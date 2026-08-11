@@ -1,6 +1,6 @@
 # Problem Set
 
-난이도 등급: **Tier B (적정하나 힌트 제공)**
+난이도 등급: **Tier B**(적정하나 힌트 제공)
 
 **1.** (코딩) 3-state MDP (state 0,1,2)가 주어질 때, 고정된 정책 하에서 각 상태의
 가치함수 \\(V(s)\\)를 반복적 정책평가(iterative policy evaluation)로 계산하라.

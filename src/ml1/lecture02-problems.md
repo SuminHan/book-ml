@@ -1,6 +1,6 @@
 # Problem Set
 
-난이도 등급: **Tier A (자유 유도)**
+난이도 등급: **Tier A**(자유 유도)
 
 **1.** (코딩) 다음과 같은 함수 `gradient_descent`를 작성하라:
 

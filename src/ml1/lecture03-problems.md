@@ -1,6 +1,6 @@
 # Problem Set
 
-난이도 등급: **Tier B (적정하나 힌트 제공)**
+난이도 등급: **Tier B**(적정하나 힌트 제공)
 
 **1.** (코딩) 다음과 같은 함수 `logistic_gradient_descent`를 작성하라:
 
@@ -57,7 +57,7 @@ print(precision_recall_f1(y_true, y_pred))  # (0.75, 0.75, 0.75)
 를 \\(w_j\\)로 미분해서 \\(\frac{\partial J^{(i)}}{\partial w_j} = (h_w(x^{(i)}) -
 y^{(i)})x_j^{(i)}\\)가 됨을 유도하라.
 
-**힌트 (연쇄법칙을 세 단계로 나눠서 적용)**:
+**힌트**(연쇄법칙을 세 단계로 나눠서 적용):
 
 1. 먼저 \\(\frac{\partial J^{(i)}}{\partial h}\\)를 구하라 (h는 \\(h_w(x^{(i)})\\)의
    줄임 표기). \\(\frac{d}{dh}\log h = \frac{1}{h}\\)임을 이용.

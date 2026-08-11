@@ -3,7 +3,7 @@
 ## 퍼셉트론에서 다층 신경망으로
 
 로지스틱회귀는 사실 입력층과 출력층만 있는(은닉층이 없는) 가장 단순한 "신경망"으로 볼 수
-있다: \\(a = \sigma(w^Tx)\\). **다층 퍼셉트론(Multi-Layer Perceptron, MLP)**은 그
+있다: \\(a = \sigma(w^Tx)\\). **다층 퍼셉트론**(Multi-Layer Perceptron, MLP)은 그
 사이에 은닉층을 하나 이상 끼워 넣는다.
 
 ## 순전파(Forward Propagation)

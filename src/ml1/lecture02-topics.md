@@ -29,7 +29,7 @@ x_j\\)로 쓴다 — bias까지 하나의 내적으로 통일하는 트릭이다
 \frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) -
 y^{(i)}\right) x_j^{(i)}\\]
 
-\\(\alpha\\)는 **학습률(learning rate)** — 한 걸음의 크기다. 모든 \\(w_j\\)를 동시에
+\\(\alpha\\)는 **학습률**(learning rate) — 한 걸음의 크기다. 모든 \\(w_j\\)를 동시에
 업데이트하는 이 과정을 손실이 충분히 작아질 때까지(또는 정해진 반복 횟수만큼) 반복한다.
 
 ```python
@@ -58,8 +58,8 @@ def gradient_descent(X, y, alpha, epochs):
 
 ## 정규방정식(Normal Equation): 미분으로 한 번에 풀기
 
-\\(J(w)\\)는 \\(w\\)에 대한 이차함수이므로, 경사하강법 없이 미분을 0으로 놓아 **닫힌
-형태(closed-form)**로 최적해를 구할 수도 있다:
+\\(J(w)\\)는 \\(w\\)에 대한 이차함수이므로, 경사하강법 없이 미분을 0으로 놓아
+**닫힌 형태**(closed-form)로 최적해를 구할 수도 있다:
 
 \\[w^* = (X^TX)^{-1}X^Ty\\]
 

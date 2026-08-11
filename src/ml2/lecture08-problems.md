@@ -39,7 +39,7 @@ def reinforce_update(theta, episode, alpha, gamma):
 \\[\nabla_\theta J(\theta) = \mathbb{E}_{\tau}\left[\sum_t \nabla_\theta \log
 \pi_\theta(a_t|s_t) \, G_t\right]\\]
 
-가 됨을, **로그미분 트릭(log-derivative trick)** \\(\nabla_\theta \pi =
+가 됨을, **로그미분 트릭**(log-derivative trick) \\(\nabla_\theta \pi =
 \pi \nabla_\theta \log \pi\\)을 사용하여 처음부터 끝까지 유도하라.
 
 ### [버전 B] 빈칸채움형 유도 워크시트 (기본값 — 대부분 학생 대상)

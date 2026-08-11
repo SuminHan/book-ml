@@ -38,7 +38,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-b32f7abc.js";
+            window.path_to_searchindex_js = "../searchindex-ad262e1b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-c7efff5e.js"></script>
@@ -184,19 +184,19 @@
 <p>ML1 W04에서 “차원의 저주(curse of dimensionality)“라는 용어를 배웠다. 이 용어를 만든
 사람은 수학자 리처드 벨만(Richard Bellman)으로, 1950년대에 동적계획법(dynamic
 programming)이라는 최적화 기법을 만들면서 이 이름을 붙였다. 그가 만든 또 하나의
-도구가 바로 이번 주의 핵심인 **벨만방정식(Bellman equation)**이다 — “복잡한 문제를
+도구가 바로 이번 주의 핵심인 <strong>벨만방정식</strong>(Bellman equation)이다 — “복잡한 문제를
 한 번에 풀지 말고, 더 작은 부분 문제로 쪼개서 그 답을 재귀적으로 조합하라“는 그의
 아이디어는 지금 강화학습의 이론적 뼈대를 이루고 있다.</p>
 <h2 id="ml1에서-살짝-본-것을-정식화한다"><a class="header" href="#ml1에서-살짝-본-것을-정식화한다">ML1에서 살짝 본 것을 정식화한다</a></h2>
 <p>ML1 W11에서 상태·행동·보상·정책이라는 개념만 직관적으로 봤다면, 이번 주는 그것을
-**MDP(Markov Decision Process)**라는 수학적 틀로 정식화한다. “지금 이 상태에서
+<strong>MDP</strong>(Markov Decision Process)라는 수학적 틀로 정식화한다. “지금 이 상태에서
 시작해서, 이 정책을 계속 따른다면, 기대할 수 있는 누적 보상은 얼마인가?” — 이
-질문에 정확한 숫자로 답하는 것이 **가치함수(value function)**이고, 그 값을 계산하는
-방법이 **정책평가(policy evaluation)**다.</p>
+질문에 정확한 숫자로 답하는 것이 <strong>가치함수</strong>(value function)이고, 그 값을 계산하는
+방법이 <strong>정책평가</strong>(policy evaluation)다.</p>
 <h2 id="재귀로-문제를-쪼개기"><a class="header" href="#재귀로-문제를-쪼개기">재귀로 문제를 쪼개기</a></h2>
 <p>가치함수를 직접 계산하려면 “지금부터 게임이 끝날 때까지 일어날 수 있는 모든 경우“를
-다 따져야 할 것 같지만, 벨만방정식은 훨씬 영리한 지름길을 준다: **“지금 상태의
-가치는, 즉시 받는 보상 + (할인된) 다음 상태의 가치”**라는 재귀적 관계로 표현할 수
+다 따져야 할 것 같지만, 벨만방정식은 훨씬 영리한 지름길을 준다: <strong>“지금 상태의
+가치는, 즉시 받는 보상 + (할인된) 다음 상태의 가치</strong>“라는 표현으로 재귀적 관계를
 있다는 것이다. 이 통찰 덕분에, “게임이 끝날 때까지“를 통째로 계산하는 대신, 한 스텝
 앞만 내다보는 계산을 반복하는 것만으로 정확한 답에 도달할 수 있다.</p>
 <p><strong>동적계획법의 핵심 아이디어(“큰 문제 = 작은 부분 문제 + 재귀”)는 컴퓨터공학

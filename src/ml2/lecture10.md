@@ -6,7 +6,7 @@
 가짜를 만드는 위조범(생성자, Generator), 다른 하나는 진짜와 가짜를 구별하는
 감정사(판별자, Discriminator)로 두고, 위조범은 감정사를 속이도록, 감정사는 위조범을
 잡아내도록 서로 계속 겨루게 하면 위조범의 실력이 점점 진짜에 가깝게 늘어나지
-않을까? 이 아이디어가 **GAN(Generative Adversarial Network)**이다.
+않을까? 이 아이디어가 **GAN**(Generative Adversarial Network)이다.
 
 ## 지난주와는 완전히 다른 원리
 

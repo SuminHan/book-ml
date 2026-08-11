@@ -21,7 +21,7 @@
 \\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
 D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\\]
 
-우변을 **ELBO(Evidence Lower BOund)**라 부른다. 두 항의 의미:
+우변을 **ELBO**(Evidence Lower BOund)라 부른다. 두 항의 의미:
 
 - 첫 항 \\(\mathbb{E}[\log p_\theta(x|z)]\\): **복원 항** — 인코더가 만든 \\(z\\)로
   디코더가 원본 \\(x\\)를 얼마나 잘 복원하는가 (일반 오토인코더의 복원 오차와

@@ -39,7 +39,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b32f7abc.js";
+            window.path_to_searchindex_js = "searchindex-ad262e1b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-c7efff5e.js"></script>
@@ -233,20 +233,20 @@ AlexNet은 그런 손설계 없이, 수백만 장의 사진과 정답 라벨만 
 <h2 id="지도학습--비지도학습--강화학습"><a class="header" href="#지도학습--비지도학습--강화학습">지도학습 · 비지도학습 · 강화학습</a></h2>
 <p>머신러닝 문제는 크게 세 갈래로 나뉜다.</p>
 <ul>
-<li><strong>지도학습(Supervised Learning)</strong>: 입력과 정답이 쌍으로 주어진다 — “이 집의 평수/방
+<li><strong>지도학습</strong>(Supervised Learning): 입력과 정답이 쌍으로 주어진다 — “이 집의 평수/방
 개수를 보고 가격을 맞혀라”(회귀), “이 이메일이 스팸인지 아닌지 맞혀라”(분류). ML1의
 거의 모든 주차가 여기 속한다.</li>
-<li><strong>비지도학습(Unsupervised Learning)</strong>: 정답 없이 데이터의 구조만 주어진다 — “이
+<li><strong>비지도학습</strong>(Unsupervised Learning): 정답 없이 데이터의 구조만 주어진다 — “이
 고객들을 비슷한 성향끼리 묶어라”(군집화), “1000개 특징을 정보 손실 최소로 10개로
 줄여라”(차원축소). ML1 W10에서 다룬다.</li>
-<li><strong>강화학습(Reinforcement Learning)</strong>: 정답이 아니라 보상만 주어지고, 에이전트가 시행착오로
+<li><strong>강화학습</strong>(Reinforcement Learning): 정답이 아니라 보상만 주어지고, 에이전트가 시행착오로
 좋은 행동을 스스로 찾아야 한다 — 체스나 바둑에서 “이 수가 정답이다“라고 알려주는 사람은
 없지만, “이겼다/졌다“는 신호는 있다. ML1에서는 개념만 예고하고, ML2에서 본격적으로
 다룬다.</li>
 </ul>
 <h2 id="회귀-vs-분류"><a class="header" href="#회귀-vs-분류">회귀 vs 분류</a></h2>
-<p>지도학습은 다시 출력이 연속값이냐 범주냐로 나뉜다: **회귀(regression)**는 숫자를
-예측한다(집값, 기온), **분류(classification)**는 범주를 예측한다(스팸/정상,
+<p>지도학습은 다시 출력이 연속값이냐 범주냐로 나뉜다: <strong>회귀</strong>(regression)는 숫자를
+예측한다(집값, 기온), <strong>분류</strong>(classification)는 범주를 예측한다(스팸/정상,
 개/고양이/새). 같은 알고리즘이 두 문제 모두에 쓰이는 경우가 많으므로(예: 선형회귀 →
 로지스틱회귀), 이 둘을 구분하는 눈은 이번 학기 내내 필요하다.</p>
 <h2 id="이번-학기-로드맵"><a class="header" href="#이번-학기-로드맵">이번 학기 로드맵</a></h2>
@@ -350,7 +350,7 @@ x_j\)로 쓴다 — bias까지 하나의 내적으로 통일하는 트릭이다.
 <p>\[w_j \leftarrow w_j - \alpha \frac{\partial J}{\partial w_j}, \qquad
 \frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) -
 y^{(i)}\right) x_j^{(i)}\]</p>
-<p>\(\alpha\)는 <strong>학습률(learning rate)</strong> — 한 걸음의 크기다. 모든 \(w_j\)를 동시에
+<p>\(\alpha\)는 <strong>학습률</strong>(learning rate) — 한 걸음의 크기다. 모든 \(w_j\)를 동시에
 업데이트하는 이 과정을 손실이 충분히 작아질 때까지(또는 정해진 반복 횟수만큼) 반복한다.</p>
 <pre><code class="language-python">def gradient_descent(X, y, alpha, epochs):
     m, n = len(X), len(X[0])
@@ -373,8 +373,8 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 벽으로 넘어가 버리는 것과 같다. 적절한 \(\alpha\)를 찾는 것 자체가 실무에서 중요한
 튜닝 과정이다.</p>
 <h2 id="정규방정식normal-equation-미분으로-한-번에-풀기"><a class="header" href="#정규방정식normal-equation-미분으로-한-번에-풀기">정규방정식(Normal Equation): 미분으로 한 번에 풀기</a></h2>
-<p>\(J(w)\)는 \(w\)에 대한 이차함수이므로, 경사하강법 없이 미분을 0으로 놓아 **닫힌
-형태(closed-form)**로 최적해를 구할 수도 있다:</p>
+<p>\(J(w)\)는 \(w\)에 대한 이차함수이므로, 경사하강법 없이 미분을 0으로 놓아
+<strong>닫힌 형태</strong>(closed-form)로 최적해를 구할 수도 있다:</p>
 <p>\[w^* = (X^TX)^{-1}X^Ty\]</p>
 <p>여기서 \(X\)는 각 행이 \(x^{(i)}\)(bias 포함)인 \(m \times (n+1)\) 행렬이다.
 이 유도는 이번 주 손유도 과제의 핵심이다.</p>
@@ -384,7 +384,7 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 선형으로만 늘어난다. 특징이 적을 땐 정규방정식, 많을 땐 경사하강법을 쓰는 이유다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set"><a class="header" href="#problem-set">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier A (자유 유도)</strong></p>
+<p>난이도 등급: <strong>Tier A</strong>(자유 유도)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>gradient_descent</code>를 작성하라:</p>
 <ul>
 <li>input parameter: 특징행렬 <code>X</code>(리스트의 리스트, 각 행이 샘플), 타겟 <code>y</code>(리스트),
@@ -422,7 +422,7 @@ print(gradient_descent(X, y, alpha=0.01, epochs=1000))  # 대략 [1.0, 2.0] (bia
 <p>1838년, 벨기에 수학자 피에르프랑수아 페르휠스트(Pierre François Verhulst)는 인구가
 지수적으로 무한히 증가할 수 없다는 문제를 풀고 있었다 — 자원은 한정돼 있으니, 인구는
 어느 시점부터 증가 속도가 느려지고 특정 상한선에 수렴해야 한다. 그가 이 현상을 표현하기
-위해 만든 S자 곡선에 **로지스틱(logistic)**이라는 이름을 붙였다. 180년 뒤, 이 곡선은
+위해 만든 S자 곡선에 <strong>로지스틱</strong>(logistic)이라는 이름을 붙였다. 180년 뒤, 이 곡선은
 인구 증가와는 전혀 상관없어 보이는 문제 — “이 이메일이 스팸일 확률은 몇 퍼센트인가” —
 를 푸는 데 그대로 쓰이고 있다.</p>
 <h2 id="회귀에서-분류로"><a class="header" href="#회귀에서-분류로">회귀에서 분류로</a></h2>
@@ -448,12 +448,12 @@ print(gradient_descent(X, y, alpha=0.01, epochs=1000))  # 대략 [1.0, 2.0] (bia
 <p>\[h_w(x) = \sigma(w^Tx) = \frac{1}{1+e^{-w^Tx}}\]</p>
 <p>\(h_w(x)\)는 “\(x\)가 양성 클래스(class 1)일 확률“로 해석한다. 예측은
 \(h_w(x) \ge 0.5\)면 클래스 1, 아니면 클래스 0으로 정한다 — \(h_w(x)=0.5\)는
-정확히 \(w^Tx=0\)인 지점이므로, 결정 경계(decision boundary)는 여전히 **직선(또는
-초평면)**이다.</p>
+정확히 \(w^Tx=0\)인 지점이므로, 결정 경계(decision boundary)는 여전히
+<strong>직선</strong>(또는 초평면)이다.</p>
 <h2 id="손실함수-왜-mse를-안-쓰는가"><a class="header" href="#손실함수-왜-mse를-안-쓰는가">손실함수: 왜 MSE를 안 쓰는가</a></h2>
 <p>시그모이드에 평균제곱오차를 그대로 적용하면 \(J(w)\)가 \(w\)에 대해 <strong>볼록하지
 않아(non-convex)</strong>, 경사하강법이 지역 최솟값(local minimum)에 갇힐 위험이 있다. 대신
-<strong>교차 엔트로피(cross-entropy)</strong> 손실을 쓴다:</p>
+<strong>교차 엔트로피</strong>(cross-entropy) 손실을 쓴다:</p>
 <p>\[J(w) = -\frac{1}{m}\sum_{i=1}^m \left[y^{(i)}\log h_w(x^{(i)}) + (1-y^{(i)})
 \log(1-h_w(x^{(i)}))\right]\]</p>
 <p>직관: 정답이 \(y=1\)인데 모델이 \(h_w(x) \to 0\)으로 확신하면 \(-\log h_w(x)
@@ -491,7 +491,7 @@ Precision은 오르지만(확신 있을 때만 양성 판정) Recall은 떨어�
 요약한 지표다 — 특히 클래스 불균형이 심할 때 accuracy보다 훨씬 신뢰할 수 있는 지표다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-1"><a class="header" href="#problem-set-1">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier B (적정하나 힌트 제공)</strong></p>
+<p>난이도 등급: <strong>Tier B</strong>(적정하나 힌트 제공)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>logistic_gradient_descent</code>를 작성하라:</p>
 <ul>
 <li>input parameter: 특징행렬 <code>X</code>, 타겟 <code>y</code>(0 또는 1의 리스트), 학습률 <code>alpha</code>, 반복횟수
@@ -537,7 +537,7 @@ print(precision_recall_f1(y_true, y_pred))  # (0.75, 0.75, 0.75)
 <p>\[J^{(i)}(w) = -y^{(i)}\log h_w(x^{(i)}) - (1-y^{(i)})\log(1-h_w(x^{(i)}))\]</p>
 <p>를 \(w_j\)로 미분해서 \(\frac{\partial J^{(i)}}{\partial w_j} = (h_w(x^{(i)}) -
 y^{(i)})x_j^{(i)}\)가 됨을 유도하라.</p>
-<p><strong>힌트 (연쇄법칙을 세 단계로 나눠서 적용)</strong>:</p>
+<p><strong>힌트</strong>(연쇄법칙을 세 단계로 나눠서 적용):</p>
 <ol>
 <li>먼저 \(\frac{\partial J^{(i)}}{\partial h}\)를 구하라 (h는 \(h_w(x^{(i)})\)의
 줄임 표기). \(\frac{d}{dh}\log h = \frac{1}{h}\)임을 이용.</li>
@@ -555,7 +555,7 @@ h}{\partial z}\)를 구하라 (여기서 \(z = w^Tx^{(i)}\)).</li>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="distance-based-models-knn"><a class="header" href="#distance-based-models-knn">Distance-Based Models: kNN</a></h1>
 <p>“당신은 가장 가까운 다섯 친구의 평균이다“라는 말이 있다. 이 문장을 그대로 알고리즘으로
-옮기면 **k-최근접이웃(k-Nearest Neighbors, kNN)**이 된다: 새로운 데이터를 분류하고
+옮기면 <strong>k-최근접이웃</strong>(k-Nearest Neighbors, kNN)이 된다: 새로운 데이터를 분류하고
 싶으면, 학습도 모델도 필요 없이 그냥 “가장 가까운 \(k\)개의 기존 데이터가 뭐라고
 답했는지 보고 다수결로 따라간다.”</p>
 <h2 id="학습이-없는-학습-알고리즘"><a class="header" href="#학습이-없는-학습-알고리즘">학습이 없는 학습 알고리즘</a></h2>
@@ -568,7 +568,7 @@ h}{\partial z}\)를 구하라 (여기서 \(z = w^Tx^{(i)}\)).</li>
 <p>kNN의 전제는 “가까운 데이터는 비슷한 답을 가질 것이다“라는 직관이다. 그런데 특징이
 2~3개일 때는 “가깝다“는 게 눈으로도 명확하지만, 특징이 수백 개가 되면 이 직관이 무너지기
 시작한다 — 고차원 공간에서는 모든 점이 서로 “멀어 보이는” 이상한 현상이 생긴다. 이것이
-이번 주 손유도 과제의 주제인 **차원의 저주(curse of dimensionality)**다.</p>
+이번 주 손유도 과제의 주제인 <strong>차원의 저주</strong>(curse of dimensionality)다.</p>
 <p><strong>단순함이 곧 약점이 아니다 — kNN은 모델이 “무엇을 학습했는지” 전혀 설명하지 않지만,
 바로 그 단순함 덕분에 언제, 왜 실패하는지도 수식으로 정확히 짚어낼 수 있다.</strong></p>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -590,10 +590,10 @@ h}{\partial z}\)를 구하라 (여기서 \(z = w^Tx^{(i)}\)).</li>
     return max(set(k_nearest_labels), key=k_nearest_labels.count)  # 다수결
 </code></pre>
 <h2 id="거리-함수"><a class="header" href="#거리-함수">거리 함수</a></h2>
-<p>가장 흔한 선택은 <strong>유클리드 거리(Euclidean distance)</strong>:</p>
+<p>가장 흔한 선택은 <strong>유클리드 거리</strong>(Euclidean distance):</p>
 <p>\[d(x, x’) = \sqrt{\sum_{j=1}^n (x_j - x’_j)^2}\]</p>
 <p>다른 선택지로 맨해튼 거리(\(\sum_j |x_j - x’_j|\), 좌표축을 따라서만 이동)도 있다.
-거리를 재기 전에 **특징 정규화(normalization)**가 거의 필수다 — “방 개수”(0~10 범위)와
+거리를 재기 전에 <strong>특징 정규화</strong>(normalization)가 거의 필수다 — “방 개수”(0~10 범위)와
 “집값”(수억 원 단위)을 그대로 섞어 거리를 재면, 스케일이 큰 특징이 거리를 사실상
 독차지해버린다.</p>
 <h2 id="k를-고르는-트레이드오프"><a class="header" href="#k를-고르는-트레이드오프">\(k\)를 고르는 트레이드오프</a></h2>
@@ -623,13 +623,13 @@ h}{\partial z}\)를 구하라 (여기서 \(z = w^Tx^{(i)}\)).</li>
 </tbody>
 </table>
 </div>
-<p>\(n=100\)에서는 각 변의 **95.5%**를 차지해야 겨우 전체의 1%만 포함된다 — “가까운
+<p>\(n=100\)에서는 <strong>각 변 길이의 95.5%나</strong> 차지해야 겨우 전체의 1%만 포함된다 — “가까운
 이웃“이라 부를 만한 좁은 영역이 사실상 사라진다. 특징이 많아질수록 모든 점이 서로
 비슷하게 멀어 보이는 이유다. 이번 주 손유도 과제에서 이 식을 직접 유도하고, 왜 kNN이
 고차원 데이터에서 잘 작동하지 않는지를 수식으로 설명한다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-2"><a class="header" href="#problem-set-2">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier B (적정하나 힌트 제공)</strong></p>
+<p>난이도 등급: <strong>Tier B</strong>(적정하나 힌트 제공)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>knn_predict</code>를 작성하라:</p>
 <ul>
 <li>input parameter: 학습 특징 <code>X_train</code>(리스트의 리스트), 학습 라벨 <code>y_train</code>(리스트),
@@ -676,18 +676,18 @@ print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
 <h1 id="tree-based-models"><a class="header" href="#tree-based-models">Tree-Based Models</a></h1>
 <p>“동물인가요? 네 다리로 걷나요? 야옹 소리를 내나요?” — 스무고개(20 Questions) 게임은
 예/아니오 질문을 잘 골라서 물어보면, 스무 번 안에 어떤 답이든 좁혀낼 수 있다는 게임이다.
-**결정 트리(Decision Tree)**는 이 게임을 알고리즘으로 그대로 옮긴 것이다: 데이터를 가장
+<strong>결정 트리</strong>(Decision Tree)는 이 게임을 알고리즘으로 그대로 옮긴 것이다: 데이터를 가장
 잘 나누는 질문(“나이가 30보다 큰가?”)을 하나씩 골라 가며, 각 질문이 답을 좁혀갈 때까지
 반복한다.</p>
 <h2 id="가장-잘-나누는-질문이란"><a class="header" href="#가장-잘-나누는-질문이란">“가장 잘 나누는 질문“이란</a></h2>
 <p>스무고개를 잘하는 사람은 아무 질문이나 던지지 않는다 — “생물인가요?“처럼 답이 반반으로
 갈릴 만한 질문을 먼저 던져야 정보를 가장 많이 얻는다. “포유류인가요?“라는 질문에 답이
 99% “네“로 몰려 있다면, 그 질문은 거의 아무것도 좁혀주지 않는다. 이번 주에 배우는
-**정보이득(information gain)**과 **지니불순도(Gini impurity)**는 바로 이 “얼마나 잘
+<strong>정보이득</strong>(information gain)과 <strong>지니불순도</strong>(Gini impurity)는 바로 이 “얼마나 잘
 좁히는가“를 수치로 재는 방법이다.</p>
 <h2 id="트리-하나에서-숲으로"><a class="header" href="#트리-하나에서-숲으로">트리 하나에서 숲으로</a></h2>
-<p>트리 하나는 데이터를 완벽하게 외워버리기(과적합) 쉽다. **랜덤 포레스트(Random
-Forest)**의 아이디어는 단순하다: 서로 조금씩 다른 트리를 여러 개 만들고(데이터와 특징을
+<p>트리 하나는 데이터를 완벽하게 외워버리기(과적합) 쉽다. <strong>랜덤 포레스트</strong>(Random
+Forest)의 아이디어는 단순하다: 서로 조금씩 다른 트리를 여러 개 만들고(데이터와 특징을
 무작위로 다르게 골라서), 그 트리들의 다수결로 예측한다. 개별 트리는 각자 편향된 실수를
 하지만, 그 실수들이 서로 다른 방향이면 평균을 내는 순간 상쇄된다 — “여러 전문가에게
 따로 물어보고 다수결을 따른다“는 앙상블(ensemble)의 직관이다.</p>
@@ -709,7 +709,7 @@ Forest)**의 아이디어는 단순하다: 서로 조금씩 다른 트리를 여
 가장 나쁜 상태(이진 분류에서 최댓값).</li>
 </ul>
 <h2 id="정보이득information-gain"><a class="header" href="#정보이득information-gain">정보이득(Information Gain)</a></h2>
-<p>먼저 **엔트로피(entropy)**를 정의한다:</p>
+<p>먼저 <strong>엔트로피</strong>(entropy)를 정의한다:</p>
 <p>\[H = -\sum_{k=1}^K p_k \log_2 p_k\]</p>
 <p>지니불순도와 마찬가지로 순수할수록 작다(0), 섞여 있을수록 크다. 어떤 질문으로 노드를
 왼쪽(\(L\))과 오른쪽(\(R\))으로 나눴을 때, <strong>정보이득</strong>은 “나누기 전 엔트로피 —
@@ -748,12 +748,12 @@ def information_gain(parent_labels, left_labels, right_labels):
 <h2 id="언제-나누기를-멈추는가"><a class="header" href="#언제-나누기를-멈추는가">언제 나누기를 멈추는가</a></h2>
 <p>트리를 끝까지 키우면 모든 리프가 완벽히 순수해질 때까지 나눈다 — 학습 데이터는 100%
 맞히지만, 새 데이터에는 취약한(과적합) 트리가 된다. 실무에서는 최대 깊이(max depth),
-리프의 최소 샘플 수 같은 **정지 조건(stopping criteria)**으로 트리 크기를 제한하거나,
-트리를 다 키운 뒤 불필요한 가지를 잘라내는 **가지치기(pruning)**를 한다.</p>
+리프의 최소 샘플 수 같은 <strong>정지 조건</strong>(stopping criteria)으로 트리 크기를 제한하거나,
+트리를 다 키운 뒤 불필요한 가지를 잘라내는 <strong>가지치기</strong>(pruning)를 한다.</p>
 <h2 id="랜덤-포레스트-배깅bagging--특징-무작위화"><a class="header" href="#랜덤-포레스트-배깅bagging--특징-무작위화">랜덤 포레스트: 배깅(Bagging) + 특징 무작위화</a></h2>
 <p>랜덤 포레스트는 두 가지 무작위성을 더한 트리 여러 개를 학습한다:</p>
 <ol>
-<li><strong>배깅(Bootstrap Aggregating)</strong>: 각 트리는 원본 데이터에서 복원추출(중복 허용)로
+<li><strong>배깅</strong>(Bootstrap Aggregating): 각 트리는 원본 데이터에서 복원추출(중복 허용)로
 같은 크기의 데이터셋을 뽑아 학습한다 — 트리마다 조금씩 다른 데이터를 본다.</li>
 <li><strong>특징 무작위화</strong>: 각 분기(split)에서 전체 특징이 아니라, 무작위로 고른 일부
 특징 중에서만 최선의 질문을 찾는다.</li>
@@ -763,7 +763,7 @@ def information_gain(parent_labels, left_labels, right_labels):
 “서로 다른 실수를 하는 전문가 100명“의 평균이 훨씬 안정적인 것과 같은 원리다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-3"><a class="header" href="#problem-set-3">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier A (자유 유도)</strong></p>
+<p>난이도 등급: <strong>Tier A</strong>(자유 유도)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>gini</code>와 <code>best_split</code>을 작성하라:</p>
 <ul>
 <li><code>gini(labels)</code>: 라벨 리스트를 받아 지니불순도를 반환</li>
@@ -821,7 +821,7 @@ print(best_split(X, y, 0))  # (4.0, 1.0) -- 완벽하게 나뉨
 답(거절/승인)을 내놓지만, <strong>왜</strong> 그 답이 나왔는지는 모델 자신도 한 줄로 설명하지 못한다.</p>
 <h2 id="트리를-더-강하게-gbdt"><a class="header" href="#트리를-더-강하게-gbdt">트리를 더 강하게: GBDT</a></h2>
 <p>지난주 랜덤 포레스트는 트리 여러 개를 <strong>독립적으로</strong> 만들고 다수결로 합쳤다.
-**GBDT(Gradient Boosted Decision Trees)**는 다른 전략을 쓴다: 트리를 하나씩
+<strong>GBDT</strong>(Gradient Boosted Decision Trees)는 다른 전략을 쓴다: 트리를 하나씩
 <strong>순차적으로</strong> 추가하는데, 매번 새로운 트리는 “지금까지의 예측이 아직 못 맞힌 부분(잔차,
 residual)“을 목표로 학습한다. 첫 트리가 대충 맞히고, 두 번째 트리가 첫 트리의 실수를
 보정하고, 세 번째가 그 둘의 남은 실수를 또 보정하는 식이다. XGBoost, LightGBM은 이
@@ -829,7 +829,7 @@ residual)“을 목표로 학습한다. 첫 트리가 대충 맞히고, 두 번�
 데이터 대회(Kaggle 등)에서 가장 자주 우승하는 축에 속한다.</p>
 <h2 id="정확한데-설명이-안-된다는-문제"><a class="header" href="#정확한데-설명이-안-된다는-문제">정확한데 설명이 안 된다는 문제</a></h2>
 <p>GBDT는 강력하지만, 수백 개의 트리가 얽혀 있어 “이 예측 하나“에 어떤 특징이 얼마나
-기여했는지 알기 어렵다. **SHAP(SHapley Additive exPlanations)**은 게임이론의
+기여했는지 알기 어렵다. <strong>SHAP</strong>(SHapley Additive exPlanations)은 게임이론의
 섀플리값(Shapley value) — “여러 사람이 협업해서 낸 성과를, 각자의 기여도에 따라 어떻게
 공정하게 나눌 것인가“라는 문제의 답 — 을 빌려와서, 모델의 예측 하나를 “각 특징이 기여한
 양“으로 정확히 분해한다.</p>
@@ -840,7 +840,7 @@ residual)“을 목표로 학습한다. 첫 트리가 대충 맞히고, 두 번�
 <h2 id="gradient-boosting의-핵심-아이디어"><a class="header" href="#gradient-boosting의-핵심-아이디어">Gradient Boosting의 핵심 아이디어</a></h2>
 <p>목표: \(T\)개의 트리 \(f_1, \ldots, f_T\)를 순차적으로 더해서 예측
 \(F_T(x) = \sum_{t=1}^T f_t(x)\)를 만든다. \(t\)번째 트리를 학습할 때는, 지금까지
-쌓은 예측 \(F_{t-1}(x)\)의 <strong>잔차(residual)</strong> \(r^{(i)} = y^{(i)} - F_{t-1}(x^{(i)})\)를
+쌓은 예측 \(F_{t-1}(x)\)의 <strong>잔차</strong>(residual) \(r^{(i)} = y^{(i)} - F_{t-1}(x^{(i)})\)를
 새로운 목표값으로 삼아, 그 잔차를 예측하는 트리를 학습한다:</p>
 <pre><code class="language-python">def gbdt_fit(X, y, n_trees, learning_rate):
     trees = []
@@ -864,7 +864,7 @@ residual)“을 목표로 학습한다. 첫 트리가 대충 맞히고, 두 번�
 계속 줄어든다 — 물론 실전에서는 검증 데이터 성능이 나빠지기 시작하는 시점(과적합)에서
 멈춰야 한다(early stopping).</p>
 <h2 id="shap-예측-하나를-특징별로-분해하기"><a class="header" href="#shap-예측-하나를-특징별로-분해하기">SHAP: 예측 하나를 특징별로 분해하기</a></h2>
-<p>SHAP값은 게임이론의 **섀플리값(Shapley value)**을 응용한다. 원래 섀플리값은 “여러
+<p>SHAP값은 게임이론의 <strong>섀플리값</strong>(Shapley value)을 응용한다. 원래 섀플리값은 “여러
 플레이어가 협력 게임에 참여할 때, 각 플레이어의 공정한 몫은 얼마인가“를 답한다 —
 모든 가능한 참여 순서에서, 그 플레이어가 합류함으로써 늘어난 가치를 평균낸다.</p>
 <p>SHAP은 “특징들“을 “플레이어들“로 바꿔서 적용한다: 특징 \(j\)의 SHAP값
@@ -891,7 +891,7 @@ residual)“을 목표로 학습한다. 첫 트리가 대충 맞히고, 두 번�
 장난감 예제로 이 계산을 직접 손으로 해본다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-4"><a class="header" href="#problem-set-4">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier C (폴백 준비 대상)</strong> — 아래 두 버전을 모두 준비해두고, 학생 반응을
+<p>난이도 등급: <strong>Tier C</strong>(폴백 준비 대상) — 아래 두 버전을 모두 준비해두고, 학생 반응을
 본 뒤 선택한다.</p>
 <p><strong>1.</strong> (코딩) 결정 트리 스텁 함수 <code>fit_stump</code>(깊이 1짜리 트리, 즉 분기 하나만 있는
 트리)가 이미 주어졌을 때, 다음과 같은 함수 <code>gbdt_fit</code>을 작성하라:</p>
@@ -961,7 +961,7 @@ phi_B = (순서 A-&gt;B에서 B의 기여 + 순서 B-&gt;A에서 B의 기여) / 
 였다 — 출력층은 W03의 로지스틱회귀와 똑같이 그래디언트를 계산하면 되지만, 은닉층은
 정답을 직접 비교할 대상이 없다.</p>
 <p>1986년 데이비드 럼멜하트(David Rumelhart), 제프리 힌턴(Geoffrey Hinton), 로널드
-윌리엄스(Ronald Williams)가 대중화한 <strong>역전파(backpropagation)</strong> 알고리즘이 이 문제를
+윌리엄스(Ronald Williams)가 대중화한 <strong>역전파</strong>(backpropagation) 알고리즘이 이 문제를
 풀었다: 출력층의 오차를 연쇄법칙(chain rule)으로 거꾸로 흘려보내, 은닉층의 각 가중치가
 최종 오차에 얼마나 책임이 있는지를 정확히 계산하는 방법이다.</p>
 <h2 id="오늘-배우는-것과의-연결-1"><a class="header" href="#오늘-배우는-것과의-연결-1">오늘 배우는 것과의 연결</a></h2>
@@ -975,7 +975,7 @@ phi_B = (순서 A-&gt;B에서 B의 기여 + 순서 B-&gt;A에서 B의 기여) / 
 <h1 id="topics-covered-6"><a class="header" href="#topics-covered-6">Topics Covered</a></h1>
 <h2 id="퍼셉트론에서-다층-신경망으로"><a class="header" href="#퍼셉트론에서-다층-신경망으로">퍼셉트론에서 다층 신경망으로</a></h2>
 <p>로지스틱회귀는 사실 입력층과 출력층만 있는(은닉층이 없는) 가장 단순한 “신경망“으로 볼 수
-있다: \(a = \sigma(w^Tx)\). **다층 퍼셉트론(Multi-Layer Perceptron, MLP)**은 그
+있다: \(a = \sigma(w^Tx)\). <strong>다층 퍼셉트론</strong>(Multi-Layer Perceptron, MLP)은 그
 사이에 은닉층을 하나 이상 끼워 넣는다.</p>
 <h2 id="순전파forward-propagation"><a class="header" href="#순전파forward-propagation">순전파(Forward Propagation)</a></h2>
 <p>입력 \(x\), 은닉층 가중치 \(W_1, b_1\), 출력층 가중치 \(W_2, b_2\)를 가진 2층
@@ -1037,7 +1037,7 @@ def two_layer_backward(y_true, cache, W2):
 해주는 그 연쇄법칙을, 딱 한 번은 손으로 끝까지 따라가 보는 것이다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-5"><a class="header" href="#problem-set-5">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier C (폴백 준비 대상)</strong> — 아래 두 버전을 모두 준비해두고, 학생 반응/Math
+<p>난이도 등급: <strong>Tier C</strong>(폴백 준비 대상) — 아래 두 버전을 모두 준비해두고, 학생 반응/Math
 for ML 실제 커버리지 확인 후 선택한다.</p>
 <p><strong>1.</strong> (코딩) 입력층(2) → 은닉층(2, sigmoid) → 출력층(1, sigmoid)인 2층 신경망을
 순전파(forward)와 역전파(backward) 둘 다 구현하라.</p>
@@ -1105,7 +1105,7 @@ Step 10: dL/dW1 = delta1 * ______________  (x와의 외적)
 <strong>곱해서</strong> 전달하는데, 층이 10개면 최대 \(0.25^{10} \approx 0.00000095\)만큼
 줄어든 신호가 첫 번째 층에 도달한다 — 사실상 0이다. 이게 <strong>그래디언트 소실(vanishing
 gradient)</strong> 문제다. 반대로 가중치 초기화가 잘못되면 그래디언트가 층을 거칠수록 오히려
-폭발적으로 커지는 **그래디언트 폭발(exploding gradient)**도 일어날 수 있다.</p>
+폭발적으로 커지는 <strong>그래디언트 폭발</strong>(exploding gradient)도 일어날 수 있다.</p>
 <h2 id="오늘-배우는-것과의-연결-2"><a class="header" href="#오늘-배우는-것과의-연결-2">오늘 배우는 것과의 연결</a></h2>
 <p>이번 주에 배우는 활성함수(ReLU 등), 정규화(dropout, batch normalization) 같은 기법들은
 전부 겉보기엔 서로 다른 트릭 같지만, 사실 대부분 이 한 가지 문제 — “깊은 네트워크에서도
@@ -1174,7 +1174,7 @@ breaking 실패) 층을 여러 개 쌓는 의미가 없어진다. 너무 크게 
 크기가 유지되도록 설계된 값이다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-6"><a class="header" href="#problem-set-6">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier B (적정하나 힌트 제공)</strong></p>
+<p>난이도 등급: <strong>Tier B</strong>(적정하나 힌트 제공)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>relu</code>와 <code>relu_prime</code>을 작성하라:</p>
 <pre><code class="language-python">def relu(z):
     # ADD ADDITIONAL CODE HERE!!
@@ -1222,7 +1222,7 @@ print(gradient_norm_through_layers(20, [0.2]*20)) # 0.2^20 -- 사실상 0
 선분에만 반응한다는 것을 발견했다 — 뇌는 이미지를 통째로 보는 게 아니라, 작은 지역별
 패턴을 감지하는 뉴런들을 층층이 쌓아 점점 더 복잡한 패턴(선 → 모서리 → 도형 → 사물)을
 조합해낸다는 뜻이었다. 이 발견은 1980년대 후쿠시마 쿠니히코의 네오코그니트론을 거쳐,
-지금 쓰이는 **합성곱 신경망(Convolutional Neural Network, CNN)**의 직접적인 영감이
+지금 쓰이는 <strong>합성곱 신경망</strong>(Convolutional Neural Network, CNN)의 직접적인 영감이
 됐다.</p>
 <h2 id="mlp로-이미지를-다루면-안-되는-이유"><a class="header" href="#mlp로-이미지를-다루면-안-되는-이유">MLP로 이미지를 다루면 안 되는 이유</a></h2>
 <p>W07의 다층 퍼셉트론(MLP)에 이미지를 입력하려면, 가로세로 픽셀을 모두 펼쳐서 하나의 긴
@@ -1276,7 +1276,7 @@ CNN의 효율이 확연히 드러난다. 예: 32×32×3 이미지, 필터 3×3, 
 층은 \((3 \times 3 \times 3 + 1) \times 16 = 448\)개의 파라미터만 쓴다. 같은
 입력을 완전연결층(출력 뉴런도 32×32×16개라 가정)에 연결하려면 수백만 개가 필요하다.</p>
 <h2 id="풀링pooling"><a class="header" href="#풀링pooling">풀링(Pooling)</a></h2>
-<p>합성곱 다음에는 보통 풀링 층으로 공간 크기를 줄인다. **최대 풀링(max pooling)**은
+<p>합성곱 다음에는 보통 풀링 층으로 공간 크기를 줄인다. <strong>최대 풀링</strong>(max pooling)은
 \(2\times2\) 영역마다 최댓값 하나만 남긴다 — 위치가 한두 칸 미세하게 움직여도
 같은 최댓값이 뽑힐 가능성이 높아, 작은 이동에 둔감한(translation-invariant) 특징을
 만든다. 풀링은 학습 파라미터가 없다 — 순수한 다운샘플링(downsampling) 연산이다.</p>
@@ -1288,7 +1288,7 @@ CNN의 효율이 확연히 드러난다. 예: 32×32×3 이미지, 필터 3×3, 
 같은 원리다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-7"><a class="header" href="#problem-set-7">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier A (자유 유도)</strong></p>
+<p>난이도 등급: <strong>Tier A</strong>(자유 유도)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>conv2d</code>를 작성하라 (패딩 없음, 스트라이드 1):</p>
 <ul>
 <li>input parameter: 2차원 리스트 <code>image</code>, 2차원 리스트 <code>kernel</code></li>
@@ -1322,8 +1322,8 @@ fm = [[1,3,2,4],
       [4,5,6,7]]
 print(max_pool(fm, 2))  # [[6,8],[9,7]]
 </code></pre>
-<p><strong>3.</strong> 합성곱 층이 완전연결층보다 파라미터가 훨씬 적은 이유를 **파라미터 공유
-(parameter sharing)**라는 용어를 써서 한 문단으로 설명하라.</p>
+<p><strong>3.</strong> 합성곱 층이 완전연결층보다 파라미터가 훨씬 적은 이유를 <strong>파라미터 공유</strong>
+(parameter sharing)라는 용어를 써서 한 문단으로 설명하라.</p>
 <hr>
 <h2 id="손유도-과제-실습시간-tier-a--자유-유도-2"><a class="header" href="#손유도-과제-실습시간-tier-a--자유-유도-2">손유도 과제 (실습시간, Tier A — 자유 유도)</a></h2>
 <h3 id="합성곱-출력-크기-공식-유도--파라미터-수-계산"><a class="header" href="#합성곱-출력-크기-공식-유도--파라미터-수-계산">합성곱 출력 크기 공식 유도 &amp; 파라미터 수 계산</a></h3>
@@ -1344,7 +1344,7 @@ Layer 3: 필터 5×5, 출력 채널 16, 패딩 0, 스트라이드 1.</p>
 <p>1901년, 통계학자 칼 피어슨(Karl Pearson)은 흥미로운 질문을 던졌다: 여러 변수를 측정한
 데이터가 있을 때, 정보를 최대한 보존하면서 변수의 개수를 줄일 수 있는 “가장 좋은
 직선(또는 평면)“은 무엇인가? 그의 답 — 데이터가 가장 많이 퍼져 있는 방향을 찾아라 —
-이 지금 **주성분분석(Principal Component Analysis, PCA)**이라 불리는 방법의 시작이다.
+이 지금 <strong>주성분분석</strong>(Principal Component Analysis, PCA)이라 불리는 방법의 시작이다.
 120년도 더 전에 나온 이 아이디어가, 지금은 수백 차원짜리 이미지 임베딩을 사람이 눈으로
 볼 수 있는 2차원으로 줄이는 데도 그대로 쓰인다.</p>
 <h2 id="정답-없이-배운다는-것"><a class="header" href="#정답-없이-배운다는-것">정답 없이 배운다는 것</a></h2>
@@ -1365,7 +1365,7 @@ Layer 3: 필터 5×5, 출력 채널 16, 패딩 0, 스트라이드 1.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="topics-covered-9"><a class="header" href="#topics-covered-9">Topics Covered</a></h1>
 <h2 id="k-means-클러스터링"><a class="header" href="#k-means-클러스터링">k-means 클러스터링</a></h2>
-<p>\(k\)개의 그룹으로 데이터를 나누는 알고리즘. 각 그룹은 **중심점(centroid)**으로
+<p>\(k\)개의 그룹으로 데이터를 나누는 알고리즘. 각 그룹은 <strong>중심점</strong>(centroid)으로
 대표된다.</p>
 <ol>
 <li>\(k\)개의 중심점을 무작위로 초기화한다.</li>
@@ -1408,7 +1408,7 @@ component)“이고, 대응하는 고유값이 그 방향의 분산 크기다.</
 <li>상위 \(d\)개의 고유벡터에 데이터를 투영하면, \(d\)차원으로 압축된 표현을
 얻는다.</li>
 </ol>
-<p><strong>왜 고유벡터인가(직관)</strong>: 공분산 행렬 \(\Sigma\)에 대해 \(\Sigma v = \lambda v\)를
+<p><strong>왜 고유벡터인가</strong>(직관): 공분산 행렬 \(\Sigma\)에 대해 \(\Sigma v = \lambda v\)를
 만족하는 \(v\)(고유벡터)는 “그 방향으로 데이터를 투영했을 때, 그 결과의 분산이
 정확히 \(\lambda\)(고유값)가 되는” 특별한 방향이다. 분산을 최대화하는 문제를
 라그랑주 승수법으로 풀면, 정확히 이 고유값 문제로 귀결된다는 것이 이번 주 손유도
@@ -1422,7 +1422,7 @@ PCA와 같다: <strong>고차원(또는 벡터가 아닌) 원본을, 유용한 �
 압축한다.</strong></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-8"><a class="header" href="#problem-set-8">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier B (적정하나 힌트 제공)</strong></p>
+<p>난이도 등급: <strong>Tier B</strong>(적정하나 힌트 제공)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>kmeans_assign</code>을 작성하라 (k-means의 할당 단계만):</p>
 <ul>
 <li>input parameter: 데이터 <code>X</code>(리스트의 리스트), 중심점 <code>centroids</code>(리스트의 리스트)</li>
@@ -1470,20 +1470,20 @@ v}(v^Tv) = 2v\)임을 이용하면, \(\Sigma v = \lambda v\)라는 익숙한 형
 이세돌 9단과의 대국에서 4승 1패로 승리했다. 흥미로운 점은 알파고가 학습한 방식이다:
 “이 상황에서는 이렇게 두는 게 정답이다“라고 사람이 알려준 게 아니라, 스스로 수백만 판을
 두면서 이긴 판의 수를 늘리는 방향으로 자신의 전략을 조금씩 개선해나갔다. 정답이 아니라
-**결과(이겼는가/졌는가)**만으로 학습한다는 것 — 이게 지금까지 배운 지도학습과
+<strong>결과</strong>(이겼는가/졌는가)만으로 학습한다는 것 — 이게 지금까지 배운 지도학습과
 근본적으로 다른 점이다.</p>
 <h2 id="정답이-없을-때-어떻게-배우는가"><a class="header" href="#정답이-없을-때-어떻게-배우는가">정답이 없을 때 어떻게 배우는가</a></h2>
 <p>지도학습은 항상 “정답 \(y\)“가 있었다. 그런데 체스에서 “17번째 수는 정확히 어디에
 둬야 정답인가“라는 질문에는 정답이 없다 — 좋은 수는 여러 개일 수 있고, 지금 당장은
-나빠 보이는 수가 나중에 더 좋은 결과로 이어질 수도 있다. **강화학습(Reinforcement
-Learning, RL)**은 이런 상황을 위한 틀이다: 에이전트(agent)가 환경(environment)과
+나빠 보이는 수가 나중에 더 좋은 결과로 이어질 수도 있다. <strong>강화학습</strong>(Reinforcement
+Learning, RL)은 이런 상황을 위한 틀이다: 에이전트(agent)가 환경(environment)과
 상호작용하며 행동(action)을 하고, 그 결과로 보상(reward)을 받는다. 목표는 “당장의
 보상“이 아니라 <strong>누적 보상의 총합</strong>을 최대화하는 것이다.</p>
 <h2 id="오늘은-개념만"><a class="header" href="#오늘은-개념만">오늘은 개념만</a></h2>
 <p>RL의 본격적인 수식(MDP 정식화, 벨만방정식, Q-learning, 정책경사 등)은 ML2의 W05부터
-제대로 시작한다. 오늘은 그 전에 필요한 최소한의 직관만 다진다: <strong>상태(state)</strong>(지금
-상황), <strong>행동(action)</strong>(할 수 있는 선택), <strong>보상(reward)</strong>(그 선택의 즉각적인
-결과), 그리고 <strong>정책(policy)</strong>(상태마다 어떤 행동을 할지 정하는 전략)이라는 네
+제대로 시작한다. 오늘은 그 전에 필요한 최소한의 직관만 다진다: <strong>상태</strong>(state)(지금
+상황), <strong>행동</strong>(action)(할 수 있는 선택), <strong>보상</strong>(reward)(그 선택의 즉각적인
+결과), 그리고 <strong>정책</strong>(policy)(상태마다 어떤 행동을 할지 정하는 전략)이라는 네
 가지 개념만 확실히 잡고 넘어간다.</p>
 <p><strong>지도학습이 “정답을 흉내 내는 법“을 배운다면, 강화학습은 “무엇이 좋은 결과로
 이어지는지 시행착오로 알아내는 법“을 배운다.</strong></p>
@@ -1502,7 +1502,7 @@ Learning, RL)**은 이런 상황을 위한 틀이다: 에이전트(agent)가 환
 </ul>
 <p>에이전트는 환경과 계속 상호작용한다: 상태 \(s_0\)에서 행동 \(a_0\)를 하면 보상
 \(r_0\)를 받고 새 상태 \(s_1\)이 되며, 이 과정이 반복된다. 이 상태-행동-보상의
-연속을 <strong>에피소드(episode)</strong> 또는 **궤적(trajectory)**이라 부른다.</p>
+연속을 <strong>에피소드</strong>(episode) 또는 <strong>궤적</strong>(trajectory)이라 부른다.</p>
 <h2 id="지도학습과의-결정적-차이"><a class="header" href="#지도학습과의-결정적-차이">지도학습과의 결정적 차이</a></h2>
 <div class="table-wrapper">
 <table>
@@ -1517,7 +1517,7 @@ Learning, RL)**은 이런 상황을 위한 틀이다: 에이전트(agent)가 환
 </tbody>
 </table>
 </div>
-<p>가장 중요한 차이는 **지연된 보상(delayed reward)**이다: 체스에서 17번째 수가 좋았는지는
+<p>가장 중요한 차이는 <strong>지연된 보상</strong>(delayed reward)이다: 체스에서 17번째 수가 좋았는지는
 그 수를 둔 직후가 아니라, 게임이 끝나야(또는 한참 지나야) 알 수 있다. “지금 이
 행동이 최종 결과에 얼마나 기여했는가“를 알아내는 문제(신용 할당 문제, credit
 assignment problem)가 RL을 어렵게 만드는 핵심 이유다.</p>
@@ -1531,11 +1531,11 @@ assignment problem)가 RL을 어렵게 만드는 핵심 이유다.</p>
 <h2 id="이번-주-손유도-과제-예고"><a class="header" href="#이번-주-손유도-과제-예고">이번 주 손유도 과제 예고</a></h2>
 <p>작은 3-state MDP(마르코프 결정 과정, Markov Decision Process — 상태·행동·보상·전이를
 정식화한 수학적 틀)를 놓고, “각 상태의 가치(그 상태에서 시작했을 때 기대할 수 있는
-누적 보상)“를 손으로 직접 계산해본다. 이 계산의 정식 명칭이 **벨만방정식(Bellman
-equation)**이며, ML2 W05에서 훨씬 일반적인 형태로 다시 만난다.</p>
+누적 보상)“를 손으로 직접 계산해본다. 이 계산의 정식 명칭이 <strong>벨만방정식</strong>(Bellman
+equation)이며, ML2 W05에서 훨씬 일반적인 형태로 다시 만난다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-9"><a class="header" href="#problem-set-9">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier C (폴백 준비 대상)</strong> — 아래 두 버전을 모두 준비해두고, 학생 반응을
+<p>난이도 등급: <strong>Tier C</strong>(폴백 준비 대상) — 아래 두 버전을 모두 준비해두고, 학생 반응을
 본 뒤 선택한다.</p>
 <p><strong>1.</strong> (코딩) 3-state MDP(state 0, 1, 2)에서, 고정된 정책으로 하나의 에피소드를
 시뮬레이션하고 할인된 누적 보상(return)을 계산하는 <code>episode_return</code>을 작성하라.</p>
@@ -1582,12 +1582,12 @@ V(0) = R(0) + gamma * V(1)
 <p>2006년, 제프리 힌턴(Geoffrey Hinton)과 루슬란 살라쿠트디노프(Ruslan Salakhutdinov)는
 신경망으로 PCA보다 훨씬 유연한 방식의 차원축소를 할 수 있음을 보였다. 핵심 아이디어는
 간단하다: 입력을 압축했다가 다시 원본으로 복원하도록 신경망을 학습시키되, 중간에
-<strong>병목(bottleneck)</strong> — 원본보다 훨씬 좁은 은닉층 — 을 강제로 통과시킨다. 신경망이
+<strong>병목</strong>(bottleneck) — 원본보다 훨씬 좁은 은닉층 — 을 강제로 통과시킨다. 신경망이
 병목을 통과하고도 원본을 복원해낸다면, 그 병목의 값이 원본 정보를 압축한 유용한
-표현이라는 뜻이다. 이 구조가 **오토인코더(Autoencoder)**다.</p>
+표현이라는 뜻이다. 이 구조가 <strong>오토인코더</strong>(Autoencoder)다.</p>
 <h2 id="지난주-pca와의-연결"><a class="header" href="#지난주-pca와의-연결">지난주 PCA와의 연결</a></h2>
 <p>W10에서 배운 PCA도 “고차원 데이터를 정보 손실 최소로 저차원으로 압축한다“는 목표는
-같았다. 차이는 PCA가 <strong>직선(선형)</strong> 투영만 가능한 반면, 오토인코더는 신경망이므로
+같았다. 차이는 PCA가 <strong>직선</strong>(선형) 투영만 가능한 반면, 오토인코더는 신경망이므로
 <strong>비선형</strong> 압축이 가능하다는 점이다 — 실제로 오토인코더의 인코더(encoder) 부분이
 선형 활성함수만 쓰면, 수학적으로 PCA와 정확히 같은 것을 학습한다는 것이 알려져 있다.
 즉 오토인코더는 PCA의 일반화(generalization)라고 볼 수 있다.</p>
@@ -1608,9 +1608,9 @@ Diffusion 순서로 본격적으로 다룬다.</p>
 <h2 id="오토인코더autoencoder의-구조"><a class="header" href="#오토인코더autoencoder의-구조">오토인코더(Autoencoder)의 구조</a></h2>
 <p>두 부분으로 이루어진다:</p>
 <ul>
-<li><strong>인코더(Encoder)</strong> \(f\): 입력 \(x\)를 저차원 잠재 표현(latent representation)
+<li><strong>인코더</strong>(Encoder) \(f\): 입력 \(x\)를 저차원 잠재 표현(latent representation)
 \(z = f(x)\)로 압축.</li>
-<li><strong>디코더(Decoder)</strong> \(g\): \(z\)로부터 원본을 복원 \(\hat{x} = g(z)\).</li>
+<li><strong>디코더</strong>(Decoder) \(g\): \(z\)로부터 원본을 복원 \(\hat{x} = g(z)\).</li>
 </ul>
 <p>손실함수는 복원 오차(reconstruction error), 보통 평균제곱오차를 쓴다:</p>
 <p>\[J = \frac{1}{m}\sum_{i=1}^m |x^{(i)} - g(f(x^{(i)}))|^2\]</p>
@@ -1635,8 +1635,8 @@ W’z\))이고 손실함수가 MSE라면, 이 오토인코더가 학습하는 �
 <h2 id="압축을-넘어-생성으로-무엇이-더-필요한가"><a class="header" href="#압축을-넘어-생성으로-무엇이-더-필요한가">압축을 넘어 생성으로: 무엇이 더 필요한가</a></h2>
 <p>오토인코더를 그대로 “생성 모델“로 쓰려고 하면 문제가 있다: 잠재 공간 \(z\) 위의
 어떤 값들이 “그럴듯한” 데이터로 복원되는지 알 수 없다 — 학습 데이터가 차지하는
-영역이 잠재 공간에서 듬성듬성하거나 불규칙할 수 있기 때문이다. **변분 오토인코더
-(Variational Autoencoder, VAE)**는 이 문제를 잠재 공간이 매끄러운 확률분포(보통
+영역이 잠재 공간에서 듬성듬성하거나 불규칙할 수 있기 때문이다. <strong>변분 오토인코더</strong>
+(Variational Autoencoder, VAE)는 이 문제를 잠재 공간이 매끄러운 확률분포(보통
 정규분포)를 따르도록 강제해서 해결한다 — ML2 W09에서 다룬다. GAN과 Diffusion은
 완전히 다른 원리(적대적 학습, 점진적 노이즈 제거)로 같은 목표(그럴듯한 새 데이터
 생성)를 이룬다 — ML2 W10에서 다룬다.</p>
@@ -1665,8 +1665,8 @@ W’z\))이고 손실함수가 MSE라면, 이 오토인코더가 학습하는 �
 <h1 id="ml1-review--roadmap"><a class="header" href="#ml1-review--roadmap">ML1 Review &amp; Roadmap</a></h1>
 <p>ML1의 마지막 장에서 오토인코더가 “압축이 어떻게 생성으로 이어지는가“라는 질문을 남기고
 끝났다. ML2는 정확히 그 질문에서 이어받아 시작한다 — 다만 그 전에, 이 학기 전체가
-기대고 있는 두 가지 ML1의 결과물을 다시 한번 확실히 짚고 넘어간다: **신경망이 무엇을
-할 수 있는가(순전파)**와 <strong>그것을 어떻게 학습시키는가(역전파)</strong>.</p>
+기대고 있는 두 가지 ML1의 결과물을 다시 한번 확실히 짚고 넘어간다: <strong>신경망이 무엇을
+할 수 있는가</strong>(순전파)와 <strong>그것을 어떻게 학습시키는가</strong>(역전파).</p>
 <h2 id="왜-다시-복습하는가"><a class="header" href="#왜-다시-복습하는가">왜 다시 복습하는가</a></h2>
 <p>ML1 W07에서 배운 역전파는 2층짜리 작은 신경망 하나를 다뤘다. ML2에서는 이 원리를
 훨씬 복잡한 구조 — 시퀀스를 처리하는 RNN, 어텐션을 쓰는 Transformer, 게임을 스스로
@@ -1728,7 +1728,7 @@ pre-activation과 activation:</p>
 단어들을 그냥 벡터 하나로 뭉쳐야 했는데, 그러면 순서 정보가 사라진다 — “누가 누구를
 쫓는지“를 구분할 방법이 없어진다.</p>
 <h2 id="은닉-상태-지금까지-읽은-것의-요약"><a class="header" href="#은닉-상태-지금까지-읽은-것의-요약">은닉 상태: 지금까지 읽은 것의 요약</a></h2>
-<p>RNN의 핵심 아이디어는 **은닉 상태(hidden state)**다: 문장을 한 단어씩 읽어가면서,
+<p>RNN의 핵심 아이디어는 <strong>은닉 상태</strong>(hidden state)다: 문장을 한 단어씩 읽어가면서,
 “지금까지 읽은 내용의 요약“을 하나의 벡터에 계속 갱신해나간다. 두 번째 단어를 처리할
 때는 두 번째 단어 자체뿐 아니라 “첫 번째 단어를 읽고 남은 요약“도 함께 입력받는다 —
 이렇게 하면 지금 시점의 출력이 과거 전체의 맥락에 영향을 받을 수 있다.</p>
@@ -1764,8 +1764,8 @@ def rnn_forward(inputs, h0, Wxh, Whh, b_h):
 </code></pre>
 <h2 id="bptt-시간을-펼쳐서-역전파하기"><a class="header" href="#bptt-시간을-펼쳐서-역전파하기">BPTT: 시간을 펼쳐서 역전파하기</a></h2>
 <p>RNN을 학습시키려면, 시퀀스 길이 \(T\)만큼 신경망을 “펼쳐서(unroll)” 각 시점을
-독립된 층처럼 취급한 뒤 일반적인 역전파를 적용한다 — 이를 **BPTT(Backpropagation
-Through Time)**라 부른다. \(h_t\)가 \(h_{t-1}\)에, \(h_{t-1}\)이
+독립된 층처럼 취급한 뒤 일반적인 역전파를 적용한다 — 이를 <strong>BPTT</strong>(Backpropagation
+Through Time)라 부른다. \(h_t\)가 \(h_{t-1}\)에, \(h_{t-1}\)이
 \(h_{t-2}\)에 의존하는 사슬을 거슬러 올라가야 하므로, \(h_1\)에 대한
 그래디언트는 다음과 같은 형태의 곱을 포함하게 된다:</p>
 <p>\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
@@ -1792,7 +1792,7 @@ LSTM/GRU가 기본 RNN보다 긴 시퀀스에 강한가“의 답은 항상 이 
 Attention/Transformer는 이 순차성 자체를 없애는 완전히 다른 접근이다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-10"><a class="header" href="#problem-set-10">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier B (적정하나 힌트 제공)</strong></p>
+<p>난이도 등급: <strong>Tier B</strong>(적정하나 힌트 제공)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>rnn_forward_scalar</code>를 작성하라 (은닉 상태가 스칼라인
 가장 단순한 RNN):</p>
 <ul>
@@ -1840,8 +1840,8 @@ w_{hh}\) (은닉 상태가 스칼라인 단순화된 경우)임을, 연쇄법칙
 <p>2017년, 구글 브레인의 연구자들은 논문 제목을 다소 도발적으로 지었다 —
 <strong>“Attention Is All You Need”</strong>. 그때까지 시퀀스를 다루는 최고 성능의 모델들은 모두
 RNN(또는 그 변형인 LSTM)을 기반으로 했는데, 이 논문은 순환 구조를 완전히 걷어내고
-<strong>어텐션(attention)</strong> 메커니즘만으로 RNN보다 더 좋은 성능을 냈다. 이 구조가
-**트랜스포머(Transformer)**이며, 지금 우리가 쓰는 거의 모든 대규모 언어모델(LLM)의
+<strong>어텐션</strong>(attention) 메커니즘만으로 RNN보다 더 좋은 성능을 냈다. 이 구조가
+<strong>트랜스포머</strong>(Transformer)이며, 지금 우리가 쓰는 거의 모든 대규모 언어모델(LLM)의
 근간이다.</p>
 <h2 id="rnn의-순차성이라는-근본-문제"><a class="header" href="#rnn의-순차성이라는-근본-문제">RNN의 순차성이라는 근본 문제</a></h2>
 <p>W02에서 본 RNN은 한 단어씩 순서대로 처리해야 했다 — 100번째 단어를 보려면 1번째부터
@@ -1865,9 +1865,9 @@ Dot-Product Attention이라는 이름의 이 연산 하나가, GPT나 다른 대
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="topics-covered-14"><a class="header" href="#topics-covered-14">Topics Covered</a></h1>
 <h2 id="query-key-value"><a class="header" href="#query-key-value">Query, Key, Value</a></h2>
-<p>각 단어(정확히는 각 단어의 임베딩 벡터)는 세 가지 벡터로 변환된다: <strong>Query(Q)</strong>
-“내가 지금 무엇을 찾고 있는가”, <strong>Key(K)</strong> “나는 어떤 정보를 갖고 있는가”,
-<strong>Value(V)</strong> “실제로 전달할 내용”. 세 벡터 모두 같은 입력 임베딩 \(x\)에 서로
+<p>각 단어(정확히는 각 단어의 임베딩 벡터)는 세 가지 벡터로 변환된다: <strong>Query</strong>(Q)
+“내가 지금 무엇을 찾고 있는가”, <strong>Key</strong>(K) “나는 어떤 정보를 갖고 있는가”,
+<strong>Value</strong>(V) “실제로 전달할 내용”. 세 벡터 모두 같은 입력 임베딩 \(x\)에 서로
 다른 학습 가능한 가중치 행렬을 곱해서 얻는다:</p>
 <p>\[Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V\]</p>
 <h2 id="scaled-dot-product-attention"><a class="header" href="#scaled-dot-product-attention">Scaled Dot-Product Attention</a></h2>
@@ -1929,7 +1929,7 @@ Query가 문장 안 모든 단어의 Key와 내적을 계산했을 때, “그 �
 이어진다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-11"><a class="header" href="#problem-set-11">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier C (폴백 준비 대상)</strong> — 아래 두 버전을 모두 준비해두고, 학생 반응을
+<p>난이도 등급: <strong>Tier C</strong>(폴백 준비 대상) — 아래 두 버전을 모두 준비해두고, 학생 반응을
 본 뒤 선택한다.</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>scaled_dot_product_attention</code>을 작성하라:</p>
 <ul>
@@ -1990,7 +1990,7 @@ Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
        = ______________ * [5,0] + ______________ * [0,5]
        = [______________, ______________]
 </code></pre>
-<p><strong>정확성 확인</strong>: 완성한 계산을 문제 1의 <code>scaled_dot_product_attention(Q, K, V, d_k=2)</code> 출력과 대조해 일치하는지 확인하라.</p>
+<p><strong>정확성 확인</strong>: 완성한 계산을 문제 1의 <code>scaled_dot_product_attention(Q, K, V,  d_k=2)</code> 출력과 대조해 일치하는지 확인하라.</p>
 <hr>
 <p><em>교원 노트: 버전 A/B 중 선택은 Math for ML의 행렬곱 커버리지 확인 후 결정. 확인
 전까지는 버전 B를 기본값으로 준비.</em></p>
@@ -2010,7 +2010,7 @@ Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
 추론 능력까지 습득하게 된다 — W02, W03에서 배운 RNN/Transformer 구조가 바로 이
 “다음 단어 예측“을 계산하는 엔진이다.</p>
 <h2 id="프롬프팅-다시-학습시키지-않고-행동을-바꾸기"><a class="header" href="#프롬프팅-다시-학습시키지-않고-행동을-바꾸기">프롬프팅: 다시 학습시키지 않고 행동을 바꾸기</a></h2>
-<p>파인튜닝은 모델의 가중치 자체를 바꾸는 것이지만, **프롬프팅(prompting)**은 가중치를
+<p>파인튜닝은 모델의 가중치 자체를 바꾸는 것이지만, <strong>프롬프팅</strong>(prompting)은 가중치를
 전혀 바꾸지 않고 입력(지시문, 예시)만으로 모델의 출력을 원하는 방향으로 유도하는
 방법이다. 몇 가지 예시를 프롬프트에 포함시키는 것만으로 모델이 새로운 형식의 작업을
 수행하게 만들 수 있다는 사실(few-shot prompting)은, 사전학습이 얼마나 폭넓은 능력을
@@ -2021,7 +2021,7 @@ Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="topics-covered-15"><a class="header" href="#topics-covered-15">Topics Covered</a></h1>
 <h2 id="언어모델링-다음-토큰-예측"><a class="header" href="#언어모델링-다음-토큰-예측">언어모델링: 다음 토큰 예측</a></h2>
-<p>LLM은 텍스트를 <strong>토큰(token)</strong>(단어 전체이거나, 더 흔하게는 단어의 일부 조각)의
+<p>LLM은 텍스트를 <strong>토큰</strong>(token)(단어 전체이거나, 더 흔하게는 단어의 일부 조각)의
 시퀀스로 다룬다. 사전학습의 목표는 지금까지의 토큰들이 주어졌을 때, 다음 토큰의
 확률분포를 예측하는 것이다:</p>
 <p>\[P(x_t \mid x_1, x_2, \ldots, x_{t-1})\]</p>
@@ -2117,19 +2117,19 @@ print(greedy_generate(corpus, "나는", 3))  # ["나는", "학교에", "간다"]
 <p>ML1 W04에서 “차원의 저주(curse of dimensionality)“라는 용어를 배웠다. 이 용어를 만든
 사람은 수학자 리처드 벨만(Richard Bellman)으로, 1950년대에 동적계획법(dynamic
 programming)이라는 최적화 기법을 만들면서 이 이름을 붙였다. 그가 만든 또 하나의
-도구가 바로 이번 주의 핵심인 **벨만방정식(Bellman equation)**이다 — “복잡한 문제를
+도구가 바로 이번 주의 핵심인 <strong>벨만방정식</strong>(Bellman equation)이다 — “복잡한 문제를
 한 번에 풀지 말고, 더 작은 부분 문제로 쪼개서 그 답을 재귀적으로 조합하라“는 그의
 아이디어는 지금 강화학습의 이론적 뼈대를 이루고 있다.</p>
 <h2 id="ml1에서-살짝-본-것을-정식화한다"><a class="header" href="#ml1에서-살짝-본-것을-정식화한다">ML1에서 살짝 본 것을 정식화한다</a></h2>
 <p>ML1 W11에서 상태·행동·보상·정책이라는 개념만 직관적으로 봤다면, 이번 주는 그것을
-**MDP(Markov Decision Process)**라는 수학적 틀로 정식화한다. “지금 이 상태에서
+<strong>MDP</strong>(Markov Decision Process)라는 수학적 틀로 정식화한다. “지금 이 상태에서
 시작해서, 이 정책을 계속 따른다면, 기대할 수 있는 누적 보상은 얼마인가?” — 이
-질문에 정확한 숫자로 답하는 것이 **가치함수(value function)**이고, 그 값을 계산하는
-방법이 **정책평가(policy evaluation)**다.</p>
+질문에 정확한 숫자로 답하는 것이 <strong>가치함수</strong>(value function)이고, 그 값을 계산하는
+방법이 <strong>정책평가</strong>(policy evaluation)다.</p>
 <h2 id="재귀로-문제를-쪼개기"><a class="header" href="#재귀로-문제를-쪼개기">재귀로 문제를 쪼개기</a></h2>
 <p>가치함수를 직접 계산하려면 “지금부터 게임이 끝날 때까지 일어날 수 있는 모든 경우“를
-다 따져야 할 것 같지만, 벨만방정식은 훨씬 영리한 지름길을 준다: **“지금 상태의
-가치는, 즉시 받는 보상 + (할인된) 다음 상태의 가치”**라는 재귀적 관계로 표현할 수
+다 따져야 할 것 같지만, 벨만방정식은 훨씬 영리한 지름길을 준다: <strong>“지금 상태의
+가치는, 즉시 받는 보상 + (할인된) 다음 상태의 가치</strong>“라는 표현으로 재귀적 관계를
 있다는 것이다. 이 통찰 덕분에, “게임이 끝날 때까지“를 통째로 계산하는 대신, 한 스텝
 앞만 내다보는 계산을 반복하는 것만으로 정확한 답에 도달할 수 있다.</p>
 <p><strong>동적계획법의 핵심 아이디어(“큰 문제 = 작은 부분 문제 + 재귀”)는 컴퓨터공학
@@ -2147,7 +2147,7 @@ programming)이라는 최적화 기법을 만들면서 이 이름을 붙였다. 
 <li>\(R(s,a)\): 상태 \(s\)에서 행동 \(a\)를 했을 때 받는 즉시 보상</li>
 <li>\(\gamma \in [0,1)\): 할인율(discount factor)</li>
 </ul>
-<p><strong>마르코프 성질(Markov property)</strong>: 다음 상태는 오직 <strong>현재</strong> 상태와 행동에만
+<p><strong>마르코프 성질</strong>(Markov property): 다음 상태는 오직 <strong>현재</strong> 상태와 행동에만
 의존한다 — 어떻게 지금 상태에 도달했는지(과거 전체 이력)는 상관없다. 예:
 체스판의 현재 배치만 알면, 거기까지 어떤 수순을 거쳐왔는지는 다음 수를 정하는 데
 필요 없다.</p>
@@ -2191,7 +2191,7 @@ s_0 = s\right]\]</p>
 시작해 한 방향으로만 전파되는 특수 케이스로 볼 수 있다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-13"><a class="header" href="#problem-set-13">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier B (적정하나 힌트 제공)</strong></p>
+<p>난이도 등급: <strong>Tier B</strong>(적정하나 힌트 제공)</p>
 <p><strong>1.</strong> (코딩) 3-state MDP (state 0,1,2)가 주어질 때, 고정된 정책 하에서 각 상태의
 가치함수 \(V(s)\)를 반복적 정책평가(iterative policy evaluation)로 계산하라.</p>
 <pre><code class="language-python">def policy_evaluation(P, R, policy, gamma, theta=1e-6):
@@ -2245,7 +2245,7 @@ s_0 = s\right]\]</p>
 (전이확률)를 알고 있다는 전제 하에 계산했다. 그런데 실제 게임이나 로봇 제어에서는
 “이 버튼을 누르면 정확히 어떤 일이 일어날지“에 대한 완벽한 수학적 모델이 없는 경우가
 대부분이다. <strong>Q-learning</strong>은 모델을 몰라도, 직접 행동해서 얻은 경험(상태, 행동, 보상,
-다음 상태)만으로 학습하는 <strong>모델-프리(model-free)</strong> 방법이다.</p>
+다음 상태)만으로 학습하는 <strong>모델-프리</strong>(model-free) 방법이다.</p>
 <h2 id="탐험과-활용의-딜레마"><a class="header" href="#탐험과-활용의-딜레마">탐험과 활용의 딜레마</a></h2>
 <p>새로운 식당을 고를 때를 생각해보자: 이미 맛있다고 아는 단골 식당에 또 갈 것인가
 (<strong>활용, exploitation</strong>), 아니면 아직 안 가본 식당을 시도해볼 것인가(<strong>탐험,
@@ -2270,7 +2270,7 @@ exploration</strong>)? 안 가본 식당이 사실 더 맛있을 수도 있지�
 \(s’\)에 도달할 때마다:</p>
 <p>\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma \max_{a’} Q(s’,a’) -
 Q(s,a)\right]\]</p>
-<p>대괄호 안은 **TD 오차(Temporal Difference error)**라 부른다: “지금 추정한
+<p>대괄호 안은 <strong>TD 오차</strong>(Temporal Difference error)라 부른다: “지금 추정한
 \(Q(s,a)\)“와 “방금 관찰한 보상 + 다음 상태에서 최선을 다했을 때의 추정값“의
 차이다. 이 오차만큼 \(Q(s,a)\)를 조금씩 보정해나간다 — W02의 경사하강법처럼,
 “현재 추정치와 더 나은 추정치의 차이만큼 이동한다“는 같은 패턴이다.</p>
@@ -2308,7 +2308,7 @@ off-policy라 부른다. (SARSA는 실제로 고른 다음 행동의 Q값을 쓰
 참고가 된다.)</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-14"><a class="header" href="#problem-set-14">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier A (자유 유도)</strong></p>
+<p>난이도 등급: <strong>Tier A</strong>(자유 유도)</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>q_learning_train</code>을 작성하라:</p>
 <ul>
 <li>input parameter: 결정론적 3-state MDP를 나타내는 <code>transition(s, a) -&gt; (r, s_next)</code>
@@ -2365,10 +2365,10 @@ Q^</em>(s’,a’)\)의 해와 같다는 것을 보여라 (단순 대수적 정�
 <h1 id="deep-reinforcement-learning"><a class="header" href="#deep-reinforcement-learning">Deep Reinforcement Learning</a></h1>
 <p>2013년, 딥마인드는 Q-learning의 Q-테이블을 신경망으로 통째로 바꾼 알고리즘으로
 Atari 2600 게임 여러 개를 학습시켰다 — 게임의 규칙을 전혀 알려주지 않고, 오직 화면
-픽셀과 점수만 보고서. **DQN(Deep Q-Network)**이라 불린 이 결과는 2015년 Nature에
+픽셀과 점수만 보고서. <strong>DQN</strong>(Deep Q-Network)이라 불린 이 결과는 2015년 Nature에
 게재되며, 여러 게임에서 사람 수준 또는 그 이상의 성능을 보였다.</p>
 <h2 id="q-테이블이-감당-못-하는-규모"><a class="header" href="#q-테이블이-감당-못-하는-규모">Q-테이블이 감당 못 하는 규모</a></h2>
-<p>W06의 Q-learning은 <code>Q[s][a]</code>라는 **표(테이블)**에 모든 상태-행동 쌍의 값을
+<p>W06의 Q-learning은 <code>Q[s][a]</code>라는 <strong>표</strong>(테이블)에 모든 상태-행동 쌍의 값을
 저장했다. 이건 상태가 몇백 개 수준일 때는 잘 작동하지만, Atari 게임의 화면(가로세로
 수백 픽셀, 색상 조합)이 만들어낼 수 있는 상태의 가짓수는 사실상 무한에 가깝다 —
 테이블에 다 담을 수도 없고, 대부분의 상태는 학습 중에 단 한 번도 안 나타난다. DQN의
@@ -2384,8 +2384,8 @@ Atari 2600 게임 여러 개를 학습시켰다 — 게임의 규칙을 전혀 �
 가정하는 “독립적인 데이터“와 거리가 멀다. 이 두 문제가 신경망을 Q-learning에
 그대로 붙였을 때 학습이 발산하는 주된 원인이었다.</p>
 <h2 id="오늘-배우는-것과의-연결-5"><a class="header" href="#오늘-배우는-것과의-연결-5">오늘 배우는 것과의 연결</a></h2>
-<p>DQN은 이 두 문제를 각각 **경험 재현(experience replay)**과 **타겟
-네트워크(target network)**라는 두 가지 장치로 해결한다. 이번 주 손유도 과제에서는
+<p>DQN은 이 두 문제를 각각 <strong>경험 재현</strong>(experience replay)과 <strong>타겟
+네트워크</strong>(target network)라는 두 가지 장치로 해결한다. 이번 주 손유도 과제에서는
 타겟 네트워크가 정확히 왜, 어떻게 학습을 안정화시키는지를 수식으로 논증한다.</p>
 <p><strong>“강화학습에 신경망을 붙이면 저절로 잘 될 것“이라는 순진한 기대는 틀렸다 — DQN의
 진짜 기여는 신경망 자체가 아니라, 그 조합이 안정적으로 학습되도록 만든 몇 가지
@@ -2405,7 +2405,7 @@ Q(s,a;\theta)\right)^2\right]\]</p>
 <p>\(\theta\)가 매 스텝 갱신되면, 손실함수의 목표값도 매 스텝 바뀐다 — 지도학습이라면
 정답 \(y\)는 절대 안 바뀌는데, 여기선 “정답“이 스스로를 쫓아다니는 셈이다. 이는
 학습을 불안정하게 만든다(진동, 발산).</p>
-<p><strong>해결책: 타겟 네트워크(Target Network)</strong>. \(Q\)와 똑같은 구조를 가진 두 번째
+<p><strong>해결책: 타겟 네트워크</strong>(Target Network). \(Q\)와 똑같은 구조를 가진 두 번째
 신경망 \(Q(s,a;\theta^-)\)를 두고, 목표값 계산에는 <strong>이 타겟 네트워크만</strong> 쓴다:</p>
 <p>\[J(\theta) = \mathbb{E}\left[\left(r + \gamma \max_{a’} Q(s’,a’;\theta^-) -
 Q(s,a;\theta)\right)^2\right]\]</p>
@@ -2422,8 +2422,8 @@ Q(s,a;\theta)\right)^2\right]\]</p>
 <p>연속된 프레임(상태)은 서로 거의 같아서, 순서대로 학습하면 최근 몇 개의 비슷한
 경험에 과도하게 치우친(overfitting) 학습이 된다 — 게다가 신경망 학습은 미니배치가
 서로 독립적이고 다양할수록 안정적이라는 가정에 기대고 있다.</p>
-<p><strong>해결책: 경험 재현(Experience Replay)</strong>. 에이전트가 경험한 \((s, a, r, s’)\)를
-바로 학습에 쓰지 않고, 일단 **재현 버퍼(replay buffer)**라는 큰 저장소에 쌓아둔다.
+<p><strong>해결책: 경험 재현</strong>(Experience Replay). 에이전트가 경험한 \((s, a, r, s’)\)를
+바로 학습에 쓰지 않고, 일단 <strong>재현 버퍼</strong>(replay buffer)라는 큰 저장소에 쌓아둔다.
 학습할 때는 이 버퍼에서 <strong>무작위로</strong> 미니배치를 샘플링해서 쓴다 — 이러면 학습 배치가
 시간적으로 인접한 경험들로만 구성되는 것을 피하고, 오래된 경험도 다시 재사용할 수
 있어 데이터 효율도 좋아진다.</p>
@@ -2449,7 +2449,7 @@ class ReplayBuffer:
 다시 만들어준다.”</strong></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-15"><a class="header" href="#problem-set-15">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier C (폴백 준비 대상)</strong> — 아래 두 버전을 모두 준비해두고, 학생 반응을
+<p>난이도 등급: <strong>Tier C</strong>(폴백 준비 대상) — 아래 두 버전을 모두 준비해두고, 학생 반응을
 본 뒤 선택한다.</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 <code>ReplayBuffer</code> 클래스를 완성하라:</p>
 <pre><code class="language-python">import random
@@ -2526,8 +2526,8 @@ Q(s,a;\theta))^2\)를 \(\theta\)로 미분할 때, \(\theta\)가 목표값 항
 수는 없다.</p>
 <h2 id="q를-거치지-않고-정책을-직접-학습한다"><a class="header" href="#q를-거치지-않고-정책을-직접-학습한다">Q를 거치지 않고, 정책을 직접 학습한다</a></h2>
 <p>지금까지(W06, W07)는 \(Q(s,a)\)를 먼저 학습하고, 그로부터 간접적으로 정책
-\(\pi(s) = \arg\max_a Q(s,a)\)을 얻었다. **정책기반 방법(Policy-Based
-Methods)**은 이 중간 단계를 건너뛰고, 정책 \(\pi_\theta(a|s)\)(파라미터
+\(\pi(s) = \arg\max_a Q(s,a)\)을 얻었다. <strong>정책기반 방법</strong>(Policy-Based
+Methods)은 이 중간 단계를 건너뛰고, 정책 \(\pi_\theta(a|s)\)(파라미터
 \(\theta\)를 가진, 행동의 확률분포를 직접 내놓는 함수) 자체를 신경망으로
 표현하고 직접 학습한다. 연속적인 행동공간에서도 “이 행동의 확률밀도가 얼마인가“는
 잘 정의되므로, 앞의 문제가 자연스럽게 해결된다.</p>
@@ -2536,7 +2536,7 @@ Methods)**은 이 중간 단계를 건너뛰고, 정책 \(\pi_\theta(a|s)\)(파�
 하면 이상한 벽에 부딪힌다는 것이다: 기대 보상은 “무작위로 행동해서 얻은 결과“에
 대한 평균인데, 그 무작위성 자체가 \(\theta\)에 의존한다. 이걸 어떻게 미분해야
 할지 처음 보면 막막하다. 이번 주 손유도 과제(<strong>Policy Gradient Theorem</strong>)는 바로
-이 문제를 우아하게 푸는 트릭 — <strong>로그미분 트릭(log-derivative trick)</strong> — 을
+이 문제를 우아하게 푸는 트릭 — <strong>로그미분 트릭</strong>(log-derivative trick) — 을
 다룬다. 대학원 수준에서도 까다롭게 여겨지는 유도이므로, 워크시트 버전으로 핵심
 아이디어 하나(“왜 로그를 취하면 문제가 풀리는가”)만 확실히 잡는 것을 목표로 한다.</p>
 <p><strong>Q-learning이 “얼마나 좋은지 평가한 뒤 최선을 고른다“는 간접적 전략이라면, 정책기반
@@ -2607,7 +2607,7 @@ def reinforce_update(theta, episode, alpha, gamma):
 <p>REINFORCE는 \(G_t\)(실제로 관찰된 누적 보상)를 그대로 쓰는데, 이건 하나의
 에피소드를 샘플링한 결과라 노이즈가 크다(분산이 높다). <strong>Actor-Critic</strong>은
 \(G_t\) 대신, W05~W06에서 배운 가치함수(Critic)로 추정한 기준값을 빼서 분산을
-줄인다(\(G_t - V(s_t)\), 이 차이를 **어드밴티지(advantage)**라 부른다) — 정책
+줄인다(\(G_t - V(s_t)\), 이 차이를 <strong>어드밴티지</strong>(advantage)라 부른다) — 정책
 (Actor)과 가치함수(Critic)를 동시에 학습하는 구조다. 자세한 유도는 이 학기
 범위를 넘어서지만, “정책 하나만 학습하는 것보다, 가치함수의 도움을 받으면 더
 안정적으로 학습된다“는 아이디어는 기억해둘 만하다.</p>
@@ -2643,7 +2643,7 @@ def reinforce_update(theta, episode, alpha, gamma):
 \pi</em>\theta}[R(\tau)]\)의 그래디언트가</p>
 <p>\[\nabla_\theta J(\theta) = \mathbb{E}<em>{\tau}\left[\sum_t \nabla</em>\theta \log
 \pi_\theta(a_t|s_t) , G_t\right]\]</p>
-<p>가 됨을, <strong>로그미분 트릭(log-derivative trick)</strong> \(\nabla_\theta \pi =
+<p>가 됨을, <strong>로그미분 트릭</strong>(log-derivative trick) \(\nabla_\theta \pi =
 \pi \nabla_\theta \log \pi\)을 사용하여 처음부터 끝까지 유도하라.</p>
 <h3 id="버전-b-빈칸채움형-유도-워크시트-기본값--대부분-학생-대상"><a class="header" href="#버전-b-빈칸채움형-유도-워크시트-기본값--대부분-학생-대상">[버전 B] 빈칸채움형 유도 워크시트 (기본값 — 대부분 학생 대상)</a></h3>
 <p>핵심 트릭 하나만 이해하면 되도록 구조를 다 주고, 빈칸만 채우게 한다:</p>
@@ -2676,7 +2676,7 @@ Step 3: 궤적 확률 P(tau;theta) = prod_t pi_theta(a_t|s_t) * (환경전이확
 <p>ML1의 마지막 주차에서 오토인코더가 남긴 질문을 기억하는가 — “병목의 값을 무작위로
 하나 골라서 디코더에 넣으면, 존재한 적 없는 새로운 데이터를 만들 수 있지 않을까?”
 2013년 디데릭 킹마(Diederik Kingma)와 맥스 웰링(Max Welling)이 발표한
-**변분 오토인코더(Variational Autoencoder, VAE)**가 바로 이 질문에 대한 정식
+<strong>변분 오토인코더</strong>(Variational Autoencoder, VAE)가 바로 이 질문에 대한 정식
 답이다.</p>
 <h2 id="오토인코더를-그냥-쓰면-안-되는-이유"><a class="header" href="#오토인코더를-그냥-쓰면-안-되는-이유">오토인코더를 그냥 쓰면 안 되는 이유</a></h2>
 <p>일반 오토인코더의 잠재 공간(latent space)은 “어떤 값이 그럴듯한 데이터로
@@ -2688,11 +2688,11 @@ VAE의 해법은 인코더가 하나의 점 \(z\)를 내놓는 대신, <strong>�
 매끄럽고 빈틈없이 채워져서, 임의의 지점에서 샘플링해도 그럴듯한 데이터가 나올
 가능성이 높아진다.</p>
 <h2 id="우도likelihood라는-관점"><a class="header" href="#우도likelihood라는-관점">우도(Likelihood)라는 관점</a></h2>
-<p>VAE는 “생성형 모델을 만드는 세 가지 원리” 중 첫 번째 — <strong>우도 기반(likelihood-based)</strong>
+<p>VAE는 “생성형 모델을 만드는 세 가지 원리” 중 첫 번째 — <strong>우도 기반</strong>(likelihood-based)
 접근이다: 모델이 학습 데이터를 만들어낼 확률(우도) \(P(x)\)를 직접(또는 그
 근사치를) 최대화하도록 학습한다. 문제는 \(P(x)\)를 정확히 계산하는 게 일반적으로
-너무 어렵다는 것이다 — 이번 주 손유도 과제에서 다루는 **ELBO(Evidence Lower
-BOund)**는, 계산 불가능한 \(P(x)\) 대신 그것의 **하한(lower bound)**을 최대화하는
+너무 어렵다는 것이다 — 이번 주 손유도 과제에서 다루는 <strong>ELBO</strong>(Evidence Lower
+BOund)는, 계산 불가능한 \(P(x)\) 대신 그것의 <strong>하한</strong>(lower bound)을 최대화하는
 것으로 문제를 우회하는 트릭이다.</p>
 <p><strong>다음 주에는 완전히 다른 두 원리(적대적, 스코어 기반)를 배운다 — 세 원리를 나란히
 놓고 비교하면, “그럴듯한 새 데이터를 만든다“는 같은 목표에 얼마나 다른 방식으로
@@ -2715,7 +2715,7 @@ BOund)**는, 계산 불가능한 \(P(x)\) 대신 그것의 **하한(lower bound)
 <p>직접 계산할 수 없는 \(\log p_\theta(x)\) 대신, 다음이 성립함을 보일 수 있다:</p>
 <p>\[\log p_\theta(x) \ge \mathbb{E}<em>{z \sim q</em>\phi(z|x)}[\log p_\theta(x|z)] -
 D_{KL}\big(q_\phi(z|x) ,|, p(z)\big)\]</p>
-<p>우변을 **ELBO(Evidence Lower BOund)**라 부른다. 두 항의 의미:</p>
+<p>우변을 <strong>ELBO</strong>(Evidence Lower BOund)라 부른다. 두 항의 의미:</p>
 <ul>
 <li>첫 항 \(\mathbb{E}[\log p_\theta(x|z)]\): <strong>복원 항</strong> — 인코더가 만든 \(z\)로
 디코더가 원본 \(x\)를 얼마나 잘 복원하는가 (일반 오토인코더의 복원 오차와
@@ -2747,7 +2747,7 @@ inequality)으로 유도하는 것이다.</p>
 기억해둘 만하다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-17"><a class="header" href="#problem-set-17">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier C (폴백 준비 대상)</strong> — 아래 두 버전을 모두 준비해두고, 학생 반응을
+<p>난이도 등급: <strong>Tier C</strong>(폴백 준비 대상) — 아래 두 버전을 모두 준비해두고, 학생 반응을
 본 뒤 선택한다.</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>kl_divergence_gaussian</code>을 작성하라 — 정규분포
 \(\mathcal{N}(\mu, \sigma^2)\)와 표준정규분포 \(\mathcal{N}(0,1)\) 사이의 KL
@@ -2818,7 +2818,7 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -E_q[ log q(z|x) - log p(z) ]
 가짜를 만드는 위조범(생성자, Generator), 다른 하나는 진짜와 가짜를 구별하는
 감정사(판별자, Discriminator)로 두고, 위조범은 감정사를 속이도록, 감정사는 위조범을
 잡아내도록 서로 계속 겨루게 하면 위조범의 실력이 점점 진짜에 가깝게 늘어나지
-않을까? 이 아이디어가 **GAN(Generative Adversarial Network)**이다.</p>
+않을까? 이 아이디어가 <strong>GAN</strong>(Generative Adversarial Network)이다.</p>
 <h2 id="지난주와는-완전히-다른-원리"><a class="header" href="#지난주와는-완전히-다른-원리">지난주와는 완전히 다른 원리</a></h2>
 <p>W09의 VAE는 “우도(데이터가 나올 확률)를 최대화한다“는 명확한 목표함수가 있었다.
 GAN은 그런 단일 목표함수가 없다 — 대신 두 신경망이 서로 다른, 심지어 <strong>반대되는</strong>
@@ -2843,9 +2843,9 @@ equilibrium) 개념으로 분석한다 — “두 신경망이 서로 경쟁하�
 <h1 id="topics-covered-21"><a class="header" href="#topics-covered-21">Topics Covered</a></h1>
 <h2 id="gan-생성자와-판별자의-min-max-게임"><a class="header" href="#gan-생성자와-판별자의-min-max-게임">GAN: 생성자와 판별자의 min-max 게임</a></h2>
 <ul>
-<li><strong>생성자(Generator)</strong> \(G\): 무작위 노이즈 \(z \sim p(z)\)(보통 표준정규분포)를
+<li><strong>생성자</strong>(Generator) \(G\): 무작위 노이즈 \(z \sim p(z)\)(보통 표준정규분포)를
 입력받아 가짜 데이터 \(G(z)\)를 만든다.</li>
-<li><strong>판별자(Discriminator)</strong> \(D\): 데이터를 입력받아, 그것이 진짜일 확률
+<li><strong>판별자</strong>(Discriminator) \(D\): 데이터를 입력받아, 그것이 진짜일 확률
 \(D(x) \in [0,1]\)을 출력한다(W03의 로지스틱회귀와 정확히 같은 형태).</li>
 </ul>
 <p>목적함수(min-max game):</p>
@@ -2869,7 +2869,7 @@ def generator_loss(D_fake):
 <p>일반적인 지도학습은 손실함수 하나를 최소화하면 끝이었다. GAN은 두 네트워크가
 서로 <strong>반대</strong> 목표로 동시에 학습되므로, “학습이 끝났다“는 것이 무슨 의미인지부터
 다시 정의해야 한다. 게임이론에서 이런 상황(각 참여자가 상대의 전략을 고려해
-자신의 최선을 선택)의 안정 상태를 **내쉬 균형(Nash equilibrium)**이라 부른다 —
+자신의 최선을 선택)의 안정 상태를 <strong>내쉬 균형</strong>(Nash equilibrium)이라 부른다 —
 어느 쪽도 혼자서 전략을 바꿔서 더 나아질 수 없는 상태다.</p>
 <p>이론적으로, 이 게임의 내쉬 균형은 \(D(x) = 0.5\)(판별자가 진짜와 가짜를 전혀
 구별하지 못함, 즉 완전히 헷갈려함)이고 \(G\)가 만드는 분포가 실제 데이터 분포와
@@ -2882,10 +2882,10 @@ def generator_loss(D_fake):
 반면, GAN은 선명한 결과를 내지만 학습이 까다롭다 — 이 트레이드오프가 두 원리의
 실무적 차이다.</p>
 <h2 id="diffusion-노이즈를-점진적으로-되돌리기"><a class="header" href="#diffusion-노이즈를-점진적으로-되돌리기">Diffusion: 노이즈를 점진적으로 되돌리기</a></h2>
-<p><strong>정방향 과정(forward process)</strong>: 진짜 이미지 \(x_0\)에 아주 작은 노이즈를
+<p><strong>정방향 과정</strong>(forward process): 진짜 이미지 \(x_0\)에 아주 작은 노이즈를
 \(T\)번 반복해서 더해, 결국 \(x_T\)가 순수한 무작위 노이즈가 되게 만든다(이
 과정은 고정된 절차이지 학습 대상이 아니다).</p>
-<p><strong>역방향 과정(reverse process)</strong>: 신경망이 “한 단계 전 노이즈가 어땠는지“를
+<p><strong>역방향 과정</strong>(reverse process): 신경망이 “한 단계 전 노이즈가 어땠는지“를
 예측하도록 학습된다 — 즉, \(x_t\)에서 \(x_{t-1}\)을 복원하는 작은 단계를
 반복 학습한다. 학습이 끝나면, 순수 노이즈 \(x_T\)에서 시작해 이 역방향 단계를
 \(T\)번 반복하면 새로운 이미지가 만들어진다.</p>
@@ -2910,7 +2910,7 @@ def generator_loss(D_fake):
 </div>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="problem-set-18"><a class="header" href="#problem-set-18">Problem Set</a></h1>
-<p>난이도 등급: <strong>Tier C (폴백 준비 대상)</strong> — 아래 두 버전을 모두 준비해두고, 학생 반응을
+<p>난이도 등급: <strong>Tier C</strong>(폴백 준비 대상) — 아래 두 버전을 모두 준비해두고, 학생 반응을
 본 뒤 선택한다.</p>
 <p><strong>1.</strong> (코딩) 다음과 같은 함수 <code>discriminator_loss</code>와 <code>generator_loss</code>를 작성하라:</p>
 <pre><code class="language-python">import math
@@ -3061,7 +3061,7 @@ Precision/Recall이 왜 필요한지 다시 체감하게 되는 지점) 등을 �
 자세한 내용보다는, “지금 배운 것이 이런 곳으로 이어질 수 있다“는 지도를 그리는
 것이 목적이다.</p>
 <ul>
-<li><strong>Theorem Proving (정리 증명)</strong>: LLM이 수학 정리를 실제로 증명하는 데 쓰이는
+<li><strong>Theorem Proving</strong>(정리 증명): LLM이 수학 정리를 실제로 증명하는 데 쓰이는
 연구 분야. Chain-of-Thought(W04)의 확장선상에서, 모델이 단계별 논증을 스스로
 생성하고 검증하는 방향으로 발전하고 있다.</li>
 <li><strong>Autoformalization</strong>: 사람이 자연어로 쓴 수학적 주장을, 컴퓨터가 검증할 수

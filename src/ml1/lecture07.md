@@ -16,7 +16,7 @@
 정답을 직접 비교할 대상이 없다.
 
 1986년 데이비드 럼멜하트(David Rumelhart), 제프리 힌턴(Geoffrey Hinton), 로널드
-윌리엄스(Ronald Williams)가 대중화한 **역전파(backpropagation)** 알고리즘이 이 문제를
+윌리엄스(Ronald Williams)가 대중화한 **역전파**(backpropagation) 알고리즘이 이 문제를
 풀었다: 출력층의 오차를 연쇄법칙(chain rule)으로 거꾸로 흘려보내, 은닉층의 각 가중치가
 최종 오차에 얼마나 책임이 있는지를 정확히 계산하는 방법이다.
 

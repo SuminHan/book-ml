@@ -17,7 +17,7 @@ W05의 \\(V(s)\\)는 "상태의 가치"였다. Q-learning은 한 걸음 더 세�
 \\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma \max_{a'} Q(s',a') -
 Q(s,a)\right]\\]
 
-대괄호 안은 **TD 오차(Temporal Difference error)**라 부른다: "지금 추정한
+대괄호 안은 **TD 오차**(Temporal Difference error)라 부른다: "지금 추정한
 \\(Q(s,a)\\)"와 "방금 관찰한 보상 + 다음 상태에서 최선을 다했을 때의 추정값"의
 차이다. 이 오차만큼 \\(Q(s,a)\\)를 조금씩 보정해나간다 — W02의 경사하강법처럼,
 "현재 추정치와 더 나은 추정치의 차이만큼 이동한다"는 같은 패턴이다.

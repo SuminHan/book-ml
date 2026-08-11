@@ -38,7 +38,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-b32f7abc.js";
+            window.path_to_searchindex_js = "../searchindex-ad262e1b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-c7efff5e.js"></script>
@@ -183,9 +183,9 @@
                         <h1 id="topics-covered"><a class="header" href="#topics-covered">Topics Covered</a></h1>
 <h2 id="gan-생성자와-판별자의-min-max-게임"><a class="header" href="#gan-생성자와-판별자의-min-max-게임">GAN: 생성자와 판별자의 min-max 게임</a></h2>
 <ul>
-<li><strong>생성자(Generator)</strong> \(G\): 무작위 노이즈 \(z \sim p(z)\)(보통 표준정규분포)를
+<li><strong>생성자</strong>(Generator) \(G\): 무작위 노이즈 \(z \sim p(z)\)(보통 표준정규분포)를
 입력받아 가짜 데이터 \(G(z)\)를 만든다.</li>
-<li><strong>판별자(Discriminator)</strong> \(D\): 데이터를 입력받아, 그것이 진짜일 확률
+<li><strong>판별자</strong>(Discriminator) \(D\): 데이터를 입력받아, 그것이 진짜일 확률
 \(D(x) \in [0,1]\)을 출력한다(W03의 로지스틱회귀와 정확히 같은 형태).</li>
 </ul>
 <p>목적함수(min-max game):</p>
@@ -209,7 +209,7 @@ def generator_loss(D_fake):
 <p>일반적인 지도학습은 손실함수 하나를 최소화하면 끝이었다. GAN은 두 네트워크가
 서로 <strong>반대</strong> 목표로 동시에 학습되므로, “학습이 끝났다“는 것이 무슨 의미인지부터
 다시 정의해야 한다. 게임이론에서 이런 상황(각 참여자가 상대의 전략을 고려해
-자신의 최선을 선택)의 안정 상태를 **내쉬 균형(Nash equilibrium)**이라 부른다 —
+자신의 최선을 선택)의 안정 상태를 <strong>내쉬 균형</strong>(Nash equilibrium)이라 부른다 —
 어느 쪽도 혼자서 전략을 바꿔서 더 나아질 수 없는 상태다.</p>
 <p>이론적으로, 이 게임의 내쉬 균형은 \(D(x) = 0.5\)(판별자가 진짜와 가짜를 전혀
 구별하지 못함, 즉 완전히 헷갈려함)이고 \(G\)가 만드는 분포가 실제 데이터 분포와
@@ -222,10 +222,10 @@ def generator_loss(D_fake):
 반면, GAN은 선명한 결과를 내지만 학습이 까다롭다 — 이 트레이드오프가 두 원리의
 실무적 차이다.</p>
 <h2 id="diffusion-노이즈를-점진적으로-되돌리기"><a class="header" href="#diffusion-노이즈를-점진적으로-되돌리기">Diffusion: 노이즈를 점진적으로 되돌리기</a></h2>
-<p><strong>정방향 과정(forward process)</strong>: 진짜 이미지 \(x_0\)에 아주 작은 노이즈를
+<p><strong>정방향 과정</strong>(forward process): 진짜 이미지 \(x_0\)에 아주 작은 노이즈를
 \(T\)번 반복해서 더해, 결국 \(x_T\)가 순수한 무작위 노이즈가 되게 만든다(이
 과정은 고정된 절차이지 학습 대상이 아니다).</p>
-<p><strong>역방향 과정(reverse process)</strong>: 신경망이 “한 단계 전 노이즈가 어땠는지“를
+<p><strong>역방향 과정</strong>(reverse process): 신경망이 “한 단계 전 노이즈가 어땠는지“를
 예측하도록 학습된다 — 즉, \(x_t\)에서 \(x_{t-1}\)을 복원하는 작은 단계를
 반복 학습한다. 학습이 끝나면, 순수 노이즈 \(x_T\)에서 시작해 이 역방향 단계를
 \(T\)번 반복하면 새로운 이미지가 만들어진다.</p>
