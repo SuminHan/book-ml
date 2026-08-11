@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Machine Learning 1/2</title>
-        <base href="/">
+        <title>Distance-Based Models: kNN - Machine Learning 1/2</title>
 
 
         <!-- Custom HTML head -->
@@ -13,36 +12,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="favicon-8114d1fc.png">
-        <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-e96d0476.css">
-        <link rel="stylesheet" href="css/chrome-d279d366.css">
-        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="theme/custom-0e6bb0b3.css">
+        <link rel="stylesheet" href="../../theme/custom-0e6bb0b3.css">
 
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-77479390.js";
+            window.path_to_searchindex_js = "../../searchindex-77479390.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-dda67ec0.js"></script>
+        <script src="../../toc-dda67ec0.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -109,7 +108,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -144,7 +143,7 @@
                     <h1 class="menu-title">Machine Learning 1/2</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
@@ -181,14 +180,124 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="chapter-4-distance-based-models-knn"><a class="header" href="#chapter-4-distance-based-models-knn">Chapter 4. Distance-Based Models: kNN</a></h1>
+<p>“You are the average of your five closest friends,” the saying goes.
+Translate that sentence directly into an algorithm and you get
+<strong>k-Nearest Neighbors (kNN)</strong>: to classify a new data point, there’s no
+training and no model needed — just look at what the \(k\) closest existing
+points say, and go with the majority.</p>
+<h2 id="41-a-learning-algorithm-with-no-learning"><a class="header" href="#41-a-learning-algorithm-with-no-learning">4.1 A Learning Algorithm With No Learning</a></h2>
+<p>Linear/logistic regression, which we covered earlier, had a <strong>training
+phase</strong> where parameters \(w\) are optimized by looking at the data. kNN
+has none of that — the only thing that could be called “training” is simply
+storing the data. All the computation instead happens <strong>at prediction
+time</strong>: when a new point arrives, only then do we measure its distance to
+every stored point and find the closest ones. This approach is called lazy
+learning, or instance-based learning.</p>
+<h2 id="42-the-algorithm"><a class="header" href="#42-the-algorithm">4.2 The Algorithm</a></h2>
+<p>To classify a new point \(x\):</p>
+<ol>
+<li>Compute the distance from \(x\) to every point \(x^{(i)}\) in the
+training data.</li>
+<li>Pick the \(k\) closest ones.</li>
+<li>Predict the majority vote (classification) or average (regression) of
+those \(k\) labels.</li>
+</ol>
+<pre><code class="language-python">def knn_predict(X_train, y_train, x_new, k):
+    distances = []
+    for i in range(len(X_train)):
+        d = sum((X_train[i][j] - x_new[j]) ** 2 for j in range(len(x_new))) ** 0.5
+        distances.append((d, y_train[i]))
+    distances.sort(key=lambda p: p[0])
+    k_nearest_labels = [label for _, label in distances[:k]]
+    return max(set(k_nearest_labels), key=k_nearest_labels.count)  # majority vote
+</code></pre>
+<h2 id="43-distance-functions"><a class="header" href="#43-distance-functions">4.3 Distance Functions</a></h2>
+<p>The most common choice is <strong>Euclidean distance</strong>:</p>
+<p>\[d(x, x’) = \sqrt{\sum_{j=1}^n (x_j - x’_j)^2}\]</p>
+<p>Another option is Manhattan distance (\(\sum_j |x_j - x’_j|\), moving only
+along coordinate axes). <strong>Feature normalization</strong> is almost mandatory before
+measuring distance — mixing “number of rooms” (range 0-10) with “house
+price” (in the hundreds of thousands) means the large-scale feature
+effectively dominates the distance entirely.</p>
+<h2 id="44-the-tradeoff-in-choosing-k"><a class="header" href="#44-the-tradeoff-in-choosing-k">4.4 The Tradeoff in Choosing \(k\)</a></h2>
+<ul>
+<li>If \(k\) is too small (e.g. \(k=1\)): sensitive to a single noisy
+point — overfitting.</li>
+<li>If \(k\) is too large (e.g. \(k=m\), the whole dataset): always
+predicts the overall majority — ignores local patterns entirely
+(underfitting).</li>
+</ul>
+<p>The right \(k\) is usually chosen by trying several values against a
+validation set.</p>
+<h2 id="45-the-curse-of-dimensionality"><a class="header" href="#45-the-curse-of-dimensionality">4.5 The Curse of Dimensionality</a></h2>
+<p>Intuition: as the number of features grows (higher dimensions), even the
+“nearest” neighbors get farther and farther away. kNN’s premise is that
+nearby data has similar answers — but once there are hundreds of features,
+that intuition starts to break down.</p>
+<p>Let’s get a feel for it with a formula. Suppose points are spread uniformly
+inside the unit cube \([0,1]^n\) in \(n\) dimensions. To build a small
+cube (sharing the same center) that contains a fraction \(p\) of the total
+volume, its side length \(\ell\) must satisfy:</p>
+<p>\[\ell^n = p \quad\Longrightarrow\quad \ell = p^{1/n}\]</p>
+<p>With \(p=0.01\) (we want to contain just 1% of the total):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>\(n\)</th><th>\(\ell = p^{1/n}\)</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>0.01</td></tr>
+<tr><td>10</td><td>0.63</td></tr>
+<tr><td>100</td><td>0.955</td></tr>
+</tbody>
+</table>
+</div>
+<p>At \(n=100\), <strong>95.5% of each side’s length</strong> is needed to contain just 1%
+of the volume — the tight little region that could be called “nearby”
+basically disappears. That’s why, as the number of features grows, every
+point starts to look about equally far from every other point.</p>
+<p><strong>Simplicity isn’t automatically a weakness — kNN never explains what the
+model “learned,” but that very simplicity is exactly what lets us pin down,
+with a formula, when and why it fails.</strong></p>
+<hr>
+<h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
+<p><strong>1. (Coding)</strong> Extend <code>knn_predict</code> above (key lines left blank) into
+<code>knn_predict_regression</code>, which returns the <strong>average</strong> instead of the
+majority vote when labels are numeric (showing that kNN works for
+regression too, not just classification):</p>
+<pre><code class="language-python">def knn_predict_regression(X_train, y_train, x_new, k):
+    # ADD ADDITIONAL CODE HERE!!
+
+X_train = [[1],[2],[3],[10],[11],[12]]
+y_train = [10, 12, 11, 100, 102, 98]
+print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # approximately 11.0
+</code></pre>
+<p><strong>2. (Hand derivation, Tier B — hints provided)</strong> Suppose points are
+uniformly distributed in the unit cube \([0,1]^n\). Consider a small cube
+(sharing the same center) with side length \(\ell\) that contains a
+fraction \(p\) of the total volume.</p>
+<p><strong>Step 1</strong>: Derive \(\ell = p^{1/n}\). (Hint: the volume of an
+\(n\)-dimensional cube is its side length raised to the \(n\)-th power.
+Solve \(\ell^n = p\) for \(\ell\), so that the small cube’s volume is
+\(p\) times the total volume of 1.)</p>
+<p><strong>Step 2</strong>: Fix \(p=0.01\) and compute \(\ell\) directly for
+\(n=1, 10, 50, 100\).</p>
+<p><strong>Confirm correctness</strong>: based on your calculations, explain in one
+paragraph why the notion of “nearest \(k\)” progressively loses meaning
+as the number of features (dimensions) grows.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../eng/ml1/chapter03.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
 
+                            <a rel="next prefetch" href="../../eng/ml1/chapter05.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -196,7 +305,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../eng/ml1/chapter03.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
 
+                    <a rel="next prefetch" href="../../eng/ml1/chapter05.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>
@@ -214,13 +329,13 @@
         </script>
 
 
-        <script src="elasticlunr-ef4e11c1.min.js"></script>
-        <script src="mark-09e88c2c.min.js"></script>
-        <script src="searcher-09f2665d.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
 
-        <script src="clipboard-1626706a.min.js"></script>
-        <script src="highlight-abc7f01d.js"></script>
-        <script src="book-609e4cb8.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

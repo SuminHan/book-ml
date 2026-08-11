@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - Machine Learning 1/2</title>
-        <base href="/">
+        <title>Attention &amp; Transformer - Machine Learning 1/2</title>
 
 
         <!-- Custom HTML head -->
@@ -13,36 +12,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="favicon-8114d1fc.png">
-        <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-e96d0476.css">
-        <link rel="stylesheet" href="css/chrome-d279d366.css">
-        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="theme/custom-0e6bb0b3.css">
+        <link rel="stylesheet" href="../../theme/custom-0e6bb0b3.css">
 
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-77479390.js";
+            window.path_to_searchindex_js = "../../searchindex-77479390.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-dda67ec0.js"></script>
+        <script src="../../toc-dda67ec0.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -109,7 +108,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -144,7 +143,7 @@
                     <h1 class="menu-title">Machine Learning 1/2</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
@@ -181,14 +180,176 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="chapter-3-attention--transformer"><a class="header" href="#chapter-3-attention--transformer">Chapter 3. Attention &amp; Transformer</a></h1>
+<p>In 2017, researchers at Google Brain gave their paper a rather provocative
+title: <strong>“Attention Is All You Need.”</strong> Until then, the best-performing
+sequence models were all built on RNNs (or their variant, LSTM). This paper
+stripped out the recurrent structure entirely and achieved better
+performance than RNNs using only an <strong>attention</strong> mechanism. This structure
+is the <strong>Transformer</strong>, and it’s the foundation of nearly every large
+language model (LLM) we use today.</p>
+<h2 id="31-the-fundamental-problem-with-rnn-sequentiality"><a class="header" href="#31-the-fundamental-problem-with-rnn-sequentiality">3.1 The Fundamental Problem With RNN Sequentiality</a></h2>
+<p>The RNN we covered in Chapter 2 has to process words one at a time, in
+order — to see the 100th word, you must go through words 1 through 99 in
+sequence first. This creates two problems: (1) GPUs are built for parallel
+computation, but a sequential structure can’t exploit that parallelism, so
+it’s slow. (2) Information from far in the past fades as it passes through
+many steps (exactly the vanishing gradient problem from Chapter 2).</p>
+<h2 id="32-the-idea-behind-attention"><a class="header" href="#32-the-idea-behind-attention">3.2 The Idea Behind “Attention”</a></h2>
+<p>Attention’s intuition is simple: “to understand this word, look at <strong>every
+other word in the sentence at once</strong>, and pay more attention to whichever
+ones are relevant.” In the sentence “the animal didn’t cross the road
+because <strong>it</strong> was too tired,” figuring out whether “it” refers to “the
+animal” or “the road” requires looking at the whole sentence at once.</p>
+<h2 id="33-query-key-value"><a class="header" href="#33-query-key-value">3.3 Query, Key, Value</a></h2>
+<p>Each word (more precisely, each word’s embedding vector) is transformed
+into three vectors: <strong>Query</strong> (Q) — “what am I looking for right now,”
+<strong>Key</strong> (K) — “what information do I hold,” <strong>Value</strong> (V) — “what I
+actually pass along.” All three are obtained by multiplying the same input
+embedding \(x\) by three different learnable weight matrices:</p>
+<p>\[Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V\]</p>
+<h2 id="34-scaled-dot-product-attention"><a class="header" href="#34-scaled-dot-product-attention">3.4 Scaled Dot-Product Attention</a></h2>
+<p>How “relevant” one word’s Query is to every word’s Key is measured via a
+dot product:</p>
+<p>\[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\]</p>
+<p>Breaking this down step by step:</p>
+<ol>
+<li>\(QK^T\): a single matrix computing the Query-Key dot product for
+every pair of words at once (each row = the raw relevance score of one
+word to every other word).</li>
+<li>Divide by \(\sqrt{d_k}\) (the square root of the Key vector’s
+dimension): dot products tend to grow larger with dimension, so this
+rescaling prevents softmax from producing only extreme values (near 0
+or 1).</li>
+<li><strong>Softmax</strong> turns each row into a probability distribution (summing to
+<ol>
+<li>— “the proportion of attention this word distributes to the
+others.”</li>
+</ol>
+</li>
+<li>That probability is used to take a weighted sum of \(V\) (what each
+word actually contributes) — the result is a new vector that mixes in
+the content of relevant words, weighted by how relevant they are.</li>
+</ol>
+<pre><code class="language-python">import math
+
+def softmax(row):
+    m = max(row)
+    exps = [math.exp(v - m) for v in row]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def attention(Q, K, V, d_k):
+    scores = [[sum(Q[i][t] * K[j][t] for t in range(d_k)) / math.sqrt(d_k)
+               for j in range(len(K))] for i in range(len(Q))]
+    weights = [softmax(row) for row in scores]
+    output = [[sum(weights[i][j] * V[j][t] for j in range(len(V)))
+               for t in range(len(V[0]))] for i in range(len(Q))]
+    return output, weights
+</code></pre>
+<h2 id="35-self-attention-a-sentence-looking-at-itself"><a class="header" href="#35-self-attention-a-sentence-looking-at-itself">3.5 Self-Attention: A Sentence Looking at Itself</a></h2>
+<p>When Q, K, and V all come from <strong>the same sentence</strong>, this is called
+“self-attention” — each word computes its relevance to every other word in
+the same sentence (including itself). This is the mechanism behind
+figuring out whether “it” refers to “the animal” from this chapter’s
+opening example: “it”’s Query is trained to produce its highest dot-product
+score against “the animal”’s Key, when computed against every word’s Key
+in the sentence.</p>
+<h2 id="36-multi-head-attention"><a class="header" href="#36-multi-head-attention">3.6 Multi-Head Attention</a></h2>
+<p>Instead of using just one set of Q, K, V, several sets (“heads”) are run
+in parallel, each learning relevance from a different perspective — it’s
+commonly observed that one head focuses on grammatical relationships
+(subject-verb), while another focuses on semantic relationships (synonyms).
+The results from all heads are concatenated and passed through one more
+linear transformation to produce the final output.</p>
+<h2 id="37-positional-encoding-how-order-gets-injected"><a class="header" href="#37-positional-encoding-how-order-gets-injected">3.7 Positional Encoding: How Order Gets Injected</a></h2>
+<p>The attention operation itself doesn’t distinguish order at all —
+\(QK^T\) computes the same relevance score for each pair of words
+regardless of their order (it treats them like a set). But in “the dog
+chases the cat,” order changes the meaning. So the Transformer <strong>adds</strong> a
+vector encoding each word’s position (positional encoding — a fixed
+pattern built from sine/cosine functions) to each word’s embedding — this
+way, the same word at a different position produces a different input
+vector, letting attention exploit order indirectly.</p>
+<h2 id="38-advantages-over-rnn"><a class="header" href="#38-advantages-over-rnn">3.8 Advantages Over RNN</a></h2>
+<p>Self-attention computes every pair of words <strong>all at once</strong>, in
+parallel — there’s no need for sequential processing, so it fully exploits
+GPU parallelism, and even “the relevance between word 1 and word 100” is
+computed directly, without passing through 99 intermediate steps
+(structurally far less prone to vanishing gradients). The tradeoff is a
+new cost that scales with the square of the sentence length (\(QK^T\) is
+an \(n \times n\) matrix) — this becomes a practical limitation when
+handling very long documents.</p>
+<p><strong>A single idea — look at every word at once, and compute relevance
+directly between all of them — is the biggest change in deep learning over
+the past several years.</strong></p>
+<hr>
+<h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
+<p><strong>1. (Coding)</strong> Complete <code>scaled_dot_product_attention</code> below (key lines
+left blank):</p>
+<pre><code class="language-python">import math
+
+def softmax(row):
+    m = max(row)
+    exps = [math.exp(v - m) for v in row]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def scaled_dot_product_attention(Q, K, V, d_k):
+    # ADD ADDITIONAL CODE HERE!!
+    # 1. scores[i][j] = (Q[i] . K[j]) / sqrt(d_k)
+    # 2. weights = apply softmax to each row
+    # 3. output[i] = weighted sum of V using weights[i]
+
+    return output, weights
+
+Q = [[1,0],[0,1]]
+K = [[1,0],[0,1]]
+V = [[10,0],[0,10]]
+output, weights = scaled_dot_product_attention(Q, K, V, d_k=2)
+print(weights)  # each word gives more weight to "itself"
+</code></pre>
+<p><strong>2. (Hand derivation, Tier C — fallback prepared)</strong> For a 2-word sentence,
+you’re given \(Q = \begin{pmatrix}1 &amp; 0\ 0 &amp; 1\end{pmatrix}\),
+\(K = \begin{pmatrix}1 &amp; 1\ 1 &amp; 0\end{pmatrix}\), \(V =
+\begin{pmatrix}5 &amp; 0\ 0 &amp; 5\end{pmatrix}\) (\(d_k=2\)).</p>
+<p>Compute \(QK^T\) by hand, divide by \(\sqrt{d_k}\), apply softmax to
+each row to get the attention weight matrix, and finally compute the
+output as a weighted sum with \(V\).</p>
+<p><strong>Fill-in-the-blank fallback version</strong> (if free calculation is too
+difficult):</p>
+<pre><code>Step 1: compute QK^T (a 2x2 matrix)
+  (QK^T)[0][0] = Q[0].K[0] = 1*1 + 0*1 = ______________
+  (QK^T)[0][1] = Q[0].K[1] = 1*1 + 0*0 = ______________
+  (QK^T)[1][0] = Q[1].K[0] = 0*1 + 1*1 = ______________
+  (QK^T)[1][1] = Q[1].K[1] = 0*1 + 1*0 = ______________
+
+Step 2: divide every element by sqrt(d_k) = sqrt(2) ≈ 1.41
+  scaled[0] = [______________, ______________]
+  scaled[1] = [______________, ______________]
+
+Step 3: apply softmax to the first row
+  exp(scaled[0][0]) = ______________  (use a calculator)
+  exp(scaled[0][1]) = ______________
+  weights[0] = [______________, ______________]  (normalized to sum to 1)
+
+Step 4: output[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
+       = [______________, ______________]
+</code></pre>
+<p><strong>Confirm correctness</strong>: check your completed calculation against the
+output of <code>scaled_dot_product_attention(Q, K, V, d_k=2)</code> from Exercise 1.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../eng/ml2/chapter02.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
 
+                            <a rel="next prefetch" href="../../eng/ml2/chapter04.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -196,7 +357,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../eng/ml2/chapter02.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
 
+                    <a rel="next prefetch" href="../../eng/ml2/chapter04.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>
@@ -214,13 +381,13 @@
         </script>
 
 
-        <script src="elasticlunr-ef4e11c1.min.js"></script>
-        <script src="mark-09e88c2c.min.js"></script>
-        <script src="searcher-09f2665d.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
 
-        <script src="clipboard-1626706a.min.js"></script>
-        <script src="highlight-abc7f01d.js"></script>
-        <script src="book-609e4cb8.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 
