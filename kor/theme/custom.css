@@ -1,0 +1,29 @@
+/* Hide the sidebar fold-toggle arrow entirely. Chapters still auto-expand
+   to reveal their children when you navigate onto that chapter (mdBook's
+   built-in active-page logic handles this via JS, independent of this
+   toggle) -- this just removes the manual click-to-expand affordance for
+   chapters you aren't currently viewing, matching a plain collapsed-title
+   look. */
+.chapter-fold-toggle {
+    display: none;
+}
+
+/* Fixed badge linking to the other language edition (injected by
+   lang-switch.js since mdBook's SUMMARY.md parser can't hold external
+   links -- it always tries to resolve them as local chapter files). */
+.lang-switch-badge {
+    position: fixed;
+    top: 0.6rem;
+    right: 1rem;
+    z-index: 1000;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: var(--sidebar-bg, #2354a5);
+    color: var(--sidebar-fg, #fff) !important;
+    font-size: 0.85rem;
+    text-decoration: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.lang-switch-badge:hover {
+    opacity: 0.85;
+}
