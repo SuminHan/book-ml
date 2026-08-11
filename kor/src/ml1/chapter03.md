@@ -43,8 +43,7 @@
 그만큼 크게 벌한다.** 신기하게도 이 손실함수를 미분하면 선형회귀와 **똑같은
 형태**의 그래디언트가 나온다:
 
-\\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)})
-- y^{(i)}\right) x_j^{(i)}\\]
+\\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) - y^{(i)}\right) x_j^{(i)}\\]
 
 그래서 경사하강법 구현 코드 자체는 Chapter 2와 거의 동일하다 — \\(h_w\\)를
 계산하는 부분에 시그모이드만 추가하면 된다.
@@ -87,9 +86,9 @@ def logistic_gradient_descent(X, y, alpha, epochs):
   비율" — 거짓 경보를 얼마나 피했는가.
 - **Recall** \\(= \frac{TP}{TP+FN}\\): "실제 양성 중 잡아낸 비율" — 놓친 양성이
   얼마나 적은가.
-- **F1** \\(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision}
-  + \text{Recall}}\\): Precision과 Recall의 조화평균 — 둘 다 낮으면 F1도
-  낮아지도록, 한쪽만 높다고 점수를 후하게 주지 않는다.
+- **F1** \\(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}\\):
+  Precision과 Recall의 조화평균 — 둘 다 낮으면 F1도 낮아지도록, 한쪽만
+  높다고 점수를 후하게 주지 않는다.
 
 **Precision-Recall 트레이드오프**: 임계값(threshold)을 0.5가 아니라 0.9로
 올리면 Precision은 오르지만(확신 있을 때만 양성 판정) Recall은

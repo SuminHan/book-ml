@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-2c79705d.js";
+            window.path_to_searchindex_js = "../searchindex-77bbeb0a.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cf809c4c.js"></script>
@@ -214,10 +214,7 @@ minimum. Instead we use the <strong>cross-entropy</strong> loss:</p>
 <strong>Being confidently wrong is punished proportionally hard.</strong> Remarkably, when
 you differentiate this loss, you get <strong>exactly the same form</strong> of gradient as
 linear regression:</p>
-<p>\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)})</p>
-<ul>
-<li>y^{(i)}\right) x_j^{(i)}\]</li>
-</ul>
+<p>\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) - y^{(i)}\right) x_j^{(i)}\]</p>
 <p>So the gradient descent code itself is nearly identical to Chapter 2 — just
 add a sigmoid where \(h_w\) is computed.</p>
 <pre><code class="language-python">import math
@@ -262,12 +259,9 @@ imbalance).</p>
 what fraction was actually positive” — how well false alarms were avoided.</li>
 <li><strong>Recall</strong> \(= \frac{TP}{TP+FN}\): “of everything actually positive, what
 fraction was caught” — how few positives were missed.</li>
-<li><strong>F1</strong> \(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision}
-<ul>
-<li>\text{Recall}}\): the harmonic mean of precision and recall — it drops
-if either one is low, so a model can’t score well by excelling at only one.</li>
-</ul>
-</li>
+<li><strong>F1</strong> \(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}\):
+the harmonic mean of precision and recall — it drops if either one is low,
+so a model can’t score well by excelling at only one.</li>
 </ul>
 <p><strong>The precision-recall tradeoff</strong>: raising the threshold from 0.5 to 0.9
 increases precision (only predict positive when confident) but lowers recall

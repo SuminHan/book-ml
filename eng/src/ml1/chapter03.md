@@ -47,8 +47,7 @@ Intuition: if the true label is \\(y=1\\) but the model confidently predicts
 you differentiate this loss, you get **exactly the same form** of gradient as
 linear regression:
 
-\\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)})
-- y^{(i)}\right) x_j^{(i)}\\]
+\\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) - y^{(i)}\right) x_j^{(i)}\\]
 
 So the gradient descent code itself is nearly identical to Chapter 2 — just
 add a sigmoid where \\(h_w\\) is computed.
@@ -92,9 +91,9 @@ imbalance).
   what fraction was actually positive" — how well false alarms were avoided.
 - **Recall** \\(= \frac{TP}{TP+FN}\\): "of everything actually positive, what
   fraction was caught" — how few positives were missed.
-- **F1** \\(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision}
-  + \text{Recall}}\\): the harmonic mean of precision and recall — it drops
-  if either one is low, so a model can't score well by excelling at only one.
+- **F1** \\(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}\\):
+  the harmonic mean of precision and recall — it drops if either one is low,
+  so a model can't score well by excelling at only one.
 
 **The precision-recall tradeoff**: raising the threshold from 0.5 to 0.9
 increases precision (only predict positive when confident) but lowers recall
