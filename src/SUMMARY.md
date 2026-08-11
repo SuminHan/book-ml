@@ -74,3 +74,8 @@
     - [Topics Covered](ml2/lecture11-topics.md)
 - [Team Project: Presentation](ml2/lecture12.md)
     - [Topics Covered](ml2/lecture12-topics.md)
+
+# Sample (New Format Preview)
+
+- [KOR: Chapter 2. 선형회귀](kor/ml1/chapter02.md)
+- [ENG: Chapter 2. Linear Regression](eng/ml1/chapter02.md)
