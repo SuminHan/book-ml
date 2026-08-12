@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-599ee677.js";
+            window.path_to_searchindex_js = "../searchindex-4299d8cf.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cf809c4c.js"></script>
@@ -243,13 +243,13 @@ def epsilon_greedy(Q, s, epsilon, actions):
 progresses — explore a lot early on, then shift increasingly toward
 exploitation as the Q-values become more trustworthy.</p>
 <h2 id="65-why-q-learning-converges-intuition"><a class="header" href="#65-why-q-learning-converges-intuition">6.5 Why Q-Learning Converges (Intuition)</a></h2>
-<p>Q-learning is proven to converge to the true \(Q^<em>(s,a)\), regardless of
+<p>Q-learning is proven to converge to the true \(Q^*(s,a)\), regardless of
 which policy actually generated the data (the exploration policy), <strong>as
 long as every state-action pair is visited infinitely often and the
 learning rate \(\alpha\) is decayed appropriately</strong> (the Robbins-Monro
 conditions). Intuitively: the point where the TD error becomes exactly
 zero is precisely the point that satisfies the Bellman optimality equation
-\(Q^</em>(s,a) = R(s,a) + \gamma \max_{a’} Q^*(s’,a’)\), so an update that
+\(Q^*(s,a) = R(s,a) + \gamma \max_{a’} Q^*(s’,a’)\), so an update that
 keeps reducing the TD error will eventually converge to that fixed point.</p>
 <h2 id="66-q-learning-vs-sarsa-for-reference"><a class="header" href="#66-q-learning-vs-sarsa-for-reference">6.6 Q-learning vs. SARSA (For Reference)</a></h2>
 <p>Q-learning’s update always uses \(\max_{a’} Q(s’,a’)\) — <strong>always
@@ -290,9 +290,9 @@ def q_learning_train(transition, n_states, n_actions, n_episodes, alpha, gamma, 
 <p><strong>2. (Hand derivation, Tier A — free derivation)</strong> Argue, in three parts,
 what conditions are needed for the Q-learning update
 \(Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma \max_{a’} Q(s’,a’) -
-Q(s,a)]\) to converge to the true \(Q^<em>(s,a)\): (1) show that the
+Q(s,a)]\) to converge to the true \(Q^*(s,a)\): (1) show that the
 \(Q\) for which the TD error is exactly zero is the same as the solution
-to the Bellman optimality equation \(Q^</em>(s,a) = R(s,a) + \gamma
+to the Bellman optimality equation \(Q^*(s,a) = R(s,a) + \gamma
 \max_{a’} Q^*(s’,a’)\) (a simple algebraic argument). (2) Explain why
 convergence becomes unstable if \(\alpha\) is too large (e.g., always
 \(\alpha=1\)), connecting it to Chapter 2’s learning-rate problem. (3)

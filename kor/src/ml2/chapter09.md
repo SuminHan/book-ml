@@ -40,8 +40,8 @@ VAE는 "생성형 모델을 만드는 세 가지 원리" 중 첫 번째 — **�
 직접 계산할 수 없는 \\(\log p_\theta(x)\\) 대신, 다음이 성립함을 보일
 수 있다:
 
-\\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\\]
+\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
+D\_{KL}\big(q\_\phi(z|x) \\,\\|\\, p(z)\big)\\]
 
 우변을 **ELBO**(Evidence Lower BOund)라 부른다. 두 항의 의미:
 
@@ -114,11 +114,11 @@ print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
 \int p_\theta(x,z)\,dz\\)에서 시작해서, 옌센 부등식(\\(\log
 \mathbb{E}[X] \ge \mathbb{E}[\log X]\\))을 이용해
 
-\\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}(q_\phi(z|x)\|p(z))\\]
+\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
+D\_{KL}(q\_\phi(z|x)\\|p(z))\\]
 
-를 유도하라(힌트: \\(\log p_\theta(x) = \log \mathbb{E}_{q_\phi}
-\left[\frac{p_\theta(x,z)}{q_\phi(z|x)}\right]\\)로 먼저 바꾼 뒤 옌센
+를 유도하라(힌트: \\(\log p\_\theta(x) = \log \mathbb{E}\_{q\_\phi}
+\left[\frac{p\_\theta(x,z)}{q\_\phi(z|x)}\right]\\)로 먼저 바꾼 뒤 옌센
 부등식을 적용하고, \\(p_\theta(x,z) = p_\theta(x|z)p(z)\\)로 분해해서
 KL divergence의 정의가 나오도록 정리하라).
 

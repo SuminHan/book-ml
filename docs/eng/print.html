@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-599ee677.js";
+            window.path_to_searchindex_js = "searchindex-4299d8cf.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-cf809c4c.js"></script>
@@ -2096,7 +2096,7 @@ much cumulative reward can I expect?” — the value function answers this
 question with an exact number. Under policy \(\pi\), the value of state
 \(s\) is the <strong>expected discounted cumulative reward</strong> starting from that
 state:</p>
-<p>\[V^\pi(s) = \mathbb{E}<em>\pi\left[\sum</em>{t=0}^\infty \gamma^t R(s_t, a_t) ,\middle|,
+<p>\[V^\pi(s) = \mathbb{E}_\pi\left[\sum_{t=0}^\infty \gamma^t R(s_t, a_t) \,\middle|\,
 s_0 = s\right]\]</p>
 <h2 id="53-the-bellman-equation-a-recursive-definition"><a class="header" href="#53-the-bellman-equation-a-recursive-definition">5.3 The Bellman Equation: A Recursive Definition</a></h2>
 <p>Computing the value function directly seems to require accounting for
@@ -2247,13 +2247,13 @@ def epsilon_greedy(Q, s, epsilon, actions):
 progresses — explore a lot early on, then shift increasingly toward
 exploitation as the Q-values become more trustworthy.</p>
 <h2 id="65-why-q-learning-converges-intuition"><a class="header" href="#65-why-q-learning-converges-intuition">6.5 Why Q-Learning Converges (Intuition)</a></h2>
-<p>Q-learning is proven to converge to the true \(Q^<em>(s,a)\), regardless of
+<p>Q-learning is proven to converge to the true \(Q^*(s,a)\), regardless of
 which policy actually generated the data (the exploration policy), <strong>as
 long as every state-action pair is visited infinitely often and the
 learning rate \(\alpha\) is decayed appropriately</strong> (the Robbins-Monro
 conditions). Intuitively: the point where the TD error becomes exactly
 zero is precisely the point that satisfies the Bellman optimality equation
-\(Q^</em>(s,a) = R(s,a) + \gamma \max_{a’} Q^*(s’,a’)\), so an update that
+\(Q^*(s,a) = R(s,a) + \gamma \max_{a’} Q^*(s’,a’)\), so an update that
 keeps reducing the TD error will eventually converge to that fixed point.</p>
 <h2 id="66-q-learning-vs-sarsa-for-reference"><a class="header" href="#66-q-learning-vs-sarsa-for-reference">6.6 Q-learning vs. SARSA (For Reference)</a></h2>
 <p>Q-learning’s update always uses \(\max_{a’} Q(s’,a’)\) — <strong>always
@@ -2294,9 +2294,9 @@ def q_learning_train(transition, n_states, n_actions, n_episodes, alpha, gamma, 
 <p><strong>2. (Hand derivation, Tier A — free derivation)</strong> Argue, in three parts,
 what conditions are needed for the Q-learning update
 \(Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma \max_{a’} Q(s’,a’) -
-Q(s,a)]\) to converge to the true \(Q^<em>(s,a)\): (1) show that the
+Q(s,a)]\) to converge to the true \(Q^*(s,a)\): (1) show that the
 \(Q\) for which the TD error is exactly zero is the same as the solution
-to the Bellman optimality equation \(Q^</em>(s,a) = R(s,a) + \gamma
+to the Bellman optimality equation \(Q^*(s,a) = R(s,a) + \gamma
 \max_{a’} Q^*(s’,a’)\) (a simple algebraic argument). (2) Explain why
 convergence becomes unstable if \(\alpha\) is too large (e.g., always
 \(\alpha=1\)), connecting it to Chapter 2’s learning-rate problem. (3)
@@ -2472,7 +2472,7 @@ by applying softmax to the network’s output:</p>
 <p>\(f_\theta(s)\) is a neural network that takes state \(s\) as input
 and outputs a raw score (logit) for each action. The goal is to find the
 \(\theta\) that maximizes the expected cumulative reward:</p>
-<p>\[J(\theta) = \mathbb{E}<em>{\tau \sim \pi</em>\theta}[R(\tau)]\]</p>
+<p>\[J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\]</p>
 <p>\(\tau\) is a trajectory (the whole episode), and \(R(\tau)\) is that
 trajectory’s total reward.</p>
 <h2 id="83-the-strange-problem-of-differentiating-a-reward"><a class="header" href="#83-the-strange-problem-of-differentiating-a-reward">8.3 The Strange Problem of “Differentiating a Reward”</a></h2>
@@ -2491,8 +2491,8 @@ expectation (integral) form.</p>
 of the log-probability instead of taking it outside the probability
 directly, letting us reorganize the expression back into an expectation.
 The final result is the <strong>Policy Gradient Theorem</strong>:</p>
-<p>\[\nabla_\theta J(\theta) = \mathbb{E}<em>\tau\left[\sum_t \nabla</em>\theta \log
-\pi_\theta(a_t|s_t) , G_t\right]\]</p>
+<p>\[\nabla_\theta J(\theta) = \mathbb{E}_\tau\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\]</p>
 <p>\(G_t\) is the discounted cumulative reward from timestep \(t\)
 onward (Chapter 5’s return). Intuition: “shift \(\theta\) to increase
 the probability (\(\log \pi_\theta(a_t|s_t)\)) of actions actually taken
@@ -2582,9 +2582,9 @@ def reinforce_update(theta, episode, alpha, gamma):
 </code></pre>
 <p><strong>2. (Hand derivation, Tier C — top-priority fallback)</strong> Under policy
 \(\pi_\theta\), derive that the gradient of the expected return
-\(J(\theta) = \mathbb{E}<em>{\tau \sim \pi</em>\theta}[R(\tau)]\) equals</p>
-<p>\[\nabla_\theta J(\theta) = \mathbb{E}<em>{\tau}\left[\sum_t \nabla</em>\theta \log
-\pi_\theta(a_t|s_t) , G_t\right]\]</p>
+\(J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\) equals</p>
+<p>\[\nabla_\theta J(\theta) = \mathbb{E}_{\tau}\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\]</p>
 <p>using the log-derivative trick. (Advanced — for strong math students /
 volunteers only; most should use the worksheet below as the default.)</p>
 <p><strong>Fill-in-the-blank worksheet version</strong> (default):</p>
@@ -2646,8 +2646,8 @@ possible \(z\), which is generally intractable to compute.</p>
 <h2 id="94-elbo-working-around-it-with-a-computable-lower-bound"><a class="header" href="#94-elbo-working-around-it-with-a-computable-lower-bound">9.4 ELBO: Working Around It With a Computable Lower Bound</a></h2>
 <p>Instead of \(\log p_\theta(x)\), which can’t be computed directly, the
 following can be shown to hold:</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}<em>{z \sim q</em>\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}\big(q_\phi(z|x) ,|, p(z)\big)\]</p>
+<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
+D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\]</p>
 <p>The right-hand side is called the <strong>ELBO</strong> (Evidence Lower BOund). What
 its two terms mean:</p>
 <ul>
@@ -2713,9 +2713,9 @@ print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
 <p><strong>2. (Hand derivation, Tier C — fallback prepared)</strong> Starting from
 \(\log p_\theta(x) = \log \int p_\theta(x,z),dz\), use Jensen’s
 inequality (\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\)) to derive</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}<em>{z \sim q</em>\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}(q_\phi(z|x)|p(z))\]</p>
-<p>(Hint: first rewrite \(\log p_\theta(x) = \log \mathbb{E}<em>{q</em>\phi}
+<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
+D_{KL}(q_\phi(z|x)\|p(z))\]</p>
+<p>(Hint: first rewrite \(\log p_\theta(x) = \log \mathbb{E}_{q_\phi}
 \left[\frac{p_\theta(x,z)}{q_\phi(z|x)}\right]\), then apply Jensen’s
 inequality, and decompose \(p_\theta(x,z) = p_\theta(x|z)p(z)\) to
 arrive at the definition of KL divergence.)</p>
@@ -2766,7 +2766,7 @@ probability \(D(x) \in [0,1]\) that it’s real (exactly the same form
 as Chapter 3’s logistic regression).</li>
 </ul>
 <p>Objective function (min-max game):</p>
-<p>\[\min_G \max_D V(D,G) = \mathbb{E}<em>{x \sim p</em>{\text{data}}}[\log D(x)] +
+<p>\[\min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] +
 \mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]\]</p>
 <ul>
 <li><strong>The discriminator’s perspective (\(\max_D\))</strong>: wants \(D(x)\)

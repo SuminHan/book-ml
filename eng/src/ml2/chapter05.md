@@ -37,8 +37,8 @@ question with an exact number. Under policy \\(\pi\\), the value of state
 \\(s\\) is the **expected discounted cumulative reward** starting from that
 state:
 
-\\[V^\pi(s) = \mathbb{E}_\pi\left[\sum_{t=0}^\infty \gamma^t R(s_t, a_t) \,\middle|\,
-s_0 = s\right]\\]
+\\[V^\pi(s) = \mathbb{E}\_\pi\left[\sum\_{t=0}^\infty \gamma^t R(s\_t, a\_t) \\,\middle|\\,
+s\_0 = s\right]\\]
 
 ## 5.3 The Bellman Equation: A Recursive Definition
 

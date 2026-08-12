@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-599ee677.js";
+            window.path_to_searchindex_js = "../searchindex-4299d8cf.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cf809c4c.js"></script>
@@ -201,7 +201,7 @@ by applying softmax to the network’s output:</p>
 <p>\(f_\theta(s)\) is a neural network that takes state \(s\) as input
 and outputs a raw score (logit) for each action. The goal is to find the
 \(\theta\) that maximizes the expected cumulative reward:</p>
-<p>\[J(\theta) = \mathbb{E}<em>{\tau \sim \pi</em>\theta}[R(\tau)]\]</p>
+<p>\[J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\]</p>
 <p>\(\tau\) is a trajectory (the whole episode), and \(R(\tau)\) is that
 trajectory’s total reward.</p>
 <h2 id="83-the-strange-problem-of-differentiating-a-reward"><a class="header" href="#83-the-strange-problem-of-differentiating-a-reward">8.3 The Strange Problem of “Differentiating a Reward”</a></h2>
@@ -220,8 +220,8 @@ expectation (integral) form.</p>
 of the log-probability instead of taking it outside the probability
 directly, letting us reorganize the expression back into an expectation.
 The final result is the <strong>Policy Gradient Theorem</strong>:</p>
-<p>\[\nabla_\theta J(\theta) = \mathbb{E}<em>\tau\left[\sum_t \nabla</em>\theta \log
-\pi_\theta(a_t|s_t) , G_t\right]\]</p>
+<p>\[\nabla_\theta J(\theta) = \mathbb{E}_\tau\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\]</p>
 <p>\(G_t\) is the discounted cumulative reward from timestep \(t\)
 onward (Chapter 5’s return). Intuition: “shift \(\theta\) to increase
 the probability (\(\log \pi_\theta(a_t|s_t)\)) of actions actually taken
@@ -311,9 +311,9 @@ def reinforce_update(theta, episode, alpha, gamma):
 </code></pre>
 <p><strong>2. (Hand derivation, Tier C — top-priority fallback)</strong> Under policy
 \(\pi_\theta\), derive that the gradient of the expected return
-\(J(\theta) = \mathbb{E}<em>{\tau \sim \pi</em>\theta}[R(\tau)]\) equals</p>
-<p>\[\nabla_\theta J(\theta) = \mathbb{E}<em>{\tau}\left[\sum_t \nabla</em>\theta \log
-\pi_\theta(a_t|s_t) , G_t\right]\]</p>
+\(J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\) equals</p>
+<p>\[\nabla_\theta J(\theta) = \mathbb{E}_{\tau}\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\]</p>
 <p>using the log-derivative trick. (Advanced — for strong math students /
 volunteers only; most should use the worksheet below as the default.)</p>
 <p><strong>Fill-in-the-blank worksheet version</strong> (default):</p>

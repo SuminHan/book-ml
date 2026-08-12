@@ -33,8 +33,8 @@ ML1에서 상태·행동·보상·정책이라는 개념만 직관적으로 봤�
 정책 \\(\pi\\)를 따를 때, 상태 \\(s\\)의 가치는 그 상태에서 시작해 앞으로
 받을 **할인된 누적 보상의 기댓값**이다:
 
-\\[V^\pi(s) = \mathbb{E}_\pi\left[\sum_{t=0}^\infty \gamma^t R(s_t, a_t) \,\middle|\,
-s_0 = s\right]\\]
+\\[V^\pi(s) = \mathbb{E}\_\pi\left[\sum\_{t=0}^\infty \gamma^t R(s\_t, a\_t) \\,\middle|\\,
+s\_0 = s\right]\\]
 
 ## 5.3 벨만방정식: 재귀적 정의
 

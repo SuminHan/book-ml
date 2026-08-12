@@ -28,8 +28,8 @@ Chapter 9의 VAE는 "우도(데이터가 나올 확률)를 최대화한다"는 �
 
 목적함수(min-max game):
 
-\\[\min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] +
-\mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]\\]
+\\[\min\_G \max\_D V(D,G) = \mathbb{E}\_{x \sim p\_{\text{data}}}[\log D(x)] +
+\mathbb{E}\_{z \sim p(z)}[\log(1 - D(G(z)))]\\]
 
 - **판별자의 관점(\\(\max_D\\))**: 진짜(\\(x\\))에는 \\(D(x)\\)를 1에
   가깝게, 가짜(\\(G(z)\\))에는 \\(D(G(z))\\)를 0에 가깝게 만들고 싶다

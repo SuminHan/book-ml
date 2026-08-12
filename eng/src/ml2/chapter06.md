@@ -82,13 +82,13 @@ exploitation as the Q-values become more trustworthy.
 
 ## 6.5 Why Q-Learning Converges (Intuition)
 
-Q-learning is proven to converge to the true \\(Q^*(s,a)\\), regardless of
+Q-learning is proven to converge to the true \\(Q^\*(s,a)\\), regardless of
 which policy actually generated the data (the exploration policy), **as
 long as every state-action pair is visited infinitely often and the
 learning rate \\(\alpha\\) is decayed appropriately** (the Robbins-Monro
 conditions). Intuitively: the point where the TD error becomes exactly
 zero is precisely the point that satisfies the Bellman optimality equation
-\\(Q^*(s,a) = R(s,a) + \gamma \max_{a'} Q^*(s',a')\\), so an update that
+\\(Q^\*(s,a) = R(s,a) + \gamma \max_{a'} Q^\*(s',a')\\), so an update that
 keeps reducing the TD error will eventually converge to that fixed point.
 
 ## 6.6 Q-learning vs. SARSA (For Reference)
@@ -138,10 +138,10 @@ def q_learning_train(transition, n_states, n_actions, n_episodes, alpha, gamma, 
 **2. (Hand derivation, Tier A — free derivation)** Argue, in three parts,
 what conditions are needed for the Q-learning update
 \\(Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma \max_{a'} Q(s',a') -
-Q(s,a)]\\) to converge to the true \\(Q^*(s,a)\\): (1) show that the
+Q(s,a)]\\) to converge to the true \\(Q^\*(s,a)\\): (1) show that the
 \\(Q\\) for which the TD error is exactly zero is the same as the solution
-to the Bellman optimality equation \\(Q^*(s,a) = R(s,a) + \gamma
-\max_{a'} Q^*(s',a')\\) (a simple algebraic argument). (2) Explain why
+to the Bellman optimality equation \\(Q^\*(s,a) = R(s,a) + \gamma
+\max_{a'} Q^\*(s',a')\\) (a simple algebraic argument). (2) Explain why
 convergence becomes unstable if \\(\alpha\\) is too large (e.g., always
 \\(\alpha=1\\)), connecting it to Chapter 2's learning-rate problem. (3)
 Explain why convergence requires that every state-action pair be

@@ -29,7 +29,7 @@ by applying softmax to the network's output:
 and outputs a raw score (logit) for each action. The goal is to find the
 \\(\theta\\) that maximizes the expected cumulative reward:
 
-\\[J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\\]
+\\[J(\theta) = \mathbb{E}\_{\tau \sim \pi\_\theta}[R(\tau)]\\]
 
 \\(\tau\\) is a trajectory (the whole episode), and \\(R(\tau)\\) is that
 trajectory's total reward.
@@ -56,8 +56,8 @@ of the log-probability instead of taking it outside the probability
 directly, letting us reorganize the expression back into an expectation.
 The final result is the **Policy Gradient Theorem**:
 
-\\[\nabla_\theta J(\theta) = \mathbb{E}_\tau\left[\sum_t \nabla_\theta \log
-\pi_\theta(a_t|s_t) \, G_t\right]\\]
+\\[\nabla\_\theta J(\theta) = \mathbb{E}\_\tau\left[\sum\_t \nabla\_\theta \log
+\pi\_\theta(a\_t|s\_t) \\, G\_t\right]\\]
 
 \\(G_t\\) is the discounted cumulative reward from timestep \\(t\\)
 onward (Chapter 5's return). Intuition: "shift \\(\theta\\) to increase
@@ -164,10 +164,10 @@ def reinforce_update(theta, episode, alpha, gamma):
 
 **2. (Hand derivation, Tier C — top-priority fallback)** Under policy
 \\(\pi_\theta\\), derive that the gradient of the expected return
-\\(J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\\) equals
+\\(J(\theta) = \mathbb{E}\_{\tau \sim \pi\_\theta}[R(\tau)]\\) equals
 
-\\[\nabla_\theta J(\theta) = \mathbb{E}_{\tau}\left[\sum_t \nabla_\theta \log
-\pi_\theta(a_t|s_t) \, G_t\right]\\]
+\\[\nabla\_\theta J(\theta) = \mathbb{E}\_{\tau}\left[\sum\_t \nabla\_\theta \log
+\pi\_\theta(a\_t|s\_t) \\, G\_t\right]\\]
 
 using the log-derivative trick. (Advanced — for strong math students /
 volunteers only; most should use the worksheet below as the default.)

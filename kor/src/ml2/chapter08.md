@@ -27,7 +27,7 @@
 원점수(logit)를 내는 신경망이다. 목표는 기대 누적 보상을 최대화하는
 \\(\theta\\)를 찾는 것:
 
-\\[J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\\]
+\\[J(\theta) = \mathbb{E}\_{\tau \sim \pi\_\theta}[R(\tau)]\\]
 
 \\(\tau\\)는 궤적(에피소드 전체), \\(R(\tau)\\)는 그 궤적의 총
 보상이다.
@@ -51,8 +51,8 @@
 확률의 그래디언트로 바뀌면서, 다시 기댓값 형태로 정리할 수 있게 된다.
 최종 결과가 **Policy Gradient Theorem**이다:
 
-\\[\nabla_\theta J(\theta) = \mathbb{E}_\tau\left[\sum_t \nabla_\theta \log
-\pi_\theta(a_t|s_t) \, G_t\right]\\]
+\\[\nabla\_\theta J(\theta) = \mathbb{E}\_\tau\left[\sum\_t \nabla\_\theta \log
+\pi\_\theta(a\_t|s\_t) \\, G\_t\right]\\]
 
 \\(G_t\\)는 시점 \\(t\\)부터의 할인된 누적 보상(Chapter 5의 return)이다.
 직관: "결과가 좋았던(\\(G_t\\)가 큰) 궤적에서 실제로 골랐던 행동의
@@ -153,11 +153,11 @@ def reinforce_update(theta, episode, alpha, gamma):
 ```
 
 **2. (손유도, Tier C — 최우선 폴백 대상)** 정책 \\(\pi_\theta\\) 하에서
-기대 리턴 \\(J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\\)의
+기대 리턴 \\(J(\theta) = \mathbb{E}\_{\tau \sim \pi\_\theta}[R(\tau)]\\)의
 그래디언트가
 
-\\[\nabla_\theta J(\theta) = \mathbb{E}_{\tau}\left[\sum_t \nabla_\theta \log
-\pi_\theta(a_t|s_t) \, G_t\right]\\]
+\\[\nabla\_\theta J(\theta) = \mathbb{E}\_{\tau}\left[\sum\_t \nabla\_\theta \log
+\pi\_\theta(a\_t|s\_t) \\, G\_t\right]\\]
 
 가 됨을, 로그미분 트릭을 사용하여 유도하라. (수학 상위권/희망자
 대상 심화 — 대부분은 아래 워크시트를 기본값으로 한다.)

@@ -43,8 +43,8 @@ possible \\(z\\), which is generally intractable to compute.
 Instead of \\(\log p_\theta(x)\\), which can't be computed directly, the
 following can be shown to hold:
 
-\\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\\]
+\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
+D\_{KL}\big(q\_\phi(z|x) \\,\\|\\, p(z)\big)\\]
 
 The right-hand side is called the **ELBO** (Evidence Lower BOund). What
 its two terms mean:
@@ -123,11 +123,11 @@ print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
 \\(\log p_\theta(x) = \log \int p_\theta(x,z)\,dz\\), use Jensen's
 inequality (\\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\\)) to derive
 
-\\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}(q_\phi(z|x)\|p(z))\\]
+\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
+D\_{KL}(q\_\phi(z|x)\\|p(z))\\]
 
-(Hint: first rewrite \\(\log p_\theta(x) = \log \mathbb{E}_{q_\phi}
-\left[\frac{p_\theta(x,z)}{q_\phi(z|x)}\right]\\), then apply Jensen's
+(Hint: first rewrite \\(\log p\_\theta(x) = \log \mathbb{E}\_{q\_\phi}
+\left[\frac{p\_\theta(x,z)}{q\_\phi(z|x)}\right]\\), then apply Jensen's
 inequality, and decompose \\(p_\theta(x,z) = p_\theta(x|z)p(z)\\) to
 arrive at the definition of KL divergence.)
 

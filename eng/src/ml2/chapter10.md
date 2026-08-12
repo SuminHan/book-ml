@@ -29,8 +29,8 @@ we've used so far.
 
 Objective function (min-max game):
 
-\\[\min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] +
-\mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]\\]
+\\[\min\_G \max\_D V(D,G) = \mathbb{E}\_{x \sim p\_{\text{data}}}[\log D(x)] +
+\mathbb{E}\_{z \sim p(z)}[\log(1 - D(G(z)))]\\]
 
 - **The discriminator's perspective (\\(\max_D\\))**: wants \\(D(x)\\)
   close to 1 for real data and \\(D(G(z))\\) close to 0 for fake data —

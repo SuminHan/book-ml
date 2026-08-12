@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-599ee677.js";
+            window.path_to_searchindex_js = "../searchindex-4299d8cf.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cf809c4c.js"></script>
@@ -215,8 +215,8 @@ possible \(z\), which is generally intractable to compute.</p>
 <h2 id="94-elbo-working-around-it-with-a-computable-lower-bound"><a class="header" href="#94-elbo-working-around-it-with-a-computable-lower-bound">9.4 ELBO: Working Around It With a Computable Lower Bound</a></h2>
 <p>Instead of \(\log p_\theta(x)\), which can’t be computed directly, the
 following can be shown to hold:</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}<em>{z \sim q</em>\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}\big(q_\phi(z|x) ,|, p(z)\big)\]</p>
+<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
+D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\]</p>
 <p>The right-hand side is called the <strong>ELBO</strong> (Evidence Lower BOund). What
 its two terms mean:</p>
 <ul>
@@ -282,9 +282,9 @@ print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
 <p><strong>2. (Hand derivation, Tier C — fallback prepared)</strong> Starting from
 \(\log p_\theta(x) = \log \int p_\theta(x,z),dz\), use Jensen’s
 inequality (\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\)) to derive</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}<em>{z \sim q</em>\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}(q_\phi(z|x)|p(z))\]</p>
-<p>(Hint: first rewrite \(\log p_\theta(x) = \log \mathbb{E}<em>{q</em>\phi}
+<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
+D_{KL}(q_\phi(z|x)\|p(z))\]</p>
+<p>(Hint: first rewrite \(\log p_\theta(x) = \log \mathbb{E}_{q_\phi}
 \left[\frac{p_\theta(x,z)}{q_\phi(z|x)}\right]\), then apply Jensen’s
 inequality, and decompose \(p_\theta(x,z) = p_\theta(x|z)p(z)\) to
 arrive at the definition of KL divergence.)</p>
