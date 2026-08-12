@@ -9,7 +9,106 @@ real situations. Q-learning's breakthrough was showing that optimal
 behavior can be learned **without knowing the environment's model at
 all** — just by acting and observing the results.
 
-## 6.1 Model-Based vs. Model-Free
+## 6.1 Does an Optimal Policy Always Exist?
+
+So far (Chapter 5) we've learned how to evaluate a given policy. But the
+problem reinforcement learning actually wants to solve is "find the best
+policy." The phrase "the best policy" isn't as obvious as it sounds,
+though — this section looks at why, and at why one always exists anyway.
+
+Policies are compared state by state: policy \\(\pi\\) is "better than"
+policy \\(\pi'\\) when \\(V^\pi(s) \ge V^{\pi'}(s)\\) holds **at every**
+state \\(s\\) simultaneously. The problem is that \\(\pi\\) might win at
+some states while \\(\pi'\\) wins at others — in that case the two
+policies simply can't be compared (a partial order, not a total one).
+For "the maximum over all policies" to mean anything, there has to be a
+single policy that's better than or equal to every other policy at once,
+even when some pairs of policies can't be compared at all — and that's
+far from obvious.
+
+In fact, the standard reinforcement learning textbook — Sutton and
+Barto's Reinforcement Learning: An Introduction (2018) — only states that
+"there is always at least one policy that is better than or equal to all
+other policies," without proving it. This section fills that gap.
+
+## 6.2 The Bellman Optimality Equation: A Unique Answer Exists
+
+Chapter 5.4 accepted, as a stated result, that iterating the Bellman
+expectation equation always converges to the exact \\(V^\pi\\) whenever
+\\(\gamma < 1\\) (the contraction mapping property). The existence of an
+optimal policy is proved with exactly the same tool.
+
+First, define the "optimal value" \\(V^\*(s)\\) via the **Bellman
+optimality equation** — the value you'd get at each state if you always
+picked the action that maximizes the value of continuing optimally from
+there on:
+
+\\[V^\*(s) = \max\_a \left[R(s,a) + \gamma \sum\_{s'} P(s'|s,a)
+V^\*(s')\right]\\]
+
+This equation looks like it "defines" \\(V^\*\\), but it's actually
+self-referential — \\(V^\*\\) appears on both sides, exactly the same
+shape as Chapter 5.4's \\(V^\pi\\) = Bellman expectation equation
+(\\(V^\pi\\)). So the same question remains: does a \\(V\\) satisfying
+this equation actually exist? If so, is it unique?
+
+The same logic from 5.4 shows up again here: treat the right-hand side of
+the Bellman optimality equation as an **operator** \\(T\\)
+(\\(T(V)(s) := \max\_a[\ldots]\\), the bracketed part above). \\(T\\) is
+also proven to be a \\(\gamma\\)-contraction (the same property as 5.4's
+\\(T^\pi\\), just a different shape — we accept this as a stated result
+again this semester). A \\(\gamma\\)-contraction always has a unique fixed
+point, and iterating it from anywhere converges to that fixed point (the
+Banach fixed-point theorem) — so a \\(V^\*\\) satisfying the Bellman
+optimality equation **exists, and is unique.**
+
+## 6.3 Building an Optimal Policy From the Value That Exists
+
+\\(V^\*\\) existing and being unique is one thing; "there's a policy that
+actually achieves that value" is another — this last gap is what we close
+here.
+
+Knowing \\(V^\*\\), we can build a deterministic policy that, at each
+state, simply picks the action that achieves that \\(\max\\):
+
+\\[\pi^\*(s) \in \arg\max\_a \left[R(s,a) + \gamma \sum\_{s'}
+P(s'|s,a) V^\*(s')\right]\\]
+
+This definition is always possible for a simple reason — the set of
+available actions \\(A(s)\\) at each state is **finite**, and the maximum
+of a finite set is always achieved somewhere (an argmax can't be empty).
+Trace the root of "an optimal policy exists" far enough and it comes down
+to this simple fact: the state and action spaces are finite.
+
+Following this \\(\pi^\*\\) can be shown to give a value
+\\(V^{\pi^\*}\\) that's exactly equal to \\(V^\*\\) (and no other policy
+can do better than \\(V^\*\\)) — the full proof is beyond this semester,
+but the core idea is: "\\(\pi^\*\\) was chosen to exactly achieve the
+\\(\max\\) of the Bellman optimality equation at every state, so the
+Bellman expectation equation under \\(\pi^\*\\) becomes identical to the
+Bellman optimality equation." That means \\(\pi^\*\\) is better than or
+equal to every other policy at every single state — the "incomparability"
+problem from section 6.1 dissolves once there's a shared target,
+\\(V^\*\\), to aim at.
+
+One more subtlety: if the argmax has ties, multiple optimal policies can
+exist — but **whichever optimal policy you pick, its value is always
+exactly \\(V^\*\\).** The number itself never wavers.
+
+It's also worth noting what this proof guarantees: existence, not
+computability or storability. In a game like Go, where the number of
+states is astronomically large (roughly \\(10^{170}\\)), \\(\pi^\*\\) can
+exist in theory while still being completely impossible to store as a
+table over every state. That's exactly why the next chapter (Chapter 7)
+turns to approximating the table with a neural network instead.
+
+**This section's conclusion is also the reason Q-learning, covered
+starting next section, is worth pursuing at all: the \\(Q^\*(s,a)\\) that
+Q-learning tries to estimate isn't "a target that may or may not exist" —
+in any finite MDP, it's guaranteed to exist and be unique. That's what
+theoretically justifies repeatedly training toward that number.**
+
+## 6.4 Model-Based vs. Model-Free
 
 Last chapter's policy evaluation was a "model-based" method — it computed
 things under the assumption that we know how the environment works (its
@@ -19,7 +118,7 @@ this button." **Q-learning** is a **model-free** method: it learns purely
 from experience (state, action, reward, next state) gathered by acting
 directly, with no knowledge of the model.
 
-## 6.2 The Q-Function: Value of Both State and Action
+## 6.5 The Q-Function: Value of Both State and Action
 
 Chapter 5's \\(V(s)\\) was "the value of a state." Q-learning learns a more
 fine-grained **Q-function** \\(Q(s,a)\\) — "the expected cumulative reward
@@ -30,7 +129,7 @@ state" doesn't tell you which action to take (you'd need the transition
 probabilities for that), but knowing "the value of a state-action pair"
 lets you pick the best action right away. This is the key advantage.
 
-## 6.3 The Q-Learning Update Rule
+## 6.6 The Q-Learning Update Rule
 
 Every time the agent takes action \\(a\\) in state \\(s\\), receives
 reward \\(r\\), and arrives at new state \\(s'\\):
@@ -53,7 +152,7 @@ def q_learning_update(Q, s, a, r, s_next, alpha, gamma):
     return Q
 ```
 
-## 6.4 The Exploration-Exploitation Dilemma: ε-greedy
+## 6.7 The Exploration-Exploitation Dilemma: ε-greedy
 
 Think about choosing a restaurant: do you go back to a favorite you already
 know is good (**exploitation**), or try somewhere new
@@ -80,9 +179,13 @@ A common strategy is to gradually decay \\(\varepsilon\\) as training
 progresses — explore a lot early on, then shift increasingly toward
 exploitation as the Q-values become more trustworthy.
 
-## 6.5 Why Q-Learning Converges (Intuition)
+## 6.8 Why Q-Learning Converges (Intuition)
 
-Q-learning is proven to converge to the true \\(Q^\*(s,a)\\), regardless of
+As sections 6.2-6.3 established, \\(Q^\*(s,a)\\) isn't "a goal that
+might or might not exist" — in a finite MDP it's guaranteed to exist and
+be unique. Q-learning never computes that target directly; it only
+approximates it from sample-based updates, and yet it's proven to reach
+exactly that value: it converges to the true \\(Q^\*(s,a)\\), regardless of
 which policy actually generated the data (the exploration policy), **as
 long as every state-action pair is visited infinitely often and the
 learning rate \\(\alpha\\) is decayed appropriately** (the Robbins-Monro
@@ -91,7 +194,7 @@ zero is precisely the point that satisfies the Bellman optimality equation
 \\(Q^\*(s,a) = R(s,a) + \gamma \max_{a'} Q^\*(s',a')\\), so an update that
 keeps reducing the TD error will eventually converge to that fixed point.
 
-## 6.6 Q-learning vs. SARSA (For Reference)
+## 6.9 Q-learning vs. SARSA (For Reference)
 
 Q-learning's update always uses \\(\max_{a'} Q(s',a')\\) — **always
 assuming the best possible next action**, even if exploration meant the
