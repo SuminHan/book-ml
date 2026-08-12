@@ -1,5 +1,7 @@
 # Chapter 5. Reinforcement Learning Basics & Policy Evaluation
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter05_policy_evaluation.ipynb)
+
 In ML1, we learned the term "curse of dimensionality." That term was coined
 by mathematician Richard Bellman, who named it while developing an
 optimization technique called dynamic programming in the 1950s. Another

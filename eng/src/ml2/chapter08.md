@@ -1,5 +1,7 @@
 # Chapter 8. Policy-Based Reinforcement Learning
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter08_reinforce_ppo.ipynb)
+
 Consider the problem of choosing how much force to apply at a robot arm's
 joint. This "action" can be any **continuous value** from -10Nm to +10Nm.
 Chapter 6's Q-learning has to compute \\(\max_{a'} Q(s',a')\\) at every

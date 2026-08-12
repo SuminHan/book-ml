@@ -1,5 +1,7 @@
 # Chapter 7. 심층강화학습 (Deep Reinforcement Learning)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter07_dqn_tricks.ipynb)
+
 2013년, 딥마인드는 Q-learning의 Q-테이블을 신경망으로 통째로 바꾼
 알고리즘으로 Atari 2600 게임 여러 개를 학습시켰다 — 게임의 규칙을 전혀
 알려주지 않고, 오직 화면 픽셀과 점수만 보고서. **DQN**(Deep

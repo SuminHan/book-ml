@@ -1,5 +1,7 @@
 # Chapter 5. 강화학습 기초와 정책평가 (Reinforcement Learning Basics & Policy Evaluation)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter05_policy_evaluation.ipynb)
+
 ML1에서 "차원의 저주(curse of dimensionality)"라는 용어를 배웠다. 이 용어를
 만든 사람은 수학자 리처드 벨만(Richard Bellman)으로, 1950년대에
 동적계획법(dynamic programming)이라는 최적화 기법을 만들면서 이 이름을

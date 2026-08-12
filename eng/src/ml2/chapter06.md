@@ -1,5 +1,7 @@
 # Chapter 6. Reinforcement Learning Algorithms
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter06_q_learning.ipynb)
+
 In 1989, Chris Watkins proposed an algorithm called **Q-learning** in his
 PhD thesis. Policy evaluation, covered last chapter, could only be computed
 if we knew the environment's transition probabilities \\(P(s'|s,a)\\)

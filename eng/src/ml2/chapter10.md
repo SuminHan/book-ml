@@ -1,5 +1,7 @@
 # Chapter 10. Generative Models II: Adversarial & Score-Based
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_gan.ipynb)
+
 In 2014, Ian Goodfellow, then a graduate student, has said in several later
 interviews that he came up with an idea during a bar argument with
 friends: instead of training a model to produce realistic fake images

@@ -1,5 +1,7 @@
 # Chapter 10. 생성형 모델 II: 적대적/스코어 기반 (Generative Models II: Adversarial & Score-Based)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_gan.ipynb)
+
 2014년, 당시 대학원생이던 이언 굿펠로우(Ian Goodfellow)는 친구들과의
 술자리 논쟁에서 아이디어 하나를 떠올렸다고 훗날 여러 인터뷰에서
 밝혔다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신, **두

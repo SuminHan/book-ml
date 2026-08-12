@@ -1,5 +1,7 @@
 # Chapter 6. 강화학습 알고리즘 (Reinforcement Learning Algorithms)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter06_q_learning.ipynb)
+
 1989년, 크리스 왓킨스(Chris Watkins)는 박사 학위 논문에서
 **Q-learning**이라는 알고리즘을 제안했다. 지난 장에서 배운 정책평가는
 환경의 전이확률 \\(P(s'|s,a)\\)를 정확히 알고 있어야 계산할 수 있었다 —

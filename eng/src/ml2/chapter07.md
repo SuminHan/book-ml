@@ -1,5 +1,7 @@
 # Chapter 7. Deep Reinforcement Learning
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter07_dqn_tricks.ipynb)
+
 In 2013, DeepMind trained an algorithm on several Atari 2600 games by
 replacing Q-learning's Q-table entirely with a neural network — without
 ever telling it the rules of the game, using only screen pixels and score.

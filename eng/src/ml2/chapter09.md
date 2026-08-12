@@ -1,5 +1,7 @@
 # Chapter 9. Generative Models I: Likelihood-Based
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter09_vae_elbo.ipynb)
+
 Remember the question ML1's last chapter left us with — "what if we pick a
 random value in the bottleneck and feed it to the decoder? Could it
 produce new data that never actually existed?" The **Variational
