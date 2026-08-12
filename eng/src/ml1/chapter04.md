@@ -87,9 +87,60 @@ of the volume — the tight little region that could be called "nearby"
 basically disappears. That's why, as the number of features grows, every
 point starts to look about equally far from every other point.
 
-**Simplicity isn't automatically a weakness — kNN never explains what the
-model "learned," but that very simplicity is exactly what lets us pin down,
-with a formula, when and why it fails.**
+## 4.6 k-means Clustering
+
+If kNN is a lazy method that only measures distance at prediction time,
+k-means is a way of finding structure in the data itself, using nothing
+but distance, with no labels at all. Having no labels puts it in the
+unsupervised learning territory we'll cover in Chapter 10, but its core
+move — find the closest thing — is exactly this chapter's theme. It
+partitions the data into \\(k\\) groups, each represented by a
+**centroid**.
+
+1. Initialize \\(k\\) centroids randomly.
+2. **Assignment step**: assign each data point to the group of its nearest
+   centroid.
+3. **Update step**: recompute each group's centroid as the average of the
+   points assigned to it.
+4. Repeat 2-3 until the assignments stop changing.
+
+```python
+def kmeans(X, k, max_iters=100):
+    import random
+    centroids = random.sample(X, k)
+    for _ in range(max_iters):
+        clusters = [[] for _ in range(k)]
+        for x in X:
+            distances = [sum((x[j]-c[j])**2 for j in range(len(x))) for c in centroids]
+            closest = distances.index(min(distances))
+            clusters[closest].append(x)
+        new_centroids = [
+            [sum(pt[j] for pt in cluster) / len(cluster) for j in range(len(X[0]))]
+            if cluster else centroids[i]
+            for i, cluster in enumerate(clusters)
+        ]
+        if new_centroids == centroids:
+            break
+        centroids = new_centroids
+    return centroids, clusters
+```
+
+**Choosing \\(k\\)**: a common approach is to plot within-cluster variance
+against several values of \\(k\\) and pick the point where the decrease
+sharply levels off (the "elbow").
+
+**Contrast with kNN**: kNN measures distance fresh at every prediction —
+that's what makes it lazy. k-means instead sweeps over the data
+repeatedly, updating centroids until they converge — the distance
+computation is front-loaded into a "training" phase rather than
+prediction time, which actually puts it closer to parameter learning like
+linear regression. The only thing that separates it from supervised
+learning is the absence of labels.
+
+**Simplicity isn't automatically a weakness — neither kNN nor k-means
+comes with an elaborate theory of what the model "learned," but that very
+simplicity (pure distance computation) is exactly what lets us pin down,
+with a formula, when and why they fail.**
 
 ---
 

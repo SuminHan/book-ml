@@ -18,42 +18,18 @@ many natural groups do these customers fall into?" (clustering), "how many
 dimensions of these 1000 features actually carry real information?"
 (dimensionality reduction).
 
-## 10.2 k-means Clustering
+## 10.2 k-means Clustering (Recap)
 
-An algorithm that partitions data into \\(k\\) groups, each represented by
-a **centroid**.
-
-1. Initialize \\(k\\) centroids randomly.
-2. **Assignment step**: assign each data point to the group of its nearest
-   centroid.
-3. **Update step**: recompute each group's centroid as the average of the
-   points assigned to it.
-4. Repeat 2-3 until the assignments stop changing.
-
-```python
-def kmeans(X, k, max_iters=100):
-    import random
-    centroids = random.sample(X, k)
-    for _ in range(max_iters):
-        clusters = [[] for _ in range(k)]
-        for x in X:
-            distances = [sum((x[j]-c[j])**2 for j in range(len(x))) for c in centroids]
-            closest = distances.index(min(distances))
-            clusters[closest].append(x)
-        new_centroids = [
-            [sum(pt[j] for pt in cluster) / len(cluster) for j in range(len(X[0]))]
-            if cluster else centroids[i]
-            for i, cluster in enumerate(clusters)
-        ]
-        if new_centroids == centroids:
-            break
-        centroids = new_centroids
-    return centroids, clusters
-```
-
-**Choosing \\(k\\)**: a common approach is to plot within-cluster variance
-against several values of \\(k\\) and pick the point where the decrease
-sharply levels off (the "elbow").
+An algorithm that groups data by distance to \\(k\\) centroids — we
+already covered the procedure and code in section 4.6 (k-means, too, is a
+distance-based model in that sense: it finds the closest thing). What
+matters here isn't the algorithm itself but **why this counts as
+unsupervised learning**: kNN and the regression/classification models
+we've covered so far all fit toward a correct label \\(y\\), but k-means
+never sees a label — it forms groups purely from the structure of the
+data \\(x\\)'s positions, using nothing but "group nearby points
+together." Choosing \\(k\\) (the elbow method) works the same way as in
+section 4.6.
 
 ## 10.3 Why We Want to Reduce Dimensionality
 

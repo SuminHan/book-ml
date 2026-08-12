@@ -78,9 +78,54 @@ kNN의 전제는 "가까운 데이터는 비슷한 답을 가질 것이다"라�
 포함된다 — "가까운 이웃"이라 부를 만한 좁은 영역이 사실상 사라진다. 특징이
 많아질수록 모든 점이 서로 비슷하게 멀어 보이는 이유다.
 
-**단순함이 곧 약점이 아니다 — kNN은 모델이 "무엇을 학습했는지" 전혀 설명하지
-않지만, 바로 그 단순함 덕분에 언제, 왜 실패하는지도 수식으로 정확히 짚어낼 수
-있다.**
+## 4.6 k-means 클러스터링
+
+kNN이 "예측 시점에 거리만 재는" 게으른 방법이라면, k-means는 정답 라벨 없이
+데이터 자체의 구조를 순전히 거리만으로 찾아내는 방법이다. 라벨이 없다는
+점에서는 10장에서 다룰 비지도학습에 속하지만, 핵심 동작(가장 가까운 대상을
+찾는다)은 이번 장의 주제 그대로다. \\(k\\)개의 그룹으로 데이터를 나누고, 각
+그룹은 **중심점**(centroid)으로 대표된다.
+
+1. \\(k\\)개의 중심점을 무작위로 초기화한다.
+2. **할당 단계**: 각 데이터 점을 가장 가까운 중심점의 그룹으로 배정한다.
+3. **갱신 단계**: 각 그룹의 새 중심점을, 그 그룹에 속한 점들의 평균으로 다시
+   계산한다.
+4. 할당이 더 이상 바뀌지 않을 때까지 2~3을 반복한다.
+
+```python
+def kmeans(X, k, max_iters=100):
+    import random
+    centroids = random.sample(X, k)
+    for _ in range(max_iters):
+        clusters = [[] for _ in range(k)]
+        for x in X:
+            distances = [sum((x[j]-c[j])**2 for j in range(len(x))) for c in centroids]
+            closest = distances.index(min(distances))
+            clusters[closest].append(x)
+        new_centroids = [
+            [sum(pt[j] for pt in cluster) / len(cluster) for j in range(len(X[0]))]
+            if cluster else centroids[i]
+            for i, cluster in enumerate(clusters)
+        ]
+        if new_centroids == centroids:
+            break
+        centroids = new_centroids
+    return centroids, clusters
+```
+
+**\\(k\\)를 고르는 법**: 여러 \\(k\\)에 대해 클러스터 내 분산(within-cluster
+variance)을 그려보고, 감소폭이 급격히 줄어드는 지점("팔꿈치", elbow)을
+고르는 방법이 흔히 쓰인다.
+
+**kNN과의 차이**: kNN은 예측할 때마다 그때그때 거리를 재는 게으른(lazy)
+방법인 반면, k-means는 중심점이 수렴할 때까지 데이터를 반복적으로 훑는다 —
+거리 계산이 예측 시점이 아니라 "학습" 단계에 몰려 있다는 점에서, 오히려
+선형회귀 같은 파라미터 학습 쪽에 더 가깝다. 라벨이 없다는 것만 지도학습과
+다르다.
+
+**단순함이 곧 약점이 아니다 — kNN과 k-means 둘 다 모델이 "무엇을 학습했는지"
+설명해주는 복잡한 이론이 없지만, 바로 그 단순함(순전히 거리 계산) 덕분에
+언제, 왜 실패하는지도 수식으로 정확히 짚어낼 수 있다.**
 
 ---
 

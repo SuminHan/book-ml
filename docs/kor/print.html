@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-e5ab7190.js";
+            window.path_to_searchindex_js = "searchindex-a2c9436c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-18bbea20.js"></script>
@@ -573,9 +573,49 @@ kNN의 전제는 “가까운 데이터는 비슷한 답을 가질 것이다“�
 <p>\(n=100\)에서는 <strong>각 변 길이의 95.5%나</strong> 차지해야 겨우 전체의 1%만
 포함된다 — “가까운 이웃“이라 부를 만한 좁은 영역이 사실상 사라진다. 특징이
 많아질수록 모든 점이 서로 비슷하게 멀어 보이는 이유다.</p>
-<p><strong>단순함이 곧 약점이 아니다 — kNN은 모델이 “무엇을 학습했는지” 전혀 설명하지
-않지만, 바로 그 단순함 덕분에 언제, 왜 실패하는지도 수식으로 정확히 짚어낼 수
-있다.</strong></p>
+<h2 id="46-k-means-클러스터링"><a class="header" href="#46-k-means-클러스터링">4.6 k-means 클러스터링</a></h2>
+<p>kNN이 “예측 시점에 거리만 재는” 게으른 방법이라면, k-means는 정답 라벨 없이
+데이터 자체의 구조를 순전히 거리만으로 찾아내는 방법이다. 라벨이 없다는
+점에서는 10장에서 다룰 비지도학습에 속하지만, 핵심 동작(가장 가까운 대상을
+찾는다)은 이번 장의 주제 그대로다. \(k\)개의 그룹으로 데이터를 나누고, 각
+그룹은 <strong>중심점</strong>(centroid)으로 대표된다.</p>
+<ol>
+<li>\(k\)개의 중심점을 무작위로 초기화한다.</li>
+<li><strong>할당 단계</strong>: 각 데이터 점을 가장 가까운 중심점의 그룹으로 배정한다.</li>
+<li><strong>갱신 단계</strong>: 각 그룹의 새 중심점을, 그 그룹에 속한 점들의 평균으로 다시
+계산한다.</li>
+<li>할당이 더 이상 바뀌지 않을 때까지 2~3을 반복한다.</li>
+</ol>
+<pre><code class="language-python">def kmeans(X, k, max_iters=100):
+    import random
+    centroids = random.sample(X, k)
+    for _ in range(max_iters):
+        clusters = [[] for _ in range(k)]
+        for x in X:
+            distances = [sum((x[j]-c[j])**2 for j in range(len(x))) for c in centroids]
+            closest = distances.index(min(distances))
+            clusters[closest].append(x)
+        new_centroids = [
+            [sum(pt[j] for pt in cluster) / len(cluster) for j in range(len(X[0]))]
+            if cluster else centroids[i]
+            for i, cluster in enumerate(clusters)
+        ]
+        if new_centroids == centroids:
+            break
+        centroids = new_centroids
+    return centroids, clusters
+</code></pre>
+<p><strong>\(k\)를 고르는 법</strong>: 여러 \(k\)에 대해 클러스터 내 분산(within-cluster
+variance)을 그려보고, 감소폭이 급격히 줄어드는 지점(“팔꿈치”, elbow)을
+고르는 방법이 흔히 쓰인다.</p>
+<p><strong>kNN과의 차이</strong>: kNN은 예측할 때마다 그때그때 거리를 재는 게으른(lazy)
+방법인 반면, k-means는 중심점이 수렴할 때까지 데이터를 반복적으로 훑는다 —
+거리 계산이 예측 시점이 아니라 “학습” 단계에 몰려 있다는 점에서, 오히려
+선형회귀 같은 파라미터 학습 쪽에 더 가깝다. 라벨이 없다는 것만 지도학습과
+다르다.</p>
+<p><strong>단순함이 곧 약점이 아니다 — kNN과 k-means 둘 다 모델이 “무엇을 학습했는지”
+설명해주는 복잡한 이론이 없지만, 바로 그 단순함(순전히 거리 계산) 덕분에
+언제, 왜 실패하는지도 수식으로 정확히 짚어낼 수 있다.</strong></p>
 <hr>
 <h2 id="연습문제-2"><a class="header" href="#연습문제-2">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 위 <code>knn_predict</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)를 확장해서,
@@ -1160,38 +1200,14 @@ print(max_pool(fm, 2))  # [[6,8],[9,7]]
 라벨. <strong>비지도학습</strong>은 그 정답이 없다. 대신 데이터 \(x\) 자체의 구조를
 찾는다: “이 고객들은 몇 개의 그룹으로 자연스럽게 나뉘는가”(군집화), “이 1000개
 특징 중 실제로 중요한 정보는 몇 차원짜리인가”(차원축소).</p>
-<h2 id="102-k-means-클러스터링"><a class="header" href="#102-k-means-클러스터링">10.2 k-means 클러스터링</a></h2>
-<p>\(k\)개의 그룹으로 데이터를 나누는 알고리즘. 각 그룹은 <strong>중심점</strong>(centroid)으로
-대표된다.</p>
-<ol>
-<li>\(k\)개의 중심점을 무작위로 초기화한다.</li>
-<li><strong>할당 단계</strong>: 각 데이터 점을 가장 가까운 중심점의 그룹으로 배정한다.</li>
-<li><strong>갱신 단계</strong>: 각 그룹의 새 중심점을, 그 그룹에 속한 점들의 평균으로 다시
-계산한다.</li>
-<li>할당이 더 이상 바뀌지 않을 때까지 2~3을 반복한다.</li>
-</ol>
-<pre><code class="language-python">def kmeans(X, k, max_iters=100):
-    import random
-    centroids = random.sample(X, k)
-    for _ in range(max_iters):
-        clusters = [[] for _ in range(k)]
-        for x in X:
-            distances = [sum((x[j]-c[j])**2 for j in range(len(x))) for c in centroids]
-            closest = distances.index(min(distances))
-            clusters[closest].append(x)
-        new_centroids = [
-            [sum(pt[j] for pt in cluster) / len(cluster) for j in range(len(X[0]))]
-            if cluster else centroids[i]
-            for i, cluster in enumerate(clusters)
-        ]
-        if new_centroids == centroids:
-            break
-        centroids = new_centroids
-    return centroids, clusters
-</code></pre>
-<p><strong>\(k\)를 고르는 법</strong>: 여러 \(k\)에 대해 클러스터 내 분산(within-cluster
-variance)을 그려보고, 감소폭이 급격히 줄어드는 지점(“팔꿈치”, elbow)을
-고르는 방법이 흔히 쓰인다.</p>
+<h2 id="102-k-means-클러스터링-복습"><a class="header" href="#102-k-means-클러스터링-복습">10.2 k-means 클러스터링 (복습)</a></h2>
+<p>\(k\)개의 중심점(centroid)까지의 거리로 데이터를 그룹 짓는 알고리즘 —
+알고리즘 절차와 코드는 4.6절에서 이미 다뤘다(사실 k-means도 “가장 가까운
+것을 찾는다“는 점에서 거리 기반 모델의 일종이다). 여기서 짚을 것은
+알고리즘 자체가 아니라 <strong>왜 이게 비지도학습인가</strong>다: kNN이나 지금까지의
+회귀·분류는 정답 라벨 \(y\)를 향해 맞춰가지만, k-means는 라벨 없이 데이터
+\(x\)의 위치만 보고 “가까운 점끼리 묶는다“는 구조 하나로 그룹을
+만들어낸다. \(k\)를 고르는 법(팔꿈치 방법)도 4.6절과 동일하다.</p>
 <h2 id="103-왜-차원을-줄이고-싶은가"><a class="header" href="#103-왜-차원을-줄이고-싶은가">10.3 왜 차원을 줄이고 싶은가</a></h2>
 <p>Chapter 4에서 배운 차원의 저주를 떠올려보자 — 특징이 너무 많으면 “가까움“이라는
 개념 자체가 무너진다. PCA는 원본 데이터의 분산(정보)을 최대한 보존하면서,

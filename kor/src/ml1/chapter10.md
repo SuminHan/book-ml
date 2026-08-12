@@ -15,41 +15,15 @@
 찾는다: "이 고객들은 몇 개의 그룹으로 자연스럽게 나뉘는가"(군집화), "이 1000개
 특징 중 실제로 중요한 정보는 몇 차원짜리인가"(차원축소).
 
-## 10.2 k-means 클러스터링
+## 10.2 k-means 클러스터링 (복습)
 
-\\(k\\)개의 그룹으로 데이터를 나누는 알고리즘. 각 그룹은 **중심점**(centroid)으로
-대표된다.
-
-1. \\(k\\)개의 중심점을 무작위로 초기화한다.
-2. **할당 단계**: 각 데이터 점을 가장 가까운 중심점의 그룹으로 배정한다.
-3. **갱신 단계**: 각 그룹의 새 중심점을, 그 그룹에 속한 점들의 평균으로 다시
-   계산한다.
-4. 할당이 더 이상 바뀌지 않을 때까지 2~3을 반복한다.
-
-```python
-def kmeans(X, k, max_iters=100):
-    import random
-    centroids = random.sample(X, k)
-    for _ in range(max_iters):
-        clusters = [[] for _ in range(k)]
-        for x in X:
-            distances = [sum((x[j]-c[j])**2 for j in range(len(x))) for c in centroids]
-            closest = distances.index(min(distances))
-            clusters[closest].append(x)
-        new_centroids = [
-            [sum(pt[j] for pt in cluster) / len(cluster) for j in range(len(X[0]))]
-            if cluster else centroids[i]
-            for i, cluster in enumerate(clusters)
-        ]
-        if new_centroids == centroids:
-            break
-        centroids = new_centroids
-    return centroids, clusters
-```
-
-**\\(k\\)를 고르는 법**: 여러 \\(k\\)에 대해 클러스터 내 분산(within-cluster
-variance)을 그려보고, 감소폭이 급격히 줄어드는 지점("팔꿈치", elbow)을
-고르는 방법이 흔히 쓰인다.
+\\(k\\)개의 중심점(centroid)까지의 거리로 데이터를 그룹 짓는 알고리즘 —
+알고리즘 절차와 코드는 4.6절에서 이미 다뤘다(사실 k-means도 "가장 가까운
+것을 찾는다"는 점에서 거리 기반 모델의 일종이다). 여기서 짚을 것은
+알고리즘 자체가 아니라 **왜 이게 비지도학습인가**다: kNN이나 지금까지의
+회귀·분류는 정답 라벨 \\(y\\)를 향해 맞춰가지만, k-means는 라벨 없이 데이터
+\\(x\\)의 위치만 보고 "가까운 점끼리 묶는다"는 구조 하나로 그룹을
+만들어낸다. \\(k\\)를 고르는 법(팔꿈치 방법)도 4.6절과 동일하다.
 
 ## 10.3 왜 차원을 줄이고 싶은가
 

@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-77bbeb0a.js";
+            window.path_to_searchindex_js = "../searchindex-599ee677.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cf809c4c.js"></script>
@@ -194,39 +194,17 @@ that. Instead, it discovers the structure of the data \(x\) itself: “how
 many natural groups do these customers fall into?” (clustering), “how many
 dimensions of these 1000 features actually carry real information?”
 (dimensionality reduction).</p>
-<h2 id="102-k-means-clustering"><a class="header" href="#102-k-means-clustering">10.2 k-means Clustering</a></h2>
-<p>An algorithm that partitions data into \(k\) groups, each represented by
-a <strong>centroid</strong>.</p>
-<ol>
-<li>Initialize \(k\) centroids randomly.</li>
-<li><strong>Assignment step</strong>: assign each data point to the group of its nearest
-centroid.</li>
-<li><strong>Update step</strong>: recompute each group’s centroid as the average of the
-points assigned to it.</li>
-<li>Repeat 2-3 until the assignments stop changing.</li>
-</ol>
-<pre><code class="language-python">def kmeans(X, k, max_iters=100):
-    import random
-    centroids = random.sample(X, k)
-    for _ in range(max_iters):
-        clusters = [[] for _ in range(k)]
-        for x in X:
-            distances = [sum((x[j]-c[j])**2 for j in range(len(x))) for c in centroids]
-            closest = distances.index(min(distances))
-            clusters[closest].append(x)
-        new_centroids = [
-            [sum(pt[j] for pt in cluster) / len(cluster) for j in range(len(X[0]))]
-            if cluster else centroids[i]
-            for i, cluster in enumerate(clusters)
-        ]
-        if new_centroids == centroids:
-            break
-        centroids = new_centroids
-    return centroids, clusters
-</code></pre>
-<p><strong>Choosing \(k\)</strong>: a common approach is to plot within-cluster variance
-against several values of \(k\) and pick the point where the decrease
-sharply levels off (the “elbow”).</p>
+<h2 id="102-k-means-clustering-recap"><a class="header" href="#102-k-means-clustering-recap">10.2 k-means Clustering (Recap)</a></h2>
+<p>An algorithm that groups data by distance to \(k\) centroids — we
+already covered the procedure and code in section 4.6 (k-means, too, is a
+distance-based model in that sense: it finds the closest thing). What
+matters here isn’t the algorithm itself but <strong>why this counts as
+unsupervised learning</strong>: kNN and the regression/classification models
+we’ve covered so far all fit toward a correct label \(y\), but k-means
+never sees a label — it forms groups purely from the structure of the
+data \(x\)’s positions, using nothing but “group nearby points
+together.” Choosing \(k\) (the elbow method) works the same way as in
+section 4.6.</p>
 <h2 id="103-why-we-want-to-reduce-dimensionality"><a class="header" href="#103-why-we-want-to-reduce-dimensionality">10.3 Why We Want to Reduce Dimensionality</a></h2>
 <p>Recall the curse of dimensionality from Chapter 4 — with too many
 features, the very notion of “closeness” breaks down. PCA compresses
