@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-9900d2b4.js";
+            window.path_to_searchindex_js = "searchindex-dd5ea0a3.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-18bbea20.js"></script>
@@ -2392,9 +2392,70 @@ P(s_{t+1}|s_t,a_t)\)를 로그로 바꾸면, <strong>환경의 전이확률
 가치함수(Critic)를 동시에 학습하는 구조다. 자세한 유도는 이 학기
 범위를 넘어서지만, “정책 하나만 학습하는 것보다, 가치함수의 도움을
 받으면 더 안정적으로 학습된다“는 아이디어는 기억해둘 만하다.</p>
+<h2 id="88-ppo-한-걸음-더-안전하게-proximal-policy-optimization"><a class="header" href="#88-ppo-한-걸음-더-안전하게-proximal-policy-optimization">8.8 PPO: 한 걸음 더 안전하게 (Proximal Policy Optimization)</a></h2>
+<p>REINFORCE와 Actor-Critic에는 공통된 한계가 있다: 궤적 하나를 모아서
+경사 상승 한 번에 쓰고 나면 그 데이터는 버려진다(온-폴리시,
+on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그래디언트는
+더 이상 정확하지 않기 때문이다. 게다가 경사 상승 스텝이 한 번이라도
+너무 크면 정책이 갑자기 나쁜 방향으로 확 바뀌어서 회복이 안 되는
+경우도 있다. 2017년 OpenAI가 제안한 <strong>PPO</strong>(Proximal Policy
+Optimization, Schulman 외)는 데이터를 몇 번 더 재사용하면서도, 정책이
+한 번에 너무 멀리 움직이지 못하게 막는 실용적인 해법이다.</p>
+<p>핵심 도구는 <strong>확률비</strong>(probability ratio)다 — 지금 업데이트하려는
+정책 \(\pi_\theta\)와, 데이터를 모을 때 썼던 정책
+\(\pi_{\theta_{\text{old}}}\)가 같은 행동에 부여하는 확률의 비다:</p>
+<p>\[r_t(\theta) := \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)},
+\quad r_t(\theta_{\text{old}}) = 1\]</p>
+<p>\(r_t\)가 1보다 크면 그 행동을 전보다 더 선호하게 됐다는 뜻, 1보다
+작으면 덜 선호한다는 뜻이다. 이 비율을 쓰면 “옛 정책이 모은 데이터“를
+“새 정책 관점에서” 재사용할 수 있다(importance sampling):</p>
+<p>\[L^{IS}(\theta) = \mathbb{E}_t[r_t(\theta) A_t]\]</p>
+<p>(\(A_t\)는 8.7에서 정의한 어드밴티지, \(A_t := G_t -
+V(s_t)\)다.) 문제는 이 목적함수를 그냥 최대화하면 \(r_t\)가
+한없이 커지도록(같은 행동만 계속 더 밀어주도록) 학습이 폭주할 수
+있다는 것이다 — 데이터는 재사용되지만, “정책이 너무 멀리 움직이지
+않는다“는 보장은 어디에도 없다.</p>
+<h2 id="89-클리핑-너무-멀리-못-가게-막기"><a class="header" href="#89-클리핑-너무-멀리-못-가게-막기">8.9 클리핑: 너무 멀리 못 가게 막기</a></h2>
+<p>PPO의 해법은 단순하다 — \(r_t\)가 \([1-\epsilon, 1+\epsilon]\)
+(보통 \(\epsilon = 0.2\)) 범위를 벗어나면, 그 구간 밖으로 나간
+만큼의 이득을 깎아버린다:</p>
+<p>\[L^{CLIP}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) A_t,
+\text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t\right)\right]\]</p>
+<p>min을 쓰는 이유: clip 안 한 값과 clip한 값 중 더 “비관적인”(작은)
+쪽을 목적함수로 삼아서, 정책이 한쪽으로 너무 밀려가는 것에 대한
+보상을 스스로 제한한다. 직관: 어드밴티지가 양수(좋은 행동)인데
+\(r_t\)가 이미 \(1+\epsilon\)을 넘었으면, 더 밀어붙여도
+그래디언트가 사라진다(이미 충분히 밀었으니 그만) — 반대로 어드밴티지가
+음수(나쁜 행동)인데 \(r_t\)가 \(1-\epsilon\) 밑으로 떨어졌으면
+역시 그래디언트가 사라진다(이미 충분히 눌렀으니 그만). 그 결과 “좋은
+행동을 과도하게 밀어주지도, 나쁜 행동을 과도하게 눌러버리지도 않는”
+암묵적인 <strong>신뢰 영역</strong>(trust region)이 생긴다 — “정책이 얼마나
+바뀌어도 되는지“를 명시적으로 제약하는 식을 따로 풀 필요 없이,
+클리핑 한 번으로 같은 효과를 낸다.</p>
+<pre><code class="language-python">def ppo_clip_loss(ratio, advantage, epsilon=0.2):
+    unclipped = ratio * advantage
+    clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
+    return min(unclipped, clipped)  # 목적함수(최대화 대상)의 한 샘플분
+</code></pre>
+<h2 id="810-왜-ppo가-표준이-됐는가"><a class="header" href="#810-왜-ppo가-표준이-됐는가">8.10 왜 PPO가 표준이 됐는가</a></h2>
+<p>PPO 이전에 같은 문제(너무 큰 업데이트로 인한 정책 붕괴)를 풀던
+방법은 <strong>TRPO</strong>(Trust Region Policy Optimization, 2015)였다 — KL
+divergence 제약을 명시적으로 걸고, 2차 미분(피셔 정보 행렬)과
+conjugate gradient, line search까지 동원하는 무거운 최적화였다. PPO는
+그 복잡한 기계장치를 클리핑 한 줄로 대체하면서도 비슷한 안정성을
+얻는다 — “이론적으로 완벽한 보장”(TRPO의 단조 개선 보장) 대신
+“구현하기 쉽고 실전에서 잘 작동하는 근사“를 택한 선택이다.</p>
+<p>이 실용성 덕분에 PPO는 지금 가장 널리 쓰이는 정책기반 알고리즘이
+됐다: ChatGPT류 LLM을 사람 피드백에 맞게 조정하는 <strong>RLHF</strong>
+(Reinforcement Learning from Human Feedback) 단계, OpenAI Five(Dota
+2), AlphaStar(스타크래프트 II), 로봇 보행 제어 등에 실제로 널리
+쓰인다.</p>
 <p><strong>Q-learning이 “얼마나 좋은지 평가한 뒤 최선을 고른다“는 간접적
 전략이라면, 정책기반 방법은 “무엇을 할지” 자체를 직접, 그리고
-연속적인 행동 공간에서도 학습한다.</strong></p>
+연속적인 행동 공간에서도 학습한다. Chapter 6에서 증명했듯이 유한한
+MDP라면 최적 정책 \(\pi^*\)는 항상 존재한다 — policy gradient와
+PPO는 그 존재가 보장하는 목표를 향해 실제로 나아가는, 지금 가장
+널리 쓰이는 방법이다.</strong></p>
 <hr>
 <h2 id="연습문제-16"><a class="header" href="#연습문제-16">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 간단한 이산 행동공간(2개 행동) softmax 정책에 대해, 한

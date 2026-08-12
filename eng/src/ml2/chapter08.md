@@ -129,9 +129,90 @@ derivation goes beyond this semester's scope, but the idea that "training
 is more stable with help from a value function than training a policy
 alone" is worth remembering.
 
-**Q-learning is an indirect strategy — "evaluate how good things are, then
-pick the best" — while policy-based methods learn "what to do" directly,
-and work in continuous action spaces too.**
+## 8.8 PPO: One Step Safer (Proximal Policy Optimization)
+
+REINFORCE and Actor-Critic share a common limitation: once you collect a
+trajectory and use it for a single gradient-ascent step, that data gets
+thrown away (on-policy) — the moment the policy changes, probabilities
+and gradients computed from the old data are no longer accurate. Worse,
+a single gradient step that's too large can shift the policy sharply in
+a bad direction with no way back. **PPO** (Proximal Policy Optimization,
+Schulman et al., 2017), proposed by OpenAI, is a practical fix that lets
+you reuse data a few more times while keeping the policy from moving too
+far in any single update.
+
+The key tool is the **probability ratio** — the ratio between the
+probability the policy being updated, \\(\pi\_\theta\\), assigns to an
+action and the probability the policy that collected the data,
+\\(\pi\_{\theta\_{\text{old}}}\\), assigned to that same action:
+
+\\[r\_t(\theta) := \frac{\pi\_\theta(a\_t|s\_t)}{\pi\_{\theta\_{\text{old}}}(a\_t|s\_t)},
+\quad r\_t(\theta\_{\text{old}}) = 1\\]
+
+If \\(r\_t\\) is greater than 1, the action is now favored more than
+before; if it's less than 1, it's favored less. This ratio lets us reuse
+"data collected by the old policy" from "the new policy's point of view"
+via importance sampling:
+
+\\[L^{IS}(\theta) = \mathbb{E}\_t[r\_t(\theta) A\_t]\\]
+
+(\\(A\_t\\) is the advantage defined in 8.7, \\(A\_t := G\_t -
+V(s\_t)\\).) The problem is that maximizing this objective directly can
+let \\(r\_t\\) blow up without bound (pushing the same action harder and
+harder) — the data gets reused, but nothing guarantees the policy stays
+close to where it started.
+
+## 8.9 Clipping: Keeping the Policy From Moving Too Far
+
+PPO's fix is simple — if \\(r\_t\\) strays outside
+\\([1-\epsilon, 1+\epsilon]\\) (typically \\(\epsilon = 0.2\\)), the
+gain from straying that far gets clipped off:
+
+\\[L^{CLIP}(\theta) = \mathbb{E}\_t\left[\min\left(r\_t(\theta) A\_t,
+\text{clip}(r\_t(\theta), 1-\epsilon, 1+\epsilon) A\_t\right)\right]\\]
+
+Why the min: taking the more "pessimistic" (smaller) of the clipped and
+unclipped values means the objective itself limits any reward for
+pushing the policy too far in one direction. Intuition: if the advantage
+is positive (a good action) and \\(r\_t\\) has already exceeded
+\\(1+\epsilon\\), pushing further no longer produces a gradient (it's
+already been pushed enough) — symmetrically, if the advantage is
+negative (a bad action) and \\(r\_t\\) has already dropped below
+\\(1-\epsilon\\), the gradient vanishes there too (it's already been
+suppressed enough). The result is an implicit **trust region** — good
+actions can't be over-promoted, bad actions can't be over-suppressed —
+achieved without ever explicitly solving a constraint on "how much the
+policy is allowed to change."
+
+```python
+def ppo_clip_loss(ratio, advantage, epsilon=0.2):
+    unclipped = ratio * advantage
+    clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
+    return min(unclipped, clipped)  # one sample's contribution to the objective (to maximize)
+```
+
+## 8.10 Why PPO Became the Standard
+
+Before PPO, the same problem (policy collapse from oversized updates)
+was handled by **TRPO** (Trust Region Policy Optimization, 2015) — a
+heavy optimization that imposed an explicit KL-divergence constraint and
+required second-order derivatives (the Fisher information matrix),
+conjugate gradient, and line search. PPO replaces that whole machine with
+a single clipping operation and gets similar stability — trading TRPO's
+"theoretically airtight guarantee" (monotonic improvement) for "easy to
+implement and works well in practice."
+
+That practicality is exactly why PPO is now the most widely used
+policy-based algorithm: it's used in the **RLHF** (Reinforcement Learning
+from Human Feedback) alignment stage of ChatGPT-style LLMs, in OpenAI
+Five (Dota 2), AlphaStar (StarCraft II), and robotic locomotion control.
+
+**Q-learning is an indirect strategy — "evaluate how good things are,
+then pick the best" — while policy-based methods learn "what to do"
+directly, and work in continuous action spaces too. As Chapter 6 proved,
+an optimal policy \\(\pi^\*\\) always exists in a finite MDP — policy
+gradient and PPO are the actual, currently most widely used, path toward
+the target that existence proof guarantees.**
 
 ---
 

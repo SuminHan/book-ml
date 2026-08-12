@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-46f45fb2.js";
+            window.path_to_searchindex_js = "../searchindex-c22e0910.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cf809c4c.js"></script>
@@ -282,9 +282,74 @@ policy (Actor) and a value function (Critic) simultaneously. The detailed
 derivation goes beyond this semester’s scope, but the idea that “training
 is more stable with help from a value function than training a policy
 alone” is worth remembering.</p>
-<p><strong>Q-learning is an indirect strategy — “evaluate how good things are, then
-pick the best” — while policy-based methods learn “what to do” directly,
-and work in continuous action spaces too.</strong></p>
+<h2 id="88-ppo-one-step-safer-proximal-policy-optimization"><a class="header" href="#88-ppo-one-step-safer-proximal-policy-optimization">8.8 PPO: One Step Safer (Proximal Policy Optimization)</a></h2>
+<p>REINFORCE and Actor-Critic share a common limitation: once you collect a
+trajectory and use it for a single gradient-ascent step, that data gets
+thrown away (on-policy) — the moment the policy changes, probabilities
+and gradients computed from the old data are no longer accurate. Worse,
+a single gradient step that’s too large can shift the policy sharply in
+a bad direction with no way back. <strong>PPO</strong> (Proximal Policy Optimization,
+Schulman et al., 2017), proposed by OpenAI, is a practical fix that lets
+you reuse data a few more times while keeping the policy from moving too
+far in any single update.</p>
+<p>The key tool is the <strong>probability ratio</strong> — the ratio between the
+probability the policy being updated, \(\pi_\theta\), assigns to an
+action and the probability the policy that collected the data,
+\(\pi_{\theta_{\text{old}}}\), assigned to that same action:</p>
+<p>\[r_t(\theta) := \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)},
+\quad r_t(\theta_{\text{old}}) = 1\]</p>
+<p>If \(r_t\) is greater than 1, the action is now favored more than
+before; if it’s less than 1, it’s favored less. This ratio lets us reuse
+“data collected by the old policy” from “the new policy’s point of view”
+via importance sampling:</p>
+<p>\[L^{IS}(\theta) = \mathbb{E}_t[r_t(\theta) A_t]\]</p>
+<p>(\(A_t\) is the advantage defined in 8.7, \(A_t := G_t -
+V(s_t)\).) The problem is that maximizing this objective directly can
+let \(r_t\) blow up without bound (pushing the same action harder and
+harder) — the data gets reused, but nothing guarantees the policy stays
+close to where it started.</p>
+<h2 id="89-clipping-keeping-the-policy-from-moving-too-far"><a class="header" href="#89-clipping-keeping-the-policy-from-moving-too-far">8.9 Clipping: Keeping the Policy From Moving Too Far</a></h2>
+<p>PPO’s fix is simple — if \(r_t\) strays outside
+\([1-\epsilon, 1+\epsilon]\) (typically \(\epsilon = 0.2\)), the
+gain from straying that far gets clipped off:</p>
+<p>\[L^{CLIP}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) A_t,
+\text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t\right)\right]\]</p>
+<p>Why the min: taking the more “pessimistic” (smaller) of the clipped and
+unclipped values means the objective itself limits any reward for
+pushing the policy too far in one direction. Intuition: if the advantage
+is positive (a good action) and \(r_t\) has already exceeded
+\(1+\epsilon\), pushing further no longer produces a gradient (it’s
+already been pushed enough) — symmetrically, if the advantage is
+negative (a bad action) and \(r_t\) has already dropped below
+\(1-\epsilon\), the gradient vanishes there too (it’s already been
+suppressed enough). The result is an implicit <strong>trust region</strong> — good
+actions can’t be over-promoted, bad actions can’t be over-suppressed —
+achieved without ever explicitly solving a constraint on “how much the
+policy is allowed to change.”</p>
+<pre><code class="language-python">def ppo_clip_loss(ratio, advantage, epsilon=0.2):
+    unclipped = ratio * advantage
+    clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
+    return min(unclipped, clipped)  # one sample's contribution to the objective (to maximize)
+</code></pre>
+<h2 id="810-why-ppo-became-the-standard"><a class="header" href="#810-why-ppo-became-the-standard">8.10 Why PPO Became the Standard</a></h2>
+<p>Before PPO, the same problem (policy collapse from oversized updates)
+was handled by <strong>TRPO</strong> (Trust Region Policy Optimization, 2015) — a
+heavy optimization that imposed an explicit KL-divergence constraint and
+required second-order derivatives (the Fisher information matrix),
+conjugate gradient, and line search. PPO replaces that whole machine with
+a single clipping operation and gets similar stability — trading TRPO’s
+“theoretically airtight guarantee” (monotonic improvement) for “easy to
+implement and works well in practice.”</p>
+<p>That practicality is exactly why PPO is now the most widely used
+policy-based algorithm: it’s used in the <strong>RLHF</strong> (Reinforcement Learning
+from Human Feedback) alignment stage of ChatGPT-style LLMs, in OpenAI
+Five (Dota 2), AlphaStar (StarCraft II), and robotic locomotion control.</p>
+<p><strong>Q-learning is an indirect strategy — “evaluate how good things are,
+then pick the best” — while policy-based methods learn “what to do”
+directly, and work in continuous action spaces too. As Chapter 6 proved,
+an optimal policy \(\pi^*\) always exists in a finite MDP — policy
+gradient and PPO are the actual, currently most widely used, path toward
+the target that existence proof guarantees.</strong></p>
 <hr>
 <h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
 <p><strong>1. (Coding)</strong> For a simple discrete action space (2 actions) with a
