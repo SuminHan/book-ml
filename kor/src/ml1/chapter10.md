@@ -53,14 +53,142 @@ Chapter 4에서 배운 차원의 저주를 떠올려보자 — 특징이 너무 
 방향이다. 분산을 최대화하는 문제를 라그랑주 승수법으로 풀면, 정확히 이
 고유값 문제로 귀결된다는 것이 이번 장 연습문제의 핵심이다.
 
-## 10.5 임베딩 맛보기: Node2Vec
+## 10.5 임베딩: word2vec과 Node2Vec
 
-PCA가 "이미 벡터인 데이터"를 압축한다면, **임베딩**은 원래 벡터가 아니었던
-것(단어, 그래프의 노드)을 학습을 통해 저차원 벡터로 표현하는 방법이다.
-Node2Vec은 그래프에서 "비슷한 이웃 구조를 가진 노드는 비슷한 벡터를 갖도록"
-학습한다 — 소셜 네트워크에서 비슷한 친구 그룹에 속한 두 사람의 벡터가
-가까워지는 식이다. 원리는 다르지만 목표는 PCA와 같다: **고차원(또는
-벡터가 아닌) 원본을, 유용한 구조를 보존한 채 저차원 벡터로 압축한다.**
+PCA가 "이미 벡터인 데이터"를 압축한다면, **임베딩**(embedding)은 원래
+벡터가 아니었던 것(단어, 그래프의 노드)을 학습을 통해 저차원 벡터로
+표현하는 방법이다. 목표는 PCA와 같다: **고차원(또는 벡터가 아닌) 원본을,
+유용한 구조를 보존한 채 저차원 벡터로 압축한다.**
+
+### word2vec: 단어를 벡터로
+
+2013년 미콜로프(Tomas Mikolov) 등이 제안한 **word2vec**은 "단어의 의미는
+주변에 어떤 단어가 오는지로 결정된다"(분포 가설, distributional
+hypothesis — "그 단어의 친구를 보면 그 단어를 안다")는 직관을 학습으로
+구현한다. **Skip-gram** 방식은 중심 단어 하나로 주변 단어들을 예측하도록
+작은 신경망을 학습시키는데, 학습이 끝난 뒤 **이 신경망의 가중치 자체가
+각 단어의 임베딩 벡터**가 된다 — "다음 단어 맞히기"라는 목표는 수단일
+뿐, 진짜 원하는 결과물은 그 과정에서 부산물로 나오는 벡터다(ML2
+Chapter 4의 "다음 토큰 예측이 문법·지식을 부산물로 남긴다"는 이야기와
+같은 패턴이다).
+
+이렇게 학습된 벡터는 놀라운 성질을 갖는다 — 단어 사이의 의미 관계가
+벡터의 뺄셈/덧셈으로 나타난다:
+
+\\[\text{vec}(\text{king}) - \text{vec}(\text{man}) + \text{vec}(\text{woman}) \approx \text{vec}(\text{queen})\\]
+
+"왕에서 남자다움을 빼고 여자다움을 더하면 여왕"이라는 관계를 학습 당시엔
+전혀 명시적으로 가르치지 않았는데도, 벡터 공간의 기하학적 구조가 스스로
+그렇게 정리된 것이다.
+
+```python
+import math, random
+
+def train_skipgram(corpus, window=2, dim=8, epochs=50, lr=0.05, neg_k=3):
+    # corpus: list of tokens (a single long sequence)
+    vocab = sorted(set(corpus))
+    idx = {w: i for i, w in enumerate(vocab)}
+    V = len(vocab)
+    # center-word / context-word weight matrices
+    W_in  = [[random.uniform(-0.5, 0.5) for _ in range(dim)] for _ in range(V)]
+    W_out = [[random.uniform(-0.5, 0.5) for _ in range(dim)] for _ in range(V)]
+
+    def sigmoid(z):
+        return 1 / (1 + math.exp(-max(-20, min(20, z))))
+
+    pairs = []
+    for i, center in enumerate(corpus):
+        for j in range(max(0, i - window), min(len(corpus), i + window + 1)):
+            if j != i:
+                pairs.append((idx[center], idx[corpus[j]]))
+
+    for _ in range(epochs):
+        random.shuffle(pairs)
+        for c, o in pairs:
+            # positive pair (c, o) + a few random negative words
+            targets = [(o, 1)] + [(random.randrange(V), 0) for _ in range(neg_k)]
+            for t, label in targets:
+                z = sum(W_in[c][k] * W_out[t][k] for k in range(dim))
+                pred = sigmoid(z)
+                grad = (pred - label) * lr
+                for k in range(dim):
+                    g_in, g_out = W_in[c][k], W_out[t][k]
+                    W_in[c][k]  -= grad * g_out
+                    W_out[t][k] -= grad * g_in
+    return {w: W_in[idx[w]] for w in vocab}
+```
+
+신기하게도 이 학습의 그래디언트도 `(pred - label)`이라는 똑같은 인자로
+시작한다 — Chapter 3 로지스틱회귀의 `(h_w(x) - y)`와 정확히 같은 형태다.
+우연이 아니다: "중심 단어 c 옆에 실제로 단어 t가 나왔는가(label=1)
+아니면 무작위로 끼워넣은 가짜 단어인가(label=0)"를 맞히는 **이진
+분류** 문제로 word2vec을 학습시키기 때문이다. (`neg_k`개의 무작위
+단어를 "가짜 정답"으로 같이 학습시키는 것이 **네거티브
+샘플링**(negative sampling)으로, 매 스텝마다 어휘 전체에 대해 softmax를
+계산하는 비용을 피하는 핵심 트릭이다. 위 코드는 아이디어만 보이려고
+아주 작게 줄인 구현이고, 실제 word2vec은 수백만 단어·수십억 개의
+(중심, 주변) 쌍으로 학습된다.)
+
+### Node2Vec: 같은 아이디어를 그래프로
+
+**Node2Vec**은 word2vec의 skip-gram을 그대로 재사용하되, "문장" 대신
+그래프 위의 **무작위 걷기**(random walk)로 만든 노드 시퀀스를 입력으로
+쓴다 — 한 노드에서 출발해 무작위로 이웃을 따라가며 만든 경로가 곧
+"문장"이고, 그 경로 위의 노드들이 "단어"다. "비슷한 이웃 구조를 가진
+노드는 비슷한 벡터를 갖게 된다"는 것도, word2vec의 "비슷한 문맥에
+나오는 단어는 비슷한 벡터를 갖는다"는 원리를 그래프에 그대로 물려준
+결과다.
+
+**Zachary's Karate Club**은 이 아이디어를 테스트하는 표준 예제
+데이터셋이다 — 1977년 인류학자 웨인 재커리(Wayne Zachary)가 한 가라테
+동호회 34명의 친분 관계를 기록했는데, 마침 이 동호회가 감독(node 0)과
+관장(node 33) 두 파벌로 실제 분열됐다. 34개 노드, 78개의 친분
+관계(edge)뿐인 작은 그래프지만, 그래프 임베딩 알고리즘이 "제대로
+작동하는지" 확인하는 표준 벤치마크로 지금까지도 쓰인다 — 라벨(파벌
+소속) 없이 순수하게 그래프 구조만 보고 임베딩했는데도 두 파벌이 벡터
+공간에서 자연스럽게 갈라지면 성공이다.
+
+```python
+KARATE_EDGES = [
+    (0,1),(0,2),(0,3),(0,4),(0,5),(0,6),(0,7),(0,8),(0,10),(0,11),
+    (0,12),(0,13),(0,17),(0,19),(0,21),(0,31),(1,2),(1,3),(1,7),(1,13),
+    (1,17),(1,19),(1,21),(1,30),(2,3),(2,7),(2,8),(2,9),(2,13),(2,27),
+    (2,28),(2,32),(3,7),(3,12),(3,13),(4,6),(4,10),(5,6),(5,10),(5,16),
+    (6,16),(8,30),(8,32),(8,33),(9,33),(13,33),(14,32),(14,33),(15,32),
+    (15,33),(18,32),(18,33),(19,33),(20,32),(20,33),(22,32),(22,33),
+    (23,25),(23,27),(23,29),(23,32),(23,33),(24,25),(24,27),(24,31),
+    (25,31),(26,29),(26,33),(27,33),(28,31),(28,33),(29,32),(29,33),
+    (30,32),(30,33),(31,32),(31,33),(32,33),
+]
+
+def random_walk(neighbors, start, length):
+    walk = [start]
+    for _ in range(length - 1):
+        cur = walk[-1]
+        if not neighbors[cur]:
+            break
+        walk.append(random.choice(neighbors[cur]))
+    return walk
+
+def build_walks(edges, n_nodes, walks_per_node=10, walk_length=8):
+    neighbors = {i: [] for i in range(n_nodes)}
+    for a, b in edges:
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    walks = []
+    for node in range(n_nodes):
+        for _ in range(walks_per_node):
+            walks.append([str(n) for n in random_walk(neighbors, node, walk_length)])
+    return walks
+```
+
+무작위 걷기로 만든 `walks`(각 걷기가 "문장", 각 노드 번호가 "단어")를
+이어붙여(`corpus = sum(walks, [])`) 위 `train_skipgram`에 그대로 넣으면
+34개 노드 각각의 임베딩 벡터가 나온다 — 이 벡터를 10.4의 PCA로 2차원까지
+압축해서 그려보면, 실제로 두 파벌이 공간적으로 갈라지는 것을 볼 수
+있다. **word2vec과 Node2Vec은 서로 다른 데이터(텍스트 vs. 그래프)에
+적용됐을 뿐, "함께 자주 나타나는 것들은 비슷한 벡터를 갖도록 학습한다"는
+같은 아이디어의 두 얼굴이다.**
 
 **지도학습이 "정답을 맞히는 법"을 배운다면, 비지도학습은 "데이터가 스스로
 어떤 모양을 하고 있는지"를 배운다 — 둘은 서로 다른 질문에 답한다.**

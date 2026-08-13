@@ -42,6 +42,20 @@ The topic is free, but here are some directions to consider:
   techniques from Chapters 2-4 (the LLM section) to a real task
   (summarization, classification, search).
 
+**Finding data**: data for the topics above usually comes from one of
+three places.
+
+- **Kaggle** (kaggle.com/datasets): the largest dataset repository,
+  covering tabular data, images, and text alike. Datasets organized as
+  Competitions are especially useful — you can also study the evaluation
+  metric and top-scoring solutions.
+- **UCI Machine Learning Repository** (archive.ics.uci.edu): mostly
+  classic tabular datasets, small enough for fast experimentation and for
+  validating a model you implemented by hand.
+- **Hugging Face Datasets** (huggingface.co/datasets): text and image
+  datasets you can load in just a few lines of code — especially
+  convenient for LLM/Transformer-related projects.
+
 ## 11.4 Real-World Problems You'll Often Hit in a Team Project
 
 Here's a preview of how the concepts covered this semester show up in an
