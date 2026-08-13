@@ -114,6 +114,8 @@ computation in exact proportion.** Real CNNs stack dozens to hundreds of
 such convolutional layers, which is why total computation is tracked just
 as closely as parameter count when designing a model.
 
+![How spatial size (width×height) shrinks and channel count (depth) grows across convolutions — visualizing the exact network from Section 9.4's exercise (32×32×3 → Conv5×5,6 → Pool2×2 → Conv5×5,16)](../images/ch09_cnn_structure.svg)
+
 ## 9.5 Pooling
 
 After convolution, a pooling layer usually reduces the spatial size.

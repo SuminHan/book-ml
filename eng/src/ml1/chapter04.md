@@ -73,6 +73,8 @@ model is structurally}} + \underbrace{\text{Var}[\hat f(x)]}\_{\text{how much
 the prediction swings as training data changes}} +
 \underbrace{\sigma^2}\_{\text{irreducible noise in the data itself}}\\]
 
+![The bias-variance tradeoff — a simpler model (left) has high bias, a more flexible model (right) has high variance, and the sweet spot minimizes their sum](../images/ch04_bias_variance.svg)
+
 A model that's too simple (large \\(k\\) in kNN, a shallow tree, a heavily
 regularized linear model) has high bias and low variance — underfitting. A
 model that's too flexible (\\(k=1\\) in kNN, a very deep tree, a neural

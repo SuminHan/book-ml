@@ -486,6 +486,7 @@ distribution</strong> — that’s exactly why it makes a good loss function:</p
 <p>(Machine learning usually uses the natural log \(\log = \ln\) instead of
 \(\log_2\) — the two differ only by a constant factor \(1/\ln 2\), which
 doesn’t change where the loss is minimized.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch03_sigmoid_crossentropy.svg" alt="Sigmoid function (left) and cross-entropy loss vs. predicted probability (right) — the loss blows up as a confident prediction gets further from the true label"><span class="img-wrapper"><img src="images/ch03_sigmoid_crossentropy.svg" alt="Sigmoid function (left) and cross-entropy loss vs. predicted probability (right) — the loss blows up as a confident prediction gets further from the true label"></span></label></p>
 <p>Intuition: if the true label is \(y=1\) but the model confidently predicts
 \(h_w(x) \to 0\), then \(-\log h_w(x) \to \infty\) — the loss blows up.
 <strong>Being confidently wrong is punished proportionally hard.</strong> Remarkably, when
@@ -636,6 +637,7 @@ terms:</p>
 model is structurally}} + \underbrace{\text{Var}[\hat f(x)]}_{\text{how much
 the prediction swings as training data changes}} +
 \underbrace{\sigma^2}_{\text{irreducible noise in the data itself}}\]</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch04_bias_variance.svg" alt="The bias-variance tradeoff — a simpler model (left) has high bias, a more flexible model (right) has high variance, and the sweet spot minimizes their sum"><span class="img-wrapper"><img src="images/ch04_bias_variance.svg" alt="The bias-variance tradeoff — a simpler model (left) has high bias, a more flexible model (right) has high variance, and the sweet spot minimizes their sum"></span></label></p>
 <p>A model that’s too simple (large \(k\) in kNN, a shallow tree, a heavily
 regularized linear model) has high bias and low variance — underfitting. A
 model that’s too flexible (\(k=1\) in kNN, a very deep tree, a neural
@@ -1353,6 +1355,7 @@ hundreds of filters, not just one — bump the same input up to 64 filters
 computation in exact proportion.</strong> Real CNNs stack dozens to hundreds of
 such convolutional layers, which is why total computation is tracked just
 as closely as parameter count when designing a model.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch09_cnn_structure.svg" alt="How spatial size (width×height) shrinks and channel count (depth) grows across convolutions — visualizing the exact network from Section 9.4’s exercise (32×32×3 → Conv5×5,6 → Pool2×2 → Conv5×5,16)"><span class="img-wrapper"><img src="images/ch09_cnn_structure.svg" alt="How spatial size (width×height) shrinks and channel count (depth) grows across convolutions — visualizing the exact network from Section 9.4’s exercise (32×32×3 → Conv5×5,6 → Pool2×2 → Conv5×5,16)"></span></label></p>
 <h2 id="95-pooling"><a class="header" href="#95-pooling">9.5 Pooling</a></h2>
 <p>After convolution, a pooling layer usually reduces the spatial size.
 <strong>Max pooling</strong> keeps only the maximum value from each \(2\times2\)

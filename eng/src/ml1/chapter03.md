@@ -80,6 +80,8 @@ distribution** — that's exactly why it makes a good loss function:
 \\(\log_2\\) — the two differ only by a constant factor \\(1/\ln 2\\), which
 doesn't change where the loss is minimized.)
 
+![Sigmoid function (left) and cross-entropy loss vs. predicted probability (right) — the loss blows up as a confident prediction gets further from the true label](../images/ch03_sigmoid_crossentropy.svg)
+
 Intuition: if the true label is \\(y=1\\) but the model confidently predicts
 \\(h_w(x) \to 0\\), then \\(-\log h_w(x) \to \infty\\) — the loss blows up.
 **Being confidently wrong is punished proportionally hard.** Remarkably, when

@@ -64,6 +64,8 @@ def knn_predict(X_train, y_train, x_new, k):
 바뀔 때 예측이 흔들리는 정도}} + \underbrace{\sigma^2}\_{\text{데이터 자체의
 잡음(줄일 수 없음)}}\\]
 
+![편향-분산 트레이드오프 — 모델이 단순할수록(왼쪽) 편향이, 유연할수록(오른쪽) 분산이 커지고, 둘의 합이 최소가 되는 지점이 최적 복잡도다](../images/ch04_bias_variance.svg)
+
 모델이 너무 단순하면(\\(k\\)가 큰 kNN, 얕은 트리, 규제가 강한 선형모델 등)
 Bias가 크고 Variance는 작다 — 과소적합. 모델이 너무 유연하면(\\(k=1\\)인
 kNN, 아주 깊은 트리, 파라미터가 많은 신경망 등) Variance가 크고 Bias는
