@@ -26,7 +26,8 @@
 
 ## 5.3 정보이득 (Information Gain)
 
-먼저 **엔트로피**(entropy)를 정의한다:
+먼저 **엔트로피**(entropy, Chapter 3.3에서 섀넌의 정보이론으로 이미 도입했다)를
+정의한다:
 
 \\[H = -\sum_{k=1}^K p_k \log_2 p_k\\]
 

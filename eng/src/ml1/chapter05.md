@@ -30,7 +30,8 @@ case (maximum) for binary classification.
 
 ## 5.3 Information Gain
 
-First, define **entropy**:
+First, define **entropy** (already introduced via Shannon's information
+theory in Chapter 3.3):
 
 \\[H = -\sum_{k=1}^K p_k \log_2 p_k\\]
 

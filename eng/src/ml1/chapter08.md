@@ -59,8 +59,11 @@ regularization techniques below still matter).
 ## 8.4 Overfitting and Regularization
 
 Overfitting is when a model fits the training data perfectly but performs
-worse on new data. Neural networks, with their huge number of parameters,
-are especially prone to it.
+worse on new data. In the bias-variance terms from Chapter 4.4, a neural
+network's huge number of parameters makes it an extremely flexible
+(high-variance) model, which is exactly why it's so prone to overfitting —
+the techniques below are all, in one way or another, ways of artificially
+reducing that variance.
 
 - **Dropout**: at every training step, randomly turn off some fraction
   \\(p\\) of neurons. This prevents neurons from becoming overly dependent

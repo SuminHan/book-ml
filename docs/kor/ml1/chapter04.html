@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-dd5ea0a3.js";
+            window.path_to_searchindex_js = "../searchindex-3b711468.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-18bbea20.js"></script>
@@ -213,13 +213,31 @@ instance-based learning이라 부른다.</p>
 있다. 거리를 재기 전에 <strong>특징 정규화</strong>(normalization)가 거의 필수다 — “방
 개수”(0~10 범위)와 “집값”(수억 원 단위)을 그대로 섞어 거리를 재면, 스케일이 큰
 특징이 거리를 사실상 독차지해버린다.</p>
-<h2 id="44-k를-고르는-트레이드오프"><a class="header" href="#44-k를-고르는-트레이드오프">4.4 \(k\)를 고르는 트레이드오프</a></h2>
+<h2 id="44-k를-고르는-트레이드오프-편향과-분산"><a class="header" href="#44-k를-고르는-트레이드오프-편향과-분산">4.4 \(k\)를 고르는 트레이드오프: 편향과 분산</a></h2>
 <ul>
-<li>\(k\)가 너무 작으면(예: \(k=1\)): 노이즈 하나에도 민감하게 반응 —
-과적합(overfitting).</li>
-<li>\(k\)가 너무 크면(예: \(k=m\), 전체 데이터): 항상 전체 다수결만 예측 —
-지역적 패턴을 완전히 무시(underfitting).</li>
+<li>\(k\)가 너무 작으면(예: \(k=1\)): 노이즈 하나에도 민감하게 반응한다 —
+훈련 데이터를 살짝만 바꿔도(다른 표본을 뽑아도) 예측이 크게 요동친다.
+이걸 <strong>분산</strong>(variance)이 크다고 한다 — <strong>과적합</strong>(overfitting).</li>
+<li>\(k\)가 너무 크면(예: \(k=m\), 전체 데이터): 항상 전체 다수결만
+예측해 지역적 패턴을 완전히 무시한다. 어떤 훈련 데이터를 줘도 거의
+똑같이 단순한 예측만 내놓으니 분산은 작지만, 애초에 잡아야 할 패턴을
+구조적으로 못 잡는다 — 이걸 <strong>편향</strong>(bias)이 크다고 한다 —
+<strong>과소적합</strong>(underfitting).</li>
 </ul>
+<p>이 편향-분산 관계는 kNN만의 얘기가 아니라 지도학습 전체에 적용되는 원리다.
+회귀 문제에서 모델의 기대 오차를 수학적으로 분해하면 세 항으로 나뉜다:</p>
+<p>\[\mathbb{E}\left[(y - \hat f(x))^2\right] =
+\underbrace{\left(\text{Bias}[\hat f(x)]\right)^2}_{\text{모델이 구조적으로
+못 맞추는 정도}} + \underbrace{\text{Var}[\hat f(x)]}_{\text{훈련 데이터가
+바뀔 때 예측이 흔들리는 정도}} + \underbrace{\sigma^2}_{\text{데이터 자체의
+잡음(줄일 수 없음)}}\]</p>
+<p>모델이 너무 단순하면(\(k\)가 큰 kNN, 얕은 트리, 규제가 강한 선형모델 등)
+Bias가 크고 Variance는 작다 — 과소적합. 모델이 너무 유연하면(\(k=1\)인
+kNN, 아주 깊은 트리, 파라미터가 많은 신경망 등) Variance가 크고 Bias는
+작다 — 과적합. 둘은 항상 이렇게 트레이드오프 관계이고, 최적의 모델
+복잡도는 이 둘의 합(전체 오차)이 최소가 되는 지점이다 — 이 프레임은 Chapter
+5(트리 깊이 제한/가지치기)와 Chapter 8(신경망 정규화)에서 “과적합을 어떻게
+막는가“를 다룰 때마다 다시 등장한다.</p>
 <p>적절한 \(k\)는 보통 검증 데이터(validation set)로 여러 값을 시도해보고
 정한다.</p>
 <h2 id="45-차원의-저주-curse-of-dimensionality"><a class="header" href="#45-차원의-저주-curse-of-dimensionality">4.5 차원의 저주 (Curse of Dimensionality)</a></h2>

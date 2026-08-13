@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-c22e0910.js";
+            window.path_to_searchindex_js = "../searchindex-0c99a633.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cf809c4c.js"></script>
@@ -218,14 +218,37 @@ along coordinate axes). <strong>Feature normalization</strong> is almost mandato
 measuring distance — mixing “number of rooms” (range 0-10) with “house
 price” (in the hundreds of thousands) means the large-scale feature
 effectively dominates the distance entirely.</p>
-<h2 id="44-the-tradeoff-in-choosing-k"><a class="header" href="#44-the-tradeoff-in-choosing-k">4.4 The Tradeoff in Choosing \(k\)</a></h2>
+<h2 id="44-the-tradeoff-in-choosing-k-bias-and-variance"><a class="header" href="#44-the-tradeoff-in-choosing-k-bias-and-variance">4.4 The Tradeoff in Choosing \(k\): Bias and Variance</a></h2>
 <ul>
 <li>If \(k\) is too small (e.g. \(k=1\)): sensitive to a single noisy
-point — overfitting.</li>
+point — even a small change to the training data (a different sample)
+swings the prediction wildly. That’s called having high <strong>variance</strong> —
+overfitting.</li>
 <li>If \(k\) is too large (e.g. \(k=m\), the whole dataset): always
-predicts the overall majority — ignores local patterns entirely
-(underfitting).</li>
+predicts the overall majority, ignoring local patterns entirely. It gives
+roughly the same simplistic prediction no matter what training data you
+feed it, so variance is low — but it’s structurally incapable of
+capturing the pattern in the first place. That’s called having high
+<strong>bias</strong> — underfitting.</li>
 </ul>
+<p>This bias-variance relationship isn’t specific to kNN — it’s a principle
+that applies across all of supervised learning. For a regression problem,
+decomposing a model’s expected error mathematically splits it into three
+terms:</p>
+<p>\[\mathbb{E}\left[(y - \hat f(x))^2\right] =
+\underbrace{\left(\text{Bias}[\hat f(x)]\right)^2}_{\text{how far off the
+model is structurally}} + \underbrace{\text{Var}[\hat f(x)]}_{\text{how much
+the prediction swings as training data changes}} +
+\underbrace{\sigma^2}_{\text{irreducible noise in the data itself}}\]</p>
+<p>A model that’s too simple (large \(k\) in kNN, a shallow tree, a heavily
+regularized linear model) has high bias and low variance — underfitting. A
+model that’s too flexible (\(k=1\) in kNN, a very deep tree, a neural
+network with many parameters) has high variance and low bias — overfitting.
+The two are always in this tradeoff, and the optimal model complexity is
+wherever their sum (the total error) is minimized — this framework will
+resurface whenever we ask “how do we prevent overfitting” in Chapter 5
+(limiting tree depth / pruning) and Chapter 8 (neural network
+regularization).</p>
 <p>The right \(k\) is usually chosen by trying several values against a
 validation set.</p>
 <h2 id="45-the-curse-of-dimensionality"><a class="header" href="#45-the-curse-of-dimensionality">4.5 The Curse of Dimensionality</a></h2>

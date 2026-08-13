@@ -58,8 +58,9 @@ its two terms mean:
 - The second term \\(D_{KL}(q_\phi(z|x)\|p(z))\\): the **regularization
   term** — how far the encoder's distribution \\(q_\phi(z|x)\\) strays
   from the target prior \\(p(z)\\) (usually a standard normal
-  distribution), measured by KL divergence (a "distance" between two
-  probability distributions). This term is exactly what makes the latent
+  distribution), measured by KL divergence — the same concept ML1 Chapter
+  3.3 introduced via Shannon's information theory, a "distance" between two
+  probability distributions. This term is exactly what makes the latent
   space smooth.
 
 Since \\(\log p_\theta(x) \ge \text{ELBO}\\), **maximizing the ELBO also

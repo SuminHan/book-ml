@@ -28,8 +28,12 @@ knowledge, and even a degree of reasoning ability.
 This probability is computed using the Transformer from Chapter 3 (more
 precisely, a decoder-only Transformer masked so it cannot see future
 tokens). Training proceeds by minimizing the cross-entropy loss between
-the actual next token and the predicted probability distribution (the same
-form as the classification loss from before Chapter 3).
+the actual next token and the predicted probability distribution (exactly
+the same loss ML1 Chapter 3.3 introduced from Shannon's information
+theory). Take this loss, swap base \\(e\\) for base 2, and exponentiate,
+and you get **perplexity** — a measure of "how many choices the model is,
+on average, effectively torn between" when predicting the next token; lower
+means the model is more confident.
 
 ```python
 def next_token_probs(logits):

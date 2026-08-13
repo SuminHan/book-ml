@@ -49,13 +49,39 @@ measuring distance — mixing "number of rooms" (range 0-10) with "house
 price" (in the hundreds of thousands) means the large-scale feature
 effectively dominates the distance entirely.
 
-## 4.4 The Tradeoff in Choosing \\(k\\)
+## 4.4 The Tradeoff in Choosing \\(k\\): Bias and Variance
 
 - If \\(k\\) is too small (e.g. \\(k=1\\)): sensitive to a single noisy
-  point — overfitting.
+  point — even a small change to the training data (a different sample)
+  swings the prediction wildly. That's called having high **variance** —
+  overfitting.
 - If \\(k\\) is too large (e.g. \\(k=m\\), the whole dataset): always
-  predicts the overall majority — ignores local patterns entirely
-  (underfitting).
+  predicts the overall majority, ignoring local patterns entirely. It gives
+  roughly the same simplistic prediction no matter what training data you
+  feed it, so variance is low — but it's structurally incapable of
+  capturing the pattern in the first place. That's called having high
+  **bias** — underfitting.
+
+This bias-variance relationship isn't specific to kNN — it's a principle
+that applies across all of supervised learning. For a regression problem,
+decomposing a model's expected error mathematically splits it into three
+terms:
+
+\\[\mathbb{E}\left[(y - \hat f(x))^2\right] =
+\underbrace{\left(\text{Bias}[\hat f(x)]\right)^2}\_{\text{how far off the
+model is structurally}} + \underbrace{\text{Var}[\hat f(x)]}\_{\text{how much
+the prediction swings as training data changes}} +
+\underbrace{\sigma^2}\_{\text{irreducible noise in the data itself}}\\]
+
+A model that's too simple (large \\(k\\) in kNN, a shallow tree, a heavily
+regularized linear model) has high bias and low variance — underfitting. A
+model that's too flexible (\\(k=1\\) in kNN, a very deep tree, a neural
+network with many parameters) has high variance and low bias — overfitting.
+The two are always in this tradeoff, and the optimal model complexity is
+wherever their sum (the total error) is minimized — this framework will
+resurface whenever we ask "how do we prevent overfitting" in Chapter 5
+(limiting tree depth / pruning) and Chapter 8 (neural network
+regularization).
 
 The right \\(k\\) is usually chosen by trying several values against a
 validation set.

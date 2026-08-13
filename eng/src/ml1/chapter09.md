@@ -67,7 +67,7 @@ Without padding, the image shrinks a little every time a filter passes
 over it — setting \\(p = (k-1)/2\\) (**"same" padding**) keeps the output
 the same size as the input.
 
-## 9.4 Counting Parameters
+## 9.4 Counting Parameters and Computation
 
 For a convolutional layer with \\(C_{\text{in}}\\) input channels,
 \\(C_{\text{out}}\\) output channels (i.e., filters), and filter size
@@ -81,6 +81,38 @@ layer with a 3×3 filter and 16 output channels uses only
 \\((3 \times 3 \times 3 + 1) \times 16 = 448\\) parameters. Connecting the
 same input to a fully-connected layer (assuming 32×32×16 output neurons
 too) would need millions.
+
+**Computation (FLOPs) is a different question from parameter count**:
+parameter count measures "how many numbers do we need to store," while the
+actual computational cost (speed) is measured by "how many
+multiply-accumulate operations happen." Computing one output position, one
+channel, takes \\(k \times k \times C_{\text{in}}\\) multiplications, and
+this repeats for every output position (\\(n_{\text{out}} \times
+n_{\text{out}}\\) of them) and every filter (\\(C_{\text{out}}\\) of them):
+
+\\[\text{FLOPs} \approx n_{\text{out}}^2 \times C_{\text{out}} \times (k
+\times k \times C_{\text{in}})\\]
+
+This looks almost identical to the parameter-count formula, but **it has an
+extra factor of \\(n_{\text{out}}^2\\) that the parameter count doesn't** —
+the same filter (the same parameters) gets reused at every output position,
+which is why parameters stay few, but the actual computation repeats once
+per position.
+
+Example: apply a single 3×3 filter (\\(C_{\text{out}}=1\\), no padding,
+stride 1) to a 224×224 grayscale image (\\(C_{\text{in}}=1\\)). Then
+\\(n_{\text{out}}=224-3+1=222\\), and:
+
+\\[\text{FLOPs} = 222^2 \times 1 \times (3\times3\times1) = 49{,}284
+\times 9 = 443{,}556\\]
+
+About 440,000 multiply-accumulate operations. Real CNNs use dozens to
+hundreds of filters, not just one — bump the same input up to 64 filters
+(\\(C_{\text{out}}=64\\)) and computation scales up by exactly 64×, to about
+28.39 million. **Adding more kernels (filters) scales parameter count and
+computation in exact proportion.** Real CNNs stack dozens to hundreds of
+such convolutional layers, which is why total computation is tracked just
+as closely as parameter count when designing a model.
 
 ## 9.5 Pooling
 
@@ -133,7 +165,8 @@ image. (Hint: after padding, the effective input size is \\(n+2p\\). Count
 how many hops of size \\(s\\) are needed for the filter to move from one
 end to the other.)
 
-Then compute the output size and parameter count at each layer of the
-following CNN — input: 32×32×3, Layer 1: 5×5 filter, 6 output channels,
-padding 0, stride 1. Layer 2 (pooling): 2×2 max pooling. Layer 3: 5×5
-filter, 16 output channels, padding 0, stride 1.
+Then compute the output size, parameter count, and computation (FLOPs) at
+each layer of the following CNN — input: 32×32×3, Layer 1: 5×5 filter, 6
+output channels, padding 0, stride 1. Layer 2 (pooling): 2×2 max pooling
+(no parameters or FLOPs to compute). Layer 3: 5×5 filter, 16 output
+channels, padding 0, stride 1.

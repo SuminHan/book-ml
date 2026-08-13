@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-dd5ea0a3.js";
+            window.path_to_searchindex_js = "../searchindex-3b711468.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-18bbea20.js"></script>
@@ -226,7 +226,7 @@ receptive field)의 특정 방향 선분에만 반응한다는 것을 발견했�
 <p>예: \(n=28, k=3, p=0, s=1\)이면 \(n_{\text{out}} = 28-3+1 = 26\). 패딩
 없이는 필터를 지날 때마다 이미지가 점점 작아진다 — <code>p = (k-1)/2</code>로
 설정하면(<strong>same padding</strong>) 출력 크기를 입력과 같게 유지할 수 있다.</p>
-<h2 id="94-파라미터-수-계산"><a class="header" href="#94-파라미터-수-계산">9.4 파라미터 수 계산</a></h2>
+<h2 id="94-파라미터-수와-연산량-계산"><a class="header" href="#94-파라미터-수와-연산량-계산">9.4 파라미터 수와 연산량 계산</a></h2>
 <p>\(C_{\text{in}}\)개 입력 채널, \(C_{\text{out}}\)개 출력 채널(즉 필터
 개수), 필터 크기 \(k \times k\)인 합성곱 층의 파라미터 수(bias 포함):</p>
 <p>\[\text{params} = (k \times k \times C_{\text{in}} + 1) \times C_{\text{out}}\]</p>
@@ -235,6 +235,29 @@ receptive field)의 특정 방향 선분에만 반응한다는 것을 발견했�
 3×3, 출력 채널 16개인 합성곱 층은 \((3 \times 3 \times 3 + 1) \times 16 =
 448\)개의 파라미터만 쓴다. 같은 입력을 완전연결층(출력 뉴런도 32×32×16개라
 가정)에 연결하려면 수백만 개가 필요하다.</p>
+<p><strong>연산량(FLOPs)은 파라미터 수와는 다른 질문이다</strong>: 파라미터 수는 “얼마나
+많은 숫자를 저장해야 하는가“를 재지만, 실제 계산 비용(속도)은 “몇 번의
+곱셈-덧셈을 하는가“로 잰다. 출력의 한 위치, 한 채널을 계산하려면 \(k
+\times k \times C_{\text{in}}\)번의 곱셈이 필요하고, 이걸 출력의 모든
+위치(\(n_{\text{out}} \times n_{\text{out}}\)개)와 모든 필터
+(\(C_{\text{out}}\)개)마다 반복하므로:</p>
+<p>\[\text{FLOPs} \approx n_{\text{out}}^2 \times C_{\text{out}} \times (k
+\times k \times C_{\text{in}})\]</p>
+<p>파라미터 수 공식과 거의 똑같이 생겼지만, <strong>파라미터 수엔 없던
+\(n_{\text{out}}^2\)이 곱해진다</strong> — 같은 필터(같은 파라미터)를 출력
+위치마다 재사용하니 파라미터는 적어도, 실제 계산은 그 위치 수만큼 반복해서
+일어나기 때문이다.</p>
+<p>예: 224×224 흑백 이미지(\(C_{\text{in}}=1\))에 3×3 필터 1개
+(\(C_{\text{out}}=1\), 패딩 없음, 스트라이드 1)를 적용하면
+\(n_{\text{out}}=224-3+1=222\)이고:</p>
+<p>\[\text{FLOPs} = 222^2 \times 1 \times (3\times3\times1) = 49{,}284
+\times 9 = 443{,}556\]</p>
+<p>약 44만 번의 곱셈-덧셈이다. 실제 CNN은 필터를 1개가 아니라 수십~수백 개
+쓴다 — 같은 입력에 필터를 64개로 늘리면(\(C_{\text{out}}=64\))
+연산량도 정확히 64배인 약 2,839만 번이 된다. <strong>커널(필터) 개수를 늘리면
+파라미터 수와 연산량이 똑같이 정비례로 늘어난다</strong>는 뜻이다. 실제 CNN은
+이런 합성곱 층을 수십~수백 개 쌓으므로, 전체 연산량은 모델 설계 시
+파라미터 수 못지않게 중요하게 따지는 지표다.</p>
 <h2 id="95-풀링-pooling"><a class="header" href="#95-풀링-pooling">9.5 풀링 (Pooling)</a></h2>
 <p>합성곱 다음에는 보통 풀링 층으로 공간 크기를 줄인다. <strong>최대 풀링</strong>(max
 pooling)은 \(2\times2\) 영역마다 최댓값 하나만 남긴다 — 위치가 한두 칸
@@ -268,10 +291,10 @@ print(max_pool(fm, 2))  # [[6,8],[9,7]]
 <p>을, 필터가 이미지 위에서 이동할 수 있는 위치의 개수를 직접 세는 방식으로
 유도하라(힌트: 패딩을 더한 뒤 유효 입력 크기는 \(n+2p\)이다. 필터가 한쪽
 끝에서 반대쪽 끝까지 이동하려면 몇 칸을 \(s\)씩 건너뛰어야 하는지 세어보라).</p>
-<p>이어서, 다음 CNN의 각 층에서 출력 크기와 파라미터 수를 계산하라 — 입력:
-32×32×3, Layer 1: 필터 5×5, 출력 채널 6, 패딩 0, 스트라이드 1. Layer
-2(풀링): 2×2 최대풀링. Layer 3: 필터 5×5, 출력 채널 16, 패딩 0, 스트라이드
-1.</p>
+<p>이어서, 다음 CNN의 각 층에서 출력 크기·파라미터 수·연산량(FLOPs)을
+계산하라 — 입력: 32×32×3, Layer 1: 필터 5×5, 출력 채널 6, 패딩 0,
+스트라이드 1. Layer 2(풀링): 2×2 최대풀링(파라미터·연산량 계산 불필요).
+Layer 3: 필터 5×5, 출력 채널 16, 패딩 0, 스트라이드 1.</p>
 
                     </main>
 

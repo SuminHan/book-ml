@@ -32,14 +32,53 @@ positive class (class 1)." We predict class 1 if \\(h_w(x) \ge 0.5\\), class
 0 otherwise — since \\(h_w(x)=0.5\\) is exactly the point where \\(w^Tx=0\\),
 the decision boundary is still a **straight line** (or hyperplane).
 
-## 3.3 The Loss Function: Why Not MSE?
+## 3.3 The Loss Function: From Shannon's Information Theory to Cross-Entropy
 
 If we apply mean squared error directly to the sigmoid, \\(J(w)\\) becomes
 **non-convex** in \\(w\\), risking that gradient descent gets stuck in a local
-minimum. Instead we use the **cross-entropy** loss:
+minimum. Instead we use the **cross-entropy** loss — a name that comes from
+the **information theory** Claude Shannon founded in 1948.
+
+Shannon asked how to measure "information" mathematically. If an event with
+probability \\(p\\) occurs, how much "surprise" (information) does that news
+carry? He defined it as \\(-\log_2 p\\) (in bits) — a frequent event
+(\\(p\\) near 1) carries almost no information, like "the sun rose in the
+east," while a rare event (\\(p\\) near 0) carries a lot, like "I won the
+lottery."
+
+The **expected value** of this information content is **entropy**:
+
+\\[H(p) = -\sum_k p_k \log_2 p_k\\]
+
+It's the average information you get from observing events drawn from
+distribution \\(p\\), and equivalently the average number of bits needed to
+optimally encode that distribution (we'll meet it again in Chapter 5.3, as
+the criterion decision trees use to pick "the best splitting question").
+
+But what if the true distribution is \\(p\\), while we encode assuming a
+different (possibly wrong) distribution \\(q\\)? The average number of bits
+that takes is the **cross-entropy**:
+
+\\[H(p, q) = -\sum_k p_k \log_2 q_k\\]
+
+When \\(q\\) exactly matches \\(p\\), \\(H(p,q) = H(p)\\) — its **minimum**.
+The further \\(q\\) drifts from \\(p\\) (the more wrong the assumed
+distribution is), the larger \\(H(p,q)\\) grows — that excess,
+\\(H(p,q) - H(p)\\), is called **KL divergence**
+(\\(D_{KL}(p\|q)\\)), which we'll meet again in Chapter 9's ELBO for VAEs.
+
+In logistic regression, the true label \\(y^{(i)}\\) is a "true distribution"
+(100% probability on one class, 0% on the other), and \\(h_w(x^{(i)})\\) is
+the distribution the model predicts. **Minimizing cross-entropy means
+pushing the model's predicted distribution as close as possible to the true
+distribution** — that's exactly why it makes a good loss function:
 
 \\[J(w) = -\frac{1}{m}\sum_{i=1}^m \left[y^{(i)}\log h_w(x^{(i)}) +
 (1-y^{(i)}) \log(1-h_w(x^{(i)}))\right]\\]
+
+(Machine learning usually uses the natural log \\(\log = \ln\\) instead of
+\\(\log_2\\) — the two differ only by a constant factor \\(1/\ln 2\\), which
+doesn't change where the loss is minimized.)
 
 Intuition: if the true label is \\(y=1\\) but the model confidently predicts
 \\(h_w(x) \to 0\\), then \\(-\log h_w(x) \to \infty\\) — the loss blows up.

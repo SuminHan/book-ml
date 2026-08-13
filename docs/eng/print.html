@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c22e0910.js";
+            window.path_to_searchindex_js = "searchindex-0c99a633.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-cf809c4c.js"></script>
@@ -450,12 +450,42 @@ probability.</p>
 positive class (class 1).” We predict class 1 if \(h_w(x) \ge 0.5\), class
 0 otherwise — since \(h_w(x)=0.5\) is exactly the point where \(w^Tx=0\),
 the decision boundary is still a <strong>straight line</strong> (or hyperplane).</p>
-<h2 id="33-the-loss-function-why-not-mse"><a class="header" href="#33-the-loss-function-why-not-mse">3.3 The Loss Function: Why Not MSE?</a></h2>
+<h2 id="33-the-loss-function-from-shannons-information-theory-to-cross-entropy"><a class="header" href="#33-the-loss-function-from-shannons-information-theory-to-cross-entropy">3.3 The Loss Function: From Shannon’s Information Theory to Cross-Entropy</a></h2>
 <p>If we apply mean squared error directly to the sigmoid, \(J(w)\) becomes
 <strong>non-convex</strong> in \(w\), risking that gradient descent gets stuck in a local
-minimum. Instead we use the <strong>cross-entropy</strong> loss:</p>
+minimum. Instead we use the <strong>cross-entropy</strong> loss — a name that comes from
+the <strong>information theory</strong> Claude Shannon founded in 1948.</p>
+<p>Shannon asked how to measure “information” mathematically. If an event with
+probability \(p\) occurs, how much “surprise” (information) does that news
+carry? He defined it as \(-\log_2 p\) (in bits) — a frequent event
+(\(p\) near 1) carries almost no information, like “the sun rose in the
+east,” while a rare event (\(p\) near 0) carries a lot, like “I won the
+lottery.”</p>
+<p>The <strong>expected value</strong> of this information content is <strong>entropy</strong>:</p>
+<p>\[H(p) = -\sum_k p_k \log_2 p_k\]</p>
+<p>It’s the average information you get from observing events drawn from
+distribution \(p\), and equivalently the average number of bits needed to
+optimally encode that distribution (we’ll meet it again in Chapter 5.3, as
+the criterion decision trees use to pick “the best splitting question”).</p>
+<p>But what if the true distribution is \(p\), while we encode assuming a
+different (possibly wrong) distribution \(q\)? The average number of bits
+that takes is the <strong>cross-entropy</strong>:</p>
+<p>\[H(p, q) = -\sum_k p_k \log_2 q_k\]</p>
+<p>When \(q\) exactly matches \(p\), \(H(p,q) = H(p)\) — its <strong>minimum</strong>.
+The further \(q\) drifts from \(p\) (the more wrong the assumed
+distribution is), the larger \(H(p,q)\) grows — that excess,
+\(H(p,q) - H(p)\), is called <strong>KL divergence</strong>
+(\(D_{KL}(p|q)\)), which we’ll meet again in Chapter 9’s ELBO for VAEs.</p>
+<p>In logistic regression, the true label \(y^{(i)}\) is a “true distribution”
+(100% probability on one class, 0% on the other), and \(h_w(x^{(i)})\) is
+the distribution the model predicts. <strong>Minimizing cross-entropy means
+pushing the model’s predicted distribution as close as possible to the true
+distribution</strong> — that’s exactly why it makes a good loss function:</p>
 <p>\[J(w) = -\frac{1}{m}\sum_{i=1}^m \left[y^{(i)}\log h_w(x^{(i)}) +
 (1-y^{(i)}) \log(1-h_w(x^{(i)}))\right]\]</p>
+<p>(Machine learning usually uses the natural log \(\log = \ln\) instead of
+\(\log_2\) — the two differ only by a constant factor \(1/\ln 2\), which
+doesn’t change where the loss is minimized.)</p>
 <p>Intuition: if the true label is \(y=1\) but the model confidently predicts
 \(h_w(x) \to 0\), then \(-\log h_w(x) \to \infty\) — the loss blows up.
 <strong>Being confidently wrong is punished proportionally hard.</strong> Remarkably, when
@@ -584,14 +614,37 @@ along coordinate axes). <strong>Feature normalization</strong> is almost mandato
 measuring distance — mixing “number of rooms” (range 0-10) with “house
 price” (in the hundreds of thousands) means the large-scale feature
 effectively dominates the distance entirely.</p>
-<h2 id="44-the-tradeoff-in-choosing-k"><a class="header" href="#44-the-tradeoff-in-choosing-k">4.4 The Tradeoff in Choosing \(k\)</a></h2>
+<h2 id="44-the-tradeoff-in-choosing-k-bias-and-variance"><a class="header" href="#44-the-tradeoff-in-choosing-k-bias-and-variance">4.4 The Tradeoff in Choosing \(k\): Bias and Variance</a></h2>
 <ul>
 <li>If \(k\) is too small (e.g. \(k=1\)): sensitive to a single noisy
-point — overfitting.</li>
+point — even a small change to the training data (a different sample)
+swings the prediction wildly. That’s called having high <strong>variance</strong> —
+overfitting.</li>
 <li>If \(k\) is too large (e.g. \(k=m\), the whole dataset): always
-predicts the overall majority — ignores local patterns entirely
-(underfitting).</li>
+predicts the overall majority, ignoring local patterns entirely. It gives
+roughly the same simplistic prediction no matter what training data you
+feed it, so variance is low — but it’s structurally incapable of
+capturing the pattern in the first place. That’s called having high
+<strong>bias</strong> — underfitting.</li>
 </ul>
+<p>This bias-variance relationship isn’t specific to kNN — it’s a principle
+that applies across all of supervised learning. For a regression problem,
+decomposing a model’s expected error mathematically splits it into three
+terms:</p>
+<p>\[\mathbb{E}\left[(y - \hat f(x))^2\right] =
+\underbrace{\left(\text{Bias}[\hat f(x)]\right)^2}_{\text{how far off the
+model is structurally}} + \underbrace{\text{Var}[\hat f(x)]}_{\text{how much
+the prediction swings as training data changes}} +
+\underbrace{\sigma^2}_{\text{irreducible noise in the data itself}}\]</p>
+<p>A model that’s too simple (large \(k\) in kNN, a shallow tree, a heavily
+regularized linear model) has high bias and low variance — underfitting. A
+model that’s too flexible (\(k=1\) in kNN, a very deep tree, a neural
+network with many parameters) has high variance and low bias — overfitting.
+The two are always in this tradeoff, and the optimal model complexity is
+wherever their sum (the total error) is minimized — this framework will
+resurface whenever we ask “how do we prevent overfitting” in Chapter 5
+(limiting tree depth / pruning) and Chapter 8 (neural network
+regularization).</p>
 <p>The right \(k\) is usually chosen by trying several values against a
 validation set.</p>
 <h2 id="45-the-curse-of-dimensionality"><a class="header" href="#45-the-curse-of-dimensionality">4.5 The Curse of Dimensionality</a></h2>
@@ -720,7 +773,8 @@ the rest), \(G=0\) — the best case. If the classes are evenly split
 (\(K=2\), \(p_1=p_2=0.5\)), \(G = 1 - 0.25 - 0.25 = 0.5\) — the worst
 case (maximum) for binary classification.</p>
 <h2 id="53-information-gain"><a class="header" href="#53-information-gain">5.3 Information Gain</a></h2>
-<p>First, define <strong>entropy</strong>:</p>
+<p>First, define <strong>entropy</strong> (already introduced via Shannon’s information
+theory in Chapter 3.3):</p>
 <p>\[H = -\sum_{k=1}^K p_k \log_2 p_k\]</p>
 <p>Like Gini impurity, this is small (0) when pure and large when mixed. If a
 question splits a node into left (\(L\)) and right (\(R\)) children,
@@ -1136,8 +1190,11 @@ themselves remains a separate concern (which is why the initialization and
 regularization techniques below still matter).</p>
 <h2 id="84-overfitting-and-regularization"><a class="header" href="#84-overfitting-and-regularization">8.4 Overfitting and Regularization</a></h2>
 <p>Overfitting is when a model fits the training data perfectly but performs
-worse on new data. Neural networks, with their huge number of parameters,
-are especially prone to it.</p>
+worse on new data. In the bias-variance terms from Chapter 4.4, a neural
+network’s huge number of parameters makes it an extremely flexible
+(high-variance) model, which is exactly why it’s so prone to overfitting —
+the techniques below are all, in one way or another, ways of artificially
+reducing that variance.</p>
 <ul>
 <li><strong>Dropout</strong>: at every training step, randomly turn off some fraction
 \(p\) of neurons. This prevents neurons from becoming overly dependent
@@ -1259,7 +1316,7 @@ size is:</p>
 Without padding, the image shrinks a little every time a filter passes
 over it — setting \(p = (k-1)/2\) (<strong>“same” padding</strong>) keeps the output
 the same size as the input.</p>
-<h2 id="94-counting-parameters"><a class="header" href="#94-counting-parameters">9.4 Counting Parameters</a></h2>
+<h2 id="94-counting-parameters-and-computation"><a class="header" href="#94-counting-parameters-and-computation">9.4 Counting Parameters and Computation</a></h2>
 <p>For a convolutional layer with \(C_{\text{in}}\) input channels,
 \(C_{\text{out}}\) output channels (i.e., filters), and filter size
 \(k \times k\), the number of parameters (including bias) is:</p>
@@ -1270,6 +1327,32 @@ layer with a 3×3 filter and 16 output channels uses only
 \((3 \times 3 \times 3 + 1) \times 16 = 448\) parameters. Connecting the
 same input to a fully-connected layer (assuming 32×32×16 output neurons
 too) would need millions.</p>
+<p><strong>Computation (FLOPs) is a different question from parameter count</strong>:
+parameter count measures “how many numbers do we need to store,” while the
+actual computational cost (speed) is measured by “how many
+multiply-accumulate operations happen.” Computing one output position, one
+channel, takes \(k \times k \times C_{\text{in}}\) multiplications, and
+this repeats for every output position (\(n_{\text{out}} \times
+n_{\text{out}}\) of them) and every filter (\(C_{\text{out}}\) of them):</p>
+<p>\[\text{FLOPs} \approx n_{\text{out}}^2 \times C_{\text{out}} \times (k
+\times k \times C_{\text{in}})\]</p>
+<p>This looks almost identical to the parameter-count formula, but <strong>it has an
+extra factor of \(n_{\text{out}}^2\) that the parameter count doesn’t</strong> —
+the same filter (the same parameters) gets reused at every output position,
+which is why parameters stay few, but the actual computation repeats once
+per position.</p>
+<p>Example: apply a single 3×3 filter (\(C_{\text{out}}=1\), no padding,
+stride 1) to a 224×224 grayscale image (\(C_{\text{in}}=1\)). Then
+\(n_{\text{out}}=224-3+1=222\), and:</p>
+<p>\[\text{FLOPs} = 222^2 \times 1 \times (3\times3\times1) = 49{,}284
+\times 9 = 443{,}556\]</p>
+<p>About 440,000 multiply-accumulate operations. Real CNNs use dozens to
+hundreds of filters, not just one — bump the same input up to 64 filters
+(\(C_{\text{out}}=64\)) and computation scales up by exactly 64×, to about
+28.39 million. <strong>Adding more kernels (filters) scales parameter count and
+computation in exact proportion.</strong> Real CNNs stack dozens to hundreds of
+such convolutional layers, which is why total computation is tracked just
+as closely as parameter count when designing a model.</p>
 <h2 id="95-pooling"><a class="header" href="#95-pooling">9.5 Pooling</a></h2>
 <p>After convolution, a pooling layer usually reduces the spatial size.
 <strong>Max pooling</strong> keeps only the maximum value from each \(2\times2\)
@@ -1308,10 +1391,11 @@ print(max_pool(fm, 2))  # [[6,8],[9,7]]
 image. (Hint: after padding, the effective input size is \(n+2p\). Count
 how many hops of size \(s\) are needed for the filter to move from one
 end to the other.)</p>
-<p>Then compute the output size and parameter count at each layer of the
-following CNN — input: 32×32×3, Layer 1: 5×5 filter, 6 output channels,
-padding 0, stride 1. Layer 2 (pooling): 2×2 max pooling. Layer 3: 5×5
-filter, 16 output channels, padding 0, stride 1.</p>
+<p>Then compute the output size, parameter count, and computation (FLOPs) at
+each layer of the following CNN — input: 32×32×3, Layer 1: 5×5 filter, 6
+output channels, padding 0, stride 1. Layer 2 (pooling): 2×2 max pooling
+(no parameters or FLOPs to compute). Layer 3: 5×5 filter, 16 output
+channels, padding 0, stride 1.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-10-unsupervised-learning--representation-learning"><a class="header" href="#chapter-10-unsupervised-learning--representation-learning">Chapter 10. Unsupervised Learning &amp; Representation Learning</a></h1>
 <p>In 1901, statistician Karl Pearson posed an interesting question: given
@@ -1977,8 +2061,12 @@ knowledge, and even a degree of reasoning ability.</p>
 <p>This probability is computed using the Transformer from Chapter 3 (more
 precisely, a decoder-only Transformer masked so it cannot see future
 tokens). Training proceeds by minimizing the cross-entropy loss between
-the actual next token and the predicted probability distribution (the same
-form as the classification loss from before Chapter 3).</p>
+the actual next token and the predicted probability distribution (exactly
+the same loss ML1 Chapter 3.3 introduced from Shannon’s information
+theory). Take this loss, swap base \(e\) for base 2, and exponentiate,
+and you get <strong>perplexity</strong> — a measure of “how many choices the model is,
+on average, effectively torn between” when predicting the next token; lower
+means the model is more confident.</p>
 <pre><code class="language-python">def next_token_probs(logits):
     # logits: raw scores for each token in the vocabulary
     # applying softmax gives "the probability of each possible next token"
@@ -2812,8 +2900,9 @@ ordinary autoencoder’s reconstruction error).</li>
 <li>The second term \(D_{KL}(q_\phi(z|x)|p(z))\): the <strong>regularization
 term</strong> — how far the encoder’s distribution \(q_\phi(z|x)\) strays
 from the target prior \(p(z)\) (usually a standard normal
-distribution), measured by KL divergence (a “distance” between two
-probability distributions). This term is exactly what makes the latent
+distribution), measured by KL divergence — the same concept ML1 Chapter
+3.3 introduced via Shannon’s information theory, a “distance” between two
+probability distributions. This term is exactly what makes the latent
 space smooth.</li>
 </ul>
 <p>Since \(\log p_\theta(x) \ge \text{ELBO}\), <strong>maximizing the ELBO also

@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-c22e0910.js";
+            window.path_to_searchindex_js = "../searchindex-0c99a633.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-cf809c4c.js"></script>
@@ -202,8 +202,12 @@ knowledge, and even a degree of reasoning ability.</p>
 <p>This probability is computed using the Transformer from Chapter 3 (more
 precisely, a decoder-only Transformer masked so it cannot see future
 tokens). Training proceeds by minimizing the cross-entropy loss between
-the actual next token and the predicted probability distribution (the same
-form as the classification loss from before Chapter 3).</p>
+the actual next token and the predicted probability distribution (exactly
+the same loss ML1 Chapter 3.3 introduced from Shannon’s information
+theory). Take this loss, swap base \(e\) for base 2, and exponentiate,
+and you get <strong>perplexity</strong> — a measure of “how many choices the model is,
+on average, effectively torn between” when predicting the next token; lower
+means the model is more confident.</p>
 <pre><code class="language-python">def next_token_probs(logits):
     # logits: raw scores for each token in the vocabulary
     # applying softmax gives "the probability of each possible next token"
