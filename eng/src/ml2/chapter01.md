@@ -8,7 +8,7 @@ that this entire semester leans on: **what a neural network can do**
 
 ## 1.1 Neural Network Review: Forward and Backward Propagation
 
-Let's re-derive the core of ML1 Chapter 7. In a network with \\(L\\)
+Let's re-derive the core of ML1 Chapter 8. In a network with \\(L\\)
 layers, layer \\(l\\)'s pre-activation and activation are:
 
 \\[z_l = W_l a_{l-1} + b_l, \qquad a_l = \sigma(z_l)\\]
@@ -63,20 +63,23 @@ supervised learning: **exploration vs. exploitation**. Starting in Chapter
   MDPs — from a table-based method (Q-learning), to deep RL that
   combines it with neural networks (DQN), to methods that learn a policy
   directly (Policy Gradient).
-- **Chapters 9-10**: the three principles of generative models —
+- **Chapter 9**: post-training a pretrained LLM in the direction people
+  actually want (RLHF, DPO) — also a chance to put Chapter 8's PPO to
+  real use.
+- **Chapters 10-11**: the three principles of generative models —
   likelihood-based (VAE), adversarial (GAN), and score-based
   (Diffusion) — covered in sequence. Learning only one of them makes it
   hard to see why the other two exist, so we learn all three side by
   side, comparing them.
-- **Chapters 11-12**: the semester wraps up with a team project.
+- **Chapters 12-13**: the semester wraps up with a team project.
 
 ## 1.6 Readiness Checklist
 
 To follow along this semester, you should be comfortable with: (1)
-computing gradients via the chain rule (ML1 Chapter 7), (2) matrix-vector
+computing gradients via the chain rule (ML1 Chapter 8), (2) matrix-vector
 products and dot products (used continuously since ML1 Chapter 2), (3) the
 basic operations of probability — expectation, conditional probability
-(especially important in Chapter 5's MDPs and Chapter 9's VAE). If you're
+(especially important in Chapter 5's MDPs and Chapter 10's VAE). If you're
 unsure about any of these three, it's worth reviewing them during this
 chapter's recitation time.
 

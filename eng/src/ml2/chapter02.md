@@ -68,7 +68,7 @@ h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh'(z_t)) \, W_{hh}\\]
 
 ## 2.5 Why Vanishing Gradients Reappear Along the Time Axis
 
-This is exactly the same pattern we saw in ML1 Chapter 8: \\(\tanh'\\)'s
+This is exactly the same pattern we saw in ML1 Chapter 9: \\(\tanh'\\)'s
 maximum value is 1, but it's below 1 across most of its range, and this
 gets multiplied by \\(W_{hh}\\) as well, \\(T\\) times (once per timestep).
 The longer the sequence (the larger \\(T\\)), the more this product shrinks

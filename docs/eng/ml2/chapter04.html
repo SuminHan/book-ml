@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>LLM Preview - Machine Learning 1/2 (English)</title>
+        <title>LLM Pretraining &amp; Prompting - Machine Learning 1/2 (English)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ae623351.js";
+            window.path_to_searchindex_js = "../searchindex-2e3fa3d8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-4ade9c3c.js"></script>
+        <script src="../toc-5d1a76df.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,7 +178,7 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-4-llm-preview"><a class="header" href="#chapter-4-llm-preview">Chapter 4. LLM Preview</a></h1>
+                        <h1 id="chapter-4-llm-pretraining--prompting"><a class="header" href="#chapter-4-llm-pretraining--prompting">Chapter 4. LLM Pretraining &amp; Prompting</a></h1>
 <p>A medical student doesn’t start out learning about one specific disease —
 they first spend years absorbing broad fundamentals like anatomy,
 physiology, and pharmacology, and only then get intensively trained in a
@@ -203,11 +203,14 @@ knowledge, and even a degree of reasoning ability.</p>
 precisely, a decoder-only Transformer masked so it cannot see future
 tokens). Training proceeds by minimizing the cross-entropy loss between
 the actual next token and the predicted probability distribution (exactly
-the same loss ML1 Chapter 3.3 introduced from Shannon’s information
+the same loss ML1 Chapter 2.6 introduced from Shannon’s information
 theory). Take this loss, swap base \(e\) for base 2, and exponentiate,
 and you get <strong>perplexity</strong> — a measure of “how many choices the model is,
 on average, effectively torn between” when predicting the next token; lower
-means the model is more confident.</p>
+means the model is more confident. This chapter also covers prompting a
+pretrained model like this one; “how to further refine that model in the
+direction people actually want” is covered next, in Chapter 9
+(post-training).</p>
 <pre><code class="language-python">def next_token_probs(logits):
     # logits: raw scores for each token in the vocabulary
     # applying softmax gives "the probability of each possible next token"

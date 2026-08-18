@@ -207,7 +207,8 @@ implement and works well in practice."
 That practicality is exactly why PPO is now the most widely used
 policy-based algorithm: it's used in the **RLHF** (Reinforcement Learning
 from Human Feedback) alignment stage of ChatGPT-style LLMs, in OpenAI
-Five (Dota 2), AlphaStar (StarCraft II), and robotic locomotion control.
+Five (Dota 2), AlphaStar (StarCraft II), and robotic locomotion control
+(RLHF itself is covered directly in Chapter 9).
 
 **Q-learning is an indirect strategy — "evaluate how good things are,
 then pick the best" — while policy-based methods learn "what to do"

@@ -1,89 +1,115 @@
-# Chapter 12. Team Project: Presentation
+# Chapter 12. Team Project: Implementation
 
-If last chapter was about implementing the project, this chapter is about
-presenting the results and reflecting on the semester as a whole. Finally,
-we close out the semester with a brief look at a few recent trends that
-are still actively developing right now.
+Everything covered over the past 11 chapters — defining loss functions,
+deriving gradients, implementing models, and arguing their correctness —
+was treated as an independent chapter's problem each time. The last two
+chapters are a time to assemble these pieces directly into one finished
+project.
 
-## 12.1 Presentation Checklist
+## 12.1 Why a Team Project
 
-- **Problem definition** (1 minute): what were you trying to solve? Why
-  is that problem interesting?
-- **Methodology** (2-3 minutes): what model/algorithm did you use, and
-  why did you choose it?
-- **Mathematical justification** (2 minutes): make sure to hit at least
-  one of the justifications from last chapter's report during the talk
-  too.
-- **Results** (2 minutes): show both quantitative results (numbers,
-  graphs) and qualitative results (examples).
-- **Limitations and reflection** (1-2 minutes): what didn't work, and why
-  do you think that happened? What would you have tried with more time?
+Real machine learning problems aren't neatly divided as "this chapter is
+logistic regression, that chapter is CNN." Cleaning data, judging which
+model fits, diagnosing why training isn't working (overfitting? vanishing
+gradients? no signal in the data at all?), and explaining the results to
+someone else — going through this entire process yourself is the surest
+way to integrate the past 11 chapters' separate topics into one whole.
 
-A good presentation weighs "why you built it that way" and "what you
-learned" more heavily than "what you built." In particular, not hiding the
-parts that didn't work, and diagnosing the cause using concepts from this
-semester — for example, "the loss wasn't decreasing, and on closer
-inspection the gradient was vanishing" — is worth far more than simply
-saying "we achieved 90% accuracy."
+## 12.2 Project Structure
 
-## 12.2 ML2 Concept Map (Review)
+- **Code**: must be reproducible — running the same code (with randomness
+  fixed) should give the same result. The entire pipeline, from data
+  preprocessing to final evaluation, should be organized into
+  scripts/notebooks.
+- **Report**: follows the structure problem definition → methodology →
+  experimental results → (required) at least one mathematical
+  justification → limitations and future improvements.
+- **Poster**: a summary for the presentation (Chapter 13) — condensed to
+  1-2 key figures (learning curves, example results, etc.) and 3-4 of the
+  most important conclusions.
 
-| Chapter | What We Learned | The Key Question |
-|---|---|---|
-| Ch02 | RNN | How do we remember and process ordered data? |
-| Ch03 | Attention/Transformer | How do we grasp context all at once, without sequential processing? |
-| Ch04 | LLM | How does next-token prediction lead to such broad capability? |
-| Ch05 | MDP/Policy Evaluation | How do we compute an uncertain future reward right now? |
-| Ch06 | Q-learning | How do we learn optimal behavior without a model of the environment? |
-| Ch07 | DQN | How do we combine neural networks and RL stably? |
-| Ch08 | Policy Gradient | How do we learn a policy directly in a continuous action space? |
-| Ch09 | VAE | How do we work around an intractable likelihood to optimize it anyway? |
-| Ch10 | GAN/Diffusion | How do adversarial training and gradual noise removal achieve the same goal through different principles? |
+## 12.3 Candidate Project Topics
 
-## 12.3 The One Pattern That Runs Through ML1 → ML2
+The topic is free, but here are some directions to consider:
 
-Let's give one final summary of the structure that runs through all 24
-chapters across both semesters:
+- **Graph anomaly detection**: using publicly available synthetic data,
+  detect abnormal nodes/edges with a graph neural network (GNN, beyond
+  this semester's scope but connected to ML1 Chapter 12's embedding
+  concept) or traditional methods.
+- **Image classification applications**: apply the CNN structure from ML1
+  Chapter 10 to a real image dataset, trying the transfer learning
+  covered in ML1 Chapter 11.
+- **A simple chatbot/LLM application project**: apply the prompting
+  techniques from Chapters 2-4 (the sequence/LLM section) to a real task
+  (summarization, classification, search), or run a small-scale
+  experiment with the alignment ideas from Chapter 9.
 
-1. **Define a model**: decide the form of the function mapping input to
-   output (a line, a tree, a neural network, a Transformer, ...).
-2. **Quantify how wrong it is**: a loss function (MSE, cross-entropy, TD
-   error, ELBO, a min-max objective, ...) — the form is different every
-   time, but the role is always the same.
-3. **Adjust parameters to reduce that loss**: gradient descent (directly,
-   or via backpropagation) — this is, in the end, the final step of every
-   algorithm covered this semester.
+**Finding data**: data for the topics above usually comes from one of
+three places.
 
-Whenever you encounter a new paper or model, developing the habit of
-breaking it down into "what does it say for each of these three
-questions" is the most durable tool these two courses hope to leave you
-with.
+- **Kaggle** (kaggle.com/datasets): the largest dataset repository,
+  covering tabular data, images, and text alike. Datasets organized as
+  Competitions are especially useful — you can also study the evaluation
+  metric and top-scoring solutions.
+- **UCI Machine Learning Repository** (archive.ics.uci.edu): mostly
+  classic tabular datasets, small enough for fast experimentation and for
+  validating a model you implemented by hand.
+- **Hugging Face Datasets** (huggingface.co/datasets): text and image
+  datasets you can load in just a few lines of code — especially
+  convenient for LLM/Transformer-related projects.
 
-## 12.4 A Final Look at Recent Trends
+## 12.4 Real-World Problems You'll Often Hit in a Team Project
 
-These are too early to cover this semester, but here's a brief look at a
-few directions of active research right now — the goal isn't depth, but
-sketching a map of where what you've learned can lead.
+Here's a preview of how the concepts covered this semester show up in an
+actual project:
 
-- **Theorem Proving**: a research area where LLMs are used to actually
-  prove mathematical theorems. Building on Chain-of-Thought (Chapter 4),
-  this is developing toward models that generate and verify step-by-step
-  arguments themselves.
-- **Autoformalization**: research on automatically converting
-  mathematical claims written in natural language by humans into a
-  formal language that a computer can verify — aiming at the goal of "the
-  computer itself checks whether a proof is correct."
-- **Extensions of Chain-of-Thought (CoT)**: the CoT prompting we saw in
-  Chapter 4 is now developing further, into training the model itself to
-  "reason across multiple steps" (reasoning models).
+- **Data is messier than you'd think**: check for missing values,
+  outliers, and class imbalance first (a place you'll really feel why ML1
+  Chapter 2.7's Precision/Recall matters).
+- **When training isn't working**: if the loss isn't decreasing, suspect,
+  in order, the learning rate (ML1 Chapter 2), vanishing gradients (ML1
+  Chapter 9), and whether there's simply no signal in the data.
+- **Don't pick a model without validation**: choosing a model based only
+  on training-data performance is an easy way to end up selecting an
+  overfit model — always do a final evaluation on separate
+  validation/test data (ML1 Chapter 6's train/validation/test discipline).
 
-## 12.5 Closing Out the Semester
+## 12.5 Requirement: At Least One Mathematical Justification
 
-Let's recall the one sentence that ran through both of these courses:
-**define a model, quantify how wrong it is with a loss function, and
-adjust parameters to reduce that loss.** From linear regression to
-Transformer to GAN, this principle repeated all semester, changing only
-its shape. Whenever you encounter a new model, returning to these three
-questions — what is it predicting, how does it measure how wrong it is,
-and how does it reduce that — lets you read even the most complicated-
-looking recent paper in the same language.
+The project report must include **at least one choice justified
+mathematically**. Here are examples that satisfy this requirement (adapt
+to your project's topic):
+
+1. If you chose a particular loss function, derive why its gradient takes
+   a form suitable for the problem (reusing the pattern from ML1 Chapter
+   2).
+2. If you used a regularization technique (L1/L2, dropout, etc.), explain
+   how it reduces overfitting with a formula or intuitive argument (ML1
+   Chapters 6, 9).
+3. Quantitatively compare why you chose a particular model architecture,
+   using parameter count/computational complexity formulas (reusing ML1
+   Chapter 10's CNN parameter-counting pattern).
+4. For an RL/generative project, connect one of the concepts from Chapters
+   5-11 (Bellman equation, ELBO, Nash equilibrium) directly to your
+   implementation.
+
+This is meant to preserve, at the larger scale of a project, the
+distinction emphasized all semester between "code that happens to be
+correct" and "knowing why it works."
+
+## 12.6 Aiming for External-Submission Quality
+
+Prepare this project as a standardized set of three deliverables:
+**code + report + poster** — aim for a level ready to hand over
+immediately if an outside institution (a university, etc.) requests these
+materials later.
+
+## 12.7 Grading Criteria
+
+- Clarity of the problem definition
+- Appropriateness of the methodology (were the concepts learned applied
+  correctly?)
+- Accuracy and depth of the mathematical justification
+- Honest reporting of results (were the parts that didn't work hidden, or
+  was the cause analyzed?)
+- Reproducibility of the code

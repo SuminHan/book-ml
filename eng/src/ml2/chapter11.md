@@ -1,113 +1,167 @@
-# Chapter 11. Team Project: Implementation
+# Chapter 11. Generative Models II: Adversarial & Score-Based
 
-Everything covered over the past 10 chapters — defining loss functions,
-deriving gradients, implementing models, and arguing their correctness —
-was treated as an independent chapter's problem each time. The last two
-chapters are a time to assemble these pieces directly into one finished
-project.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter11_gan.ipynb)
 
-## 11.1 Why a Team Project
+In 2014, Ian Goodfellow, then a graduate student, has said in several later
+interviews that he came up with an idea during a bar argument with
+friends: instead of training a model to produce realistic fake images
+directly, **what if two neural networks competed against each other?**
+Set one up as a forger creating fakes (the Generator) and the other as an
+appraiser distinguishing real from fake (the Discriminator), and have the
+forger try to fool the appraiser while the appraiser tries to catch the
+forger — wouldn't the forger's skill keep improving until it approached
+the real thing? This idea is the **GAN** (Generative Adversarial Network).
 
-Real machine learning problems aren't neatly divided as "this chapter is
-logistic regression, that chapter is CNN." Cleaning data, judging which
-model fits, diagnosing why training isn't working (overfitting? vanishing
-gradients? no signal in the data at all?), and explaining the results to
-someone else — going through this entire process yourself is the surest
-way to integrate the past 10 chapters' separate topics into one whole.
+## 11.1 A Completely Different Principle From Last Chapter
 
-## 11.2 Project Structure
+Chapter 10's VAE had a clear objective function: "maximize the likelihood
+(the probability of generating the data)." GAN has no such single
+objective — instead, two networks are trained simultaneously with
+different, even **opposing**, goals. This is a fundamentally different
+game-theoretic setup from the "minimize one loss function" framework
+we've used so far.
 
-- **Code**: must be reproducible — running the same code (with randomness
-  fixed) should give the same result. The entire pipeline, from data
-  preprocessing to final evaluation, should be organized into
-  scripts/notebooks.
-- **Report**: follows the structure problem definition → methodology →
-  experimental results → (required) at least one mathematical
-  justification → limitations and future improvements.
-- **Poster**: a summary for the presentation (Chapter 12) — condensed to
-  1-2 key figures (learning curves, example results, etc.) and 3-4 of the
-  most important conclusions.
+## 11.2 GAN: The Generator-Discriminator Min-Max Game
 
-## 11.3 Candidate Project Topics
+- **Generator** \\(G\\): takes random noise \\(z \sim p(z)\\) (usually
+  standard normal) and produces a fake sample \\(G(z)\\).
+- **Discriminator** \\(D\\): takes data as input and outputs the
+  probability \\(D(x) \in [0,1]\\) that it's real (exactly the same form
+  as Chapter 2's logistic regression).
 
-The topic is free, but here are some directions to consider:
+Objective function (min-max game):
 
-- **Graph anomaly detection**: using publicly available synthetic data,
-  detect abnormal nodes/edges with a graph neural network (GNN, beyond
-  this semester's scope but connected to ML1 Chapter 10's embedding
-  concept) or traditional methods.
-- **Image classification applications**: apply the CNN structure from ML1
-  Chapter 9 to a real image dataset, trying transfer learning.
-- **A simple chatbot/LLM application project**: apply the prompting
-  techniques from Chapters 2-4 (the LLM section) to a real task
-  (summarization, classification, search).
+\\[\min\_G \max\_D V(D,G) = \mathbb{E}\_{x \sim p\_{\text{data}}}[\log D(x)] +
+\mathbb{E}\_{z \sim p(z)}[\log(1 - D(G(z)))]\\]
 
-**Finding data**: data for the topics above usually comes from one of
-three places.
+- **The discriminator's perspective (\\(\max_D\\))**: wants \\(D(x)\\)
+  close to 1 for real data and \\(D(G(z))\\) close to 0 for fake data —
+  this value grows the better it distinguishes real from fake.
+- **The generator's perspective (\\(\min_G\\))**: wants \\(D(G(z))\\)
+  close to 1 (wants to fool the discriminator).
 
-- **Kaggle** (kaggle.com/datasets): the largest dataset repository,
-  covering tabular data, images, and text alike. Datasets organized as
-  Competitions are especially useful — you can also study the evaluation
-  metric and top-scoring solutions.
-- **UCI Machine Learning Repository** (archive.ics.uci.edu): mostly
-  classic tabular datasets, small enough for fast experimentation and for
-  validating a model you implemented by hand.
-- **Hugging Face Datasets** (huggingface.co/datasets): text and image
-  datasets you can load in just a few lines of code — especially
-  convenient for LLM/Transformer-related projects.
+```python
+def discriminator_loss(D_real, D_fake):
+    # D_real = D(real data), D_fake = D(fake data) -- both are (0,1) probabilities
+    return -(math.log(D_real) + math.log(1 - D_fake))  # loss the discriminator minimizes
 
-## 11.4 Real-World Problems You'll Often Hit in a Team Project
+def generator_loss(D_fake):
+    return -math.log(D_fake)  # loss the generator minimizes (pushes D_fake toward 1)
+```
 
-Here's a preview of how the concepts covered this semester show up in an
-actual project:
+## 11.3 Why We Need to Discuss "Equilibrium"
 
-- **Data is messier than you'd think**: check for missing values,
-  outliers, and class imbalance first (a place you'll really feel why ML1
-  Chapter 3's Precision/Recall matters).
-- **When training isn't working**: if the loss isn't decreasing, suspect,
-  in order, the learning rate (ML1 Chapter 2), vanishing gradients (ML1
-  Chapter 8), and whether there's simply no signal in the data.
-- **Don't pick a model without validation**: choosing a model based only
-  on training-data performance is an easy way to end up selecting an
-  overfit model — always do a final evaluation on separate
-  validation/test data.
+In ordinary supervised learning, minimizing a single loss function was the
+whole story. GAN trains two networks simultaneously with **opposing**
+goals, so we first have to redefine what "training is done" even means.
+In game theory, the stable state of a situation like this (each player
+choosing their best strategy given the other's) is called a **Nash
+equilibrium** — a state where neither side can improve by changing their
+own strategy alone.
 
-## 11.5 Requirement: At Least One Mathematical Justification
+Theoretically, this game's Nash equilibrium is proven to be the point
+where \\(D(x) = 0.5\\) (the discriminator cannot tell real from fake at
+all) and the distribution \\(G\\) produces exactly matches the real data
+distribution — the theoretical endpoint is "the generator is so perfect
+that the discriminator is left just guessing." This chapter's exercises
+argue this equilibrium directly.
 
-The project report must include **at least one choice justified
-mathematically**. Here are examples that satisfy this requirement (adapt
-to your project's topic):
+## 11.4 Instability in Practice
 
-1. If you chose a particular loss function, derive why its gradient takes
-   a form suitable for the problem (reusing the pattern from ML1 Chapters
-   2-3).
-2. If you used a regularization technique (dropout, weight decay, etc.),
-   explain how it reduces overfitting with a formula or intuitive argument
-   (ML1 Chapter 8).
-3. Quantitatively compare why you chose a particular model architecture,
-   using parameter count/computational complexity formulas (reusing ML1
-   Chapter 9's CNN parameter-counting pattern).
-4. For an RL/generative project, connect one of the concepts from Chapters
-   5-10 (Bellman equation, ELBO, Nash equilibrium) directly to your
-   implementation.
+Unlike the theory, actual GAN training is often unstable — a common
+problem is **mode collapse**, where the generator crowds around just a
+few patterns that fool the discriminator and loses diversity. VAE tends to
+be theoretically stable but produces somewhat blurry results, while GAN
+produces sharp results but is finicky to train — this tradeoff is the
+practical difference between the two principles.
 
-This is meant to preserve, at the larger scale of a project, the
-distinction emphasized all semester between "code that happens to be
-correct" and "knowing why it works."
+## 11.5 Another Principle: Diffusion — Gradually Reversing Noise
 
-## 11.6 Aiming for External-Submission Quality
+**Diffusion models** are a third, completely different approach.
 
-Prepare this project as a standardized set of three deliverables:
-**code + report + poster** — aim for a level ready to hand over
-immediately if an outside institution (a university, etc.) requests these
-materials later.
+**Forward process**: add tiny amounts of noise to a real image \\(x_0\\),
+repeated \\(T\\) times, until \\(x_T\\) becomes pure random noise (this
+process is a fixed procedure, not something that's trained).
 
-## 11.7 Grading Criteria
+**Reverse process**: a neural network is trained to predict "what the
+noise looked like one step earlier" — that is, it repeatedly learns the
+small step of reconstructing \\(x_{t-1}\\) from \\(x_t\\). Once trained, a
+new image is created by starting from pure noise \\(x_T\\) and repeating
+this reverse step \\(T\\) times.
 
-- Clarity of the problem definition
-- Appropriateness of the methodology (were the concepts learned applied
-  correctly?)
-- Accuracy and depth of the mathematical justification
-- Honest reporting of results (were the parts that didn't work hidden, or
-  was the cause analyzed?)
-- Reproducibility of the code
+Unlike GAN, which tries to turn noise into an image "all at once,"
+Diffusion breaks that hard problem into \\(T\\) tiny steps — each step is
+the much easier problem of "removing just a tiny bit of noise," so
+training is far more stable overall. The tradeoff is that generating a
+single image requires \\(T\\) repeated steps, making it slower than GAN.
+The most widely used image generation models today (Stable Diffusion and
+similar) use this principle.
+
+## 11.6 Comparing the Three Principles
+
+| | VAE (likelihood-based) | GAN (adversarial) | Diffusion (score-based) |
+|---|---|---|---|
+| Training objective | Maximize ELBO | Equilibrium of a min-max game | Minimize noise-prediction error at each step |
+| Training stability | Relatively stable | Prone to instability | Stable |
+| Generation quality | Somewhat blurry | Sharp | Sharp |
+| Generation speed | Fast (one shot) | Fast (one shot) | Slow (requires iteration) |
+
+**If we had learned only one principle (VAE), it would be easy to
+misunderstand "generative model = likelihood maximization." Only by seeing
+all three side by side does it become clear how many different ways the
+problem of generative modeling itself can be solved.**
+
+---
+
+## Exercises
+
+**1. (Coding)** Complete `discriminator_loss` and `generator_loss` below
+(key lines left blank):
+
+```python
+import math
+
+def discriminator_loss(D_real, D_fake):
+    # ADD ADDITIONAL CODE HERE!!
+    # -(log(D_real) + log(1 - D_fake))
+
+def generator_loss(D_fake):
+    # ADD ADDITIONAL CODE HERE!!
+    # -log(D_fake)
+
+print(discriminator_loss(D_real=0.9, D_fake=0.1))  # the better it distinguishes, the smaller the loss
+print(generator_loss(D_fake=0.9))                  # the better it fools the discriminator, the smaller the loss
+```
+
+**2. (Hand derivation, Tier C — fallback prepared)** For a fixed generator
+\\(G\\), the discriminator's optimal solution is known to be
+
+\\[D^*(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\\]
+
+Accepting this fact, show that if the generator becomes theoretically
+perfect, \\(p_G = p_{\text{data}}\\), then \\(D^*(x) = 0.5\\) (for all
+\\(x\\)). Then argue, in one paragraph, why neither the discriminator nor
+the generator can improve further at this point, and explain why this is
+a Nash equilibrium.
+
+**Fill-in-the-blank fallback version** (if free-form argument is too
+difficult):
+
+```
+Step 1: assume D*(x) = p_data(x) / (p_data(x) + p_G(x)).
+
+Step 2: if p_G(x) = p_data(x):
+  D*(x) = p_data(x) / (______________) = ______________
+
+Step 3: this means the discriminator is ______________ (good at telling them apart / completely confused).
+
+Step 4: if the generator changes strategy here, it ______________ (gets better / gets worse)
+Step 5: if the discriminator changes strategy here, it ______________ (gets better / gets worse)
+
+Conclusion: the state where neither side can benefit from changing strategy alone = ______________ (name of the equilibrium)
+```
+
+**Confirm correctness**: check that the loss values computed in Exercise 1
+match the values at this equilibrium point (\\(D=0.5\\)), and note in one
+sentence why reaching this equilibrium in actual GAN training isn't as
+easy as the theory suggests (e.g., mode collapse).

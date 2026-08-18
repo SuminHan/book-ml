@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Team Project: Presentation - Machine Learning 1/2 (English)</title>
+        <title>Team Project: Implementation - Machine Learning 1/2 (English)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ae623351.js";
+            window.path_to_searchindex_js = "../searchindex-2e3fa3d8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-4ade9c3c.js"></script>
+        <script src="../toc-5d1a76df.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,93 +178,112 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-12-team-project-presentation"><a class="header" href="#chapter-12-team-project-presentation">Chapter 12. Team Project: Presentation</a></h1>
-<p>If last chapter was about implementing the project, this chapter is about
-presenting the results and reflecting on the semester as a whole. Finally,
-we close out the semester with a brief look at a few recent trends that
-are still actively developing right now.</p>
-<h2 id="121-presentation-checklist"><a class="header" href="#121-presentation-checklist">12.1 Presentation Checklist</a></h2>
+                        <h1 id="chapter-12-team-project-implementation"><a class="header" href="#chapter-12-team-project-implementation">Chapter 12. Team Project: Implementation</a></h1>
+<p>Everything covered over the past 11 chapters — defining loss functions,
+deriving gradients, implementing models, and arguing their correctness —
+was treated as an independent chapter’s problem each time. The last two
+chapters are a time to assemble these pieces directly into one finished
+project.</p>
+<h2 id="121-why-a-team-project"><a class="header" href="#121-why-a-team-project">12.1 Why a Team Project</a></h2>
+<p>Real machine learning problems aren’t neatly divided as “this chapter is
+logistic regression, that chapter is CNN.” Cleaning data, judging which
+model fits, diagnosing why training isn’t working (overfitting? vanishing
+gradients? no signal in the data at all?), and explaining the results to
+someone else — going through this entire process yourself is the surest
+way to integrate the past 11 chapters’ separate topics into one whole.</p>
+<h2 id="122-project-structure"><a class="header" href="#122-project-structure">12.2 Project Structure</a></h2>
 <ul>
-<li><strong>Problem definition</strong> (1 minute): what were you trying to solve? Why
-is that problem interesting?</li>
-<li><strong>Methodology</strong> (2-3 minutes): what model/algorithm did you use, and
-why did you choose it?</li>
-<li><strong>Mathematical justification</strong> (2 minutes): make sure to hit at least
-one of the justifications from last chapter’s report during the talk
-too.</li>
-<li><strong>Results</strong> (2 minutes): show both quantitative results (numbers,
-graphs) and qualitative results (examples).</li>
-<li><strong>Limitations and reflection</strong> (1-2 minutes): what didn’t work, and why
-do you think that happened? What would you have tried with more time?</li>
+<li><strong>Code</strong>: must be reproducible — running the same code (with randomness
+fixed) should give the same result. The entire pipeline, from data
+preprocessing to final evaluation, should be organized into
+scripts/notebooks.</li>
+<li><strong>Report</strong>: follows the structure problem definition → methodology →
+experimental results → (required) at least one mathematical
+justification → limitations and future improvements.</li>
+<li><strong>Poster</strong>: a summary for the presentation (Chapter 13) — condensed to
+1-2 key figures (learning curves, example results, etc.) and 3-4 of the
+most important conclusions.</li>
 </ul>
-<p>A good presentation weighs “why you built it that way” and “what you
-learned” more heavily than “what you built.” In particular, not hiding the
-parts that didn’t work, and diagnosing the cause using concepts from this
-semester — for example, “the loss wasn’t decreasing, and on closer
-inspection the gradient was vanishing” — is worth far more than simply
-saying “we achieved 90% accuracy.”</p>
-<h2 id="122-ml2-concept-map-review"><a class="header" href="#122-ml2-concept-map-review">12.2 ML2 Concept Map (Review)</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Chapter</th><th>What We Learned</th><th>The Key Question</th></tr>
-</thead>
-<tbody>
-<tr><td>Ch02</td><td>RNN</td><td>How do we remember and process ordered data?</td></tr>
-<tr><td>Ch03</td><td>Attention/Transformer</td><td>How do we grasp context all at once, without sequential processing?</td></tr>
-<tr><td>Ch04</td><td>LLM</td><td>How does next-token prediction lead to such broad capability?</td></tr>
-<tr><td>Ch05</td><td>MDP/Policy Evaluation</td><td>How do we compute an uncertain future reward right now?</td></tr>
-<tr><td>Ch06</td><td>Q-learning</td><td>How do we learn optimal behavior without a model of the environment?</td></tr>
-<tr><td>Ch07</td><td>DQN</td><td>How do we combine neural networks and RL stably?</td></tr>
-<tr><td>Ch08</td><td>Policy Gradient</td><td>How do we learn a policy directly in a continuous action space?</td></tr>
-<tr><td>Ch09</td><td>VAE</td><td>How do we work around an intractable likelihood to optimize it anyway?</td></tr>
-<tr><td>Ch10</td><td>GAN/Diffusion</td><td>How do adversarial training and gradual noise removal achieve the same goal through different principles?</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="123-the-one-pattern-that-runs-through-ml1--ml2"><a class="header" href="#123-the-one-pattern-that-runs-through-ml1--ml2">12.3 The One Pattern That Runs Through ML1 → ML2</a></h2>
-<p>Let’s give one final summary of the structure that runs through all 24
-chapters across both semesters:</p>
+<h2 id="123-candidate-project-topics"><a class="header" href="#123-candidate-project-topics">12.3 Candidate Project Topics</a></h2>
+<p>The topic is free, but here are some directions to consider:</p>
+<ul>
+<li><strong>Graph anomaly detection</strong>: using publicly available synthetic data,
+detect abnormal nodes/edges with a graph neural network (GNN, beyond
+this semester’s scope but connected to ML1 Chapter 12’s embedding
+concept) or traditional methods.</li>
+<li><strong>Image classification applications</strong>: apply the CNN structure from ML1
+Chapter 10 to a real image dataset, trying the transfer learning
+covered in ML1 Chapter 11.</li>
+<li><strong>A simple chatbot/LLM application project</strong>: apply the prompting
+techniques from Chapters 2-4 (the sequence/LLM section) to a real task
+(summarization, classification, search), or run a small-scale
+experiment with the alignment ideas from Chapter 9.</li>
+</ul>
+<p><strong>Finding data</strong>: data for the topics above usually comes from one of
+three places.</p>
+<ul>
+<li><strong>Kaggle</strong> (kaggle.com/datasets): the largest dataset repository,
+covering tabular data, images, and text alike. Datasets organized as
+Competitions are especially useful — you can also study the evaluation
+metric and top-scoring solutions.</li>
+<li><strong>UCI Machine Learning Repository</strong> (archive.ics.uci.edu): mostly
+classic tabular datasets, small enough for fast experimentation and for
+validating a model you implemented by hand.</li>
+<li><strong>Hugging Face Datasets</strong> (huggingface.co/datasets): text and image
+datasets you can load in just a few lines of code — especially
+convenient for LLM/Transformer-related projects.</li>
+</ul>
+<h2 id="124-real-world-problems-youll-often-hit-in-a-team-project"><a class="header" href="#124-real-world-problems-youll-often-hit-in-a-team-project">12.4 Real-World Problems You’ll Often Hit in a Team Project</a></h2>
+<p>Here’s a preview of how the concepts covered this semester show up in an
+actual project:</p>
+<ul>
+<li><strong>Data is messier than you’d think</strong>: check for missing values,
+outliers, and class imbalance first (a place you’ll really feel why ML1
+Chapter 2.7’s Precision/Recall matters).</li>
+<li><strong>When training isn’t working</strong>: if the loss isn’t decreasing, suspect,
+in order, the learning rate (ML1 Chapter 2), vanishing gradients (ML1
+Chapter 9), and whether there’s simply no signal in the data.</li>
+<li><strong>Don’t pick a model without validation</strong>: choosing a model based only
+on training-data performance is an easy way to end up selecting an
+overfit model — always do a final evaluation on separate
+validation/test data (ML1 Chapter 6’s train/validation/test discipline).</li>
+</ul>
+<h2 id="125-requirement-at-least-one-mathematical-justification"><a class="header" href="#125-requirement-at-least-one-mathematical-justification">12.5 Requirement: At Least One Mathematical Justification</a></h2>
+<p>The project report must include <strong>at least one choice justified
+mathematically</strong>. Here are examples that satisfy this requirement (adapt
+to your project’s topic):</p>
 <ol>
-<li><strong>Define a model</strong>: decide the form of the function mapping input to
-output (a line, a tree, a neural network, a Transformer, …).</li>
-<li><strong>Quantify how wrong it is</strong>: a loss function (MSE, cross-entropy, TD
-error, ELBO, a min-max objective, …) — the form is different every
-time, but the role is always the same.</li>
-<li><strong>Adjust parameters to reduce that loss</strong>: gradient descent (directly,
-or via backpropagation) — this is, in the end, the final step of every
-algorithm covered this semester.</li>
+<li>If you chose a particular loss function, derive why its gradient takes
+a form suitable for the problem (reusing the pattern from ML1 Chapter
+2).</li>
+<li>If you used a regularization technique (L1/L2, dropout, etc.), explain
+how it reduces overfitting with a formula or intuitive argument (ML1
+Chapters 6, 9).</li>
+<li>Quantitatively compare why you chose a particular model architecture,
+using parameter count/computational complexity formulas (reusing ML1
+Chapter 10’s CNN parameter-counting pattern).</li>
+<li>For an RL/generative project, connect one of the concepts from Chapters
+5-11 (Bellman equation, ELBO, Nash equilibrium) directly to your
+implementation.</li>
 </ol>
-<p>Whenever you encounter a new paper or model, developing the habit of
-breaking it down into “what does it say for each of these three
-questions” is the most durable tool these two courses hope to leave you
-with.</p>
-<h2 id="124-a-final-look-at-recent-trends"><a class="header" href="#124-a-final-look-at-recent-trends">12.4 A Final Look at Recent Trends</a></h2>
-<p>These are too early to cover this semester, but here’s a brief look at a
-few directions of active research right now — the goal isn’t depth, but
-sketching a map of where what you’ve learned can lead.</p>
+<p>This is meant to preserve, at the larger scale of a project, the
+distinction emphasized all semester between “code that happens to be
+correct” and “knowing why it works.”</p>
+<h2 id="126-aiming-for-external-submission-quality"><a class="header" href="#126-aiming-for-external-submission-quality">12.6 Aiming for External-Submission Quality</a></h2>
+<p>Prepare this project as a standardized set of three deliverables:
+<strong>code + report + poster</strong> — aim for a level ready to hand over
+immediately if an outside institution (a university, etc.) requests these
+materials later.</p>
+<h2 id="127-grading-criteria"><a class="header" href="#127-grading-criteria">12.7 Grading Criteria</a></h2>
 <ul>
-<li><strong>Theorem Proving</strong>: a research area where LLMs are used to actually
-prove mathematical theorems. Building on Chain-of-Thought (Chapter 4),
-this is developing toward models that generate and verify step-by-step
-arguments themselves.</li>
-<li><strong>Autoformalization</strong>: research on automatically converting
-mathematical claims written in natural language by humans into a
-formal language that a computer can verify — aiming at the goal of “the
-computer itself checks whether a proof is correct.”</li>
-<li><strong>Extensions of Chain-of-Thought (CoT)</strong>: the CoT prompting we saw in
-Chapter 4 is now developing further, into training the model itself to
-“reason across multiple steps” (reasoning models).</li>
+<li>Clarity of the problem definition</li>
+<li>Appropriateness of the methodology (were the concepts learned applied
+correctly?)</li>
+<li>Accuracy and depth of the mathematical justification</li>
+<li>Honest reporting of results (were the parts that didn’t work hidden, or
+was the cause analyzed?)</li>
+<li>Reproducibility of the code</li>
 </ul>
-<h2 id="125-closing-out-the-semester"><a class="header" href="#125-closing-out-the-semester">12.5 Closing Out the Semester</a></h2>
-<p>Let’s recall the one sentence that ran through both of these courses:
-<strong>define a model, quantify how wrong it is with a loss function, and
-adjust parameters to reduce that loss.</strong> From linear regression to
-Transformer to GAN, this principle repeated all semester, changing only
-its shape. Whenever you encounter a new model, returning to these three
-questions — what is it predicting, how does it measure how wrong it is,
-and how does it reduce that — lets you read even the most complicated-
-looking recent paper in the same language.</p>
 
                     </main>
 
@@ -274,6 +293,9 @@ looking recent paper in the same language.</p>
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
+                            <a rel="next prefetch" href="../ml2/chapter13.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -285,6 +307,9 @@ looking recent paper in the same language.</p>
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
+                    <a rel="next prefetch" href="../ml2/chapter13.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>

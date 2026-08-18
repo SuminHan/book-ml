@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Generative Models I: Likelihood-Based - Machine Learning 1/2 (English)</title>
+        <title>LLM Post-training: RLHF &amp; Alignment - Machine Learning 1/2 (English)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ae623351.js";
+            window.path_to_searchindex_js = "../searchindex-2e3fa3d8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-4ade9c3c.js"></script>
+        <script src="../toc-5d1a76df.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,138 +178,148 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-9-generative-models-i-likelihood-based"><a class="header" href="#chapter-9-generative-models-i-likelihood-based">Chapter 9. Generative Models I: Likelihood-Based</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter09_vae_elbo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>Remember the question ML1’s last chapter left us with — “what if we pick a
-random value in the bottleneck and feed it to the decoder? Could it
-produce new data that never actually existed?” The <strong>Variational
-Autoencoder (VAE)</strong>, published in 2013 by Diederik Kingma and Max Welling,
-is the formal answer to that question.</p>
-<h2 id="91-why-an-autoencoder-alone-doesnt-work"><a class="header" href="#91-why-an-autoencoder-alone-doesnt-work">9.1 Why an Autoencoder Alone Doesn’t Work</a></h2>
-<p>A regular autoencoder’s latent space comes with no guarantee about “which
-values reconstruct into plausible data” — the training data can occupy a
-sparse or irregular region of latent space, and sampling randomly from the
-empty space in between gives no idea what will come out. VAE’s solution is
-to force the encoder to output a <strong>probability distribution</strong> (usually the
-mean and variance of a Gaussian) instead of a single point \(z\). An
-additional constraint pushes that distribution to be close to a standard
-normal distribution (mean 0, variance 1) — this makes the entire latent
-space smooth and densely filled, so sampling from any point is likely to
-produce plausible data.</p>
-<h2 id="92-the-structure-of-a-vae"><a class="header" href="#92-the-structure-of-a-vae">9.2 The Structure of a VAE</a></h2>
-<ul>
-<li><strong>Encoder</strong> \(q_\phi(z|x)\): takes input \(x\) and outputs a
-probability distribution over the latent variable \(z\) (usually the
-mean and variance of a Gaussian \(\mathcal{N}(\mu(x),
-\sigma^2(x))\)).</li>
-<li><strong>Sampling</strong>: draw a \(z\) from that distribution.</li>
-<li><strong>Decoder</strong> \(p_\theta(x|z)\): reconstructs (or generates) \(x\)
-from \(z\).</li>
-</ul>
-<h2 id="93-the-likelihood-perspective"><a class="header" href="#93-the-likelihood-perspective">9.3 The Likelihood Perspective</a></h2>
-<p>VAE is the first of “the three principles of generative models” — the
-<strong>likelihood-based</strong> approach: train the model to directly maximize (or
-maximize an approximation of) the probability (likelihood) \(P(x)\) that
-it generates the training data. The problem is that
-\(p_\theta(x) = \int p_\theta(x|z)p(z),dz\) is an integral over every
-possible \(z\), which is generally intractable to compute.</p>
-<h2 id="94-elbo-working-around-it-with-a-computable-lower-bound"><a class="header" href="#94-elbo-working-around-it-with-a-computable-lower-bound">9.4 ELBO: Working Around It With a Computable Lower Bound</a></h2>
-<p>Instead of \(\log p_\theta(x)\), which can’t be computed directly, the
-following can be shown to hold:</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\]</p>
-<p>The right-hand side is called the <strong>ELBO</strong> (Evidence Lower BOund). What
-its two terms mean:</p>
-<ul>
-<li>The first term \(\mathbb{E}[\log p_\theta(x|z)]\): the
-<strong>reconstruction term</strong> — how well the decoder reconstructs the
-original \(x\) from the encoder’s \(z\) (essentially the same as an
-ordinary autoencoder’s reconstruction error).</li>
-<li>The second term \(D_{KL}(q_\phi(z|x)|p(z))\): the <strong>regularization
-term</strong> — how far the encoder’s distribution \(q_\phi(z|x)\) strays
-from the target prior \(p(z)\) (usually a standard normal
-distribution), measured by KL divergence — the same concept ML1 Chapter
-3.3 introduced via Shannon’s information theory, a “distance” between two
-probability distributions. This term is exactly what makes the latent
-space smooth.</li>
-</ul>
-<p>Since \(\log p_\theta(x) \ge \text{ELBO}\), <strong>maximizing the ELBO also
-raises the actual likelihood’s lower bound</strong> — swapping a goal we can’t
-compute directly for a computable surrogate goal. Deriving this inequality
-itself using Jensen’s inequality is the centerpiece of this chapter’s
-exercises.</p>
-<pre><code class="language-python">def vae_loss(x, x_reconstructed, mu, log_var):
-    # reconstruction loss (approximated here with MSE)
-    recon_loss = sum((x[i] - x_reconstructed[i]) ** 2 for i in range(len(x)))
-    # KL divergence: closed-form formula between Gaussian q(mu, sigma^2) and standard normal N(0,1)
-    kl_loss = -0.5 * sum(1 + log_var[i] - mu[i]**2 - math.exp(log_var[i])
-                          for i in range(len(mu)))
-    return recon_loss + kl_loss  # maximizing ELBO = minimizing this loss (negative ELBO)
-</code></pre>
-<h2 id="95-the-reparameterization-trick-for-reference"><a class="header" href="#95-the-reparameterization-trick-for-reference">9.5 The Reparameterization Trick (For Reference)</a></h2>
-<p>Sampling \(z\) directly from a probability distribution is a
-non-differentiable operation, so backpropagation can’t flow back through
-it to the encoder. VAE works around this with the reparameterization
-trick, rewriting the sampling as \(z = \mu + \sigma \odot \epsilon\)
-(treating \(\epsilon \sim \mathcal{N}(0,1)\) as a constant that pulls
-the randomness outside) — now \(\mu\) and \(\sigma\) are
-differentiable, so backpropagation flows normally. The detailed derivation
-goes beyond this semester’s scope, but the question itself — “why can’t we
-just sample directly” — is worth remembering.</p>
-<p><strong>Next chapter covers two completely different principles (adversarial,
-score-based) — comparing all three side by side makes clear just how
-differently the same goal (“generate plausible new data”) can be
-approached.</strong></p>
-<hr>
-<h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
-<p><strong>1. (Coding)</strong> Complete <code>kl_divergence_gaussian</code> (the KL divergence
-between Gaussian \(\mathcal{N}(\mu, \sigma^2)\) and the standard normal,
-\(D_{KL} = -\frac{1}{2}(1 + \log\sigma^2 - \mu^2 - \sigma^2)\)) and
-<code>vae_loss</code> below (key lines left blank):</p>
+                        <h1 id="chapter-9-llm-post-training-rlhf--alignment"><a class="header" href="#chapter-9-llm-post-training-rlhf--alignment">Chapter 9. LLM Post-training: RLHF &amp; Alignment</a></h1>
+<p>In 2022, OpenAI reported a surprising observation in the InstructGPT
+paper — a model with 100x fewer parameters, if refined the way people
+actually wanted, was preferred by human raters far more often than a
+much larger model that had only been pretrained. Chapter 4’s pretraining
+(next-token prediction) produces “plausible-sounding text,” but that’s no
+guarantee it’s “the answer a person actually wants” — pretraining data
+mixes in brilliant writing alongside nonsensical or rude writing. This
+chapter covers <strong>post-training</strong>, the stage that refines a pretrained
+model in the direction people actually want — and its central tool turns
+out to be Chapter 8’s PPO.</p>
+<h2 id="91-sft-refining-with-ideal-answers-a-person-wrote"><a class="header" href="#91-sft-refining-with-ideal-answers-a-person-wrote">9.1 SFT: Refining With Ideal Answers a Person Wrote</a></h2>
+<p>The simplest form of post-training is <strong>Supervised Fine-Tuning</strong> (SFT):
+collect ideal (question, answer) pairs written by people, and train the
+pretrained model on that data with ordinary supervised learning one more
+time — exactly Chapter 4’s next-token-prediction loss, just with the data
+swapped from internet text to hand-written, high-quality examples. The
+problem is scale: having a person <strong>write</strong> “what a good answer looks
+like” from scratch, every time, is expensive, and it’s hard to cover the
+huge variety of questions a model might encounter.</p>
+<h2 id="92-rlhf-applying-ppo-through-a-reward-model"><a class="header" href="#92-rlhf-applying-ppo-through-a-reward-model">9.2 RLHF: Applying PPO Through a Reward Model</a></h2>
+<p><strong>RLHF</strong> (Reinforcement Learning from Human Feedback) takes a different
+strategy — instead of a person writing a fresh “correct answer” every
+time, they only need to <strong>pick which of several model-generated answers
+is better</strong> (comparing is much easier and faster than writing). This
+preference data is used to train a <strong>Reward Model</strong>, and then Chapter 8’s
+PPO is applied to the language model itself, treated as a policy, to
+maximize that reward model’s score.</p>
+<p><strong>Step 1 — Train the reward model</strong>: given two answers \(y_w\) (the one
+a person preferred, the “winner”) and \(y_l\) (the “loser”) to the same
+question \(x\), train a reward model \(r_\phi(x,y)\) to assign a
+higher score to \(y_w\). The Bradley-Terry model represents this
+preference probability with a sigmoid:</p>
+<p>\[P(y_w \succ y_l \mid x) = \sigma\big(r_\phi(x,y_w) - r_\phi(x,y_l)\big)\]</p>
+<p>The loss that maximizes this probability is <strong>exactly the same
+cross-entropy form as Chapter 2’s logistic regression</strong> — because this is
+a binary classification problem whose only “correct label” is the fact
+that “\(y_w\) won”:</p>
 <pre><code class="language-python">import math
 
-def kl_divergence_gaussian(mu, log_var):
-    # log_var = log(sigma^2)
-    # ADD ADDITIONAL CODE HERE!!
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
 
-print(kl_divergence_gaussian(mu=0.0, log_var=0.0))  # 0.0
-print(kl_divergence_gaussian(mu=2.0, log_var=0.0))  # 2.0
-
-def vae_loss(recon_loss, mu_list, log_var_list):
-    # ADD ADDITIONAL CODE HERE!!
-    # sum the KL divergence across all latent dimensions, then add to the reconstruction loss
-
-print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
+def reward_model_loss(r_win, r_lose):
+    # Bradley-Terry: P(y_w &gt; y_l) = sigmoid(r_win - r_lose)
+    return -math.log(sigmoid(r_win - r_lose))
 </code></pre>
-<p><strong>2. (Hand derivation, Tier C — fallback prepared)</strong> Starting from
-\(\log p_\theta(x) = \log \int p_\theta(x,z),dz\), use Jensen’s
-inequality (\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\)) to derive</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}(q_\phi(z|x)\|p(z))\]</p>
-<p>(Hint: first rewrite \(\log p_\theta(x) = \log \mathbb{E}_{q_\phi}
-\left[\frac{p_\theta(x,z)}{q_\phi(z|x)}\right]\), then apply Jensen’s
-inequality, and decompose \(p_\theta(x,z) = p_\theta(x|z)p(z)\) to
-arrive at the definition of KL divergence.)</p>
-<p><strong>Fill-in-the-blank fallback version</strong> (if free derivation is too
-difficult):</p>
-<pre><code>Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
-                  = log E_q[ ______________ ]
+<p><strong>Step 2 — Train the policy with PPO</strong>: once the reward model is ready,
+treat the language model \(\pi_\theta\) as “a policy that sequentially
+picks an answer \(y\) (one token at a time) as its action, given
+question \(x\) as its state,” use the reward model’s score
+\(r_\phi(x,y)\) as the reward, and apply Chapter 8’s PPO directly. One
+term gets added, though — a KL-divergence penalty subtracted from the
+objective, keeping the policy from straying too far from the original
+pretrained (SFT) model \(\pi_{\text{ref}}\):</p>
+<p>\[J(\theta) = \mathbb{E}\left[r_\phi(x,y)\right] - \beta , D_{KL}\big(\pi_\theta(\cdot|x) ,|, \pi_{\text{ref}}(\cdot|x)\big)\]</p>
+<p>Why this penalty matters: the reward model is itself only an
+approximation, so the policy risks exploiting its blind spots to rack up
+score while actually producing strange text (<strong>reward hacking</strong>). Tying
+the policy to \(\pi_{\text{ref}}\) constrains it to raise reward only
+within the space of “text that still makes sense” — this is exactly what
+Chapter 8.10’s mention of “tuning ChatGPT-style LLMs with RLHF” refers to.</p>
+<h2 id="93-dpo-peftlora-and-an-overview-of-agents--rag"><a class="header" href="#93-dpo-peftlora-and-an-overview-of-agents--rag">9.3 DPO, PEFT/LoRA, and an Overview of Agents &amp; RAG</a></h2>
+<p><strong>DPO</strong> (Direct Preference Optimization, 2023): RLHF is a two-stage
+process — (1) train a separate reward model, then (2) run PPO against it
+— which can be complex and unstable. DPO shows mathematically that the
+optimal policy for the RLHF objective can express the reward function
+directly as a ratio between \(\pi_\theta\) and \(\pi_{\text{ref}}\),
+and substituting that relationship into the reward-model loss yields a
+loss that <strong>learns the policy directly from preference data, with no
+separate reward model and no PPO loop at all</strong>:</p>
+<p>\[\mathcal{L}_{\text{DPO}} = -\log \sigma\left(\beta \log
+\frac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)} - \beta \log
+\frac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\right)\]</p>
+<p>Look at the shape — it’s still the exact same logistic loss as 9.2’s
+reward-model loss, just with the role of “reward” played by
+\(\beta \log(\pi_\theta/\pi_{\text{ref}})\) (how much more the policy
+now prefers that answer compared to the reference model). DPO’s appeal is
+reaching the same theoretical destination as RLHF with a single round of
+supervised learning, no separate reward model and no RL loop required.</p>
+<p><strong>PEFT/LoRA</strong> (Parameter-Efficient Fine-Tuning / Low-Rank Adaptation):
+fine-tuning all tens or hundreds of billions of a model’s parameters is
+computationally and storage-wise expensive. LoRA freezes the original
+weights \(W\) and instead trains only the product of two much
+smaller low-rank matrices, \(\Delta W = BA\) (where \(B, A\) have far
+smaller dimensions than \(W\)), using \(W + \Delta W\) as the new
+weights — cutting the number of trainable parameters by hundreds of times
+while achieving performance close to full fine-tuning in practice.</p>
+<p><strong>Agents and RAG</strong> (Retrieval-Augmented Generation): prompting alone can’t
+answer questions about information the model doesn’t know or external
+documents. RAG first retrieves documents relevant to the question and
+includes them in the prompt; an <strong>agent</strong> goes a step further, letting
+the model <strong>call tools</strong> — search, a calculator, code execution — on its
+own. Both solve the same underlying problem in the same direction:
+instead of cramming all knowledge into the model’s parameters, let the
+model reach for outside information/tools when it needs to.</p>
+<p><strong>If pretraining teaches “how to plausibly continue anything,” post-training
+is the stage that picks out just “what people actually want” from that —
+and its central tool (PPO) is the very same algorithm we already learned
+this semester to solve reinforcement learning problems.</strong></p>
+<hr>
+<h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
+<p><strong>1. (Coding)</strong> Complete <code>reward_model_loss</code> above, and write the DPO
+loss <code>dpo_loss</code> (key lines left blank):</p>
+<pre><code class="language-python">import math
 
-Step 2: apply Jensen's inequality (log is concave):
-  log E_q[ p(x,z)/q(z|x) ] &gt;= E_q[ log(______________) ]
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
 
-Step 3: decomposing p(x,z) = p(x|z) * p(z):
-  = E_q[ log p(x|z) ] + E_q[ ______________ ]
+def reward_model_loss(r_win, r_lose):
+    # ADD ADDITIONAL CODE HERE!!
+    # -log(sigmoid(r_win - r_lose))
 
-Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
+def dpo_loss(logp_win_theta, logp_win_ref, logp_lose_theta, logp_lose_ref, beta):
+    # ADD ADDITIONAL CODE HERE!!
+    # log_ratio_win = beta * (logp_win_theta - logp_win_ref)
+    # log_ratio_lose = beta * (logp_lose_theta - logp_lose_ref)
+    # -log(sigmoid(log_ratio_win - log_ratio_lose))
 
-Conclusion: log p(x) &gt;= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
+print(round(reward_model_loss(r_win=2.0, r_lose=-1.0), 3))  # 0.049 -- loss is small when well-separated
+print(round(reward_model_loss(r_win=-1.0, r_lose=2.0), 3))  # 3.049 -- loss is large when reversed
 </code></pre>
-<p><strong>Confirm correctness</strong>: explain in one sentence why Step 2 is an
-inequality (<code>&gt;=</code>) rather than an equality (hint: when does Jensen’s
-inequality become an equality? When \(X\) is constant), and explain why
-maximizing the ELBO amounts to “indirectly” maximizing the true
-likelihood \(\log p(x)\).</p>
+<p><strong>2. (Conceptual)</strong> If you removed the KL-divergence penalty
+(\(-\beta D_{KL}(\pi_\theta|\pi_{\text{ref}})\)) from RLHF’s objective
+entirely, what problem could arise? Explain in two or three sentences,
+using the term “reward hacking.”</p>
+<p><strong>3. (Hand derivation, Tier C — fallback prepared)</strong> Show that
+differentiating the Bradley-Terry loss \(\mathcal{L} =
+-\log\sigma(r_\phi(x,y_w) - r_\phi(x,y_l))\) with respect to
+\(r_\phi(x,y_w)\) reduces to the same
+\((\text{prediction} - \text{label})\)-shaped gradient you get from
+differentiating Chapter 2’s logistic regression loss.</p>
+<p><strong>Hint</strong>: substituting \(z = r_\phi(x,y_w) - r_\phi(x,y_l)\) gives
+\(\mathcal{L} = -\log\sigma(z)\), which is exactly the logistic
+regression loss \(-\log h_w(x)\) for “a true label that’s always 1.”
+Reuse the result \(\frac{d}{dz}(-\log\sigma(z)) = \sigma(z) - 1\) you
+derived in section 2.6 to find \(\frac{\partial \mathcal{L}}{\partial
+r_\phi(x,y_w)}\).</p>
+<p><strong>Confirm correctness</strong>: looking at the sign of the gradient you found,
+explain in one sentence why it approaches zero (i.e., stops updating much
+further) once the model already confidently prefers \(y_w\)
+(\(\sigma(z) \to 1\)).</p>
 
                     </main>
 
