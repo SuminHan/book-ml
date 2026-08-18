@@ -1,144 +1,152 @@
-# Chapter 6. GBDT & Explainability
+# Chapter 6. Regularization & Model Selection
 
-In the United States, when a bank denies a loan, the law (the Equal Credit
-Opportunity Act) requires it to give the applicant a **specific reason** —
-"credit score too low," "debt-to-income ratio too high," and so on. But if
-the bank's prediction model is a complex ensemble combining hundreds of
-trees, it's not easy to answer precisely "why was this person denied." The
-model gives a correct answer (deny/approve), but even the model itself
-can't explain **why** in a single line.
+In 1996, statistician Robert Tibshirani proposed a method called the
+"Lasso" (Least Absolute Shrinkage and Selection Operator). The idea was
+simple — add the sum of the absolute values of the weights as a penalty to
+a regression's loss function, and remarkably, the weights on unimportant
+features shrink to **exactly zero**. Instead of a person manually picking
+which of thousands of features actually matter, changing a single loss
+function lets the model filter them out on its own. This chapter covers
+the actual **dial** for controlling the bias-variance tradeoff we saw in
+Chapter 4.4.
 
-## 6.1 Making Trees Stronger: GBDT
+## 6.1 Regularization: Adding a Penalty to the Loss Function
 
-Last chapter's random forest built many trees **independently** and combined
-them by majority vote. **GBDT** (Gradient Boosted Decision Trees) takes a
-different strategy: trees are added one at a time, **sequentially**, and
-each new tree targets whatever the predictions so far have gotten wrong
-(the **residual**).
+As we saw in Chapter 4.4, when a model is too flexible (large, unconstrained
+parameters), variance increases and it overfits. **Regularization** adds a
+penalty term to the loss function that discourages weights from growing too
+large, artificially reducing the model's effective flexibility:
 
-Goal: sequentially add \\(T\\) trees \\(f_1, \ldots, f_T\\) to build the
-prediction \\(F_T(x) = \sum_{t=1}^T f_t(x)\\). When training the \\(t\\)-th
-tree, we treat the **residual** of the predictions accumulated so far,
-\\(r^{(i)} = y^{(i)} - F_{t-1}(x^{(i)})\\), as the new target, and train a
-tree to predict that residual:
+\\[J(w) = \underbrace{\frac{1}{2m}\sum_{i=1}^m (h_w(x^{(i)})-y^{(i)})^2}\_{\text{original loss (fit)}} +
+\underbrace{\lambda R(w)}\_{\text{regularization term (demands simplicity)}}\\]
+
+When \\(\lambda\\) (regularization strength) is 0, this is just the
+original loss function (no regularization); as \\(\lambda\\) grows, the
+model cares more about "keeping the weights small" than "fitting the data
+exactly" — in Chapter 4.4's language, raising \\(\lambda\\) trades variance
+down for bias up.
+
+## 6.2 L2 (Ridge) and L1 (Lasso): the Shape of the Penalty Matters
+
+The two most common penalties are:
+
+- **L2 regularization (Ridge)**: \\(R(w) = \|w\|_2^2 = \sum_j w_j^2\\)
+- **L1 regularization (Lasso)**: \\(R(w) = \|w\|_1 = \sum_j |w_j|\\)
+
+Both aim to "keep the weights small," but **the shape produces different
+results**. L2 smoothly shrinks all weights toward 0, but they rarely land
+exactly on 0. L1 tends to push unimportant weights to **exactly** 0 —
+meaning Lasso does automatic **feature selection** as a side effect of
+regularization.
+
+**Geometric intuition**: rewriting this as minimizing the original loss
+subject to a constraint \\(R(w) \le t\\), L2's constraint region is a
+circle (or sphere), while L1's is a diamond (a polytope with sharp corners
+sitting on the axes). When the loss function's contours meet this region at
+an optimum, they're far more likely to meet at a corner (where some
+coordinate is exactly 0) with the diamond than with the circle — that's the
+geometric reason L1 produces exact zeros and L2 doesn't.
 
 ```python
-def gbdt_fit(X, y, n_trees, learning_rate):
-    trees = []
-    predictions = [0.0] * len(y)  # F_0(x) = 0
-    for t in range(n_trees):
-        residuals = [y[i] - predictions[i] for i in range(len(y))]
-        tree = fit_single_tree(X, residuals)  # train one tree on the residuals
-        trees.append(tree)
-        for i in range(len(y)):
-            predictions[i] += learning_rate * tree.predict(X[i])
-    return trees
+def ridge_gradient_descent(X, y, lam, alpha, epochs):
+    m, n = len(X), len(X[0])
+    w = [0.0] * (n + 1)  # w[0] = bias
+    for _ in range(epochs):
+        grad = [0.0] * (n + 1)
+        for i in range(m):
+            pred = w[0] + sum(w[j+1] * X[i][j] for j in range(n))
+            error = pred - y[i]
+            grad[0] += error
+            for j in range(n):
+                grad[j+1] += error * X[i][j]
+        for j in range(n + 1):
+            reg = lam * w[j] if j > 0 else 0  # bias (w[0]) is conventionally excluded
+            w[j] -= alpha * (grad[j] / m + reg)
+    return w
 ```
 
-The `learning_rate` (shrinkage) deliberately shrinks each tree's
-contribution, so no single tree overfits and the trees instead learn
-gradually, splitting the work among many — a role similar to Chapter 2's
-gradient descent learning rate. In fact, this process of "taking small
-steps toward the residual" can be viewed as gradient descent in function
-space (hence the name **gradient** boosting). XGBoost and LightGBM are
-libraries that push this idea to an extreme level of practical
-optimization, and they remain among the most frequent winners of tabular
-data competitions (Kaggle and similar) to this day.
+Increasing `lam` (\\(\lambda\\)) from 0 upward, you can directly watch the
+learned weights shrink toward 0 — feeding the same data through
+\\(\lambda=0, 0.5, 5.0\\), the slope \\(w_1\\) shrinks from roughly
+\\(2.0 \to 1.4 \to 0.4\\).
 
-## 6.2 Why Predicting the Residual Improves the Whole Model
+## 6.3 Cross-Validation: Letting the Data Choose \\(\lambda\\)
 
-If \\(F_{t-1}\\) is already doing reasonably well, the remaining error (the
-residual) is smaller than the original \\(y\\). If the new tree reduces that
-smaller error further, the overall prediction \\(F_t = F_{t-1} + \eta f_t\\)
-has an error that's one notch smaller still. In theory, the training error
-keeps decreasing the more trees you add — but in practice, you have to stop
-once validation performance starts getting worse (overfitting), a technique
-called early stopping.
+\\(\lambda\\) is a **hyperparameter** — unlike \\(w\\), which gets set by
+training, a hyperparameter needs to be chosen before training even starts.
+Choosing \\(\lambda\\) by looking only at training loss always favors
+\\(\lambda=0\\) (no regularization), which defeats the purpose — you need
+to measure performance on a **validation set**.
 
-## 6.3 The Problem of Being Accurate but Unexplainable
+When data is scarce, **k-fold cross-validation** is used: split the data
+into \\(k\\) parts, and \\(k\\) times, hold out one part for validation
+while training on the rest, then average the performance — every data
+point gets used for both training and validation at some point.
 
-GBDT is powerful, but with hundreds of trees intertwined, it's hard to know
-which features contributed how much to any one prediction. **SHAP**
-(SHapley Additive exPlanations) borrows the **Shapley value** from game
-theory — the answer to "when several people collaborate on an outcome, how
-should the credit be fairly split among them?" — and uses it to decompose a
-single model prediction precisely into "how much each feature contributed."
+```python
+def k_fold_split(data, k, fold_idx):
+    n = len(data)
+    fold_size = n // k
+    start = fold_idx * fold_size
+    end = start + fold_size if fold_idx < k - 1 else n
+    val = data[start:end]
+    train = data[:start] + data[end:]
+    return train, val
+```
 
-## 6.4 SHAP: Decomposing One Prediction Feature by Feature
+**The principle of model selection**: use the training data to fit
+parameters (\\(w\\)), use the validation data to choose hyperparameters
+(\\(\lambda\\), \\(k\\) in kNN, tree depth, etc.), and use the **test
+data** only once, at the very end, to check final performance — using the
+test data to tune hyperparameters is no different from cheating (peeking
+at the test data to pick your model). This three-way split
+(train/validation/test) discipline applies just as strictly to ML2's team
+project.
 
-The original Shapley value answers: "when several players participate in a
-cooperative game, what is each player's fair share?" — averaged over every
-possible order in which players could join, based on the value each one
-adds upon joining.
-
-SHAP applies this by replacing "players" with "features": the SHAP value
-\\(\phi_j\\) of feature \\(j\\) is the average, over every possible order in
-which features are added one by one, of "how much the prediction changed
-when feature \\(j\\) was added." The key property (**additivity**):
-
-\\[f(x) = \phi_0 + \sum_{j=1}^n \phi_j\\]
-
-Here \\(\phi_0\\) is the baseline (the average prediction over the whole
-dataset), and \\(\phi_j\\) is how much feature \\(j\\) pushed the prediction
-up (positive) or down (negative) from that baseline. SHAP's core guarantee
-is that the sum of all \\(\phi_j\\) for one prediction is exactly equal to
-the difference between the actual prediction and the baseline — giving an
-exact-sum decomposition like "why was this loan denied: credit score
-contributed -0.3, income contributed +0.1, ..."
-
-**A small example**: with only 2 features (\\(A, B\\)), there are only two
-possible orderings, \\(A \to B\\) and \\(B \to A\\):
-
-\\[\phi_A = \frac{1}{2}\left[\big(f(\{A\})-f(\{\})\big) +
-\big(f(\{A,B\})-f(\{B\})\big)\right]\\]
-
-As the number of features grows, the number of possible orderings explodes
-as \\(n!\\), so actual SHAP libraries approximate this average quickly via
-sampling.
-
-**A model's accuracy and its explainability are two separate axes — going
-beyond "a model that predicts well" to "a model that can explain why it
-predicted that way" is exactly the question SHAP is trying to answer.**
+**Regularization is the tool that turns Chapter 4.4's bias-variance
+principle — "make the model less flexible to reduce variance" — into
+something you can actually dial in, just by adding a term to the loss
+function. And that dial itself (\\(\lambda\\)) gets set by yet another
+procedure: cross-validation.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Given a decision-stump function `fit_stump` (a depth-1
-tree), complete `gbdt_fit` below (key lines left blank):
+**1. (Coding)** Complete `ridge_gradient_descent` and `k_fold_split` above
+(key lines left blank):
 
 ```python
-def gbdt_fit(X, y, n_trees, learning_rate):
-    trees = []
-    predictions = [0.0] * len(y)
-    for t in range(n_trees):
-        # ADD ADDITIONAL CODE HERE!!
-        # 1. compute residuals = y - predictions
-        # 2. train one tree via fit_stump(X, residuals)
-        # 3. accumulate predictions += learning_rate * tree's prediction
+def ridge_gradient_descent(X, y, lam, alpha, epochs):
+    # ADD ADDITIONAL CODE HERE!!
+    # Chapter 2's gradient_descent, plus an L2 regularization term (excluding bias)
 
-    return trees
+def k_fold_split(data, k, fold_idx):
+    # ADD ADDITIONAL CODE HERE!!
+    # split data into k parts, return fold_idx as validation and the rest as training
+
+X = [[1.0],[2.0],[3.0],[4.0]]
+y = [3.0,5.0,7.0,9.0]
+print(ridge_gradient_descent(X, y, lam=0.0, alpha=0.01, epochs=2000))  # approximately [1.0, 2.0]
+print(ridge_gradient_descent(X, y, lam=5.0, alpha=0.01, epochs=2000))  # w[1] pushed toward 0
+
+print(k_fold_split(list(range(10)), k=5, fold_idx=2))  # ([...], [4, 5])
 ```
 
-**2. (Hand derivation, Tier C — fallback prepared)** A toy model with 2
-features (\\(A, B\\)) has the prediction function \\(f(S)\\):
+**2. (Conceptual)** In gene-expression data with 10,000 features, where
+only about 20 features are believed to actually affect the outcome, which
+would you use — L1 or L2 — and why?
 
-\\[f(\{\}) = 10, \quad f(\{A\}) = 16, \quad f(\{B\}) = 13, \quad f(\{A,B\}) = 20\\]
+**3. (Hand derivation, Tier A — free derivation)** Starting from the L2-
+regularized linear regression (Ridge regression) cost function \\(J(w) =
+\frac{1}{2m}\|Xw-y\|^2 + \frac{\lambda}{2}\|w\|^2\\), differentiate with
+respect to \\(w\\), set the result to zero, and derive that the closed-form
+solution is
 
-Find the marginal contribution of each feature for both possible orderings
-(\\(A \to B\\), \\(B \to A\\)), and compute \\(\phi_A\\) and \\(\phi_B\\).
-Verify that \\(\phi_0 + \phi_A + \phi_B = f(\{A,B\})\\) holds exactly.
+\\[w^* = (X^TX + \lambda I)^{-1}X^Ty\\]
 
-**Fill-in-the-blank fallback version** (if free derivation is too
-difficult):
-
-```
-Order A -> B: A's marginal contribution = f({A}) - f({}) = 16 - 10 = ______________
-              B's marginal contribution = f({A,B}) - f({A}) = 20 - 16 = ______________
-Order B -> A: B's marginal contribution = f({B}) - f({}) = 13 - 10 = ______________
-              A's marginal contribution = f({A,B}) - f({B}) = 20 - 13 = ______________
-
-phi_A = (A's contribution in A->B + A's contribution in B->A) / 2 = ______________
-phi_B = (B's contribution in A->B + B's contribution in B->A) / 2 = ______________
-Check: phi_0 + phi_A + phi_B = f({}) + phi_A + phi_B = ______________ (should equal 20)
-```
+(reuse Chapter 2's normal-equation derivation, adding the derivative of the
+regularization term \\(\nabla_w \frac{\lambda}{2}\|w\|^2 = \lambda w\\)).
+Confirm that as \\(\lambda \to 0\\), this reduces to Chapter 2's normal
+equation \\(w^*=(X^TX)^{-1}X^Ty\\), and explain in one sentence what value
+\\(w^*\\) approaches as \\(\lambda \to \infty\\).

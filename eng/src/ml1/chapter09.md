@@ -1,174 +1,147 @@
-# Chapter 9. CNN Basics
+# Chapter 9. Deep Learning Training Techniques
 
-In 1959, neurophysiologists David Hubel and Torsten Wiesel ran an experiment
-where they implanted electrodes in a cat's visual cortex and showed it
-various visual stimuli. They found that certain neurons respond not to the
-**whole** screen, but only to a specific line orientation within a tiny
-region (a receptive field) — meaning the brain doesn't look at an image as
-a whole, but stacks layers of neurons that each detect small local
-patterns, combining them into increasingly complex patterns (lines →
-edges → shapes → objects). This discovery, via Kunihiko Fukushima's
-Neocognitron in the 1980s, became the direct inspiration for what is now
-the **Convolutional Neural Network (CNN)**.
+The backpropagation we covered last chapter can, in theory, compute
+gradients no matter how many layers there are. But when you actually stack
+10 or 20 layers deep, something strange happens: the weights of layers near
+the input barely learn at all. This is one reason neural networks stayed
+"shallow" (2-3 layers) for so long — the paradox that going deeper actually
+makes training worse.
 
-## 9.1 Why You Shouldn't Feed Images to an MLP
+## 9.1 The Sigmoid's Hidden Trap
 
-To feed an image into the Multi-Layer Perceptron (MLP) from Chapter 7, you'd
-have to flatten every pixel into one long vector. A 200×200 grayscale image
-alone gives 40,000 inputs, and if the first hidden layer has 1000 neurons,
-that's already 40 million weights just for that connection — and this
-approach doesn't exploit the fact that "a cat is still a cat whether it's
-in the top-left or bottom-right of the photo" at all. Shift a single pixel
-and the whole thing is treated as a completely different input.
+The cause lies in the sigmoid function itself. \\(\sigma'(z) =
+\sigma(z)(1-\sigma(z))\\) has a maximum of only 0.25, at \\(z=0\\).
+Backpropagation **multiplies** this derivative every time it climbs back up
+a layer, so with 10 layers, the signal that reaches the first layer is at
+best \\(0.25^{10} \approx 0.00000095\\) of its original size — effectively
+zero. This is the **vanishing gradient** problem. Conversely, if weights
+are initialized badly, the gradient can instead grow explosively larger
+with each layer — the **exploding gradient** problem.
 
-## 9.2 Convolution: Reusing a Small Filter Across the Whole Image
+## 9.2 Vanishing/Exploding Gradients as a Formula
 
-CNN's core idea is the same thing Hubel and Wiesel discovered: instead of
-looking at the **entire** image at once, slide a small filter (e.g. 3×3)
-across the whole image, reusing it **identically** everywhere. A \\(k
-\times k\\) filter (kernel) slides over the input, and at each position
-computes the sum of elementwise products with the overlapping region:
+In a network with \\(L\\) layers, the chain rule gives the gradient with
+respect to the first layer's weights this form (a product of each layer's
+activation derivative and weights):
+
+\\[\frac{\partial L}{\partial W_1} \propto \prod_{l=2}^{L} \sigma'(z_l) \cdot W_l\\]
+
+- If each \\(\sigma'(z_l) < 1\\) (as with sigmoid), this product shrinks
+  exponentially toward 0 as the number of layers grows — **vanishing
+  gradient**.
+- If each term is greater than 1 (e.g., weights initialized too large), the
+  product grows exponentially — **exploding gradient**.
+
+## 9.3 Activation Functions
+
+The activation functions and regularization techniques (dropout, batch
+normalization) covered in this chapter look like unrelated tricks on the
+surface, but most of them are really different angles on solving this one
+problem: "how do we keep the gradient alive as it travels through a deep
+network?"
+
+| Function | Definition | Derivative | Notes |
+|---|---|---|---|
+| Sigmoid | \\(\frac{1}{1+e^{-z}}\\) | \\(\sigma(z)(1-\sigma(z))\\), max 0.25 | Output in (0,1) — useful for probabilities, but prone to vanishing gradients |
+| Tanh | \\(\frac{e^z-e^{-z}}{e^z+e^{-z}}\\) | max 1 | Output in (-1,1), better than sigmoid but still saturates at both ends |
+| ReLU | \\(\max(0, z)\\) | 1 if \\(z>0\\), 0 if \\(z<0\\) | Derivative is always 1 in the positive region — doesn't shrink the gradient across layers |
+
+ReLU's derivative is either 0 or 1, so multiplying by it never shrinks
+anything. It does have the "dying ReLU" problem — the derivative is exactly
+0 when \\(z<0\\), so a neuron can get stuck — but it's simple to compute
+and has no vanishing-gradient issue in the positive region, which is why
+it's the most common default choice today. With ReLU, activated neurons
+have \\(\sigma'(z_l)=1\\), so the product above is at least never shrunk by
+the activation function itself — though the size of the weights \\(W_l\\)
+themselves remains a separate concern (which is why the initialization and
+regularization techniques below still matter).
+
+## 9.4 Overfitting and Regularization
+
+Overfitting is when a model fits the training data perfectly but performs
+worse on new data. In the bias-variance terms from Chapter 4.4, a neural
+network's huge number of parameters makes it an extremely flexible
+(high-variance) model, which is exactly why it's so prone to overfitting —
+Chapter 6's L1/L2 regularization applies to neural nets too, but neural
+nets also lean on regularization techniques baked into their structure:
+
+- **Dropout**: at every training step, randomly turn off some fraction
+  \\(p\\) of neurons. This prevents neurons from becoming overly dependent
+  on one another, forcing the network to learn more robust features rather
+  than relying on a handful of specific neurons — similar to how "assuming
+  some teammates might always be absent" tends to make everyone develop
+  each other's skills to some degree.
+- **Batch Normalization**: normalize each layer's input, per mini-batch, to
+  mean 0 and variance 1, then multiply and add learnable scale/shift
+  parameters. This reduces the phenomenon where a layer's input
+  distribution keeps shifting during training (internal covariate shift),
+  making training faster and more stable.
 
 ```python
-def conv2d(image, kernel):
-    img_h, img_w = len(image), len(image[0])
-    k = len(kernel)
-    out_h, out_w = img_h - k + 1, img_w - k + 1
-    output = [[0.0] * out_w for _ in range(out_h)]
-    for i in range(out_h):
-        for j in range(out_w):
-            total = 0.0
-            for di in range(k):
-                for dj in range(k):
-                    total += image[i+di][j+dj] * kernel[di][dj]
-            output[i][j] = total
-    return output
+def dropout(activations, p, training):
+    if not training:
+        return activations
+    import random
+    return [0.0 if random.random() < p else a / (1 - p) for a in activations]
 ```
 
-Each filter is **trained** to respond strongly to a particular pattern
-(vertical lines, edges, etc.) — the filter's values themselves are the
-parameters being learned. An "edge-detecting filter" needs to detect edges
-the same way no matter where it is in the image, so there's no need to
-learn separate weights for each position — this reuse (**parameter
-sharing**) is why CNNs can handle much larger images with far fewer
-parameters than an MLP.
+(Why divide by `(1-p)`: during training, only \\((1-p)\\) of neurons are
+alive on average, so this rescaling keeps the expected value consistent
+with inference time, when all neurons are used.)
 
-## 9.3 The Output Size Formula
+## 9.5 Weight Initialization
 
-For an input of size \\(n \times n\\), filter size \\(k \times k\\),
-padding \\(p\\) (the number of zero pixels added around the input's edge),
-and stride \\(s\\) (how many cells the filter moves each step), the output
-size is:
+If all weights are initialized to zero, every neuron learns identically
+(the symmetry-breaking problem), making stacking multiple layers
+pointless. If weights are initialized too large, gradients explode; too
+small, and vanishing becomes more likely. Methods like Xavier/He
+initialization account for the number of input/output neurons at a layer
+and initialize weights randomly with an appropriately scaled variance —
+designed so the gradient's magnitude stays roughly constant across layers.
 
-\\[n_{\text{out}} = \left\lfloor \frac{n + 2p - k}{s} \right\rfloor + 1\\]
-
-Example: with \\(n=28, k=3, p=0, s=1\\), \\(n_{\text{out}} = 28-3+1 = 26\\).
-Without padding, the image shrinks a little every time a filter passes
-over it — setting \\(p = (k-1)/2\\) (**"same" padding**) keeps the output
-the same size as the input.
-
-## 9.4 Counting Parameters and Computation
-
-For a convolutional layer with \\(C_{\text{in}}\\) input channels,
-\\(C_{\text{out}}\\) output channels (i.e., filters), and filter size
-\\(k \times k\\), the number of parameters (including bias) is:
-
-\\[\text{params} = (k \times k \times C_{\text{in}} + 1) \times C_{\text{out}}\\]
-
-Comparing this to a fully-connected layer of the same size makes the
-efficiency of CNNs obvious. Example: for a 32×32×3 image, a convolutional
-layer with a 3×3 filter and 16 output channels uses only
-\\((3 \times 3 \times 3 + 1) \times 16 = 448\\) parameters. Connecting the
-same input to a fully-connected layer (assuming 32×32×16 output neurons
-too) would need millions.
-
-**Computation (FLOPs) is a different question from parameter count**:
-parameter count measures "how many numbers do we need to store," while the
-actual computational cost (speed) is measured by "how many
-multiply-accumulate operations happen." Computing one output position, one
-channel, takes \\(k \times k \times C_{\text{in}}\\) multiplications, and
-this repeats for every output position (\\(n_{\text{out}} \times
-n_{\text{out}}\\) of them) and every filter (\\(C_{\text{out}}\\) of them):
-
-\\[\text{FLOPs} \approx n_{\text{out}}^2 \times C_{\text{out}} \times (k
-\times k \times C_{\text{in}})\\]
-
-This looks almost identical to the parameter-count formula, but **it has an
-extra factor of \\(n_{\text{out}}^2\\) that the parameter count doesn't** —
-the same filter (the same parameters) gets reused at every output position,
-which is why parameters stay few, but the actual computation repeats once
-per position.
-
-Example: apply a single 3×3 filter (\\(C_{\text{out}}=1\\), no padding,
-stride 1) to a 224×224 grayscale image (\\(C_{\text{in}}=1\\)). Then
-\\(n_{\text{out}}=224-3+1=222\\), and:
-
-\\[\text{FLOPs} = 222^2 \times 1 \times (3\times3\times1) = 49{,}284
-\times 9 = 443{,}556\\]
-
-About 440,000 multiply-accumulate operations. Real CNNs use dozens to
-hundreds of filters, not just one — bump the same input up to 64 filters
-(\\(C_{\text{out}}=64\\)) and computation scales up by exactly 64×, to about
-28.39 million. **Adding more kernels (filters) scales parameter count and
-computation in exact proportion.** Real CNNs stack dozens to hundreds of
-such convolutional layers, which is why total computation is tracked just
-as closely as parameter count when designing a model.
-
-![How spatial size (width×height) shrinks and channel count (depth) grows across convolutions — visualizing the exact network from Section 9.4's exercise (32×32×3 → Conv5×5,6 → Pool2×2 → Conv5×5,16)](../images/ch09_cnn_structure.svg)
-
-## 9.5 Pooling
-
-After convolution, a pooling layer usually reduces the spatial size.
-**Max pooling** keeps only the maximum value from each \\(2\times2\\)
-region — if a feature shifts by a pixel or two, the same maximum is likely
-to still be picked, creating features that are insensitive to small shifts
-(translation-invariant). Pooling has no trainable parameters — it's a pure
-downsampling operation.
-
-## 9.6 The Typical CNN Structure
-
-Stack `[convolution → activation (ReLU) → pooling]` several times, shrinking
-spatial size while growing the number of channels (features), then finish
-with one or two fully-connected layers to produce the classification
-output. Shallow layers learn to detect low-level patterns like lines and
-edges, while deeper layers learn increasingly high-level patterns like
-eyes, noses, and wheels — the same hierarchical structure, from simple
-cells to complex cells, that Hubel and Wiesel observed.
-
-**A CNN implements a single insight — that an image's local patterns can be
-reused regardless of position — through a single operation: convolution.**
+**The intuition "deeper network = smarter model" is only half right — the
+other half is the far more practical question of whether that depth can
+actually be trained.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete `conv2d` above (key lines left blank) and the
-following `max_pool`:
+**1. (Coding)** Complete `relu`, `relu_prime`, and
+`gradient_norm_through_layers` below (key lines left blank):
 
 ```python
-def max_pool(feature_map, pool_size):
+def relu(z):
     # ADD ADDITIONAL CODE HERE!!
 
-fm = [[1,3,2,4],
-      [5,6,7,8],
-      [9,1,2,3],
-      [4,5,6,7]]
-print(max_pool(fm, 2))  # [[6,8],[9,7]]
+def relu_prime(z):
+    # ADD ADDITIONAL CODE HERE!!
+    # 1 if z > 0, else 0 (by convention, 0 at z=0)
+
+def gradient_norm_through_layers(n_layers, sigmoid_derivatives):
+    # ADD ADDITIONAL CODE HERE!!
+    # return the product of all values in sigmoid_derivatives
+
+print(gradient_norm_through_layers(5, [0.2]*5))   # 0.2^5 = 0.00032
+print(gradient_norm_through_layers(20, [0.2]*20)) # 0.2^20 -- effectively 0
 ```
 
-**2. (Hand derivation, Tier A — free derivation)** For an input of size
-\\(n \times n\\), filter size \\(k \times k\\), padding \\(p\\), and stride
-\\(s\\), derive the output size formula
+**2. (Conceptual)** Batch Normalization and Dropout both have a
+regularizing effect, but they work differently. Explain how each one's
+behavior changes at inference time compared to training time.
 
-\\[n_{\text{out}} = \left\lfloor \frac{n + 2p - k}{s} \right\rfloor + 1\\]
+**3. (Hand derivation, Tier B — hints provided)** Show that the sigmoid
+derivative \\(\sigma'(z) = \sigma(z)(1-\sigma(z))\\) reaches a maximum of
+0.25 at \\(z=0\\) (hint: differentiate \\(f(p)=p(1-p)\\) with respect to
+\\(p\\) and set it to zero — the maximum occurs at \\(p=0.5\\), and
+\\(\sigma(0)=0.5\\)).
 
-by directly counting the number of positions a filter can occupy on the
-image. (Hint: after padding, the effective input size is \\(n+2p\\). Count
-how many hops of size \\(s\\) are needed for the filter to move from one
-end to the other.)
+For a 10-layer network where every layer's \\(\sigma'(z_l)\\) equals this
+maximum of 0.25, compute what percentage of the original gradient's size
+survives after passing through all 10 layers. Then compute the same for
+ReLU (where \\(\sigma'(z_l)=1\\) in the positive region) and compare.
 
-Then compute the output size, parameter count, and computation (FLOPs) at
-each layer of the following CNN — input: 32×32×3, Layer 1: 5×5 filter, 6
-output channels, padding 0, stride 1. Layer 2 (pooling): 2×2 max pooling
-(no parameters or FLOPs to compute). Layer 3: 5×5 filter, 16 output
-channels, padding 0, stride 1.
+**Confirm correctness**: based on your calculations, explain in one
+paragraph why sigmoid-based networks get harder to train as they get
+deeper, and note that ReLU doesn't fully solve this problem either (its
+derivative is 0 in the negative region).

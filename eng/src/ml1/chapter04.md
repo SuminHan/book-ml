@@ -1,4 +1,4 @@
-# Chapter 4. Distance-Based Models: kNN
+# Chapter 4. Distance-Based Models & Clustering: kNN & k-means
 
 "You are the average of your five closest friends," the saying goes.
 Translate that sentence directly into an algorithm and you get
@@ -81,9 +81,9 @@ model that's too flexible (\\(k=1\\) in kNN, a very deep tree, a neural
 network with many parameters) has high variance and low bias — overfitting.
 The two are always in this tradeoff, and the optimal model complexity is
 wherever their sum (the total error) is minimized — this framework will
-resurface whenever we ask "how do we prevent overfitting" in Chapter 5
-(limiting tree depth / pruning) and Chapter 8 (neural network
-regularization).
+resurface whenever we ask "how do we prevent overfitting" in Chapter 6
+(regularization), Chapter 7 (limiting tree depth / pruning), and Chapter 9
+(neural network regularization).
 
 The right \\(k\\) is usually chosen by trying several values against a
 validation set.
@@ -120,7 +120,7 @@ point starts to look about equally far from every other point.
 If kNN is a lazy method that only measures distance at prediction time,
 k-means is a way of finding structure in the data itself, using nothing
 but distance, with no labels at all. Having no labels puts it in the
-unsupervised learning territory we'll cover in Chapter 10, but its core
+unsupervised learning territory we'll cover in Chapter 12, but its core
 move — find the closest thing — is exactly this chapter's theme. It
 partitions the data into \\(k\\) groups, each represented by a
 **centroid**.

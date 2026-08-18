@@ -5,17 +5,19 @@
 # Machine Learning 1
 
 - [Orientation](ml1/chapter01.md)
-- [Linear Regression](ml1/chapter02.md)
-- [Logistic Regression & Classification Metrics](ml1/chapter03.md)
-- [Distance-Based Models: kNN](ml1/chapter04.md)
-- [Tree-Based Models](ml1/chapter05.md)
-- [GBDT & Explainability](ml1/chapter06.md)
-- [Neural Network Basics & Backpropagation](ml1/chapter07.md)
-- [Deep Learning Training Techniques](ml1/chapter08.md)
-- [CNN Basics](ml1/chapter09.md)
-- [Unsupervised Learning & Representation Learning](ml1/chapter10.md)
-- [Reinforcement Learning Preview](ml1/chapter11.md)
-- [Generative Models Preview & Review](ml1/chapter12.md)
+- [Regression Models: Linear & Logistic](ml1/chapter02.md)
+- [Generative Classifiers: Naive Bayes & GDA](ml1/chapter03.md)
+- [Distance-Based Models & Clustering: kNN & k-means](ml1/chapter04.md)
+- [Support Vector Machines & Kernels](ml1/chapter05.md)
+- [Regularization & Model Selection](ml1/chapter06.md)
+- [Tree-Based Models: Decision Trees to GBDT](ml1/chapter07.md)
+- [Neural Network Basics & Backpropagation](ml1/chapter08.md)
+- [Deep Learning Training Techniques](ml1/chapter09.md)
+- [CNN Basics](ml1/chapter10.md)
+- [CNN Applications & Modern Architectures](ml1/chapter11.md)
+- [Unsupervised Learning & Representation Learning](ml1/chapter12.md)
+- [EM Algorithm & Gaussian Mixture Models](ml1/chapter13.md)
+- [Generative Models Preview & Review](ml1/chapter14.md)
 
 # Machine Learning 2
 

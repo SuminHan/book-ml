@@ -1,160 +1,295 @@
-# Chapter 7. Neural Network Basics & Backpropagation
+# Chapter 7. Tree-Based Models: Decision Trees to GBDT
 
-In 1969, Marvin Minsky and Seymour Papert proved mathematically, in their
-book *Perceptrons*, that a single-layer perceptron cannot solve even
-**XOR**. XOR is a very simple rule ("output 1 if the two inputs differ, 0 if
-they're the same"), but its decision boundary cannot be drawn with a single
-straight line — a problem fundamentally unsolvable by logistic regression
-(a model that separates with one line), which we covered earlier. This
-result sharply curtailed investment in neural network research and became
-one cause of the decade-plus "AI winter" that followed.
+"Is it an animal? Does it walk on four legs? Does it meow?" — the game of 20
+Questions works because, if you pick your yes/no questions well, you can
+narrow down almost any answer within twenty tries. A **Decision Tree**
+translates this game directly into an algorithm. Meanwhile, in the United
+States, when a bank denies a loan, the law (the Equal Credit Opportunity
+Act) requires it to give the applicant a **specific reason**. A single
+tree makes that easy — just read off the questions from root to leaf — but
+if the model is **GBDT**, hundreds of trees combined, accuracy goes up
+while answering "why" gets much harder. This chapter starts with a single
+tree and builds up through two ways of combining many trees (random
+forests, GBDT) to the method that wins back the explainability that costs
+(SHAP).
 
-## 7.1 From Perceptron to Multi-Layer Network
+## 7.1 The Structure of a Decision Tree
 
-The fix turned out to be remarkably simple: if one line isn't enough,
-**stack several lines to build a new space, then separate again in that new
-space.** Logistic regression can actually be viewed as the simplest possible
-"neural network," with only an input and output layer (no hidden layer):
-\\(a = \sigma(w^Tx)\\). A **Multi-Layer Perceptron (MLP)** inserts one or
-more hidden layers in between — adding just a single hidden layer is enough
-to build a boundary that solves XOR perfectly.
+Each internal node is a question (e.g., "\\(x_2 > 5\\)?"), and each leaf
+node is a prediction. To predict, start at the root and descend to a leaf by
+answering each question along the way.
 
-## 7.2 Forward Propagation
+## 7.2 What Makes a "Good" Question: Gini Impurity
 
-For a two-layer network (input → hidden → output) with input \\(x\\),
-hidden layer weights \\(W_1, b_1\\), and output layer weights \\(W_2,
-b_2\\), the forward pass is:
+A good 20-Questions player doesn't ask just any question — asking something
+like "is it alive?" that splits the possible answers roughly in half yields
+the most information. **Gini Impurity** measures how "mixed" the data in a
+node is. With \\(K\\) classes and class \\(k\\) making up a fraction
+\\(p_k\\):
 
-\\[z_1 = W_1 x + b_1, \quad a_1 = \sigma(z_1), \quad z_2 = W_2^T a_1 + b_2,
-\quad a_2 = \sigma(z_2)\\]
+\\[G = 1 - \sum_{k=1}^K p_k^2\\]
 
-\\(z\\) is the value before applying the activation function
-(pre-activation), \\(a\\) is after (activation). The final output \\(a_2\\)
-is the prediction.
+If a node is pure (all one class, so \\(p_k=1\\) for one \\(k\\) and 0 for
+the rest), \\(G=0\\) — the best case. If the classes are evenly split
+(\\(K=2\\), \\(p_1=p_2=0.5\\)), \\(G = 1 - 0.25 - 0.25 = 0.5\\) — the worst
+case (maximum) for binary classification.
 
-## 7.3 Backpropagation: Running the Chain Rule Backwards
+## 7.3 Information Gain
 
-Adding a hidden layer creates a new problem: how do we train that hidden
-layer's weights? The output layer's gradient can be computed exactly as in
-Chapter 3's logistic regression, but the hidden layer has no direct target
-to compare against. The **backpropagation** algorithm, popularized in 1986
-by David Rumelhart, Geoffrey Hinton, and Ronald Williams, solved this: flow
-the output layer's error backward through the chain rule, computing exactly
-how responsible each hidden-layer weight is for the final error.
+First, define **entropy** (already introduced via Shannon's information
+theory in Chapter 2.6):
 
-Given a loss function \\(L\\), we need \\(\frac{\partial L}{\partial W}\\)
-for every weight in order to apply gradient descent. The problem is that
-\\(W_1\\)'s effect on the final loss travels through the long chain
-\\(z_1 \to a_1 \to z_2 \to a_2 \to L\\). The chain rule tells us we can
-follow this chain **backward, from output to input**, multiplying
-derivatives one link at a time:
+\\[H = -\sum_{k=1}^K p_k \log_2 p_k\\]
 
-1. **Output layer error**: \\(\delta_2 = \frac{\partial L}{\partial z_2} =
-   (a_2 - y) \sigma'(z_2)\\) (the same form we saw in Chapter 3 — the
-   combination of cross-entropy and sigmoid always simplifies this
-   cleanly.)
-2. **Hidden layer error**: \\(\delta_1 = (W_2 \delta_2) \odot
-   \sigma'(z_1)\\) — the output layer's error \\(\delta_2\\) is "sent back"
-   through \\(W_2\\) to the hidden layer, then multiplied by the hidden
-   layer's own derivative \\(\sigma'(z_1)\\). (\\(\odot\\) is elementwise
-   multiplication.)
-3. **Gradients**: \\(\frac{\partial L}{\partial W_2} = \delta_2 \cdot
-   a_1^T\\), \\(\frac{\partial L}{\partial W_1} = \delta_1 \cdot x^T\\)
+Like Gini impurity, this is small (0) when pure and large when mixed. If a
+question splits a node into left (\\(L\\)) and right (\\(R\\)) children,
+**information gain** is "entropy before the split, minus the (weighted
+average) entropy after":
 
-This is exactly where the name "backpropagation" comes from: the error
-(\\(\delta\\)) is computed at the output layer, and that value propagates
-**backward** toward the hidden layer, generating the gradient for each
-layer along the way.
+\\[\text{IG} = H(\text{parent}) - \left(\frac{|L|}{|L|+|R|}H(L) +
+\frac{|R|}{|L|+|R|}H(R)\right)\\]
+
+The larger the information gain, the better that question split the data.
+When building a decision tree, at every step we choose **whichever question
+gives the largest information gain (or Gini impurity reduction)** — this is
+the algorithmic version of "ask the question that narrows things down the
+most" from 20 Questions.
 
 ```python
 import math
 
-def sigmoid(x):
-    return 1 / (1 + math.exp(-x))
+def gini(labels):
+    n = len(labels)
+    if n == 0:
+        return 0
+    counts = {}
+    for l in labels:
+        counts[l] = counts.get(l, 0) + 1
+    return 1 - sum((c / n) ** 2 for c in counts.values())
 
-def sigmoid_prime(x):
-    s = sigmoid(x)
-    return s * (1 - s)
+def entropy(labels):
+    n = len(labels)
+    if n == 0:
+        return 0
+    counts = {}
+    for l in labels:
+        counts[l] = counts.get(l, 0) + 1
+    return -sum((c / n) * math.log2(c / n) for c in counts.values())
 
-def two_layer_forward(x, W1, b1, W2, b2):
-    z1 = [sum(W1[i][j] * x[j] for j in range(len(x))) + b1[i] for i in range(len(b1))]
-    a1 = [sigmoid(v) for v in z1]
-    z2 = sum(W2[i] * a1[i] for i in range(len(a1))) + b2
-    a2 = sigmoid(z2)
-    return a2, (x, z1, a1, z2, a2)
-
-def two_layer_backward(y_true, cache, W2):
-    x, z1, a1, z2, a2 = cache
-    delta2 = (a2 - y_true) * sigmoid_prime(z2)
-    delta1 = [W2[i] * delta2 * sigmoid_prime(z1[i]) for i in range(len(z1))]
-    grad_W2 = [delta2 * a1[i] for i in range(len(a1))]
-    grad_b2 = delta2
-    grad_W1 = [[delta1[i] * x[j] for j in range(len(x))] for i in range(len(delta1))]
-    grad_b1 = delta1
-    return grad_W1, grad_b1, grad_W2, grad_b2
+def information_gain(parent_labels, left_labels, right_labels):
+    n = len(parent_labels)
+    weighted_child = (len(left_labels) / n) * entropy(left_labels) + \
+                      (len(right_labels) / n) * entropy(right_labels)
+    return entropy(parent_labels) - weighted_child
 ```
 
-## 7.4 Why Do This "Without Autograd," by Hand
+## 7.4 When to Stop Splitting
 
-PyTorch and TensorFlow compute all these derivatives automatically with a
-single line, `.backward()` (automatic differentiation). But if you don't
-know exactly what that automatic differentiation is doing internally,
-there's no way to diagnose the cause when training diverges or you hit the
-vanishing gradient problem (covered in Chapter 8). The point of this
-chapter's exercises is to walk through, by hand, the exact chain rule that
-the library normally does for you — just once.
+If you let a tree grow fully, it keeps splitting until every leaf is
+perfectly pure — the training data is matched 100%, but the resulting tree
+is fragile (overfit) on new data. In practice, tree size is limited with
+**stopping criteria** like maximum depth or a minimum number of samples per
+leaf, or the fully-grown tree is trimmed back afterward by removing
+unnecessary branches (**pruning** — the same goal as Chapter 6's
+regularization, applied to the shape of a tree instead of a weight vector).
 
-**A neural network's ability to "learn anything" comes from stacking layers
-to increase its expressive power; its ability to be "actually trained" comes
-down to a single idea: the chain rule.**
+## 7.5 From One Tree to a Forest: Random Forests
+
+A single tree can easily memorize the training data perfectly (overfitting).
+The idea behind a **Random Forest** is simple: build many trees that each
+differ slightly from one another, and predict by majority vote across them.
+Two sources of randomness are added:
+
+1. **Bagging (Bootstrap Aggregating)**: each tree is trained on a
+   same-sized dataset drawn with replacement from the original data — so
+   every tree sees slightly different data.
+2. **Feature randomization**: at each split, instead of considering all
+   features, only a randomly chosen subset is considered for the best
+   question.
+
+These two sources of randomness make the trees less like one another, so
+that when you take the majority vote (or average), each individual tree's
+overfitting tendencies tend to cancel out — the same principle behind why
+the average of "100 experts who all make the exact same mistakes" is far
+less reliable than the average of "100 experts who each make different
+mistakes."
+
+## 7.6 Making Trees Stronger: GBDT
+
+Random forest builds many trees **independently** and combines them by
+majority vote. **GBDT** (Gradient Boosted Decision Trees) takes a
+different strategy: trees are added one at a time, **sequentially**, and
+each new tree targets whatever the predictions so far have gotten wrong
+(the **residual**).
+
+Goal: sequentially add \\(T\\) trees \\(f_1, \ldots, f_T\\) to build the
+prediction \\(F_T(x) = \sum_{t=1}^T f_t(x)\\). When training the \\(t\\)-th
+tree, we treat the **residual** of the predictions accumulated so far,
+\\(r^{(i)} = y^{(i)} - F_{t-1}(x^{(i)})\\), as the new target, and train a
+tree to predict that residual:
+
+```python
+def gbdt_fit(X, y, n_trees, learning_rate):
+    trees = []
+    predictions = [0.0] * len(y)  # F_0(x) = 0
+    for t in range(n_trees):
+        residuals = [y[i] - predictions[i] for i in range(len(y))]
+        tree = fit_single_tree(X, residuals)  # train one tree on the residuals
+        trees.append(tree)
+        for i in range(len(y)):
+            predictions[i] += learning_rate * tree.predict(X[i])
+    return trees
+```
+
+The `learning_rate` (shrinkage) deliberately shrinks each tree's
+contribution, so no single tree overfits and the trees instead learn
+gradually, splitting the work among many — a role similar to Chapter 2's
+gradient descent learning rate. In fact, this process of "taking small
+steps toward the residual" can be viewed as gradient descent in function
+space (hence the name **gradient** boosting). XGBoost and LightGBM are
+libraries that push this idea to an extreme level of practical
+optimization, and they remain among the most frequent winners of tabular
+data competitions (Kaggle and similar) to this day.
+
+If \\(F_{t-1}\\) is already doing reasonably well, the remaining error (the
+residual) is smaller than the original \\(y\\). If the new tree reduces that
+smaller error further, the overall prediction \\(F_t = F_{t-1} + \eta f_t\\)
+has an error that's one notch smaller still. In theory, the training error
+keeps decreasing the more trees you add — but in practice, you have to stop
+once validation performance starts getting worse (overfitting, or "early
+stopping" — the same validation-data principle from Chapter 6).
+
+## 7.7 The Problem of Being Accurate but Unexplainable
+
+GBDT is powerful, but with hundreds of trees intertwined, it's hard to know
+which features contributed how much to any one prediction. **SHAP**
+(SHapley Additive exPlanations) borrows the **Shapley value** from game
+theory — the answer to "when several people collaborate on an outcome, how
+should the credit be fairly split among them?" — and uses it to decompose a
+single model prediction precisely into "how much each feature contributed."
+
+## 7.8 SHAP: Decomposing One Prediction Feature by Feature
+
+The original Shapley value answers: "when several players participate in a
+cooperative game, what is each player's fair share?" — averaged over every
+possible order in which players could join, based on the value each one
+adds upon joining.
+
+SHAP applies this by replacing "players" with "features": the SHAP value
+\\(\phi_j\\) of feature \\(j\\) is the average, over every possible order in
+which features are added one by one, of "how much the prediction changed
+when feature \\(j\\) was added." The key property (**additivity**):
+
+\\[f(x) = \phi_0 + \sum_{j=1}^n \phi_j\\]
+
+Here \\(\phi_0\\) is the baseline (the average prediction over the whole
+dataset), and \\(\phi_j\\) is how much feature \\(j\\) pushed the prediction
+up (positive) or down (negative) from that baseline. SHAP's core guarantee
+is that the sum of all \\(\phi_j\\) for one prediction is exactly equal to
+the difference between the actual prediction and the baseline — giving an
+exact-sum decomposition like "why was this loan denied: credit score
+contributed -0.3, income contributed +0.1, ..."
+
+**A small example**: with only 2 features (\\(A, B\\)), there are only two
+possible orderings, \\(A \to B\\) and \\(B \to A\\):
+
+\\[\phi_A = \frac{1}{2}\left[\big(f(\{A\})-f(\{\})\big) +
+\big(f(\{A,B\})-f(\{B\})\big)\right]\\]
+
+As the number of features grows, the number of possible orderings explodes
+as \\(n!\\), so actual SHAP libraries approximate this average quickly via
+sampling.
+
+**A decision tree is simultaneously a tree of human-readable rules
+(if-then) and an algorithm whose "how good is this split" can be measured
+exactly with a formula. Combining many trees (random forest, GBDT) raises
+accuracy at the cost of that readability — SHAP is an attempt to win that
+explainability back, using a completely different tool: game theory.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete the forward and backward pass (key lines left
-blank) for a two-layer network with input (2) → hidden (2, sigmoid) →
-output (1, sigmoid):
+**1. (Coding)** Complete `gini` and `best_split` below (key lines left
+blank):
 
 ```python
-def two_layer_nn_forward(x, W1, b1, W2, b2):
+def gini(labels):
     # ADD ADDITIONAL CODE HERE!!
-    # hidden pre-activation z1 = W1 @ x + b1, activation a1 = sigmoid(z1)
-    # output pre-activation z2 = W2 . a1 + b2, activation a2 = sigmoid(z2)
 
-    return a2, (x, z1, a1, z2, a2)
-
-def two_layer_nn_backward(y_true, cache, W2):
-    x, z1, a1, z2, a2 = cache
+def weighted_gini(left_labels, right_labels):
     # ADD ADDITIONAL CODE HERE!!
-    # output error delta2, hidden error delta1, gradients for W2/b2/W1/b1
+    # Gini impurity weighted by left/right node sizes
 
-    return grads
+def best_split(X, y, feature_idx):
+    best_threshold, best_gain = None, -1
+    parent_gini = gini(y)
+    for threshold in sorted(set(row[feature_idx] for row in X)):
+        left_y = [y[i] for i in range(len(X)) if X[i][feature_idx] <= threshold]
+        right_y = [y[i] for i in range(len(X)) if X[i][feature_idx] > threshold]
+        if not left_y or not right_y:
+            continue
+        gain = parent_gini - weighted_gini(left_y, right_y)
+        if gain > best_gain:
+            best_threshold, best_gain = threshold, gain
+    return best_threshold, best_gain
+
+X = [[2.0],[3.0],[4.0],[7.0],[8.0],[9.0]]
+y = ["A","A","A","B","B","B"]
+print(best_split(X, y, 0))  # (4.0, 1.0) -- splits perfectly
 ```
 
-**2. (Hand derivation, Tier C — fallback prepared)** Starting from the loss
-function \\(L = \frac{1}{2}(a_2 - y)^2\\) for the network above, derive
-\\(\frac{\partial L}{\partial W_1}\\) and \\(\frac{\partial L}{\partial
-W_2}\\) from start to finish, **using the chain rule alone**.
+**2. (Coding)** Given a decision-stump function `fit_stump` (a depth-1
+tree), complete `gbdt_fit` below (key lines left blank):
+
+```python
+def gbdt_fit(X, y, n_trees, learning_rate):
+    trees = []
+    predictions = [0.0] * len(y)
+    for t in range(n_trees):
+        # ADD ADDITIONAL CODE HERE!!
+        # 1. compute residuals = y - predictions
+        # 2. train one tree via fit_stump(X, residuals)
+        # 3. accumulate predictions += learning_rate * tree's prediction
+
+    return trees
+```
+
+**3. (Conceptual)** Random forest (independent, parallel trees) and GBDT
+(sequential trees) are both ensembles of "many combined trees," but they
+train in opposite ways. Which one would be more vulnerable to noisy
+(mislabeled) data, and why? (Hint: think about the fact that GBDT keeps
+chasing the residual.)
+
+**4. (Hand derivation, Tier A — free derivation)** Consider 8 samples:
+classes `[A,A,A,A,B,B,B,B]`, feature values \\(x\\) = `[1,2,3,4,5,6,7,8]`.
+
+Compute the Gini impurity of all 8 by hand, then compute the information
+gain (Gini impurity reduction) of the split at \\(x \le 4\\) vs. \\(x > 4\\)
+(threshold=4). Compare it against the information gain of splitting at
+threshold=2 (left: `[A,A]`, right: `[A,A,B,B,B,B]`) — which split does a
+better job of separating the data? Confirm your result matches the output
+of `best_split(X, y, 0)` from Exercise 1.
+
+**5. (Hand derivation, Tier C — fallback prepared)** A toy model with 2
+features (\\(A, B\\)) has the prediction function \\(f(S)\\):
+
+\\[f(\{\}) = 10, \quad f(\{A\}) = 16, \quad f(\{B\}) = 13, \quad f(\{A,B\}) = 20\\]
+
+Find the marginal contribution of each feature for both possible orderings
+(\\(A \to B\\), \\(B \to A\\)), and compute \\(\phi_A\\) and \\(\phi_B\\).
+Verify that \\(\phi_0 + \phi_A + \phi_B = f(\{A,B\})\\) holds exactly.
 
 **Fill-in-the-blank fallback version** (if free derivation is too
 difficult):
 
 ```
-L = (1/2)(a2 - y)^2
+Order A -> B: A's marginal contribution = f({A}) - f({}) = 16 - 10 = ______________
+              B's marginal contribution = f({A,B}) - f({A}) = 20 - 16 = ______________
+Order B -> A: B's marginal contribution = f({B}) - f({}) = 13 - 10 = ______________
+              A's marginal contribution = f({A,B}) - f({B}) = 20 - 13 = ______________
 
-Step 1: dL/da2 = ______________
-Step 2: da2/dz2 = a2(1-a2)  [sigmoid derivative formula -- already given]
-Step 3: dL/dz2 = dL/da2 * da2/dz2 = ______________  (this is delta2)
-Step 4: dz2/dW2 = a1
-Step 5: dL/dW2 = delta2 * ______________
-
-Step 6: dz2/da1 = W2
-Step 7: dL/da1 = delta2 * ______________
-Step 8: da1/dz1 = a1(1-a1)
-Step 9: dL/dz1 = dL/da1 * da1/dz1 = ______________  (this is delta1)
-Step 10: dL/dW1 = delta1 * ______________  (outer product with x)
+phi_A = (A's contribution in A->B + A's contribution in B->A) / 2 = ______________
+phi_B = (B's contribution in A->B + B's contribution in B->A) / 2 = ______________
+Check: phi_0 + phi_A + phi_B = f({}) + phi_A + phi_B = ______________ (should equal 20)
 ```
-
-**Confirm correctness**: connect each line of your finished derivation to
-the corresponding blank in the code above, one sentence each.

@@ -1,180 +1,184 @@
-# Chapter 3. Logistic Regression & Classification Metrics
+# Chapter 3. Generative Classifiers: Naive Bayes & GDA
 
-In 1838, Belgian mathematician Pierre François Verhulst was working on a
-problem: population can't grow exponentially forever. Resources are finite, so
-at some point growth must slow down and converge to some ceiling. He named
-the S-shaped curve he devised to capture this the **logistic** curve. A
-hundred and eighty years later, that same curve is used to solve a problem
-that seems to have nothing to do with population growth: "what percent chance
-is there that this email is spam?"
+In 2002, programmer Paul Graham wrote an essay called "A Plan for Spam,"
+arguing that most spam filters of the time — which relied on hand-written
+rules ("if the subject contains 'free,' it's spam") — were easily fooled,
+and that a much simpler statistical method could do better: count how
+often words appear in spam versus legitimate email, then flip that with
+Bayes' rule to compute "the probability this is spam given these words."
+This method (Naive Bayes) was widely adopted and became the standard for
+early spam filters. This chapter approaches classification from a
+fundamentally different direction than Chapter 2.
 
-## 3.1 From Regression to Classification
+## 3.1 Bayes' Rule, and Generative vs. Discriminative
 
-The name "logistic regression" is misleading — this is not a regression
-algorithm, it's a **classification** algorithm. Linear regression's output
-\\(w^Tx\\) can be anything from \\(-\infty\\) to \\(+\infty\\), but "the
-probability of being spam" must lie strictly between 0 and 1. The logistic
-function (sigmoid) does exactly this conversion:
+Chapter 2's logistic regression modeled \\(P(y|x)\\) (the probability of
+the answer given the input) **directly** — this kind of approach is
+called a **discriminative** model. This chapter's approach is the
+opposite: model how each class "generates" data (\\(P(x|y)\\)) first, and
+flip it via **Bayes' rule** to get the \\(P(y|x)\\) we actually want —
+this is called a **generative** model.
 
-\\[\sigma(z) = \frac{1}{1+e^{-z}}\\]
+\\[P(y|x) = \frac{P(x|y)P(y)}{P(x)}\\]
 
-As \\(z \to +\infty\\), \\(\sigma(z) \to 1\\); as \\(z \to -\infty\\),
-\\(\sigma(z) \to 0\\); at \\(z=0\\), \\(\sigma(0)=0.5\\). Any real number
-passed through this function lands between 0 and 1, so it can be read as a
-probability.
+In classification, \\(x\\) is fixed and we compare across values of
+\\(y\\) (the classes), so the denominator \\(P(x)\\) (the same across all
+classes) can be ignored, and we just maximize the numerator:
 
-## 3.2 The Model
+\\[\hat{y} = \arg\max_y P(x|y)P(y)\\]
 
-\\[h_w(x) = \sigma(w^Tx) = \frac{1}{1+e^{-w^Tx}}\\]
+Here \\(P(y)\\) is the **prior** (e.g., the fraction of all email that's
+spam), and \\(P(x|y)\\) is the **likelihood** (e.g., the probability that
+a spam email contains these particular words). The name "generative"
+comes from the fact that this model, in effect, learns "given class
+\\(y\\), how is data \\(x\\) generated" — you can even sample from the
+learned \\(P(x|y)\\) to produce fake "typical" data for that class (the
+same family of idea as ML1 Chapter 13's EM/GMM and ML2 Chapter 10's
+generative models).
 
-\\(h_w(x)\\) is interpreted as "the probability that \\(x\\) belongs to the
-positive class (class 1)." We predict class 1 if \\(h_w(x) \ge 0.5\\), class
-0 otherwise — since \\(h_w(x)=0.5\\) is exactly the point where \\(w^Tx=0\\),
-the decision boundary is still a **straight line** (or hyperplane).
+## 3.2 Gaussian Discriminant Analysis (GDA)
 
-## 3.3 The Loss Function: From Shannon's Information Theory to Cross-Entropy
+When the input \\(x\\) is continuous (a real-valued vector), the most
+natural choice is to assume each class's data follows a **normal
+distribution** — this is **Gaussian Discriminant Analysis** (GDA). For
+binary classification:
 
-If we apply mean squared error directly to the sigmoid, \\(J(w)\\) becomes
-**non-convex** in \\(w\\), risking that gradient descent gets stuck in a local
-minimum. Instead we use the **cross-entropy** loss — a name that comes from
-the **information theory** Claude Shannon founded in 1948.
+\\[y \sim \text{Bernoulli}(\phi), \qquad x \mid y{=}0 \sim
+\mathcal{N}(\mu_0, \Sigma), \qquad x \mid y{=}1 \sim \mathcal{N}(\mu_1, \Sigma)\\]
 
-Shannon asked how to measure "information" mathematically. If an event with
-probability \\(p\\) occurs, how much "surprise" (information) does that news
-carry? He defined it as \\(-\log_2 p\\) (in bits) — a frequent event
-(\\(p\\) near 1) carries almost no information, like "the sun rose in the
-east," while a rare event (\\(p\\) near 0) carries a lot, like "I won the
-lottery."
+We assume the two classes share the **same covariance matrix**
+\\(\Sigma\\), differing only in their means \\(\mu_0, \mu_1\\) (meaning
+the two classes' data is spread in the same "shape," just centered at
+different locations). The parameters \\(\phi, \mu_0, \mu_1, \Sigma\\) are
+estimated by simply computing the training data's empirical mean and
+covariance (maximum likelihood estimation) — solved in closed form with
+no gradient descent needed, which is a practical difference from logistic
+regression.
 
-The **expected value** of this information content is **entropy**:
+**A remarkable fact**: expanding \\(P(y=1|x)\\) computed this way via
+Bayes' rule gives exactly the same sigmoid-linear form as Chapter 2's
+logistic regression, \\(P(y=1|x) = \sigma(w^Tx+b)\\) (derived in this
+chapter's Exercise 2). In other words, GDA is "another road to the same
+decision boundary (a straight line) as logistic regression" — just taking
+a different path there (assuming the data is Gaussian first, versus
+learning the decision boundary directly). If the data really is close to
+Gaussian, GDA tends to fit well with less data; if that assumption is
+wrong, the discriminative model (logistic regression) tends to be more
+robust — this is the fundamental tradeoff between generative and
+discriminative models: fit the model to the data, or assume the data
+follows the model.
 
-\\[H(p) = -\sum_k p_k \log_2 p_k\\]
+## 3.3 Naive Bayes: Assuming Independence to Dodge the Curse of Dimensionality
 
-It's the average information you get from observing events drawn from
-distribution \\(p\\), and equivalently the average number of bits needed to
-optimally encode that distribution (we'll meet it again in Chapter 5.3, as
-the criterion decision trees use to pick "the best splitting question").
+GDA works well when \\(x\\) is low-dimensional and continuous, but for
+something like a spam filter — where \\(x\\) is "whether each word in a
+vocabulary of tens of thousands appears" — estimating the covariance
+matrix \\(\Sigma\\) (vocabulary size by vocabulary size) alone is
+infeasible. **Naive Bayes** sidesteps this with a bold simplification: it
+assumes that, given the class \\(y\\), **each feature (word) is
+independent** of the others:
 
-But what if the true distribution is \\(p\\), while we encode assuming a
-different (possibly wrong) distribution \\(q\\)? The average number of bits
-that takes is the **cross-entropy**:
+\\[P(x|y) = \prod_{j=1}^n P(x_j|y)\\]
 
-\\[H(p, q) = -\sum_k p_k \log_2 q_k\\]
+The name "naive" reflects that this assumption is nearly always false in
+reality — words like "free" and "prize" really do tend to co-occur in
+spam, so they aren't independent. And yet Naive Bayes works surprisingly
+well in practice (especially for text classification) — each
+\\(P(x_j|y)\\) is estimated just by counting word frequencies in the
+data, so the number of parameters grows only **linearly** with vocabulary
+size (unlike GDA's covariance matrix, which grows quadratically).
 
-When \\(q\\) exactly matches \\(p\\), \\(H(p,q) = H(p)\\) — its **minimum**.
-The further \\(q\\) drifts from \\(p\\) (the more wrong the assumed
-distribution is), the larger \\(H(p,q)\\) grows — that excess,
-\\(H(p,q) - H(p)\\), is called **KL divergence**
-(\\(D_{KL}(p\|q)\\)), which we'll meet again in Chapter 9's ELBO for VAEs.
+**Laplace smoothing**: if a word never appeared in the training data for
+some class but shows up in a new email, \\(P(x_j|y)=0\\) makes the entire
+product collapse to zero. Adding 1 to every count sidesteps this:
 
-In logistic regression, the true label \\(y^{(i)}\\) is a "true distribution"
-(100% probability on one class, 0% on the other), and \\(h_w(x^{(i)})\\) is
-the distribution the model predicts. **Minimizing cross-entropy means
-pushing the model's predicted distribution as close as possible to the true
-distribution** — that's exactly why it makes a good loss function:
-
-\\[J(w) = -\frac{1}{m}\sum_{i=1}^m \left[y^{(i)}\log h_w(x^{(i)}) +
-(1-y^{(i)}) \log(1-h_w(x^{(i)}))\right]\\]
-
-(Machine learning usually uses the natural log \\(\log = \ln\\) instead of
-\\(\log_2\\) — the two differ only by a constant factor \\(1/\ln 2\\), which
-doesn't change where the loss is minimized.)
-
-![Sigmoid function (left) and cross-entropy loss vs. predicted probability (right) — the loss blows up as a confident prediction gets further from the true label](../images/ch03_sigmoid_crossentropy.svg)
-
-Intuition: if the true label is \\(y=1\\) but the model confidently predicts
-\\(h_w(x) \to 0\\), then \\(-\log h_w(x) \to \infty\\) — the loss blows up.
-**Being confidently wrong is punished proportionally hard.** Remarkably, when
-you differentiate this loss, you get **exactly the same form** of gradient as
-linear regression:
-
-\\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) - y^{(i)}\right) x_j^{(i)}\\]
-
-So the gradient descent code itself is nearly identical to Chapter 2 — just
-add a sigmoid where \\(h_w\\) is computed.
+\\[P(x_j{=}1|y{=}k) = \frac{(\text{documents in class } k\text{ containing word } j) + 1}{(\text{total documents in class } k) + 2}\\]
 
 ```python
 import math
 
-def sigmoid(z):
-    return 1 / (1 + math.exp(-z))
+def train_naive_bayes(emails, labels):
+    # emails: a list of word lists; labels: a list of 0(ham)/1(spam)
+    vocab = set(w for email in emails for w in email)
+    n_spam = sum(1 for l in labels if l == 1)
+    n_ham = len(labels) - n_spam
+    word_counts = {0: {}, 1: {}}
+    for email, label in zip(emails, labels):
+        for w in set(email):  # Bernoulli Naive Bayes: only presence/absence matters
+            word_counts[label][w] = word_counts[label].get(w, 0) + 1
+    return {"vocab": vocab, "word_counts": word_counts,
+            "n_spam": n_spam, "n_ham": n_ham, "n_total": len(labels)}
 
-def logistic_gradient_descent(X, y, alpha, epochs):
-    m, n = len(X), len(X[0])
-    w = [0.0] * (n + 1)
-    for _ in range(epochs):
-        grad = [0.0] * (n + 1)
-        for i in range(m):
-            pred = sigmoid(w[0] + sum(w[j+1] * X[i][j] for j in range(n)))
-            error = pred - y[i]
-            grad[0] += error
-            for j in range(n):
-                grad[j+1] += error * X[i][j]
-        for j in range(n + 1):
-            w[j] -= alpha * grad[j] / m
-    return w
+def classify(email, model):
+    words = set(email)
+    log_prob = {}
+    for label, n_docs in [(0, model["n_ham"]), (1, model["n_spam"])]:
+        log_p = math.log(n_docs / model["n_total"])  # log P(y)
+        for w in model["vocab"]:
+            p_present = (model["word_counts"][label].get(w, 0) + 1) / (n_docs + 2)
+            log_p += math.log(p_present) if w in words else math.log(1 - p_present)
+        log_prob[label] = log_p
+    return 1 if log_prob[1] > log_prob[0] else 0
 ```
 
-## 3.4 Why "Accuracy" Alone Isn't Enough
+**Why add logs**: with thousands of words, multiplying \\(P(x_j|y)\\)
+thousands of times produces an extremely small number, and floating-point
+precision can't tell the difference (underflow). For exactly the same
+reason Chapter 2's cross-entropy used a sum of logs instead of a product
+of probabilities, we again turn the product into a sum here:
+\\(\log \prod_j P(x_j|y) = \sum_j \log P(x_j|y)\\).
 
-Imagine a cancer-screening model. If 99% of all patients are healthy, a model
-that always predicts "healthy" boasts 99% accuracy — yet it's a useless model
-that catches not a single cancer patient. Precision/Recall/F1 exist precisely
-to reveal the truth that accuracy hides in situations like this (class
-imbalance).
-
-| Actual\\Predicted | Predicted Positive | Predicted Negative |
-|---|---|---|
-| Actual Positive | True Positive (TP) | False Negative (FN) |
-| Actual Negative | False Positive (FP) | True Negative (TN) |
-
-- **Precision** \\(= \frac{TP}{TP+FP}\\): "of everything predicted positive,
-  what fraction was actually positive" — how well false alarms were avoided.
-- **Recall** \\(= \frac{TP}{TP+FN}\\): "of everything actually positive, what
-  fraction was caught" — how few positives were missed.
-- **F1** \\(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}\\):
-  the harmonic mean of precision and recall — it drops if either one is low,
-  so a model can't score well by excelling at only one.
-
-**The precision-recall tradeoff**: raising the threshold from 0.5 to 0.9
-increases precision (only predict positive when confident) but lowers recall
-(ambiguous positives get missed). Lowering the threshold does the opposite.
-**PR-AUC** (the area under the precision-recall curve) summarizes performance
-across the entire tradeoff without depending on any single threshold —
-especially trustworthy under heavy class imbalance, where accuracy is not.
+**GDA and Naive Bayes take different approaches (a normal-distribution
+assumption for continuous values vs. an independence assumption for
+discrete ones), but they share the same generative philosophy: model how
+each class produces data first, then flip it with Bayes' rule.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete `logistic_gradient_descent` above (key lines left
-blank) and the following `precision_recall_f1`:
+**1. (Coding)** Complete `train_naive_bayes` and `classify` above (key
+lines left blank):
 
 ```python
-def precision_recall_f1(y_true, y_pred):
+def train_naive_bayes(emails, labels):
     # ADD ADDITIONAL CODE HERE!!
-    # count TP, FP, FN, then compute precision, recall, f1
-    # (if a denominator is 0, treat that value as 0.0)
+    # build the vocab, count documents per class, count word-appearance-per-document by class
 
-y_true = [1, 1, 1, 0, 0, 0, 1, 0]
-y_pred = [1, 0, 1, 0, 1, 0, 1, 0]
-print(precision_recall_f1(y_true, y_pred))  # (0.75, 0.75, 0.75)
+def classify(email, model):
+    # ADD ADDITIONAL CODE HERE!!
+    # for classes 0 and 1, compute log P(y) + sum(log P(x_j|y)) and compare
+
+emails = [["free", "money", "now"], ["meeting", "tomorrow", "project"],
+          ["free", "prize", "click"], ["project", "deadline", "meeting"]]
+labels = [1, 0, 1, 0]
+model = train_naive_bayes(emails, labels)
+print(classify(["free", "prize"], model))  # 1 (spam)
+print(classify(["project", "meeting"], model))  # 0 (ham)
 ```
 
-**2. (Hand derivation, Tier B — hints provided)** For a single sample's
-cross-entropy loss:
+**2. (Hand derivation, Tier B — hints provided)** Given \\(x|y{=}0 \sim
+\mathcal{N}(\mu_0, \Sigma)\\), \\(x|y{=}1 \sim \mathcal{N}(\mu_1,
+\Sigma)\\) (shared covariance), and \\(y \sim \text{Bernoulli}(\phi)\\),
+derive that
 
-\\[J^{(i)}(w) = -y^{(i)}\log h_w(x^{(i)}) - (1-y^{(i)})\log(1-h_w(x^{(i)}))\\]
+\\[P(y{=}1|x) = \sigma(w^Tx+b), \qquad w = \Sigma^{-1}(\mu_1-\mu_0)\\]
 
-derive that differentiating with respect to \\(w_j\\) gives
-\\(\frac{\partial J^{(i)}}{\partial w_j} = (h_w(x^{(i)}) - y^{(i)})x_j^{(i)}\\).
+(i.e., show that GDA's posterior probability has exactly the same
+sigmoid-of-a-linear-function form as Chapter 2's logistic regression).
 
-**Hint** (apply the chain rule in three steps): (1) First find
-\\(\frac{\partial J^{(i)}}{\partial h}\\) (where \\(h\\) abbreviates
-\\(h_w(x^{(i)})\\)), using \\(\frac{d}{dh}\log h = \frac{1}{h}\\). (2) Then use
-\\(\sigma'(z) = \sigma(z)(1-\sigma(z))\\) to find \\(\frac{\partial
-h}{\partial z}\\) (where \\(z=w^Tx^{(i)}\\)). (3) Using \\(\frac{\partial
-z}{\partial w_j} = x_j^{(i)}\\), multiply the three pieces together via the
-chain rule — remarkably, the \\(h(1-h)\\) term cancels out entirely. Check
-why that happens, and confirm that the result you derived has exactly the
-same form as Chapter 2's linear regression gradient.
+**Hint** (in three steps): (1) Define \\(z = \log\frac{P(x|y{=}1)P(y{=}1)}
+{P(x|y{=}0)P(y{=}0)}\\), and first confirm that \\(P(y{=}1|x) =
+\sigma(z)\\) (using Bayes' rule and the sigmoid's definition). (2)
+Expanding the log of the multivariate normal density gives
+\\(\log P(x|y{=}k) = -\frac{1}{2}(x-\mu_k)^T\Sigma^{-1}(x-\mu_k) +
+\text{constant}\\) — substitute this into \\(z\\) for \\(k=0,1\\) and
+expand. (3) Since both classes share the **same** \\(\Sigma\\), the
+\\(x^T\Sigma^{-1}x\\) quadratic term cancels exactly — figure out what's
+left, confirm that \\(z\\) is a **linear** function of \\(x\\), and
+express \\(w\\) and \\(b\\) in terms of \\(\mu_0, \mu_1, \Sigma, \phi\\).
+
+**Confirm correctness**: if the two classes instead had different
+covariances (\\(\Sigma_0 \ne \Sigma_1\\)), the quadratic term would *not*
+cancel — explain in one sentence what shape the decision boundary would
+become in that case (hint: a quadratic form).
