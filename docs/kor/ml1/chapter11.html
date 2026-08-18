@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>강화학습 맛보기 (Reinforcement Learning Preview) - Machine Learning 1/2 (한국어)</title>
+        <title>CNN 응용과 최신 아키텍처 (CNN Applications &amp; Modern Architectures) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-3aee2f53.js";
+            window.path_to_searchindex_js = "../searchindex-5c8e63ae.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-18bbea20.js"></script>
+        <script src="../toc-9a132350.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,96 +178,107 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-11-강화학습-맛보기-reinforcement-learning-preview"><a class="header" href="#chapter-11-강화학습-맛보기-reinforcement-learning-preview">Chapter 11. 강화학습 맛보기 (Reinforcement Learning Preview)</a></h1>
-<p>2016년, 딥마인드(DeepMind)의 알파고(AlphaGo)는 세계 최고의 바둑 기사 중 한
-명인 이세돌 9단과의 대국에서 4승 1패로 승리했다. 흥미로운 점은 알파고가 학습한
-방식이다: “이 상황에서는 이렇게 두는 게 정답이다“라고 사람이 알려준 게 아니라,
-스스로 수백만 판을 두면서 이긴 판의 수를 늘리는 방향으로 자신의 전략을 조금씩
-개선해나갔다. 정답이 아니라 <strong>결과</strong>(이겼는가/졌는가)만으로 학습한다는 것 —
-이게 지금까지 배운 지도학습과 근본적으로 다른 점이다.</p>
-<h2 id="111-정답이-없을-때-어떻게-배우는가"><a class="header" href="#111-정답이-없을-때-어떻게-배우는가">11.1 정답이 없을 때 어떻게 배우는가</a></h2>
-<p>지도학습은 항상 “정답 \(y\)“가 있었다. 그런데 체스에서 “17번째 수는 정확히
-어디에 둬야 정답인가“라는 질문에는 정답이 없다 — 좋은 수는 여러 개일 수 있고,
-지금 당장은 나빠 보이는 수가 나중에 더 좋은 결과로 이어질 수도 있다.
-<strong>강화학습</strong>(Reinforcement Learning, RL)은 이런 상황을 위한 틀이다:
-에이전트(agent)가 환경(environment)과 상호작용하며 행동(action)을 하고, 그
-결과로 보상(reward)을 받는다. 목표는 “당장의 보상“이 아니라 <strong>누적 보상의
-총합</strong>을 최대화하는 것이다.</p>
-<h2 id="112-강화학습의-구성-요소"><a class="header" href="#112-강화학습의-구성-요소">11.2 강화학습의 구성 요소</a></h2>
+                        <h1 id="chapter-11-cnn-응용과-최신-아키텍처-cnn-applications--modern-architectures"><a class="header" href="#chapter-11-cnn-응용과-최신-아키텍처-cnn-applications--modern-architectures">Chapter 11. CNN 응용과 최신 아키텍처 (CNN Applications &amp; Modern Architectures)</a></h1>
+<p>2015년, 마이크로소프트의 카이밍 허(Kaiming He) 등은 이상한 현상을 발견했다 —
+CNN을 더 깊게 쌓을수록 성능이 좋아질 줄 알았는데, 어느 지점을 넘어서면
+오히려 <strong>더 나빠졌다</strong>. 이건 Chapter 9에서 배운 과적합 때문이 아니었다(학습
+데이터에 대한 성능조차 나빠졌다) — 층을 더해도 그래디언트가 온전히 전달되지
+못해, 깊은 층이 사실상 “학습이 안 되는” 문제였다. 그들의 해법
+<strong>ResNet</strong>(Residual Network)은 놀랍도록 단순했고, 지금 쓰이는 거의 모든
+대형 CNN·Transformer 구조의 기본 재료가 됐다. 이번 장은 CNN을 실전에서
+어떻게 재사용하고 확장하는지를 다룬다.</p>
+<h2 id="111-전이학습-처음부터-다시-배우지-않는다"><a class="header" href="#111-전이학습-처음부터-다시-배우지-않는다">11.1 전이학습: 처음부터 다시 배우지 않는다</a></h2>
+<p>ImageNet(수백만 장의 이미지) 같은 대규모 데이터로 미리 학습된 CNN의 앞쪽
+층들은 선/모서리/질감 같은 아주 범용적인 패턴을 감지하도록 학습돼 있다 —
+이건 “고양이를 구분하는 능력“이 아니라 “이미지를 보는 능력” 자체에 가깝다.
+<strong>전이학습</strong>(Transfer Learning)은 이 사전학습된 앞쪽 층들을 그대로 재사용하고,
+마지막 몇 층(또는 마지막 분류층)만 새로운 문제에 맞게 다시 학습시킨다:</p>
 <ul>
-<li><strong>상태(State) \(s\)</strong>: 에이전트가 처한 상황을 나타내는 정보(예: 바둑판의
-현재 배치, 게임 캐릭터의 위치).</li>
-<li><strong>행동(Action) \(a\)</strong>: 그 상태에서 에이전트가 선택할 수 있는 것(예:
-바둑돌을 놓을 위치).</li>
-<li><strong>보상(Reward) \(r\)</strong>: 행동의 결과로 즉시 받는 숫자 신호(예: 게임에서
-이기면 +1, 지면 -1).</li>
-<li><strong>정책(Policy) \(\pi\)</strong>: 상태를 행동으로 매핑하는 전략 — \(\pi(s) =
-a\)(결정론적) 또는 \(\pi(a|s)\)(확률적, 상태 \(s\)에서 행동 \(a\)를
-선택할 확률).</li>
+<li><strong>특징 추출</strong>(feature extraction): 사전학습된 층의 가중치를 전부
+고정(freeze)하고, 마지막 분류층만 새로 학습시킨다. 데이터가 적을 때
+특히 유리하다 — 새로 학습할 파라미터가 훨씬 적기 때문이다.</li>
+<li><strong>미세조정</strong>(fine-tuning): 사전학습된 가중치를 학습의 시작점으로만
+쓰고, 전체(또는 뒤쪽 일부) 층을 낮은 학습률로 계속 학습시킨다 — 새
+데이터가 어느 정도 있을 때 특징 추출보다 더 좋은 성능을 낸다.</li>
 </ul>
-<p>에이전트는 환경과 계속 상호작용한다: 상태 \(s_0\)에서 행동 \(a_0\)를 하면
-보상 \(r_0\)를 받고 새 상태 \(s_1\)이 되며, 이 과정이 반복된다. 이
-상태-행동-보상의 연속을 <strong>에피소드</strong>(episode) 또는 <strong>궤적</strong>(trajectory)이라
-부른다.</p>
-<h2 id="113-지도학습과의-결정적-차이"><a class="header" href="#113-지도학습과의-결정적-차이">11.3 지도학습과의 결정적 차이</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th></th><th>지도학습</th><th>강화학습</th></tr>
-</thead>
-<tbody>
-<tr><td>무엇이 주어지는가</td><td>(입력, 정답) 쌍</td><td>(상태, 행동, 보상)의 연속</td></tr>
-<tr><td>“정답“이 있는가</td><td>있음</td><td>없음 — 보상만 있음</td></tr>
-<tr><td>데이터의 출처</td><td>미리 고정된 데이터셋</td><td>에이전트 스스로의 행동으로 생성</td></tr>
-<tr><td>시간의 역할</td><td>각 샘플이 독립적</td><td>지금의 행동이 미래 상태에 영향을 줌</td></tr>
-</tbody>
-</table>
-</div>
-<p>가장 중요한 차이는 <strong>지연된 보상</strong>(delayed reward)이다: 체스에서 17번째
-수가 좋았는지는 그 수를 둔 직후가 아니라, 게임이 끝나야(또는 한참 지나야)
-알 수 있다. “지금 이 행동이 최종 결과에 얼마나 기여했는가“를 알아내는
-문제(신용 할당 문제, credit assignment problem)가 RL을 어렵게 만드는 핵심
-이유다.</p>
-<h2 id="114-왜-누적-보상인가"><a class="header" href="#114-왜-누적-보상인가">11.4 왜 “누적” 보상인가</a></h2>
-<p>당장의 보상만 최대화하면 근시안적인 전략이 나온다 — 체스에서 당장 말 하나를
-따먹는 수가, 몇 수 뒤에 체크메이트를 당하는 함정일 수 있다. 그래서 RL은
-<strong>지금부터 끝까지 받을 보상의 총합</strong>(누적 보상, return)을 최대화하도록
-설계된다. 보통 먼 미래의 보상은 할인율(discount factor) \(\gamma\)(0~1
-사이)로 조금씩 깎아서 더한다 — “당장의 이득이 먼 미래의 같은 이득보다 조금 더
-가치있다“는 상식을 반영한 것이다. 이 개념(할인된 누적 보상)은 ML2 Chapter
-5에서 벨만방정식으로 정식화된다.</p>
-<h2 id="115-예고-벨만방정식"><a class="header" href="#115-예고-벨만방정식">11.5 예고: 벨만방정식</a></h2>
-<p>작은 3-state MDP(마르코프 결정 과정, Markov Decision Process — 상태·행동·
-보상·전이를 정식화한 수학적 틀)를 놓고, “각 상태의 가치(그 상태에서
-시작했을 때 기대할 수 있는 누적 보상)“를 손으로 직접 계산해본다. 이 계산의
-정식 명칭이 <strong>벨만방정식</strong>(Bellman equation)이며, ML2 Chapter 5에서 훨씬
-일반적인 형태로 다시 만난다.</p>
-<p><strong>지도학습이 “정답을 흉내 내는 법“을 배운다면, 강화학습은 “무엇이 좋은 결과로
-이어지는지 시행착오로 알아내는 법“을 배운다.</strong></p>
+<p><strong>왜 이게 되는가</strong>: Chapter 6에서 정규화가 “모델을 덜 유연하게 만들어
+분산을 줄인다“고 배웠다. 전이학습도 비슷한 효과를 낸다 — 처음부터
+무작위로 초기화해서 배우는 대신 이미 검증된 좋은 시작점에서 출발하므로,
+훨씬 적은 데이터로도 과적합 없이 학습할 수 있다.</p>
+<h2 id="112-분류를-넘어서-탐지와-분할"><a class="header" href="#112-분류를-넘어서-탐지와-분할">11.2 분류를 넘어서: 탐지와 분할</a></h2>
+<p>지금까지의 CNN은 “이미지 전체가 어떤 클래스인가”(분류)만 답했다. 실전
+문제는 더 세밀한 답을 요구할 때가 많다:</p>
+<ul>
+<li><strong>객체 탐지</strong>(Object Detection): “이미지 안에 사물이 어디에, 무엇이
+있는가” — 각 사물의 위치를 사각형(bounding box)으로, 그 안의 클래스를
+함께 예측한다.</li>
+<li><strong>의미론적 분할</strong>(Semantic Segmentation): “각 픽셀이 어떤 클래스에
+속하는가” — 이미지 크기와 똑같은 크기의 출력을 내되, 각 픽셀에 클래스
+라벨을 붙인다(자율주행에서 “이 픽셀은 도로/보행자/차량” 등을 구분하는
+데 쓰인다).</li>
+</ul>
+<p>두 문제 모두 이 책에서 다룬 합성곱·풀링을 그대로 기본 재료로 쓰지만,
+출력 형태를 바꾸는 구조(예: 분할에서는 공간 크기를 다시 키워 원본
+해상도로 복원하는 층)를 추가한다 — 자세한 구조는 이 학기 범위를
+넘어서지만, “합성곱으로 뽑은 특징 위에 다른 출력 헤드(head)를 붙이면
+문제를 바꿀 수 있다“는 원리 자체는 기억해둘 만하다.</p>
+<h2 id="113-resnet과-스킵-연결-더-깊이-쌓을-수-있게"><a class="header" href="#113-resnet과-스킵-연결-더-깊이-쌓을-수-있게">11.3 ResNet과 스킵 연결: 더 깊이 쌓을 수 있게</a></h2>
+<p>Chapter 9에서 본 그래디언트 소실 문제는 “활성함수의 미분을 층마다
+곱한다“에서 비롯됐다. ResNet의 해법 <strong>스킵 연결</strong>(skip connection, residual
+connection)은 이 곱셈 사슬에 지름길을 낸다 — 한 블록의 출력을 그냥
+\(F(x)\)로 두는 대신, 입력을 그대로 더한 \(y = F(x) + x\)로 정의한다:</p>
+<pre><code class="language-python">def residual_block(x, F):
+    # F: 합성곱 층 몇 개로 이루어진 함수(예: Conv-ReLU-Conv)
+    return [F(x)[i] + x[i] for i in range(len(x))]  # F(x) + x
+</code></pre>
+<p><strong>왜 이게 그래디언트를 살리는가</strong>(직관): \(y=F(x)+x\)를 \(x\)로
+미분하면 \(\frac{\partial y}{\partial x} = \frac{\partial F}{\partial x}</p>
+<ul>
+<li>1\)이다. Chapter 9의 \(\prod_l \sigma’(z_l) \cdot W_l\) 곱셈 사슬에서
+\(\frac{\partial F}{\partial x}\)가 아무리 작아져도(그래디언트 소실),
+더해진 <strong>“+1” 항 덕분에 그래디언트가 최소한 1은 유지된 채로 그대로
+전달될 길이 남는다</strong> — 입력을 “건너뛰어” later 층으로 그대로 흘려보내는
+지름길이 있는 셈이다. 이 아이디어 덕분에 100층이 넘는 CNN도 안정적으로
+학습할 수 있게 됐고, 지금은 ML2에서 배울 Transformer 구조에도 (다른
+형태로) 그대로 쓰인다.</li>
+</ul>
+<p><strong>전이학습·탐지·분할·ResNet은 서로 다른 문제를 풀지만 공통점이 있다 —
+전부 Chapter 10의 “합성곱으로 국소 패턴을 뽑는다“는 기본 재료 위에,
+“그 재료를 어떻게 재사용·재조합·안정화할 것인가“를 답하는 응용이다.</strong></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 3-state MDP(state 0, 1, 2)에서, 고정된 정책으로 하나의
-에피소드를 시뮬레이션하고 할인된 누적 보상(return)을 계산하는
-<code>episode_return</code>을 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
-<pre><code class="language-python">def episode_return(rewards, gamma):
-    # input: rewards = [r_0, r_1, r_2, ...] (에피소드에서 순서대로 받은 보상)
-    #        gamma = 할인율
-    # return: G_0 = r_0 + gamma*r_1 + gamma^2*r_2 + ...
+<p><strong>1. (코딩)</strong> 위 <code>residual_block</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)과,
+“동결된 특징 추출기 + 새로 학습되는 선형 분류층“을 흉내 낸
+<code>transfer_learning_predict</code>를 완성하라:</p>
+<pre><code class="language-python">def residual_block(x, F):
     # ADD ADDITIONAL CODE HERE!!
+    # F(x)를 계산한 뒤 x와 원소별로 더해서 반환
 
-print(episode_return([-1, -1, 0], gamma=0.9))  # -1 + 0.9*(-1) + 0.81*0 = -1.9
+def transfer_learning_predict(x, frozen_features_fn, new_w, new_b):
+    # ADD ADDITIONAL CODE HERE!!
+    # frozen_features_fn(x)로 특징을 뽑은 뒤(가중치 갱신 없음),
+    # new_w · features + new_b로 새 분류 결과를 계산
+
+features_fn = lambda x: [x[0]+x[1], x[0]-x[1]]  # 고정된(사전학습된) 특징 추출
+print(transfer_learning_predict([3, 1], features_fn, new_w=[2, 1], new_b=0.5))
+# features = [4, 2], 예측 = 2*4 + 1*2 + 0.5 = 10.5
 </code></pre>
-<p><strong>2. (손유도, Tier C — 이번 장은 RL “맛보기“라 부담이 크지 않음)</strong> 다음
-3-state MDP를 놓고 각 상태의 가치 \(V(s)\)를 구한다: State 0은 항상 State
-1로 이동(보상 -1), State 1은 항상 State 2로 이동(보상 -1), State 2는 종료
-상태(\(V(2)=0\)). 할인율 \(\gamma = 0.9\).</p>
-<p>벨만방정식 \(V(s) = R(s) + \gamma V(s’)\)을 이용해, \(V(2)=0\)부터
-시작해 거꾸로 대입하며 \(V(1)\)과 \(V(0)\)을 직접 계산하라.</p>
-<p><strong>정확성 확인</strong>: 문제 1의 <code>episode_return([-1, -1, 0], gamma=0.9)</code>가
-State 0에서 시작한 한 에피소드의 실제 누적 보상을 계산한 것이다. 이 값이
-위에서 손으로 계산한 \(V(0)\)과 (거의) 일치하는지 확인하고, 왜 “가치함수
-\(V(s)\)“와 “실제 한 번의 에피소드에서 얻은 누적 보상“이 같은 개념을
-가리키는지 한 문장으로 설명하라.</p>
+<p><strong>2. (개념 서술)</strong> 새로운 문제의 데이터가 (a) 아주 적을 때와 (b) 사전학습
+데이터만큼은 아니어도 꽤 많을 때, 특징 추출과 미세조정 중 각각 어느 쪽을
+선택하는 게 나을지 이유와 함께 답하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> \(L\)개의 잔차 블록을 스킵 연결로
+쌓은 신경망에서, 첫 블록 입력 \(x_0\)에 대한 마지막 출력 \(x_L\)의
+그래디언트 \(\frac{\partial x_L}{\partial x_0}\)가 “적어도 1은 포함하는
+항“을 갖는다는 것을 보여라.</p>
+<p><strong>힌트</strong>: 각 블록이 \(x_{l} = F_l(x_{l-1}) + x_{l-1}\)이라 하자. 연쇄법칙으로
+\(\frac{\partial x_L}{\partial x_0} = \prod_{l=1}^L \frac{\partial
+x_l}{\partial x_{l-1}}\)이고, 각 항은 \(\frac{\partial x_l}{\partial
+x_{l-1}} = \frac{\partial F_l}{\partial x_{l-1}} + 1\)이다. 이 곱을
+전개하면(모든 항이 “1“이거나 “\(\partial F_l/\partial x_{l-1}\)을
+포함하는 항“인 합으로 나뉜다) 그 중 <strong>모든 블록에서 “1“만 골라 곱한
+항</strong>이 정확히 1로 살아남는다는 것을 보여라. Chapter 9의 \(\prod_l
+\sigma’(z_l)\cdot W_l\)(스킵 연결이 없는 경우)과 비교했을 때, 이 “+1”
+항이 왜 그래디언트 소실을 근본적으로 막아주는지 한 문단으로 설명하라.</p>
 
                     </main>
 

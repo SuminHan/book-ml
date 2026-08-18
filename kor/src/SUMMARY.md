@@ -5,17 +5,19 @@
 # Machine Learning 1
 
 - [Orientation](ml1/chapter01.md)
-- [선형회귀 (Linear Regression)](ml1/chapter02.md)
-- [로지스틱회귀와 분류 평가 (Logistic Regression & Classification Metrics)](ml1/chapter03.md)
-- [거리 기반 모델: kNN (Distance-Based Models)](ml1/chapter04.md)
-- [트리 기반 모델 (Tree-Based Models)](ml1/chapter05.md)
-- [GBDT와 설명가능성 (GBDT & Explainability)](ml1/chapter06.md)
-- [신경망 기초와 역전파 (Neural Network Basics & Backpropagation)](ml1/chapter07.md)
-- [딥러닝 학습 기법 (Deep Learning Training Techniques)](ml1/chapter08.md)
-- [CNN 기초 (CNN Basics)](ml1/chapter09.md)
-- [비지도학습과 표현학습 (Unsupervised Learning & Representation Learning)](ml1/chapter10.md)
-- [강화학습 맛보기 (Reinforcement Learning Preview)](ml1/chapter11.md)
-- [생성형 모델 맛보기와 총정리 (Generative Models Preview & Review)](ml1/chapter12.md)
+- [회귀 모델: 선형회귀와 로지스틱회귀 (Regression Models: Linear & Logistic)](ml1/chapter02.md)
+- [생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes & GDA)](ml1/chapter03.md)
+- [거리 기반 모델과 클러스터링: kNN과 k-means (Distance-Based Models & Clustering)](ml1/chapter04.md)
+- [SVM과 커널 (Support Vector Machines & Kernels)](ml1/chapter05.md)
+- [정규화와 모델 선택 (Regularization & Model Selection)](ml1/chapter06.md)
+- [트리 기반 모델: 결정트리에서 GBDT까지 (Tree-Based Models: Decision Trees to GBDT)](ml1/chapter07.md)
+- [신경망 기초와 역전파 (Neural Network Basics & Backpropagation)](ml1/chapter08.md)
+- [딥러닝 학습 기법 (Deep Learning Training Techniques)](ml1/chapter09.md)
+- [CNN 기초 (CNN Basics)](ml1/chapter10.md)
+- [CNN 응용과 최신 아키텍처 (CNN Applications & Modern Architectures)](ml1/chapter11.md)
+- [비지도학습과 표현학습 (Unsupervised Learning & Representation Learning)](ml1/chapter12.md)
+- [EM 알고리즘과 가우시안 혼합모델 (EM Algorithm & Gaussian Mixture Models)](ml1/chapter13.md)
+- [생성형 모델 맛보기와 총정리 (Generative Models Preview & Review)](ml1/chapter14.md)
 
 # Machine Learning 2
 

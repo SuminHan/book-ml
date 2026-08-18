@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes &amp; GDA) - Machine Learning 1/2 (한국어)</title>
+        <title>생성형 모델 맛보기와 총정리 (Generative Models Preview &amp; Review) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,153 +178,103 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-3-생성-모델-관점의-분류-나이브베이즈와-gda-generative-classifiers-naive-bayes--gda"><a class="header" href="#chapter-3-생성-모델-관점의-분류-나이브베이즈와-gda-generative-classifiers-naive-bayes--gda">Chapter 3. 생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes &amp; GDA)</a></h1>
-<p>2002년, 프로그래머 폴 그레이엄(Paul Graham)은 “스팸에 대한 계획”(A Plan for
-Spam)이라는 글에서, 당시 대부분의 스팸 필터가 손으로 짠 규칙(“제목에 ’무료’가
-있으면 스팸”)에 의존해 쉽게 뚫리던 문제를, 훨씬 단순한 통계적 방법으로 풀 수
-있다고 제안했다 — 스팸 메일과 정상 메일 각각에서 단어가 나타나는 빈도를 세고,
-베이즈 정리로 뒤집어 “이 단어들이 나왔을 때 스팸일 확률“을 계산하는 것이다. 이
-방법(나이브베이즈)은 널리 채택되어 초기 스팸 필터의 표준이 됐다. 이번 장은
-Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한다.</p>
-<h2 id="31-베이즈-정리-그리고-생성-vs-판별"><a class="header" href="#31-베이즈-정리-그리고-생성-vs-판별">3.1 베이즈 정리, 그리고 생성 vs 판별</a></h2>
-<p>Chapter 2의 로지스틱회귀는 \(P(y|x)\)(입력이 주어졌을 때 정답의 확률)를
-<strong>곧바로</strong> 모델링했다 — 이런 접근을 <strong>판별적</strong>(discriminative) 모델이라
-부른다. 이번 장의 접근은 정반대다: 각 클래스가 데이터를 어떻게
-“만들어내는지”(\(P(x|y)\))를 먼저 모델링하고, <strong>베이즈 정리</strong>로 뒤집어서
-원하는 \(P(y|x)\)를 얻는다 — 이런 접근을 <strong>생성적</strong>(generative) 모델이라
-부른다.</p>
-<p>\[P(y|x) = \frac{P(x|y)P(y)}{P(x)}\]</p>
-<p>분류에서는 \(x\)가 고정된 채 \(y\)의 각 값(클래스)을 비교하므로, 분모
-\(P(x)\)(모든 클래스에 걸쳐 동일)는 무시하고 분자만 최대화하는 클래스를
-고르면 된다:</p>
-<p>\[\hat{y} = \arg\max_y P(x|y)P(y)\]</p>
-<p>여기서 \(P(y)\)는 <strong>사전확률</strong>(prior, 예: 전체 메일 중 스팸 비율)이고,
-\(P(x|y)\)는 <strong>가능도</strong>(likelihood, 예: 스팸 메일이 이런 단어들을 포함할
-확률)다. “생성적“이라는 이름은, 이 모델이 사실상 “클래스 \(y\)가 주어지면
-데이터 \(x\)를 어떻게 생성하는가“를 학습한다는 데서 온다 — 실제로 학습이
-끝난 \(P(x|y)\)에서 샘플을 뽑으면, 그 클래스의 “전형적인” 가짜 데이터를
-만들어낼 수도 있다(ML1 Chapter 13의 EM/GMM, ML2 Chapter 10의 생성형 모델과
-같은 계열의 아이디어다).</p>
-<h2 id="32-가우시안-판별분석-gda"><a class="header" href="#32-가우시안-판별분석-gda">3.2 가우시안 판별분석 (GDA)</a></h2>
-<p>입력 \(x\)가 연속값(실수 벡터)일 때, 가장 자연스러운 선택은 각 클래스의
-데이터가 <strong>정규분포</strong>를 따른다고 가정하는 것이다 — 이게 <strong>가우시안
-판별분석</strong>(Gaussian Discriminant Analysis, GDA)이다. 이진 분류라면:</p>
-<p>\[y \sim \text{Bernoulli}(\phi), \qquad x \mid y{=}0 \sim
-\mathcal{N}(\mu_0, \Sigma), \qquad x \mid y{=}1 \sim \mathcal{N}(\mu_1, \Sigma)\]</p>
-<p>두 클래스가 <strong>같은 공분산 행렬</strong> \(\Sigma\)를 공유하되, 평균 \(\mu_0,
-\mu_1\)만 다르다고 가정한다(두 클래스의 데이터가 같은 “모양“으로 퍼져
-있지만 중심 위치만 다르다는 뜻). 파라미터 \(\phi, \mu_0, \mu_1, \Sigma\)는
-학습 데이터의 평균·공분산을 그대로 계산해서 구한다(최대우도추정, maximum
-likelihood estimation) — 경사하강법 없이 닫힌 형태로 바로 구해진다는 점이
-로지스틱회귀와의 실전적 차이다.</p>
-<p><strong>놀라운 사실</strong>: 이렇게 구한 \(P(y=1|x)\)를 베이즈 정리로 전개하면, 정확히
-Chapter 2의 로지스틱회귀와 <strong>같은 시그모이드 형태</strong> \(P(y=1|x) =
-\sigma(w^Tx+b)\)가 나온다(유도는 이번 장 연습문제 2번). 즉 GDA는 “로지스틱
-회귀와 같은 결정 경계(직선)에 도달하는 또 다른 길“이다 — 다만 가는
-경로(데이터가 정규분포를 따른다고 먼저 가정하는가, 아니면 결정 경계를
-바로 학습하는가)가 다르다. 데이터가 실제로 가우시안에 가깝다면 GDA가 더
-적은 데이터로도 잘 맞고, 그 가정이 틀렸다면 판별적 모델(로지스틱회귀)이
-더 안정적인 경향이 있다 — “모델을 데이터에 맞출 것인가, 데이터가 모델을
-따른다고 가정할 것인가“라는, 생성적 모델과 판별적 모델의 근본적인
-트레이드오프다.</p>
-<h2 id="33-나이브베이즈-독립을-가정하고-차원의-저주를-피한다"><a class="header" href="#33-나이브베이즈-독립을-가정하고-차원의-저주를-피한다">3.3 나이브베이즈: 독립을 가정하고 차원의 저주를 피한다</a></h2>
-<p>GDA는 \(x\)가 저차원 연속값일 때는 잘 맞지만, 스팸 필터처럼 \(x\)가
-“어휘 사전 크기(수만 개)만큼의 차원을 가진, 각 단어의 등장 여부” 같은
-고차원 데이터라면 공분산 행렬 \(\Sigma\)(어휘 크기 × 어휘 크기)를 추정하는
-것 자체가 감당이 안 된다. <strong>나이브베이즈</strong>(Naive Bayes)는 과감한 단순화로
-이 문제를 피한다 — 클래스 \(y\)가 주어지면 <strong>각 특징(단어)이 서로
-독립</strong>이라고 가정해버린다:</p>
-<p>\[P(x|y) = \prod_{j=1}^n P(x_j|y)\]</p>
-<p>“나이브(순진)“라는 이름은 이 가정이 현실적으로 거의 항상 틀리기 때문이다 —
-“무료“라는 단어와 “당첨“이라는 단어는 스팸 메일에서 실제로 같이 나타나는
-경향이 있어 독립이 아니다. 그런데도 나이브베이즈는 실전에서(특히 텍스트
-분류) 놀랄 만큼 잘 작동한다 — 각 \(P(x_j|y)\)는 데이터에서 단어 \(j\)의
-빈도만 세면 바로 추정되므로, 어휘가 아무리 커도 파라미터 수가 어휘
-크기에 <strong>선형</strong>으로만 늘어난다(GDA의 공분산 행렬처럼 제곱으로 늘지 않는다).</p>
-<p><strong>라플라스 스무딩</strong>: 학습 데이터에 한 번도 안 나온 단어가 새 메일에 등장하면
-\(P(x_j|y)=0\)이 되어 곱 전체가 0이 돼버린다. 모든 카운트에 1을 더해서
-이 문제를 피한다:</p>
-<p>\[P(x_j{=}1|y{=}k) = \frac{(\text{클래스 } k\text{에서 단어 } j\text{가 등장한 문서 수}) + 1}{(\text{클래스 } k\text{의 전체 문서 수}) + 2}\]</p>
-<pre><code class="language-python">import math
-
-def train_naive_bayes(emails, labels):
-    # emails: 단어 리스트의 리스트, labels: 0(정상)/1(스팸) 리스트
-    vocab = set(w for email in emails for w in email)
-    n_spam = sum(1 for l in labels if l == 1)
-    n_ham = len(labels) - n_spam
-    word_counts = {0: {}, 1: {}}
-    for email, label in zip(emails, labels):
-        for w in set(email):  # 등장 여부만 세는 Bernoulli 나이브베이즈
-            word_counts[label][w] = word_counts[label].get(w, 0) + 1
-    return {"vocab": vocab, "word_counts": word_counts,
-            "n_spam": n_spam, "n_ham": n_ham, "n_total": len(labels)}
-
-def classify(email, model):
-    words = set(email)
-    log_prob = {}
-    for label, n_docs in [(0, model["n_ham"]), (1, model["n_spam"])]:
-        log_p = math.log(n_docs / model["n_total"])  # log P(y)
-        for w in model["vocab"]:
-            p_present = (model["word_counts"][label].get(w, 0) + 1) / (n_docs + 2)
-            log_p += math.log(p_present) if w in words else math.log(1 - p_present)
-        log_prob[label] = log_p
-    return 1 if log_prob[1] &gt; log_prob[0] else 0
+                        <h1 id="chapter-14-생성형-모델-맛보기와-총정리-generative-models-preview--review"><a class="header" href="#chapter-14-생성형-모델-맛보기와-총정리-generative-models-preview--review">Chapter 14. 생성형 모델 맛보기와 총정리 (Generative Models Preview &amp; Review)</a></h1>
+<p>2006년, 제프리 힌턴(Geoffrey Hinton)과 루슬란 살라쿠트디노프(Ruslan
+Salakhutdinov)는 신경망으로 PCA보다 훨씬 유연한 방식의 차원축소를 할 수 있음을
+보였다. 핵심 아이디어는 간단하다: 입력을 압축했다가 다시 원본으로 복원하도록
+신경망을 학습시키되, 중간에 <strong>병목</strong>(bottleneck) — 원본보다 훨씬 좁은 은닉층
+— 을 강제로 통과시킨다. 신경망이 병목을 통과하고도 원본을 복원해낸다면, 그
+병목의 값이 원본 정보를 압축한 유용한 표현이라는 뜻이다. 이 구조가
+<strong>오토인코더</strong>(Autoencoder)다.</p>
+<h2 id="141-오토인코더의-구조"><a class="header" href="#141-오토인코더의-구조">14.1 오토인코더의 구조</a></h2>
+<p>두 부분으로 이루어진다:</p>
+<ul>
+<li><strong>인코더</strong>(Encoder) \(f\): 입력 \(x\)를 저차원 잠재 표현(latent
+representation) \(z = f(x)\)로 압축.</li>
+<li><strong>디코더</strong>(Decoder) \(g\): \(z\)로부터 원본을 복원 \(\hat{x} = g(z)\).</li>
+</ul>
+<p>손실함수는 복원 오차(reconstruction error), 보통 평균제곱오차를 쓴다:</p>
+<p>\[J = \frac{1}{m}\sum_{i=1}^m |x^{(i)} - g(f(x^{(i)}))|^2\]</p>
+<pre><code class="language-python">def autoencoder_forward(x, encoder_weights, decoder_weights):
+    z = apply_layer(x, encoder_weights)   # 압축: 입력보다 좁은 은닉층
+    x_hat = apply_layer(z, decoder_weights)  # 복원: 다시 원본 차원으로
+    return x_hat, z
 </code></pre>
-<p><strong>왜 로그를 더하는가</strong>: 단어가 수천 개면 \(P(x_j|y)\)를 수천 번 곱해서
-극도로 작은 수(0에 가까운)가 되고, 컴퓨터의 부동소수점 정밀도로는 구분이
-안 될 수 있다(underflow). Chapter 2에서 교차 엔트로피가 확률의 곱 대신 로그의
-합을 쓴 것과 정확히 같은 이유로, 여기서도 \(\log \prod_j P(x_j|y) = \sum_j
-\log P(x_j|y)\)로 곱을 합으로 바꿔서 계산한다.</p>
-<p><strong>GDA와 나이브베이즈는 접근 방식(연속값에 정규분포 vs. 이산값에 독립 가정)은
-다르지만, 둘 다 “먼저 각 클래스가 데이터를 어떻게 만드는지 모델링하고,
-베이즈 정리로 뒤집는다“는 같은 생성적 철학을 공유한다.</strong></p>
-<hr>
-<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 <code>train_naive_bayes</code>와 <code>classify</code>(핵심 줄은 빈칸으로 남겨져
-있다고 가정)를 완성하라:</p>
-<pre><code class="language-python">def train_naive_bayes(emails, labels):
-    # ADD ADDITIONAL CODE HERE!!
-    # vocab 구성, 클래스별 문서 수 계산, 클래스별 단어 등장 문서 수 카운트
-
-def classify(email, model):
-    # ADD ADDITIONAL CODE HERE!!
-    # 클래스 0, 1 각각에 대해 log P(y) + sum(log P(x_j|y))를 계산해 비교
-
-emails = [["free", "money", "now"], ["meeting", "tomorrow", "project"],
-          ["free", "prize", "click"], ["project", "deadline", "meeting"]]
-labels = [1, 0, 1, 0]
-model = train_naive_bayes(emails, labels)
-print(classify(["free", "prize"], model))  # 1 (스팸)
-print(classify(["project", "meeting"], model))  # 0 (정상)
-</code></pre>
-<p><strong>2. (손유도, Tier B — 힌트 제공)</strong> \(x|y{=}0 \sim \mathcal{N}(\mu_0,
-\Sigma)\), \(x|y{=}1 \sim \mathcal{N}(\mu_1, \Sigma)\)(공분산 공유),
-\(y \sim \text{Bernoulli}(\phi)\)일 때,</p>
-<p>\[P(y{=}1|x) = \sigma(w^Tx+b), \qquad w = \Sigma^{-1}(\mu_1-\mu_0)\]</p>
-<p>가 됨을 유도하라(즉 GDA의 사후확률이 Chapter 2의 로지스틱회귀와 정확히
-같은 시그모이드-선형 형태임을 보여라).</p>
-<p><strong>힌트</strong>(세 단계로 나눠서): (1) \(z = \log\frac{P(x|y{=}1)P(y{=}1)}{P(x|y{=}0)P(y{=}0)}\)로
-정의하면 \(P(y{=}1|x) = \sigma(z)\)임을 먼저 확인하라(베이즈 정리와
-시그모이드 정의를 이용). (2) 다변량 정규분포의 로그를 전개하면
-\(\log P(x|y{=}k) = -\frac{1}{2}(x-\mu_k)^T\Sigma^{-1}(x-\mu_k) + \text{상수}\)
-형태다 — 이걸 \(k=0,1\) 각각에 대해 \(z\)에 대입하고 전개하라. (3) 두
-클래스가 <strong>같은</strong> \(\Sigma\)를 쓰므로 \(x^T\Sigma^{-1}x\) 이차항이
-정확히 상쇄되어 사라진다 — 무엇이 남는지 정리해서 \(z\)가 \(x\)에
-대한 <strong>일차식</strong>(선형)임을 확인하고, \(w\)와 \(b\)를 \(\mu_0, \mu_1,
-\Sigma, \phi\)로 표현하라.</p>
-<p><strong>정확성 확인</strong>: 만약 두 클래스의 공분산이 서로 다르다면(\(\Sigma_0 \ne
-\Sigma_1\)) 이차항이 상쇄되지 않는다 — 이 경우 결정 경계가 더 이상
-직선이 아니라 어떤 모양이 될지(힌트: 이차식) 한 문장으로 설명하라.</p>
+<h2 id="142-왜-병목이-필요한가"><a class="header" href="#142-왜-병목이-필요한가">14.2 왜 병목이 필요한가</a></h2>
+<p>만약 은닉층이 입력과 같거나 더 넓다면, 신경망은 그냥 입력을 그대로 복사하는
+항등함수(identity function)를 배워버릴 수 있다 — 그러면 복원 오차는 0이
+되지만 아무것도 배운 게 없다. 병목(입력보다 훨씬 좁은 은닉층)을 강제하면,
+신경망은 원본을 통째로 저장할 수 없으므로 <strong>정말로 중요한 정보만 압축해서
+담아야</strong> 한다.</p>
+<h2 id="143-pcaem과의-관계"><a class="header" href="#143-pcaem과의-관계">14.3 PCA·EM과의 관계</a></h2>
+<p>Chapter 12에서 배운 PCA도 “고차원 데이터를 정보 손실 최소로 저차원으로
+압축한다“는 목표는 같았다. 차이는 PCA가 <strong>직선</strong>(선형) 투영만 가능한 반면,
+오토인코더는 신경망이므로 <strong>비선형</strong> 압축이 가능하다는 점이다 — 실제로
+오토인코더의 인코더가 선형 활성함수만 쓰면, 수학적으로 PCA와 정확히 같은
+것을 학습한다는 것이 알려져 있다:</p>
+<p>\[\text{선형 오토인코더} \subset \text{비선형 오토인코더}, \qquad
+\text{선형 오토인코더} \approx \text{PCA}\]</p>
+<p>즉 오토인코더는 PCA의 일반화(generalization)라고 볼 수 있다. 비선형
+활성함수(ReLU, sigmoid 등)를 인코더/디코더에 추가하면, PCA로는 표현할 수
+없는 곡면 모양의 데이터 구조도 압축할 수 있다.</p>
+<p>Chapter 13의 EM/GMM과 비교하면 또 다른 각도가 보인다 — GMM의 잠재변수
+\(z\)는 “어느 클러스터인가“라는 이산값이었지만, 오토인코더의 잠재
+표현 \(z\)는 연속적인 벡터다. 둘 다 “관측되지 않은 \(z\)가 관측된
+\(x\)를 설명한다“는 같은 틀 안에 있다 — GMM은 EM(반복적 확률 계산)으로,
+오토인코더는 역전파(경사하강법)로 그 \(z\)를 찾는다는 방법만 다르다.</p>
+<h2 id="144-압축에서-생성으로"><a class="header" href="#144-압축에서-생성으로">14.4 압축에서 생성으로</a></h2>
+<p>오토인코더는 원래 압축(인코딩) 목적으로 만들어졌지만, 흥미로운 질문 하나가
+남는다: 병목의 값을 무작위로 하나 골라서 디코더에 넣으면 어떻게 될까? 원본
+데이터와 비슷하지만 <strong>존재한 적 없는 새로운 데이터</strong>가 나올 수도 있지
+않을까? 이 질문이 바로 “생성형 모델(generative model)“의 시작이다.</p>
+<p>오토인코더를 그대로 “생성 모델“로 쓰려고 하면 문제가 있다: 잠재 공간
+\(z\) 위의 어떤 값들이 “그럴듯한” 데이터로 복원되는지 알 수 없다 — 학습
+데이터가 차지하는 영역이 잠재 공간에서 듬성듬성하거나 불규칙할 수 있기
+때문이다. <strong>변분 오토인코더</strong>(Variational Autoencoder, VAE)는 이 문제를
+잠재 공간이 매끄러운 확률분포(보통 정규분포)를 따르도록 강제해서 해결한다 —
+ML2 Chapter 10에서 다룬다. GAN과 Diffusion은 완전히 다른 원리(적대적 학습,
+점진적 노이즈 제거)로 같은 목표(그럴듯한 새 데이터 생성)를 이룬다 — ML2
+Chapter 11에서 다룬다.</p>
+<h2 id="145-ml1-총정리"><a class="header" href="#145-ml1-총정리">14.5 ML1 총정리</a></h2>
+<p>이번 학기는 선형/로지스틱회귀의 경사하강법에서 시작해, 생성적 분류(나이브
+베이즈/GDA), 거리·마진 기반 모델(kNN, SVM), 트리 앙상블(GBDT), 신경망(역전파,
+CNN), 비지도학습(PCA, 임베딩, EM/GMM)까지 왔다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>장</th><th>배운 것</th><th>핵심 질문</th></tr>
+</thead>
+<tbody>
+<tr><td>Ch02</td><td>선형·로지스틱회귀</td><td>연속값과 확률을 어떻게 예측하는가</td></tr>
+<tr><td>Ch03</td><td>나이브베이즈/GDA</td><td>데이터가 어떻게 생성됐는지부터 거꾸로 분류할 수 있는가</td></tr>
+<tr><td>Ch04</td><td>kNN/k-means</td><td>“가깝다“만으로 예측·군집화할 수 있는가, 그 한계는 무엇인가</td></tr>
+<tr><td>Ch05</td><td>SVM</td><td>확률이 아니라 마진으로 경계를 정할 수 있는가</td></tr>
+<tr><td>Ch06</td><td>정규화/모델선택</td><td>과적합을 손실함수로 어떻게 통제하는가</td></tr>
+<tr><td>Ch07</td><td>트리/랜덤포레스트/GBDT/SHAP</td><td>데이터를 잘 나누는 질문을 어떻게 고르고, 그 예측을 어떻게 설명하는가</td></tr>
+<tr><td>Ch08</td><td>신경망/역전파</td><td>층을 어떻게 학습시키는가</td></tr>
+<tr><td>Ch09</td><td>학습 기법</td><td>깊은 신경망이 왜, 어떻게 학습을 실패하는가</td></tr>
+<tr><td>Ch10</td><td>CNN 기초</td><td>이미지의 국소 구조를 어떻게 효율적으로 다루는가</td></tr>
+<tr><td>Ch11</td><td>CNN 응용</td><td>학습된 CNN을 어떻게 재사용하고 더 깊게 쌓는가</td></tr>
+<tr><td>Ch12</td><td>PCA/임베딩/PageRank</td><td>정답 없이 데이터·그래프의 구조를 어떻게 찾는가</td></tr>
+<tr><td>Ch13</td><td>EM/GMM</td><td>관측되지 않은 변수를 어떻게 추정하는가</td></tr>
+<tr><td>Ch14</td><td>오토인코더</td><td>압축이 어떻게 생성으로 이어지는가</td></tr>
+</tbody>
+</table>
+</div>
+<p>공통된 흐름을 돌아보면: <strong>모델을 정의하고 → 틀린 정도를 손실함수로
+수치화하고 → 그 손실을 줄이는 방향으로 파라미터를 조정한다</strong>는 구조가
+거의 모든 장에서 반복됐다. ML2는 이 신경망 기초 위에서, 시퀀스(RNN/
+Transformer), 대규모 언어모델, 강화학습, 생성형 모델로 응용력을 확장한다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml1/chapter02.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml1/chapter13.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml1/chapter04.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml2/chapter01.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -334,11 +284,11 @@ print(classify(["project", "meeting"], model))  # 0 (정상)
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml1/chapter02.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml1/chapter13.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml1/chapter04.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml2/chapter01.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

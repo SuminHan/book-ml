@@ -1,4 +1,4 @@
-# Chapter 4. 거리 기반 모델: kNN (Distance-Based Models)
+# Chapter 4. 거리 기반 모델과 클러스터링: kNN과 k-means (Distance-Based Models & Clustering)
 
 "당신은 가장 가까운 다섯 친구의 평균이다"라는 말이 있다. 이 문장을 그대로
 알고리즘으로 옮기면 **k-최근접이웃**(k-Nearest Neighbors, kNN)이 된다: 새로운
@@ -71,8 +71,8 @@ Bias가 크고 Variance는 작다 — 과소적합. 모델이 너무 유연하�
 kNN, 아주 깊은 트리, 파라미터가 많은 신경망 등) Variance가 크고 Bias는
 작다 — 과적합. 둘은 항상 이렇게 트레이드오프 관계이고, 최적의 모델
 복잡도는 이 둘의 합(전체 오차)이 최소가 되는 지점이다 — 이 프레임은 Chapter
-5(트리 깊이 제한/가지치기)와 Chapter 8(신경망 정규화)에서 "과적합을 어떻게
-막는가"를 다룰 때마다 다시 등장한다.
+6(정규화), Chapter 7(트리 깊이 제한/가지치기), Chapter 9(신경망 정규화)에서
+"과적합을 어떻게 막는가"를 다룰 때마다 다시 등장한다.
 
 적절한 \\(k\\)는 보통 검증 데이터(validation set)로 여러 값을 시도해보고
 정한다.

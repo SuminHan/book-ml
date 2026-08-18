@@ -1,169 +1,169 @@
-# Chapter 3. 로지스틱회귀와 분류 평가 (Logistic Regression & Classification Metrics)
+# Chapter 3. 생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes & GDA)
 
-1838년, 벨기에 수학자 피에르프랑수아 페르휠스트(Pierre François Verhulst)는
-인구가 지수적으로 무한히 증가할 수 없다는 문제를 풀고 있었다 — 자원은 한정돼
-있으니, 인구는 어느 시점부터 증가 속도가 느려지고 특정 상한선에 수렴해야 한다.
-그가 이 현상을 표현하기 위해 만든 S자 곡선에 **로지스틱**(logistic)이라는 이름을
-붙였다. 180년 뒤, 이 곡선은 인구 증가와는 전혀 상관없어 보이는 문제 — "이
-이메일이 스팸일 확률은 몇 퍼센트인가" — 를 푸는 데 그대로 쓰이고 있다.
+2002년, 프로그래머 폴 그레이엄(Paul Graham)은 "스팸에 대한 계획"(A Plan for
+Spam)이라는 글에서, 당시 대부분의 스팸 필터가 손으로 짠 규칙("제목에 '무료'가
+있으면 스팸")에 의존해 쉽게 뚫리던 문제를, 훨씬 단순한 통계적 방법으로 풀 수
+있다고 제안했다 — 스팸 메일과 정상 메일 각각에서 단어가 나타나는 빈도를 세고,
+베이즈 정리로 뒤집어 "이 단어들이 나왔을 때 스팸일 확률"을 계산하는 것이다. 이
+방법(나이브베이즈)은 널리 채택되어 초기 스팸 필터의 표준이 됐다. 이번 장은
+Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한다.
 
-## 3.1 회귀에서 분류로
+## 3.1 베이즈 정리, 그리고 생성 vs 판별
 
-로지스틱회귀라는 이름 때문에 헷갈리기 쉽지만, 이건 회귀가 아니라 **분류**
-알고리즘이다. 선형회귀의 출력 \\(w^Tx\\)는 \\(-\infty\\)부터 \\(+\infty\\)까지
-아무 값이나 될 수 있는데, "스팸일 확률"은 반드시 0과 1 사이여야 한다.
-로지스틱함수(시그모이드)는 정확히 이 변환을 해준다:
+Chapter 2의 로지스틱회귀는 \\(P(y|x)\\)(입력이 주어졌을 때 정답의 확률)를
+**곧바로** 모델링했다 — 이런 접근을 **판별적**(discriminative) 모델이라
+부른다. 이번 장의 접근은 정반대다: 각 클래스가 데이터를 어떻게
+"만들어내는지"(\\(P(x|y)\\))를 먼저 모델링하고, **베이즈 정리**로 뒤집어서
+원하는 \\(P(y|x)\\)를 얻는다 — 이런 접근을 **생성적**(generative) 모델이라
+부른다.
 
-\\[\sigma(z) = \frac{1}{1+e^{-z}}\\]
+\\[P(y|x) = \frac{P(x|y)P(y)}{P(x)}\\]
 
-\\(z \to +\infty\\)이면 \\(\sigma(z) \to 1\\), \\(z \to -\infty\\)이면
-\\(\sigma(z) \to 0\\), \\(z=0\\)이면 \\(\sigma(0)=0.5\\)다. 어떤 실수든 이
-함수를 통과하면 0~1 사이의 값이 되므로, "확률"로 해석할 수 있다.
+분류에서는 \\(x\\)가 고정된 채 \\(y\\)의 각 값(클래스)을 비교하므로, 분모
+\\(P(x)\\)(모든 클래스에 걸쳐 동일)는 무시하고 분자만 최대화하는 클래스를
+고르면 된다:
 
-## 3.2 모델
+\\[\hat{y} = \arg\max_y P(x|y)P(y)\\]
 
-\\[h_w(x) = \sigma(w^Tx) = \frac{1}{1+e^{-w^Tx}}\\]
+여기서 \\(P(y)\\)는 **사전확률**(prior, 예: 전체 메일 중 스팸 비율)이고,
+\\(P(x|y)\\)는 **가능도**(likelihood, 예: 스팸 메일이 이런 단어들을 포함할
+확률)다. "생성적"이라는 이름은, 이 모델이 사실상 "클래스 \\(y\\)가 주어지면
+데이터 \\(x\\)를 어떻게 생성하는가"를 학습한다는 데서 온다 — 실제로 학습이
+끝난 \\(P(x|y)\\)에서 샘플을 뽑으면, 그 클래스의 "전형적인" 가짜 데이터를
+만들어낼 수도 있다(ML1 Chapter 13의 EM/GMM, ML2 Chapter 10의 생성형 모델과
+같은 계열의 아이디어다).
 
-\\(h_w(x)\\)는 "\\(x\\)가 양성 클래스(class 1)일 확률"로 해석한다. 예측은
-\\(h_w(x) \ge 0.5\\)면 클래스 1, 아니면 클래스 0으로 정한다 — \\(h_w(x)=0.5\\)는
-정확히 \\(w^Tx=0\\)인 지점이므로, 결정 경계(decision boundary)는 여전히
-**직선**(또는 초평면)이다.
+## 3.2 가우시안 판별분석 (GDA)
 
-## 3.3 손실함수: 섀넌의 정보이론에서 교차 엔트로피까지
+입력 \\(x\\)가 연속값(실수 벡터)일 때, 가장 자연스러운 선택은 각 클래스의
+데이터가 **정규분포**를 따른다고 가정하는 것이다 — 이게 **가우시안
+판별분석**(Gaussian Discriminant Analysis, GDA)이다. 이진 분류라면:
 
-시그모이드에 평균제곱오차를 그대로 적용하면 \\(J(w)\\)가 \\(w\\)에 대해
-**볼록하지 않아(non-convex)**, 경사하강법이 지역 최솟값(local minimum)에 갇힐
-위험이 있다. 대신 **교차 엔트로피**(cross-entropy) 손실을 쓴다 — 이 이름은
-1948년 클로드 섀넌(Claude Shannon)이 만든 **정보이론**(information theory)에서
-왔다.
+\\[y \sim \text{Bernoulli}(\phi), \qquad x \mid y{=}0 \sim
+\mathcal{N}(\mu_0, \Sigma), \qquad x \mid y{=}1 \sim \mathcal{N}(\mu_1, \Sigma)\\]
 
-섀넌은 "정보량"을 수학적으로 재는 법을 고민했다. 확률 \\(p\\)로 일어나는 사건이
-실제로 일어났다는 소식에는 얼마만큼의 "놀라움"(정보량)이 담겨 있을까? 섀넌은
-이걸 \\(-\log_2 p\\)(단위: 비트)로 정의했다 — 자주 일어나는 사건(\\(p\\)가
-1에 가까움)은 "해가 동쪽에서 떴다"처럼 정보량이 거의 0이고, 거의 안 일어나는
-사건(\\(p\\)가 0에 가까움)은 "복권에 당첨됐다"처럼 정보량이 크다.
+두 클래스가 **같은 공분산 행렬** \\(\Sigma\\)를 공유하되, 평균 \\(\mu_0,
+\mu_1\\)만 다르다고 가정한다(두 클래스의 데이터가 같은 "모양"으로 퍼져
+있지만 중심 위치만 다르다는 뜻). 파라미터 \\(\phi, \mu_0, \mu_1, \Sigma\\)는
+학습 데이터의 평균·공분산을 그대로 계산해서 구한다(최대우도추정, maximum
+likelihood estimation) — 경사하강법 없이 닫힌 형태로 바로 구해진다는 점이
+로지스틱회귀와의 실전적 차이다.
 
-이 정보량의 **기댓값**이 **엔트로피**(entropy)다:
+**놀라운 사실**: 이렇게 구한 \\(P(y=1|x)\\)를 베이즈 정리로 전개하면, 정확히
+Chapter 2의 로지스틱회귀와 **같은 시그모이드 형태** \\(P(y=1|x) =
+\sigma(w^Tx+b)\\)가 나온다(유도는 이번 장 연습문제 2번). 즉 GDA는 "로지스틱
+회귀와 같은 결정 경계(직선)에 도달하는 또 다른 길"이다 — 다만 가는
+경로(데이터가 정규분포를 따른다고 먼저 가정하는가, 아니면 결정 경계를
+바로 학습하는가)가 다르다. 데이터가 실제로 가우시안에 가깝다면 GDA가 더
+적은 데이터로도 잘 맞고, 그 가정이 틀렸다면 판별적 모델(로지스틱회귀)이
+더 안정적인 경향이 있다 — "모델을 데이터에 맞출 것인가, 데이터가 모델을
+따른다고 가정할 것인가"라는, 생성적 모델과 판별적 모델의 근본적인
+트레이드오프다.
 
-\\[H(p) = -\sum_k p_k \log_2 p_k\\]
+## 3.3 나이브베이즈: 독립을 가정하고 차원의 저주를 피한다
 
-확률분포 \\(p\\)를 따르는 사건들을 평균적으로 관찰할 때 얻는 정보량이자,
-이 분포를 최적으로 부호화(encoding)하는 데 필요한 평균 비트 수다(Chapter
-5.3에서 결정트리가 "가장 잘 나누는 질문"을 고르는 기준으로 다시 만난다).
+GDA는 \\(x\\)가 저차원 연속값일 때는 잘 맞지만, 스팸 필터처럼 \\(x\\)가
+"어휘 사전 크기(수만 개)만큼의 차원을 가진, 각 단어의 등장 여부" 같은
+고차원 데이터라면 공분산 행렬 \\(\Sigma\\)(어휘 크기 × 어휘 크기)를 추정하는
+것 자체가 감당이 안 된다. **나이브베이즈**(Naive Bayes)는 과감한 단순화로
+이 문제를 피한다 — 클래스 \\(y\\)가 주어지면 **각 특징(단어)이 서로
+독립**이라고 가정해버린다:
 
-그런데 만약 실제 분포는 \\(p\\)인데, (어쩌면 틀린) 다른 분포 \\(q\\)를 믿고
-부호화한다면 몇 비트가 필요할까? 그 평균 비트 수가 **교차 엔트로피**다:
+\\[P(x|y) = \prod_{j=1}^n P(x_j|y)\\]
 
-\\[H(p, q) = -\sum_k p_k \log_2 q_k\\]
+"나이브(순진)"라는 이름은 이 가정이 현실적으로 거의 항상 틀리기 때문이다 —
+"무료"라는 단어와 "당첨"이라는 단어는 스팸 메일에서 실제로 같이 나타나는
+경향이 있어 독립이 아니다. 그런데도 나이브베이즈는 실전에서(특히 텍스트
+분류) 놀랄 만큼 잘 작동한다 — 각 \\(P(x_j|y)\\)는 데이터에서 단어 \\(j\\)의
+빈도만 세면 바로 추정되므로, 어휘가 아무리 커도 파라미터 수가 어휘
+크기에 **선형**으로만 늘어난다(GDA의 공분산 행렬처럼 제곱으로 늘지 않는다).
 
-\\(q\\)가 \\(p\\)와 정확히 같으면 \\(H(p,q) = H(p)\\)로 **최솟값**을 갖고,
-\\(q\\)가 \\(p\\)에서 멀어질수록(즉 잘못된 분포를 믿을수록) \\(H(p,q)\\)는
-커진다 — 그 초과분 \\(H(p,q) - H(p)\\)를 **KL 발산**(KL divergence,
-\\(D_{KL}(p\|q)\\))이라 부른다(Chapter 9, VAE의 ELBO에서 다시 만난다).
+**라플라스 스무딩**: 학습 데이터에 한 번도 안 나온 단어가 새 메일에 등장하면
+\\(P(x_j|y)=0\\)이 되어 곱 전체가 0이 돼버린다. 모든 카운트에 1을 더해서
+이 문제를 피한다:
 
-로지스틱회귀에서 정답 \\(y^{(i)}\\)는 "정답 분포"(클래스 1일 확률이 100%
-아니면 0%인 분포)이고, \\(h_w(x^{(i)})\\)는 모델이 예측한 분포다. **교차
-엔트로피를 최소화한다는 것은 곧 모델의 예측 분포를 정답 분포에 최대한
-가깝게 만든다는 뜻**이다 — 이게 바로 손실함수로 쓸 이유다:
-
-\\[J(w) = -\frac{1}{m}\sum_{i=1}^m \left[y^{(i)}\log h_w(x^{(i)}) +
-(1-y^{(i)}) \log(1-h_w(x^{(i)}))\right]\\]
-
-(머신러닝에서는 보통 \\(\log_2\\) 대신 자연로그 \\(\log = \ln\\)을 쓴다 —
-둘은 상수배(\\(1/\ln 2\\))만 차이나서, 손실이 최소가 되는 지점 \\(w\\)에는
-영향을 주지 않는다.)
-
-![시그모이드 함수(왼쪽)와 예측 확률에 따른 교차 엔트로피 손실(오른쪽) — 정답과 반대로 확신할수록 손실이 무한히 커진다](../images/ch03_sigmoid_crossentropy.svg)
-
-직관: 정답이 \\(y=1\\)인데 모델이 \\(h_w(x) \to 0\\)으로 확신하면
-\\(-\log h_w(x) \to \infty\\) — 손실이 무한히 커진다. **확신을 갖고 틀리면
-그만큼 크게 벌한다.** 신기하게도 이 손실함수를 미분하면 선형회귀와 **똑같은
-형태**의 그래디언트가 나온다:
-
-\\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) - y^{(i)}\right) x_j^{(i)}\\]
-
-그래서 경사하강법 구현 코드 자체는 Chapter 2와 거의 동일하다 — \\(h_w\\)를
-계산하는 부분에 시그모이드만 추가하면 된다.
+\\[P(x_j{=}1|y{=}k) = \frac{(\text{클래스 } k\text{에서 단어 } j\text{가 등장한 문서 수}) + 1}{(\text{클래스 } k\text{의 전체 문서 수}) + 2}\\]
 
 ```python
 import math
 
-def sigmoid(z):
-    return 1 / (1 + math.exp(-z))
+def train_naive_bayes(emails, labels):
+    # emails: 단어 리스트의 리스트, labels: 0(정상)/1(스팸) 리스트
+    vocab = set(w for email in emails for w in email)
+    n_spam = sum(1 for l in labels if l == 1)
+    n_ham = len(labels) - n_spam
+    word_counts = {0: {}, 1: {}}
+    for email, label in zip(emails, labels):
+        for w in set(email):  # 등장 여부만 세는 Bernoulli 나이브베이즈
+            word_counts[label][w] = word_counts[label].get(w, 0) + 1
+    return {"vocab": vocab, "word_counts": word_counts,
+            "n_spam": n_spam, "n_ham": n_ham, "n_total": len(labels)}
 
-def logistic_gradient_descent(X, y, alpha, epochs):
-    m, n = len(X), len(X[0])
-    w = [0.0] * (n + 1)
-    for _ in range(epochs):
-        grad = [0.0] * (n + 1)
-        for i in range(m):
-            pred = sigmoid(w[0] + sum(w[j+1] * X[i][j] for j in range(n)))
-            error = pred - y[i]
-            grad[0] += error
-            for j in range(n):
-                grad[j+1] += error * X[i][j]
-        for j in range(n + 1):
-            w[j] -= alpha * grad[j] / m
-    return w
+def classify(email, model):
+    words = set(email)
+    log_prob = {}
+    for label, n_docs in [(0, model["n_ham"]), (1, model["n_spam"])]:
+        log_p = math.log(n_docs / model["n_total"])  # log P(y)
+        for w in model["vocab"]:
+            p_present = (model["word_counts"][label].get(w, 0) + 1) / (n_docs + 2)
+            log_p += math.log(p_present) if w in words else math.log(1 - p_present)
+        log_prob[label] = log_p
+    return 1 if log_prob[1] > log_prob[0] else 0
 ```
 
-## 3.4 "정확도"만으로는 안 되는 이유
+**왜 로그를 더하는가**: 단어가 수천 개면 \\(P(x_j|y)\\)를 수천 번 곱해서
+극도로 작은 수(0에 가까운)가 되고, 컴퓨터의 부동소수점 정밀도로는 구분이
+안 될 수 있다(underflow). Chapter 2에서 교차 엔트로피가 확률의 곱 대신 로그의
+합을 쓴 것과 정확히 같은 이유로, 여기서도 \\(\log \prod_j P(x_j|y) = \sum_j
+\log P(x_j|y)\\)로 곱을 합으로 바꿔서 계산한다.
 
-암 검진 모델을 상상해보자. 전체 환자의 99%가 정상이라면, "무조건 정상"이라고만
-찍는 모델도 정확도(accuracy) 99%를 자랑한다 — 하지만 이 모델은 암 환자를 단 한
-명도 잡아내지 못하는, 쓸모없는 모델이다. Precision/Recall/F1은 바로 이런
-상황(클래스 불균형)에서 정확도가 숨기는 진실을 드러내기 위한 지표다.
-
-| 실제\\예측 | 양성 예측 | 음성 예측 |
-|---|---|---|
-| 실제 양성 | True Positive (TP) | False Negative (FN) |
-| 실제 음성 | False Positive (FP) | True Negative (TN) |
-
-- **Precision** \\(= \frac{TP}{TP+FP}\\): "양성이라고 예측한 것 중 진짜 양성
-  비율" — 거짓 경보를 얼마나 피했는가.
-- **Recall** \\(= \frac{TP}{TP+FN}\\): "실제 양성 중 잡아낸 비율" — 놓친 양성이
-  얼마나 적은가.
-- **F1** \\(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}\\):
-  Precision과 Recall의 조화평균 — 둘 다 낮으면 F1도 낮아지도록, 한쪽만
-  높다고 점수를 후하게 주지 않는다.
-
-**Precision-Recall 트레이드오프**: 임계값(threshold)을 0.5가 아니라 0.9로
-올리면 Precision은 오르지만(확신 있을 때만 양성 판정) Recall은
-떨어진다(애매한 양성을 놓침). 반대로 임계값을 낮추면 Recall은 오르고
-Precision은 떨어진다. **PR-AUC**(Precision-Recall 곡선 아래 면적)는 이
-트레이드오프 전 구간에서의 성능을 임계값 하나에 의존하지 않고 요약한 지표다 —
-특히 클래스 불균형이 심할 때 accuracy보다 훨씬 신뢰할 수 있는 지표다.
+**GDA와 나이브베이즈는 접근 방식(연속값에 정규분포 vs. 이산값에 독립 가정)은
+다르지만, 둘 다 "먼저 각 클래스가 데이터를 어떻게 만드는지 모델링하고,
+베이즈 정리로 뒤집는다"는 같은 생성적 철학을 공유한다.**
 
 ---
 
 ## 연습문제
 
-**1. (코딩)** 위 `logistic_gradient_descent`(핵심 줄은 빈칸으로 남겨져 있다고
-가정)와, 다음 `precision_recall_f1`을 완성하라:
+**1. (코딩)** 위 `train_naive_bayes`와 `classify`(핵심 줄은 빈칸으로 남겨져
+있다고 가정)를 완성하라:
 
 ```python
-def precision_recall_f1(y_true, y_pred):
+def train_naive_bayes(emails, labels):
     # ADD ADDITIONAL CODE HERE!!
-    # TP, FP, FN을 센 뒤 precision, recall, f1 계산
-    # (0으로 나누는 경우는 각 값을 0.0으로 처리)
+    # vocab 구성, 클래스별 문서 수 계산, 클래스별 단어 등장 문서 수 카운트
 
-y_true = [1, 1, 1, 0, 0, 0, 1, 0]
-y_pred = [1, 0, 1, 0, 1, 0, 1, 0]
-print(precision_recall_f1(y_true, y_pred))  # (0.75, 0.75, 0.75)
+def classify(email, model):
+    # ADD ADDITIONAL CODE HERE!!
+    # 클래스 0, 1 각각에 대해 log P(y) + sum(log P(x_j|y))를 계산해 비교
+
+emails = [["free", "money", "now"], ["meeting", "tomorrow", "project"],
+          ["free", "prize", "click"], ["project", "deadline", "meeting"]]
+labels = [1, 0, 1, 0]
+model = train_naive_bayes(emails, labels)
+print(classify(["free", "prize"], model))  # 1 (스팸)
+print(classify(["project", "meeting"], model))  # 0 (정상)
 ```
 
-**2. (손유도, Tier B — 힌트 제공)** 교차 엔트로피 손실 하나의 샘플에 대해:
+**2. (손유도, Tier B — 힌트 제공)** \\(x|y{=}0 \sim \mathcal{N}(\mu_0,
+\Sigma)\\), \\(x|y{=}1 \sim \mathcal{N}(\mu_1, \Sigma)\\)(공분산 공유),
+\\(y \sim \text{Bernoulli}(\phi)\\)일 때,
 
-\\[J^{(i)}(w) = -y^{(i)}\log h_w(x^{(i)}) - (1-y^{(i)})\log(1-h_w(x^{(i)}))\\]
+\\[P(y{=}1|x) = \sigma(w^Tx+b), \qquad w = \Sigma^{-1}(\mu_1-\mu_0)\\]
 
-를 \\(w_j\\)로 미분해서 \\(\frac{\partial J^{(i)}}{\partial w_j} =
-(h_w(x^{(i)}) - y^{(i)})x_j^{(i)}\\)가 됨을 유도하라.
+가 됨을 유도하라(즉 GDA의 사후확률이 Chapter 2의 로지스틱회귀와 정확히
+같은 시그모이드-선형 형태임을 보여라).
 
-**힌트**(연쇄법칙을 세 단계로 나눠서 적용): (1) 먼저 \\(\frac{\partial
-J^{(i)}}{\partial h}\\)를 구하라(h는 \\(h_w(x^{(i)})\\)의 줄임 표기,
-\\(\frac{d}{dh}\log h = \frac{1}{h}\\)임을 이용). (2) \\(\sigma'(z) =
-\sigma(z)(1-\sigma(z))\\)임을 이용해 \\(\frac{\partial h}{\partial z}\\)를
-구하라(\\(z=w^Tx^{(i)}\\)). (3) \\(\frac{\partial z}{\partial w_j} =
-x_j^{(i)}\\)임을 이용해 세 조각을 연쇄법칙으로 곱하면, 놀랍게도
-\\(h(1-h)\\) 항이 통째로 약분되어 사라진다 — 왜 그런지 확인하라. 유도한
-결과가 Chapter 2의 선형회귀 그래디언트와 형태가 똑같다는 것도 확인하라.
+**힌트**(세 단계로 나눠서): (1) \\(z = \log\frac{P(x|y{=}1)P(y{=}1)}{P(x|y{=}0)P(y{=}0)}\\)로
+정의하면 \\(P(y{=}1|x) = \sigma(z)\\)임을 먼저 확인하라(베이즈 정리와
+시그모이드 정의를 이용). (2) 다변량 정규분포의 로그를 전개하면
+\\(\log P(x|y{=}k) = -\frac{1}{2}(x-\mu_k)^T\Sigma^{-1}(x-\mu_k) + \text{상수}\\)
+형태다 — 이걸 \\(k=0,1\\) 각각에 대해 \\(z\\)에 대입하고 전개하라. (3) 두
+클래스가 **같은** \\(\Sigma\\)를 쓰므로 \\(x^T\Sigma^{-1}x\\) 이차항이
+정확히 상쇄되어 사라진다 — 무엇이 남는지 정리해서 \\(z\\)가 \\(x\\)에
+대한 **일차식**(선형)임을 확인하고, \\(w\\)와 \\(b\\)를 \\(\mu_0, \mu_1,
+\Sigma, \phi\\)로 표현하라.
+
+**정확성 확인**: 만약 두 클래스의 공분산이 서로 다르다면(\\(\Sigma_0 \ne
+\Sigma_1\\)) 이차항이 상쇄되지 않는다 — 이 경우 결정 경계가 더 이상
+직선이 아니라 어떤 모양이 될지(힌트: 이차식) 한 문장으로 설명하라.
