@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>생성형 모델 I: 우도 기반 (Generative Models I: Likelihood-Based) - Machine Learning 1/2 (한국어)</title>
+        <title>팀 프로젝트: 발표 (Team Project: Presentation) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,139 +178,96 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-10-생성형-모델-i-우도-기반-generative-models-i-likelihood-based"><a class="header" href="#chapter-10-생성형-모델-i-우도-기반-generative-models-i-likelihood-based">Chapter 10. 생성형 모델 I: 우도 기반 (Generative Models I: Likelihood-Based)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_vae_elbo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>ML1의 마지막 장에서 오토인코더가 남긴 질문을 기억하는가 — “병목의 값을
-무작위로 하나 골라서 디코더에 넣으면, 존재한 적 없는 새로운 데이터를
-만들 수 있지 않을까?” 2013년 디데릭 킹마(Diederik Kingma)와 맥스
-웰링(Max Welling)이 발표한 <strong>변분 오토인코더</strong>(Variational
-Autoencoder, VAE)가 바로 이 질문에 대한 정식 답이다.</p>
-<h2 id="101-오토인코더를-그냥-쓰면-안-되는-이유"><a class="header" href="#101-오토인코더를-그냥-쓰면-안-되는-이유">10.1 오토인코더를 그냥 쓰면 안 되는 이유</a></h2>
-<p>일반 오토인코더의 잠재 공간(latent space)은 “어떤 값이 그럴듯한
-데이터로 복원되는지“에 대한 보장이 없다 — 학습 데이터들이 잠재 공간의
-여기저기 흩어져 있을 수 있고, 그 사이 빈 공간에서 무작위로 값을 뽑으면
-무엇이 나올지 알 수 없다. VAE의 해법은 인코더가 하나의 점 \(z\)를
-내놓는 대신, <strong>확률분포</strong>(보통 정규분포의 평균과 분산)를 내놓도록
-강제하는 것이다. 그리고 그 분포가 표준 정규분포(평균 0, 분산 1)에
-가깝도록 추가 제약을 건다 — 그러면 잠재 공간 전체가 매끄럽고 빈틈없이
-채워져서, 임의의 지점에서 샘플링해도 그럴듯한 데이터가 나올 가능성이
-높아진다.</p>
-<h2 id="102-vae의-구조"><a class="header" href="#102-vae의-구조">10.2 VAE의 구조</a></h2>
+                        <h1 id="chapter-13-팀-프로젝트-발표-team-project-presentation"><a class="header" href="#chapter-13-팀-프로젝트-발표-team-project-presentation">Chapter 13. 팀 프로젝트: 발표 (Team Project: Presentation)</a></h1>
+<p>지난 장에서 프로젝트를 구현했다면, 이번 장은 그 결과를 발표하고, 학기
+전체를 돌아보는 시간이다. 그리고 마지막으로, 지금 이 순간에도 계속
+발전하고 있는 몇 가지 최신 동향을 짧게 소개하며 학기를 마무리한다.</p>
+<h2 id="131-발표-체크리스트"><a class="header" href="#131-발표-체크리스트">13.1 발표 체크리스트</a></h2>
 <ul>
-<li><strong>인코더</strong> \(q_\phi(z|x)\): 입력 \(x\)를 받아, 잠재변수 \(z\)의
-확률분포를 내놓는다(보통 정규분포 \(\mathcal{N}(\mu(x),
-\sigma^2(x))\)의 평균과 분산을 출력).</li>
-<li><strong>샘플링</strong>: 그 분포에서 \(z\)를 하나 뽑는다.</li>
-<li><strong>디코더</strong> \(p_\theta(x|z)\): \(z\)로부터 \(x\)를 복원(또는
-생성)한다.</li>
+<li><strong>문제 정의</strong> (1분): 무엇을 풀려고 했는가? 왜 그 문제가 흥미로운가?</li>
+<li><strong>방법론</strong> (2~3분): 어떤 모델/알고리즘을 썼고, 왜 그것을 선택했는가?</li>
+<li><strong>수식적 정당화</strong> (2분): 지난 장 리포트에 담은 정당화 1개 이상을
+발표에서도 반드시 짚는다.</li>
+<li><strong>결과</strong> (2분): 정량적 결과(수치, 그래프)와 정성적 결과(예시)를
+함께 보여준다.</li>
+<li><strong>한계와 회고</strong> (1~2분): 무엇이 잘 안 됐고, 왜 그랬다고 생각하는가?
+시간이 더 있었다면 무엇을 시도했을 것인가?</li>
 </ul>
-<h2 id="103-우도라는-관점"><a class="header" href="#103-우도라는-관점">10.3 우도라는 관점</a></h2>
-<p>VAE는 “생성형 모델을 만드는 세 가지 원리” 중 첫 번째 — <strong>우도
-기반</strong>(likelihood-based) 접근이다: 모델이 학습 데이터를 만들어낼
-확률(우도) \(P(x)\)를 직접(또는 그 근사치를) 최대화하도록 학습한다.
-문제는 \(p_\theta(x) = \int p_\theta(x|z)p(z),dz\)는 가능한 모든
-\(z\)에 대한 적분이라, 일반적으로 계산이 불가능하다(intractable).</p>
-<h2 id="104-elbo-계산-가능한-하한으로-우회하기"><a class="header" href="#104-elbo-계산-가능한-하한으로-우회하기">10.4 ELBO: 계산 가능한 하한으로 우회하기</a></h2>
-<p>직접 계산할 수 없는 \(\log p_\theta(x)\) 대신, 다음이 성립함을 보일
-수 있다:</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\]</p>
-<p>우변을 <strong>ELBO</strong>(Evidence Lower BOund)라 부른다. 두 항의 의미:</p>
+<p>좋은 발표는 “무엇을 만들었는가“보다 “왜 그렇게 만들었는가“와 “무엇을
+배웠는가“에 더 무게를 둔다. 특히 잘 안 됐던 부분을 숨기지 않고, 그
+원인을 이 학기에 배운 개념으로 진단해서 보여주는 것 — 예를 들어
+“손실이 줄지 않았는데, 확인해보니 그래디언트가 소실되고 있었다“는
+식의 진단 — 이 단순히 “정확도 90% 달성했습니다“보다 훨씬 값진
+결과다.</p>
+<h2 id="132-ml2-개념-지도-총정리"><a class="header" href="#132-ml2-개념-지도-총정리">13.2 ML2 개념 지도 (총정리)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>장</th><th>배운 것</th><th>핵심 질문</th></tr>
+</thead>
+<tbody>
+<tr><td>Ch02</td><td>RNN</td><td>순서가 있는 데이터를 어떻게 기억하며 처리하는가</td></tr>
+<tr><td>Ch03</td><td>Attention/Transformer</td><td>순차 처리 없이 어떻게 문맥을 한 번에 파악하는가</td></tr>
+<tr><td>Ch04</td><td>LLM 사전학습과 프롬프팅</td><td>다음 토큰 예측이 어떻게 폭넓은 능력으로 이어지는가</td></tr>
+<tr><td>Ch05</td><td>MDP/정책평가</td><td>미래의 불확실한 보상을 지금 어떻게 계산하는가</td></tr>
+<tr><td>Ch06</td><td>Q-learning</td><td>환경 모델 없이 어떻게 최적 행동을 배우는가</td></tr>
+<tr><td>Ch07</td><td>DQN</td><td>신경망과 강화학습을 어떻게 안정적으로 결합하는가</td></tr>
+<tr><td>Ch08</td><td>Policy Gradient/PPO</td><td>연속적 행동공간에서 정책을 어떻게 직접 학습하는가</td></tr>
+<tr><td>Ch09</td><td>RLHF/정렬</td><td>사전학습된 모델을 사람이 원하는 방향으로 어떻게 다듬는가</td></tr>
+<tr><td>Ch10</td><td>VAE</td><td>계산 불가능한 우도를 어떻게 우회해서 최적화하는가</td></tr>
+<tr><td>Ch11</td><td>GAN/Diffusion</td><td>적대적 학습과 점진적 노이즈 제거는 어떻게 다른 원리로 같은 목표를 이루는가</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="133-ml1--ml2를-관통하는-하나의-패턴"><a class="header" href="#133-ml1--ml2를-관통하는-하나의-패턴">13.3 ML1 → ML2를 관통하는 하나의 패턴</a></h2>
+<p>두 학기 26개 장 전체를 관통하는 구조를 마지막으로 정리한다:</p>
+<ol>
+<li><strong>모델을 정의한다</strong>: 입력을 출력으로 매핑하는 함수의 형태를
+정한다(직선, 트리, 신경망, Transformer, …).</li>
+<li><strong>틀린 정도를 수치화한다</strong>: 손실함수(MSE, 교차 엔트로피, TD 오차,
+ELBO, min-max 목적함수, …) — 형태는 매번 다르지만 역할은 항상
+같다.</li>
+<li><strong>그 손실을 줄이는 방향으로 파라미터를 조정한다</strong>: 경사하강법(직접
+또는 역전파를 통해) — 이 학기 배운 모든 알고리즘의 마지막 단계는
+결국 이것이다.</li>
+</ol>
+<p>새로운 논문이나 모델을 마주칠 때마다, “이 세 가지 질문에 각각 뭐라고
+답하는가“로 분해해서 읽는 습관이, 이 두 과목이 남기고자 하는 가장
+오래가는 도구다.</p>
+<h2 id="134-마지막으로-소개하는-최신-동향"><a class="header" href="#134-마지막으로-소개하는-최신-동향">13.4 마지막으로 소개하는 최신 동향</a></h2>
+<p>이번 학기에서 다루기엔 이르지만, 지금 활발히 연구되는 방향들을 짧게
+짚어본다 — 자세한 내용보다는, “지금 배운 것이 이런 곳으로 이어질 수
+있다“는 지도를 그리는 것이 목적이다.</p>
 <ul>
-<li>첫 항 \(\mathbb{E}[\log p_\theta(x|z)]\): <strong>복원 항</strong> — 인코더가
-만든 \(z\)로 디코더가 원본 \(x\)를 얼마나 잘 복원하는가(일반
-오토인코더의 복원 오차와 본질적으로 같다).</li>
-<li>둘째 항 \(D_{KL}(q_\phi(z|x)|p(z))\): <strong>정규화 항</strong> — 인코더가
-만든 분포 \(q_\phi(z|x)\)가, 목표로 하는 사전분포 \(p(z)\)(보통
-표준정규분포)에서 얼마나 벗어나 있는지(KL divergence, ML1 Chapter
-2.6에서 섀넌의 정보이론으로 소개한 그 개념 — 두 확률분포 사이의
-“거리”). 이 항이 바로 잠재 공간을 매끄럽게 만드는 힘이다.</li>
+<li><strong>Theorem Proving</strong>(정리 증명): LLM이 수학 정리를 실제로 증명하는
+데 쓰이는 연구 분야. Chain-of-Thought(Chapter 4)의 확장선상에서,
+모델이 단계별 논증을 스스로 생성하고 검증하는 방향으로 발전하고
+있다.</li>
+<li><strong>Autoformalization</strong>: 사람이 자연어로 쓴 수학적 주장을, 컴퓨터가
+검증할 수 있는 형식 언어(formal language)로 자동 변환하는 연구.
+“증명이 맞는지 컴퓨터가 직접 확인한다“는 목표를 향한다.</li>
+<li><strong>Chain-of-Thought (CoT)의 확장</strong>: Chapter 4에서 본 CoT 프롬프팅이,
+이제는 모델 자체를 “여러 단계에 걸쳐 추론하도록” 학습시키는
+방향(추론 모델, reasoning model)으로 발전하고 있다 — Chapter 9에서
+배운 포스트트레이닝(RLHF 등)이 바로 이런 추론 능력을 다듬는 데에도
+쓰인다.</li>
 </ul>
-<p>\(\log p_\theta(x) \ge \text{ELBO}\)이므로, <strong>ELBO를 최대화하면 실제
-우도의 하한도 함께 올라간다</strong> — 직접 계산 못 하는 목표를, 계산 가능한
-대리(surrogate) 목표로 바꿔치기한 것이다. 이 부등식 자체를 옌센
-부등식(Jensen’s inequality)으로 유도하는 것이 이번 장 연습문제의
-핵심이다.</p>
-<pre><code class="language-python">def vae_loss(x, x_reconstructed, mu, log_var):
-    # 복원 손실 (여기서는 MSE로 근사)
-    recon_loss = sum((x[i] - x_reconstructed[i]) ** 2 for i in range(len(x)))
-    # KL divergence: 정규분포 q(mu, sigma^2)와 표준정규분포 N(0,1) 사이의 닫힌 형태 공식
-    kl_loss = -0.5 * sum(1 + log_var[i] - mu[i]**2 - math.exp(log_var[i])
-                          for i in range(len(mu)))
-    return recon_loss + kl_loss  # ELBO를 최대화 = 이 손실(음의 ELBO)을 최소화
-</code></pre>
-<h2 id="105-reparameterization-trick-참고"><a class="header" href="#105-reparameterization-trick-참고">10.5 Reparameterization Trick (참고)</a></h2>
-<p>\(z\)를 확률분포에서 직접 샘플링하면, “샘플링“이라는 연산은 미분이
-안 돼서 역전파가 인코더까지 흘러가지 못한다. VAE는 \(z = \mu + \sigma
-\odot \epsilon\)(\(\epsilon \sim \mathcal{N}(0,1)\)은 무작위성을
-밖으로 빼낸 상수 취급)으로 샘플링을 다시 쓰는 트릭(reparameterization
-trick)으로 이 문제를 우회한다 — 이제 \(\mu, \sigma\)에 대한 미분이
-가능해져 역전파가 정상적으로 흐른다. 자세한 유도는 이 학기 범위를
-넘어서지만, “왜 그냥 샘플링하면 안 되는가“라는 질문 자체는 기억해둘
-만하다.</p>
-<p><strong>다음 장에는 완전히 다른 두 원리(적대적, 스코어 기반)를 배운다 — 세
-원리를 나란히 놓고 비교하면, “그럴듯한 새 데이터를 만든다“는 같은
-목표에 얼마나 다른 방식으로 접근할 수 있는지가 뚜렷하게 드러난다.</strong></p>
-<hr>
-<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>kl_divergence_gaussian</code>(정규분포
-\(\mathcal{N}(\mu, \sigma^2)\)와 표준정규분포 사이의 KL divergence,
-\(D_{KL} = -\frac{1}{2}(1 + \log\sigma^2 - \mu^2 - \sigma^2)\))과
-<code>vae_loss</code>를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
-<pre><code class="language-python">import math
-
-def kl_divergence_gaussian(mu, log_var):
-    # log_var = log(sigma^2)
-    # ADD ADDITIONAL CODE HERE!!
-
-print(kl_divergence_gaussian(mu=0.0, log_var=0.0))  # 0.0
-print(kl_divergence_gaussian(mu=2.0, log_var=0.0))  # 2.0
-
-def vae_loss(recon_loss, mu_list, log_var_list):
-    # ADD ADDITIONAL CODE HERE!!
-    # 여러 잠재 차원에 대한 KL divergence를 모두 더한 뒤, 복원 손실과 합산
-
-print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
-</code></pre>
-<p><strong>2. (손유도, Tier C — 폴백 준비 대상)</strong> \(\log p_\theta(x) = \log
-\int p_\theta(x,z),dz\)에서 시작해서, 옌센 부등식(\(\log
-\mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 이용해</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}(q_\phi(z|x)\|p(z))\]</p>
-<p>를 유도하라(힌트: \(\log p_\theta(x) = \log \mathbb{E}_{q_\phi}
-\left[\frac{p_\theta(x,z)}{q_\phi(z|x)}\right]\)로 먼저 바꾼 뒤 옌센
-부등식을 적용하고, \(p_\theta(x,z) = p_\theta(x|z)p(z)\)로 분해해서
-KL divergence의 정의가 나오도록 정리하라).</p>
-<p><strong>빈칸채움형 폴백 버전</strong> (자유 유도가 어려운 경우):</p>
-<pre><code>Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
-                  = log E_q[ ______________ ]
-
-Step 2: 옌센 부등식(log가 오목함수) 적용:
-  log E_q[ p(x,z)/q(z|x) ] &gt;= E_q[ log(______________) ]
-
-Step 3: p(x,z) = p(x|z) * p(z)로 분해하면:
-  = E_q[ log p(x|z) ] + E_q[ ______________ ]
-
-Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
-
-결론: log p(x) &gt;= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
-</code></pre>
-<p><strong>정확성 확인</strong>: Step 2에서 부등호(<code>&gt;=</code>)가 등호(<code>=</code>)가 아니라 부등식인
-이유를 한 문장으로 설명하고(옌센 부등식이 언제 등식이 되는지:
-\(X\)가 상수일 때), ELBO를 최대화하는 것이 왜 실제 우도
-\(\log p(x)\)를 “간접적으로” 최대화하는 셈이 되는지 설명하라.</p>
+<h2 id="135-발표-후-다음-단계"><a class="header" href="#135-발표-후-다음-단계">13.5 발표 후: 다음 단계</a></h2>
+<p>이 두 과목을 마친 뒤 더 깊이 파고들고 싶다면, 각 장에서 “이 학기
+범위를 넘어선다“고 언급됐던 부분들(LSTM/GRU의 게이트 수식,
+Actor-Critic의 상세 유도, diffusion의 스코어 매칭 이론, PEFT/LoRA의
+구체적인 구현 등)이 자연스러운 다음 목표가 된다 — 이 학기가 그
+개념들을 처음 마주쳤을 때 무섭지 않게 만드는 것이 목표였다면, 그다음은
+각자의 관심에 따라 깊이를 더해가는 몫이다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml2/chapter09.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml2/chapter12.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml2/chapter11.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -318,13 +275,10 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml2/chapter09.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml2/chapter12.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml2/chapter11.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                    </a>
             </nav>
 
         </div>

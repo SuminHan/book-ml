@@ -193,7 +193,7 @@ conjugate gradient, line search까지 동원하는 무거운 최적화였다. PP
 됐다: ChatGPT류 LLM을 사람 피드백에 맞게 조정하는 **RLHF**
 (Reinforcement Learning from Human Feedback) 단계, OpenAI Five(Dota
 2), AlphaStar(스타크래프트 II), 로봇 보행 제어 등에 실제로 널리
-쓰인다.
+쓰인다(RLHF는 Chapter 9에서 직접 다룬다).
 
 **Q-learning이 "얼마나 좋은지 평가한 뒤 최선을 고른다"는 간접적
 전략이라면, 정책기반 방법은 "무엇을 할지" 자체를 직접, 그리고

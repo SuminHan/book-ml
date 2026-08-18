@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-5c8e63ae.js";
+            window.path_to_searchindex_js = "searchindex-d5762192.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-9a132350.js"></script>
+        <script src="toc-bf224681.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -2287,7 +2287,7 @@ Transformer), 대규모 언어모델, 강화학습, 생성형 모델로 응용�
 짚고 넘어간다: <strong>신경망이 무엇을 할 수 있는가</strong>(순전파)와 <strong>그것을 어떻게
 학습시키는가</strong>(역전파).</p>
 <h2 id="11-신경망-복습-순전파와-역전파"><a class="header" href="#11-신경망-복습-순전파와-역전파">1.1 신경망 복습: 순전파와 역전파</a></h2>
-<p>ML1 Chapter 7의 핵심을 다시 정리한다. \(L\)개 층을 가진 신경망에서, 층
+<p>ML1 Chapter 8의 핵심을 다시 정리한다. \(L\)개 층을 가진 신경망에서, 층
 \(l\)의 pre-activation과 activation:</p>
 <p>\[z_l = W_l a_{l-1} + b_l, \qquad a_l = \sigma(z_l)\]</p>
 <p>역전파는 출력층에서 계산한 오차 \(\delta_L\)를 입력 방향으로 거슬러
@@ -2325,17 +2325,20 @@ LLM까지.</li>
 <li><strong>Chapter 5~8</strong>: 강화학습을 MDP부터 제대로 시작해, 표 기반
 방법(Q-learning)에서 신경망을 결합한 심층강화학습(DQN), 정책을 직접
 학습하는 방법(Policy Gradient)까지.</li>
-<li><strong>Chapter 9~10</strong>: 생성형 모델의 세 가지 원리 — 우도 기반(VAE),
+<li><strong>Chapter 9</strong>: 사전학습된 LLM을 사람이 원하는 방향으로 다듬는
+포스트트레이닝(RLHF, DPO) — Chapter 8의 PPO를 실제로 적용해보는
+자리이기도 하다.</li>
+<li><strong>Chapter 10~11</strong>: 생성형 모델의 세 가지 원리 — 우도 기반(VAE),
 적대적(GAN), 스코어 기반(Diffusion) — 을 순서대로 훑는다. 하나만
 배우면 다른 둘의 존재 이유가 잘 안 보이므로, 세 원리를 나란히 놓고
 비교하며 배운다.</li>
-<li><strong>Chapter 11~12</strong>: 팀 프로젝트로 학기를 마무리한다.</li>
+<li><strong>Chapter 12~13</strong>: 팀 프로젝트로 학기를 마무리한다.</li>
 </ul>
 <h2 id="16-준비-체크리스트"><a class="header" href="#16-준비-체크리스트">1.6 준비 체크리스트</a></h2>
 <p>이번 학기를 따라가려면 다음이 편해야 한다: (1) 연쇄법칙으로 그래디언트를
-계산하는 법(ML1 Chapter 7), (2) 행렬-벡터 곱과 내적(ML1 Chapter 2 이후
+계산하는 법(ML1 Chapter 8), (2) 행렬-벡터 곱과 내적(ML1 Chapter 2 이후
 계속 사용), (3) 확률의 기본 연산 — 기댓값, 조건부확률(Chapter 5 MDP와
-Chapter 9 VAE에서 특히 중요). 이 셋 중 자신 없는 부분이 있다면, 이번
+Chapter 10 VAE에서 특히 중요). 이 셋 중 자신 없는 부분이 있다면, 이번
 장 실습시간에 짚고 넘어가는 것을 권장한다.</p>
 <p><strong>신경망 자체는 ML1에서 이미 끝났다 — ML2는 “같은 원리로 무엇을 더 만들
 수 있는가“를 묻는 학기다.</strong></p>
@@ -2389,7 +2392,7 @@ def rnn_forward(inputs, h0, Wxh, Whh, b_h):
 <p>\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
 h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh’(z_t)) , W_{hh}\]</p>
 <h2 id="25-그래디언트-소실이-시간-축에서-재발하는-이유"><a class="header" href="#25-그래디언트-소실이-시간-축에서-재발하는-이유">2.5 그래디언트 소실이 시간 축에서 재발하는 이유</a></h2>
-<p>ML1 Chapter 8에서 본 것과 정확히 같은 패턴이다: \(\tanh’\)의 최댓값은
+<p>ML1 Chapter 9에서 본 것과 정확히 같은 패턴이다: \(\tanh’\)의 최댓값은
 1이지만 대부분의 구간에서 1보다 작고, 여기에 \(W_{hh}\)까지
 \(T\)번(시퀀스 길이만큼) 곱해진다. 시퀀스가 길수록(\(T\)가 클수록)
 이 곱은 지수적으로 0에 가까워지거나(그래디언트 소실 — \(W_{hh}\)의
@@ -2594,7 +2597,7 @@ Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
 <code>scaled_dot_product_attention(Q, K, V, d_k=2)</code> 출력과 대조해 일치하는지
 확인하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-4-llm-맛보기-llm-preview"><a class="header" href="#chapter-4-llm-맛보기-llm-preview">Chapter 4. LLM 맛보기 (LLM Preview)</a></h1>
+<h1 id="chapter-4-llm-사전학습과-프롬프팅-llm-pretraining--prompting"><a class="header" href="#chapter-4-llm-사전학습과-프롬프팅-llm-pretraining--prompting">Chapter 4. LLM 사전학습과 프롬프팅 (LLM Pretraining &amp; Prompting)</a></h1>
 <p>의대생은 처음부터 특정 질병 하나만 배우지 않는다 — 먼저 해부학, 생리학,
 약리학 같은 방대한 기초를 몇 년에 걸쳐 익힌 뒤에야, 특정 전공(예:
 심장내과)을 짧은 기간 집중적으로 훈련받는다. 대규모 언어모델(LLM)이
@@ -2613,12 +2616,14 @@ Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
 사실 지식, 심지어 어느 정도의 추론 능력까지 습득하게 된다.</p>
 <p>이 확률은 Chapter 3에서 배운 Transformer(정확히는 미래 토큰을 보지
 못하게 마스킹한 decoder-only Transformer)로 계산된다. 학습은 실제 다음
-토큰과 예측 확률분포 사이의 교차 엔트로피 손실(ML1 Chapter 3.3에서 섀넌의
+토큰과 예측 확률분포 사이의 교차 엔트로피 손실(ML1 Chapter 2.6에서 섀넌의
 정보이론으로부터 도입한 그 손실과 정확히 같은 형태)을 최소화하는 방향으로
 진행된다. 이 손실에 밑을 \(e\) 대신 2로 바꿔 지수를 취하면 <strong>퍼플렉시티</strong>
 (perplexity)라는 지표가 되는데, “모델이 다음 토큰을 고를 때 평균적으로 몇
 개의 선택지를 두고 헤매는 것과 같은가“를 뜻한다 — 낮을수록 모델이 확신을
-갖고 예측한다는 뜻이다.</p>
+갖고 예측한다는 뜻이다. 이번 장은 이렇게 사전학습된 모델을 프롬프팅으로
+쓰는 법까지 다루고, “그 모델을 사람이 원하는 방향으로 더 다듬는 법“은
+Chapter 9(포스트트레이닝)에서 이어서 다룬다.</p>
 <pre><code class="language-python">def next_token_probs(logits):
     # logits: 어휘 사전의 각 토큰에 대한 원점수(raw score)
     # softmax를 적용하면 "다음 토큰이 각각일 확률"이 된다
@@ -3292,7 +3297,7 @@ conjugate gradient, line search까지 동원하는 무거운 최적화였다. PP
 됐다: ChatGPT류 LLM을 사람 피드백에 맞게 조정하는 <strong>RLHF</strong>
 (Reinforcement Learning from Human Feedback) 단계, OpenAI Five(Dota
 2), AlphaStar(스타크래프트 II), 로봇 보행 제어 등에 실제로 널리
-쓰인다.</p>
+쓰인다(RLHF는 Chapter 9에서 직접 다룬다).</p>
 <p><strong>Q-learning이 “얼마나 좋은지 평가한 뒤 최선을 고른다“는 간접적
 전략이라면, 정책기반 방법은 “무엇을 할지” 자체를 직접, 그리고
 연속적인 행동 공간에서도 학습한다. Chapter 6에서 증명했듯이 유한한
@@ -3351,14 +3356,143 @@ Step 3: 궤적 확률 P(tau;theta) = prod_t pi_theta(a_t|s_t) * (환경전이확
 몰라도 정책만으로 학습 가능하다는 model-free RL의 핵심 성질이
 깨진다).</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-9-생성형-모델-i-우도-기반-generative-models-i-likelihood-based"><a class="header" href="#chapter-9-생성형-모델-i-우도-기반-generative-models-i-likelihood-based">Chapter 9. 생성형 모델 I: 우도 기반 (Generative Models I: Likelihood-Based)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter09_vae_elbo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<h1 id="chapter-9-llm-포스트트레이닝-rlhf와-정렬-llm-post-training-rlhf--alignment"><a class="header" href="#chapter-9-llm-포스트트레이닝-rlhf와-정렬-llm-post-training-rlhf--alignment">Chapter 9. LLM 포스트트레이닝: RLHF와 정렬 (LLM Post-training: RLHF &amp; Alignment)</a></h1>
+<p>2022년, OpenAI는 InstructGPT 논문에서 놀라운 관찰을 보고했다 — 파라미터가
+100배 더 적은 모델이라도, 사람이 원하는 방식으로 다듬어졌다면 사전학습만
+거친 거대 모델보다 사람들이 훨씬 더 선호했다. Chapter 4에서 배운
+사전학습(다음 토큰 예측)은 “그럴듯한 텍스트“를 만들어내지만, 그게 곧
+“사람이 원하는 대답“이라는 보장은 없다 — 사전학습 데이터에는 훌륭한 글도,
+엉뚱하거나 무례한 글도 섞여 있기 때문이다. 이번 장은 사전학습된 모델을
+“사람이 실제로 원하는 방향“으로 다듬는 <strong>포스트트레이닝</strong>(post-training)
+단계를 다룬다 — 그리고 그 핵심 도구가, Chapter 8에서 배운 PPO다.</p>
+<h2 id="91-sft-사람이-쓴-이상적인-답변으로-다듬기"><a class="header" href="#91-sft-사람이-쓴-이상적인-답변으로-다듬기">9.1 SFT: 사람이 쓴 이상적인 답변으로 다듬기</a></h2>
+<p>가장 단순한 포스트트레이닝은 <strong>지도 파인튜닝</strong>(Supervised Fine-Tuning,
+SFT)이다: 사람이 직접 작성한 “이상적인 (질문, 답변)” 쌍을 모아, 사전학습된
+모델을 그 데이터에 대해 평범한 지도학습으로 한 번 더 학습시킨다 —
+Chapter 4의 다음 토큰 예측 손실 그대로, 다만 데이터가 인터넷 텍스트가
+아니라 사람이 직접 쓴 고품질 예시로 바뀐다. 문제는 확장성이다: “좋은
+답변이 무엇인가“를 사람이 매번 처음부터 <strong>작성</strong>하는 것은 비용이 크고,
+모델이 만들 수 있는 무수한 질문 유형을 다 커버하기 어렵다.</p>
+<h2 id="92-rlhf-보상모델을-거쳐-ppo를-적용한다"><a class="header" href="#92-rlhf-보상모델을-거쳐-ppo를-적용한다">9.2 RLHF: 보상모델을 거쳐 PPO를 적용한다</a></h2>
+<p><strong>RLHF</strong>(Reinforcement Learning from Human Feedback)는 다른 전략을
+쓴다 — 사람이 매번 “정답“을 새로 쓰는 대신, 모델이 만든 <strong>여러 답변 중
+어느 쪽이 더 나은지 고르기만</strong> 하면 된다(비교가 작성보다 훨씬 쉽고
+빠르다). 이 선호 데이터로 <strong>보상모델</strong>(Reward Model)을 학습시킨 뒤,
+Chapter 8의 PPO로 그 보상모델의 점수를 최대화하도록 언어모델 자체를
+정책(policy)처럼 취급해 학습시킨다.</p>
+<p><strong>1단계 — 보상모델 학습</strong>: 같은 질문 \(x\)에 대해 모델이 만든 두 답변
+\(y_w\)(사람이 더 선호한 쪽, winner)와 \(y_l\)(덜 선호한 쪽,
+loser)이 있을 때, 보상모델 \(r_\phi(x,y)\)가 \(y_w\)에 더 높은
+점수를 주도록 학습한다. 브래들리-테리 모델(Bradley-Terry model)은 이
+선호 확률을 시그모이드로 모델링한다:</p>
+<p>\[P(y_w \succ y_l \mid x) = \sigma\big(r_\phi(x,y_w) - r_\phi(x,y_l)\big)\]</p>
+<p>이 확률을 최대화하는 손실은 <strong>정확히 Chapter 2의 로지스틱회귀와 같은
+교차 엔트로피 형태</strong>다 — “정답 라벨“이 “\(y_w\)가 이겼다“는 사실
+하나뿐인 이진분류 문제이기 때문이다:</p>
+<pre><code class="language-python">import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+def reward_model_loss(r_win, r_lose):
+    # Bradley-Terry: P(y_w &gt; y_l) = sigmoid(r_win - r_lose)
+    return -math.log(sigmoid(r_win - r_lose))
+</code></pre>
+<p><strong>2단계 — PPO로 정책 학습</strong>: 보상모델이 준비되면, 언어모델 \(\pi_\theta\)를
+“질문 \(x\)라는 상태에서, 답변 \(y\)라는 행동을 순차적으로(토큰 하나씩)
+고르는 정책“으로 취급하고, 보상모델의 점수 \(r_\phi(x,y)\)를 보상 삼아
+Chapter 8의 PPO를 그대로 적용한다. 다만 한 가지 항이 추가된다 — 사전학습된
+원래 모델(SFT 모델) \(\pi_{\text{ref}}\)에서 너무 멀리 벗어나지
+않도록, KL 발산 페널티를 목적함수에서 뺀다:</p>
+<p>\[J(\theta) = \mathbb{E}\left[r_\phi(x,y)\right] - \beta , D_{KL}\big(\pi_\theta(\cdot|x) ,|, \pi_{\text{ref}}(\cdot|x)\big)\]</p>
+<p>왜 이 페널티가 필요한가: 보상모델도 결국 근사에 불과하므로, 정책이
+보상모델의 허점을 악용해 점수만 높이고 실제로는 이상한 텍스트를 만들어낼
+위험이 있다(<strong>보상 해킹</strong>, reward hacking). \(\pi_{\text{ref}}\)에서 너무
+멀어지지 않도록 묶어두면, “말이 되는 문장” 안에서만 보상을 높이도록
+제약할 수 있다 — Chapter 8.10에서 언급했던 “ChatGPT류 LLM을 RLHF로
+조정한다“는 문장이 정확히 이 과정을 가리킨다.</p>
+<h2 id="93-dpo-peftlora-에이전트rag-개관"><a class="header" href="#93-dpo-peftlora-에이전트rag-개관">9.3 DPO, PEFT/LoRA, 에이전트·RAG 개관</a></h2>
+<p><strong>DPO</strong>(Direct Preference Optimization, 2023): RLHF는 (1) 보상모델을
+따로 학습하고 (2) 그 보상모델로 PPO를 돌리는 2단계 과정이라 복잡하고
+불안정할 수 있다. DPO는 수학적으로, RLHF 목적함수의 최적 정책이 보상함수를
+\(\pi_\theta\)와 \(\pi_{\text{ref}}\)의 비율로 직접 표현할 수 있음을
+보이고, 그 관계를 보상모델 손실에 대입해 <strong>보상모델도 PPO도 없이, 선호
+데이터에서 정책을 곧바로 학습</strong>하는 손실을 유도한다:</p>
+<p>\[\mathcal{L}_{\text{DPO}} = -\log \sigma\left(\beta \log
+\frac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)} - \beta \log
+\frac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\right)\]</p>
+<p>형태를 보면 여전히 9.2의 보상모델 손실과 똑같은 로지스틱 손실이다 —
+다만 “보상“의 역할을 \(\beta \log(\pi_\theta/\pi_{\text{ref}})\)(정책이
+기준 모델보다 그 답변을 얼마나 더 선호하게 됐는가)이 대신한다. 별도의
+보상모델과 RL 루프 없이 지도학습 한 번으로 RLHF와 이론적으로 같은
+지점에 도달한다는 것이 DPO의 매력이다.</p>
+<p><strong>PEFT/LoRA</strong>(Parameter-Efficient Fine-Tuning / Low-Rank Adaptation):
+수십~수백억 개 파라미터 전체를 파인튜닝하는 것은 계산·저장 비용이 크다.
+LoRA는 원래 가중치 \(W\)를 고정한 채, 훨씬 작은 두 저차원 행렬의 곱
+\(\Delta W = BA\)(\(B, A\)의 차원이 \(W\)보다 훨씬 작다)만 학습해서
+\(W + \Delta W\)를 새 가중치로 쓴다 — 학습해야 할 파라미터 수를
+수백 분의 1로 줄이면서도 실전에서 전체 파인튜닝과 비슷한 성능을 낸다.</p>
+<p><strong>에이전트와 RAG</strong>(Retrieval-Augmented Generation): 프롬프팅만으로는
+모델이 모르는 최신 정보나 외부 문서를 답할 수 없다. RAG는 질문과 관련된
+문서를 먼저 검색해 프롬프트에 함께 넣어주고, 에이전트(agent)는 여기서
+한 걸음 더 나아가 모델이 검색·계산기·코드 실행 같은 <strong>도구를 스스로
+호출</strong>하도록 만든다 — 둘 다 “모델의 파라미터 안에 모든 지식을 우겨넣는”
+대신 “모델이 필요할 때 바깥 정보/도구에 접근하게 한다“는 같은 방향의
+해법이다.</p>
+<p><strong>사전학습이 “무엇이든 그럴듯하게 잇는 법“을 가르친다면, 포스트트레이닝은
+그중 “사람이 실제로 원하는 것“만 골라내는 단계다 — 그리고 그 핵심
+도구(PPO)는 이미 이번 학기에 강화학습 문제를 풀기 위해 배운 바로 그
+알고리즘이다.</strong></p>
+<hr>
+<h2 id="연습문제-19"><a class="header" href="#연습문제-19">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>reward_model_loss</code>를 완성하고, DPO 손실
+<code>dpo_loss</code>를 작성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
+<pre><code class="language-python">import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+def reward_model_loss(r_win, r_lose):
+    # ADD ADDITIONAL CODE HERE!!
+    # -log(sigmoid(r_win - r_lose))
+
+def dpo_loss(logp_win_theta, logp_win_ref, logp_lose_theta, logp_lose_ref, beta):
+    # ADD ADDITIONAL CODE HERE!!
+    # log_ratio_win = beta * (logp_win_theta - logp_win_ref)
+    # log_ratio_lose = beta * (logp_lose_theta - logp_lose_ref)
+    # -log(sigmoid(log_ratio_win - log_ratio_lose))
+
+print(round(reward_model_loss(r_win=2.0, r_lose=-1.0), 3))  # 0.049 -- 잘 구분하면 손실이 작다
+print(round(reward_model_loss(r_win=-1.0, r_lose=2.0), 3))  # 3.049 -- 거꾸로면 손실이 크다
+</code></pre>
+<p><strong>2. (개념 서술)</strong> RLHF의 목적함수에 있는 KL 발산 페널티(\(-\beta
+D_{KL}(\pi_\theta|\pi_{\text{ref}})\))를 만약 완전히 없앤다면 어떤
+문제가 생길 수 있는지, “보상 해킹“이라는 용어를 써서 두세 문장으로
+설명하라.</p>
+<p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> 브래들리-테리 손실
+\(\mathcal{L} = -\log\sigma(r_\phi(x,y_w) - r_\phi(x,y_l))\)를
+\(r_\phi(x,y_w)\)로 미분한 결과가, Chapter 2의 로지스틱회귀 손실을
+미분했을 때와 같은 \((\text{예측} - \text{정답})\) 꼴의 그래디언트로
+정리됨을 보여라.</p>
+<p><strong>힌트</strong>: \(z = r_\phi(x,y_w) - r_\phi(x,y_l)\)로 치환하면
+\(\mathcal{L} = -\log\sigma(z)\)이고, 이는 “정답 라벨이 항상 1인”
+로지스틱회귀 손실 \(-\log h_w(x)\)와 정확히 같은 형태다. Chapter
+2.6에서 유도한 \(\frac{d}{dz}(-\log\sigma(z)) = \sigma(z) - 1\)을
+그대로 재사용해서 \(\frac{\partial \mathcal{L}}{\partial
+r_\phi(x,y_w)}\)를 구하라.</p>
+<p><strong>정확성 확인</strong>: 구한 그래디언트의 부호를 보고, 모델이 이미
+\(y_w\)를 확신 있게 선호하고 있을 때(\(\sigma(z) \to 1\))
+그래디언트가 왜 0에 가까워지는지(즉 더 이상 크게 갱신하지 않는지)
+한 문장으로 설명하라.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chapter-10-생성형-모델-i-우도-기반-generative-models-i-likelihood-based"><a class="header" href="#chapter-10-생성형-모델-i-우도-기반-generative-models-i-likelihood-based">Chapter 10. 생성형 모델 I: 우도 기반 (Generative Models I: Likelihood-Based)</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_vae_elbo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <p>ML1의 마지막 장에서 오토인코더가 남긴 질문을 기억하는가 — “병목의 값을
 무작위로 하나 골라서 디코더에 넣으면, 존재한 적 없는 새로운 데이터를
 만들 수 있지 않을까?” 2013년 디데릭 킹마(Diederik Kingma)와 맥스
 웰링(Max Welling)이 발표한 <strong>변분 오토인코더</strong>(Variational
 Autoencoder, VAE)가 바로 이 질문에 대한 정식 답이다.</p>
-<h2 id="91-오토인코더를-그냥-쓰면-안-되는-이유"><a class="header" href="#91-오토인코더를-그냥-쓰면-안-되는-이유">9.1 오토인코더를 그냥 쓰면 안 되는 이유</a></h2>
+<h2 id="101-오토인코더를-그냥-쓰면-안-되는-이유"><a class="header" href="#101-오토인코더를-그냥-쓰면-안-되는-이유">10.1 오토인코더를 그냥 쓰면 안 되는 이유</a></h2>
 <p>일반 오토인코더의 잠재 공간(latent space)은 “어떤 값이 그럴듯한
 데이터로 복원되는지“에 대한 보장이 없다 — 학습 데이터들이 잠재 공간의
 여기저기 흩어져 있을 수 있고, 그 사이 빈 공간에서 무작위로 값을 뽑으면
@@ -3368,7 +3502,7 @@ Autoencoder, VAE)가 바로 이 질문에 대한 정식 답이다.</p>
 가깝도록 추가 제약을 건다 — 그러면 잠재 공간 전체가 매끄럽고 빈틈없이
 채워져서, 임의의 지점에서 샘플링해도 그럴듯한 데이터가 나올 가능성이
 높아진다.</p>
-<h2 id="92-vae의-구조"><a class="header" href="#92-vae의-구조">9.2 VAE의 구조</a></h2>
+<h2 id="102-vae의-구조"><a class="header" href="#102-vae의-구조">10.2 VAE의 구조</a></h2>
 <ul>
 <li><strong>인코더</strong> \(q_\phi(z|x)\): 입력 \(x\)를 받아, 잠재변수 \(z\)의
 확률분포를 내놓는다(보통 정규분포 \(\mathcal{N}(\mu(x),
@@ -3377,13 +3511,13 @@ Autoencoder, VAE)가 바로 이 질문에 대한 정식 답이다.</p>
 <li><strong>디코더</strong> \(p_\theta(x|z)\): \(z\)로부터 \(x\)를 복원(또는
 생성)한다.</li>
 </ul>
-<h2 id="93-우도라는-관점"><a class="header" href="#93-우도라는-관점">9.3 우도라는 관점</a></h2>
+<h2 id="103-우도라는-관점"><a class="header" href="#103-우도라는-관점">10.3 우도라는 관점</a></h2>
 <p>VAE는 “생성형 모델을 만드는 세 가지 원리” 중 첫 번째 — <strong>우도
 기반</strong>(likelihood-based) 접근이다: 모델이 학습 데이터를 만들어낼
 확률(우도) \(P(x)\)를 직접(또는 그 근사치를) 최대화하도록 학습한다.
 문제는 \(p_\theta(x) = \int p_\theta(x|z)p(z),dz\)는 가능한 모든
 \(z\)에 대한 적분이라, 일반적으로 계산이 불가능하다(intractable).</p>
-<h2 id="94-elbo-계산-가능한-하한으로-우회하기"><a class="header" href="#94-elbo-계산-가능한-하한으로-우회하기">9.4 ELBO: 계산 가능한 하한으로 우회하기</a></h2>
+<h2 id="104-elbo-계산-가능한-하한으로-우회하기"><a class="header" href="#104-elbo-계산-가능한-하한으로-우회하기">10.4 ELBO: 계산 가능한 하한으로 우회하기</a></h2>
 <p>직접 계산할 수 없는 \(\log p_\theta(x)\) 대신, 다음이 성립함을 보일
 수 있다:</p>
 <p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
@@ -3396,7 +3530,7 @@ D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\]</p>
 <li>둘째 항 \(D_{KL}(q_\phi(z|x)|p(z))\): <strong>정규화 항</strong> — 인코더가
 만든 분포 \(q_\phi(z|x)\)가, 목표로 하는 사전분포 \(p(z)\)(보통
 표준정규분포)에서 얼마나 벗어나 있는지(KL divergence, ML1 Chapter
-3.3에서 섀넌의 정보이론으로 소개한 그 개념 — 두 확률분포 사이의
+2.6에서 섀넌의 정보이론으로 소개한 그 개념 — 두 확률분포 사이의
 “거리”). 이 항이 바로 잠재 공간을 매끄럽게 만드는 힘이다.</li>
 </ul>
 <p>\(\log p_\theta(x) \ge \text{ELBO}\)이므로, <strong>ELBO를 최대화하면 실제
@@ -3412,7 +3546,7 @@ D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\]</p>
                           for i in range(len(mu)))
     return recon_loss + kl_loss  # ELBO를 최대화 = 이 손실(음의 ELBO)을 최소화
 </code></pre>
-<h2 id="95-reparameterization-trick-참고"><a class="header" href="#95-reparameterization-trick-참고">9.5 Reparameterization Trick (참고)</a></h2>
+<h2 id="105-reparameterization-trick-참고"><a class="header" href="#105-reparameterization-trick-참고">10.5 Reparameterization Trick (참고)</a></h2>
 <p>\(z\)를 확률분포에서 직접 샘플링하면, “샘플링“이라는 연산은 미분이
 안 돼서 역전파가 인코더까지 흘러가지 못한다. VAE는 \(z = \mu + \sigma
 \odot \epsilon\)(\(\epsilon \sim \mathcal{N}(0,1)\)은 무작위성을
@@ -3425,7 +3559,7 @@ trick)으로 이 문제를 우회한다 — 이제 \(\mu, \sigma\)에 대한 미
 원리를 나란히 놓고 비교하면, “그럴듯한 새 데이터를 만든다“는 같은
 목표에 얼마나 다른 방식으로 접근할 수 있는지가 뚜렷하게 드러난다.</strong></p>
 <hr>
-<h2 id="연습문제-19"><a class="header" href="#연습문제-19">연습문제</a></h2>
+<h2 id="연습문제-20"><a class="header" href="#연습문제-20">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>kl_divergence_gaussian</code>(정규분포
 \(\mathcal{N}(\mu, \sigma^2)\)와 표준정규분포 사이의 KL divergence,
 \(D_{KL} = -\frac{1}{2}(1 + \log\sigma^2 - \mu^2 - \sigma^2)\))과
@@ -3473,8 +3607,8 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 \(X\)가 상수일 때), ELBO를 최대화하는 것이 왜 실제 우도
 \(\log p(x)\)를 “간접적으로” 최대화하는 셈이 되는지 설명하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-10-생성형-모델-ii-적대적스코어-기반-generative-models-ii-adversarial--score-based"><a class="header" href="#chapter-10-생성형-모델-ii-적대적스코어-기반-generative-models-ii-adversarial--score-based">Chapter 10. 생성형 모델 II: 적대적/스코어 기반 (Generative Models II: Adversarial &amp; Score-Based)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_gan.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<h1 id="chapter-11-생성형-모델-ii-적대적스코어-기반-generative-models-ii-adversarial--score-based"><a class="header" href="#chapter-11-생성형-모델-ii-적대적스코어-기반-generative-models-ii-adversarial--score-based">Chapter 11. 생성형 모델 II: 적대적/스코어 기반 (Generative Models II: Adversarial &amp; Score-Based)</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter11_gan.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <p>2014년, 당시 대학원생이던 이언 굿펠로우(Ian Goodfellow)는 친구들과의
 술자리 논쟁에서 아이디어 하나를 떠올렸다고 훗날 여러 인터뷰에서
 밝혔다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신, <strong>두
@@ -3484,18 +3618,18 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 감정사는 위조범을 잡아내도록 서로 계속 겨루게 하면 위조범의 실력이
 점점 진짜에 가깝게 늘어나지 않을까? 이 아이디어가
 <strong>GAN</strong>(Generative Adversarial Network)이다.</p>
-<h2 id="101-지난-장과는-완전히-다른-원리"><a class="header" href="#101-지난-장과는-완전히-다른-원리">10.1 지난 장과는 완전히 다른 원리</a></h2>
-<p>Chapter 9의 VAE는 “우도(데이터가 나올 확률)를 최대화한다“는 명확한
+<h2 id="111-지난-장과는-완전히-다른-원리"><a class="header" href="#111-지난-장과는-완전히-다른-원리">11.1 지난 장과는 완전히 다른 원리</a></h2>
+<p>Chapter 10의 VAE는 “우도(데이터가 나올 확률)를 최대화한다“는 명확한
 목표함수가 있었다. GAN은 그런 단일 목표함수가 없다 — 대신 두 신경망이
 서로 다른, 심지어 <strong>반대되는</strong> 목표를 갖고 동시에 학습된다. 이건
 지금까지 배운 “손실함수 하나를 최소화한다“는 틀과는 근본적으로 다른
 게임이론적 설정이다.</p>
-<h2 id="102-gan-생성자와-판별자의-min-max-게임"><a class="header" href="#102-gan-생성자와-판별자의-min-max-게임">10.2 GAN: 생성자와 판별자의 min-max 게임</a></h2>
+<h2 id="112-gan-생성자와-판별자의-min-max-게임"><a class="header" href="#112-gan-생성자와-판별자의-min-max-게임">11.2 GAN: 생성자와 판별자의 min-max 게임</a></h2>
 <ul>
 <li><strong>생성자</strong>(Generator) \(G\): 무작위 노이즈 \(z \sim p(z)\)(보통
 표준정규분포)를 입력받아 가짜 데이터 \(G(z)\)를 만든다.</li>
 <li><strong>판별자</strong>(Discriminator) \(D\): 데이터를 입력받아, 그것이 진짜일
-확률 \(D(x) \in [0,1]\)을 출력한다(Chapter 3의 로지스틱회귀와
+확률 \(D(x) \in [0,1]\)을 출력한다(Chapter 2의 로지스틱회귀와
 정확히 같은 형태).</li>
 </ul>
 <p>목적함수(min-max game):</p>
@@ -3515,7 +3649,7 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 def generator_loss(D_fake):
     return -math.log(D_fake)  # 생성자가 최소화할 손실 (D_fake를 1에 가깝게)
 </code></pre>
-<h2 id="103-왜-균형점을-논해야-하는가"><a class="header" href="#103-왜-균형점을-논해야-하는가">10.3 왜 “균형점“을 논해야 하는가</a></h2>
+<h2 id="113-왜-균형점을-논해야-하는가"><a class="header" href="#113-왜-균형점을-논해야-하는가">11.3 왜 “균형점“을 논해야 하는가</a></h2>
 <p>일반적인 지도학습은 손실함수 하나를 최소화하면 끝이었다. GAN은 두
 네트워크가 서로 <strong>반대</strong> 목표로 동시에 학습되므로, “학습이 끝났다“는
 것이 무슨 의미인지부터 다시 정의해야 한다. 게임이론에서 이런
@@ -3527,13 +3661,13 @@ def generator_loss(D_fake):
 분포와 정확히 같아지는 지점임이 증명돼 있다 — “생성자가 완벽해서
 판별자가 찍는 수밖에 없는 상태“가 이론적 종착점이다. 이번 장 연습문제는
 이 균형점을 직접 논증한다.</p>
-<h2 id="104-실전에서의-불안정성"><a class="header" href="#104-실전에서의-불안정성">10.4 실전에서의 불안정성</a></h2>
+<h2 id="114-실전에서의-불안정성"><a class="header" href="#114-실전에서의-불안정성">11.4 실전에서의 불안정성</a></h2>
 <p>이론과 달리, 실제 GAN 학습은 자주 불안정하다 — 생성자가 판별자를
 속이는 몇 가지 패턴에만 몰려서 다양성을 잃는 현상(<strong>모드 붕괴, mode
 collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적이지만 생성
 품질이 다소 흐릿한(blurry) 경향이 있는 반면, GAN은 선명한 결과를 내지만
 학습이 까다롭다 — 이 트레이드오프가 두 원리의 실무적 차이다.</p>
-<h2 id="105-또-다른-원리-diffusion--노이즈를-점진적으로-되돌리기"><a class="header" href="#105-또-다른-원리-diffusion--노이즈를-점진적으로-되돌리기">10.5 또 다른 원리: Diffusion — 노이즈를 점진적으로 되돌리기</a></h2>
+<h2 id="115-또-다른-원리-diffusion--노이즈를-점진적으로-되돌리기"><a class="header" href="#115-또-다른-원리-diffusion--노이즈를-점진적으로-되돌리기">11.5 또 다른 원리: Diffusion — 노이즈를 점진적으로 되돌리기</a></h2>
 <p><strong>Diffusion 모델</strong>은 세 번째 완전히 다른 접근이다.</p>
 <p><strong>정방향 과정</strong>(forward process): 진짜 이미지 \(x_0\)에 아주 작은
 노이즈를 \(T\)번 반복해서 더해, 결국 \(x_T\)가 순수한 무작위
@@ -3549,7 +3683,7 @@ collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적�
 안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \(T\)번의 반복이
 필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
 이미지 생성 모델들(Stable Diffusion 등)이 이 원리를 쓴다.</p>
-<h2 id="106-세-원리-비교"><a class="header" href="#106-세-원리-비교">10.6 세 원리 비교</a></h2>
+<h2 id="116-세-원리-비교"><a class="header" href="#116-세-원리-비교">11.6 세 원리 비교</a></h2>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -3567,7 +3701,7 @@ collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적�
 오해했을 것이다 — 세 원리를 나란히 보고 나서야, 생성형 모델이라는
 문제 자체가 얼마나 다양한 방식으로 풀릴 수 있는지가 보인다.</strong></p>
 <hr>
-<h2 id="연습문제-20"><a class="header" href="#연습문제-20">연습문제</a></h2>
+<h2 id="연습문제-21"><a class="header" href="#연습문제-21">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>discriminator_loss</code>와
 <code>generator_loss</code>를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
 <pre><code class="language-python">import math
@@ -3608,19 +3742,19 @@ Step 5: 판별자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 
 계산된 값과 일치하는지 확인하고, 실제 GAN 학습에서 이 균형에
 도달하기가 왜 이론만큼 쉽지 않은지(모드 붕괴 등) 한 문장으로 언급하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-11-팀-프로젝트-구현-team-project-implementation"><a class="header" href="#chapter-11-팀-프로젝트-구현-team-project-implementation">Chapter 11. 팀 프로젝트: 구현 (Team Project: Implementation)</a></h1>
-<p>지금까지 10개 장 동안 배운 모든 것 — 손실함수를 정의하고, 그래디언트를
+<h1 id="chapter-12-팀-프로젝트-구현-team-project-implementation"><a class="header" href="#chapter-12-팀-프로젝트-구현-team-project-implementation">Chapter 12. 팀 프로젝트: 구현 (Team Project: Implementation)</a></h1>
+<p>지금까지 11개 장 동안 배운 모든 것 — 손실함수를 정의하고, 그래디언트를
 유도하고, 모델을 구현하고, 그 정확성을 논증하는 것 — 은 각각 독립된
 장의 문제로 다뤄졌다. 마지막 두 장은 이 조각들을 하나의 완성된
 프로젝트로 직접 조립해보는 시간이다.</p>
-<h2 id="111-왜-팀-프로젝트인가"><a class="header" href="#111-왜-팀-프로젝트인가">11.1 왜 팀 프로젝트인가</a></h2>
+<h2 id="121-왜-팀-프로젝트인가"><a class="header" href="#121-왜-팀-프로젝트인가">12.1 왜 팀 프로젝트인가</a></h2>
 <p>실제 머신러닝 문제는 “이 장은 로지스틱회귀, 저 장은 CNN” 식으로
 깔끔하게 나뉘어 있지 않다. 데이터를 정제하고, 어떤 모델이 적합한지
 판단하고, 학습이 잘 안 될 때 원인을 진단하고(과적합인가? 그래디언트
 소실인가? 데이터 자체의 문제인가?), 결과를 남에게 설명하는 것까지 —
-이 모든 과정을 스스로 겪어보는 것이 지난 10개 장의 개별 주제를 하나로
+이 모든 과정을 스스로 겪어보는 것이 지난 11개 장의 개별 주제를 하나로
 통합하는 가장 확실한 방법이다.</p>
-<h2 id="112-프로젝트-구조"><a class="header" href="#112-프로젝트-구조">11.2 프로젝트 구조</a></h2>
+<h2 id="122-프로젝트-구조"><a class="header" href="#122-프로젝트-구조">12.2 프로젝트 구조</a></h2>
 <ul>
 <li><strong>코드</strong>: 재현 가능해야 한다 — 다른 사람이 같은 코드를 실행하면
 (무작위성을 고정했을 때) 같은 결과가 나와야 한다. 데이터 전처리부터
@@ -3628,19 +3762,20 @@ Step 5: 판별자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 
 한다.</li>
 <li><strong>리포트</strong>: 문제 정의 → 방법론 → 실험 결과 → (필수) 수식적 정당화
 1개 이상 → 한계와 향후 개선 방향의 구조를 따른다.</li>
-<li><strong>포스터</strong>: 발표(Chapter 12)에서 쓸 요약본 — 핵심 그림 1~2개(학습
+<li><strong>포스터</strong>: 발표(Chapter 13)에서 쓸 요약본 — 핵심 그림 1~2개(학습
 곡선, 결과 예시 등)와 가장 중요한 결론 3~4개로 압축한다.</li>
 </ul>
-<h2 id="113-프로젝트-주제-후보"><a class="header" href="#113-프로젝트-주제-후보">11.3 프로젝트 주제 후보</a></h2>
+<h2 id="123-프로젝트-주제-후보"><a class="header" href="#123-프로젝트-주제-후보">12.3 프로젝트 주제 후보</a></h2>
 <p>자유 주제이지만, 다음과 같은 방향을 참고할 수 있다:</p>
 <ul>
 <li><strong>그래프 이상탐지</strong>: 공개 합성 데이터를 이용해, 그래프신경망(GNN,
-이번 학기 범위 밖이지만 ML1 Chapter 10의 임베딩 개념과 이어진다)이나
+이번 학기 범위 밖이지만 ML1 Chapter 12의 임베딩 개념과 이어진다)이나
 전통적 방법으로 비정상 노드/엣지를 탐지.</li>
-<li><strong>이미지 분류 응용</strong>: ML1 Chapter 9(CNN)에서 배운 구조를 실제 이미지
-데이터셋에 적용, 전이학습(transfer learning) 시도.</li>
-<li><strong>간단한 챗봇/LLM 활용 프로젝트</strong>: Chapter 2~4(LLM 파트)에서 배운
-프롬프팅 기법을 실제 과제(요약, 분류, 검색)에 응용.</li>
+<li><strong>이미지 분류 응용</strong>: ML1 Chapter 10(CNN)에서 배운 구조를 실제 이미지
+데이터셋에 적용, ML1 Chapter 11에서 배운 전이학습(transfer learning) 시도.</li>
+<li><strong>간단한 챗봇/LLM 활용 프로젝트</strong>: Chapter 2~4(시퀀스/LLM 파트)에서
+배운 프롬프팅 기법을 실제 과제(요약, 분류, 검색)에 응용하거나,
+Chapter 9에서 배운 정렬(alignment) 아이디어를 작은 규모로 실험.</li>
 </ul>
 <p><strong>데이터 구하기</strong>: 위 주제들에 쓸 데이터는 보통 다음 세 곳에서 구한다.</p>
 <ul>
@@ -3654,41 +3789,42 @@ Step 5: 판별자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 
 데이터셋을 코드 몇 줄로 바로 불러올 수 있어, LLM/트랜스포머 관련
 프로젝트에 특히 편리하다.</li>
 </ul>
-<h2 id="114-팀-프로젝트에서-자주-마주치는-실전-문제들"><a class="header" href="#114-팀-프로젝트에서-자주-마주치는-실전-문제들">11.4 팀 프로젝트에서 자주 마주치는 실전 문제들</a></h2>
+<h2 id="124-팀-프로젝트에서-자주-마주치는-실전-문제들"><a class="header" href="#124-팀-프로젝트에서-자주-마주치는-실전-문제들">12.4 팀 프로젝트에서 자주 마주치는 실전 문제들</a></h2>
 <p>이번 학기 배운 개념들이 실제 프로젝트에서 어떤 모습으로 나타나는지
 미리 짚어본다:</p>
 <ul>
 <li><strong>데이터가 생각보다 지저분하다</strong>: 결측값, 이상치, 클래스
-불균형(ML1 Chapter 3의 Precision/Recall이 왜 필요한지 다시 체감하게
+불균형(ML1 Chapter 2.7의 Precision/Recall이 왜 필요한지 다시 체감하게
 되는 지점) 등을 먼저 확인해야 한다.</li>
 <li><strong>학습이 안 될 때</strong>: 손실이 줄지 않는다면 학습률(ML1 Chapter 2)이
-문제인지, 그래디언트 소실(ML1 Chapter 8)이 문제인지, 데이터 자체에
+문제인지, 그래디언트 소실(ML1 Chapter 9)이 문제인지, 데이터 자체에
 신호가 없는지 순서대로 의심해봐야 한다.</li>
 <li><strong>검증 없이 모델을 고르지 않는다</strong>: 학습 데이터에 대한 성능만 보고
 모델을 고르면 과적합된 모델을 최종안으로 선택하는 실수를 하기 쉽다 —
-반드시 별도의 검증/테스트 데이터로 최종 평가한다.</li>
+반드시 별도의 검증/테스트 데이터로 최종 평가한다(ML1 Chapter 6의
+train/validation/test 원칙).</li>
 </ul>
-<h2 id="115-요구사항-수식적-정당화-최소-1개"><a class="header" href="#115-요구사항-수식적-정당화-최소-1개">11.5 요구사항: 수식적 정당화 최소 1개</a></h2>
+<h2 id="125-요구사항-수식적-정당화-최소-1개"><a class="header" href="#125-요구사항-수식적-정당화-최소-1개">12.5 요구사항: 수식적 정당화 최소 1개</a></h2>
 <p>프로젝트 보고서에는 반드시 <strong>수식적으로 정당화되는 선택 1개 이상</strong>이
 포함돼야 한다. 다음은 이 요구사항을 만족하는 예시들이다(프로젝트
 주제에 맞게 변형):</p>
 <ol>
 <li>특정 손실함수를 골랐다면, 그 손실함수의 그래디언트가 왜 문제에
-적합한 형태를 갖는지 유도(ML1 Chapter 2, 3의 패턴 재사용).</li>
-<li>정규화 기법(dropout, 가중치 감쇠 등)을 썼다면, 그것이 과적합을
-어떻게 줄이는지 수식 또는 직관적 논증으로 설명(ML1 Chapter 8).</li>
+적합한 형태를 갖는지 유도(ML1 Chapter 2의 패턴 재사용).</li>
+<li>정규화 기법(L1/L2, dropout 등)을 썼다면, 그것이 과적합을 어떻게
+줄이는지 수식 또는 직관적 논증으로 설명(ML1 Chapter 6, 9).</li>
 <li>모델 구조를 선택한 이유를, 파라미터 수/계산 복잡도 공식으로
-정량적으로 비교(ML1 Chapter 9의 CNN 파라미터 수 계산 패턴 재사용).</li>
-<li>강화학습/생성형 프로젝트라면, Chapter 5~10에서 배운 벨만방정식·
+정량적으로 비교(ML1 Chapter 10의 CNN 파라미터 수 계산 패턴 재사용).</li>
+<li>강화학습/생성형 프로젝트라면, Chapter 5~11에서 배운 벨만방정식·
 ELBO·Nash 균형 같은 개념 중 하나를 실제 구현과 연결지어 설명.</li>
 </ol>
 <p>이는 이번 학기 내내 강조된 “정확히 맞히는 코드“와 “왜 그렇게 작동하는지
 아는 것“의 구분을, 프로젝트라는 더 큰 스케일에서도 유지하기 위함이다.</p>
-<h2 id="116-외부-제출-가능한-수준으로"><a class="header" href="#116-외부-제출-가능한-수준으로">11.6 외부 제출 가능한 수준으로</a></h2>
+<h2 id="126-외부-제출-가능한-수준으로"><a class="header" href="#126-외부-제출-가능한-수준으로">12.6 외부 제출 가능한 수준으로</a></h2>
 <p>이 프로젝트는 <strong>코드 + 리포트 + 포스터</strong> 3종 세트로 표준화해서
 준비한다 — 나중에 외부 기관(대학 등)이 자료를 요청할 경우 즉시 제시할
 수 있는 수준을 목표로 한다.</p>
-<h2 id="117-평가-기준"><a class="header" href="#117-평가-기준">11.7 평가 기준</a></h2>
+<h2 id="127-평가-기준"><a class="header" href="#127-평가-기준">12.7 평가 기준</a></h2>
 <ul>
 <li>문제 정의의 명확성</li>
 <li>방법론의 적절성(배운 개념을 올바르게 적용했는가)</li>
@@ -3697,11 +3833,11 @@ ELBO·Nash 균형 같은 개념 중 하나를 실제 구현과 연결지어 설�
 <li>코드의 재현 가능성</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-12-팀-프로젝트-발표-team-project-presentation"><a class="header" href="#chapter-12-팀-프로젝트-발표-team-project-presentation">Chapter 12. 팀 프로젝트: 발표 (Team Project: Presentation)</a></h1>
+<h1 id="chapter-13-팀-프로젝트-발표-team-project-presentation"><a class="header" href="#chapter-13-팀-프로젝트-발표-team-project-presentation">Chapter 13. 팀 프로젝트: 발표 (Team Project: Presentation)</a></h1>
 <p>지난 장에서 프로젝트를 구현했다면, 이번 장은 그 결과를 발표하고, 학기
 전체를 돌아보는 시간이다. 그리고 마지막으로, 지금 이 순간에도 계속
 발전하고 있는 몇 가지 최신 동향을 짧게 소개하며 학기를 마무리한다.</p>
-<h2 id="121-발표-체크리스트"><a class="header" href="#121-발표-체크리스트">12.1 발표 체크리스트</a></h2>
+<h2 id="131-발표-체크리스트"><a class="header" href="#131-발표-체크리스트">13.1 발표 체크리스트</a></h2>
 <ul>
 <li><strong>문제 정의</strong> (1분): 무엇을 풀려고 했는가? 왜 그 문제가 흥미로운가?</li>
 <li><strong>방법론</strong> (2~3분): 어떤 모델/알고리즘을 썼고, 왜 그것을 선택했는가?</li>
@@ -3718,7 +3854,7 @@ ELBO·Nash 균형 같은 개념 중 하나를 실제 구현과 연결지어 설�
 “손실이 줄지 않았는데, 확인해보니 그래디언트가 소실되고 있었다“는
 식의 진단 — 이 단순히 “정확도 90% 달성했습니다“보다 훨씬 값진
 결과다.</p>
-<h2 id="122-ml2-개념-지도-총정리"><a class="header" href="#122-ml2-개념-지도-총정리">12.2 ML2 개념 지도 (총정리)</a></h2>
+<h2 id="132-ml2-개념-지도-총정리"><a class="header" href="#132-ml2-개념-지도-총정리">13.2 ML2 개념 지도 (총정리)</a></h2>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -3727,18 +3863,19 @@ ELBO·Nash 균형 같은 개념 중 하나를 실제 구현과 연결지어 설�
 <tbody>
 <tr><td>Ch02</td><td>RNN</td><td>순서가 있는 데이터를 어떻게 기억하며 처리하는가</td></tr>
 <tr><td>Ch03</td><td>Attention/Transformer</td><td>순차 처리 없이 어떻게 문맥을 한 번에 파악하는가</td></tr>
-<tr><td>Ch04</td><td>LLM</td><td>다음 토큰 예측이 어떻게 폭넓은 능력으로 이어지는가</td></tr>
+<tr><td>Ch04</td><td>LLM 사전학습과 프롬프팅</td><td>다음 토큰 예측이 어떻게 폭넓은 능력으로 이어지는가</td></tr>
 <tr><td>Ch05</td><td>MDP/정책평가</td><td>미래의 불확실한 보상을 지금 어떻게 계산하는가</td></tr>
 <tr><td>Ch06</td><td>Q-learning</td><td>환경 모델 없이 어떻게 최적 행동을 배우는가</td></tr>
 <tr><td>Ch07</td><td>DQN</td><td>신경망과 강화학습을 어떻게 안정적으로 결합하는가</td></tr>
-<tr><td>Ch08</td><td>Policy Gradient</td><td>연속적 행동공간에서 정책을 어떻게 직접 학습하는가</td></tr>
-<tr><td>Ch09</td><td>VAE</td><td>계산 불가능한 우도를 어떻게 우회해서 최적화하는가</td></tr>
-<tr><td>Ch10</td><td>GAN/Diffusion</td><td>적대적 학습과 점진적 노이즈 제거는 어떻게 다른 원리로 같은 목표를 이루는가</td></tr>
+<tr><td>Ch08</td><td>Policy Gradient/PPO</td><td>연속적 행동공간에서 정책을 어떻게 직접 학습하는가</td></tr>
+<tr><td>Ch09</td><td>RLHF/정렬</td><td>사전학습된 모델을 사람이 원하는 방향으로 어떻게 다듬는가</td></tr>
+<tr><td>Ch10</td><td>VAE</td><td>계산 불가능한 우도를 어떻게 우회해서 최적화하는가</td></tr>
+<tr><td>Ch11</td><td>GAN/Diffusion</td><td>적대적 학습과 점진적 노이즈 제거는 어떻게 다른 원리로 같은 목표를 이루는가</td></tr>
 </tbody>
 </table>
 </div>
-<h2 id="123-ml1--ml2를-관통하는-하나의-패턴"><a class="header" href="#123-ml1--ml2를-관통하는-하나의-패턴">12.3 ML1 → ML2를 관통하는 하나의 패턴</a></h2>
-<p>두 학기 24개 장 전체를 관통하는 구조를 마지막으로 정리한다:</p>
+<h2 id="133-ml1--ml2를-관통하는-하나의-패턴"><a class="header" href="#133-ml1--ml2를-관통하는-하나의-패턴">13.3 ML1 → ML2를 관통하는 하나의 패턴</a></h2>
+<p>두 학기 26개 장 전체를 관통하는 구조를 마지막으로 정리한다:</p>
 <ol>
 <li><strong>모델을 정의한다</strong>: 입력을 출력으로 매핑하는 함수의 형태를
 정한다(직선, 트리, 신경망, Transformer, …).</li>
@@ -3752,7 +3889,7 @@ ELBO, min-max 목적함수, …) — 형태는 매번 다르지만 역할은 항
 <p>새로운 논문이나 모델을 마주칠 때마다, “이 세 가지 질문에 각각 뭐라고
 답하는가“로 분해해서 읽는 습관이, 이 두 과목이 남기고자 하는 가장
 오래가는 도구다.</p>
-<h2 id="124-마지막으로-소개하는-최신-동향"><a class="header" href="#124-마지막으로-소개하는-최신-동향">12.4 마지막으로 소개하는 최신 동향</a></h2>
+<h2 id="134-마지막으로-소개하는-최신-동향"><a class="header" href="#134-마지막으로-소개하는-최신-동향">13.4 마지막으로 소개하는 최신 동향</a></h2>
 <p>이번 학기에서 다루기엔 이르지만, 지금 활발히 연구되는 방향들을 짧게
 짚어본다 — 자세한 내용보다는, “지금 배운 것이 이런 곳으로 이어질 수
 있다“는 지도를 그리는 것이 목적이다.</p>
@@ -3766,15 +3903,17 @@ ELBO, min-max 목적함수, …) — 형태는 매번 다르지만 역할은 항
 “증명이 맞는지 컴퓨터가 직접 확인한다“는 목표를 향한다.</li>
 <li><strong>Chain-of-Thought (CoT)의 확장</strong>: Chapter 4에서 본 CoT 프롬프팅이,
 이제는 모델 자체를 “여러 단계에 걸쳐 추론하도록” 학습시키는
-방향(추론 모델, reasoning model)으로 발전하고 있다.</li>
+방향(추론 모델, reasoning model)으로 발전하고 있다 — Chapter 9에서
+배운 포스트트레이닝(RLHF 등)이 바로 이런 추론 능력을 다듬는 데에도
+쓰인다.</li>
 </ul>
-<h2 id="125-발표-후-다음-단계"><a class="header" href="#125-발표-후-다음-단계">12.5 발표 후: 다음 단계</a></h2>
+<h2 id="135-발표-후-다음-단계"><a class="header" href="#135-발표-후-다음-단계">13.5 발표 후: 다음 단계</a></h2>
 <p>이 두 과목을 마친 뒤 더 깊이 파고들고 싶다면, 각 장에서 “이 학기
 범위를 넘어선다“고 언급됐던 부분들(LSTM/GRU의 게이트 수식,
-Actor-Critic의 상세 유도, diffusion의 스코어 매칭 이론 등)이 자연스러운
-다음 목표가 된다 — 이 학기가 그 개념들을 처음 마주쳤을 때 무섭지 않게
-만드는 것이 목표였다면, 그다음은 각자의 관심에 따라 깊이를 더해가는
-몫이다.</p>
+Actor-Critic의 상세 유도, diffusion의 스코어 매칭 이론, PEFT/LoRA의
+구체적인 구현 등)이 자연스러운 다음 목표가 된다 — 이 학기가 그
+개념들을 처음 마주쳤을 때 무섭지 않게 만드는 것이 목표였다면, 그다음은
+각자의 관심에 따라 깊이를 더해가는 몫이다.</p>
 
                     </main>
 

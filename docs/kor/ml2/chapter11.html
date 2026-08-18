@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>팀 프로젝트: 구현 (Team Project: Implementation) - Machine Learning 1/2 (한국어)</title>
+        <title>생성형 모델 II: 적대적/스코어 기반 (Generative Models II: Adversarial &amp; Score-Based) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-5c8e63ae.js";
+            window.path_to_searchindex_js = "../searchindex-d5762192.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-9a132350.js"></script>
+        <script src="../toc-bf224681.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,94 +178,140 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-11-팀-프로젝트-구현-team-project-implementation"><a class="header" href="#chapter-11-팀-프로젝트-구현-team-project-implementation">Chapter 11. 팀 프로젝트: 구현 (Team Project: Implementation)</a></h1>
-<p>지금까지 10개 장 동안 배운 모든 것 — 손실함수를 정의하고, 그래디언트를
-유도하고, 모델을 구현하고, 그 정확성을 논증하는 것 — 은 각각 독립된
-장의 문제로 다뤄졌다. 마지막 두 장은 이 조각들을 하나의 완성된
-프로젝트로 직접 조립해보는 시간이다.</p>
-<h2 id="111-왜-팀-프로젝트인가"><a class="header" href="#111-왜-팀-프로젝트인가">11.1 왜 팀 프로젝트인가</a></h2>
-<p>실제 머신러닝 문제는 “이 장은 로지스틱회귀, 저 장은 CNN” 식으로
-깔끔하게 나뉘어 있지 않다. 데이터를 정제하고, 어떤 모델이 적합한지
-판단하고, 학습이 잘 안 될 때 원인을 진단하고(과적합인가? 그래디언트
-소실인가? 데이터 자체의 문제인가?), 결과를 남에게 설명하는 것까지 —
-이 모든 과정을 스스로 겪어보는 것이 지난 10개 장의 개별 주제를 하나로
-통합하는 가장 확실한 방법이다.</p>
-<h2 id="112-프로젝트-구조"><a class="header" href="#112-프로젝트-구조">11.2 프로젝트 구조</a></h2>
+                        <h1 id="chapter-11-생성형-모델-ii-적대적스코어-기반-generative-models-ii-adversarial--score-based"><a class="header" href="#chapter-11-생성형-모델-ii-적대적스코어-기반-generative-models-ii-adversarial--score-based">Chapter 11. 생성형 모델 II: 적대적/스코어 기반 (Generative Models II: Adversarial &amp; Score-Based)</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter11_gan.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<p>2014년, 당시 대학원생이던 이언 굿펠로우(Ian Goodfellow)는 친구들과의
+술자리 논쟁에서 아이디어 하나를 떠올렸다고 훗날 여러 인터뷰에서
+밝혔다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신, <strong>두
+개의 신경망이 서로 경쟁하게 만들면 어떨까?</strong> 하나는 가짜를 만드는
+위조범(생성자, Generator), 다른 하나는 진짜와 가짜를 구별하는
+감정사(판별자, Discriminator)로 두고, 위조범은 감정사를 속이도록,
+감정사는 위조범을 잡아내도록 서로 계속 겨루게 하면 위조범의 실력이
+점점 진짜에 가깝게 늘어나지 않을까? 이 아이디어가
+<strong>GAN</strong>(Generative Adversarial Network)이다.</p>
+<h2 id="111-지난-장과는-완전히-다른-원리"><a class="header" href="#111-지난-장과는-완전히-다른-원리">11.1 지난 장과는 완전히 다른 원리</a></h2>
+<p>Chapter 10의 VAE는 “우도(데이터가 나올 확률)를 최대화한다“는 명확한
+목표함수가 있었다. GAN은 그런 단일 목표함수가 없다 — 대신 두 신경망이
+서로 다른, 심지어 <strong>반대되는</strong> 목표를 갖고 동시에 학습된다. 이건
+지금까지 배운 “손실함수 하나를 최소화한다“는 틀과는 근본적으로 다른
+게임이론적 설정이다.</p>
+<h2 id="112-gan-생성자와-판별자의-min-max-게임"><a class="header" href="#112-gan-생성자와-판별자의-min-max-게임">11.2 GAN: 생성자와 판별자의 min-max 게임</a></h2>
 <ul>
-<li><strong>코드</strong>: 재현 가능해야 한다 — 다른 사람이 같은 코드를 실행하면
-(무작위성을 고정했을 때) 같은 결과가 나와야 한다. 데이터 전처리부터
-최종 평가까지 전체 파이프라인이 스크립트/노트북으로 정리돼 있어야
-한다.</li>
-<li><strong>리포트</strong>: 문제 정의 → 방법론 → 실험 결과 → (필수) 수식적 정당화
-1개 이상 → 한계와 향후 개선 방향의 구조를 따른다.</li>
-<li><strong>포스터</strong>: 발표(Chapter 12)에서 쓸 요약본 — 핵심 그림 1~2개(학습
-곡선, 결과 예시 등)와 가장 중요한 결론 3~4개로 압축한다.</li>
+<li><strong>생성자</strong>(Generator) \(G\): 무작위 노이즈 \(z \sim p(z)\)(보통
+표준정규분포)를 입력받아 가짜 데이터 \(G(z)\)를 만든다.</li>
+<li><strong>판별자</strong>(Discriminator) \(D\): 데이터를 입력받아, 그것이 진짜일
+확률 \(D(x) \in [0,1]\)을 출력한다(Chapter 2의 로지스틱회귀와
+정확히 같은 형태).</li>
 </ul>
-<h2 id="113-프로젝트-주제-후보"><a class="header" href="#113-프로젝트-주제-후보">11.3 프로젝트 주제 후보</a></h2>
-<p>자유 주제이지만, 다음과 같은 방향을 참고할 수 있다:</p>
+<p>목적함수(min-max game):</p>
+<p>\[\min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] +
+\mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]\]</p>
 <ul>
-<li><strong>그래프 이상탐지</strong>: 공개 합성 데이터를 이용해, 그래프신경망(GNN,
-이번 학기 범위 밖이지만 ML1 Chapter 10의 임베딩 개념과 이어진다)이나
-전통적 방법으로 비정상 노드/엣지를 탐지.</li>
-<li><strong>이미지 분류 응용</strong>: ML1 Chapter 9(CNN)에서 배운 구조를 실제 이미지
-데이터셋에 적용, 전이학습(transfer learning) 시도.</li>
-<li><strong>간단한 챗봇/LLM 활용 프로젝트</strong>: Chapter 2~4(LLM 파트)에서 배운
-프롬프팅 기법을 실제 과제(요약, 분류, 검색)에 응용.</li>
+<li><strong>판별자의 관점(\(\max_D\))</strong>: 진짜(\(x\))에는 \(D(x)\)를 1에
+가깝게, 가짜(\(G(z)\))에는 \(D(G(z))\)를 0에 가깝게 만들고 싶다
+— 진짜/가짜를 잘 구별할수록 이 값이 커진다.</li>
+<li><strong>생성자의 관점(\(\min_G\))</strong>: \(D(G(z))\)를 1에 가깝게 만들고
+싶다(판별자를 속이고 싶다).</li>
 </ul>
-<p><strong>데이터 구하기</strong>: 위 주제들에 쓸 데이터는 보통 다음 세 곳에서 구한다.</p>
-<ul>
-<li><strong>Kaggle</strong>(kaggle.com/datasets): 정형데이터·이미지·텍스트를 가리지
-않는 가장 큰 데이터셋 저장소. 대회(Competition) 형태로 정리된
-데이터는 평가지표와 상위권 풀이까지 참고할 수 있어 특히 유용하다.</li>
-<li><strong>UCI Machine Learning Repository</strong>(archive.ics.uci.edu): 고전적인
-정형 데이터셋 위주, 크기가 작아 빠른 실험과 손으로 구현한 모델을
-검증하는 데 적합하다.</li>
-<li><strong>Hugging Face Datasets</strong>(huggingface.co/datasets): 텍스트·이미지
-데이터셋을 코드 몇 줄로 바로 불러올 수 있어, LLM/트랜스포머 관련
-프로젝트에 특히 편리하다.</li>
-</ul>
-<h2 id="114-팀-프로젝트에서-자주-마주치는-실전-문제들"><a class="header" href="#114-팀-프로젝트에서-자주-마주치는-실전-문제들">11.4 팀 프로젝트에서 자주 마주치는 실전 문제들</a></h2>
-<p>이번 학기 배운 개념들이 실제 프로젝트에서 어떤 모습으로 나타나는지
-미리 짚어본다:</p>
-<ul>
-<li><strong>데이터가 생각보다 지저분하다</strong>: 결측값, 이상치, 클래스
-불균형(ML1 Chapter 3의 Precision/Recall이 왜 필요한지 다시 체감하게
-되는 지점) 등을 먼저 확인해야 한다.</li>
-<li><strong>학습이 안 될 때</strong>: 손실이 줄지 않는다면 학습률(ML1 Chapter 2)이
-문제인지, 그래디언트 소실(ML1 Chapter 8)이 문제인지, 데이터 자체에
-신호가 없는지 순서대로 의심해봐야 한다.</li>
-<li><strong>검증 없이 모델을 고르지 않는다</strong>: 학습 데이터에 대한 성능만 보고
-모델을 고르면 과적합된 모델을 최종안으로 선택하는 실수를 하기 쉽다 —
-반드시 별도의 검증/테스트 데이터로 최종 평가한다.</li>
-</ul>
-<h2 id="115-요구사항-수식적-정당화-최소-1개"><a class="header" href="#115-요구사항-수식적-정당화-최소-1개">11.5 요구사항: 수식적 정당화 최소 1개</a></h2>
-<p>프로젝트 보고서에는 반드시 <strong>수식적으로 정당화되는 선택 1개 이상</strong>이
-포함돼야 한다. 다음은 이 요구사항을 만족하는 예시들이다(프로젝트
-주제에 맞게 변형):</p>
-<ol>
-<li>특정 손실함수를 골랐다면, 그 손실함수의 그래디언트가 왜 문제에
-적합한 형태를 갖는지 유도(ML1 Chapter 2, 3의 패턴 재사용).</li>
-<li>정규화 기법(dropout, 가중치 감쇠 등)을 썼다면, 그것이 과적합을
-어떻게 줄이는지 수식 또는 직관적 논증으로 설명(ML1 Chapter 8).</li>
-<li>모델 구조를 선택한 이유를, 파라미터 수/계산 복잡도 공식으로
-정량적으로 비교(ML1 Chapter 9의 CNN 파라미터 수 계산 패턴 재사용).</li>
-<li>강화학습/생성형 프로젝트라면, Chapter 5~10에서 배운 벨만방정식·
-ELBO·Nash 균형 같은 개념 중 하나를 실제 구현과 연결지어 설명.</li>
-</ol>
-<p>이는 이번 학기 내내 강조된 “정확히 맞히는 코드“와 “왜 그렇게 작동하는지
-아는 것“의 구분을, 프로젝트라는 더 큰 스케일에서도 유지하기 위함이다.</p>
-<h2 id="116-외부-제출-가능한-수준으로"><a class="header" href="#116-외부-제출-가능한-수준으로">11.6 외부 제출 가능한 수준으로</a></h2>
-<p>이 프로젝트는 <strong>코드 + 리포트 + 포스터</strong> 3종 세트로 표준화해서
-준비한다 — 나중에 외부 기관(대학 등)이 자료를 요청할 경우 즉시 제시할
-수 있는 수준을 목표로 한다.</p>
-<h2 id="117-평가-기준"><a class="header" href="#117-평가-기준">11.7 평가 기준</a></h2>
-<ul>
-<li>문제 정의의 명확성</li>
-<li>방법론의 적절성(배운 개념을 올바르게 적용했는가)</li>
-<li>수식적 정당화의 정확성과 깊이</li>
-<li>결과의 정직한 보고(잘 안 된 부분을 숨기지 않고, 원인을 분석했는가)</li>
-<li>코드의 재현 가능성</li>
-</ul>
+<pre><code class="language-python">def discriminator_loss(D_real, D_fake):
+    # D_real = D(진짜 데이터), D_fake = D(가짜 데이터) -- 각각 (0,1) 확률
+    return -(math.log(D_real) + math.log(1 - D_fake))  # 판별자가 최소화할 손실
+
+def generator_loss(D_fake):
+    return -math.log(D_fake)  # 생성자가 최소화할 손실 (D_fake를 1에 가깝게)
+</code></pre>
+<h2 id="113-왜-균형점을-논해야-하는가"><a class="header" href="#113-왜-균형점을-논해야-하는가">11.3 왜 “균형점“을 논해야 하는가</a></h2>
+<p>일반적인 지도학습은 손실함수 하나를 최소화하면 끝이었다. GAN은 두
+네트워크가 서로 <strong>반대</strong> 목표로 동시에 학습되므로, “학습이 끝났다“는
+것이 무슨 의미인지부터 다시 정의해야 한다. 게임이론에서 이런
+상황(각 참여자가 상대의 전략을 고려해 자신의 최선을 선택)의 안정
+상태를 <strong>내쉬 균형</strong>(Nash equilibrium)이라 부른다 — 어느 쪽도 혼자서
+전략을 바꿔서 더 나아질 수 없는 상태다.</p>
+<p>이론적으로, 이 게임의 내쉬 균형은 \(D(x) = 0.5\)(판별자가 진짜와
+가짜를 전혀 구별하지 못함)이고 \(G\)가 만드는 분포가 실제 데이터
+분포와 정확히 같아지는 지점임이 증명돼 있다 — “생성자가 완벽해서
+판별자가 찍는 수밖에 없는 상태“가 이론적 종착점이다. 이번 장 연습문제는
+이 균형점을 직접 논증한다.</p>
+<h2 id="114-실전에서의-불안정성"><a class="header" href="#114-실전에서의-불안정성">11.4 실전에서의 불안정성</a></h2>
+<p>이론과 달리, 실제 GAN 학습은 자주 불안정하다 — 생성자가 판별자를
+속이는 몇 가지 패턴에만 몰려서 다양성을 잃는 현상(<strong>모드 붕괴, mode
+collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적이지만 생성
+품질이 다소 흐릿한(blurry) 경향이 있는 반면, GAN은 선명한 결과를 내지만
+학습이 까다롭다 — 이 트레이드오프가 두 원리의 실무적 차이다.</p>
+<h2 id="115-또-다른-원리-diffusion--노이즈를-점진적으로-되돌리기"><a class="header" href="#115-또-다른-원리-diffusion--노이즈를-점진적으로-되돌리기">11.5 또 다른 원리: Diffusion — 노이즈를 점진적으로 되돌리기</a></h2>
+<p><strong>Diffusion 모델</strong>은 세 번째 완전히 다른 접근이다.</p>
+<p><strong>정방향 과정</strong>(forward process): 진짜 이미지 \(x_0\)에 아주 작은
+노이즈를 \(T\)번 반복해서 더해, 결국 \(x_T\)가 순수한 무작위
+노이즈가 되게 만든다(이 과정은 고정된 절차이지 학습 대상이 아니다).</p>
+<p><strong>역방향 과정</strong>(reverse process): 신경망이 “한 단계 전 노이즈가
+어땠는지“를 예측하도록 학습된다 — 즉, \(x_t\)에서 \(x_{t-1}\)을
+복원하는 작은 단계를 반복 학습한다. 학습이 끝나면, 순수 노이즈
+\(x_T\)에서 시작해 이 역방향 단계를 \(T\)번 반복하면 새로운
+이미지가 만들어진다.</p>
+<p>GAN이 “한 번에” 노이즈를 이미지로 바꾸려 하는 것과 달리, Diffusion은
+그 어려운 문제를 아주 작은 단계 \(T\)개로 잘게 쪼갠다 — 각 단계는
+“노이즈를 아주 조금만 제거하는” 훨씬 쉬운 문제이므로, 전체적으로 훨씬
+안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \(T\)번의 반복이
+필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
+이미지 생성 모델들(Stable Diffusion 등)이 이 원리를 쓴다.</p>
+<h2 id="116-세-원리-비교"><a class="header" href="#116-세-원리-비교">11.6 세 원리 비교</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>VAE (우도 기반)</th><th>GAN (적대적)</th><th>Diffusion (스코어 기반)</th></tr>
+</thead>
+<tbody>
+<tr><td>학습 목표</td><td>ELBO 최대화</td><td>min-max 게임의 균형</td><td>각 단계의 노이즈 예측 오차 최소화</td></tr>
+<tr><td>학습 안정성</td><td>비교적 안정적</td><td>불안정하기 쉬움</td><td>안정적</td></tr>
+<tr><td>생성 품질</td><td>다소 흐릿함</td><td>선명함</td><td>선명함</td></tr>
+<tr><td>생성 속도</td><td>빠름(한 번에)</td><td>빠름(한 번에)</td><td>느림(반복 필요)</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>하나의 원리(VAE)만 배우고 끝냈다면 “생성형 모델 = 우도 최대화“라고
+오해했을 것이다 — 세 원리를 나란히 보고 나서야, 생성형 모델이라는
+문제 자체가 얼마나 다양한 방식으로 풀릴 수 있는지가 보인다.</strong></p>
+<hr>
+<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>discriminator_loss</code>와
+<code>generator_loss</code>를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
+<pre><code class="language-python">import math
+
+def discriminator_loss(D_real, D_fake):
+    # ADD ADDITIONAL CODE HERE!!
+    # -(log(D_real) + log(1 - D_fake))
+
+def generator_loss(D_fake):
+    # ADD ADDITIONAL CODE HERE!!
+    # -log(D_fake)
+
+print(discriminator_loss(D_real=0.9, D_fake=0.1))  # 판별자가 잘 구별할수록 손실이 작음
+print(generator_loss(D_fake=0.9))                  # 생성자가 잘 속일수록 손실이 작음
+</code></pre>
+<p><strong>2. (손유도, Tier C — 폴백 준비 대상)</strong> 고정된 생성자 \(G\)에
+대해, 판별자의 최적해는</p>
+<p>\[D^*(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\]</p>
+<p>임이 알려져 있다. 이 사실을 받아들이고, 생성자가 이론적으로 완벽해져서
+\(p_G = p_{\text{data}}\)가 되면 \(D^*(x) = 0.5\)(모든 \(x\)에
+대해)가 됨을 보여라. 그런 다음, 이 지점에서 판별자도 생성자도 더
+나아질 수 없는 이유를 한 문단으로 논증하고, 이것이 왜 내쉬 균형인지
+설명하라.</p>
+<p><strong>빈칸채움형 폴백 버전</strong> (자유 논증이 어려운 경우):</p>
+<pre><code>Step 1: D*(x) = p_data(x) / (p_data(x) + p_G(x))가 주어졌다고 하자.
+
+Step 2: p_G(x) = p_data(x)라면:
+  D*(x) = p_data(x) / (______________) = ______________
+
+Step 3: 이는 판별자가 ______________ (구별을 잘한다 / 완전히 헷갈려한다)는 뜻이다.
+
+Step 4: 이 상태에서 생성자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 나빠진다)
+Step 5: 판별자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 나빠진다)
+
+결론: 어느 쪽도 혼자 전략을 바꿔서 이득을 볼 수 없는 상태 = ______________ (균형의 이름)
+</code></pre>
+<p><strong>정확성 확인</strong>: 문제 1에서 계산한 손실값들이 이 균형점(\(D=0.5\))에서
+계산된 값과 일치하는지 확인하고, 실제 GAN 학습에서 이 균형에
+도달하기가 왜 이론만큼 쉽지 않은지(모드 붕괴 등) 한 문장으로 언급하라.</p>
 
                     </main>
 

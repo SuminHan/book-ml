@@ -1,159 +1,148 @@
-# Chapter 10. 생성형 모델 II: 적대적/스코어 기반 (Generative Models II: Adversarial & Score-Based)
+# Chapter 10. 생성형 모델 I: 우도 기반 (Generative Models I: Likelihood-Based)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_gan.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_vae_elbo.ipynb)
 
-2014년, 당시 대학원생이던 이언 굿펠로우(Ian Goodfellow)는 친구들과의
-술자리 논쟁에서 아이디어 하나를 떠올렸다고 훗날 여러 인터뷰에서
-밝혔다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신, **두
-개의 신경망이 서로 경쟁하게 만들면 어떨까?** 하나는 가짜를 만드는
-위조범(생성자, Generator), 다른 하나는 진짜와 가짜를 구별하는
-감정사(판별자, Discriminator)로 두고, 위조범은 감정사를 속이도록,
-감정사는 위조범을 잡아내도록 서로 계속 겨루게 하면 위조범의 실력이
-점점 진짜에 가깝게 늘어나지 않을까? 이 아이디어가
-**GAN**(Generative Adversarial Network)이다.
+ML1의 마지막 장에서 오토인코더가 남긴 질문을 기억하는가 — "병목의 값을
+무작위로 하나 골라서 디코더에 넣으면, 존재한 적 없는 새로운 데이터를
+만들 수 있지 않을까?" 2013년 디데릭 킹마(Diederik Kingma)와 맥스
+웰링(Max Welling)이 발표한 **변분 오토인코더**(Variational
+Autoencoder, VAE)가 바로 이 질문에 대한 정식 답이다.
 
-## 10.1 지난 장과는 완전히 다른 원리
+## 10.1 오토인코더를 그냥 쓰면 안 되는 이유
 
-Chapter 9의 VAE는 "우도(데이터가 나올 확률)를 최대화한다"는 명확한
-목표함수가 있었다. GAN은 그런 단일 목표함수가 없다 — 대신 두 신경망이
-서로 다른, 심지어 **반대되는** 목표를 갖고 동시에 학습된다. 이건
-지금까지 배운 "손실함수 하나를 최소화한다"는 틀과는 근본적으로 다른
-게임이론적 설정이다.
+일반 오토인코더의 잠재 공간(latent space)은 "어떤 값이 그럴듯한
+데이터로 복원되는지"에 대한 보장이 없다 — 학습 데이터들이 잠재 공간의
+여기저기 흩어져 있을 수 있고, 그 사이 빈 공간에서 무작위로 값을 뽑으면
+무엇이 나올지 알 수 없다. VAE의 해법은 인코더가 하나의 점 \\(z\\)를
+내놓는 대신, **확률분포**(보통 정규분포의 평균과 분산)를 내놓도록
+강제하는 것이다. 그리고 그 분포가 표준 정규분포(평균 0, 분산 1)에
+가깝도록 추가 제약을 건다 — 그러면 잠재 공간 전체가 매끄럽고 빈틈없이
+채워져서, 임의의 지점에서 샘플링해도 그럴듯한 데이터가 나올 가능성이
+높아진다.
 
-## 10.2 GAN: 생성자와 판별자의 min-max 게임
+## 10.2 VAE의 구조
 
-- **생성자**(Generator) \\(G\\): 무작위 노이즈 \\(z \sim p(z)\\)(보통
-  표준정규분포)를 입력받아 가짜 데이터 \\(G(z)\\)를 만든다.
-- **판별자**(Discriminator) \\(D\\): 데이터를 입력받아, 그것이 진짜일
-  확률 \\(D(x) \in [0,1]\\)을 출력한다(Chapter 3의 로지스틱회귀와
-  정확히 같은 형태).
+- **인코더** \\(q_\phi(z|x)\\): 입력 \\(x\\)를 받아, 잠재변수 \\(z\\)의
+  확률분포를 내놓는다(보통 정규분포 \\(\mathcal{N}(\mu(x),
+  \sigma^2(x))\\)의 평균과 분산을 출력).
+- **샘플링**: 그 분포에서 \\(z\\)를 하나 뽑는다.
+- **디코더** \\(p_\theta(x|z)\\): \\(z\\)로부터 \\(x\\)를 복원(또는
+  생성)한다.
 
-목적함수(min-max game):
+## 10.3 우도라는 관점
 
-\\[\min\_G \max\_D V(D,G) = \mathbb{E}\_{x \sim p\_{\text{data}}}[\log D(x)] +
-\mathbb{E}\_{z \sim p(z)}[\log(1 - D(G(z)))]\\]
+VAE는 "생성형 모델을 만드는 세 가지 원리" 중 첫 번째 — **우도
+기반**(likelihood-based) 접근이다: 모델이 학습 데이터를 만들어낼
+확률(우도) \\(P(x)\\)를 직접(또는 그 근사치를) 최대화하도록 학습한다.
+문제는 \\(p_\theta(x) = \int p_\theta(x|z)p(z)\,dz\\)는 가능한 모든
+\\(z\\)에 대한 적분이라, 일반적으로 계산이 불가능하다(intractable).
 
-- **판별자의 관점(\\(\max_D\\))**: 진짜(\\(x\\))에는 \\(D(x)\\)를 1에
-  가깝게, 가짜(\\(G(z)\\))에는 \\(D(G(z))\\)를 0에 가깝게 만들고 싶다
-  — 진짜/가짜를 잘 구별할수록 이 값이 커진다.
-- **생성자의 관점(\\(\min_G\\))**: \\(D(G(z))\\)를 1에 가깝게 만들고
-  싶다(판별자를 속이고 싶다).
+## 10.4 ELBO: 계산 가능한 하한으로 우회하기
+
+직접 계산할 수 없는 \\(\log p_\theta(x)\\) 대신, 다음이 성립함을 보일
+수 있다:
+
+\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
+D\_{KL}\big(q\_\phi(z|x) \\,\\|\\, p(z)\big)\\]
+
+우변을 **ELBO**(Evidence Lower BOund)라 부른다. 두 항의 의미:
+
+- 첫 항 \\(\mathbb{E}[\log p_\theta(x|z)]\\): **복원 항** — 인코더가
+  만든 \\(z\\)로 디코더가 원본 \\(x\\)를 얼마나 잘 복원하는가(일반
+  오토인코더의 복원 오차와 본질적으로 같다).
+- 둘째 항 \\(D_{KL}(q_\phi(z|x)\|p(z))\\): **정규화 항** — 인코더가
+  만든 분포 \\(q_\phi(z|x)\\)가, 목표로 하는 사전분포 \\(p(z)\\)(보통
+  표준정규분포)에서 얼마나 벗어나 있는지(KL divergence, ML1 Chapter
+  2.6에서 섀넌의 정보이론으로 소개한 그 개념 — 두 확률분포 사이의
+  "거리"). 이 항이 바로 잠재 공간을 매끄럽게 만드는 힘이다.
+
+\\(\log p_\theta(x) \ge \text{ELBO}\\)이므로, **ELBO를 최대화하면 실제
+우도의 하한도 함께 올라간다** — 직접 계산 못 하는 목표를, 계산 가능한
+대리(surrogate) 목표로 바꿔치기한 것이다. 이 부등식 자체를 옌센
+부등식(Jensen's inequality)으로 유도하는 것이 이번 장 연습문제의
+핵심이다.
 
 ```python
-def discriminator_loss(D_real, D_fake):
-    # D_real = D(진짜 데이터), D_fake = D(가짜 데이터) -- 각각 (0,1) 확률
-    return -(math.log(D_real) + math.log(1 - D_fake))  # 판별자가 최소화할 손실
-
-def generator_loss(D_fake):
-    return -math.log(D_fake)  # 생성자가 최소화할 손실 (D_fake를 1에 가깝게)
+def vae_loss(x, x_reconstructed, mu, log_var):
+    # 복원 손실 (여기서는 MSE로 근사)
+    recon_loss = sum((x[i] - x_reconstructed[i]) ** 2 for i in range(len(x)))
+    # KL divergence: 정규분포 q(mu, sigma^2)와 표준정규분포 N(0,1) 사이의 닫힌 형태 공식
+    kl_loss = -0.5 * sum(1 + log_var[i] - mu[i]**2 - math.exp(log_var[i])
+                          for i in range(len(mu)))
+    return recon_loss + kl_loss  # ELBO를 최대화 = 이 손실(음의 ELBO)을 최소화
 ```
 
-## 10.3 왜 "균형점"을 논해야 하는가
+## 10.5 Reparameterization Trick (참고)
 
-일반적인 지도학습은 손실함수 하나를 최소화하면 끝이었다. GAN은 두
-네트워크가 서로 **반대** 목표로 동시에 학습되므로, "학습이 끝났다"는
-것이 무슨 의미인지부터 다시 정의해야 한다. 게임이론에서 이런
-상황(각 참여자가 상대의 전략을 고려해 자신의 최선을 선택)의 안정
-상태를 **내쉬 균형**(Nash equilibrium)이라 부른다 — 어느 쪽도 혼자서
-전략을 바꿔서 더 나아질 수 없는 상태다.
+\\(z\\)를 확률분포에서 직접 샘플링하면, "샘플링"이라는 연산은 미분이
+안 돼서 역전파가 인코더까지 흘러가지 못한다. VAE는 \\(z = \mu + \sigma
+\odot \epsilon\\)(\\(\epsilon \sim \mathcal{N}(0,1)\\)은 무작위성을
+밖으로 빼낸 상수 취급)으로 샘플링을 다시 쓰는 트릭(reparameterization
+trick)으로 이 문제를 우회한다 — 이제 \\(\mu, \sigma\\)에 대한 미분이
+가능해져 역전파가 정상적으로 흐른다. 자세한 유도는 이 학기 범위를
+넘어서지만, "왜 그냥 샘플링하면 안 되는가"라는 질문 자체는 기억해둘
+만하다.
 
-이론적으로, 이 게임의 내쉬 균형은 \\(D(x) = 0.5\\)(판별자가 진짜와
-가짜를 전혀 구별하지 못함)이고 \\(G\\)가 만드는 분포가 실제 데이터
-분포와 정확히 같아지는 지점임이 증명돼 있다 — "생성자가 완벽해서
-판별자가 찍는 수밖에 없는 상태"가 이론적 종착점이다. 이번 장 연습문제는
-이 균형점을 직접 논증한다.
-
-## 10.4 실전에서의 불안정성
-
-이론과 달리, 실제 GAN 학습은 자주 불안정하다 — 생성자가 판별자를
-속이는 몇 가지 패턴에만 몰려서 다양성을 잃는 현상(**모드 붕괴, mode
-collapse**)이 대표적인 문제다. VAE가 이론적으로 안정적이지만 생성
-품질이 다소 흐릿한(blurry) 경향이 있는 반면, GAN은 선명한 결과를 내지만
-학습이 까다롭다 — 이 트레이드오프가 두 원리의 실무적 차이다.
-
-## 10.5 또 다른 원리: Diffusion — 노이즈를 점진적으로 되돌리기
-
-**Diffusion 모델**은 세 번째 완전히 다른 접근이다.
-
-**정방향 과정**(forward process): 진짜 이미지 \\(x_0\\)에 아주 작은
-노이즈를 \\(T\\)번 반복해서 더해, 결국 \\(x_T\\)가 순수한 무작위
-노이즈가 되게 만든다(이 과정은 고정된 절차이지 학습 대상이 아니다).
-
-**역방향 과정**(reverse process): 신경망이 "한 단계 전 노이즈가
-어땠는지"를 예측하도록 학습된다 — 즉, \\(x_t\\)에서 \\(x_{t-1}\\)을
-복원하는 작은 단계를 반복 학습한다. 학습이 끝나면, 순수 노이즈
-\\(x_T\\)에서 시작해 이 역방향 단계를 \\(T\\)번 반복하면 새로운
-이미지가 만들어진다.
-
-GAN이 "한 번에" 노이즈를 이미지로 바꾸려 하는 것과 달리, Diffusion은
-그 어려운 문제를 아주 작은 단계 \\(T\\)개로 잘게 쪼갠다 — 각 단계는
-"노이즈를 아주 조금만 제거하는" 훨씬 쉬운 문제이므로, 전체적으로 훨씬
-안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \\(T\\)번의 반복이
-필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
-이미지 생성 모델들(Stable Diffusion 등)이 이 원리를 쓴다.
-
-## 10.6 세 원리 비교
-
-| | VAE (우도 기반) | GAN (적대적) | Diffusion (스코어 기반) |
-|---|---|---|---|
-| 학습 목표 | ELBO 최대화 | min-max 게임의 균형 | 각 단계의 노이즈 예측 오차 최소화 |
-| 학습 안정성 | 비교적 안정적 | 불안정하기 쉬움 | 안정적 |
-| 생성 품질 | 다소 흐릿함 | 선명함 | 선명함 |
-| 생성 속도 | 빠름(한 번에) | 빠름(한 번에) | 느림(반복 필요) |
-
-**하나의 원리(VAE)만 배우고 끝냈다면 "생성형 모델 = 우도 최대화"라고
-오해했을 것이다 — 세 원리를 나란히 보고 나서야, 생성형 모델이라는
-문제 자체가 얼마나 다양한 방식으로 풀릴 수 있는지가 보인다.**
+**다음 장에는 완전히 다른 두 원리(적대적, 스코어 기반)를 배운다 — 세
+원리를 나란히 놓고 비교하면, "그럴듯한 새 데이터를 만든다"는 같은
+목표에 얼마나 다른 방식으로 접근할 수 있는지가 뚜렷하게 드러난다.**
 
 ---
 
 ## 연습문제
 
-**1. (코딩)** 다음과 같은 함수 `discriminator_loss`와
-`generator_loss`를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):
+**1. (코딩)** 다음과 같은 함수 `kl_divergence_gaussian`(정규분포
+\\(\mathcal{N}(\mu, \sigma^2)\\)와 표준정규분포 사이의 KL divergence,
+\\(D_{KL} = -\frac{1}{2}(1 + \log\sigma^2 - \mu^2 - \sigma^2)\\))과
+`vae_loss`를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):
 
 ```python
 import math
 
-def discriminator_loss(D_real, D_fake):
+def kl_divergence_gaussian(mu, log_var):
+    # log_var = log(sigma^2)
     # ADD ADDITIONAL CODE HERE!!
-    # -(log(D_real) + log(1 - D_fake))
 
-def generator_loss(D_fake):
+print(kl_divergence_gaussian(mu=0.0, log_var=0.0))  # 0.0
+print(kl_divergence_gaussian(mu=2.0, log_var=0.0))  # 2.0
+
+def vae_loss(recon_loss, mu_list, log_var_list):
     # ADD ADDITIONAL CODE HERE!!
-    # -log(D_fake)
+    # 여러 잠재 차원에 대한 KL divergence를 모두 더한 뒤, 복원 손실과 합산
 
-print(discriminator_loss(D_real=0.9, D_fake=0.1))  # 판별자가 잘 구별할수록 손실이 작음
-print(generator_loss(D_fake=0.9))                  # 생성자가 잘 속일수록 손실이 작음
+print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
 ```
 
-**2. (손유도, Tier C — 폴백 준비 대상)** 고정된 생성자 \\(G\\)에
-대해, 판별자의 최적해는
+**2. (손유도, Tier C — 폴백 준비 대상)** \\(\log p_\theta(x) = \log
+\int p_\theta(x,z)\,dz\\)에서 시작해서, 옌센 부등식(\\(\log
+\mathbb{E}[X] \ge \mathbb{E}[\log X]\\))을 이용해
 
-\\[D^*(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\\]
+\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
+D\_{KL}(q\_\phi(z|x)\\|p(z))\\]
 
-임이 알려져 있다. 이 사실을 받아들이고, 생성자가 이론적으로 완벽해져서
-\\(p_G = p_{\text{data}}\\)가 되면 \\(D^*(x) = 0.5\\)(모든 \\(x\\)에
-대해)가 됨을 보여라. 그런 다음, 이 지점에서 판별자도 생성자도 더
-나아질 수 없는 이유를 한 문단으로 논증하고, 이것이 왜 내쉬 균형인지
-설명하라.
+를 유도하라(힌트: \\(\log p\_\theta(x) = \log \mathbb{E}\_{q\_\phi}
+\left[\frac{p\_\theta(x,z)}{q\_\phi(z|x)}\right]\\)로 먼저 바꾼 뒤 옌센
+부등식을 적용하고, \\(p_\theta(x,z) = p_\theta(x|z)p(z)\\)로 분해해서
+KL divergence의 정의가 나오도록 정리하라).
 
-**빈칸채움형 폴백 버전** (자유 논증이 어려운 경우):
+**빈칸채움형 폴백 버전** (자유 유도가 어려운 경우):
 
 ```
-Step 1: D*(x) = p_data(x) / (p_data(x) + p_G(x))가 주어졌다고 하자.
+Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
+                  = log E_q[ ______________ ]
 
-Step 2: p_G(x) = p_data(x)라면:
-  D*(x) = p_data(x) / (______________) = ______________
+Step 2: 옌센 부등식(log가 오목함수) 적용:
+  log E_q[ p(x,z)/q(z|x) ] >= E_q[ log(______________) ]
 
-Step 3: 이는 판별자가 ______________ (구별을 잘한다 / 완전히 헷갈려한다)는 뜻이다.
+Step 3: p(x,z) = p(x|z) * p(z)로 분해하면:
+  = E_q[ log p(x|z) ] + E_q[ ______________ ]
 
-Step 4: 이 상태에서 생성자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 나빠진다)
-Step 5: 판별자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 나빠진다)
+Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 
-결론: 어느 쪽도 혼자 전략을 바꿔서 이득을 볼 수 없는 상태 = ______________ (균형의 이름)
+결론: log p(x) >= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
 ```
 
-**정확성 확인**: 문제 1에서 계산한 손실값들이 이 균형점(\\(D=0.5\\))에서
-계산된 값과 일치하는지 확인하고, 실제 GAN 학습에서 이 균형에
-도달하기가 왜 이론만큼 쉽지 않은지(모드 붕괴 등) 한 문장으로 언급하라.
+**정확성 확인**: Step 2에서 부등호(`>=`)가 등호(`=`)가 아니라 부등식인
+이유를 한 문장으로 설명하고(옌센 부등식이 언제 등식이 되는지:
+\\(X\\)가 상수일 때), ELBO를 최대화하는 것이 왜 실제 우도
+\\(\log p(x)\\)를 "간접적으로" 최대화하는 셈이 되는지 설명하라.
