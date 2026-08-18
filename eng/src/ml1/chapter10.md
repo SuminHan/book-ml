@@ -205,6 +205,70 @@ spatially. **word2vec and Node2Vec are applied to different kinds of data
 (text vs. graphs), but they're really two faces of the same idea: learn
 vectors so that things that co-occur frequently end up close together.**
 
+## 10.6 Same Random Walk, Different Question: PageRank
+
+Node2Vec used the "sequence of nodes" a random walk produces. The same
+random walk can be put to a completely different question: **if you
+wander this graph at random forever, what fraction of the time do you
+spend at each node?** The answer to that question is exactly what "node
+importance" means in **PageRank**, the algorithm Larry Page and Sergey
+Brin built Google on in 1998 — a page gets visited more often by a random
+surfer following links if more pages link to it, and especially if
+*important* pages link to it.
+
+Node \\(i\\)'s PageRank score \\(PR(i)\\) must satisfy: the sum, over every
+node \\(j\\) that links to it, of that node's own score split evenly across
+its outgoing links (\\(\text{outdeg}(j)\\)):
+
+\\[PR(i) = \frac{1-d}{N} + d\sum_{j \to i} \frac{PR(j)}{\text{outdeg}(j)}\\]
+
+\\(N\\) is the total number of nodes, and \\(d\\) (usually 0.85) is the
+**damping factor** — with probability \\(d\\) you follow a link, and with
+probability \\(1-d\\) you teleport to a random node instead (a safeguard
+against getting stuck in a dead end or trapped in a cycle).
+
+This equation is **recursive** — \\(PR\\) appears again on the right-hand
+side — so it can't be solved in one shot. Instead, start from any guess
+(\\(1/N\\) for every node) and repeatedly plug the current values back into
+the right-hand side until they stop changing — this is **power
+iteration**:
+
+```python
+def pagerank(edges, n_nodes, d=0.85, iters=100):
+    outgoing = {i: [] for i in range(n_nodes)}  # directed: a -> b
+    for a, b in edges:
+        outgoing[a].append(b)
+    outdeg = {i: max(1, len(outgoing[i])) for i in range(n_nodes)}
+    incoming = {i: [] for i in range(n_nodes)}  # who points to me?
+    for a, b in edges:
+        incoming[b].append(a)
+
+    pr = {i: 1 / n_nodes for i in range(n_nodes)}
+    for _ in range(iters):
+        pr = {i: (1 - d) / n_nodes + d * sum(pr[j] / outdeg[j] for j in incoming[i])
+              for i in range(n_nodes)}
+    return pr
+
+# Karate Club is undirected, so treat each friendship as a link both ways
+directed_edges = KARATE_EDGES + [(b, a) for a, b in KARATE_EDGES]
+scores = pagerank(directed_edges, 34)
+print(sorted(scores.items(), key=lambda kv: -kv[1])[:3])
+# node 33 and node 0 rank highest -- exactly the two real-world "hub" nodes
+# (the club president and the instructor)
+```
+
+Why this power iteration converges is exactly the same argument as the
+**Banach fixed point theorem** Chapter 6.2 used to show the Bellman
+optimality equation has a unique solution — "repeatedly applying some
+transformation eventually settles at a fixed point that no longer moves"
+is the same mathematics, just applied here to "a probability distribution
+over a graph" and in reinforcement learning to "a state's value function."
+
+**PCA, word2vec, Node2Vec, and PageRank look like different problems at
+first glance, but they all share one mathematical pattern: repeatedly
+pushing something through some transformation makes it converge to a
+special point (an eigenvector, an embedding, a stationary distribution).**
+
 **Supervised learning learns "how to predict the right answer"; unsupervised
 learning learns "what shape the data has on its own" — they answer
 different questions.**
