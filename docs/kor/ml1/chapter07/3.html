@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>로봇 시뮬레이션과 제어 기초 (Robot Simulation &amp; Control Basics) - Machine Learning 1/2 (한국어)</title>
+        <title>GBDT와 SHAP - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-e96d0476.css">
-        <link rel="stylesheet" href="../css/chrome-d279d366.css">
-        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-9fca9ae1.css">
+        <link rel="stylesheet" href="../../theme/custom-9fca9ae1.css">
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-6807f651.js";
+            window.path_to_searchindex_js = "../../searchindex-6807f651.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-6f3f4dc9.js"></script>
+        <script src="../../toc-6f3f4dc9.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Machine Learning 1/2 (한국어)</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
@@ -178,126 +178,177 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-13-로봇-시뮬레이션과-제어-기초-robot-simulation--control-basics"><a class="header" href="#chapter-13-로봇-시뮬레이션과-제어-기초-robot-simulation--control-basics">Chapter 13. 로봇 시뮬레이션과 제어 기초 (Robot Simulation &amp; Control Basics)</a></h1>
-<p>지금까지 배운 강화학습 알고리즘은 CartPole처럼 단순화된 환경에서 다뤘다.
-실제 로봇 — 팔, 다리, 바퀴가 달린 물리적 시스템 — 을 다루려면, “행동이
-연속적인 힘/토크“라는 사실뿐 아니라, 그 힘이 실제 물리 법칙(관성, 중력,
-마찰)을 거쳐 로봇을 움직인다는 사실까지 감안해야 한다. 이번 장은
-Chapter 9~12에서 배운 알고리즘들을 실제로 적용해볼 로봇 시뮬레이션의
-기초 개념을 다룬다.</p>
-<h2 id="131-로봇공학-기초-개념-상태공간과-운동학"><a class="header" href="#131-로봇공학-기초-개념-상태공간과-운동학">13.1 로봇공학 기초 개념: 상태공간과 운동학</a></h2>
-<p>로봇의 상태는 보통 각 관절의 <strong>각도</strong>와 <strong>각속도</strong>로 표현된다 — 2관절
-로봇 팔이라면 상태는 \((\theta_1, \theta_2, \dot\theta_1,
-\dot\theta_2)\)처럼 4차원 벡터가 된다. <strong>정기구학</strong>(forward
-kinematics)은 이 관절 각도들로부터 팔 끝(end-effector)의 실제 위치를
-계산하는 것이고, <strong>역기구학</strong>(inverse kinematics)은 그 반대 — “팔 끝을
-이 위치로 보내려면 관절 각도가 얼마여야 하는가“를 계산하는 것이다. 이런
-기하학 계산은 로봇공학 자체의 깊은 주제이지만, 강화학습 관점에서 중요한
-것은 단 하나다: <strong>상태와 행동이 이제 물리적으로 의미 있는 연속값이라는
-것</strong>이다 — Chapter 3.1에서 배운 MDP의 \(\mathcal{S}, \mathcal{A}\)가
-이제 추상적인 기호가 아니라 실제 각도·힘의 단위를 갖는다.</p>
-<h2 id="132-시뮬레이션이-필요한-이유-sim-to-real"><a class="header" href="#132-시뮬레이션이-필요한-이유-sim-to-real">13.2 시뮬레이션이 필요한 이유: sim-to-real</a></h2>
-<p>실물 로봇으로 강화학습을 직접 학습시키면 몇 가지 현실적인 문제에
-부딪힌다 — 수만 번의 시행착오 동안 로봇이 고장 나거나, 사람에게 위험할
-수 있고, 무엇보다 <strong>느리다</strong>(물리 세계는 컴퓨터 시뮬레이션보다 훨씬
-느리게 흐른다). 그래서 실전에서는 먼저 물리 엔진 위의 <strong>시뮬레이션</strong>에서
-정책을 학습시킨 뒤, 그 정책을 실물 로봇으로 옮긴다 — 이 전이 과정을
-<strong>sim-to-real</strong>이라 부른다.</p>
-<p>문제는 시뮬레이션이 실제 물리를 완벽히 재현하지 못한다는 것이다(마찰
-계수, 센서 잡음, 재질의 미세한 차이 등) — 시뮬레이션에서만 잘 작동하고
-실물에서는 실패하는 정책을 <strong>현실 격차</strong>(reality gap)라 부른다. 이
-격차를 줄이는 대표적인 방법이 <strong>도메인 무작위화</strong>(domain
-randomization) — 시뮬레이션의 물리 파라미터(마찰, 질량, 조명 등)를
-매 학습 에피소드마다 무작위로 바꿔가며 학습시키는 것이다. 정책이 하나의
-고정된 시뮬레이션 설정이 아니라 “다양한 물리 조건 전체“에 대해 잘
-작동하도록 강제하면, 그중 어느 하나(실물 로봇의 실제 물리 조건)에도
-더 잘 일반화하는 경향이 생긴다 — Chapter 6(ML1)에서 배운 정규화가
-“모델을 덜 유연하게 만들어 분산을 줄인다“는 것과 비슷하게, 여기서는
-“환경 자체를 다양화해서 정책이 특정 시뮬레이션 설정에 과적합하지
-않게 만든다.”</p>
-<h2 id="133-gymnasiumpybullet-로봇-환경"><a class="header" href="#133-gymnasiumpybullet-로봇-환경">13.3 Gymnasium/PyBullet 로봇 환경</a></h2>
-<p>이번 학기 실습은 Gymnasium이 제공하는 로봇류 환경으로 진행한다 — 이미
-Chapter 1과 9에서 쓴 CartPole·Pendulum도 사실 아주 단순화된 “로봇
-제어” 문제다(막대의 균형을 잡는 것, 진자를 세우는 것 모두 관절 제어의
-가장 작은 형태다). 좀 더 로봇에 가까운 연속 제어 문제로 넘어가 보자:</p>
-<pre><code class="language-python">import gymnasium as gym
+                        <h1 id="73-gbdt와-shap"><a class="header" href="#73-gbdt와-shap">7.3 GBDT와 SHAP</a></h1>
+<h3 id="트리를-더-강하게-gbdt"><a class="header" href="#트리를-더-강하게-gbdt">트리를 더 강하게: GBDT</a></h3>
+<p>랜덤 포레스트는 트리 여러 개를 <strong>독립적으로</strong> 만들고 다수결로 합쳤다.
+<strong>GBDT</strong>(Gradient Boosted Decision Trees)는 다른 전략을 쓴다: 트리를
+하나씩 <strong>순차적으로</strong> 추가하는데, 매번 새로운 트리는 “지금까지의 예측이 아직
+못 맞힌 부분(잔차, residual)“을 목표로 학습한다.</p>
+<p>목표: \(T\)개의 트리 \(f_1, \ldots, f_T\)를 순차적으로 더해서 예측
+\(F_T(x) = \sum_{t=1}^T f_t(x)\)를 만든다. \(t\)번째 트리를 학습할 때는,
+지금까지 쌓은 예측 \(F_{t-1}(x)\)의 <strong>잔차</strong> \(r^{(i)} = y^{(i)} -
+F_{t-1}(x^{(i)})\)를 새로운 목표값으로 삼아, 그 잔차를 예측하는 트리를
+학습한다:</p>
+<pre><code class="language-python">def gbdt_fit(X, y, n_trees, learning_rate):
+    trees = []
+    predictions = [0.0] * len(y)  # F_0(x) = 0
+    for t in range(n_trees):
+        residuals = [y[i] - predictions[i] for i in range(len(y))]
+        tree = fit_single_tree(X, residuals)  # 잔차를 목표로 트리 하나 학습
+        trees.append(tree)
+        for i in range(len(y)):
+            predictions[i] += learning_rate * tree.predict(X[i])
+    return trees
+</code></pre>
+<p><code>learning_rate</code>(축소율, shrinkage)는 각 트리의 기여를 일부러 줄여서, 한 트리가
+과적합하는 것을 막고 여러 트리가 조금씩 나눠서 학습하게 한다 — Chapter 2의
+경사하강법 학습률과 비슷한 역할이다. 실제로 “잔차를 향해 조금씩 이동한다“는 이
+과정은 함수 공간에서의 경사하강법으로 볼 수 있다(그래서 이름이 <strong>gradient</strong>
+boosting). XGBoost, LightGBM은 이 아이디어를 실무에서 쓸 수 있도록 극도로
+최적화한 라이브러리이며, 지금도 정형(tabular) 데이터 대회(Kaggle 등)에서 가장
+자주 우승하는 축에 속한다.</p>
+<p>\(F_{t-1}\)이 이미 어느 정도 맞히고 있다면, 남은 오차(잔차)는 원래
+\(y\)보다 작다. 그 작은 오차를 새 트리가 다시 줄이면, 전체 예측 \(F_t =
+F_{t-1} + \eta f_t\)의 오차는 한 단계 더 작아진다. 트리를 계속 추가할수록
+학습 데이터에 대한 오차는 이론상 계속 줄어든다 — 물론 실전에서는 검증 데이터
+성능이 나빠지기 시작하는 시점(과적합)에서 멈춰야 한다(early stopping, Chapter
+6의 검증 데이터 원칙과 동일하다).</p>
+<h3 id="실습-sklearn-gbdt로-랜덤-포레스트와-비교하기"><a class="header" href="#실습-sklearn-gbdt로-랜덤-포레스트와-비교하기">실습: sklearn GBDT로 랜덤 포레스트와 비교하기</a></h3>
+<p>7.2절에서 쓴 유방암 데이터셋에 실제 GBDT를 돌려서, 랜덤 포레스트와
+성능을 직접 비교해보자:</p>
+<pre><code class="language-python">from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+
+rf = RandomForestClassifier(n_estimators=100, random_state=0).fit(X_train, y_train)
+gbdt = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, random_state=0).fit(X_train, y_train)
+
+print("RandomForest 정확도:", round(rf.score(X_test, y_test), 3))
+print("GBDT 정확도:        ", round(gbdt.score(X_test, y_test), 3))
+
 import numpy as np
-
-env = gym.make("Pendulum-v1")  # 연속 행동공간을 가진 가장 단순한 "관절 제어" 문제
-obs, info = env.reset(seed=0)
-print("상태(cos theta, sin theta, 각속도):", obs)
-print("행동공간:", env.action_space)  # Box(-2.0, 2.0, (1,)) -- 연속값 토크
-
-# 손으로 설계한 간단한 PD(비례-미분) 제어기: 각도가 클수록, 각속도가 클수록 반대로 힘을 준다
-total_reward = 0.0
-for _ in range(50):
-    cos_th, sin_th, thdot = obs
-    theta = np.arctan2(sin_th, cos_th)
-    action = np.clip(-2.0 * theta - 0.5 * thdot, -2.0, 2.0)
-    obs, reward, terminated, truncated, info = env.step([action])
-    total_reward += reward
-print("PD 제어기의 50스텝 누적 보상:", round(total_reward, 2))
-env.close()
+idx = np.argsort(gbdt.feature_importances_)[::-1][:3]
+for i in idx:
+    print(data.feature_names[i], round(gbdt.feature_importances_[i], 3))
 </code></pre>
-<p>이 PD(Proportional-Derivative) 제어기는 강화학습이 전혀 아니다 — 사람이
-직접 설계한 규칙일 뿐이다. 그런데도 무작위 행동보다 훨씬 나은 성능을
-낸다(무작위 정책의 50스텝 누적 보상은 보통 -1200~-1600 근처인데, 이
-간단한 규칙은 -240 근처까지 개선된다). 이 비교가 보여주는 것: <strong>강화학습의
-목표는 이런 손으로 설계한 제어기보다 더 나은, 또는 사람이 규칙으로
-설계하기 어려운 상황에서도 작동하는 정책을 데이터로부터 직접 찾아내는
-것</strong>이다.</p>
-<h2 id="134-연속제어에-ppo-적용하기"><a class="header" href="#134-연속제어에-ppo-적용하기">13.4 연속제어에 PPO 적용하기</a></h2>
-<p>Chapter 11의 PPO는 이산 행동(softmax 정책)뿐 아니라 연속 행동에도
-자연스럽게 확장된다 — 신경망이 각 행동 차원마다 정규분포의 평균과
-표준편차를 출력하도록 하면 된다:</p>
-<p>\[\pi_\theta(a|s) = \mathcal{N}(a; \mu_\theta(s), \sigma_\theta(s)^2)\]</p>
-<p>로그 확률 \(\log \pi_\theta(a|s)\)은 정규분포의 확률밀도함수에서
-바로 계산되며, Chapter 10.4의 로그미분 트릭과 Chapter 11의 클리핑
-목적함수는 이산/연속 여부와 무관하게 형태가 그대로 유지된다 — “행동을
-어떻게 파라미터화하는가“만 바뀔 뿐, 그 뒤의 최적화 기계는 동일하다는
-것이 정책기반 방법의 큰 장점이다.</p>
-<pre><code class="language-python">import math
-
-def gaussian_log_prob(action, mu, sigma):
-    # 연속 행동에 대한 로그 확률 -- softmax 대신 정규분포를 쓴다는 점만 다르다
-    return -0.5 * math.log(2 * math.pi * sigma**2) - (action - mu)**2 / (2 * sigma**2)
-</code></pre>
-<p><strong>로봇 시뮬레이션은 지금까지 배운 알고리즘(DQN, PPO)을 “실제 물리
-법칙이 지배하는 연속 행동공간“이라는 더 현실적인 무대로 옮기는 시험대다
-— 다음 장에서는 이 시뮬레이션을 더 정교한 물리엔진으로, 그리고 대규모
-GPU 가속 환경으로 확장한다.</strong></p>
+<p>실행해보면(예: RandomForest 0.959, GBDT 0.977) GBDT가 랜덤 포레스트보다
+근소하게 더 높은 정확도를 낸다 — “독립적으로 여러 트리를 합치는 것“보다
+“잔차를 순차적으로 쫓는 것“이 조금 더 정교하게 맞출 수 있다는, 7.2절과
+이번 절의 핵심 차이가 숫자로 확인되는 지점이다. <code>feature_importances_</code>는
+7.1절의 지니불순도 감소량을 트리 전체에 걸쳐 누적한 값으로, 어떤 특징이
+예측에 가장 크게 기여했는지 보여준다 — 다만 이건 <strong>모델 전체</strong>에 대한
+설명이지 “이 환자 한 명의 예측“에 대한 설명은 아니다. 개별 예측 하나를
+설명하려면 다음 절의 SHAP이 필요하다.</p>
+<h3 id="정확한데-설명이-안-된다는-문제-그리고-shap"><a class="header" href="#정확한데-설명이-안-된다는-문제-그리고-shap">정확한데 설명이 안 된다는 문제, 그리고 SHAP</a></h3>
+<p>GBDT는 강력하지만, 수백 개의 트리가 얽혀 있어 “이 예측 하나“에 어떤 특징이
+얼마나 기여했는지 알기 어렵다. <strong>SHAP</strong>(SHapley Additive exPlanations)은
+게임이론의 섀플리값(Shapley value) — “여러 사람이 협업해서 낸 성과를, 각자의
+기여도에 따라 어떻게 공정하게 나눌 것인가“라는 문제의 답 — 을 빌려와서,
+모델의 예측 하나를 “각 특징이 기여한 양“으로 정확히 분해한다.</p>
+<p>원래 섀플리값은 “여러 플레이어가 협력 게임에 참여할 때, 각 플레이어의 공정한
+몫은 얼마인가“를 답한다 — 모든 가능한 참여 순서에서, 그 플레이어가 합류함으로써
+늘어난 가치를 평균낸다.</p>
+<p>SHAP은 “특징들“을 “플레이어들“로 바꿔서 적용한다: 특징 \(j\)의 SHAP값
+\(\phi_j\)는, 특징들이 하나씩 추가되는 모든 가능한 순서에 대해 “특징
+\(j\)가 추가됨으로써 예측값이 변한 정도“를 평균낸 것이다. 핵심 성질
+(<strong>가산성, additivity</strong>):</p>
+<p>\[f(x) = \phi_0 + \sum_{j=1}^n \phi_j\]</p>
+<p>여기서 \(\phi_0\)는 기준값(baseline, 전체 데이터의 평균 예측), \(\phi_j\)는
+특징 \(j\)가 그 기준에서 예측값을 얼마나 밀어올렸는지(양수) 또는
+밀어내렸는지(음수)다. 이 예측 하나에 대한 모든 \(\phi_j\)의 합이 정확히
+실제 예측값과 기준값의 차이와 같다는 것이 SHAP의 핵심 보장이다 — “왜 이
+대출이 거절됐는가“에 대해 “신용점수 기여 -0.3, 소득 기여 +0.1, …“처럼
+정확히 합이 맞는 분해를 준다.</p>
+<p><strong>작은 예제로 감 잡기</strong>: 특징이 2개(\(A, B\))뿐이면, 가능한 추가 순서는
+\(A \to B\)와 \(B \to A\) 두 가지뿐이다:</p>
+<p>\[\phi_A = \frac{1}{2}\left[\big(f({A})-f({})\big) +
+\big(f({A,B})-f({B})\big)\right]\]</p>
+<p>특징이 많아지면 가능한 순서의 수가 \(n!\)로 폭발하므로, 실제 SHAP
+라이브러리는 이 평균을 근사(sampling)로 빠르게 계산한다.</p>
+<p><strong>결정 트리는 인간이 읽을 수 있는 규칙(if-then)의 나무이면서 동시에, “얼마나
+잘 나누는가“를 정확히 수식으로 잴 수 있는 알고리즘이다. 트리를 여러 개
+합치면(랜덤 포레스트, GBDT) 정확도는 올라가지만 그 읽기 쉬움을 잃는다 —
+SHAP은 그 대가로 잃은 설명가능성을, 게임이론이라는 전혀 다른 도구로
+되찾아오는 시도다.</strong></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (실습)</strong> 위 코드를 그대로 실행한 뒤, PD 제어기의 계수(<code>-2.0</code>,
-<code>-0.5</code>)를 각각 두 배로 키워보고, 절반으로 줄여도 보고, 50스텝 누적
-보상이 어떻게 달라지는지 비교하라. 계수가 너무 크거나 너무 작을 때
-각각 어떤 문제가 생기는지(진동하는지, 반응이 느린지) 관찰한 바를
-서술하라.</p>
-<p><strong>2. (코딩)</strong> 위 <code>gaussian_log_prob</code>(핵심 줄은 빈칸으로 남겨져 있다고
-가정)을 완성하라:</p>
-<pre><code class="language-python">import math
-
-def gaussian_log_prob(action, mu, sigma):
+<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>gini</code>와 <code>best_split</code>을 완성하라(핵심 줄은
+빈칸으로 남겨져 있다고 가정):</p>
+<pre><code class="language-python">def gini(labels):
     # ADD ADDITIONAL CODE HERE!!
-    # 정규분포 확률밀도함수의 로그: -0.5*log(2*pi*sigma^2) - (action-mu)^2/(2*sigma^2)
 
-print(round(gaussian_log_prob(0.0, 0.0, 1.0), 4))   # 표준정규분포 x=0에서의 로그밀도, 약 -0.9189
-print(round(gaussian_log_prob(2.0, 0.0, 1.0), 4))   # 평균에서 멀수록 로그확률이 더 작아짐(더 음수)
+def weighted_gini(left_labels, right_labels):
+    # ADD ADDITIONAL CODE HERE!!
+    # 왼쪽/오른쪽 노드 크기로 가중평균한 지니불순도
+
+def best_split(X, y, feature_idx):
+    best_threshold, best_gain = None, -1
+    parent_gini = gini(y)
+    for threshold in sorted(set(row[feature_idx] for row in X)):
+        left_y = [y[i] for i in range(len(X)) if X[i][feature_idx] &lt;= threshold]
+        right_y = [y[i] for i in range(len(X)) if X[i][feature_idx] &gt; threshold]
+        if not left_y or not right_y:
+            continue
+        gain = parent_gini - weighted_gini(left_y, right_y)
+        if gain &gt; best_gain:
+            best_threshold, best_gain = threshold, gain
+    return best_threshold, best_gain
+
+X = [[2.0],[3.0],[4.0],[7.0],[8.0],[9.0]]
+y = ["A","A","A","B","B","B"]
+print(best_split(X, y, 0))  # (4.0, 1.0) -- 완벽하게 나뉨
 </code></pre>
-<p><strong>3. (개념 서술)</strong> 도메인 무작위화(domain randomization)가 왜 ML1
-Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
-있는지, “모델이 특정 조건 하나에 과적합하는 것을 막는다“는 관점에서
-두세 문장으로 설명하라.</p>
+<p><strong>2. (코딩)</strong> 결정 트리 스텁 함수 <code>fit_stump</code>(깊이 1짜리 트리)가 이미 주어졌을
+때, 다음과 같은 함수 <code>gbdt_fit</code>을 완성하라(핵심 줄은 빈칸으로 남겨져 있다고
+가정):</p>
+<pre><code class="language-python">def gbdt_fit(X, y, n_trees, learning_rate):
+    trees = []
+    predictions = [0.0] * len(y)
+    for t in range(n_trees):
+        # ADD ADDITIONAL CODE HERE!!
+        # 1. 잔차 = y - predictions 계산
+        # 2. fit_stump(X, residuals)로 트리 하나 학습
+        # 3. predictions에 learning_rate * 트리 예측값을 더해 누적
+
+    return trees
+</code></pre>
+<p><strong>3. (개념 서술)</strong> 랜덤 포레스트(트리를 독립적으로 병렬 학습)와 GBDT(트리를
+순차적으로 학습)는 둘 다 “트리 여러 개를 합친다“는 앙상블이지만 학습
+방식이 정반대다. 데이터에 노이즈(라벨링 오류)가 많이 섞여 있을 때 어느
+쪽이 그 노이즈에 더 취약할지, 이유와 함께 답하라(힌트: GBDT는 잔차를
+반복해서 좇는다는 점을 생각하라).</p>
+<p><strong>4. (손유도, Tier A — 자유 유도)</strong> 다음 8개 샘플이 있다: 클래스는
+<code>[A,A,A,A,B,B,B,B]</code>이고, 특징 \(x\) 값은 <code>[1,2,3,4,5,6,7,8]</code>이다.</p>
+<p>전체(8개)의 지니불순도를 손으로 계산한 뒤, \(x \le 4\)와 \(x &gt; 4\)로
+나누는 분기(threshold=4)의 정보이득(지니불순도 감소량)을 계산하라. threshold=2로
+나눴을 때(왼쪽: <code>[A,A]</code>, 오른쪽: <code>[A,A,B,B,B,B]</code>)의 정보이득과 비교해 어느 쪽
+분기가 데이터를 더 잘 나누는지 논하고, 문제 1의 <code>best_split(X, y, 0)</code> 결과와
+일치하는지 확인하라.</p>
+<p><strong>5. (손유도, Tier C — 폴백 준비 대상)</strong> 특징이 2개(\(A, B\))인 장난감
+모델의 예측함수 \(f(S)\)가 다음과 같이 주어졌다:</p>
+<p>\[f({}) = 10, \quad f({A}) = 16, \quad f({B}) = 13, \quad f({A,B}) = 20\]</p>
+<p>가능한 두 추가 순서(\(A \to B\), \(B \to A\))에서 각 특징의 한계
+기여(marginal contribution)를 모두 구하고, \(\phi_A\)와 \(\phi_B\)를
+계산하라. \(\phi_0 + \phi_A + \phi_B = f({A,B})\)가 정확히 성립하는지
+확인하라.</p>
+<p><strong>빈칸채움형 폴백 버전</strong>(자유 계산이 어려운 경우):</p>
+<pre><code>순서 A -&gt; B: A의 한계 기여 = f({A}) - f({}) = 16 - 10 = ______________
+             B의 한계 기여 = f({A,B}) - f({A}) = 20 - 16 = ______________
+순서 B -&gt; A: B의 한계 기여 = f({B}) - f({}) = 13 - 10 = ______________
+             A의 한계 기여 = f({A,B}) - f({B}) = 20 - 13 = ______________
+
+phi_A = (A-&gt;B에서 A의 기여 + B-&gt;A에서 A의 기여) / 2 = ______________
+phi_B = (A-&gt;B에서 B의 기여 + B-&gt;A에서 B의 기여) / 2 = ______________
+검산: phi_0 + phi_A + phi_B = f({}) + phi_A + phi_B = ______________ (20과 같아야 함)
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml2/chapter12.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter07/2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml2/chapter14.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter08.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -307,11 +358,11 @@ Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml2/chapter12.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter07/2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml2/chapter14.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter08.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -331,17 +382,17 @@ Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
         </script>
 
 
-        <script src="../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-09f2665d.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
 
-        <script src="../clipboard-1626706a.min.js"></script>
-        <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-609e4cb8.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
-        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 
