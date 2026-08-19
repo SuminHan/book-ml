@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>고급 정책 최적화: PPO (Proximal Policy Optimization) - Machine Learning 1/2 (한국어)</title>
+        <title>모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL &amp; Monte Carlo Tree Search) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,140 +178,131 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-11-고급-정책-최적화-ppo-proximal-policy-optimization"><a class="header" href="#chapter-11-고급-정책-최적화-ppo-proximal-policy-optimization">Chapter 11. 고급 정책 최적화: PPO (Proximal Policy Optimization)</a></h1>
-<p>Chapter 10의 REINFORCE와 Actor-Critic에는 공통된 한계가 있다: 궤적 하나를
-모아서 경사 상승 한 번에 쓰고 나면 그 데이터는 버려진다(온-폴리시,
-on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그래디언트는
-더 이상 정확하지 않기 때문이다. 게다가 경사 상승 스텝이 한 번이라도
-너무 크면 정책이 갑자기 나쁜 방향으로 확 바뀌어서 회복이 안 되는
-경우도 있다 — 로봇 제어처럼 “한 번의 잘못된 업데이트로 정책이 완전히
-무너지면 다시 좋아지기 어려운” 상황에서는 치명적이다. 2017년 OpenAI가
-제안한 <strong>PPO</strong>(Proximal Policy Optimization, Schulman 외)는 데이터를
-몇 번 더 재사용하면서도, 정책이 한 번에 너무 멀리 움직이지 못하게 막는
-실용적인 해법이다.</p>
-<h2 id="111-신뢰-영역이라는-직관"><a class="header" href="#111-신뢰-영역이라는-직관">11.1 신뢰 영역이라는 직관</a></h2>
-<p>산을 내려갈 때 안개가 껴서 한 치 앞만 보인다고 하자. 경사가 가장 가파른
-방향으로 무작정 큰 걸음을 내디디면, 그 방향의 지형이 어떻게 바뀌는지도
-모른 채 절벽으로 떨어질 수 있다. 안전한 전략은 “한 걸음의 크기를 믿을
-수 있는 범위(신뢰 영역, trust region) 안으로 제한하는 것“이다 —
-PPO의 핵심 아이디어가 바로 이것이다. 정책이 한 번의 업데이트로 너무
-크게 바뀌지 않도록 제약을 걸어서, 매 스텝이 실제로 개선을 보장하는
-좁은 범위 안에서만 이동하게 한다.</p>
-<h2 id="112-확률비와-중요도-샘플링"><a class="header" href="#112-확률비와-중요도-샘플링">11.2 확률비와 중요도 샘플링</a></h2>
-<p>핵심 도구는 <strong>확률비</strong>(probability ratio)다 — 지금 업데이트하려는
-정책 \(\pi_\theta\)와, 데이터를 모을 때 썼던 정책
-\(\pi_{\theta_{\text{old}}}\)가 같은 행동에 부여하는 확률의 비다:</p>
-<p>\[r_t(\theta) := \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)},
-\quad r_t(\theta_{\text{old}}) = 1\]</p>
-<p>\(r_t\)가 1보다 크면 그 행동을 전보다 더 선호하게 됐다는 뜻, 1보다
-작으면 덜 선호한다는 뜻이다. 이 비율을 쓰면 “옛 정책이 모은 데이터“를
-“새 정책 관점에서” 재사용할 수 있다(<strong>중요도 샘플링</strong> — Chapter 5.4에서
-MC의 off-policy 학습에 처음 등장했던 바로 그 도구가 여기서 다시
-쓰인다):</p>
-<p>\[L^{IS}(\theta) = \mathbb{E}_t[r_t(\theta) A_t]\]</p>
-<p>\(A_t\)는 Chapter 10.7에서 정의한 어드밴티지, \(A_t := G_t -
-V(s_t)\)다. 문제는 이 목적함수를 그냥 최대화하면 \(r_t\)가
-한없이 커지도록(같은 행동만 계속 더 밀어주도록) 학습이 폭주할 수
-있다는 것이다 — 데이터는 재사용되지만, “정책이 너무 멀리 움직이지
-않는다“는 보장은 어디에도 없다.</p>
-<h2 id="113-gae-어드밴티지를-더-안정적으로-추정하기"><a class="header" href="#113-gae-어드밴티지를-더-안정적으로-추정하기">11.3 GAE: 어드밴티지를 더 안정적으로 추정하기</a></h2>
-<p>Chapter 10.7의 어드밴티지 \(A_t = G_t - V(s_t)\)는 실제 리턴 \(G_t\)를
-그대로 쓰므로 여전히 분산이 크다. <strong>GAE</strong>(Generalized Advantage
-Estimation)는 Chapter 7의 n-step/적격흔적과 정확히 같은 아이디어를
-어드밴티지 추정에 적용한다 — 여러 \(n\)-step 어드밴티지 추정치를
-\(\lambda\)로 가중평균해서, 분산은 낮추되 편향은 적당히만 감수하는
-절충점을 찾는다:</p>
-<p>\[A_t^{\text{GAE}} = \sum_{k=0}^\infty (\gamma\lambda)^k \delta_{t+k},
-\qquad \delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)\]</p>
-<p>\(\delta_t\)는 Chapter 6.1의 TD 오차 그 자체다 — GAE는 결국 “여러
-시점의 TD 오차를 적격흔적처럼 지수적으로 가중합해서 하나의 어드밴티지
-추정치를 만든다“는 것으로 요약된다. \(\lambda=0\)이면 TD(0) 기반
-어드밴티지(분산 작고 편향 큼), \(\lambda=1\)이면 몬테카를로 기반
-어드밴티지(편향 없고 분산 큼)에 가까워진다 — Chapter 7.2의 다이얼이
-여기서도 그대로 등장한다. 실전 PPO 구현은 거의 항상 GAE로 계산한
-\(A_t\)를 쓴다.</p>
-<h2 id="114-클리핑-너무-멀리-못-가게-막기"><a class="header" href="#114-클리핑-너무-멀리-못-가게-막기">11.4 클리핑: 너무 멀리 못 가게 막기</a></h2>
-<p>PPO의 해법은 단순하다 — \(r_t\)가 \([1-\epsilon, 1+\epsilon]\)
-(보통 \(\epsilon = 0.2\)) 범위를 벗어나면, 그 구간 밖으로 나간
-만큼의 이득을 깎아버린다:</p>
-<p>\[L^{CLIP}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) A_t,
-\text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t\right)\right]\]</p>
-<p>min을 쓰는 이유: clip 안 한 값과 clip한 값 중 더 “비관적인”(작은)
-쪽을 목적함수로 삼아서, 정책이 한쪽으로 너무 밀려가는 것에 대한
-보상을 스스로 제한한다. 직관: 어드밴티지가 양수(좋은 행동)인데
-\(r_t\)가 이미 \(1+\epsilon\)을 넘었으면, 더 밀어붙여도
-그래디언트가 사라진다(이미 충분히 밀었으니 그만) — 반대로 어드밴티지가
-음수(나쁜 행동)인데 \(r_t\)가 \(1-\epsilon\) 밑으로 떨어졌으면
-역시 그래디언트가 사라진다(이미 충분히 눌렀으니 그만). 그 결과 “좋은
-행동을 과도하게 밀어주지도, 나쁜 행동을 과도하게 눌러버리지도 않는”
-암묵적인 신뢰 영역이 생긴다 — 11.1절에서 말한 “믿을 수 있는 범위“를
-명시적으로 제약하는 식을 따로 풀 필요 없이, 클리핑 한 번으로 같은
-효과를 낸다.</p>
-<pre><code class="language-python">def ppo_clip_loss(ratio, advantage, epsilon=0.2):
-    unclipped = ratio * advantage
-    clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
-    return min(unclipped, clipped)  # 목적함수(최대화 대상)의 한 샘플분
+                        <h1 id="chapter-15-모델기반-rl과-몬테카를로-트리-탐색-model-based-rl--monte-carlo-tree-search"><a class="header" href="#chapter-15-모델기반-rl과-몬테카를로-트리-탐색-model-based-rl--monte-carlo-tree-search">Chapter 15. 모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL &amp; Monte Carlo Tree Search)</a></h1>
+<p>2016년, 딥마인드의 <strong>AlphaGo</strong>는 세계 최정상급 프로 바둑기사 이세돌을
+꺾어 큰 화제를 모았다. 바둑판의 경우의 수는 우주의 원자 수보다 많다고
+알려져 있어서, Chapter 9의 DQN처럼 “신경망으로 가치를 근사하는 것“만으로는
+충분하지 않았다 — AlphaGo의 핵심 무기 중 하나가 바로 이번 장의 주제,
+<strong>몬테카를로 트리 탐색</strong>(Monte Carlo Tree Search, MCTS)이다. 이번 장은
+Chapter 7.3에서 잠깐 맛본 “모델을 활용한 계획“이라는 아이디어를,
+게임처럼 명확한 규칙이 있는 문제에서 훨씬 강력하게 확장한 형태를 다룬다.</p>
+<h2 id="151-모델기반-rl-다시-보기"><a class="header" href="#151-모델기반-rl-다시-보기">15.1 모델기반 RL 다시 보기</a></h2>
+<p>Chapter 7.3의 Dyna-Q는 실제 경험으로 간단한 모델을 만들고, 그 모델로
+<strong>가상의 추가 학습</strong>을 했다. <strong>모델기반 강화학습</strong>(Model-Based RL)은
+이 아이디어를 일반화한 이름이다 — 환경의 모델(전이확률과 보상함수, 또는
+그 근사)을 학습하거나 알고 있다면, 그 모델을 이용해 “실제로 행동해보지
+않고도” 여러 수를 미리 시뮬레이션해볼 수 있다. Dyna-Q가 이걸 값 갱신에
+썼다면, MCTS는 이걸 <strong>지금 당장 어떤 행동을 할지 결정하는 데</strong> 직접
+쓴다.</p>
+<h2 id="152-바둑-같은-문제에서-모델은-공짜다"><a class="header" href="#152-바둑-같은-문제에서-모델은-공짜다">15.2 바둑 같은 문제에서 모델은 공짜다</a></h2>
+<p>체스나 바둑 같은 게임에는 특별한 사정이 있다 — 규칙이 완벽하게
+알려져 있다. “이 수를 두면 판이 정확히 이렇게 바뀐다“는 전이확률
+\(P(s’|s,a)\)를 배울 필요 없이 이미 알고 있는 것이다(Chapter 4의
+모델 기반 방법을 쓸 수 있는 이상적인 조건이다). 문제는 상태 수가
+너무 많아서(바둑판은 약 \(10^{170}\)가지) Chapter 4의 가치반복처럼
+모든 상태를 다 계산할 수 없다는 것이다 — 그래서 “지금 당장 놓인 상황
+근처만” 깊이 파고드는 탐색이 필요하다.</p>
+<h2 id="153-mcts-네-단계의-반복"><a class="header" href="#153-mcts-네-단계의-반복">15.3 MCTS: 네 단계의 반복</a></h2>
+<p>MCTS는 현재 상태에서 시작해, 정해진 횟수만큼 다음 네 단계를 반복해서
+“어떤 수가 가장 유망한가“에 대한 통계를 쌓는다:</p>
+<ol>
+<li><strong>선택</strong>(Selection): 트리의 루트(현재 상태)에서 시작해, 각 갈림길에서
+“지금까지의 성과“와 “아직 덜 시도해본 정도“를 함께 고려하는 규칙
+(Chapter 2의 UCB와 정확히 같은 발상)으로 자식 노드를 골라가며
+아직 다 확장되지 않은 노드까지 내려간다.</li>
+<li><strong>확장</strong>(Expansion): 그 노드에 새로운 자식 노드(아직 안 가본 수)를
+하나 추가한다.</li>
+<li><strong>시뮬레이션</strong>(Simulation/Rollout): 그 새 노드에서부터 게임이 끝날
+때까지 (간단한 정책으로, 극단적으로는 완전히 무작위로) 끝까지
+플레이해본다 — Chapter 5의 몬테카를로처럼, 실제로 끝까지 해보고
+결과(승/패)를 얻는다.</li>
+<li><strong>역전파</strong>(Backpropagation): 그 결과를, 선택 단계에서 지나온 모든
+노드에 통계로 반영한다(방문 횟수 +1, 승률 갱신) — 이 “역전파“는
+ML1 Chapter 9의 역전파와 이름만 같을 뿐 완전히 다른 개념이다:
+신경망의 그래디언트를 전달하는 게 아니라, 트리의 승패 통계를
+전달하는 것이다.</li>
+</ol>
+<p>이 네 단계를 수백~수만 번 반복한 뒤, 루트에서 <strong>가장 많이 방문된</strong>
+자식(가장 유망하다고 반복적으로 확인된 수)을 실제로 둘 수로 선택한다.</p>
+<pre><code class="language-python">import math, random
+
+def uct_select(node_children, parent_visits, c=1.4):
+    # node_children: {move: (wins, visits)}
+    # UCB1과 정확히 같은 형태 -- Chapter 2.3을 그대로 게임 트리에 적용한 것
+    return max(node_children, key=lambda m: node_children[m][0] / node_children[m][1] +
+               c * math.sqrt(math.log(parent_visits) / node_children[m][1]))
 </code></pre>
-<h2 id="115-왜-ppo가-표준이-됐는가"><a class="header" href="#115-왜-ppo가-표준이-됐는가">11.5 왜 PPO가 표준이 됐는가</a></h2>
-<p>PPO 이전에 같은 문제(너무 큰 업데이트로 인한 정책 붕괴)를 풀던
-방법은 <strong>TRPO</strong>(Trust Region Policy Optimization, 2015)였다 — KL
-divergence 제약을 명시적으로 걸고, 2차 미분(피셔 정보 행렬)과
-conjugate gradient, line search까지 동원하는 무거운 최적화였다. PPO는
-그 복잡한 기계장치를 클리핑 한 줄로 대체하면서도 비슷한 안정성을
-얻는다 — “이론적으로 완벽한 보장”(TRPO의 단조 개선 보장) 대신
-“구현하기 쉽고 실전에서 잘 작동하는 근사“를 택한 선택이다.</p>
-<p>이 실용성 덕분에 PPO는 지금 가장 널리 쓰이는 정책기반 알고리즘이
-됐다: 로봇 보행 제어, OpenAI Five(Dota 2), AlphaStar(스타크래프트
-II)뿐 아니라, 사람 피드백에 맞게 언어모델을 조정하는 RLHF의 핵심
-도구로도 쓰인다 — 연속 제어(로봇의 관절 힘 같은)와 이산 선택(다음
-토큰 고르기) 양쪽 모두에 그대로 적용될 만큼 범용적이다.</p>
-<p><strong>Q-learning이 “얼마나 좋은지 평가한 뒤 최선을 고른다“는 간접적
-전략이라면, 정책기반 방법은 “무엇을 할지” 자체를 직접 학습한다. GAE가
-어드밴티지 추정의 분산을 줄이고, 클리핑이 그 추정을 바탕으로 한
-업데이트가 너무 커지지 않게 막는다 — Chapter 13~14에서 다룰 로봇
-시뮬레이션의 연속 제어 문제에 PPO가 표준으로 쓰이는 이유가 바로 이
-안정성이다.</strong></p>
+<h2 id="154-작은-예제로-확인하기"><a class="header" href="#154-작은-예제로-확인하기">15.4 작은 예제로 확인하기</a></h2>
+<p>돌을 1~3개씩 번갈아 가져가고, 마지막 돌을 가져가는 사람이 이기는
+간단한 게임(님 게임의 변형)에서 MCTS를 3000번 시뮬레이션 돌려보면,
+돌이 5개 남은 상황에서 “1개를 가져가서 상대에게 4개를 남기는” 수를
+가장 유망하다고 정확히 찾아낸다 — 실제로 이 게임의 수학적 필승 전략
+(남은 돌 수가 4의 배수가 되도록 만드는 것)과 정확히 일치하는 결과다.
+MCTS가 게임의 규칙 자체(4의 배수 전략)를 전혀 몰랐는데도, 오직
+“시뮬레이션을 많이 해보고 이긴 비율이 높은 수를 고른다“는 것만으로
+이 최적 전략을 스스로 찾아낸 것이다.</p>
+<h2 id="155-alphagoalphazero-mcts와-신경망의-결합"><a class="header" href="#155-alphagoalphazero-mcts와-신경망의-결합">15.5 AlphaGo/AlphaZero: MCTS와 신경망의 결합</a></h2>
+<p>순수 MCTS는 시뮬레이션 단계에서 무작위로(또는 아주 단순한 규칙으로)
+게임을 끝까지 진행한다 — 바둑처럼 한 수의 영향이 아주 나중에야
+드러나는 게임에서는 무작위 시뮬레이션이 부정확할 수 있다. AlphaGo와
+그 후속작 AlphaZero의 핵심 개선은, 이 무작위 롤아웃을 <strong>신경망</strong>으로
+대체한 것이다: 신경망 하나가 “이 상태에서 각 수가 얼마나 유망한가”
+(정책, Chapter 10의 \(\pi_\theta\)와 같은 역할)를, 다른 하나(또는
+같은 신경망의 다른 출력 헤드)가 “이 상태가 최종적으로 얼마나 유리한가”
+(가치, ML1 Chapter 4의 \(V(s)\)와 같은 역할)를 추정한다. MCTS는 이
+신경망들의 추정치를 길잡이 삼아 탐색을 훨씬 더 효율적으로 좁혀나가고,
+그렇게 MCTS로 찾아낸 더 정확한 수를 다시 신경망 학습의 정답(지도학습
+목표)으로 사용한다 — <strong>탐색(MCTS)과 학습(신경망)이 서로를 개선하는
+루프</strong>다.</p>
+<h2 id="156-멀티에이전트-rl-개관-선택"><a class="header" href="#156-멀티에이전트-rl-개관-선택">15.6 멀티에이전트 RL 개관 (선택)</a></h2>
+<p>지금까지는 에이전트가 하나뿐인 환경을 다뤘다. <strong>멀티에이전트
+강화학습</strong>(Multi-Agent RL)은 여러 에이전트가 같은 환경에서 동시에
+행동하는 경우를 다룬다 — 서로 협력할 수도(팀 스포츠, 물류 로봇들의
+협업), 경쟁할 수도(바둑, 게임 AI) 있다. MCTS 자체도 사실 “상대방도
+최선을 다한다“고 가정하는 2인 게임에서는 <strong>미니맥스</strong>(minimax) 탐색의
+확률적 근사로 볼 수 있다 — ML1 Chapter 15의 GAN에서 본 min-max
+게임과, “두 참여자가 서로 다른 목표로 상호작용한다“는 구조적 유사성이
+있다. 자세한 이론(내쉬 균형, 협력 게임 등)은 이 학기 범위를 넘지만,
+“에이전트가 하나가 아니면 문제 자체가 근본적으로 달라진다“는 점은
+기억해둘 만하다.</p>
+<p><strong>MCTS는 “모델이 있다면(규칙을 안다면), 실제로 행동하기 전에 미리
+수를 읽어볼 수 있다“는 아이디어를 극한까지 밀어붙인 방법이다 — Chapter
+7의 Dyna-Q가 학습된 모델로 값을 개선했다면, MCTS는 완벽한 모델로
+바로 지금의 결정 자체를 개선한다. 그리고 AlphaZero가 보여줬듯,
+이 탐색과 신경망 학습을 결합하면 순수 탐색도, 순수 신경망도 각각
+해내지 못한 성능에 도달할 수 있다.</strong></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 <code>ppo_clip_loss</code>(핵심 줄은 빈칸으로 남겨져 있다고
-가정)와, GAE의 한 항 \(\delta_t = r_t + \gamma V(s_{t+1}) -
-V(s_t)\)를 계산하는 <code>td_error</code>를 완성하라:</p>
-<pre><code class="language-python">def td_error(r, V_s, V_s_next, gamma):
-    # ADD ADDITIONAL CODE HERE!!
+<p><strong>1. (코딩)</strong> 위 <code>uct_select</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)를
+완성하라:</p>
+<pre><code class="language-python">import math
 
-def ppo_clip_loss(ratio, advantage, epsilon=0.2):
+def uct_select(node_children, parent_visits, c=1.4):
+    # node_children: {move: (wins, visits)}
     # ADD ADDITIONAL CODE HERE!!
-    # unclipped = ratio * advantage
-    # clipped = ratio를 [1-epsilon, 1+epsilon]로 clip한 뒤 advantage 곱
-    # 둘 중 최솟값 반환
+    # 각 move에 대해 wins/visits + c*sqrt(log(parent_visits)/visits) 계산 후 최댓값의 move 반환
 
-print(ppo_clip_loss(ratio=1.5, advantage=1.0, epsilon=0.2))  # 1.2 (clip된 값이 더 작음)
-print(ppo_clip_loss(ratio=0.5, advantage=1.0, epsilon=0.2))  # 0.5 (clip 안 된 값이 더 작음)
-print(ppo_clip_loss(ratio=1.5, advantage=-1.0, epsilon=0.2)) # -1.5 (advantage가 음수면 부호가 바뀜에 주의)
+children = {"A": (7, 10), "B": (3, 5), "C": (0, 1)}
+print(uct_select(children, parent_visits=16))
+# C처럼 거의 안 시도해본 수는 불확실성 보너스가 커서 선택될 수 있음
 </code></pre>
-<p><strong>2. (개념 서술)</strong> GAE의 \(\lambda\)를 0으로 두는 것과 1로 두는 것이
-각각 Chapter 7에서 배운 어떤 방법과 대응되는지 설명하고, 왜 그
-극단들이 각각 편향과 분산 중 어느 쪽 문제를 안고 있는지 서술하라.</p>
-<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> \(A_t^{\text{GAE}} =
-\sum_{k=0}^\infty (\gamma\lambda)^k \delta_{t+k}\)에서 \(\lambda = 0\)을
-대입하면 \(A_t^{\text{GAE}} = \delta_t\)(TD 오차 하나)만 남음을
-보여라. \(\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)\)의 정의를
-이용해서, 이것이 Chapter 10.7의 1-step 어드밴티지 근사
-\(A_t \approx r_t + \gamma V(s_{t+1}) - V(s_t)\)와 정확히 같은
-형태임을 확인하라.</p>
-<p><strong>정확성 확인</strong>: \(\lambda\)를 0에서 1로 점점 키우면 GAE가 더 먼
-미래의 TD 오차들까지 포함하게 되는데, 이게 왜 “몬테카를로 방향으로
-다가간다“는 뜻인지 한 문장으로 설명하라.</p>
+<p><strong>2. (개념 서술)</strong> 15.3절의 4단계(선택-확장-시뮬레이션-역전파) 중,
+Chapter 2의 UCB와 가장 직접적으로 대응하는 단계는 어디인지, 그리고
+Chapter 5의 몬테카를로와 가장 직접적으로 대응하는 단계는 어디인지
+짝짓고 이유를 설명하라.</p>
+<p><strong>3. (개념 서술)</strong> AlphaZero가 무작위 롤아웃 대신 신경망을 쓰는 것이
+왜 “바둑처럼 한 수의 영향이 아주 나중에야 드러나는 게임“에서 특히
+중요한지, 무작위 롤아웃의 한계와 연결지어 설명하라.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml2/chapter10.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml2/chapter14.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml2/chapter12.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml2/chapter16.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -321,11 +312,11 @@ print(ppo_clip_loss(ratio=1.5, advantage=-1.0, epsilon=0.2)) # -1.5 (advantage�
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml2/chapter10.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml2/chapter14.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml2/chapter12.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml2/chapter16.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

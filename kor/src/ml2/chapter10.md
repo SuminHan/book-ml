@@ -1,148 +1,196 @@
-# Chapter 10. 생성형 모델 I: 우도 기반 (Generative Models I: Likelihood-Based)
+# Chapter 10. 정책기반 강화학습 (Policy-Based Reinforcement Learning)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_vae_elbo.ipynb)
+로봇 팔의 관절에 가할 힘을 정하는 문제를 생각해보자. 이 "행동"은
+-10Nm부터 +10Nm까지 **연속적인 값** 중 아무거나 될 수 있다. Chapter
+6·9의 Q-learning/DQN은 매 스텝 \\(\max_{a'} Q(s',a')\\)를 계산해야
+하는데, 행동이 연속값이면 "가능한 모든 행동"을 나열해서 최댓값을 찾는다는
+것 자체가 불가능하다 — 무한히 많은 후보를 다 계산해볼 수는 없다. 이번
+장부터 다룰 로봇 시뮬레이션(Chapter 13~14)이 바로 이런 연속 행동공간을
+쓰므로, 이 문제를 정면으로 풀어야 한다.
 
-ML1의 마지막 장에서 오토인코더가 남긴 질문을 기억하는가 — "병목의 값을
-무작위로 하나 골라서 디코더에 넣으면, 존재한 적 없는 새로운 데이터를
-만들 수 있지 않을까?" 2013년 디데릭 킹마(Diederik Kingma)와 맥스
-웰링(Max Welling)이 발표한 **변분 오토인코더**(Variational
-Autoencoder, VAE)가 바로 이 질문에 대한 정식 답이다.
+## 10.1 Q를 거치지 않고, 정책을 직접 학습한다
 
-## 10.1 오토인코더를 그냥 쓰면 안 되는 이유
+지금까지(Chapter 6, 9)는 \\(Q(s,a)\\)를 먼저 학습하고, 그로부터
+간접적으로 정책 \\(\pi(s) = \arg\max_a Q(s,a)\\)을 얻었다.
+**정책기반 방법**(Policy-Based Methods)은 이 중간 단계를 건너뛰고,
+정책 \\(\pi_\theta(a|s)\\)(파라미터 \\(\theta\\)를 가진, 행동의
+확률분포를 직접 내놓는 함수) 자체를 신경망으로 표현하고 직접 학습한다.
+연속적인 행동공간에서도 "이 행동의 확률밀도가 얼마인가"는 잘
+정의되므로, 앞의 문제가 자연스럽게 해결된다.
 
-일반 오토인코더의 잠재 공간(latent space)은 "어떤 값이 그럴듯한
-데이터로 복원되는지"에 대한 보장이 없다 — 학습 데이터들이 잠재 공간의
-여기저기 흩어져 있을 수 있고, 그 사이 빈 공간에서 무작위로 값을 뽑으면
-무엇이 나올지 알 수 없다. VAE의 해법은 인코더가 하나의 점 \\(z\\)를
-내놓는 대신, **확률분포**(보통 정규분포의 평균과 분산)를 내놓도록
-강제하는 것이다. 그리고 그 분포가 표준 정규분포(평균 0, 분산 1)에
-가깝도록 추가 제약을 건다 — 그러면 잠재 공간 전체가 매끄럽고 빈틈없이
-채워져서, 임의의 지점에서 샘플링해도 그럴듯한 데이터가 나올 가능성이
-높아진다.
+## 10.2 정책을 파라미터화하기
 
-## 10.2 VAE의 구조
+이산 행동공간에서는 정책을 신경망 출력에 softmax를 적용해 확률분포로
+만든다:
 
-- **인코더** \\(q_\phi(z|x)\\): 입력 \\(x\\)를 받아, 잠재변수 \\(z\\)의
-  확률분포를 내놓는다(보통 정규분포 \\(\mathcal{N}(\mu(x),
-  \sigma^2(x))\\)의 평균과 분산을 출력).
-- **샘플링**: 그 분포에서 \\(z\\)를 하나 뽑는다.
-- **디코더** \\(p_\theta(x|z)\\): \\(z\\)로부터 \\(x\\)를 복원(또는
-  생성)한다.
+\\[\pi_\theta(a|s) = \text{softmax}(f_\theta(s))_a\\]
 
-## 10.3 우도라는 관점
+\\(f_\theta(s)\\)는 상태 \\(s\\)를 입력받아 각 행동에 대한
+원점수(logit)를 내는 신경망이다. 목표는 기대 누적 보상을 최대화하는
+\\(\theta\\)를 찾는 것:
 
-VAE는 "생성형 모델을 만드는 세 가지 원리" 중 첫 번째 — **우도
-기반**(likelihood-based) 접근이다: 모델이 학습 데이터를 만들어낼
-확률(우도) \\(P(x)\\)를 직접(또는 그 근사치를) 최대화하도록 학습한다.
-문제는 \\(p_\theta(x) = \int p_\theta(x|z)p(z)\,dz\\)는 가능한 모든
-\\(z\\)에 대한 적분이라, 일반적으로 계산이 불가능하다(intractable).
+\\[J(\theta) = \mathbb{E}\_{\tau \sim \pi_\theta}[R(\tau)]\\]
 
-## 10.4 ELBO: 계산 가능한 하한으로 우회하기
+\\(\tau\\)는 궤적(에피소드 전체), \\(R(\tau)\\)는 그 궤적의 총
+보상이다.
 
-직접 계산할 수 없는 \\(\log p_\theta(x)\\) 대신, 다음이 성립함을 보일
-수 있다:
+## 10.3 "보상을 미분한다"는 이상한 문제
 
-\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
-D\_{KL}\big(q\_\phi(z|x) \\,\\|\\, p(z)\big)\\]
+문제는 "기대 보상을 최대화하는 \\(\theta\\)를 찾는다"는 목표를 그대로
+미분하려고 하면 이상한 벽에 부딪힌다는 것이다: 기대 보상은 "무작위로
+행동해서 얻은 결과"에 대한 평균인데, 그 무작위성 자체가 \\(\theta\\)에
+의존한다. \\(J(\theta)\\)를 \\(\theta\\)로 직접 미분하려면 확률분포
+\\(\pi_\theta\\) 자체를 미분해야 해서 기댓값(적분) 형태가 깨진다.
 
-우변을 **ELBO**(Evidence Lower BOund)라 부른다. 두 항의 의미:
+## 10.4 로그미분 트릭 (Log-Derivative Trick)
 
-- 첫 항 \\(\mathbb{E}[\log p_\theta(x|z)]\\): **복원 항** — 인코더가
-  만든 \\(z\\)로 디코더가 원본 \\(x\\)를 얼마나 잘 복원하는가(일반
-  오토인코더의 복원 오차와 본질적으로 같다).
-- 둘째 항 \\(D_{KL}(q_\phi(z|x)\|p(z))\\): **정규화 항** — 인코더가
-  만든 분포 \\(q_\phi(z|x)\\)가, 목표로 하는 사전분포 \\(p(z)\\)(보통
-  표준정규분포)에서 얼마나 벗어나 있는지(KL divergence, ML1 Chapter
-  2.6에서 섀넌의 정보이론으로 소개한 그 개념 — 두 확률분포 사이의
-  "거리"). 이 항이 바로 잠재 공간을 매끄럽게 만드는 힘이다.
+**로그미분 트릭**은 다음 항등식을 이용한다:
 
-\\(\log p_\theta(x) \ge \text{ELBO}\\)이므로, **ELBO를 최대화하면 실제
-우도의 하한도 함께 올라간다** — 직접 계산 못 하는 목표를, 계산 가능한
-대리(surrogate) 목표로 바꿔치기한 것이다. 이 부등식 자체를 옌센
-부등식(Jensen's inequality)으로 유도하는 것이 이번 장 연습문제의
-핵심이다.
+\\[\nabla_\theta \pi_\theta = \pi_\theta \nabla_\theta \log \pi_\theta\\]
+
+(이는 \\(\nabla \log f = \nabla f / f\\)라는 미분 공식에서 바로
+나온다.) 이 치환을 통해, 미분이 확률 **밖으로** 빠져나오는 대신 로그
+확률의 그래디언트로 바뀌면서, 다시 기댓값 형태로 정리할 수 있게 된다.
+최종 결과가 **Policy Gradient Theorem**이다:
+
+\\[\nabla_\theta J(\theta) = \mathbb{E}\_\tau\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\\]
+
+\\(G_t\\)는 시점 \\(t\\)부터의 할인된 누적 보상(Chapter 3의 return)이다.
+직관: "결과가 좋았던(\\(G_t\\)가 큰) 궤적에서 실제로 골랐던 행동의
+확률(\\(\log \pi_\theta(a_t|s_t)\\))을 더 높이는 방향으로, 결과가
+나빴던 행동의 확률은 낮추는 방향으로 \\(\theta\\)를 옮긴다."
+
+이 유도(대학원 수준에서도 까다롭게 여겨지는 유도)는 이번 장 연습문제의
+핵심이며, 워크시트 버전으로 핵심 아이디어 하나("왜 로그를 취하면
+문제가 풀리는가")만 확실히 잡는 것을 목표로 한다.
+
+## 10.5 REINFORCE 알고리즘
+
+Policy Gradient Theorem을 그대로 경사 상승법(gradient ascent —
+최대화이므로 `+=`)으로 구현한 것이 REINFORCE다:
 
 ```python
-def vae_loss(x, x_reconstructed, mu, log_var):
-    # 복원 손실 (여기서는 MSE로 근사)
-    recon_loss = sum((x[i] - x_reconstructed[i]) ** 2 for i in range(len(x)))
-    # KL divergence: 정규분포 q(mu, sigma^2)와 표준정규분포 N(0,1) 사이의 닫힌 형태 공식
-    kl_loss = -0.5 * sum(1 + log_var[i] - mu[i]**2 - math.exp(log_var[i])
-                          for i in range(len(mu)))
-    return recon_loss + kl_loss  # ELBO를 최대화 = 이 손실(음의 ELBO)을 최소화
+import math
+
+def softmax_policy(theta, state_feature):
+    logits = [theta[0]*state_feature, theta[1]*state_feature]
+    m = max(logits)
+    exps = [math.exp(l - m) for l in logits]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def reinforce_update(theta, episode, alpha, gamma):
+    # episode: [(state_feature, action, reward), ...]
+    T = len(episode)
+    G = [0.0] * T
+    running = 0.0
+    for t in reversed(range(T)):
+        running = episode[t][2] + gamma * running
+        G[t] = running
+    for t, (s, a, r) in enumerate(episode):
+        probs = softmax_policy(theta, s)
+        if a == 0:
+            grad_log_pi = [(1 - probs[0]) * s, -probs[1] * s]
+        else:
+            grad_log_pi = [-probs[0] * s, (1 - probs[1]) * s]
+        theta[0] += alpha * G[t] * grad_log_pi[0]
+        theta[1] += alpha * G[t] * grad_log_pi[1]
+    return theta
 ```
 
-## 10.5 Reparameterization Trick (참고)
+## 10.6 왜 이게 model-free인가
 
-\\(z\\)를 확률분포에서 직접 샘플링하면, "샘플링"이라는 연산은 미분이
-안 돼서 역전파가 인코더까지 흘러가지 못한다. VAE는 \\(z = \mu + \sigma
-\odot \epsilon\\)(\\(\epsilon \sim \mathcal{N}(0,1)\\)은 무작위성을
-밖으로 빼낸 상수 취급)으로 샘플링을 다시 쓰는 트릭(reparameterization
-trick)으로 이 문제를 우회한다 — 이제 \\(\mu, \sigma\\)에 대한 미분이
-가능해져 역전파가 정상적으로 흐른다. 자세한 유도는 이 학기 범위를
-넘어서지만, "왜 그냥 샘플링하면 안 되는가"라는 질문 자체는 기억해둘
-만하다.
+Policy Gradient Theorem의 유도에서 핵심 단계는, 궤적의 확률
+\\(P(\tau;\theta) = \prod_t \pi_\theta(a_t|s_t) \cdot
+P(s_{t+1}|s_t,a_t)\\)를 로그로 바꾸면, **환경의 전이확률
+\\(P(s_{t+1}|s_t,a_t)\\) 항은 \\(\theta\\)와 무관해서 미분하면
+사라진다**는 것이다. 즉 최종 그래디언트 식에는 정책 \\(\pi_\theta\\)만
+남고 환경 모델은 전혀 등장하지 않는다 — 환경이 어떻게 작동하는지
+몰라도 정책을 학습할 수 있다는, model-free RL의 핵심 성질이 여기서
+나온다.
 
-**다음 장에는 완전히 다른 두 원리(적대적, 스코어 기반)를 배운다 — 세
-원리를 나란히 놓고 비교하면, "그럴듯한 새 데이터를 만든다"는 같은
-목표에 얼마나 다른 방식으로 접근할 수 있는지가 뚜렷하게 드러난다.**
+## 10.7 Actor-Critic: 분산을 줄이는 개선
+
+REINFORCE는 \\(G_t\\)(실제로 관찰된 누적 보상)를 그대로 쓰는데, 이건
+하나의 에피소드를 샘플링한 결과라 노이즈가 크다(분산이 높다).
+**Actor-Critic**은 \\(G_t\\) 대신, Chapter 4·6에서 배운 가치함수
+(Critic)로 추정한 기준값을 빼서 분산을 줄인다(\\(G_t - V(s_t)\\), 이
+차이를 **어드밴티지**(advantage)라 부른다) — 정책(Actor)과
+가치함수(Critic)를 동시에 학습하는 구조다. 자세한 유도는 이 학기
+범위를 넘어서지만, "정책 하나만 학습하는 것보다, 가치함수의 도움을
+받으면 더 안정적으로 학습된다"는 아이디어는 기억해둘 만하다 — 이
+어드밴티지는 Chapter 11의 PPO에서 그대로 재사용된다.
+
+**Q-learning이 "얼마나 좋은지 평가한 뒤 최선을 고른다"는 간접적
+전략이라면, 정책기반 방법은 "무엇을 할지" 자체를 직접, 그리고
+연속적인 행동 공간에서도 학습한다. Chapter 4에서 증명했듯이 유한한
+MDP라면 최적 정책 \\(\pi^*\\)는 항상 존재한다 — policy gradient는
+그 존재가 보장하는 목표를 향해 직접 나아가는 방법이다.**
 
 ---
 
 ## 연습문제
 
-**1. (코딩)** 다음과 같은 함수 `kl_divergence_gaussian`(정규분포
-\\(\mathcal{N}(\mu, \sigma^2)\\)와 표준정규분포 사이의 KL divergence,
-\\(D_{KL} = -\frac{1}{2}(1 + \log\sigma^2 - \mu^2 - \sigma^2)\\))과
-`vae_loss`를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):
+**1. (코딩)** 간단한 이산 행동공간(2개 행동) softmax 정책에 대해, 한
+에피소드의 REINFORCE 업데이트를 완성하라(핵심 줄은 빈칸으로 남겨져
+있다고 가정):
 
 ```python
 import math
 
-def kl_divergence_gaussian(mu, log_var):
-    # log_var = log(sigma^2)
+def softmax_policy(theta, state_feature):
     # ADD ADDITIONAL CODE HERE!!
+    # logits = [theta[0]*state_feature, theta[1]*state_feature]
+    # softmax 확률 계산 (수치안정성을 위해 max 빼고 exp)
+    return probs
 
-print(kl_divergence_gaussian(mu=0.0, log_var=0.0))  # 0.0
-print(kl_divergence_gaussian(mu=2.0, log_var=0.0))  # 2.0
-
-def vae_loss(recon_loss, mu_list, log_var_list):
+def reinforce_update(theta, episode, alpha, gamma):
+    # episode: [(state_feature, action, reward), ...]
     # ADD ADDITIONAL CODE HERE!!
-    # 여러 잠재 차원에 대한 KL divergence를 모두 더한 뒤, 복원 손실과 합산
-
-print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
+    # 리턴(return) G_t를 뒤에서부터 누적 계산 (할인 적용)
+    for t, (s, a, r) in enumerate(episode):
+        probs = softmax_policy(theta, s)
+        # ADD ADDITIONAL CODE HERE!!
+        # grad_log_pi: action=0이면 [1-probs[0], -probs[1]]*s, action=1이면 [-probs[0], 1-probs[1]]*s
+        # theta 갱신: theta += alpha * G[t] * grad_log_pi
+    return theta
 ```
 
-**2. (손유도, Tier C — 폴백 준비 대상)** \\(\log p_\theta(x) = \log
-\int p_\theta(x,z)\,dz\\)에서 시작해서, 옌센 부등식(\\(\log
-\mathbb{E}[X] \ge \mathbb{E}[\log X]\\))을 이용해
+**2. (개념 서술)** Actor-Critic이 REINFORCE보다 분산이 낮은 이유를,
+"베이스라인(baseline)을 빼도 그래디언트의 기댓값은 바뀌지 않는다"는
+사실과 연결지어 두세 문장으로 설명하라(직관 수준으로 충분하다).
 
-\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
-D\_{KL}(q\_\phi(z|x)\\|p(z))\\]
+**3. (손유도, Tier C — 최우선 폴백 대상)** 정책 \\(\pi_\theta\\) 하에서
+기대 리턴 \\(J(\theta) = \mathbb{E}\_{\tau \sim \pi_\theta}[R(\tau)]\\)의
+그래디언트가
 
-를 유도하라(힌트: \\(\log p\_\theta(x) = \log \mathbb{E}\_{q\_\phi}
-\left[\frac{p\_\theta(x,z)}{q\_\phi(z|x)}\right]\\)로 먼저 바꾼 뒤 옌센
-부등식을 적용하고, \\(p_\theta(x,z) = p_\theta(x|z)p(z)\\)로 분해해서
-KL divergence의 정의가 나오도록 정리하라).
+\\[\nabla_\theta J(\theta) = \mathbb{E}\_{\tau}\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\\]
 
-**빈칸채움형 폴백 버전** (자유 유도가 어려운 경우):
+가 됨을, 로그미분 트릭을 사용하여 유도하라. (수학 상위권/희망자
+대상 심화 — 대부분은 아래 워크시트를 기본값으로 한다.)
+
+**빈칸채움형 워크시트 버전** (기본값):
 
 ```
-Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
-                  = log E_q[ ______________ ]
+목표: J(theta) = sum_tau P(tau; theta) * R(tau) 를 theta로 미분하고 싶다.
+문제: P(tau; theta)를 직접 미분하면 기댓값(적분) 형태가 깨져서 샘플로 추정할 수 없다.
 
-Step 2: 옌센 부등식(log가 오목함수) 적용:
-  log E_q[ p(x,z)/q(z|x) ] >= E_q[ log(______________) ]
+로그미분 트릭: grad(f) = f * grad(log f)
 
-Step 3: p(x,z) = p(x|z) * p(z)로 분해하면:
-  = E_q[ log p(x|z) ] + E_q[ ______________ ]
+Step 1: grad_theta P(tau;theta) = P(tau;theta) * ______________  [로그미분 트릭 적용]
 
-Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
+Step 2: grad_theta J(theta) = sum_tau ______________ * R(tau)
+                             = E_tau[ grad_theta log P(tau;theta) * R(tau) ]
 
-결론: log p(x) >= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
+Step 3: 궤적 확률 P(tau;theta) = prod_t pi_theta(a_t|s_t) * (환경전이확률, theta와 무관)
+        따라서 grad_theta log P(tau;theta) = ______________
+
+결론: grad_theta J(theta) = E_tau[ (sum_t grad_theta log pi_theta(a_t|s_t)) * R(tau) ]
 ```
 
-**정확성 확인**: Step 2에서 부등호(`>=`)가 등호(`=`)가 아니라 부등식인
-이유를 한 문장으로 설명하고(옌센 부등식이 언제 등식이 되는지:
-\\(X\\)가 상수일 때), ELBO를 최대화하는 것이 왜 실제 우도
-\\(\log p(x)\\)를 "간접적으로" 최대화하는 셈이 되는지 설명하라.
+**정확성 확인**: Step 3의 "환경전이확률은 theta와 무관하다"는 사실이
+왜 중요한지 한 문장으로 설명하라(힌트: 이게 없으면 환경 모델을
+몰라도 정책만으로 학습 가능하다는 model-free RL의 핵심 성질이
+깨진다).

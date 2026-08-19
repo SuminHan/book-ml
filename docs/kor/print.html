@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-7ff56cd6.js";
+            window.path_to_searchindex_js = "searchindex-c60f6173.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-2198bfff.js"></script>
+        <script src="toc-a2542804.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -467,7 +467,7 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 <p>\(q\)가 \(p\)와 정확히 같으면 \(H(p,q) = H(p)\)로 <strong>최솟값</strong>을 갖고,
 \(q\)가 \(p\)에서 멀어질수록(즉 잘못된 분포를 믿을수록) \(H(p,q)\)는
 커진다 — 그 초과분 \(H(p,q) - H(p)\)를 <strong>KL 발산</strong>(KL divergence,
-\(D_{KL}(p|q)\))이라 부른다(ML2 Chapter 10, VAE의 ELBO에서 다시 만난다).</p>
+\(D_{KL}(p|q)\))이라 부른다(Chapter 15, VAE의 ELBO에서 다시 만난다).</p>
 <p>로지스틱회귀에서 정답 \(y^{(i)}\)는 “정답 분포”(클래스 1일 확률이 100%
 아니면 0%인 분포)이고, \(h_w(x^{(i)})\)는 모델이 예측한 분포다. <strong>교차
 엔트로피를 최소화한다는 것은 곧 모델의 예측 분포를 정답 분포에 최대한
@@ -611,8 +611,8 @@ Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한�
 확률)다. “생성적“이라는 이름은, 이 모델이 사실상 “클래스 \(y\)가 주어지면
 데이터 \(x\)를 어떻게 생성하는가“를 학습한다는 데서 온다 — 실제로 학습이
 끝난 \(P(x|y)\)에서 샘플을 뽑으면, 그 클래스의 “전형적인” 가짜 데이터를
-만들어낼 수도 있다(ML1 Chapter 13의 EM/GMM, ML2 Chapter 10의 생성형 모델과
-같은 계열의 아이디어다).</p>
+만들어낼 수도 있다(Chapter 15의 EM/GMM·생성형 모델과 같은 계열의
+아이디어다).</p>
 <h2 id="32-가우시안-판별분석-gda"><a class="header" href="#32-가우시안-판별분석-gda">3.2 가우시안 판별분석 (GDA)</a></h2>
 <p>입력 \(x\)가 연속값(실수 벡터)일 때, 가장 자연스러운 선택은 각 클래스의
 데이터가 <strong>정규분포</strong>를 따른다고 가정하는 것이다 — 이게 <strong>가우시안
@@ -1086,7 +1086,8 @@ Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 
 정하고, <strong>테스트 데이터</strong>로는 최종 성능만 딱 한 번 확인한다 — 테스트
 데이터를 하이퍼파라미터 튜닝에 쓰면 “부정행위”(테스트 데이터를 몰래
 봐서 고른 모델)와 다를 게 없다. 이 3분할(train/validation/test) 원칙은
-ML2의 팀 프로젝트에서도 그대로 지켜야 한다.</p>
+이번 학기 팀 프로젝트(Chapter 8, 16)와 ML2의 팀 프로젝트에서도 그대로
+지켜야 한다.</p>
 <p><strong>정규화는 “모델을 덜 유연하게 만들어서 분산을 줄인다“는 Chapter 4.4의
 편향-분산 원리를, 손실함수에 항 하나를 더하는 것만으로 실제로 조절
 가능하게 만든 도구다 — 그리고 그 조절 손잡이(\(\lambda\)) 자체는
@@ -2936,445 +2937,301 @@ ML2는 완전히 다른 질문에서 출발한다 — 정답 대신 <strong>보�
 쓸지보다 먼저 물어야 할 질문은 항상 같다 — 이 문제는 무엇을 데이터로
 갖고 있고, 무엇을 맞히고 싶은가.</strong></p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-1-ml1-복습과-로드맵-ml1-review--roadmap"><a class="header" href="#chapter-1-ml1-복습과-로드맵-ml1-review--roadmap">Chapter 1. ML1 복습과 로드맵 (ML1 Review &amp; Roadmap)</a></h1>
-<p>ML1의 마지막 장에서 오토인코더가 “압축이 어떻게 생성으로 이어지는가“라는
-질문을 남기고 끝났다. ML2는 정확히 그 질문에서 이어받아 시작한다 — 다만 그
-전에, 이 학기 전체가 기대고 있는 두 가지 ML1의 결과물을 다시 한번 확실히
-짚고 넘어간다: <strong>신경망이 무엇을 할 수 있는가</strong>(순전파)와 <strong>그것을 어떻게
-학습시키는가</strong>(역전파).</p>
-<h2 id="11-신경망-복습-순전파와-역전파"><a class="header" href="#11-신경망-복습-순전파와-역전파">1.1 신경망 복습: 순전파와 역전파</a></h2>
-<p>ML1 Chapter 8의 핵심을 다시 정리한다. \(L\)개 층을 가진 신경망에서, 층
-\(l\)의 pre-activation과 activation:</p>
-<p>\[z_l = W_l a_{l-1} + b_l, \qquad a_l = \sigma(z_l)\]</p>
-<p>역전파는 출력층에서 계산한 오차 \(\delta_L\)를 입력 방향으로 거슬러
-전달한다:</p>
-<p>\[\delta_l = (W_{l+1}^T \delta_{l+1}) \odot \sigma’(z_l), \qquad
-\frac{\partial J}{\partial W_l} = \delta_l \cdot a_{l-1}^T\]</p>
-<p>이 두 식이 이번 학기 내내 형태를 바꿔가며 반복해서 등장한다 — RNN은 시간
-방향으로도 이 사슬을 펼치고(BPTT, Chapter 2), Transformer의 어텐션도
-결국 미분 가능한 연산들의 합성이라 같은 방식으로 학습된다.</p>
-<h2 id="12-왜-다시-복습하는가"><a class="header" href="#12-왜-다시-복습하는가">1.2 왜 다시 복습하는가</a></h2>
-<p>ML1에서 배운 역전파는 2층짜리 작은 신경망 하나를 다뤘다. ML2에서는 이
-원리를 훨씬 복잡한 구조 — 시퀀스를 처리하는 RNN, 어텐션을 쓰는
-Transformer, 게임을 스스로 학습하는 강화학습 에이전트, 새로운 이미지를
-그려내는 생성형 모델 — 에 그대로 적용한다. 구조는 매번 새롭지만, “출력의
-오차를 연쇄법칙으로 거슬러 올려 각 파라미터의 책임을 계산한다“는 근본
-원리는 학기 내내 단 한 번도 바뀌지 않는다.</p>
-<h2 id="13-왜-시퀀스가-새로운-문제인가"><a class="header" href="#13-왜-시퀀스가-새로운-문제인가">1.3 왜 “시퀀스“가 새로운 문제인가</a></h2>
-<p>ML1까지 다룬 모델(MLP, CNN)은 입력의 크기가 고정돼 있었다 — 이미지는 항상
-같은 해상도, 특징 벡터는 항상 같은 길이. 그런데 문장(“나는 학교에
-간다”)은 길이가 매번 다르고, 순서를 바꾸면 의미가 완전히 달라진다(“학교는
-나에게 간다“는 다른 문장이다). 고정 크기 입력을 가정하는 지금까지의
-구조로는 이 문제를 풀 수 없다 — Chapter 2에서 이 문제를 정면으로 다룬다.</p>
-<h2 id="14-왜-보상이-새로운-문제인가"><a class="header" href="#14-왜-보상이-새로운-문제인가">1.4 왜 “보상“이 새로운 문제인가</a></h2>
-<p>ML1에서 개념만 살짝 본 강화학습은, 정답이 없다는 것 외에도 결정적인 차이가
-하나 더 있다: 데이터가 미리 주어지지 않고 <strong>에이전트 스스로 행동하며
-만들어진다</strong>. 지금 어떤 행동을 하느냐가 앞으로 어떤 데이터를(어떤 상태를)
-보게 될지에 영향을 준다 — 지도학습에서는 없던, “탐험(exploration)과
-활용(exploitation)“이라는 완전히 새로운 딜레마가 여기서 생긴다. Chapter
-5부터 이 문제를 벨만방정식으로 정식화하며 시작한다.</p>
-<h2 id="15-이번-학기-로드맵"><a class="header" href="#15-이번-학기-로드맵">1.5 이번 학기 로드맵</a></h2>
-<ul>
-<li><strong>Chapter 2~4</strong>: 순서가 있는 데이터(시퀀스)를 다루는 법 — RNN에서
-시작해 지금 딥러닝의 핵심인 Attention/Transformer, 그리고 그 위에 세워진
-LLM까지.</li>
-<li><strong>Chapter 5~8</strong>: 강화학습을 MDP부터 제대로 시작해, 표 기반
-방법(Q-learning)에서 신경망을 결합한 심층강화학습(DQN), 정책을 직접
-학습하는 방법(Policy Gradient)까지.</li>
-<li><strong>Chapter 9</strong>: 사전학습된 LLM을 사람이 원하는 방향으로 다듬는
-포스트트레이닝(RLHF, DPO) — Chapter 8의 PPO를 실제로 적용해보는
-자리이기도 하다.</li>
-<li><strong>Chapter 10~11</strong>: 생성형 모델의 세 가지 원리 — 우도 기반(VAE),
-적대적(GAN), 스코어 기반(Diffusion) — 을 순서대로 훑는다. 하나만
-배우면 다른 둘의 존재 이유가 잘 안 보이므로, 세 원리를 나란히 놓고
-비교하며 배운다.</li>
-<li><strong>Chapter 12~13</strong>: 팀 프로젝트로 학기를 마무리한다.</li>
-</ul>
-<h2 id="16-준비-체크리스트"><a class="header" href="#16-준비-체크리스트">1.6 준비 체크리스트</a></h2>
-<p>이번 학기를 따라가려면 다음이 편해야 한다: (1) 연쇄법칙으로 그래디언트를
-계산하는 법(ML1 Chapter 8), (2) 행렬-벡터 곱과 내적(ML1 Chapter 2 이후
-계속 사용), (3) 확률의 기본 연산 — 기댓값, 조건부확률(Chapter 5 MDP와
-Chapter 10 VAE에서 특히 중요). 이 셋 중 자신 없는 부분이 있다면, 이번
-장 실습시간에 짚고 넘어가는 것을 권장한다.</p>
-<p><strong>신경망 자체는 ML1에서 이미 끝났다 — ML2는 “같은 원리로 무엇을 더 만들
-수 있는가“를 묻는 학기다.</strong></p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-2-시퀀스-모델-sequence-models"><a class="header" href="#chapter-2-시퀀스-모델-sequence-models">Chapter 2. 시퀀스 모델 (Sequence Models)</a></h1>
-<p>1990년, 인지과학자 제프리 엘먼(Jeffrey Elman)은 논문 “Finding Structure in
-Time“에서 질문 하나를 던졌다: 신경망이 “지금 보고 있는 입력“뿐 아니라 “조금
-전에 무엇을 봤는지“도 기억하게 만들 수 있을까? 그가 제안한 구조 — 은닉층의
-출력을 다음 시점의 입력으로 다시 연결하는 순환(recurrent) 구조 — 는 지금
-RNN(Recurrent Neural Network)이라 불리는 모델의 원형이다.</p>
-<h2 id="21-왜-순서가-중요한가"><a class="header" href="#21-왜-순서가-중요한가">2.1 왜 순서가 중요한가</a></h2>
-<p>“강아지가 고양이를 쫓는다“와 “고양이가 강아지를 쫓는다“는 똑같은 단어 세
-개로 이루어져 있지만 완전히 다른 문장이다. ML1까지 배운 MLP나 CNN에 이
-문장을 넣으려면 단어들을 그냥 벡터 하나로 뭉쳐야 했는데, 그러면 순서
-정보가 사라진다 — “누가 누구를 쫓는지“를 구분할 방법이 없어진다.</p>
-<h2 id="22-은닉-상태-지금까지-읽은-것의-요약"><a class="header" href="#22-은닉-상태-지금까지-읽은-것의-요약">2.2 은닉 상태: 지금까지 읽은 것의 요약</a></h2>
-<p>RNN의 핵심 아이디어는 <strong>은닉 상태</strong>(hidden state)다: 문장을 한 단어씩
-읽어가면서, “지금까지 읽은 내용의 요약“을 하나의 벡터에 계속 갱신해나간다.
-두 번째 단어를 처리할 때는 두 번째 단어 자체뿐 아니라 “첫 번째 단어를
-읽고 남은 요약“도 함께 입력받는다 — 이렇게 하면 지금 시점의 출력이 과거
-전체의 맥락에 영향을 받을 수 있다.</p>
-<h2 id="23-rnn의-순전파"><a class="header" href="#23-rnn의-순전파">2.3 RNN의 순전파</a></h2>
-<p>시점 \(t\)마다 입력 \(x_t\)와 이전 은닉 상태 \(h_{t-1}\)을 받아, 새
-은닉 상태 \(h_t\)와 (필요하면) 출력 \(y_t\)를 낸다:</p>
-<p>\[h_t = \tanh(W_{xh} x_t + W_{hh} h_{t-1} + b_h), \qquad y_t = W_{hy} h_t + b_y\]</p>
-<p><strong>핵심은 \(W_{xh}, W_{hh}, W_{hy}\)가 모든 시점에서 동일한 가중치를
-재사용한다는 것</strong>이다(파라미터 공유 — CNN의 필터 재사용과 같은 아이디어를
-시간 축에 적용한 것).</p>
-<pre><code class="language-python">def rnn_step(x_t, h_prev, Wxh, Whh, b_h):
-    z = [sum(Wxh[i][j]*x_t[j] for j in range(len(x_t))) +
-         sum(Whh[i][j]*h_prev[j] for j in range(len(h_prev))) + b_h[i]
-         for i in range(len(h_prev))]
-    return [tanh(v) for v in z]
-
-def rnn_forward(inputs, h0, Wxh, Whh, b_h):
-    h = h0
-    hidden_states = []
-    for x_t in inputs:
-        h = rnn_step(x_t, h, Wxh, Whh, b_h)
-        hidden_states.append(h)
-    return hidden_states
-</code></pre>
-<h2 id="24-bptt-시간을-펼쳐서-역전파하기"><a class="header" href="#24-bptt-시간을-펼쳐서-역전파하기">2.4 BPTT: 시간을 펼쳐서 역전파하기</a></h2>
-<p>이 “요약을 계속 갱신한다“는 구조를 학습시키려면, 역전파를 시간 축을 따라
-펼쳐서 적용해야 한다. 시퀀스 길이 \(T\)만큼 신경망을 “펼쳐서(unroll)”
-각 시점을 독립된 층처럼 취급한 뒤 일반적인 역전파를 적용하는 이 방법을
-<strong>BPTT</strong>(Backpropagation Through Time)라 부른다. \(h_t\)가
-\(h_{t-1}\)에, \(h_{t-1}\)이 \(h_{t-2}\)에 의존하는 사슬을 거슬러
-올라가야 하므로, \(h_1\)에 대한 그래디언트는 다음과 같은 형태의 곱을
-포함하게 된다:</p>
-<p>\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
-h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh’(z_t)) , W_{hh}\]</p>
-<h2 id="25-그래디언트-소실이-시간-축에서-재발하는-이유"><a class="header" href="#25-그래디언트-소실이-시간-축에서-재발하는-이유">2.5 그래디언트 소실이 시간 축에서 재발하는 이유</a></h2>
-<p>ML1 Chapter 9에서 본 것과 정확히 같은 패턴이다: \(\tanh’\)의 최댓값은
-1이지만 대부분의 구간에서 1보다 작고, 여기에 \(W_{hh}\)까지
-\(T\)번(시퀀스 길이만큼) 곱해진다. 시퀀스가 길수록(\(T\)가 클수록)
-이 곱은 지수적으로 0에 가까워지거나(그래디언트 소실 — \(W_{hh}\)의
-고유값이 1보다 작을 때) 발산한다(그래디언트 폭발 — 고유값이 1보다 클
-때). 결과적으로 기본 RNN은 <strong>먼 과거의 정보를 거의 기억하지 못한다</strong> —
-“10단어 전에 나온 주어“를 지금 시점에서 활용해야 하는 문장에서 특히
-취약하다.</p>
-<h2 id="26-lstmgru-게이트로-소실을-완화"><a class="header" href="#26-lstmgru-게이트로-소실을-완화">2.6 LSTM/GRU: 게이트로 소실을 완화</a></h2>
-<p>LSTM(Long Short-Term Memory)과 GRU(Gated Recurrent Unit)는
-“게이트(gate)“라는 장치를 추가해, 은닉 상태를 매 시점 완전히 새로
-계산하는 대신 <strong>선택적으로 유지하거나 갱신</strong>한다. 핵심 트릭은 정보가
-지나가는 경로에 곱셈 대신 <strong>덧셈</strong>이 섞이도록 설계하는 것이다 — 덧셈은
-그래디언트를 그대로 통과시키므로(미분이 1), 곱셈만 반복될 때보다 소실이
-훨씬 덜하다. 자세한 게이트 수식은 이번 학기에서는 다루지 않지만, “왜
-LSTM/GRU가 기본 RNN보다 긴 시퀀스에 강한가“의 답은 항상 이 원리로
-귀결된다.</p>
-<h2 id="27-rnn의-근본적-한계"><a class="header" href="#27-rnn의-근본적-한계">2.7 RNN의 근본적 한계</a></h2>
-<p>게이트를 추가해도 RNN은 여전히 <strong>순차적으로</strong> 한 시점씩 처리해야 한다 —
-100번째 단어를 처리하려면 1번째부터 99번째까지 순서대로 다 거쳐야 한다.
-이 순차성 때문에 병렬화가 어렵고, 아주 긴 시퀀스에서는 여전히 먼 과거
-정보가 흐려진다. Chapter 3에서 배울 Attention/Transformer는 이 순차성
-자체를 없애는 완전히 다른 접근이다.</p>
-<p><strong>RNN은 “순서가 있는 데이터를 다루려면 과거를 기억하는 상태가 필요하다“는
-통찰의 가장 단순한 구현이다 — 다음 두 장은 이 구조의 한계를 극복하는
-이야기다.</strong></p>
-<hr>
-<h2 id="연습문제-13"><a class="header" href="#연습문제-13">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>rnn_forward_scalar</code>(은닉 상태가 스칼라인
-가장 단순한 RNN, \(h_t = \tanh(w_{xh} x_t + w_{hh} h_{t-1} + b_h)\))와
-<code>gradient_through_time</code>을 완성하라(핵심 줄은 빈칸으로 남겨져 있다고
-가정):</p>
-<pre><code class="language-python">import math
-
-def rnn_forward_scalar(inputs, h0, w_xh, w_hh, b_h):
-    # ADD ADDITIONAL CODE HERE!!
-
-print(rnn_forward_scalar([1.0, 1.0, 1.0], h0=0.0, w_xh=0.5, w_hh=0.8, b_h=0.0))
-
-def gradient_through_time(tanh_derivatives, w_hh):
-    # input: tanh_derivatives = [tanh'(z_1), ..., tanh'(z_T)]
-    # return: product of (tanh'(z_t) * w_hh) for all t
-    # ADD ADDITIONAL CODE HERE!!
-
-print(gradient_through_time([0.5]*20, w_hh=0.9))  # (0.5*0.9)^20 -- 사실상 0
-print(gradient_through_time([0.9]*20, w_hh=1.1))  # (0.9*1.1)^20 -- 1에 가까움
-</code></pre>
-<p><strong>2. (손유도, Tier B — 힌트 제공)</strong> \(\frac{\partial h_T}{\partial h_1} =
-\prod_{t=2}^T \tanh’(z_t) \cdot w_{hh}\)(은닉 상태가 스칼라인 단순화된
-경우)임을, 연쇄법칙을 \(T-1\)번 반복 적용하는 방식으로 보여라(힌트:
-\(\frac{\partial h_t}{\partial h_{t-1}} = \tanh’(z_t) \cdot w_{hh}\)를
-\(t=2\)부터 \(t=T\)까지 사슬처럼 곱하면 된다).</p>
-<p>\(\tanh’(z_t) \approx 0.5\)(평균적인 경우), \(w_{hh}=0.9\)라고 하고,
-시퀀스 길이 \(T=5, 10, 20\)일 때 각각 \(\frac{\partial h_T}{\partial
-h_1}\)의 크기를 계산하라. 이번엔 \(w_{hh}=1.5\)로 바꿔서 같은 계산을
-반복하고, \(T=20\)일 때 어떤 일이 일어나는지 확인하라.</p>
-<p><strong>정확성 확인</strong>: 계산 결과를 문제 1의 <code>gradient_through_time</code> 함수로
-검증하고, “\(w_{hh}\)의 값 하나가 그래디언트 소실이 될지 폭발이 될지를
-가른다“는 문장이 왜 참인지 한 문단으로 설명하라.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-3-어텐션과-트랜스포머-attention--transformer"><a class="header" href="#chapter-3-어텐션과-트랜스포머-attention--transformer">Chapter 3. 어텐션과 트랜스포머 (Attention &amp; Transformer)</a></h1>
-<p>2017년, 구글 브레인의 연구자들은 논문 제목을 다소 도발적으로 지었다 —
-<strong>“Attention Is All You Need”</strong>. 그때까지 시퀀스를 다루는 최고 성능의
-모델들은 모두 RNN(또는 그 변형인 LSTM)을 기반으로 했는데, 이 논문은 순환
-구조를 완전히 걷어내고 <strong>어텐션</strong>(attention) 메커니즘만으로 RNN보다 더
-좋은 성능을 냈다. 이 구조가 <strong>트랜스포머</strong>(Transformer)이며, 지금 우리가
-쓰는 거의 모든 대규모 언어모델(LLM)의 근간이다.</p>
-<h2 id="31-rnn의-순차성이라는-근본-문제"><a class="header" href="#31-rnn의-순차성이라는-근본-문제">3.1 RNN의 순차성이라는 근본 문제</a></h2>
-<p>Chapter 2에서 본 RNN은 한 단어씩 순서대로 처리해야 했다 — 100번째
-단어를 보려면 1번째부터 99번째까지 순서대로 거쳐야 한다. 이건 두 가지
-문제를 만든다: (1) GPU는 병렬 연산에 특화됐는데, 순차적 구조는 그
-병렬성을 활용하지 못해 느리다. (2) 먼 과거의 정보가 여러 단계를 거치며
-흐려진다(Chapter 2의 그래디언트 소실과 정확히 같은 문제).</p>
-<h2 id="32-어텐션이라는-아이디어"><a class="header" href="#32-어텐션이라는-아이디어">3.2 “어텐션“이라는 아이디어</a></h2>
-<p>어텐션의 직관은 단순하다: “지금 이 단어를 이해하려면, 문장의 <strong>다른 모든
-단어를 한 번에</strong> 보고, 그중 관련 있는 단어에 더 집중(attend)한다.” “그
-동물은 도로를 건너지 않았다, 왜냐하면 <strong>그것은</strong> 너무 지쳐 있었기
-때문이다“라는 문장에서, “그것은“이 가리키는 게 “그 동물“인지 “도로“인지는
-문장 전체를 동시에 봐야 판단할 수 있다.</p>
-<h2 id="33-query-key-value"><a class="header" href="#33-query-key-value">3.3 Query, Key, Value</a></h2>
-<p>각 단어(정확히는 각 단어의 임베딩 벡터)는 세 가지 벡터로 변환된다:
-<strong>Query</strong>(Q) “내가 지금 무엇을 찾고 있는가”, <strong>Key</strong>(K) “나는 어떤
-정보를 갖고 있는가”, <strong>Value</strong>(V) “실제로 전달할 내용”. 세 벡터 모두
-같은 입력 임베딩 \(x\)에 서로 다른 학습 가능한 가중치 행렬을 곱해서
-얻는다:</p>
-<p>\[Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V\]</p>
-<h2 id="34-scaled-dot-product-attention"><a class="header" href="#34-scaled-dot-product-attention">3.4 Scaled Dot-Product Attention</a></h2>
-<p>한 단어의 Query가 모든 단어의 Key와 얼마나 “관련 있는지“를 내적(dot
-product)으로 잰다:</p>
-<p>\[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\]</p>
-<p>단계별로 뜯어보면:</p>
-<ol>
-<li>\(QK^T\): 모든 단어 쌍의 Query-Key 내적을 한 번에 계산한 행렬(각
-행 = 한 단어가 다른 모든 단어와 얼마나 관련 있는지에 대한 원점수).</li>
-<li>\(\sqrt{d_k}\)(Key 벡터의 차원의 제곱근)로 나눈다: 내적값이 차원이
-커질수록 커지는 경향이 있어, softmax가 극단적인 값(0 또는 1에 가까운)만
-내뱉게 되는 것을 막기 위한 스케일 조정이다.</li>
-<li><strong>softmax</strong>로 각 행을 확률분포(합이 1)로 바꾼다 — “이 단어가 다른
-단어들에 나눠 주는 주의(attention)의 비율”.</li>
-<li>그 확률로 \(V\)(각 단어가 실제로 전달할 내용)의 가중합을 낸다 —
-결과는 “관련 있는 단어들의 내용을 그 관련도만큼 섞어 담은” 새로운
-벡터다.</li>
-</ol>
-<pre><code class="language-python">import math
-
-def softmax(row):
-    m = max(row)
-    exps = [math.exp(v - m) for v in row]
-    total = sum(exps)
-    return [e / total for e in exps]
-
-def attention(Q, K, V, d_k):
-    scores = [[sum(Q[i][t] * K[j][t] for t in range(d_k)) / math.sqrt(d_k)
-               for j in range(len(K))] for i in range(len(Q))]
-    weights = [softmax(row) for row in scores]
-    output = [[sum(weights[i][j] * V[j][t] for j in range(len(V)))
-               for t in range(len(V[0]))] for i in range(len(Q))]
-    return output, weights
-</code></pre>
-<h2 id="35-self-attention-문장이-자기-자신을-본다"><a class="header" href="#35-self-attention-문장이-자기-자신을-본다">3.5 Self-Attention: 문장이 자기 자신을 본다</a></h2>
-<p>Q, K, V가 모두 <strong>같은 문장</strong>에서 나오면 “self-attention“이라 부른다 —
-각 단어가 같은 문장 안의 다른 모든 단어(자기 자신 포함)와의 관련도를
-계산한다. 이게 이번 장 도입부에서 본 “그것은“이 “그 동물“을 가리키는지
-판단하는 메커니즘이다: “그것은“의 Query가 문장 안 모든 단어의 Key와
-내적을 계산했을 때, “그 동물“의 Key와 가장 높은 점수가 나오도록
-학습된다.</p>
-<h2 id="36-multi-head-attention"><a class="header" href="#36-multi-head-attention">3.6 Multi-Head Attention</a></h2>
-<p>Q, K, V를 한 세트만 쓰는 대신, 여러 세트(“헤드”, head)를 병렬로 두고
-각각 다른 관점의 관련성을 학습하게 한다 — 한 헤드는 문법적 관계(주어-동사)에,
-다른 헤드는 의미적 관계(동의어)에 집중하는 식으로 역할이 나뉘는 경향이
-관찰된다. 여러 헤드의 결과를 이어붙인(concatenate) 뒤 다시 한 번
-선형변환해서 최종 출력을 만든다.</p>
-<h2 id="37-positional-encoding-순서-정보는-어떻게-넣는가"><a class="header" href="#37-positional-encoding-순서-정보는-어떻게-넣는가">3.7 Positional Encoding: 순서 정보는 어떻게 넣는가</a></h2>
-<p>어텐션 연산 자체는 순서를 전혀 구분하지 않는다 — \(QK^T\)는 단어들의
-순서를 뒤섞어도 각 쌍의 관련도 자체는 똑같이 계산된다(집합처럼 취급).
-그런데 “강아지가 고양이를 쫓는다“에서는 순서가 의미를 바꾼다. 그래서
-Transformer는 각 단어의 임베딩에 그 단어의 위치 정보를 담은 벡터
-(positional encoding, 사인/코사인 함수로 만든 고정된 패턴)를 <strong>더해서</strong>
-넣는다 — 이러면 같은 단어라도 위치가 다르면 입력 벡터 자체가 달라지므로,
-어텐션이 간접적으로 순서를 활용할 수 있다.</p>
-<h2 id="38-rnn-대비-이점"><a class="header" href="#38-rnn-대비-이점">3.8 RNN 대비 이점</a></h2>
-<p>Self-attention은 모든 단어 쌍을 <strong>한 번에</strong> 병렬로 계산한다 — 순차적으로
-처리할 필요가 없어 GPU 병렬성을 최대한 활용하고, “1번째 단어와 100번째
-단어의 관련성“도 중간 99단계를 거치지 않고 직접 계산된다(그래디언트 소실
-문제가 구조적으로 훨씬 덜하다). 대신 문장 길이의 제곱에 비례하는
-계산량(\(QK^T\)가 \(n \times n\) 행렬)이라는 새로운 비용이 생긴다 —
-이건 아주 긴 문서를 다룰 때의 실무적 한계로 이어진다.</p>
-<p><strong>“모든 단어를 한 번에 보고, 서로의 관련성을 직접 계산한다“는 이 아이디어
-하나가 지난 몇 년간 딥러닝을 가장 크게 바꾼 변화다.</strong></p>
-<hr>
-<h2 id="연습문제-14"><a class="header" href="#연습문제-14">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>scaled_dot_product_attention</code>을
-완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
-<pre><code class="language-python">import math
-
-def softmax(row):
-    m = max(row)
-    exps = [math.exp(v - m) for v in row]
-    total = sum(exps)
-    return [e / total for e in exps]
-
-def scaled_dot_product_attention(Q, K, V, d_k):
-    # ADD ADDITIONAL CODE HERE!!
-    # 1. scores[i][j] = (Q[i] . K[j]) / sqrt(d_k)
-    # 2. weights = 각 행에 softmax 적용
-    # 3. output[i] = weights[i]로 V의 가중합
-
-    return output, weights
-
-Q = [[1,0],[0,1]]
-K = [[1,0],[0,1]]
-V = [[10,0],[0,10]]
-output, weights = scaled_dot_product_attention(Q, K, V, d_k=2)
-print(weights)  # 각 단어가 "자기 자신"에 더 높은 가중치를 줌
-</code></pre>
-<p><strong>2. (손유도, Tier C — 폴백 준비 대상)</strong> 단어 2개짜리 문장에 대해, 다음
-벡터가 주어졌다: \(Q = \begin{pmatrix}1 &amp; 0\ 0 &amp; 1\end{pmatrix}\),
-\(K = \begin{pmatrix}1 &amp; 1\ 1 &amp; 0\end{pmatrix}\), \(V =
-\begin{pmatrix}5 &amp; 0\ 0 &amp; 5\end{pmatrix}\)(\(d_k=2\)).</p>
-<p>\(QK^T\)를 손으로 계산하고, \(\sqrt{d_k}\)로 나눈 뒤, 각 행에
-softmax를 적용해 어텐션 가중치 행렬을 구하고, 마지막으로 \(V\)와의
-가중합으로 최종 출력을 계산하라.</p>
-<p><strong>빈칸채움형 폴백 버전</strong>(자유 계산이 어려운 경우):</p>
-<pre><code>Step 1: QK^T 계산 (2x2 행렬)
-  (QK^T)[0][0] = Q[0].K[0] = 1*1 + 0*1 = ______________
-  (QK^T)[0][1] = Q[0].K[1] = 1*1 + 0*0 = ______________
-  (QK^T)[1][0] = Q[1].K[0] = 0*1 + 1*1 = ______________
-  (QK^T)[1][1] = Q[1].K[1] = 0*1 + 1*0 = ______________
-
-Step 2: sqrt(d_k) = sqrt(2) ≈ 1.41 로 모든 원소를 나눈다
-  scaled[0] = [______________, ______________]
-  scaled[1] = [______________, ______________]
-
-Step 3: 첫 번째 행에 softmax 적용
-  exp(scaled[0][0]) = ______________  (계산기 사용)
-  exp(scaled[0][1]) = ______________
-  weights[0] = [______________, ______________]  (합이 1이 되도록 정규화)
-
-Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
-       = [______________, ______________]
-</code></pre>
-<p><strong>정확성 확인</strong>: 완성한 계산을 문제 1의
-<code>scaled_dot_product_attention(Q, K, V, d_k=2)</code> 출력과 대조해 일치하는지
-확인하라.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-4-llm-사전학습과-프롬프팅-llm-pretraining--prompting"><a class="header" href="#chapter-4-llm-사전학습과-프롬프팅-llm-pretraining--prompting">Chapter 4. LLM 사전학습과 프롬프팅 (LLM Pretraining &amp; Prompting)</a></h1>
-<p>의대생은 처음부터 특정 질병 하나만 배우지 않는다 — 먼저 해부학, 생리학,
-약리학 같은 방대한 기초를 몇 년에 걸쳐 익힌 뒤에야, 특정 전공(예:
-심장내과)을 짧은 기간 집중적으로 훈련받는다. 대규모 언어모델(LLM)이
-학습되는 방식도 놀랍도록 비슷하다: 먼저 인터넷의 방대한 텍스트로 “다음
-단어를 예측하는” 아주 단순한 과제를 통해 언어와 세상에 대한 폭넓은 지식을
-흡수하고(<strong>사전학습, pretraining</strong>), 그 다음 특정 목적(대화, 코드 작성,
-요약)에 맞춰 비교적 적은 데이터로 다듬는다(<strong>파인튜닝, fine-tuning</strong>).</p>
-<h2 id="41-언어모델링-다음-토큰-예측"><a class="header" href="#41-언어모델링-다음-토큰-예측">4.1 언어모델링: 다음 토큰 예측</a></h2>
-<p>LLM은 텍스트를 <strong>토큰</strong>(token)(단어 전체이거나, 더 흔하게는 단어의 일부
-조각)의 시퀀스로 다룬다. 사전학습의 목표는 지금까지의 토큰들이 주어졌을
-때, 다음 토큰의 확률분포를 예측하는 것이다:</p>
-<p>\[P(x_t \mid x_1, x_2, \ldots, x_{t-1})\]</p>
-<p>“프랑스의 수도는 ___“이라는 문장을 잘 완성하려면, 모델은 “파리“라는
-사실을 어딘가에 담고 있어야 한다. 이런 문장이 수십억 개 쌓이면, “다음
-단어 맞히기“라는 단순한 목표를 잘 해내기 위해 모델은 자연스럽게 문법,
-사실 지식, 심지어 어느 정도의 추론 능력까지 습득하게 된다.</p>
-<p>이 확률은 Chapter 3에서 배운 Transformer(정확히는 미래 토큰을 보지
-못하게 마스킹한 decoder-only Transformer)로 계산된다. 학습은 실제 다음
-토큰과 예측 확률분포 사이의 교차 엔트로피 손실(ML1 Chapter 2.6에서 섀넌의
-정보이론으로부터 도입한 그 손실과 정확히 같은 형태)을 최소화하는 방향으로
-진행된다. 이 손실에 밑을 \(e\) 대신 2로 바꿔 지수를 취하면 <strong>퍼플렉시티</strong>
-(perplexity)라는 지표가 되는데, “모델이 다음 토큰을 고를 때 평균적으로 몇
-개의 선택지를 두고 헤매는 것과 같은가“를 뜻한다 — 낮을수록 모델이 확신을
-갖고 예측한다는 뜻이다. 이번 장은 이렇게 사전학습된 모델을 프롬프팅으로
-쓰는 법까지 다루고, “그 모델을 사람이 원하는 방향으로 더 다듬는 법“은
-Chapter 9(포스트트레이닝)에서 이어서 다룬다.</p>
-<pre><code class="language-python">def next_token_probs(logits):
-    # logits: 어휘 사전의 각 토큰에 대한 원점수(raw score)
-    # softmax를 적용하면 "다음 토큰이 각각일 확률"이 된다
-    return softmax(logits)
-</code></pre>
-<h2 id="42-사전학습-vs-파인튜닝"><a class="header" href="#42-사전학습-vs-파인튜닝">4.2 사전학습 vs 파인튜닝</a></h2>
+<h1 id="chapter-1-코스-소개와-신경망-미니-리뷰-course-introduction--neural-network-mini-review"><a class="header" href="#chapter-1-코스-소개와-신경망-미니-리뷰-course-introduction--neural-network-mini-review">Chapter 1. 코스 소개와 신경망 미니 리뷰 (Course Introduction &amp; Neural Network Mini-Review)</a></h1>
+<p>체스나 바둑을 둘 때, “이 수가 정답이다“라고 알려주는 사람은 아무도 없다 —
+게임이 끝나야 “이겼다/졌다“는 신호 하나만 돌아온다. 지금까지의 지도학습(정답
+\(y\)가 있는 데이터)과 비지도학습(구조만 있는 데이터)과는 전혀 다른 이
+문제 — <strong>행동하고, 그 결과로 나중에 돌아오는 보상만 보고 스스로 좋은 행동을
+찾아내야 하는 문제</strong> — 가 이번 학기의 주제인 <strong>강화학습</strong>(Reinforcement
+Learning, RL)이다. 그리고 이번 학기는 그 강화학습을, 화면 속 게임이 아니라
+<strong>물리 법칙이 지배하는 로봇 시뮬레이션</strong>이라는 무대 위에서 다룬다.</p>
+<h2 id="11-강화학습이란-무엇인가-지도학습과의-차이"><a class="header" href="#11-강화학습이란-무엇인가-지도학습과의-차이">1.1 강화학습이란 무엇인가: 지도학습과의 차이</a></h2>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th></th><th>사전학습(Pretraining)</th><th>파인튜닝(Fine-tuning)</th></tr>
+<tr><th></th><th>지도학습</th><th>강화학습</th></tr>
 </thead>
 <tbody>
-<tr><td>데이터</td><td>인터넷 규모의 방대한 텍스트</td><td>특정 목적에 맞는 비교적 적은 데이터</td></tr>
-<tr><td>목표</td><td>다음 토큰 예측(비지도)</td><td>특정 작업(대화, 지시 따르기 등)에 맞춘 지도학습</td></tr>
-<tr><td>결과</td><td>폭넓지만 다듬어지지 않은 능력</td><td>목적에 맞게 다듬어진 행동</td></tr>
+<tr><td>데이터</td><td>미리 주어짐, \((x,y)\) 쌍</td><td>에이전트가 행동하며 스스로 만들어냄</td></tr>
+<tr><td>신호</td><td>정답 \(y\)</td><td>보상(reward) — 얼마나 좋았는지의 점수</td></tr>
+<tr><td>시간</td><td>각 샘플이 독립적</td><td>지금 행동이 미래에 보게 될 상태에 영향을 줌</td></tr>
+<tr><td>새로운 딜레마</td><td>없음</td><td>탐험(exploration) vs 활용(exploitation)</td></tr>
 </tbody>
 </table>
 </div>
-<p>사전학습은 계산 비용이 막대하지만(수천 개의 GPU로 몇 주~몇 달),
-파인튜닝은 상대적으로 적은 자원으로 가능하다 — “기초를 다시 배우지
-않고, 이미 아는 것을 특정 방향으로 다듬는다“는 것이 파인튜닝의 효율성의
-핵심이다.</p>
-<h2 id="43-프롬프팅-다시-학습시키지-않고-행동을-바꾸기"><a class="header" href="#43-프롬프팅-다시-학습시키지-않고-행동을-바꾸기">4.3 프롬프팅: 다시 학습시키지 않고 행동을 바꾸기</a></h2>
-<p>파인튜닝은 모델의 가중치 자체를 바꾸는 것이지만, <strong>프롬프팅</strong>(prompting)은
-가중치를 전혀 바꾸지 않고 입력(지시문, 예시)만으로 모델의 출력을 원하는
-방향으로 유도하는 방법이다.</p>
+<p>가장 중요한 차이는 <strong>데이터가 미리 주어지지 않는다</strong>는 것이다. 지도학습은
+“이미 모아둔 사진과 라벨“로 학습하지만, 강화학습 에이전트는 지금 이 순간
+어떤 행동을 하느냐에 따라 다음에 어떤 상태를 보게 될지가 달라진다 — 아직
+가보지 않은 길을 시도해볼 것인가(<strong>탐험</strong>), 아니면 지금까지 가장 좋다고
+알려진 선택을 반복할 것인가(<strong>활용</strong>)? 이 완전히 새로운 딜레마가 이번
+학기 내내 형태를 바꿔가며 반복해서 등장한다.</p>
+<h2 id="12-왜-로봇-시뮬레이션인가"><a class="header" href="#12-왜-로봇-시뮬레이션인가">1.2 왜 로봇 시뮬레이션인가</a></h2>
+<p>강화학습이 실제로 힘을 발휘하는 대표적인 무대가 로봇 제어다 — 관절에 얼마나
+힘을 줄지, 어느 방향으로 움직일지를 사람이 규칙으로 일일이 정해주는 대신,
+시행착오를 통해 “넘어지지 않고 걷는 법“을 스스로 찾아내게 하는 것이다. 이번
+학기는 게임 화면 같은 추상적인 예제뿐 아니라, 실제로 물리 엔진 위에서 로봇을
+움직여보는 시뮬레이션 환경(Chapter 13~14에서 본격적으로 다룬다)을 실습에
+사용한다.</p>
+<h2 id="13-이번-학기-로드맵"><a class="header" href="#13-이번-학기-로드맵">1.3 이번 학기 로드맵</a></h2>
 <ul>
-<li><strong>Zero-shot</strong>: 예시 없이 지시문만 주고 바로 요청(“이 문장을 한국어로
-번역해줘: …”).</li>
-<li><strong>Few-shot</strong>: 몇 개의 입출력 예시를 프롬프트에 포함시켜, 모델이 패턴을
-파악하고 따라하게 유도.</li>
-<li><strong>Chain-of-Thought</strong>: “단계별로 생각해봐“처럼, 최종 답 전에 중간 추론
-과정을 출력하도록 유도 — 복잡한 추론 문제에서 정답률을 크게 높이는
-경우가 많다.</li>
+<li><strong>Chapter 2~7 (Block A)</strong>: 강화학습의 이론적 뼈대를 표(table) 기반으로
+차근차근 쌓는다 — 멀티암 밴딧에서 시작해, MDP, 동적계획법, 몬테카를로,
+시간차 학습, n-step/적격흔적까지. 이 순서는 강화학습의 표준 교과서인
+Sutton과 Barto의 <em>Reinforcement Learning: An Introduction</em>의 목차를
+그대로 따른다.</li>
+<li><strong>Chapter 8</strong>: Block A 팀 프로젝트와 중간고사 준비.</li>
+<li><strong>Chapter 9~11 (Block B 전반)</strong>: 표 대신 신경망으로 확장하는 심층강화학습
+(DQN)과, Q값을 거치지 않고 정책을 직접 학습하는 정책기반 방법(REINFORCE,
+PPO)까지.</li>
+<li><strong>Chapter 12</strong>: 모방학습과 인간 피드백 — 시행착오 대신 시연이나 선호로부터
+배우는 법.</li>
+<li><strong>Chapter 13~14</strong>: 로봇 시뮬레이션과 제어의 기초, 그리고 더 정교한
+물리엔진(MuJoCo)과 GPU 가속 시뮬레이션(NVIDIA Isaac Sim)까지.</li>
+<li><strong>Chapter 15</strong>: 환경의 모델을 직접 활용하는 모델기반 RL과, 바둑을 정복한
+AlphaGo의 핵심 아이디어인 몬테카를로 트리 탐색(MCTS).</li>
+<li><strong>Chapter 16</strong>: Block B 팀 프로젝트와 학기 총정리.</li>
 </ul>
-<p>몇 가지 예시를 프롬프트에 포함시키는 것만으로 모델이 새로운 형식의
-작업을 수행하게 만들 수 있다는 사실(few-shot prompting)은, 사전학습이
-얼마나 폭넓은 능력을 모델 안에 압축해뒀는지를 보여주는 증거이기도 하다.</p>
-<h2 id="44-왜-프롬프팅이-통하는가"><a class="header" href="#44-왜-프롬프팅이-통하는가">4.4 왜 프롬프팅이 통하는가</a></h2>
-<p>사전학습 데이터에는 “질문-답변”, “예시-패턴” 형태의 텍스트가 이미
-무수히 포함돼 있다. 모델은 “다음 토큰 예측“을 통해 이런 패턴 자체를
-이미 학습해뒀으므로, 프롬프트 안에 비슷한 패턴을 보여주면 그 패턴을
-이어가는 방향으로 다음 토큰을 예측한다 — 새로운 지식을 학습하는 게
-아니라, <strong>이미 갖고 있는 능력 중 어떤 것을 꺼내 쓸지를 프롬프트가
-가리키는 것</strong>에 가깝다.</p>
-<h2 id="45-한계"><a class="header" href="#45-한계">4.5 한계</a></h2>
-<p>LLM은 사실이 아닌 그럴듯한 문장을 자신 있게 만들어내기도 한다(<strong>환각,
-hallucination</strong>) — “다음 토큰으로 그럴듯한 것“을 예측하도록 학습됐을
-뿐, 사실 여부를 검증하는 과정이 내장돼 있지 않기 때문이다. 이 한계는
-지금도 활발히 연구되는 문제이며, 이 학기의 범위를 넘어선다 — 다만 “왜
-이런 한계가 생기는가“를 사전학습 목표(다음 토큰 예측) 자체에서 짚어낼
-수 있다는 점은 기억해둘 만하다.</p>
-<p><strong>LLM 자체는 새로운 알고리즘이 아니라, 지금까지 배운 Transformer를
-극단적으로 큰 규모(파라미터 수, 데이터 양)로 학습시킨 결과다 — “왜
-크기가 커지면 새로운 능력이 생기는가“는 지금도 활발히 연구되는 질문이다.</strong></p>
-<hr>
-<h2 id="연습문제-15"><a class="header" href="#연습문제-15">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>simple_tokenize</code>와
-<code>next_token_distribution</code>을 완성하라(아주 단순화된 언어모델 시뮬레이션,
-핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
-<pre><code class="language-python">def simple_tokenize(text):
-    # ADD ADDITIONAL CODE HERE!!
+<h2 id="14-이-과목은-ml1과-완전히-독립적이다"><a class="header" href="#14-이-과목은-ml1과-완전히-독립적이다">1.4 이 과목은 ML1과 완전히 독립적이다</a></h2>
+<p>ML1을 듣지 않았어도 이 과목을 바로 시작할 수 있다 — 이번 학기가 필요로 하는
+신경망 지식은 순전파, 역전파, 그리고 경사하강법으로 손실을 줄인다는 감각
+정도이며, 아래 1.5절에서 그 핵심만 압축해서 다시 짚는다. (ML1을 먼저 들었다면
+익숙한 내용이니 빠르게 훑고 넘어가도 좋다.)</p>
+<h2 id="15-신경망-미니-리뷰"><a class="header" href="#15-신경망-미니-리뷰">1.5 신경망 미니 리뷰</a></h2>
+<p>신경망은 입력 \(x\)를 층(layer)을 거치며 변환해 예측값을 만드는 함수다.
+2층 신경망의 순전파:</p>
+<p>\[z_1 = W_1 x + b_1, \quad a_1 = \sigma(z_1), \quad z_2 = W_2^T a_1 + b_2,
+\quad a_2 = \sigma(z_2)\]</p>
+<p><strong>학습</strong>이란 예측이 얼마나 틀렸는지를 손실함수 \(J\)로 수치화하고,
+\(J\)를 줄이는 방향(그래디언트의 반대 방향)으로 파라미터
+\(W_1, W_2, b_1, b_2\)를 조금씩 옮기는 과정이다. 그 그래디언트를 구하는
+방법이 <strong>역전파</strong>(backpropagation) — 연쇄법칙을 출력에서 입력 방향으로
+거꾸로 적용해, 각 파라미터가 최종 손실에 얼마나 책임이 있는지 계산하는
+것이다. 이번 학기에서는 PyTorch의 <code>nn.Module</code>과 <code>.backward()</code>로 이 계산을
+자동으로 처리한다 — 손으로 유도하는 연습은 이미 (ML1을 들었다면) 끝냈다고
+가정한다.</p>
+<pre><code class="language-python">import torch
+import torch.nn as nn
 
-def next_token_distribution(corpus_tokens, context_word):
-    # ADD ADDITIONAL CODE HERE!!
-    # context_word가 등장한 모든 위치에서, 바로 다음 토큰을 세어
-    # {다음단어: 확률} 딕셔너리로 반환
+class MLP(nn.Module):
+    def __init__(self, in_dim, hidden_dim, out_dim):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(in_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, out_dim),
+        )
 
-corpus = simple_tokenize("나는 학교에 간다 나는 집에 간다 나는 학교에 있다")
-print(next_token_distribution(corpus, "나는"))
-# {"학교에": 2/3, "집에": 1/3}
+    def forward(self, x):
+        return self.net(x)
+
+# 간단한 회귀 실습: y = 2x + 1을 배우게 하기
+torch.manual_seed(0)
+model = MLP(1, 16, 1)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+loss_fn = nn.MSELoss()
+
+X = torch.rand(64, 1) * 4 - 2
+y = 2 * X + 1
+
+for epoch in range(200):
+    pred = model(X)
+    loss = loss_fn(pred, y)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+print("최종 손실:", round(loss.item(), 4))
+print("x=1일 때 예측:", round(model(torch.tensor([[1.0]])).item(), 3), "(정답: 3.0)")
 </code></pre>
-<p><strong>2. (프롬프트 설계, 코딩 아님)</strong> 다음 두 프롬프트 중 어느 쪽이
-chain-of-thought 기법을 쓴 것인지 표시하고, 왜 복잡한 산술/논리 문제에서
-chain-of-thought 프롬프트가 더 정확한 답을 내는 경향이 있는지 한
-문단으로 설명하라.</p>
-<blockquote>
-<p>(A) “23×17은 얼마인가? 답만 말해줘.”</p>
-<p>(B) “23×17을 계산해줘. 단계별로 어떻게 계산하는지 먼저 보여준 다음
-최종 답을 말해줘.”</p>
-</blockquote>
+<h2 id="16-실습-환경-세팅-gymnasium"><a class="header" href="#16-실습-환경-세팅-gymnasium">1.6 실습 환경 세팅: Gymnasium</a></h2>
+<p>이번 학기 실습은 <strong>Gymnasium</strong>(옛 OpenAI Gym의 후신)이라는 표준 라이브러리로
+만든 환경 위에서 진행한다 — 어떤 환경이든 “현재 상태를 관측하고(<code>reset</code>),
+행동을 하나 취하면(<code>step</code>) 다음 상태·보상·종료 여부가 돌아온다“는 똑같은
+인터페이스를 따른다. 이 인터페이스 통일 덕분에, Chapter 2~11에서 배우는
+어떤 알고리즘이든 환경만 바꿔 끼우면 그대로 재사용할 수 있다.</p>
+<pre><code class="language-python">import gymnasium as gym
+
+env = gym.make("CartPole-v1")  # 막대를 쓰러뜨리지 않고 균형 잡기
+obs, info = env.reset(seed=0)
+print("초기 상태(카트 위치, 속도, 막대 각도, 각속도):", obs)
+
+for _ in range(3):
+    action = env.action_space.sample()  # 지금은 무작위 정책
+    obs, reward, terminated, truncated, info = env.step(action)
+    print("행동:", action, "-&gt; 다음 상태:", obs, "보상:", reward)
+
+env.close()
+</code></pre>
+<p>이 CartPole 환경은 이번 학기 초반의 표 기반 알고리즘을 시각적으로 이해하는
+데, 그리고 Chapter 9의 DQN에서 다시 등장한다.</p>
+<p><strong>강화학습은 지도학습·비지도학습과 완전히 다른 게임이다 — 정답을 맞히는
+것도, 구조를 찾는 것도 아니라, 스스로 행동해서 얻은 경험만으로 무엇이 좋은
+행동인지 알아내야 한다. 이 게임의 규칙을 정확히 정의하는 것부터가 다음
+장의 시작이다.</strong></p>
+<hr>
+<h2 id="연습문제-13"><a class="header" href="#연습문제-13">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>MLP</code> 클래스와 학습 루프를 참고해서, <code>y = x^2</code> 함수를
+근사하는 신경망을 학습시켜라(<code>hidden_dim=32</code>, 200 에포크 이상 학습한 뒤
+<code>x=1.5</code>에서의 예측값이 실제 값 <code>2.25</code>에 충분히 가까운지 확인하라).</p>
+<p><strong>2. (개념 서술)</strong> 지도학습에서는 “탐험과 활용의 딜레마“가 왜 존재하지
+않는지, 그리고 강화학습에서는 왜 이 딜레마가 근본적으로 피할 수 없는지
+1.1절의 표를 참고해서 두세 문장으로 설명하라.</p>
+<p><strong>3. (실습)</strong> 위 Gymnasium 코드를 그대로 실행한 뒤, <code>env.action_space</code>와
+<code>env.observation_space</code>를 각각 출력해서 CartPole의 행동이 몇 가지이고
+(이산/연속 중 무엇인지), 상태가 몇 차원 벡터인지 확인하라. <code>Pendulum-v1</code>
+환경으로 바꿔서 같은 것을 확인하고, CartPole과 행동 공간의 형태가 어떻게
+다른지(이산 vs 연속) 한 문장으로 비교하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-5-강화학습-기초와-정책평가-reinforcement-learning-basics--policy-evaluation"><a class="header" href="#chapter-5-강화학습-기초와-정책평가-reinforcement-learning-basics--policy-evaluation">Chapter 5. 강화학습 기초와 정책평가 (Reinforcement Learning Basics &amp; Policy Evaluation)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter05_policy_evaluation.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>ML1에서 “차원의 저주(curse of dimensionality)“라는 용어를 배웠다. 이 용어를
-만든 사람은 수학자 리처드 벨만(Richard Bellman)으로, 1950년대에
-동적계획법(dynamic programming)이라는 최적화 기법을 만들면서 이 이름을
-붙였다. 그가 만든 또 하나의 도구가 바로 이번 장의 핵심인
-<strong>벨만방정식</strong>(Bellman equation)이다 — “복잡한 문제를 한 번에 풀지 말고,
-더 작은 부분 문제로 쪼개서 그 답을 재귀적으로 조합하라“는 그의 아이디어는
-지금 강화학습의 이론적 뼈대를 이루고 있다.</p>
-<h2 id="51-ml1에서-살짝-본-것을-정식화한다"><a class="header" href="#51-ml1에서-살짝-본-것을-정식화한다">5.1 ML1에서 살짝 본 것을 정식화한다</a></h2>
-<p>ML1에서 상태·행동·보상·정책이라는 개념만 직관적으로 봤다면, 이번 장은
-그것을 <strong>MDP</strong>(Markov Decision Process)라는 수학적 틀로 정식화한다. MDP는
-다섯 가지 요소로 정의된다: \((\mathcal{S}, \mathcal{A}, P, R, \gamma)\)</p>
+<h1 id="chapter-2-멀티암-밴딧-multi-armed-bandits"><a class="header" href="#chapter-2-멀티암-밴딧-multi-armed-bandits">Chapter 2. 멀티암 밴딧 (Multi-Armed Bandits)</a></h1>
+<p>카지노에는 손잡이(암, arm)가 여러 개 달린 슬롯머신들이 있다고 상상해보자.
+각 손잡이는 서로 다른, 그러나 당신은 모르는 평균 보상을 가지고 있다.
+제한된 횟수만 당길 수 있다면, 어떤 순서로 손잡이를 당겨야 총 보상을
+최대화할 수 있을까? 이 단순한 질문 — <strong>멀티암 밴딧</strong>(Multi-Armed
+Bandit) 문제 — 이 강화학습이 다루는 모든 문제의 가장 작은 뼈대다. 다음
+장부터 배울 상태(state)도, 여러 스텝에 걸친 전이(transition)도 없이,
+“탐험과 활용의 딜레마“라는 강화학습의 핵심 문제 하나만 순수하게 남겨둔
+가장 단순한 형태이기 때문이다.</p>
+<h2 id="21-탐험과-활용"><a class="header" href="#21-탐험과-활용">2.1 탐험과 활용</a></h2>
+<p>\(k\)개의 손잡이(팔) 각각의 실제 평균 보상을 \(q^*(a)\)라 하자(우리는
+모른다). 지금까지 관찰한 것을 바탕으로 한 추정치를 \(Q_t(a)\)라 하면,
+가장 단순한 전략은 <strong>탐욕적</strong>(greedy) 선택 — 매번 \(Q_t(a)\)가 가장 큰
+팔을 당기는 것이다. 문제는 초반에 우연히 나쁜 결과가 나온 팔을 그 뒤로
+영원히 외면하게 될 수 있다는 것이다 — 진짜 최선의 팔을 충분히 시도해보지
+못한 채 잘못된 결론에 갇히는 것이다.</p>
+<p><strong>\(\varepsilon\)-greedy</strong>는 확률 \(1-\varepsilon\)로는 지금까지
+가장 좋다고 아는 팔을 당기고(활용), 확률 \(\varepsilon\)로는 무작위
+팔을 당긴다(탐험) — Chapter 6(시간차 학습)에서 다시 만날 바로 그
+전략이다. 각 팔의 추정치는 실제로 관찰한 보상의 평균으로 갱신한다:</p>
+<p>\[Q_{t+1}(a) = Q_t(a) + \frac{1}{N_t(a)}\big(R_t - Q_t(a)\big)\]</p>
+<p>\(N_t(a)\)는 팔 \(a\)를 지금까지 당긴 횟수다. 이 갱신 규칙은
+“새로 관찰한 값과 지금 추정치의 차이만큼, 그 차이의 크기에 비례해서
+추정치를 옮긴다“는 형태 — Chapter 5(몬테카를로)와 Chapter 6(시간차
+학습)에서 계속 재사용될 패턴이다.</p>
+<pre><code class="language-python">import random
+
+def epsilon_greedy_bandit(true_means, epsilon, steps):
+    k = len(true_means)
+    Q = [0.0] * k
+    N = [0] * k
+    for t in range(steps):
+        if random.random() &lt; epsilon:
+            a = random.randrange(k)          # 탐험
+        else:
+            a = max(range(k), key=lambda i: Q[i])  # 활용
+        r = random.gauss(true_means[a], 1.0)  # 실제 보상은 평균 true_means[a], 잡음 섞임
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+    return Q
+</code></pre>
+<h2 id="22-낙관적-초기화"><a class="header" href="#22-낙관적-초기화">2.2 낙관적 초기화</a></h2>
+<p>\(\varepsilon\)-greedy는 탐험을 완전히 무작위로 한다 — 이미 나쁘다고
+거의 확신하는 팔도 똑같은 확률로 다시 시도한다. <strong>낙관적
+초기화</strong>(optimistic initialization)는 다른 트릭을 쓴다: 모든 \(Q_0(a)\)를
+실제 가능한 보상보다 훨씬 크게(낙관적으로) 초기화한다. 그러면 탐욕적
+선택만으로도, 아직 안 당겨본 팔은 “과대평가된” 상태이므로 자연스럽게
+먼저 시도하게 된다 — 시도해서 실망하면(실제 보상이 초기값보다 낮으면)
+추정치가 내려가고, 그다음 팔로 넘어간다. 초반 몇 번의 강제적인 탐험을
+낙관적인 시작값 하나로 만들어내는 셈이다.</p>
+<h2 id="23-ucb-불확실성-자체를-이용한다"><a class="header" href="#23-ucb-불확실성-자체를-이용한다">2.3 UCB: 불확실성 자체를 이용한다</a></h2>
+<p><strong>UCB</strong>(Upper Confidence Bound)는 한 걸음 더 나아간다 — “지금까지 별로
+안 당겨본 팔일수록, 그 추정치가 얼마나 정확한지 자체가 불확실하다“는
+점을 직접 활용한다. 각 팔을 고를 때, 평균 추정치에 “불확실성 보너스“를
+더해서 비교한다:</p>
+<p>\[a_t = \arg\max_a \left[Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}}\right]\]</p>
+<p>\(N_t(a)\)가 작을수록(그 팔을 적게 당겨봤을수록) 제곱근 항이 커져서
+보너스가 커진다 — 그 팔이 사실 최선일 수도 있다는 가능성에 정당한 만큼의
+기회를 준다. 많이 당겨볼수록(\(N_t(a)\)가 커질수록) 보너스는 줄어들어,
+결국 진짜 평균 \(Q_t(a)\)의 크기가 선택을 지배하게 된다.</p>
+<pre><code class="language-python">import math
+
+def ucb_bandit(true_means, c, steps):
+    k = len(true_means)
+    Q = [0.0] * k
+    N = [0] * k
+    for t in range(1, steps + 1):
+        unplayed = [i for i in range(k) if N[i] == 0]
+        if unplayed:
+            a = unplayed[0]  # 아직 안 당겨본 팔을 먼저 시도
+        else:
+            a = max(range(k), key=lambda i: Q[i] + c * math.sqrt(math.log(t) / N[i]))
+        r = random.gauss(true_means[a], 1.0)
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+    return Q
+</code></pre>
+<p>실제로 세 팔(평균 보상 1.0, 1.5, 2.0)에 대해 2000번씩 당겨보면, \(\varepsilon\)
+-greedy와 UCB 둘 다 진짜 평균에 가까운 추정치로 수렴하지만(예:
+<code>[0.98, 1.32, 2.01]</code>과 <code>[1.15, 1.48, 2.0]</code>), 총 획득 보상은 UCB
+쪽이 조금 더 높은 경향이 있다 — 무작위 탐험 대신, 불확실성이 큰 곳을
+우선적으로 찔러보기 때문이다.</p>
+<h2 id="24-밴딧-vs-완전한-mdp-다음-장으로-가는-다리"><a class="header" href="#24-밴딧-vs-완전한-mdp-다음-장으로-가는-다리">2.4 밴딧 vs 완전한 MDP: 다음 장으로 가는 다리</a></h2>
+<p>밴딧 문제에는 <strong>상태</strong>가 없다 — 팔을 당겨도 “다음 상태“로 넘어가지
+않는다. 매번 같은 \(k\)개의 팔 중에서 고르는, 시간이 흘러도 상황이
+전혀 안 바뀌는 세계다. Chapter 3부터 배울 <strong>MDP</strong>(Markov Decision
+Process)는 여기에 결정적인 것 하나를 추가한다 — <strong>지금 한 행동이
+다음에 어떤 상태를 보게 될지에 영향을 준다.</strong> 슬롯머신을 당기는 것과,
+체스에서 한 수를 두는 것의 차이를 생각해보라: 체스에서는 지금 둔 수가
+판의 배치(상태)를 바꾸고, 그 배치가 다음에 무엇을 할 수 있는지를
+결정한다. 밴딧에서 배운 탐험-활용의 딜레마는 그대로 남지만, 이제
+“지금 선택이 미래의 선택지 자체를 바꾼다“는 완전히 새로운 문제가
+겹쳐진다.</p>
+<p><strong>밴딧은 강화학습에서 상태와 전이를 걷어내고 남은 최소 뼈대다 —
+\(\varepsilon\)-greedy, 낙관적 초기화, UCB, 이 세 가지 탐험 전략은
+형태만 바뀐 채 이 학기 내내(특히 Chapter 6의 ε-greedy) 반복해서
+등장한다.</strong></p>
+<hr>
+<h2 id="연습문제-14"><a class="header" href="#연습문제-14">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>epsilon_greedy_bandit</code>과 <code>ucb_bandit</code>(핵심 줄은
+빈칸으로 남겨져 있다고 가정)을 완성하라:</p>
+<pre><code class="language-python">import random, math
+
+def epsilon_greedy_bandit(true_means, epsilon, steps):
+    # ADD ADDITIONAL CODE HERE!!
+    # k개 팔의 Q, N을 0으로 초기화한 뒤 steps번 반복:
+    # 확률 epsilon으로 무작위 팔, 아니면 Q가 최대인 팔을 선택
+    # 보상 관찰 후 Q[a] += (r - Q[a]) / N[a]로 갱신
+
+    return Q
+
+def ucb_bandit(true_means, c, steps):
+    # ADD ADDITIONAL CODE HERE!!
+    # 아직 안 당겨본 팔을 먼저 모두 시도한 뒤,
+    # Q[a] + c*sqrt(ln(t)/N[a])가 최대인 팔을 선택
+
+    return Q
+
+random.seed(0)
+true_means = [1.0, 1.5, 2.0]
+print(epsilon_greedy_bandit(true_means, 0.1, 2000))  # 대략 [1.0, 1.3~1.5, 2.0] 근처
+</code></pre>
+<p><strong>2. (개념 서술)</strong> \(\varepsilon\)를 0으로 고정하면(순수 탐욕적
+선택) 어떤 문제가 생기는지, 반대로 \(\varepsilon=1\)로 고정하면(순수
+무작위 선택) 어떤 문제가 생기는지 각각 설명하라. 학습이 진행될수록
+\(\varepsilon\)을 점점 줄여나가는 것(decay)이 왜 합리적인 절충안인지도
+논하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> 팔 하나를 \(n\)번 당겨서 얻은 보상이
+\(R_1, \ldots, R_n\)일 때, 증분 갱신식 \(Q_{n+1} = Q_n +
+\frac{1}{n}(R_n - Q_n)\)을 \(n=1\)부터 반복 전개하면
+\(Q_{n+1} = \frac{1}{n}\sum_{i=1}^n R_i\)(단순 평균)와 정확히 같아짐을
+보여라.</p>
+<p><strong>힌트</strong>: \(Q_1 = 0\)에서 시작해 \(n=1, 2, 3\)에 대해 직접 전개해보고
+패턴을 관찰한 뒤(예: \(Q_2 = R_1\), \(Q_3 = R_1 + \frac{1}{2}(R_2-R_1) =
+\frac{R_1+R_2}{2}\)), 수학적 귀납법으로 일반적인 \(n\)에 대해
+증명하라.</p>
+<p><strong>정확성 확인</strong>: 이 결과가 왜 “증분 갱신식이 그냥 평균을 온라인(데이터가
+하나씩 들어올 때마다)으로 계산하는 것과 수학적으로 동일하다“는 것을
+의미하는지 한 문장으로 설명하라.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chapter-3-mdp-정식화-markov-decision-processes"><a class="header" href="#chapter-3-mdp-정식화-markov-decision-processes">Chapter 3. MDP 정식화 (Markov Decision Processes)</a></h1>
+<p>1950년대, 수학자 리처드 벨만(Richard Bellman)은 “차원의 저주(curse of
+dimensionality)“라는 용어를 만들면서 동적계획법(dynamic programming)이라는
+최적화 기법을 고안했다. 그의 핵심 통찰 — “복잡한 문제를 한 번에 풀지 말고,
+더 작은 부분 문제로 쪼개서 그 답을 재귀적으로 조합하라” — 는 지금 강화학습
+이론 전체의 뼈대를 이루고 있다. 이번 장은 Chapter 2의 밴딧에 “상태“를
+더해서, 강화학습 문제를 수학적으로 엄밀하게 정의하는 틀 — <strong>MDP</strong>(Markov
+Decision Process) — 를 세운다.</p>
+<h2 id="31-mdp의-다섯-요소"><a class="header" href="#31-mdp의-다섯-요소">3.1 MDP의 다섯 요소</a></h2>
+<p>MDP는 다섯 가지로 정의된다: \((\mathcal{S}, \mathcal{A}, P, R, \gamma)\)</p>
 <ul>
 <li>\(\mathcal{S}\): 가능한 상태들의 집합</li>
 <li>\(\mathcal{A}\): 가능한 행동들의 집합</li>
@@ -3383,33 +3240,119 @@ chain-of-thought 프롬프트가 더 정확한 답을 내는 경향이 있는지
 <li>\(R(s,a)\): 상태 \(s\)에서 행동 \(a\)를 했을 때 받는 즉시 보상</li>
 <li>\(\gamma \in [0,1)\): 할인율(discount factor)</li>
 </ul>
+<p>Chapter 2의 밴딧과 비교하면 정확히 무엇이 추가됐는지 보인다 — 밴딧에는
+\(\mathcal{S}\)도 \(P\)도 없었다(팔을 당겨도 “다음 상태“가 없었다).
+MDP는 지금 한 행동이 다음 상태 \(P(s’|s,a)\)를 통해 미래 전체에 영향을
+준다는 사실을 명시적으로 담는다.</p>
+<h2 id="32-마르코프-성질"><a class="header" href="#32-마르코프-성질">3.2 마르코프 성질</a></h2>
 <p><strong>마르코프 성질</strong>(Markov property): 다음 상태는 오직 <strong>현재</strong> 상태와
 행동에만 의존한다 — 어떻게 지금 상태에 도달했는지(과거 전체 이력)는
-상관없다. 예: 체스판의 현재 배치만 알면, 거기까지 어떤 수순을 거쳐왔는지는
-다음 수를 정하는 데 필요 없다.</p>
-<h2 id="52-가치함수-value-function"><a class="header" href="#52-가치함수-value-function">5.2 가치함수 (Value Function)</a></h2>
+상관없다:</p>
+<p>\[P(s_{t+1} | s_t, a_t, s_{t-1}, a_{t-1}, \ldots, s_0) = P(s_{t+1} | s_t, a_t)\]</p>
+<p>예: 체스판의 현재 배치만 알면, 거기까지 어떤 수순을 거쳐왔는지는 다음
+수를 정하는 데 필요 없다. 이 성질이 성립한다는 가정 덕분에, “지금까지의
+전체 이력“이 아니라 “현재 상태” 하나만 기억하면 충분해진다 — 뒤에서
+배울 알고리즘들이 상태 하나만 보고 결정을 내릴 수 있는 이유가 여기서
+나온다.</p>
+<h2 id="33-누적-보상과-할인율"><a class="header" href="#33-누적-보상과-할인율">3.3 누적 보상과 할인율</a></h2>
+<p>강화학습의 목표는 한 스텝의 보상이 아니라, 앞으로 받을 보상들의 합 —
+<strong>리턴</strong>(return) \(G_t\) — 을 최대화하는 것이다:</p>
+<p>\[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k}\]</p>
+<p><strong>왜 할인율 \(\gamma\)가 필요한가</strong>: (1) 수학적으로, \(\gamma &lt; 1\)이면
+보상이 유계(bounded)인 한 이 무한급수가 항상 수렴한다(기하급수). \(\gamma=1\)
+이면 끝나지 않는 과업에서 리턴이 무한대로 발산할 수 있다. (2) 직관적으로,
+“지금 당장의 보상 1“이 “10스텝 뒤의 보상 1“보다 더 가치 있다고 보는
+경우가 많다 — 사람의 시간 선호나, 금융의 이자율 개념과 같은 방향이다.
+\(\gamma\)가 0에 가까우면 에이전트는 “근시안적”(당장의 보상만 중시)이고,
+1에 가까우면 “장기적”(먼 미래의 보상까지 충분히 고려)이 된다.</p>
+<pre><code class="language-python">import gymnasium as gym
+
+env = gym.make("CartPole-v1")
+obs, info = env.reset(seed=0)
+
+# 이 환경에서 MDP의 다섯 요소를 실제로 확인해보자
+print("상태 공간 S:", env.observation_space)   # 4차원 연속 벡터
+print("행동 공간 A:", env.action_space)         # 2개의 이산 행동 (왼쪽/오른쪽 밀기)
+
+total_return, gamma, discount = 0.0, 0.95, 1.0
+for _ in range(10):
+    action = env.action_space.sample()
+    obs, reward, terminated, truncated, info = env.step(action)
+    total_return += discount * reward   # G_t를 직접 누적
+    discount *= gamma
+    if terminated or truncated:
+        break
+print("10스텝 동안의 할인된 리턴 G_0:", round(total_return, 3))
+env.close()
+</code></pre>
+<p>이 코드에서 <code>reward</code>가 매 스텝 즉시 보상 \(R(s,a)\)이고, 환경이
+내부적으로 다음 상태로 전이시키는 규칙이 곧 \(P(s’|s,a)\)다 —
+Gymnasium 환경은 이 전이확률을 코드로 감춰두고 <code>step()</code> 함수 하나로
+캡슐화한 것뿐, MDP의 정의와 정확히 대응된다.</p>
+<h2 id="34-가치함수를-향해"><a class="header" href="#34-가치함수를-향해">3.4 가치함수를 향해</a></h2>
+<p>이제 “누적 보상을 최대화하는 행동을 고른다“는 목표는 명확해졌지만,
+아직 계산할 방법은 없다 — 무한히 먼 미래까지 내다봐야 할 것 같다.
+다음 장(동적계획법)은 이 무한합을 재귀적인 형태로 다시 쓰는
+<strong>벨만방정식</strong>을 통해, 실제로 계산 가능한 절차로 바꾸는 방법을 다룬다.</p>
+<p><strong>MDP는 “지금 한 행동이 미래의 상태 자체를 바꾼다“는 사실 하나를
+Chapter 2의 밴딧에 추가한 것뿐이지만, 이 한 가지 차이가 강화학습을
+훨씬 더 어렵고, 훨씬 더 흥미로운 문제로 만든다.</strong></p>
+<hr>
+<h2 id="연습문제-15"><a class="header" href="#연습문제-15">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 코드를 참고해서, <code>FrozenLake-v1</code>(<code>is_slippery=False</code>)
+환경을 만들고 <code>env.observation_space</code>와 <code>env.action_space</code>를 출력해서
+상태·행동 공간이 각각 이산(discrete)인지 연속(continuous)인지, 몇
+가지인지 확인하라. CartPole과 비교했을 때 어떤 차이가 있는지 한 문장으로
+서술하라.</p>
+<pre><code class="language-python">import gymnasium as gym
+
+env = gym.make("FrozenLake-v1", is_slippery=False)
+# ADD ADDITIONAL CODE HERE!!
+# observation_space, action_space를 출력하고 CartPole과 비교
+</code></pre>
+<p><strong>2. (개념 서술)</strong> 마르코프 성질이 실제로는 성립하지 않을 것 같은
+상황을 하나 떠올려보라(예: 자율주행에서 “지금 화면 한 장“만으로 판단하는
+경우, 안개 속에서 방금 지나간 표지판 정보가 필요할 수 있다). 그런
+경우에도 마르코프 성질을 다시 성립시키려면 상태를 어떻게 다시 정의해야
+할지(예: 최근 몇 프레임을 함께 상태에 포함시키는 등) 한 문단으로
+제안하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> 보상이 매 스텝 상수 \(R\)로
+고정된 경우(즉 \(R_t = R\) for all \(t\)), 리턴 \(G_t = \sum_{k=0}^\infty
+\gamma^k R\)이 \(\gamma &lt; 1\)일 때 닫힌 형태 \(G_t = \frac{R}{1-\gamma}\)로
+수렴함을 보여라.</p>
+<p><strong>힌트</strong>: 등비급수의 합 공식 \(\sum_{k=0}^\infty x^k = \frac{1}{1-x}\)
+(\(|x|&lt;1\)일 때)을 그대로 적용하면 된다. \(R=1, \gamma=0.9\)일 때
+\(G_t\)의 값을 직접 계산하고, \(\gamma=0.99\)로 바꿨을 때 값이 어떻게
+달라지는지도 계산해보라.</p>
+<p><strong>정확성 확인</strong>: \(\gamma\)가 1에 가까워질수록 \(G_t\)가 왜 점점
+커지는지(발산에 가까워지는지) 계산 결과를 바탕으로 한 문장으로
+설명하라.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chapter-4-동적계획법-dynamic-programming"><a class="header" href="#chapter-4-동적계획법-dynamic-programming">Chapter 4. 동적계획법 (Dynamic Programming)</a></h1>
+<p>Chapter 3에서 MDP를 정식화했지만, “누적 보상을 최대화하는 행동을 고른다“는
+목표는 여전히 계산 불가능해 보인다 — 무한히 먼 미래까지 내다봐야 하는
+것처럼 보이기 때문이다. 벨만의 통찰은 이 무한합을 <strong>재귀적 관계</strong>로 다시
+쓸 수 있다는 것이었다. 이번 장은 그 재귀식(벨만방정식)을 유도하고, MDP의
+전이확률 \(P\)를 정확히 알고 있다는 전제 하에(모델 기반, model-based)
+최적 정책을 계산하는 절차를 다룬다.</p>
+<h2 id="41-가치함수"><a class="header" href="#41-가치함수">4.1 가치함수</a></h2>
 <p>“지금 이 상태에서 시작해서, 이 정책을 계속 따른다면, 기대할 수 있는 누적
-보상은 얼마인가?” — 이 질문에 정확한 숫자로 답하는 것이 가치함수다.
-정책 \(\pi\)를 따를 때, 상태 \(s\)의 가치는 그 상태에서 시작해 앞으로
-받을 <strong>할인된 누적 보상의 기댓값</strong>이다:</p>
-<p>\[V^\pi(s) = \mathbb{E}_\pi\left[\sum_{t=0}^\infty \gamma^t R(s_t, a_t) \,\middle|\,
+보상은 얼마인가?” — 이 질문에 정확한 숫자로 답하는 것이 가치함수다. 정책
+\(\pi\)를 따를 때, 상태 \(s\)의 가치는 그 상태에서 시작해 앞으로 받을
+할인된 누적 보상의 기댓값이다:</p>
+<p>\[V^\pi(s) = \mathbb{E}_\pi\left[\sum_{t=0}^\infty \gamma^t R(s_t, a_t) ,\middle|,
 s_0 = s\right]\]</p>
-<h2 id="53-벨만방정식-재귀적-정의"><a class="header" href="#53-벨만방정식-재귀적-정의">5.3 벨만방정식: 재귀적 정의</a></h2>
-<p>가치함수를 직접 계산하려면 “지금부터 게임이 끝날 때까지 일어날 수 있는
-모든 경우“를 다 따져야 할 것 같지만, 벨만방정식은 훨씬 영리한 지름길을
-준다. 저 무한합을 재귀적 관계로 다시 쓸 수 있다:</p>
+<h2 id="42-벨만-기대방정식-재귀적-정의"><a class="header" href="#42-벨만-기대방정식-재귀적-정의">4.2 벨만 기대방정식: 재귀적 정의</a></h2>
+<p>저 무한합을 재귀적 관계로 다시 쓸 수 있다:</p>
 <p>\[V^\pi(s) = R(s, \pi(s)) + \gamma \sum_{s’} P(s’|s,\pi(s)) V^\pi(s’)\]</p>
 <p>직관: “지금 상태의 가치 = 지금 당장 받는 보상 + 할인된, 다음에 갈
-상태들의 가치의 기댓값.” 이 식이 성립하는 이유는 무한합
-\(\sum_{t=0}^\infty \gamma^t r_t = r_0 + \gamma(r_1 + \gamma r_2 +
-\cdots)\)를 “첫 항 + 할인된 나머지“로 다시 묶을 수 있기 때문이다 —
-괄호 안이 바로 \(V^\pi(s’)\)의 정의와 같다. 이 통찰 덕분에, “게임이
-끝날 때까지“를 통째로 계산하는 대신, 한 스텝 앞만 내다보는 계산을
-반복하는 것만으로 정확한 답에 도달할 수 있다.</p>
-<h2 id="54-반복적-정책평가-iterative-policy-evaluation"><a class="header" href="#54-반복적-정책평가-iterative-policy-evaluation">5.4 반복적 정책평가 (Iterative Policy Evaluation)</a></h2>
-<p>결정론적 정책(각 상태에서 항상 같은 행동을 선택)이라면, 벨만방정식을
-<strong>연립방정식</strong>으로 직접 풀 수도 있지만(상태가 적을 때), 상태가 많으면
-대신 다음을 계속 반복해서 근사한다:</p>
+상태들의 가치의 기댓값.” 이 식이 성립하는 이유는 무한합 \(\sum_{t=0}^\infty
+\gamma^t r_t = r_0 + \gamma(r_1 + \gamma r_2 + \cdots)\)를 “첫 항 + 할인된
+나머지“로 다시 묶을 수 있기 때문이다 — 괄호 안이 바로 \(V^\pi(s’)\)의
+정의와 같다. 이 통찰 덕분에, “게임이 끝날 때까지“를 통째로 계산하는 대신,
+한 스텝 앞만 내다보는 계산을 반복하는 것만으로 정확한 답에 도달할 수 있다.</p>
+<h2 id="43-반복적-정책평가"><a class="header" href="#43-반복적-정책평가">4.3 반복적 정책평가</a></h2>
+<p>상태가 많으면, 다음을 값이 더 이상 바뀌지 않을 때까지 반복해서 근사한다:</p>
 <pre><code class="language-python">def policy_evaluation(P, R, policy, gamma, theta=1e-6):
     n_states = len(P)
     V = [0.0] * n_states
@@ -3426,27 +3369,87 @@ s_0 = s\right]\]</p>
 </code></pre>
 <p>매 반복마다 모든 상태의 \(V(s)\)를 벨만방정식 우변으로 갱신하는데,
 우변에 쓰이는 \(V(s’)\)도 (아직 정확한 값이 아니라) 지금까지 추정한
-값이다 — 그런데도 이 반복은 \(\gamma &lt; 1\)이기만 하면 정확한
-\(V^\pi\)로 수렴한다는 것이 증명돼 있다(수축 사상, contraction
-mapping 성질에 근거하며, 이 학기에서는 결과만 받아들인다).</p>
-<h2 id="55-터미널-상태에서-거꾸로-특수한-경우"><a class="header" href="#55-터미널-상태에서-거꾸로-특수한-경우">5.5 터미널 상태에서 거꾸로: 특수한 경우</a></h2>
-<p>만약 MDP가 종료 상태(terminal state, \(V=0\))를 가진 경로형 구조라면,
-반복 계산 없이도 터미널부터 거꾸로 대입만으로 정확한 답을 즉시 구할 수
-있다 — 이번 장 연습문제가 다루는 경우다. 이건 사실 반복적 정책평가가
-“이미 정답을 아는 상태(터미널)“에서 시작해 한 방향으로만 전파되는 특수
-케이스로 볼 수 있다.</p>
+값이다 — 그런데도 이 반복은 \(\gamma &lt; 1\)이기만 하면 정확한 \(V^\pi\)로
+수렴한다는 것이 증명돼 있다(<strong>수축 사상</strong>, contraction mapping 성질 —
+4.5절에서 다시 다룬다).</p>
+<h2 id="44-벨만-최적방정식과-정책-반복"><a class="header" href="#44-벨만-최적방정식과-정책-반복">4.4 벨만 최적방정식과 정책 반복</a></h2>
+<p>지금까지는 “주어진 정책을 평가하는 법“을 배웠다. 강화학습이 정말로 풀고
+싶은 문제는 “가장 좋은 정책을 찾는 것“이다. 최적 가치 \(V^*(s)\)를
+다음 <strong>벨만 최적방정식</strong>으로 정의한다 — 각 상태에서, 그 이후를 최적으로
+이어갔을 때 가치가 가장 커지는 행동을 골랐다고 가정했을 때 나오는 가치다:</p>
+<p>\[V^<em>(s) = \max_a \left[R(s,a) + \gamma \sum_{s’} P(s’|s,a) V^</em>(s’)\right]\]</p>
+<p><strong>정책 반복</strong>(Policy Iteration)은 이 최적해를 향해 두 단계를 번갈아
+반복한다:</p>
+<ol>
+<li><strong>정책평가</strong>: 현재 정책 \(\pi\)의 \(V^\pi\)를 계산한다(4.3절).</li>
+<li><strong>정책개선</strong>: 각 상태에서, \(V^\pi\) 기준으로 더 나은 행동이 있으면
+정책을 그 행동으로 바꾼다: \(\pi’(s) = \arg\max_a[R(s,a) + \gamma
+\sum_{s’} P(s’|s,a) V^\pi(s’)]\).</li>
+</ol>
+<p>정책이 더 이상 안 바뀔 때까지 반복하면 최적 정책에 도달한다. <strong>가치
+반복</strong>(Value Iteration)은 이 둘을 합쳐서, 정책평가를 끝까지 수렴시키지
+않고 딱 한 번만 하고 바로 개선하는 것을 매 스텝 반복한다 — 벨만
+최적방정식 자체를 반복 대입으로 직접 푸는 것과 같다:</p>
+<pre><code class="language-python">def value_iteration(P, R, n_actions, gamma, theta=1e-6):
+    n_states = len(P)
+    V = [0.0] * n_states
+    while True:
+        delta = 0
+        for s in range(n_states):
+            v_new = max(R[s][a] + gamma * sum(prob * V[next_s] for prob, next_s in P[s][a])
+                        for a in range(n_actions))
+            delta = max(delta, abs(v_new - V[s]))
+            V[s] = v_new
+        if delta &lt; theta:
+            break
+    policy = [max(range(n_actions),
+                  key=lambda a: R[s][a] + gamma * sum(prob * V[next_s] for prob, next_s in P[s][a]))
+              for s in range(n_states)]
+    return V, policy
+</code></pre>
+<h2 id="45-왜-이-반복이-수렴하는가-바나흐-고정점-정리"><a class="header" href="#45-왜-이-반복이-수렴하는가-바나흐-고정점-정리">4.5 왜 이 반복이 수렴하는가: 바나흐 고정점 정리</a></h2>
+<p>“적어도 하나의 최적 정책이 항상 존재한다“는 사실은 자명하지 않다 — 어떤
+상태에서는 정책 \(\pi\)가 낫고 다른 상태에서는 \(\pi’\)이 나을 수
+있어서, “모든 정책 중 최댓값“이라는 개념 자체가 무너질 수도 있기
+때문이다. 이 문제는 4.2·4.4절의 우변(벨만 기대방정식과 벨만
+최적방정식 각각의 우변)을 하나의 <strong>연산자</strong> \(T\)로 보면 풀린다 —
+\(T\)는 <strong>\(\gamma\)-축소 사상</strong>(contraction mapping)이라는 것이
+증명돼 있다: 임의의 두 가치함수 \(V_1, V_2\)에 대해,</p>
+<p>\[|TV_1 - TV_2|<em>\infty \le \gamma |V_1 - V_2|</em>\infty\]</p>
+<p>즉 \(T\)를 한 번 적용할 때마다 두 함수 사이의 (최대) 차이가 최소
+\(\gamma\)배로 줄어든다. <strong>바나흐 고정점 정리</strong>(Banach fixed point
+theorem)는 이런 축소 사상이 항상 <strong>유일한 고정점</strong>을 가지고, 어디서
+출발해 반복해도 그 고정점에 수렴한다는 것을 보장한다 — 그래서 벨만
+최적방정식을 만족하는 \(V^*\)가 존재하고 유일하며, 4.4절의 가치반복
+(임의의 값에서 시작해 \(T\)를 반복 적용하는 것)이 실제로 그 값에
+도달한다.</p>
+<p>\(V^<em>\)를 알면, 각 상태에서 그 \(\max\)를 실제로 달성하는 행동을
+그대로 고르는 결정론적 정책 \(\pi^</em>\)를 만들 수 있다. 이 정의가 항상
+가능한 이유는 단순하다 — 각 상태에서 고를 수 있는 행동의 집합이
+<strong>유한</strong>하기 때문에, 유한집합의 최댓값은 항상 어딘가에서 달성된다.</p>
+<p>이 증명이 보장하는 건 “존재“이지 “계산 가능성“이나 “저장 가능성“이
+아니라는 점도 중요하다 — 바둑처럼 상태 수가 초천문학적으로 많으면(약
+\(10^{170}\)), \(\pi^*\)가 이론적으로 존재해도 모든 상태에 대해
+표로 저장하는 것 자체가 불가능하다. Chapter 9(DQN)에서 배울, 표 대신
+신경망으로 근사하는 방법이 필요해지는 이유가 바로 여기서 나온다. (이
+거듭제곱법이 왜 수렴하는지는, 그래프 위에서 무작위 걷기의 정상분포를
+구하는 PageRank 알고리즘과 정확히 같은 수학이다.)</p>
+<h2 id="46-모델-기반이라는-전제"><a class="header" href="#46-모델-기반이라는-전제">4.6 모델 기반이라는 전제</a></h2>
+<p>이번 장의 모든 알고리즘은 전이확률 \(P(s’|s,a)\)를 <strong>정확히 알고
+있다는</strong> 전제 위에 서 있다 — 체스라면 “이 수를 두면 상대는 어떻게
+반응할 확률이 얼마인가“를 미리 다 알아야 한다는 뜻인데, 현실에서는
+대부분 이걸 알 수 없다. Chapter 5·6은 이 모델을 몰라도 경험만으로
+학습하는 방법(몬테카를로, 시간차 학습)을 다룬다.</p>
 <p><strong>동적계획법의 핵심 아이디어(“큰 문제 = 작은 부분 문제 + 재귀”)는
 컴퓨터공학 전반에서 반복해서 등장하는 패턴이고, 강화학습은 그 패턴을
 “미래의 불확실한 보상을 어떻게 지금 계산할 것인가“라는 문제에 적용한
-것이다.</strong></p>
+것이다 — 그리고 그 반복이 항상 정답에 수렴한다는 것 자체가, 축소
+사상이라는 하나의 수학적 성질로 보장된다.</strong></p>
 <hr>
 <h2 id="연습문제-16"><a class="header" href="#연습문제-16">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 3-state MDP(state 0,1,2)가 주어질 때, 고정된 정책 하에서
-각 상태의 가치함수 \(V(s)\)를 반복적 정책평가로 계산하는
-<code>policy_evaluation</code>을 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
+<p><strong>1. (코딩)</strong> 3-state MDP(state 0,1,2)가 주어질 때, <code>policy_evaluation</code>과
+<code>value_iteration</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)을 완성하라:</p>
 <pre><code class="language-python">def policy_evaluation(P, R, policy, gamma, theta=1e-6):
-    # P[s][a] = [(prob, next_state), ...]  전이확률
-    # R[s][a] = 즉시 보상(스칼라), policy[s] = 결정론적 정책의 행동
     n_states = len(P)
     V = [0.0] * n_states
     while True:
@@ -3455,6 +3458,13 @@ mapping 성질에 근거하며, 이 학기에서는 결과만 받아들인다).<
         # -&gt; theta보다 delta가 작으면 종료
 
     return V
+
+def value_iteration(P, R, n_actions, gamma, theta=1e-6):
+    # ADD ADDITIONAL CODE HERE!!
+    # policy_evaluation과 비슷하되, 정책을 따르는 대신 max_a를 취함
+    # 수렴 후 각 상태에서 최선의 행동으로 policy 구성
+
+    return V, policy
 </code></pre>
 <p><strong>2. (손유도, Tier B — 힌트 제공)</strong> 다음 3-state MDP를 놓고 각 상태의
 가치 \(V(s)\)를 구한다: State 0은 항상 State 1로 이동(보상 -1), State
@@ -3466,168 +3476,311 @@ mapping 성질에 근거하며, 이 학기에서는 결과만 받아들인다).<
 한 번에 풀 필요 없이 대입만으로 답이 나온다. \(V(2) = 0\) →
 \(V(1) = -1 + 0.9 \times V(2) = ?\) → \(V(0) = -1 + 0.9 \times V(1)
 = ?\)</p>
-<p><strong>정확성 확인</strong>: 문제 1의 코드로 같은 MDP를 실행했을 때 나오는 값과
-손계산 값이 일치하는지 비교하라.</p>
+<p><strong>정확성 확인</strong>: 문제 1의 <code>policy_evaluation</code>으로 같은 MDP를 실행했을 때
+나오는 값과 손계산 값이 일치하는지 비교하라.</p>
+<p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> \(T\)가 \(\gamma\)-축소
+사상이라는 성질 \(|TV_1 - TV_2|<em>\infty \le \gamma |V_1 -
+V_2|</em>\infty\)을 받아들이고, 이로부터 “임의의 초기값 \(V_0\)에서
+시작해 \(T\)를 반복 적용하면 \(V^*\)로 수렴한다“는 결론이 왜
+따라 나오는지 논증하라.</p>
+<p><strong>빈칸채움형 폴백 버전</strong> (자유 논증이 어려운 경우):</p>
+<pre><code>가정: T는 gamma-축소 사상이고, V*는 T의 고정점(TV* = V*)이다.
+
+Step 1: ||V_1 - V*|| = ||TV_0 - TV*|| &lt;= gamma * ||______________||
+Step 2: 같은 방식으로 ||V_2 - V*|| = ||TV_1 - TV*|| &lt;= gamma * ||______________||
+                                    &lt;= gamma^2 * ||______________||
+Step 3: n번 반복하면 ||V_n - V*|| &lt;= gamma^n * ||______________||
+
+결론: gamma &lt; 1이므로 n이 커질수록 gamma^n은 ______________ (0에 가까워진다/커진다)
+      따라서 V_n은 ______________ (V*로 수렴한다/발산한다)
+</code></pre>
+<p><strong>정확성 확인</strong>: 이 결과가 “정책평가·가치반복이 초기값 \(V_0\)를
+아무렇게나(예: 전부 0으로) 잡아도 항상 같은 답에 도달한다“는 사실을
+왜 보장하는지 한 문장으로 설명하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-6-강화학습-알고리즘-reinforcement-learning-algorithms"><a class="header" href="#chapter-6-강화학습-알고리즘-reinforcement-learning-algorithms">Chapter 6. 강화학습 알고리즘 (Reinforcement Learning Algorithms)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter06_q_learning.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>1989년, 크리스 왓킨스(Chris Watkins)는 박사 학위 논문에서
-<strong>Q-learning</strong>이라는 알고리즘을 제안했다. 지난 장에서 배운 정책평가는
-환경의 전이확률 \(P(s’|s,a)\)를 정확히 알고 있어야 계산할 수 있었다 —
-체스라면 “이 수를 두면 상대는 어떻게 반응할 확률이 얼마인가“를 미리 다
-알아야 한다는 뜻인데, 현실에서는 대부분 이걸 알 수 없다. Q-learning의
-혁신은 <strong>환경의 모델을 전혀 몰라도</strong>, 그저 행동해보고 결과를 관찰하는
-것만으로 최적의 행동을 학습할 수 있다는 것을 보인 데 있다.</p>
-<h2 id="61-최적-정책은-항상-존재하는가"><a class="header" href="#61-최적-정책은-항상-존재하는가">6.1 최적 정책은 항상 존재하는가?</a></h2>
-<p>지금까지(Chapter 5)는 “주어진 정책을 평가하는 법“을 배웠다. 그런데
-강화학습이 정말로 풀고 싶은 문제는 “가장 좋은 정책을 찾는 것“이다.
-그런데 “가장 좋은 정책“이라는 말 자체가 사실 당연하지 않다 — 왜
-그런지, 그리고 그럼에도 왜 항상 존재하는지를 이 절에서 짚어본다.</p>
-<p>정책 사이의 비교는 상태별로 이루어진다: 정책 \(\pi\)가 정책
-\(\pi’\)보다 “더 낫다“는 것은, <strong>모든</strong> 상태 \(s\)에서 동시에
-\(V^\pi(s) \ge V^{\pi’}(s)\)일 때로 정의한다. 문제는, 어떤
-상태에서는 \(\pi\)가 더 낫고 다른 상태에서는 \(\pi’\)이 더 나을
-수 있다는 것이다 — 이 경우 두 정책은 아예 비교가 불가능하다(부분순서,
-partial order). “모든 정책 중 최댓값“이라는 개념이 의미를 가지려면,
-이렇게 서로 비교 불가능한 정책이 있을 수 있는데도 <strong>다른 모든
-정책보다 동시에 낫거나 같은</strong> 단 하나의 정책이 존재해야 하는데, 이건
-결코 자명하지 않다.</p>
-<p>실제로 강화학습의 표준 교과서로 꼽히는 Sutton과 Barto의 책
-(Reinforcement Learning: An Introduction, 2018)도 “적어도 하나의
-최적 정책이 항상 존재한다“고 서술만 할 뿐, 그 이유는 증명하지 않고
-넘어간다 — 이번 장에서 그 빈틈을 채운다.</p>
-<h2 id="62-벨만-최적방정식-유일한-답이-존재한다"><a class="header" href="#62-벨만-최적방정식-유일한-답이-존재한다">6.2 벨만 최적방정식: 유일한 답이 존재한다</a></h2>
-<p>Chapter 5.4에서 “벨만 기대방정식을 반복 계산하면 \(\gamma &lt;
-1\)일 때 항상 정확한 \(V^\pi\)로 수렴한다“는 사실을 결과만
-받아들이고 넘어갔다(수축 사상, contraction mapping 성질). 최적
-정책의 존재도 정확히 같은 도구로 증명된다.</p>
-<p>먼저 “최적 가치” \(V^*(s)\)를 다음 <strong>벨만 최적방정식</strong>으로
-정의한다 — 각 상태에서, 그 이후를 최적으로 이어갔을 때 가치가 가장
-커지는 행동을 골랐다고 가정했을 때 나오는 가치다:</p>
-<p>\[V^*(s) = \max_a \left[R(s,a) + \gamma \sum_{s’} P(s’|s,a)
-V^*(s’)\right]\]</p>
-<p>이 식은 얼핏 \(V^*\)를 “정의“하는 것처럼 보이지만, 사실은
-\(V^*\)가 스스로를 참조하는 순환적인 방정식이다 — 5.4장의
-\(V^\pi\) = 벨만 기대방정식(\(V^\pi\))과 완전히 같은 모양이다.
-그래서 “이 식을 만족하는 \(V\)가 정말 존재하는가? 존재한다면
-유일한가?“라는 질문이 그대로 남는다.</p>
-<p>여기서 5.4장과 똑같은 논리가 다시 등장한다: 벨만 최적방정식의
-우변을 하나의 <strong>연산자</strong> \(T\)로 보면(\(T(V)(s) := \max_a[\ldots]\),
-위 식의 대괄호 안), \(T\)도 \(\gamma\)-축소 사상이라는 것이
-증명돼 있다(5.4의 \(T^\pi\)와 형태만 다를 뿐 같은 성질 — 이
-학기에서는 마찬가지로 결과만 받아들인다). \(\gamma\)-축소
-사상은 반드시 유일한 고정점을 가지고, 어디서 출발해 반복해도 그
-고정점에 수렴한다(Banach 고정점 정리) — 그래서 벨만 최적방정식을
-만족하는 \(V^*\)가 <strong>존재하고, 유일하다.</strong></p>
-<h2 id="63-존재하는-가치로부터-최적-정책을-구성한다"><a class="header" href="#63-존재하는-가치로부터-최적-정책을-구성한다">6.3 존재하는 가치로부터 최적 정책을 구성한다</a></h2>
-<p>\(V^*\)가 존재하고 유일하다는 것과, “그 가치를 실제로 달성하는
-정책이 존재한다“는 것은 다른 이야기다 — 이 간극을 마지막으로 메운다.</p>
-<p>\(V^*\)를 알면, 각 상태에서 그 \(\max\)를 실제로 달성하는
-행동을 그대로 고르는 결정론적 정책을 만들 수 있다:</p>
-<p>\[\pi^*(s) \in \arg\max_a \left[R(s,a) + \gamma \sum_{s’}
-P(s’|s,a) V^*(s’)\right]\]</p>
-<p>이 정의가 항상 가능한 이유는 단순하다 — 각 상태에서 고를 수 있는
-행동의 집합 \(A(s)\)가 <strong>유한</strong>하기 때문에, 유한집합의 최댓값은
-항상 어딘가에서 달성된다(argmax가 빈 집합일 수 없다). “최적 정책이
-존재한다“는 결론의 뿌리를 파고들면, 결국 상태·행동 공간이
-유한하다는 아주 단순한 사실로 귀결된다.</p>
-<p>이렇게 만든 \(\pi^*\)를 실제로 따르면, 그 가치
-\(V^{\pi^*}\)가 정확히 \(V^*\)와 같아진다는 것(그리고 다른
-어떤 정책도 \(V^*\)보다 더 좋을 수 없다는 것)을 보일 수 있다 —
-증명 자체는 이 학기 범위를 넘지만, 핵심 아이디어는 이렇다:
-“\(\pi^*\)가 매 상태에서 벨만 최적방정식의 \(\max\)를 정확히
-달성하도록 골랐으니, \(\pi^*\)를 따랐을 때의 벨만 기대방정식이
-벨만 최적방정식과 완전히 같아진다.” 그래서 \(\pi^*\)는 어느
-상태에서 봐도 다른 모든 정책보다 동시에 낫거나 같다 — 6.1절에서
-걱정했던 “비교 불가능성” 문제가, \(V^*\)라는 공통의 목표를 통해
-해소된다.</p>
-<p>덤으로: 위 argmax에 동점자가 여럿이면 최적 정책도 여러 개 존재할 수
-있다 — 하지만 <strong>어떤 최적 정책을 골라도 그 가치는 항상 똑같이
-\(V^*\)다.</strong> “최적 가치“라는 숫자 자체는 흔들리지 않는다.</p>
-<p>이 증명이 보장하는 건 “존재“이지 “계산 가능성“이나 “저장
-가능성“이 아니라는 점도 중요하다 — 바둑처럼 상태 수가
-초천문학적으로 많으면(약 \(10^{170}\)), \(\pi^*\)가 이론적으로
-존재해도 모든 상태에 대해 표로 저장하는 것 자체가 불가능하다.
-다음 장(Chapter 7)에서 배울, 표 대신 신경망으로 근사하는 방법들이
-필요해지는 이유가 바로 여기서 나온다.</p>
-<p><strong>이 절의 결론은 다음 절부터 배울 Q-learning의 존재 이유이기도
-하다: Q-learning이 추정하려는 \(Q^*(s,a)\)는 “존재할지도 모르는
-목표“가 아니라, 유한한 MDP라면 반드시 존재하고 유일한 숫자다 —
-그래서 그 숫자를 향해 학습을 반복하는 것이 이론적으로 정당화된다.</strong></p>
-<h2 id="64-모델-기반-vs-모델-프리model-free"><a class="header" href="#64-모델-기반-vs-모델-프리model-free">6.4 모델 기반 vs 모델-프리(Model-Free)</a></h2>
-<p>지난 장의 정책평가는 “모델 기반(model-based)” 방법이었다 — 환경이 어떻게
-작동하는지(전이확률)를 알고 있다는 전제 하에 계산했다. 그런데 실제
-게임이나 로봇 제어에서는 “이 버튼을 누르면 정확히 어떤 일이 일어날지“에
-대한 완벽한 수학적 모델이 없는 경우가 대부분이다. <strong>Q-learning</strong>은
-모델을 몰라도, 직접 행동해서 얻은 경험(상태, 행동, 보상, 다음 상태)만으로
-학습하는 <strong>모델-프리</strong>(model-free) 방법이다.</p>
-<h2 id="65-q-함수-상태와-행동-둘-다에-대한-가치"><a class="header" href="#65-q-함수-상태와-행동-둘-다에-대한-가치">6.5 Q-함수: 상태와 행동 둘 다에 대한 가치</a></h2>
-<p>Chapter 5의 \(V(s)\)는 “상태의 가치“였다. Q-learning은 한 걸음 더
-세분화한 <strong>Q-함수</strong> \(Q(s,a)\) — “상태 \(s\)에서 행동 \(a\)를 한
-뒤, 그 이후 최적으로 행동했을 때의 기대 누적 보상” — 를 학습한다.
-\(Q(s,a)\)를 알면 최적 정책은 그냥 \(\pi^*(s) = \arg\max_a
-Q(s,a)\)로 즉시 얻어진다 — “상태의 가치“만으로는 어떤 행동을 골라야
-할지 알 수 없지만(전이확률을 알아야 함), “상태-행동의 가치“를 알면 바로
-최선의 행동을 고를 수 있다는 게 핵심 이점이다.</p>
-<h2 id="66-q-learning-업데이트-규칙"><a class="header" href="#66-q-learning-업데이트-규칙">6.6 Q-learning 업데이트 규칙</a></h2>
-<p>에이전트가 상태 \(s\)에서 행동 \(a\)를 하고, 보상 \(r\)을 받고,
-새 상태 \(s’\)에 도달할 때마다:</p>
+<h1 id="chapter-5-몬테카를로-방법-monte-carlo-methods"><a class="header" href="#chapter-5-몬테카를로-방법-monte-carlo-methods">Chapter 5. 몬테카를로 방법 (Monte Carlo Methods)</a></h1>
+<p>Chapter 4의 동적계획법은 강력하지만 치명적인 전제 하나에 기대고 있었다 —
+전이확률 \(P(s’|s,a)\)를 정확히 알고 있어야 한다는 것이다. 카드 게임을
+생각해보자: 딜러가 다음에 어떤 카드를 낼지에 대한 “확률표“를 미리 손에 쥐고
+있는 사람은 없다. 그런데도 사람은 게임을 반복해서 해보는 것만으로 점점
+나은 전략을 배운다. <strong>몬테카를로</strong>(Monte Carlo, MC) 방법은 바로 이 방식을
+알고리즘으로 옮긴 것이다 — 모델을 전혀 몰라도, <strong>에피소드를 끝까지
+실제로 플레이해보고, 그 결과(실제로 받은 리턴)를 그대로 가치의 추정치로
+쓴다.</strong></p>
+<h2 id="51-모델-없이-배운다-경험으로부터의-학습"><a class="header" href="#51-모델-없이-배운다-경험으로부터의-학습">5.1 모델 없이 배운다: 경험으로부터의 학습</a></h2>
+<p>가치함수의 정의를 다시 떠올려보자: \(V^\pi(s) = \mathbb{E}_\pi[G_t \mid
+s_t = s]\) — “이 상태에서 시작해서 정책을 따랐을 때 받을 리턴의
+<strong>기댓값</strong>“이다. 기댓값을 정확히 계산하려면 전이확률을 알아야 하지만,
+기댓값은 <strong>많은 샘플의 평균</strong>으로도 근사할 수 있다는 것이 통계학의 기본
+원리(대수의 법칙)다. MC는 정확히 이 원리를 쓴다 — 정책 \(\pi\)를 따라
+에피소드를 여러 번 플레이해서, 상태 \(s\)를 방문했을 때 그 이후
+실제로 받은 리턴들을 모아 평균 내면, 그게 곧 \(V^\pi(s)\)의 추정치가
+된다.</p>
+<h2 id="52-첫방문-mc-예측"><a class="header" href="#52-첫방문-mc-예측">5.2 첫방문 MC 예측</a></h2>
+<p>한 상태를 한 에피소드 안에서 여러 번 방문할 수도 있다(예: 게임에서
+같은 위치로 되돌아오는 경우). <strong>첫방문</strong>(first-visit) MC는 각
+에피소드에서 그 상태를 <strong>처음</strong> 방문했을 때의 리턴만 카운트한다(모든
+방문을 다 쓰는 <strong>모든방문</strong>(every-visit) MC도 있다 — 이번 학기에서는
+첫방문 방식만 다룬다):</p>
+<pre><code class="language-python">def mc_prediction(policy, env_sample_episode, n_episodes, gamma):
+    # env_sample_episode(policy) -&gt; [(state, action, reward), ...] 한 에피소드
+    returns_sum = {}
+    returns_count = {}
+    for _ in range(n_episodes):
+        episode = env_sample_episode(policy)
+        G = 0.0
+        visited = set()
+        for t in reversed(range(len(episode))):
+            s, a, r = episode[t]
+            G = r + gamma * G
+            if s not in visited:  # 첫방문만 카운트
+                visited.add(s)
+                returns_sum[s] = returns_sum.get(s, 0.0) + G
+                returns_count[s] = returns_count.get(s, 0) + 1
+    return {s: returns_sum[s] / returns_count[s] for s in returns_sum}
+</code></pre>
+<p>에피소드를 <strong>뒤에서부터 앞으로</strong> 훑는 이유: 리턴 \(G_t = R_t + \gamma
+G_{t+1}\)은 재귀적으로 정의되므로, 맨 마지막 스텝부터 거꾸로 누적해
+가면 매 스텝의 \(G_t\)를 한 번의 순회로 전부 계산할 수 있다 — Chapter
+4에서 본 “터미널부터 거꾸로 대입” 패턴과 같은 아이디어다.</p>
+<h2 id="53-mc-제어-정책-개선까지"><a class="header" href="#53-mc-제어-정책-개선까지">5.3 MC 제어: 정책 개선까지</a></h2>
+<p>예측(주어진 정책의 가치를 구하는 것)에서 제어(더 나은 정책을 찾는
+것)로 넘어가려면, Chapter 4의 정책 반복과 같은 틀을 쓴다 — 다만 이제는
+\(V(s)\) 대신 **Q(s,a)**를 추정한다(전이확률을 모르니 \(V\)만으로는
+“어느 행동이 최선인지” 판단할 수 없기 때문 — Chapter 6에서 다시 강조할
+이유다). 각 상태에서 Q값이 최대인 행동을 고르는 탐욕적 정책 개선을,
+\(\varepsilon\)-greedy(Chapter 2에서 배운 그 전략)와 함께 반복한다 —
+순수 탐욕적으로만 행동하면 한 번도 시도하지 않은 (상태, 행동) 쌍은
+영원히 그 가치를 알 수 없기 때문이다.</p>
+<pre><code class="language-python">import random
+
+def mc_control(env_step, n_states, n_actions, n_episodes, epsilon, gamma, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    counts = [[0] * n_actions for _ in range(n_states)]
+
+    def generate_episode():
+        s, episode = start_state, []
+        for _ in range(100):
+            a = random.randrange(n_actions) if random.random() &lt; epsilon \
+                else max(range(n_actions), key=lambda x: Q[s][x])
+            ns, r, done = env_step(s, a)
+            episode.append((s, a, r))
+            s = ns
+            if done:
+                break
+        return episode
+
+    for _ in range(n_episodes):
+        episode = generate_episode()
+        G, visited = 0.0, set()
+        for t in reversed(range(len(episode))):
+            s, a, r = episode[t]
+            G = r + gamma * G
+            if (s, a) not in visited:
+                visited.add((s, a))
+                counts[s][a] += 1
+                Q[s][a] += (G - Q[s][a]) / counts[s][a]  # Chapter 2의 증분 평균과 같은 갱신
+    return Q
+</code></pre>
+<p>작은 1차원 격자 환경(양 끝에 종료 보상 -1, +1)에서 5000 에피소드를
+학습시키면, 목표(+1) 쪽에 가까운 상태일수록 그 방향으로 가는 행동의
+Q값이 더 크게 학습된다 — 예를 들어 목표 바로 앞 상태에서는 목표 방향
+행동의 Q값이 거의 1.0에 가깝게 수렴한다.</p>
+<h2 id="54-중요도-샘플링-off-policy로-가는-다리"><a class="header" href="#54-중요도-샘플링-off-policy로-가는-다리">5.4 중요도 샘플링: off-policy로 가는 다리</a></h2>
+<p>지금까지의 MC는 “행동에 쓰는 정책“과 “가치를 평가하려는 정책“이
+같았다(<strong>on-policy</strong>) — \(\varepsilon\)-greedy로 행동하면서 그
+\(\varepsilon\)-greedy 정책 자체의 가치를 학습했다. 그런데 만약
+“무작위로 행동해서 모은 데이터“로 “탐욕적 정책의 가치“를 알고 싶다면
+(<strong>off-policy</strong>), 그냥 평균을 내면 안 된다 — 데이터를 모을 때 쓴 정책
+(<strong>행동 정책</strong>, behavior policy \(b\))과 평가하려는 정책(<strong>목표
+정책</strong>, target policy \(\pi\))이 다르면, 관찰된 리턴을 그대로 평균
+내는 것은 편향된(biased) 추정이 된다.</p>
+<p><strong>중요도 샘플링</strong>(importance sampling)은 각 에피소드의 리턴에
+“이 궤적이 \(\pi\)에서 나왔을 확률 대비 \(b\)에서 나왔을 확률의
+비율“을 가중치로 곱해서 이 편향을 보정한다:</p>
+<p>\[\rho = \prod_{t} \frac{\pi(a_t|s_t)}{b(a_t|s_t)}\]</p>
+<p>직관: 목표 정책 \(\pi\)라면 거의 선택하지 않았을 행동을 행동 정책
+\(b\)가 우연히 선택해서 얻은 궤적은, 그 희소함(비율 \(\rho\)가
+작음)만큼 가중치를 낮춰서 반영한다. 이 아이디어는 Chapter 9(DQN)의
+경험재현 버퍼(과거 정책들이 모은 데이터를 재사용)와, Chapter 11(PPO)의
+확률비(probability ratio)에서 형태를 바꿔 다시 등장한다.</p>
+<h2 id="55-mc의-한계와-다음-장"><a class="header" href="#55-mc의-한계와-다음-장">5.5 MC의 한계와 다음 장</a></h2>
+<p>MC는 모델이 필요 없다는 강력한 장점이 있지만, <strong>에피소드가 끝나야만</strong>
+학습할 수 있다는 근본적인 제약이 있다 — 리턴 \(G_t\) 자체가 에피소드
+끝까지의 보상을 다 더한 값이기 때문이다. 게임이 아주 길거나 끝나지 않는
+과업(continuing task)이라면 MC는 아예 쓸 수 없다. Chapter 6의 시간차
+학습은 “에피소드가 끝나기를 기다리지 않고, 한 스텝만 보고도 즉시
+갱신한다“는 완전히 다른 절충안으로 이 문제를 푼다.</p>
+<p><strong>몬테카를로는 “모델을 몰라도, 충분히 많이 시도해보면 평균이 진실에
+수렴한다“는 통계학의 가장 기본적인 원리를 강화학습에 그대로 옮긴
+것이다 — 다만 그 대가로, 결과를 알기 위해 항상 게임이 끝날 때까지
+기다려야 한다.</strong></p>
+<hr>
+<h2 id="연습문제-17"><a class="header" href="#연습문제-17">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 다음 1차원 격자 환경(<code>step</code> 함수, state 0~4, action
+0=왼쪽/1=오른쪽, 상태 0과 4가 종료 상태)에 대해 위 <code>mc_control</code>(핵심
+줄은 빈칸으로 남겨져 있다고 가정)을 완성하라:</p>
+<pre><code class="language-python">import random
+
+def step(s, a):
+    ns = s - 1 if a == 0 else s + 1
+    ns = max(0, min(4, ns))
+    if ns == 0:
+        return ns, -1.0, True
+    if ns == 4:
+        return ns, 1.0, True
+    return ns, 0.0, False
+
+def mc_control(env_step, n_states, n_actions, n_episodes, epsilon, gamma, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    counts = [[0] * n_actions for _ in range(n_states)]
+    # ADD ADDITIONAL CODE HERE!!
+    # generate_episode 내부 함수 정의(epsilon-greedy로 행동 선택, env_step으로 전이)
+    # 에피소드 생성 후 뒤에서부터 첫방문 리턴 계산, Q 증분 갱신
+
+    return Q
+
+random.seed(1)
+Q = mc_control(step, 5, 2, 5000, 0.1, 0.9, start_state=2)
+for s in range(5):
+    print(s, [round(v, 2) for v in Q[s]])
+# state 3에서 action 1(오른쪽, 목표 방향)의 Q값이 가장 커야 함
+</code></pre>
+<p><strong>2. (개념 서술)</strong> 첫방문 MC와 모든방문 MC는 같은 데이터에서 다른
+추정치를 낼 수 있다. 한 에피소드 안에서 같은 상태를 여러 번 방문하는
+구체적인 상황을 하나 예로 들고, 왜 두 방식의 추정치가 달라질 수 있는지
+설명하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> 행동 정책 \(b\)가 두 행동을
+각각 50%씩 고르는 무작위 정책이고, 목표 정책 \(\pi\)는 항상 행동
+0만 고르는 결정론적 정책이라 하자. 길이 2인 궤적
+\((s_0,a_0{=}0),(s_1,a_1{=}0)\)에 대해 중요도 샘플링 비율 \(\rho =
+\prod_t \frac{\pi(a_t|s_t)}{b(a_t|s_t)}\)를 계산하라. 만약 궤적의
+두 번째 행동이 \(a_1{=}1\)이었다면(\(\pi\)라면 절대 고르지 않았을
+행동) \(\rho\)가 어떻게 되는지도 계산하고, 그 결과가 왜 “이 궤적은
+목표 정책의 가치 추정에 전혀 기여하지 않는다“는 뜻인지 한 문장으로
+설명하라.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chapter-6-시간차-학습-temporal-difference-learning"><a class="header" href="#chapter-6-시간차-학습-temporal-difference-learning">Chapter 6. 시간차 학습 (Temporal-Difference Learning)</a></h1>
+<p>1989년, 크리스 왓킨스(Chris Watkins)는 박사 학위 논문에서 <strong>Q-learning</strong>
+이라는 알고리즘을 제안했다. Chapter 5의 몬테카를로는 모델 없이도 배울 수
+있었지만, 에피소드가 끝날 때까지 기다려야 리턴을 계산할 수 있었다.
+<strong>시간차 학습</strong>(Temporal-Difference, TD)은 이 기다림 자체를 없앤다 — 한
+스텝만 진행해보고, “지금 추정치“와 “방금 관찰한 보상 + 다음 상태의
+추정치“의 차이만큼 즉시 갱신한다. 모델도 필요 없고, 에피소드가 끝나기를
+기다릴 필요도 없는, 강화학습에서 가장 널리 쓰이는 절충안이다.</p>
+<h2 id="61-td0-한-스텝만-보고-갱신한다"><a class="header" href="#61-td0-한-스텝만-보고-갱신한다">6.1 TD(0): 한 스텝만 보고 갱신한다</a></h2>
+<p>Chapter 4의 벨만방정식 \(V^\pi(s) = R(s,\pi(s)) + \gamma V^\pi(s’)\)를
+다시 보자. 정책평가(모델 기반)는 이 식의 우변을 <strong>모든</strong> 다음 상태에
+대한 기댓값으로 계산했다. TD(0)는 그 기댓값을, 실제로 한 번 관찰한
+<strong>샘플 하나</strong>로 대체한다:</p>
+<p>\[V(s) \leftarrow V(s) + \alpha\big[r + \gamma V(s’) - V(s)\big]\]</p>
+<p>대괄호 안을 <strong>TD 오차</strong>(TD error)라 부른다. MC와 비교하면 핵심 차이가
+분명해진다: MC는 실제 리턴 \(G_t\)(에피소드 끝까지의 실제 보상 합)를
+목표로 쓰지만, TD는 \(r + \gamma V(s’)\)(한 스텝의 실제 보상 + 다음
+상태 가치의 <strong>추정치</strong>)를 목표로 쓴다 — “아직 확실하지 않은 추정치를
+가지고 스스로를 갱신한다“는 뜻에서 <strong>부트스트래핑</strong>(bootstrapping)이라
+부른다. 이 부트스트래핑 덕분에 에피소드가 끝나지 않아도, 심지어 끝이
+없는 과업에서도 매 스텝 학습이 가능해진다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>몬테카를로</th><th>시간차 학습(TD)</th></tr>
+</thead>
+<tbody>
+<tr><td>목표값</td><td>실제 리턴 \(G_t\)(에피소드 끝까지)</td><td>\(r + \gamma V(s’)\)(한 스텝 + 추정치)</td></tr>
+<tr><td>갱신 시점</td><td>에피소드가 끝난 뒤</td><td>매 스텝 즉시</td></tr>
+<tr><td>편향/분산</td><td>편향 없음(불편), 분산 큼</td><td>편향 있음(추정치를 씀), 분산 작음</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="62-q-learning-모델-없이-상태-행동-가치로"><a class="header" href="#62-q-learning-모델-없이-상태-행동-가치로">6.2 Q-learning: 모델 없이, 상태-행동 가치로</a></h2>
+<p>Chapter 4의 \(V(s)\)는 “상태의 가치“였다. 이것만으로는 다음 행동을
+고를 수 없다 — 어느 행동이 좋은 다음 상태로 이어지는지 알려면 전이확률
+\(P\)가 필요하기 때문이다(Chapter 5.3에서 이미 짚은 이유). <strong>Q-learning</strong>
+은 한 걸음 더 세분화한 <strong>Q-함수</strong> \(Q(s,a)\) — “상태 \(s\)에서 행동
+\(a\)를 한 뒤, 그 이후 최적으로 행동했을 때의 기대 누적 보상” — 를
+학습한다. \(Q(s,a)\)를 알면 최적 정책은 그냥 \(\pi^*(s) = \arg\max_a
+Q(s,a)\)로 즉시 얻어진다.</p>
+<p>에이전트가 상태 \(s\)에서 행동 \(a\)를 하고, 보상 \(r\)을 받고, 새
+상태 \(s’\)에 도달할 때마다:</p>
 <p>\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma \max_{a’} Q(s’,a’) -
 Q(s,a)\right]\]</p>
-<p>대괄호 안은 <strong>TD 오차</strong>(Temporal Difference error)라 부른다: “지금
-추정한 \(Q(s,a)\)“와 “방금 관찰한 보상 + 다음 상태에서 최선을 다했을
-때의 추정값“의 차이다. 이 오차만큼 \(Q(s,a)\)를 조금씩 보정해나간다 —
-Chapter 2의 경사하강법처럼, “현재 추정치와 더 나은 추정치의 차이만큼
-이동한다“는 같은 패턴이다.</p>
 <pre><code class="language-python">def q_learning_update(Q, s, a, r, s_next, alpha, gamma):
-    max_next_q = max(Q[s_next].values())
+    max_next_q = max(Q[s_next].values()) if isinstance(Q[s_next], dict) else max(Q[s_next])
     td_error = r + gamma * max_next_q - Q[s][a]
     Q[s][a] += alpha * td_error
     return Q
 </code></pre>
-<h2 id="67-탐험과-활용의-딜레마-ε-greedy"><a class="header" href="#67-탐험과-활용의-딜레마-ε-greedy">6.7 탐험과 활용의 딜레마: ε-greedy</a></h2>
-<p>새로운 식당을 고를 때를 생각해보자: 이미 맛있다고 아는 단골 식당에 또
-갈 것인가(<strong>활용, exploitation</strong>), 아니면 아직 안 가본 식당을
-시도해볼 것인가(<strong>탐험, exploration</strong>)? 강화학습 에이전트도 똑같은
-딜레마에 빠진다 — 지금까지 가장 좋다고 알려진 행동만 계속하면(순수
-활용) 더 좋은 행동을 영영 발견하지 못할 수 있고, 무작위로만
-행동하면(순수 탐험) 학습한 지식을 전혀 활용하지 못한다.</p>
-<p>행동을 고를 때, 확률 \(1-\varepsilon\)로는 현재까지 가장 좋다고 아는
-행동을 고르고(활용), 확률 \(\varepsilon\)로는 무작위 행동을 고른다
-(탐험):</p>
+<h2 id="63-sarsa-실제로-고른-행동을-쓴다"><a class="header" href="#63-sarsa-실제로-고른-행동을-쓴다">6.3 SARSA: 실제로 고른 행동을 쓴다</a></h2>
+<p>Q-learning의 목표값은 \(\max_{a’} Q(s’,a’)\) — <strong>항상 최선의 다음
+행동을 가정</strong>한다. 실제로 탐험(Chapter 2의 \(\varepsilon\)-greedy)
+때문에 그 최선의 행동을 안 골랐더라도 상관없이 말이다. <strong>SARSA</strong>
+(State-Action-Reward-State-Action, 이름 자체가 갱신에 필요한 다섯
+요소를 그대로 나열한 것이다)는 다르게 접근한다 — 실제로 다음에 <strong>고른</strong>
+행동 \(a’\)의 Q값을 목표로 쓴다:</p>
+<p>\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma Q(s’,a’) -
+Q(s,a)\right]\]</p>
+<p>이 차이 하나가 두 알고리즘을 근본적으로 갈라놓는다. Q-learning은
+행동 정책이 무엇이든(예: \(\varepsilon\)-greedy로 무작위 탐험을 섞어도)
+<strong>목표 정책</strong>(최적 정책)의 가치를 직접 학습한다 — Chapter 5.4의 언어로
+<strong>off-policy</strong>다. SARSA는 지금 실제로 따르고 있는 정책(탐험을 포함한
+\(\varepsilon\)-greedy 그 자체) 의 가치를 학습한다 — <strong>on-policy</strong>다.</p>
 <pre><code class="language-python">import random
 
-def epsilon_greedy(Q, s, epsilon, actions):
+def epsilon_greedy(Q, s, epsilon, n_actions):
     if random.random() &lt; epsilon:
-        return random.choice(actions)
-    return max(actions, key=lambda a: Q[s][a])
+        return random.randrange(n_actions)
+    return max(range(n_actions), key=lambda a: Q[s][a])
+
+def sarsa_train(env_step, n_states, n_actions, n_episodes, alpha, gamma, epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    for _ in range(n_episodes):
+        s = start_state
+        a = epsilon_greedy(Q, s, epsilon, n_actions)
+        for _ in range(200):
+            ns, r, done = env_step(s, a)
+            na = epsilon_greedy(Q, ns, epsilon, n_actions)
+            Q[s][a] += alpha * (r + gamma * Q[ns][na] - Q[s][a])  # 실제로 고른 na를 사용
+            s, a = ns, na
+            if done:
+                break
+    return Q
 </code></pre>
-<p>학습이 진행될수록 \(\varepsilon\)을 서서히 줄여가는 것(decay)이 흔한
-전략이다 — 초반에는 많이 탐험하고, Q값이 신뢰할 만해지면 점점 활용
-위주로 전환한다.</p>
-<h2 id="68-q-learning이-왜-수렴하는가직관"><a class="header" href="#68-q-learning이-왜-수렴하는가직관">6.8 Q-learning이 왜 수렴하는가(직관)</a></h2>
-<p>6.2~6.3에서 확인했듯이 \(Q^*(s,a)\)는 “존재할지도 모르는 목표“가
-아니라 유한한 MDP라면 반드시 존재하고 유일한 숫자다. Q-learning은
+<h2 id="64-절벽-걷기-두-알고리즘이-실제로-다른-정책을-배운다"><a class="header" href="#64-절벽-걷기-두-알고리즘이-실제로-다른-정책을-배운다">6.4 절벽 걷기: 두 알고리즘이 실제로 다른 정책을 배운다</a></h2>
+<p>“절벽 걷기”(Cliff Walking) 환경 — 시작점에서 목표까지 가는 길 바로
+옆에 떨어지면 큰 벌점(-100)을 받는 절벽이 있는 격자 — 에서 두
+알고리즘을 각각 500 에피소드 학습시키면, 놀랍도록 다른 경로를
+배운다:</p>
+<ul>
+<li><strong>Q-learning</strong>: 절벽 바로 옆을 스치듯 지나가는 <strong>가장 짧은</strong> 경로를
+배운다 — 목표 정책(탐욕적) 관점에서는 이게 진짜 최적이기 때문이다.</li>
+<li><strong>SARSA</strong>: 절벽에서 멀리 돌아가는 <strong>더 안전한</strong> 경로를 배운다 —
+학습 중에는 여전히 \(\varepsilon\)-greedy로 가끔 무작위 행동을
+섞는데, 절벽 바로 옆을 지나가는 정책을 학습하면 그 무작위 행동
+때문에 실제로 가끔 절벽에 떨어져 큰 손해를 본다. SARSA는 <strong>자신이
+실제로 행동하는 방식</strong>(탐험 포함)까지 감안해서 가치를 매기므로, 그
+위험을 피하는 경로를 선호하게 된다.</li>
+</ul>
+<p><strong>Q-learning은 “이상적으로 항상 최선을 다한다면“이라는 가정 아래 최적
+경로를 찾고, SARSA는 “실제로 가끔 실수(탐험)할 수 있다“는 현실을 감안한
+경로를 찾는다</strong> — 어느 쪽이 “더 낫다“가 아니라, 애초에 답하는 질문이
+다르다는 것이 이 예제가 보여주는 핵심이다.</p>
+<h2 id="65-왜-q-learning이-수렴하는가직관"><a class="header" href="#65-왜-q-learning이-수렴하는가직관">6.5 왜 Q-learning이 수렴하는가(직관)</a></h2>
+<p>Chapter 4.5에서 확인했듯이 \(Q^<em>(s,a)\)는 유한한 MDP라면 반드시
+존재하고 유일한 숫자다(벨만 최적방정식, 바나흐 고정점 정리). Q-learning은
 그 목표를 직접 계산하지 않고, 샘플 기반 업데이트만으로 근사하는데도
-정확히 그 값에 도달한다는 것이 증명돼 있다: \(Q(s,a)\)가 실제로
-어떤 행동으로 데이터를 모았는지(탐험 정책)와 무관하게, <strong>충분히
-모든 상태-행동 쌍을 무한히 방문하고 학습률 \(\alpha\)를 적절히
-줄여나가면</strong> 참값 \(Q^*(s,a)\)로 수렴한다는 것이 증명돼 있다
-(Robbins-Monro 조건). 직관적으로는: TD
-오차가 0이 되는 지점이 정확히 벨만 최적방정식 \(Q^*(s,a) = R(s,a) +
-\gamma \max_{a’} Q^*(s’,a’)\)을 만족하는 지점이므로, TD 오차를 계속
-줄여나가는 이 업데이트는 결국 그 고정점으로 수렴하게 된다.</p>
-<h2 id="69-q-learning-vs-sarsa-참고"><a class="header" href="#69-q-learning-vs-sarsa-참고">6.9 Q-learning vs SARSA (참고)</a></h2>
-<p>Q-learning은 업데이트할 때 \(\max_{a’} Q(s’,a’)\)(<strong>항상 최선의 다음
-행동을 가정</strong>)을 쓴다 — 실제로 탐험 때문에 그 최선의 행동을 안
-골랐더라도. 이런 방식을 off-policy라 부른다. (SARSA는 실제로 고른
-다음 행동의 Q값을 쓰는 on-policy 방법이다 — 이 학기에서는 다루지
-않지만, Q-learning의 설계 선택을 이해하는 데 참고가 된다.)</p>
-<p><strong>Q-learning은 “환경을 몰라도 배울 수 있다“는 것을 증명함으로써,
-강화학습을 이론적 호기심에서 실제로 로봇·게임·추천시스템에 적용 가능한
-도구로 바꾼 전환점이다.</strong></p>
+정확히 그 값에 도달한다는 것이 증명돼 있다: <strong>충분히 모든 상태-행동
+쌍을 무한히 방문하고 학습률 \(\alpha\)를 적절히 줄여나가면</strong> 참값
+\(Q^</em>(s,a)\)로 수렴한다(Robbins-Monro 조건). 직관적으로는: TD 오차가
+0이 되는 지점이 정확히 벨만 최적방정식을 만족하는 지점이므로, TD 오차를
+계속 줄여나가는 이 업데이트는 결국 그 고정점으로 수렴하게 된다.</p>
+<p><strong>시간차 학습은 몬테카를로의 “모델이 필요 없다“는 장점과, 동적계획법의
+“한 스텝만 보고도 갱신한다“는 장점을 하나로 합친 것이다 — 그리고
+Q-learning과 SARSA의 차이는, 똑같은 부트스트래핑 아이디어를 “이상적인
+목표 정책“에 적용하느냐 “실제 행동 정책“에 적용하느냐라는, 아주 작지만
+결과는 크게 갈리는 선택에서 나온다.</strong></p>
 <hr>
-<h2 id="연습문제-17"><a class="header" href="#연습문제-17">연습문제</a></h2>
+<h2 id="연습문제-18"><a class="header" href="#연습문제-18">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>q_learning_train</code>을 완성하라(핵심 줄은
 빈칸으로 남겨져 있다고 가정):</p>
 <pre><code class="language-python">import random
@@ -3652,34 +3805,258 @@ def q_learning_train(transition, n_states, n_actions, n_episodes, alpha, gamma, 
             s = s_next
     return Q
 </code></pre>
-<p><strong>2. (손유도, Tier A — 자유 유도)</strong> Q-learning의 업데이트
+<p><strong>2. (개념 서술)</strong> 6.4절의 절벽 걷기 예제에서, 만약 학습이 끝난 뒤
+\(\varepsilon\)을 0으로 낮춰서(더 이상 탐험하지 않고) SARSA가 배운
+정책을 실행한다면, 그래도 여전히 먼 길로 돌아갈지, 아니면 짧은 길을
+택하게 될지 예측하고 이유를 설명하라. (힌트: SARSA가 학습한 Q값
+자체는 “탐험이 있는 상황“을 가정하고 계산된 값이라는 점을 생각하라.)</p>
+<p><strong>3. (손유도, Tier A — 자유 유도)</strong> Q-learning의 업데이트
 \(Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma \max_{a’} Q(s’,a’) -
-Q(s,a)]\)가 참값 \(Q^*(s,a)\)로 수렴하기 위해 필요한 조건을 다음
+Q(s,a)]\)가 참값 \(Q^<em>(s,a)\)로 수렴하기 위해 필요한 조건을 다음
 세 가지로 나눠 논증하라: (1) TD 오차가 정확히 0이 되는 \(Q\)가 벨만
-최적방정식 \(Q^*(s,a) = R(s,a) + \gamma \max_{a’} Q^*(s’,a’)\)의
+최적방정식 \(Q^</em>(s,a) = R(s,a) + \gamma \max_{a’} Q^*(s’,a’)\)의
 해와 같다는 것(단순 대수적 정리). (2) \(\alpha\)가 너무 크면(예:
-항상 \(\alpha=1\)) 왜 수렴이 불안정해지는지(Chapter 2의 학습률 문제와
-연결지어). (3) 모든 상태-행동 쌍이 <strong>무한히 많이 방문돼야</strong> 수렴이
-보장되는 이유(ε-greedy 탐험이 없다면 어떤 상태-행동 쌍은 영원히 시도되지
-않을 수 있다는 점과 연결지어).</p>
+항상 \(\alpha=1\)) 왜 수렴이 불안정해지는지(Chapter 2의 증분 평균
+갱신과 연결지어). (3) 모든 상태-행동 쌍이 <strong>무한히 많이 방문돼야</strong>
+수렴이 보장되는 이유(ε-greedy 탐험이 없다면 어떤 상태-행동 쌍은 영원히
+시도되지 않을 수 있다는 점과 연결지어).</p>
 <p><strong>정확성 확인</strong>: 위 세 가지 논증이 각각 Q-learning 알고리즘의 어느
 부분(TD 오차 계산, <code>alpha</code> 파라미터, <code>epsilon_greedy</code> 함수)에
 대응하는지 짝지어라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-7-심층강화학습-deep-reinforcement-learning"><a class="header" href="#chapter-7-심층강화학습-deep-reinforcement-learning">Chapter 7. 심층강화학습 (Deep Reinforcement Learning)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter07_dqn_tricks.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<h1 id="chapter-7-n-step-부트스트래핑-적격흔적-그리고-계획-n-step-bootstrapping-eligibility-traces--planning"><a class="header" href="#chapter-7-n-step-부트스트래핑-적격흔적-그리고-계획-n-step-bootstrapping-eligibility-traces--planning">Chapter 7. n-step 부트스트래핑, 적격흔적, 그리고 계획 (n-Step Bootstrapping, Eligibility Traces &amp; Planning)</a></h1>
+<p>Chapter 5의 몬테카를로와 Chapter 6의 TD(0)는 언뜻 서로 다른 두 극단처럼
+보인다 — MC는 에피소드 <strong>끝까지</strong>의 실제 보상을 목표로 쓰고, TD(0)는
+<strong>한 스텝</strong>만 보고 나머지는 추정치로 대체한다. 이번 장은 이 둘이 사실
+“몇 스텝을 실제로 볼 것인가“라는 하나의 다이얼 위의 양 끝일 뿐임을
+보이고, 그 사이의 모든 지점을 아우르는 방법을 다룬다. 마지막으로는
+경험뿐 아니라 학습된 모델도 함께 활용하는 계획(planning)까지 살펴본다.</p>
+<h2 id="71-n-step-td-mc와-td0-사이의-다이얼"><a class="header" href="#71-n-step-td-mc와-td0-사이의-다이얼">7.1 n-step TD: MC와 TD(0) 사이의 다이얼</a></h2>
+<p>TD(0)의 목표값은 \(r + \gamma V(s’)\)(1 스텝의 실제 보상 + 나머지는
+추정치)였다. 이걸 일반화해서, \(n\) 스텝만큼 실제로 관찰한 보상을 쓰고
+그 이후는 추정치로 대체하면:</p>
+<p>\[G_t^{(n)} = R_t + \gamma R_{t+1} + \cdots + \gamma^{n-1} R_{t+n-1} +
+\gamma^n V(s_{t+n})\]</p>
+<p>\(n=1\)이면 정확히 TD(0)이고, \(n \to \infty\)(에피소드 끝까지)이면
+정확히 몬테카를로다. \(n\)을 늘릴수록 실제 관찰에 더 의존하게 되어
+<strong>편향은 줄고 분산은 커진다</strong>(Chapter 6.1의 표에서 본 그 트레이드오프의
+연속선상에 있다) — \(n\)은 그 사이 어딘가에서 상황에 맞게 고르는
+하이퍼파라미터다.</p>
+<pre><code class="language-python">def n_step_td(env_step, n, n_episodes, alpha, gamma, n_states, start_state):
+    V = [0.0] * n_states
+    for _ in range(n_episodes):
+        states, rewards = [start_state], []
+        s, T, t = start_state, float('inf'), 0
+        while True:
+            if t &lt; T:
+                a = 0 if False else __import__('random').randrange(2)  # 데모용 무작위 정책
+                ns, r, done = env_step(s, a)
+                states.append(ns)
+                rewards.append(r)
+                if done:
+                    T = t + 1
+                s = ns
+            tau = t - n + 1  # tau번째 상태를 지금 갱신
+            if tau &gt;= 0:
+                G = sum(gamma ** (i - tau - 1) * rewards[i]
+                        for i in range(tau, min(tau + n, len(rewards))))
+                if tau + n &lt; T:
+                    G += gamma ** n * V[states[tau + n]]
+                V[states[tau]] += alpha * (G - V[states[tau]])
+            if tau == T - 1:
+                break
+            t += 1
+    return V
+</code></pre>
+<p><code>tau</code>(갱신 대상 시점)가 항상 현재 시점보다 \(n-1\)만큼 뒤처져 있다는
+점에 주목하라 — \(n\) 스텝만큼의 실제 보상이 다 모여야 그 목표값을
+계산할 수 있기 때문이다. 7개 상태짜리 1차원 격자에서 <code>n=3</code>으로 학습시켜
+보면, 목표(오른쪽 끝, +1)에 가까운 상태일수록 가치가 매끄럽게 커지는
+것을 확인할 수 있다(예: 왼쪽 끝 -0.84 근처에서 오른쪽으로 갈수록 0.69
+근처까지 단조 증가).</p>
+<h2 id="72-적격흔적-모든-n을-동시에"><a class="header" href="#72-적격흔적-모든-n을-동시에">7.2 적격흔적: 모든 n을 동시에</a></h2>
+<p>n-step TD는 매번 \(n\)을 하나로 고정해야 한다. <strong>적격흔적</strong>
+(eligibility trace)은 다른 접근을 쓴다 — 모든 상태에 “최근에 얼마나
+자주, 얼마나 최근에 방문했는가“를 나타내는 흔적 \(e(s)\)를 붙여두고,
+TD 오차가 발생할 때마다 <strong>그 흔적의 크기에 비례해서 모든 상태를 동시에</strong>
+갱신한다:</p>
+<p>\[e(s) \leftarrow \gamma\lambda , e(s) + \mathbb{1}[s = s_t], \qquad
+V(s) \leftarrow V(s) + \alpha , \delta_t , e(s) ; \text{(모든 } s \text{에 대해)}\]</p>
+<p>\(\lambda \in [0,1]\)이 새로운 다이얼이다 — \(\lambda=0\)이면 흔적이
+매 스텝 거의 사라져서 TD(0)와 같아지고, \(\lambda=1\)이면 흔적이
+전혀 안 줄어들어 몬테카를로에 가까워진다. **TD(\(\lambda\))**라는
+이름은 정확히 이 다이얼에서 왔다 — n-step TD가 “\(n\) 하나를 고정해서
+전방(forward)으로 내다보는” 방식이라면, 적격흔적은 “과거 방문 이력에
+흔적을 남겨서 후방(backward)으로 갱신을 퍼뜨리는” 방식으로 사실상 같은
+효과를 낸다는 것이 알려져 있다(전방 관점과 후방 관점의 등가성 — 자세한
+증명은 이 학기 범위를 넘는다).</p>
+<h2 id="73-계획과-학습-dyna-q"><a class="header" href="#73-계획과-학습-dyna-q">7.3 계획과 학습: Dyna-Q</a></h2>
+<p>지금까지의 모델-프리 방법(MC, TD)은 경험을 한 번 쓰고 나면 버렸다.
+그런데 그 경험에는 사실 “이 상태에서 이 행동을 하면 대략 이런 보상과
+다음 상태가 나오더라“라는, 환경에 대한 정보가 담겨 있다. <strong>Dyna-Q</strong>는
+이 정보를 버리지 않고 간단한 <strong>모델</strong>로 저장해뒀다가, 실제 환경과
+상호작용하는 사이사이에 그 모델을 이용해 <strong>가상의</strong> 추가 학습(계획,
+planning)을 끼워 넣는다:</p>
+<pre><code class="language-python">import random
+
+def dyna_q(env_step, n_states, n_actions, n_episodes, planning_steps, alpha, gamma, epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    model = {}  # (s, a) -&gt; (r, s') 실제로 관찰한 것을 그대로 저장(결정론적 환경 가정)
+    for _ in range(n_episodes):
+        s = start_state
+        for _ in range(100):
+            a = random.randrange(n_actions) if random.random() &lt; epsilon \
+                else max(range(n_actions), key=lambda x: Q[s][x])
+            ns, r, done = env_step(s, a)
+            Q[s][a] += alpha * (r + gamma * max(Q[ns]) - Q[s][a])  # 1) 실제 경험으로 학습
+            model[(s, a)] = (r, ns)                                 # 2) 모델 갱신
+            for _ in range(planning_steps):                         # 3) 모델로 가상 학습(계획)
+                (ps, pa), (pr, pns) = random.choice(list(model.items()))
+                Q[ps][pa] += alpha * (pr + gamma * max(Q[pns]) - Q[ps][pa])
+            s = ns
+            if done:
+                break
+    return Q
+</code></pre>
+<p><code>planning_steps</code>가 클수록 실제 환경과 상호작용을 한 번 할 때마다 그
+경험을 모델을 통해 몇 번이고 “복습“하는 셈이다. 실제로 같은 격자
+환경에서, 목표 상태(state 3, 오른쪽으로 가는 행동)의 Q값이 0.5를
+넘어서기까지 필요한 에피소드 수를 비교하면 차이가 극적이다:
+<code>planning_steps=0</code>(순수 Q-learning)은 253 에피소드가 걸리는데,
+<code>planning_steps=10</code>은 단 9 에피소드만에 도달한다 — 매 실제 스텝마다
+모델을 이용해 10번씩 추가로 학습하니, 같은 실제 경험으로 훨씬 더 많은
+것을 뽑아내는 것이다.</p>
+<h2 id="74-세-가지-축을-한자리에"><a class="header" href="#74-세-가지-축을-한자리에">7.4 세 가지 축을 한자리에</a></h2>
+<p>이번 장에서 다룬 것들을 한 표로 정리하면, 이번 학기 Block A 전체가
+사실 “부트스트래핑을 얼마나 할 것인가“라는 하나의 질문에 대한 서로
+다른 답이었다는 게 보인다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>방법</th><th>목표값</th><th>특징</th></tr>
+</thead>
+<tbody>
+<tr><td>MC (Chapter 5)</td><td>실제 리턴 \(G_t\)</td><td>편향 없음, 분산 큼, 에피소드가 끝나야 함</td></tr>
+<tr><td>TD(0) (Chapter 6)</td><td>\(r + \gamma V(s’)\)</td><td>편향 있음, 분산 작음, 매 스텝 학습</td></tr>
+<tr><td>n-step TD</td><td>\(n\) 스텝 실제 + 나머지 추정</td><td>둘 사이의 절충, \(n\)이 다이얼</td></tr>
+<tr><td>TD(\(\lambda\))</td><td>모든 \(n\)을 흔적으로 가중평균</td><td>\(n\)을 고정할 필요 없음, \(\lambda\)가 다이얼</td></tr>
+<tr><td>Dyna-Q</td><td>TD(0) + 학습된 모델로 계획</td><td>모델-프리와 모델-기반을 결합</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>부트스트래핑(추정치로 스스로를 갱신하는 것)을 아예 안 하는 것(MC)과
+매 스텝 하는 것(TD)은 두 극단일 뿐이다 — 실전에서는 그 사이 어딘가가,
+그리고 경험을 재사용하는 계획까지 더하는 것이 대체로 더 낫다는 것이
+이번 장의 결론이다.</strong></p>
+<hr>
+<h2 id="연습문제-19"><a class="header" href="#연습문제-19">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>dyna_q</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)를
+완성하고, <code>planning_steps</code>를 0과 10으로 바꿔가며 같은 상태-행동의
+Q값이 0.5를 넘는 데 걸리는 에피소드 수를 비교하라:</p>
+<pre><code class="language-python">import random
+
+def dyna_q(env_step, n_states, n_actions, n_episodes, planning_steps, alpha, gamma, epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    model = {}
+    # ADD ADDITIONAL CODE HERE!!
+    # 1) epsilon-greedy로 행동 선택, 환경과 상호작용, Q-learning 갱신
+    # 2) model[(s,a)] = (r, ns)로 모델 저장
+    # 3) planning_steps번, model에서 무작위로 (s,a)-&gt;(r,ns)를 뽑아 같은 방식으로 Q 갱신
+
+    return Q
+</code></pre>
+<p><strong>2. (개념 서술)</strong> Dyna-Q의 모델은 환경이 결정론적이라고(같은 (s,a)는
+항상 같은 (r,s’)를 낸다고) 가정하고 있다. 만약 환경이 확률적이라면
+(같은 (s,a)에서도 매번 다른 s’가 나올 수 있다면) <code>model[(s,a)] = (r, ns)</code>처럼 마지막 경험 하나만 저장하는 방식에 어떤 문제가 생길지
+설명하고, 이를 개선할 방법을 한 가지 제안하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> \(n\)-step 리턴 \(G_t^{(n)} =
+\sum_{k=0}^{n-1} \gamma^k R_{t+k} + \gamma^n V(s_{t+n})\)에서
+\(n=1\)로 놓으면 정확히 TD(0)의 목표값 \(R_t + \gamma V(s_{t+1})\)이
+됨을 확인하고, \(n \to \infty\)이면서 에피소드가 유한한 길이 \(T\)에서
+끝난다고 할 때(\(V(s_T) = 0\)) \(G_t^{(n)}\)이 몬테카를로의 실제
+리턴 \(G_t = \sum_{k=0}^{T-t-1} \gamma^k R_{t+k}\)와 같아짐을
+보여라.</p>
+<p><strong>정확성 확인</strong>: 이 결과가 왜 “TD(0)와 MC가 n-step TD의 두 특수한
+경우“라는 주장을 뒷받침하는지 한 문장으로 설명하라.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chapter-8-block-a-캡스톤-팀-프로젝트와-총정리-block-a-capstone-team-project--review-1"><a class="header" href="#chapter-8-block-a-캡스톤-팀-프로젝트와-총정리-block-a-capstone-team-project--review-1">Chapter 8. Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone: Team Project &amp; Review)</a></h1>
+<p>Chapter 2~7은 밴딧, MDP, 동적계획법, 몬테카를로, 시간차 학습, n-step까지
+강화학습의 표 기반(tabular) 이론 전체를 훑었다. 이번 장은 새 개념 대신,
+이 이론들을 Gymnasium의 표 기반 환경에서 직접 구현해보고 비교하며,
+중간고사를 준비하는 자리다.</p>
+<h2 id="81-프로젝트-구조"><a class="header" href="#81-프로젝트-구조">8.1 프로젝트 구조</a></h2>
+<ul>
+<li><strong>환경</strong>: Gymnasium의 표 기반(이산 상태·행동) 환경 중 하나를 고른다
+— <code>FrozenLake-v1</code>, <code>CliffWalking-v0</code>, <code>Taxi-v3</code> 등이 좋은 후보다.</li>
+<li><strong>적용</strong>: Chapter 4~7의 알고리즘 중 <strong>최소 두 가지</strong>(예: Q-learning과
+SARSA, 또는 MC 제어와 n-step TD)를 같은 환경에 적용하고 학습 곡선과
+최종 정책을 비교한다.</li>
+<li><strong>필수 요구사항 — 수식적 정당화 최소 1개</strong>: 예를 들어 (1) Q-learning과
+SARSA를 비교했다면 Chapter 6.3~6.4의 on-policy/off-policy 차이로 두
+정책이 왜 다르게 학습됐는지 설명, (2) \(\varepsilon\)이나 \(\alpha\)를
+바꿔가며 실험했다면 Chapter 6.5의 수렴 조건과 연결지어 설명, (3)
+Dyna-Q를 썼다면 Chapter 7.3의 계획 스텝 수와 학습 속도의 관계를 직접
+측정해서 제시.</li>
+</ul>
+<h2 id="82-발표-블록-1"><a class="header" href="#82-발표-블록-1">8.2 발표 (블록 1)</a></h2>
+<p>팀당 5~7분: 문제 정의(환경 설명, 1분) → 적용한 알고리즘과 이유(2분) →
+학습 곡선/최종 정책 비교와 수식적 정당화(2~3분) → 잘 안 됐던 부분과
+원인 진단(1분).</p>
+<h2 id="83-peer-review-블록-2"><a class="header" href="#83-peer-review-블록-2">8.3 Peer-Review (블록 2)</a></h2>
+<p>다른 두 팀의 발표를 다음 체크리스트로 평가한다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>항목</th><th>확인할 것</th></tr>
+</thead>
+<tbody>
+<tr><td>환경 설명</td><td>상태·행동·보상이 명확히 정의됐는가</td></tr>
+<tr><td>알고리즘 선택</td><td>표 기반 환경에 적합한 방법을 골랐는가</td></tr>
+<tr><td>수식적 정당화</td><td>요구사항을 충족했고, 실제로 관찰한 결과와 일치하는가</td></tr>
+<tr><td>결과의 정직성</td><td>학습이 불안정했던 구간을 숨기지 않고 원인을 분석했는가</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="84-중간고사-대비-총정리-블록-3"><a class="header" href="#84-중간고사-대비-총정리-블록-3">8.4 중간고사 대비 총정리 (블록 3)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>장</th><th>핵심 질문</th><th>다시 봐야 할 개념</th></tr>
+</thead>
+<tbody>
+<tr><td>Ch02</td><td>상태 없이도 탐험-활용 딜레마가 존재하는가</td><td>ε-greedy, 낙관적 초기화, UCB</td></tr>
+<tr><td>Ch03</td><td>강화학습 문제를 어떻게 수학적으로 정식화하는가</td><td>MDP 5요소, 마르코프 성질, 할인율</td></tr>
+<tr><td>Ch04</td><td>모델을 알 때 최적 정책을 어떻게 계산하는가</td><td>벨만방정식, 정책반복/가치반복, 축소 사상</td></tr>
+<tr><td>Ch05</td><td>모델 없이, 에피소드 결과만으로 배울 수 있는가</td><td>첫방문 MC, MC 제어, 중요도 샘플링</td></tr>
+<tr><td>Ch06</td><td>에피소드가 끝나길 기다리지 않고 배울 수 있는가</td><td>TD 오차, Q-learning vs SARSA</td></tr>
+<tr><td>Ch07</td><td>MC와 TD 사이, 그리고 경험 재사용은 어떻게 하는가</td><td>n-step TD, 적격흔적, Dyna-Q</td></tr>
+</tbody>
+</table>
+</div>
+<p>중간고사는 이 여섯 장의 개념을 새로운 MDP에 적용하는 문제(손유도
+포함)로 구성된다 — 특히 “벨만방정식을 터미널부터 거꾸로 대입해서
+직접 풀기”(Chapter 4)와 “TD 오차의 수렴 조건 논증하기”(Chapter 6)
+패턴이 다른 MDP에도 그대로 적용되는지 확인하는 것이 좋은 복습이다.</p>
+<p><strong>Chapter 2~7에서 배운 모든 알고리즘은 결국 하나의 질문에 대한 답이다
+— “미래의 불확실한 보상을 지금 어떻게 수치화할 것인가?” 이제 이
+질문에 신경망을 결합해서, 표에 담을 수 없을 만큼 큰 문제로 나아갈
+차례다.</strong></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chapter-9-함수근사와-dqn-function-approximation--deep-q-networks"><a class="header" href="#chapter-9-함수근사와-dqn-function-approximation--deep-q-networks">Chapter 9. 함수근사와 DQN (Function Approximation &amp; Deep Q-Networks)</a></h1>
 <p>2013년, 딥마인드는 Q-learning의 Q-테이블을 신경망으로 통째로 바꾼
 알고리즘으로 Atari 2600 게임 여러 개를 학습시켰다 — 게임의 규칙을 전혀
 알려주지 않고, 오직 화면 픽셀과 점수만 보고서. <strong>DQN</strong>(Deep
 Q-Network)이라 불린 이 결과는 2015년 Nature에 게재되며, 여러 게임에서
 사람 수준 또는 그 이상의 성능을 보였다.</p>
-<h2 id="71-q-테이블이-감당-못-하는-규모"><a class="header" href="#71-q-테이블이-감당-못-하는-규모">7.1 Q-테이블이 감당 못 하는 규모</a></h2>
+<h2 id="91-q-테이블이-감당-못-하는-규모"><a class="header" href="#91-q-테이블이-감당-못-하는-규모">9.1 Q-테이블이 감당 못 하는 규모</a></h2>
 <p>Chapter 6의 Q-learning은 <code>Q[s][a]</code>라는 <strong>표</strong>(테이블)에 모든 상태-행동
 쌍의 값을 저장했다. 이건 상태가 몇백 개 수준일 때는 잘 작동하지만,
 Atari 게임의 화면(가로세로 수백 픽셀, 색상 조합)이 만들어낼 수 있는
 상태의 가짓수는 사실상 무한에 가깝다 — 테이블에 다 담을 수도 없고,
-대부분의 상태는 학습 중에 단 한 번도 안 나타난다.</p>
-<h2 id="72-q-함수를-신경망으로-근사"><a class="header" href="#72-q-함수를-신경망으로-근사">7.2 Q-함수를 신경망으로 근사</a></h2>
+대부분의 상태는 학습 중에 단 한 번도 안 나타난다. Chapter 4.5에서 짚은
+“바둑처럼 상태가 초천문학적으로 많으면 표로 저장하는 것 자체가
+불가능하다“는 문제가 바로 여기서 실제로 닥친다.</p>
+<h2 id="92-q-함수를-신경망으로-근사"><a class="header" href="#92-q-함수를-신경망으로-근사">9.2 Q-함수를 신경망으로 근사</a></h2>
 <p>DQN의 아이디어는 단순하다: 테이블 대신 <strong>신경망</strong>으로 \(Q(s,a)\)를
 근사하자(\(Q(s,a;\theta)\), \(\theta\)는 신경망 가중치). 비슷한
 화면(상태)은 신경망을 통해 비슷한 Q값을 내게 되므로, 한 번도 정확히 본
@@ -3691,7 +4068,22 @@ Q(s,a;\theta)\right)^2\right]\]</p>
 갱신한다 — 지도학습과 형태는 같지만, “정답“에 해당하는 목표값
 \(r + \gamma \max_{a’} Q(s’,a’;\theta)\) 자체가 지금 학습 중인
 \(\theta\)로 계산된다는 점이 다르다.</p>
-<h2 id="73-문제-1-목표가-계속-움직인다"><a class="header" href="#73-문제-1-목표가-계속-움직인다">7.3 문제 1: 목표가 계속 움직인다</a></h2>
+<pre><code class="language-python">import torch
+import torch.nn as nn
+
+class QNetwork(nn.Module):
+    def __init__(self, state_dim, n_actions):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(state_dim, 64), nn.ReLU(),
+            nn.Linear(64, 64), nn.ReLU(),
+            nn.Linear(64, n_actions),
+        )
+
+    def forward(self, x):
+        return self.net(x)
+</code></pre>
+<h2 id="93-문제-1-목표가-계속-움직인다"><a class="header" href="#93-문제-1-목표가-계속-움직인다">9.3 문제 1: 목표가 계속 움직인다</a></h2>
 <p>\(\theta\)가 매 스텝 갱신되면, 손실함수의 목표값도 매 스텝 바뀐다 —
 지도학습이라면 정답 \(y\)는 절대 안 바뀌는데, 여기선 “정답“이
 스스로를 쫓아다니는 셈이다. 이는 학습을 불안정하게 만든다(진동, 발산).</p>
@@ -3705,12 +4097,14 @@ Q(s,a;\theta)\right)^2\right]\]</p>
 동안 목표값은 고정돼 있으므로, 손실함수는(짧은 구간 동안은) 지도학습과
 똑같이 “정답이 고정된” 최적화 문제가 된다 — 움직이는 과녁을 고정시킨
 셈이다.</p>
-<pre><code class="language-python">def dqn_loss(Q_net, target_net, s, a, r, s_next, gamma, actions):
-    target = r + gamma * max(target_net(s_next, a2) for a2 in actions)
-    prediction = Q_net(s, a)
-    return (target - prediction) ** 2
+<pre><code class="language-python">def dqn_loss(Q_net, target_net, states, actions, rewards, next_states, dones, gamma):
+    q_pred = Q_net(states).gather(1, actions.unsqueeze(1)).squeeze(1)
+    with torch.no_grad():
+        q_next = target_net(next_states).max(dim=1).values
+        target = rewards + gamma * q_next * (1 - dones)
+    return ((target - q_pred) ** 2).mean()
 </code></pre>
-<h2 id="74-문제-2-데이터가-서로-상관돼-있다"><a class="header" href="#74-문제-2-데이터가-서로-상관돼-있다">7.4 문제 2: 데이터가 서로 상관돼 있다</a></h2>
+<h2 id="94-문제-2-데이터가-서로-상관돼-있다"><a class="header" href="#94-문제-2-데이터가-서로-상관돼-있다">9.4 문제 2: 데이터가 서로 상관돼 있다</a></h2>
 <p>연속된 프레임(상태)은 서로 거의 같아서, 순서대로 학습하면 최근 몇 개의
 비슷한 경험에 과도하게 치우친(overfitting) 학습이 된다 — 게다가 신경망
 학습은 미니배치가 서로 독립적이고 다양할수록 안정적이라는 가정에 기대고
@@ -3720,7 +4114,8 @@ Q(s,a;\theta)\right)^2\right]\]</p>
 buffer)라는 큰 저장소에 쌓아둔다. 학습할 때는 이 버퍼에서 <strong>무작위로</strong>
 미니배치를 샘플링해서 쓴다 — 이러면 학습 배치가 시간적으로 인접한
 경험들로만 구성되는 것을 피하고, 오래된 경험도 다시 재사용할 수 있어
-데이터 효율도 좋아진다.</p>
+데이터 효율도 좋아진다(Chapter 5.4에서 본 “과거 경험을 다른 목적으로
+재사용한다“는 아이디어의 또 다른 형태다).</p>
 <pre><code class="language-python">import random
 
 class ReplayBuffer:
@@ -3736,7 +4131,34 @@ class ReplayBuffer:
     def sample(self, batch_size):
         return random.sample(self.buffer, batch_size)
 </code></pre>
-<h2 id="75-두-장치의-공통점"><a class="header" href="#75-두-장치의-공통점">7.5 두 장치의 공통점</a></h2>
+<h2 id="95-cartpole에서-dqn-실습"><a class="header" href="#95-cartpole에서-dqn-실습">9.5 CartPole에서 DQN 실습</a></h2>
+<p>Chapter 1.6에서 소개한 CartPole 환경에 위 조각들을 조합하면, 재현
+버퍼에서 미니배치를 뽑아 손실을 계산하고, 일정 주기마다 타겟
+네트워크를 동기화하는 학습 루프가 완성된다:</p>
+<pre><code class="language-python">import torch
+
+env_state_dim, n_actions = 4, 2  # CartPole 기준
+Q_net = QNetwork(env_state_dim, n_actions)
+target_net = QNetwork(env_state_dim, n_actions)
+target_net.load_state_dict(Q_net.state_dict())  # 처음엔 동일하게 초기화
+optimizer = torch.optim.Adam(Q_net.parameters(), lr=1e-3)
+buffer = ReplayBuffer(capacity=10000)
+
+# 한 번의 학습 스텝(버퍼에 데이터가 충분히 쌓인 뒤 반복 호출한다고 가정)
+def train_step(batch_size, gamma):
+    batch = buffer.sample(batch_size)
+    states = torch.tensor([b[0] for b in batch], dtype=torch.float32)
+    actions = torch.tensor([b[1] for b in batch])
+    rewards = torch.tensor([b[2] for b in batch], dtype=torch.float32)
+    next_states = torch.tensor([b[3] for b in batch], dtype=torch.float32)
+    dones = torch.tensor([b[4] for b in batch], dtype=torch.float32)
+    loss = dqn_loss(Q_net, target_net, states, actions, rewards, next_states, dones, gamma)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    return loss.item()
+</code></pre>
+<h2 id="96-두-장치의-공통점"><a class="header" href="#96-두-장치의-공통점">9.6 두 장치의 공통점</a></h2>
 <p>경험 재현과 타겟 네트워크는 서로 다른 문제(데이터 상관성 vs 움직이는
 목표)를 풀지만, 근본적으로 같은 철학을 공유한다: <strong>“지도학습이 잘
 작동하는 조건(독립적인 데이터, 고정된 정답)을, 강화학습이라는 원래 그
@@ -3745,7 +4167,7 @@ class ReplayBuffer:
 틀렸다 — DQN의 진짜 기여는 신경망 자체가 아니라, 그 조합이 안정적으로
 학습되도록 만든 몇 가지 공학적 장치에 있다.</strong></p>
 <hr>
-<h2 id="연습문제-18"><a class="header" href="#연습문제-18">연습문제</a></h2>
+<h2 id="연습문제-20"><a class="header" href="#연습문제-20">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음과 같은 <code>ReplayBuffer</code> 클래스와
 <code>should_update_target</code>을 완성하라(핵심 줄은 빈칸으로 남겨져 있다고
 가정):</p>
@@ -3778,7 +4200,11 @@ def should_update_target(step, update_freq):
 print([should_update_target(s, 1000) for s in [999, 1000, 1500, 2000]])
 # [False, True, False, True]
 </code></pre>
-<p><strong>2. (손유도, Tier C — 폴백 준비 대상)</strong> 타겟 네트워크 없이(즉 목표값
+<p><strong>2. (실습)</strong> CartPole 환경(<code>gym.make("CartPole-v1")</code>)에서 무작위
+정책으로 100 스텝을 진행하며 <code>(state, action, reward, next_state, done)</code>을 <code>ReplayBuffer</code>에 채워 넣어라. 버퍼에 데이터가 32개 이상
+쌓이면 위 <code>train_step</code> 함수를 5번 호출해서 손실이 실제로 계산되고
+역전파가 되는지(에러 없이 실행되는지) 확인하라.</p>
+<p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> 타겟 네트워크 없이(즉 목표값
 계산에도 \(\theta\)를 그대로 쓴다고 하자) DQN을 학습시킨다고 하자.
 손실 \(J(\theta) = (r + \gamma \max_{a’} Q(s’,a’;\theta) -
 Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
@@ -3801,22 +4227,23 @@ Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
 크게(예: 100만 스텝) 잡으면 어떤 문제가 생길지, 반대로 극단적으로
 작게(예: 1 스텝) 잡으면 어떤 문제가 생길지 각각 한 문장으로 설명하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-8-정책기반-강화학습-policy-based-reinforcement-learning"><a class="header" href="#chapter-8-정책기반-강화학습-policy-based-reinforcement-learning">Chapter 8. 정책기반 강화학습 (Policy-Based Reinforcement Learning)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter08_reinforce_ppo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<h1 id="chapter-10-정책기반-강화학습-policy-based-reinforcement-learning"><a class="header" href="#chapter-10-정책기반-강화학습-policy-based-reinforcement-learning">Chapter 10. 정책기반 강화학습 (Policy-Based Reinforcement Learning)</a></h1>
 <p>로봇 팔의 관절에 가할 힘을 정하는 문제를 생각해보자. 이 “행동“은
 -10Nm부터 +10Nm까지 <strong>연속적인 값</strong> 중 아무거나 될 수 있다. Chapter
-6의 Q-learning은 매 스텝 \(\max_{a’} Q(s’,a’)\)를 계산해야 하는데,
-행동이 연속값이면 “가능한 모든 행동“을 나열해서 최댓값을 찾는다는 것
-자체가 불가능하다 — 무한히 많은 후보를 다 계산해볼 수는 없다.</p>
-<h2 id="81-q를-거치지-않고-정책을-직접-학습한다"><a class="header" href="#81-q를-거치지-않고-정책을-직접-학습한다">8.1 Q를 거치지 않고, 정책을 직접 학습한다</a></h2>
-<p>지금까지(Chapter 6, 7)는 \(Q(s,a)\)를 먼저 학습하고, 그로부터
+6·9의 Q-learning/DQN은 매 스텝 \(\max_{a’} Q(s’,a’)\)를 계산해야
+하는데, 행동이 연속값이면 “가능한 모든 행동“을 나열해서 최댓값을 찾는다는
+것 자체가 불가능하다 — 무한히 많은 후보를 다 계산해볼 수는 없다. 이번
+장부터 다룰 로봇 시뮬레이션(Chapter 13~14)이 바로 이런 연속 행동공간을
+쓰므로, 이 문제를 정면으로 풀어야 한다.</p>
+<h2 id="101-q를-거치지-않고-정책을-직접-학습한다"><a class="header" href="#101-q를-거치지-않고-정책을-직접-학습한다">10.1 Q를 거치지 않고, 정책을 직접 학습한다</a></h2>
+<p>지금까지(Chapter 6, 9)는 \(Q(s,a)\)를 먼저 학습하고, 그로부터
 간접적으로 정책 \(\pi(s) = \arg\max_a Q(s,a)\)을 얻었다.
 <strong>정책기반 방법</strong>(Policy-Based Methods)은 이 중간 단계를 건너뛰고,
 정책 \(\pi_\theta(a|s)\)(파라미터 \(\theta\)를 가진, 행동의
 확률분포를 직접 내놓는 함수) 자체를 신경망으로 표현하고 직접 학습한다.
 연속적인 행동공간에서도 “이 행동의 확률밀도가 얼마인가“는 잘
 정의되므로, 앞의 문제가 자연스럽게 해결된다.</p>
-<h2 id="82-정책을-파라미터화하기"><a class="header" href="#82-정책을-파라미터화하기">8.2 정책을 파라미터화하기</a></h2>
+<h2 id="102-정책을-파라미터화하기"><a class="header" href="#102-정책을-파라미터화하기">10.2 정책을 파라미터화하기</a></h2>
 <p>이산 행동공간에서는 정책을 신경망 출력에 softmax를 적용해 확률분포로
 만든다:</p>
 <p>\[\pi_\theta(a|s) = \text{softmax}(f_\theta(s))_a\]</p>
@@ -3826,13 +4253,13 @@ Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
 <p>\[J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\]</p>
 <p>\(\tau\)는 궤적(에피소드 전체), \(R(\tau)\)는 그 궤적의 총
 보상이다.</p>
-<h2 id="83-보상을-미분한다는-이상한-문제"><a class="header" href="#83-보상을-미분한다는-이상한-문제">8.3 “보상을 미분한다“는 이상한 문제</a></h2>
+<h2 id="103-보상을-미분한다는-이상한-문제"><a class="header" href="#103-보상을-미분한다는-이상한-문제">10.3 “보상을 미분한다“는 이상한 문제</a></h2>
 <p>문제는 “기대 보상을 최대화하는 \(\theta\)를 찾는다“는 목표를 그대로
 미분하려고 하면 이상한 벽에 부딪힌다는 것이다: 기대 보상은 “무작위로
 행동해서 얻은 결과“에 대한 평균인데, 그 무작위성 자체가 \(\theta\)에
 의존한다. \(J(\theta)\)를 \(\theta\)로 직접 미분하려면 확률분포
 \(\pi_\theta\) 자체를 미분해야 해서 기댓값(적분) 형태가 깨진다.</p>
-<h2 id="84-로그미분-트릭-log-derivative-trick"><a class="header" href="#84-로그미분-트릭-log-derivative-trick">8.4 로그미분 트릭 (Log-Derivative Trick)</a></h2>
+<h2 id="104-로그미분-트릭-log-derivative-trick"><a class="header" href="#104-로그미분-트릭-log-derivative-trick">10.4 로그미분 트릭 (Log-Derivative Trick)</a></h2>
 <p><strong>로그미분 트릭</strong>은 다음 항등식을 이용한다:</p>
 <p>\[\nabla_\theta \pi_\theta = \pi_\theta \nabla_\theta \log \pi_\theta\]</p>
 <p>(이는 \(\nabla \log f = \nabla f / f\)라는 미분 공식에서 바로
@@ -3840,15 +4267,15 @@ Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
 확률의 그래디언트로 바뀌면서, 다시 기댓값 형태로 정리할 수 있게 된다.
 최종 결과가 <strong>Policy Gradient Theorem</strong>이다:</p>
 <p>\[\nabla_\theta J(\theta) = \mathbb{E}_\tau\left[\sum_t \nabla_\theta \log
-\pi_\theta(a_t|s_t) \, G_t\right]\]</p>
-<p>\(G_t\)는 시점 \(t\)부터의 할인된 누적 보상(Chapter 5의 return)이다.
+\pi_\theta(a_t|s_t) , G_t\right]\]</p>
+<p>\(G_t\)는 시점 \(t\)부터의 할인된 누적 보상(Chapter 3의 return)이다.
 직관: “결과가 좋았던(\(G_t\)가 큰) 궤적에서 실제로 골랐던 행동의
 확률(\(\log \pi_\theta(a_t|s_t)\))을 더 높이는 방향으로, 결과가
 나빴던 행동의 확률은 낮추는 방향으로 \(\theta\)를 옮긴다.”</p>
 <p>이 유도(대학원 수준에서도 까다롭게 여겨지는 유도)는 이번 장 연습문제의
 핵심이며, 워크시트 버전으로 핵심 아이디어 하나(“왜 로그를 취하면
 문제가 풀리는가”)만 확실히 잡는 것을 목표로 한다.</p>
-<h2 id="85-reinforce-알고리즘"><a class="header" href="#85-reinforce-알고리즘">8.5 REINFORCE 알고리즘</a></h2>
+<h2 id="105-reinforce-알고리즘"><a class="header" href="#105-reinforce-알고리즘">10.5 REINFORCE 알고리즘</a></h2>
 <p>Policy Gradient Theorem을 그대로 경사 상승법(gradient ascent —
 최대화이므로 <code>+=</code>)으로 구현한 것이 REINFORCE다:</p>
 <pre><code class="language-python">import math
@@ -3878,7 +4305,7 @@ def reinforce_update(theta, episode, alpha, gamma):
         theta[1] += alpha * G[t] * grad_log_pi[1]
     return theta
 </code></pre>
-<h2 id="86-왜-이게-model-free인가"><a class="header" href="#86-왜-이게-model-free인가">8.6 왜 이게 model-free인가</a></h2>
+<h2 id="106-왜-이게-model-free인가"><a class="header" href="#106-왜-이게-model-free인가">10.6 왜 이게 model-free인가</a></h2>
 <p>Policy Gradient Theorem의 유도에서 핵심 단계는, 궤적의 확률
 \(P(\tau;\theta) = \prod_t \pi_\theta(a_t|s_t) \cdot
 P(s_{t+1}|s_t,a_t)\)를 로그로 바꾸면, <strong>환경의 전이확률
@@ -3887,81 +4314,23 @@ P(s_{t+1}|s_t,a_t)\)를 로그로 바꾸면, <strong>환경의 전이확률
 남고 환경 모델은 전혀 등장하지 않는다 — 환경이 어떻게 작동하는지
 몰라도 정책을 학습할 수 있다는, model-free RL의 핵심 성질이 여기서
 나온다.</p>
-<h2 id="87-actor-critic-분산을-줄이는-개선"><a class="header" href="#87-actor-critic-분산을-줄이는-개선">8.7 Actor-Critic: 분산을 줄이는 개선</a></h2>
+<h2 id="107-actor-critic-분산을-줄이는-개선"><a class="header" href="#107-actor-critic-분산을-줄이는-개선">10.7 Actor-Critic: 분산을 줄이는 개선</a></h2>
 <p>REINFORCE는 \(G_t\)(실제로 관찰된 누적 보상)를 그대로 쓰는데, 이건
 하나의 에피소드를 샘플링한 결과라 노이즈가 크다(분산이 높다).
-<strong>Actor-Critic</strong>은 \(G_t\) 대신, Chapter 5~6에서 배운 가치함수
+<strong>Actor-Critic</strong>은 \(G_t\) 대신, Chapter 4·6에서 배운 가치함수
 (Critic)로 추정한 기준값을 빼서 분산을 줄인다(\(G_t - V(s_t)\), 이
 차이를 <strong>어드밴티지</strong>(advantage)라 부른다) — 정책(Actor)과
 가치함수(Critic)를 동시에 학습하는 구조다. 자세한 유도는 이 학기
 범위를 넘어서지만, “정책 하나만 학습하는 것보다, 가치함수의 도움을
-받으면 더 안정적으로 학습된다“는 아이디어는 기억해둘 만하다.</p>
-<h2 id="88-ppo-한-걸음-더-안전하게-proximal-policy-optimization"><a class="header" href="#88-ppo-한-걸음-더-안전하게-proximal-policy-optimization">8.8 PPO: 한 걸음 더 안전하게 (Proximal Policy Optimization)</a></h2>
-<p>REINFORCE와 Actor-Critic에는 공통된 한계가 있다: 궤적 하나를 모아서
-경사 상승 한 번에 쓰고 나면 그 데이터는 버려진다(온-폴리시,
-on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그래디언트는
-더 이상 정확하지 않기 때문이다. 게다가 경사 상승 스텝이 한 번이라도
-너무 크면 정책이 갑자기 나쁜 방향으로 확 바뀌어서 회복이 안 되는
-경우도 있다. 2017년 OpenAI가 제안한 <strong>PPO</strong>(Proximal Policy
-Optimization, Schulman 외)는 데이터를 몇 번 더 재사용하면서도, 정책이
-한 번에 너무 멀리 움직이지 못하게 막는 실용적인 해법이다.</p>
-<p>핵심 도구는 <strong>확률비</strong>(probability ratio)다 — 지금 업데이트하려는
-정책 \(\pi_\theta\)와, 데이터를 모을 때 썼던 정책
-\(\pi_{\theta_{\text{old}}}\)가 같은 행동에 부여하는 확률의 비다:</p>
-<p>\[r_t(\theta) := \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)},
-\quad r_t(\theta_{\text{old}}) = 1\]</p>
-<p>\(r_t\)가 1보다 크면 그 행동을 전보다 더 선호하게 됐다는 뜻, 1보다
-작으면 덜 선호한다는 뜻이다. 이 비율을 쓰면 “옛 정책이 모은 데이터“를
-“새 정책 관점에서” 재사용할 수 있다(importance sampling):</p>
-<p>\[L^{IS}(\theta) = \mathbb{E}_t[r_t(\theta) A_t]\]</p>
-<p>(\(A_t\)는 8.7에서 정의한 어드밴티지, \(A_t := G_t -
-V(s_t)\)다.) 문제는 이 목적함수를 그냥 최대화하면 \(r_t\)가
-한없이 커지도록(같은 행동만 계속 더 밀어주도록) 학습이 폭주할 수
-있다는 것이다 — 데이터는 재사용되지만, “정책이 너무 멀리 움직이지
-않는다“는 보장은 어디에도 없다.</p>
-<h2 id="89-클리핑-너무-멀리-못-가게-막기"><a class="header" href="#89-클리핑-너무-멀리-못-가게-막기">8.9 클리핑: 너무 멀리 못 가게 막기</a></h2>
-<p>PPO의 해법은 단순하다 — \(r_t\)가 \([1-\epsilon, 1+\epsilon]\)
-(보통 \(\epsilon = 0.2\)) 범위를 벗어나면, 그 구간 밖으로 나간
-만큼의 이득을 깎아버린다:</p>
-<p>\[L^{CLIP}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) A_t,
-\text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t\right)\right]\]</p>
-<p>min을 쓰는 이유: clip 안 한 값과 clip한 값 중 더 “비관적인”(작은)
-쪽을 목적함수로 삼아서, 정책이 한쪽으로 너무 밀려가는 것에 대한
-보상을 스스로 제한한다. 직관: 어드밴티지가 양수(좋은 행동)인데
-\(r_t\)가 이미 \(1+\epsilon\)을 넘었으면, 더 밀어붙여도
-그래디언트가 사라진다(이미 충분히 밀었으니 그만) — 반대로 어드밴티지가
-음수(나쁜 행동)인데 \(r_t\)가 \(1-\epsilon\) 밑으로 떨어졌으면
-역시 그래디언트가 사라진다(이미 충분히 눌렀으니 그만). 그 결과 “좋은
-행동을 과도하게 밀어주지도, 나쁜 행동을 과도하게 눌러버리지도 않는”
-암묵적인 <strong>신뢰 영역</strong>(trust region)이 생긴다 — “정책이 얼마나
-바뀌어도 되는지“를 명시적으로 제약하는 식을 따로 풀 필요 없이,
-클리핑 한 번으로 같은 효과를 낸다.</p>
-<pre><code class="language-python">def ppo_clip_loss(ratio, advantage, epsilon=0.2):
-    unclipped = ratio * advantage
-    clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
-    return min(unclipped, clipped)  # 목적함수(최대화 대상)의 한 샘플분
-</code></pre>
-<h2 id="810-왜-ppo가-표준이-됐는가"><a class="header" href="#810-왜-ppo가-표준이-됐는가">8.10 왜 PPO가 표준이 됐는가</a></h2>
-<p>PPO 이전에 같은 문제(너무 큰 업데이트로 인한 정책 붕괴)를 풀던
-방법은 <strong>TRPO</strong>(Trust Region Policy Optimization, 2015)였다 — KL
-divergence 제약을 명시적으로 걸고, 2차 미분(피셔 정보 행렬)과
-conjugate gradient, line search까지 동원하는 무거운 최적화였다. PPO는
-그 복잡한 기계장치를 클리핑 한 줄로 대체하면서도 비슷한 안정성을
-얻는다 — “이론적으로 완벽한 보장”(TRPO의 단조 개선 보장) 대신
-“구현하기 쉽고 실전에서 잘 작동하는 근사“를 택한 선택이다.</p>
-<p>이 실용성 덕분에 PPO는 지금 가장 널리 쓰이는 정책기반 알고리즘이
-됐다: ChatGPT류 LLM을 사람 피드백에 맞게 조정하는 <strong>RLHF</strong>
-(Reinforcement Learning from Human Feedback) 단계, OpenAI Five(Dota
-2), AlphaStar(스타크래프트 II), 로봇 보행 제어 등에 실제로 널리
-쓰인다(RLHF는 Chapter 9에서 직접 다룬다).</p>
+받으면 더 안정적으로 학습된다“는 아이디어는 기억해둘 만하다 — 이
+어드밴티지는 Chapter 11의 PPO에서 그대로 재사용된다.</p>
 <p><strong>Q-learning이 “얼마나 좋은지 평가한 뒤 최선을 고른다“는 간접적
 전략이라면, 정책기반 방법은 “무엇을 할지” 자체를 직접, 그리고
-연속적인 행동 공간에서도 학습한다. Chapter 6에서 증명했듯이 유한한
-MDP라면 최적 정책 \(\pi^*\)는 항상 존재한다 — policy gradient와
-PPO는 그 존재가 보장하는 목표를 향해 실제로 나아가는, 지금 가장
-널리 쓰이는 방법이다.</strong></p>
+연속적인 행동 공간에서도 학습한다. Chapter 4에서 증명했듯이 유한한
+MDP라면 최적 정책 \(\pi^*\)는 항상 존재한다 — policy gradient는
+그 존재가 보장하는 목표를 향해 직접 나아가는 방법이다.</strong></p>
 <hr>
-<h2 id="연습문제-19"><a class="header" href="#연습문제-19">연습문제</a></h2>
+<h2 id="연습문제-21"><a class="header" href="#연습문제-21">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 간단한 이산 행동공간(2개 행동) softmax 정책에 대해, 한
 에피소드의 REINFORCE 업데이트를 완성하라(핵심 줄은 빈칸으로 남겨져
 있다고 가정):</p>
@@ -3984,11 +4353,14 @@ def reinforce_update(theta, episode, alpha, gamma):
         # theta 갱신: theta += alpha * G[t] * grad_log_pi
     return theta
 </code></pre>
-<p><strong>2. (손유도, Tier C — 최우선 폴백 대상)</strong> 정책 \(\pi_\theta\) 하에서
+<p><strong>2. (개념 서술)</strong> Actor-Critic이 REINFORCE보다 분산이 낮은 이유를,
+“베이스라인(baseline)을 빼도 그래디언트의 기댓값은 바뀌지 않는다“는
+사실과 연결지어 두세 문장으로 설명하라(직관 수준으로 충분하다).</p>
+<p><strong>3. (손유도, Tier C — 최우선 폴백 대상)</strong> 정책 \(\pi_\theta\) 하에서
 기대 리턴 \(J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\)의
 그래디언트가</p>
 <p>\[\nabla_\theta J(\theta) = \mathbb{E}_{\tau}\left[\sum_t \nabla_\theta \log
-\pi_\theta(a_t|s_t) \, G_t\right]\]</p>
+\pi_\theta(a_t|s_t) , G_t\right]\]</p>
 <p>가 됨을, 로그미분 트릭을 사용하여 유도하라. (수학 상위권/희망자
 대상 심화 — 대부분은 아래 워크시트를 기본값으로 한다.)</p>
 <p><strong>빈칸채움형 워크시트 버전</strong> (기본값):</p>
@@ -4012,564 +4384,704 @@ Step 3: 궤적 확률 P(tau;theta) = prod_t pi_theta(a_t|s_t) * (환경전이확
 몰라도 정책만으로 학습 가능하다는 model-free RL의 핵심 성질이
 깨진다).</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-9-llm-포스트트레이닝-rlhf와-정렬-llm-post-training-rlhf--alignment"><a class="header" href="#chapter-9-llm-포스트트레이닝-rlhf와-정렬-llm-post-training-rlhf--alignment">Chapter 9. LLM 포스트트레이닝: RLHF와 정렬 (LLM Post-training: RLHF &amp; Alignment)</a></h1>
-<p>2022년, OpenAI는 InstructGPT 논문에서 놀라운 관찰을 보고했다 — 파라미터가
-100배 더 적은 모델이라도, 사람이 원하는 방식으로 다듬어졌다면 사전학습만
-거친 거대 모델보다 사람들이 훨씬 더 선호했다. Chapter 4에서 배운
-사전학습(다음 토큰 예측)은 “그럴듯한 텍스트“를 만들어내지만, 그게 곧
-“사람이 원하는 대답“이라는 보장은 없다 — 사전학습 데이터에는 훌륭한 글도,
-엉뚱하거나 무례한 글도 섞여 있기 때문이다. 이번 장은 사전학습된 모델을
-“사람이 실제로 원하는 방향“으로 다듬는 <strong>포스트트레이닝</strong>(post-training)
-단계를 다룬다 — 그리고 그 핵심 도구가, Chapter 8에서 배운 PPO다.</p>
-<h2 id="91-sft-사람이-쓴-이상적인-답변으로-다듬기"><a class="header" href="#91-sft-사람이-쓴-이상적인-답변으로-다듬기">9.1 SFT: 사람이 쓴 이상적인 답변으로 다듬기</a></h2>
-<p>가장 단순한 포스트트레이닝은 <strong>지도 파인튜닝</strong>(Supervised Fine-Tuning,
-SFT)이다: 사람이 직접 작성한 “이상적인 (질문, 답변)” 쌍을 모아, 사전학습된
-모델을 그 데이터에 대해 평범한 지도학습으로 한 번 더 학습시킨다 —
-Chapter 4의 다음 토큰 예측 손실 그대로, 다만 데이터가 인터넷 텍스트가
-아니라 사람이 직접 쓴 고품질 예시로 바뀐다. 문제는 확장성이다: “좋은
-답변이 무엇인가“를 사람이 매번 처음부터 <strong>작성</strong>하는 것은 비용이 크고,
-모델이 만들 수 있는 무수한 질문 유형을 다 커버하기 어렵다.</p>
-<h2 id="92-rlhf-보상모델을-거쳐-ppo를-적용한다"><a class="header" href="#92-rlhf-보상모델을-거쳐-ppo를-적용한다">9.2 RLHF: 보상모델을 거쳐 PPO를 적용한다</a></h2>
-<p><strong>RLHF</strong>(Reinforcement Learning from Human Feedback)는 다른 전략을
-쓴다 — 사람이 매번 “정답“을 새로 쓰는 대신, 모델이 만든 <strong>여러 답변 중
-어느 쪽이 더 나은지 고르기만</strong> 하면 된다(비교가 작성보다 훨씬 쉽고
-빠르다). 이 선호 데이터로 <strong>보상모델</strong>(Reward Model)을 학습시킨 뒤,
-Chapter 8의 PPO로 그 보상모델의 점수를 최대화하도록 언어모델 자체를
-정책(policy)처럼 취급해 학습시킨다.</p>
-<p><strong>1단계 — 보상모델 학습</strong>: 같은 질문 \(x\)에 대해 모델이 만든 두 답변
-\(y_w\)(사람이 더 선호한 쪽, winner)와 \(y_l\)(덜 선호한 쪽,
-loser)이 있을 때, 보상모델 \(r_\phi(x,y)\)가 \(y_w\)에 더 높은
-점수를 주도록 학습한다. 브래들리-테리 모델(Bradley-Terry model)은 이
-선호 확률을 시그모이드로 모델링한다:</p>
-<p>\[P(y_w \succ y_l \mid x) = \sigma\big(r_\phi(x,y_w) - r_\phi(x,y_l)\big)\]</p>
-<p>이 확률을 최대화하는 손실은 <strong>정확히 Chapter 2의 로지스틱회귀와 같은
-교차 엔트로피 형태</strong>다 — “정답 라벨“이 “\(y_w\)가 이겼다“는 사실
-하나뿐인 이진분류 문제이기 때문이다:</p>
+<h1 id="chapter-11-고급-정책-최적화-ppo-proximal-policy-optimization"><a class="header" href="#chapter-11-고급-정책-최적화-ppo-proximal-policy-optimization">Chapter 11. 고급 정책 최적화: PPO (Proximal Policy Optimization)</a></h1>
+<p>Chapter 10의 REINFORCE와 Actor-Critic에는 공통된 한계가 있다: 궤적 하나를
+모아서 경사 상승 한 번에 쓰고 나면 그 데이터는 버려진다(온-폴리시,
+on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그래디언트는
+더 이상 정확하지 않기 때문이다. 게다가 경사 상승 스텝이 한 번이라도
+너무 크면 정책이 갑자기 나쁜 방향으로 확 바뀌어서 회복이 안 되는
+경우도 있다 — 로봇 제어처럼 “한 번의 잘못된 업데이트로 정책이 완전히
+무너지면 다시 좋아지기 어려운” 상황에서는 치명적이다. 2017년 OpenAI가
+제안한 <strong>PPO</strong>(Proximal Policy Optimization, Schulman 외)는 데이터를
+몇 번 더 재사용하면서도, 정책이 한 번에 너무 멀리 움직이지 못하게 막는
+실용적인 해법이다.</p>
+<h2 id="111-신뢰-영역이라는-직관"><a class="header" href="#111-신뢰-영역이라는-직관">11.1 신뢰 영역이라는 직관</a></h2>
+<p>산을 내려갈 때 안개가 껴서 한 치 앞만 보인다고 하자. 경사가 가장 가파른
+방향으로 무작정 큰 걸음을 내디디면, 그 방향의 지형이 어떻게 바뀌는지도
+모른 채 절벽으로 떨어질 수 있다. 안전한 전략은 “한 걸음의 크기를 믿을
+수 있는 범위(신뢰 영역, trust region) 안으로 제한하는 것“이다 —
+PPO의 핵심 아이디어가 바로 이것이다. 정책이 한 번의 업데이트로 너무
+크게 바뀌지 않도록 제약을 걸어서, 매 스텝이 실제로 개선을 보장하는
+좁은 범위 안에서만 이동하게 한다.</p>
+<h2 id="112-확률비와-중요도-샘플링"><a class="header" href="#112-확률비와-중요도-샘플링">11.2 확률비와 중요도 샘플링</a></h2>
+<p>핵심 도구는 <strong>확률비</strong>(probability ratio)다 — 지금 업데이트하려는
+정책 \(\pi_\theta\)와, 데이터를 모을 때 썼던 정책
+\(\pi_{\theta_{\text{old}}}\)가 같은 행동에 부여하는 확률의 비다:</p>
+<p>\[r_t(\theta) := \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)},
+\quad r_t(\theta_{\text{old}}) = 1\]</p>
+<p>\(r_t\)가 1보다 크면 그 행동을 전보다 더 선호하게 됐다는 뜻, 1보다
+작으면 덜 선호한다는 뜻이다. 이 비율을 쓰면 “옛 정책이 모은 데이터“를
+“새 정책 관점에서” 재사용할 수 있다(<strong>중요도 샘플링</strong> — Chapter 5.4에서
+MC의 off-policy 학습에 처음 등장했던 바로 그 도구가 여기서 다시
+쓰인다):</p>
+<p>\[L^{IS}(\theta) = \mathbb{E}_t[r_t(\theta) A_t]\]</p>
+<p>\(A_t\)는 Chapter 10.7에서 정의한 어드밴티지, \(A_t := G_t -
+V(s_t)\)다. 문제는 이 목적함수를 그냥 최대화하면 \(r_t\)가
+한없이 커지도록(같은 행동만 계속 더 밀어주도록) 학습이 폭주할 수
+있다는 것이다 — 데이터는 재사용되지만, “정책이 너무 멀리 움직이지
+않는다“는 보장은 어디에도 없다.</p>
+<h2 id="113-gae-어드밴티지를-더-안정적으로-추정하기"><a class="header" href="#113-gae-어드밴티지를-더-안정적으로-추정하기">11.3 GAE: 어드밴티지를 더 안정적으로 추정하기</a></h2>
+<p>Chapter 10.7의 어드밴티지 \(A_t = G_t - V(s_t)\)는 실제 리턴 \(G_t\)를
+그대로 쓰므로 여전히 분산이 크다. <strong>GAE</strong>(Generalized Advantage
+Estimation)는 Chapter 7의 n-step/적격흔적과 정확히 같은 아이디어를
+어드밴티지 추정에 적용한다 — 여러 \(n\)-step 어드밴티지 추정치를
+\(\lambda\)로 가중평균해서, 분산은 낮추되 편향은 적당히만 감수하는
+절충점을 찾는다:</p>
+<p>\[A_t^{\text{GAE}} = \sum_{k=0}^\infty (\gamma\lambda)^k \delta_{t+k},
+\qquad \delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)\]</p>
+<p>\(\delta_t\)는 Chapter 6.1의 TD 오차 그 자체다 — GAE는 결국 “여러
+시점의 TD 오차를 적격흔적처럼 지수적으로 가중합해서 하나의 어드밴티지
+추정치를 만든다“는 것으로 요약된다. \(\lambda=0\)이면 TD(0) 기반
+어드밴티지(분산 작고 편향 큼), \(\lambda=1\)이면 몬테카를로 기반
+어드밴티지(편향 없고 분산 큼)에 가까워진다 — Chapter 7.2의 다이얼이
+여기서도 그대로 등장한다. 실전 PPO 구현은 거의 항상 GAE로 계산한
+\(A_t\)를 쓴다.</p>
+<h2 id="114-클리핑-너무-멀리-못-가게-막기"><a class="header" href="#114-클리핑-너무-멀리-못-가게-막기">11.4 클리핑: 너무 멀리 못 가게 막기</a></h2>
+<p>PPO의 해법은 단순하다 — \(r_t\)가 \([1-\epsilon, 1+\epsilon]\)
+(보통 \(\epsilon = 0.2\)) 범위를 벗어나면, 그 구간 밖으로 나간
+만큼의 이득을 깎아버린다:</p>
+<p>\[L^{CLIP}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) A_t,
+\text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t\right)\right]\]</p>
+<p>min을 쓰는 이유: clip 안 한 값과 clip한 값 중 더 “비관적인”(작은)
+쪽을 목적함수로 삼아서, 정책이 한쪽으로 너무 밀려가는 것에 대한
+보상을 스스로 제한한다. 직관: 어드밴티지가 양수(좋은 행동)인데
+\(r_t\)가 이미 \(1+\epsilon\)을 넘었으면, 더 밀어붙여도
+그래디언트가 사라진다(이미 충분히 밀었으니 그만) — 반대로 어드밴티지가
+음수(나쁜 행동)인데 \(r_t\)가 \(1-\epsilon\) 밑으로 떨어졌으면
+역시 그래디언트가 사라진다(이미 충분히 눌렀으니 그만). 그 결과 “좋은
+행동을 과도하게 밀어주지도, 나쁜 행동을 과도하게 눌러버리지도 않는”
+암묵적인 신뢰 영역이 생긴다 — 11.1절에서 말한 “믿을 수 있는 범위“를
+명시적으로 제약하는 식을 따로 풀 필요 없이, 클리핑 한 번으로 같은
+효과를 낸다.</p>
+<pre><code class="language-python">def ppo_clip_loss(ratio, advantage, epsilon=0.2):
+    unclipped = ratio * advantage
+    clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
+    return min(unclipped, clipped)  # 목적함수(최대화 대상)의 한 샘플분
+</code></pre>
+<h2 id="115-왜-ppo가-표준이-됐는가"><a class="header" href="#115-왜-ppo가-표준이-됐는가">11.5 왜 PPO가 표준이 됐는가</a></h2>
+<p>PPO 이전에 같은 문제(너무 큰 업데이트로 인한 정책 붕괴)를 풀던
+방법은 <strong>TRPO</strong>(Trust Region Policy Optimization, 2015)였다 — KL
+divergence 제약을 명시적으로 걸고, 2차 미분(피셔 정보 행렬)과
+conjugate gradient, line search까지 동원하는 무거운 최적화였다. PPO는
+그 복잡한 기계장치를 클리핑 한 줄로 대체하면서도 비슷한 안정성을
+얻는다 — “이론적으로 완벽한 보장”(TRPO의 단조 개선 보장) 대신
+“구현하기 쉽고 실전에서 잘 작동하는 근사“를 택한 선택이다.</p>
+<p>이 실용성 덕분에 PPO는 지금 가장 널리 쓰이는 정책기반 알고리즘이
+됐다: 로봇 보행 제어, OpenAI Five(Dota 2), AlphaStar(스타크래프트
+II)뿐 아니라, 사람 피드백에 맞게 언어모델을 조정하는 RLHF의 핵심
+도구로도 쓰인다 — 연속 제어(로봇의 관절 힘 같은)와 이산 선택(다음
+토큰 고르기) 양쪽 모두에 그대로 적용될 만큼 범용적이다.</p>
+<p><strong>Q-learning이 “얼마나 좋은지 평가한 뒤 최선을 고른다“는 간접적
+전략이라면, 정책기반 방법은 “무엇을 할지” 자체를 직접 학습한다. GAE가
+어드밴티지 추정의 분산을 줄이고, 클리핑이 그 추정을 바탕으로 한
+업데이트가 너무 커지지 않게 막는다 — Chapter 13~14에서 다룰 로봇
+시뮬레이션의 연속 제어 문제에 PPO가 표준으로 쓰이는 이유가 바로 이
+안정성이다.</strong></p>
+<hr>
+<h2 id="연습문제-22"><a class="header" href="#연습문제-22">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>ppo_clip_loss</code>(핵심 줄은 빈칸으로 남겨져 있다고
+가정)와, GAE의 한 항 \(\delta_t = r_t + \gamma V(s_{t+1}) -
+V(s_t)\)를 계산하는 <code>td_error</code>를 완성하라:</p>
+<pre><code class="language-python">def td_error(r, V_s, V_s_next, gamma):
+    # ADD ADDITIONAL CODE HERE!!
+
+def ppo_clip_loss(ratio, advantage, epsilon=0.2):
+    # ADD ADDITIONAL CODE HERE!!
+    # unclipped = ratio * advantage
+    # clipped = ratio를 [1-epsilon, 1+epsilon]로 clip한 뒤 advantage 곱
+    # 둘 중 최솟값 반환
+
+print(ppo_clip_loss(ratio=1.5, advantage=1.0, epsilon=0.2))  # 1.2 (clip된 값이 더 작음)
+print(ppo_clip_loss(ratio=0.5, advantage=1.0, epsilon=0.2))  # 0.5 (clip 안 된 값이 더 작음)
+print(ppo_clip_loss(ratio=1.5, advantage=-1.0, epsilon=0.2)) # -1.5 (advantage가 음수면 부호가 바뀜에 주의)
+</code></pre>
+<p><strong>2. (개념 서술)</strong> GAE의 \(\lambda\)를 0으로 두는 것과 1로 두는 것이
+각각 Chapter 7에서 배운 어떤 방법과 대응되는지 설명하고, 왜 그
+극단들이 각각 편향과 분산 중 어느 쪽 문제를 안고 있는지 서술하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> \(A_t^{\text{GAE}} =
+\sum_{k=0}^\infty (\gamma\lambda)^k \delta_{t+k}\)에서 \(\lambda = 0\)을
+대입하면 \(A_t^{\text{GAE}} = \delta_t\)(TD 오차 하나)만 남음을
+보여라. \(\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)\)의 정의를
+이용해서, 이것이 Chapter 10.7의 1-step 어드밴티지 근사
+\(A_t \approx r_t + \gamma V(s_{t+1}) - V(s_t)\)와 정확히 같은
+형태임을 확인하라.</p>
+<p><strong>정확성 확인</strong>: \(\lambda\)를 0에서 1로 점점 키우면 GAE가 더 먼
+미래의 TD 오차들까지 포함하게 되는데, 이게 왜 “몬테카를로 방향으로
+다가간다“는 뜻인지 한 문장으로 설명하라.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chapter-12-모방학습과-인간-피드백-imitation-learning--learning-from-human-feedback"><a class="header" href="#chapter-12-모방학습과-인간-피드백-imitation-learning--learning-from-human-feedback">Chapter 12. 모방학습과 인간 피드백 (Imitation Learning &amp; Learning from Human Feedback)</a></h1>
+<p>Chapter 2~11에서 배운 모든 알고리즘은 에이전트가 스스로 시행착오를 겪으며
+보상 신호로부터 배웠다. 그런데 어떤 문제는 “시행착오” 자체가 위험하거나
+비싸다 — 로봇 팔이 사람 옆에서 물건을 옮기는 법을 무작위로 시도하며
+배우게 둘 수는 없다. 이번 장은 보상을 직접 최적화하는 대신, <strong>사람의
+시연</strong>이나 <strong>사람의 선호</strong>로부터 배우는 두 가지 방법을 다룬다.</p>
+<h2 id="121-모방학습-보상-없이-시연만으로"><a class="header" href="#121-모방학습-보상-없이-시연만으로">12.1 모방학습: 보상 없이, 시연만으로</a></h2>
+<p><strong>모방학습</strong>(Imitation Learning)의 가장 단순한 형태는 <strong>행동
+복제</strong>(Behavior Cloning, BC)다 — 전문가(사람 또는 기존 정책)가 남긴
+(상태, 행동) 시연 데이터를 모아서, “이 상태에서는 이 행동“이라는
+지도학습 문제로 그대로 바꿔버린다. 보상함수를 설계할 필요도, 환경과
+상호작용하며 탐험할 필요도 없다 — 로지스틱회귀나 다중분류와 정확히
+같은 방식으로, 상태를 입력받아 행동(이산이면 분류, 연속이면 회귀)을
+출력하도록 신경망을 학습시키면 끝이다.</p>
 <pre><code class="language-python">import math
 
 def sigmoid(z):
-    return 1 / (1 + math.exp(-z))
+    return 1 / (1 + math.exp(-max(-20, min(20, z))))
 
-def reward_model_loss(r_win, r_lose):
+def train_behavior_cloning(demos, epochs, lr):
+    # demos: [(state, action), ...] 전문가 시연, action은 0 또는 1(이진 예시)
+    w, b = 0.0, 0.0
+    for _ in range(epochs):
+        for s, a in demos:
+            pred = sigmoid(w * s + b)
+            grad = pred - a          # 로지스틱회귀와 똑같은 그래디언트 형태
+            w -= lr * grad * s
+            b -= lr * grad
+    return w, b
+</code></pre>
+<h2 id="122-왜-행동-복제만으로는-부족한가-복합-오차"><a class="header" href="#122-왜-행동-복제만으로는-부족한가-복합-오차">12.2 왜 행동 복제만으로는 부족한가: 복합 오차</a></h2>
+<p>행동 복제는 단순하지만 근본적인 약점이 있다 — 학습은 <strong>전문가가 실제로
+방문한 상태</strong>들에서만 이뤄지는데, 배포된 정책은 작은 실수 하나로 전문가가
+한 번도 가본 적 없는 상태로 빗나갈 수 있다. 그 낯선 상태에서는 정책이
+무엇을 해야 할지 전혀 배운 적이 없으므로 더 큰 실수를 하고, 그 실수가
+또 다른 낯선 상태로 이어진다 — 오차가 시간이 지날수록 눈덩이처럼
+불어나는 <strong>복합 오차</strong>(compounding error) 문제다.</p>
+<p><strong>DAgger</strong>(Dataset Aggregation)는 이 문제를 반복으로 완화한다: (1)
+지금까지 학습된 정책으로 직접 환경을 돌아다녀 보고, (2) 그 경로에서
+마주친 상태들에 대해 전문가에게 “여기선 어떻게 해야 하나요?“라고 다시
+물어서 정답을 받고, (3) 이 새 데이터를 원래 시연 데이터에 합쳐서 다시
+학습한다. 이 과정을 반복하면, 학습 데이터가 점점 “정책이 실제로 방문하는
+상태“들을 포함하게 되어 복합 오차가 줄어든다 — Chapter 6의 SARSA가
+“실제로 따르는 정책“의 가치를 배우는 것과 비슷한 정신이다: <strong>이론상
+이상적인 상황이 아니라, 실제로 마주칠 상황을 기준으로 학습한다.</strong></p>
+<h2 id="123-선호-기반-보상모델-로봇-제어에-적용하는-rlhf"><a class="header" href="#123-선호-기반-보상모델-로봇-제어에-적용하는-rlhf">12.3 선호 기반 보상모델: 로봇 제어에 적용하는 RLHF</a></h2>
+<p>시연을 구하기도 어려운 경우(예: “이 로봇 걸음걸이가 더 자연스럽다“처럼
+정답 하나를 콕 집어 시연하기는 어렵지만, 두 걸음걸이를 보고 어느 쪽이
+나은지 비교하기는 쉬운 경우)에는 다른 전략이 통한다 — Chapter 13에서
+소개할 로봇 제어 문제에 이번 절의 아이디어를 바로 적용해볼 수 있다.
+사람이 매번 “정답 행동“을 알려주는 대신, 로봇이 만든 <strong>두 개의 시도(궤적)
+중 어느 쪽이 더 나은지 고르기만</strong> 하면 된다 — 이 아이디어는 형태만
+바뀌었을 뿐, LLM을 사람이 원하는 방향으로 다듬는 RLHF(Reinforcement
+Learning from Human Feedback)와 정확히 같은 구조다.</p>
+<p>같은 상황 \(x\)에 대해 로봇이 만든 두 궤적 \(y_w\)(사람이 더
+선호한 쪽)와 \(y_l\)(덜 선호한 쪽)이 있을 때, 보상모델
+\(r_\phi(x,y)\)가 \(y_w\)에 더 높은 점수를 주도록 학습한다.
+브래들리-테리 모델(Bradley-Terry model)은 이 선호 확률을 시그모이드로
+모델링한다:</p>
+<p>\[P(y_w \succ y_l \mid x) = \sigma\big(r_\phi(x,y_w) - r_\phi(x,y_l)\big)\]</p>
+<p>이 확률을 최대화하는 손실은 다시 한번 <strong>로지스틱회귀와 같은 교차
+엔트로피 형태</strong>다:</p>
+<pre><code class="language-python">def reward_model_loss(r_win, r_lose):
     # Bradley-Terry: P(y_w &gt; y_l) = sigmoid(r_win - r_lose)
     return -math.log(sigmoid(r_win - r_lose))
 </code></pre>
-<p><strong>2단계 — PPO로 정책 학습</strong>: 보상모델이 준비되면, 언어모델 \(\pi_\theta\)를
-“질문 \(x\)라는 상태에서, 답변 \(y\)라는 행동을 순차적으로(토큰 하나씩)
-고르는 정책“으로 취급하고, 보상모델의 점수 \(r_\phi(x,y)\)를 보상 삼아
-Chapter 8의 PPO를 그대로 적용한다. 다만 한 가지 항이 추가된다 — 사전학습된
-원래 모델(SFT 모델) \(\pi_{\text{ref}}\)에서 너무 멀리 벗어나지
-않도록, KL 발산 페널티를 목적함수에서 뺀다:</p>
-<p>\[J(\theta) = \mathbb{E}\left[r_\phi(x,y)\right] - \beta , D_{KL}\big(\pi_\theta(\cdot|x) ,|, \pi_{\text{ref}}(\cdot|x)\big)\]</p>
-<p>왜 이 페널티가 필요한가: 보상모델도 결국 근사에 불과하므로, 정책이
-보상모델의 허점을 악용해 점수만 높이고 실제로는 이상한 텍스트를 만들어낼
-위험이 있다(<strong>보상 해킹</strong>, reward hacking). \(\pi_{\text{ref}}\)에서 너무
-멀어지지 않도록 묶어두면, “말이 되는 문장” 안에서만 보상을 높이도록
-제약할 수 있다 — Chapter 8.10에서 언급했던 “ChatGPT류 LLM을 RLHF로
-조정한다“는 문장이 정확히 이 과정을 가리킨다.</p>
-<h2 id="93-dpo-peftlora-에이전트rag-개관"><a class="header" href="#93-dpo-peftlora-에이전트rag-개관">9.3 DPO, PEFT/LoRA, 에이전트·RAG 개관</a></h2>
-<p><strong>DPO</strong>(Direct Preference Optimization, 2023): RLHF는 (1) 보상모델을
-따로 학습하고 (2) 그 보상모델로 PPO를 돌리는 2단계 과정이라 복잡하고
-불안정할 수 있다. DPO는 수학적으로, RLHF 목적함수의 최적 정책이 보상함수를
-\(\pi_\theta\)와 \(\pi_{\text{ref}}\)의 비율로 직접 표현할 수 있음을
-보이고, 그 관계를 보상모델 손실에 대입해 <strong>보상모델도 PPO도 없이, 선호
-데이터에서 정책을 곧바로 학습</strong>하는 손실을 유도한다:</p>
-<p>\[\mathcal{L}_{\text{DPO}} = -\log \sigma\left(\beta \log
-\frac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)} - \beta \log
-\frac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\right)\]</p>
-<p>형태를 보면 여전히 9.2의 보상모델 손실과 똑같은 로지스틱 손실이다 —
-다만 “보상“의 역할을 \(\beta \log(\pi_\theta/\pi_{\text{ref}})\)(정책이
-기준 모델보다 그 답변을 얼마나 더 선호하게 됐는가)이 대신한다. 별도의
-보상모델과 RL 루프 없이 지도학습 한 번으로 RLHF와 이론적으로 같은
-지점에 도달한다는 것이 DPO의 매력이다.</p>
-<p><strong>PEFT/LoRA</strong>(Parameter-Efficient Fine-Tuning / Low-Rank Adaptation):
-수십~수백억 개 파라미터 전체를 파인튜닝하는 것은 계산·저장 비용이 크다.
-LoRA는 원래 가중치 \(W\)를 고정한 채, 훨씬 작은 두 저차원 행렬의 곱
-\(\Delta W = BA\)(\(B, A\)의 차원이 \(W\)보다 훨씬 작다)만 학습해서
-\(W + \Delta W\)를 새 가중치로 쓴다 — 학습해야 할 파라미터 수를
-수백 분의 1로 줄이면서도 실전에서 전체 파인튜닝과 비슷한 성능을 낸다.</p>
-<p><strong>에이전트와 RAG</strong>(Retrieval-Augmented Generation): 프롬프팅만으로는
-모델이 모르는 최신 정보나 외부 문서를 답할 수 없다. RAG는 질문과 관련된
-문서를 먼저 검색해 프롬프트에 함께 넣어주고, 에이전트(agent)는 여기서
-한 걸음 더 나아가 모델이 검색·계산기·코드 실행 같은 <strong>도구를 스스로
-호출</strong>하도록 만든다 — 둘 다 “모델의 파라미터 안에 모든 지식을 우겨넣는”
-대신 “모델이 필요할 때 바깥 정보/도구에 접근하게 한다“는 같은 방향의
-해법이다.</p>
-<p><strong>사전학습이 “무엇이든 그럴듯하게 잇는 법“을 가르친다면, 포스트트레이닝은
-그중 “사람이 실제로 원하는 것“만 골라내는 단계다 — 그리고 그 핵심
-도구(PPO)는 이미 이번 학기에 강화학습 문제를 풀기 위해 배운 바로 그
-알고리즘이다.</strong></p>
+<p>이렇게 학습된 보상모델 \(r_\phi\)가 준비되면, 그 점수를 Chapter
+9~11에서 배운 강화학습 알고리즘(특히 PPO)의 보상으로 그대로 사용해서
+정책을 학습시킬 수 있다 — “사람이 직접 보상함수를 수식으로 설계하기
+어려운 문제”(자연스러운 걸음걸이가 정확히 무엇인지 수식으로 정의하기는
+어렵지만, 두 개를 보고 비교하기는 쉽다)에서 특히 강력한 전략이다.</p>
+<h2 id="124-모방학습-vs-강화학습-언제-무엇을-쓰는가"><a class="header" href="#124-모방학습-vs-강화학습-언제-무엇을-쓰는가">12.4 모방학습 vs 강화학습: 언제 무엇을 쓰는가</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>모방학습(BC/DAgger)</th><th>강화학습(Ch.2~11)</th></tr>
+</thead>
+<tbody>
+<tr><td>필요한 것</td><td>전문가 시연(또는 비교)</td><td>보상함수, 환경과의 상호작용</td></tr>
+<tr><td>탐험 필요 여부</td><td>기본적으로 불필요(DAgger는 약간 필요)</td><td>필수(Chapter 2의 탐험-활용 딜레마)</td></tr>
+<tr><td>안전성</td><td>상대적으로 안전(전문가 행동만 따라함)</td><td>학습 중 위험한 행동을 시도할 수 있음</td></tr>
+<tr><td>성능 상한</td><td>전문가 수준이 상한(그 이상 못 넘어섬)</td><td>이론상 전문가를 뛰어넘을 수 있음(Chapter 4의 최적 정책)</td></tr>
+</tbody>
+</table>
+</div>
+<p>실전에서는 둘을 섞어 쓰는 경우가 많다 — 예를 들어 행동 복제로 “그럴듯한
+초기 정책“을 빠르게 만든 뒤, 그 위에서 강화학습(PPO 등)으로 미세조정해
+전문가의 한계를 넘어서게 하는 식이다.</p>
+<p><strong>모방학습은 “시행착오를 겪을 필요 없이, 이미 잘하는 존재를 보고 배운다“는
+지름길이고, 선호 기반 보상모델은 “보상함수를 직접 설계하기 어려울 때
+비교만으로 그 보상함수 자체를 학습한다“는 우회로다 — 둘 다 Chapter
+2~11에서 힘들게 배운 강화학습 알고리즘 자체를 대체하는 게 아니라, 그
+알고리즘에 넣을 데이터와 보상을 어떻게 더 안전하고 저렴하게 얻을
+것인가에 대한 답이다.</strong></p>
 <hr>
-<h2 id="연습문제-20"><a class="header" href="#연습문제-20">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 <code>reward_model_loss</code>를 완성하고, DPO 손실
-<code>dpo_loss</code>를 작성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
-<pre><code class="language-python">import math
+<h2 id="연습문제-23"><a class="header" href="#연습문제-23">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>train_behavior_cloning</code>과 <code>reward_model_loss</code>(핵심
+줄은 빈칸으로 남겨져 있다고 가정)를 완성하라:</p>
+<pre><code class="language-python">import math, random
 
 def sigmoid(z):
-    return 1 / (1 + math.exp(-z))
+    return 1 / (1 + math.exp(-max(-20, min(20, z))))
+
+def train_behavior_cloning(demos, epochs, lr):
+    # ADD ADDITIONAL CODE HERE!!
+    # w, b를 0으로 초기화, epochs번 반복하며 demos의 각 (s,a)에 대해
+    # 로지스틱회귀와 같은 방식으로 grad = pred - a 계산 후 w, b 갱신
+
+    return w, b
+
+def expert_policy(state):
+    return 1 if state &lt; 0 else 0  # 전문가: 항상 0(원점) 방향으로 이동
+
+random.seed(0)
+demos = [expert_policy(random.uniform(-5, 5)) for _ in range(200)]  # placeholder
+demos = [(s, expert_policy(s)) for s in [random.uniform(-5, 5) for _ in range(200)]]
+w, b = train_behavior_cloning(demos, epochs=30, lr=0.05)
+print(sigmoid(w * (-2) + b) &gt; 0.5)  # True여야 함 (state=-2에서 action=1 예측)
 
 def reward_model_loss(r_win, r_lose):
     # ADD ADDITIONAL CODE HERE!!
     # -log(sigmoid(r_win - r_lose))
 
-def dpo_loss(logp_win_theta, logp_win_ref, logp_lose_theta, logp_lose_ref, beta):
-    # ADD ADDITIONAL CODE HERE!!
-    # log_ratio_win = beta * (logp_win_theta - logp_win_ref)
-    # log_ratio_lose = beta * (logp_lose_theta - logp_lose_ref)
-    # -log(sigmoid(log_ratio_win - log_ratio_lose))
-
-print(round(reward_model_loss(r_win=2.0, r_lose=-1.0), 3))  # 0.049 -- 잘 구분하면 손실이 작다
-print(round(reward_model_loss(r_win=-1.0, r_lose=2.0), 3))  # 3.049 -- 거꾸로면 손실이 크다
+print(round(reward_model_loss(2.0, -1.0), 3))  # 0.049
 </code></pre>
-<p><strong>2. (개념 서술)</strong> RLHF의 목적함수에 있는 KL 발산 페널티(\(-\beta
-D_{KL}(\pi_\theta|\pi_{\text{ref}})\))를 만약 완전히 없앤다면 어떤
-문제가 생길 수 있는지, “보상 해킹“이라는 용어를 써서 두세 문장으로
-설명하라.</p>
-<p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> 브래들리-테리 손실
-\(\mathcal{L} = -\log\sigma(r_\phi(x,y_w) - r_\phi(x,y_l))\)를
-\(r_\phi(x,y_w)\)로 미분한 결과가, Chapter 2의 로지스틱회귀 손실을
-미분했을 때와 같은 \((\text{예측} - \text{정답})\) 꼴의 그래디언트로
-정리됨을 보여라.</p>
-<p><strong>힌트</strong>: \(z = r_\phi(x,y_w) - r_\phi(x,y_l)\)로 치환하면
-\(\mathcal{L} = -\log\sigma(z)\)이고, 이는 “정답 라벨이 항상 1인”
-로지스틱회귀 손실 \(-\log h_w(x)\)와 정확히 같은 형태다. Chapter
-2.6에서 유도한 \(\frac{d}{dz}(-\log\sigma(z)) = \sigma(z) - 1\)을
-그대로 재사용해서 \(\frac{\partial \mathcal{L}}{\partial
-r_\phi(x,y_w)}\)를 구하라.</p>
-<p><strong>정확성 확인</strong>: 구한 그래디언트의 부호를 보고, 모델이 이미
-\(y_w\)를 확신 있게 선호하고 있을 때(\(\sigma(z) \to 1\))
-그래디언트가 왜 0에 가까워지는지(즉 더 이상 크게 갱신하지 않는지)
-한 문장으로 설명하라.</p>
+<p><strong>2. (개념 서술)</strong> 12.2절의 복합 오차 문제가 왜 “에피소드가 길수록”
+더 심각해지는지 설명하고, DAgger가 이 문제를 완화하는 메커니즘을
+1~2문장으로 요약하라.</p>
+<p><strong>3. (개념 서술)</strong> 자율주행 자동차의 조향을 학습시키는 문제를 예로 들어,
+(a) 순수 행동 복제만 썼을 때 발생할 수 있는 구체적인 실패 시나리오
+하나, (b) 순수 강화학습(무작위 탐험 포함)만 썼을 때 발생할 수 있는
+안전 문제 하나를 각각 서술하고, 왜 실전에서는 두 접근을 섞어 쓰는
+경우가 많은지 논하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-10-생성형-모델-i-우도-기반-generative-models-i-likelihood-based"><a class="header" href="#chapter-10-생성형-모델-i-우도-기반-generative-models-i-likelihood-based">Chapter 10. 생성형 모델 I: 우도 기반 (Generative Models I: Likelihood-Based)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_vae_elbo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>ML1의 마지막 장에서 오토인코더가 남긴 질문을 기억하는가 — “병목의 값을
-무작위로 하나 골라서 디코더에 넣으면, 존재한 적 없는 새로운 데이터를
-만들 수 있지 않을까?” 2013년 디데릭 킹마(Diederik Kingma)와 맥스
-웰링(Max Welling)이 발표한 <strong>변분 오토인코더</strong>(Variational
-Autoencoder, VAE)가 바로 이 질문에 대한 정식 답이다.</p>
-<h2 id="101-오토인코더를-그냥-쓰면-안-되는-이유"><a class="header" href="#101-오토인코더를-그냥-쓰면-안-되는-이유">10.1 오토인코더를 그냥 쓰면 안 되는 이유</a></h2>
-<p>일반 오토인코더의 잠재 공간(latent space)은 “어떤 값이 그럴듯한
-데이터로 복원되는지“에 대한 보장이 없다 — 학습 데이터들이 잠재 공간의
-여기저기 흩어져 있을 수 있고, 그 사이 빈 공간에서 무작위로 값을 뽑으면
-무엇이 나올지 알 수 없다. VAE의 해법은 인코더가 하나의 점 \(z\)를
-내놓는 대신, <strong>확률분포</strong>(보통 정규분포의 평균과 분산)를 내놓도록
-강제하는 것이다. 그리고 그 분포가 표준 정규분포(평균 0, 분산 1)에
-가깝도록 추가 제약을 건다 — 그러면 잠재 공간 전체가 매끄럽고 빈틈없이
-채워져서, 임의의 지점에서 샘플링해도 그럴듯한 데이터가 나올 가능성이
-높아진다.</p>
-<h2 id="102-vae의-구조"><a class="header" href="#102-vae의-구조">10.2 VAE의 구조</a></h2>
-<ul>
-<li><strong>인코더</strong> \(q_\phi(z|x)\): 입력 \(x\)를 받아, 잠재변수 \(z\)의
-확률분포를 내놓는다(보통 정규분포 \(\mathcal{N}(\mu(x),
-\sigma^2(x))\)의 평균과 분산을 출력).</li>
-<li><strong>샘플링</strong>: 그 분포에서 \(z\)를 하나 뽑는다.</li>
-<li><strong>디코더</strong> \(p_\theta(x|z)\): \(z\)로부터 \(x\)를 복원(또는
-생성)한다.</li>
-</ul>
-<h2 id="103-우도라는-관점"><a class="header" href="#103-우도라는-관점">10.3 우도라는 관점</a></h2>
-<p>VAE는 “생성형 모델을 만드는 세 가지 원리” 중 첫 번째 — <strong>우도
-기반</strong>(likelihood-based) 접근이다: 모델이 학습 데이터를 만들어낼
-확률(우도) \(P(x)\)를 직접(또는 그 근사치를) 최대화하도록 학습한다.
-문제는 \(p_\theta(x) = \int p_\theta(x|z)p(z),dz\)는 가능한 모든
-\(z\)에 대한 적분이라, 일반적으로 계산이 불가능하다(intractable).</p>
-<h2 id="104-elbo-계산-가능한-하한으로-우회하기"><a class="header" href="#104-elbo-계산-가능한-하한으로-우회하기">10.4 ELBO: 계산 가능한 하한으로 우회하기</a></h2>
-<p>직접 계산할 수 없는 \(\log p_\theta(x)\) 대신, 다음이 성립함을 보일
-수 있다:</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\]</p>
-<p>우변을 <strong>ELBO</strong>(Evidence Lower BOund)라 부른다. 두 항의 의미:</p>
-<ul>
-<li>첫 항 \(\mathbb{E}[\log p_\theta(x|z)]\): <strong>복원 항</strong> — 인코더가
-만든 \(z\)로 디코더가 원본 \(x\)를 얼마나 잘 복원하는가(일반
-오토인코더의 복원 오차와 본질적으로 같다).</li>
-<li>둘째 항 \(D_{KL}(q_\phi(z|x)|p(z))\): <strong>정규화 항</strong> — 인코더가
-만든 분포 \(q_\phi(z|x)\)가, 목표로 하는 사전분포 \(p(z)\)(보통
-표준정규분포)에서 얼마나 벗어나 있는지(KL divergence, ML1 Chapter
-2.6에서 섀넌의 정보이론으로 소개한 그 개념 — 두 확률분포 사이의
-“거리”). 이 항이 바로 잠재 공간을 매끄럽게 만드는 힘이다.</li>
-</ul>
-<p>\(\log p_\theta(x) \ge \text{ELBO}\)이므로, <strong>ELBO를 최대화하면 실제
-우도의 하한도 함께 올라간다</strong> — 직접 계산 못 하는 목표를, 계산 가능한
-대리(surrogate) 목표로 바꿔치기한 것이다. 이 부등식 자체를 옌센
-부등식(Jensen’s inequality)으로 유도하는 것이 이번 장 연습문제의
-핵심이다.</p>
-<pre><code class="language-python">def vae_loss(x, x_reconstructed, mu, log_var):
-    # 복원 손실 (여기서는 MSE로 근사)
-    recon_loss = sum((x[i] - x_reconstructed[i]) ** 2 for i in range(len(x)))
-    # KL divergence: 정규분포 q(mu, sigma^2)와 표준정규분포 N(0,1) 사이의 닫힌 형태 공식
-    kl_loss = -0.5 * sum(1 + log_var[i] - mu[i]**2 - math.exp(log_var[i])
-                          for i in range(len(mu)))
-    return recon_loss + kl_loss  # ELBO를 최대화 = 이 손실(음의 ELBO)을 최소화
+<h1 id="chapter-13-로봇-시뮬레이션과-제어-기초-robot-simulation--control-basics"><a class="header" href="#chapter-13-로봇-시뮬레이션과-제어-기초-robot-simulation--control-basics">Chapter 13. 로봇 시뮬레이션과 제어 기초 (Robot Simulation &amp; Control Basics)</a></h1>
+<p>지금까지 배운 강화학습 알고리즘은 CartPole처럼 단순화된 환경에서 다뤘다.
+실제 로봇 — 팔, 다리, 바퀴가 달린 물리적 시스템 — 을 다루려면, “행동이
+연속적인 힘/토크“라는 사실뿐 아니라, 그 힘이 실제 물리 법칙(관성, 중력,
+마찰)을 거쳐 로봇을 움직인다는 사실까지 감안해야 한다. 이번 장은
+Chapter 9~12에서 배운 알고리즘들을 실제로 적용해볼 로봇 시뮬레이션의
+기초 개념을 다룬다.</p>
+<h2 id="131-로봇공학-기초-개념-상태공간과-운동학"><a class="header" href="#131-로봇공학-기초-개념-상태공간과-운동학">13.1 로봇공학 기초 개념: 상태공간과 운동학</a></h2>
+<p>로봇의 상태는 보통 각 관절의 <strong>각도</strong>와 <strong>각속도</strong>로 표현된다 — 2관절
+로봇 팔이라면 상태는 \((\theta_1, \theta_2, \dot\theta_1,
+\dot\theta_2)\)처럼 4차원 벡터가 된다. <strong>정기구학</strong>(forward
+kinematics)은 이 관절 각도들로부터 팔 끝(end-effector)의 실제 위치를
+계산하는 것이고, <strong>역기구학</strong>(inverse kinematics)은 그 반대 — “팔 끝을
+이 위치로 보내려면 관절 각도가 얼마여야 하는가“를 계산하는 것이다. 이런
+기하학 계산은 로봇공학 자체의 깊은 주제이지만, 강화학습 관점에서 중요한
+것은 단 하나다: <strong>상태와 행동이 이제 물리적으로 의미 있는 연속값이라는
+것</strong>이다 — Chapter 3.1에서 배운 MDP의 \(\mathcal{S}, \mathcal{A}\)가
+이제 추상적인 기호가 아니라 실제 각도·힘의 단위를 갖는다.</p>
+<h2 id="132-시뮬레이션이-필요한-이유-sim-to-real"><a class="header" href="#132-시뮬레이션이-필요한-이유-sim-to-real">13.2 시뮬레이션이 필요한 이유: sim-to-real</a></h2>
+<p>실물 로봇으로 강화학습을 직접 학습시키면 몇 가지 현실적인 문제에
+부딪힌다 — 수만 번의 시행착오 동안 로봇이 고장 나거나, 사람에게 위험할
+수 있고, 무엇보다 <strong>느리다</strong>(물리 세계는 컴퓨터 시뮬레이션보다 훨씬
+느리게 흐른다). 그래서 실전에서는 먼저 물리 엔진 위의 <strong>시뮬레이션</strong>에서
+정책을 학습시킨 뒤, 그 정책을 실물 로봇으로 옮긴다 — 이 전이 과정을
+<strong>sim-to-real</strong>이라 부른다.</p>
+<p>문제는 시뮬레이션이 실제 물리를 완벽히 재현하지 못한다는 것이다(마찰
+계수, 센서 잡음, 재질의 미세한 차이 등) — 시뮬레이션에서만 잘 작동하고
+실물에서는 실패하는 정책을 <strong>현실 격차</strong>(reality gap)라 부른다. 이
+격차를 줄이는 대표적인 방법이 <strong>도메인 무작위화</strong>(domain
+randomization) — 시뮬레이션의 물리 파라미터(마찰, 질량, 조명 등)를
+매 학습 에피소드마다 무작위로 바꿔가며 학습시키는 것이다. 정책이 하나의
+고정된 시뮬레이션 설정이 아니라 “다양한 물리 조건 전체“에 대해 잘
+작동하도록 강제하면, 그중 어느 하나(실물 로봇의 실제 물리 조건)에도
+더 잘 일반화하는 경향이 생긴다 — Chapter 6(ML1)에서 배운 정규화가
+“모델을 덜 유연하게 만들어 분산을 줄인다“는 것과 비슷하게, 여기서는
+“환경 자체를 다양화해서 정책이 특정 시뮬레이션 설정에 과적합하지
+않게 만든다.”</p>
+<h2 id="133-gymnasiumpybullet-로봇-환경"><a class="header" href="#133-gymnasiumpybullet-로봇-환경">13.3 Gymnasium/PyBullet 로봇 환경</a></h2>
+<p>이번 학기 실습은 Gymnasium이 제공하는 로봇류 환경으로 진행한다 — 이미
+Chapter 1과 9에서 쓴 CartPole·Pendulum도 사실 아주 단순화된 “로봇
+제어” 문제다(막대의 균형을 잡는 것, 진자를 세우는 것 모두 관절 제어의
+가장 작은 형태다). 좀 더 로봇에 가까운 연속 제어 문제로 넘어가 보자:</p>
+<pre><code class="language-python">import gymnasium as gym
+import numpy as np
+
+env = gym.make("Pendulum-v1")  # 연속 행동공간을 가진 가장 단순한 "관절 제어" 문제
+obs, info = env.reset(seed=0)
+print("상태(cos theta, sin theta, 각속도):", obs)
+print("행동공간:", env.action_space)  # Box(-2.0, 2.0, (1,)) -- 연속값 토크
+
+# 손으로 설계한 간단한 PD(비례-미분) 제어기: 각도가 클수록, 각속도가 클수록 반대로 힘을 준다
+total_reward = 0.0
+for _ in range(50):
+    cos_th, sin_th, thdot = obs
+    theta = np.arctan2(sin_th, cos_th)
+    action = np.clip(-2.0 * theta - 0.5 * thdot, -2.0, 2.0)
+    obs, reward, terminated, truncated, info = env.step([action])
+    total_reward += reward
+print("PD 제어기의 50스텝 누적 보상:", round(total_reward, 2))
+env.close()
 </code></pre>
-<h2 id="105-reparameterization-trick-참고"><a class="header" href="#105-reparameterization-trick-참고">10.5 Reparameterization Trick (참고)</a></h2>
-<p>\(z\)를 확률분포에서 직접 샘플링하면, “샘플링“이라는 연산은 미분이
-안 돼서 역전파가 인코더까지 흘러가지 못한다. VAE는 \(z = \mu + \sigma
-\odot \epsilon\)(\(\epsilon \sim \mathcal{N}(0,1)\)은 무작위성을
-밖으로 빼낸 상수 취급)으로 샘플링을 다시 쓰는 트릭(reparameterization
-trick)으로 이 문제를 우회한다 — 이제 \(\mu, \sigma\)에 대한 미분이
-가능해져 역전파가 정상적으로 흐른다. 자세한 유도는 이 학기 범위를
-넘어서지만, “왜 그냥 샘플링하면 안 되는가“라는 질문 자체는 기억해둘
-만하다.</p>
-<p><strong>다음 장에는 완전히 다른 두 원리(적대적, 스코어 기반)를 배운다 — 세
-원리를 나란히 놓고 비교하면, “그럴듯한 새 데이터를 만든다“는 같은
-목표에 얼마나 다른 방식으로 접근할 수 있는지가 뚜렷하게 드러난다.</strong></p>
-<hr>
-<h2 id="연습문제-21"><a class="header" href="#연습문제-21">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>kl_divergence_gaussian</code>(정규분포
-\(\mathcal{N}(\mu, \sigma^2)\)와 표준정규분포 사이의 KL divergence,
-\(D_{KL} = -\frac{1}{2}(1 + \log\sigma^2 - \mu^2 - \sigma^2)\))과
-<code>vae_loss</code>를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
+<p>이 PD(Proportional-Derivative) 제어기는 강화학습이 전혀 아니다 — 사람이
+직접 설계한 규칙일 뿐이다. 그런데도 무작위 행동보다 훨씬 나은 성능을
+낸다(무작위 정책의 50스텝 누적 보상은 보통 -1200~-1600 근처인데, 이
+간단한 규칙은 -240 근처까지 개선된다). 이 비교가 보여주는 것: <strong>강화학습의
+목표는 이런 손으로 설계한 제어기보다 더 나은, 또는 사람이 규칙으로
+설계하기 어려운 상황에서도 작동하는 정책을 데이터로부터 직접 찾아내는
+것</strong>이다.</p>
+<h2 id="134-연속제어에-ppo-적용하기"><a class="header" href="#134-연속제어에-ppo-적용하기">13.4 연속제어에 PPO 적용하기</a></h2>
+<p>Chapter 11의 PPO는 이산 행동(softmax 정책)뿐 아니라 연속 행동에도
+자연스럽게 확장된다 — 신경망이 각 행동 차원마다 정규분포의 평균과
+표준편차를 출력하도록 하면 된다:</p>
+<p>\[\pi_\theta(a|s) = \mathcal{N}(a; \mu_\theta(s), \sigma_\theta(s)^2)\]</p>
+<p>로그 확률 \(\log \pi_\theta(a|s)\)은 정규분포의 확률밀도함수에서
+바로 계산되며, Chapter 10.4의 로그미분 트릭과 Chapter 11의 클리핑
+목적함수는 이산/연속 여부와 무관하게 형태가 그대로 유지된다 — “행동을
+어떻게 파라미터화하는가“만 바뀔 뿐, 그 뒤의 최적화 기계는 동일하다는
+것이 정책기반 방법의 큰 장점이다.</p>
 <pre><code class="language-python">import math
 
-def kl_divergence_gaussian(mu, log_var):
-    # log_var = log(sigma^2)
-    # ADD ADDITIONAL CODE HERE!!
-
-print(kl_divergence_gaussian(mu=0.0, log_var=0.0))  # 0.0
-print(kl_divergence_gaussian(mu=2.0, log_var=0.0))  # 2.0
-
-def vae_loss(recon_loss, mu_list, log_var_list):
-    # ADD ADDITIONAL CODE HERE!!
-    # 여러 잠재 차원에 대한 KL divergence를 모두 더한 뒤, 복원 손실과 합산
-
-print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
+def gaussian_log_prob(action, mu, sigma):
+    # 연속 행동에 대한 로그 확률 -- softmax 대신 정규분포를 쓴다는 점만 다르다
+    return -0.5 * math.log(2 * math.pi * sigma**2) - (action - mu)**2 / (2 * sigma**2)
 </code></pre>
-<p><strong>2. (손유도, Tier C — 폴백 준비 대상)</strong> \(\log p_\theta(x) = \log
-\int p_\theta(x,z),dz\)에서 시작해서, 옌센 부등식(\(\log
-\mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 이용해</p>
-<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
-D_{KL}(q_\phi(z|x)\|p(z))\]</p>
-<p>를 유도하라(힌트: \(\log p_\theta(x) = \log \mathbb{E}_{q_\phi}
-\left[\frac{p_\theta(x,z)}{q_\phi(z|x)}\right]\)로 먼저 바꾼 뒤 옌센
-부등식을 적용하고, \(p_\theta(x,z) = p_\theta(x|z)p(z)\)로 분해해서
-KL divergence의 정의가 나오도록 정리하라).</p>
-<p><strong>빈칸채움형 폴백 버전</strong> (자유 유도가 어려운 경우):</p>
-<pre><code>Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
-                  = log E_q[ ______________ ]
+<p><strong>로봇 시뮬레이션은 지금까지 배운 알고리즘(DQN, PPO)을 “실제 물리
+법칙이 지배하는 연속 행동공간“이라는 더 현실적인 무대로 옮기는 시험대다
+— 다음 장에서는 이 시뮬레이션을 더 정교한 물리엔진으로, 그리고 대규모
+GPU 가속 환경으로 확장한다.</strong></p>
+<hr>
+<h2 id="연습문제-24"><a class="header" href="#연습문제-24">연습문제</a></h2>
+<p><strong>1. (실습)</strong> 위 코드를 그대로 실행한 뒤, PD 제어기의 계수(<code>-2.0</code>,
+<code>-0.5</code>)를 각각 두 배로 키워보고, 절반으로 줄여도 보고, 50스텝 누적
+보상이 어떻게 달라지는지 비교하라. 계수가 너무 크거나 너무 작을 때
+각각 어떤 문제가 생기는지(진동하는지, 반응이 느린지) 관찰한 바를
+서술하라.</p>
+<p><strong>2. (코딩)</strong> 위 <code>gaussian_log_prob</code>(핵심 줄은 빈칸으로 남겨져 있다고
+가정)을 완성하라:</p>
+<pre><code class="language-python">import math
 
-Step 2: 옌센 부등식(log가 오목함수) 적용:
-  log E_q[ p(x,z)/q(z|x) ] &gt;= E_q[ log(______________) ]
+def gaussian_log_prob(action, mu, sigma):
+    # ADD ADDITIONAL CODE HERE!!
+    # 정규분포 확률밀도함수의 로그: -0.5*log(2*pi*sigma^2) - (action-mu)^2/(2*sigma^2)
 
-Step 3: p(x,z) = p(x|z) * p(z)로 분해하면:
-  = E_q[ log p(x|z) ] + E_q[ ______________ ]
-
-Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
-
-결론: log p(x) &gt;= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
+print(round(gaussian_log_prob(0.0, 0.0, 1.0), 4))   # 표준정규분포 x=0에서의 로그밀도, 약 -0.9189
+print(round(gaussian_log_prob(2.0, 0.0, 1.0), 4))   # 평균에서 멀수록 로그확률이 더 작아짐(더 음수)
 </code></pre>
-<p><strong>정확성 확인</strong>: Step 2에서 부등호(<code>&gt;=</code>)가 등호(<code>=</code>)가 아니라 부등식인
-이유를 한 문장으로 설명하고(옌센 부등식이 언제 등식이 되는지:
-\(X\)가 상수일 때), ELBO를 최대화하는 것이 왜 실제 우도
-\(\log p(x)\)를 “간접적으로” 최대화하는 셈이 되는지 설명하라.</p>
+<p><strong>3. (개념 서술)</strong> 도메인 무작위화(domain randomization)가 왜 ML1
+Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
+있는지, “모델이 특정 조건 하나에 과적합하는 것을 막는다“는 관점에서
+두세 문장으로 설명하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-11-생성형-모델-ii-적대적스코어-기반-generative-models-ii-adversarial--score-based"><a class="header" href="#chapter-11-생성형-모델-ii-적대적스코어-기반-generative-models-ii-adversarial--score-based">Chapter 11. 생성형 모델 II: 적대적/스코어 기반 (Generative Models II: Adversarial &amp; Score-Based)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter11_gan.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>2014년, 당시 대학원생이던 이언 굿펠로우(Ian Goodfellow)는 친구들과의
-술자리 논쟁에서 아이디어 하나를 떠올렸다고 훗날 여러 인터뷰에서
-밝혔다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신, <strong>두
-개의 신경망이 서로 경쟁하게 만들면 어떨까?</strong> 하나는 가짜를 만드는
-위조범(생성자, Generator), 다른 하나는 진짜와 가짜를 구별하는
-감정사(판별자, Discriminator)로 두고, 위조범은 감정사를 속이도록,
-감정사는 위조범을 잡아내도록 서로 계속 겨루게 하면 위조범의 실력이
-점점 진짜에 가깝게 늘어나지 않을까? 이 아이디어가
-<strong>GAN</strong>(Generative Adversarial Network)이다.</p>
-<h2 id="111-지난-장과는-완전히-다른-원리"><a class="header" href="#111-지난-장과는-완전히-다른-원리">11.1 지난 장과는 완전히 다른 원리</a></h2>
-<p>Chapter 10의 VAE는 “우도(데이터가 나올 확률)를 최대화한다“는 명확한
-목표함수가 있었다. GAN은 그런 단일 목표함수가 없다 — 대신 두 신경망이
-서로 다른, 심지어 <strong>반대되는</strong> 목표를 갖고 동시에 학습된다. 이건
-지금까지 배운 “손실함수 하나를 최소화한다“는 틀과는 근본적으로 다른
-게임이론적 설정이다.</p>
-<h2 id="112-gan-생성자와-판별자의-min-max-게임"><a class="header" href="#112-gan-생성자와-판별자의-min-max-게임">11.2 GAN: 생성자와 판별자의 min-max 게임</a></h2>
-<ul>
-<li><strong>생성자</strong>(Generator) \(G\): 무작위 노이즈 \(z \sim p(z)\)(보통
-표준정규분포)를 입력받아 가짜 데이터 \(G(z)\)를 만든다.</li>
-<li><strong>판별자</strong>(Discriminator) \(D\): 데이터를 입력받아, 그것이 진짜일
-확률 \(D(x) \in [0,1]\)을 출력한다(Chapter 2의 로지스틱회귀와
-정확히 같은 형태).</li>
-</ul>
-<p>목적함수(min-max game):</p>
-<p>\[\min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] +
-\mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]\]</p>
-<ul>
-<li><strong>판별자의 관점(\(\max_D\))</strong>: 진짜(\(x\))에는 \(D(x)\)를 1에
-가깝게, 가짜(\(G(z)\))에는 \(D(G(z))\)를 0에 가깝게 만들고 싶다
-— 진짜/가짜를 잘 구별할수록 이 값이 커진다.</li>
-<li><strong>생성자의 관점(\(\min_G\))</strong>: \(D(G(z))\)를 1에 가깝게 만들고
-싶다(판별자를 속이고 싶다).</li>
-</ul>
-<pre><code class="language-python">def discriminator_loss(D_real, D_fake):
-    # D_real = D(진짜 데이터), D_fake = D(가짜 데이터) -- 각각 (0,1) 확률
-    return -(math.log(D_real) + math.log(1 - D_fake))  # 판별자가 최소화할 손실
+<h1 id="chapter-14-고급-시뮬레이션-mujoco와-isaac-sim-advanced-simulation-mujoco--isaac-sim"><a class="header" href="#chapter-14-고급-시뮬레이션-mujoco와-isaac-sim-advanced-simulation-mujoco--isaac-sim">Chapter 14. 고급 시뮬레이션: MuJoCo와 Isaac Sim (Advanced Simulation: MuJoCo &amp; Isaac Sim)</a></h1>
+<p>Chapter 13에서 쓴 Gymnasium의 기본 환경들은 물리를 간단한 근사식으로만
+계산한다 — 학습 속도는 빠르지만, 접촉(contact)이나 마찰처럼 로봇
+제어에서 중요한 물리 현상은 거칠게만 흉내 낸다. 실전 로봇 연구에서는
+훨씬 정교한 물리엔진을 쓴다. 이번 장은 그중 두 가지 — CPU에서도 도는
+정밀한 물리엔진 <strong>MuJoCo</strong>와, GPU로 수천 개의 시뮬레이션을 동시에 돌리는
+<strong>NVIDIA Isaac Sim</strong> — 을 소개하고, 언제 무엇을 쓸지 정리한다.</p>
+<h2 id="141-mujoco-정밀한-접촉마찰-시뮬레이션"><a class="header" href="#141-mujoco-정밀한-접촉마찰-시뮬레이션">14.1 MuJoCo: 정밀한 접촉·마찰 시뮬레이션</a></h2>
+<p><strong>MuJoCo</strong>(Multi-Joint dynamics with Contact)는 로봇의 관절, 접촉,
+마찰을 물리적으로 정확하게 계산하도록 설계된 물리엔진이다 — 원래
+상용 소프트웨어였다가 2021년 무료로 공개되며 로봇 강화학습 연구의
+사실상 표준 도구가 됐다. MuJoCo의 모델은 XML로 물체의 형태, 관절,
+질량 등을 정의하고, 이를 반복적으로 스텝시켜 물리 시뮬레이션을
+진행한다:</p>
+<pre><code class="language-python">import mujoco
 
-def generator_loss(D_fake):
-    return -math.log(D_fake)  # 생성자가 최소화할 손실 (D_fake를 1에 가깝게)
+xml = """
+&lt;mujoco&gt;
+  &lt;worldbody&gt;
+    &lt;light name="top" pos="0 0 1"/&gt;
+    &lt;geom type="plane" size="1 1 0.1"/&gt;
+    &lt;body pos="0 0 1"&gt;
+      &lt;joint type="free"/&gt;
+      &lt;geom type="sphere" size="0.1" rgba="1 0 0 1"/&gt;
+    &lt;/body&gt;
+  &lt;/worldbody&gt;
+&lt;/mujoco&gt;
+"""
+model = mujoco.MjModel.from_xml_string(xml)
+data = mujoco.MjData(model)
+print("위치 자유도(nq):", model.nq, "속도 자유도(nv):", model.nv)
+
+for step in range(5):
+    mujoco.mj_step(model, data)  # 중력 등 물리 법칙에 따라 한 스텝 전진
+print("5스텝 후 공의 높이:", round(data.qpos[2], 4))  # 자유낙하로 조금 내려감
 </code></pre>
-<h2 id="113-왜-균형점을-논해야-하는가"><a class="header" href="#113-왜-균형점을-논해야-하는가">11.3 왜 “균형점“을 논해야 하는가</a></h2>
-<p>일반적인 지도학습은 손실함수 하나를 최소화하면 끝이었다. GAN은 두
-네트워크가 서로 <strong>반대</strong> 목표로 동시에 학습되므로, “학습이 끝났다“는
-것이 무슨 의미인지부터 다시 정의해야 한다. 게임이론에서 이런
-상황(각 참여자가 상대의 전략을 고려해 자신의 최선을 선택)의 안정
-상태를 <strong>내쉬 균형</strong>(Nash equilibrium)이라 부른다 — 어느 쪽도 혼자서
-전략을 바꿔서 더 나아질 수 없는 상태다.</p>
-<p>이론적으로, 이 게임의 내쉬 균형은 \(D(x) = 0.5\)(판별자가 진짜와
-가짜를 전혀 구별하지 못함)이고 \(G\)가 만드는 분포가 실제 데이터
-분포와 정확히 같아지는 지점임이 증명돼 있다 — “생성자가 완벽해서
-판별자가 찍는 수밖에 없는 상태“가 이론적 종착점이다. 이번 장 연습문제는
-이 균형점을 직접 논증한다.</p>
-<h2 id="114-실전에서의-불안정성"><a class="header" href="#114-실전에서의-불안정성">11.4 실전에서의 불안정성</a></h2>
-<p>이론과 달리, 실제 GAN 학습은 자주 불안정하다 — 생성자가 판별자를
-속이는 몇 가지 패턴에만 몰려서 다양성을 잃는 현상(<strong>모드 붕괴, mode
-collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적이지만 생성
-품질이 다소 흐릿한(blurry) 경향이 있는 반면, GAN은 선명한 결과를 내지만
-학습이 까다롭다 — 이 트레이드오프가 두 원리의 실무적 차이다.</p>
-<h2 id="115-또-다른-원리-diffusion--노이즈를-점진적으로-되돌리기"><a class="header" href="#115-또-다른-원리-diffusion--노이즈를-점진적으로-되돌리기">11.5 또 다른 원리: Diffusion — 노이즈를 점진적으로 되돌리기</a></h2>
-<p><strong>Diffusion 모델</strong>은 세 번째 완전히 다른 접근이다.</p>
-<p><strong>정방향 과정</strong>(forward process): 진짜 이미지 \(x_0\)에 아주 작은
-노이즈를 \(T\)번 반복해서 더해, 결국 \(x_T\)가 순수한 무작위
-노이즈가 되게 만든다(이 과정은 고정된 절차이지 학습 대상이 아니다).</p>
-<p><strong>역방향 과정</strong>(reverse process): 신경망이 “한 단계 전 노이즈가
-어땠는지“를 예측하도록 학습된다 — 즉, \(x_t\)에서 \(x_{t-1}\)을
-복원하는 작은 단계를 반복 학습한다. 학습이 끝나면, 순수 노이즈
-\(x_T\)에서 시작해 이 역방향 단계를 \(T\)번 반복하면 새로운
-이미지가 만들어진다.</p>
-<p>GAN이 “한 번에” 노이즈를 이미지로 바꾸려 하는 것과 달리, Diffusion은
-그 어려운 문제를 아주 작은 단계 \(T\)개로 잘게 쪼갠다 — 각 단계는
-“노이즈를 아주 조금만 제거하는” 훨씬 쉬운 문제이므로, 전체적으로 훨씬
-안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \(T\)번의 반복이
-필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
-이미지 생성 모델들(Stable Diffusion 등)이 이 원리를 쓴다.</p>
-<h2 id="116-세-원리-비교"><a class="header" href="#116-세-원리-비교">11.6 세 원리 비교</a></h2>
+<p>이 코드는 공 하나가 중력에 따라 자유낙하하는 가장 단순한 예시지만,
+같은 API(<code>MjModel</code>, <code>MjData</code>, <code>mj_step</code>)로 다리가 여러 개인 로봇, 로봇
+팔, 인간형 로봇까지 표현할 수 있다 — Gymnasium의 <code>HalfCheetah</code>,
+<code>Ant</code>, <code>Humanoid</code> 같은 연속제어 환경들이 실제로 이 MuJoCo 엔진 위에
+만들어져 있다. Chapter 9~13에서 배운 DQN·PPO 알고리즘은 환경이
+CartPole이든 MuJoCo 기반 로봇이든 바뀌지 않는다 — <code>env.step()</code>
+인터페이스만 지키면, 물리엔진이 훨씬 정교해져도 알고리즘 쪽 코드는
+그대로다.</p>
+<h2 id="142-nvidia-isaac-sim-gpu로-수천-개를-동시에"><a class="header" href="#142-nvidia-isaac-sim-gpu로-수천-개를-동시에">14.2 NVIDIA Isaac Sim: GPU로 수천 개를 동시에</a></h2>
+<p><strong>Isaac Sim</strong>은 NVIDIA의 Omniverse 플랫폼 위에 만들어진 로봇
+시뮬레이션 환경으로, 물리 계산 자체를 GPU에서 병렬로 수행한다 — 같은
+로봇 환경을 CPU에서 하나씩 순차적으로 도는 대신, 수천 개의 복제본을
+GPU 위에서 동시에 시뮬레이션해서 학습에 필요한 경험을 극적으로 빠르게
+모을 수 있다. 사실적인 렌더링(카메라 센서 시뮬레이션 포함)까지 지원해서,
+“픽셀을 보고 판단하는” 로봇 정책을 학습시키는 연구에도 널리 쓰인다.</p>
+<p><strong>이번 학기 실습 환경에서는 Isaac Sim을 직접 돌리지 않는다</strong> — 최소
+요구 사양이 RTX 4080(16GB VRAM)급이고, 애초에 RT 코어가 없는
+데이터센터용 GPU(A100, H100류)는 지원하지 않는다. 학교가 보유한 GPU가
+바로 이 H100/H200 계열이라, Isaac Sim을 실습에 쓸 수 없다 — 이번
+장에서는 원리와 시연 영상으로만 다룬다.</p>
+<h2 id="143-gpu-가속-시뮬레이션의-원리"><a class="header" href="#143-gpu-가속-시뮬레이션의-원리">14.3 GPU 가속 시뮬레이션의 원리</a></h2>
+<p>CPU 기반 시뮬레이션(MuJoCo, Gymnasium 기본 환경)은 한 번에 환경 하나를
+스텝시킨다 — 경험을 더 모으려면 더 많은 시간이 걸린다. Isaac Sim 같은
+GPU 가속 시뮬레이터는 물리 계산 자체를 대규모 병렬 연산으로 다시
+설계해서, ML1 Chapter 10.4에서 배운 “같은 연산을 위치마다 반복한다“는
+CNN의 아이디어와 비슷한 방식으로 — 이번엔 “같은 물리 스텝을 로봇
+복제본마다 반복한다” — 수천 개의 환경을 GPU 코어에 흩뿌려 동시에
+계산한다. 그 결과 초당 모을 수 있는 (상태, 행동, 보상) 경험의 양이
+CPU 대비 수십~수백 배까지 늘어날 수 있다 — Chapter 9의 경험재현
+버퍼가 순식간에 채워지는 셈이다.</p>
+<h2 id="144-어떤-도구를-언제-쓰는가"><a class="header" href="#144-어떤-도구를-언제-쓰는가">14.4 어떤 도구를 언제 쓰는가</a></h2>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th></th><th>VAE (우도 기반)</th><th>GAN (적대적)</th><th>Diffusion (스코어 기반)</th></tr>
+<tr><th>도구</th><th>실행 위치</th><th>정밀도</th><th>속도(대량 병렬)</th><th>이번 학기 사용</th></tr>
 </thead>
 <tbody>
-<tr><td>학습 목표</td><td>ELBO 최대화</td><td>min-max 게임의 균형</td><td>각 단계의 노이즈 예측 오차 최소화</td></tr>
-<tr><td>학습 안정성</td><td>비교적 안정적</td><td>불안정하기 쉬움</td><td>안정적</td></tr>
-<tr><td>생성 품질</td><td>다소 흐릿함</td><td>선명함</td><td>선명함</td></tr>
-<tr><td>생성 속도</td><td>빠름(한 번에)</td><td>빠름(한 번에)</td><td>느림(반복 필요)</td></tr>
+<tr><td>Gymnasium 기본 환경</td><td>CPU</td><td>낮음~중간</td><td>느림</td><td>기본 실습</td></tr>
+<tr><td>PyBullet</td><td>CPU</td><td>중간</td><td>느림</td><td>로봇팔/사족보행 실습</td></tr>
+<tr><td>MuJoCo</td><td>CPU</td><td>높음</td><td>느림</td><td>정밀 제어 실습</td></tr>
+<tr><td>NVIDIA Isaac Sim</td><td>GPU</td><td>높음</td><td>매우 빠름(수천 배 병렬)</td><td>시연만(하드웨어 제약)</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>하나의 원리(VAE)만 배우고 끝냈다면 “생성형 모델 = 우도 최대화“라고
-오해했을 것이다 — 세 원리를 나란히 보고 나서야, 생성형 모델이라는
-문제 자체가 얼마나 다양한 방식으로 풀릴 수 있는지가 보인다.</strong></p>
+<p>선택 기준을 요약하면: <strong>개인 노트북에서 직접 돌려보고 싶다면</strong>
+Gymnasium/PyBullet, <strong>접촉·마찰까지 정밀하게 맞춰야 하는 연구라면</strong>
+MuJoCo, <strong>대량의 경험을 매우 빠르게 모아야 하는 대규모 학습이라면</strong>
+(그리고 적합한 GPU가 있다면) Isaac Sim이다. 셋 다 Chapter 9~13에서
+배운 알고리즘을 그대로 얹을 수 있는, “환경을 바꿔 끼우는” 문제라는
+점은 동일하다.</p>
+<p><strong>시뮬레이션 도구가 달라져도 강화학습 알고리즘 자체는 바뀌지 않는다
+— 바뀌는 건 물리적 정확도와 계산 속도의 트레이드오프뿐이다. 어떤
+도구를 쓸지는 “얼마나 정밀해야 하는가“와 “얼마나 많은 경험이
+필요한가“라는 두 질문에 대한 답으로 결정된다.</strong></p>
 <hr>
-<h2 id="연습문제-22"><a class="header" href="#연습문제-22">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>discriminator_loss</code>와
-<code>generator_loss</code>를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
+<h2 id="연습문제-25"><a class="header" href="#연습문제-25">연습문제</a></h2>
+<p><strong>1. (실습)</strong> 위 MuJoCo 코드를 그대로 실행한 뒤, <code>xml</code>의 공 초기
+높이(<code>pos="0 0 1"</code>)를 <code>pos="0 0 5"</code>로 바꿔서 다시 실행하고, 5스텝
+후의 높이가 어떻게 달라지는지 비교하라. 스텝 수를 50으로 늘리면 공이
+바닥(<code>plane</code>)에 닿아 멈추는지도 확인하라.</p>
+<p><strong>2. (개념 서술)</strong> GPU 가속 시뮬레이션이 “같은 계산을 여러 복제본에
+반복한다“는 점에서 ML1의 CNN이 “같은 필터를 여러 위치에 반복
+적용한다“는 것과 어떻게 비슷한지, 그리고 무엇이 다른지(공유하는
+것이 “파라미터“인지 “환경 복제본“인지) 두세 문장으로 비교하라.</p>
+<p><strong>3. (개념 서술)</strong> 학교에 Isaac Sim을 실습에 쓸 만한 GPU(RTX
+4080/16GB급 이상)가 새로 갖춰진다면, 이번 학기 커리큘럼 중 어떤
+실습(Chapter 9~13 중)을 Isaac Sim으로 옮겨서 실행하는 것이 가장
+이득이 클지 하나 고르고 이유를 설명하라(힌트: 경험을 얼마나 많이
+모아야 하는 알고리즘인지 생각해보라).</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chapter-15-모델기반-rl과-몬테카를로-트리-탐색-model-based-rl--monte-carlo-tree-search"><a class="header" href="#chapter-15-모델기반-rl과-몬테카를로-트리-탐색-model-based-rl--monte-carlo-tree-search">Chapter 15. 모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL &amp; Monte Carlo Tree Search)</a></h1>
+<p>2016년, 딥마인드의 <strong>AlphaGo</strong>는 세계 최정상급 프로 바둑기사 이세돌을
+꺾어 큰 화제를 모았다. 바둑판의 경우의 수는 우주의 원자 수보다 많다고
+알려져 있어서, Chapter 9의 DQN처럼 “신경망으로 가치를 근사하는 것“만으로는
+충분하지 않았다 — AlphaGo의 핵심 무기 중 하나가 바로 이번 장의 주제,
+<strong>몬테카를로 트리 탐색</strong>(Monte Carlo Tree Search, MCTS)이다. 이번 장은
+Chapter 7.3에서 잠깐 맛본 “모델을 활용한 계획“이라는 아이디어를,
+게임처럼 명확한 규칙이 있는 문제에서 훨씬 강력하게 확장한 형태를 다룬다.</p>
+<h2 id="151-모델기반-rl-다시-보기"><a class="header" href="#151-모델기반-rl-다시-보기">15.1 모델기반 RL 다시 보기</a></h2>
+<p>Chapter 7.3의 Dyna-Q는 실제 경험으로 간단한 모델을 만들고, 그 모델로
+<strong>가상의 추가 학습</strong>을 했다. <strong>모델기반 강화학습</strong>(Model-Based RL)은
+이 아이디어를 일반화한 이름이다 — 환경의 모델(전이확률과 보상함수, 또는
+그 근사)을 학습하거나 알고 있다면, 그 모델을 이용해 “실제로 행동해보지
+않고도” 여러 수를 미리 시뮬레이션해볼 수 있다. Dyna-Q가 이걸 값 갱신에
+썼다면, MCTS는 이걸 <strong>지금 당장 어떤 행동을 할지 결정하는 데</strong> 직접
+쓴다.</p>
+<h2 id="152-바둑-같은-문제에서-모델은-공짜다"><a class="header" href="#152-바둑-같은-문제에서-모델은-공짜다">15.2 바둑 같은 문제에서 모델은 공짜다</a></h2>
+<p>체스나 바둑 같은 게임에는 특별한 사정이 있다 — 규칙이 완벽하게
+알려져 있다. “이 수를 두면 판이 정확히 이렇게 바뀐다“는 전이확률
+\(P(s’|s,a)\)를 배울 필요 없이 이미 알고 있는 것이다(Chapter 4의
+모델 기반 방법을 쓸 수 있는 이상적인 조건이다). 문제는 상태 수가
+너무 많아서(바둑판은 약 \(10^{170}\)가지) Chapter 4의 가치반복처럼
+모든 상태를 다 계산할 수 없다는 것이다 — 그래서 “지금 당장 놓인 상황
+근처만” 깊이 파고드는 탐색이 필요하다.</p>
+<h2 id="153-mcts-네-단계의-반복"><a class="header" href="#153-mcts-네-단계의-반복">15.3 MCTS: 네 단계의 반복</a></h2>
+<p>MCTS는 현재 상태에서 시작해, 정해진 횟수만큼 다음 네 단계를 반복해서
+“어떤 수가 가장 유망한가“에 대한 통계를 쌓는다:</p>
+<ol>
+<li><strong>선택</strong>(Selection): 트리의 루트(현재 상태)에서 시작해, 각 갈림길에서
+“지금까지의 성과“와 “아직 덜 시도해본 정도“를 함께 고려하는 규칙
+(Chapter 2의 UCB와 정확히 같은 발상)으로 자식 노드를 골라가며
+아직 다 확장되지 않은 노드까지 내려간다.</li>
+<li><strong>확장</strong>(Expansion): 그 노드에 새로운 자식 노드(아직 안 가본 수)를
+하나 추가한다.</li>
+<li><strong>시뮬레이션</strong>(Simulation/Rollout): 그 새 노드에서부터 게임이 끝날
+때까지 (간단한 정책으로, 극단적으로는 완전히 무작위로) 끝까지
+플레이해본다 — Chapter 5의 몬테카를로처럼, 실제로 끝까지 해보고
+결과(승/패)를 얻는다.</li>
+<li><strong>역전파</strong>(Backpropagation): 그 결과를, 선택 단계에서 지나온 모든
+노드에 통계로 반영한다(방문 횟수 +1, 승률 갱신) — 이 “역전파“는
+ML1 Chapter 9의 역전파와 이름만 같을 뿐 완전히 다른 개념이다:
+신경망의 그래디언트를 전달하는 게 아니라, 트리의 승패 통계를
+전달하는 것이다.</li>
+</ol>
+<p>이 네 단계를 수백~수만 번 반복한 뒤, 루트에서 <strong>가장 많이 방문된</strong>
+자식(가장 유망하다고 반복적으로 확인된 수)을 실제로 둘 수로 선택한다.</p>
+<pre><code class="language-python">import math, random
+
+def uct_select(node_children, parent_visits, c=1.4):
+    # node_children: {move: (wins, visits)}
+    # UCB1과 정확히 같은 형태 -- Chapter 2.3을 그대로 게임 트리에 적용한 것
+    return max(node_children, key=lambda m: node_children[m][0] / node_children[m][1] +
+               c * math.sqrt(math.log(parent_visits) / node_children[m][1]))
+</code></pre>
+<h2 id="154-작은-예제로-확인하기"><a class="header" href="#154-작은-예제로-확인하기">15.4 작은 예제로 확인하기</a></h2>
+<p>돌을 1~3개씩 번갈아 가져가고, 마지막 돌을 가져가는 사람이 이기는
+간단한 게임(님 게임의 변형)에서 MCTS를 3000번 시뮬레이션 돌려보면,
+돌이 5개 남은 상황에서 “1개를 가져가서 상대에게 4개를 남기는” 수를
+가장 유망하다고 정확히 찾아낸다 — 실제로 이 게임의 수학적 필승 전략
+(남은 돌 수가 4의 배수가 되도록 만드는 것)과 정확히 일치하는 결과다.
+MCTS가 게임의 규칙 자체(4의 배수 전략)를 전혀 몰랐는데도, 오직
+“시뮬레이션을 많이 해보고 이긴 비율이 높은 수를 고른다“는 것만으로
+이 최적 전략을 스스로 찾아낸 것이다.</p>
+<h2 id="155-alphagoalphazero-mcts와-신경망의-결합"><a class="header" href="#155-alphagoalphazero-mcts와-신경망의-결합">15.5 AlphaGo/AlphaZero: MCTS와 신경망의 결합</a></h2>
+<p>순수 MCTS는 시뮬레이션 단계에서 무작위로(또는 아주 단순한 규칙으로)
+게임을 끝까지 진행한다 — 바둑처럼 한 수의 영향이 아주 나중에야
+드러나는 게임에서는 무작위 시뮬레이션이 부정확할 수 있다. AlphaGo와
+그 후속작 AlphaZero의 핵심 개선은, 이 무작위 롤아웃을 <strong>신경망</strong>으로
+대체한 것이다: 신경망 하나가 “이 상태에서 각 수가 얼마나 유망한가”
+(정책, Chapter 10의 \(\pi_\theta\)와 같은 역할)를, 다른 하나(또는
+같은 신경망의 다른 출력 헤드)가 “이 상태가 최종적으로 얼마나 유리한가”
+(가치, ML1 Chapter 4의 \(V(s)\)와 같은 역할)를 추정한다. MCTS는 이
+신경망들의 추정치를 길잡이 삼아 탐색을 훨씬 더 효율적으로 좁혀나가고,
+그렇게 MCTS로 찾아낸 더 정확한 수를 다시 신경망 학습의 정답(지도학습
+목표)으로 사용한다 — <strong>탐색(MCTS)과 학습(신경망)이 서로를 개선하는
+루프</strong>다.</p>
+<h2 id="156-멀티에이전트-rl-개관-선택"><a class="header" href="#156-멀티에이전트-rl-개관-선택">15.6 멀티에이전트 RL 개관 (선택)</a></h2>
+<p>지금까지는 에이전트가 하나뿐인 환경을 다뤘다. <strong>멀티에이전트
+강화학습</strong>(Multi-Agent RL)은 여러 에이전트가 같은 환경에서 동시에
+행동하는 경우를 다룬다 — 서로 협력할 수도(팀 스포츠, 물류 로봇들의
+협업), 경쟁할 수도(바둑, 게임 AI) 있다. MCTS 자체도 사실 “상대방도
+최선을 다한다“고 가정하는 2인 게임에서는 <strong>미니맥스</strong>(minimax) 탐색의
+확률적 근사로 볼 수 있다 — ML1 Chapter 15의 GAN에서 본 min-max
+게임과, “두 참여자가 서로 다른 목표로 상호작용한다“는 구조적 유사성이
+있다. 자세한 이론(내쉬 균형, 협력 게임 등)은 이 학기 범위를 넘지만,
+“에이전트가 하나가 아니면 문제 자체가 근본적으로 달라진다“는 점은
+기억해둘 만하다.</p>
+<p><strong>MCTS는 “모델이 있다면(규칙을 안다면), 실제로 행동하기 전에 미리
+수를 읽어볼 수 있다“는 아이디어를 극한까지 밀어붙인 방법이다 — Chapter
+7의 Dyna-Q가 학습된 모델로 값을 개선했다면, MCTS는 완벽한 모델로
+바로 지금의 결정 자체를 개선한다. 그리고 AlphaZero가 보여줬듯,
+이 탐색과 신경망 학습을 결합하면 순수 탐색도, 순수 신경망도 각각
+해내지 못한 성능에 도달할 수 있다.</strong></p>
+<hr>
+<h2 id="연습문제-26"><a class="header" href="#연습문제-26">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>uct_select</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)를
+완성하라:</p>
 <pre><code class="language-python">import math
 
-def discriminator_loss(D_real, D_fake):
+def uct_select(node_children, parent_visits, c=1.4):
+    # node_children: {move: (wins, visits)}
     # ADD ADDITIONAL CODE HERE!!
-    # -(log(D_real) + log(1 - D_fake))
+    # 각 move에 대해 wins/visits + c*sqrt(log(parent_visits)/visits) 계산 후 최댓값의 move 반환
 
-def generator_loss(D_fake):
-    # ADD ADDITIONAL CODE HERE!!
-    # -log(D_fake)
-
-print(discriminator_loss(D_real=0.9, D_fake=0.1))  # 판별자가 잘 구별할수록 손실이 작음
-print(generator_loss(D_fake=0.9))                  # 생성자가 잘 속일수록 손실이 작음
+children = {"A": (7, 10), "B": (3, 5), "C": (0, 1)}
+print(uct_select(children, parent_visits=16))
+# C처럼 거의 안 시도해본 수는 불확실성 보너스가 커서 선택될 수 있음
 </code></pre>
-<p><strong>2. (손유도, Tier C — 폴백 준비 대상)</strong> 고정된 생성자 \(G\)에
-대해, 판별자의 최적해는</p>
-<p>\[D^*(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\]</p>
-<p>임이 알려져 있다. 이 사실을 받아들이고, 생성자가 이론적으로 완벽해져서
-\(p_G = p_{\text{data}}\)가 되면 \(D^*(x) = 0.5\)(모든 \(x\)에
-대해)가 됨을 보여라. 그런 다음, 이 지점에서 판별자도 생성자도 더
-나아질 수 없는 이유를 한 문단으로 논증하고, 이것이 왜 내쉬 균형인지
-설명하라.</p>
-<p><strong>빈칸채움형 폴백 버전</strong> (자유 논증이 어려운 경우):</p>
-<pre><code>Step 1: D*(x) = p_data(x) / (p_data(x) + p_G(x))가 주어졌다고 하자.
-
-Step 2: p_G(x) = p_data(x)라면:
-  D*(x) = p_data(x) / (______________) = ______________
-
-Step 3: 이는 판별자가 ______________ (구별을 잘한다 / 완전히 헷갈려한다)는 뜻이다.
-
-Step 4: 이 상태에서 생성자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 나빠진다)
-Step 5: 판별자가 전략을 바꾸면 ______________ (더 좋아진다 / 더 나빠진다)
-
-결론: 어느 쪽도 혼자 전략을 바꿔서 이득을 볼 수 없는 상태 = ______________ (균형의 이름)
-</code></pre>
-<p><strong>정확성 확인</strong>: 문제 1에서 계산한 손실값들이 이 균형점(\(D=0.5\))에서
-계산된 값과 일치하는지 확인하고, 실제 GAN 학습에서 이 균형에
-도달하기가 왜 이론만큼 쉽지 않은지(모드 붕괴 등) 한 문장으로 언급하라.</p>
+<p><strong>2. (개념 서술)</strong> 15.3절의 4단계(선택-확장-시뮬레이션-역전파) 중,
+Chapter 2의 UCB와 가장 직접적으로 대응하는 단계는 어디인지, 그리고
+Chapter 5의 몬테카를로와 가장 직접적으로 대응하는 단계는 어디인지
+짝짓고 이유를 설명하라.</p>
+<p><strong>3. (개념 서술)</strong> AlphaZero가 무작위 롤아웃 대신 신경망을 쓰는 것이
+왜 “바둑처럼 한 수의 영향이 아주 나중에야 드러나는 게임“에서 특히
+중요한지, 무작위 롤아웃의 한계와 연결지어 설명하라.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-12-팀-프로젝트-구현-team-project-implementation"><a class="header" href="#chapter-12-팀-프로젝트-구현-team-project-implementation">Chapter 12. 팀 프로젝트: 구현 (Team Project: Implementation)</a></h1>
-<p>지금까지 11개 장 동안 배운 모든 것 — 손실함수를 정의하고, 그래디언트를
-유도하고, 모델을 구현하고, 그 정확성을 논증하는 것 — 은 각각 독립된
-장의 문제로 다뤄졌다. 마지막 두 장은 이 조각들을 하나의 완성된
-프로젝트로 직접 조립해보는 시간이다.</p>
-<h2 id="121-왜-팀-프로젝트인가"><a class="header" href="#121-왜-팀-프로젝트인가">12.1 왜 팀 프로젝트인가</a></h2>
-<p>실제 머신러닝 문제는 “이 장은 로지스틱회귀, 저 장은 CNN” 식으로
-깔끔하게 나뉘어 있지 않다. 데이터를 정제하고, 어떤 모델이 적합한지
-판단하고, 학습이 잘 안 될 때 원인을 진단하고(과적합인가? 그래디언트
-소실인가? 데이터 자체의 문제인가?), 결과를 남에게 설명하는 것까지 —
-이 모든 과정을 스스로 겪어보는 것이 지난 11개 장의 개별 주제를 하나로
-통합하는 가장 확실한 방법이다.</p>
-<h2 id="122-프로젝트-구조"><a class="header" href="#122-프로젝트-구조">12.2 프로젝트 구조</a></h2>
+<h1 id="chapter-16-block-b-캡스톤-팀-프로젝트와-학기-총정리-block-b-capstone--semester-review"><a class="header" href="#chapter-16-block-b-캡스톤-팀-프로젝트와-학기-총정리-block-b-capstone--semester-review">Chapter 16. Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone &amp; Semester Review)</a></h1>
+<p>Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN), 정책을 직접
+학습하고(REINFORCE, PPO), 사람의 시연·선호로부터 배우고(모방학습), 실제
+물리 시뮬레이션(MuJoCo, Isaac Sim)과 트리 탐색(MCTS)까지 다뤘다. 이번
+장은 Chapter 8의 짝이다 — 이 두 번째 절반의 도구들을 로봇 시뮬레이션
+환경에 직접 적용해보고, 학기 전체를 총정리한다.</p>
+<h2 id="161-프로젝트-구조-1"><a class="header" href="#161-프로젝트-구조-1">16.1 프로젝트 구조</a></h2>
 <ul>
-<li><strong>코드</strong>: 재현 가능해야 한다 — 다른 사람이 같은 코드를 실행하면
-(무작위성을 고정했을 때) 같은 결과가 나와야 한다. 데이터 전처리부터
-최종 평가까지 전체 파이프라인이 스크립트/노트북으로 정리돼 있어야
-한다.</li>
-<li><strong>리포트</strong>: 문제 정의 → 방법론 → 실험 결과 → (필수) 수식적 정당화
-1개 이상 → 한계와 향후 개선 방향의 구조를 따른다.</li>
-<li><strong>포스터</strong>: 발표(Chapter 13)에서 쓸 요약본 — 핵심 그림 1~2개(학습
-곡선, 결과 예시 등)와 가장 중요한 결론 3~4개로 압축한다.</li>
+<li><strong>환경</strong>: PyBullet 또는 Gymnasium의 연속제어 환경(Pendulum,
+MuJoCo 기반 로봇 환경 등) 중 하나를 고른다.</li>
+<li><strong>적용</strong>: Chapter 9~15 중 최소 하나의 방법(DQN, PPO, 모방학습, 또는
+MCTS)으로 정책을 학습시킨다.</li>
+<li><strong>필수 요구사항 — 수식적 정당화 최소 1개</strong>: 예를 들어 (1) PPO를
+썼다면 Chapter 11.4의 클리핑이 학습 안정성에 미친 영향을 클리핑
+있음/없음 비교로 제시, (2) 모방학습을 썼다면 Chapter 12.2의 복합
+오차가 실제로 관찰됐는지(전문가 데이터 분포 밖 상태에서 성능이
+떨어지는지) 확인, (3) 도메인 무작위화를 적용했다면 Chapter 13.2의
+현실 격차 논의와 연결지어 효과를 설명.</li>
+<li>Chapter 8과 마찬가지로, 학습 곡선(에피소드에 따른 누적 보상 변화)을
+반드시 제시한다 — 지도학습의 손실 곡선에 해당하는, 강화학습에서
+“학습이 실제로 되고 있는가“를 보여주는 기본 증거다.</li>
 </ul>
-<h2 id="123-프로젝트-주제-후보"><a class="header" href="#123-프로젝트-주제-후보">12.3 프로젝트 주제 후보</a></h2>
-<p>자유 주제이지만, 다음과 같은 방향을 참고할 수 있다:</p>
-<ul>
-<li><strong>그래프 이상탐지</strong>: 공개 합성 데이터를 이용해, 그래프신경망(GNN,
-이번 학기 범위 밖이지만 ML1 Chapter 12의 임베딩 개념과 이어진다)이나
-전통적 방법으로 비정상 노드/엣지를 탐지.</li>
-<li><strong>이미지 분류 응용</strong>: ML1 Chapter 10(CNN)에서 배운 구조를 실제 이미지
-데이터셋에 적용, ML1 Chapter 11에서 배운 전이학습(transfer learning) 시도.</li>
-<li><strong>간단한 챗봇/LLM 활용 프로젝트</strong>: Chapter 2~4(시퀀스/LLM 파트)에서
-배운 프롬프팅 기법을 실제 과제(요약, 분류, 검색)에 응용하거나,
-Chapter 9에서 배운 정렬(alignment) 아이디어를 작은 규모로 실험.</li>
-</ul>
-<p><strong>데이터 구하기</strong>: 위 주제들에 쓸 데이터는 보통 다음 세 곳에서 구한다.</p>
-<ul>
-<li><strong>Kaggle</strong>(kaggle.com/datasets): 정형데이터·이미지·텍스트를 가리지
-않는 가장 큰 데이터셋 저장소. 대회(Competition) 형태로 정리된
-데이터는 평가지표와 상위권 풀이까지 참고할 수 있어 특히 유용하다.</li>
-<li><strong>UCI Machine Learning Repository</strong>(archive.ics.uci.edu): 고전적인
-정형 데이터셋 위주, 크기가 작아 빠른 실험과 손으로 구현한 모델을
-검증하는 데 적합하다.</li>
-<li><strong>Hugging Face Datasets</strong>(huggingface.co/datasets): 텍스트·이미지
-데이터셋을 코드 몇 줄로 바로 불러올 수 있어, LLM/트랜스포머 관련
-프로젝트에 특히 편리하다.</li>
-</ul>
-<h2 id="124-팀-프로젝트에서-자주-마주치는-실전-문제들"><a class="header" href="#124-팀-프로젝트에서-자주-마주치는-실전-문제들">12.4 팀 프로젝트에서 자주 마주치는 실전 문제들</a></h2>
-<p>이번 학기 배운 개념들이 실제 프로젝트에서 어떤 모습으로 나타나는지
-미리 짚어본다:</p>
-<ul>
-<li><strong>데이터가 생각보다 지저분하다</strong>: 결측값, 이상치, 클래스
-불균형(ML1 Chapter 2.7의 Precision/Recall이 왜 필요한지 다시 체감하게
-되는 지점) 등을 먼저 확인해야 한다.</li>
-<li><strong>학습이 안 될 때</strong>: 손실이 줄지 않는다면 학습률(ML1 Chapter 2)이
-문제인지, 그래디언트 소실(ML1 Chapter 9)이 문제인지, 데이터 자체에
-신호가 없는지 순서대로 의심해봐야 한다.</li>
-<li><strong>검증 없이 모델을 고르지 않는다</strong>: 학습 데이터에 대한 성능만 보고
-모델을 고르면 과적합된 모델을 최종안으로 선택하는 실수를 하기 쉽다 —
-반드시 별도의 검증/테스트 데이터로 최종 평가한다(ML1 Chapter 6의
-train/validation/test 원칙).</li>
-</ul>
-<h2 id="125-요구사항-수식적-정당화-최소-1개"><a class="header" href="#125-요구사항-수식적-정당화-최소-1개">12.5 요구사항: 수식적 정당화 최소 1개</a></h2>
-<p>프로젝트 보고서에는 반드시 <strong>수식적으로 정당화되는 선택 1개 이상</strong>이
-포함돼야 한다. 다음은 이 요구사항을 만족하는 예시들이다(프로젝트
-주제에 맞게 변형):</p>
-<ol>
-<li>특정 손실함수를 골랐다면, 그 손실함수의 그래디언트가 왜 문제에
-적합한 형태를 갖는지 유도(ML1 Chapter 2의 패턴 재사용).</li>
-<li>정규화 기법(L1/L2, dropout 등)을 썼다면, 그것이 과적합을 어떻게
-줄이는지 수식 또는 직관적 논증으로 설명(ML1 Chapter 6, 9).</li>
-<li>모델 구조를 선택한 이유를, 파라미터 수/계산 복잡도 공식으로
-정량적으로 비교(ML1 Chapter 10의 CNN 파라미터 수 계산 패턴 재사용).</li>
-<li>강화학습/생성형 프로젝트라면, Chapter 5~11에서 배운 벨만방정식·
-ELBO·Nash 균형 같은 개념 중 하나를 실제 구현과 연결지어 설명.</li>
-</ol>
-<p>이는 이번 학기 내내 강조된 “정확히 맞히는 코드“와 “왜 그렇게 작동하는지
-아는 것“의 구분을, 프로젝트라는 더 큰 스케일에서도 유지하기 위함이다.</p>
-<h2 id="126-외부-제출-가능한-수준으로"><a class="header" href="#126-외부-제출-가능한-수준으로">12.6 외부 제출 가능한 수준으로</a></h2>
-<p>이 프로젝트는 <strong>코드 + 리포트 + 포스터</strong> 3종 세트로 표준화해서
-준비한다 — 나중에 외부 기관(대학 등)이 자료를 요청할 경우 즉시 제시할
-수 있는 수준을 목표로 한다.</p>
-<h2 id="127-평가-기준"><a class="header" href="#127-평가-기준">12.7 평가 기준</a></h2>
-<ul>
-<li>문제 정의의 명확성</li>
-<li>방법론의 적절성(배운 개념을 올바르게 적용했는가)</li>
-<li>수식적 정당화의 정확성과 깊이</li>
-<li>결과의 정직한 보고(잘 안 된 부분을 숨기지 않고, 원인을 분석했는가)</li>
-<li>코드의 재현 가능성</li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="chapter-13-팀-프로젝트-발표-team-project-presentation"><a class="header" href="#chapter-13-팀-프로젝트-발표-team-project-presentation">Chapter 13. 팀 프로젝트: 발표 (Team Project: Presentation)</a></h1>
-<p>지난 장에서 프로젝트를 구현했다면, 이번 장은 그 결과를 발표하고, 학기
-전체를 돌아보는 시간이다. 그리고 마지막으로, 지금 이 순간에도 계속
-발전하고 있는 몇 가지 최신 동향을 짧게 소개하며 학기를 마무리한다.</p>
-<h2 id="131-발표-체크리스트"><a class="header" href="#131-발표-체크리스트">13.1 발표 체크리스트</a></h2>
-<ul>
-<li><strong>문제 정의</strong> (1분): 무엇을 풀려고 했는가? 왜 그 문제가 흥미로운가?</li>
-<li><strong>방법론</strong> (2~3분): 어떤 모델/알고리즘을 썼고, 왜 그것을 선택했는가?</li>
-<li><strong>수식적 정당화</strong> (2분): 지난 장 리포트에 담은 정당화 1개 이상을
-발표에서도 반드시 짚는다.</li>
-<li><strong>결과</strong> (2분): 정량적 결과(수치, 그래프)와 정성적 결과(예시)를
-함께 보여준다.</li>
-<li><strong>한계와 회고</strong> (1~2분): 무엇이 잘 안 됐고, 왜 그랬다고 생각하는가?
-시간이 더 있었다면 무엇을 시도했을 것인가?</li>
-</ul>
-<p>좋은 발표는 “무엇을 만들었는가“보다 “왜 그렇게 만들었는가“와 “무엇을
-배웠는가“에 더 무게를 둔다. 특히 잘 안 됐던 부분을 숨기지 않고, 그
-원인을 이 학기에 배운 개념으로 진단해서 보여주는 것 — 예를 들어
-“손실이 줄지 않았는데, 확인해보니 그래디언트가 소실되고 있었다“는
-식의 진단 — 이 단순히 “정확도 90% 달성했습니다“보다 훨씬 값진
-결과다.</p>
-<h2 id="132-ml2-개념-지도-총정리"><a class="header" href="#132-ml2-개념-지도-총정리">13.2 ML2 개념 지도 (총정리)</a></h2>
+<h2 id="162-발표와-peer-review-블록-12-1"><a class="header" href="#162-발표와-peer-review-블록-12-1">16.2 발표와 Peer-Review (블록 1~2)</a></h2>
+<p>형식은 Chapter 8과 동일하다. Peer-review 체크리스트에 이번엔 다음
+항목을 추가한다: “탐험-활용 균형이 적절했는가”(Chapter 2에서 배운
+딜레마가 실제 학습 곡선에서 어떻게 드러났는지), “환경의 특성(이산/연속
+행동, 보상의 희소성 등)에 알고리즘 선택이 맞았는가.”</p>
+<h2 id="163-ml2-개념-지도-총정리"><a class="header" href="#163-ml2-개념-지도-총정리">16.3 ML2 개념 지도 (총정리)</a></h2>
 <div class="table-wrapper">
 <table>
 <thead>
 <tr><th>장</th><th>배운 것</th><th>핵심 질문</th></tr>
 </thead>
 <tbody>
-<tr><td>Ch02</td><td>RNN</td><td>순서가 있는 데이터를 어떻게 기억하며 처리하는가</td></tr>
-<tr><td>Ch03</td><td>Attention/Transformer</td><td>순차 처리 없이 어떻게 문맥을 한 번에 파악하는가</td></tr>
-<tr><td>Ch04</td><td>LLM 사전학습과 프롬프팅</td><td>다음 토큰 예측이 어떻게 폭넓은 능력으로 이어지는가</td></tr>
-<tr><td>Ch05</td><td>MDP/정책평가</td><td>미래의 불확실한 보상을 지금 어떻게 계산하는가</td></tr>
-<tr><td>Ch06</td><td>Q-learning</td><td>환경 모델 없이 어떻게 최적 행동을 배우는가</td></tr>
-<tr><td>Ch07</td><td>DQN</td><td>신경망과 강화학습을 어떻게 안정적으로 결합하는가</td></tr>
-<tr><td>Ch08</td><td>Policy Gradient/PPO</td><td>연속적 행동공간에서 정책을 어떻게 직접 학습하는가</td></tr>
-<tr><td>Ch09</td><td>RLHF/정렬</td><td>사전학습된 모델을 사람이 원하는 방향으로 어떻게 다듬는가</td></tr>
-<tr><td>Ch10</td><td>VAE</td><td>계산 불가능한 우도를 어떻게 우회해서 최적화하는가</td></tr>
-<tr><td>Ch11</td><td>GAN/Diffusion</td><td>적대적 학습과 점진적 노이즈 제거는 어떻게 다른 원리로 같은 목표를 이루는가</td></tr>
+<tr><td>Ch02</td><td>멀티암 밴딧</td><td>상태 없이도 탐험-활용 딜레마를 어떻게 다루는가</td></tr>
+<tr><td>Ch03</td><td>MDP</td><td>강화학습 문제를 어떻게 수학적으로 정식화하는가</td></tr>
+<tr><td>Ch04</td><td>동적계획법</td><td>모델을 알 때 최적 정책을 어떻게 계산하는가</td></tr>
+<tr><td>Ch05</td><td>몬테카를로</td><td>모델 없이, 에피소드 결과만으로 어떻게 배우는가</td></tr>
+<tr><td>Ch06</td><td>시간차 학습</td><td>에피소드가 끝나길 기다리지 않고 어떻게 배우는가</td></tr>
+<tr><td>Ch07</td><td>n-step/적격흔적/Dyna</td><td>MC와 TD 사이, 그리고 경험 재사용은 어떻게 하는가</td></tr>
+<tr><td>Ch09</td><td>DQN</td><td>표 대신 신경망으로 어떻게 Q-함수를 근사하는가</td></tr>
+<tr><td>Ch10</td><td>정책기반 RL</td><td>Q를 거치지 않고 정책을 직접, 연속공간에서 어떻게 학습하는가</td></tr>
+<tr><td>Ch11</td><td>PPO</td><td>정책이 한 번에 너무 멀리 움직이지 않게 어떻게 제한하는가</td></tr>
+<tr><td>Ch12</td><td>모방학습/RLHF</td><td>시행착오 대신 시연이나 선호로부터 어떻게 배우는가</td></tr>
+<tr><td>Ch13</td><td>로봇 시뮬레이션</td><td>물리 법칙이 지배하는 연속 제어 문제를 어떻게 다루는가</td></tr>
+<tr><td>Ch14</td><td>MuJoCo/Isaac Sim</td><td>시뮬레이션의 정밀도와 속도를 어떻게 절충하는가</td></tr>
+<tr><td>Ch15</td><td>MCTS</td><td>완벽한 모델이 있을 때 미리 수를 어떻게 읽어보는가</td></tr>
 </tbody>
 </table>
 </div>
-<h2 id="133-ml1--ml2를-관통하는-하나의-패턴"><a class="header" href="#133-ml1--ml2를-관통하는-하나의-패턴">13.3 ML1 → ML2를 관통하는 하나의 패턴</a></h2>
-<p>두 학기 26개 장 전체를 관통하는 구조를 마지막으로 정리한다:</p>
+<h2 id="164-ml1--ml2를-관통하는-하나의-패턴"><a class="header" href="#164-ml1--ml2를-관통하는-하나의-패턴">16.4 ML1 → ML2를 관통하는 하나의 패턴</a></h2>
+<p>두 과목을 관통하는 구조를 마지막으로 정리한다 — ML1을 들었다면
+익숙한 결론일 것이고, ML2만 들었어도 이번 학기 13개 장에서 이미 충분히
+확인했을 패턴이다:</p>
 <ol>
-<li><strong>모델을 정의한다</strong>: 입력을 출력으로 매핑하는 함수의 형태를
-정한다(직선, 트리, 신경망, Transformer, …).</li>
-<li><strong>틀린 정도를 수치화한다</strong>: 손실함수(MSE, 교차 엔트로피, TD 오차,
-ELBO, min-max 목적함수, …) — 형태는 매번 다르지만 역할은 항상
-같다.</li>
-<li><strong>그 손실을 줄이는 방향으로 파라미터를 조정한다</strong>: 경사하강법(직접
-또는 역전파를 통해) — 이 학기 배운 모든 알고리즘의 마지막 단계는
-결국 이것이다.</li>
+<li><strong>모델을 정의한다</strong>: 상태를 행동(또는 그 확률분포)으로 매핑하는
+함수의 형태를 정한다(Q-테이블, 신경망 Q-함수, 정책 신경망, 게임
+트리, …).</li>
+<li><strong>틀린 정도(또는 목표와의 격차)를 수치화한다</strong>: TD 오차, 정책
+그래디언트의 목적함수, PPO의 클리핑된 목적함수, MCTS의 승률
+통계, … — 형태는 매번 다르지만 “지금이 얼마나 좋은가/나쁜가를
+수치 하나로 요약한다“는 역할은 항상 같다.</li>
+<li><strong>그 수치를 개선하는 방향으로 파라미터(또는 탐색 방향)를
+조정한다</strong>: 경사하강법, 또는 트리 탐색의 반복 — 이 학기 배운
+모든 알고리즘의 마지막 단계는 결국 이것이다.</li>
 </ol>
-<p>새로운 논문이나 모델을 마주칠 때마다, “이 세 가지 질문에 각각 뭐라고
+<p>새로운 논문이나 시스템을 마주칠 때마다, “이 세 가지 질문에 각각 뭐라고
 답하는가“로 분해해서 읽는 습관이, 이 두 과목이 남기고자 하는 가장
 오래가는 도구다.</p>
-<h2 id="134-마지막으로-소개하는-최신-동향"><a class="header" href="#134-마지막으로-소개하는-최신-동향">13.4 마지막으로 소개하는 최신 동향</a></h2>
+<h2 id="165-마지막으로-소개하는-rl로봇공학-최신-동향"><a class="header" href="#165-마지막으로-소개하는-rl로봇공학-최신-동향">16.5 마지막으로 소개하는 RL·로봇공학 최신 동향</a></h2>
 <p>이번 학기에서 다루기엔 이르지만, 지금 활발히 연구되는 방향들을 짧게
 짚어본다 — 자세한 내용보다는, “지금 배운 것이 이런 곳으로 이어질 수
 있다“는 지도를 그리는 것이 목적이다.</p>
 <ul>
-<li><strong>Theorem Proving</strong>(정리 증명): LLM이 수학 정리를 실제로 증명하는
-데 쓰이는 연구 분야. Chain-of-Thought(Chapter 4)의 확장선상에서,
-모델이 단계별 논증을 스스로 생성하고 검증하는 방향으로 발전하고
-있다.</li>
-<li><strong>Autoformalization</strong>: 사람이 자연어로 쓴 수학적 주장을, 컴퓨터가
-검증할 수 있는 형식 언어(formal language)로 자동 변환하는 연구.
-“증명이 맞는지 컴퓨터가 직접 확인한다“는 목표를 향한다.</li>
-<li><strong>Chain-of-Thought (CoT)의 확장</strong>: Chapter 4에서 본 CoT 프롬프팅이,
-이제는 모델 자체를 “여러 단계에 걸쳐 추론하도록” 학습시키는
-방향(추론 모델, reasoning model)으로 발전하고 있다 — Chapter 9에서
-배운 포스트트레이닝(RLHF 등)이 바로 이런 추론 능력을 다듬는 데에도
-쓰인다.</li>
+<li><strong>오프라인 강화학습</strong>(Offline RL): 환경과 직접 상호작용하지 않고,
+이미 모아둔 방대한 로그 데이터만으로 정책을 학습하는 연구. 실물
+로봇으로 탐험하는 것 자체가 위험하거나 비싼 상황(자율주행, 의료)에서
+특히 중요하다 — Chapter 12의 모방학습과 문제의식이 비슷하지만, 시연이
+아니라 (좋은 것과 나쁜 것이 섞인) 임의의 로그 데이터로부터 배운다는
+점이 다르다.</li>
+<li><strong>범용 로봇 정책</strong>(Generalist Robot Policies): 하나의 작업에만
+특화된 정책 대신, 다양한 로봇·작업에 걸쳐 일반화되는 하나의 큰
+정책을 학습하려는 시도(RT-2, OpenVLA 등) — ML1에서 배운 LLM의
+사전학습 아이디어를 로봇 제어에 적용한 것에 가깝다: 방대한 로봇
+시연·상호작용 데이터로 먼저 폭넓게 학습시킨 뒤, 특정 작업에 맞게
+다듬는다.</li>
+<li><strong>Sim-to-Real의 발전</strong>: Chapter 13.2에서 본 도메인 무작위화를 넘어,
+시뮬레이션과 실제 환경의 차이 자체를 학습으로 메우려는 연구가
+계속되고 있다 — Chapter 14에서 본 GPU 가속 시뮬레이션(Isaac Sim
+등)이 “훨씬 많은 다양한 시뮬레이션 조건을 빠르게 경험시킨다“는
+방향으로 이 문제에 기여하고 있다.</li>
 </ul>
-<h2 id="135-발표-후-다음-단계"><a class="header" href="#135-발표-후-다음-단계">13.5 발표 후: 다음 단계</a></h2>
-<p>이 두 과목을 마친 뒤 더 깊이 파고들고 싶다면, 각 장에서 “이 학기
-범위를 넘어선다“고 언급됐던 부분들(LSTM/GRU의 게이트 수식,
-Actor-Critic의 상세 유도, diffusion의 스코어 매칭 이론, PEFT/LoRA의
-구체적인 구현 등)이 자연스러운 다음 목표가 된다 — 이 학기가 그
-개념들을 처음 마주쳤을 때 무섭지 않게 만드는 것이 목표였다면, 그다음은
-각자의 관심에 따라 깊이를 더해가는 몫이다.</p>
+<h2 id="166-발표-후-다음-단계"><a class="header" href="#166-발표-후-다음-단계">16.6 발표 후: 다음 단계</a></h2>
+<p>이 과목을 마친 뒤 더 깊이 파고들고 싶다면, 각 장에서 “이 학기 범위를
+넘어선다“고 언급됐던 부분들(TRPO의 상세 수학, DAgger의 수렴 증명,
+멀티에이전트 RL의 내쉬 균형, AlphaZero의 자기대국 학습 세부사항 등)이
+자연스러운 다음 목표가 된다 — 이 학기가 그 개념들을 처음 마주쳤을 때
+무섭지 않게 만드는 것이 목표였다면, 그다음은 각자의 관심에 따라 깊이를
+더해가는 몫이다.</p>
+<p><strong>ML1이 “정답이 있는 데이터로부터 배운다“는 세계였다면, ML2는 “스스로
+행동해서 얻은 경험만으로 배운다“는 완전히 다른 세계였다 — 밴딧의
+탐험-활용 딜레마에서 시작해 MDP, 동적계획법, 몬테카를로, 시간차
+학습으로 이론을 다졌고, 신경망과 결합해 그 이론을 로봇 시뮬레이션이라는
+현실적인 무대까지 끌고 왔다. 이제 이 두 세계 모두에서, “무엇을
+데이터(또는 경험)로 갖고 있고, 무엇을 최적화하고 싶은가“라는 같은
+질문을 던질 수 있을 것이다.</strong></p>
 
                     </main>
 

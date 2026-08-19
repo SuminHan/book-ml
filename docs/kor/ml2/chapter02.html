@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>시퀀스 모델 (Sequence Models) - Machine Learning 1/2 (한국어)</title>
+        <title>멀티암 밴딧 (Multi-Armed Bandits) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-7ff56cd6.js";
+            window.path_to_searchindex_js = "../searchindex-c60f6173.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-2198bfff.js"></script>
+        <script src="../toc-a2542804.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,114 +178,145 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-2-시퀀스-모델-sequence-models"><a class="header" href="#chapter-2-시퀀스-모델-sequence-models">Chapter 2. 시퀀스 모델 (Sequence Models)</a></h1>
-<p>1990년, 인지과학자 제프리 엘먼(Jeffrey Elman)은 논문 “Finding Structure in
-Time“에서 질문 하나를 던졌다: 신경망이 “지금 보고 있는 입력“뿐 아니라 “조금
-전에 무엇을 봤는지“도 기억하게 만들 수 있을까? 그가 제안한 구조 — 은닉층의
-출력을 다음 시점의 입력으로 다시 연결하는 순환(recurrent) 구조 — 는 지금
-RNN(Recurrent Neural Network)이라 불리는 모델의 원형이다.</p>
-<h2 id="21-왜-순서가-중요한가"><a class="header" href="#21-왜-순서가-중요한가">2.1 왜 순서가 중요한가</a></h2>
-<p>“강아지가 고양이를 쫓는다“와 “고양이가 강아지를 쫓는다“는 똑같은 단어 세
-개로 이루어져 있지만 완전히 다른 문장이다. ML1까지 배운 MLP나 CNN에 이
-문장을 넣으려면 단어들을 그냥 벡터 하나로 뭉쳐야 했는데, 그러면 순서
-정보가 사라진다 — “누가 누구를 쫓는지“를 구분할 방법이 없어진다.</p>
-<h2 id="22-은닉-상태-지금까지-읽은-것의-요약"><a class="header" href="#22-은닉-상태-지금까지-읽은-것의-요약">2.2 은닉 상태: 지금까지 읽은 것의 요약</a></h2>
-<p>RNN의 핵심 아이디어는 <strong>은닉 상태</strong>(hidden state)다: 문장을 한 단어씩
-읽어가면서, “지금까지 읽은 내용의 요약“을 하나의 벡터에 계속 갱신해나간다.
-두 번째 단어를 처리할 때는 두 번째 단어 자체뿐 아니라 “첫 번째 단어를
-읽고 남은 요약“도 함께 입력받는다 — 이렇게 하면 지금 시점의 출력이 과거
-전체의 맥락에 영향을 받을 수 있다.</p>
-<h2 id="23-rnn의-순전파"><a class="header" href="#23-rnn의-순전파">2.3 RNN의 순전파</a></h2>
-<p>시점 \(t\)마다 입력 \(x_t\)와 이전 은닉 상태 \(h_{t-1}\)을 받아, 새
-은닉 상태 \(h_t\)와 (필요하면) 출력 \(y_t\)를 낸다:</p>
-<p>\[h_t = \tanh(W_{xh} x_t + W_{hh} h_{t-1} + b_h), \qquad y_t = W_{hy} h_t + b_y\]</p>
-<p><strong>핵심은 \(W_{xh}, W_{hh}, W_{hy}\)가 모든 시점에서 동일한 가중치를
-재사용한다는 것</strong>이다(파라미터 공유 — CNN의 필터 재사용과 같은 아이디어를
-시간 축에 적용한 것).</p>
-<pre><code class="language-python">def rnn_step(x_t, h_prev, Wxh, Whh, b_h):
-    z = [sum(Wxh[i][j]*x_t[j] for j in range(len(x_t))) +
-         sum(Whh[i][j]*h_prev[j] for j in range(len(h_prev))) + b_h[i]
-         for i in range(len(h_prev))]
-    return [tanh(v) for v in z]
+                        <h1 id="chapter-2-멀티암-밴딧-multi-armed-bandits"><a class="header" href="#chapter-2-멀티암-밴딧-multi-armed-bandits">Chapter 2. 멀티암 밴딧 (Multi-Armed Bandits)</a></h1>
+<p>카지노에는 손잡이(암, arm)가 여러 개 달린 슬롯머신들이 있다고 상상해보자.
+각 손잡이는 서로 다른, 그러나 당신은 모르는 평균 보상을 가지고 있다.
+제한된 횟수만 당길 수 있다면, 어떤 순서로 손잡이를 당겨야 총 보상을
+최대화할 수 있을까? 이 단순한 질문 — <strong>멀티암 밴딧</strong>(Multi-Armed
+Bandit) 문제 — 이 강화학습이 다루는 모든 문제의 가장 작은 뼈대다. 다음
+장부터 배울 상태(state)도, 여러 스텝에 걸친 전이(transition)도 없이,
+“탐험과 활용의 딜레마“라는 강화학습의 핵심 문제 하나만 순수하게 남겨둔
+가장 단순한 형태이기 때문이다.</p>
+<h2 id="21-탐험과-활용"><a class="header" href="#21-탐험과-활용">2.1 탐험과 활용</a></h2>
+<p>\(k\)개의 손잡이(팔) 각각의 실제 평균 보상을 \(q^*(a)\)라 하자(우리는
+모른다). 지금까지 관찰한 것을 바탕으로 한 추정치를 \(Q_t(a)\)라 하면,
+가장 단순한 전략은 <strong>탐욕적</strong>(greedy) 선택 — 매번 \(Q_t(a)\)가 가장 큰
+팔을 당기는 것이다. 문제는 초반에 우연히 나쁜 결과가 나온 팔을 그 뒤로
+영원히 외면하게 될 수 있다는 것이다 — 진짜 최선의 팔을 충분히 시도해보지
+못한 채 잘못된 결론에 갇히는 것이다.</p>
+<p><strong>\(\varepsilon\)-greedy</strong>는 확률 \(1-\varepsilon\)로는 지금까지
+가장 좋다고 아는 팔을 당기고(활용), 확률 \(\varepsilon\)로는 무작위
+팔을 당긴다(탐험) — Chapter 6(시간차 학습)에서 다시 만날 바로 그
+전략이다. 각 팔의 추정치는 실제로 관찰한 보상의 평균으로 갱신한다:</p>
+<p>\[Q_{t+1}(a) = Q_t(a) + \frac{1}{N_t(a)}\big(R_t - Q_t(a)\big)\]</p>
+<p>\(N_t(a)\)는 팔 \(a\)를 지금까지 당긴 횟수다. 이 갱신 규칙은
+“새로 관찰한 값과 지금 추정치의 차이만큼, 그 차이의 크기에 비례해서
+추정치를 옮긴다“는 형태 — Chapter 5(몬테카를로)와 Chapter 6(시간차
+학습)에서 계속 재사용될 패턴이다.</p>
+<pre><code class="language-python">import random
 
-def rnn_forward(inputs, h0, Wxh, Whh, b_h):
-    h = h0
-    hidden_states = []
-    for x_t in inputs:
-        h = rnn_step(x_t, h, Wxh, Whh, b_h)
-        hidden_states.append(h)
-    return hidden_states
+def epsilon_greedy_bandit(true_means, epsilon, steps):
+    k = len(true_means)
+    Q = [0.0] * k
+    N = [0] * k
+    for t in range(steps):
+        if random.random() &lt; epsilon:
+            a = random.randrange(k)          # 탐험
+        else:
+            a = max(range(k), key=lambda i: Q[i])  # 활용
+        r = random.gauss(true_means[a], 1.0)  # 실제 보상은 평균 true_means[a], 잡음 섞임
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+    return Q
 </code></pre>
-<h2 id="24-bptt-시간을-펼쳐서-역전파하기"><a class="header" href="#24-bptt-시간을-펼쳐서-역전파하기">2.4 BPTT: 시간을 펼쳐서 역전파하기</a></h2>
-<p>이 “요약을 계속 갱신한다“는 구조를 학습시키려면, 역전파를 시간 축을 따라
-펼쳐서 적용해야 한다. 시퀀스 길이 \(T\)만큼 신경망을 “펼쳐서(unroll)”
-각 시점을 독립된 층처럼 취급한 뒤 일반적인 역전파를 적용하는 이 방법을
-<strong>BPTT</strong>(Backpropagation Through Time)라 부른다. \(h_t\)가
-\(h_{t-1}\)에, \(h_{t-1}\)이 \(h_{t-2}\)에 의존하는 사슬을 거슬러
-올라가야 하므로, \(h_1\)에 대한 그래디언트는 다음과 같은 형태의 곱을
-포함하게 된다:</p>
-<p>\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
-h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh’(z_t)) , W_{hh}\]</p>
-<h2 id="25-그래디언트-소실이-시간-축에서-재발하는-이유"><a class="header" href="#25-그래디언트-소실이-시간-축에서-재발하는-이유">2.5 그래디언트 소실이 시간 축에서 재발하는 이유</a></h2>
-<p>ML1 Chapter 9에서 본 것과 정확히 같은 패턴이다: \(\tanh’\)의 최댓값은
-1이지만 대부분의 구간에서 1보다 작고, 여기에 \(W_{hh}\)까지
-\(T\)번(시퀀스 길이만큼) 곱해진다. 시퀀스가 길수록(\(T\)가 클수록)
-이 곱은 지수적으로 0에 가까워지거나(그래디언트 소실 — \(W_{hh}\)의
-고유값이 1보다 작을 때) 발산한다(그래디언트 폭발 — 고유값이 1보다 클
-때). 결과적으로 기본 RNN은 <strong>먼 과거의 정보를 거의 기억하지 못한다</strong> —
-“10단어 전에 나온 주어“를 지금 시점에서 활용해야 하는 문장에서 특히
-취약하다.</p>
-<h2 id="26-lstmgru-게이트로-소실을-완화"><a class="header" href="#26-lstmgru-게이트로-소실을-완화">2.6 LSTM/GRU: 게이트로 소실을 완화</a></h2>
-<p>LSTM(Long Short-Term Memory)과 GRU(Gated Recurrent Unit)는
-“게이트(gate)“라는 장치를 추가해, 은닉 상태를 매 시점 완전히 새로
-계산하는 대신 <strong>선택적으로 유지하거나 갱신</strong>한다. 핵심 트릭은 정보가
-지나가는 경로에 곱셈 대신 <strong>덧셈</strong>이 섞이도록 설계하는 것이다 — 덧셈은
-그래디언트를 그대로 통과시키므로(미분이 1), 곱셈만 반복될 때보다 소실이
-훨씬 덜하다. 자세한 게이트 수식은 이번 학기에서는 다루지 않지만, “왜
-LSTM/GRU가 기본 RNN보다 긴 시퀀스에 강한가“의 답은 항상 이 원리로
-귀결된다.</p>
-<h2 id="27-rnn의-근본적-한계"><a class="header" href="#27-rnn의-근본적-한계">2.7 RNN의 근본적 한계</a></h2>
-<p>게이트를 추가해도 RNN은 여전히 <strong>순차적으로</strong> 한 시점씩 처리해야 한다 —
-100번째 단어를 처리하려면 1번째부터 99번째까지 순서대로 다 거쳐야 한다.
-이 순차성 때문에 병렬화가 어렵고, 아주 긴 시퀀스에서는 여전히 먼 과거
-정보가 흐려진다. Chapter 3에서 배울 Attention/Transformer는 이 순차성
-자체를 없애는 완전히 다른 접근이다.</p>
-<p><strong>RNN은 “순서가 있는 데이터를 다루려면 과거를 기억하는 상태가 필요하다“는
-통찰의 가장 단순한 구현이다 — 다음 두 장은 이 구조의 한계를 극복하는
-이야기다.</strong></p>
-<hr>
-<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>rnn_forward_scalar</code>(은닉 상태가 스칼라인
-가장 단순한 RNN, \(h_t = \tanh(w_{xh} x_t + w_{hh} h_{t-1} + b_h)\))와
-<code>gradient_through_time</code>을 완성하라(핵심 줄은 빈칸으로 남겨져 있다고
-가정):</p>
+<h2 id="22-낙관적-초기화"><a class="header" href="#22-낙관적-초기화">2.2 낙관적 초기화</a></h2>
+<p>\(\varepsilon\)-greedy는 탐험을 완전히 무작위로 한다 — 이미 나쁘다고
+거의 확신하는 팔도 똑같은 확률로 다시 시도한다. <strong>낙관적
+초기화</strong>(optimistic initialization)는 다른 트릭을 쓴다: 모든 \(Q_0(a)\)를
+실제 가능한 보상보다 훨씬 크게(낙관적으로) 초기화한다. 그러면 탐욕적
+선택만으로도, 아직 안 당겨본 팔은 “과대평가된” 상태이므로 자연스럽게
+먼저 시도하게 된다 — 시도해서 실망하면(실제 보상이 초기값보다 낮으면)
+추정치가 내려가고, 그다음 팔로 넘어간다. 초반 몇 번의 강제적인 탐험을
+낙관적인 시작값 하나로 만들어내는 셈이다.</p>
+<h2 id="23-ucb-불확실성-자체를-이용한다"><a class="header" href="#23-ucb-불확실성-자체를-이용한다">2.3 UCB: 불확실성 자체를 이용한다</a></h2>
+<p><strong>UCB</strong>(Upper Confidence Bound)는 한 걸음 더 나아간다 — “지금까지 별로
+안 당겨본 팔일수록, 그 추정치가 얼마나 정확한지 자체가 불확실하다“는
+점을 직접 활용한다. 각 팔을 고를 때, 평균 추정치에 “불확실성 보너스“를
+더해서 비교한다:</p>
+<p>\[a_t = \arg\max_a \left[Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}}\right]\]</p>
+<p>\(N_t(a)\)가 작을수록(그 팔을 적게 당겨봤을수록) 제곱근 항이 커져서
+보너스가 커진다 — 그 팔이 사실 최선일 수도 있다는 가능성에 정당한 만큼의
+기회를 준다. 많이 당겨볼수록(\(N_t(a)\)가 커질수록) 보너스는 줄어들어,
+결국 진짜 평균 \(Q_t(a)\)의 크기가 선택을 지배하게 된다.</p>
 <pre><code class="language-python">import math
 
-def rnn_forward_scalar(inputs, h0, w_xh, w_hh, b_h):
-    # ADD ADDITIONAL CODE HERE!!
-
-print(rnn_forward_scalar([1.0, 1.0, 1.0], h0=0.0, w_xh=0.5, w_hh=0.8, b_h=0.0))
-
-def gradient_through_time(tanh_derivatives, w_hh):
-    # input: tanh_derivatives = [tanh'(z_1), ..., tanh'(z_T)]
-    # return: product of (tanh'(z_t) * w_hh) for all t
-    # ADD ADDITIONAL CODE HERE!!
-
-print(gradient_through_time([0.5]*20, w_hh=0.9))  # (0.5*0.9)^20 -- 사실상 0
-print(gradient_through_time([0.9]*20, w_hh=1.1))  # (0.9*1.1)^20 -- 1에 가까움
+def ucb_bandit(true_means, c, steps):
+    k = len(true_means)
+    Q = [0.0] * k
+    N = [0] * k
+    for t in range(1, steps + 1):
+        unplayed = [i for i in range(k) if N[i] == 0]
+        if unplayed:
+            a = unplayed[0]  # 아직 안 당겨본 팔을 먼저 시도
+        else:
+            a = max(range(k), key=lambda i: Q[i] + c * math.sqrt(math.log(t) / N[i]))
+        r = random.gauss(true_means[a], 1.0)
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+    return Q
 </code></pre>
-<p><strong>2. (손유도, Tier B — 힌트 제공)</strong> \(\frac{\partial h_T}{\partial h_1} =
-\prod_{t=2}^T \tanh’(z_t) \cdot w_{hh}\)(은닉 상태가 스칼라인 단순화된
-경우)임을, 연쇄법칙을 \(T-1\)번 반복 적용하는 방식으로 보여라(힌트:
-\(\frac{\partial h_t}{\partial h_{t-1}} = \tanh’(z_t) \cdot w_{hh}\)를
-\(t=2\)부터 \(t=T\)까지 사슬처럼 곱하면 된다).</p>
-<p>\(\tanh’(z_t) \approx 0.5\)(평균적인 경우), \(w_{hh}=0.9\)라고 하고,
-시퀀스 길이 \(T=5, 10, 20\)일 때 각각 \(\frac{\partial h_T}{\partial
-h_1}\)의 크기를 계산하라. 이번엔 \(w_{hh}=1.5\)로 바꿔서 같은 계산을
-반복하고, \(T=20\)일 때 어떤 일이 일어나는지 확인하라.</p>
-<p><strong>정확성 확인</strong>: 계산 결과를 문제 1의 <code>gradient_through_time</code> 함수로
-검증하고, “\(w_{hh}\)의 값 하나가 그래디언트 소실이 될지 폭발이 될지를
-가른다“는 문장이 왜 참인지 한 문단으로 설명하라.</p>
+<p>실제로 세 팔(평균 보상 1.0, 1.5, 2.0)에 대해 2000번씩 당겨보면, \(\varepsilon\)
+-greedy와 UCB 둘 다 진짜 평균에 가까운 추정치로 수렴하지만(예:
+<code>[0.98, 1.32, 2.01]</code>과 <code>[1.15, 1.48, 2.0]</code>), 총 획득 보상은 UCB
+쪽이 조금 더 높은 경향이 있다 — 무작위 탐험 대신, 불확실성이 큰 곳을
+우선적으로 찔러보기 때문이다.</p>
+<h2 id="24-밴딧-vs-완전한-mdp-다음-장으로-가는-다리"><a class="header" href="#24-밴딧-vs-완전한-mdp-다음-장으로-가는-다리">2.4 밴딧 vs 완전한 MDP: 다음 장으로 가는 다리</a></h2>
+<p>밴딧 문제에는 <strong>상태</strong>가 없다 — 팔을 당겨도 “다음 상태“로 넘어가지
+않는다. 매번 같은 \(k\)개의 팔 중에서 고르는, 시간이 흘러도 상황이
+전혀 안 바뀌는 세계다. Chapter 3부터 배울 <strong>MDP</strong>(Markov Decision
+Process)는 여기에 결정적인 것 하나를 추가한다 — <strong>지금 한 행동이
+다음에 어떤 상태를 보게 될지에 영향을 준다.</strong> 슬롯머신을 당기는 것과,
+체스에서 한 수를 두는 것의 차이를 생각해보라: 체스에서는 지금 둔 수가
+판의 배치(상태)를 바꾸고, 그 배치가 다음에 무엇을 할 수 있는지를
+결정한다. 밴딧에서 배운 탐험-활용의 딜레마는 그대로 남지만, 이제
+“지금 선택이 미래의 선택지 자체를 바꾼다“는 완전히 새로운 문제가
+겹쳐진다.</p>
+<p><strong>밴딧은 강화학습에서 상태와 전이를 걷어내고 남은 최소 뼈대다 —
+\(\varepsilon\)-greedy, 낙관적 초기화, UCB, 이 세 가지 탐험 전략은
+형태만 바뀐 채 이 학기 내내(특히 Chapter 6의 ε-greedy) 반복해서
+등장한다.</strong></p>
+<hr>
+<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>epsilon_greedy_bandit</code>과 <code>ucb_bandit</code>(핵심 줄은
+빈칸으로 남겨져 있다고 가정)을 완성하라:</p>
+<pre><code class="language-python">import random, math
+
+def epsilon_greedy_bandit(true_means, epsilon, steps):
+    # ADD ADDITIONAL CODE HERE!!
+    # k개 팔의 Q, N을 0으로 초기화한 뒤 steps번 반복:
+    # 확률 epsilon으로 무작위 팔, 아니면 Q가 최대인 팔을 선택
+    # 보상 관찰 후 Q[a] += (r - Q[a]) / N[a]로 갱신
+
+    return Q
+
+def ucb_bandit(true_means, c, steps):
+    # ADD ADDITIONAL CODE HERE!!
+    # 아직 안 당겨본 팔을 먼저 모두 시도한 뒤,
+    # Q[a] + c*sqrt(ln(t)/N[a])가 최대인 팔을 선택
+
+    return Q
+
+random.seed(0)
+true_means = [1.0, 1.5, 2.0]
+print(epsilon_greedy_bandit(true_means, 0.1, 2000))  # 대략 [1.0, 1.3~1.5, 2.0] 근처
+</code></pre>
+<p><strong>2. (개념 서술)</strong> \(\varepsilon\)를 0으로 고정하면(순수 탐욕적
+선택) 어떤 문제가 생기는지, 반대로 \(\varepsilon=1\)로 고정하면(순수
+무작위 선택) 어떤 문제가 생기는지 각각 설명하라. 학습이 진행될수록
+\(\varepsilon\)을 점점 줄여나가는 것(decay)이 왜 합리적인 절충안인지도
+논하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> 팔 하나를 \(n\)번 당겨서 얻은 보상이
+\(R_1, \ldots, R_n\)일 때, 증분 갱신식 \(Q_{n+1} = Q_n +
+\frac{1}{n}(R_n - Q_n)\)을 \(n=1\)부터 반복 전개하면
+\(Q_{n+1} = \frac{1}{n}\sum_{i=1}^n R_i\)(단순 평균)와 정확히 같아짐을
+보여라.</p>
+<p><strong>힌트</strong>: \(Q_1 = 0\)에서 시작해 \(n=1, 2, 3\)에 대해 직접 전개해보고
+패턴을 관찰한 뒤(예: \(Q_2 = R_1\), \(Q_3 = R_1 + \frac{1}{2}(R_2-R_1) =
+\frac{R_1+R_2}{2}\)), 수학적 귀납법으로 일반적인 \(n\)에 대해
+증명하라.</p>
+<p><strong>정확성 확인</strong>: 이 결과가 왜 “증분 갱신식이 그냥 평균을 온라인(데이터가
+하나씩 들어올 때마다)으로 계산하는 것과 수학적으로 동일하다“는 것을
+의미하는지 한 문장으로 설명하라.</p>
 
                     </main>
 

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>강화학습 알고리즘 (Reinforcement Learning Algorithms) - Machine Learning 1/2 (한국어)</title>
+        <title>시간차 학습 (Temporal-Difference Learning) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-7ff56cd6.js";
+            window.path_to_searchindex_js = "../searchindex-c60f6173.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-2198bfff.js"></script>
+        <script src="../toc-a2542804.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,163 +178,125 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-6-강화학습-알고리즘-reinforcement-learning-algorithms"><a class="header" href="#chapter-6-강화학습-알고리즘-reinforcement-learning-algorithms">Chapter 6. 강화학습 알고리즘 (Reinforcement Learning Algorithms)</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter06_q_learning.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>1989년, 크리스 왓킨스(Chris Watkins)는 박사 학위 논문에서
-<strong>Q-learning</strong>이라는 알고리즘을 제안했다. 지난 장에서 배운 정책평가는
-환경의 전이확률 \(P(s’|s,a)\)를 정확히 알고 있어야 계산할 수 있었다 —
-체스라면 “이 수를 두면 상대는 어떻게 반응할 확률이 얼마인가“를 미리 다
-알아야 한다는 뜻인데, 현실에서는 대부분 이걸 알 수 없다. Q-learning의
-혁신은 <strong>환경의 모델을 전혀 몰라도</strong>, 그저 행동해보고 결과를 관찰하는
-것만으로 최적의 행동을 학습할 수 있다는 것을 보인 데 있다.</p>
-<h2 id="61-최적-정책은-항상-존재하는가"><a class="header" href="#61-최적-정책은-항상-존재하는가">6.1 최적 정책은 항상 존재하는가?</a></h2>
-<p>지금까지(Chapter 5)는 “주어진 정책을 평가하는 법“을 배웠다. 그런데
-강화학습이 정말로 풀고 싶은 문제는 “가장 좋은 정책을 찾는 것“이다.
-그런데 “가장 좋은 정책“이라는 말 자체가 사실 당연하지 않다 — 왜
-그런지, 그리고 그럼에도 왜 항상 존재하는지를 이 절에서 짚어본다.</p>
-<p>정책 사이의 비교는 상태별로 이루어진다: 정책 \(\pi\)가 정책
-\(\pi’\)보다 “더 낫다“는 것은, <strong>모든</strong> 상태 \(s\)에서 동시에
-\(V^\pi(s) \ge V^{\pi’}(s)\)일 때로 정의한다. 문제는, 어떤
-상태에서는 \(\pi\)가 더 낫고 다른 상태에서는 \(\pi’\)이 더 나을
-수 있다는 것이다 — 이 경우 두 정책은 아예 비교가 불가능하다(부분순서,
-partial order). “모든 정책 중 최댓값“이라는 개념이 의미를 가지려면,
-이렇게 서로 비교 불가능한 정책이 있을 수 있는데도 <strong>다른 모든
-정책보다 동시에 낫거나 같은</strong> 단 하나의 정책이 존재해야 하는데, 이건
-결코 자명하지 않다.</p>
-<p>실제로 강화학습의 표준 교과서로 꼽히는 Sutton과 Barto의 책
-(Reinforcement Learning: An Introduction, 2018)도 “적어도 하나의
-최적 정책이 항상 존재한다“고 서술만 할 뿐, 그 이유는 증명하지 않고
-넘어간다 — 이번 장에서 그 빈틈을 채운다.</p>
-<h2 id="62-벨만-최적방정식-유일한-답이-존재한다"><a class="header" href="#62-벨만-최적방정식-유일한-답이-존재한다">6.2 벨만 최적방정식: 유일한 답이 존재한다</a></h2>
-<p>Chapter 5.4에서 “벨만 기대방정식을 반복 계산하면 \(\gamma &lt;
-1\)일 때 항상 정확한 \(V^\pi\)로 수렴한다“는 사실을 결과만
-받아들이고 넘어갔다(수축 사상, contraction mapping 성질). 최적
-정책의 존재도 정확히 같은 도구로 증명된다.</p>
-<p>먼저 “최적 가치” \(V^*(s)\)를 다음 <strong>벨만 최적방정식</strong>으로
-정의한다 — 각 상태에서, 그 이후를 최적으로 이어갔을 때 가치가 가장
-커지는 행동을 골랐다고 가정했을 때 나오는 가치다:</p>
-<p>\[V^*(s) = \max_a \left[R(s,a) + \gamma \sum_{s’} P(s’|s,a)
-V^*(s’)\right]\]</p>
-<p>이 식은 얼핏 \(V^*\)를 “정의“하는 것처럼 보이지만, 사실은
-\(V^*\)가 스스로를 참조하는 순환적인 방정식이다 — 5.4장의
-\(V^\pi\) = 벨만 기대방정식(\(V^\pi\))과 완전히 같은 모양이다.
-그래서 “이 식을 만족하는 \(V\)가 정말 존재하는가? 존재한다면
-유일한가?“라는 질문이 그대로 남는다.</p>
-<p>여기서 5.4장과 똑같은 논리가 다시 등장한다: 벨만 최적방정식의
-우변을 하나의 <strong>연산자</strong> \(T\)로 보면(\(T(V)(s) := \max_a[\ldots]\),
-위 식의 대괄호 안), \(T\)도 \(\gamma\)-축소 사상이라는 것이
-증명돼 있다(5.4의 \(T^\pi\)와 형태만 다를 뿐 같은 성질 — 이
-학기에서는 마찬가지로 결과만 받아들인다). \(\gamma\)-축소
-사상은 반드시 유일한 고정점을 가지고, 어디서 출발해 반복해도 그
-고정점에 수렴한다(Banach 고정점 정리) — 그래서 벨만 최적방정식을
-만족하는 \(V^*\)가 <strong>존재하고, 유일하다.</strong></p>
-<h2 id="63-존재하는-가치로부터-최적-정책을-구성한다"><a class="header" href="#63-존재하는-가치로부터-최적-정책을-구성한다">6.3 존재하는 가치로부터 최적 정책을 구성한다</a></h2>
-<p>\(V^*\)가 존재하고 유일하다는 것과, “그 가치를 실제로 달성하는
-정책이 존재한다“는 것은 다른 이야기다 — 이 간극을 마지막으로 메운다.</p>
-<p>\(V^*\)를 알면, 각 상태에서 그 \(\max\)를 실제로 달성하는
-행동을 그대로 고르는 결정론적 정책을 만들 수 있다:</p>
-<p>\[\pi^*(s) \in \arg\max_a \left[R(s,a) + \gamma \sum_{s’}
-P(s’|s,a) V^*(s’)\right]\]</p>
-<p>이 정의가 항상 가능한 이유는 단순하다 — 각 상태에서 고를 수 있는
-행동의 집합 \(A(s)\)가 <strong>유한</strong>하기 때문에, 유한집합의 최댓값은
-항상 어딘가에서 달성된다(argmax가 빈 집합일 수 없다). “최적 정책이
-존재한다“는 결론의 뿌리를 파고들면, 결국 상태·행동 공간이
-유한하다는 아주 단순한 사실로 귀결된다.</p>
-<p>이렇게 만든 \(\pi^*\)를 실제로 따르면, 그 가치
-\(V^{\pi^*}\)가 정확히 \(V^*\)와 같아진다는 것(그리고 다른
-어떤 정책도 \(V^*\)보다 더 좋을 수 없다는 것)을 보일 수 있다 —
-증명 자체는 이 학기 범위를 넘지만, 핵심 아이디어는 이렇다:
-“\(\pi^*\)가 매 상태에서 벨만 최적방정식의 \(\max\)를 정확히
-달성하도록 골랐으니, \(\pi^*\)를 따랐을 때의 벨만 기대방정식이
-벨만 최적방정식과 완전히 같아진다.” 그래서 \(\pi^*\)는 어느
-상태에서 봐도 다른 모든 정책보다 동시에 낫거나 같다 — 6.1절에서
-걱정했던 “비교 불가능성” 문제가, \(V^*\)라는 공통의 목표를 통해
-해소된다.</p>
-<p>덤으로: 위 argmax에 동점자가 여럿이면 최적 정책도 여러 개 존재할 수
-있다 — 하지만 <strong>어떤 최적 정책을 골라도 그 가치는 항상 똑같이
-\(V^*\)다.</strong> “최적 가치“라는 숫자 자체는 흔들리지 않는다.</p>
-<p>이 증명이 보장하는 건 “존재“이지 “계산 가능성“이나 “저장
-가능성“이 아니라는 점도 중요하다 — 바둑처럼 상태 수가
-초천문학적으로 많으면(약 \(10^{170}\)), \(\pi^*\)가 이론적으로
-존재해도 모든 상태에 대해 표로 저장하는 것 자체가 불가능하다.
-다음 장(Chapter 7)에서 배울, 표 대신 신경망으로 근사하는 방법들이
-필요해지는 이유가 바로 여기서 나온다.</p>
-<p><strong>이 절의 결론은 다음 절부터 배울 Q-learning의 존재 이유이기도
-하다: Q-learning이 추정하려는 \(Q^*(s,a)\)는 “존재할지도 모르는
-목표“가 아니라, 유한한 MDP라면 반드시 존재하고 유일한 숫자다 —
-그래서 그 숫자를 향해 학습을 반복하는 것이 이론적으로 정당화된다.</strong></p>
-<h2 id="64-모델-기반-vs-모델-프리model-free"><a class="header" href="#64-모델-기반-vs-모델-프리model-free">6.4 모델 기반 vs 모델-프리(Model-Free)</a></h2>
-<p>지난 장의 정책평가는 “모델 기반(model-based)” 방법이었다 — 환경이 어떻게
-작동하는지(전이확률)를 알고 있다는 전제 하에 계산했다. 그런데 실제
-게임이나 로봇 제어에서는 “이 버튼을 누르면 정확히 어떤 일이 일어날지“에
-대한 완벽한 수학적 모델이 없는 경우가 대부분이다. <strong>Q-learning</strong>은
-모델을 몰라도, 직접 행동해서 얻은 경험(상태, 행동, 보상, 다음 상태)만으로
-학습하는 <strong>모델-프리</strong>(model-free) 방법이다.</p>
-<h2 id="65-q-함수-상태와-행동-둘-다에-대한-가치"><a class="header" href="#65-q-함수-상태와-행동-둘-다에-대한-가치">6.5 Q-함수: 상태와 행동 둘 다에 대한 가치</a></h2>
-<p>Chapter 5의 \(V(s)\)는 “상태의 가치“였다. Q-learning은 한 걸음 더
-세분화한 <strong>Q-함수</strong> \(Q(s,a)\) — “상태 \(s\)에서 행동 \(a\)를 한
-뒤, 그 이후 최적으로 행동했을 때의 기대 누적 보상” — 를 학습한다.
-\(Q(s,a)\)를 알면 최적 정책은 그냥 \(\pi^*(s) = \arg\max_a
-Q(s,a)\)로 즉시 얻어진다 — “상태의 가치“만으로는 어떤 행동을 골라야
-할지 알 수 없지만(전이확률을 알아야 함), “상태-행동의 가치“를 알면 바로
-최선의 행동을 고를 수 있다는 게 핵심 이점이다.</p>
-<h2 id="66-q-learning-업데이트-규칙"><a class="header" href="#66-q-learning-업데이트-규칙">6.6 Q-learning 업데이트 규칙</a></h2>
-<p>에이전트가 상태 \(s\)에서 행동 \(a\)를 하고, 보상 \(r\)을 받고,
-새 상태 \(s’\)에 도달할 때마다:</p>
+                        <h1 id="chapter-6-시간차-학습-temporal-difference-learning"><a class="header" href="#chapter-6-시간차-학습-temporal-difference-learning">Chapter 6. 시간차 학습 (Temporal-Difference Learning)</a></h1>
+<p>1989년, 크리스 왓킨스(Chris Watkins)는 박사 학위 논문에서 <strong>Q-learning</strong>
+이라는 알고리즘을 제안했다. Chapter 5의 몬테카를로는 모델 없이도 배울 수
+있었지만, 에피소드가 끝날 때까지 기다려야 리턴을 계산할 수 있었다.
+<strong>시간차 학습</strong>(Temporal-Difference, TD)은 이 기다림 자체를 없앤다 — 한
+스텝만 진행해보고, “지금 추정치“와 “방금 관찰한 보상 + 다음 상태의
+추정치“의 차이만큼 즉시 갱신한다. 모델도 필요 없고, 에피소드가 끝나기를
+기다릴 필요도 없는, 강화학습에서 가장 널리 쓰이는 절충안이다.</p>
+<h2 id="61-td0-한-스텝만-보고-갱신한다"><a class="header" href="#61-td0-한-스텝만-보고-갱신한다">6.1 TD(0): 한 스텝만 보고 갱신한다</a></h2>
+<p>Chapter 4의 벨만방정식 \(V^\pi(s) = R(s,\pi(s)) + \gamma V^\pi(s’)\)를
+다시 보자. 정책평가(모델 기반)는 이 식의 우변을 <strong>모든</strong> 다음 상태에
+대한 기댓값으로 계산했다. TD(0)는 그 기댓값을, 실제로 한 번 관찰한
+<strong>샘플 하나</strong>로 대체한다:</p>
+<p>\[V(s) \leftarrow V(s) + \alpha\big[r + \gamma V(s’) - V(s)\big]\]</p>
+<p>대괄호 안을 <strong>TD 오차</strong>(TD error)라 부른다. MC와 비교하면 핵심 차이가
+분명해진다: MC는 실제 리턴 \(G_t\)(에피소드 끝까지의 실제 보상 합)를
+목표로 쓰지만, TD는 \(r + \gamma V(s’)\)(한 스텝의 실제 보상 + 다음
+상태 가치의 <strong>추정치</strong>)를 목표로 쓴다 — “아직 확실하지 않은 추정치를
+가지고 스스로를 갱신한다“는 뜻에서 <strong>부트스트래핑</strong>(bootstrapping)이라
+부른다. 이 부트스트래핑 덕분에 에피소드가 끝나지 않아도, 심지어 끝이
+없는 과업에서도 매 스텝 학습이 가능해진다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>몬테카를로</th><th>시간차 학습(TD)</th></tr>
+</thead>
+<tbody>
+<tr><td>목표값</td><td>실제 리턴 \(G_t\)(에피소드 끝까지)</td><td>\(r + \gamma V(s’)\)(한 스텝 + 추정치)</td></tr>
+<tr><td>갱신 시점</td><td>에피소드가 끝난 뒤</td><td>매 스텝 즉시</td></tr>
+<tr><td>편향/분산</td><td>편향 없음(불편), 분산 큼</td><td>편향 있음(추정치를 씀), 분산 작음</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="62-q-learning-모델-없이-상태-행동-가치로"><a class="header" href="#62-q-learning-모델-없이-상태-행동-가치로">6.2 Q-learning: 모델 없이, 상태-행동 가치로</a></h2>
+<p>Chapter 4의 \(V(s)\)는 “상태의 가치“였다. 이것만으로는 다음 행동을
+고를 수 없다 — 어느 행동이 좋은 다음 상태로 이어지는지 알려면 전이확률
+\(P\)가 필요하기 때문이다(Chapter 5.3에서 이미 짚은 이유). <strong>Q-learning</strong>
+은 한 걸음 더 세분화한 <strong>Q-함수</strong> \(Q(s,a)\) — “상태 \(s\)에서 행동
+\(a\)를 한 뒤, 그 이후 최적으로 행동했을 때의 기대 누적 보상” — 를
+학습한다. \(Q(s,a)\)를 알면 최적 정책은 그냥 \(\pi^*(s) = \arg\max_a
+Q(s,a)\)로 즉시 얻어진다.</p>
+<p>에이전트가 상태 \(s\)에서 행동 \(a\)를 하고, 보상 \(r\)을 받고, 새
+상태 \(s’\)에 도달할 때마다:</p>
 <p>\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma \max_{a’} Q(s’,a’) -
 Q(s,a)\right]\]</p>
-<p>대괄호 안은 <strong>TD 오차</strong>(Temporal Difference error)라 부른다: “지금
-추정한 \(Q(s,a)\)“와 “방금 관찰한 보상 + 다음 상태에서 최선을 다했을
-때의 추정값“의 차이다. 이 오차만큼 \(Q(s,a)\)를 조금씩 보정해나간다 —
-Chapter 2의 경사하강법처럼, “현재 추정치와 더 나은 추정치의 차이만큼
-이동한다“는 같은 패턴이다.</p>
 <pre><code class="language-python">def q_learning_update(Q, s, a, r, s_next, alpha, gamma):
-    max_next_q = max(Q[s_next].values())
+    max_next_q = max(Q[s_next].values()) if isinstance(Q[s_next], dict) else max(Q[s_next])
     td_error = r + gamma * max_next_q - Q[s][a]
     Q[s][a] += alpha * td_error
     return Q
 </code></pre>
-<h2 id="67-탐험과-활용의-딜레마-ε-greedy"><a class="header" href="#67-탐험과-활용의-딜레마-ε-greedy">6.7 탐험과 활용의 딜레마: ε-greedy</a></h2>
-<p>새로운 식당을 고를 때를 생각해보자: 이미 맛있다고 아는 단골 식당에 또
-갈 것인가(<strong>활용, exploitation</strong>), 아니면 아직 안 가본 식당을
-시도해볼 것인가(<strong>탐험, exploration</strong>)? 강화학습 에이전트도 똑같은
-딜레마에 빠진다 — 지금까지 가장 좋다고 알려진 행동만 계속하면(순수
-활용) 더 좋은 행동을 영영 발견하지 못할 수 있고, 무작위로만
-행동하면(순수 탐험) 학습한 지식을 전혀 활용하지 못한다.</p>
-<p>행동을 고를 때, 확률 \(1-\varepsilon\)로는 현재까지 가장 좋다고 아는
-행동을 고르고(활용), 확률 \(\varepsilon\)로는 무작위 행동을 고른다
-(탐험):</p>
+<h2 id="63-sarsa-실제로-고른-행동을-쓴다"><a class="header" href="#63-sarsa-실제로-고른-행동을-쓴다">6.3 SARSA: 실제로 고른 행동을 쓴다</a></h2>
+<p>Q-learning의 목표값은 \(\max_{a’} Q(s’,a’)\) — <strong>항상 최선의 다음
+행동을 가정</strong>한다. 실제로 탐험(Chapter 2의 \(\varepsilon\)-greedy)
+때문에 그 최선의 행동을 안 골랐더라도 상관없이 말이다. <strong>SARSA</strong>
+(State-Action-Reward-State-Action, 이름 자체가 갱신에 필요한 다섯
+요소를 그대로 나열한 것이다)는 다르게 접근한다 — 실제로 다음에 <strong>고른</strong>
+행동 \(a’\)의 Q값을 목표로 쓴다:</p>
+<p>\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma Q(s’,a’) -
+Q(s,a)\right]\]</p>
+<p>이 차이 하나가 두 알고리즘을 근본적으로 갈라놓는다. Q-learning은
+행동 정책이 무엇이든(예: \(\varepsilon\)-greedy로 무작위 탐험을 섞어도)
+<strong>목표 정책</strong>(최적 정책)의 가치를 직접 학습한다 — Chapter 5.4의 언어로
+<strong>off-policy</strong>다. SARSA는 지금 실제로 따르고 있는 정책(탐험을 포함한
+\(\varepsilon\)-greedy 그 자체) 의 가치를 학습한다 — <strong>on-policy</strong>다.</p>
 <pre><code class="language-python">import random
 
-def epsilon_greedy(Q, s, epsilon, actions):
+def epsilon_greedy(Q, s, epsilon, n_actions):
     if random.random() &lt; epsilon:
-        return random.choice(actions)
-    return max(actions, key=lambda a: Q[s][a])
+        return random.randrange(n_actions)
+    return max(range(n_actions), key=lambda a: Q[s][a])
+
+def sarsa_train(env_step, n_states, n_actions, n_episodes, alpha, gamma, epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    for _ in range(n_episodes):
+        s = start_state
+        a = epsilon_greedy(Q, s, epsilon, n_actions)
+        for _ in range(200):
+            ns, r, done = env_step(s, a)
+            na = epsilon_greedy(Q, ns, epsilon, n_actions)
+            Q[s][a] += alpha * (r + gamma * Q[ns][na] - Q[s][a])  # 실제로 고른 na를 사용
+            s, a = ns, na
+            if done:
+                break
+    return Q
 </code></pre>
-<p>학습이 진행될수록 \(\varepsilon\)을 서서히 줄여가는 것(decay)이 흔한
-전략이다 — 초반에는 많이 탐험하고, Q값이 신뢰할 만해지면 점점 활용
-위주로 전환한다.</p>
-<h2 id="68-q-learning이-왜-수렴하는가직관"><a class="header" href="#68-q-learning이-왜-수렴하는가직관">6.8 Q-learning이 왜 수렴하는가(직관)</a></h2>
-<p>6.2~6.3에서 확인했듯이 \(Q^*(s,a)\)는 “존재할지도 모르는 목표“가
-아니라 유한한 MDP라면 반드시 존재하고 유일한 숫자다. Q-learning은
+<h2 id="64-절벽-걷기-두-알고리즘이-실제로-다른-정책을-배운다"><a class="header" href="#64-절벽-걷기-두-알고리즘이-실제로-다른-정책을-배운다">6.4 절벽 걷기: 두 알고리즘이 실제로 다른 정책을 배운다</a></h2>
+<p>“절벽 걷기”(Cliff Walking) 환경 — 시작점에서 목표까지 가는 길 바로
+옆에 떨어지면 큰 벌점(-100)을 받는 절벽이 있는 격자 — 에서 두
+알고리즘을 각각 500 에피소드 학습시키면, 놀랍도록 다른 경로를
+배운다:</p>
+<ul>
+<li><strong>Q-learning</strong>: 절벽 바로 옆을 스치듯 지나가는 <strong>가장 짧은</strong> 경로를
+배운다 — 목표 정책(탐욕적) 관점에서는 이게 진짜 최적이기 때문이다.</li>
+<li><strong>SARSA</strong>: 절벽에서 멀리 돌아가는 <strong>더 안전한</strong> 경로를 배운다 —
+학습 중에는 여전히 \(\varepsilon\)-greedy로 가끔 무작위 행동을
+섞는데, 절벽 바로 옆을 지나가는 정책을 학습하면 그 무작위 행동
+때문에 실제로 가끔 절벽에 떨어져 큰 손해를 본다. SARSA는 <strong>자신이
+실제로 행동하는 방식</strong>(탐험 포함)까지 감안해서 가치를 매기므로, 그
+위험을 피하는 경로를 선호하게 된다.</li>
+</ul>
+<p><strong>Q-learning은 “이상적으로 항상 최선을 다한다면“이라는 가정 아래 최적
+경로를 찾고, SARSA는 “실제로 가끔 실수(탐험)할 수 있다“는 현실을 감안한
+경로를 찾는다</strong> — 어느 쪽이 “더 낫다“가 아니라, 애초에 답하는 질문이
+다르다는 것이 이 예제가 보여주는 핵심이다.</p>
+<h2 id="65-왜-q-learning이-수렴하는가직관"><a class="header" href="#65-왜-q-learning이-수렴하는가직관">6.5 왜 Q-learning이 수렴하는가(직관)</a></h2>
+<p>Chapter 4.5에서 확인했듯이 \(Q^<em>(s,a)\)는 유한한 MDP라면 반드시
+존재하고 유일한 숫자다(벨만 최적방정식, 바나흐 고정점 정리). Q-learning은
 그 목표를 직접 계산하지 않고, 샘플 기반 업데이트만으로 근사하는데도
-정확히 그 값에 도달한다는 것이 증명돼 있다: \(Q(s,a)\)가 실제로
-어떤 행동으로 데이터를 모았는지(탐험 정책)와 무관하게, <strong>충분히
-모든 상태-행동 쌍을 무한히 방문하고 학습률 \(\alpha\)를 적절히
-줄여나가면</strong> 참값 \(Q^*(s,a)\)로 수렴한다는 것이 증명돼 있다
-(Robbins-Monro 조건). 직관적으로는: TD
-오차가 0이 되는 지점이 정확히 벨만 최적방정식 \(Q^*(s,a) = R(s,a) +
-\gamma \max_{a’} Q^*(s’,a’)\)을 만족하는 지점이므로, TD 오차를 계속
-줄여나가는 이 업데이트는 결국 그 고정점으로 수렴하게 된다.</p>
-<h2 id="69-q-learning-vs-sarsa-참고"><a class="header" href="#69-q-learning-vs-sarsa-참고">6.9 Q-learning vs SARSA (참고)</a></h2>
-<p>Q-learning은 업데이트할 때 \(\max_{a’} Q(s’,a’)\)(<strong>항상 최선의 다음
-행동을 가정</strong>)을 쓴다 — 실제로 탐험 때문에 그 최선의 행동을 안
-골랐더라도. 이런 방식을 off-policy라 부른다. (SARSA는 실제로 고른
-다음 행동의 Q값을 쓰는 on-policy 방법이다 — 이 학기에서는 다루지
-않지만, Q-learning의 설계 선택을 이해하는 데 참고가 된다.)</p>
-<p><strong>Q-learning은 “환경을 몰라도 배울 수 있다“는 것을 증명함으로써,
-강화학습을 이론적 호기심에서 실제로 로봇·게임·추천시스템에 적용 가능한
-도구로 바꾼 전환점이다.</strong></p>
+정확히 그 값에 도달한다는 것이 증명돼 있다: <strong>충분히 모든 상태-행동
+쌍을 무한히 방문하고 학습률 \(\alpha\)를 적절히 줄여나가면</strong> 참값
+\(Q^</em>(s,a)\)로 수렴한다(Robbins-Monro 조건). 직관적으로는: TD 오차가
+0이 되는 지점이 정확히 벨만 최적방정식을 만족하는 지점이므로, TD 오차를
+계속 줄여나가는 이 업데이트는 결국 그 고정점으로 수렴하게 된다.</p>
+<p><strong>시간차 학습은 몬테카를로의 “모델이 필요 없다“는 장점과, 동적계획법의
+“한 스텝만 보고도 갱신한다“는 장점을 하나로 합친 것이다 — 그리고
+Q-learning과 SARSA의 차이는, 똑같은 부트스트래핑 아이디어를 “이상적인
+목표 정책“에 적용하느냐 “실제 행동 정책“에 적용하느냐라는, 아주 작지만
+결과는 크게 갈리는 선택에서 나온다.</strong></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>q_learning_train</code>을 완성하라(핵심 줄은
@@ -361,16 +323,21 @@ def q_learning_train(transition, n_states, n_actions, n_episodes, alpha, gamma, 
             s = s_next
     return Q
 </code></pre>
-<p><strong>2. (손유도, Tier A — 자유 유도)</strong> Q-learning의 업데이트
+<p><strong>2. (개념 서술)</strong> 6.4절의 절벽 걷기 예제에서, 만약 학습이 끝난 뒤
+\(\varepsilon\)을 0으로 낮춰서(더 이상 탐험하지 않고) SARSA가 배운
+정책을 실행한다면, 그래도 여전히 먼 길로 돌아갈지, 아니면 짧은 길을
+택하게 될지 예측하고 이유를 설명하라. (힌트: SARSA가 학습한 Q값
+자체는 “탐험이 있는 상황“을 가정하고 계산된 값이라는 점을 생각하라.)</p>
+<p><strong>3. (손유도, Tier A — 자유 유도)</strong> Q-learning의 업데이트
 \(Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma \max_{a’} Q(s’,a’) -
-Q(s,a)]\)가 참값 \(Q^*(s,a)\)로 수렴하기 위해 필요한 조건을 다음
+Q(s,a)]\)가 참값 \(Q^<em>(s,a)\)로 수렴하기 위해 필요한 조건을 다음
 세 가지로 나눠 논증하라: (1) TD 오차가 정확히 0이 되는 \(Q\)가 벨만
-최적방정식 \(Q^*(s,a) = R(s,a) + \gamma \max_{a’} Q^*(s’,a’)\)의
+최적방정식 \(Q^</em>(s,a) = R(s,a) + \gamma \max_{a’} Q^*(s’,a’)\)의
 해와 같다는 것(단순 대수적 정리). (2) \(\alpha\)가 너무 크면(예:
-항상 \(\alpha=1\)) 왜 수렴이 불안정해지는지(Chapter 2의 학습률 문제와
-연결지어). (3) 모든 상태-행동 쌍이 <strong>무한히 많이 방문돼야</strong> 수렴이
-보장되는 이유(ε-greedy 탐험이 없다면 어떤 상태-행동 쌍은 영원히 시도되지
-않을 수 있다는 점과 연결지어).</p>
+항상 \(\alpha=1\)) 왜 수렴이 불안정해지는지(Chapter 2의 증분 평균
+갱신과 연결지어). (3) 모든 상태-행동 쌍이 <strong>무한히 많이 방문돼야</strong>
+수렴이 보장되는 이유(ε-greedy 탐험이 없다면 어떤 상태-행동 쌍은 영원히
+시도되지 않을 수 있다는 점과 연결지어).</p>
 <p><strong>정확성 확인</strong>: 위 세 가지 논증이 각각 Q-learning 알고리즘의 어느
 부분(TD 오차 계산, <code>alpha</code> 파라미터, <code>epsilon_greedy</code> 함수)에
 대응하는지 짝지어라.</p>

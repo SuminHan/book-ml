@@ -1,177 +1,131 @@
-# Chapter 3. 어텐션과 트랜스포머 (Attention & Transformer)
+# Chapter 3. MDP 정식화 (Markov Decision Processes)
 
-2017년, 구글 브레인의 연구자들은 논문 제목을 다소 도발적으로 지었다 —
-**"Attention Is All You Need"**. 그때까지 시퀀스를 다루는 최고 성능의
-모델들은 모두 RNN(또는 그 변형인 LSTM)을 기반으로 했는데, 이 논문은 순환
-구조를 완전히 걷어내고 **어텐션**(attention) 메커니즘만으로 RNN보다 더
-좋은 성능을 냈다. 이 구조가 **트랜스포머**(Transformer)이며, 지금 우리가
-쓰는 거의 모든 대규모 언어모델(LLM)의 근간이다.
+1950년대, 수학자 리처드 벨만(Richard Bellman)은 "차원의 저주(curse of
+dimensionality)"라는 용어를 만들면서 동적계획법(dynamic programming)이라는
+최적화 기법을 고안했다. 그의 핵심 통찰 — "복잡한 문제를 한 번에 풀지 말고,
+더 작은 부분 문제로 쪼개서 그 답을 재귀적으로 조합하라" — 는 지금 강화학습
+이론 전체의 뼈대를 이루고 있다. 이번 장은 Chapter 2의 밴딧에 "상태"를
+더해서, 강화학습 문제를 수학적으로 엄밀하게 정의하는 틀 — **MDP**(Markov
+Decision Process) — 를 세운다.
 
-## 3.1 RNN의 순차성이라는 근본 문제
+## 3.1 MDP의 다섯 요소
 
-Chapter 2에서 본 RNN은 한 단어씩 순서대로 처리해야 했다 — 100번째
-단어를 보려면 1번째부터 99번째까지 순서대로 거쳐야 한다. 이건 두 가지
-문제를 만든다: (1) GPU는 병렬 연산에 특화됐는데, 순차적 구조는 그
-병렬성을 활용하지 못해 느리다. (2) 먼 과거의 정보가 여러 단계를 거치며
-흐려진다(Chapter 2의 그래디언트 소실과 정확히 같은 문제).
+MDP는 다섯 가지로 정의된다: \\((\mathcal{S}, \mathcal{A}, P, R, \gamma)\\)
 
-## 3.2 "어텐션"이라는 아이디어
+- \\(\mathcal{S}\\): 가능한 상태들의 집합
+- \\(\mathcal{A}\\): 가능한 행동들의 집합
+- \\(P(s'|s,a)\\): 상태 \\(s\\)에서 행동 \\(a\\)를 했을 때 상태 \\(s'\\)로
+  전이될 확률
+- \\(R(s,a)\\): 상태 \\(s\\)에서 행동 \\(a\\)를 했을 때 받는 즉시 보상
+- \\(\gamma \in [0,1)\\): 할인율(discount factor)
 
-어텐션의 직관은 단순하다: "지금 이 단어를 이해하려면, 문장의 **다른 모든
-단어를 한 번에** 보고, 그중 관련 있는 단어에 더 집중(attend)한다." "그
-동물은 도로를 건너지 않았다, 왜냐하면 **그것은** 너무 지쳐 있었기
-때문이다"라는 문장에서, "그것은"이 가리키는 게 "그 동물"인지 "도로"인지는
-문장 전체를 동시에 봐야 판단할 수 있다.
+Chapter 2의 밴딧과 비교하면 정확히 무엇이 추가됐는지 보인다 — 밴딧에는
+\\(\mathcal{S}\\)도 \\(P\\)도 없었다(팔을 당겨도 "다음 상태"가 없었다).
+MDP는 지금 한 행동이 다음 상태 \\(P(s'|s,a)\\)를 통해 미래 전체에 영향을
+준다는 사실을 명시적으로 담는다.
 
-## 3.3 Query, Key, Value
+## 3.2 마르코프 성질
 
-각 단어(정확히는 각 단어의 임베딩 벡터)는 세 가지 벡터로 변환된다:
-**Query**(Q) "내가 지금 무엇을 찾고 있는가", **Key**(K) "나는 어떤
-정보를 갖고 있는가", **Value**(V) "실제로 전달할 내용". 세 벡터 모두
-같은 입력 임베딩 \\(x\\)에 서로 다른 학습 가능한 가중치 행렬을 곱해서
-얻는다:
+**마르코프 성질**(Markov property): 다음 상태는 오직 **현재** 상태와
+행동에만 의존한다 — 어떻게 지금 상태에 도달했는지(과거 전체 이력)는
+상관없다:
 
-\\[Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V\\]
+\\[P(s_{t+1} | s_t, a_t, s_{t-1}, a_{t-1}, \ldots, s_0) = P(s_{t+1} | s_t, a_t)\\]
 
-## 3.4 Scaled Dot-Product Attention
+예: 체스판의 현재 배치만 알면, 거기까지 어떤 수순을 거쳐왔는지는 다음
+수를 정하는 데 필요 없다. 이 성질이 성립한다는 가정 덕분에, "지금까지의
+전체 이력"이 아니라 "현재 상태" 하나만 기억하면 충분해진다 — 뒤에서
+배울 알고리즘들이 상태 하나만 보고 결정을 내릴 수 있는 이유가 여기서
+나온다.
 
-한 단어의 Query가 모든 단어의 Key와 얼마나 "관련 있는지"를 내적(dot
-product)으로 잰다:
+## 3.3 누적 보상과 할인율
 
-\\[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\\]
+강화학습의 목표는 한 스텝의 보상이 아니라, 앞으로 받을 보상들의 합 —
+**리턴**(return) \\(G_t\\) — 을 최대화하는 것이다:
 
-단계별로 뜯어보면:
+\\[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k}\\]
 
-1. \\(QK^T\\): 모든 단어 쌍의 Query-Key 내적을 한 번에 계산한 행렬(각
-   행 = 한 단어가 다른 모든 단어와 얼마나 관련 있는지에 대한 원점수).
-2. \\(\sqrt{d_k}\\)(Key 벡터의 차원의 제곱근)로 나눈다: 내적값이 차원이
-   커질수록 커지는 경향이 있어, softmax가 극단적인 값(0 또는 1에 가까운)만
-   내뱉게 되는 것을 막기 위한 스케일 조정이다.
-3. **softmax**로 각 행을 확률분포(합이 1)로 바꾼다 — "이 단어가 다른
-   단어들에 나눠 주는 주의(attention)의 비율".
-4. 그 확률로 \\(V\\)(각 단어가 실제로 전달할 내용)의 가중합을 낸다 —
-   결과는 "관련 있는 단어들의 내용을 그 관련도만큼 섞어 담은" 새로운
-   벡터다.
+**왜 할인율 \\(\gamma\\)가 필요한가**: (1) 수학적으로, \\(\gamma < 1\\)이면
+보상이 유계(bounded)인 한 이 무한급수가 항상 수렴한다(기하급수). \\(\gamma=1\\)
+이면 끝나지 않는 과업에서 리턴이 무한대로 발산할 수 있다. (2) 직관적으로,
+"지금 당장의 보상 1"이 "10스텝 뒤의 보상 1"보다 더 가치 있다고 보는
+경우가 많다 — 사람의 시간 선호나, 금융의 이자율 개념과 같은 방향이다.
+\\(\gamma\\)가 0에 가까우면 에이전트는 "근시안적"(당장의 보상만 중시)이고,
+1에 가까우면 "장기적"(먼 미래의 보상까지 충분히 고려)이 된다.
 
 ```python
-import math
+import gymnasium as gym
 
-def softmax(row):
-    m = max(row)
-    exps = [math.exp(v - m) for v in row]
-    total = sum(exps)
-    return [e / total for e in exps]
+env = gym.make("CartPole-v1")
+obs, info = env.reset(seed=0)
 
-def attention(Q, K, V, d_k):
-    scores = [[sum(Q[i][t] * K[j][t] for t in range(d_k)) / math.sqrt(d_k)
-               for j in range(len(K))] for i in range(len(Q))]
-    weights = [softmax(row) for row in scores]
-    output = [[sum(weights[i][j] * V[j][t] for j in range(len(V)))
-               for t in range(len(V[0]))] for i in range(len(Q))]
-    return output, weights
+# 이 환경에서 MDP의 다섯 요소를 실제로 확인해보자
+print("상태 공간 S:", env.observation_space)   # 4차원 연속 벡터
+print("행동 공간 A:", env.action_space)         # 2개의 이산 행동 (왼쪽/오른쪽 밀기)
+
+total_return, gamma, discount = 0.0, 0.95, 1.0
+for _ in range(10):
+    action = env.action_space.sample()
+    obs, reward, terminated, truncated, info = env.step(action)
+    total_return += discount * reward   # G_t를 직접 누적
+    discount *= gamma
+    if terminated or truncated:
+        break
+print("10스텝 동안의 할인된 리턴 G_0:", round(total_return, 3))
+env.close()
 ```
 
-## 3.5 Self-Attention: 문장이 자기 자신을 본다
+이 코드에서 `reward`가 매 스텝 즉시 보상 \\(R(s,a)\\)이고, 환경이
+내부적으로 다음 상태로 전이시키는 규칙이 곧 \\(P(s'|s,a)\\)다 —
+Gymnasium 환경은 이 전이확률을 코드로 감춰두고 `step()` 함수 하나로
+캡슐화한 것뿐, MDP의 정의와 정확히 대응된다.
 
-Q, K, V가 모두 **같은 문장**에서 나오면 "self-attention"이라 부른다 —
-각 단어가 같은 문장 안의 다른 모든 단어(자기 자신 포함)와의 관련도를
-계산한다. 이게 이번 장 도입부에서 본 "그것은"이 "그 동물"을 가리키는지
-판단하는 메커니즘이다: "그것은"의 Query가 문장 안 모든 단어의 Key와
-내적을 계산했을 때, "그 동물"의 Key와 가장 높은 점수가 나오도록
-학습된다.
+## 3.4 가치함수를 향해
 
-## 3.6 Multi-Head Attention
+이제 "누적 보상을 최대화하는 행동을 고른다"는 목표는 명확해졌지만,
+아직 계산할 방법은 없다 — 무한히 먼 미래까지 내다봐야 할 것 같다.
+다음 장(동적계획법)은 이 무한합을 재귀적인 형태로 다시 쓰는
+**벨만방정식**을 통해, 실제로 계산 가능한 절차로 바꾸는 방법을 다룬다.
 
-Q, K, V를 한 세트만 쓰는 대신, 여러 세트("헤드", head)를 병렬로 두고
-각각 다른 관점의 관련성을 학습하게 한다 — 한 헤드는 문법적 관계(주어-동사)에,
-다른 헤드는 의미적 관계(동의어)에 집중하는 식으로 역할이 나뉘는 경향이
-관찰된다. 여러 헤드의 결과를 이어붙인(concatenate) 뒤 다시 한 번
-선형변환해서 최종 출력을 만든다.
-
-## 3.7 Positional Encoding: 순서 정보는 어떻게 넣는가
-
-어텐션 연산 자체는 순서를 전혀 구분하지 않는다 — \\(QK^T\\)는 단어들의
-순서를 뒤섞어도 각 쌍의 관련도 자체는 똑같이 계산된다(집합처럼 취급).
-그런데 "강아지가 고양이를 쫓는다"에서는 순서가 의미를 바꾼다. 그래서
-Transformer는 각 단어의 임베딩에 그 단어의 위치 정보를 담은 벡터
-(positional encoding, 사인/코사인 함수로 만든 고정된 패턴)를 **더해서**
-넣는다 — 이러면 같은 단어라도 위치가 다르면 입력 벡터 자체가 달라지므로,
-어텐션이 간접적으로 순서를 활용할 수 있다.
-
-## 3.8 RNN 대비 이점
-
-Self-attention은 모든 단어 쌍을 **한 번에** 병렬로 계산한다 — 순차적으로
-처리할 필요가 없어 GPU 병렬성을 최대한 활용하고, "1번째 단어와 100번째
-단어의 관련성"도 중간 99단계를 거치지 않고 직접 계산된다(그래디언트 소실
-문제가 구조적으로 훨씬 덜하다). 대신 문장 길이의 제곱에 비례하는
-계산량(\\(QK^T\\)가 \\(n \times n\\) 행렬)이라는 새로운 비용이 생긴다 —
-이건 아주 긴 문서를 다룰 때의 실무적 한계로 이어진다.
-
-**"모든 단어를 한 번에 보고, 서로의 관련성을 직접 계산한다"는 이 아이디어
-하나가 지난 몇 년간 딥러닝을 가장 크게 바꾼 변화다.**
+**MDP는 "지금 한 행동이 미래의 상태 자체를 바꾼다"는 사실 하나를
+Chapter 2의 밴딧에 추가한 것뿐이지만, 이 한 가지 차이가 강화학습을
+훨씬 더 어렵고, 훨씬 더 흥미로운 문제로 만든다.**
 
 ---
 
 ## 연습문제
 
-**1. (코딩)** 다음과 같은 함수 `scaled_dot_product_attention`을
-완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):
+**1. (코딩)** 위 코드를 참고해서, `FrozenLake-v1`(`is_slippery=False`)
+환경을 만들고 `env.observation_space`와 `env.action_space`를 출력해서
+상태·행동 공간이 각각 이산(discrete)인지 연속(continuous)인지, 몇
+가지인지 확인하라. CartPole과 비교했을 때 어떤 차이가 있는지 한 문장으로
+서술하라.
 
 ```python
-import math
+import gymnasium as gym
 
-def softmax(row):
-    m = max(row)
-    exps = [math.exp(v - m) for v in row]
-    total = sum(exps)
-    return [e / total for e in exps]
-
-def scaled_dot_product_attention(Q, K, V, d_k):
-    # ADD ADDITIONAL CODE HERE!!
-    # 1. scores[i][j] = (Q[i] . K[j]) / sqrt(d_k)
-    # 2. weights = 각 행에 softmax 적용
-    # 3. output[i] = weights[i]로 V의 가중합
-
-    return output, weights
-
-Q = [[1,0],[0,1]]
-K = [[1,0],[0,1]]
-V = [[10,0],[0,10]]
-output, weights = scaled_dot_product_attention(Q, K, V, d_k=2)
-print(weights)  # 각 단어가 "자기 자신"에 더 높은 가중치를 줌
+env = gym.make("FrozenLake-v1", is_slippery=False)
+# ADD ADDITIONAL CODE HERE!!
+# observation_space, action_space를 출력하고 CartPole과 비교
 ```
 
-**2. (손유도, Tier C — 폴백 준비 대상)** 단어 2개짜리 문장에 대해, 다음
-벡터가 주어졌다: \\(Q = \begin{pmatrix}1 & 0\\ 0 & 1\end{pmatrix}\\),
-\\(K = \begin{pmatrix}1 & 1\\ 1 & 0\end{pmatrix}\\), \\(V =
-\begin{pmatrix}5 & 0\\ 0 & 5\end{pmatrix}\\)(\\(d_k=2\\)).
+**2. (개념 서술)** 마르코프 성질이 실제로는 성립하지 않을 것 같은
+상황을 하나 떠올려보라(예: 자율주행에서 "지금 화면 한 장"만으로 판단하는
+경우, 안개 속에서 방금 지나간 표지판 정보가 필요할 수 있다). 그런
+경우에도 마르코프 성질을 다시 성립시키려면 상태를 어떻게 다시 정의해야
+할지(예: 최근 몇 프레임을 함께 상태에 포함시키는 등) 한 문단으로
+제안하라.
 
-\\(QK^T\\)를 손으로 계산하고, \\(\sqrt{d_k}\\)로 나눈 뒤, 각 행에
-softmax를 적용해 어텐션 가중치 행렬을 구하고, 마지막으로 \\(V\\)와의
-가중합으로 최종 출력을 계산하라.
+**3. (손유도, Tier B — 힌트 제공)** 보상이 매 스텝 상수 \\(R\\)로
+고정된 경우(즉 \\(R_t = R\\) for all \\(t\\)), 리턴 \\(G_t = \sum_{k=0}^\infty
+\gamma^k R\\)이 \\(\gamma < 1\\)일 때 닫힌 형태 \\(G_t = \frac{R}{1-\gamma}\\)로
+수렴함을 보여라.
 
-**빈칸채움형 폴백 버전**(자유 계산이 어려운 경우):
+**힌트**: 등비급수의 합 공식 \\(\sum_{k=0}^\infty x^k = \frac{1}{1-x}\\)
+(\\(|x|<1\\)일 때)을 그대로 적용하면 된다. \\(R=1, \gamma=0.9\\)일 때
+\\(G_t\\)의 값을 직접 계산하고, \\(\gamma=0.99\\)로 바꿨을 때 값이 어떻게
+달라지는지도 계산해보라.
 
-```
-Step 1: QK^T 계산 (2x2 행렬)
-  (QK^T)[0][0] = Q[0].K[0] = 1*1 + 0*1 = ______________
-  (QK^T)[0][1] = Q[0].K[1] = 1*1 + 0*0 = ______________
-  (QK^T)[1][0] = Q[1].K[0] = 0*1 + 1*1 = ______________
-  (QK^T)[1][1] = Q[1].K[1] = 0*1 + 1*0 = ______________
-
-Step 2: sqrt(d_k) = sqrt(2) ≈ 1.41 로 모든 원소를 나눈다
-  scaled[0] = [______________, ______________]
-  scaled[1] = [______________, ______________]
-
-Step 3: 첫 번째 행에 softmax 적용
-  exp(scaled[0][0]) = ______________  (계산기 사용)
-  exp(scaled[0][1]) = ______________
-  weights[0] = [______________, ______________]  (합이 1이 되도록 정규화)
-
-Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
-       = [______________, ______________]
-```
-
-**정확성 확인**: 완성한 계산을 문제 1의
-`scaled_dot_product_attention(Q, K, V, d_k=2)` 출력과 대조해 일치하는지
-확인하라.
+**정확성 확인**: \\(\gamma\\)가 1에 가까워질수록 \\(G_t\\)가 왜 점점
+커지는지(발산에 가까워지는지) 계산 결과를 바탕으로 한 문장으로
+설명하라.
