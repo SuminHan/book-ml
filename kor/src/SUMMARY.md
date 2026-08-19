@@ -5,8 +5,17 @@
 # Machine Learning 1
 
 - [Orientation](ml1/chapter01.md)
+    - [1.1 머신러닝 문제 정식화와 세 갈래 분류]()
+    - [1.2 데이터사이언스 파이프라인과 사전지식 리뷰]()
+    - [1.3 아주 짧은 역사와 이번 학기 로드맵]()
 - [회귀 모델: 선형회귀와 로지스틱회귀 (Regression Models: Linear & Logistic)](ml1/chapter02.md)
+    - [2.1 선형회귀: 모델, 비용함수, 경사하강법]()
+    - [2.2 정규방정식과 "같은 모델, 다른 출력"이라는 다리]()
+    - [2.3 로지스틱회귀: 시그모이드에서 PR-AUC까지]()
 - [생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes & GDA)](ml1/chapter03.md)
+    - [3.1 베이즈 정리, 그리고 생성 vs 판별]()
+    - [3.2 가우시안 판별분석 (GDA)]()
+    - [3.3 나이브베이즈: 독립을 가정하고 차원의 저주를 피한다]()
 - [거리 기반 모델과 클러스터링: kNN과 k-means (Distance-Based Models & Clustering)](ml1/chapter04.md)
 - [SVM과 커널 (Support Vector Machines & Kernels)](ml1/chapter05.md)
 - [정규화와 모델 선택 (Regularization & Model Selection)](ml1/chapter06.md)
@@ -24,7 +33,13 @@
 # Machine Learning 2
 
 - [코스 소개와 신경망 미니 리뷰 (Course Introduction & Neural Network Mini-Review)](ml2/chapter01.md)
+    - [1.1 강화학습이란 무엇인가, 그리고 이번 학기 로드맵]()
+    - [1.2 신경망 미니 리뷰]()
+    - [1.3 실습 환경 세팅: Gymnasium]()
 - [멀티암 밴딧 (Multi-Armed Bandits)](ml2/chapter02.md)
+    - [2.1 탐험과 활용: ε-greedy]()
+    - [2.2 낙관적 초기화와 UCB: 불확실성을 이용한 탐험]()
+    - [2.3 밴딧 vs 완전한 MDP: 다음 장으로 가는 다리]()
 - [MDP 정식화 (Markov Decision Processes)](ml2/chapter03.md)
 - [동적계획법 (Dynamic Programming)](ml2/chapter04.md)
 - [몬테카를로 방법 (Monte Carlo Methods)](ml2/chapter05.md)

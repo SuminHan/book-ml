@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b2d154d5.js";
+            window.path_to_searchindex_js = "searchindex-a67ffd97.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-a2542804.js"></script>
+        <script src="toc-c52cac5f.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -704,6 +704,7 @@ Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한�
 만들어낼 수도 있다(Chapter 15의 EM/GMM·생성형 모델과 같은 계열의
 아이디어다).</p>
 <h2 id="32-가우시안-판별분석-gda"><a class="header" href="#32-가우시안-판별분석-gda">3.2 가우시안 판별분석 (GDA)</a></h2>
+<h3 id="정규분포를-가정한다면-gda의-모델"><a class="header" href="#정규분포를-가정한다면-gda의-모델">정규분포를 가정한다면: GDA의 모델</a></h3>
 <p>입력 \(x\)가 연속값(실수 벡터)일 때, 가장 자연스러운 선택은 각 클래스의
 데이터가 <strong>정규분포</strong>를 따른다고 가정하는 것이다 — 이게 <strong>가우시안
 판별분석</strong>(Gaussian Discriminant Analysis, GDA)이다. 이진 분류라면:</p>
@@ -715,6 +716,7 @@ Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한�
 학습 데이터의 평균·공분산을 그대로 계산해서 구한다(최대우도추정, maximum
 likelihood estimation) — 경사하강법 없이 닫힌 형태로 바로 구해진다는 점이
 로지스틱회귀와의 실전적 차이다.</p>
+<h3 id="로지스틱회귀와-만나는-지점"><a class="header" href="#로지스틱회귀와-만나는-지점">로지스틱회귀와 만나는 지점</a></h3>
 <p><strong>놀라운 사실</strong>: 이렇게 구한 \(P(y=1|x)\)를 베이즈 정리로 전개하면, 정확히
 Chapter 2의 로지스틱회귀와 <strong>같은 시그모이드 형태</strong> \(P(y=1|x) =
 \sigma(w^Tx+b)\)가 나온다(유도는 이번 장 연습문제 2번). 즉 GDA는 “로지스틱
@@ -726,6 +728,7 @@ Chapter 2의 로지스틱회귀와 <strong>같은 시그모이드 형태</strong
 따른다고 가정할 것인가“라는, 생성적 모델과 판별적 모델의 근본적인
 트레이드오프다.</p>
 <h2 id="33-나이브베이즈-독립을-가정하고-차원의-저주를-피한다"><a class="header" href="#33-나이브베이즈-독립을-가정하고-차원의-저주를-피한다">3.3 나이브베이즈: 독립을 가정하고 차원의 저주를 피한다</a></h2>
+<h3 id="독립-가정으로-차원의-저주를-피하다"><a class="header" href="#독립-가정으로-차원의-저주를-피하다">독립 가정으로 차원의 저주를 피하다</a></h3>
 <p>GDA는 \(x\)가 저차원 연속값일 때는 잘 맞지만, 스팸 필터처럼 \(x\)가
 “어휘 사전 크기(수만 개)만큼의 차원을 가진, 각 단어의 등장 여부” 같은
 고차원 데이터라면 공분산 행렬 \(\Sigma\)(어휘 크기 × 어휘 크기)를 추정하는
@@ -743,6 +746,7 @@ Chapter 2의 로지스틱회귀와 <strong>같은 시그모이드 형태</strong
 \(P(x_j|y)=0\)이 되어 곱 전체가 0이 돼버린다. 모든 카운트에 1을 더해서
 이 문제를 피한다:</p>
 <p>\[P(x_j{=}1|y{=}k) = \frac{(\text{클래스 } k\text{에서 단어 } j\text{가 등장한 문서 수}) + 1}{(\text{클래스 } k\text{의 전체 문서 수}) + 2}\]</p>
+<h3 id="실습-나이브베이즈-스팸-필터-구현"><a class="header" href="#실습-나이브베이즈-스팸-필터-구현">실습: 나이브베이즈 스팸 필터 구현</a></h3>
 <pre><code class="language-python">import math
 
 def train_naive_bayes(emails, labels):
@@ -768,7 +772,8 @@ def classify(email, model):
         log_prob[label] = log_p
     return 1 if log_prob[1] &gt; log_prob[0] else 0
 </code></pre>
-<p><strong>왜 로그를 더하는가</strong>: 단어가 수천 개면 \(P(x_j|y)\)를 수천 번 곱해서
+<h3 id="왜-로그를-더하는가-언더플로우-방지"><a class="header" href="#왜-로그를-더하는가-언더플로우-방지">왜 로그를 더하는가: 언더플로우 방지</a></h3>
+<p>단어가 수천 개면 \(P(x_j|y)\)를 수천 번 곱해서
 극도로 작은 수(0에 가까운)가 되고, 컴퓨터의 부동소수점 정밀도로는 구분이
 안 될 수 있다(underflow). Chapter 2에서 교차 엔트로피가 확률의 곱 대신 로그의
 합을 쓴 것과 정확히 같은 이유로, 여기서도 \(\log \prod_j P(x_j|y) = \sum_j
@@ -3201,13 +3206,15 @@ Bandit) 문제 — 이 강화학습이 다루는 모든 문제의 가장 작은 
 장부터 배울 상태(state)도, 여러 스텝에 걸친 전이(transition)도 없이,
 “탐험과 활용의 딜레마“라는 강화학습의 핵심 문제 하나만 순수하게 남겨둔
 가장 단순한 형태이기 때문이다.</p>
-<h2 id="21-탐험과-활용"><a class="header" href="#21-탐험과-활용">2.1 탐험과 활용</a></h2>
+<h2 id="21-탐험과-활용-ε-greedy"><a class="header" href="#21-탐험과-활용-ε-greedy">2.1 탐험과 활용: ε-greedy</a></h2>
+<h3 id="탐욕적-선택의-함정"><a class="header" href="#탐욕적-선택의-함정">탐욕적 선택의 함정</a></h3>
 <p>\(k\)개의 손잡이(팔) 각각의 실제 평균 보상을 \(q^*(a)\)라 하자(우리는
 모른다). 지금까지 관찰한 것을 바탕으로 한 추정치를 \(Q_t(a)\)라 하면,
 가장 단순한 전략은 <strong>탐욕적</strong>(greedy) 선택 — 매번 \(Q_t(a)\)가 가장 큰
 팔을 당기는 것이다. 문제는 초반에 우연히 나쁜 결과가 나온 팔을 그 뒤로
 영원히 외면하게 될 수 있다는 것이다 — 진짜 최선의 팔을 충분히 시도해보지
 못한 채 잘못된 결론에 갇히는 것이다.</p>
+<h3 id="ε-greedy-전략"><a class="header" href="#ε-greedy-전략">ε-greedy 전략</a></h3>
 <p><strong>\(\varepsilon\)-greedy</strong>는 확률 \(1-\varepsilon\)로는 지금까지
 가장 좋다고 아는 팔을 당기고(활용), 확률 \(\varepsilon\)로는 무작위
 팔을 당긴다(탐험) — Chapter 6(시간차 학습)에서 다시 만날 바로 그
@@ -3233,7 +3240,8 @@ def epsilon_greedy_bandit(true_means, epsilon, steps):
         Q[a] += (r - Q[a]) / N[a]
     return Q
 </code></pre>
-<h2 id="22-낙관적-초기화"><a class="header" href="#22-낙관적-초기화">2.2 낙관적 초기화</a></h2>
+<h2 id="22-낙관적-초기화와-ucb-불확실성을-이용한-탐험"><a class="header" href="#22-낙관적-초기화와-ucb-불확실성을-이용한-탐험">2.2 낙관적 초기화와 UCB: 불확실성을 이용한 탐험</a></h2>
+<h3 id="낙관적-초기화-시작값-하나로-탐험을-유도한다"><a class="header" href="#낙관적-초기화-시작값-하나로-탐험을-유도한다">낙관적 초기화: 시작값 하나로 탐험을 유도한다</a></h3>
 <p>\(\varepsilon\)-greedy는 탐험을 완전히 무작위로 한다 — 이미 나쁘다고
 거의 확신하는 팔도 똑같은 확률로 다시 시도한다. <strong>낙관적
 초기화</strong>(optimistic initialization)는 다른 트릭을 쓴다: 모든 \(Q_0(a)\)를
@@ -3242,7 +3250,7 @@ def epsilon_greedy_bandit(true_means, epsilon, steps):
 먼저 시도하게 된다 — 시도해서 실망하면(실제 보상이 초기값보다 낮으면)
 추정치가 내려가고, 그다음 팔로 넘어간다. 초반 몇 번의 강제적인 탐험을
 낙관적인 시작값 하나로 만들어내는 셈이다.</p>
-<h2 id="23-ucb-불확실성-자체를-이용한다"><a class="header" href="#23-ucb-불확실성-자체를-이용한다">2.3 UCB: 불확실성 자체를 이용한다</a></h2>
+<h3 id="ucb-불확실성-자체를-이용한다"><a class="header" href="#ucb-불확실성-자체를-이용한다">UCB: 불확실성 자체를 이용한다</a></h3>
 <p><strong>UCB</strong>(Upper Confidence Bound)는 한 걸음 더 나아간다 — “지금까지 별로
 안 당겨본 팔일수록, 그 추정치가 얼마나 정확한지 자체가 불확실하다“는
 점을 직접 활용한다. 각 팔을 고를 때, 평균 추정치에 “불확실성 보너스“를
@@ -3269,12 +3277,62 @@ def ucb_bandit(true_means, c, steps):
         Q[a] += (r - Q[a]) / N[a]
     return Q
 </code></pre>
-<p>실제로 세 팔(평균 보상 1.0, 1.5, 2.0)에 대해 2000번씩 당겨보면, \(\varepsilon\)
--greedy와 UCB 둘 다 진짜 평균에 가까운 추정치로 수렴하지만(예:
-<code>[0.98, 1.32, 2.01]</code>과 <code>[1.15, 1.48, 2.0]</code>), 총 획득 보상은 UCB
-쪽이 조금 더 높은 경향이 있다 — 무작위 탐험 대신, 불확실성이 큰 곳을
-우선적으로 찔러보기 때문이다.</p>
-<h2 id="24-밴딧-vs-완전한-mdp-다음-장으로-가는-다리"><a class="header" href="#24-밴딧-vs-완전한-mdp-다음-장으로-가는-다리">2.4 밴딧 vs 완전한 MDP: 다음 장으로 가는 다리</a></h2>
+<h3 id="실습-세-전략의-누적-보상-비교"><a class="header" href="#실습-세-전략의-누적-보상-비교">실습: 세 전략의 누적 보상 비교</a></h3>
+<p>세 가지 탐험 전략(ε-greedy, 낙관적 초기화, UCB)을 같은 밴딧 문제에서
+직접 겨뤄보자 — “추정치가 얼마나 정확한가“가 아니라 “그 과정에서 실제로
+얼마나 많은 보상을 벌었는가“를 비교하는 것이 핵심이다(탐험 자체에도
+비용이 있다는 뜻이다: 나쁜 팔을 시도해보는 동안 그만큼 보상을 손해
+본다).</p>
+<pre><code class="language-python">def total_reward_epsilon_greedy(true_means, epsilon, steps):
+    k = len(true_means)
+    Q, N, total = [0.0] * k, [0] * k, 0.0
+    for _ in range(steps):
+        a = random.randrange(k) if random.random() &lt; epsilon \
+            else max(range(k), key=lambda i: Q[i])
+        r = random.gauss(true_means[a], 1.0)
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+        total += r
+    return total
+
+def total_reward_optimistic(true_means, initial_q, steps):
+    k = len(true_means)
+    Q, N, total = [initial_q] * k, [0] * k, 0.0  # 실제 보상보다 훨씬 큰 초기값
+    for _ in range(steps):
+        a = max(range(k), key=lambda i: Q[i])  # 탐욕적 선택뿐이지만
+        r = random.gauss(true_means[a], 1.0)   # 낙관적 초기값 덕에 자동 탐험됨
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+        total += r
+    return total
+
+def total_reward_ucb(true_means, c, steps):
+    k = len(true_means)
+    Q, N, total = [0.0] * k, [0] * k, 0.0
+    for t in range(1, steps + 1):
+        unplayed = [i for i in range(k) if N[i] == 0]
+        a = unplayed[0] if unplayed else \
+            max(range(k), key=lambda i: Q[i] + c * math.sqrt(math.log(t) / N[i]))
+        r = random.gauss(true_means[a], 1.0)
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+        total += r
+    return total
+
+random.seed(0)
+true_means = [1.0, 1.5, 2.0]
+steps = 2000
+print("ε-greedy 총 보상:    ", round(total_reward_epsilon_greedy(true_means, 0.1, steps), 1))
+print("낙관적 초기화 총 보상:", round(total_reward_optimistic(true_means, 5.0, steps), 1))
+print("UCB 총 보상:         ", round(total_reward_ucb(true_means, 2.0, steps), 1))
+</code></pre>
+<p>세 전략 모두 결국 진짜 최선의 팔(평균 2.0)을 찾아내지만, <strong>총 보상</strong>
+기준으로는 순위가 갈린다 — 무작위로 나쁜 팔을 계속 찔러보는
+ε-greedy보다, “불확실성이 큰 곳“이나 “아직 낙관적으로 보이는 곳“만
+골라서 찔러보는 UCB·낙관적 초기화가 대체로 더 높은 누적 보상을 낸다.
+이 “탐험에도 비용이 있다“는 감각은 Chapter 5(몬테카를로)부터 등장하는
+<strong>후회(regret)</strong> 개념의 직관적 출발점이다.</p>
+<h2 id="23-밴딧-vs-완전한-mdp-다음-장으로-가는-다리"><a class="header" href="#23-밴딧-vs-완전한-mdp-다음-장으로-가는-다리">2.3 밴딧 vs 완전한 MDP: 다음 장으로 가는 다리</a></h2>
 <p>밴딧 문제에는 <strong>상태</strong>가 없다 — 팔을 당겨도 “다음 상태“로 넘어가지
 않는다. 매번 같은 \(k\)개의 팔 중에서 고르는, 시간이 흘러도 상황이
 전혀 안 바뀌는 세계다. Chapter 3부터 배울 <strong>MDP</strong>(Markov Decision
