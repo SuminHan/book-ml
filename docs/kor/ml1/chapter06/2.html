@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes &amp; GDA) - Machine Learning 1/2 (한국어)</title>
+        <title>교차검증: λ를 데이터로 정한다 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-e96d0476.css">
-        <link rel="stylesheet" href="../css/chrome-d279d366.css">
-        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-8b082fac.css">
+        <link rel="stylesheet" href="../../theme/custom-8b082fac.css">
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0df25da1.js";
+            window.path_to_searchindex_js = "../../searchindex-0df25da1.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-ae6fb18c.js"></script>
+        <script src="../../toc-ae6fb18c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Machine Learning 1/2 (한국어)</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
@@ -178,30 +178,72 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-3-생성-모델-관점의-분류-나이브베이즈와-gda-generative-classifiers-naive-bayes--gda"><a class="header" href="#chapter-3-생성-모델-관점의-분류-나이브베이즈와-gda-generative-classifiers-naive-bayes--gda">Chapter 3. 생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes &amp; GDA)</a></h1>
-<p>2002년, 프로그래머 폴 그레이엄(Paul Graham)은 “스팸에 대한 계획”(A Plan for
-Spam)이라는 글에서, 당시 대부분의 스팸 필터가 손으로 짠 규칙(“제목에 ’무료’가
-있으면 스팸”)에 의존해 쉽게 뚫리던 문제를, 훨씬 단순한 통계적 방법으로 풀 수
-있다고 제안했다 — 스팸 메일과 정상 메일 각각에서 단어가 나타나는 빈도를 세고,
-베이즈 정리로 뒤집어 “이 단어들이 나왔을 때 스팸일 확률“을 계산하는 것이다. 이
-방법(나이브베이즈)은 널리 채택되어 초기 스팸 필터의 표준이 됐다. 이번 장은
-Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한다.</p>
-<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
-<ul>
-<li><a href="chapter03/1.html">3.1 베이즈 정리, 그리고 생성 vs 판별</a></li>
-<li><a href="chapter03/2.html">3.2 가우시안 판별분석 (GDA)</a></li>
-<li><a href="chapter03/3.html">3.3 나이브베이즈: 독립을 가정하고 차원의 저주를 피한다</a></li>
-</ul>
+                        <h1 id="62-교차검증-lambda를-데이터로-정한다"><a class="header" href="#62-교차검증-lambda를-데이터로-정한다">6.2 교차검증: \(\lambda\)를 데이터로 정한다</a></h1>
+<h3 id="왜-검증-데이터가-필요한가"><a class="header" href="#왜-검증-데이터가-필요한가">왜 검증 데이터가 필요한가</a></h3>
+<p>\(\lambda\)는 사람이 직접 정해야 하는 <strong>하이퍼파라미터</strong>(hyperparameter) —
+학습으로 정해지는 \(w\)와 달리, 학습 시작 전에 값을 정해줘야 하는
+파라미터다. 학습 데이터에 대한 손실만 보고 \(\lambda\)를 고르면 항상
+\(\lambda=0\)(정규화 없음)이 제일 낮은 손실을 내므로 의미가 없다 —
+<strong>검증 데이터</strong>(validation set)로 성능을 재야 한다.</p>
+<p>데이터가 넉넉하지 않을 때는 <strong>k-겹 교차검증</strong>(k-fold cross-validation)을
+쓴다: 데이터를 \(k\)개로 쪼갠 뒤, 매번 한 조각을 검증용으로 남기고
+나머지로 학습하는 것을 \(k\)번 반복해서 성능을 평균낸다 — 데이터
+전체를 한 번씩은 검증에도, 학습에도 써보는 셈이다.</p>
+<pre><code class="language-python">def k_fold_split(data, k, fold_idx):
+    n = len(data)
+    fold_size = n // k
+    start = fold_idx * fold_size
+    end = start + fold_size if fold_idx &lt; k - 1 else n
+    val = data[start:end]
+    train = data[:start] + data[end:]
+    return train, val
+</code></pre>
+<h3 id="실습-k-fold-cv로-최적-lambda-찾기"><a class="header" href="#실습-k-fold-cv로-최적-lambda-찾기">실습: k-fold CV로 최적 \(\lambda\) 찾기</a></h3>
+<p><code>ridge_gradient_descent</code>와 <code>k_fold_split</code>을 조합하면, “학습 손실이 아니라
+검증 손실을 기준으로 \(\lambda\)를 고른다“는 원칙을 코드로 직접 확인할
+수 있다:</p>
+<pre><code class="language-python">def mse(X, y, w):
+    m, n = len(X), len(X[0])
+    total = 0.0
+    for i in range(m):
+        pred = w[0] + sum(w[j+1] * X[i][j] for j in range(n))
+        total += (pred - y[i]) ** 2
+    return total / m
+
+def cross_validate_lambda(X, y, lambdas, k=5, alpha=0.01, epochs=500):
+    data = list(zip(X, y))
+    results = {}
+    for lam in lambdas:
+        val_errors = []
+        for fold in range(k):
+            train, val = k_fold_split(data, k, fold)
+            X_train, y_train = [d[0] for d in train], [d[1] for d in train]
+            X_val, y_val = [d[0] for d in val], [d[1] for d in val]
+            w = ridge_gradient_descent(X_train, y_train, lam, alpha, epochs)
+            val_errors.append(mse(X_val, y_val, w))
+        results[lam] = sum(val_errors) / len(val_errors)
+    return results
+
+# 특징 15개 중 실제로 y와 관련 있는 건 2개뿐이고, 나머지는 순수 잡음인
+# 데이터에서 최적 lambda를 찾아보면 (실행 예):
+# lambda=0.0: 평균 검증 MSE=12.520
+# lambda=0.5: 평균 검증 MSE=10.872   &lt;- 최적
+# lambda=2.0: 평균 검증 MSE=11.780
+# lambda=10.0: 평균 검증 MSE=13.740
+</code></pre>
+<p>정규화가 전혀 없을 때(\(\lambda=0\))도, 너무 강할 때(\(\lambda=10\))도
+검증 MSE가 오히려 나빠지고, 그 사이 어딘가에 최적점이 있다 — 이 U자
+모양이 바로 6.1절의 편향-분산 트레이드오프가 실제 숫자로 나타난 것이다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml1/chapter02/3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter06/1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml1/chapter03/1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter06/3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -211,11 +253,11 @@ Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한�
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml1/chapter02/3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter06/1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml1/chapter03/1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter06/3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -235,17 +277,17 @@ Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한�
         </script>
 
 
-        <script src="../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-09f2665d.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
 
-        <script src="../clipboard-1626706a.min.js"></script>
-        <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-609e4cb8.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
-        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

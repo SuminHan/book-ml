@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-de83d01a.js";
+            window.path_to_searchindex_js = "searchindex-0df25da1.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-4fab332e.js"></script>
+        <script src="toc-ae6fb18c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -1238,10 +1238,18 @@ Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 
 회귀의 손실함수에 가중치 절댓값의 합을 페널티로 더하면, 놀랍게도 중요하지 않은
 특징의 가중치가 <strong>정확히 0</strong>이 되어버린다. 특징이 수천 개인 문제에서 “어떤
 특징이 진짜 중요한가“를 사람이 일일이 고르는 대신, 손실함수 하나를 바꾸는 것만
-으로 모델이 스스로 걸러낸다는 뜻이다. 이번 장은 Chapter 4.4에서 본 편향-분산
+으로 모델이 스스로 걸러낸다는 뜻이다. 이번 장은 Chapter 4.1에서 본 편향-분산
 트레이드오프를 실제로 <strong>조절하는 손잡이</strong>를 다룬다.</p>
-<h2 id="61-정규화-손실함수에-페널티를-더한다"><a class="header" href="#61-정규화-손실함수에-페널티를-더한다">6.1 정규화: 손실함수에 페널티를 더한다</a></h2>
-<p>Chapter 4.4에서 봤듯, 모델이 너무 유연하면(파라미터가 크고 자유로우면)
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#61-정규화-편향-분산-복습과-l1l2-페널티">6.1 정규화: 편향-분산 복습과 L1/L2 페널티</a></li>
+<li><a href="#62-교차검증-lambda를-데이터로-정한다">6.2 교차검증: \(\lambda\)를 데이터로 정한다</a></li>
+<li><a href="#63-trainvaltest-분리-원칙-실전">6.3 train/val/test 분리 원칙 실전</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="61-정규화-편향-분산-복습과-l1l2-페널티"><a class="header" href="#61-정규화-편향-분산-복습과-l1l2-페널티">6.1 정규화: 편향-분산 복습과 L1/L2 페널티</a></h1>
+<h3 id="손실함수에-페널티를-더한다"><a class="header" href="#손실함수에-페널티를-더한다">손실함수에 페널티를 더한다</a></h3>
+<p>Chapter 4.1에서 봤듯, 모델이 너무 유연하면(파라미터가 크고 자유로우면)
 분산이 커져 과적합한다. <strong>정규화</strong>(regularization)는 손실함수에 “가중치가
 너무 커지지 않도록” 페널티 항을 더해서, 모델의 유효 유연성을 인위적으로
 낮추는 기법이다:</p>
@@ -1249,9 +1257,9 @@ Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 
 \underbrace{\lambda R(w)}_{\text{정규화 항(단순함을 요구)}}\]</p>
 <p>\(\lambda\)(정규화 강도)가 0이면 원래 손실함수와 같고(정규화 없음),
 \(\lambda\)가 커질수록 “데이터에 딱 맞추기“보다 “가중치를 작게 유지하기“를
-더 중요하게 여긴다 — Chapter 4.4의 언어로는, \(\lambda\)를 올릴수록
+더 중요하게 여긴다 — Chapter 4.1의 언어로는, \(\lambda\)를 올릴수록
 분산은 줄고 편향은 늘어난다.</p>
-<h2 id="62-l2ridge와-l1lasso-페널티의-모양이-다르면-결과도-다르다"><a class="header" href="#62-l2ridge와-l1lasso-페널티의-모양이-다르면-결과도-다르다">6.2 L2(Ridge)와 L1(Lasso): 페널티의 모양이 다르면 결과도 다르다</a></h2>
+<h3 id="l2ridge와-l1lasso-페널티의-모양이-다르면-결과도-다르다"><a class="header" href="#l2ridge와-l1lasso-페널티의-모양이-다르면-결과도-다르다">L2(Ridge)와 L1(Lasso): 페널티의 모양이 다르면 결과도 다르다</a></h3>
 <p>가장 흔한 두 페널티는 다음과 같다:</p>
 <ul>
 <li><strong>L2 정규화(Ridge)</strong>: \(R(w) = |w|_2^2 = \sum_j w_j^2\)</li>
@@ -1287,7 +1295,9 @@ Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 
 <p><code>lam</code>(\(\lambda\))을 0에서 점점 키우면 학습된 가중치가 점점 0에 가까워지는
 것을 직접 확인할 수 있다 — 같은 데이터에 \(\lambda=0, 0.5, 5.0\)을 넣으면
 기울기 \(w_1\)이 대략 \(2.0 \to 1.4 \to 0.4\)로 줄어든다.</p>
-<h2 id="63-교차검증-lambda를-데이터로-정한다"><a class="header" href="#63-교차검증-lambda를-데이터로-정한다">6.3 교차검증: \(\lambda\)를 데이터로 정한다</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="62-교차검증-lambda를-데이터로-정한다"><a class="header" href="#62-교차검증-lambda를-데이터로-정한다">6.2 교차검증: \(\lambda\)를 데이터로 정한다</a></h1>
+<h3 id="왜-검증-데이터가-필요한가"><a class="header" href="#왜-검증-데이터가-필요한가">왜 검증 데이터가 필요한가</a></h3>
 <p>\(\lambda\)는 사람이 직접 정해야 하는 <strong>하이퍼파라미터</strong>(hyperparameter) —
 학습으로 정해지는 \(w\)와 달리, 학습 시작 전에 값을 정해줘야 하는
 파라미터다. 학습 데이터에 대한 손실만 보고 \(\lambda\)를 고르면 항상
@@ -1306,14 +1316,60 @@ Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 
     train = data[:start] + data[end:]
     return train, val
 </code></pre>
-<p><strong>모델 선택의 원칙</strong>: 학습 데이터로 파라미터(\(w\))를 정하고, 검증
+<h3 id="실습-k-fold-cv로-최적-lambda-찾기"><a class="header" href="#실습-k-fold-cv로-최적-lambda-찾기">실습: k-fold CV로 최적 \(\lambda\) 찾기</a></h3>
+<p><code>ridge_gradient_descent</code>와 <code>k_fold_split</code>을 조합하면, “학습 손실이 아니라
+검증 손실을 기준으로 \(\lambda\)를 고른다“는 원칙을 코드로 직접 확인할
+수 있다:</p>
+<pre><code class="language-python">def mse(X, y, w):
+    m, n = len(X), len(X[0])
+    total = 0.0
+    for i in range(m):
+        pred = w[0] + sum(w[j+1] * X[i][j] for j in range(n))
+        total += (pred - y[i]) ** 2
+    return total / m
+
+def cross_validate_lambda(X, y, lambdas, k=5, alpha=0.01, epochs=500):
+    data = list(zip(X, y))
+    results = {}
+    for lam in lambdas:
+        val_errors = []
+        for fold in range(k):
+            train, val = k_fold_split(data, k, fold)
+            X_train, y_train = [d[0] for d in train], [d[1] for d in train]
+            X_val, y_val = [d[0] for d in val], [d[1] for d in val]
+            w = ridge_gradient_descent(X_train, y_train, lam, alpha, epochs)
+            val_errors.append(mse(X_val, y_val, w))
+        results[lam] = sum(val_errors) / len(val_errors)
+    return results
+
+# 특징 15개 중 실제로 y와 관련 있는 건 2개뿐이고, 나머지는 순수 잡음인
+# 데이터에서 최적 lambda를 찾아보면 (실행 예):
+# lambda=0.0: 평균 검증 MSE=12.520
+# lambda=0.5: 평균 검증 MSE=10.872   &lt;- 최적
+# lambda=2.0: 평균 검증 MSE=11.780
+# lambda=10.0: 평균 검증 MSE=13.740
+</code></pre>
+<p>정규화가 전혀 없을 때(\(\lambda=0\))도, 너무 강할 때(\(\lambda=10\))도
+검증 MSE가 오히려 나빠지고, 그 사이 어딘가에 최적점이 있다 — 이 U자
+모양이 바로 6.1절의 편향-분산 트레이드오프가 실제 숫자로 나타난 것이다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="63-trainvaltest-분리-원칙-실전"><a class="header" href="#63-trainvaltest-분리-원칙-실전">6.3 train/val/test 분리 원칙 실전</a></h1>
+<h3 id="모델-선택의-원칙"><a class="header" href="#모델-선택의-원칙">모델 선택의 원칙</a></h3>
+<p>학습 데이터로 파라미터(\(w\))를 정하고, 검증
 데이터로 하이퍼파라미터(\(\lambda\), \(k\)의 kNN, 트리 깊이 등)를
 정하고, <strong>테스트 데이터</strong>로는 최종 성능만 딱 한 번 확인한다 — 테스트
 데이터를 하이퍼파라미터 튜닝에 쓰면 “부정행위”(테스트 데이터를 몰래
-봐서 고른 모델)와 다를 게 없다. 이 3분할(train/validation/test) 원칙은
-이번 학기 팀 프로젝트(Chapter 8, 16)와 ML2의 팀 프로젝트에서도 그대로
-지켜야 한다.</p>
-<p><strong>정규화는 “모델을 덜 유연하게 만들어서 분산을 줄인다“는 Chapter 4.4의
+봐서 고른 모델)와 다를 게 없다.</p>
+<h3 id="3분할이-실제로-깨지는-흔한-실수"><a class="header" href="#3분할이-실제로-깨지는-흔한-실수">3분할이 실제로 깨지는 흔한 실수</a></h3>
+<p>이 원칙이 무너지는 흔한 패턴 세 가지: (1) 테스트 데이터로 여러 모델을
+비교해보고 가장 잘 나온 걸 고르는 것(“살짝 훔쳐보기”), (2) 검증 데이터
+없이 테스트 데이터로 하이퍼파라미터까지 같이 튜닝하는 것(검증과 테스트를
+사실상 섞어버림), (3) 데이터를 나누기 <strong>전에</strong> 정규화(스케일링) 같은
+전처리 통계량(평균, 표준편차)을 전체 데이터로 계산하는 것 — 테스트
+데이터의 정보가 전처리 단계에서 이미 학습에 스며든다(“data leakage”).
+Chapter 8, 16의 팀 프로젝트와 ML2의 팀 프로젝트에서도 이 3분할 원칙을
+그대로 지켜야 한다.</p>
+<p><strong>정규화는 “모델을 덜 유연하게 만들어서 분산을 줄인다“는 Chapter 4.1의
 편향-분산 원리를, 손실함수에 항 하나를 더하는 것만으로 실제로 조절
 가능하게 만든 도구다 — 그리고 그 조절 손잡이(\(\lambda\)) 자체는
 교차검증이라는 또 다른 절차로 정해야 한다.</strong></p>
