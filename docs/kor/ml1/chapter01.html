@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Orientation - Machine Learning 1/2 (한국어)</title>
+        <title>1.3 아주 짧은 역사와 이번 학기 로드맵 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-b2d154d5.js";
+            window.path_to_searchindex_js = "../searchindex-f9c2dbe5.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-a2542804.js"></script>
+        <script src="../toc-1f42a8c3.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,210 +178,13 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-1-orientation"><a class="header" href="#chapter-1-orientation">Chapter 1. Orientation</a></h1>
-<p>2012년, ImageNet 대회에서 AlexNet이라는 신경망이 등장하기 전까지, 컴퓨터에게 “이
-사진에 고양이가 있는가“를 알려주는 방법은 사람이 직접 특징을 설계하는 것이었다 —
-가장자리 검출기, 색 히스토그램, 특정 모양의 필터를 손으로 조합해서 “고양이스러움“을
-수치로 정의하려 했다. AlexNet은 그런 손설계 없이, 수백만 장의 사진과 정답 라벨만
-보고 스스로 무엇을 봐야 하는지 학습해서, 기존 방법들을 압도적인 차이로 이겼다. 이게
-이 두 과목이 다루는 질문이다: <strong>정답이 있는 데이터로부터, 규칙을 사람이 짜는 대신
-기계가 데이터에서 직접 찾아내게 하려면 어떻게 해야 하는가?</strong></p>
-<h2 id="11-머신러닝-문제-정식화와-세-갈래-분류"><a class="header" href="#11-머신러닝-문제-정식화와-세-갈래-분류">1.1 머신러닝 문제 정식화와 세 갈래 분류</a></h2>
-<h3 id="문제를-푸는-게-아니라-먼저-문제를-정의하는-것부터"><a class="header" href="#문제를-푸는-게-아니라-먼저-문제를-정의하는-것부터">문제를 푸는 게 아니라, 먼저 문제를 “정의“하는 것부터</a></h3>
-<p>머신러닝을 처음 배울 때 흔히 하는 착각은 “어떤 알고리즘을 쓸까“부터 고민하는
-것이다. 실전에서는 순서가 반대다 — 알고리즘을 고르기 전에, 문제 자체를 다음
-세 가지로 명확히 정의해야 한다:</p>
-<ol>
-<li><strong>입력(input) \(x\)</strong>: 무엇을 특징(feature)으로 쓸 것인가? (예: 집의 평수,
-방 개수, 지어진 연도)</li>
-<li><strong>출력(output) \(y\)</strong>: 무엇을 맞히고 싶은가? 연속값(회귀)인가, 범주(분류)인가?</li>
-<li><strong>가설(hypothesis) \(h\)</strong>: 입력에서 출력으로 가는 함수를 어떤 형태로 근사할
-것인가? (직선? 트리? 신경망?)</li>
-</ol>
-<p>이 세 가지가 정해지지 않은 채로 “머신러닝으로 풀어보자“고 덤비면, 데이터를
-아무리 모아도 무엇을 목표로 학습시켜야 하는지조차 불분명해진다. 부동산 가격을
-예측하고 싶다면, \(x\)는 평수·방 개수·위치 같은 특징, \(y\)는 실제 거래
-가격(연속값), \(h\)는 이 학기 초반에 배울 선형 함수부터 시작할 수 있다.</p>
-<p>**학습(training)**이란, 주어진 데이터 \((x^{(1)}, y^{(1)}), \ldots,
-(x^{(m)}, y^{(m)})\)에 대해 \(h(x^{(i)})\)가 \(y^{(i)}\)에 최대한
-가깝도록 \(h\)의 파라미터를 조정하는 과정이다. 여기서 위 첨자 \((i)\)는
-“\(i\)번째 데이터 샘플“을 가리키는 표기로, 이 학기 내내 반복해서 쓰인다 —
-\(x^{(3)}\)이라면 세 번째 집의 특징 벡터라는 뜻이다.</p>
-<h3 id="세-갈래-분류-무엇을-데이터로-갖고-있는가"><a class="header" href="#세-갈래-분류-무엇을-데이터로-갖고-있는가">세 갈래 분류: 무엇을 데이터로 갖고 있는가</a></h3>
-<p>머신러닝 문제는 크게 세 갈래로 나뉜다 — 그리고 이 분류는 알고리즘의 이름이
-아니라, <strong>어떤 형태의 데이터를 갖고 있고 어떤 신호로 학습하는가</strong>로 갈린다.</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th></th><th>데이터 형태</th><th>목표</th><th>이번 학기 예시</th></tr>
-</thead>
-<tbody>
-<tr><td>지도학습</td><td>\((x, y)\) 쌍</td><td>새 \(x\)에 대한 \(y\) 예측</td><td>회귀·분류, kNN, SVM, 트리, 신경망</td></tr>
-<tr><td>비지도학습</td><td>\(x\)만</td><td>데이터의 숨은 구조 발견</td><td>k-means, PCA, EM/GMM</td></tr>
-<tr><td>강화학습</td><td>상태·행동·보상</td><td>누적 보상을 최대화하는 정책</td><td>이번 학기(ML1)에서는 다루지 않음 — 강화학습·로봇 시뮬레이션을 전문으로 다루는 ML2에서</td></tr>
-</tbody>
-</table>
-</div>
-<ul>
-<li><strong>지도학습</strong>(Supervised Learning): 입력과 정답이 쌍으로 주어진다 — “이 집의
-평수/방 개수를 보고 가격을 맞혀라”(회귀), “이 이메일이 스팸인지 아닌지
-맞혀라”(분류). ML1의 거의 모든 장이 여기 속한다. 지도학습 안에서도 다시 두
-갈래가 갈린다 — <strong>판별적</strong>(discriminative) 접근은 \(P(y|x)\)(x가 주어졌을
-때 y의 확률)를 곧바로 학습하고(회귀·로지스틱회귀·SVM·신경망), <strong>생성적</strong>
-(generative) 접근은 \(P(x|y)\)(각 클래스가 데이터를 어떻게 만들어내는지)를
-먼저 학습한 뒤 베이즈 정리로 뒤집어 \(P(y|x)\)를 얻는다(Chapter 3의
-나이브베이즈·GDA). 같은 문제를 정반대 방향에서 접근하는 이 두 철학의 차이는
-Chapter 3에서 자세히 다룬다.</li>
-<li><strong>비지도학습</strong>(Unsupervised Learning): 정답 없이 데이터의 구조만 주어진다 —
-“이 고객들을 비슷한 성향끼리 묶어라”(군집화), “1000개 특징을 정보 손실 최소로
-10개로 줄여라”(차원축소). Chapter 14~15에서 다룬다.</li>
-<li><strong>강화학습</strong>(Reinforcement Learning): 정답이 아니라 보상만 주어지고, 에이전트가
-시행착오로 좋은 행동을 스스로 찾아야 한다 — 체스나 바둑에서 “이 수가
-정답이다“라고 알려주는 사람은 없지만, “이겼다/졌다“는 신호는 있다. <strong>이번
-학기(ML1)에서는 다루지 않는다</strong> — ML1과 ML2는 서로 독립된 과목이고, ML2가
-강화학습과 로봇 시뮬레이션을 처음부터 끝까지 전문으로 다룬다(ML2를 듣기
-위해 ML1을 먼저 들을 필요는 없다).</li>
-</ul>
-<h3 id="회귀-vs-분류-같은-모델-다른-출력"><a class="header" href="#회귀-vs-분류-같은-모델-다른-출력">회귀 vs 분류: 같은 모델, 다른 출력</a></h3>
-<p>지도학습은 다시 출력이 연속값이냐 범주냐로 나뉜다: <strong>회귀</strong>(regression)는 숫자를
-예측한다(집값, 기온), <strong>분류</strong>(classification)는 범주를 예측한다(스팸/정상,
-개/고양이/새). 같은 선형 모델 \(w^Tx + b\)라도, 출력을 그대로 쓰면 회귀가 되고,
-시그모이드를 씌워 0~1 확률로 해석하면 분류가 된다(둘 다 Chapter 2에서 다룬다) —
-앞으로 몇 장 동안 이 패턴이 반복해서 나온다: <strong>모델 구조는 비슷한데, 출력을
-해석하는 방식과 손실함수(loss function)만 문제에 맞게 바뀐다.</strong> 같은 알고리즘이
-두 문제 모두에 쓰이는 경우가 많으므로, 이 둘을 구분하는 눈은 이번 학기 내내
-필요하다.</p>
-<p>지금부터 배우는 거의 모든 알고리즘은 다음 두 단계 틀을 따른다: (1) 모델이
-얼마나 틀렸는지를 숫자 하나로 요약하는 <strong>손실함수</strong> \(J(w)\)를 정의하고,
-(2) \(J(w)\)를 최소화하는 \(w\)를 찾는다(대개 경사하강법, Chapter 2).
-회귀의 손실함수(평균제곱오차)와 분류의 손실함수(교차 엔트로피)는 형태가
-다르지만, “모델의 틀린 정도를 수치화하고 그걸 줄인다“는 구조 자체는 동일하다 —
-이 공통 언어 하나가 이번 학기 14개 챕터를 관통하는 뼈대다.</p>
-<h2 id="12-데이터사이언스-파이프라인과-사전지식-리뷰"><a class="header" href="#12-데이터사이언스-파이프라인과-사전지식-리뷰">1.2 데이터사이언스 파이프라인과 사전지식 리뷰</a></h2>
-<h3 id="모델은-파이프라인의-한-조각일-뿐이다"><a class="header" href="#모델은-파이프라인의-한-조각일-뿐이다">모델은 파이프라인의 한 조각일 뿐이다</a></h3>
-<p>1.1절은 “모델을 어떻게 정의하는가“에 집중했지만, 실전에서 모델 학습은 전체
-작업의 작은 일부에 불과하다. 실제 데이터 프로젝트는 보통 다음 순환을 따른다:</p>
-<ol>
-<li><strong>수집</strong>(Collection): 어디서 데이터를 구할 것인가 — 이번 학기 팀
-프로젝트(Chapter 8, 16)에서는 Kaggle, UCI Machine Learning Repository,
-Hugging Face Datasets 같은 공개 저장소를 주로 쓰게 된다.</li>
-<li><strong>정제</strong>(Cleaning): 결측치(missing value), 중복, 이상치(outlier)를
-처리한다 — 현실 데이터는 거의 항상 지저분하다.</li>
-<li><strong>탐색적 데이터 분석</strong>(Exploratory Data Analysis, EDA): 본격적으로 모델을
-만들기 전에, 데이터의 분포·상관관계·클래스 비율을 눈으로 확인한다.</li>
-<li><strong>모델링</strong>(Modeling): 1.1절에서 정식화한 문제에 맞는 가설 \(h\)를
-고르고 학습시킨다 — 이번 학기 대부분의 장이 이 단계를 다룬다.</li>
-<li><strong>평가</strong>(Evaluation): 학습에 쓰지 않은 데이터로 성능을 검증한다
-(Chapter 6에서 이 원칙을 엄밀하게 다룬다).</li>
-</ol>
-<p>이 순환에서 <strong>모델링은 다섯 단계 중 하나일 뿐</strong>이라는 사실이, 처음 머신러닝을
-배울 때 가장 자주 간과되는 점이다. 실제로 캐글 데이터로 프로젝트를 진행해보면
-결측치 처리와 EDA에 들이는 시간이 모델 코드를 짜는 시간보다 긴 경우가 흔하다.</p>
-<h3 id="실습-pandas로-첫-eda-해보기"><a class="header" href="#실습-pandas로-첫-eda-해보기">실습: pandas로 첫 EDA 해보기</a></h3>
-<p>이번 학기 코드 예제는 이해를 돕기 위해 순수 Python이나 numpy로 개념을 손으로
-짜보는 경우가 많지만(1.5절 참고), 실전 데이터 탐색 단계에서는 <code>pandas</code>가
-사실상 표준 도구다. 아주 작은 예시로 EDA의 감을 잡아보자:</p>
-<pre><code class="language-python">import pandas as pd
-
-data = {
-    "size_sqm": [59, 84, 112, 46, 132, 78],
-    "rooms": [2, 3, 4, 1, 4, 3],
-    "year_built": [2015, 2008, 1998, 2020, 1995, 2011],
-    "price_million": [320, 410, 505, 250, 560, 390],
-}
-df = pd.DataFrame(data)
-
-print(df.describe())          # 각 열의 평균/표준편차/최소/최대 한눈에 보기
-print(df.corr(numeric_only=True)["price_million"])  # 어떤 특징이 가격과 가장 관련 있는가
-print(df.isna().sum())        # 결측치가 열마다 몇 개인지
-</code></pre>
-<p><code>df.describe()</code>는 “이 데이터의 스케일이 서로 얼마나 다른가”(평수는 수십~백
-단위, 연식은 네 자리 연도)를 즉시 보여준다 — Chapter 4.3에서 배울 특징
-정규화가 왜 필요한지 이 시점에서 미리 감을 잡을 수 있다. <code>df.corr()</code>은 어떤
-특징이 목표 변수와 강하게 연관돼 있는지 보여주는데, 이건 나중에 배울 어떤
-모델보다도 먼저 실행해볼 만한 진단이다 — 모델이 이상한 성능을 내면, “애초에
-이 특징들이 목표와 관련이 있기는 한가?“부터 되짚어보는 습관이 정규화(Chapter
-6)나 신경망 구조(Chapter 9~10) 같은 복잡한 도구를 고민하기 전에 훨씬 자주
-문제를 해결해준다.</p>
-<h3 id="수학과-python-사전지식-리뷰"><a class="header" href="#수학과-python-사전지식-리뷰">수학과 Python 사전지식 리뷰</a></h3>
-<p>이번 학기는 다음 세 영역의 수학을 계속 재사용한다 — 낯선 표기가 나올 때마다
-여기로 돌아와 확인할 것:</p>
-<ul>
-<li><strong>선형대수</strong>: 벡터의 내적(\(w^Tx = \sum_j w_jx_j\)), 행렬-벡터 곱, 그리고
-“그래디언트”(다변수 함수를 각 변수로 편미분해서 만든 벡터, \(\nabla_w
-J\)). 고유벡터/고유값은 Chapter 14(PCA)에서 다시 자세히 다룬다.</li>
-<li><strong>미적분</strong>: 연쇄법칙(chain rule) — 합성함수 \(f(g(x))\)의 미분이
-\(f’(g(x))g’(x)\)라는 것. Chapter 9(역전파)의 핵심 도구가 바로 이것이다.</li>
-<li><strong>확률</strong>: 조건부 확률과 베이즈 정리 \(P(y|x) = \frac{P(x|y)P(y)}{P(x)}\).
-Chapter 3에서 본격적으로 쓴다.</li>
-</ul>
-<pre><code class="language-python">import numpy as np
-
-X = np.array([[1.0, 2.0], [3.0, 4.0]])  # 2x2 행렬
-w = np.array([0.5, -0.5])               # 길이 2 벡터
-print(X @ w)   # 행렬-벡터 곱: [-0.5, -0.5]
-</code></pre>
-<p><code>X @ w</code>(행렬곱)는 앞으로 매장 나오는 \(w^Tx\) 형태의 계산을 한 줄로 표현해준다 —
-for 루프로 직접 짜는 것보다 빠르고 읽기 쉽다. 다만 이 책의 연습문제 코드는
-<strong>개념이 잘 드러나도록 순수 Python(리스트와 for 루프)으로 스텁을 짠 경우가
-많다</strong> — 실전에서는 numpy/PyTorch로 훨씬 빠르게 같은 계산을 하지만, 처음
-배울 때는 벡터 연산 뒤에 숨은 for 루프를 직접 눈으로 보는 쪽이 이해에 더
-도움이 된다는 판단에서다.</p>
-<h2 id="13-아주-짧은-역사와-이번-학기-로드맵"><a class="header" href="#13-아주-짧은-역사와-이번-학기-로드맵">1.3 아주 짧은 역사와 이번 학기 로드맵</a></h2>
-<h3 id="퍼셉트론에서-llm까지"><a class="header" href="#퍼셉트론에서-llm까지">퍼셉트론에서 LLM까지</a></h3>
-<p>이번 학기에 배울 아이디어들이 실제로 언제, 어떤 순서로 등장했는지 알아두면
-“왜 지금 이 순서로 배우는가“가 더 잘 보인다. 흥미로운 점은, 이 역사가 직선으로
-쭉 발전한 게 아니라 침체기(“겨울”)를 두 번이나 거쳤다는 것이다.</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>연도</th><th>사건</th></tr>
-</thead>
-<tbody>
-<tr><td>1950s</td><td>퍼셉트론(단층 신경망) 등장 — 이번 학기 초반 고전 ML 모델들과 비슷한 시기 아이디어</td></tr>
-<tr><td>1969</td><td>민스키·페퍼트가 단층 퍼셉트론이 XOR을 못 푼다는 것을 증명 → 첫 “AI 겨울” (Chapter 9)</td></tr>
-<tr><td>1986</td><td>역전파(backpropagation) 재발견으로 다층 신경망 학습이 가능해짐 (Chapter 9)</td></tr>
-<tr><td>1998</td><td>LeCun의 CNN(LeNet)이 손글씨 숫자 인식에 성공 (Chapter 10)</td></tr>
-<tr><td>2012</td><td>AlexNet이 ImageNet에서 압승 — 딥러닝 시대의 시작 (이 챕터의 도입부)</td></tr>
-<tr><td>2013</td><td>word2vec, VAE 등 표현학습·생성모델의 현대적 형태 등장 (Chapter 14, 15)</td></tr>
-<tr><td>2017</td><td>Transformer(“Attention Is All You Need”) 등장 (Chapter 12)</td></tr>
-<tr><td>2022</td><td>ChatGPT — 사전학습 + RLHF로 조정된 대규모 언어모델의 대중화 (Chapter 13)</td></tr>
-</tbody>
-</table>
-</div>
-<p>1969년의 증명 하나가 신경망 연구를 십수 년간 위축시켰다는 사실은, “이론적
-한계를 정확히 아는 것“이 때로는 “무작정 더 시도해보는 것“보다 강력하다는
-것을 보여준다 — 동시에, 1986년의 역전파가 바로 그 한계(XOR)를 정확히 풀어낸
-해법이었다는 것도 기억할 만하다. <strong>한 가지 반복되는 패턴</strong>: 대부분의
-“돌파구“는 완전히 새로운 수학이 아니라, 이미 있던 아이디어(경사하강법,
-연쇄법칙, 확률론)를 더 큰 데이터·더 많은 계산 자원 위에서 다시 조합한
-것이다. 이번 학기 목표는 그 재사용되는 기본 아이디어 자체를 손으로 짚어보는
-것이다.</p>
-<h3 id="이번-학기-로드맵"><a class="header" href="#이번-학기-로드맵">이번 학기 로드맵</a></h3>
-<p>이번 학기는 8주씩 두 블록으로 나뉜다. **Block A(Chapter 2~7)**는 신경망 없이도
-강력한 classical ML 모델들(회귀, 나이브베이즈/GDA, 거리 기반 모델, SVM, 정규화,
-트리 기반 모델)을 다룬다 — 지금도 정형(tabular) 데이터에서는 이 모델들이
-신경망보다 자주 이긴다. Chapter 8은 Block A를 마무리하는 팀 프로젝트와
-중간고사 준비다.</p>
-<p>중간고사 이후 **Block B(Chapter 9~16)**는 신경망으로 넘어간다. 역전파의
-원리를 손으로 유도한 뒤(Chapter 9) CNN(Chapter 10)까지 신경망의 기본기를
-다지고, 이어서 순서가 있는 데이터를 다루는 시퀀스 모델·Transformer·LLM까지
-현대 딥러닝의 핵심 계보를 한 줄로 훑는다(Chapter 11~13). 마지막으로
-비지도학습(PCA, 임베딩)과 잠재변수 기반 생성형 모델(EM/GMM에서 VAE·GAN·
-Diffusion까지)로 학기를 마무리한다(Chapter 14~15). Chapter 16은 두 번째
-팀 프로젝트 발표와 학기 총정리다.</p>
-<p><strong>강화학습과 로봇 시뮬레이션은 이번 학기(ML1)에서는 전혀 다루지 않는다</strong> —
-ML1과 ML2는 서로 독립된 과목으로 설계됐고, ML2가 이 주제를 처음부터 끝까지
-전담한다. ML1을 먼저 듣지 않아도 ML2를 바로 들을 수 있다(ML2 1주차에 필요한
-신경망 기초를 압축해서 다시 짚어준다).</p>
-<p><strong>어떤 모델을 쓸지보다 먼저 물어야 할 질문은 항상 같다: 이 문제는 무엇을 데이터로
-갖고 있고, 무엇을 맞히고 싶은가.</strong></p>
+                        <h1 id="13-아주-짧은-역사와-이번-학기-로드맵"><a class="header" href="#13-아주-짧은-역사와-이번-학기-로드맵">1.3 아주 짧은 역사와 이번 학기 로드맵</a></h1>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml1/chapter01.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -395,7 +198,7 @@ ML1과 ML2는 서로 독립된 과목으로 설계됐고, ML2가 이 주제를 �
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml1/chapter01.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
