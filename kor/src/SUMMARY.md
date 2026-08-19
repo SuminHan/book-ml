@@ -5,9 +5,6 @@
 # Machine Learning 1
 
 - [Orientation](ml1/chapter01.md)
-  - [1.1 머신러닝 문제 정식화와 세 갈래 분류](ml1/chapter01.md#11-머신러닝-문제-정식화와-세-갈래-분류)
-  - [1.2 데이터사이언스 파이프라인과 사전지식 리뷰](ml1/chapter01.md#12-데이터사이언스-파이프라인과-사전지식-리뷰)
-  - [1.3 아주 짧은 역사와 이번 학기 로드맵](ml1/chapter01.md#13-아주-짧은-역사와-이번-학기-로드맵)
 - [회귀 모델: 선형회귀와 로지스틱회귀 (Regression Models: Linear & Logistic)](ml1/chapter02.md)
 - [생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes & GDA)](ml1/chapter03.md)
 - [거리 기반 모델과 클러스터링: kNN과 k-means (Distance-Based Models & Clustering)](ml1/chapter04.md)
@@ -27,9 +24,6 @@
 # Machine Learning 2
 
 - [코스 소개와 신경망 미니 리뷰 (Course Introduction & Neural Network Mini-Review)](ml2/chapter01.md)
-  - [1.1 강화학습이란 무엇인가, 그리고 이번 학기 로드맵](ml2/chapter01.md#11-강화학습이란-무엇인가-그리고-이번-학기-로드맵)
-  - [1.2 신경망 미니 리뷰](ml2/chapter01.md#12-신경망-미니-리뷰)
-  - [1.3 실습 환경 세팅: Gymnasium](ml2/chapter01.md#13-실습-환경-세팅-gymnasium)
 - [멀티암 밴딧 (Multi-Armed Bandits)](ml2/chapter02.md)
 - [MDP 정식화 (Markov Decision Processes)](ml2/chapter03.md)
 - [동적계획법 (Dynamic Programming)](ml2/chapter04.md)
