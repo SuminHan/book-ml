@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-7d172146.js";
+            window.path_to_searchindex_js = "../searchindex-b2d154d5.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-a2542804.js"></script>
@@ -189,13 +189,14 @@ squares)이라는 이름으로, 지금도 스프레드시트의 추세선부터 
 완전히 다른 문제에 그대로 쓰이게 된다. 이번 장은 이 둘을 한 이야기로 묶어서 다룬다 —
 <strong>같은 선형모델 \(w^Tx\)에, 출력을 다르게 해석하고 손실함수만 바꾸면 회귀와
 분류가 된다.</strong></p>
-<h2 id="21-선형회귀-모델"><a class="header" href="#21-선형회귀-모델">2.1 선형회귀: 모델</a></h2>
+<h2 id="21-선형회귀-모델-비용함수-경사하강법"><a class="header" href="#21-선형회귀-모델-비용함수-경사하강법">2.1 선형회귀: 모델, 비용함수, 경사하강법</a></h2>
+<h3 id="모델-특징의-가중합"><a class="header" href="#모델-특징의-가중합">모델: 특징의 가중합</a></h3>
 <p>선형회귀는 입력 \(x = (x_1, \ldots, x_n)\)에서 출력을 다음과 같이 예측한다:</p>
 <p>\[h_w(x) = w_0 + w_1 x_1 + w_2 x_2 + \cdots + w_n x_n\]</p>
 <p>\(w_0\)은 절편(bias), \(w_1, \ldots, w_n\)은 각 특징의 가중치(weight)다.
 표기를 간단히 하기 위해 \(x_0 = 1\)을 항상 추가해서 \(h_w(x) = w^Tx =
 \sum_{j=0}^n w_j x_j\)로 쓴다 — bias까지 하나의 내적으로 통일하는 표기다.</p>
-<h2 id="22-비용함수-평균제곱오차"><a class="header" href="#22-비용함수-평균제곱오차">2.2 비용함수: 평균제곱오차</a></h2>
+<h3 id="비용함수-평균제곱오차"><a class="header" href="#비용함수-평균제곱오차">비용함수: 평균제곱오차</a></h3>
 <p>\(m\)개의 학습 데이터 \((x^{(i)}, y^{(i)})\)에 대해, 모델이 얼마나 틀렸는지를
 다음으로 정의한다:</p>
 <p>\[J(w) = \frac{1}{2m}\sum_{i=1}^m \left(h_w(x^{(i)}) - y^{(i)}\right)^2\]</p>
@@ -205,7 +206,7 @@ squares)이라는 이름으로, 지금도 스프레드시트의 추세선부터 
 양수이고, 매끄럽게 미분 가능하다. 앞의 \(\frac{1}{2}\)는 나중에 미분할 때 제곱의
 지수 2와 상쇄돼서 식이 깔끔해지도록 넣은 관례적 상수이며, 최솟값의 위치 자체는
 바뀌지 않는다.</p>
-<h2 id="23-경사하강법-gradient-descent"><a class="header" href="#23-경사하강법-gradient-descent">2.3 경사하강법 (Gradient Descent)</a></h2>
+<h3 id="경사하강법-gradient-descent"><a class="header" href="#경사하강법-gradient-descent">경사하강법 (Gradient Descent)</a></h3>
 <p>\(J(w)\)를 최소화하는 \(w\)를 찾기 위해, 그래디언트(gradient, 가장 가파르게
 증가하는 방향)의 <strong>반대</strong> 방향으로 조금씩 이동한다:</p>
 <p>\[w_j \leftarrow w_j - \alpha \frac{\partial J}{\partial w_j}, \qquad
@@ -231,8 +232,10 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 </code></pre>
 <p><strong>학습률의 함정</strong>: \(\alpha\)가 너무 작으면 수렴이 느리다. \(\alpha\)가 너무
 크면 최솟값 근처에서 오히려 튕겨 나가 발산할 수 있다 — 골짜기 바닥으로 가려다가
-걸음이 너무 커서 반대편 벽으로 넘어가 버리는 것과 같다.</p>
-<h2 id="24-정규방정식-미분으로-한-번에-풀기"><a class="header" href="#24-정규방정식-미분으로-한-번에-풀기">2.4 정규방정식: 미분으로 한 번에 풀기</a></h2>
+걸음이 너무 커서 반대편 벽으로 넘어가 버리는 것과 같다. 위 코드에 <code>alpha=0.01</code>
+대신 <code>alpha=1.0</code>을 넣어서 직접 발산하는 모습을 관찰해보는 것도 좋은 감각 훈련이다.</p>
+<h2 id="22-정규방정식과-같은-모델-다른-출력이라는-다리"><a class="header" href="#22-정규방정식과-같은-모델-다른-출력이라는-다리">2.2 정규방정식과 “같은 모델, 다른 출력“이라는 다리</a></h2>
+<h3 id="정규방정식-미분으로-한-번에-풀기"><a class="header" href="#정규방정식-미분으로-한-번에-풀기">정규방정식: 미분으로 한 번에 풀기</a></h3>
 <p>\(J(w)\)는 \(w\)에 대한 이차함수이므로, 경사하강법 없이 미분을 0으로 놓아
 <strong>닫힌 형태</strong>(closed-form)로 최적해를 구할 수도 있다:</p>
 <p>\[w^* = (X^TX)^{-1}X^Ty\]</p>
@@ -243,12 +246,19 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 \(n\)이 수천~수만이 되는 실전 문제에서는 감당이 안 된다. 반면 경사하강법은
 \(n\)이 커져도 매 반복의 비용이 선형으로만 늘어난다. 특징이 적을 땐 정규방정식,
 많을 땐 경사하강법을 쓰는 이유다.</p>
-<h2 id="25-회귀에서-분류로"><a class="header" href="#25-회귀에서-분류로">2.5 회귀에서 분류로</a></h2>
+<h3 id="회귀에서-분류로-같은-도구를-다른-문제에"><a class="header" href="#회귀에서-분류로-같은-도구를-다른-문제에">회귀에서 분류로: 같은 도구를 다른 문제에</a></h3>
 <p>여기서부터는 같은 선형모델을 <strong>분류</strong>에 쓴다. 로지스틱회귀라는 이름 때문에
 헷갈리기 쉽지만, 이건 회귀가 아니라 <strong>분류</strong> 알고리즘이다. 선형회귀의 출력
 \(w^Tx\)는 \(-\infty\)부터 \(+\infty\)까지 아무 값이나 될 수 있는데,
-“스팸일 확률“은 반드시 0과 1 사이여야 한다. 로지스틱함수(시그모이드)는 정확히
-이 변환을 해준다:</p>
+“스팸일 확률“은 반드시 0과 1 사이여야 한다 — 2.1절에서 배운 모델과 경사하강법을
+그대로 재사용하고 싶다면, “출력을 확률로 바꾸는 변환“과 “그 확률에 맞는 새
+손실함수“만 추가하면 된다는 게 이번 장 후반부의 핵심 아이디어다. 이 패턴 —
+<strong>모델 구조는 그대로 두고, 출력 해석과 손실함수만 문제에 맞게 바꾼다</strong> — 은
+이번 학기 내내 반복해서 등장하니 여기서 확실히 잡아두자.</p>
+<h2 id="23-로지스틱회귀-시그모이드에서-pr-auc까지"><a class="header" href="#23-로지스틱회귀-시그모이드에서-pr-auc까지">2.3 로지스틱회귀: 시그모이드에서 PR-AUC까지</a></h2>
+<h3 id="시그모이드-실수를-확률로"><a class="header" href="#시그모이드-실수를-확률로">시그모이드: 실수를 확률로</a></h3>
+<p>로지스틱함수(시그모이드)는 정확히 “\(-\infty\)~\(+\infty\)를 0~1로 바꾸는”
+변환을 해준다:</p>
 <p>\[\sigma(z) = \frac{1}{1+e^{-z}}\]</p>
 <p>\(z \to +\infty\)이면 \(\sigma(z) \to 1\), \(z \to -\infty\)이면
 \(\sigma(z) \to 0\), \(z=0\)이면 \(\sigma(0)=0.5\)다. 어떤 실수든 이
@@ -258,7 +268,7 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 \(h_w(x) \ge 0.5\)면 클래스 1, 아니면 클래스 0으로 정한다 — \(h_w(x)=0.5\)는
 정확히 \(w^Tx=0\)인 지점이므로, 결정 경계(decision boundary)는 여전히
 <strong>직선</strong>(또는 초평면)이다.</p>
-<h2 id="26-손실함수-섀넌의-정보이론에서-교차-엔트로피까지"><a class="header" href="#26-손실함수-섀넌의-정보이론에서-교차-엔트로피까지">2.6 손실함수: 섀넌의 정보이론에서 교차 엔트로피까지</a></h2>
+<h3 id="손실함수-섀넌의-정보이론에서-교차-엔트로피까지"><a class="header" href="#손실함수-섀넌의-정보이론에서-교차-엔트로피까지">손실함수: 섀넌의 정보이론에서 교차 엔트로피까지</a></h3>
 <p>시그모이드에 평균제곱오차를 그대로 적용하면 \(J(w)\)가 \(w\)에 대해
 <strong>볼록하지 않아(non-convex)</strong>, 경사하강법이 지역 최솟값(local minimum)에 갇힐
 위험이 있다. 대신 <strong>교차 엔트로피</strong>(cross-entropy) 손실을 쓴다 — 이 이름은
@@ -273,7 +283,7 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 <p>\[H(p) = -\sum_k p_k \log_2 p_k\]</p>
 <p>확률분포 \(p\)를 따르는 사건들을 평균적으로 관찰할 때 얻는 정보량이자,
 이 분포를 최적으로 부호화(encoding)하는 데 필요한 평균 비트 수다(Chapter
-6.1에서 결정트리가 “가장 잘 나누는 질문“을 고르는 기준으로 다시 만난다).</p>
+7.2에서 결정트리가 “가장 잘 나누는 질문“을 고르는 기준으로 다시 만난다).</p>
 <p>그런데 만약 실제 분포는 \(p\)인데, (어쩌면 틀린) 다른 분포 \(q\)를 믿고
 부호화한다면 몇 비트가 필요할까? 그 평균 비트 수가 <strong>교차 엔트로피</strong>다:</p>
 <p>\[H(p, q) = -\sum_k p_k \log_2 q_k\]</p>
@@ -293,10 +303,10 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ch03_sigmoid_crossentropy.svg" alt="시그모이드 함수(왼쪽)와 예측 확률에 따른 교차 엔트로피 손실(오른쪽) — 정답과 반대로 확신할수록 손실이 무한히 커진다"><span class="img-wrapper"><img src="../images/ch03_sigmoid_crossentropy.svg" alt="시그모이드 함수(왼쪽)와 예측 확률에 따른 교차 엔트로피 손실(오른쪽) — 정답과 반대로 확신할수록 손실이 무한히 커진다"></span></label></p>
 <p>직관: 정답이 \(y=1\)인데 모델이 \(h_w(x) \to 0\)으로 확신하면
 \(-\log h_w(x) \to \infty\) — 손실이 무한히 커진다. <strong>확신을 갖고 틀리면
-그만큼 크게 벌한다.</strong> 신기하게도 이 손실함수를 미분하면 2.3절의 선형회귀와
+그만큼 크게 벌한다.</strong> 신기하게도 이 손실함수를 미분하면 2.1절의 선형회귀와
 <strong>똑같은 형태</strong>의 그래디언트가 나온다:</p>
 <p>\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) - y^{(i)}\right) x_j^{(i)}\]</p>
-<p>그래서 경사하강법 구현 코드 자체는 2.3절과 거의 동일하다 — \(h_w\)를
+<p>그래서 경사하강법 구현 코드 자체는 2.1절과 거의 동일하다 — \(h_w\)를
 계산하는 부분에 시그모이드만 추가하면 된다.</p>
 <pre><code class="language-python">import math
 
@@ -318,7 +328,7 @@ def logistic_gradient_descent(X, y, alpha, epochs):
             w[j] -= alpha * grad[j] / m
     return w
 </code></pre>
-<h2 id="27-정확도만으로는-안-되는-이유"><a class="header" href="#27-정확도만으로는-안-되는-이유">2.7 “정확도“만으로는 안 되는 이유</a></h2>
+<h3 id="정확도만으로는-안-되는-이유"><a class="header" href="#정확도만으로는-안-되는-이유">“정확도“만으로는 안 되는 이유</a></h3>
 <p>암 검진 모델을 상상해보자. 전체 환자의 99%가 정상이라면, “무조건 정상“이라고만
 찍는 모델도 정확도(accuracy) 99%를 자랑한다 — 하지만 이 모델은 암 환자를 단 한
 명도 잡아내지 못하는, 쓸모없는 모델이다. Precision/Recall/F1은 바로 이런
@@ -349,6 +359,22 @@ Precision과 Recall의 조화평균 — 둘 다 낮으면 F1도 낮아지도록,
 Precision은 떨어진다. <strong>PR-AUC</strong>(Precision-Recall 곡선 아래 면적)는 이
 트레이드오프 전 구간에서의 성능을 임계값 하나에 의존하지 않고 요약한 지표다 —
 특히 클래스 불균형이 심할 때 accuracy보다 훨씬 신뢰할 수 있는 지표다.</p>
+<h3 id="실습-sklearn으로-분류-평가-지표-한-번에-계산하기"><a class="header" href="#실습-sklearn으로-분류-평가-지표-한-번에-계산하기">실습: sklearn으로 분류 평가 지표 한 번에 계산하기</a></h3>
+<p>직접 구현한 <code>precision_recall_f1</code>(연습문제 3번)로 원리를 이해했다면, 실전에서는
+<code>scikit-learn</code>이 이 모든 지표를 한 번에 계산해준다:</p>
+<pre><code class="language-python">from sklearn.metrics import classification_report, average_precision_score
+
+y_true = [1, 1, 1, 0, 0, 0, 1, 0]
+y_pred = [1, 0, 1, 0, 1, 0, 1, 0]
+y_scores = [0.9, 0.4, 0.8, 0.3, 0.6, 0.2, 0.7, 0.1]  # 임계값 0.5를 적용하기 전의 확률
+
+print(classification_report(y_true, y_pred, target_names=["정상", "스팸"]))
+print("PR-AUC:", round(average_precision_score(y_true, y_scores), 3))
+</code></pre>
+<p><code>classification_report</code>는 Precision/Recall/F1을 클래스별로 한 번에 출력하고,
+<code>average_precision_score</code>는 임계값을 하나로 고정하지 않고 <code>y_scores</code>(확률)
+전체를 보고 PR-AUC를 계산한다 — 임계값 0.5에서의 성능만 보는 <code>y_pred</code> 기반
+지표와 달리, 모델 자체의 순위(ranking) 능력을 평가한다는 점이 다르다.</p>
 <p><strong>선형회귀와 로지스틱회귀는 겉보기엔 다른 문제(숫자 예측 vs. 확률 예측)를
 풀지만, 뜯어보면 “선형모델 → 손실함수 정의 → 경사하강법으로 최소화“라는
 완전히 같은 파이프라인이다 — 이 패턴은 이번 학기 내내 반복된다.</strong></p>
@@ -386,7 +412,11 @@ y_true = [1, 1, 1, 0, 0, 0, 1, 0]
 y_pred = [1, 0, 1, 0, 1, 0, 1, 0]
 print(precision_recall_f1(y_true, y_pred))  # (0.75, 0.75, 0.75)
 </code></pre>
-<p><strong>4. (손유도, Tier B — 힌트 제공)</strong> 교차 엔트로피 손실 하나의 샘플에 대해:</p>
+<p><strong>4. (개념 서술)</strong> 위 sklearn 실습에서 <code>y_pred</code> 기반 지표(Precision/Recall/F1)와
+<code>y_scores</code> 기반 지표(PR-AUC)가 답하는 질문이 어떻게 다른지 두세 문장으로
+설명하라. 임계값을 0.5가 아니라 0.7로 바꾸면 <code>classification_report</code>의 결과가
+어떻게 달라질지도 예상해보라.</p>
+<p><strong>5. (손유도, Tier B — 힌트 제공)</strong> 교차 엔트로피 손실 하나의 샘플에 대해:</p>
 <p>\[J^{(i)}(w) = -y^{(i)}\log h_w(x^{(i)}) - (1-y^{(i)})\log(1-h_w(x^{(i)}))\]</p>
 <p>를 \(w_j\)로 미분해서 \(\frac{\partial J^{(i)}}{\partial w_j} =
 (h_w(x^{(i)}) - y^{(i)})x_j^{(i)}\)가 됨을 유도하라.</p>
@@ -397,7 +427,7 @@ J^{(i)}}{\partial h}\)를 구하라(h는 \(h_w(x^{(i)})\)의 줄임 표기,
 구하라(\(z=w^Tx^{(i)}\)). (3) \(\frac{\partial z}{\partial w_j} =
 x_j^{(i)}\)임을 이용해 세 조각을 연쇄법칙으로 곱하면, 놀랍게도
 \(h(1-h)\) 항이 통째로 약분되어 사라진다 — 왜 그런지 확인하라. 유도한
-결과가 2.3절의 선형회귀 그래디언트와 형태가 똑같다는 것도 확인하라.</p>
+결과가 2.1절의 선형회귀 그래디언트와 형태가 똑같다는 것도 확인하라.</p>
 
                     </main>
 
