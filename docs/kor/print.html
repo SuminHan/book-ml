@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-6616b8ad.js";
+            window.path_to_searchindex_js = "searchindex-fafc8d86.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-9898c238.js"></script>
+        <script src="toc-82e00ac7.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -851,7 +851,14 @@ print(classify(["project", "meeting"], model))  # 0 (정상)
 알고리즘으로 옮기면 <strong>k-최근접이웃</strong>(k-Nearest Neighbors, kNN)이 된다: 새로운
 데이터를 분류하고 싶으면, 학습도 모델도 필요 없이 그냥 “가장 가까운 \(k\)개의
 기존 데이터가 뭐라고 답했는지 보고 다수결로 따라간다.”</p>
-<h2 id="41-knn-알고리즘-거리함수-편향-분산-트레이드오프"><a class="header" href="#41-knn-알고리즘-거리함수-편향-분산-트레이드오프">4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프</a></h2>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#41-knn-알고리즘-거리함수-편향-분산-트레이드오프">4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프</a></li>
+<li><a href="#42-차원의-저주와-실습-검증셋으로-k-튜닝하기">4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기</a></li>
+<li><a href="#43-k-means-클러스터링">4.3 k-means 클러스터링</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="41-knn-알고리즘-거리함수-편향-분산-트레이드오프"><a class="header" href="#41-knn-알고리즘-거리함수-편향-분산-트레이드오프">4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프</a></h1>
 <h3 id="학습이-없는-학습-알고리즘"><a class="header" href="#학습이-없는-학습-알고리즘">학습이 없는 학습 알고리즘</a></h3>
 <p>지금까지 배운 선형회귀/로지스틱회귀는 데이터를 보고 파라미터 \(w\)를
 최적화하는 <strong>학습 단계</strong>가 있었다. kNN은 그런 게 없다 — “학습“이라고 부를 만한
@@ -910,7 +917,8 @@ kNN, 아주 깊은 트리, 파라미터가 많은 신경망 등) Variance가 크
 “과적합을 어떻게 막는가“를 다룰 때마다 다시 등장한다.</p>
 <p>적절한 \(k\)는 보통 검증 데이터(validation set)로 여러 값을 시도해보고
 정한다.</p>
-<h2 id="42-차원의-저주와-실습-검증셋으로-k-튜닝하기"><a class="header" href="#42-차원의-저주와-실습-검증셋으로-k-튜닝하기">4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="42-차원의-저주와-실습-검증셋으로-k-튜닝하기"><a class="header" href="#42-차원의-저주와-실습-검증셋으로-k-튜닝하기">4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기</a></h1>
 <h3 id="차원의-저주-curse-of-dimensionality"><a class="header" href="#차원의-저주-curse-of-dimensionality">차원의 저주 (Curse of Dimensionality)</a></h3>
 <p>직관: 특징이 늘어날수록(고차원일수록), “가장 가까운 이웃“조차 점점 멀어진다.
 kNN의 전제는 “가까운 데이터는 비슷한 답을 가질 것이다“라는 직관인데, 특징이
@@ -964,7 +972,8 @@ def tune_k(X, y, k_candidates):
 <p><code>k=1</code>에 가까울수록 훈련 정확도는 100%에 가깝지만(과적합), 검증 정확도는
 오히려 떨어질 수 있다 — 4.1절에서 본 편향-분산 트레이드오프가 숫자로
 그대로 드러나는 지점이다.</p>
-<h2 id="43-k-means-클러스터링"><a class="header" href="#43-k-means-클러스터링">4.3 k-means 클러스터링</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="43-k-means-클러스터링"><a class="header" href="#43-k-means-클러스터링">4.3 k-means 클러스터링</a></h1>
 <h3 id="k-means-알고리즘"><a class="header" href="#k-means-알고리즘">k-means 알고리즘</a></h3>
 <p>kNN이 “예측 시점에 거리만 재는” 게으른 방법이라면, k-means는 정답 라벨 없이
 데이터 자체의 구조를 순전히 거리만으로 찾아내는 방법이다. 라벨이 없다는

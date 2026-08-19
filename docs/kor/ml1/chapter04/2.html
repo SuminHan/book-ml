@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone) - Machine Learning 1/2 (한국어)</title>
+        <title>차원의 저주와 실습: 검증셋으로 k 튜닝하기 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-e96d0476.css">
-        <link rel="stylesheet" href="../css/chrome-d279d366.css">
-        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-8b082fac.css">
+        <link rel="stylesheet" href="../../theme/custom-8b082fac.css">
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-fafc8d86.js";
+            window.path_to_searchindex_js = "../../searchindex-fafc8d86.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-82e00ac7.js"></script>
+        <script src="../../toc-82e00ac7.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Machine Learning 1/2 (한국어)</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
@@ -178,90 +178,70 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-8-block-a-캡스톤-팀-프로젝트와-총정리-block-a-capstone-team-project--review"><a class="header" href="#chapter-8-block-a-캡스톤-팀-프로젝트와-총정리-block-a-capstone-team-project--review">Chapter 8. Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone: Team Project &amp; Review)</a></h1>
-<p>Chapter 2~7에서 배운 회귀, 생성적 분류(나이브베이즈/GDA), 거리·마진 기반
-모델(kNN, SVM), 정규화, 트리 앙상블(GBDT)은 각각 독립된 장의 문제처럼
-다뤘지만, 실전 데이터 앞에서는 “이 문제에 어떤 모델이 맞는가“를 스스로
-판단해야 한다. 이번 장은 새 개념을 배우는 대신, 지금까지 배운 것을 실제
-데이터에 적용해보고, 다른 팀의 결과를 검토하며, 중간고사를 준비하는 자리다.</p>
-<h2 id="81-왜-지금-프로젝트를-하는가"><a class="header" href="#81-왜-지금-프로젝트를-하는가">8.1 왜 지금 프로젝트를 하는가</a></h2>
-<p>트리 기반 모델(Chapter 7)까지 배우고 나면, 정형(tabular) 데이터를 다루는
-데 필요한 대표적인 도구를 거의 다 손에 쥔 셈이다 — 이후 Block B에서 배울
-신경망 없이도, 실전 데이터셋 상당수를 이 도구들만으로 충분히 다룰 수 있다.
-지금이 “각 장의 코드가 실제 데이터 앞에서도 작동하는가“를 확인할 가장 좋은
-시점이다.</p>
-<h2 id="82-프로젝트-구조"><a class="header" href="#82-프로젝트-구조">8.2 프로젝트 구조</a></h2>
-<ul>
-<li><strong>데이터</strong>: Kaggle(kaggle.com/datasets), UCI Machine Learning Repository
-(archive.ics.uci.edu) 중에서 정형 데이터를 하나 고른다 — 이번 프로젝트는
-Chapter 2~7의 분류/회귀 모델을 검증하는 것이 목표이므로, 이미지나 텍스트보다
-표(행/열) 형태 데이터가 적합하다.</li>
-<li><strong>적용</strong>: Chapter 2~7 중 <strong>최소 두 가지 모델</strong>(예: 로지스틱회귀와 GBDT)을
-같은 데이터에 적용하고 성능을 비교한다.</li>
-<li><strong>필수 요구사항 — 수식적 정당화 최소 1개</strong>: 예를 들어 (1) 정규화를
-적용했다면 Chapter 6의 편향-분산 관점에서 왜 성능이 바뀌었는지 설명,
-(2) GBDT를 썼다면 Chapter 7의 SHAP으로 예측 하나를 분해해서 설명,
-(3) 여러 모델을 비교했다면 Chapter 2.7의 PR-AUC로 클래스 불균형을 고려한
-비교를 제시.</li>
-<li><strong>검증 원칙 준수</strong>: Chapter 6.3의 train/validation/test 3분할을 반드시
-지킨다 — 테스트 데이터 성능은 딱 한 번만 확인한다.</li>
-</ul>
-<h2 id="83-발표-블록-1"><a class="header" href="#83-발표-블록-1">8.3 발표 (블록 1)</a></h2>
-<p>팀당 5~7분: 문제 정의(1분) → 데이터와 전처리(1분) → 적용한 모델과 이유(2분)
-→ 결과와 수식적 정당화(2분) → 잘 안 됐던 부분과 원인 진단(1분). “정확도
-90%를 달성했다“보다 “왜 이 모델을 골랐고, 왜 이 결과가 나왔는지“를 설명하는
-쪽에 더 높은 점수를 준다.</p>
-<h2 id="84-peer-review-블록-2"><a class="header" href="#84-peer-review-블록-2">8.4 Peer-Review (블록 2)</a></h2>
-<p>다른 두 팀의 발표를 다음 체크리스트로 평가한다:</p>
+                        <h1 id="42-차원의-저주와-실습-검증셋으로-k-튜닝하기"><a class="header" href="#42-차원의-저주와-실습-검증셋으로-k-튜닝하기">4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기</a></h1>
+<h3 id="차원의-저주-curse-of-dimensionality"><a class="header" href="#차원의-저주-curse-of-dimensionality">차원의 저주 (Curse of Dimensionality)</a></h3>
+<p>직관: 특징이 늘어날수록(고차원일수록), “가장 가까운 이웃“조차 점점 멀어진다.
+kNN의 전제는 “가까운 데이터는 비슷한 답을 가질 것이다“라는 직관인데, 특징이
+수백 개가 되면 이 직관이 무너지기 시작한다.</p>
+<p>수식으로 감을 잡아보자. \(n\)차원 단위 정육면체 \([0,1]^n\) 안에 점들이
+균등하게 뿌려져 있다고 하자. 전체 부피의 비율 \(p\)만큼을 “가까운 이웃“으로
+포함하는 작은 정육면체를 만들려면, 그 한 변의 길이 \(\ell\)은:</p>
+<p>\[\ell^n = p \quad\Longrightarrow\quad \ell = p^{1/n}\]</p>
+<p>\(p=0.01\)(전체의 1%만 포함하고 싶다)일 때:</p>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>항목</th><th>확인할 것</th></tr>
+<tr><th>\(n\)</th><th>\(\ell = p^{1/n}\)</th></tr>
 </thead>
 <tbody>
-<tr><td>문제 정의</td><td>무엇을 예측/분류하려 했는지 명확한가</td></tr>
-<tr><td>방법론 적절성</td><td>데이터 특성(불균형, 차원 수 등)에 맞는 모델을 골랐는가</td></tr>
-<tr><td>수식적 정당화</td><td>요구사항을 충족했고, 그 설명이 실제로 타당한가</td></tr>
-<tr><td>결과의 정직성</td><td>잘 안 된 부분을 숨기지 않고 원인을 분석했는가</td></tr>
+<tr><td>1</td><td>0.01</td></tr>
+<tr><td>10</td><td>0.63</td></tr>
+<tr><td>100</td><td>0.955</td></tr>
 </tbody>
 </table>
 </div>
-<p>체크리스트 기반 리뷰는 팀 점수의 일부로 반영되며, 좋은 리뷰란 “잘했다“가
-아니라 “이 부분은 Chapter 6의 교차검증을 안 썼는데, 검증 데이터 성능이
-우연일 가능성은 없는가?“처럼 <strong>구체적으로 반박 가능한 질문</strong>을 던지는
-것이다.</p>
-<h2 id="85-중간고사-대비-총정리-블록-3"><a class="header" href="#85-중간고사-대비-총정리-블록-3">8.5 중간고사 대비 총정리 (블록 3)</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>장</th><th>핵심 질문</th><th>다시 봐야 할 개념</th></tr>
-</thead>
-<tbody>
-<tr><td>Ch02</td><td>같은 선형모델로 회귀와 분류를 어떻게 모두 푸는가</td><td>경사하강법, 정규방정식, 교차 엔트로피</td></tr>
-<tr><td>Ch03</td><td>생성적 접근과 판별적 접근의 차이는 무엇인가</td><td>베이즈 정리, GDA/로지스틱회귀의 관계</td></tr>
-<tr><td>Ch04</td><td>“가깝다“만으로 예측하는 것의 한계는 무엇인가</td><td>편향-분산, 차원의 저주</td></tr>
-<tr><td>Ch05</td><td>확률이 아니라 마진으로 경계를 정하면 무엇이 달라지는가</td><td>서포트 벡터, 커널 트릭</td></tr>
-<tr><td>Ch06</td><td>과적합을 손실함수로 어떻게 통제하는가</td><td>L1/L2 정규화, 교차검증</td></tr>
-<tr><td>Ch07</td><td>트리를 어떻게 앙상블하고, 그 예측을 어떻게 설명하는가</td><td>정보이득, 랜덤포레스트 vs GBDT, SHAP</td></tr>
-</tbody>
-</table>
-</div>
-<p>중간고사는 이 여섯 장의 개념을 새로운 상황에 적용하는 문제(손유도 포함)로
-구성된다 — Chapter 2, 6에서 연습한 정규방정식·Ridge 회귀 유도 패턴이
-다른 손실함수에도 그대로 적용되는지 확인하는 것이 좋은 복습이다.</p>
-<p><strong>지금까지 배운 어떤 모델도 “항상 최선“이지 않다 — 실전에서는 데이터의
-특성을 보고 어떤 도구를 쓸지 스스로 판단해야 한다는 것이, 이번 프로젝트가
-남기는 가장 중요한 교훈이다.</strong></p>
+<p>\(n=100\)에서는 <strong>각 변 길이의 95.5%나</strong> 차지해야 겨우 전체의 1%만
+포함된다 — “가까운 이웃“이라 부를 만한 좁은 영역이 사실상 사라진다. 특징이
+많아질수록 모든 점이 서로 비슷하게 멀어 보이는 이유다.</p>
+<h3 id="실습-검증셋으로-k-튜닝하기"><a class="header" href="#실습-검증셋으로-k-튜닝하기">실습: 검증셋으로 k 튜닝하기</a></h3>
+<p>4.1절에서 “적절한 k는 검증 데이터로 정한다“고 했다 — 직접 해보자. 여러
+\(k\) 값 각각에 대해 검증셋 정확도를 계산하고, 가장 높은 지점을 고른다:</p>
+<pre><code class="language-python">def train_val_split(X, y, val_ratio=0.3, seed=0):
+    import random
+    idx = list(range(len(X)))
+    random.Random(seed).shuffle(idx)
+    n_val = int(len(X) * val_ratio)
+    val_idx, train_idx = idx[:n_val], idx[n_val:]
+    return ([X[i] for i in train_idx], [y[i] for i in train_idx],
+            [X[i] for i in val_idx], [y[i] for i in val_idx])
+
+def tune_k(X, y, k_candidates):
+    X_train, y_train, X_val, y_val = train_val_split(X, y)
+    best_k, best_acc = None, -1.0
+    for k in k_candidates:
+        correct = sum(
+            knn_predict(X_train, y_train, x_val, k) == y_true
+            for x_val, y_true in zip(X_val, y_val)
+        )
+        acc = correct / len(X_val)
+        print(f"k={k}: 검증 정확도={acc:.3f}")
+        if acc &gt; best_acc:
+            best_k, best_acc = k, acc
+    return best_k
+</code></pre>
+<p><code>k=1</code>에 가까울수록 훈련 정확도는 100%에 가깝지만(과적합), 검증 정확도는
+오히려 떨어질 수 있다 — 4.1절에서 본 편향-분산 트레이드오프가 숫자로
+그대로 드러나는 지점이다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml1/chapter07.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter04/1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml1/chapter09.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter04/3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -271,11 +251,11 @@ Chapter 2~7의 분류/회귀 모델을 검증하는 것이 목표이므로, 이�
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml1/chapter07.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter04/1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml1/chapter09.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter04/3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -295,17 +275,17 @@ Chapter 2~7의 분류/회귀 모델을 검증하는 것이 목표이므로, 이�
         </script>
 
 
-        <script src="../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-09f2665d.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
 
-        <script src="../clipboard-1626706a.min.js"></script>
-        <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-609e4cb8.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
-        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

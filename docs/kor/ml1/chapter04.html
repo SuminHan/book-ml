@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-6616b8ad.js";
+            window.path_to_searchindex_js = "../searchindex-fafc8d86.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-9898c238.js"></script>
+        <script src="../toc-82e00ac7.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -183,210 +183,12 @@
 알고리즘으로 옮기면 <strong>k-최근접이웃</strong>(k-Nearest Neighbors, kNN)이 된다: 새로운
 데이터를 분류하고 싶으면, 학습도 모델도 필요 없이 그냥 “가장 가까운 \(k\)개의
 기존 데이터가 뭐라고 답했는지 보고 다수결로 따라간다.”</p>
-<h2 id="41-knn-알고리즘-거리함수-편향-분산-트레이드오프"><a class="header" href="#41-knn-알고리즘-거리함수-편향-분산-트레이드오프">4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프</a></h2>
-<h3 id="학습이-없는-학습-알고리즘"><a class="header" href="#학습이-없는-학습-알고리즘">학습이 없는 학습 알고리즘</a></h3>
-<p>지금까지 배운 선형회귀/로지스틱회귀는 데이터를 보고 파라미터 \(w\)를
-최적화하는 <strong>학습 단계</strong>가 있었다. kNN은 그런 게 없다 — “학습“이라고 부를 만한
-과정은 사실 데이터를 그냥 저장해두는 것뿐이다. 대신 모든 계산은 <strong>예측 시점</strong>에
-일어난다: 새 점이 들어오면 그제서야 저장된 모든 점까지의 거리를 재고, 가장
-가까운 것들을 찾는다. 이런 방식을 게으른 학습(lazy learning) 또는
-instance-based learning이라 부른다.</p>
-<h3 id="알고리즘-가장-가까운-k개의-다수결"><a class="header" href="#알고리즘-가장-가까운-k개의-다수결">알고리즘: 가장 가까운 k개의 다수결</a></h3>
-<p>새로운 점 \(x\)를 분류하려면:</p>
-<ol>
-<li>학습 데이터의 모든 점 \(x^{(i)}\)에 대해 \(x\)와의 거리를 계산한다.</li>
-<li>거리가 가장 가까운 \(k\)개를 고른다.</li>
-<li>그 \(k\)개의 라벨 중 다수결(분류) 또는 평균(회귀)을 예측값으로 낸다.</li>
-</ol>
-<pre><code class="language-python">def knn_predict(X_train, y_train, x_new, k):
-    distances = []
-    for i in range(len(X_train)):
-        d = sum((X_train[i][j] - x_new[j]) ** 2 for j in range(len(x_new))) ** 0.5
-        distances.append((d, y_train[i]))
-    distances.sort(key=lambda p: p[0])
-    k_nearest_labels = [label for _, label in distances[:k]]
-    return max(set(k_nearest_labels), key=k_nearest_labels.count)  # 다수결
-</code></pre>
-<h3 id="거리-함수와-정규화"><a class="header" href="#거리-함수와-정규화">거리 함수와 정규화</a></h3>
-<p>가장 흔한 선택은 <strong>유클리드 거리</strong>(Euclidean distance):</p>
-<p>\[d(x, x’) = \sqrt{\sum_{j=1}^n (x_j - x’_j)^2}\]</p>
-<p>다른 선택지로 맨해튼 거리(\(\sum_j |x_j - x’_j|\), 좌표축을 따라서만 이동)도
-있다. 거리를 재기 전에 <strong>특징 정규화</strong>(normalization)가 거의 필수다 — “방
-개수”(0~10 범위)와 “집값”(수억 원 단위)을 그대로 섞어 거리를 재면, 스케일이 큰
-특징이 거리를 사실상 독차지해버린다.</p>
-<h3 id="k를-고르는-트레이드오프-편향과-분산"><a class="header" href="#k를-고르는-트레이드오프-편향과-분산">\(k\)를 고르는 트레이드오프: 편향과 분산</a></h3>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li>\(k\)가 너무 작으면(예: \(k=1\)): 노이즈 하나에도 민감하게 반응한다 —
-훈련 데이터를 살짝만 바꿔도(다른 표본을 뽑아도) 예측이 크게 요동친다.
-이걸 <strong>분산</strong>(variance)이 크다고 한다 — <strong>과적합</strong>(overfitting).</li>
-<li>\(k\)가 너무 크면(예: \(k=m\), 전체 데이터): 항상 전체 다수결만
-예측해 지역적 패턴을 완전히 무시한다. 어떤 훈련 데이터를 줘도 거의
-똑같이 단순한 예측만 내놓으니 분산은 작지만, 애초에 잡아야 할 패턴을
-구조적으로 못 잡는다 — 이걸 <strong>편향</strong>(bias)이 크다고 한다 —
-<strong>과소적합</strong>(underfitting).</li>
+<li><a href="chapter04/1.html">4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프</a></li>
+<li><a href="chapter04/2.html">4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기</a></li>
+<li><a href="chapter04/3.html">4.3 k-means 클러스터링</a></li>
 </ul>
-<p>이 편향-분산 관계는 kNN만의 얘기가 아니라 지도학습 전체에 적용되는 원리다.
-회귀 문제에서 모델의 기대 오차를 수학적으로 분해하면 세 항으로 나뉜다:</p>
-<p>\[\mathbb{E}\left[(y - \hat f(x))^2\right] =
-\underbrace{\left(\text{Bias}[\hat f(x)]\right)^2}_{\text{모델이 구조적으로
-못 맞추는 정도}} + \underbrace{\text{Var}[\hat f(x)]}_{\text{훈련 데이터가
-바뀔 때 예측이 흔들리는 정도}} + \underbrace{\sigma^2}_{\text{데이터 자체의
-잡음(줄일 수 없음)}}\]</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ch04_bias_variance.svg" alt="편향-분산 트레이드오프 — 모델이 단순할수록(왼쪽) 편향이, 유연할수록(오른쪽) 분산이 커지고, 둘의 합이 최소가 되는 지점이 최적 복잡도다"><span class="img-wrapper"><img src="../images/ch04_bias_variance.svg" alt="편향-분산 트레이드오프 — 모델이 단순할수록(왼쪽) 편향이, 유연할수록(오른쪽) 분산이 커지고, 둘의 합이 최소가 되는 지점이 최적 복잡도다"></span></label></p>
-<p>모델이 너무 단순하면(\(k\)가 큰 kNN, 얕은 트리, 규제가 강한 선형모델 등)
-Bias가 크고 Variance는 작다 — 과소적합. 모델이 너무 유연하면(\(k=1\)인
-kNN, 아주 깊은 트리, 파라미터가 많은 신경망 등) Variance가 크고 Bias는
-작다 — 과적합. 둘은 항상 이렇게 트레이드오프 관계이고, 최적의 모델
-복잡도는 이 둘의 합(전체 오차)이 최소가 되는 지점이다 — 이 프레임은 Chapter
-6(정규화), Chapter 7(트리 깊이 제한/가지치기), Chapter 9(신경망 정규화)에서
-“과적합을 어떻게 막는가“를 다룰 때마다 다시 등장한다.</p>
-<p>적절한 \(k\)는 보통 검증 데이터(validation set)로 여러 값을 시도해보고
-정한다.</p>
-<h2 id="42-차원의-저주와-실습-검증셋으로-k-튜닝하기"><a class="header" href="#42-차원의-저주와-실습-검증셋으로-k-튜닝하기">4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기</a></h2>
-<h3 id="차원의-저주-curse-of-dimensionality"><a class="header" href="#차원의-저주-curse-of-dimensionality">차원의 저주 (Curse of Dimensionality)</a></h3>
-<p>직관: 특징이 늘어날수록(고차원일수록), “가장 가까운 이웃“조차 점점 멀어진다.
-kNN의 전제는 “가까운 데이터는 비슷한 답을 가질 것이다“라는 직관인데, 특징이
-수백 개가 되면 이 직관이 무너지기 시작한다.</p>
-<p>수식으로 감을 잡아보자. \(n\)차원 단위 정육면체 \([0,1]^n\) 안에 점들이
-균등하게 뿌려져 있다고 하자. 전체 부피의 비율 \(p\)만큼을 “가까운 이웃“으로
-포함하는 작은 정육면체를 만들려면, 그 한 변의 길이 \(\ell\)은:</p>
-<p>\[\ell^n = p \quad\Longrightarrow\quad \ell = p^{1/n}\]</p>
-<p>\(p=0.01\)(전체의 1%만 포함하고 싶다)일 때:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>\(n\)</th><th>\(\ell = p^{1/n}\)</th></tr>
-</thead>
-<tbody>
-<tr><td>1</td><td>0.01</td></tr>
-<tr><td>10</td><td>0.63</td></tr>
-<tr><td>100</td><td>0.955</td></tr>
-</tbody>
-</table>
-</div>
-<p>\(n=100\)에서는 <strong>각 변 길이의 95.5%나</strong> 차지해야 겨우 전체의 1%만
-포함된다 — “가까운 이웃“이라 부를 만한 좁은 영역이 사실상 사라진다. 특징이
-많아질수록 모든 점이 서로 비슷하게 멀어 보이는 이유다.</p>
-<h3 id="실습-검증셋으로-k-튜닝하기"><a class="header" href="#실습-검증셋으로-k-튜닝하기">실습: 검증셋으로 k 튜닝하기</a></h3>
-<p>4.1절에서 “적절한 k는 검증 데이터로 정한다“고 했다 — 직접 해보자. 여러
-\(k\) 값 각각에 대해 검증셋 정확도를 계산하고, 가장 높은 지점을 고른다:</p>
-<pre><code class="language-python">def train_val_split(X, y, val_ratio=0.3, seed=0):
-    import random
-    idx = list(range(len(X)))
-    random.Random(seed).shuffle(idx)
-    n_val = int(len(X) * val_ratio)
-    val_idx, train_idx = idx[:n_val], idx[n_val:]
-    return ([X[i] for i in train_idx], [y[i] for i in train_idx],
-            [X[i] for i in val_idx], [y[i] for i in val_idx])
-
-def tune_k(X, y, k_candidates):
-    X_train, y_train, X_val, y_val = train_val_split(X, y)
-    best_k, best_acc = None, -1.0
-    for k in k_candidates:
-        correct = sum(
-            knn_predict(X_train, y_train, x_val, k) == y_true
-            for x_val, y_true in zip(X_val, y_val)
-        )
-        acc = correct / len(X_val)
-        print(f"k={k}: 검증 정확도={acc:.3f}")
-        if acc &gt; best_acc:
-            best_k, best_acc = k, acc
-    return best_k
-</code></pre>
-<p><code>k=1</code>에 가까울수록 훈련 정확도는 100%에 가깝지만(과적합), 검증 정확도는
-오히려 떨어질 수 있다 — 4.1절에서 본 편향-분산 트레이드오프가 숫자로
-그대로 드러나는 지점이다.</p>
-<h2 id="43-k-means-클러스터링"><a class="header" href="#43-k-means-클러스터링">4.3 k-means 클러스터링</a></h2>
-<h3 id="k-means-알고리즘"><a class="header" href="#k-means-알고리즘">k-means 알고리즘</a></h3>
-<p>kNN이 “예측 시점에 거리만 재는” 게으른 방법이라면, k-means는 정답 라벨 없이
-데이터 자체의 구조를 순전히 거리만으로 찾아내는 방법이다. 라벨이 없다는
-점에서는 15장에서 다룰 EM/GMM(k-means를 확률적으로 일반화한 모델)과
-직접 이어지지만, 핵심 동작(가장 가까운 대상을 찾는다)은 이번 장의 주제
-그대로다. \(k\)개의 그룹으로 데이터를 나누고, 각 그룹은
-<strong>중심점</strong>(centroid)으로 대표된다.</p>
-<ol>
-<li>\(k\)개의 중심점을 무작위로 초기화한다.</li>
-<li><strong>할당 단계</strong>: 각 데이터 점을 가장 가까운 중심점의 그룹으로 배정한다.</li>
-<li><strong>갱신 단계</strong>: 각 그룹의 새 중심점을, 그 그룹에 속한 점들의 평균으로 다시
-계산한다.</li>
-<li>할당이 더 이상 바뀌지 않을 때까지 2~3을 반복한다.</li>
-</ol>
-<pre><code class="language-python">def kmeans(X, k, max_iters=100):
-    import random
-    centroids = random.sample(X, k)
-    for _ in range(max_iters):
-        clusters = [[] for _ in range(k)]
-        for x in X:
-            distances = [sum((x[j]-c[j])**2 for j in range(len(x))) for c in centroids]
-            closest = distances.index(min(distances))
-            clusters[closest].append(x)
-        new_centroids = [
-            [sum(pt[j] for pt in cluster) / len(cluster) for j in range(len(X[0]))]
-            if cluster else centroids[i]
-            for i, cluster in enumerate(clusters)
-        ]
-        if new_centroids == centroids:
-            break
-        centroids = new_centroids
-    return centroids, clusters
-</code></pre>
-<p><strong>\(k\)를 고르는 법</strong>: 여러 \(k\)에 대해 클러스터 내 분산(within-cluster
-variance)을 그려보고, 감소폭이 급격히 줄어드는 지점(“팔꿈치”, elbow)을
-고르는 방법이 흔히 쓰인다.</p>
-<h3 id="실습-클러스터링-결과-시각화"><a class="header" href="#실습-클러스터링-결과-시각화">실습: 클러스터링 결과 시각화</a></h3>
-<p>2차원 데이터라면 클러스터 할당 결과를 눈으로 바로 확인할 수 있다 — 알고리즘이
-“올바른” 그룹을 찾았는지 감으로 검증하는 가장 빠른 방법이다.</p>
-<pre><code class="language-python">import matplotlib.pyplot as plt
-
-def plot_clusters(clusters, centroids):
-    colors = ["tab:blue", "tab:orange", "tab:green", "tab:red"]
-    for i, cluster in enumerate(clusters):
-        xs = [pt[0] for pt in cluster]
-        ys = [pt[1] for pt in cluster]
-        plt.scatter(xs, ys, c=colors[i % len(colors)], label=f"cluster {i}")
-    cx = [c[0] for c in centroids]
-    cy = [c[1] for c in centroids]
-    plt.scatter(cx, cy, c="black", marker="x", s=100, label="centroid")
-    plt.legend()
-    plt.savefig("kmeans_result.png")
-
-# 사용 예: centroids, clusters = kmeans(X, k=3)
-# plot_clusters(clusters, centroids)
-</code></pre>
-<p>같은 데이터에 <code>k=2</code>, <code>k=3</code>, <code>k=4</code>를 각각 돌려서 그림을 나란히 비교해보면,
-“몇 개의 덩어리로 나누는 게 자연스러운가“라는 질문에 대한 감을 숫자(within-cluster
-variance)보다 훨씬 빠르게 얻을 수 있다.</p>
-<h3 id="knn과의-차이"><a class="header" href="#knn과의-차이">kNN과의 차이</a></h3>
-<p>kNN은 예측할 때마다 그때그때 거리를 재는 게으른(lazy)
-방법인 반면, k-means는 중심점이 수렴할 때까지 데이터를 반복적으로 훑는다 —
-거리 계산이 예측 시점이 아니라 “학습” 단계에 몰려 있다는 점에서, 오히려
-선형회귀 같은 파라미터 학습 쪽에 더 가깝다. 라벨이 없다는 것만 지도학습과
-다르다.</p>
-<p><strong>단순함이 곧 약점이 아니다 — kNN과 k-means 둘 다 모델이 “무엇을 학습했는지”
-설명해주는 복잡한 이론이 없지만, 바로 그 단순함(순전히 거리 계산) 덕분에
-언제, 왜 실패하는지도 수식으로 정확히 짚어낼 수 있다.</strong></p>
-<hr>
-<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 <code>knn_predict</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)를 확장해서,
-라벨이 숫자일 때 다수결 대신 <strong>평균</strong>을 반환하는 <code>knn_predict_regression</code>을
-작성하라 (kNN이 분류뿐 아니라 회귀에도 쓰일 수 있음을 보이는 문제):</p>
-<pre><code class="language-python">def knn_predict_regression(X_train, y_train, x_new, k):
-    # ADD ADDITIONAL CODE HERE!!
-
-X_train = [[1],[2],[3],[10],[11],[12]]
-y_train = [10, 12, 11, 100, 102, 98]
-print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
-</code></pre>
-<p><strong>2. (손유도, Tier B — 힌트 제공)</strong> \(n\)차원 단위 정육면체 \([0,1]^n\)에
-점들이 균등하게 분포한다고 하자. 전체 부피의 \(p\)만큼을 포함하는, 한 변의
-길이가 \(\ell\)인 작은 정육면체(중심을 공유)를 생각한다.</p>
-<p><strong>단계 1</strong>: \(\ell = p^{1/n}\)을 유도하라. (힌트: \(n\)차원 정육면체의
-부피는 한 변 길이의 \(n\)제곱이다. 작은 정육면체의 부피가 전체(부피 1)의
-\(p\)배가 되도록 \(\ell^n = p\)를 풀어라.)</p>
-<p><strong>단계 2</strong>: \(p=0.01\)로 고정하고, \(n=1, 10, 50, 100\)일 때 각각
-\(\ell\)을 직접 계산하라.</p>
-<p><strong>정확성 확인</strong>: 계산 결과를 바탕으로, 특징(차원)이 많아질수록 “가까운
-\(k\)개“라는 개념 자체가 왜 점점 의미를 잃는지 한 문단으로 설명하라.</p>
 
                     </main>
 
@@ -396,7 +198,7 @@ print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml1/chapter05.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml1/chapter04/1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -410,7 +212,7 @@ print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml1/chapter05.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml1/chapter04/1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
