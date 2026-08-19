@@ -4,10 +4,10 @@
 
 # Machine Learning 1
 
-- [Orientation](ml1/chapter01.md)
-    - [머신러닝 문제 정식화와 세 갈래 분류](ml1/chapter01/1.md)
-    - [데이터사이언스 파이프라인과 사전지식 리뷰](ml1/chapter01/2.md)
-    - [아주 짧은 역사와 이번 학기 로드맵](ml1/chapter01/3.md)
+- [머신러닝 첫걸음](ml1/chapter01.md)
+    - [아주 짧은 역사와 이번 학기 로드맵](ml1/chapter01/1.md)
+    - [머신러닝 문제 정식화와 세 갈래 분류](ml1/chapter01/2.md)
+    - [데이터사이언스 파이프라인과 사전지식 리뷰](ml1/chapter01/3.md)
 - [회귀 모델: 선형회귀와 로지스틱회귀 (Regression Models: Linear & Logistic)](ml1/chapter02.md)
     - [선형회귀: 모델, 비용함수, 경사하강법](ml1/chapter02/1.md)
     - [정규방정식과 "같은 모델, 다른 출력"이라는 다리](ml1/chapter02/2.md)
