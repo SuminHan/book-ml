@@ -33,7 +33,7 @@ Machine learning problems fall into three broad categories.
 |---|---|---|---|
 | Supervised | \\((x, y)\\) pairs | Predict \\(y\\) for new \\(x\\) | Regression/classification, kNN, SVM, trees, neural nets |
 | Unsupervised | \\(x\\) only | Discover hidden structure in the data | k-means, PCA, EM/GMM |
-| Reinforcement | State, action, reward | A policy that maximizes cumulative reward | ML2 Ch05-Ch08 |
+| Reinforcement | State, action, reward | A policy that maximizes cumulative reward | Not covered this semester — ML2 covers reinforcement learning and robot simulation as its own dedicated subject |
 
 - **Supervised Learning**: inputs and correct answers are given in pairs —
   "predict the price from a house's square footage and room count"
@@ -53,7 +53,10 @@ Machine learning problems fall into three broad categories.
 - **Reinforcement Learning**: instead of correct answers, only a reward is
   given, and an agent must discover good behavior through trial and error —
   in chess or Go, nobody tells you "this move is correct," but there is a
-  win/lose signal. ML1 only previews the concept; ML2 covers it in depth.
+  win/lose signal. **This semester (ML1) does not cover it at all** — ML1
+  and ML2 are designed as independent courses, and ML2 covers reinforcement
+  learning and robot simulation from the ground up as its dedicated subject
+  (you don't need to take ML1 first to take ML2).
 
 ## 1.3 Regression vs. Classification: Same Model, Different Output
 
@@ -125,9 +128,9 @@ appeared makes it clearer why we cover them in this particular order.
 | 1986 | Backpropagation is rediscovered, making multi-layer network training possible (Chapter 8) |
 | 1998 | LeCun's CNN (LeNet) succeeds at handwritten digit recognition (Chapter 10) |
 | 2012 | AlexNet dominates ImageNet -> the start of the deep learning era (this chapter's opener) |
-| 2013 | word2vec, VAE, and other modern forms of representation learning/generative models appear (Chapter 12, ML2 Ch10) |
-| 2017 | The Transformer ("Attention Is All You Need") appears (ML2 Chapter 3) |
-| 2022 | ChatGPT -- the popularization of large language models tuned via pretraining + RLHF (ML2 Chapter 4, 9) |
+| 2013 | word2vec, VAE, and other modern forms of representation learning/generative models appear (Chapter 14, 15) |
+| 2017 | The Transformer ("Attention Is All You Need") appears (Chapter 12) |
+| 2022 | ChatGPT -- the popularization of large language models tuned via pretraining + RLHF (Chapter 13) |
 
 **A recurring pattern**: most "breakthroughs" aren't entirely new math —
 they're old ideas (gradient descent, the chain rule, probability theory)
@@ -136,16 +139,26 @@ to trace, by hand, the reused fundamental ideas themselves.
 
 ## 1.7 Roadmap for This Semester
 
-Chapters 2-7 cover classical ML models that are powerful even without a
-neural network (regression, Naive Bayes/GDA, distance-based models, SVM,
-regularization, tree-based models) — these still routinely beat neural
-networks on tabular data. From Chapter 8 onward we move to neural networks:
-deriving backpropagation by hand and building structures like CNNs on top of
-that principle (Chapters 8-11). Chapters 12-13 cover unsupervised learning
-(PCA, embeddings, EM/GMM), and the final chapter gives a taste of generative
-models — both unsupervised learning and generative models return in depth in
-ML2. Reinforcement learning isn't covered this semester (ML1) at all — ML2
-Chapters 5-9 cover it properly from the ground up.
+This semester splits into two eight-week blocks. **Block A (Chapters 2-7)**
+covers classical ML models that are powerful even without a neural network
+(regression, Naive Bayes/GDA, distance-based models, SVM, regularization,
+tree-based models) — these still routinely beat neural networks on tabular
+data. Chapter 8 wraps up Block A with a team project and midterm review.
+
+After the midterm, **Block B (Chapters 9-16)** moves to neural networks.
+We derive backpropagation by hand (Chapter 9), build up through CNNs
+(Chapter 10), then trace the core lineage of modern deep learning in one
+line — sequence models, the Transformer, and LLMs (Chapters 11-13).
+Finally we close with unsupervised learning (PCA, embeddings) and
+latent-variable generative models, from EM/GMM through VAE, GAN, and
+Diffusion (Chapters 14-15). Chapter 16 is the second team project and a
+semester review.
+
+**Reinforcement learning and robot simulation are not covered at all this
+semester (ML1)** — ML1 and ML2 are designed as independent courses, and ML2
+covers this subject from the ground up on its own. You don't need to take
+ML1 first to take ML2 (ML2's Week 1 gives a compressed refresher of the
+neural-network basics it needs).
 
 **The question to ask before choosing any model is always the same: what data
 does this problem actually have, and what am I trying to predict?**

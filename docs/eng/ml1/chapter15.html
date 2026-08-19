@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
-<html lang="ko" class="light sidebar-visible" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>정규화와 모델 선택 (Regularization &amp; Model Selection) - Machine Learning 1/2 (한국어)</title>
+        <title>Latent-Variable Generative Models: EM/GMM to VAE, GAN, Diffusion - Machine Learning 1/2 (English)</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="KSA Machine Learning 1/2 교재 — 한국어판">
+        <meta name="description" content="KSA Machine Learning 1/2 Textbook — English Edition">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-7ff56cd6.js";
+            window.path_to_searchindex_js = "../searchindex-0957b01d.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-2198bfff.js"></script>
+        <script src="../toc-1921d095.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -138,7 +138,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Machine Learning 1/2 (한국어)</h1>
+                    <h1 class="menu-title">Machine Learning 1/2 (English)</h1>
 
                     <div class="right-buttons">
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -178,131 +178,299 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-6-정규화와-모델-선택-regularization--model-selection"><a class="header" href="#chapter-6-정규화와-모델-선택-regularization--model-selection">Chapter 6. 정규화와 모델 선택 (Regularization &amp; Model Selection)</a></h1>
-<p>1996년, 통계학자 로버트 팁시라니(Robert Tibshirani)는 “Lasso”(Least Absolute
-Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 단순했다 —
-회귀의 손실함수에 가중치 절댓값의 합을 페널티로 더하면, 놀랍게도 중요하지 않은
-특징의 가중치가 <strong>정확히 0</strong>이 되어버린다. 특징이 수천 개인 문제에서 “어떤
-특징이 진짜 중요한가“를 사람이 일일이 고르는 대신, 손실함수 하나를 바꾸는 것만
-으로 모델이 스스로 걸러낸다는 뜻이다. 이번 장은 Chapter 4.4에서 본 편향-분산
-트레이드오프를 실제로 <strong>조절하는 손잡이</strong>를 다룬다.</p>
-<h2 id="61-정규화-손실함수에-페널티를-더한다"><a class="header" href="#61-정규화-손실함수에-페널티를-더한다">6.1 정규화: 손실함수에 페널티를 더한다</a></h2>
-<p>Chapter 4.4에서 봤듯, 모델이 너무 유연하면(파라미터가 크고 자유로우면)
-분산이 커져 과적합한다. <strong>정규화</strong>(regularization)는 손실함수에 “가중치가
-너무 커지지 않도록” 페널티 항을 더해서, 모델의 유효 유연성을 인위적으로
-낮추는 기법이다:</p>
-<p>\[J(w) = \underbrace{\frac{1}{2m}\sum_{i=1}^m (h_w(x^{(i)})-y^{(i)})^2}_{\text{원래 손실(적합도)}} +
-\underbrace{\lambda R(w)}_{\text{정규화 항(단순함을 요구)}}\]</p>
-<p>\(\lambda\)(정규화 강도)가 0이면 원래 손실함수와 같고(정규화 없음),
-\(\lambda\)가 커질수록 “데이터에 딱 맞추기“보다 “가중치를 작게 유지하기“를
-더 중요하게 여긴다 — Chapter 4.4의 언어로는, \(\lambda\)를 올릴수록
-분산은 줄고 편향은 늘어난다.</p>
-<h2 id="62-l2ridge와-l1lasso-페널티의-모양이-다르면-결과도-다르다"><a class="header" href="#62-l2ridge와-l1lasso-페널티의-모양이-다르면-결과도-다르다">6.2 L2(Ridge)와 L1(Lasso): 페널티의 모양이 다르면 결과도 다르다</a></h2>
-<p>가장 흔한 두 페널티는 다음과 같다:</p>
+                        <h1 id="chapter-15-latent-variable-generative-models-from-emgmm-to-vae-gan-and-diffusion"><a class="header" href="#chapter-15-latent-variable-generative-models-from-emgmm-to-vae-gan-and-diffusion">Chapter 15. Latent-Variable Generative Models: From EM/GMM to VAE, GAN, and Diffusion</a></h1>
+<p>In 1977, statisticians Arthur Dempster, Nan Laird, and Donald Rubin
+published “Maximum Likelihood from Incomplete Data via the EM Algorithm,”
+showing that several seemingly unrelated statistical problems actually
+share one common structure: <strong>when part of the information is unobserved
+(a latent variable), repeatedly approximate the calculation that would
+have been easy if you’d known it.</strong> This chapter starts from their <strong>EM</strong>
+(Expectation-Maximization) algorithm, extends the exact same question
+(“how does an unobserved latent variable generate the data?”) to neural
+networks with VAE, and closes with GAN and Diffusion, which reach the same
+goal through two completely different principles (adversarial training,
+gradual noise removal) — four faces of generative modeling in one chapter.</p>
+<h2 id="151-chicken-or-egg-the-latent-variable-problem"><a class="header" href="#151-chicken-or-egg-the-latent-variable-problem">15.1 Chicken or Egg: The Latent Variable Problem</a></h2>
+<p>Chapter 14’s k-means assigned each point to <strong>exactly one</strong> cluster (a
+hard assignment). But real data often has fuzzy cluster boundaries — it’s
+often more natural to say a point belongs 60% to cluster A and 40% to
+cluster B. A <strong>Gaussian Mixture Model</strong> (GMM) represents each cluster as a
+normal distribution (the same assumption as Chapter 3’s GDA), and
+represents which cluster each point came from as a <strong>probability</strong>.</p>
+<p>Here’s the catch — the variable \(z\) representing which cluster each
+point truly came from is <strong>never observed</strong> in the data (a latent
+variable):</p>
 <ul>
-<li><strong>L2 정규화(Ridge)</strong>: \(R(w) = |w|_2^2 = \sum_j w_j^2\)</li>
-<li><strong>L1 정규화(Lasso)</strong>: \(R(w) = |w|_1 = \sum_j |w_j|\)</li>
+<li>If we <strong>knew</strong> each point’s true \(z\) (its cluster), estimating each
+cluster’s mean and variance would be easy (exactly like Chapter 3’s GDA
+— just compute the mean/variance of the points belonging to that
+cluster).</li>
+<li>If we <strong>knew</strong> each cluster’s mean and variance, computing the
+probability of each point’s cluster membership (\(z\)’s posterior)
+would also be easy (Bayes’ rule).</li>
 </ul>
-<p>둘 다 “가중치를 작게 만든다“는 목표는 같지만, <strong>모양이 다르면 결과도
-다르다</strong>. L2는 모든 가중치를 매끄럽게 0 쪽으로 축소시키지만(shrinkage),
-좀처럼 정확히 0이 되지는 않는다. L1은 반대로 중요하지 않은 가중치를
-<strong>정확히 0</strong>으로 만들어버리는 경향이 있다 — 그래서 Lasso는 정규화와
-동시에 <strong>특징 선택</strong>(feature selection)을 자동으로 해내는 셈이다.</p>
-<p><strong>기하학적 직관</strong>: 제약 \(R(w) \le t\) 아래에서 원래 손실을 최소화하는
-문제로 다시 쓰면, L2의 제약 영역은 원(구)이고 L1의 제약 영역은 마름모(각
-축 위에 뾰족한 꼭짓점이 있는 다면체)다. 손실함수의 등고선이 이 영역과
-만나는 최적점을 찾을 때, 마름모는 꼭짓점(즉 어떤 좌표가 정확히 0인 지점)에서
-만날 확률이 원보다 훨씬 높다 — 이게 L1이 정확히 0을 만들어내고 L2는 그렇지
-않은 기하학적 이유다.</p>
-<pre><code class="language-python">def ridge_gradient_descent(X, y, lam, alpha, epochs):
-    m, n = len(X), len(X[0])
-    w = [0.0] * (n + 1)  # w[0] = bias
-    for _ in range(epochs):
-        grad = [0.0] * (n + 1)
-        for i in range(m):
-            pred = w[0] + sum(w[j+1] * X[i][j] for j in range(n))
-            error = pred - y[i]
-            grad[0] += error
-            for j in range(n):
-                grad[j+1] += error * X[i][j]
-        for j in range(n + 1):
-            reg = lam * w[j] if j &gt; 0 else 0  # bias(w[0])는 관례적으로 정규화에서 제외
-            w[j] -= alpha * (grad[j] / m + reg)
-    return w
+<p>The problem is that we know <strong>neither</strong>. It’s a chicken-and-egg loop. EM
+breaks this loop with iteration: fix one (at some arbitrary starting
+value), compute the other, use that to refix the first, and repeat until
+the values stop changing.</p>
+<h2 id="152-the-em-algorithm-e-step-and-m-step"><a class="header" href="#152-the-em-algorithm-e-step-and-m-step">15.2 The EM Algorithm: E-Step and M-Step</a></h2>
+<p><strong>E-step (Expectation)</strong>: assuming the current cluster parameters (means
+\(\mu_k\), variances \(\sigma_k^2\), mixture weights \(\pi_k\)) are
+correct, compute each data point \(x_i\)’s posterior probability of
+belonging to cluster \(k\) (the <strong>responsibility</strong>) \(\gamma_{ik}\)
+via Bayes’ rule:</p>
+<p>\[\gamma_{ik} = P(z_i{=}k \mid x_i) = \frac{\pi_k , \mathcal{N}(x_i;
+\mu_k,\sigma_k^2)}{\sum_{j} \pi_j , \mathcal{N}(x_i;\mu_j,\sigma_j^2)}\]</p>
+<p><strong>M-step (Maximization)</strong>: using the responsibilities just computed as
+weights, re-estimate each cluster’s parameters — the higher a point’s
+responsibility for cluster \(k\), the more it contributes to estimating
+\(\mu_k, \sigma_k^2\):</p>
+<p>\[\mu_k = \frac{\sum_i \gamma_{ik} x_i}{\sum_i \gamma_{ik}}, \qquad
+\sigma_k^2 = \frac{\sum_i \gamma_{ik}(x_i-\mu_k)^2}{\sum_i \gamma_{ik}},
+\qquad \pi_k = \frac{\sum_i \gamma_{ik}}{m}\]</p>
+<pre><code class="language-python">import math
+
+def gaussian_pdf(x, mu, sigma):
+    return (1 / (sigma * math.sqrt(2 * math.pi))) * math.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
+
+def em_step(data, means, sigmas, weights):
+    K, n = len(means), len(data)
+    # E-step: compute responsibilities
+    resp = []
+    for x in data:
+        probs = [weights[k] * gaussian_pdf(x, means[k], sigmas[k]) for k in range(K)]
+        total = sum(probs)
+        resp.append([p / total for p in probs])
+    # M-step: re-estimate parameters as responsibility-weighted averages
+    Nk = [sum(resp[i][k] for i in range(n)) for k in range(K)]
+    new_means = [sum(resp[i][k] * data[i] for i in range(n)) / Nk[k] for k in range(K)]
+    new_sigmas = [math.sqrt(sum(resp[i][k] * (data[i] - new_means[k]) ** 2
+                                  for i in range(n)) / Nk[k]) for k in range(K)]
+    new_weights = [Nk[k] / n for k in range(K)]
+    return new_means, new_sigmas, new_weights
 </code></pre>
-<p><code>lam</code>(\(\lambda\))을 0에서 점점 키우면 학습된 가중치가 점점 0에 가까워지는
-것을 직접 확인할 수 있다 — 같은 데이터에 \(\lambda=0, 0.5, 5.0\)을 넣으면
-기울기 \(w_1\)이 대략 \(2.0 \to 1.4 \to 0.4\)로 줄어든다.</p>
-<h2 id="63-교차검증-lambda를-데이터로-정한다"><a class="header" href="#63-교차검증-lambda를-데이터로-정한다">6.3 교차검증: \(\lambda\)를 데이터로 정한다</a></h2>
-<p>\(\lambda\)는 사람이 직접 정해야 하는 <strong>하이퍼파라미터</strong>(hyperparameter) —
-학습으로 정해지는 \(w\)와 달리, 학습 시작 전에 값을 정해줘야 하는
-파라미터다. 학습 데이터에 대한 손실만 보고 \(\lambda\)를 고르면 항상
-\(\lambda=0\)(정규화 없음)이 제일 낮은 손실을 내므로 의미가 없다 —
-<strong>검증 데이터</strong>(validation set)로 성능을 재야 한다.</p>
-<p>데이터가 넉넉하지 않을 때는 <strong>k-겹 교차검증</strong>(k-fold cross-validation)을
-쓴다: 데이터를 \(k\)개로 쪼갠 뒤, 매번 한 조각을 검증용으로 남기고
-나머지로 학습하는 것을 \(k\)번 반복해서 성능을 평균낸다 — 데이터
-전체를 한 번씩은 검증에도, 학습에도 써보는 셈이다.</p>
-<pre><code class="language-python">def k_fold_split(data, k, fold_idx):
-    n = len(data)
-    fold_size = n // k
-    start = fold_idx * fold_size
-    end = start + fold_size if fold_idx &lt; k - 1 else n
-    val = data[start:end]
-    train = data[:start] + data[end:]
-    return train, val
+<p>Alternating between the E-step and M-step, the two clusters’ means,
+variances, and weights converge toward their true values. Placed side by
+side with k-means, the structures are identical — in fact, k-means can be
+viewed as the special case of GMM where every cluster’s variance is fixed
+to be very small (so the responsibilities effectively collapse to 0 or 1).</p>
+<h2 id="153-from-em-to-vae-making-the-latent-variable-continuous-with-a-neural-network"><a class="header" href="#153-from-em-to-vae-making-the-latent-variable-continuous-with-a-neural-network">15.3 From EM to VAE: Making the Latent Variable Continuous, With a Neural Network</a></h2>
+<p>GMM is the simplest case, where the latent variable \(z\) (which
+cluster) is finite and discrete. The <strong>VAE</strong> (Variational Autoencoder,
+2013, by Diederik Kingma and Max Welling) that we cover from here asks
+exactly the same question — “how does an unobserved latent variable
+generate the data?” — but makes \(z\) a <strong>continuous</strong> vector instead of
+a finite cluster number, and approximates the E-step/M-step’s explicit
+iteration with a <strong>neural network</strong> instead.</p>
+<p>A regular autoencoder’s latent space comes with no guarantee about “which
+values reconstruct into plausible data” — the training data can occupy a
+sparse or irregular region of latent space, and sampling randomly from the
+empty space in between gives no idea what will come out. VAE’s solution is
+to force the encoder to output a <strong>probability distribution</strong> (usually the
+mean and variance of a Gaussian) instead of a single point \(z\). An
+additional constraint pushes that distribution to be close to a standard
+normal distribution (mean 0, variance 1) — this makes the entire latent
+space smooth and densely filled, so sampling from any point is likely to
+produce plausible data.</p>
+<p><strong>Structure</strong>: the encoder \(q_\phi(z|x)\) takes input \(x\) and
+outputs a probability distribution over \(z\) (mean and variance), a
+\(z\) is drawn from that distribution, and the decoder
+\(p_\theta(x|z)\) reconstructs (or generates) \(x\) from \(z\).</p>
+<p>VAE is the first of “the ways to build a generative model” — the
+<strong>likelihood-based</strong> approach: train the model to directly maximize (or
+maximize an approximation of) the probability (likelihood) \(P(x)\) that
+it generates the training data. The problem is that
+\(p_\theta(x) = \int p_\theta(x|z)p(z),dz\) is an integral over every
+possible \(z\), which is generally intractable to compute.</p>
+<h2 id="154-elbo-working-around-it-with-a-computable-lower-bound"><a class="header" href="#154-elbo-working-around-it-with-a-computable-lower-bound">15.4 ELBO: Working Around It With a Computable Lower Bound</a></h2>
+<p>Instead of \(\log p_\theta(x)\), which can’t be computed directly, the
+following can be shown to hold:</p>
+<p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
+D_{KL}\big(q_\phi(z|x) ,|, p(z)\big)\]</p>
+<p>The right-hand side is called the <strong>ELBO</strong> (Evidence Lower BOund). What
+its two terms mean:</p>
+<ul>
+<li>The first term \(\mathbb{E}[\log p_\theta(x|z)]\): the
+<strong>reconstruction term</strong> — how well the decoder reconstructs the
+original \(x\) from the encoder’s \(z\) (essentially the same as an
+ordinary autoencoder’s reconstruction error).</li>
+<li>The second term \(D_{KL}(q_\phi(z|x)|p(z))\): the <strong>regularization
+term</strong> — how far the encoder’s distribution \(q_\phi(z|x)\) strays
+from the target prior \(p(z)\) (usually a standard normal
+distribution), measured by KL divergence — the same concept Chapter
+2.6 introduced via Shannon’s information theory. This term is exactly
+what makes the latent space smooth.</li>
+</ul>
+<p>Since \(\log p_\theta(x) \ge \text{ELBO}\), <strong>maximizing the ELBO also
+raises the actual likelihood’s lower bound</strong> — swapping a goal we can’t
+compute directly for a computable surrogate goal.</p>
+<pre><code class="language-python">def vae_loss(x, x_reconstructed, mu, log_var):
+    # reconstruction loss (approximated here with MSE)
+    recon_loss = sum((x[i] - x_reconstructed[i]) ** 2 for i in range(len(x)))
+    # KL divergence: closed-form formula between Gaussian q(mu, sigma^2) and standard normal N(0,1)
+    kl_loss = -0.5 * sum(1 + log_var[i] - mu[i]**2 - math.exp(log_var[i])
+                          for i in range(len(mu)))
+    return recon_loss + kl_loss  # maximizing ELBO = minimizing this loss (negative ELBO)
 </code></pre>
-<p><strong>모델 선택의 원칙</strong>: 학습 데이터로 파라미터(\(w\))를 정하고, 검증
-데이터로 하이퍼파라미터(\(\lambda\), \(k\)의 kNN, 트리 깊이 등)를
-정하고, <strong>테스트 데이터</strong>로는 최종 성능만 딱 한 번 확인한다 — 테스트
-데이터를 하이퍼파라미터 튜닝에 쓰면 “부정행위”(테스트 데이터를 몰래
-봐서 고른 모델)와 다를 게 없다. 이 3분할(train/validation/test) 원칙은
-ML2의 팀 프로젝트에서도 그대로 지켜야 한다.</p>
-<p><strong>정규화는 “모델을 덜 유연하게 만들어서 분산을 줄인다“는 Chapter 4.4의
-편향-분산 원리를, 손실함수에 항 하나를 더하는 것만으로 실제로 조절
-가능하게 만든 도구다 — 그리고 그 조절 손잡이(\(\lambda\)) 자체는
-교차검증이라는 또 다른 절차로 정해야 한다.</strong></p>
+<p><strong>The reparameterization trick (for reference)</strong>: sampling \(z\) directly
+from a probability distribution is a non-differentiable operation, so
+backpropagation can’t flow back through it to the encoder. VAE works
+around this by rewriting the sampling as \(z = \mu + \sigma \odot
+\epsilon\) (treating \(\epsilon \sim \mathcal{N}(0,1)\) as a constant
+that pulls the randomness outside).</p>
+<h2 id="155-gan-the-generator-discriminator-min-max-game"><a class="header" href="#155-gan-the-generator-discriminator-min-max-game">15.5 GAN: The Generator-Discriminator Min-Max Game</a></h2>
+<p>In 2014, Ian Goodfellow, then a graduate student, has said in several
+later interviews that he came up with an idea during a bar argument with
+friends: instead of training a model to produce realistic fake images
+directly, <strong>what if two neural networks competed against each other?</strong> Set
+one up as a forger creating fakes (the Generator) and the other as an
+appraiser distinguishing real from fake (the Discriminator), and have the
+forger try to fool the appraiser while the appraiser tries to catch the
+forger. Unlike VAE, which had a clear objective function (“maximize the
+likelihood”), GAN has no such single objective — instead, two networks are
+trained simultaneously with different, even <strong>opposing</strong>, goals.</p>
+<ul>
+<li><strong>Generator</strong> \(G\): takes random noise \(z \sim p(z)\) and produces
+a fake sample \(G(z)\).</li>
+<li><strong>Discriminator</strong> \(D\): takes data as input and outputs the
+probability \(D(x) \in [0,1]\) that it’s real (exactly the same form
+as Chapter 2’s logistic regression).</li>
+</ul>
+<p>Objective function (min-max game):</p>
+<p>\[\min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] +
+\mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]\]</p>
+<pre><code class="language-python">def discriminator_loss(D_real, D_fake):
+    return -(math.log(D_real) + math.log(1 - D_fake))  # loss the discriminator minimizes
+
+def generator_loss(D_fake):
+    return -math.log(D_fake)  # loss the generator minimizes (pushes D_fake toward 1)
+</code></pre>
+<p><strong>Why we need to discuss “equilibrium”</strong>: since two networks train
+simultaneously with opposing goals, we first have to redefine what
+“training is done” even means. In game theory, the stable state of a
+situation like this (each player choosing their best strategy given the
+other’s) is called a <strong>Nash equilibrium</strong> — a state where neither side can
+improve by changing their own strategy alone. Theoretically, this game’s
+Nash equilibrium is proven to be the point where \(D(x) = 0.5\) (the
+discriminator cannot tell real from fake at all) and the distribution
+\(G\) produces exactly matches the real data distribution.</p>
+<p>Unlike the theory, actual GAN training is often unstable — a common
+problem is <strong>mode collapse</strong>, where the generator crowds around just a few
+patterns that fool the discriminator and loses diversity. VAE tends to be
+theoretically stable but produces somewhat blurry results, while GAN
+produces sharp results but is finicky to train.</p>
+<h2 id="156-diffusion-gradually-reversing-noise"><a class="header" href="#156-diffusion-gradually-reversing-noise">15.6 Diffusion: Gradually Reversing Noise</a></h2>
+<p><strong>Diffusion models</strong> are a third, completely different approach.
+<strong>Forward process</strong>: add tiny amounts of noise to a real image \(x_0\),
+repeated \(T\) times, until \(x_T\) becomes pure random noise (this
+process is a fixed procedure, not something that’s trained). <strong>Reverse
+process</strong>: a neural network is trained to predict “what the noise looked
+like one step earlier” — once trained, a new image is created by starting
+from pure noise \(x_T\) and repeating this reverse step \(T\) times.</p>
+<p>Unlike GAN, which tries to turn noise into an image “all at once,”
+Diffusion breaks that hard problem into \(T\) tiny steps — each step is
+the much easier problem of “removing just a tiny bit of noise,” so
+training is far more stable overall. The tradeoff is that generating a
+single image requires \(T\) repeated steps, making it slower than GAN.
+The most widely used image generation models today (Stable Diffusion and
+similar) use this principle.</p>
+<h2 id="157-comparing-the-four-principles"><a class="header" href="#157-comparing-the-four-principles">15.7 Comparing the Four Principles</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>EM/GMM</th><th>VAE (likelihood-based)</th><th>GAN (adversarial)</th><th>Diffusion (score-based)</th></tr>
+</thead>
+<tbody>
+<tr><td>Latent variable</td><td>Discrete (cluster number)</td><td>Continuous vector</td><td>None (transforms noise directly)</td><td>Continuous (noise steps)</td></tr>
+<tr><td>Training method</td><td>Alternating E-step/M-step</td><td>Maximize ELBO (backprop)</td><td>Equilibrium of a min-max game</td><td>Minimize noise-prediction error at each step</td></tr>
+<tr><td>Training stability</td><td>Stable</td><td>Relatively stable</td><td>Prone to instability</td><td>Stable</td></tr>
+<tr><td>Generation speed</td><td>—</td><td>Fast (one shot)</td><td>Fast (one shot)</td><td>Slow (requires iteration)</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>If we had learned only one of these principles, it would be easy to
+misunderstand what “generative model” means narrowly. Only by seeing all
+four side by side does it become clear how many different ways the
+question “how does unobserved structure produce new data” can be solved.</strong></p>
 <hr>
-<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 <code>ridge_gradient_descent</code>와 <code>k_fold_split</code>(핵심 줄은
-빈칸으로 남겨져 있다고 가정)을 완성하라:</p>
-<pre><code class="language-python">def ridge_gradient_descent(X, y, lam, alpha, epochs):
+<h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
+<p><strong>1. (Coding)</strong> Complete <code>em_step</code> above and <code>kl_divergence_gaussian</code> (the
+KL divergence between Gaussian \(\mathcal{N}(\mu, \sigma^2)\) and the
+standard normal) below (key lines left blank):</p>
+<pre><code class="language-python">def em_step(data, means, sigmas, weights):
     # ADD ADDITIONAL CODE HERE!!
-    # Chapter 2의 gradient_descent에 L2 정규화 항(bias 제외)만 추가
+    return new_means, new_sigmas, new_weights
 
-def k_fold_split(data, k, fold_idx):
+data = [1.0, 1.5, 0.8, 9.2, 10.1, 9.8]
+means, sigmas, weights = [2.0, 8.0], [1.0, 1.0], [0.5, 0.5]
+for _ in range(20):
+    means, sigmas, weights = em_step(data, means, sigmas, weights)
+print(means)  # converges to roughly [1.1, 9.7]
+
+def kl_divergence_gaussian(mu, log_var):
+    # log_var = log(sigma^2), D_KL = -0.5*(1 + log_var - mu^2 - exp(log_var))
     # ADD ADDITIONAL CODE HERE!!
-    # data를 k등분해서 fold_idx번째를 검증용, 나머지를 학습용으로 반환
 
-X = [[1.0],[2.0],[3.0],[4.0]]
-y = [3.0,5.0,7.0,9.0]
-print(ridge_gradient_descent(X, y, lam=0.0, alpha=0.01, epochs=2000))  # 대략 [1.0, 2.0]
-print(ridge_gradient_descent(X, y, lam=5.0, alpha=0.01, epochs=2000))  # w[1]이 0쪽으로 눌림
-
-print(k_fold_split(list(range(10)), k=5, fold_idx=2))  # ([...], [4, 5])
+print(kl_divergence_gaussian(mu=0.0, log_var=0.0))  # 0.0
+print(kl_divergence_gaussian(mu=2.0, log_var=0.0))  # 2.0
 </code></pre>
-<p><strong>2. (개념 서술)</strong> 다음 상황에서 L1과 L2 중 어느 쪽이 더 적합할지 이유와
-함께 답하라: 특징이 10,000개인데 그중 실제로 결과에 영향을 주는 특징은
-20개 정도일 것이라 추정되는 유전자 발현 데이터 분석 문제.</p>
-<p><strong>3. (손유도, Tier A — 자유 유도)</strong> L2 정규화가 있는 선형회귀(Ridge
-회귀)의 비용함수 \(J(w) = \frac{1}{2m}|Xw-y|^2 + \frac{\lambda}{2}|w|^2\)를
-\(w\)에 대해 미분해 0으로 놓고, 닫힌 형태의 해가</p>
-<p>\[w^* = (X^TX + \lambda I)^{-1}X^Ty\]</p>
-<p>가 됨을 유도하라(Chapter 2의 정규방정식 유도와 같은 방식을 재사용하되,
-정규화 항의 미분 \(\nabla_w \frac{\lambda}{2}|w|^2 = \lambda w\)를
-추가로 이용한다). \(\lambda \to 0\)일 때 이 식이 Chapter 2의 정규방정식
-\(w^<em>=(X^TX)^{-1}X^Ty\)로 돌아감을 확인하고, \(\lambda \to \infty\)일
-때 \(w^</em>\)가 어떤 값에 가까워지는지 한 문장으로 설명하라.</p>
+<p><strong>2. (Coding)</strong> Complete <code>discriminator_loss</code> and <code>generator_loss</code> above
+(key lines left blank):</p>
+<pre><code class="language-python">def discriminator_loss(D_real, D_fake):
+    # ADD ADDITIONAL CODE HERE!!
+
+def generator_loss(D_fake):
+    # ADD ADDITIONAL CODE HERE!!
+
+print(discriminator_loss(D_real=0.9, D_fake=0.1))
+print(generator_loss(D_fake=0.9))
+</code></pre>
+<p><strong>3. (Conceptual)</strong> Explain why GMM becomes equivalent to k-means if each
+cluster’s variance is fixed to a very small value and never learned, and
+compare, in two or three sentences, the generation-quality vs.
+training-stability tradeoff between VAE (likelihood-based) and GAN
+(adversarial).</p>
+<p><strong>4. (Hand derivation, Tier B — hints provided)</strong> With 3 data points
+\(x_1=1, x_2=9, x_3=10\), 2 clusters, and current parameters
+\(\mu_1=0, \sigma_1=1, \mu_2=9, \sigma_2=1, \pi_1=\pi_2=0.5\),
+hand-compute the responsibilities \(\gamma_{1,1}\) and \(\gamma_{1,2}\)
+for \(x_1\).</p>
+<p><strong>Hint</strong>: compute the normal density \(\mathcal{N}(x;\mu,\sigma^2) =
+\frac{1}{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/2\sigma^2}\) at \(x_1=1\) for
+each cluster and substitute into the responsibility formula. Note that
+since \(\pi_1=\pi_2\), the \(\pi\) terms actually cancel out.</p>
+<p><strong>5. (Hand derivation, Tier C — fallback prepared)</strong> Starting from
+\(\log p_\theta(x) = \log \int p_\theta(x,z),dz\), use Jensen’s
+inequality (\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\)) to derive
+Section 15.4’s ELBO inequality.</p>
+<p><strong>Fill-in-the-blank fallback version</strong> (if free derivation is too
+difficult):</p>
+<pre><code>Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
+                  = log E_q[ ______________ ]
+
+Step 2: apply Jensen's inequality (log is concave):
+  log E_q[ p(x,z)/q(z|x) ] &gt;= E_q[ log(______________) ]
+
+Step 3: decomposing p(x,z) = p(x|z) * p(z):
+  = E_q[ log p(x|z) ] + E_q[ ______________ ]
+
+Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
+
+Conclusion: log p(x) &gt;= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
+</code></pre>
+<p><strong>Confirm correctness</strong>: explain in one sentence why Step 2 is an
+inequality rather than an equality (hint: when does Jensen’s inequality
+become an equality? When \(X\) is constant).</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml1/chapter05.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml1/chapter14.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml1/chapter07.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml1/chapter16.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -312,11 +480,11 @@ print(k_fold_split(list(range(10)), k=5, fold_idx=2))  # ([...], [4, 5])
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml1/chapter05.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml1/chapter14.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml1/chapter07.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml1/chapter16.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -345,7 +513,7 @@ print(k_fold_split(list(range(10)), k=5, fold_idx=2))  # ([...], [4, 5])
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/lang-switch-a3581242.js"></script>
         <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 

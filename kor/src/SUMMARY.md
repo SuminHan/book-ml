@@ -11,13 +11,15 @@
 - [SVM과 커널 (Support Vector Machines & Kernels)](ml1/chapter05.md)
 - [정규화와 모델 선택 (Regularization & Model Selection)](ml1/chapter06.md)
 - [트리 기반 모델: 결정트리에서 GBDT까지 (Tree-Based Models: Decision Trees to GBDT)](ml1/chapter07.md)
-- [신경망 기초와 역전파 (Neural Network Basics & Backpropagation)](ml1/chapter08.md)
-- [딥러닝 학습 기법 (Deep Learning Training Techniques)](ml1/chapter09.md)
-- [CNN 기초 (CNN Basics)](ml1/chapter10.md)
-- [CNN 응용과 최신 아키텍처 (CNN Applications & Modern Architectures)](ml1/chapter11.md)
-- [비지도학습과 표현학습 (Unsupervised Learning & Representation Learning)](ml1/chapter12.md)
-- [EM 알고리즘과 가우시안 혼합모델 (EM Algorithm & Gaussian Mixture Models)](ml1/chapter13.md)
-- [생성형 모델 맛보기와 총정리 (Generative Models Preview & Review)](ml1/chapter14.md)
+- [Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone)](ml1/chapter08.md)
+- [신경망 기초, 역전파, 학습 기법 (Neural Networks, Backprop & Training)](ml1/chapter09.md)
+- [CNN 기초와 응용 (CNN Basics & Applications)](ml1/chapter10.md)
+- [시퀀스 모델 (Sequence Models)](ml1/chapter11.md)
+- [어텐션과 트랜스포머 (Attention & Transformer)](ml1/chapter12.md)
+- [LLM: 사전학습, 프롬프팅, 정렬 (LLM: Pretraining, Prompting & Alignment)](ml1/chapter13.md)
+- [표현학습: PCA, word2vec, Node2Vec, PageRank (Representation Learning)](ml1/chapter14.md)
+- [잠재변수 생성모델: EM/GMM에서 VAE, GAN, Diffusion까지 (Latent-Variable Generative Models)](ml1/chapter15.md)
+- [Block B 캡스톤: 팀 프로젝트와 ML1 총정리 (Block B Capstone & ML1 Review)](ml1/chapter16.md)
 
 # Machine Learning 2
 

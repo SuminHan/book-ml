@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>비지도학습과 표현학습 (Unsupervised Learning &amp; Representation Learning) - Machine Learning 1/2 (한국어)</title>
+        <title>어텐션과 트랜스포머 (Attention &amp; Transformer) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d5762192.js";
+            window.path_to_searchindex_js = "../searchindex-7ff56cd6.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-bf224681.js"></script>
+        <script src="../toc-2198bfff.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,262 +178,153 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-12-비지도학습과-표현학습-unsupervised-learning--representation-learning"><a class="header" href="#chapter-12-비지도학습과-표현학습-unsupervised-learning--representation-learning">Chapter 12. 비지도학습과 표현학습 (Unsupervised Learning &amp; Representation Learning)</a></h1>
-<p>1901년, 통계학자 칼 피어슨(Karl Pearson)은 흥미로운 질문을 던졌다: 여러 변수를
-측정한 데이터가 있을 때, 정보를 최대한 보존하면서 변수의 개수를 줄일 수 있는
-“가장 좋은 직선(또는 평면)“은 무엇인가? 그의 답 — 데이터가 가장 많이 퍼져 있는
-방향을 찾아라 — 이 지금 <strong>주성분분석</strong>(Principal Component Analysis, PCA)이라
-불리는 방법의 시작이다. 120년도 더 전에 나온 이 아이디어가, 지금은 수백
-차원짜리 이미지 임베딩을 사람이 눈으로 볼 수 있는 2차원으로 줄이는 데도 그대로
-쓰인다.</p>
-<h2 id="121-정답-없이-배운다는-것"><a class="header" href="#121-정답-없이-배운다는-것">12.1 정답 없이 배운다는 것</a></h2>
-<p>지금까지 배운 모든 모델은 “정답(\(y\))“이 있었다 — 집값, 스팸 여부, 클래스
-라벨. <strong>비지도학습</strong>은 그 정답이 없다. 대신 데이터 \(x\) 자체의 구조를
-찾는다: “이 고객들은 몇 개의 그룹으로 자연스럽게 나뉘는가”(군집화), “이 1000개
-특징 중 실제로 중요한 정보는 몇 차원짜리인가”(차원축소).</p>
-<h2 id="122-k-means-클러스터링-복습"><a class="header" href="#122-k-means-클러스터링-복습">12.2 k-means 클러스터링 (복습)</a></h2>
-<p>\(k\)개의 중심점(centroid)까지의 거리로 데이터를 그룹 짓는 알고리즘 —
-알고리즘 절차와 코드는 4.6절에서 이미 다뤘다(사실 k-means도 “가장 가까운
-것을 찾는다“는 점에서 거리 기반 모델의 일종이다). 여기서 짚을 것은
-알고리즘 자체가 아니라 <strong>왜 이게 비지도학습인가</strong>다: kNN이나 지금까지의
-회귀·분류는 정답 라벨 \(y\)를 향해 맞춰가지만, k-means는 라벨 없이 데이터
-\(x\)의 위치만 보고 “가까운 점끼리 묶는다“는 구조 하나로 그룹을
-만들어낸다. \(k\)를 고르는 법(팔꿈치 방법)도 4.6절과 동일하다.</p>
-<h2 id="123-왜-차원을-줄이고-싶은가"><a class="header" href="#123-왜-차원을-줄이고-싶은가">12.3 왜 차원을 줄이고 싶은가</a></h2>
-<p>Chapter 4에서 배운 차원의 저주를 떠올려보자 — 특징이 너무 많으면 “가까움“이라는
-개념 자체가 무너진다. PCA는 원본 데이터의 분산(정보)을 최대한 보존하면서,
-서로 상관관계가 높아 사실상 중복인 특징들을 몇 개의 새로운 축(주성분)으로
-압축한다.</p>
-<h2 id="124-pca-분산을-최대로-보존하는-축-찾기"><a class="header" href="#124-pca-분산을-최대로-보존하는-축-찾기">12.4 PCA: 분산을 최대로 보존하는 축 찾기</a></h2>
-<p>데이터를 저차원으로 투영(project)하되, <strong>투영된 데이터의 분산이 최대</strong>가
-되는 방향을 찾는 것이 목표다 — 정보를 가장 적게 잃는 방향이라는 뜻이다.</p>
-<p><strong>절차</strong>:</p>
+                        <h1 id="chapter-12-어텐션과-트랜스포머-attention--transformer"><a class="header" href="#chapter-12-어텐션과-트랜스포머-attention--transformer">Chapter 12. 어텐션과 트랜스포머 (Attention &amp; Transformer)</a></h1>
+<p>2017년, 구글 브레인의 연구자들은 논문 제목을 다소 도발적으로 지었다 —
+<strong>“Attention Is All You Need”</strong>. 그때까지 시퀀스를 다루는 최고 성능의
+모델들은 모두 RNN(또는 그 변형인 LSTM)을 기반으로 했는데, 이 논문은 순환
+구조를 완전히 걷어내고 <strong>어텐션</strong>(attention) 메커니즘만으로 RNN보다 더
+좋은 성능을 냈다. 이 구조가 <strong>트랜스포머</strong>(Transformer)이며, 지금 우리가
+쓰는 거의 모든 대규모 언어모델(LLM)의 근간이다.</p>
+<h2 id="121-rnn의-순차성이라는-근본-문제"><a class="header" href="#121-rnn의-순차성이라는-근본-문제">12.1 RNN의 순차성이라는 근본 문제</a></h2>
+<p>Chapter 11에서 본 RNN은 한 단어씩 순서대로 처리해야 했다 — 100번째
+단어를 보려면 1번째부터 99번째까지 순서대로 거쳐야 한다. 이건 두 가지
+문제를 만든다: (1) GPU는 병렬 연산에 특화됐는데, 순차적 구조는 그
+병렬성을 활용하지 못해 느리다. (2) 먼 과거의 정보가 여러 단계를 거치며
+흐려진다(Chapter 11의 그래디언트 소실과 정확히 같은 문제).</p>
+<h2 id="122-어텐션이라는-아이디어"><a class="header" href="#122-어텐션이라는-아이디어">12.2 “어텐션“이라는 아이디어</a></h2>
+<p>어텐션의 직관은 단순하다: “지금 이 단어를 이해하려면, 문장의 <strong>다른 모든
+단어를 한 번에</strong> 보고, 그중 관련 있는 단어에 더 집중(attend)한다.” “그
+동물은 도로를 건너지 않았다, 왜냐하면 <strong>그것은</strong> 너무 지쳐 있었기
+때문이다“라는 문장에서, “그것은“이 가리키는 게 “그 동물“인지 “도로“인지는
+문장 전체를 동시에 봐야 판단할 수 있다.</p>
+<h2 id="123-query-key-value"><a class="header" href="#123-query-key-value">12.3 Query, Key, Value</a></h2>
+<p>각 단어(정확히는 각 단어의 임베딩 벡터)는 세 가지 벡터로 변환된다:
+<strong>Query</strong>(Q) “내가 지금 무엇을 찾고 있는가”, <strong>Key</strong>(K) “나는 어떤
+정보를 갖고 있는가”, <strong>Value</strong>(V) “실제로 전달할 내용”. 세 벡터 모두
+같은 입력 임베딩 \(x\)에 서로 다른 학습 가능한 가중치 행렬을 곱해서
+얻는다:</p>
+<p>\[Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V\]</p>
+<h2 id="124-scaled-dot-product-attention"><a class="header" href="#124-scaled-dot-product-attention">12.4 Scaled Dot-Product Attention</a></h2>
+<p>한 단어의 Query가 모든 단어의 Key와 얼마나 “관련 있는지“를 내적(dot
+product)으로 잰다:</p>
+<p>\[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\]</p>
+<p>단계별로 뜯어보면:</p>
 <ol>
-<li>데이터를 평균이 0이 되도록 중심화(centering)한다.</li>
-<li>공분산 행렬(covariance matrix) \(\Sigma = \frac{1}{m}X^TX\)를 계산한다.</li>
-<li>\(\Sigma\)의 고유벡터(eigenvector)와 고유값(eigenvalue)을 구한다.</li>
-<li>고유값이 큰 순서대로 고유벡터를 정렬한다 — 각 고유벡터가 “주성분(principal
-component)“이고, 대응하는 고유값이 그 방향의 분산 크기다.</li>
-<li>상위 \(d\)개의 고유벡터에 데이터를 투영하면, \(d\)차원으로 압축된
-표현을 얻는다.</li>
+<li>\(QK^T\): 모든 단어 쌍의 Query-Key 내적을 한 번에 계산한 행렬(각
+행 = 한 단어가 다른 모든 단어와 얼마나 관련 있는지에 대한 원점수).</li>
+<li>\(\sqrt{d_k}\)(Key 벡터의 차원의 제곱근)로 나눈다: 내적값이 차원이
+커질수록 커지는 경향이 있어, softmax가 극단적인 값(0 또는 1에 가까운)만
+내뱉게 되는 것을 막기 위한 스케일 조정이다.</li>
+<li><strong>softmax</strong>로 각 행을 확률분포(합이 1)로 바꾼다 — “이 단어가 다른
+단어들에 나눠 주는 주의(attention)의 비율”.</li>
+<li>그 확률로 \(V\)(각 단어가 실제로 전달할 내용)의 가중합을 낸다 —
+결과는 “관련 있는 단어들의 내용을 그 관련도만큼 섞어 담은” 새로운
+벡터다.</li>
 </ol>
-<p><strong>왜 고유벡터인가</strong>(직관): 공분산 행렬 \(\Sigma\)에 대해 \(\Sigma v =
-\lambda v\)를 만족하는 \(v\)(고유벡터)는 “그 방향으로 데이터를
-투영했을 때, 그 결과의 분산이 정확히 \(\lambda\)(고유값)가 되는” 특별한
-방향이다. 분산을 최대화하는 문제를 라그랑주 승수법으로 풀면, 정확히 이
-고유값 문제로 귀결된다는 것이 이번 장 연습문제의 핵심이다.</p>
-<h2 id="125-임베딩-word2vec과-node2vec"><a class="header" href="#125-임베딩-word2vec과-node2vec">12.5 임베딩: word2vec과 Node2Vec</a></h2>
-<p>PCA가 “이미 벡터인 데이터“를 압축한다면, <strong>임베딩</strong>(embedding)은 원래
-벡터가 아니었던 것(단어, 그래프의 노드)을 학습을 통해 저차원 벡터로
-표현하는 방법이다. 목표는 PCA와 같다: <strong>고차원(또는 벡터가 아닌) 원본을,
-유용한 구조를 보존한 채 저차원 벡터로 압축한다.</strong></p>
-<h3 id="word2vec-단어를-벡터로"><a class="header" href="#word2vec-단어를-벡터로">word2vec: 단어를 벡터로</a></h3>
-<p>2013년 미콜로프(Tomas Mikolov) 등이 제안한 <strong>word2vec</strong>은 “단어의 의미는
-주변에 어떤 단어가 오는지로 결정된다”(분포 가설, distributional
-hypothesis — “그 단어의 친구를 보면 그 단어를 안다”)는 직관을 학습으로
-구현한다. <strong>Skip-gram</strong> 방식은 중심 단어 하나로 주변 단어들을 예측하도록
-작은 신경망을 학습시키는데, 학습이 끝난 뒤 <strong>이 신경망의 가중치 자체가
-각 단어의 임베딩 벡터</strong>가 된다 — “다음 단어 맞히기“라는 목표는 수단일
-뿐, 진짜 원하는 결과물은 그 과정에서 부산물로 나오는 벡터다(ML2
-Chapter 4의 “다음 토큰 예측이 문법·지식을 부산물로 남긴다“는 이야기와
-같은 패턴이다).</p>
-<p>이렇게 학습된 벡터는 놀라운 성질을 갖는다 — 단어 사이의 의미 관계가
-벡터의 뺄셈/덧셈으로 나타난다:</p>
-<p>\[\text{vec}(\text{king}) - \text{vec}(\text{man}) + \text{vec}(\text{woman}) \approx \text{vec}(\text{queen})\]</p>
-<p>“왕에서 남자다움을 빼고 여자다움을 더하면 여왕“이라는 관계를 학습 당시엔
-전혀 명시적으로 가르치지 않았는데도, 벡터 공간의 기하학적 구조가 스스로
-그렇게 정리된 것이다.</p>
-<pre><code class="language-python">import math, random
+<pre><code class="language-python">import math
 
-def train_skipgram(corpus, window=2, dim=8, epochs=50, lr=0.05, neg_k=3):
-    # corpus: list of tokens (a single long sequence)
-    vocab = sorted(set(corpus))
-    idx = {w: i for i, w in enumerate(vocab)}
-    V = len(vocab)
-    # center-word / context-word weight matrices
-    W_in  = [[random.uniform(-0.5, 0.5) for _ in range(dim)] for _ in range(V)]
-    W_out = [[random.uniform(-0.5, 0.5) for _ in range(dim)] for _ in range(V)]
+def softmax(row):
+    m = max(row)
+    exps = [math.exp(v - m) for v in row]
+    total = sum(exps)
+    return [e / total for e in exps]
 
-    def sigmoid(z):
-        return 1 / (1 + math.exp(-max(-20, min(20, z))))
-
-    pairs = []
-    for i, center in enumerate(corpus):
-        for j in range(max(0, i - window), min(len(corpus), i + window + 1)):
-            if j != i:
-                pairs.append((idx[center], idx[corpus[j]]))
-
-    for _ in range(epochs):
-        random.shuffle(pairs)
-        for c, o in pairs:
-            # positive pair (c, o) + a few random negative words
-            targets = [(o, 1)] + [(random.randrange(V), 0) for _ in range(neg_k)]
-            for t, label in targets:
-                z = sum(W_in[c][k] * W_out[t][k] for k in range(dim))
-                pred = sigmoid(z)
-                grad = (pred - label) * lr
-                for k in range(dim):
-                    g_in, g_out = W_in[c][k], W_out[t][k]
-                    W_in[c][k]  -= grad * g_out
-                    W_out[t][k] -= grad * g_in
-    return {w: W_in[idx[w]] for w in vocab}
+def attention(Q, K, V, d_k):
+    scores = [[sum(Q[i][t] * K[j][t] for t in range(d_k)) / math.sqrt(d_k)
+               for j in range(len(K))] for i in range(len(Q))]
+    weights = [softmax(row) for row in scores]
+    output = [[sum(weights[i][j] * V[j][t] for j in range(len(V)))
+               for t in range(len(V[0]))] for i in range(len(Q))]
+    return output, weights
 </code></pre>
-<p>신기하게도 이 학습의 그래디언트도 <code>(pred - label)</code>이라는 똑같은 인자로
-시작한다 — Chapter 2 로지스틱회귀의 <code>(h_w(x) - y)</code>와 정확히 같은 형태다.
-우연이 아니다: “중심 단어 c 옆에 실제로 단어 t가 나왔는가(label=1)
-아니면 무작위로 끼워넣은 가짜 단어인가(label=0)“를 맞히는 <strong>이진
-분류</strong> 문제로 word2vec을 학습시키기 때문이다. (<code>neg_k</code>개의 무작위
-단어를 “가짜 정답“으로 같이 학습시키는 것이 <strong>네거티브
-샘플링</strong>(negative sampling)으로, 매 스텝마다 어휘 전체에 대해 softmax를
-계산하는 비용을 피하는 핵심 트릭이다. 위 코드는 아이디어만 보이려고
-아주 작게 줄인 구현이고, 실제 word2vec은 수백만 단어·수십억 개의
-(중심, 주변) 쌍으로 학습된다.)</p>
-<h3 id="node2vec-같은-아이디어를-그래프로"><a class="header" href="#node2vec-같은-아이디어를-그래프로">Node2Vec: 같은 아이디어를 그래프로</a></h3>
-<p><strong>Node2Vec</strong>은 word2vec의 skip-gram을 그대로 재사용하되, “문장” 대신
-그래프 위의 <strong>무작위 걷기</strong>(random walk)로 만든 노드 시퀀스를 입력으로
-쓴다 — 한 노드에서 출발해 무작위로 이웃을 따라가며 만든 경로가 곧
-“문장“이고, 그 경로 위의 노드들이 “단어“다. “비슷한 이웃 구조를 가진
-노드는 비슷한 벡터를 갖게 된다“는 것도, word2vec의 “비슷한 문맥에
-나오는 단어는 비슷한 벡터를 갖는다“는 원리를 그래프에 그대로 물려준
-결과다.</p>
-<p><strong>Zachary’s Karate Club</strong>은 이 아이디어를 테스트하는 표준 예제
-데이터셋이다 — 1977년 인류학자 웨인 재커리(Wayne Zachary)가 한 가라테
-동호회 34명의 친분 관계를 기록했는데, 마침 이 동호회가 감독(node 0)과
-관장(node 33) 두 파벌로 실제 분열됐다. 34개 노드, 78개의 친분
-관계(edge)뿐인 작은 그래프지만, 그래프 임베딩 알고리즘이 “제대로
-작동하는지” 확인하는 표준 벤치마크로 지금까지도 쓰인다 — 라벨(파벌
-소속) 없이 순수하게 그래프 구조만 보고 임베딩했는데도 두 파벌이 벡터
-공간에서 자연스럽게 갈라지면 성공이다.</p>
-<pre><code class="language-python">KARATE_EDGES = [
-    (0,1),(0,2),(0,3),(0,4),(0,5),(0,6),(0,7),(0,8),(0,10),(0,11),
-    (0,12),(0,13),(0,17),(0,19),(0,21),(0,31),(1,2),(1,3),(1,7),(1,13),
-    (1,17),(1,19),(1,21),(1,30),(2,3),(2,7),(2,8),(2,9),(2,13),(2,27),
-    (2,28),(2,32),(3,7),(3,12),(3,13),(4,6),(4,10),(5,6),(5,10),(5,16),
-    (6,16),(8,30),(8,32),(8,33),(9,33),(13,33),(14,32),(14,33),(15,32),
-    (15,33),(18,32),(18,33),(19,33),(20,32),(20,33),(22,32),(22,33),
-    (23,25),(23,27),(23,29),(23,32),(23,33),(24,25),(24,27),(24,31),
-    (25,31),(26,29),(26,33),(27,33),(28,31),(28,33),(29,32),(29,33),
-    (30,32),(30,33),(31,32),(31,33),(32,33),
-]
-
-def random_walk(neighbors, start, length):
-    walk = [start]
-    for _ in range(length - 1):
-        cur = walk[-1]
-        if not neighbors[cur]:
-            break
-        walk.append(random.choice(neighbors[cur]))
-    return walk
-
-def build_walks(edges, n_nodes, walks_per_node=10, walk_length=8):
-    neighbors = {i: [] for i in range(n_nodes)}
-    for a, b in edges:
-        neighbors[a].append(b)
-        neighbors[b].append(a)
-    walks = []
-    for node in range(n_nodes):
-        for _ in range(walks_per_node):
-            walks.append([str(n) for n in random_walk(neighbors, node, walk_length)])
-    return walks
-</code></pre>
-<p>무작위 걷기로 만든 <code>walks</code>(각 걷기가 “문장”, 각 노드 번호가 “단어”)를
-이어붙여(<code>corpus = sum(walks, [])</code>) 위 <code>train_skipgram</code>에 그대로 넣으면
-34개 노드 각각의 임베딩 벡터가 나온다 — 이 벡터를 12.4의 PCA로 2차원까지
-압축해서 그려보면, 실제로 두 파벌이 공간적으로 갈라지는 것을 볼 수
-있다. <strong>word2vec과 Node2Vec은 서로 다른 데이터(텍스트 vs. 그래프)에
-적용됐을 뿐, “함께 자주 나타나는 것들은 비슷한 벡터를 갖도록 학습한다“는
-같은 아이디어의 두 얼굴이다.</strong></p>
-<h2 id="126-같은-무작위-걷기-다른-질문-pagerank"><a class="header" href="#126-같은-무작위-걷기-다른-질문-pagerank">12.6 같은 무작위 걷기, 다른 질문: PageRank</a></h2>
-<p>Node2Vec은 무작위 걷기가 만들어내는 “노드의 순서(시퀀스)“를 이용했다.
-같은 무작위 걷기 자체를 완전히 다른 질문에 쓸 수도 있다: <strong>이 그래프
-위를 무작위로 영원히 돌아다닌다면, 각 노드에 머물러 있을 확률은 각각
-얼마나 될까?</strong> 이 질문에 대한 답이 곧 그 노드의 “중요도“라는 것이,
-1998년 래리 페이지(Larry Page)와 세르게이 브린(Sergey Brin)이 구글을
-세울 때 쓴 <strong>PageRank</strong> 알고리즘의 핵심 아이디어다 — 많은 페이지가
-링크하는 페이지일수록, 또 중요한 페이지가 링크하는 페이지일수록,
-무작위로 링크를 따라다니는 서퍼(random surfer)가 그 페이지에 더 자주
-머문다.</p>
-<p>노드 \(i\)의 페이지랭크 \(PR(i)\)는 다음을 만족해야 한다 — 자신을
-가리키는 모든 노드 \(j\)로부터, 그 노드가 가진 점수를 그 노드가 가진
-바깥 링크 수(\(\text{outdeg}(j)\))만큼 나눠 받은 합:</p>
-<p>\[PR(i) = \frac{1-d}{N} + d\sum_{j \to i} \frac{PR(j)}{\text{outdeg}(j)}\]</p>
-<p>\(N\)은 전체 노드 수, \(d\)(보통 0.85)는 <strong>댐핑 팩터</strong>(damping
-factor) — 확률 \(d\)로 링크를 따라가고, 확률 \(1-d\)로 아무 노드로나
-순간이동(teleport)한다는 뜻이다(막다른 골목에 갇히거나 순환에 갇히는
-것을 막기 위한 장치).</p>
-<p>이 식은 우변에 \(PR\) 자신이 다시 등장하는 <strong>재귀식</strong>이라 한 번에 풀 수
-없다 — 그래서 아무 값(모든 노드에 \(1/N\))에서 시작해, 우변에 반복해서
-대입하며 값이 더 이상 바뀌지 않을 때까지 되풀이하는
-<strong>거듭제곱법</strong>(power iteration)으로 푼다:</p>
-<pre><code class="language-python">def pagerank(edges, n_nodes, d=0.85, iters=100):
-    outgoing = {i: [] for i in range(n_nodes)}  # directed: a -&gt; b
-    for a, b in edges:
-        outgoing[a].append(b)
-    outdeg = {i: max(1, len(outgoing[i])) for i in range(n_nodes)}
-    incoming = {i: [] for i in range(n_nodes)}  # who points to me?
-    for a, b in edges:
-        incoming[b].append(a)
-
-    pr = {i: 1 / n_nodes for i in range(n_nodes)}
-    for _ in range(iters):
-        pr = {i: (1 - d) / n_nodes + d * sum(pr[j] / outdeg[j] for j in incoming[i])
-              for i in range(n_nodes)}
-    return pr
-
-# Karate Club은 무방향 그래프이므로, 친분 관계 하나를 양방향 링크로 취급한다
-directed_edges = KARATE_EDGES + [(b, a) for a, b in KARATE_EDGES]
-scores = pagerank(directed_edges, 34)
-print(sorted(scores.items(), key=lambda kv: -kv[1])[:3])
-# node 33, node 0이 가장 높다 -- 실제 두 "허브" 노드(관장, 감독)와 정확히 일치
-</code></pre>
-<p>이 거듭제곱법이 왜 수렴하는지는, <strong>ML2 Chapter 6.2</strong>에서 벨만 최적방정식의
-해가 유일하게 존재함을 보일 때 쓸 <strong>바나흐 고정점 정리</strong>(Banach fixed
-point theorem)와 정확히 같은 논리다 — “어떤 변환을 값이 안 바뀔 때까지
-반복해서 적용하면 결국 고정점(fixed point)에 도달한다“는 같은 수학이,
-여기서는 “그래프 위 확률분포“에, 강화학습에서는 “상태의 가치함수“에
-적용된다.</p>
-<p><strong>PCA·word2vec·Node2Vec·PageRank는 얼핏 서로 다른 문제처럼 보이지만,
-전부 “무언가를 어떤 변환에 반복해서 통과시키면 특별한 지점(고유벡터,
-임베딩, 정상분포)에 수렴한다“는 하나의 수학적 패턴을 공유한다.</strong></p>
-<p><strong>지도학습이 “정답을 맞히는 법“을 배운다면, 비지도학습은 “데이터가 스스로
-어떤 모양을 하고 있는지“를 배운다 — 둘은 서로 다른 질문에 답한다.</strong></p>
+<h2 id="125-self-attention-문장이-자기-자신을-본다"><a class="header" href="#125-self-attention-문장이-자기-자신을-본다">12.5 Self-Attention: 문장이 자기 자신을 본다</a></h2>
+<p>Q, K, V가 모두 <strong>같은 문장</strong>에서 나오면 “self-attention“이라 부른다 —
+각 단어가 같은 문장 안의 다른 모든 단어(자기 자신 포함)와의 관련도를
+계산한다. 이게 이번 장 도입부에서 본 “그것은“이 “그 동물“을 가리키는지
+판단하는 메커니즘이다: “그것은“의 Query가 문장 안 모든 단어의 Key와
+내적을 계산했을 때, “그 동물“의 Key와 가장 높은 점수가 나오도록
+학습된다.</p>
+<h2 id="126-multi-head-attention"><a class="header" href="#126-multi-head-attention">12.6 Multi-Head Attention</a></h2>
+<p>Q, K, V를 한 세트만 쓰는 대신, 여러 세트(“헤드”, head)를 병렬로 두고
+각각 다른 관점의 관련성을 학습하게 한다 — 한 헤드는 문법적 관계(주어-동사)에,
+다른 헤드는 의미적 관계(동의어)에 집중하는 식으로 역할이 나뉘는 경향이
+관찰된다. 여러 헤드의 결과를 이어붙인(concatenate) 뒤 다시 한 번
+선형변환해서 최종 출력을 만든다.</p>
+<h2 id="127-positional-encoding-순서-정보는-어떻게-넣는가"><a class="header" href="#127-positional-encoding-순서-정보는-어떻게-넣는가">12.7 Positional Encoding: 순서 정보는 어떻게 넣는가</a></h2>
+<p>어텐션 연산 자체는 순서를 전혀 구분하지 않는다 — \(QK^T\)는 단어들의
+순서를 뒤섞어도 각 쌍의 관련도 자체는 똑같이 계산된다(집합처럼 취급).
+그런데 “강아지가 고양이를 쫓는다“에서는 순서가 의미를 바꾼다. 그래서
+Transformer는 각 단어의 임베딩에 그 단어의 위치 정보를 담은 벡터
+(positional encoding, 사인/코사인 함수로 만든 고정된 패턴)를 <strong>더해서</strong>
+넣는다 — 이러면 같은 단어라도 위치가 다르면 입력 벡터 자체가 달라지므로,
+어텐션이 간접적으로 순서를 활용할 수 있다.</p>
+<h2 id="128-rnn-대비-이점"><a class="header" href="#128-rnn-대비-이점">12.8 RNN 대비 이점</a></h2>
+<p>Self-attention은 모든 단어 쌍을 <strong>한 번에</strong> 병렬로 계산한다 — 순차적으로
+처리할 필요가 없어 GPU 병렬성을 최대한 활용하고, “1번째 단어와 100번째
+단어의 관련성“도 중간 99단계를 거치지 않고 직접 계산된다(그래디언트 소실
+문제가 구조적으로 훨씬 덜하다). 대신 문장 길이의 제곱에 비례하는
+계산량(\(QK^T\)가 \(n \times n\) 행렬)이라는 새로운 비용이 생긴다 —
+이건 아주 긴 문서를 다룰 때의 실무적 한계로 이어진다.</p>
+<p><strong>“모든 단어를 한 번에 보고, 서로의 관련성을 직접 계산한다“는 이 아이디어
+하나가 지난 몇 년간 딥러닝을 가장 크게 바꾼 변화다.</strong></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>kmeans_assign</code>(k-means의 할당 단계)과
-<code>center_data</code>(PCA의 전처리 단계)를 완성하라(핵심 줄은 빈칸으로 남겨져 있다고
-가정):</p>
-<pre><code class="language-python">def kmeans_assign(X, centroids):
+<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>scaled_dot_product_attention</code>을
+완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
+<pre><code class="language-python">import math
+
+def softmax(row):
+    m = max(row)
+    exps = [math.exp(v - m) for v in row]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def scaled_dot_product_attention(Q, K, V, d_k):
     # ADD ADDITIONAL CODE HERE!!
+    # 1. scores[i][j] = (Q[i] . K[j]) / sqrt(d_k)
+    # 2. weights = 각 행에 softmax 적용
+    # 3. output[i] = weights[i]로 V의 가중합
 
-X = [[1,1],[1,2],[8,8],[9,9]]
-centroids = [[1,1],[9,9]]
-print(kmeans_assign(X, centroids))  # [0, 0, 1, 1]
+    return output, weights
 
-def center_data(X):
-    # ADD ADDITIONAL CODE HERE!!
-
-X2 = [[1,2],[3,4],[5,6]]
-print(center_data(X2))  # [[-2,-2],[0,0],[2,2]]
+Q = [[1,0],[0,1]]
+K = [[1,0],[0,1]]
+V = [[10,0],[0,10]]
+output, weights = scaled_dot_product_attention(Q, K, V, d_k=2)
+print(weights)  # 각 단어가 "자기 자신"에 더 높은 가중치를 줌
 </code></pre>
-<p><strong>2. (개념 서술)</strong> word2vec은 skip-gram(중심 단어로 주변 단어 예측)을
-쓴다. 만약 반대로 “주변 단어들로 중심 단어를 예측“하는 방식(CBOW,
-Continuous Bag-of-Words)을 쓴다면 학습 목표가 어떻게 달라질지, 그리고
-왜 두 방식 모두 결국 비슷한 임베딩 벡터를 만들어낼 것으로 예상되는지
-두세 문장으로 설명하라.</p>
-<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> 중심화된 데이터 \(X\)를 단위벡터
-\(v\)(\(|v|=1\)) 방향으로 투영한 결과의 분산은 \(v^T \Sigma v\)이다
-(단, \(\Sigma = \frac{1}{m}X^TX\)). 이 분산을 최대화하는 \(v\)를 구하고
-싶다.</p>
-<p><strong>힌트</strong>: \(|v|=1\) 제약 하에 \(v^T\Sigma v\)를 최대화하는 문제를,
-라그랑주 승수 \(\lambda\)를 이용해 \(\mathcal{L}(v, \lambda) =
-v^T\Sigma v - \lambda(v^Tv - 1)\)로 바꾼 뒤, \(v\)로 미분해서 0으로
-놓으면(\(\frac{\partial}{\partial v}(v^T\Sigma v) = 2\Sigma v\),
-\(\frac{\partial}{\partial v}(v^Tv) = 2v\)임을 이용) \(\Sigma v =
-\lambda v\)라는 고유값 방정식이 나온다. 이 결과를 원래 목적함수에
-대입하면(\(v^T\Sigma v = v^T(\lambda v) = \lambda\)) 분산이 정확히
-\(\lambda\)(고유값)가 됨을 보일 수 있다.</p>
-<p><strong>정확성 확인</strong>: 위 결과가 왜 “고유값이 가장 큰 고유벡터를 첫 번째
-주성분으로 고른다“는 알고리즘의 근거가 되는지 한 문장으로 설명하라.</p>
+<p><strong>2. (개념 서술)</strong> Self-attention이 RNN보다 그래디언트 소실에 덜 취약한
+이유를, “1번째 단어와 100번째 단어 사이의 경로 길이“라는 관점에서
+설명하라(Chapter 11의 BPTT와 비교).</p>
+<p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> 단어 2개짜리 문장에 대해, 다음
+벡터가 주어졌다: \(Q = \begin{pmatrix}1 &amp; 0\ 0 &amp; 1\end{pmatrix}\),
+\(K = \begin{pmatrix}1 &amp; 1\ 1 &amp; 0\end{pmatrix}\), \(V =
+\begin{pmatrix}5 &amp; 0\ 0 &amp; 5\end{pmatrix}\)(\(d_k=2\)).</p>
+<p>\(QK^T\)를 손으로 계산하고, \(\sqrt{d_k}\)로 나눈 뒤, 각 행에
+softmax를 적용해 어텐션 가중치 행렬을 구하고, 마지막으로 \(V\)와의
+가중합으로 최종 출력을 계산하라.</p>
+<p><strong>빈칸채움형 폴백 버전</strong>(자유 계산이 어려운 경우):</p>
+<pre><code>Step 1: QK^T 계산 (2x2 행렬)
+  (QK^T)[0][0] = Q[0].K[0] = 1*1 + 0*1 = ______________
+  (QK^T)[0][1] = Q[0].K[1] = 1*1 + 0*0 = ______________
+  (QK^T)[1][0] = Q[1].K[0] = 0*1 + 1*1 = ______________
+  (QK^T)[1][1] = Q[1].K[1] = 0*1 + 1*0 = ______________
+
+Step 2: sqrt(d_k) = sqrt(2) ≈ 1.41 로 모든 원소를 나눈다
+  scaled[0] = [______________, ______________]
+  scaled[1] = [______________, ______________]
+
+Step 3: 첫 번째 행에 softmax 적용
+  exp(scaled[0][0]) = ______________  (계산기 사용)
+  exp(scaled[0][1]) = ______________
+  weights[0] = [______________, ______________]  (합이 1이 되도록 정규화)
+
+Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
+       = [______________, ______________]
+</code></pre>
+<p><strong>정확성 확인</strong>: 완성한 계산을 문제 1의
+<code>scaled_dot_product_attention(Q, K, V, d_k=2)</code> 출력과 대조해 일치하는지
+확인하라.</p>
 
                     </main>
 

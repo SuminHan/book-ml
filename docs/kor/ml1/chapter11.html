@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>CNN 응용과 최신 아키텍처 (CNN Applications &amp; Modern Architectures) - Machine Learning 1/2 (한국어)</title>
+        <title>시퀀스 모델 (Sequence Models) - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d5762192.js";
+            window.path_to_searchindex_js = "../searchindex-7ff56cd6.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-bf224681.js"></script>
+        <script src="../toc-2198bfff.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,107 +178,118 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-11-cnn-응용과-최신-아키텍처-cnn-applications--modern-architectures"><a class="header" href="#chapter-11-cnn-응용과-최신-아키텍처-cnn-applications--modern-architectures">Chapter 11. CNN 응용과 최신 아키텍처 (CNN Applications &amp; Modern Architectures)</a></h1>
-<p>2015년, 마이크로소프트의 카이밍 허(Kaiming He) 등은 이상한 현상을 발견했다 —
-CNN을 더 깊게 쌓을수록 성능이 좋아질 줄 알았는데, 어느 지점을 넘어서면
-오히려 <strong>더 나빠졌다</strong>. 이건 Chapter 9에서 배운 과적합 때문이 아니었다(학습
-데이터에 대한 성능조차 나빠졌다) — 층을 더해도 그래디언트가 온전히 전달되지
-못해, 깊은 층이 사실상 “학습이 안 되는” 문제였다. 그들의 해법
-<strong>ResNet</strong>(Residual Network)은 놀랍도록 단순했고, 지금 쓰이는 거의 모든
-대형 CNN·Transformer 구조의 기본 재료가 됐다. 이번 장은 CNN을 실전에서
-어떻게 재사용하고 확장하는지를 다룬다.</p>
-<h2 id="111-전이학습-처음부터-다시-배우지-않는다"><a class="header" href="#111-전이학습-처음부터-다시-배우지-않는다">11.1 전이학습: 처음부터 다시 배우지 않는다</a></h2>
-<p>ImageNet(수백만 장의 이미지) 같은 대규모 데이터로 미리 학습된 CNN의 앞쪽
-층들은 선/모서리/질감 같은 아주 범용적인 패턴을 감지하도록 학습돼 있다 —
-이건 “고양이를 구분하는 능력“이 아니라 “이미지를 보는 능력” 자체에 가깝다.
-<strong>전이학습</strong>(Transfer Learning)은 이 사전학습된 앞쪽 층들을 그대로 재사용하고,
-마지막 몇 층(또는 마지막 분류층)만 새로운 문제에 맞게 다시 학습시킨다:</p>
-<ul>
-<li><strong>특징 추출</strong>(feature extraction): 사전학습된 층의 가중치를 전부
-고정(freeze)하고, 마지막 분류층만 새로 학습시킨다. 데이터가 적을 때
-특히 유리하다 — 새로 학습할 파라미터가 훨씬 적기 때문이다.</li>
-<li><strong>미세조정</strong>(fine-tuning): 사전학습된 가중치를 학습의 시작점으로만
-쓰고, 전체(또는 뒤쪽 일부) 층을 낮은 학습률로 계속 학습시킨다 — 새
-데이터가 어느 정도 있을 때 특징 추출보다 더 좋은 성능을 낸다.</li>
-</ul>
-<p><strong>왜 이게 되는가</strong>: Chapter 6에서 정규화가 “모델을 덜 유연하게 만들어
-분산을 줄인다“고 배웠다. 전이학습도 비슷한 효과를 낸다 — 처음부터
-무작위로 초기화해서 배우는 대신 이미 검증된 좋은 시작점에서 출발하므로,
-훨씬 적은 데이터로도 과적합 없이 학습할 수 있다.</p>
-<h2 id="112-분류를-넘어서-탐지와-분할"><a class="header" href="#112-분류를-넘어서-탐지와-분할">11.2 분류를 넘어서: 탐지와 분할</a></h2>
-<p>지금까지의 CNN은 “이미지 전체가 어떤 클래스인가”(분류)만 답했다. 실전
-문제는 더 세밀한 답을 요구할 때가 많다:</p>
-<ul>
-<li><strong>객체 탐지</strong>(Object Detection): “이미지 안에 사물이 어디에, 무엇이
-있는가” — 각 사물의 위치를 사각형(bounding box)으로, 그 안의 클래스를
-함께 예측한다.</li>
-<li><strong>의미론적 분할</strong>(Semantic Segmentation): “각 픽셀이 어떤 클래스에
-속하는가” — 이미지 크기와 똑같은 크기의 출력을 내되, 각 픽셀에 클래스
-라벨을 붙인다(자율주행에서 “이 픽셀은 도로/보행자/차량” 등을 구분하는
-데 쓰인다).</li>
-</ul>
-<p>두 문제 모두 이 책에서 다룬 합성곱·풀링을 그대로 기본 재료로 쓰지만,
-출력 형태를 바꾸는 구조(예: 분할에서는 공간 크기를 다시 키워 원본
-해상도로 복원하는 층)를 추가한다 — 자세한 구조는 이 학기 범위를
-넘어서지만, “합성곱으로 뽑은 특징 위에 다른 출력 헤드(head)를 붙이면
-문제를 바꿀 수 있다“는 원리 자체는 기억해둘 만하다.</p>
-<h2 id="113-resnet과-스킵-연결-더-깊이-쌓을-수-있게"><a class="header" href="#113-resnet과-스킵-연결-더-깊이-쌓을-수-있게">11.3 ResNet과 스킵 연결: 더 깊이 쌓을 수 있게</a></h2>
-<p>Chapter 9에서 본 그래디언트 소실 문제는 “활성함수의 미분을 층마다
-곱한다“에서 비롯됐다. ResNet의 해법 <strong>스킵 연결</strong>(skip connection, residual
-connection)은 이 곱셈 사슬에 지름길을 낸다 — 한 블록의 출력을 그냥
-\(F(x)\)로 두는 대신, 입력을 그대로 더한 \(y = F(x) + x\)로 정의한다:</p>
-<pre><code class="language-python">def residual_block(x, F):
-    # F: 합성곱 층 몇 개로 이루어진 함수(예: Conv-ReLU-Conv)
-    return [F(x)[i] + x[i] for i in range(len(x))]  # F(x) + x
+                        <h1 id="chapter-11-시퀀스-모델-sequence-models"><a class="header" href="#chapter-11-시퀀스-모델-sequence-models">Chapter 11. 시퀀스 모델 (Sequence Models)</a></h1>
+<p>1990년, 인지과학자 제프리 엘먼(Jeffrey Elman)은 논문 “Finding Structure in
+Time“에서 질문 하나를 던졌다: 신경망이 “지금 보고 있는 입력“뿐 아니라 “조금
+전에 무엇을 봤는지“도 기억하게 만들 수 있을까? 그가 제안한 구조 — 은닉층의
+출력을 다음 시점의 입력으로 다시 연결하는 순환(recurrent) 구조 — 는 지금
+RNN(Recurrent Neural Network)이라 불리는 모델의 원형이다.</p>
+<h2 id="111-왜-순서가-중요한가"><a class="header" href="#111-왜-순서가-중요한가">11.1 왜 순서가 중요한가</a></h2>
+<p>“강아지가 고양이를 쫓는다“와 “고양이가 강아지를 쫓는다“는 똑같은 단어 세
+개로 이루어져 있지만 완전히 다른 문장이다. 지금까지 배운 MLP나 CNN에 이
+문장을 넣으려면 단어들을 그냥 벡터 하나로 뭉쳐야 했는데, 그러면 순서
+정보가 사라진다 — “누가 누구를 쫓는지“를 구분할 방법이 없어진다.</p>
+<h2 id="112-은닉-상태-지금까지-읽은-것의-요약"><a class="header" href="#112-은닉-상태-지금까지-읽은-것의-요약">11.2 은닉 상태: 지금까지 읽은 것의 요약</a></h2>
+<p>RNN의 핵심 아이디어는 <strong>은닉 상태</strong>(hidden state)다: 문장을 한 단어씩
+읽어가면서, “지금까지 읽은 내용의 요약“을 하나의 벡터에 계속 갱신해나간다.
+두 번째 단어를 처리할 때는 두 번째 단어 자체뿐 아니라 “첫 번째 단어를
+읽고 남은 요약“도 함께 입력받는다 — 이렇게 하면 지금 시점의 출력이 과거
+전체의 맥락에 영향을 받을 수 있다.</p>
+<h2 id="113-rnn의-순전파"><a class="header" href="#113-rnn의-순전파">11.3 RNN의 순전파</a></h2>
+<p>시점 \(t\)마다 입력 \(x_t\)와 이전 은닉 상태 \(h_{t-1}\)을 받아, 새
+은닉 상태 \(h_t\)와 (필요하면) 출력 \(y_t\)를 낸다:</p>
+<p>\[h_t = \tanh(W_{xh} x_t + W_{hh} h_{t-1} + b_h), \qquad y_t = W_{hy} h_t + b_y\]</p>
+<p><strong>핵심은 \(W_{xh}, W_{hh}, W_{hy}\)가 모든 시점에서 동일한 가중치를
+재사용한다는 것</strong>이다(파라미터 공유 — Chapter 10의 CNN 필터 재사용과 같은
+아이디어를 시간 축에 적용한 것).</p>
+<pre><code class="language-python">def rnn_step(x_t, h_prev, Wxh, Whh, b_h):
+    z = [sum(Wxh[i][j]*x_t[j] for j in range(len(x_t))) +
+         sum(Whh[i][j]*h_prev[j] for j in range(len(h_prev))) + b_h[i]
+         for i in range(len(h_prev))]
+    return [tanh(v) for v in z]
+
+def rnn_forward(inputs, h0, Wxh, Whh, b_h):
+    h = h0
+    hidden_states = []
+    for x_t in inputs:
+        h = rnn_step(x_t, h, Wxh, Whh, b_h)
+        hidden_states.append(h)
+    return hidden_states
 </code></pre>
-<p><strong>왜 이게 그래디언트를 살리는가</strong>(직관): \(y=F(x)+x\)를 \(x\)로
-미분하면 \(\frac{\partial y}{\partial x} = \frac{\partial F}{\partial x}</p>
-<ul>
-<li>1\)이다. Chapter 9의 \(\prod_l \sigma’(z_l) \cdot W_l\) 곱셈 사슬에서
-\(\frac{\partial F}{\partial x}\)가 아무리 작아져도(그래디언트 소실),
-더해진 <strong>“+1” 항 덕분에 그래디언트가 최소한 1은 유지된 채로 그대로
-전달될 길이 남는다</strong> — 입력을 “건너뛰어” later 층으로 그대로 흘려보내는
-지름길이 있는 셈이다. 이 아이디어 덕분에 100층이 넘는 CNN도 안정적으로
-학습할 수 있게 됐고, 지금은 ML2에서 배울 Transformer 구조에도 (다른
-형태로) 그대로 쓰인다.</li>
-</ul>
-<p><strong>전이학습·탐지·분할·ResNet은 서로 다른 문제를 풀지만 공통점이 있다 —
-전부 Chapter 10의 “합성곱으로 국소 패턴을 뽑는다“는 기본 재료 위에,
-“그 재료를 어떻게 재사용·재조합·안정화할 것인가“를 답하는 응용이다.</strong></p>
+<h2 id="114-bptt-시간을-펼쳐서-역전파하기"><a class="header" href="#114-bptt-시간을-펼쳐서-역전파하기">11.4 BPTT: 시간을 펼쳐서 역전파하기</a></h2>
+<p>이 “요약을 계속 갱신한다“는 구조를 학습시키려면, 역전파를 시간 축을 따라
+펼쳐서 적용해야 한다. 시퀀스 길이 \(T\)만큼 신경망을 “펼쳐서(unroll)”
+각 시점을 독립된 층처럼 취급한 뒤 Chapter 9의 역전파를 그대로 적용하는 이
+방법을 <strong>BPTT</strong>(Backpropagation Through Time)라 부른다. \(h_t\)가
+\(h_{t-1}\)에, \(h_{t-1}\)이 \(h_{t-2}\)에 의존하는 사슬을 거슬러
+올라가야 하므로, \(h_1\)에 대한 그래디언트는 다음과 같은 형태의 곱을
+포함하게 된다:</p>
+<p>\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
+h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh’(z_t)) , W_{hh}\]</p>
+<h2 id="115-그래디언트-소실이-시간-축에서-재발하는-이유"><a class="header" href="#115-그래디언트-소실이-시간-축에서-재발하는-이유">11.5 그래디언트 소실이 시간 축에서 재발하는 이유</a></h2>
+<p>Chapter 9.4에서 본 것과 정확히 같은 패턴이다: \(\tanh’\)의 최댓값은
+1이지만 대부분의 구간에서 1보다 작고, 여기에 \(W_{hh}\)까지
+\(T\)번(시퀀스 길이만큼) 곱해진다. 시퀀스가 길수록(\(T\)가 클수록)
+이 곱은 지수적으로 0에 가까워지거나(그래디언트 소실 — \(W_{hh}\)의
+고유값이 1보다 작을 때) 발산한다(그래디언트 폭발 — 고유값이 1보다 클
+때). 결과적으로 기본 RNN은 <strong>먼 과거의 정보를 거의 기억하지 못한다</strong> —
+“10단어 전에 나온 주어“를 지금 시점에서 활용해야 하는 문장에서 특히
+취약하다.</p>
+<h2 id="116-lstmgru-게이트로-소실을-완화"><a class="header" href="#116-lstmgru-게이트로-소실을-완화">11.6 LSTM/GRU: 게이트로 소실을 완화</a></h2>
+<p>LSTM(Long Short-Term Memory)과 GRU(Gated Recurrent Unit)는
+“게이트(gate)“라는 장치를 추가해, 은닉 상태를 매 시점 완전히 새로
+계산하는 대신 <strong>선택적으로 유지하거나 갱신</strong>한다. 핵심 트릭은 정보가
+지나가는 경로에 곱셈 대신 <strong>덧셈</strong>이 섞이도록 설계하는 것이다 — Chapter
+10.9에서 본 ResNet의 스킵 연결(\(y=F(x)+x\))과 정확히 같은 원리다. 덧셈은
+그래디언트를 그대로 통과시키므로(미분이 1), 곱셈만 반복될 때보다 소실이
+훨씬 덜하다. 자세한 게이트 수식은 이번 학기에서는 다루지 않지만, “왜
+LSTM/GRU가 기본 RNN보다 긴 시퀀스에 강한가“의 답은 항상 이 원리로
+귀결된다.</p>
+<h2 id="117-rnn의-근본적-한계"><a class="header" href="#117-rnn의-근본적-한계">11.7 RNN의 근본적 한계</a></h2>
+<p>게이트를 추가해도 RNN은 여전히 <strong>순차적으로</strong> 한 시점씩 처리해야 한다 —
+100번째 단어를 처리하려면 1번째부터 99번째까지 순서대로 다 거쳐야 한다.
+이 순차성 때문에 병렬화가 어렵고, 아주 긴 시퀀스에서는 여전히 먼 과거
+정보가 흐려진다. Chapter 12에서 배울 Attention/Transformer는 이 순차성
+자체를 없애는 완전히 다른 접근이다.</p>
+<p><strong>RNN은 “순서가 있는 데이터를 다루려면 과거를 기억하는 상태가 필요하다“는
+통찰의 가장 단순한 구현이다 — 다음 장은 이 구조의 한계를 극복하는
+이야기다.</strong></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 <code>residual_block</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)과,
-“동결된 특징 추출기 + 새로 학습되는 선형 분류층“을 흉내 낸
-<code>transfer_learning_predict</code>를 완성하라:</p>
-<pre><code class="language-python">def residual_block(x, F):
-    # ADD ADDITIONAL CODE HERE!!
-    # F(x)를 계산한 뒤 x와 원소별로 더해서 반환
+<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>rnn_forward_scalar</code>(은닉 상태가 스칼라인
+가장 단순한 RNN, \(h_t = \tanh(w_{xh} x_t + w_{hh} h_{t-1} + b_h)\))와
+<code>gradient_through_time</code>을 완성하라(핵심 줄은 빈칸으로 남겨져 있다고
+가정):</p>
+<pre><code class="language-python">import math
 
-def transfer_learning_predict(x, frozen_features_fn, new_w, new_b):
+def rnn_forward_scalar(inputs, h0, w_xh, w_hh, b_h):
     # ADD ADDITIONAL CODE HERE!!
-    # frozen_features_fn(x)로 특징을 뽑은 뒤(가중치 갱신 없음),
-    # new_w · features + new_b로 새 분류 결과를 계산
 
-features_fn = lambda x: [x[0]+x[1], x[0]-x[1]]  # 고정된(사전학습된) 특징 추출
-print(transfer_learning_predict([3, 1], features_fn, new_w=[2, 1], new_b=0.5))
-# features = [4, 2], 예측 = 2*4 + 1*2 + 0.5 = 10.5
+print(rnn_forward_scalar([1.0, 1.0, 1.0], h0=0.0, w_xh=0.5, w_hh=0.8, b_h=0.0))
+
+def gradient_through_time(tanh_derivatives, w_hh):
+    # input: tanh_derivatives = [tanh'(z_1), ..., tanh'(z_T)]
+    # return: product of (tanh'(z_t) * w_hh) for all t
+    # ADD ADDITIONAL CODE HERE!!
+
+print(gradient_through_time([0.5]*20, w_hh=0.9))  # (0.5*0.9)^20 -- 사실상 0
+print(gradient_through_time([0.9]*20, w_hh=1.1))  # (0.9*1.1)^20 -- 1에 가까움
 </code></pre>
-<p><strong>2. (개념 서술)</strong> 새로운 문제의 데이터가 (a) 아주 적을 때와 (b) 사전학습
-데이터만큼은 아니어도 꽤 많을 때, 특징 추출과 미세조정 중 각각 어느 쪽을
-선택하는 게 나을지 이유와 함께 답하라.</p>
-<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> \(L\)개의 잔차 블록을 스킵 연결로
-쌓은 신경망에서, 첫 블록 입력 \(x_0\)에 대한 마지막 출력 \(x_L\)의
-그래디언트 \(\frac{\partial x_L}{\partial x_0}\)가 “적어도 1은 포함하는
-항“을 갖는다는 것을 보여라.</p>
-<p><strong>힌트</strong>: 각 블록이 \(x_{l} = F_l(x_{l-1}) + x_{l-1}\)이라 하자. 연쇄법칙으로
-\(\frac{\partial x_L}{\partial x_0} = \prod_{l=1}^L \frac{\partial
-x_l}{\partial x_{l-1}}\)이고, 각 항은 \(\frac{\partial x_l}{\partial
-x_{l-1}} = \frac{\partial F_l}{\partial x_{l-1}} + 1\)이다. 이 곱을
-전개하면(모든 항이 “1“이거나 “\(\partial F_l/\partial x_{l-1}\)을
-포함하는 항“인 합으로 나뉜다) 그 중 <strong>모든 블록에서 “1“만 골라 곱한
-항</strong>이 정확히 1로 살아남는다는 것을 보여라. Chapter 9의 \(\prod_l
-\sigma’(z_l)\cdot W_l\)(스킵 연결이 없는 경우)과 비교했을 때, 이 “+1”
-항이 왜 그래디언트 소실을 근본적으로 막아주는지 한 문단으로 설명하라.</p>
+<p><strong>2. (개념 서술)</strong> 게이트를 추가해도 RNN은 왜 여전히 병렬화가 어려운지
+설명하고, “게이트가 그래디언트 소실을 완화하는 것“과 “순차성 자체를
+없애는 것“이 서로 다른 문제라는 것을 한두 문장으로 구분하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> \(\frac{\partial h_T}{\partial h_1} =
+\prod_{t=2}^T \tanh’(z_t) \cdot w_{hh}\)(은닉 상태가 스칼라인 단순화된
+경우)임을, 연쇄법칙을 \(T-1\)번 반복 적용하는 방식으로 보여라(힌트:
+\(\frac{\partial h_t}{\partial h_{t-1}} = \tanh’(z_t) \cdot w_{hh}\)를
+\(t=2\)부터 \(t=T\)까지 사슬처럼 곱하면 된다).</p>
+<p>\(\tanh’(z_t) \approx 0.5\)(평균적인 경우), \(w_{hh}=0.9\)라고 하고,
+시퀀스 길이 \(T=5, 10, 20\)일 때 각각 \(\frac{\partial h_T}{\partial
+h_1}\)의 크기를 계산하라. 이번엔 \(w_{hh}=1.5\)로 바꿔서 같은 계산을
+반복하고, \(T=20\)일 때 어떤 일이 일어나는지 확인하라.</p>
+<p><strong>정확성 확인</strong>: 계산 결과를 문제 1의 <code>gradient_through_time</code> 함수로
+검증하고, “\(w_{hh}\)의 값 하나가 그래디언트 소실이 될지 폭발이 될지를
+가른다“는 문장이 왜 참인지 한 문단으로 설명하라.</p>
 
                     </main>
 

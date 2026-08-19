@@ -11,13 +11,15 @@
 - [Support Vector Machines & Kernels](ml1/chapter05.md)
 - [Regularization & Model Selection](ml1/chapter06.md)
 - [Tree-Based Models: Decision Trees to GBDT](ml1/chapter07.md)
-- [Neural Network Basics & Backpropagation](ml1/chapter08.md)
-- [Deep Learning Training Techniques](ml1/chapter09.md)
-- [CNN Basics](ml1/chapter10.md)
-- [CNN Applications & Modern Architectures](ml1/chapter11.md)
-- [Unsupervised Learning & Representation Learning](ml1/chapter12.md)
-- [EM Algorithm & Gaussian Mixture Models](ml1/chapter13.md)
-- [Generative Models Preview & Review](ml1/chapter14.md)
+- [Block A Capstone: Team Project & Review](ml1/chapter08.md)
+- [Neural Networks, Backprop & Training Techniques](ml1/chapter09.md)
+- [CNN Basics & Applications](ml1/chapter10.md)
+- [Sequence Models](ml1/chapter11.md)
+- [Attention & Transformer](ml1/chapter12.md)
+- [LLM: Pretraining, Prompting & Alignment](ml1/chapter13.md)
+- [Representation Learning: PCA, word2vec, Node2Vec, PageRank](ml1/chapter14.md)
+- [Latent-Variable Generative Models: EM/GMM to VAE, GAN, Diffusion](ml1/chapter15.md)
+- [Block B Capstone: Team Project & ML1 Review](ml1/chapter16.md)
 
 # Machine Learning 2
 

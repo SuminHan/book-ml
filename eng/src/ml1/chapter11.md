@@ -1,131 +1,153 @@
-# Chapter 11. CNN Applications & Modern Architectures
+# Chapter 11. Sequence Models
 
-In 2015, Kaiming He and colleagues at Microsoft noticed something odd —
-stacking a CNN deeper was supposed to keep improving performance, but past
-a certain point, it got **worse** instead. This wasn't the overfitting from
-Chapter 9 (even training performance got worse) — adding more layers meant
-the gradient couldn't fully get through, so the deep layers effectively
-stopped learning. Their solution, **ResNet** (Residual Network), was
-remarkably simple, and it became a basic ingredient in nearly every large
-CNN and Transformer architecture used today. This chapter covers how CNNs
-get reused and extended in practice.
+In 1990, cognitive scientist Jeffrey Elman posed a question in his paper
+"Finding Structure in Time": could a neural network be made to remember not
+just "the input it's looking at right now," but also "what it saw a moment
+ago"? The structure he proposed — a recurrent connection feeding the hidden
+layer's output back in as the next timestep's input — is the prototype of
+what's now called the RNN (Recurrent Neural Network).
 
-## 11.1 Transfer Learning: Not Starting From Scratch
+## 11.1 Why Order Matters
 
-The early layers of a CNN pretrained on a large dataset like ImageNet
-(millions of images) have learned to detect very general patterns — lines,
-edges, textures — closer to "the ability to see an image" than "the
-ability to tell cats apart." **Transfer learning** reuses these pretrained
-early layers as-is, and only retrains the last few layers (or just the
-final classification layer) for the new problem:
+"The dog chases the cat" and "the cat chases the dog" use the exact same
+three words but mean completely different things. Feeding a sentence like
+this into the MLPs or CNNs we've covered so far requires bundling the
+words into a single vector, which erases the order information entirely —
+there's no longer any way to tell who is chasing whom.
 
-- **Feature extraction**: freeze all the pretrained layers' weights, and
-  train only the final classification layer. Especially useful when data is
-  scarce — there are far fewer new parameters to learn.
-- **Fine-tuning**: use the pretrained weights only as a starting point, and
-  continue training the whole network (or the later layers) at a low
-  learning rate. Tends to outperform feature extraction once you have a
-  reasonable amount of new data.
+## 11.2 Hidden State: A Summary of Everything Read So Far
 
-**Why this works**: Chapter 6 taught us that regularization "reduces
-variance by making the model less flexible." Transfer learning has a
-similar effect — instead of starting from a random initialization, you
-start from an already-validated good starting point, so you can train
-without overfitting even on much less data.
+RNN's core idea is the **hidden state**: as the network reads a sentence
+one word at a time, it continuously updates a single vector that summarizes
+"everything read so far." When processing the second word, the network
+receives not just that word itself but also "the summary left over from
+reading the first word" — this lets the current output be influenced by the
+entire past context.
 
-## 11.2 Beyond Classification: Detection and Segmentation
+## 11.3 RNN Forward Propagation
 
-So far our CNNs have only answered "what class is the entire image" —
-classification. Real problems often demand a more fine-grained answer:
+At each timestep \\(t\\), given input \\(x_t\\) and the previous hidden
+state \\(h_{t-1}\\), the network produces a new hidden state \\(h_t\\) and
+(if needed) an output \\(y_t\\):
 
-- **Object Detection**: "where are the objects in this image, and what are
-  they" — predicting each object's location as a bounding box along with
-  its class.
-- **Semantic Segmentation**: "what class does each pixel belong to" —
-  producing output the same size as the input image, with a class label
-  attached to every pixel (used in self-driving cars to tell "this pixel is
-  road/pedestrian/vehicle," for example).
+\\[h_t = \tanh(W_{xh} x_t + W_{hh} h_{t-1} + b_h), \qquad y_t = W_{hy} h_t + b_y\\]
 
-Both problems still use convolution and pooling from this book as their
-basic ingredients, but add structure to change the shape of the output
-(e.g., in segmentation, layers that expand the spatial size back to the
-original resolution) — the detailed architecture is beyond this semester's
-scope, but the underlying principle — "attach a different output head on
-top of the features convolution extracts, and you can change the
-problem" — is worth remembering.
-
-## 11.3 ResNet and Skip Connections: Stacking Deeper
-
-The vanishing gradient problem from Chapter 9 came from multiplying the
-activation function's derivative at every layer. ResNet's fix, the **skip
-connection** (or residual connection), cuts a shortcut through that chain
-of multiplication — instead of a block's output being just \\(F(x)\\), it's
-defined as the input added back in: \\(y = F(x) + x\\):
+**The key point is that \\(W_{xh}, W_{hh}, W_{hy}\\) are the same weights
+reused at every timestep** (parameter sharing — the same idea as Chapter
+10's reuse of a CNN filter, applied along the time axis instead).
 
 ```python
-def residual_block(x, F):
-    # F: a function made of a few convolutional layers (e.g., Conv-ReLU-Conv)
-    return [F(x)[i] + x[i] for i in range(len(x))]  # F(x) + x
+def rnn_step(x_t, h_prev, Wxh, Whh, b_h):
+    z = [sum(Wxh[i][j]*x_t[j] for j in range(len(x_t))) +
+         sum(Whh[i][j]*h_prev[j] for j in range(len(h_prev))) + b_h[i]
+         for i in range(len(h_prev))]
+    return [tanh(v) for v in z]
+
+def rnn_forward(inputs, h0, Wxh, Whh, b_h):
+    h = h0
+    hidden_states = []
+    for x_t in inputs:
+        h = rnn_step(x_t, h, Wxh, Whh, b_h)
+        hidden_states.append(h)
+    return hidden_states
 ```
 
-**Why this keeps the gradient alive** (intuition): differentiating
-\\(y=F(x)+x\\) with respect to \\(x\\) gives \\(\frac{\partial y}{\partial
-x} = \frac{\partial F}{\partial x} + 1\\). Even if
-\\(\frac{\partial F}{\partial x}\\) shrinks toward zero (vanishing
-gradient) in Chapter 9's chain of products \\(\prod_l \sigma'(z_l) \cdot
-W_l\\), **the added "+1" term guarantees a path along which the gradient
-stays at least 1** as it passes through — a shortcut that skips over the
-input and flows straight to later layers unchanged. This idea is what
-made it possible to train CNNs over 100 layers deep, and it shows up
-(in a different form) in the Transformer architecture we'll cover in ML2.
+## 11.4 BPTT: Unrolling Time to Backpropagate
 
-**Transfer learning, detection, segmentation, and ResNet all solve
-different problems, but they share something: they're all built on top of
-Chapter 10's basic ingredient — extracting local patterns with convolution
-— and answer "how do we reuse, recombine, or stabilize that ingredient?"**
+To train this "keep updating a summary" structure, backpropagation must be
+applied by unrolling the network along the time axis. This method — treat
+each of the \\(T\\) timesteps as an independent layer by "unrolling" the
+network, then apply Chapter 9's ordinary backpropagation — is called
+**BPTT** (Backpropagation Through Time). Since \\(h_t\\) depends on
+\\(h_{t-1}\\), which depends on \\(h_{t-2}\\), and so on, we must climb
+back up this chain, so the gradient with respect to \\(h_1\\) ends up
+containing a product of this form:
+
+\\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
+h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh'(z_t)) \, W_{hh}\\]
+
+## 11.5 Why Vanishing Gradients Reappear Along the Time Axis
+
+This is exactly the same pattern we saw in Chapter 9.4: \\(\tanh'\\)'s
+maximum value is 1, but it's below 1 across most of its range, and this
+gets multiplied by \\(W_{hh}\\) as well, \\(T\\) times (once per timestep).
+The longer the sequence (the larger \\(T\\)), the more this product shrinks
+exponentially toward 0 (vanishing gradient — when \\(W_{hh}\\)'s eigenvalue
+is less than 1) or diverges (exploding gradient — when its eigenvalue is
+greater than 1). As a result, a basic RNN **barely remembers information
+from far in the past** — it's especially weak on sentences that require
+using "the subject that appeared 10 words ago" at the current timestep.
+
+## 11.6 LSTM/GRU: Using Gates to Mitigate Vanishing
+
+LSTM (Long Short-Term Memory) and GRU (Gated Recurrent Unit) add a device
+called a "gate," which **selectively keeps or updates** the hidden state
+instead of recomputing it entirely at every timestep. The key trick is
+designing the path information travels along to mix in **addition**
+instead of multiplication — exactly the same principle as Chapter 10.9's
+ResNet skip connection (\\(y=F(x)+x\\)). Addition passes the gradient
+through unchanged (its derivative is 1), so it vanishes far less than
+repeated multiplication alone would. We won't cover the detailed gate
+equations this semester, but the answer to "why are LSTM/GRU more robust to
+long sequences than a basic RNN" always comes back to this principle.
+
+## 11.7 The Fundamental Limitation of RNNs
+
+Even with gates, an RNN still has to process one timestep at a time,
+**sequentially** — to process the 100th word, you have to go through words
+1 through 99 in order first. This sequential nature makes parallelization
+hard, and information from far in the past still fades on very long
+sequences. Attention/Transformer, which we cover in Chapter 12, is a
+completely different approach that eliminates this sequential requirement
+entirely.
+
+**An RNN is the simplest implementation of the insight that "handling
+ordered data requires a state that remembers the past" — the next chapter
+is the story of overcoming this structure's limitations.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete `residual_block` above (key lines left blank), and
-`transfer_learning_predict`, which mimics "a frozen feature extractor plus
-a newly-trained classification layer":
+**1. (Coding)** Complete `rnn_forward_scalar` below (the simplest possible
+RNN, with a scalar hidden state, \\(h_t = \tanh(w_{xh} x_t + w_{hh}
+h_{t-1} + b_h)\\)) and `gradient_through_time` (key lines left blank):
 
 ```python
-def residual_block(x, F):
-    # ADD ADDITIONAL CODE HERE!!
-    # compute F(x), then add it elementwise to x and return
+import math
 
-def transfer_learning_predict(x, frozen_features_fn, new_w, new_b):
+def rnn_forward_scalar(inputs, h0, w_xh, w_hh, b_h):
     # ADD ADDITIONAL CODE HERE!!
-    # extract features via frozen_features_fn(x) (no weight updates),
-    # then compute new_w . features + new_b as the new classification result
 
-features_fn = lambda x: [x[0]+x[1], x[0]-x[1]]  # a fixed (pretrained) feature extractor
-print(transfer_learning_predict([3, 1], features_fn, new_w=[2, 1], new_b=0.5))
-# features = [4, 2], prediction = 2*4 + 1*2 + 0.5 = 10.5
+print(rnn_forward_scalar([1.0, 1.0, 1.0], h0=0.0, w_xh=0.5, w_hh=0.8, b_h=0.0))
+
+def gradient_through_time(tanh_derivatives, w_hh):
+    # input: tanh_derivatives = [tanh'(z_1), ..., tanh'(z_T)]
+    # return: product of (tanh'(z_t) * w_hh) for all t
+    # ADD ADDITIONAL CODE HERE!!
+
+print(gradient_through_time([0.5]*20, w_hh=0.9))  # (0.5*0.9)^20 -- effectively 0
+print(gradient_through_time([0.9]*20, w_hh=1.1))  # (0.9*1.1)^20 -- close to 1
 ```
 
-**2. (Conceptual)** When the new problem's data is (a) very scarce, and (b)
-fairly plentiful (though not as much as the pretraining data), explain with
-reasons which of feature extraction or fine-tuning would be the better
-choice in each case.
+**2. (Conceptual)** Explain why an RNN is still hard to parallelize even
+after adding gates, and distinguish, in a sentence or two, between "gates
+mitigating vanishing gradients" and "removing sequentiality itself" as two
+separate problems.
 
-**3. (Hand derivation, Tier B — hints provided)** For a neural network made
-of \\(L\\) residual blocks stacked with skip connections, show that the
-gradient of the final output \\(x_L\\) with respect to the first block's
-input \\(x_0\\), \\(\frac{\partial x_L}{\partial x_0}\\), contains "a term
-that's at least 1."
+**3. (Hand derivation, Tier B — hints provided)** Show that
+\\(\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \tanh'(z_t) \cdot
+w_{hh}\\) (in the simplified case of a scalar hidden state), by applying
+the chain rule repeatedly, \\(T-1\\) times (hint: multiply
+\\(\frac{\partial h_t}{\partial h_{t-1}} = \tanh'(z_t) \cdot w_{hh}\\) as a
+chain from \\(t=2\\) to \\(t=T\\)).
 
-**Hint**: let each block be \\(x_{l} = F_l(x_{l-1}) + x_{l-1}\\). By the
-chain rule, \\(\frac{\partial x_L}{\partial x_0} = \prod_{l=1}^L
-\frac{\partial x_l}{\partial x_{l-1}}\\), and each factor is
-\\(\frac{\partial x_l}{\partial x_{l-1}} = \frac{\partial F_l}{\partial
-x_{l-1}} + 1\\). Expanding this product (every term in the expansion is
-either "1" or "a term involving \\(\partial F_l/\partial x_{l-1}\\)"),
-show that **the single term formed by picking "1" from every block**
-survives the product exactly equal to 1. Compare this to Chapter 9's
-\\(\prod_l \sigma'(z_l)\cdot W_l\\) (without skip connections), and explain
-in one paragraph why this "+1" term fundamentally prevents vanishing
-gradients.
+Assume \\(\tanh'(z_t) \approx 0.5\\) (a typical value) and \\(w_{hh}=0.9\\),
+and compute the magnitude of \\(\frac{\partial h_T}{\partial h_1}\\) for
+sequence lengths \\(T=5, 10, 20\\). Then repeat with \\(w_{hh}=1.5\\) and
+check what happens at \\(T=20\\).
+
+**Confirm correctness**: verify your calculations against Exercise 1's
+`gradient_through_time` function, and explain in one paragraph why a
+single value, \\(w_{hh}\\), determines whether the outcome is a vanishing
+or exploding gradient.
