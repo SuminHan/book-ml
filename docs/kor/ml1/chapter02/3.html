@@ -1,0 +1,413 @@
+<!DOCTYPE HTML>
+<html lang="ko" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>로지스틱회귀: 시그모이드에서 PR-AUC까지 - Machine Learning 1/2 (한국어)</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="KSA Machine Learning 1/2 교재 — 한국어판">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom-8b082fac.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../searchindex-6616b8ad.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc-9898c238.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Machine Learning 1/2 (한국어)</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="23-로지스틱회귀-시그모이드에서-pr-auc까지"><a class="header" href="#23-로지스틱회귀-시그모이드에서-pr-auc까지">2.3 로지스틱회귀: 시그모이드에서 PR-AUC까지</a></h1>
+<h3 id="시그모이드-실수를-확률로"><a class="header" href="#시그모이드-실수를-확률로">시그모이드: 실수를 확률로</a></h3>
+<p>로지스틱함수(시그모이드)는 정확히 “\(-\infty\)~\(+\infty\)를 0~1로 바꾸는”
+변환을 해준다:</p>
+<p>\[\sigma(z) = \frac{1}{1+e^{-z}}\]</p>
+<p>\(z \to +\infty\)이면 \(\sigma(z) \to 1\), \(z \to -\infty\)이면
+\(\sigma(z) \to 0\), \(z=0\)이면 \(\sigma(0)=0.5\)다. 어떤 실수든 이
+함수를 통과하면 0~1 사이의 값이 되므로, “확률“로 해석할 수 있다.</p>
+<p>\[h_w(x) = \sigma(w^Tx) = \frac{1}{1+e^{-w^Tx}}\]</p>
+<p>\(h_w(x)\)는 “\(x\)가 양성 클래스(class 1)일 확률“로 해석한다. 예측은
+\(h_w(x) \ge 0.5\)면 클래스 1, 아니면 클래스 0으로 정한다 — \(h_w(x)=0.5\)는
+정확히 \(w^Tx=0\)인 지점이므로, 결정 경계(decision boundary)는 여전히
+<strong>직선</strong>(또는 초평면)이다.</p>
+<h3 id="손실함수-섀넌의-정보이론에서-교차-엔트로피까지"><a class="header" href="#손실함수-섀넌의-정보이론에서-교차-엔트로피까지">손실함수: 섀넌의 정보이론에서 교차 엔트로피까지</a></h3>
+<p>시그모이드에 평균제곱오차를 그대로 적용하면 \(J(w)\)가 \(w\)에 대해
+<strong>볼록하지 않아(non-convex)</strong>, 경사하강법이 지역 최솟값(local minimum)에 갇힐
+위험이 있다. 대신 <strong>교차 엔트로피</strong>(cross-entropy) 손실을 쓴다 — 이 이름은
+1948년 클로드 섀넌(Claude Shannon)이 만든 <strong>정보이론</strong>(information theory)에서
+왔다.</p>
+<p>섀넌은 “정보량“을 수학적으로 재는 법을 고민했다. 확률 \(p\)로 일어나는 사건이
+실제로 일어났다는 소식에는 얼마만큼의 “놀라움”(정보량)이 담겨 있을까? 섀넌은
+이걸 \(-\log_2 p\)(단위: 비트)로 정의했다 — 자주 일어나는 사건(\(p\)가
+1에 가까움)은 “해가 동쪽에서 떴다“처럼 정보량이 거의 0이고, 거의 안 일어나는
+사건(\(p\)가 0에 가까움)은 “복권에 당첨됐다“처럼 정보량이 크다.</p>
+<p>이 정보량의 <strong>기댓값</strong>이 <strong>엔트로피</strong>(entropy)다:</p>
+<p>\[H(p) = -\sum_k p_k \log_2 p_k\]</p>
+<p>확률분포 \(p\)를 따르는 사건들을 평균적으로 관찰할 때 얻는 정보량이자,
+이 분포를 최적으로 부호화(encoding)하는 데 필요한 평균 비트 수다(Chapter
+7.2에서 결정트리가 “가장 잘 나누는 질문“을 고르는 기준으로 다시 만난다).</p>
+<p>그런데 만약 실제 분포는 \(p\)인데, (어쩌면 틀린) 다른 분포 \(q\)를 믿고
+부호화한다면 몇 비트가 필요할까? 그 평균 비트 수가 <strong>교차 엔트로피</strong>다:</p>
+<p>\[H(p, q) = -\sum_k p_k \log_2 q_k\]</p>
+<p>\(q\)가 \(p\)와 정확히 같으면 \(H(p,q) = H(p)\)로 <strong>최솟값</strong>을 갖고,
+\(q\)가 \(p\)에서 멀어질수록(즉 잘못된 분포를 믿을수록) \(H(p,q)\)는
+커진다 — 그 초과분 \(H(p,q) - H(p)\)를 <strong>KL 발산</strong>(KL divergence,
+\(D_{KL}(p|q)\))이라 부른다(Chapter 15, VAE의 ELBO에서 다시 만난다).</p>
+<p>로지스틱회귀에서 정답 \(y^{(i)}\)는 “정답 분포”(클래스 1일 확률이 100%
+아니면 0%인 분포)이고, \(h_w(x^{(i)})\)는 모델이 예측한 분포다. <strong>교차
+엔트로피를 최소화한다는 것은 곧 모델의 예측 분포를 정답 분포에 최대한
+가깝게 만든다는 뜻</strong>이다 — 이게 바로 손실함수로 쓸 이유다:</p>
+<p>\[J(w) = -\frac{1}{m}\sum_{i=1}^m \left[y^{(i)}\log h_w(x^{(i)}) +
+(1-y^{(i)}) \log(1-h_w(x^{(i)}))\right]\]</p>
+<p>(머신러닝에서는 보통 \(\log_2\) 대신 자연로그 \(\log = \ln\)을 쓴다 —
+둘은 상수배(\(1/\ln 2\))만 차이나서, 손실이 최소가 되는 지점 \(w\)에는
+영향을 주지 않는다.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch03_sigmoid_crossentropy.svg" alt="시그모이드 함수(왼쪽)와 예측 확률에 따른 교차 엔트로피 손실(오른쪽) — 정답과 반대로 확신할수록 손실이 무한히 커진다"><span class="img-wrapper"><img src="../../images/ch03_sigmoid_crossentropy.svg" alt="시그모이드 함수(왼쪽)와 예측 확률에 따른 교차 엔트로피 손실(오른쪽) — 정답과 반대로 확신할수록 손실이 무한히 커진다"></span></label></p>
+<p>직관: 정답이 \(y=1\)인데 모델이 \(h_w(x) \to 0\)으로 확신하면
+\(-\log h_w(x) \to \infty\) — 손실이 무한히 커진다. <strong>확신을 갖고 틀리면
+그만큼 크게 벌한다.</strong> 신기하게도 이 손실함수를 미분하면 2.1절의 선형회귀와
+<strong>똑같은 형태</strong>의 그래디언트가 나온다:</p>
+<p>\[\frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m \left(h_w(x^{(i)}) - y^{(i)}\right) x_j^{(i)}\]</p>
+<p>그래서 경사하강법 구현 코드 자체는 2.1절과 거의 동일하다 — \(h_w\)를
+계산하는 부분에 시그모이드만 추가하면 된다.</p>
+<pre><code class="language-python">import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+def logistic_gradient_descent(X, y, alpha, epochs):
+    m, n = len(X), len(X[0])
+    w = [0.0] * (n + 1)
+    for _ in range(epochs):
+        grad = [0.0] * (n + 1)
+        for i in range(m):
+            pred = sigmoid(w[0] + sum(w[j+1] * X[i][j] for j in range(n)))
+            error = pred - y[i]
+            grad[0] += error
+            for j in range(n):
+                grad[j+1] += error * X[i][j]
+        for j in range(n + 1):
+            w[j] -= alpha * grad[j] / m
+    return w
+</code></pre>
+<h3 id="정확도만으로는-안-되는-이유"><a class="header" href="#정확도만으로는-안-되는-이유">“정확도“만으로는 안 되는 이유</a></h3>
+<p>암 검진 모델을 상상해보자. 전체 환자의 99%가 정상이라면, “무조건 정상“이라고만
+찍는 모델도 정확도(accuracy) 99%를 자랑한다 — 하지만 이 모델은 암 환자를 단 한
+명도 잡아내지 못하는, 쓸모없는 모델이다. Precision/Recall/F1은 바로 이런
+상황(클래스 불균형)에서 정확도가 숨기는 진실을 드러내기 위한 지표다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>실제\예측</th><th>양성 예측</th><th>음성 예측</th></tr>
+</thead>
+<tbody>
+<tr><td>실제 양성</td><td>True Positive (TP)</td><td>False Negative (FN)</td></tr>
+<tr><td>실제 음성</td><td>False Positive (FP)</td><td>True Negative (TN)</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>Precision</strong> \(= \frac{TP}{TP+FP}\): “양성이라고 예측한 것 중 진짜 양성
+비율” — 거짓 경보를 얼마나 피했는가.</li>
+<li><strong>Recall</strong> \(= \frac{TP}{TP+FN}\): “실제 양성 중 잡아낸 비율” — 놓친 양성이
+얼마나 적은가.</li>
+<li><strong>F1</strong> \(= \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}\):
+Precision과 Recall의 조화평균 — 둘 다 낮으면 F1도 낮아지도록, 한쪽만
+높다고 점수를 후하게 주지 않는다.</li>
+</ul>
+<p><strong>Precision-Recall 트레이드오프</strong>: 임계값(threshold)을 0.5가 아니라 0.9로
+올리면 Precision은 오르지만(확신 있을 때만 양성 판정) Recall은
+떨어진다(애매한 양성을 놓침). 반대로 임계값을 낮추면 Recall은 오르고
+Precision은 떨어진다. <strong>PR-AUC</strong>(Precision-Recall 곡선 아래 면적)는 이
+트레이드오프 전 구간에서의 성능을 임계값 하나에 의존하지 않고 요약한 지표다 —
+특히 클래스 불균형이 심할 때 accuracy보다 훨씬 신뢰할 수 있는 지표다.</p>
+<h3 id="실습-sklearn으로-분류-평가-지표-한-번에-계산하기"><a class="header" href="#실습-sklearn으로-분류-평가-지표-한-번에-계산하기">실습: sklearn으로 분류 평가 지표 한 번에 계산하기</a></h3>
+<p>직접 구현한 <code>precision_recall_f1</code>(연습문제 3번)로 원리를 이해했다면, 실전에서는
+<code>scikit-learn</code>이 이 모든 지표를 한 번에 계산해준다:</p>
+<pre><code class="language-python">from sklearn.metrics import classification_report, average_precision_score
+
+y_true = [1, 1, 1, 0, 0, 0, 1, 0]
+y_pred = [1, 0, 1, 0, 1, 0, 1, 0]
+y_scores = [0.9, 0.4, 0.8, 0.3, 0.6, 0.2, 0.7, 0.1]  # 임계값 0.5를 적용하기 전의 확률
+
+print(classification_report(y_true, y_pred, target_names=["정상", "스팸"]))
+print("PR-AUC:", round(average_precision_score(y_true, y_scores), 3))
+</code></pre>
+<p><code>classification_report</code>는 Precision/Recall/F1을 클래스별로 한 번에 출력하고,
+<code>average_precision_score</code>는 임계값을 하나로 고정하지 않고 <code>y_scores</code>(확률)
+전체를 보고 PR-AUC를 계산한다 — 임계값 0.5에서의 성능만 보는 <code>y_pred</code> 기반
+지표와 달리, 모델 자체의 순위(ranking) 능력을 평가한다는 점이 다르다.</p>
+<p><strong>선형회귀와 로지스틱회귀는 겉보기엔 다른 문제(숫자 예측 vs. 확률 예측)를
+풀지만, 뜯어보면 “선형모델 → 손실함수 정의 → 경사하강법으로 최소화“라는
+완전히 같은 파이프라인이다 — 이 패턴은 이번 학기 내내 반복된다.</strong></p>
+<hr>
+<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 <code>gradient_descent</code>(핵심 줄 4개는 빈칸으로 남겨져 있다고 가정)를
+완성하라:</p>
+<pre><code class="language-python">def gradient_descent(X, y, alpha, epochs):
+    # ADD ADDITIONAL CODE HERE!!
+    # 초기화: w를 0벡터로, bias 포함하여 길이 len(X[0])+1
+
+    for epoch in range(epochs):
+        # ADD ADDITIONAL CODE HERE!!
+        # 예측값 계산 h_w(x) = w^T x, 그래디언트 계산, w 갱신
+
+X = [[1.0], [2.0], [3.0], [4.0]]
+y = [3.0, 5.0, 7.0, 9.0]
+print(gradient_descent(X, y, alpha=0.01, epochs=1000))  # 대략 [1.0, 2.0]
+</code></pre>
+<p><strong>2. (손유도, Tier A — 자유 유도)</strong> 선형회귀의 비용함수 \(J(w) =
+\frac{1}{2m}|Xw - y|^2\)을 \(w\)에 대해 미분하여 0으로 놓고,</p>
+<p>\[w^* = (X^TX)^{-1}X^Ty\]</p>
+<p>가 되는 과정을 <strong>처음부터 끝까지 손으로 유도</strong>하라. (힌트: \(\nabla_w |Xw-y|^2
+= 2X^T(Xw-y)\)임을 먼저 보인 뒤, 이를 0으로 놓고 \(w\)에 대해 정리한다.)
+유도한 \(w^*\)가 실제로 \(J(w)\)의 <strong>전역 최솟값</strong>임을(Hessian이 양의
+준정부호 행렬임을 보이는 방식으로) 논증하라.</p>
+<p><strong>3. (코딩)</strong> 위 <code>logistic_gradient_descent</code>(핵심 줄은 빈칸으로 남겨져 있다고
+가정)와, 다음 <code>precision_recall_f1</code>을 완성하라:</p>
+<pre><code class="language-python">def precision_recall_f1(y_true, y_pred):
+    # ADD ADDITIONAL CODE HERE!!
+    # TP, FP, FN을 센 뒤 precision, recall, f1 계산
+    # (0으로 나누는 경우는 각 값을 0.0으로 처리)
+
+y_true = [1, 1, 1, 0, 0, 0, 1, 0]
+y_pred = [1, 0, 1, 0, 1, 0, 1, 0]
+print(precision_recall_f1(y_true, y_pred))  # (0.75, 0.75, 0.75)
+</code></pre>
+<p><strong>4. (개념 서술)</strong> 위 sklearn 실습에서 <code>y_pred</code> 기반 지표(Precision/Recall/F1)와
+<code>y_scores</code> 기반 지표(PR-AUC)가 답하는 질문이 어떻게 다른지 두세 문장으로
+설명하라. 임계값을 0.5가 아니라 0.7로 바꾸면 <code>classification_report</code>의 결과가
+어떻게 달라질지도 예상해보라.</p>
+<p><strong>5. (손유도, Tier B — 힌트 제공)</strong> 교차 엔트로피 손실 하나의 샘플에 대해:</p>
+<p>\[J^{(i)}(w) = -y^{(i)}\log h_w(x^{(i)}) - (1-y^{(i)})\log(1-h_w(x^{(i)}))\]</p>
+<p>를 \(w_j\)로 미분해서 \(\frac{\partial J^{(i)}}{\partial w_j} =
+(h_w(x^{(i)}) - y^{(i)})x_j^{(i)}\)가 됨을 유도하라.</p>
+<p><strong>힌트</strong>(연쇄법칙을 세 단계로 나눠서 적용): (1) 먼저 \(\frac{\partial
+J^{(i)}}{\partial h}\)를 구하라(h는 \(h_w(x^{(i)})\)의 줄임 표기,
+\(\frac{d}{dh}\log h = \frac{1}{h}\)임을 이용). (2) \(\sigma’(z) =
+\sigma(z)(1-\sigma(z))\)임을 이용해 \(\frac{\partial h}{\partial z}\)를
+구하라(\(z=w^Tx^{(i)}\)). (3) \(\frac{\partial z}{\partial w_j} =
+x_j^{(i)}\)임을 이용해 세 조각을 연쇄법칙으로 곱하면, 놀랍게도
+\(h(1-h)\) 항이 통째로 약분되어 사라진다 — 왜 그런지 확인하라. 유도한
+결과가 2.1절의 선형회귀 그래디언트와 형태가 똑같다는 것도 확인하라.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../ml1/chapter02/2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../../ml1/chapter03.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../ml1/chapter02/2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../../ml1/chapter03.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
+
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

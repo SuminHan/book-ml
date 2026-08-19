@@ -5,7 +5,9 @@
 데이터를 분류하고 싶으면, 학습도 모델도 필요 없이 그냥 "가장 가까운 \\(k\\)개의
 기존 데이터가 뭐라고 답했는지 보고 다수결로 따라간다."
 
-## 4.1 학습이 없는 학습 알고리즘
+## 4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프
+
+### 학습이 없는 학습 알고리즘
 
 지금까지 배운 선형회귀/로지스틱회귀는 데이터를 보고 파라미터 \\(w\\)를
 최적화하는 **학습 단계**가 있었다. kNN은 그런 게 없다 — "학습"이라고 부를 만한
@@ -14,7 +16,7 @@
 가까운 것들을 찾는다. 이런 방식을 게으른 학습(lazy learning) 또는
 instance-based learning이라 부른다.
 
-## 4.2 알고리즘
+### 알고리즘: 가장 가까운 k개의 다수결
 
 새로운 점 \\(x\\)를 분류하려면:
 
@@ -33,7 +35,7 @@ def knn_predict(X_train, y_train, x_new, k):
     return max(set(k_nearest_labels), key=k_nearest_labels.count)  # 다수결
 ```
 
-## 4.3 거리 함수
+### 거리 함수와 정규화
 
 가장 흔한 선택은 **유클리드 거리**(Euclidean distance):
 
@@ -44,7 +46,7 @@ def knn_predict(X_train, y_train, x_new, k):
 개수"(0~10 범위)와 "집값"(수억 원 단위)을 그대로 섞어 거리를 재면, 스케일이 큰
 특징이 거리를 사실상 독차지해버린다.
 
-## 4.4 \\(k\\)를 고르는 트레이드오프: 편향과 분산
+### \\(k\\)를 고르는 트레이드오프: 편향과 분산
 
 - \\(k\\)가 너무 작으면(예: \\(k=1\\)): 노이즈 하나에도 민감하게 반응한다 —
   훈련 데이터를 살짝만 바꿔도(다른 표본을 뽑아도) 예측이 크게 요동친다.
@@ -77,7 +79,9 @@ kNN, 아주 깊은 트리, 파라미터가 많은 신경망 등) Variance가 크
 적절한 \\(k\\)는 보통 검증 데이터(validation set)로 여러 값을 시도해보고
 정한다.
 
-## 4.5 차원의 저주 (Curse of Dimensionality)
+## 4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기
+
+### 차원의 저주 (Curse of Dimensionality)
 
 직관: 특징이 늘어날수록(고차원일수록), "가장 가까운 이웃"조차 점점 멀어진다.
 kNN의 전제는 "가까운 데이터는 비슷한 답을 가질 것이다"라는 직관인데, 특징이
@@ -101,13 +105,50 @@ kNN의 전제는 "가까운 데이터는 비슷한 답을 가질 것이다"라�
 포함된다 — "가까운 이웃"이라 부를 만한 좁은 영역이 사실상 사라진다. 특징이
 많아질수록 모든 점이 서로 비슷하게 멀어 보이는 이유다.
 
-## 4.6 k-means 클러스터링
+### 실습: 검증셋으로 k 튜닝하기
+
+4.1절에서 "적절한 k는 검증 데이터로 정한다"고 했다 — 직접 해보자. 여러
+\\(k\\) 값 각각에 대해 검증셋 정확도를 계산하고, 가장 높은 지점을 고른다:
+
+```python
+def train_val_split(X, y, val_ratio=0.3, seed=0):
+    import random
+    idx = list(range(len(X)))
+    random.Random(seed).shuffle(idx)
+    n_val = int(len(X) * val_ratio)
+    val_idx, train_idx = idx[:n_val], idx[n_val:]
+    return ([X[i] for i in train_idx], [y[i] for i in train_idx],
+            [X[i] for i in val_idx], [y[i] for i in val_idx])
+
+def tune_k(X, y, k_candidates):
+    X_train, y_train, X_val, y_val = train_val_split(X, y)
+    best_k, best_acc = None, -1.0
+    for k in k_candidates:
+        correct = sum(
+            knn_predict(X_train, y_train, x_val, k) == y_true
+            for x_val, y_true in zip(X_val, y_val)
+        )
+        acc = correct / len(X_val)
+        print(f"k={k}: 검증 정확도={acc:.3f}")
+        if acc > best_acc:
+            best_k, best_acc = k, acc
+    return best_k
+```
+
+`k=1`에 가까울수록 훈련 정확도는 100%에 가깝지만(과적합), 검증 정확도는
+오히려 떨어질 수 있다 — 4.1절에서 본 편향-분산 트레이드오프가 숫자로
+그대로 드러나는 지점이다.
+
+## 4.3 k-means 클러스터링
+
+### k-means 알고리즘
 
 kNN이 "예측 시점에 거리만 재는" 게으른 방법이라면, k-means는 정답 라벨 없이
 데이터 자체의 구조를 순전히 거리만으로 찾아내는 방법이다. 라벨이 없다는
-점에서는 10장에서 다룰 비지도학습에 속하지만, 핵심 동작(가장 가까운 대상을
-찾는다)은 이번 장의 주제 그대로다. \\(k\\)개의 그룹으로 데이터를 나누고, 각
-그룹은 **중심점**(centroid)으로 대표된다.
+점에서는 15장에서 다룰 EM/GMM(k-means를 확률적으로 일반화한 모델)과
+직접 이어지지만, 핵심 동작(가장 가까운 대상을 찾는다)은 이번 장의 주제
+그대로다. \\(k\\)개의 그룹으로 데이터를 나누고, 각 그룹은
+**중심점**(centroid)으로 대표된다.
 
 1. \\(k\\)개의 중심점을 무작위로 초기화한다.
 2. **할당 단계**: 각 데이터 점을 가장 가까운 중심점의 그룹으로 배정한다.
@@ -140,7 +181,37 @@ def kmeans(X, k, max_iters=100):
 variance)을 그려보고, 감소폭이 급격히 줄어드는 지점("팔꿈치", elbow)을
 고르는 방법이 흔히 쓰인다.
 
-**kNN과의 차이**: kNN은 예측할 때마다 그때그때 거리를 재는 게으른(lazy)
+### 실습: 클러스터링 결과 시각화
+
+2차원 데이터라면 클러스터 할당 결과를 눈으로 바로 확인할 수 있다 — 알고리즘이
+"올바른" 그룹을 찾았는지 감으로 검증하는 가장 빠른 방법이다.
+
+```python
+import matplotlib.pyplot as plt
+
+def plot_clusters(clusters, centroids):
+    colors = ["tab:blue", "tab:orange", "tab:green", "tab:red"]
+    for i, cluster in enumerate(clusters):
+        xs = [pt[0] for pt in cluster]
+        ys = [pt[1] for pt in cluster]
+        plt.scatter(xs, ys, c=colors[i % len(colors)], label=f"cluster {i}")
+    cx = [c[0] for c in centroids]
+    cy = [c[1] for c in centroids]
+    plt.scatter(cx, cy, c="black", marker="x", s=100, label="centroid")
+    plt.legend()
+    plt.savefig("kmeans_result.png")
+
+# 사용 예: centroids, clusters = kmeans(X, k=3)
+# plot_clusters(clusters, centroids)
+```
+
+같은 데이터에 `k=2`, `k=3`, `k=4`를 각각 돌려서 그림을 나란히 비교해보면,
+"몇 개의 덩어리로 나누는 게 자연스러운가"라는 질문에 대한 감을 숫자(within-cluster
+variance)보다 훨씬 빠르게 얻을 수 있다.
+
+### kNN과의 차이
+
+kNN은 예측할 때마다 그때그때 거리를 재는 게으른(lazy)
 방법인 반면, k-means는 중심점이 수렴할 때까지 데이터를 반복적으로 훑는다 —
 거리 계산이 예측 시점이 아니라 "학습" 단계에 몰려 있다는 점에서, 오히려
 선형회귀 같은 파라미터 학습 쪽에 더 가깝다. 라벨이 없다는 것만 지도학습과
