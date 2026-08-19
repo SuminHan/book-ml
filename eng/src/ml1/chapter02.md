@@ -152,7 +152,7 @@ When \\(q\\) exactly matches \\(p\\), \\(H(p,q) = H(p)\\) — its **minimum**.
 The further \\(q\\) drifts from \\(p\\) (the more wrong the assumed
 distribution is), the larger \\(H(p,q)\\) grows — that excess,
 \\(H(p,q) - H(p)\\), is called **KL divergence**
-(\\(D_{KL}(p\|q)\\)), which we'll meet again in ML2 Chapter 10's ELBO for VAEs.
+(\\(D_{KL}(p\|q)\\)), which we'll meet again in Chapter 15's ELBO for VAEs.
 
 In logistic regression, the true label \\(y^{(i)}\\) is a "true distribution"
 (100% probability on one class, 0% on the other), and \\(h_w(x^{(i)})\\) is

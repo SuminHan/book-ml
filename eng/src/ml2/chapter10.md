@@ -1,159 +1,211 @@
-# Chapter 10. Generative Models I: Likelihood-Based
+# Chapter 10. Policy-Based Reinforcement Learning
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_vae_elbo.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_reinforce_ppo.ipynb)
 
-Remember the question ML1's last chapter left us with — "what if we pick a
-random value in the bottleneck and feed it to the decoder? Could it
-produce new data that never actually existed?" The **Variational
-Autoencoder (VAE)**, published in 2013 by Diederik Kingma and Max Welling,
-is the formal answer to that question.
+Consider the problem of deciding how much force to apply at a robot arm's
+joint. This "action" can be any **continuous value** from -10Nm to +10Nm.
+Chapter 6/9's Q-learning/DQN needs to compute \\(\max_{a'} Q(s',a')\\)
+every step, but if actions are continuous, enumerating "every possible
+action" to find the max is simply impossible — you can't evaluate
+infinitely many candidates. The robot simulation we'll cover starting in
+Chapter 13 uses exactly this kind of continuous action space, so we need
+to confront this problem head-on.
 
-## 10.1 Why an Autoencoder Alone Doesn't Work
+## 10.1 Learning the Policy Directly, Without Going Through Q
 
-A regular autoencoder's latent space comes with no guarantee about "which
-values reconstruct into plausible data" — the training data can occupy a
-sparse or irregular region of latent space, and sampling randomly from the
-empty space in between gives no idea what will come out. VAE's solution is
-to force the encoder to output a **probability distribution** (usually the
-mean and variance of a Gaussian) instead of a single point \\(z\\). An
-additional constraint pushes that distribution to be close to a standard
-normal distribution (mean 0, variance 1) — this makes the entire latent
-space smooth and densely filled, so sampling from any point is likely to
-produce plausible data.
+So far (Chapters 6, 9), we've learned \\(Q(s,a)\\) first, and obtained the
+policy \\(\pi(s) = \arg\max_a Q(s,a)\\) only indirectly from it.
+**Policy-based methods** skip this intermediate step, and represent the
+policy \\(\pi_\theta(a|s)\\) itself — a function with parameters
+\\(\theta\\) that directly outputs a probability distribution over
+actions — as a neural network and train it directly. Even in a continuous
+action space, "what's the probability density of this action" is
+well-defined, which naturally resolves the problem above.
 
-## 10.2 The Structure of a VAE
+## 10.2 Parameterizing the Policy
 
-- **Encoder** \\(q_\phi(z|x)\\): takes input \\(x\\) and outputs a
-  probability distribution over the latent variable \\(z\\) (usually the
-  mean and variance of a Gaussian \\(\mathcal{N}(\mu(x),
-  \sigma^2(x))\\)).
-- **Sampling**: draw a \\(z\\) from that distribution.
-- **Decoder** \\(p_\theta(x|z)\\): reconstructs (or generates) \\(x\\)
-  from \\(z\\).
+In a discrete action space, we turn the policy into a probability
+distribution by applying softmax to the network's output:
 
-## 10.3 The Likelihood Perspective
+\\[\pi_\theta(a|s) = \text{softmax}(f_\theta(s))_a\\]
 
-VAE is the first of "the three principles of generative models" — the
-**likelihood-based** approach: train the model to directly maximize (or
-maximize an approximation of) the probability (likelihood) \\(P(x)\\) that
-it generates the training data. The problem is that
-\\(p_\theta(x) = \int p_\theta(x|z)p(z)\,dz\\) is an integral over every
-possible \\(z\\), which is generally intractable to compute.
+\\(f_\theta(s)\\) is a neural network that takes state \\(s\\) as input
+and outputs a raw score (logit) for each action. The goal is to find the
+\\(\theta\\) that maximizes expected cumulative reward:
 
-## 10.4 ELBO: Working Around It With a Computable Lower Bound
+\\[J(\theta) = \mathbb{E}\_{\tau \sim \pi_\theta}[R(\tau)]\\]
 
-Instead of \\(\log p_\theta(x)\\), which can't be computed directly, the
-following can be shown to hold:
+\\(\tau\\) is a trajectory (an entire episode), and \\(R(\tau)\\) is that
+trajectory's total reward.
 
-\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
-D\_{KL}\big(q\_\phi(z|x) \\,\\|\\, p(z)\big)\\]
+## 10.3 The Strange Problem of "Differentiating a Reward"
 
-The right-hand side is called the **ELBO** (Evidence Lower BOund). What
-its two terms mean:
+The problem is that trying to directly differentiate the goal "find the
+\\(\theta\\) that maximizes expected reward" runs into a strange wall:
+expected reward is an average over "outcomes obtained by acting
+randomly," and that very randomness depends on \\(\theta\\). Trying to
+differentiate \\(J(\theta)\\) with respect to \\(\theta\\) directly
+requires differentiating the probability distribution \\(\pi_\theta\\)
+itself, which breaks the expectation (integral) form.
 
-- The first term \\(\mathbb{E}[\log p_\theta(x|z)]\\): the
-  **reconstruction term** — how well the decoder reconstructs the
-  original \\(x\\) from the encoder's \\(z\\) (essentially the same as an
-  ordinary autoencoder's reconstruction error).
-- The second term \\(D_{KL}(q_\phi(z|x)\|p(z))\\): the **regularization
-  term** — how far the encoder's distribution \\(q_\phi(z|x)\\) strays
-  from the target prior \\(p(z)\\) (usually a standard normal
-  distribution), measured by KL divergence — the same concept ML1 Chapter
-  2.6 introduced via Shannon's information theory, a "distance" between two
-  probability distributions. This term is exactly what makes the latent
-  space smooth.
+## 10.4 The Log-Derivative Trick
 
-Since \\(\log p_\theta(x) \ge \text{ELBO}\\), **maximizing the ELBO also
-raises the actual likelihood's lower bound** — swapping a goal we can't
-compute directly for a computable surrogate goal. Deriving this inequality
-itself using Jensen's inequality is the centerpiece of this chapter's
-exercises.
+The **log-derivative trick** uses the following identity:
+
+\\[\nabla_\theta \pi_\theta = \pi_\theta \nabla_\theta \log \pi_\theta\\]
+
+(This follows directly from the calculus identity \\(\nabla \log f =
+\nabla f / f\\).) This substitution moves the derivative **outside** the
+probability instead, replacing it with the gradient of the log
+probability, which lets us rearrange things back into expectation form.
+The final result is the **Policy Gradient Theorem**:
+
+\\[\nabla_\theta J(\theta) = \mathbb{E}\_\tau\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\\]
+
+\\(G_t\\) is the discounted cumulative reward from time \\(t\\) onward
+(Chapter 3's return). Intuition: "shift \\(\theta\\) so that the
+probability of the action actually chosen (\\(\log
+\pi_\theta(a_t|s_t)\\)) increases along trajectories with good outcomes
+(large \\(G_t\\)), and decreases along trajectories with bad outcomes."
+
+This derivation (considered tricky even at the graduate level) is the
+centerpiece of this chapter's exercises, and the worksheet version's goal
+is simply to firmly grasp the one key idea: "why does taking the log solve
+the problem?"
+
+## 10.5 The REINFORCE Algorithm
+
+Implementing the Policy Gradient Theorem directly via gradient ascent
+(maximizing, so `+=`) gives REINFORCE:
 
 ```python
-def vae_loss(x, x_reconstructed, mu, log_var):
-    # reconstruction loss (approximated here with MSE)
-    recon_loss = sum((x[i] - x_reconstructed[i]) ** 2 for i in range(len(x)))
-    # KL divergence: closed-form formula between Gaussian q(mu, sigma^2) and standard normal N(0,1)
-    kl_loss = -0.5 * sum(1 + log_var[i] - mu[i]**2 - math.exp(log_var[i])
-                          for i in range(len(mu)))
-    return recon_loss + kl_loss  # maximizing ELBO = minimizing this loss (negative ELBO)
+import math
+
+def softmax_policy(theta, state_feature):
+    logits = [theta[0]*state_feature, theta[1]*state_feature]
+    m = max(logits)
+    exps = [math.exp(l - m) for l in logits]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def reinforce_update(theta, episode, alpha, gamma):
+    # episode: [(state_feature, action, reward), ...]
+    T = len(episode)
+    G = [0.0] * T
+    running = 0.0
+    for t in reversed(range(T)):
+        running = episode[t][2] + gamma * running
+        G[t] = running
+    for t, (s, a, r) in enumerate(episode):
+        probs = softmax_policy(theta, s)
+        if a == 0:
+            grad_log_pi = [(1 - probs[0]) * s, -probs[1] * s]
+        else:
+            grad_log_pi = [-probs[0] * s, (1 - probs[1]) * s]
+        theta[0] += alpha * G[t] * grad_log_pi[0]
+        theta[1] += alpha * G[t] * grad_log_pi[1]
+    return theta
 ```
 
-## 10.5 The Reparameterization Trick (For Reference)
+## 10.6 Why This Is Model-Free
 
-Sampling \\(z\\) directly from a probability distribution is a
-non-differentiable operation, so backpropagation can't flow back through
-it to the encoder. VAE works around this with the reparameterization
-trick, rewriting the sampling as \\(z = \mu + \sigma \odot \epsilon\\)
-(treating \\(\epsilon \sim \mathcal{N}(0,1)\\) as a constant that pulls
-the randomness outside) — now \\(\mu\\) and \\(\sigma\\) are
-differentiable, so backpropagation flows normally. The detailed derivation
-goes beyond this semester's scope, but the question itself — "why can't we
-just sample directly" — is worth remembering.
+The key step in deriving the Policy Gradient Theorem is this: when you
+take the log of a trajectory's probability, \\(P(\tau;\theta) = \prod_t
+\pi_\theta(a_t|s_t) \cdot P(s_{t+1}|s_t,a_t)\\), the **environment's
+transition probability term \\(P(s_{t+1}|s_t,a_t)\\) is independent of
+\\(\theta\\) and vanishes upon differentiation.** That is, the final
+gradient expression contains only the policy \\(\pi_\theta\\) — the
+environment model never appears at all. This is where the core
+model-free RL property comes from: you can learn a policy without ever
+knowing how the environment works.
 
-**Next chapter covers two completely different principles (adversarial,
-score-based) — comparing all three side by side makes clear just how
-differently the same goal ("generate plausible new data") can be
-approached.**
+## 10.7 Actor-Critic: Reducing Variance
+
+REINFORCE uses \\(G_t\\) (the actually-observed cumulative reward) as-is,
+but this is the result of sampling a single episode, so it's noisy (high
+variance). **Actor-Critic** subtracts a baseline estimated by a value
+function (the Critic, from Chapters 4/6) instead of using \\(G_t\\)
+directly, reducing variance (\\(G_t - V(s_t)\\); this difference is called
+the **advantage**) — a structure that trains the policy (Actor) and the
+value function (Critic) simultaneously. The detailed derivation is beyond
+this semester's scope, but the idea — "getting help from a value function
+trains more stably than training the policy alone" — is worth
+remembering; this advantage is reused directly in Chapter 11's PPO.
+
+**Where Q-learning is an indirect strategy — "evaluate how good things
+are, then pick the best" — policy-based methods learn "what to do" itself
+directly, even in continuous action spaces. As Chapter 4 proved, an
+optimal policy \\(\pi^*\\) is always guaranteed to exist for a finite MDP —
+policy gradient methods head directly toward the target that existence
+guarantees.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete `kl_divergence_gaussian` (the KL divergence
-between Gaussian \\(\mathcal{N}(\mu, \sigma^2)\\) and the standard normal,
-\\(D_{KL} = -\frac{1}{2}(1 + \log\sigma^2 - \mu^2 - \sigma^2)\\)) and
-`vae_loss` below (key lines left blank):
+**1. (Coding)** For a simple discrete action space (2 actions) with a
+softmax policy, complete a REINFORCE update over one episode (key lines
+left blank):
 
 ```python
 import math
 
-def kl_divergence_gaussian(mu, log_var):
-    # log_var = log(sigma^2)
+def softmax_policy(theta, state_feature):
     # ADD ADDITIONAL CODE HERE!!
+    # logits = [theta[0]*state_feature, theta[1]*state_feature]
+    # compute softmax probabilities (subtract max before exp for numerical stability)
+    return probs
 
-print(kl_divergence_gaussian(mu=0.0, log_var=0.0))  # 0.0
-print(kl_divergence_gaussian(mu=2.0, log_var=0.0))  # 2.0
-
-def vae_loss(recon_loss, mu_list, log_var_list):
+def reinforce_update(theta, episode, alpha, gamma):
+    # episode: [(state_feature, action, reward), ...]
     # ADD ADDITIONAL CODE HERE!!
-    # sum the KL divergence across all latent dimensions, then add to the reconstruction loss
-
-print(vae_loss(recon_loss=5.0, mu_list=[0.5, -0.3], log_var_list=[0.1, -0.2]))
+    # compute the return G_t backward from the end (with discounting)
+    for t, (s, a, r) in enumerate(episode):
+        probs = softmax_policy(theta, s)
+        # ADD ADDITIONAL CODE HERE!!
+        # grad_log_pi: if action=0, [1-probs[0], -probs[1]]*s; if action=1, [-probs[0], 1-probs[1]]*s
+        # update theta: theta += alpha * G[t] * grad_log_pi
+    return theta
 ```
 
-**2. (Hand derivation, Tier C — fallback prepared)** Starting from
-\\(\log p_\theta(x) = \log \int p_\theta(x,z)\,dz\\), use Jensen's
-inequality (\\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\\)) to derive
+**2. (Conceptual)** Explain, in two or three sentences, why Actor-Critic
+has lower variance than REINFORCE, connecting it to the fact that
+"subtracting a baseline doesn't change the expected value of the
+gradient" (an intuitive-level explanation is enough).
 
-\\[\log p\_\theta(x) \ge \mathbb{E}\_{z \sim q\_\phi(z|x)}[\log p\_\theta(x|z)] -
-D\_{KL}(q\_\phi(z|x)\\|p(z))\\]
+**3. (Hand derivation, Tier C — top priority fallback)** Using the
+log-derivative trick, derive that the gradient of expected return
+\\(J(\theta) = \mathbb{E}\_{\tau \sim \pi_\theta}[R(\tau)]\\) under policy
+\\(\pi_\theta\\) is
 
-(Hint: first rewrite \\(\log p\_\theta(x) = \log \mathbb{E}\_{q\_\phi}
-\left[\frac{p\_\theta(x,z)}{q\_\phi(z|x)}\right]\\), then apply Jensen's
-inequality, and decompose \\(p_\theta(x,z) = p_\theta(x|z)p(z)\\) to
-arrive at the definition of KL divergence.)
+\\[\nabla_\theta J(\theta) = \mathbb{E}\_{\tau}\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\\]
 
-**Fill-in-the-blank fallback version** (if free derivation is too
-difficult):
+(An advanced exercise, mainly for stronger students who want it — most
+students should default to the worksheet version below.)
+
+**Fill-in-the-blank worksheet version** (default):
 
 ```
-Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
-                  = log E_q[ ______________ ]
+Goal: differentiate J(theta) = sum_tau P(tau; theta) * R(tau) with respect to theta.
+Problem: differentiating P(tau; theta) directly breaks the expectation (integral) form, so it can't be estimated from samples.
 
-Step 2: apply Jensen's inequality (log is concave):
-  log E_q[ p(x,z)/q(z|x) ] >= E_q[ log(______________) ]
+Log-derivative trick: grad(f) = f * grad(log f)
 
-Step 3: decomposing p(x,z) = p(x|z) * p(z):
-  = E_q[ log p(x|z) ] + E_q[ ______________ ]
+Step 1: grad_theta P(tau;theta) = P(tau;theta) * ______________  [apply the log-derivative trick]
 
-Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
+Step 2: grad_theta J(theta) = sum_tau ______________ * R(tau)
+                             = E_tau[ grad_theta log P(tau;theta) * R(tau) ]
 
-Conclusion: log p(x) >= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
+Step 3: the trajectory probability P(tau;theta) = prod_t pi_theta(a_t|s_t) * (environment transition probability, independent of theta)
+        so grad_theta log P(tau;theta) = ______________
+
+Conclusion: grad_theta J(theta) = E_tau[ (sum_t grad_theta log pi_theta(a_t|s_t)) * R(tau) ]
 ```
 
-**Confirm correctness**: explain in one sentence why Step 2 is an
-inequality (`>=`) rather than an equality (hint: when does Jensen's
-inequality become an equality? When \\(X\\) is constant), and explain why
-maximizing the ELBO amounts to "indirectly" maximizing the true
-likelihood \\(\log p(x)\\).
+**Confirm correctness**: explain in one sentence why the fact in Step 3
+that "the environment's transition probability is independent of theta"
+matters (hint: without this, the core model-free RL property — being able
+to learn from the policy alone without knowing the environment model —
+would break down).

@@ -1,175 +1,179 @@
-# Chapter 7. Deep Reinforcement Learning
+# Chapter 7. n-Step Bootstrapping, Eligibility Traces & Planning
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter07_dqn_tricks.ipynb)
+Chapter 5's Monte Carlo and Chapter 6's TD(0) look at first like two
+opposite extremes — MC uses the actual reward all the way **to the end**
+of the episode as its target, while TD(0) looks just **one step** ahead
+and replaces the rest with an estimate. This chapter shows these are
+really just the two ends of a single dial — "how many steps do we
+actually look at" — and covers everything in between. We close with
+planning, which leverages a learned model alongside experience.
 
-In 2013, DeepMind trained an algorithm on several Atari 2600 games by
-replacing Q-learning's Q-table entirely with a neural network — without
-ever telling it the rules of the game, using only screen pixels and score.
-This result, called **DQN** (Deep Q-Network), was published in Nature in
-2015 and achieved human-level or better performance on several games.
+## 7.1 n-Step TD: The Dial Between MC and TD(0)
 
-## 7.1 A Scale the Q-Table Can't Handle
+TD(0)'s target was \\(r + \gamma V(s')\\) (1 step of actual reward, plus
+an estimate for the rest). Generalize this by using \\(n\\) steps of
+actually-observed rewards and replacing the rest with an estimate:
 
-Chapter 6's Q-learning stored every state-action pair's value in a
-**table**, `Q[s][a]`. This works fine when there are a few hundred states,
-but the number of possible states an Atari screen (hundreds of pixels wide
-and tall, with color combinations) can produce is effectively infinite —
-it can't possibly all fit in a table, and most states never appear even
-once during training.
+\\[G_t^{(n)} = R_t + \gamma R_{t+1} + \cdots + \gamma^{n-1} R_{t+n-1} +
+\gamma^n V(s_{t+n})\\]
 
-## 7.2 Approximating the Q-Function With a Neural Network
-
-DQN's idea is simple: approximate \\(Q(s,a)\\) with a **neural network**
-instead of a table (\\(Q(s,a;\theta)\\), where \\(\theta\\) is the
-network's weights). Similar screens (states) will produce similar Q-values
-through the network, so it can generalize to states it has never seen
-exactly before. The loss function is Chapter 6's TD error, squared:
-
-\\[J(\theta) = \mathbb{E}\left[\left(r + \gamma \max_{a'} Q(s',a';\theta) -
-Q(s,a;\theta)\right)^2\right]\\]
-
-We update \\(\theta\\) via gradient descent (specifically, backpropagation)
-to minimize this loss — the same shape as supervised learning, but with the
-difference that the target value that plays the role of "the correct
-answer" (\\(r + \gamma \max_{a'} Q(s',a';\theta)\\)) is itself computed
-using the very \\(\theta\\) currently being trained.
-
-## 7.3 Problem 1: The Target Keeps Moving
-
-If \\(\theta\\) is updated every step, the loss function's target value
-changes every step too — in supervised learning, the correct answer
-\\(y\\) never changes, but here the "correct answer" is effectively
-chasing itself. This makes training unstable (oscillation, divergence).
-
-**Solution: the Target Network.** Keep a second network,
-\\(Q(s,a;\theta^-)\\), identical in structure to \\(Q\\), and use **only
-this target network** to compute the target value:
-
-\\[J(\theta) = \mathbb{E}\left[\left(r + \gamma \max_{a'} Q(s',a';\theta^-) -
-Q(s,a;\theta)\right)^2\right]\\]
-
-\\(\theta^-\\) isn't updated every step — instead, its value is copied
-wholesale from \\(\theta\\)'s current value every fixed interval (e.g.,
-every 1000 steps). During that interval, the target stays fixed, so the
-loss function becomes (over that short window) exactly the same kind of
-optimization problem as supervised learning, with a fixed correct
-answer — effectively pinning down the moving target.
+\\(n=1\\) is exactly TD(0), and \\(n \to \infty\\) (all the way to the end
+of the episode) is exactly Monte Carlo. As \\(n\\) grows, we rely more on
+actual observations — **bias decreases, variance increases** (continuing
+the exact tradeoff from Section 6.1's table) — \\(n\\) is a hyperparameter
+to tune somewhere in between depending on the situation.
 
 ```python
-def dqn_loss(Q_net, target_net, s, a, r, s_next, gamma, actions):
-    target = r + gamma * max(target_net(s_next, a2) for a2 in actions)
-    prediction = Q_net(s, a)
-    return (target - prediction) ** 2
+def n_step_td(env_step, n, n_episodes, alpha, gamma, n_states, start_state):
+    V = [0.0] * n_states
+    for _ in range(n_episodes):
+        states, rewards = [start_state], []
+        s, T, t = start_state, float('inf'), 0
+        while True:
+            if t < T:
+                a = 0 if False else __import__('random').randrange(2)  # a random demo policy
+                ns, r, done = env_step(s, a)
+                states.append(ns)
+                rewards.append(r)
+                if done:
+                    T = t + 1
+                s = ns
+            tau = t - n + 1  # we now update the tau-th state
+            if tau >= 0:
+                G = sum(gamma ** (i - tau - 1) * rewards[i]
+                        for i in range(tau, min(tau + n, len(rewards))))
+                if tau + n < T:
+                    G += gamma ** n * V[states[tau + n]]
+                V[states[tau]] += alpha * (G - V[states[tau]])
+            if tau == T - 1:
+                break
+            t += 1
+    return V
 ```
 
-## 7.4 Problem 2: The Data Is Correlated
+Notice that `tau` (the time step being updated) always lags the current
+time by \\(n-1\\) — we need \\(n\\) steps' worth of actual rewards to
+accumulate before we can compute that target. Training this on a 7-state
+1D grid with `n=3`, the values increase smoothly the closer a state is to
+the goal (right end, +1) — e.g., from around -0.84 near the left end up
+to around 0.69 monotonically toward the right.
 
-Consecutive frames (states) are nearly identical, so training on them in
-order produces a model that overfits to the last handful of similar
-experiences — and neural network training generally assumes mini-batches
-that are independent and diverse to be stable.
+## 7.2 Eligibility Traces: All Values of n at Once
 
-**Solution: Experience Replay.** Instead of immediately using each
-experienced \\((s, a, r, s')\\) for training, store it in a large storage
-called a **replay buffer**. During training, sample a mini-batch
-**randomly** from this buffer — this avoids batches consisting only of
-temporally adjacent experiences, and lets old experiences be reused,
-improving data efficiency too.
+n-step TD requires fixing a single \\(n\\) each time. **Eligibility
+traces** take a different approach — attach a trace \\(e(s)\\) to every
+state, tracking "how often, and how recently, has this state been
+visited," and whenever a TD error occurs, update **every state at once,
+in proportion to its trace**:
+
+\\[e(s) \leftarrow \gamma\lambda \, e(s) + \mathbb{1}[s = s_t], \qquad
+V(s) \leftarrow V(s) + \alpha \, \delta_t \, e(s) \; \text{(for every } s \text{)}\\]
+
+\\(\lambda \in [0,1]\\) is the new dial — with \\(\lambda=0\\), the trace
+nearly vanishes every step, matching TD(0); with \\(\lambda=1\\), the
+trace never shrinks, moving toward Monte Carlo. The name **TD(\\(\lambda\\))**
+comes exactly from this dial — where n-step TD is a "forward" view that
+fixes a single \\(n\\) and looks ahead, eligibility traces are a
+"backward" view that leaves traces from past visits and propagates
+updates backward; it's known that these two views are equivalent (the
+proof of forward-backward equivalence is beyond this semester).
+
+## 7.3 Planning and Learning: Dyna-Q
+
+The model-free methods we've covered so far (MC, TD) throw away
+experience after using it once. But that experience actually contains
+information about the environment — roughly, "if I take this action in
+this state, I tend to get about this reward and land in about this next
+state." **Dyna-Q** doesn't discard this — it stores it in a simple
+**model**, and interleaves that model into extra **imaginary** learning
+(planning) between real interactions with the environment:
 
 ```python
 import random
 
-class ReplayBuffer:
-    def __init__(self, capacity):
-        self.buffer = []
-        self.capacity = capacity
-
-    def push(self, transition):
-        if len(self.buffer) >= self.capacity:
-            self.buffer.pop(0)
-        self.buffer.append(transition)
-
-    def sample(self, batch_size):
-        return random.sample(self.buffer, batch_size)
+def dyna_q(env_step, n_states, n_actions, n_episodes, planning_steps, alpha, gamma, epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    model = {}  # (s, a) -> (r, s') -- store exactly what was observed (assumes a deterministic environment)
+    for _ in range(n_episodes):
+        s = start_state
+        for _ in range(100):
+            a = random.randrange(n_actions) if random.random() < epsilon \
+                else max(range(n_actions), key=lambda x: Q[s][x])
+            ns, r, done = env_step(s, a)
+            Q[s][a] += alpha * (r + gamma * max(Q[ns]) - Q[s][a])  # 1) learn from real experience
+            model[(s, a)] = (r, ns)                                 # 2) update the model
+            for _ in range(planning_steps):                         # 3) learn imaginary steps from the model (planning)
+                (ps, pa), (pr, pns) = random.choice(list(model.items()))
+                Q[ps][pa] += alpha * (pr + gamma * max(Q[pns]) - Q[ps][pa])
+            s = ns
+            if done:
+                break
+    return Q
 ```
 
-## 7.5 What These Two Devices Have in Common
+The larger `planning_steps` is, the more times each real interaction gets
+"reviewed" through the model. On the same grid environment, comparing how
+many episodes it takes for the goal state's (state 3, moving right)
+Q-value to exceed 0.5, the difference is dramatic:
+`planning_steps=0` (pure Q-learning) takes 253 episodes, while
+`planning_steps=10` reaches it in just 9 episodes — with 10 extra rounds
+of learning from the model at every real step, far more gets squeezed out
+of the same real experience.
 
-Experience replay and the target network solve different problems (data
-correlation vs. a moving target), but they share the same underlying
-philosophy: **"artificially recreate the conditions under which supervised
-learning works well (independent data, a fixed correct answer) inside
-reinforcement learning, an environment where those conditions are broken
-by default."**
+## 7.4 Three Axes, In One Place
 
-**The naive expectation that "attaching a neural network to reinforcement
-learning will just work" is wrong — DQN's real contribution isn't the
-neural network itself, but the handful of engineering devices that make
-the combination train stably.**
+Putting together everything covered in this chapter shows that Block A of
+this semester has really been a series of different answers to a single
+question: "how much bootstrapping should we do?"
+
+| Method | Target | Characteristics |
+|---|---|---|
+| MC (Chapter 5) | actual return \\(G_t\\) | unbiased, high variance, needs the episode to end |
+| TD(0) (Chapter 6) | \\(r + \gamma V(s')\\) | biased, low variance, learns every step |
+| n-step TD | \\(n\\) steps actual + rest estimated | a compromise between the two, \\(n\\) is the dial |
+| TD(\\(\lambda\\)) | all values of \\(n\\), weighted by traces | no need to fix \\(n\\), \\(\lambda\\) is the dial |
+| Dyna-Q | TD(0) + planning with a learned model | combines model-free and model-based |
+
+**Not bootstrapping at all (MC) and bootstrapping every step (TD) are just
+two extremes — in practice, something in between, plus reusing experience
+through planning, is usually better. That's this chapter's conclusion.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete `ReplayBuffer` and `should_update_target` below
-(key lines left blank):
+**1. (Coding)** Complete `dyna_q` above (key lines left blank), and
+compare how many episodes it takes for the same state-action's Q-value to
+exceed 0.5, with `planning_steps` set to 0 versus 10:
 
 ```python
 import random
 
-class ReplayBuffer:
-    def __init__(self, capacity):
-        self.buffer = []
-        self.capacity = capacity
-
-    def push(self, transition):
-        # ADD ADDITIONAL CODE HERE!!
-        # if the buffer exceeds capacity, remove the oldest item (FIFO) before adding
-
-    def sample(self, batch_size):
-        # ADD ADDITIONAL CODE HERE!!
-        # return batch_size items sampled randomly without replacement
-
-buf = ReplayBuffer(capacity=3)
-buf.push(("s1","a1",1,"s2"))
-buf.push(("s2","a2",0,"s3"))
-buf.push(("s3","a3",1,"s4"))
-buf.push(("s4","a4",0,"s5"))  # buffer is full, the first item gets pushed out
-print(len(buf.buffer))  # 3
-print(buf.buffer[0])    # ("s2","a2",0,"s3")
-
-def should_update_target(step, update_freq):
+def dyna_q(env_step, n_states, n_actions, n_episodes, planning_steps, alpha, gamma, epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    model = {}
     # ADD ADDITIONAL CODE HERE!!
+    # 1) choose an action via epsilon-greedy, interact with the environment, apply the Q-learning update
+    # 2) store model[(s,a)] = (r, ns)
+    # 3) for planning_steps iterations, sample a random (s,a)->(r,ns) from the model and apply the same update
 
-print([should_update_target(s, 1000) for s in [999, 1000, 1500, 2000]])
-# [False, True, False, True]
+    return Q
 ```
 
-**2. (Hand derivation, Tier C — fallback prepared)** Suppose we train DQN
-without a target network (i.e., using \\(\theta\\) directly for the target
-value too). Point out that in the loss \\(J(\theta) = (r + \gamma
-\max_{a'} Q(s',a';\theta) - Q(s,a;\theta))^2\\), \\(\theta\\) appears in
-**both** the target term \\(Q(s',a';\theta)\\) and the prediction term
-\\(Q(s,a;\theta)\\), and argue that this means a single gradient update
-doesn't just move the prediction toward the target — it moves the target
-itself, too. Then explain how a target network (using \\(\theta^-\\) only
-for the target, updated on a fixed schedule) avoids this problem.
+**2. (Conceptual)** Dyna-Q's model assumes the environment is
+deterministic (the same (s,a) always gives the same (r,s')). If the
+environment were stochastic (the same (s,a) could give different s'
+each time), explain what problem arises from storing only the last
+experience, as `model[(s,a)] = (r, ns)` does, and propose one way to
+improve this.
 
-**Fill-in-the-blank fallback version** (if free-form argument is too
-difficult):
+**3. (Hand derivation, Tier B — hints provided)** For the \\(n\\)-step
+return \\(G_t^{(n)} = \sum_{k=0}^{n-1} \gamma^k R_{t+k} + \gamma^n
+V(s_{t+n})\\), confirm that setting \\(n=1\\) gives exactly TD(0)'s target
+\\(R_t + \gamma V(s_{t+1})\\), and show that as \\(n \to \infty\\) with an
+episode ending at a finite length \\(T\\) (so \\(V(s_T) = 0\\)),
+\\(G_t^{(n)}\\) becomes equal to Monte Carlo's actual return \\(G_t =
+\sum_{k=0}^{T-t-1} \gamma^k R_{t+k}\\).
 
-```
-Without a target network:
-  theta appears in both max_a' Q(s',a';theta) and Q(s,a;theta).
-  After one update, the prediction moves ______________ (closer to/farther from) the target.
-  But the target itself also ______________ (changes along with it/stays fixed).
-
-With a target network (theta^-):
-  theta^- ______________ (changes/stays fixed) every step.
-  So while theta is being updated, the target ______________ (moves/stays fixed).
-```
-
-**Confirm correctness**: explain, in one sentence each, what problem
-arises if the target network's update frequency (`update_freq`) is set
-extremely large (e.g., 1 million steps), and what problem arises if it's
-set extremely small (e.g., 1 step).
+**Confirm correctness**: explain in one sentence why this result supports
+the claim that "TD(0) and MC are the two special cases of n-step TD."

@@ -1,5 +1,7 @@
 # Chapter 10. 정책기반 강화학습 (Policy-Based Reinforcement Learning)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_reinforce_ppo.ipynb)
+
 로봇 팔의 관절에 가할 힘을 정하는 문제를 생각해보자. 이 "행동"은
 -10Nm부터 +10Nm까지 **연속적인 값** 중 아무거나 될 수 있다. Chapter
 6·9의 Q-learning/DQN은 매 스텝 \\(\max_{a'} Q(s',a')\\)를 계산해야

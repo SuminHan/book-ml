@@ -1,137 +1,50 @@
-# Chapter 6. Reinforcement Learning Algorithms
+# Chapter 6. Temporal-Difference Learning
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter06_q_learning.ipynb)
 
 In 1989, Chris Watkins proposed an algorithm called **Q-learning** in his
-PhD thesis. Policy evaluation, covered last chapter, could only be computed
-if we knew the environment's transition probabilities \\(P(s'|s,a)\\)
-exactly — in chess, that would mean knowing in advance exactly how likely
-your opponent is to respond to any given move, which is unknowable in most
-real situations. Q-learning's breakthrough was showing that optimal
-behavior can be learned **without knowing the environment's model at
-all** — just by acting and observing the results.
+PhD thesis. Chapter 5's Monte Carlo could learn without a model, but you
+had to wait for an episode to end before you could compute a return.
+**Temporal-Difference (TD) learning** removes that wait entirely — it
+takes just one step, then immediately updates by the difference between
+"the current estimate" and "the reward just observed plus the next
+state's estimate." No model needed, no waiting for episodes to end — the
+most widely used compromise in reinforcement learning.
 
-## 6.1 Does an Optimal Policy Always Exist?
+## 6.1 TD(0): Update After Just One Step
 
-So far (Chapter 5) we've learned how to evaluate a given policy. But the
-problem reinforcement learning actually wants to solve is "find the best
-policy." The phrase "the best policy" isn't as obvious as it sounds,
-though — this section looks at why, and at why one always exists anyway.
+Recall Chapter 4's Bellman equation, \\(V^\pi(s) = R(s,\pi(s)) + \gamma
+V^\pi(s')\\). Policy evaluation (model-based) computed the right-hand side
+as an expectation over **every** possible next state. TD(0) replaces that
+expectation with a single **observed sample**:
 
-Policies are compared state by state: policy \\(\pi\\) is "better than"
-policy \\(\pi'\\) when \\(V^\pi(s) \ge V^{\pi'}(s)\\) holds **at every**
-state \\(s\\) simultaneously. The problem is that \\(\pi\\) might win at
-some states while \\(\pi'\\) wins at others — in that case the two
-policies simply can't be compared (a partial order, not a total one).
-For "the maximum over all policies" to mean anything, there has to be a
-single policy that's better than or equal to every other policy at once,
-even when some pairs of policies can't be compared at all — and that's
-far from obvious.
+\\[V(s) \leftarrow V(s) + \alpha\big[r + \gamma V(s') - V(s)\big]\\]
 
-In fact, the standard reinforcement learning textbook — Sutton and
-Barto's Reinforcement Learning: An Introduction (2018) — only states that
-"there is always at least one policy that is better than or equal to all
-other policies," without proving it. This section fills that gap.
+The bracketed term is called the **TD error**. Comparing to MC makes the
+key difference clear: MC uses the actual return \\(G_t\\) (the real sum
+of rewards to the end of the episode) as its target, while TD uses
+\\(r + \gamma V(s')\\) (one step's actual reward, plus an **estimate** of
+the next state's value) — since it updates using a not-yet-certain
+estimate of itself, this is called **bootstrapping**. Bootstrapping is
+exactly what makes learning possible every single step, even without an
+episode ending, even in tasks that never end at all.
 
-## 6.2 The Bellman Optimality Equation: A Unique Answer Exists
+| | Monte Carlo | Temporal-Difference (TD) |
+|---|---|---|
+| Target | actual return \\(G_t\\) (to the end of the episode) | \\(r + \gamma V(s')\\) (one step + estimate) |
+| When it updates | after the episode ends | immediately, every step |
+| Bias/Variance | unbiased, high variance | biased (uses an estimate), low variance |
 
-Chapter 5.4 accepted, as a stated result, that iterating the Bellman
-expectation equation always converges to the exact \\(V^\pi\\) whenever
-\\(\gamma < 1\\) (the contraction mapping property). The existence of an
-optimal policy is proved with exactly the same tool.
+## 6.2 Q-Learning: Model-Free, With State-Action Values
 
-First, define the "optimal value" \\(V^\*(s)\\) via the **Bellman
-optimality equation** — the value you'd get at each state if you always
-picked the action that maximizes the value of continuing optimally from
-there on:
-
-\\[V^\*(s) = \max\_a \left[R(s,a) + \gamma \sum\_{s'} P(s'|s,a)
-V^\*(s')\right]\\]
-
-This equation looks like it "defines" \\(V^\*\\), but it's actually
-self-referential — \\(V^\*\\) appears on both sides, exactly the same
-shape as Chapter 5.4's \\(V^\pi\\) = Bellman expectation equation
-(\\(V^\pi\\)). So the same question remains: does a \\(V\\) satisfying
-this equation actually exist? If so, is it unique?
-
-The same logic from 5.4 shows up again here: treat the right-hand side of
-the Bellman optimality equation as an **operator** \\(T\\)
-(\\(T(V)(s) := \max\_a[\ldots]\\), the bracketed part above). \\(T\\) is
-also proven to be a \\(\gamma\\)-contraction (the same property as 5.4's
-\\(T^\pi\\), just a different shape — we accept this as a stated result
-again this semester). A \\(\gamma\\)-contraction always has a unique fixed
-point, and iterating it from anywhere converges to that fixed point (the
-Banach fixed-point theorem) — so a \\(V^\*\\) satisfying the Bellman
-optimality equation **exists, and is unique.**
-
-## 6.3 Building an Optimal Policy From the Value That Exists
-
-\\(V^\*\\) existing and being unique is one thing; "there's a policy that
-actually achieves that value" is another — this last gap is what we close
-here.
-
-Knowing \\(V^\*\\), we can build a deterministic policy that, at each
-state, simply picks the action that achieves that \\(\max\\):
-
-\\[\pi^\*(s) \in \arg\max\_a \left[R(s,a) + \gamma \sum\_{s'}
-P(s'|s,a) V^\*(s')\right]\\]
-
-This definition is always possible for a simple reason — the set of
-available actions \\(A(s)\\) at each state is **finite**, and the maximum
-of a finite set is always achieved somewhere (an argmax can't be empty).
-Trace the root of "an optimal policy exists" far enough and it comes down
-to this simple fact: the state and action spaces are finite.
-
-Following this \\(\pi^\*\\) can be shown to give a value
-\\(V^{\pi^\*}\\) that's exactly equal to \\(V^\*\\) (and no other policy
-can do better than \\(V^\*\\)) — the full proof is beyond this semester,
-but the core idea is: "\\(\pi^\*\\) was chosen to exactly achieve the
-\\(\max\\) of the Bellman optimality equation at every state, so the
-Bellman expectation equation under \\(\pi^\*\\) becomes identical to the
-Bellman optimality equation." That means \\(\pi^\*\\) is better than or
-equal to every other policy at every single state — the "incomparability"
-problem from section 6.1 dissolves once there's a shared target,
-\\(V^\*\\), to aim at.
-
-One more subtlety: if the argmax has ties, multiple optimal policies can
-exist — but **whichever optimal policy you pick, its value is always
-exactly \\(V^\*\\).** The number itself never wavers.
-
-It's also worth noting what this proof guarantees: existence, not
-computability or storability. In a game like Go, where the number of
-states is astronomically large (roughly \\(10^{170}\\)), \\(\pi^\*\\) can
-exist in theory while still being completely impossible to store as a
-table over every state. That's exactly why the next chapter (Chapter 7)
-turns to approximating the table with a neural network instead.
-
-**This section's conclusion is also the reason Q-learning, covered
-starting next section, is worth pursuing at all: the \\(Q^\*(s,a)\\) that
-Q-learning tries to estimate isn't "a target that may or may not exist" —
-in any finite MDP, it's guaranteed to exist and be unique. That's what
-theoretically justifies repeatedly training toward that number.**
-
-## 6.4 Model-Based vs. Model-Free
-
-Last chapter's policy evaluation was a "model-based" method — it computed
-things under the assumption that we know how the environment works (its
-transition probabilities). But in actual games or robot control, there's
-usually no perfect mathematical model of "exactly what happens if I press
-this button." **Q-learning** is a **model-free** method: it learns purely
-from experience (state, action, reward, next state) gathered by acting
-directly, with no knowledge of the model.
-
-## 6.5 The Q-Function: Value of Both State and Action
-
-Chapter 5's \\(V(s)\\) was "the value of a state." Q-learning learns a more
+Chapter 4's \\(V(s)\\) was "the value of a state" — on its own, this
+isn't enough to choose the next action, since you'd need the transition
+probabilities \\(P\\) to know which action leads to a good next state (a
+point already made in Section 5.3). **Q-learning** learns a more
 fine-grained **Q-function** \\(Q(s,a)\\) — "the expected cumulative reward
 of taking action \\(a\\) in state \\(s\\), then acting optimally
 thereafter." Once you know \\(Q(s,a)\\), the optimal policy is immediately
-just \\(\pi^*(s) = \arg\max_a Q(s,a)\\) — knowing only "the value of a
-state" doesn't tell you which action to take (you'd need the transition
-probabilities for that), but knowing "the value of a state-action pair"
-lets you pick the best action right away. This is the key advantage.
-
-## 6.6 The Q-Learning Update Rule
+just \\(\pi^*(s) = \arg\max_a Q(s,a)\\).
 
 Every time the agent takes action \\(a\\) in state \\(s\\), receives
 reward \\(r\\), and arrives at new state \\(s'\\):
@@ -139,76 +52,102 @@ reward \\(r\\), and arrives at new state \\(s'\\):
 \\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma \max_{a'} Q(s',a') -
 Q(s,a)\right]\\]
 
-The bracketed term is called the **TD error** (Temporal Difference error):
-the difference between "our current estimate of \\(Q(s,a)\\)" and "the
-reward just observed, plus our estimate of doing our best from the next
-state onward." We nudge \\(Q(s,a)\\) by this error each time — the same
-pattern as Chapter 2's gradient descent: "move by the difference between
-the current estimate and a better one."
-
 ```python
 def q_learning_update(Q, s, a, r, s_next, alpha, gamma):
-    max_next_q = max(Q[s_next].values())
+    max_next_q = max(Q[s_next].values()) if isinstance(Q[s_next], dict) else max(Q[s_next])
     td_error = r + gamma * max_next_q - Q[s][a]
     Q[s][a] += alpha * td_error
     return Q
 ```
 
-## 6.7 The Exploration-Exploitation Dilemma: ε-greedy
+## 6.3 SARSA: Using the Action Actually Taken
 
-Think about choosing a restaurant: do you go back to a favorite you already
-know is good (**exploitation**), or try somewhere new
-(**exploration**)? A place you haven't tried might actually be better, but
-there's also a risk of disappointment. Reinforcement learning agents face
-the exact same dilemma — always taking the action currently believed best
-(pure exploitation) might mean never discovering a better one, while acting
-purely randomly (pure exploration) wastes everything already learned.
+Q-learning's target uses \\(\max_{a'} Q(s',a')\\) — **it always assumes
+the best possible next action**, regardless of whether exploration
+(Chapter 2's \\(\varepsilon\\)-greedy) meant that action wasn't actually
+taken. **SARSA** (State-Action-Reward-State-Action — the name itself just
+lists the five pieces needed for the update) takes a different approach:
+it uses the Q-value of whichever action \\(a'\\) was actually **chosen**
+next:
 
-When choosing an action, with probability \\(1-\varepsilon\\) pick the
-currently best-known action (exploit), and with probability
-\\(\varepsilon\\) pick a random action (explore):
+\\[Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma Q(s',a') -
+Q(s,a)\right]\\]
+
+This one difference fundamentally splits the two algorithms. Q-learning
+directly learns the value of the **target policy** (the optimal policy)
+regardless of what the behavior policy is (even if it mixes in random
+exploration via \\(\varepsilon\\)-greedy) — in Section 5.4's language, it's
+**off-policy**. SARSA learns the value of whatever policy it's actually
+following right now (\\(\varepsilon\\)-greedy, exploration included) — it's
+**on-policy**.
 
 ```python
 import random
 
-def epsilon_greedy(Q, s, epsilon, actions):
+def epsilon_greedy(Q, s, epsilon, n_actions):
     if random.random() < epsilon:
-        return random.choice(actions)
-    return max(actions, key=lambda a: Q[s][a])
+        return random.randrange(n_actions)
+    return max(range(n_actions), key=lambda a: Q[s][a])
+
+def sarsa_train(env_step, n_states, n_actions, n_episodes, alpha, gamma, epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    for _ in range(n_episodes):
+        s = start_state
+        a = epsilon_greedy(Q, s, epsilon, n_actions)
+        for _ in range(200):
+            ns, r, done = env_step(s, a)
+            na = epsilon_greedy(Q, ns, epsilon, n_actions)
+            Q[s][a] += alpha * (r + gamma * Q[ns][na] - Q[s][a])  # uses the actually-chosen na
+            s, a = ns, na
+            if done:
+                break
+    return Q
 ```
 
-A common strategy is to gradually decay \\(\varepsilon\\) as training
-progresses — explore a lot early on, then shift increasingly toward
-exploitation as the Q-values become more trustworthy.
+## 6.4 Cliff Walking: Two Algorithms Learn Genuinely Different Policies
 
-## 6.8 Why Q-Learning Converges (Intuition)
+In the "Cliff Walking" environment — a grid where the direct path from
+start to goal runs right alongside a cliff that gives a big penalty
+(-100) if you fall in — training both algorithms for 500 episodes each
+produces strikingly different routes:
 
-As sections 6.2-6.3 established, \\(Q^\*(s,a)\\) isn't "a goal that
-might or might not exist" — in a finite MDP it's guaranteed to exist and
-be unique. Q-learning never computes that target directly; it only
-approximates it from sample-based updates, and yet it's proven to reach
-exactly that value: it converges to the true \\(Q^\*(s,a)\\), regardless of
-which policy actually generated the data (the exploration policy), **as
-long as every state-action pair is visited infinitely often and the
-learning rate \\(\alpha\\) is decayed appropriately** (the Robbins-Monro
-conditions). Intuitively: the point where the TD error becomes exactly
-zero is precisely the point that satisfies the Bellman optimality equation
-\\(Q^\*(s,a) = R(s,a) + \gamma \max_{a'} Q^\*(s',a')\\), so an update that
-keeps reducing the TD error will eventually converge to that fixed point.
+- **Q-learning** learns the **shortest** path, skimming right along the
+  edge of the cliff — this really is optimal from the target policy's
+  (greedy) perspective.
+- **SARSA** learns a **safer** path, well away from the cliff — even
+  during training, it still occasionally mixes in random actions via
+  \\(\varepsilon\\)-greedy, and if it learned a policy that hugs the
+  cliff's edge, that randomness would occasionally cause it to actually
+  fall in and take a large loss. Because SARSA values things according to
+  **how it actually acts** (exploration included), it prefers to avoid
+  that risk.
 
-## 6.9 Q-learning vs. SARSA (For Reference)
+**Q-learning finds the optimal path under the assumption "I'll always do
+my best from here on," while SARSA finds a path that accounts for the
+reality "I might occasionally make a mistake (explore)."** Neither is
+"better" in an absolute sense — what this example shows is that the two
+are simply answering different questions from the start.
 
-Q-learning's update always uses \\(\max_{a'} Q(s',a')\\) — **always
-assuming the best possible next action**, even if exploration meant the
-agent actually took a different one. This approach is called off-policy.
-(SARSA is an on-policy method that instead uses the Q-value of whichever
-action was actually taken next — not covered this semester, but useful
-context for understanding Q-learning's design choice.)
+## 6.5 Why Q-Learning Converges (Intuition)
 
-**By proving that an agent can learn without knowing the environment,
-Q-learning was the turning point that transformed reinforcement learning
-from a theoretical curiosity into a tool actually applicable to robotics,
-games, and recommendation systems.**
+As established in Section 4.5, \\(Q^*(s,a)\\) is guaranteed to exist and
+be unique in any finite MDP (the Bellman optimality equation, the Banach
+fixed-point theorem). Q-learning never computes that target directly; it
+only approximates it from sample-based updates, and yet it's proven to
+reach exactly that value: **as long as every state-action pair is visited
+infinitely often and the learning rate \\(\alpha\\) is decayed
+appropriately** (the Robbins-Monro conditions), it converges to the true
+\\(Q^*(s,a)\\). Intuitively: the point where the TD error becomes exactly
+zero is precisely the point that satisfies the Bellman optimality
+equation, so an update that keeps reducing the TD error will eventually
+converge to that fixed point.
+
+**Temporal-difference learning combines Monte Carlo's advantage ("no model
+needed") with dynamic programming's advantage ("update after just one
+step") into a single method — and the difference between Q-learning and
+SARSA comes down to a small but consequential choice: apply the same
+bootstrapping idea to "the ideal target policy," or to "the policy you're
+actually following."**
 
 ---
 
@@ -240,18 +179,26 @@ def q_learning_train(transition, n_states, n_actions, n_episodes, alpha, gamma, 
     return Q
 ```
 
-**2. (Hand derivation, Tier A — free derivation)** Argue, in three parts,
+**2. (Conceptual)** In Section 6.4's Cliff Walking example, if
+\\(\varepsilon\\) is lowered to 0 after training ends (no more
+exploration) and SARSA's learned policy is executed, predict whether it
+would still take the long way around, or switch to the shorter path, and
+explain why. (Hint: think about the fact that the Q-values SARSA learned
+were themselves computed under the assumption "exploration is happening.")
+
+**3. (Hand derivation, Tier A — free derivation)** Argue, in three parts,
 what conditions are needed for the Q-learning update
 \\(Q(s,a) \leftarrow Q(s,a) + \alpha[r + \gamma \max_{a'} Q(s',a') -
-Q(s,a)]\\) to converge to the true \\(Q^\*(s,a)\\): (1) show that the
+Q(s,a)]\\) to converge to the true \\(Q^*(s,a)\\): (1) show that the
 \\(Q\\) for which the TD error is exactly zero is the same as the solution
-to the Bellman optimality equation \\(Q^\*(s,a) = R(s,a) + \gamma
-\max_{a'} Q^\*(s',a')\\) (a simple algebraic argument). (2) Explain why
+to the Bellman optimality equation \\(Q^*(s,a) = R(s,a) + \gamma
+\max_{a'} Q^*(s',a')\\) (a simple algebraic argument). (2) Explain why
 convergence becomes unstable if \\(\alpha\\) is too large (e.g., always
-\\(\alpha=1\\)), connecting it to Chapter 2's learning-rate problem. (3)
-Explain why convergence requires that every state-action pair be
+\\(\alpha=1\\)), connecting it to Chapter 2's incremental-average update.
+(3) Explain why convergence requires that every state-action pair be
 **visited infinitely often**, connecting it to the fact that without
-ε-greedy exploration, some state-action pairs might never be tried at all.
+ε-greedy exploration, some state-action pairs might never be tried at
+all.
 
 **Confirm correctness**: match each of the three arguments above to the
 part of the Q-learning algorithm it corresponds to (TD error computation,

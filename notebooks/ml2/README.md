@@ -6,12 +6,14 @@
 
 | 챕터 | 노트북 | 내용 |
 |---|---|---|
-| [Ch5](https://smhanlab.com/book-ml/kor/ml2/chapter05.html) | [chapter05_policy_evaluation.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter05_policy_evaluation.ipynb) | 반복적 정책평가, 벨만방정식 직접 검증 |
+| [Ch4](https://smhanlab.com/book-ml/kor/ml2/chapter04.html) | [chapter04_policy_evaluation.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter04_policy_evaluation.ipynb) | 반복적 정책평가, 벨만방정식 직접 검증 |
 | [Ch6](https://smhanlab.com/book-ml/kor/ml2/chapter06.html) | [chapter06_q_learning.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter06_q_learning.ipynb) | 장난감 환경에서 Q-learning이 최적 정책을 찾는 과정 |
-| [Ch7](https://smhanlab.com/book-ml/kor/ml2/chapter07.html) | [chapter07_dqn_tricks.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter07_dqn_tricks.ipynb) | 경험 재현 버퍼, 타겟 네트워크 동기화 |
-| [Ch8](https://smhanlab.com/book-ml/kor/ml2/chapter08.html) | [chapter08_reinforce_ppo.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter08_reinforce_ppo.ipynb) | REINFORCE 학습 곡선, PPO 클리핑 목적함수 시각화 |
-| [Ch10](https://smhanlab.com/book-ml/kor/ml2/chapter10.html) | [chapter10_vae_elbo.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_vae_elbo.ipynb) | KL divergence, VAE 손실, 정규화 항 시각화 |
-| [Ch11](https://smhanlab.com/book-ml/kor/ml2/chapter11.html) | [chapter11_gan.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter11_gan.ipynb) | 판별자/생성자 손실, 내쉬 균형(D=0.5) 확인 |
+| [Ch9](https://smhanlab.com/book-ml/kor/ml2/chapter09.html) | [chapter09_dqn_tricks.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter09_dqn_tricks.ipynb) | 경험 재현 버퍼, 타겟 네트워크 동기화 |
+| [Ch10~11](https://smhanlab.com/book-ml/kor/ml2/chapter10.html) | [chapter10_reinforce_ppo.ipynb](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_reinforce_ppo.ipynb) | REINFORCE 학습 곡선, PPO 클리핑 목적함수 시각화 |
+
+VAE·GAN 노트북은 2026-08 개편으로 두 주제가 ML1 Chapter 15(잠재변수
+생성모델)로 옮겨가면서 `notebooks/ml1/`으로 이동했습니다 — 아래
+ML1 실습 노트북 표를 참고하세요.
 
 ## 만든 방식
 

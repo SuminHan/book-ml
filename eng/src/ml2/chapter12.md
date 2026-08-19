@@ -1,115 +1,163 @@
-# Chapter 12. Team Project: Implementation
+# Chapter 12. Imitation Learning & Learning from Human Feedback
 
-Everything covered over the past 11 chapters — defining loss functions,
-deriving gradients, implementing models, and arguing their correctness —
-was treated as an independent chapter's problem each time. The last two
-chapters are a time to assemble these pieces directly into one finished
-project.
+Every algorithm covered in Chapters 2-11 had the agent learn by trial and
+error, guided by a reward signal it experienced directly. But for some
+problems, "trial and error" itself is dangerous or expensive — you can't
+just let a robot arm try random motions while working next to a person.
+This chapter covers two methods that learn from **human demonstrations**
+or **human preferences** instead of directly optimizing a reward.
 
-## 12.1 Why a Team Project
+## 12.1 Imitation Learning: No Reward, Just Demonstrations
 
-Real machine learning problems aren't neatly divided as "this chapter is
-logistic regression, that chapter is CNN." Cleaning data, judging which
-model fits, diagnosing why training isn't working (overfitting? vanishing
-gradients? no signal in the data at all?), and explaining the results to
-someone else — going through this entire process yourself is the surest
-way to integrate the past 11 chapters' separate topics into one whole.
+The simplest form of **imitation learning** is **Behavior Cloning** (BC) —
+collect (state, action) demonstration data left behind by an expert
+(human or an existing policy), and turn it directly into a supervised
+learning problem: "in this state, take this action." There's no need to
+design a reward function, and no need to explore by interacting with the
+environment — you can simply train a neural network, exactly the way we'd
+handle logistic regression or multi-class classification, to take a state
+as input and output an action (classification if discrete, regression if
+continuous).
 
-## 12.2 Project Structure
+```python
+import math
 
-- **Code**: must be reproducible — running the same code (with randomness
-  fixed) should give the same result. The entire pipeline, from data
-  preprocessing to final evaluation, should be organized into
-  scripts/notebooks.
-- **Report**: follows the structure problem definition → methodology →
-  experimental results → (required) at least one mathematical
-  justification → limitations and future improvements.
-- **Poster**: a summary for the presentation (Chapter 13) — condensed to
-  1-2 key figures (learning curves, example results, etc.) and 3-4 of the
-  most important conclusions.
+def sigmoid(z):
+    return 1 / (1 + math.exp(-max(-20, min(20, z))))
 
-## 12.3 Candidate Project Topics
+def train_behavior_cloning(demos, epochs, lr):
+    # demos: [(state, action), ...] expert demonstrations, action is 0 or 1 (binary example)
+    w, b = 0.0, 0.0
+    for _ in range(epochs):
+        for s, a in demos:
+            pred = sigmoid(w * s + b)
+            grad = pred - a          # exactly the same gradient shape as logistic regression
+            w -= lr * grad * s
+            b -= lr * grad
+    return w, b
+```
 
-The topic is free, but here are some directions to consider:
+## 12.2 Why Behavior Cloning Alone Isn't Enough: Compounding Error
 
-- **Graph anomaly detection**: using publicly available synthetic data,
-  detect abnormal nodes/edges with a graph neural network (GNN, beyond
-  this semester's scope but connected to ML1 Chapter 12's embedding
-  concept) or traditional methods.
-- **Image classification applications**: apply the CNN structure from ML1
-  Chapter 10 to a real image dataset, trying the transfer learning
-  covered in ML1 Chapter 11.
-- **A simple chatbot/LLM application project**: apply the prompting
-  techniques from Chapters 2-4 (the sequence/LLM section) to a real task
-  (summarization, classification, search), or run a small-scale
-  experiment with the alignment ideas from Chapter 9.
+Behavior cloning is simple but has a fundamental weakness — training
+happens only on states the **expert actually visited**, but the deployed
+policy can drift, from just one small mistake, into a state the expert
+never visited. In that unfamiliar state, the policy has never learned
+what to do, so it makes an even bigger mistake, which leads to yet another
+unfamiliar state — errors snowball over time, a problem called
+**compounding error**.
 
-**Finding data**: data for the topics above usually comes from one of
-three places.
+**DAgger** (Dataset Aggregation) mitigates this with iteration: (1) roll
+out the policy learned so far by actually navigating the environment
+directly, (2) go back to the expert and ask "what should I do here?" for
+the states encountered along that path, getting fresh correct-action
+labels, and (3) merge this new data into the original demonstration set
+and retrain. Repeating this makes the training data increasingly include
+"states the policy actually visits," reducing compounding error — similar
+in spirit to Chapter 6's SARSA learning the value of the policy it
+actually follows: **train based on situations you'll actually encounter,
+not an idealized situation.**
 
-- **Kaggle** (kaggle.com/datasets): the largest dataset repository,
-  covering tabular data, images, and text alike. Datasets organized as
-  Competitions are especially useful — you can also study the evaluation
-  metric and top-scoring solutions.
-- **UCI Machine Learning Repository** (archive.ics.uci.edu): mostly
-  classic tabular datasets, small enough for fast experimentation and for
-  validating a model you implemented by hand.
-- **Hugging Face Datasets** (huggingface.co/datasets): text and image
-  datasets you can load in just a few lines of code — especially
-  convenient for LLM/Transformer-related projects.
+## 12.3 Preference-Based Reward Models: Applying RLHF to Robot Control
 
-## 12.4 Real-World Problems You'll Often Hit in a Team Project
+When even demonstrations are hard to obtain (e.g., "this robot gait looks
+more natural" is hard to pin down as a single demonstration, but easy to
+judge by comparing two gaits), a different strategy works — you can apply
+this section's idea directly to the robot control problems introduced in
+Chapter 13. Instead of a person providing the "correct action" every
+time, they only need to **pick which of two attempts (trajectories) the
+robot produced is better** — the exact same structure, just reshaped, as
+RLHF (Reinforcement Learning from Human Feedback), used to tune LLMs
+toward what people want.
 
-Here's a preview of how the concepts covered this semester show up in an
-actual project:
+For two trajectories \\(y_w\\) (the one a person preferred, the "winner")
+and \\(y_l\\) (the "loser") produced in the same situation \\(x\\), train a
+reward model \\(r_\phi(x,y)\\) to assign a higher score to \\(y_w\\). The
+Bradley-Terry model represents this preference probability with a
+sigmoid:
 
-- **Data is messier than you'd think**: check for missing values,
-  outliers, and class imbalance first (a place you'll really feel why ML1
-  Chapter 2.7's Precision/Recall matters).
-- **When training isn't working**: if the loss isn't decreasing, suspect,
-  in order, the learning rate (ML1 Chapter 2), vanishing gradients (ML1
-  Chapter 9), and whether there's simply no signal in the data.
-- **Don't pick a model without validation**: choosing a model based only
-  on training-data performance is an easy way to end up selecting an
-  overfit model — always do a final evaluation on separate
-  validation/test data (ML1 Chapter 6's train/validation/test discipline).
+\\[P(y_w \succ y_l \mid x) = \sigma\big(r_\phi(x,y_w) - r_\phi(x,y_l)\big)\\]
 
-## 12.5 Requirement: At Least One Mathematical Justification
+The loss that maximizes this probability is once again the **same
+cross-entropy form as logistic regression**:
 
-The project report must include **at least one choice justified
-mathematically**. Here are examples that satisfy this requirement (adapt
-to your project's topic):
+```python
+def reward_model_loss(r_win, r_lose):
+    # Bradley-Terry: P(y_w > y_l) = sigmoid(r_win - r_lose)
+    return -math.log(sigmoid(r_win - r_lose))
+```
 
-1. If you chose a particular loss function, derive why its gradient takes
-   a form suitable for the problem (reusing the pattern from ML1 Chapter
-   2).
-2. If you used a regularization technique (L1/L2, dropout, etc.), explain
-   how it reduces overfitting with a formula or intuitive argument (ML1
-   Chapters 6, 9).
-3. Quantitatively compare why you chose a particular model architecture,
-   using parameter count/computational complexity formulas (reusing ML1
-   Chapter 10's CNN parameter-counting pattern).
-4. For an RL/generative project, connect one of the concepts from Chapters
-   5-11 (Bellman equation, ELBO, Nash equilibrium) directly to your
-   implementation.
+Once this reward model \\(r_\phi\\) is trained, its score can be used
+directly as the reward for the reinforcement learning algorithms covered
+in Chapters 9-11 (especially PPO) to train a policy — a particularly
+powerful strategy for "problems where a person can't easily write down the
+reward function by hand" (defining exactly what a natural gait means
+mathematically is hard, but comparing two examples is easy).
 
-This is meant to preserve, at the larger scale of a project, the
-distinction emphasized all semester between "code that happens to be
-correct" and "knowing why it works."
+## 12.4 Imitation Learning vs. Reinforcement Learning: When to Use Which
 
-## 12.6 Aiming for External-Submission Quality
+| | Imitation Learning (BC/DAgger) | Reinforcement Learning (Ch.2-11) |
+|---|---|---|
+| What's needed | Expert demonstrations (or comparisons) | A reward function, interaction with the environment |
+| Exploration needed? | Basically no (DAgger needs a little) | Required (Chapter 2's exploration-exploitation dilemma) |
+| Safety | Relatively safe (only imitates expert behavior) | Can try dangerous actions during training |
+| Performance ceiling | Capped at expert-level (can't exceed it) | Can in principle surpass the expert (Chapter 4's optimal policy) |
 
-Prepare this project as a standardized set of three deliverables:
-**code + report + poster** — aim for a level ready to hand over
-immediately if an outside institution (a university, etc.) requests these
-materials later.
+In practice, the two are often combined — for example, quickly building a
+"reasonably good starting policy" with behavior cloning, then fine-tuning
+on top of it with reinforcement learning (PPO, etc.) to push past the
+expert's limits.
 
-## 12.7 Grading Criteria
+**Imitation learning is a shortcut — "learn by watching something that
+already does it well, without having to go through trial and error" —
+while preference-based reward models are a workaround — "learn the reward
+function itself just from comparisons, when it's hard to design directly."
+Neither replaces the reinforcement learning algorithms we worked hard to
+learn in Chapters 2-11; both are answers to the question of how to obtain
+the data and reward those algorithms need, more safely and more cheaply.**
 
-- Clarity of the problem definition
-- Appropriateness of the methodology (were the concepts learned applied
-  correctly?)
-- Accuracy and depth of the mathematical justification
-- Honest reporting of results (were the parts that didn't work hidden, or
-  was the cause analyzed?)
-- Reproducibility of the code
+---
+
+## Exercises
+
+**1. (Coding)** Complete `train_behavior_cloning` and `reward_model_loss`
+above (key lines left blank):
+
+```python
+import math, random
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-max(-20, min(20, z))))
+
+def train_behavior_cloning(demos, epochs, lr):
+    # ADD ADDITIONAL CODE HERE!!
+    # initialize w, b to 0, then for epochs iterations, for each (s,a) in demos,
+    # compute grad = pred - a (the same as logistic regression) and update w, b
+
+    return w, b
+
+def expert_policy(state):
+    return 1 if state < 0 else 0  # expert: always moves toward the origin (0)
+
+random.seed(0)
+demos = [(s, expert_policy(s)) for s in [random.uniform(-5, 5) for _ in range(200)]]
+w, b = train_behavior_cloning(demos, epochs=30, lr=0.05)
+print(sigmoid(w * (-2) + b) > 0.5)  # should be True (predicts action=1 at state=-2)
+
+def reward_model_loss(r_win, r_lose):
+    # ADD ADDITIONAL CODE HERE!!
+    # -log(sigmoid(r_win - r_lose))
+
+print(round(reward_model_loss(2.0, -1.0), 3))  # 0.049
+```
+
+**2. (Conceptual)** Explain why the compounding error problem from Section
+12.2 gets worse "the longer the episode," and summarize in 1-2 sentences
+the mechanism by which DAgger mitigates it.
+
+**3. (Conceptual)** Using the example of training steering for a
+self-driving car, describe (a) one concrete failure scenario that could
+happen with pure behavior cloning alone, and (b) one safety problem that
+could happen with pure reinforcement learning (including random
+exploration) alone. Discuss why practitioners often combine the two
+approaches.

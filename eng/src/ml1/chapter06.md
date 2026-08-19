@@ -100,8 +100,8 @@ parameters (\\(w\\)), use the validation data to choose hyperparameters
 data** only once, at the very end, to check final performance — using the
 test data to tune hyperparameters is no different from cheating (peeking
 at the test data to pick your model). This three-way split
-(train/validation/test) discipline applies just as strictly to ML2's team
-project.
+(train/validation/test) discipline applies just as strictly to this
+semester's team projects (Chapters 8, 16) and ML2's team project.
 
 **Regularization is the tool that turns Chapter 4.4's bias-variance
 principle — "make the model less flexible to reduce variance" — into

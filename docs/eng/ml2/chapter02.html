@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Sequence Models - Machine Learning 1/2 (English)</title>
+        <title>Multi-Armed Bandits - Machine Learning 1/2 (English)</title>
 
 
         <!-- Custom HTML head -->
@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0957b01d.js";
+            window.path_to_searchindex_js = "../searchindex-1f5dea89.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-1921d095.js"></script>
+        <script src="../toc-5338eca1.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -178,124 +178,155 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-2-sequence-models"><a class="header" href="#chapter-2-sequence-models">Chapter 2. Sequence Models</a></h1>
-<p>In 1990, cognitive scientist Jeffrey Elman posed a question in his paper
-“Finding Structure in Time”: could a neural network be made to remember not
-just “the input it’s looking at right now,” but also “what it saw a moment
-ago”? The structure he proposed — a recurrent connection feeding the hidden
-layer’s output back in as the next timestep’s input — is the prototype of
-what’s now called the RNN (Recurrent Neural Network).</p>
-<h2 id="21-why-order-matters"><a class="header" href="#21-why-order-matters">2.1 Why Order Matters</a></h2>
-<p>“The dog chases the cat” and “the cat chases the dog” use the exact same
-three words but mean completely different things. Feeding a sentence like
-this into the MLPs or CNNs we covered through ML1 requires bundling the
-words into a single vector, which erases the order information entirely —
-there’s no longer any way to tell who is chasing whom.</p>
-<h2 id="22-hidden-state-a-summary-of-everything-read-so-far"><a class="header" href="#22-hidden-state-a-summary-of-everything-read-so-far">2.2 Hidden State: A Summary of Everything Read So Far</a></h2>
-<p>RNN’s core idea is the <strong>hidden state</strong>: as the network reads a sentence
-one word at a time, it continuously updates a single vector that summarizes
-“everything read so far.” When processing the second word, the network
-receives not just that word itself but also “the summary left over from
-reading the first word” — this lets the current output be influenced by the
-entire past context.</p>
-<h2 id="23-rnn-forward-propagation"><a class="header" href="#23-rnn-forward-propagation">2.3 RNN Forward Propagation</a></h2>
-<p>At each timestep \(t\), given input \(x_t\) and the previous hidden
-state \(h_{t-1}\), the network produces a new hidden state \(h_t\) and
-(if needed) an output \(y_t\):</p>
-<p>\[h_t = \tanh(W_{xh} x_t + W_{hh} h_{t-1} + b_h), \qquad y_t = W_{hy} h_t + b_y\]</p>
-<p><strong>The key point is that \(W_{xh}, W_{hh}, W_{hy}\) are the same weights
-reused at every timestep</strong> (parameter sharing — the same idea as reusing a
-CNN filter, applied along the time axis instead).</p>
-<pre><code class="language-python">def rnn_step(x_t, h_prev, Wxh, Whh, b_h):
-    z = [sum(Wxh[i][j]*x_t[j] for j in range(len(x_t))) +
-         sum(Whh[i][j]*h_prev[j] for j in range(len(h_prev))) + b_h[i]
-         for i in range(len(h_prev))]
-    return [tanh(v) for v in z]
+                        <h1 id="chapter-2-multi-armed-bandits"><a class="header" href="#chapter-2-multi-armed-bandits">Chapter 2. Multi-Armed Bandits</a></h1>
+<p>Imagine a casino with several slot machines, each with its own lever
+(arm). Each arm pays out a different, unknown-to-you average reward. If
+you can only pull the levers a limited number of times, in what order
+should you pull them to maximize your total reward? This simple question —
+the <strong>multi-armed bandit</strong> problem — is the smallest possible skeleton of
+every problem reinforcement learning deals with. It has no state, no
+transitions spanning multiple steps like the chapters ahead will introduce
+— it isolates, in its purest form, the single core problem of
+reinforcement learning: the exploration-exploitation dilemma.</p>
+<h2 id="21-exploration-and-exploitation"><a class="header" href="#21-exploration-and-exploitation">2.1 Exploration and Exploitation</a></h2>
+<p>Let \(q^*(a)\) be the true average reward of each of \(k\) arms (which
+we don’t know). Let \(Q_t(a)\) be our estimate based on what we’ve
+observed so far. The simplest strategy is <strong>greedy</strong> selection — always
+pull the arm with the largest \(Q_t(a)\). The problem is that an arm
+that happened to produce a bad result early on might get permanently
+ignored afterward — getting stuck on a wrong conclusion without ever
+sufficiently trying the arm that’s actually best.</p>
+<p><strong>\(\varepsilon\)-greedy</strong> pulls the currently best-known arm with
+probability \(1-\varepsilon\) (exploit), and a random arm with
+probability \(\varepsilon\) (explore) — the exact same strategy we’ll
+meet again in Chapter 6 (TD learning). Each arm’s estimate is updated as
+the average of the rewards actually observed:</p>
+<p>\[Q_{t+1}(a) = Q_t(a) + \frac{1}{N_t(a)}\big(R_t - Q_t(a)\big)\]</p>
+<p>\(N_t(a)\) is the number of times arm \(a\) has been pulled so far.
+This update rule has the shape “move the estimate by an amount
+proportional to the difference between the newly observed value and the
+current estimate” — a pattern we’ll keep reusing in Chapters 5 (Monte
+Carlo) and 6 (TD learning).</p>
+<pre><code class="language-python">import random
 
-def rnn_forward(inputs, h0, Wxh, Whh, b_h):
-    h = h0
-    hidden_states = []
-    for x_t in inputs:
-        h = rnn_step(x_t, h, Wxh, Whh, b_h)
-        hidden_states.append(h)
-    return hidden_states
+def epsilon_greedy_bandit(true_means, epsilon, steps):
+    k = len(true_means)
+    Q = [0.0] * k
+    N = [0] * k
+    for t in range(steps):
+        if random.random() &lt; epsilon:
+            a = random.randrange(k)          # explore
+        else:
+            a = max(range(k), key=lambda i: Q[i])  # exploit
+        r = random.gauss(true_means[a], 1.0)  # true reward has mean true_means[a], plus noise
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+    return Q
 </code></pre>
-<h2 id="24-bptt-unrolling-time-to-backpropagate"><a class="header" href="#24-bptt-unrolling-time-to-backpropagate">2.4 BPTT: Unrolling Time to Backpropagate</a></h2>
-<p>To train this “keep updating a summary” structure, backpropagation must be
-applied by unrolling the network along the time axis. This method — treat
-each of the \(T\) timesteps as an independent layer by “unrolling” the
-network, then apply ordinary backpropagation — is called <strong>BPTT</strong>
-(Backpropagation Through Time). Since \(h_t\) depends on \(h_{t-1}\),
-which depends on \(h_{t-2}\), and so on, we must climb back up this chain,
-so the gradient with respect to \(h_1\) ends up containing a product of
-this form:</p>
-<p>\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
-h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh’(z_t)) , W_{hh}\]</p>
-<h2 id="25-why-vanishing-gradients-reappear-along-the-time-axis"><a class="header" href="#25-why-vanishing-gradients-reappear-along-the-time-axis">2.5 Why Vanishing Gradients Reappear Along the Time Axis</a></h2>
-<p>This is exactly the same pattern we saw in ML1 Chapter 9: \(\tanh’\)’s
-maximum value is 1, but it’s below 1 across most of its range, and this
-gets multiplied by \(W_{hh}\) as well, \(T\) times (once per timestep).
-The longer the sequence (the larger \(T\)), the more this product shrinks
-exponentially toward 0 (vanishing gradient — when \(W_{hh}\)’s eigenvalue
-is less than 1) or diverges (exploding gradient — when its eigenvalue is
-greater than 1). As a result, a basic RNN <strong>barely remembers information
-from far in the past</strong> — it’s especially weak on sentences that require
-using “the subject that appeared 10 words ago” at the current timestep.</p>
-<h2 id="26-lstmgru-using-gates-to-mitigate-vanishing"><a class="header" href="#26-lstmgru-using-gates-to-mitigate-vanishing">2.6 LSTM/GRU: Using Gates to Mitigate Vanishing</a></h2>
-<p>LSTM (Long Short-Term Memory) and GRU (Gated Recurrent Unit) add a device
-called a “gate,” which <strong>selectively keeps or updates</strong> the hidden state
-instead of recomputing it entirely at every timestep. The key trick is
-designing the path information travels along to mix in <strong>addition</strong>
-instead of multiplication — addition passes the gradient through unchanged
-(its derivative is 1), so it vanishes far less than repeated multiplication
-alone would. We won’t cover the detailed gate equations this semester, but
-the answer to “why are LSTM/GRU more robust to long sequences than a basic
-RNN” always comes back to this principle.</p>
-<h2 id="27-the-fundamental-limitation-of-rnns"><a class="header" href="#27-the-fundamental-limitation-of-rnns">2.7 The Fundamental Limitation of RNNs</a></h2>
-<p>Even with gates, an RNN still has to process one timestep at a time,
-<strong>sequentially</strong> — to process the 100th word, you have to go through words
-1 through 99 in order first. This sequential nature makes parallelization
-hard, and information from far in the past still fades on very long
-sequences. Attention/Transformer, which we cover in Chapter 3, is a
-completely different approach that eliminates this sequential requirement
-entirely.</p>
-<p><strong>An RNN is the simplest implementation of the insight that “handling
-ordered data requires a state that remembers the past” — the next two
-chapters are the story of overcoming this structure’s limitations.</strong></p>
-<hr>
-<h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
-<p><strong>1. (Coding)</strong> Complete <code>rnn_forward_scalar</code> below (the simplest possible
-RNN, with a scalar hidden state, \(h_t = \tanh(w_{xh} x_t + w_{hh}
-h_{t-1} + b_h)\)) and <code>gradient_through_time</code> (key lines left blank):</p>
+<h2 id="22-optimistic-initialization"><a class="header" href="#22-optimistic-initialization">2.2 Optimistic Initialization</a></h2>
+<p>\(\varepsilon\)-greedy explores completely randomly — it re-tries even
+arms it’s already fairly confident are bad, with the same probability as
+any other. <strong>Optimistic initialization</strong> uses a different trick: initialize
+every \(Q_0(a)\) much higher (more optimistically) than any actually
+achievable reward. Then greedy selection alone naturally tries unexplored
+arms first, since they’re still “overestimated” — try one, get
+disappointed (the actual reward is lower than the initial value), and the
+estimate drops, moving on to the next arm. A handful of forced early
+exploration steps get generated purely from one optimistic starting value.</p>
+<h2 id="23-ucb-using-uncertainty-itself"><a class="header" href="#23-ucb-using-uncertainty-itself">2.3 UCB: Using Uncertainty Itself</a></h2>
+<p><strong>UCB</strong> (Upper Confidence Bound) goes a step further — it directly
+exploits the fact that “the less an arm has been pulled, the less certain
+we can be about how accurate its estimate is.” When choosing an arm, it
+adds an “uncertainty bonus” to the mean estimate before comparing:</p>
+<p>\[a_t = \arg\max_a \left[Q_t(a) + c\sqrt{\frac{\ln t}{N_t(a)}}\right]\]</p>
+<p>The smaller \(N_t(a)\) is (the less that arm has been pulled), the
+larger the square-root term grows, boosting the bonus — giving fair
+credit to the possibility that this arm might actually be the best one.
+The more it gets pulled (the larger \(N_t(a)\) grows), the smaller the
+bonus shrinks, until the true magnitude of \(Q_t(a)\) eventually
+dominates the choice.</p>
 <pre><code class="language-python">import math
 
-def rnn_forward_scalar(inputs, h0, w_xh, w_hh, b_h):
-    # ADD ADDITIONAL CODE HERE!!
-
-print(rnn_forward_scalar([1.0, 1.0, 1.0], h0=0.0, w_xh=0.5, w_hh=0.8, b_h=0.0))
-
-def gradient_through_time(tanh_derivatives, w_hh):
-    # input: tanh_derivatives = [tanh'(z_1), ..., tanh'(z_T)]
-    # return: product of (tanh'(z_t) * w_hh) for all t
-    # ADD ADDITIONAL CODE HERE!!
-
-print(gradient_through_time([0.5]*20, w_hh=0.9))  # (0.5*0.9)^20 -- effectively 0
-print(gradient_through_time([0.9]*20, w_hh=1.1))  # (0.9*1.1)^20 -- close to 1
+def ucb_bandit(true_means, c, steps):
+    k = len(true_means)
+    Q = [0.0] * k
+    N = [0] * k
+    for t in range(1, steps + 1):
+        unplayed = [i for i in range(k) if N[i] == 0]
+        if unplayed:
+            a = unplayed[0]  # try any unpulled arm first
+        else:
+            a = max(range(k), key=lambda i: Q[i] + c * math.sqrt(math.log(t) / N[i]))
+        r = random.gauss(true_means[a], 1.0)
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+    return Q
 </code></pre>
-<p><strong>2. (Hand derivation, Tier B — hints provided)</strong> Show that
-\(\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \tanh’(z_t) \cdot
-w_{hh}\) (in the simplified case of a scalar hidden state), by applying
-the chain rule repeatedly, \(T-1\) times (hint: multiply
-\(\frac{\partial h_t}{\partial h_{t-1}} = \tanh’(z_t) \cdot w_{hh}\) as a
-chain from \(t=2\) to \(t=T\)).</p>
-<p>Assume \(\tanh’(z_t) \approx 0.5\) (a typical value) and \(w_{hh}=0.9\),
-and compute the magnitude of \(\frac{\partial h_T}{\partial h_1}\) for
-sequence lengths \(T=5, 10, 20\). Then repeat with \(w_{hh}=1.5\) and
-check what happens at \(T=20\).</p>
-<p><strong>Confirm correctness</strong>: verify your calculations against Exercise 1’s
-<code>gradient_through_time</code> function, and explain in one paragraph why a
-single value, \(w_{hh}\), determines whether the outcome is a vanishing
-or exploding gradient.</p>
+<p>Pulling three arms (true mean rewards 1.0, 1.5, 2.0) 2000 times each,
+both \(\varepsilon\)-greedy and UCB converge to estimates close to the
+true means (e.g., <code>[0.98, 1.32, 2.01]</code> and <code>[1.15, 1.48, 2.0]</code>), but UCB
+tends to earn slightly more total reward — because instead of exploring
+randomly, it preferentially probes wherever uncertainty is largest.</p>
+<h2 id="24-bandits-vs-a-full-mdp-a-bridge-to-the-next-chapter"><a class="header" href="#24-bandits-vs-a-full-mdp-a-bridge-to-the-next-chapter">2.4 Bandits vs. a Full MDP: A Bridge to the Next Chapter</a></h2>
+<p>The bandit problem has no <strong>state</strong> — pulling an arm doesn’t move you to a
+“next state.” It’s a world where nothing changes over time; you always
+choose among the same \(k\) arms. The <strong>MDP</strong> (Markov Decision Process)
+we’ll cover starting in Chapter 3 adds one decisive thing on top of this:
+<strong>the action you take now affects what state you’ll see next.</strong> Think
+about the difference between pulling a slot machine’s lever and making a
+move in chess: in chess, the move you make now changes the board
+(the state), and that board determines what you can do next. The
+exploration-exploitation dilemma we learned from bandits carries over
+unchanged, but now it’s layered with a completely new problem — “the
+current choice changes the choices themselves that will be available in
+the future.”</p>
+<p><strong>Bandits are the minimal skeleton of reinforcement learning with state
+and transitions stripped away — \(\varepsilon\)-greedy, optimistic
+initialization, and UCB, the three exploration strategies covered here,
+reappear (in different shapes, especially ε-greedy in Chapter 6) again
+and again throughout the semester.</strong></p>
+<hr>
+<h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
+<p><strong>1. (Coding)</strong> Complete <code>epsilon_greedy_bandit</code> and <code>ucb_bandit</code> below
+(key lines left blank):</p>
+<pre><code class="language-python">import random, math
+
+def epsilon_greedy_bandit(true_means, epsilon, steps):
+    # ADD ADDITIONAL CODE HERE!!
+    # initialize Q, N for k arms to 0, then repeat steps times:
+    # with probability epsilon pick a random arm, otherwise the arm with max Q
+    # after observing the reward, update Q[a] += (r - Q[a]) / N[a]
+
+    return Q
+
+def ucb_bandit(true_means, c, steps):
+    # ADD ADDITIONAL CODE HERE!!
+    # first try every unpulled arm once, then
+    # pick the arm that maximizes Q[a] + c*sqrt(ln(t)/N[a])
+
+    return Q
+
+random.seed(0)
+true_means = [1.0, 1.5, 2.0]
+print(epsilon_greedy_bandit(true_means, 0.1, 2000))  # roughly [1.0, 1.3~1.5, 2.0]
+</code></pre>
+<p><strong>2. (Conceptual)</strong> Explain what problem arises if you fix
+\(\varepsilon\) at 0 (pure greedy selection), and what problem arises if
+you fix \(\varepsilon=1\) (pure random selection). Then discuss why
+gradually decaying \(\varepsilon\) as training progresses is a
+reasonable compromise between the two.</p>
+<p><strong>3. (Hand derivation, Tier B — hints provided)</strong> For an arm pulled
+\(n\) times with rewards \(R_1, \ldots, R_n\), show that expanding the
+incremental update \(Q_{n+1} = Q_n + \frac{1}{n}(R_n - Q_n)\)
+recursively starting from \(n=1\) gives exactly \(Q_{n+1} =
+\frac{1}{n}\sum_{i=1}^n R_i\) (the simple average).</p>
+<p><strong>Hint</strong>: start from \(Q_1 = 0\), expand directly for \(n=1, 2, 3\)
+and look for the pattern (e.g., \(Q_2 = R_1\), \(Q_3 = R_1 +
+\frac{1}{2}(R_2-R_1) = \frac{R_1+R_2}{2}\)), then prove the general case
+for \(n\) by induction.</p>
+<p><strong>Confirm correctness</strong>: explain in one sentence why this result means the
+incremental update formula is mathematically identical to computing a
+plain average online (one data point at a time).</p>
 
                     </main>
 

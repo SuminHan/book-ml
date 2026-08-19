@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - Machine Learning 1/2 (English)</title>
+        <title>Model-Based RL &amp; Monte Carlo Tree Search - Machine Learning 1/2 (English)</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="favicon-8114d1fc.png">
-        <link rel="stylesheet" href="css/variables-8adf115d.css">
-        <link rel="stylesheet" href="css/general-e96d0476.css">
-        <link rel="stylesheet" href="css/chrome-d279d366.css">
-        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="theme/custom-8b082fac.css">
+        <link rel="stylesheet" href="../theme/custom-8b082fac.css">
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1f5dea89.js";
+            window.path_to_searchindex_js = "../searchindex-1f5dea89.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-5338eca1.js"></script>
+        <script src="../toc-5338eca1.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Machine Learning 1/2 (English)</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
@@ -178,66 +178,140 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p><strong>Machine Learning 1</strong> and <strong>Machine Learning 2</strong> are KSA’s 3-1-3
-advanced elective courses, building on CS1/CS2 and Math for ML (linear
-algebra and probability/statistics fundamentals) as prerequisites. This
-is the English edition; a <a href="https://smhanlab.com/book-ml/kor/">Korean
-edition</a> with the same structure is
-also available — either one teaches the same material.</p>
-<h2 id="how-the-two-courses-relate"><a class="header" href="#how-the-two-courses-relate">How the two courses relate</a></h2>
-<p><strong>ML1</strong> covers classical ML (linear/logistic regression, kNN,
-tree-based models, GBDT) through the basics of neural networks and
-backpropagation. Reinforcement learning and generative models get only
-a brief conceptual preview.</p>
-<p><strong>ML2</strong> picks up ML1’s neural-network foundations and goes deeper into
-sequence/attention architectures (RNN → Transformer → LLM), starts
-reinforcement learning properly from the MDP (Q-learning → DQN →
-Policy Gradient), and covers generative models through all three major
-principles (Autoencoder → VAE → GAN → Diffusion). The last two chapters
-wrap up with a team project.</p>
-<h2 id="how-this-textbook-is-organized"><a class="header" href="#how-this-textbook-is-organized">How this textbook is organized</a></h2>
-<p>Each chapter is a single page structured as numbered sections (e.g.,
-2.1, 2.2, …) in genuine-textbook form — the section numbers follow
-the actual week number the chapter covers, independent of the chapter
-number shown in the sidebar.</p>
-<p>Every chapter follows this flow:</p>
-<ul>
-<li><strong>Introduction</strong>: a short real-world case or historical anecdote
-showing why the chapter’s ideas matter.</li>
-<li><strong>Body sections</strong>: concepts, formulas, and example code building up
-in order.</li>
-<li><strong>Exercises</strong>: one coding problem (fill-in-the-blank stub) and one
-hand-derivation problem at the end, sized to about one lab-hour
-credit’s worth.</li>
-</ul>
-<h2 id="hand-derivation-difficulty-tiers"><a class="header" href="#hand-derivation-difficulty-tiers">Hand-derivation difficulty tiers</a></h2>
-<p>Hand-derivation exercises are graded into three tiers:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Tier</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><strong>Tier A</strong> (free derivation)</td><td>Well within prerequisite knowledge — proceed as-is</td></tr>
-<tr><td><strong>Tier B</strong> (appropriate but watch)</td><td>Proceed, but provide hints</td></tr>
-<tr><td><strong>Tier C</strong> (fallback needed)</td><td>Prepare both a free-derivation version and a fill-in-the-blank worksheet version — choose based on student response</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="assessment"><a class="header" href="#assessment">Assessment</a></h2>
-<p>In-class 20% + Assignment 20% + Final 50% + Attendance 10%. In
-addition to CS1/2-style “fill-in-the-blank code completion,” the final
-exam includes at least 2-3 proof-style questions — gradient
-derivations, loss-function property proofs, algorithm-correctness
-arguments.</p>
+                        <h1 id="chapter-15-model-based-rl--monte-carlo-tree-search"><a class="header" href="#chapter-15-model-based-rl--monte-carlo-tree-search">Chapter 15. Model-Based RL &amp; Monte Carlo Tree Search</a></h1>
+<p>In 2016, DeepMind’s <strong>AlphaGo</strong> made headlines by defeating world-champion
+Go player Lee Sedol. The number of possible Go board configurations is
+said to exceed the number of atoms in the universe, so Chapter 9’s DQN
+approach of “approximating value with a neural network” alone wasn’t
+enough — one of AlphaGo’s core weapons was this chapter’s topic, <strong>Monte
+Carlo Tree Search</strong> (MCTS). This chapter takes the “planning with a model”
+idea we glimpsed in Section 7.3 and extends it much further, for problems
+like games where the rules are known precisely.</p>
+<h2 id="151-model-based-rl-revisited"><a class="header" href="#151-model-based-rl-revisited">15.1 Model-Based RL, Revisited</a></h2>
+<p>Chapter 7.3’s Dyna-Q built a simple model from real experience and used it
+for <strong>extra imaginary training</strong>. <strong>Model-Based Reinforcement Learning</strong> is
+the general name for this idea — if you know or can learn a model of the
+environment (transition probabilities and a reward function, or an
+approximation of them), you can simulate many moves ahead <strong>without
+actually acting</strong> in the real world. Where Dyna-Q used this for updating
+values, MCTS uses it directly to <strong>decide what action to take right now</strong>.</p>
+<h2 id="152-in-problems-like-go-the-model-is-free"><a class="header" href="#152-in-problems-like-go-the-model-is-free">15.2 In Problems Like Go, the Model Is Free</a></h2>
+<p>Games like chess and Go have a special property — the rules are known
+perfectly. There’s no need to learn the transition probability
+\(P(s’|s,a)\) — “make this move and the board changes exactly like
+this” — it’s already known (the ideal condition for using Chapter 4’s
+model-based methods). The problem is that there are too many states (Go’s
+board has roughly \(10^{170}\) possible configurations) to compute
+everything the way Chapter 4’s value iteration does — so we need a search
+that digs deep only “near the current situation.”</p>
+<h2 id="153-mcts-four-steps-repeated"><a class="header" href="#153-mcts-four-steps-repeated">15.3 MCTS: Four Steps, Repeated</a></h2>
+<p>Starting from the current state, MCTS repeats the following four steps a
+fixed number of times, building up statistics on “which move looks most
+promising”:</p>
+<ol>
+<li><strong>Selection</strong>: starting from the tree’s root (the current state), pick
+a child node at each fork using a rule that balances “performance so
+far” against “how little this has been tried” (exactly the same idea
+as Chapter 2’s UCB), descending until reaching a node that hasn’t been
+fully expanded yet.</li>
+<li><strong>Expansion</strong>: add one new child node (an untried move) to that node.</li>
+<li><strong>Simulation (Rollout)</strong>: play the game all the way to the end from
+that new node, using a simple policy (or, in the extreme, completely
+random play) — just like Chapter 5’s Monte Carlo, actually play it out
+and get a result (win/loss).</li>
+<li><strong>Backpropagation</strong>: propagate that result back as statistics (visit
+count +1, win rate updated) to every node visited along the way during
+selection — this “backpropagation” shares only a name with ML1’s neural
+network backpropagation, and is a completely different concept: it’s
+not propagating a neural network’s gradient, but a tree’s win/loss
+statistics.</li>
+</ol>
+<p>After repeating these four steps hundreds to tens of thousands of times,
+we pick the root’s <strong>most-visited</strong> child (the move repeatedly confirmed
+to be the most promising) as the move to actually play.</p>
+<pre><code class="language-python">import math, random
+
+def uct_select(node_children, parent_visits, c=1.4):
+    # node_children: {move: (wins, visits)}
+    # exactly the same shape as UCB1 -- Section 2.3 applied directly to a game tree
+    return max(node_children, key=lambda m: node_children[m][0] / node_children[m][1] +
+               c * math.sqrt(math.log(parent_visits) / node_children[m][1]))
+</code></pre>
+<h2 id="154-confirming-it-with-a-small-example"><a class="header" href="#154-confirming-it-with-a-small-example">15.4 Confirming It With a Small Example</a></h2>
+<p>In a simple game (a variant of Nim) where players alternately take 1-3
+stones and whoever takes the last stone wins, running MCTS with 3000
+simulations from a position with 5 stones left correctly finds that
+“taking 1 stone, leaving 4 for the opponent” is the most promising
+move — exactly matching this game’s known mathematical winning strategy
+(making the number of stones left a multiple of 4). MCTS never knew the
+game’s rule (the multiple-of-4 strategy) at all — it discovered this
+optimal strategy entirely on its own, simply from “simulating a lot and
+picking the move with the highest win rate.”</p>
+<h2 id="155-alphagoalphazero-combining-mcts-with-neural-networks"><a class="header" href="#155-alphagoalphazero-combining-mcts-with-neural-networks">15.5 AlphaGo/AlphaZero: Combining MCTS With Neural Networks</a></h2>
+<p>Pure MCTS plays the game randomly (or with a very simple rule) all the way
+to the end during the simulation step — in a game like Go, where the
+impact of one move might not show up until much later, random simulation
+can be inaccurate. AlphaGo and its successor AlphaZero’s core improvement
+was replacing this random rollout with a <strong>neural network</strong>: one network
+estimates “how promising is each move from this state” (a policy, playing
+the same role as Chapter 10’s \(\pi_\theta\)), and another (or a
+different output head of the same network) estimates “how favorable is
+this state ultimately” (a value, playing the same role as ML1’s
+\(V(s)\)). MCTS uses these network estimates as a guide to narrow its
+search much more efficiently, and the more accurate moves that MCTS finds
+through that search are, in turn, used as the supervised-learning targets
+for training the neural network further — <strong>a loop where search (MCTS)
+and learning (the neural network) improve each other.</strong></p>
+<h2 id="156-a-look-at-multi-agent-rl-optional"><a class="header" href="#156-a-look-at-multi-agent-rl-optional">15.6 A Look at Multi-Agent RL (Optional)</a></h2>
+<p>So far we’ve dealt with environments containing only a single agent.
+<strong>Multi-Agent Reinforcement Learning</strong> covers cases where multiple agents
+act simultaneously in the same environment — they might cooperate (a team
+sport, collaborating logistics robots) or compete (Go, game AI). MCTS
+itself, in a two-player game where “the opponent also plays optimally,”
+can actually be viewed as a probabilistic approximation of <strong>minimax</strong>
+search — there’s a structural similarity here to ML1’s GAN and its
+min-max game (Chapter 15 of ML1), where two participants interact toward
+different goals. The detailed theory (Nash equilibria, cooperative games,
+etc.) is beyond this semester, but it’s worth remembering that “the problem
+changes fundamentally once there’s more than one agent.”</p>
+<p><strong>MCTS pushes the idea “if you have a model (know the rules), you can read
+ahead before actually acting” to its limit — where Chapter 7’s Dyna-Q used
+a learned model to improve values, MCTS uses a perfect model to improve
+the decision happening right now. And as AlphaZero showed, combining this
+search with neural network learning reaches a level of performance neither
+pure search nor a pure neural network could achieve alone.</strong></p>
+<hr>
+<h2 id="exercises"><a class="header" href="#exercises">Exercises</a></h2>
+<p><strong>1. (Coding)</strong> Complete <code>uct_select</code> above (key lines left blank):</p>
+<pre><code class="language-python">import math
+
+def uct_select(node_children, parent_visits, c=1.4):
+    # node_children: {move: (wins, visits)}
+    # ADD ADDITIONAL CODE HERE!!
+    # for each move, compute wins/visits + c*sqrt(log(parent_visits)/visits), return the move with the max
+
+children = {"A": (7, 10), "B": (3, 5), "C": (0, 1)}
+print(uct_select(children, parent_visits=16))
+# a barely-tried move like C can get picked because its uncertainty bonus is large
+</code></pre>
+<p><strong>2. (Conceptual)</strong> Among Section 15.3’s four steps (selection-expansion-
+simulation-backpropagation), match which step most directly corresponds
+to Chapter 2’s UCB, and which most directly corresponds to Chapter 5’s
+Monte Carlo, and explain why for each.</p>
+<p><strong>3. (Conceptual)</strong> Explain why AlphaZero using a neural network instead
+of random rollouts matters especially for “games like Go, where the
+impact of a move might not show up until much later,” connecting it to
+the limitations of random rollouts.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../ml2/chapter14.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
 
-                            <a rel="next prefetch" href="ml1/chapter01.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml2/chapter16.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -247,8 +321,11 @@ arguments.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../ml2/chapter14.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
 
-                    <a rel="next prefetch" href="ml1/chapter01.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml2/chapter16.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -268,17 +345,17 @@ arguments.</p>
         </script>
 
 
-        <script src="elasticlunr-ef4e11c1.min.js"></script>
-        <script src="mark-09e88c2c.min.js"></script>
-        <script src="searcher-09f2665d.js"></script>
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
 
-        <script src="clipboard-1626706a.min.js"></script>
-        <script src="highlight-abc7f01d.js"></script>
-        <script src="book-609e4cb8.js"></script>
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="theme/lang-switch-a3581242.js"></script>
-        <script src="theme/mathjax-v3-f54fc4b8.js"></script>
+        <script src="../theme/lang-switch-a3581242.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

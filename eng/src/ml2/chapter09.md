@@ -1,171 +1,237 @@
-# Chapter 9. LLM Post-training: RLHF & Alignment
+# Chapter 9. Function Approximation & Deep Q-Networks
 
-In 2022, OpenAI reported a surprising observation in the InstructGPT
-paper — a model with 100x fewer parameters, if refined the way people
-actually wanted, was preferred by human raters far more often than a
-much larger model that had only been pretrained. Chapter 4's pretraining
-(next-token prediction) produces "plausible-sounding text," but that's no
-guarantee it's "the answer a person actually wants" — pretraining data
-mixes in brilliant writing alongside nonsensical or rude writing. This
-chapter covers **post-training**, the stage that refines a pretrained
-model in the direction people actually want — and its central tool turns
-out to be Chapter 8's PPO.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter09_dqn_tricks.ipynb)
 
-## 9.1 SFT: Refining With Ideal Answers a Person Wrote
+In 2013, DeepMind trained an algorithm that swapped Q-learning's Q-table
+for a neural network wholesale, and used it to learn several Atari 2600
+games — with no knowledge of the game's rules at all, just from raw pixels
+and score. This result, called **DQN** (Deep Q-Network), was published in
+Nature in 2015, and reached human-level or better performance on several
+games.
 
-The simplest form of post-training is **Supervised Fine-Tuning** (SFT):
-collect ideal (question, answer) pairs written by people, and train the
-pretrained model on that data with ordinary supervised learning one more
-time — exactly Chapter 4's next-token-prediction loss, just with the data
-swapped from internet text to hand-written, high-quality examples. The
-problem is scale: having a person **write** "what a good answer looks
-like" from scratch, every time, is expensive, and it's hard to cover the
-huge variety of questions a model might encounter.
+## 9.1 A Scale the Q-Table Can't Handle
 
-## 9.2 RLHF: Applying PPO Through a Reward Model
+Chapter 6's Q-learning stored every state-action pair's value in a
+**table**, `Q[s][a]`. This works fine when there are a few hundred
+states, but the number of possible states an Atari game's screen (hundreds
+of pixels wide and tall, in color) can produce is effectively infinite —
+it can't all fit in a table, and most states never appear even once during
+training. This is exactly the problem flagged in Section 4.5: "in a game
+like Go, where the number of states is astronomically large, storing a
+table over every state is simply impossible."
 
-**RLHF** (Reinforcement Learning from Human Feedback) takes a different
-strategy — instead of a person writing a fresh "correct answer" every
-time, they only need to **pick which of several model-generated answers
-is better** (comparing is much easier and faster than writing). This
-preference data is used to train a **Reward Model**, and then Chapter 8's
-PPO is applied to the language model itself, treated as a policy, to
-maximize that reward model's score.
+## 9.2 Approximating the Q-Function With a Neural Network
 
-**Step 1 — Train the reward model**: given two answers \\(y_w\\) (the one
-a person preferred, the "winner") and \\(y_l\\) (the "loser") to the same
-question \\(x\\), train a reward model \\(r_\phi(x,y)\\) to assign a
-higher score to \\(y_w\\). The Bradley-Terry model represents this
-preference probability with a sigmoid:
+DQN's idea is simple: approximate \\(Q(s,a)\\) with a **neural network**
+instead of a table (\\(Q(s,a;\theta)\\), where \\(\theta\\) are the
+network's weights). Similar screens (states) produce similar Q-values
+through the network, so it can generalize even to states it's never seen
+exactly before. The loss function is Chapter 6's TD error, squared:
 
-\\[P(y_w \succ y_l \mid x) = \sigma\big(r_\phi(x,y_w) - r_\phi(x,y_l)\big)\\]
+\\[J(\theta) = \mathbb{E}\left[\left(r + \gamma \max_{a'} Q(s',a';\theta) -
+Q(s,a;\theta)\right)^2\right]\\]
 
-The loss that maximizes this probability is **exactly the same
-cross-entropy form as Chapter 2's logistic regression** — because this is
-a binary classification problem whose only "correct label" is the fact
-that "\\(y_w\\) won":
+We update \\(\theta\\) via gradient descent (specifically, backpropagation)
+to minimize this loss — the same shape as supervised learning, except that
+the target value \\(r + \gamma \max_{a'} Q(s',a';\theta)\\), which plays
+the role of the "correct label," is itself computed using the very
+\\(\theta\\) currently being trained.
 
 ```python
-import math
+import torch
+import torch.nn as nn
 
-def sigmoid(z):
-    return 1 / (1 + math.exp(-z))
+class QNetwork(nn.Module):
+    def __init__(self, state_dim, n_actions):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(state_dim, 64), nn.ReLU(),
+            nn.Linear(64, 64), nn.ReLU(),
+            nn.Linear(64, n_actions),
+        )
 
-def reward_model_loss(r_win, r_lose):
-    # Bradley-Terry: P(y_w > y_l) = sigmoid(r_win - r_lose)
-    return -math.log(sigmoid(r_win - r_lose))
+    def forward(self, x):
+        return self.net(x)
 ```
 
-**Step 2 — Train the policy with PPO**: once the reward model is ready,
-treat the language model \\(\pi_\theta\\) as "a policy that sequentially
-picks an answer \\(y\\) (one token at a time) as its action, given
-question \\(x\\) as its state," use the reward model's score
-\\(r_\phi(x,y)\\) as the reward, and apply Chapter 8's PPO directly. One
-term gets added, though — a KL-divergence penalty subtracted from the
-objective, keeping the policy from straying too far from the original
-pretrained (SFT) model \\(\pi_{\text{ref}}\\):
+## 9.3 Problem 1: The Target Keeps Moving
 
-\\[J(\theta) = \mathbb{E}\left[r_\phi(x,y)\right] - \beta \, D_{KL}\big(\pi_\theta(\cdot|x) \,\|\, \pi_{\text{ref}}(\cdot|x)\big)\\]
+Since \\(\theta\\) is updated every step, the loss function's target value
+changes every step too — in supervised learning, the correct label \\(y\\)
+never changes, but here the "correct label" is chasing itself. This makes
+training unstable (oscillation, divergence).
 
-Why this penalty matters: the reward model is itself only an
-approximation, so the policy risks exploiting its blind spots to rack up
-score while actually producing strange text (**reward hacking**). Tying
-the policy to \\(\pi_{\text{ref}}\\) constrains it to raise reward only
-within the space of "text that still makes sense" — this is exactly what
-Chapter 8.10's mention of "tuning ChatGPT-style LLMs with RLHF" refers to.
+**Solution: the Target Network.** Keep a second neural network,
+\\(Q(s,a;\theta^-)\\), with the exact same architecture as \\(Q\\), and use
+**only this target network** for computing the target value:
 
-## 9.3 DPO, PEFT/LoRA, and an Overview of Agents & RAG
+\\[J(\theta) = \mathbb{E}\left[\left(r + \gamma \max_{a'} Q(s',a';\theta^-) -
+Q(s,a;\theta)\right)^2\right]\\]
 
-**DPO** (Direct Preference Optimization, 2023): RLHF is a two-stage
-process — (1) train a separate reward model, then (2) run PPO against it
-— which can be complex and unstable. DPO shows mathematically that the
-optimal policy for the RLHF objective can express the reward function
-directly as a ratio between \\(\pi_\theta\\) and \\(\pi_{\text{ref}}\\),
-and substituting that relationship into the reward-model loss yields a
-loss that **learns the policy directly from preference data, with no
-separate reward model and no PPO loop at all**:
+\\(\theta^-\\) isn't updated every step — instead, it's copied wholesale
+from \\(\theta\\)'s current value periodically (e.g., every 1000 steps).
+During the interval between copies, the target stays fixed, so the loss
+function becomes (over that short interval) an ordinary optimization
+problem with a "fixed correct label," just like supervised learning —
+effectively freezing a moving target.
 
-\\[\mathcal{L}\_{\text{DPO}} = -\log \sigma\left(\beta \log
-\frac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)} - \beta \log
-\frac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\right)\\]
+```python
+def dqn_loss(Q_net, target_net, states, actions, rewards, next_states, dones, gamma):
+    q_pred = Q_net(states).gather(1, actions.unsqueeze(1)).squeeze(1)
+    with torch.no_grad():
+        q_next = target_net(next_states).max(dim=1).values
+        target = rewards + gamma * q_next * (1 - dones)
+    return ((target - q_pred) ** 2).mean()
+```
 
-Look at the shape — it's still the exact same logistic loss as 9.2's
-reward-model loss, just with the role of "reward" played by
-\\(\beta \log(\pi_\theta/\pi_{\text{ref}})\\) (how much more the policy
-now prefers that answer compared to the reference model). DPO's appeal is
-reaching the same theoretical destination as RLHF with a single round of
-supervised learning, no separate reward model and no RL loop required.
+## 9.4 Problem 2: The Data Is Correlated
 
-**PEFT/LoRA** (Parameter-Efficient Fine-Tuning / Low-Rank Adaptation):
-fine-tuning all tens or hundreds of billions of a model's parameters is
-computationally and storage-wise expensive. LoRA freezes the original
-weights \\(W\\) and instead trains only the product of two much
-smaller low-rank matrices, \\(\Delta W = BA\\) (where \\(B, A\\) have far
-smaller dimensions than \\(W\\)), using \\(W + \Delta W\\) as the new
-weights — cutting the number of trainable parameters by hundreds of times
-while achieving performance close to full fine-tuning in practice.
+Consecutive frames (states) are nearly identical to each other, so
+learning from them in sequence causes overfitting to a small handful of
+recent, similar experiences — and neural network training generally
+assumes mini-batches are independent and diverse to be stable.
 
-**Agents and RAG** (Retrieval-Augmented Generation): prompting alone can't
-answer questions about information the model doesn't know or external
-documents. RAG first retrieves documents relevant to the question and
-includes them in the prompt; an **agent** goes a step further, letting
-the model **call tools** — search, a calculator, code execution — on its
-own. Both solve the same underlying problem in the same direction:
-instead of cramming all knowledge into the model's parameters, let the
-model reach for outside information/tools when it needs to.
+**Solution: Experience Replay.** Instead of using each experienced
+\\((s, a, r, s')\\) for training immediately, first accumulate it in a
+large storage called the **replay buffer**. When training, sample
+mini-batches **randomly** from this buffer — this avoids training batches
+being made up entirely of temporally adjacent experiences, and lets old
+experience get reused, improving data efficiency too (another form of the
+idea from Section 5.4: reusing past experience for a different purpose).
 
-**If pretraining teaches "how to plausibly continue anything," post-training
-is the stage that picks out just "what people actually want" from that —
-and its central tool (PPO) is the very same algorithm we already learned
-this semester to solve reinforcement learning problems.**
+```python
+import random
+
+class ReplayBuffer:
+    def __init__(self, capacity):
+        self.buffer = []
+        self.capacity = capacity
+
+    def push(self, transition):
+        if len(self.buffer) >= self.capacity:
+            self.buffer.pop(0)
+        self.buffer.append(transition)
+
+    def sample(self, batch_size):
+        return random.sample(self.buffer, batch_size)
+```
+
+## 9.5 Hands-On DQN on CartPole
+
+Combining these pieces on the CartPole environment introduced in Section
+1.6 gives a training loop that samples a mini-batch from the replay
+buffer, computes the loss, and periodically syncs the target network:
+
+```python
+import torch
+
+env_state_dim, n_actions = 4, 2  # for CartPole
+Q_net = QNetwork(env_state_dim, n_actions)
+target_net = QNetwork(env_state_dim, n_actions)
+target_net.load_state_dict(Q_net.state_dict())  # start identical
+optimizer = torch.optim.Adam(Q_net.parameters(), lr=1e-3)
+buffer = ReplayBuffer(capacity=10000)
+
+# One training step (assume this is called repeatedly once the buffer has enough data)
+def train_step(batch_size, gamma):
+    batch = buffer.sample(batch_size)
+    states = torch.tensor([b[0] for b in batch], dtype=torch.float32)
+    actions = torch.tensor([b[1] for b in batch])
+    rewards = torch.tensor([b[2] for b in batch], dtype=torch.float32)
+    next_states = torch.tensor([b[3] for b in batch], dtype=torch.float32)
+    dones = torch.tensor([b[4] for b in batch], dtype=torch.float32)
+    loss = dqn_loss(Q_net, target_net, states, actions, rewards, next_states, dones, gamma)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    return loss.item()
+```
+
+## 9.6 What the Two Fixes Have in Common
+
+Experience replay and the target network solve different problems (data
+correlation vs. a moving target), but they share the same underlying
+philosophy: **"artificially recreate the conditions under which supervised
+learning works well (independent data, a fixed correct label), inside
+reinforcement learning — a setting where those conditions are broken by
+default."**
+
+**The naive hope that "bolting a neural network onto reinforcement
+learning will just work" turns out to be wrong — DQN's real contribution
+isn't the neural network itself, but the handful of engineering devices
+that made the combination train stably.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete `reward_model_loss` above, and write the DPO
-loss `dpo_loss` (key lines left blank):
+**1. (Coding)** Complete the `ReplayBuffer` class and
+`should_update_target` below (key lines left blank):
 
 ```python
-import math
+import random
 
-def sigmoid(z):
-    return 1 / (1 + math.exp(-z))
+class ReplayBuffer:
+    def __init__(self, capacity):
+        self.buffer = []
+        self.capacity = capacity
 
-def reward_model_loss(r_win, r_lose):
+    def push(self, transition):
+        # ADD ADDITIONAL CODE HERE!!
+        # if the buffer exceeds capacity, remove the oldest item (FIFO) before appending
+
+    def sample(self, batch_size):
+        # ADD ADDITIONAL CODE HERE!!
+        # return batch_size items sampled without replacement from the buffer
+
+buf = ReplayBuffer(capacity=3)
+buf.push(("s1","a1",1,"s2"))
+buf.push(("s2","a2",0,"s3"))
+buf.push(("s3","a3",1,"s4"))
+buf.push(("s4","a4",0,"s5"))  # buffer is full, so the first item gets pushed out
+print(len(buf.buffer))  # 3
+print(buf.buffer[0])    # ("s2","a2",0,"s3")
+
+def should_update_target(step, update_freq):
     # ADD ADDITIONAL CODE HERE!!
-    # -log(sigmoid(r_win - r_lose))
 
-def dpo_loss(logp_win_theta, logp_win_ref, logp_lose_theta, logp_lose_ref, beta):
-    # ADD ADDITIONAL CODE HERE!!
-    # log_ratio_win = beta * (logp_win_theta - logp_win_ref)
-    # log_ratio_lose = beta * (logp_lose_theta - logp_lose_ref)
-    # -log(sigmoid(log_ratio_win - log_ratio_lose))
-
-print(round(reward_model_loss(r_win=2.0, r_lose=-1.0), 3))  # 0.049 -- loss is small when well-separated
-print(round(reward_model_loss(r_win=-1.0, r_lose=2.0), 3))  # 3.049 -- loss is large when reversed
+print([should_update_target(s, 1000) for s in [999, 1000, 1500, 2000]])
+# [False, True, False, True]
 ```
 
-**2. (Conceptual)** If you removed the KL-divergence penalty
-(\\(-\beta D_{KL}(\pi_\theta\|\pi_{\text{ref}})\\)) from RLHF's objective
-entirely, what problem could arise? Explain in two or three sentences,
-using the term "reward hacking."
+**2. (Hands-on)** In the CartPole environment (`gym.make("CartPole-v1")`),
+run a random policy for 100 steps, pushing each
+`(state, action, reward, next_state, done)` into a `ReplayBuffer`. Once
+the buffer holds 32 or more entries, call the `train_step` function above
+5 times and confirm the loss actually gets computed and backpropagated
+(runs without error).
 
-**3. (Hand derivation, Tier C — fallback prepared)** Show that
-differentiating the Bradley-Terry loss \\(\mathcal{L} =
--\log\sigma(r_\phi(x,y_w) - r_\phi(x,y_l))\\) with respect to
-\\(r_\phi(x,y_w)\\) reduces to the same
-\\((\text{prediction} - \text{label})\\)-shaped gradient you get from
-differentiating Chapter 2's logistic regression loss.
+**3. (Hand derivation, Tier C — fallback prepared)** Suppose we train DQN
+without a target network (i.e., the target value also uses \\(\theta\\)
+directly). Point out that in the loss \\(J(\theta) = (r + \gamma
+\max_{a'} Q(s',a';\theta) - Q(s,a;\theta))^2\\), \\(\theta\\) appears in
+**both** the target term \\(Q(s',a';\theta)\\) and the prediction term
+\\(Q(s,a;\theta)\\), and argue that this means a single gradient update
+doesn't just move the prediction closer to the target — it moves the
+target itself, too. Then explain how the target network (using
+\\(\theta^-\\) only for the target value, updated periodically) avoids
+this problem.
 
-**Hint**: substituting \\(z = r_\phi(x,y_w) - r_\phi(x,y_l)\\) gives
-\\(\mathcal{L} = -\log\sigma(z)\\), which is exactly the logistic
-regression loss \\(-\log h_w(x)\\) for "a true label that's always 1."
-Reuse the result \\(\frac{d}{dz}(-\log\sigma(z)) = \sigma(z) - 1\\) you
-derived in section 2.6 to find \\(\frac{\partial \mathcal{L}}{\partial
-r_\phi(x,y_w)}\\).
+**Fill-in-the-blank fallback version** (if free-form argument is too
+difficult):
 
-**Confirm correctness**: looking at the sign of the gradient you found,
-explain in one sentence why it approaches zero (i.e., stops updating much
-further) once the model already confidently prefers \\(y_w\\)
-(\\(\sigma(z) \to 1\\)).
+```
+Without a target network:
+  theta appears both inside max_a' Q(s',a';theta) and inside Q(s,a;theta).
+  Updating theta once moves the prediction ______________ (closer to / further from) the target
+  But the target itself also ______________ (moves along with it / stays the same)
+
+With a target network (theta^-):
+  theta^- ______________ (changes / stays fixed) every step
+  So while theta is being updated, the target ______________ (moves / stays fixed)
+```
+
+**Confirm correctness**: explain in one sentence each what problem would
+arise if the target network's update frequency (`update_freq`) were set
+extremely large (e.g., a million steps), and what problem would arise if
+it were set extremely small (e.g., 1 step).

@@ -33,8 +33,7 @@ a spam email contains these particular words). The name "generative"
 comes from the fact that this model, in effect, learns "given class
 \\(y\\), how is data \\(x\\) generated" — you can even sample from the
 learned \\(P(x|y)\\) to produce fake "typical" data for that class (the
-same family of idea as ML1 Chapter 13's EM/GMM and ML2 Chapter 10's
-generative models).
+same family of idea as Chapter 15's EM/GMM and generative models).
 
 ## 3.2 Gaussian Discriminant Analysis (GDA)
 

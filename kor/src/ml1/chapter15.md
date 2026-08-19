@@ -1,5 +1,8 @@
 # Chapter 15. 잠재변수 생성모델: EM/GMM에서 VAE, GAN, Diffusion까지 (Latent-Variable Generative Models)
 
+[![Open In Colab: VAE](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_vae_elbo.ipynb)
+[![Open In Colab: GAN](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_gan.ipynb)
+
 1977년, 통계학자 아서 뎀스터(Arthur Dempster), 낸 레어드(Nan Laird), 도널드
 루빈(Donald Rubin)은 "불완전한 데이터로부터의 최대우도추정"이라는 논문에서,
 겉보기엔 서로 다른 여러 통계 문제들이 사실 하나의 공통된 구조 — **일부

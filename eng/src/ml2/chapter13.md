@@ -1,91 +1,147 @@
-# Chapter 13. Team Project: Presentation
+# Chapter 13. Robot Simulation & Control Basics
 
-If last chapter was about implementing the project, this chapter is about
-presenting the results and reflecting on the semester as a whole. Finally,
-we close out the semester with a brief look at a few recent trends that
-are still actively developing right now.
+The reinforcement learning algorithms covered so far were treated in
+simplified environments like CartPole. Working with an actual robot — a
+physical system with arms, legs, and wheels — means accounting not just
+for the fact that "actions are continuous forces/torques," but for the
+fact that those forces move the robot through actual physical laws
+(inertia, gravity, friction). This chapter covers the fundamentals of
+robot simulation, where you'll actually apply the algorithms learned in
+Chapters 9-12.
 
-## 13.1 Presentation Checklist
+## 13.1 Robotics Basics: State Space and Kinematics
 
-- **Problem definition** (1 minute): what were you trying to solve? Why
-  is that problem interesting?
-- **Methodology** (2-3 minutes): what model/algorithm did you use, and
-  why did you choose it?
-- **Mathematical justification** (2 minutes): make sure to hit at least
-  one of the justifications from last chapter's report during the talk
-  too.
-- **Results** (2 minutes): show both quantitative results (numbers,
-  graphs) and qualitative results (examples).
-- **Limitations and reflection** (1-2 minutes): what didn't work, and why
-  do you think that happened? What would you have tried with more time?
+A robot's state is usually represented by each joint's **angle** and
+**angular velocity** — for a 2-joint robot arm, the state would be a
+4-dimensional vector like \\((\theta_1, \theta_2, \dot\theta_1,
+\dot\theta_2)\\). **Forward kinematics** computes the actual position of
+the end-effector (the arm's tip) from these joint angles, and **inverse
+kinematics** does the reverse — computing "what joint angles are needed to
+send the end-effector to this position." This geometric computation is a
+deep subject of robotics in its own right, but from a reinforcement
+learning perspective, one thing matters most: **states and actions are now
+continuous values with real physical meaning.** Section 3.1's MDP
+\\(\mathcal{S}, \mathcal{A}\\) are no longer abstract symbols — they now
+carry units of actual angles and forces.
 
-A good presentation weighs "why you built it that way" and "what you
-learned" more heavily than "what you built." In particular, not hiding the
-parts that didn't work, and diagnosing the cause using concepts from this
-semester — for example, "the loss wasn't decreasing, and on closer
-inspection the gradient was vanishing" — is worth far more than simply
-saying "we achieved 90% accuracy."
+## 13.2 Why Simulation Is Necessary: Sim-to-Real
 
-## 13.2 ML2 Concept Map (Review)
+Training reinforcement learning directly on a physical robot runs into
+several real-world problems — the robot can break down or pose a danger
+to people over tens of thousands of trial-and-error attempts, and above
+all, it's **slow** (the physical world moves far slower than a computer
+simulation). So in practice, a policy is first trained in a **simulation**
+running on a physics engine, and then that policy is transferred to the
+physical robot — this transfer process is called **sim-to-real**.
 
-| Chapter | What We Learned | The Key Question |
-|---|---|---|
-| Ch02 | RNN | How do we remember and process ordered data? |
-| Ch03 | Attention/Transformer | How do we grasp context all at once, without sequential processing? |
-| Ch04 | LLM Pretraining & Prompting | How does next-token prediction lead to such broad capability? |
-| Ch05 | MDP/Policy Evaluation | How do we compute an uncertain future reward right now? |
-| Ch06 | Q-learning | How do we learn optimal behavior without a model of the environment? |
-| Ch07 | DQN | How do we combine neural networks and RL stably? |
-| Ch08 | Policy Gradient/PPO | How do we learn a policy directly in a continuous action space? |
-| Ch09 | RLHF/Alignment | How do we refine a pretrained model in the direction people actually want? |
-| Ch10 | VAE | How do we work around an intractable likelihood to optimize it anyway? |
-| Ch11 | GAN/Diffusion | How do adversarial training and gradual noise removal achieve the same goal through different principles? |
+The problem is that simulation never perfectly reproduces real physics
+(friction coefficients, sensor noise, subtle material differences, etc.) —
+a policy that works well only in simulation and fails on the real robot
+suffers from what's called the **reality gap**. A common way to shrink
+this gap is **domain randomization** — randomizing the simulation's
+physical parameters (friction, mass, lighting, etc.) every training
+episode. Forcing the policy to work well not on one fixed simulation
+setup, but across "a wide variety of physical conditions," tends to make
+it generalize better to any one of them — including the real robot's
+actual physical conditions. This is similar in spirit to how regularization
+"reduces variance by making the model less flexible": here, "diversifying
+the environment itself" keeps the policy from overfitting to any one
+specific simulation setup.
 
-## 13.3 The One Pattern That Runs Through ML1 → ML2
+## 13.3 Gymnasium/PyBullet Robot Environments
 
-Let's give one final summary of the structure that runs through all 26
-chapters across both semesters:
+This semester's exercises run on Gymnasium's robot-like environments —
+the CartPole and Pendulum we already used in Chapters 1 and 9 are actually
+very simplified "robot control" problems too (balancing a pole and
+stabilizing a pendulum are both the smallest possible forms of joint
+control). Let's move to a continuous control problem a bit closer to a
+real robot:
 
-1. **Define a model**: decide the form of the function mapping input to
-   output (a line, a tree, a neural network, a Transformer, ...).
-2. **Quantify how wrong it is**: a loss function (MSE, cross-entropy, TD
-   error, ELBO, a min-max objective, ...) — the form is different every
-   time, but the role is always the same.
-3. **Adjust parameters to reduce that loss**: gradient descent (directly,
-   or via backpropagation) — this is, in the end, the final step of every
-   algorithm covered this semester.
+```python
+import gymnasium as gym
+import numpy as np
 
-Whenever you encounter a new paper or model, developing the habit of
-breaking it down into "what does it say for each of these three
-questions" is the most durable tool these two courses hope to leave you
-with.
+env = gym.make("Pendulum-v1")  # the simplest "joint control" problem with a continuous action space
+obs, info = env.reset(seed=0)
+print("State (cos theta, sin theta, angular velocity):", obs)
+print("Action space:", env.action_space)  # Box(-2.0, 2.0, (1,)) -- a continuous torque value
 
-## 13.4 A Final Look at Recent Trends
+# A simple hand-designed PD (proportional-derivative) controller: push back harder the larger the angle and angular velocity are
+total_reward = 0.0
+for _ in range(50):
+    cos_th, sin_th, thdot = obs
+    theta = np.arctan2(sin_th, cos_th)
+    action = np.clip(-2.0 * theta - 0.5 * thdot, -2.0, 2.0)
+    obs, reward, terminated, truncated, info = env.step([action])
+    total_reward += reward
+print("PD controller's cumulative reward over 50 steps:", round(total_reward, 2))
+env.close()
+```
 
-These are too early to cover this semester, but here's a brief look at a
-few directions of active research right now — the goal isn't depth, but
-sketching a map of where what you've learned can lead.
+This PD (Proportional-Derivative) controller isn't reinforcement learning
+at all — it's just a rule a human designed by hand. Even so, it performs
+far better than random actions (a random policy's 50-step cumulative
+reward is usually around -1200 to -1600, while this simple rule improves
+it to around -240). What this comparison shows: **the goal of
+reinforcement learning is to find, directly from data, a policy that does
+better than a hand-designed controller like this, or that works even in
+situations too complex for a human to design rules for.**
 
-- **Theorem Proving**: a research area where LLMs are used to actually
-  prove mathematical theorems. Building on Chain-of-Thought (Chapter 4),
-  this is developing toward models that generate and verify step-by-step
-  arguments themselves.
-- **Autoformalization**: research on automatically converting
-  mathematical claims written in natural language by humans into a
-  formal language that a computer can verify — aiming at the goal of "the
-  computer itself checks whether a proof is correct."
-- **Extensions of Chain-of-Thought (CoT)**: the CoT prompting we saw in
-  Chapter 4 is now developing further, into training the model itself to
-  "reason across multiple steps" (reasoning models) — the post-training
-  we covered in Chapter 9 (RLHF and similar) is exactly one of the tools
-  used to refine this reasoning ability.
+## 13.4 Applying PPO to Continuous Control
 
-## 13.5 After the Presentation: What's Next
+Chapter 11's PPO extends naturally not just to discrete actions (a softmax
+policy) but to continuous ones too — just have the network output the
+mean and standard deviation of a normal distribution for each action
+dimension:
 
-If you want to dig deeper after finishing these two courses, the parts
-each chapter flagged as "beyond this semester's scope" (LSTM/GRU's gate
-equations, Actor-Critic's detailed derivation, Diffusion's score-matching
-theory, the concrete implementation of PEFT/LoRA, and more) are the
-natural next targets — if this semester's goal was to make these concepts
-feel unintimidating the first time you met them, what comes next is
-deepening each one according to your own interests.
+\\[\pi_\theta(a|s) = \mathcal{N}(a; \mu_\theta(s), \sigma_\theta(s)^2)\\]
+
+The log-probability \\(\log \pi_\theta(a|s)\\) is computed directly from
+the normal distribution's density function, and Chapter 10.4's
+log-derivative trick and Chapter 11's clipped objective keep exactly the
+same shape regardless of whether actions are discrete or continuous —
+only "how the action is parameterized" changes, while the optimization
+machinery behind it stays the same. This is a major strength of
+policy-based methods.
+
+```python
+import math
+
+def gaussian_log_prob(action, mu, sigma):
+    # log-probability for a continuous action -- the only difference from softmax is using a normal distribution
+    return -0.5 * math.log(2 * math.pi * sigma**2) - (action - mu)**2 / (2 * sigma**2)
+```
+
+**Robot simulation is the proving ground that moves the algorithms learned
+so far (DQN, PPO) into a more realistic setting — a continuous action
+space governed by actual physical laws. The next chapter extends this
+simulation to more sophisticated physics engines, and to large-scale
+GPU-accelerated environments.**
+
+---
+
+## Exercises
+
+**1. (Hands-on)** Run the code above as-is, then double the PD
+controller's coefficients (`-2.0`, `-0.5`), and also try halving them, and
+compare how the 50-step cumulative reward changes. Describe what problem
+occurs when the coefficients are too large or too small (does it
+oscillate? does it respond too slowly?).
+
+**2. (Coding)** Complete `gaussian_log_prob` above (key lines left blank):
+
+```python
+import math
+
+def gaussian_log_prob(action, mu, sigma):
+    # ADD ADDITIONAL CODE HERE!!
+    # log of the normal distribution's density function: -0.5*log(2*pi*sigma^2) - (action-mu)^2/(2*sigma^2)
+
+print(round(gaussian_log_prob(0.0, 0.0, 1.0), 4))   # log-density of the standard normal at x=0, about -0.9189
+print(round(gaussian_log_prob(2.0, 0.0, 1.0), 4))   # further from the mean means a smaller (more negative) log-probability
+```
+
+**3. (Conceptual)** Explain, in two or three sentences, why domain
+randomization plays a role similar to regularization, from the
+perspective of "preventing the model from overfitting to one specific
+condition."

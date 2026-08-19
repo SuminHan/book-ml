@@ -1,5 +1,7 @@
 # Chapter 6. 시간차 학습 (Temporal-Difference Learning)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter06_q_learning.ipynb)
+
 1989년, 크리스 왓킨스(Chris Watkins)는 박사 학위 논문에서 **Q-learning**
 이라는 알고리즘을 제안했다. Chapter 5의 몬테카를로는 모델 없이도 배울 수
 있었지만, 에피소드가 끝날 때까지 기다려야 리턴을 계산할 수 있었다.

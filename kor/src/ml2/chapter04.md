@@ -1,5 +1,7 @@
 # Chapter 4. 동적계획법 (Dynamic Programming)
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter04_policy_evaluation.ipynb)
+
 Chapter 3에서 MDP를 정식화했지만, "누적 보상을 최대화하는 행동을 고른다"는
 목표는 여전히 계산 불가능해 보인다 — 무한히 먼 미래까지 내다봐야 하는
 것처럼 보이기 때문이다. 벨만의 통찰은 이 무한합을 **재귀적 관계**로 다시

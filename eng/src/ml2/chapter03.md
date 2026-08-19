@@ -1,188 +1,141 @@
-# Chapter 3. Attention & Transformer
+# Chapter 3. Markov Decision Processes
 
-In 2017, researchers at Google Brain gave their paper a rather provocative
-title: **"Attention Is All You Need."** Until then, the best-performing
-sequence models were all built on RNNs (or their variant, LSTM). This paper
-stripped out the recurrent structure entirely and achieved better
-performance than RNNs using only an **attention** mechanism. This structure
-is the **Transformer**, and it's the foundation of nearly every large
-language model (LLM) we use today.
+In the 1950s, mathematician Richard Bellman coined the term "curse of
+dimensionality" while developing an optimization technique called dynamic
+programming. His core insight — "don't solve a complex problem all at
+once; break it into smaller subproblems and combine their answers
+recursively" — forms the theoretical backbone of reinforcement learning
+today. This chapter adds "state" to Chapter 2's bandits, building the
+framework that lets us define a reinforcement learning problem with
+mathematical rigor: the **MDP** (Markov Decision Process).
 
-## 3.1 The Fundamental Problem With RNN Sequentiality
+## 3.1 The Five Components of an MDP
 
-The RNN we covered in Chapter 2 has to process words one at a time, in
-order — to see the 100th word, you must go through words 1 through 99 in
-sequence first. This creates two problems: (1) GPUs are built for parallel
-computation, but a sequential structure can't exploit that parallelism, so
-it's slow. (2) Information from far in the past fades as it passes through
-many steps (exactly the vanishing gradient problem from Chapter 2).
+An MDP is defined by five components: \\((\mathcal{S}, \mathcal{A}, P, R,
+\gamma)\\)
 
-## 3.2 The Idea Behind "Attention"
+- \\(\mathcal{S}\\): the set of possible states
+- \\(\mathcal{A}\\): the set of possible actions
+- \\(P(s'|s,a)\\): the probability of transitioning to state \\(s'\\)
+  after taking action \\(a\\) in state \\(s\\)
+- \\(R(s,a)\\): the immediate reward received for taking action \\(a\\) in
+  state \\(s\\)
+- \\(\gamma \in [0,1)\\): the discount factor
 
-Attention's intuition is simple: "to understand this word, look at **every
-other word in the sentence at once**, and pay more attention to whichever
-ones are relevant." In the sentence "the animal didn't cross the road
-because **it** was too tired," figuring out whether "it" refers to "the
-animal" or "the road" requires looking at the whole sentence at once.
+Comparing this to Chapter 2's bandits shows exactly what's been added —
+bandits had neither \\(\mathcal{S}\\) nor \\(P\\) (pulling an arm didn't
+lead to a "next state"). An MDP explicitly captures the fact that the
+current action affects the entire future through the next-state transition
+\\(P(s'|s,a)\\).
 
-## 3.3 Query, Key, Value
+## 3.2 The Markov Property
 
-Each word (more precisely, each word's embedding vector) is transformed
-into three vectors: **Query** (Q) — "what am I looking for right now,"
-**Key** (K) — "what information do I hold," **Value** (V) — "what I
-actually pass along." All three are obtained by multiplying the same input
-embedding \\(x\\) by three different learnable weight matrices:
+**The Markov property**: the next state depends only on the **current**
+state and action — how you got there (the entire past history) doesn't
+matter:
 
-\\[Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V\\]
+\\[P(s_{t+1} | s_t, a_t, s_{t-1}, a_{t-1}, \ldots, s_0) = P(s_{t+1} | s_t, a_t)\\]
 
-## 3.4 Scaled Dot-Product Attention
+For example, knowing only a chess board's current arrangement is enough to
+decide the next move; the sequence of moves that led there is irrelevant.
+Thanks to this assumption, remembering only "the current state" (rather
+than "the entire history so far") is enough — this is exactly why the
+algorithms we'll cover can make decisions based on a single state.
 
-How "relevant" one word's Query is to every word's Key is measured via a
-dot product:
+## 3.3 Cumulative Reward and the Discount Factor
 
-\\[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\\]
+Reinforcement learning's goal isn't a single step's reward, but the sum of
+all future rewards — the **return** \\(G_t\\):
 
-Breaking this down step by step:
+\\[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k}\\]
 
-1. \\(QK^T\\): a single matrix computing the Query-Key dot product for
-   every pair of words at once (each row = the raw relevance score of one
-   word to every other word).
-2. Divide by \\(\sqrt{d_k}\\) (the square root of the Key vector's
-   dimension): dot products tend to grow larger with dimension, so this
-   rescaling prevents softmax from producing only extreme values (near 0
-   or 1).
-3. **Softmax** turns each row into a probability distribution (summing to
-   1) — "the proportion of attention this word distributes to the
-   others."
-4. That probability is used to take a weighted sum of \\(V\\) (what each
-   word actually contributes) — the result is a new vector that mixes in
-   the content of relevant words, weighted by how relevant they are.
+**Why do we need the discount factor \\(\gamma\\)?**: (1) Mathematically,
+as long as \\(\gamma < 1\\), this infinite series always converges when
+rewards are bounded (a geometric series). If \\(\gamma=1\\), the return
+can diverge to infinity in a never-ending task. (2) Intuitively, "a reward
+of 1 right now" is often considered more valuable than "a reward of 1, 10
+steps from now" — this points the same direction as human time preference
+or the concept of interest rates in finance. An agent with \\(\gamma\\)
+close to 0 is "short-sighted" (only cares about immediate reward), while
+one close to 1 is "long-sighted" (properly weighs even distant future
+rewards).
 
 ```python
-import math
+import gymnasium as gym
 
-def softmax(row):
-    m = max(row)
-    exps = [math.exp(v - m) for v in row]
-    total = sum(exps)
-    return [e / total for e in exps]
+env = gym.make("CartPole-v1")
+obs, info = env.reset(seed=0)
 
-def attention(Q, K, V, d_k):
-    scores = [[sum(Q[i][t] * K[j][t] for t in range(d_k)) / math.sqrt(d_k)
-               for j in range(len(K))] for i in range(len(Q))]
-    weights = [softmax(row) for row in scores]
-    output = [[sum(weights[i][j] * V[j][t] for j in range(len(V)))
-               for t in range(len(V[0]))] for i in range(len(Q))]
-    return output, weights
+# Let's actually confirm the MDP's five components in this environment
+print("State space S:", env.observation_space)   # a 4-dimensional continuous vector
+print("Action space A:", env.action_space)         # 2 discrete actions (push left/right)
+
+total_return, gamma, discount = 0.0, 0.95, 1.0
+for _ in range(10):
+    action = env.action_space.sample()
+    obs, reward, terminated, truncated, info = env.step(action)
+    total_return += discount * reward   # directly accumulate G_t
+    discount *= gamma
+    if terminated or truncated:
+        break
+print("Discounted return G_0 over 10 steps:", round(total_return, 3))
+env.close()
 ```
 
-## 3.5 Self-Attention: A Sentence Looking at Itself
+In this code, `reward` is the immediate reward \\(R(s,a)\\) at each step,
+and the rule the environment uses internally to transition to the next
+state is exactly \\(P(s'|s,a)\\) — Gymnasium environments simply hide this
+transition probability behind the `step()` function, but it corresponds
+exactly to the MDP's definition.
 
-When Q, K, and V all come from **the same sentence**, this is called
-"self-attention" — each word computes its relevance to every other word in
-the same sentence (including itself). This is the mechanism behind
-figuring out whether "it" refers to "the animal" from this chapter's
-opening example: "it"'s Query is trained to produce its highest dot-product
-score against "the animal"'s Key, when computed against every word's Key
-in the sentence.
+## 3.4 Toward the Value Function
 
-## 3.6 Multi-Head Attention
+The goal "maximize cumulative reward" is now well-defined, but we still
+have no way to compute it — we seem to need to look infinitely far into
+the future. The next chapter (dynamic programming) rewrites this infinite
+sum as a recursive form — the **Bellman equation** — turning it into an
+actually computable procedure.
 
-Instead of using just one set of Q, K, V, several sets ("heads") are run
-in parallel, each learning relevance from a different perspective — it's
-commonly observed that one head focuses on grammatical relationships
-(subject-verb), while another focuses on semantic relationships (synonyms).
-The results from all heads are concatenated and passed through one more
-linear transformation to produce the final output.
-
-## 3.7 Positional Encoding: How Order Gets Injected
-
-The attention operation itself doesn't distinguish order at all —
-\\(QK^T\\) computes the same relevance score for each pair of words
-regardless of their order (it treats them like a set). But in "the dog
-chases the cat," order changes the meaning. So the Transformer **adds** a
-vector encoding each word's position (positional encoding — a fixed
-pattern built from sine/cosine functions) to each word's embedding — this
-way, the same word at a different position produces a different input
-vector, letting attention exploit order indirectly.
-
-## 3.8 Advantages Over RNN
-
-Self-attention computes every pair of words **all at once**, in
-parallel — there's no need for sequential processing, so it fully exploits
-GPU parallelism, and even "the relevance between word 1 and word 100" is
-computed directly, without passing through 99 intermediate steps
-(structurally far less prone to vanishing gradients). The tradeoff is a
-new cost that scales with the square of the sentence length (\\(QK^T\\) is
-an \\(n \times n\\) matrix) — this becomes a practical limitation when
-handling very long documents.
-
-**A single idea — look at every word at once, and compute relevance
-directly between all of them — is the biggest change in deep learning over
-the past several years.**
+**An MDP is just Chapter 2's bandit problem with one fact added: the
+current action changes the state itself in the future. But that one
+difference makes reinforcement learning a far harder, and far more
+interesting, problem.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete `scaled_dot_product_attention` below (key lines
-left blank):
+**1. (Coding)** Using the code above as a reference, create a
+`FrozenLake-v1` (`is_slippery=False`) environment and print
+`env.observation_space` and `env.action_space` to check whether the state
+and action spaces are each discrete or continuous, and how many values
+each has. Describe in one sentence how this compares to CartPole.
 
 ```python
-import math
+import gymnasium as gym
 
-def softmax(row):
-    m = max(row)
-    exps = [math.exp(v - m) for v in row]
-    total = sum(exps)
-    return [e / total for e in exps]
-
-def scaled_dot_product_attention(Q, K, V, d_k):
-    # ADD ADDITIONAL CODE HERE!!
-    # 1. scores[i][j] = (Q[i] . K[j]) / sqrt(d_k)
-    # 2. weights = apply softmax to each row
-    # 3. output[i] = weighted sum of V using weights[i]
-
-    return output, weights
-
-Q = [[1,0],[0,1]]
-K = [[1,0],[0,1]]
-V = [[10,0],[0,10]]
-output, weights = scaled_dot_product_attention(Q, K, V, d_k=2)
-print(weights)  # each word gives more weight to "itself"
+env = gym.make("FrozenLake-v1", is_slippery=False)
+# ADD ADDITIONAL CODE HERE!!
+# print observation_space, action_space, and compare with CartPole
 ```
 
-**2. (Hand derivation, Tier C — fallback prepared)** For a 2-word sentence,
-you're given \\(Q = \begin{pmatrix}1 & 0\\ 0 & 1\end{pmatrix}\\),
-\\(K = \begin{pmatrix}1 & 1\\ 1 & 0\end{pmatrix}\\), \\(V =
-\begin{pmatrix}5 & 0\\ 0 & 5\end{pmatrix}\\) (\\(d_k=2\\)).
+**2. (Conceptual)** Think of a situation where the Markov property seems
+like it would actually fail to hold (e.g., in self-driving, deciding based
+on "just the current camera frame" alone — information from a sign passed
+a moment ago in fog might still be needed). Propose, in one paragraph, how
+you'd redefine the state to restore the Markov property in that case (e.g.,
+including the last several frames in the state).
 
-Compute \\(QK^T\\) by hand, divide by \\(\sqrt{d_k}\\), apply softmax to
-each row to get the attention weight matrix, and finally compute the
-output as a weighted sum with \\(V\\).
+**3. (Hand derivation, Tier B — hints provided)** For a constant reward
+\\(R\\) at every step (i.e., \\(R_t = R\\) for all \\(t\\)), show that the
+return \\(G_t = \sum_{k=0}^\infty \gamma^k R\\) converges to the
+closed-form \\(G_t = \frac{R}{1-\gamma}\\) when \\(\gamma < 1\\).
 
-**Fill-in-the-blank fallback version** (if free calculation is too
-difficult):
+**Hint**: this follows directly from the geometric series formula
+\\(\sum_{k=0}^\infty x^k = \frac{1}{1-x}\\) (for \\(|x|<1\\)). Compute
+\\(G_t\\) directly for \\(R=1, \gamma=0.9\\), then compute it again for
+\\(\gamma=0.99\\) and see how the value changes.
 
-```
-Step 1: compute QK^T (a 2x2 matrix)
-  (QK^T)[0][0] = Q[0].K[0] = 1*1 + 0*1 = ______________
-  (QK^T)[0][1] = Q[0].K[1] = 1*1 + 0*0 = ______________
-  (QK^T)[1][0] = Q[1].K[0] = 0*1 + 1*1 = ______________
-  (QK^T)[1][1] = Q[1].K[1] = 0*1 + 1*0 = ______________
-
-Step 2: divide every element by sqrt(d_k) = sqrt(2) ≈ 1.41
-  scaled[0] = [______________, ______________]
-  scaled[1] = [______________, ______________]
-
-Step 3: apply softmax to the first row
-  exp(scaled[0][0]) = ______________  (use a calculator)
-  exp(scaled[0][1]) = ______________
-  weights[0] = [______________, ______________]  (normalized to sum to 1)
-
-Step 4: output[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
-       = [______________, ______________]
-```
-
-**Confirm correctness**: check your completed calculation against the
-output of `scaled_dot_product_attention(Q, K, V, d_k=2)` from Exercise 1.
+**Confirm correctness**: based on your calculations, explain in one
+sentence why \\(G_t\\) grows larger (approaching divergence) as
+\\(\gamma\\) gets closer to 1.

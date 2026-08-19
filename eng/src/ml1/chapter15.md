@@ -1,5 +1,8 @@
 # Chapter 15. Latent-Variable Generative Models: From EM/GMM to VAE, GAN, and Diffusion
 
+[![Open In Colab: VAE](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_vae_elbo.ipynb)
+[![Open In Colab: GAN](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_gan.ipynb)
+
 In 1977, statisticians Arthur Dempster, Nan Laird, and Donald Rubin
 published "Maximum Likelihood from Incomplete Data via the EM Algorithm,"
 showing that several seemingly unrelated statistical problems actually

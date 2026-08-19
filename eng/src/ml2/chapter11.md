@@ -1,167 +1,164 @@
-# Chapter 11. Generative Models II: Adversarial & Score-Based
+# Chapter 11. Advanced Policy Optimization: PPO (Proximal Policy Optimization)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter11_gan.ipynb)
+Chapter 10's REINFORCE and Actor-Critic share a common limitation: once
+you collect one trajectory and use it for a single gradient ascent step,
+that data gets thrown away (on-policy) — the moment the policy changes,
+probabilities/gradients computed from the old data are no longer accurate.
+On top of that, even a single gradient ascent step that's too large can
+suddenly push the policy in a bad direction it can't recover from — this
+is disastrous in settings like robot control, where "one bad update
+collapsing the policy" is hard to walk back from. **PPO** (Proximal Policy
+Optimization, Schulman et al., proposed by OpenAI in 2017) is a practical
+solution that reuses data several times while still preventing the policy
+from moving too far in a single update.
 
-In 2014, Ian Goodfellow, then a graduate student, has said in several later
-interviews that he came up with an idea during a bar argument with
-friends: instead of training a model to produce realistic fake images
-directly, **what if two neural networks competed against each other?**
-Set one up as a forger creating fakes (the Generator) and the other as an
-appraiser distinguishing real from fake (the Discriminator), and have the
-forger try to fool the appraiser while the appraiser tries to catch the
-forger — wouldn't the forger's skill keep improving until it approached
-the real thing? This idea is the **GAN** (Generative Adversarial Network).
+## 11.1 The Intuition of a Trust Region
 
-## 11.1 A Completely Different Principle From Last Chapter
+Imagine descending a mountain in thick fog, where you can only see one
+step ahead. If you take a big step blindly in the steepest downhill
+direction, you might not know how the terrain changes in that direction
+and could fall off a cliff. The safe strategy is "limit the size of each
+step to a range you can trust (a trust region)" — this is exactly PPO's
+core idea. By constraining how much the policy can change in a single
+update, it stays within a narrow range where each step is actually
+guaranteed to be an improvement.
 
-Chapter 10's VAE had a clear objective function: "maximize the likelihood
-(the probability of generating the data)." GAN has no such single
-objective — instead, two networks are trained simultaneously with
-different, even **opposing**, goals. This is a fundamentally different
-game-theoretic setup from the "minimize one loss function" framework
-we've used so far.
+## 11.2 The Probability Ratio and Importance Sampling
 
-## 11.2 GAN: The Generator-Discriminator Min-Max Game
+The key tool is the **probability ratio** — the ratio between the
+probability the policy we're currently updating, \\(\pi_\theta\\), assigns
+to an action, and the probability the policy used to collect the data,
+\\(\pi_{\theta_{\text{old}}}\\), assigned to that same action:
 
-- **Generator** \\(G\\): takes random noise \\(z \sim p(z)\\) (usually
-  standard normal) and produces a fake sample \\(G(z)\\).
-- **Discriminator** \\(D\\): takes data as input and outputs the
-  probability \\(D(x) \in [0,1]\\) that it's real (exactly the same form
-  as Chapter 2's logistic regression).
+\\[r_t(\theta) := \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)},
+\quad r_t(\theta_{\text{old}}) = 1\\]
 
-Objective function (min-max game):
+\\(r_t > 1\\) means the action is now preferred more than before;
+\\(r_t < 1\\) means less. This ratio lets us reuse "data collected by the
+old policy" from "the new policy's perspective" (**importance sampling** —
+the very same tool that first appeared for MC's off-policy learning in
+Section 5.4):
 
-\\[\min\_G \max\_D V(D,G) = \mathbb{E}\_{x \sim p\_{\text{data}}}[\log D(x)] +
-\mathbb{E}\_{z \sim p(z)}[\log(1 - D(G(z)))]\\]
+\\[L^{IS}(\theta) = \mathbb{E}_t[r_t(\theta) A_t]\\]
 
-- **The discriminator's perspective (\\(\max_D\\))**: wants \\(D(x)\\)
-  close to 1 for real data and \\(D(G(z))\\) close to 0 for fake data —
-  this value grows the better it distinguishes real from fake.
-- **The generator's perspective (\\(\min_G\\))**: wants \\(D(G(z))\\)
-  close to 1 (wants to fool the discriminator).
+\\(A_t\\) is the advantage defined in Section 10.7, \\(A_t := G_t -
+V(s_t)\\). The problem is that simply maximizing this objective as-is can
+let training run away, pushing \\(r_t\\) arbitrarily high (endlessly
+reinforcing the same action) — the data gets reused, but there's no
+guarantee anywhere that "the policy doesn't move too far."
+
+## 11.3 GAE: Estimating the Advantage More Stably
+
+Section 10.7's advantage, \\(A_t = G_t - V(s_t)\\), still uses the actual
+return \\(G_t\\) directly, so its variance stays high. **GAE**
+(Generalized Advantage Estimation) applies the exact same idea from
+Chapter 7's n-step/eligibility traces to advantage estimation — it takes a
+weighted average of several \\(n\\)-step advantage estimates using
+\\(\lambda\\), finding a compromise that lowers variance while accepting
+just enough bias:
+
+\\[A_t^{\text{GAE}} = \sum_{k=0}^\infty (\gamma\lambda)^k \delta_{t+k},
+\qquad \delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)\\]
+
+\\(\delta_t\\) is exactly Section 6.1's TD error — GAE boils down to
+"exponentially weighting and summing TD errors from multiple time steps,
+the same way eligibility traces do, to produce a single advantage
+estimate." With \\(\lambda=0\\), it reduces to a TD(0)-based advantage
+(low variance, high bias); with \\(\lambda=1\\), it approaches a Monte
+Carlo-based advantage (unbiased, high variance) — Chapter 7.2's dial shows
+up here again. Real-world PPO implementations almost always use \\(A_t\\)
+computed via GAE.
+
+## 11.4 Clipping: Preventing Runaway Updates
+
+PPO's solution is simple — if \\(r_t\\) strays outside
+\\([1-\epsilon, 1+\epsilon]\\) (usually \\(\epsilon = 0.2\\)), clip away
+whatever gain came from going outside that range:
+
+\\[L^{CLIP}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta) A_t,
+\text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t\right)\right]\\]
+
+Why the min: taking the more "pessimistic" (smaller) of the clipped and
+unclipped values as the objective self-limits the reward for pushing the
+policy too far in one direction. Intuition: if the advantage is positive
+(a good action) and \\(r_t\\) has already exceeded \\(1+\epsilon\\),
+pushing further gives zero gradient (it's already been pushed enough) —
+conversely, if the advantage is negative (a bad action) and \\(r_t\\) has
+already dropped below \\(1-\epsilon\\), the gradient vanishes there too
+(it's already been suppressed enough). The result is an implicit
+**trust region** that neither over-reinforces good actions nor
+over-suppresses bad ones — Section 11.1's "range you can trust," achieved
+with a single clipping operation instead of having to solve an explicit
+constrained optimization problem.
 
 ```python
-def discriminator_loss(D_real, D_fake):
-    # D_real = D(real data), D_fake = D(fake data) -- both are (0,1) probabilities
-    return -(math.log(D_real) + math.log(1 - D_fake))  # loss the discriminator minimizes
-
-def generator_loss(D_fake):
-    return -math.log(D_fake)  # loss the generator minimizes (pushes D_fake toward 1)
+def ppo_clip_loss(ratio, advantage, epsilon=0.2):
+    unclipped = ratio * advantage
+    clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
+    return min(unclipped, clipped)  # one sample's worth of the objective (to be maximized)
 ```
 
-## 11.3 Why We Need to Discuss "Equilibrium"
+## 11.5 Why PPO Became the Standard
 
-In ordinary supervised learning, minimizing a single loss function was the
-whole story. GAN trains two networks simultaneously with **opposing**
-goals, so we first have to redefine what "training is done" even means.
-In game theory, the stable state of a situation like this (each player
-choosing their best strategy given the other's) is called a **Nash
-equilibrium** — a state where neither side can improve by changing their
-own strategy alone.
+Before PPO, the same problem (policy collapse from overly large updates)
+was solved by **TRPO** (Trust Region Policy Optimization, 2015) — an
+explicit KL-divergence constraint combined with heavyweight optimization
+involving second derivatives (the Fisher information matrix), conjugate
+gradient, and line search. PPO replaces that entire complex machinery
+with a single line of clipping, while achieving similar stability — a
+choice of "an approximation that's easy to implement and works well in
+practice" over "a theoretically airtight guarantee" (TRPO's monotonic
+improvement guarantee).
 
-Theoretically, this game's Nash equilibrium is proven to be the point
-where \\(D(x) = 0.5\\) (the discriminator cannot tell real from fake at
-all) and the distribution \\(G\\) produces exactly matches the real data
-distribution — the theoretical endpoint is "the generator is so perfect
-that the discriminator is left just guessing." This chapter's exercises
-argue this equilibrium directly.
+This practicality is why PPO became the most widely used policy-based
+algorithm today: it's used in robot locomotion control, OpenAI Five
+(Dota 2), AlphaStar (StarCraft II), and as the core tool of RLHF for
+tuning language models to human feedback — general enough to apply
+directly to both continuous control (a robot's joint forces) and discrete
+choice (picking the next token).
 
-## 11.4 Instability in Practice
-
-Unlike the theory, actual GAN training is often unstable — a common
-problem is **mode collapse**, where the generator crowds around just a
-few patterns that fool the discriminator and loses diversity. VAE tends to
-be theoretically stable but produces somewhat blurry results, while GAN
-produces sharp results but is finicky to train — this tradeoff is the
-practical difference between the two principles.
-
-## 11.5 Another Principle: Diffusion — Gradually Reversing Noise
-
-**Diffusion models** are a third, completely different approach.
-
-**Forward process**: add tiny amounts of noise to a real image \\(x_0\\),
-repeated \\(T\\) times, until \\(x_T\\) becomes pure random noise (this
-process is a fixed procedure, not something that's trained).
-
-**Reverse process**: a neural network is trained to predict "what the
-noise looked like one step earlier" — that is, it repeatedly learns the
-small step of reconstructing \\(x_{t-1}\\) from \\(x_t\\). Once trained, a
-new image is created by starting from pure noise \\(x_T\\) and repeating
-this reverse step \\(T\\) times.
-
-Unlike GAN, which tries to turn noise into an image "all at once,"
-Diffusion breaks that hard problem into \\(T\\) tiny steps — each step is
-the much easier problem of "removing just a tiny bit of noise," so
-training is far more stable overall. The tradeoff is that generating a
-single image requires \\(T\\) repeated steps, making it slower than GAN.
-The most widely used image generation models today (Stable Diffusion and
-similar) use this principle.
-
-## 11.6 Comparing the Three Principles
-
-| | VAE (likelihood-based) | GAN (adversarial) | Diffusion (score-based) |
-|---|---|---|---|
-| Training objective | Maximize ELBO | Equilibrium of a min-max game | Minimize noise-prediction error at each step |
-| Training stability | Relatively stable | Prone to instability | Stable |
-| Generation quality | Somewhat blurry | Sharp | Sharp |
-| Generation speed | Fast (one shot) | Fast (one shot) | Slow (requires iteration) |
-
-**If we had learned only one principle (VAE), it would be easy to
-misunderstand "generative model = likelihood maximization." Only by seeing
-all three side by side does it become clear how many different ways the
-problem of generative modeling itself can be solved.**
+**Where Q-learning is an indirect strategy — "evaluate how good things
+are, then pick the best" — policy-based methods learn "what to do"
+directly. GAE reduces the variance of the advantage estimate, and clipping
+keeps updates based on that estimate from growing too large — this
+stability is exactly why PPO is the standard for the continuous control
+problems in the robot simulation we'll cover in Chapters 13-14.**
 
 ---
 
 ## Exercises
 
-**1. (Coding)** Complete `discriminator_loss` and `generator_loss` below
-(key lines left blank):
+**1. (Coding)** Complete `ppo_clip_loss` above, and `td_error`, which
+computes one term of GAE, \\(\delta_t = r_t + \gamma V(s_{t+1}) -
+V(s_t)\\) (key lines left blank):
 
 ```python
-import math
-
-def discriminator_loss(D_real, D_fake):
+def td_error(r, V_s, V_s_next, gamma):
     # ADD ADDITIONAL CODE HERE!!
-    # -(log(D_real) + log(1 - D_fake))
 
-def generator_loss(D_fake):
+def ppo_clip_loss(ratio, advantage, epsilon=0.2):
     # ADD ADDITIONAL CODE HERE!!
-    # -log(D_fake)
+    # unclipped = ratio * advantage
+    # clipped = ratio clipped to [1-epsilon, 1+epsilon], times advantage
+    # return the smaller of the two
 
-print(discriminator_loss(D_real=0.9, D_fake=0.1))  # the better it distinguishes, the smaller the loss
-print(generator_loss(D_fake=0.9))                  # the better it fools the discriminator, the smaller the loss
+print(ppo_clip_loss(ratio=1.5, advantage=1.0, epsilon=0.2))  # 1.2 (the clipped value is smaller)
+print(ppo_clip_loss(ratio=0.5, advantage=1.0, epsilon=0.2))  # 0.5 (the unclipped value is smaller)
+print(ppo_clip_loss(ratio=1.5, advantage=-1.0, epsilon=0.2)) # -1.5 (note the sign flip when advantage is negative)
 ```
 
-**2. (Hand derivation, Tier C — fallback prepared)** For a fixed generator
-\\(G\\), the discriminator's optimal solution is known to be
+**2. (Conceptual)** Explain which methods from Chapter 7 correspond to
+GAE's \\(\lambda=0\\) and \\(\lambda=1\\) respectively, and describe which
+side of the bias/variance tradeoff each extreme suffers from.
 
-\\[D^*(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\\]
+**3. (Hand derivation, Tier B — hints provided)** Show that substituting
+\\(\lambda = 0\\) into \\(A_t^{\text{GAE}} = \sum_{k=0}^\infty
+(\gamma\lambda)^k \delta_{t+k}\\) leaves only \\(A_t^{\text{GAE}} =
+\delta_t\\) (a single TD error). Using the definition \\(\delta_t = r_t +
+\gamma V(s_{t+1}) - V(s_t)\\), confirm this is exactly the same as Section
+10.7's 1-step advantage approximation, \\(A_t \approx r_t + \gamma
+V(s_{t+1}) - V(s_t)\\).
 
-Accepting this fact, show that if the generator becomes theoretically
-perfect, \\(p_G = p_{\text{data}}\\), then \\(D^*(x) = 0.5\\) (for all
-\\(x\\)). Then argue, in one paragraph, why neither the discriminator nor
-the generator can improve further at this point, and explain why this is
-a Nash equilibrium.
-
-**Fill-in-the-blank fallback version** (if free-form argument is too
-difficult):
-
-```
-Step 1: assume D*(x) = p_data(x) / (p_data(x) + p_G(x)).
-
-Step 2: if p_G(x) = p_data(x):
-  D*(x) = p_data(x) / (______________) = ______________
-
-Step 3: this means the discriminator is ______________ (good at telling them apart / completely confused).
-
-Step 4: if the generator changes strategy here, it ______________ (gets better / gets worse)
-Step 5: if the discriminator changes strategy here, it ______________ (gets better / gets worse)
-
-Conclusion: the state where neither side can benefit from changing strategy alone = ______________ (name of the equilibrium)
-```
-
-**Confirm correctness**: check that the loss values computed in Exercise 1
-match the values at this equilibrium point (\\(D=0.5\\)), and note in one
-sentence why reaching this equilibrium in actual GAN training isn't as
-easy as the theory suggests (e.g., mode collapse).
+**Confirm correctness**: as \\(\lambda\\) increases from 0 toward 1, GAE
+starts including TD errors from further into the future — explain in one
+sentence why this means it's "moving toward Monte Carlo."
