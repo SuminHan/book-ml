@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-fafc8d86.js";
+            window.path_to_searchindex_js = "../searchindex-de83d01a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-82e00ac7.js"></script>
+        <script src="../toc-4fab332e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -188,125 +188,12 @@
 이 질문의 답이 <strong>서포트 벡터 머신</strong>(Support Vector Machine, SVM)이다 —
 2010년대 딥러닝이 대세가 되기 전까지, 손글씨 인식부터 텍스트 분류까지
 가장 널리 쓰인 분류기였다.</p>
-<h2 id="51-마진-최대화와-서포트-벡터"><a class="header" href="#51-마진-최대화와-서포트-벡터">5.1 마진 최대화와 서포트 벡터</a></h2>
-<p>두 클래스가 완벽히 선형분리 가능한 데이터를 생각해보자. 두 클래스를 가르는
-직선(초평면)은 무수히 많다 — 그런데 어떤 직선은 한쪽 클래스에 아슬아슬하게
-붙어 있고, 어떤 직선은 양쪽에서 넉넉하게 떨어져 있다. SVM은 <strong>마진</strong>(margin,
-경계선에서 가장 가까운 데이터 점까지의 거리)이 <strong>가장 큰</strong> 직선을 고른다 —
-새 데이터가 조금 다르게 나타나도 잘못 분류될 여지가 가장 적은 경계이기
-때문이다.</p>
-<p>결정 경계를 \(w^Tx+b=0\)으로 두면, 각 데이터가 올바른 쪽에 마진 1 이상의
-여유를 두고 있어야 한다는 제약은:</p>
-<p>\[y^{(i)}(w^Tx^{(i)}+b) \ge 1, \qquad y^{(i)} \in {-1, +1}\]</p>
-<p>(로지스틱회귀와 달리 SVM에서는 라벨을 \(0/1\)이 아니라 \(-1/+1\)로 쓰는
-게 관례다.) 이 제약 아래에서 마진의 크기는 \(\frac{2}{|w|}\)로
-계산되므로, 마진을 최대화하는 것은 \(|w|\)를 <strong>최소화</strong>하는 것과
-같다. 이 제약을 정확히 등호로 만족시키는(경계에 가장 가까운) 데이터
-점들을 <strong>서포트 벡터</strong>(support vector)라 부른다 — 이름 그대로, 이
-점들만이 경계의 위치를 “떠받친다.” 서포트 벡터가 아닌 나머지 점들은
-경계를 살짝 옮기거나 지워도 결과에 전혀 영향을 주지 않는다 — 로지스틱
-회귀가 <strong>모든</strong> 데이터를 손실함수에 반영하는 것과 대조적이다.</p>
-<h2 id="52-소프트-마진-완벽히-나뉘지-않는-데이터"><a class="header" href="#52-소프트-마진-완벽히-나뉘지-않는-데이터">5.2 소프트 마진: 완벽히 나뉘지 않는 데이터</a></h2>
-<p>실전 데이터는 노이즈 때문에 완벽하게 선형분리되지 않는 경우가 대부분이다.
-<strong>소프트 마진</strong>(soft margin) SVM은 각 데이터마다 위반을 어느 정도
-허용하는 여유 변수(slack variable) \(\xi^{(i)} \ge 0\)를 도입한다:</p>
-<p>\[y^{(i)}(w^Tx^{(i)}+b) \ge 1 - \xi^{(i)}\]</p>
-<p>전체 목적함수는 “마진을 최대화하고 싶다”(\(|w|\) 최소화)와 “위반을
-최소화하고 싶다”(\(\sum \xi^{(i)}\) 최소화) 사이의 트레이드오프가 된다:</p>
-<p>\[J(w,b) = \frac{1}{2}|w|^2 + C\sum_{i=1}^m \xi^{(i)}\]</p>
-<p>이 목적함수는 사실 <strong>힌지 손실</strong>(hinge loss) \(\max(0, 1-y^{(i)}(w^Tx^{(i)}+b))\)의
-합으로 다시 쓸 수 있다 — 마진을 충분히 만족하면(\(\ge 1\)) 손실 0, 위반하면
-그만큼 선형으로 손실이 커진다. \(C\)는 “마진을 넓게 잡을 것인가, 위반을
-덜 허용할 것인가“를 조절하는 하이퍼파라미터다: \(C\)가 크면 위반에
-더 엄격해져(과적합 위험), \(C\)가 작으면 마진을 넓게 잡는 대신 위반을
-더 허용한다(과소적합 위험) — Chapter 6에서 다룰 정규화 세기 조절과
-정확히 같은 종류의 트레이드오프다.</p>
-<pre><code class="language-python">def hinge_loss_gradient_descent(X, y, C, alpha, epochs):
-    # y[i]는 -1 또는 +1
-    m, n = len(X), len(X[0])
-    w, b = [0.0] * n, 0.0
-    for _ in range(epochs):
-        grad_w, grad_b = [0.0] * n, 0.0
-        for i in range(m):
-            margin = y[i] * (sum(w[j] * X[i][j] for j in range(n)) + b)
-            if margin &lt; 1:  # 마진을 위반한 점만 그래디언트에 기여
-                for j in range(n):
-                    grad_w[j] += -y[i] * X[i][j]
-                grad_b += -y[i]
-        for j in range(n):
-            grad_w[j] = w[j] + C * grad_w[j] / m  # ||w||^2 항의 그래디언트 + 힌지 항
-        grad_b = C * grad_b / m
-        for j in range(n):
-            w[j] -= alpha * grad_w[j]
-        b -= alpha * grad_b
-    return w, b
-</code></pre>
-<h2 id="53-커널-트릭-선형분리가-안-되는-데이터"><a class="header" href="#53-커널-트릭-선형분리가-안-되는-데이터">5.3 커널 트릭: 선형분리가 안 되는 데이터</a></h2>
-<p>두 클래스가 원래 특징 공간에서 동그라미 모양으로 얽혀 있어 어떤 직선으로도
-못 나누는 경우가 있다. 이런 데이터를 <strong>더 높은 차원</strong>으로 옮기면(예:
-\(x=(x_1,x_2) \to \phi(x)=(x_1,x_2,x_1^2+x_2^2)\)) 그 공간에서는 오히려
-평평한 초평면으로 나뉠 수 있다 — “2차원에서 휘어진 경계“가 “3차원에서는
-평평한 경계“가 되는 식이다.</p>
-<p>문제는 \(\phi(x)\)를 명시적으로 계산하면 차원이 감당 못 하게 커질 수
-있다는 것이다. <strong>커널 트릭</strong>(kernel trick)은 이걸 피해간다 — SVM의 최적화
-문제를 (라그랑주 쌍대) 다른 형태로 바꾸면, 데이터가 항상 \(\phi(x^{(i)})
-\cdot \phi(x^{(j)})\)(내적) 형태로만 등장한다는 것이 알려져 있다. 그렇다면
-\(\phi\)를 직접 계산하지 않고, 이 내적값 자체를 곧바로 계산해주는
-<strong>커널 함수</strong> \(K(x,x’) = \phi(x)\cdot\phi(x’)\)만 있으면 충분하다.</p>
-<p>가장 널리 쓰이는 커널:</p>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><strong>다항 커널</strong>(polynomial): \(K(x,x’) = (x \cdot x’ + c)^d\)</li>
-<li><strong>RBF(가우시안) 커널</strong>: \(K(x,x’) = \exp\left(-\frac{|x-x’|^2}{2\sigma^2}\right)\)
-— 두 점이 가까울수록 1에 가깝고, 멀수록 0에 가까운 “유사도” 함수. 이
-커널은 <strong>무한 차원</strong>의 \(\phi\)에 대응한다는 것이 알려져 있는데도,
-커널 함수 자체는 유클리드 거리 하나로 계산 가능하다.</li>
+<li><a href="chapter05/1.html">5.1 마진 최대화와 서포트 벡터</a></li>
+<li><a href="chapter05/2.html">5.2 소프트 마진: 완벽히 나뉘지 않는 데이터</a></li>
+<li><a href="chapter05/3.html">5.3 커널 트릭: 선형분리가 안 되는 데이터</a></li>
 </ul>
-<pre><code class="language-python">import math
-
-def rbf_kernel(x1, x2, sigma):
-    sq_dist = sum((x1[i] - x2[i]) ** 2 for i in range(len(x1)))
-    return math.exp(-sq_dist / (2 * sigma ** 2))
-</code></pre>
-<p><strong>직관</strong>: 커널 SVM의 예측은 결국 “새 점이 각 서포트 벡터와 얼마나
-비슷한가”(커널값)를 가중치 삼아 투표하는 것과 비슷하다 — \(\sigma\)가
-작으면 아주 가까운 서포트 벡터만 강하게 반영(복잡한 경계, 과적합 위험),
-\(\sigma\)가 크면 멀리 있는 서포트 벡터까지 두루 반영(단순한 경계,
-과소적합 위험)한다. 실제 커널 SVM의 학습(쌍대 문제를 이차계획법으로
-푸는 것)은 이 책 범위를 넘지만, “커널 함수 하나로 고차원 변환을 우회한다“는
-이 아이디어는 이후 신경망 이전 시대의 비선형 모델 설계에 깊은 영향을
-남겼다.</p>
-<p><strong>SVM은 로지스틱회귀·GDA와 정확히 같은 문제(선형 결정 경계를 찾는 것)를
-풀지만, “확률을 모델링한다“가 아니라 “마진을 최대화한다“는 완전히 다른
-원칙에서 출발한다 — 목적지가 비슷해도 원칙이 다르면 얻는 성질(서포트
-벡터, 커널 트릭)도 달라진다.</strong></p>
-<hr>
-<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 <code>hinge_loss_gradient_descent</code>(핵심 줄은 빈칸으로 남겨져
-있다고 가정)를 완성하라:</p>
-<pre><code class="language-python">def hinge_loss_gradient_descent(X, y, C, alpha, epochs):
-    # ADD ADDITIONAL CODE HERE!!
-    # w, b를 0으로 초기화한 뒤, epochs번 반복하며:
-    #   각 샘플의 마진 y[i]*(w.x[i]+b)을 계산해 1보다 작으면 그래디언트에 반영
-    #   ||w||^2 항의 그래디언트(=w)를 더하고 w, b를 갱신
-
-X = [[3,3],[4,3],[3,4],[-3,-3],[-4,-3],[-3,-4]]
-y = [1,1,1,-1,-1,-1]
-w, b = hinge_loss_gradient_descent(X, y, C=1.0, alpha=0.01, epochs=2000)
-print(w, b)  # 대략 [0.17, 0.17], 0.0 근처 -- 원점을 지나는 대칭적인 경계
-</code></pre>
-<p><strong>2. (개념 서술)</strong> 다음 두 시나리오에서 \(C\)를 크게 할지 작게 할지와
-그 이유를 각각 한두 문장으로 설명하라: (a) 학습 데이터에 라벨링 오류가
-섞여 있다고 의심되는 경우, (b) 학습 데이터가 매우 깨끗하고 새 데이터도
-비슷한 분포를 가질 것이라 확신하는 경우.</p>
-<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> 마진이 \(\frac{2}{|w|}\)임을
-보여라. (힌트: 결정 경계 위의 점을 \(x_0\), 경계에서 가장 가까운
-양성 서포트 벡터를 \(x_+\)라 하면 \(w^Tx_+ + b = 1\)이고
-\(w^Tx_0+b=0\)이다. 두 식을 빼서 \(w^T(x_+-x_0)=1\)을 얻고,
-\(x_+-x_0\)이 \(w\)와 평행한 방향(경계에 수직인 최단 거리 방향)임을
-이용해 \(|x_+-x_0\| = \frac{1}{|w|}\)를 유도하라.) 마진 전체
-너비가 이 거리의 2배(양성·음성 서포트 벡터 양쪽)임을 설명하고, 왜
-“\(|w|\)를 최소화하는 것“이 “마진을 최대화하는 것“과 같은지 한
-문장으로 정리하라.</p>
 
                     </main>
 
@@ -316,7 +203,7 @@ print(w, b)  # 대략 [0.17, 0.17], 0.0 근처 -- 원점을 지나는 대칭적�
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml1/chapter06.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml1/chapter05/1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -330,7 +217,7 @@ print(w, b)  # 대략 [0.17, 0.17], 0.0 근처 -- 원점을 지나는 대칭적�
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml1/chapter06.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml1/chapter05/1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

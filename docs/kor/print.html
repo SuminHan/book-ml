@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-fafc8d86.js";
+            window.path_to_searchindex_js = "searchindex-de83d01a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-82e00ac7.js"></script>
+        <script src="toc-4fab332e.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -1075,13 +1075,22 @@ print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
 이 질문의 답이 <strong>서포트 벡터 머신</strong>(Support Vector Machine, SVM)이다 —
 2010년대 딥러닝이 대세가 되기 전까지, 손글씨 인식부터 텍스트 분류까지
 가장 널리 쓰인 분류기였다.</p>
-<h2 id="51-마진-최대화와-서포트-벡터"><a class="header" href="#51-마진-최대화와-서포트-벡터">5.1 마진 최대화와 서포트 벡터</a></h2>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#51-마진-최대화와-서포트-벡터">5.1 마진 최대화와 서포트 벡터</a></li>
+<li><a href="#52-소프트-마진-완벽히-나뉘지-않는-데이터">5.2 소프트 마진: 완벽히 나뉘지 않는 데이터</a></li>
+<li><a href="#53-커널-트릭-선형분리가-안-되는-데이터">5.3 커널 트릭: 선형분리가 안 되는 데이터</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="51-마진-최대화와-서포트-벡터"><a class="header" href="#51-마진-최대화와-서포트-벡터">5.1 마진 최대화와 서포트 벡터</a></h1>
+<h3 id="순수-기하학적-질문"><a class="header" href="#순수-기하학적-질문">순수 기하학적 질문</a></h3>
 <p>두 클래스가 완벽히 선형분리 가능한 데이터를 생각해보자. 두 클래스를 가르는
 직선(초평면)은 무수히 많다 — 그런데 어떤 직선은 한쪽 클래스에 아슬아슬하게
 붙어 있고, 어떤 직선은 양쪽에서 넉넉하게 떨어져 있다. SVM은 <strong>마진</strong>(margin,
 경계선에서 가장 가까운 데이터 점까지의 거리)이 <strong>가장 큰</strong> 직선을 고른다 —
 새 데이터가 조금 다르게 나타나도 잘못 분류될 여지가 가장 적은 경계이기
 때문이다.</p>
+<h3 id="마진과-서포트-벡터"><a class="header" href="#마진과-서포트-벡터">마진과 서포트 벡터</a></h3>
 <p>결정 경계를 \(w^Tx+b=0\)으로 두면, 각 데이터가 올바른 쪽에 마진 1 이상의
 여유를 두고 있어야 한다는 제약은:</p>
 <p>\[y^{(i)}(w^Tx^{(i)}+b) \ge 1, \qquad y^{(i)} \in {-1, +1}\]</p>
@@ -1093,7 +1102,9 @@ print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
 점들만이 경계의 위치를 “떠받친다.” 서포트 벡터가 아닌 나머지 점들은
 경계를 살짝 옮기거나 지워도 결과에 전혀 영향을 주지 않는다 — 로지스틱
 회귀가 <strong>모든</strong> 데이터를 손실함수에 반영하는 것과 대조적이다.</p>
-<h2 id="52-소프트-마진-완벽히-나뉘지-않는-데이터"><a class="header" href="#52-소프트-마진-완벽히-나뉘지-않는-데이터">5.2 소프트 마진: 완벽히 나뉘지 않는 데이터</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="52-소프트-마진-완벽히-나뉘지-않는-데이터"><a class="header" href="#52-소프트-마진-완벽히-나뉘지-않는-데이터">5.2 소프트 마진: 완벽히 나뉘지 않는 데이터</a></h1>
+<h3 id="여유-변수와-힌지-손실"><a class="header" href="#여유-변수와-힌지-손실">여유 변수와 힌지 손실</a></h3>
 <p>실전 데이터는 노이즈 때문에 완벽하게 선형분리되지 않는 경우가 대부분이다.
 <strong>소프트 마진</strong>(soft margin) SVM은 각 데이터마다 위반을 어느 정도
 허용하는 여유 변수(slack variable) \(\xi^{(i)} \ge 0\)를 도입한다:</p>
@@ -1108,6 +1119,7 @@ print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
 더 엄격해져(과적합 위험), \(C\)가 작으면 마진을 넓게 잡는 대신 위반을
 더 허용한다(과소적합 위험) — Chapter 6에서 다룰 정규화 세기 조절과
 정확히 같은 종류의 트레이드오프다.</p>
+<h3 id="실습-힌지-손실-경사하강법-구현"><a class="header" href="#실습-힌지-손실-경사하강법-구현">실습: 힌지 손실 경사하강법 구현</a></h3>
 <pre><code class="language-python">def hinge_loss_gradient_descent(X, y, C, alpha, epochs):
     # y[i]는 -1 또는 +1
     m, n = len(X), len(X[0])
@@ -1128,7 +1140,9 @@ print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
         b -= alpha * grad_b
     return w, b
 </code></pre>
-<h2 id="53-커널-트릭-선형분리가-안-되는-데이터"><a class="header" href="#53-커널-트릭-선형분리가-안-되는-데이터">5.3 커널 트릭: 선형분리가 안 되는 데이터</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="53-커널-트릭-선형분리가-안-되는-데이터"><a class="header" href="#53-커널-트릭-선형분리가-안-되는-데이터">5.3 커널 트릭: 선형분리가 안 되는 데이터</a></h1>
+<h3 id="고차원으로-옮기면-보이는-것"><a class="header" href="#고차원으로-옮기면-보이는-것">고차원으로 옮기면 보이는 것</a></h3>
 <p>두 클래스가 원래 특징 공간에서 동그라미 모양으로 얽혀 있어 어떤 직선으로도
 못 나누는 경우가 있다. 이런 데이터를 <strong>더 높은 차원</strong>으로 옮기면(예:
 \(x=(x_1,x_2) \to \phi(x)=(x_1,x_2,x_1^2+x_2^2)\)) 그 공간에서는 오히려
@@ -1140,6 +1154,7 @@ print(knn_predict_regression(X_train, y_train, [2.5], k=3))  # 대략 11.0
 \cdot \phi(x^{(j)})\)(내적) 형태로만 등장한다는 것이 알려져 있다. 그렇다면
 \(\phi\)를 직접 계산하지 않고, 이 내적값 자체를 곧바로 계산해주는
 <strong>커널 함수</strong> \(K(x,x’) = \phi(x)\cdot\phi(x’)\)만 있으면 충분하다.</p>
+<h3 id="커널-함수-내적을-우회한다"><a class="header" href="#커널-함수-내적을-우회한다">커널 함수: 내적을 우회한다</a></h3>
 <p>가장 널리 쓰이는 커널:</p>
 <ul>
 <li><strong>다항 커널</strong>(polynomial): \(K(x,x’) = (x \cdot x’ + c)^d\)</li>
@@ -1162,6 +1177,28 @@ def rbf_kernel(x1, x2, sigma):
 푸는 것)은 이 책 범위를 넘지만, “커널 함수 하나로 고차원 변환을 우회한다“는
 이 아이디어는 이후 신경망 이전 시대의 비선형 모델 설계에 깊은 영향을
 남겼다.</p>
+<h3 id="실습-rbf-커널로-비선형-분류-실험"><a class="header" href="#실습-rbf-커널로-비선형-분류-실험">실습: RBF 커널로 비선형 분류 실험</a></h3>
+<p>두 클래스가 동심원처럼 얽혀 있는(선형분리 불가능한) 데이터에서, 선형
+커널과 RBF 커널이 얼마나 다른 성능을 내는지 직접 비교해보자:</p>
+<pre><code class="language-python">from sklearn.datasets import make_circles
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+
+X, y = make_circles(n_samples=200, noise=0.1, factor=0.4, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
+
+linear_svm = SVC(kernel="linear").fit(X_train, y_train)
+rbf_svm = SVC(kernel="rbf", gamma=2.0).fit(X_train, y_train)
+
+print("선형 커널 정확도:", round(linear_svm.score(X_test, y_test), 3))
+print("RBF 커널 정확도: ", round(rbf_svm.score(X_test, y_test), 3))
+</code></pre>
+<p><code>make_circles</code>가 만드는 데이터는 안쪽 원(클래스 0)과 바깥쪽 원(클래스 1)이
+동심원 모양으로 얽혀 있어서, 어떤 직선으로도 나눌 수 없다 — 실행해보면
+선형 커널은 거의 동전 던지기 수준(약 50%)에 머무는 반면, RBF 커널은
+거의 완벽하게(100%에 가깝게) 분류한다. “직선으로는 안 되는 문제가, 커널
+하나만 바꿨을 뿐인데 거의 풀린다“는 이 극적인 차이가 커널 트릭의 위력을
+가장 잘 보여준다.</p>
 <p><strong>SVM은 로지스틱회귀·GDA와 정확히 같은 문제(선형 결정 경계를 찾는 것)를
 풀지만, “확률을 모델링한다“가 아니라 “마진을 최대화한다“는 완전히 다른
 원칙에서 출발한다 — 목적지가 비슷해도 원칙이 다르면 얻는 성질(서포트
