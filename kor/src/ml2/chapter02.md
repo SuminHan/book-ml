@@ -9,7 +9,9 @@ Bandit) 문제 — 이 강화학습이 다루는 모든 문제의 가장 작은 
 "탐험과 활용의 딜레마"라는 강화학습의 핵심 문제 하나만 순수하게 남겨둔
 가장 단순한 형태이기 때문이다.
 
-## 2.1 탐험과 활용
+## 2.1 탐험과 활용: ε-greedy
+
+### 탐욕적 선택의 함정
 
 \\(k\\)개의 손잡이(팔) 각각의 실제 평균 보상을 \\(q^*(a)\\)라 하자(우리는
 모른다). 지금까지 관찰한 것을 바탕으로 한 추정치를 \\(Q_t(a)\\)라 하면,
@@ -17,6 +19,8 @@ Bandit) 문제 — 이 강화학습이 다루는 모든 문제의 가장 작은 
 팔을 당기는 것이다. 문제는 초반에 우연히 나쁜 결과가 나온 팔을 그 뒤로
 영원히 외면하게 될 수 있다는 것이다 — 진짜 최선의 팔을 충분히 시도해보지
 못한 채 잘못된 결론에 갇히는 것이다.
+
+### ε-greedy 전략
 
 **\\(\varepsilon\\)-greedy**는 확률 \\(1-\varepsilon\\)로는 지금까지
 가장 좋다고 아는 팔을 당기고(활용), 확률 \\(\varepsilon\\)로는 무작위
@@ -48,7 +52,9 @@ def epsilon_greedy_bandit(true_means, epsilon, steps):
     return Q
 ```
 
-## 2.2 낙관적 초기화
+## 2.2 낙관적 초기화와 UCB: 불확실성을 이용한 탐험
+
+### 낙관적 초기화: 시작값 하나로 탐험을 유도한다
 
 \\(\varepsilon\\)-greedy는 탐험을 완전히 무작위로 한다 — 이미 나쁘다고
 거의 확신하는 팔도 똑같은 확률로 다시 시도한다. **낙관적
@@ -59,7 +65,7 @@ def epsilon_greedy_bandit(true_means, epsilon, steps):
 추정치가 내려가고, 그다음 팔로 넘어간다. 초반 몇 번의 강제적인 탐험을
 낙관적인 시작값 하나로 만들어내는 셈이다.
 
-## 2.3 UCB: 불확실성 자체를 이용한다
+### UCB: 불확실성 자체를 이용한다
 
 **UCB**(Upper Confidence Bound)는 한 걸음 더 나아간다 — "지금까지 별로
 안 당겨본 팔일수록, 그 추정치가 얼마나 정확한지 자체가 불확실하다"는
@@ -92,13 +98,67 @@ def ucb_bandit(true_means, c, steps):
     return Q
 ```
 
-실제로 세 팔(평균 보상 1.0, 1.5, 2.0)에 대해 2000번씩 당겨보면, \\(\varepsilon\\)
--greedy와 UCB 둘 다 진짜 평균에 가까운 추정치로 수렴하지만(예:
-`[0.98, 1.32, 2.01]`과 `[1.15, 1.48, 2.0]`), 총 획득 보상은 UCB
-쪽이 조금 더 높은 경향이 있다 — 무작위 탐험 대신, 불확실성이 큰 곳을
-우선적으로 찔러보기 때문이다.
+### 실습: 세 전략의 누적 보상 비교
 
-## 2.4 밴딧 vs 완전한 MDP: 다음 장으로 가는 다리
+세 가지 탐험 전략(ε-greedy, 낙관적 초기화, UCB)을 같은 밴딧 문제에서
+직접 겨뤄보자 — "추정치가 얼마나 정확한가"가 아니라 "그 과정에서 실제로
+얼마나 많은 보상을 벌었는가"를 비교하는 것이 핵심이다(탐험 자체에도
+비용이 있다는 뜻이다: 나쁜 팔을 시도해보는 동안 그만큼 보상을 손해
+본다).
+
+```python
+def total_reward_epsilon_greedy(true_means, epsilon, steps):
+    k = len(true_means)
+    Q, N, total = [0.0] * k, [0] * k, 0.0
+    for _ in range(steps):
+        a = random.randrange(k) if random.random() < epsilon \
+            else max(range(k), key=lambda i: Q[i])
+        r = random.gauss(true_means[a], 1.0)
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+        total += r
+    return total
+
+def total_reward_optimistic(true_means, initial_q, steps):
+    k = len(true_means)
+    Q, N, total = [initial_q] * k, [0] * k, 0.0  # 실제 보상보다 훨씬 큰 초기값
+    for _ in range(steps):
+        a = max(range(k), key=lambda i: Q[i])  # 탐욕적 선택뿐이지만
+        r = random.gauss(true_means[a], 1.0)   # 낙관적 초기값 덕에 자동 탐험됨
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+        total += r
+    return total
+
+def total_reward_ucb(true_means, c, steps):
+    k = len(true_means)
+    Q, N, total = [0.0] * k, [0] * k, 0.0
+    for t in range(1, steps + 1):
+        unplayed = [i for i in range(k) if N[i] == 0]
+        a = unplayed[0] if unplayed else \
+            max(range(k), key=lambda i: Q[i] + c * math.sqrt(math.log(t) / N[i]))
+        r = random.gauss(true_means[a], 1.0)
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+        total += r
+    return total
+
+random.seed(0)
+true_means = [1.0, 1.5, 2.0]
+steps = 2000
+print("ε-greedy 총 보상:    ", round(total_reward_epsilon_greedy(true_means, 0.1, steps), 1))
+print("낙관적 초기화 총 보상:", round(total_reward_optimistic(true_means, 5.0, steps), 1))
+print("UCB 총 보상:         ", round(total_reward_ucb(true_means, 2.0, steps), 1))
+```
+
+세 전략 모두 결국 진짜 최선의 팔(평균 2.0)을 찾아내지만, **총 보상**
+기준으로는 순위가 갈린다 — 무작위로 나쁜 팔을 계속 찔러보는
+ε-greedy보다, "불확실성이 큰 곳"이나 "아직 낙관적으로 보이는 곳"만
+골라서 찔러보는 UCB·낙관적 초기화가 대체로 더 높은 누적 보상을 낸다.
+이 "탐험에도 비용이 있다"는 감각은 Chapter 5(몬테카를로)부터 등장하는
+**후회(regret)** 개념의 직관적 출발점이다.
+
+## 2.3 밴딧 vs 완전한 MDP: 다음 장으로 가는 다리
 
 밴딧 문제에는 **상태**가 없다 — 팔을 당겨도 "다음 상태"로 넘어가지
 않는다. 매번 같은 \\(k\\)개의 팔 중에서 고르는, 시간이 흘러도 상황이
