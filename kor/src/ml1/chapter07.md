@@ -11,12 +11,14 @@
 합치는 두 가지 전략(랜덤 포레스트, GBDT)까지, 그리고 그 대가로 잃은
 설명가능성을 되찾는 방법(SHAP)까지 다룬다.
 
-## 7.1 결정 트리의 구조
+## 7.1 결정 트리: 구조, 지니불순도, 정보이득
+
+### 결정 트리의 구조
 
 각 내부 노드는 하나의 질문(예: "\\(x_2 > 5\\)?")이고, 각 리프(leaf) 노드는
 예측값이다. 예측할 때는 루트에서 시작해 질문에 답하며 리프까지 내려간다.
 
-## 7.2 "가장 잘 나누는 질문"이란: 지니불순도
+### "가장 잘 나누는 질문"이란: 지니불순도
 
 스무고개를 잘하는 사람은 아무 질문이나 던지지 않는다 — "생물인가요?"처럼 답이
 반반으로 갈릴 만한 질문을 먼저 던져야 정보를 가장 많이 얻는다. **지니불순도**
@@ -29,9 +31,9 @@
 상태다. 클래스가 반반이면(\\(K=2\\), \\(p_1=p_2=0.5\\)) \\(G = 1 - 0.25 -
 0.25 = 0.5\\) — 이진 분류에서 가장 나쁜 상태(최댓값)다.
 
-## 7.3 정보이득 (Information Gain)
+### 정보이득 (Information Gain)
 
-먼저 **엔트로피**(entropy, Chapter 2.6에서 섀넌의 정보이론으로 이미 도입했다)를
+먼저 **엔트로피**(entropy, Chapter 2.3에서 섀넌의 정보이론으로 이미 도입했다)를
 정의한다:
 
 \\[H = -\sum_{k=1}^K p_k \log_2 p_k\\]
@@ -75,7 +77,7 @@ def information_gain(parent_labels, left_labels, right_labels):
     return entropy(parent_labels) - weighted_child
 ```
 
-## 7.4 언제 나누기를 멈추는가
+### 언제 나누기를 멈추는가
 
 트리를 끝까지 키우면 모든 리프가 완벽히 순수해질 때까지 나눈다 — 학습 데이터는
 100% 맞히지만, 새 데이터에는 취약한(과적합) 트리가 된다. 실무에서는 최대
@@ -84,7 +86,9 @@ def information_gain(parent_labels, left_labels, right_labels):
 **가지치기**(pruning)를 한다 — Chapter 6의 정규화와 같은 목적(모델을 덜
 유연하게 만들어 분산을 줄인다)을 트리 구조에 맞게 적용한 것이다.
 
-## 7.5 트리 하나에서 숲으로: 랜덤 포레스트
+## 7.2 트리 하나에서 숲으로: 랜덤 포레스트
+
+### 트리 하나에서 숲으로
 
 트리 하나는 데이터를 완벽하게 외워버리기(과적합) 쉽다. **랜덤 포레스트**(Random
 Forest)의 아이디어는 단순하다: 서로 조금씩 다른 트리를 여러 개 만들고, 그
@@ -101,7 +105,33 @@ Forest)의 아이디어는 단순하다: 서로 조금씩 다른 트리를 여�
 100명"보다 "서로 다른 실수를 하는 전문가 100명"의 평균이 훨씬 안정적인 것과
 같은 원리다.
 
-## 7.6 트리를 더 강하게: GBDT
+### 실습: sklearn으로 결정 트리 시각화하기
+
+트리가 실제로 "어떤 질문들을 순서대로 던지는지" 눈으로 확인해보자 —
+유방암 진단 데이터셋(양성/악성)에 깊이 3짜리 트리를 학습시킨다:
+
+```python
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, export_text
+
+data = load_breast_cancer()
+X_train, X_test, y_train, y_test = train_test_split(
+    data.data, data.target, test_size=0.3, random_state=0)
+
+tree = DecisionTreeClassifier(max_depth=3, random_state=0).fit(X_train, y_train)
+print(export_text(tree, feature_names=list(data.feature_names), max_depth=2))
+print("트리 정확도:", round(tree.score(X_test, y_test), 3))
+```
+
+실행해보면 루트 노드가 `worst concave points`(가장 오목한 부분의 정도)로
+먼저 나누는 것을 볼 수 있다 — 정보이득이 가장 큰 질문을 알고리즘이
+스스로 찾아낸 것이다. 은행 대출 심사 예시에서처럼, 이 트리 하나는
+"왜 이렇게 예측했는가"를 사람이 그대로 읽을 수 있다.
+
+## 7.3 GBDT와 SHAP
+
+### 트리를 더 강하게: GBDT
 
 랜덤 포레스트는 트리 여러 개를 **독립적으로** 만들고 다수결로 합쳤다.
 **GBDT**(Gradient Boosted Decision Trees)는 다른 전략을 쓴다: 트리를

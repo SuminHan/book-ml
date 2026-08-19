@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-8b082fac.css">
+        <link rel="stylesheet" href="../../theme/custom-9fca9ae1.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0df25da1.js";
+            window.path_to_searchindex_js = "../../searchindex-f1b1d3ee.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-ae6fb18c.js"></script>
@@ -185,19 +185,41 @@
 <ol>
 <li><strong>수집</strong>(Collection): 어디서 데이터를 구할 것인가 — 이번 학기 팀
 프로젝트(Chapter 8, 16)에서는 Kaggle, UCI Machine Learning Repository,
-Hugging Face Datasets 같은 공개 저장소를 주로 쓰게 된다.</li>
+Hugging Face Datasets 같은 공개 저장소를 주로 쓰게 된다. 실무에서는
+여기에 “이 데이터를 이 목적으로 써도 되는가”(라이선스, 개인정보) 확인도
+포함된다 — 캐글 대회 데이터라도 상업적 재사용이 금지된 경우가 흔하다.</li>
 <li><strong>정제</strong>(Cleaning): 결측치(missing value), 중복, 이상치(outlier)를
-처리한다 — 현실 데이터는 거의 항상 지저분하다.</li>
+처리한다 — 현실 데이터는 거의 항상 지저분하다. 센서 데이터라면
+기기 고장으로 -999 같은 비현실적인 값이 섞여 있을 수 있고, 설문
+데이터라면 같은 응답자가 중복 제출한 행이 섞여 있을 수 있다.</li>
 <li><strong>탐색적 데이터 분석</strong>(Exploratory Data Analysis, EDA): 본격적으로 모델을
-만들기 전에, 데이터의 분포·상관관계·클래스 비율을 눈으로 확인한다.</li>
+만들기 전에, 데이터의 분포·상관관계·클래스 비율을 눈으로 확인한다.
+이 단계에서 발견한 사실이 종종 4단계에서 어떤 모델을 고를지까지
+결정한다 — 예를 들어 클래스 비율이 99:1로 심하게 불균형하다면, 정확도
+대신 다른 평가지표(Chapter 2.3의 PR-AUC)를 처음부터 염두에 둬야 한다.</li>
 <li><strong>모델링</strong>(Modeling): 1.1절에서 정식화한 문제에 맞는 가설 \(h\)를
 고르고 학습시킨다 — 이번 학기 대부분의 장이 이 단계를 다룬다.</li>
 <li><strong>평가</strong>(Evaluation): 학습에 쓰지 않은 데이터로 성능을 검증한다
-(Chapter 6에서 이 원칙을 엄밀하게 다룬다).</li>
+(Chapter 6에서 이 원칙을 엄밀하게 다룬다). 평가 결과가 나쁘면
+반드시 4단계(다른 모델?)로만 돌아가는 게 아니라, 종종 1~3단계로
+되돌아가야 한다는 점도 기억할 것 — “모델이 나쁜 것“이 아니라
+“데이터가 애초에 그 신호를 담고 있지 않은 것“일 수 있다.</li>
 </ol>
 <p>이 순환에서 <strong>모델링은 다섯 단계 중 하나일 뿐</strong>이라는 사실이, 처음 머신러닝을
 배울 때 가장 자주 간과되는 점이다. 실제로 캐글 데이터로 프로젝트를 진행해보면
 결측치 처리와 EDA에 들이는 시간이 모델 코드를 짜는 시간보다 긴 경우가 흔하다.</p>
+<h3 id="자주-하는-실수-eda를-건너뛰고-바로-모델링"><a class="header" href="#자주-하는-실수-eda를-건너뛰고-바로-모델링">자주 하는 실수: EDA를 건너뛰고 바로 모델링</a></h3>
+<p>1.1절의 “정의 없이 알고리즘부터 고르지 말라“는 교훈이 이 파이프라인
+단계에도 그대로 적용된다. 흔한 실패 패턴: 캐글에서 데이터를 내려받자마자
+<code>df.head()</code>만 한 번 찍어보고 바로 <code>model.fit(X, y)</code>를 돌린다. 나중에
+성능이 이상해서 데이터를 다시 들여다보면 — 가격 열에 음수값이 섞여
+있었거나, 한 지역 데이터가 전체의 90%를 차지해 다른 지역은 사실상
+학습이 안 됐거나, 특정 열이 사실 “미래 정보”(예측 시점에는 알 수 없는
+값)를 담고 있어서 학습 때만 비현실적으로 정확했던 것으로 드러나는 식이다.
+이런 문제는 전부 <code>df.describe()</code>, <code>df.corr()</code>, 그룹별 통계 몇 줄만
+먼저 찍어봤어도 모델을 돌리기 <strong>전에</strong> 잡을 수 있었던 것들이다 — EDA에
+쓰는 10분이, 잘못된 가정 위에 쌓은 모델을 디버깅하는 데 드는 몇 시간을
+아껴준다.</p>
 <h3 id="실습-pandas로-첫-eda-해보기"><a class="header" href="#실습-pandas로-첫-eda-해보기">실습: pandas로 첫 EDA 해보기</a></h3>
 <p>이번 학기 코드 예제는 이해를 돕기 위해 순수 Python이나 numpy로 개념을 손으로
 짜보는 경우가 많지만(1.2절 하단 참고), 실전 데이터 탐색 단계에서는 <code>pandas</code>가
@@ -224,6 +246,30 @@ print(df.isna().sum())        # 결측치가 열마다 몇 개인지
 이 특징들이 목표와 관련이 있기는 한가?“부터 되짚어보는 습관이 정규화(Chapter
 6)나 신경망 구조(Chapter 9~10) 같은 복잡한 도구를 고민하기 전에 훨씬 자주
 문제를 해결해준다.</p>
+<h3 id="실습-결측치와-그룹별-통계-다루기"><a class="header" href="#실습-결측치와-그룹별-통계-다루기">실습: 결측치와 그룹별 통계 다루기</a></h3>
+<p>실제 데이터에는 결측치가 거의 항상 있다. 위 데이터에 결측치와 지역
+정보를 추가해서, EDA에서 가장 자주 쓰는 두 가지 처리를 확인해보자:</p>
+<pre><code class="language-python">import numpy as np
+
+data2 = {
+    "size_sqm": [59, 84, 112, 46, 132, 78, np.nan],
+    "district": ["A", "B", "A", "C", "B", "A", "C"],
+    "price_million": [320, 410, 505, 250, 560, 390, np.nan],
+}
+df2 = pd.DataFrame(data2)
+
+print(df2.isna().sum())               # size_sqm 1개, price_million 1개 결측
+print(len(df2.dropna()))               # 결측 행 제거 후 6행
+df2["size_sqm"] = df2["size_sqm"].fillna(df2["size_sqm"].median())  # 중앙값으로 채움
+print(df2.groupby("district")["price_million"].mean())  # 지역별 평균가
+</code></pre>
+<p><code>dropna()</code>(결측 있는 행을 통째로 버림)와 <code>fillna()</code>(중앙값·평균 등으로
+채움) 중 뭘 쓸지는 상황에 따라 다르다 — 결측이 극히 일부라면 <code>dropna</code>가
+간단하고 안전하지만, 데이터가 적거나 결측이 특정 그룹에 몰려 있다면
+<code>dropna</code>가 그 그룹 전체를 지워버릴 위험이 있다(위 경우 지역 C의 결측을
+그냥 지우면 지역 C의 평균가 정보 자체가 사라진다). <code>groupby()</code>로 지역별
+평균을 보는 것만으로도 “지역 A가 B보다 확실히 싼가?” 같은, 모델링 전에
+확인해야 할 가설을 즉시 검증할 수 있다.</p>
 <h3 id="수학과-python-사전지식-리뷰"><a class="header" href="#수학과-python-사전지식-리뷰">수학과 Python 사전지식 리뷰</a></h3>
 <p>이번 학기는 다음 세 영역의 수학을 계속 재사용한다 — 낯선 표기가 나올 때마다
 여기로 돌아와 확인할 것:</p>
@@ -236,6 +282,22 @@ J\)). 고유벡터/고유값은 Chapter 14(PCA)에서 다시 자세히 다룬다
 <li><strong>확률</strong>: 조건부 확률과 베이즈 정리 \(P(y|x) = \frac{P(x|y)P(y)}{P(x)}\).
 Chapter 3에서 본격적으로 쓴다.</li>
 </ul>
+<h3 id="손으로-한-번-내적과-연쇄법칙"><a class="header" href="#손으로-한-번-내적과-연쇄법칙">손으로 한 번: 내적과 연쇄법칙</a></h3>
+<p>표기가 낯설다면 아주 작은 숫자로 직접 계산해보는 것이 가장 빠르다.
+\(w=[2, -1, 3]\), \(x=[1, 4, 2]\)일 때 내적은:</p>
+<p>\[w^Tx = (2)(1) + (-1)(4) + (3)(2) = 2 - 4 + 6 = 4\]</p>
+<p>각 자리끼리 곱해서 다 더하는 것뿐이다 — 이 계산이 이번 학기
+거의 모든 챕터의 첫 줄에 등장한다. 연쇄법칙도 마찬가지로 작은 숫자로
+확인해보자. \(g(x) = 3x+1\), \(f(u) = u^2\)이고 \(x=2\)일 때
+합성함수 \(f(g(x)) = (3x+1)^2\)의 \(x=2\)에서의 미분을 두 가지
+방식으로 구해보면:</p>
+<p>\[f’(g(x)) \cdot g’(x) = 2(3x+1) \cdot 3 = 2(3{\cdot}2+1){\cdot}3 = 2{\cdot}7{\cdot}3 = 42\]</p>
+<p>실제로 \((3x+1)^2\)을 전개해서 직접 미분해도(\(9x^2+6x+1\)의
+도함수는 \(18x+6\), \(x=2\)에서 \(18{\cdot}2+6=42\)) 똑같이 42가
+나온다 — 연쇄법칙은 “안쪽 함수를 미분하고 바깥쪽 함수를 미분해서 곱한다“는
+지름길일 뿐, 다른 답을 주는 게 아니다. Chapter 9에서 신경망의 역전파를
+배울 때, 이 계산을 손으로 한 번이 아니라 수십 개의 층을 거쳐 반복하게
+된다 — 지금 이 작은 예제가 그 전체 과정의 축소판이다.</p>
 <pre><code class="language-python">import numpy as np
 
 X = np.array([[1.0, 2.0], [3.0, 4.0]])  # 2x2 행렬

@@ -28,3 +28,16 @@
 .lang-switch-badge:hover {
     opacity: 0.85;
 }
+
+/* Sidebar progress indicator: a top-level chapter that has been split into
+   numbered sub-blocks (N.1/N.2/N.3, i.e. it has a nested <ol class="section">)
+   is "done" and shown at full strength; chapters still in the old flat
+   single-page format are dimmed. Scoped to direct children of the root
+   <ol class="chapter"> so nested sub-block items (already full strength)
+   aren't affected. */
+ol.chapter > li.chapter-item {
+    opacity: 0.5;
+}
+ol.chapter > li.chapter-item:has(> ol.section) {
+    opacity: 1;
+}
