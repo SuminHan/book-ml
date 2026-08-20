@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>팀 프로젝트: 구조와 발표 - Machine Learning 1/2 (한국어)</title>
+        <title>MC 제어와 블랙잭 실습 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,56 +178,115 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="161-팀-프로젝트-구조와-발표"><a class="header" href="#161-팀-프로젝트-구조와-발표">16.1 팀 프로젝트: 구조와 발표</a></h1>
-<h3 id="프로젝트-구조"><a class="header" href="#프로젝트-구조">프로젝트 구조</a></h3>
-<ul>
-<li><strong>데이터</strong>: Kaggle, UCI 외에 Hugging Face Datasets(huggingface.co/datasets)도
-후보에 추가한다 — Chapter 11~13에서 배운 시퀀스/LLM 관련 프로젝트라면
-텍스트 데이터를 몇 줄로 불러올 수 있어 특히 편리하다.</li>
-<li><strong>적용</strong>: Chapter 9~15 중 최소 하나의 딥러닝 기법(CNN, RNN/Transformer,
-프롬프팅 응용, 또는 EM/VAE 계열 생성모델)을 실제 데이터에 적용한다.</li>
-<li><strong>필수 요구사항 — 수식적 정당화 최소 1개</strong>: 예를 들어 (1) CNN
-구조를 골랐다면 Chapter 10.1의 파라미터 수/연산량 공식으로 설계를
-정당화, (2) 정규화 기법(dropout 등)을 썼다면 Chapter 9.3에서 그
-효과를 설명, (3) 생성모델 프로젝트라면 Chapter 15의 ELBO나 min-max
-목적함수 중 하나를 실제 구현에 연결.</li>
-<li>Chapter 8의 프로젝트와 마찬가지로 train/validation/test 분리(Chapter
-6.3)를 지킨다.</li>
-</ul>
-<h3 id="발표"><a class="header" href="#발표">발표</a></h3>
-<p>형식은 Chapter 8.1과 동일하다(문제 정의 → 방법론 → 결과와 정당화 → 한계
-분석, 팀당 5~7분). 다만 이번엔 발표 마지막에 “왜 고전 ML이 아니라
-딥러닝을 선택했는가“라는 질문에 반드시 답해야 한다 — 데이터가
-이미지/텍스트처럼 비정형이라 신경망이 필요했는지, 아니면 정형
-데이터인데도 신경망을 썼다면 그 이유가 무엇인지(Chapter 7의 GBDT와
-비교했을 때) 명확히 설명할 수 있어야 한다. Chapter 8의 프로젝트가
-“어떤 고전 ML 모델이 이 데이터에 맞는가“를 물었다면, 이번 프로젝트는
-한 단계 더 나아가 “애초에 딥러닝이 필요한 문제인가“부터 스스로
-판단해야 한다.</p>
-<h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
-<p><strong>Q. 정형 데이터에 굳이 신경망을 써도 되나요?</strong> 된다 — 다만 Chapter
-7.3에서 배웠듯, 정형 데이터에서는 지금도 GBDT 계열이 신경망보다
-경쟁력 있는 경우가 흔하다. 신경망을 선택했다면 “왜 GBDT보다 신경망이
-이 문제에 더 적합하다고 판단했는지”(예: 특징 사이의 복잡한 상호작용을
-자동으로 학습하고 싶었다, 다른 딥러닝 모듈과 결합할 계획이 있다 등)를
-발표에서 설명할 수 있어야 한다 — “그냥 딥러닝이 최신이라서“는 충분한
-근거가 아니다.</p>
-<p><strong>Q. Chapter 9~15 중 여러 기법을 동시에 써도 되나요?</strong> 권장한다 —
-예를 들어 CNN으로 이미지 특징을 뽑은 뒤 어텐션으로 그 특징들을
-조합하는 식으로 여러 장의 도구를 함께 쓰면, “왜 이 조합을
-골랐는가“라는 추가적인 설계 근거를 보여줄 기회가 된다. 다만 필수
-요구사항(수식적 정당화 최소 1개)은 그중 하나의 기법에 대해서만
-충족하면 된다.</p>
+                        <h1 id="52-mc-제어와-블랙잭-실습"><a class="header" href="#52-mc-제어와-블랙잭-실습">5.2 MC 제어와 블랙잭 실습</a></h1>
+<h3 id="mc-제어-정책-개선까지"><a class="header" href="#mc-제어-정책-개선까지">MC 제어: 정책 개선까지</a></h3>
+<p>예측(주어진 정책의 가치를 구하는 것)에서 제어(더 나은 정책을 찾는
+것)로 넘어가려면, Chapter 4의 정책 반복과 같은 틀을 쓴다 — 다만 이제는
+\(V(s)\) 대신 **Q(s,a)**를 추정한다(전이확률을 모르니 \(V\)만으로는
+“어느 행동이 최선인지” 판단할 수 없기 때문 — Chapter 6에서 다시 강조할
+이유다).</p>
+<p><strong>탐험을 어떻게 보장할 것인가</strong>: 순수 탐욕적으로만 행동하면 한 번도
+시도하지 않은 (상태, 행동) 쌍은 영원히 그 가치를 알 수 없다 — Chapter
+2.1의 “탐욕적 선택의 함정“과 똑같은 문제가 여기서도 재발한다. 두 가지
+대응책이 있다: (1) <strong>탐험적 시작</strong>(exploring starts) — 매 에피소드를
+무작위로 고른 (상태, 행동) 쌍에서 강제로 시작해서, 모든 (상태, 행동)
+쌍이 결국 충분히 방문되도록 만드는 것(이론적으로 깔끔하지만, 임의의
+상태·행동에서 “시작“할 수 있어야 하므로 실전 환경에서는 항상 가능하지
+않다). (2) \(\varepsilon\)<strong>-greedy</strong>(Chapter 2.1에서 배운 그
+전략) — 매 스텝 작은 확률로 무작위 행동을 섞어서, 시작 상태와 무관하게
+모든 (상태, 행동) 쌍을 계속 조금씩 방문하게 한다. 아래 실습은
+\(\varepsilon\)-greedy를 쓴다.</p>
+<pre><code class="language-python">import random
+
+def mc_control(env_step, n_states, n_actions, n_episodes, epsilon, gamma, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    counts = [[0] * n_actions for _ in range(n_states)]
+
+    def generate_episode():
+        s, episode = start_state, []
+        for _ in range(100):
+            a = random.randrange(n_actions) if random.random() &lt; epsilon \
+                else max(range(n_actions), key=lambda x: Q[s][x])
+            ns, r, done = env_step(s, a)
+            episode.append((s, a, r))
+            s = ns
+            if done:
+                break
+        return episode
+
+    for _ in range(n_episodes):
+        episode = generate_episode()
+        G, visited = 0.0, set()
+        for t in reversed(range(len(episode))):
+            s, a, r = episode[t]
+            G = r + gamma * G
+            if (s, a) not in visited:
+                visited.add((s, a))
+                counts[s][a] += 1
+                Q[s][a] += (G - Q[s][a]) / counts[s][a]  # Chapter 2의 증분 평균과 같은 갱신
+    return Q
+</code></pre>
+<h3 id="실습-블랙잭에서-mc-제어로-언제-카드를-더-받을지-학습하기"><a class="header" href="#실습-블랙잭에서-mc-제어로-언제-카드를-더-받을지-학습하기">실습: 블랙잭에서 MC 제어로 “언제 카드를 더 받을지” 학습하기</a></h3>
+<p>Sutton &amp; Barto의 강화학습 교재에서 MC 제어를 소개할 때 쓰는 표준
+예제가 블랙잭이다 — 규칙이 간단하면서도(카드를 더 받을지 멈출지,
+딜러와 최종 합을 비교) 상태 전이가 복잡해서(카드 덱 전체의 확률
+분포) 동적계획법으로 정확한 전이확률을 계산하기는 번거롭지만, MC는
+그냥 게임을 실제로 여러 번 시뮬레이션하면 그만이라는 것을 잘 보여준다.
+(아래는 학습 목적의 단순화 버전이다 — 실제 카지노 규칙의 “소프트
+에이스” 처리는 생략했다.)</p>
+<pre><code class="language-python">def gen_episode(Q, epsilon):
+    player_sum = draw_card() + draw_card()
+    dealer_showing = draw_card()
+    s = (player_sum, dealer_showing)
+    episode = []
+    while True:
+        if s[0] &lt; 12:
+            a = 1  # 12 미만이면 무조건 히트(버스트 위험이 없으므로 자명한 선택)
+        else:
+            a = random.randrange(2) if (s not in Q or random.random() &lt; epsilon) \
+                else max(range(2), key=lambda x: Q[s][x])  # 0=스틱, 1=히트
+        ns, r, done = step(s, a)
+        episode.append((s, a, r))
+        if done:
+            break
+        s = ns
+    return episode
+</code></pre>
+<p>플레이어 합이 12 이상인 상태에서만 Q를 학습시키며 30만 에피소드를
+플레이시키면(스크래치패드에서 실행 검증):</p>
+<pre><code>상태(플레이어합=20, 딜러오픈카드=3): Q(스틱)=0.680, Q(히트)=-0.890 -&gt; 스틱
+상태(플레이어합=20, 딜러오픈카드=10): Q(스틱)=0.524, Q(히트)=-0.842 -&gt; 스틱
+상태(플레이어합=12, 딜러오픈카드=10): Q(스틱)=-0.514, Q(히트)=-0.408 -&gt; 히트
+</code></pre>
+<p>플레이어 합이 20이면 딜러의 카드가 무엇이든(3이든 10이든) “스틱“의
+Q값이 “히트“보다 압도적으로 높다 — 실제 블랙잭 기본 전략과 정확히
+일치한다(20에서 카드를 더 받으면 버스트할 위험이 거의 항상 손해다).
+반대로 플레이어 합이 12뿐이고 딜러가 강한 카드(10)를 보여주고
+있다면 “히트“가 더 유리하게 나온다 — 딜러가 강할 때는 낮은 합에
+안주하기보다 위험을 감수하고 카드를 더 받는 쪽이 낫다는, 실제 전략과
+같은 방향의 판단이다. 카드 덱의 확률 분포나 딜러의 정확한 행동 규칙을
+<strong>단 한 줄도 명시적으로 계산하지 않았는데도</strong>, 30만 번의 시뮬레이션
+경험만으로 이런 패턴이 스스로 학습된다는 것이 MC 제어의 핵심이다.</p>
+<h3 id="자주-하는-실수-방문-횟수가-적은-상태의-q값을-그대로-믿기"><a class="header" href="#자주-하는-실수-방문-횟수가-적은-상태의-q값을-그대로-믿기">자주 하는 실수: 방문 횟수가 적은 상태의 Q값을 그대로 믿기</a></h3>
+<p>위 실습에서 플레이어 합이 낮고(12~13) 애매한 상태들은 20 근처 상태들보다
+방문 빈도가 낮아서, Q값의 추정이 상대적으로 더 노이즈가 많다 —
+30만 에피소드로도 완벽하게 교과서적인 기본 전략표와 정확히 일치하지
+않는 경계 상태들이 남아있을 수 있다. MC 추정치는 “그 상태를 몇 번
+방문했는가“에 직접적으로 의존하므로, 방문 횟수가 적은 (상태, 행동)
+쌍의 Q값은 실전에서 곧이곧대로 신뢰하기보다 “더 많은 에피소드가
+필요하다“는 신호로 받아들이는 것이 안전하다 — 이 문제는 6장에서
+배울 시간차 학습에서도, 그리고 Chapter 9의 DQN에서도 형태를 바꿔
+계속 등장한다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../ml1/chapter16.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml2/chapter05/1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../ml1/chapter16/2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml2/chapter05/3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -237,11 +296,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../ml1/chapter16.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml2/chapter05/1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../ml1/chapter16/2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml2/chapter05/3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>팀 프로젝트: 구조와 발표 - Machine Learning 1/2 (한국어)</title>
+        <title>모델 없이 배운다: MC 예측 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,56 +178,67 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="161-팀-프로젝트-구조와-발표"><a class="header" href="#161-팀-프로젝트-구조와-발표">16.1 팀 프로젝트: 구조와 발표</a></h1>
-<h3 id="프로젝트-구조"><a class="header" href="#프로젝트-구조">프로젝트 구조</a></h3>
-<ul>
-<li><strong>데이터</strong>: Kaggle, UCI 외에 Hugging Face Datasets(huggingface.co/datasets)도
-후보에 추가한다 — Chapter 11~13에서 배운 시퀀스/LLM 관련 프로젝트라면
-텍스트 데이터를 몇 줄로 불러올 수 있어 특히 편리하다.</li>
-<li><strong>적용</strong>: Chapter 9~15 중 최소 하나의 딥러닝 기법(CNN, RNN/Transformer,
-프롬프팅 응용, 또는 EM/VAE 계열 생성모델)을 실제 데이터에 적용한다.</li>
-<li><strong>필수 요구사항 — 수식적 정당화 최소 1개</strong>: 예를 들어 (1) CNN
-구조를 골랐다면 Chapter 10.1의 파라미터 수/연산량 공식으로 설계를
-정당화, (2) 정규화 기법(dropout 등)을 썼다면 Chapter 9.3에서 그
-효과를 설명, (3) 생성모델 프로젝트라면 Chapter 15의 ELBO나 min-max
-목적함수 중 하나를 실제 구현에 연결.</li>
-<li>Chapter 8의 프로젝트와 마찬가지로 train/validation/test 분리(Chapter
-6.3)를 지킨다.</li>
-</ul>
-<h3 id="발표"><a class="header" href="#발표">발표</a></h3>
-<p>형식은 Chapter 8.1과 동일하다(문제 정의 → 방법론 → 결과와 정당화 → 한계
-분석, 팀당 5~7분). 다만 이번엔 발표 마지막에 “왜 고전 ML이 아니라
-딥러닝을 선택했는가“라는 질문에 반드시 답해야 한다 — 데이터가
-이미지/텍스트처럼 비정형이라 신경망이 필요했는지, 아니면 정형
-데이터인데도 신경망을 썼다면 그 이유가 무엇인지(Chapter 7의 GBDT와
-비교했을 때) 명확히 설명할 수 있어야 한다. Chapter 8의 프로젝트가
-“어떤 고전 ML 모델이 이 데이터에 맞는가“를 물었다면, 이번 프로젝트는
-한 단계 더 나아가 “애초에 딥러닝이 필요한 문제인가“부터 스스로
-판단해야 한다.</p>
+                        <h1 id="51-모델-없이-배운다-mc-예측"><a class="header" href="#51-모델-없이-배운다-mc-예측">5.1 모델 없이 배운다: MC 예측</a></h1>
+<h3 id="모델-없이-배운다-경험으로부터의-학습"><a class="header" href="#모델-없이-배운다-경험으로부터의-학습">모델 없이 배운다: 경험으로부터의 학습</a></h3>
+<p>가치함수의 정의를 다시 떠올려보자: \(V^\pi(s) = \mathbb{E}_\pi[G_t \mid
+s_t = s]\) — “이 상태에서 시작해서 정책을 따랐을 때 받을 리턴의
+<strong>기댓값</strong>“이다. 기댓값을 정확히 계산하려면 전이확률을 알아야 하지만,
+기댓값은 <strong>많은 샘플의 평균</strong>으로도 근사할 수 있다는 것이 통계학의 기본
+원리(대수의 법칙)다. MC는 정확히 이 원리를 쓴다 — 정책 \(\pi\)를 따라
+에피소드를 여러 번 플레이해서, 상태 \(s\)를 방문했을 때 그 이후
+실제로 받은 리턴들을 모아 평균 내면, 그게 곧 \(V^\pi(s)\)의 추정치가
+된다.</p>
+<h3 id="첫방문-mc-예측"><a class="header" href="#첫방문-mc-예측">첫방문 MC 예측</a></h3>
+<p>한 상태를 한 에피소드 안에서 여러 번 방문할 수도 있다(예: 게임에서
+같은 위치로 되돌아오는 경우). <strong>첫방문</strong>(first-visit) MC는 각
+에피소드에서 그 상태를 <strong>처음</strong> 방문했을 때의 리턴만 카운트한다(모든
+방문을 다 쓰는 <strong>모든방문</strong>(every-visit) MC도 있다 — 이번 학기에서는
+첫방문 방식만 다룬다):</p>
+<pre><code class="language-python">def mc_prediction(policy, env_sample_episode, n_episodes, gamma):
+    # env_sample_episode(policy) -&gt; [(state, action, reward), ...] 한 에피소드
+    returns_sum = {}
+    returns_count = {}
+    for _ in range(n_episodes):
+        episode = env_sample_episode(policy)
+        G = 0.0
+        visited = set()
+        for t in reversed(range(len(episode))):
+            s, a, r = episode[t]
+            G = r + gamma * G
+            if s not in visited:  # 첫방문만 카운트
+                visited.add(s)
+                returns_sum[s] = returns_sum.get(s, 0.0) + G
+                returns_count[s] = returns_count.get(s, 0) + 1
+    return {s: returns_sum[s] / returns_count[s] for s in returns_sum}
+</code></pre>
+<p>에피소드를 <strong>뒤에서부터 앞으로</strong> 훑는 이유: 리턴 \(G_t = R_t + \gamma
+G_{t+1}\)은 재귀적으로 정의되므로, 맨 마지막 스텝부터 거꾸로 누적해
+가면 매 스텝의 \(G_t\)를 한 번의 순회로 전부 계산할 수 있다 — Chapter
+4에서 본 “터미널부터 거꾸로 대입” 패턴과 같은 아이디어다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
-<p><strong>Q. 정형 데이터에 굳이 신경망을 써도 되나요?</strong> 된다 — 다만 Chapter
-7.3에서 배웠듯, 정형 데이터에서는 지금도 GBDT 계열이 신경망보다
-경쟁력 있는 경우가 흔하다. 신경망을 선택했다면 “왜 GBDT보다 신경망이
-이 문제에 더 적합하다고 판단했는지”(예: 특징 사이의 복잡한 상호작용을
-자동으로 학습하고 싶었다, 다른 딥러닝 모듈과 결합할 계획이 있다 등)를
-발표에서 설명할 수 있어야 한다 — “그냥 딥러닝이 최신이라서“는 충분한
-근거가 아니다.</p>
-<p><strong>Q. Chapter 9~15 중 여러 기법을 동시에 써도 되나요?</strong> 권장한다 —
-예를 들어 CNN으로 이미지 특징을 뽑은 뒤 어텐션으로 그 특징들을
-조합하는 식으로 여러 장의 도구를 함께 쓰면, “왜 이 조합을
-골랐는가“라는 추가적인 설계 근거를 보여줄 기회가 된다. 다만 필수
-요구사항(수식적 정당화 최소 1개)은 그중 하나의 기법에 대해서만
-충족하면 된다.</p>
+<p><strong>Q. MC 예측은 Chapter 4의 정책평가와 결국 같은 것을 계산하나요?</strong>
+목표(\(V^\pi(s)\))는 같지만 방법이 다르다 — Chapter 4의 정책평가는
+전이확률 \(P\)를 정확히 알고 있다는 전제로 벨만방정식을 반복
+대입해서 계산한다(모델 기반). MC 예측은 \(P\)를 전혀 모른 채, 실제로
+에피소드를 여러 번 플레이해서 관찰된 리턴의 <strong>평균</strong>으로 \(V^\pi(s)\)를
+추정한다(모델 프리) — 대수의 법칙에 의해 에피소드 수가 많아질수록 이
+평균은 진짜 \(V^\pi(s)\)에 가까워진다.</p>
+<p><strong>Q. 에피소드가 짧으면 추정이 더 정확한가요?</strong> 아니다 — 에피소드
+길이와 추정 정확도는 직접적인 관계가 없다. 정확도를 높이는 건
+“그 상태를 방문한 <strong>횟수</strong>”(더 많은 에피소드)이지 에피소드 하나의
+길이가 아니다. 다만 에피소드가 매우 길면 리턴 \(G_t\)의 분산이
+커지는 경향이 있어(먼 미래의 무작위성까지 다 누적되므로), 같은
+정확도에 도달하는 데 더 많은 에피소드가 필요할 수는 있다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../ml1/chapter16.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml2/chapter05.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../ml1/chapter16/2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml2/chapter05/2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -237,11 +248,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../ml1/chapter16.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml2/chapter05.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../ml1/chapter16/2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml2/chapter05/2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
