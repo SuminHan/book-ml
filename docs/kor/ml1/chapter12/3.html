@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>로봇 시뮬레이션과 제어 기초 (Robot Simulation &amp; Control Basics) - Machine Learning 1/2 (한국어)</title>
+        <title>Multi-Head Attention과 Positional Encoding - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-e96d0476.css">
-        <link rel="stylesheet" href="../css/chrome-d279d366.css">
-        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-9fca9ae1.css">
+        <link rel="stylesheet" href="../../theme/custom-9fca9ae1.css">
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-52155b50.js";
+            window.path_to_searchindex_js = "../../searchindex-52155b50.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-77073610.js"></script>
+        <script src="../../toc-77073610.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Machine Learning 1/2 (한국어)</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
@@ -178,126 +178,135 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-13-로봇-시뮬레이션과-제어-기초-robot-simulation--control-basics"><a class="header" href="#chapter-13-로봇-시뮬레이션과-제어-기초-robot-simulation--control-basics">Chapter 13. 로봇 시뮬레이션과 제어 기초 (Robot Simulation &amp; Control Basics)</a></h1>
-<p>지금까지 배운 강화학습 알고리즘은 CartPole처럼 단순화된 환경에서 다뤘다.
-실제 로봇 — 팔, 다리, 바퀴가 달린 물리적 시스템 — 을 다루려면, “행동이
-연속적인 힘/토크“라는 사실뿐 아니라, 그 힘이 실제 물리 법칙(관성, 중력,
-마찰)을 거쳐 로봇을 움직인다는 사실까지 감안해야 한다. 이번 장은
-Chapter 9~12에서 배운 알고리즘들을 실제로 적용해볼 로봇 시뮬레이션의
-기초 개념을 다룬다.</p>
-<h2 id="131-로봇공학-기초-개념-상태공간과-운동학"><a class="header" href="#131-로봇공학-기초-개념-상태공간과-운동학">13.1 로봇공학 기초 개념: 상태공간과 운동학</a></h2>
-<p>로봇의 상태는 보통 각 관절의 <strong>각도</strong>와 <strong>각속도</strong>로 표현된다 — 2관절
-로봇 팔이라면 상태는 \((\theta_1, \theta_2, \dot\theta_1,
-\dot\theta_2)\)처럼 4차원 벡터가 된다. <strong>정기구학</strong>(forward
-kinematics)은 이 관절 각도들로부터 팔 끝(end-effector)의 실제 위치를
-계산하는 것이고, <strong>역기구학</strong>(inverse kinematics)은 그 반대 — “팔 끝을
-이 위치로 보내려면 관절 각도가 얼마여야 하는가“를 계산하는 것이다. 이런
-기하학 계산은 로봇공학 자체의 깊은 주제이지만, 강화학습 관점에서 중요한
-것은 단 하나다: <strong>상태와 행동이 이제 물리적으로 의미 있는 연속값이라는
-것</strong>이다 — Chapter 3.1에서 배운 MDP의 \(\mathcal{S}, \mathcal{A}\)가
-이제 추상적인 기호가 아니라 실제 각도·힘의 단위를 갖는다.</p>
-<h2 id="132-시뮬레이션이-필요한-이유-sim-to-real"><a class="header" href="#132-시뮬레이션이-필요한-이유-sim-to-real">13.2 시뮬레이션이 필요한 이유: sim-to-real</a></h2>
-<p>실물 로봇으로 강화학습을 직접 학습시키면 몇 가지 현실적인 문제에
-부딪힌다 — 수만 번의 시행착오 동안 로봇이 고장 나거나, 사람에게 위험할
-수 있고, 무엇보다 <strong>느리다</strong>(물리 세계는 컴퓨터 시뮬레이션보다 훨씬
-느리게 흐른다). 그래서 실전에서는 먼저 물리 엔진 위의 <strong>시뮬레이션</strong>에서
-정책을 학습시킨 뒤, 그 정책을 실물 로봇으로 옮긴다 — 이 전이 과정을
-<strong>sim-to-real</strong>이라 부른다.</p>
-<p>문제는 시뮬레이션이 실제 물리를 완벽히 재현하지 못한다는 것이다(마찰
-계수, 센서 잡음, 재질의 미세한 차이 등) — 시뮬레이션에서만 잘 작동하고
-실물에서는 실패하는 정책을 <strong>현실 격차</strong>(reality gap)라 부른다. 이
-격차를 줄이는 대표적인 방법이 <strong>도메인 무작위화</strong>(domain
-randomization) — 시뮬레이션의 물리 파라미터(마찰, 질량, 조명 등)를
-매 학습 에피소드마다 무작위로 바꿔가며 학습시키는 것이다. 정책이 하나의
-고정된 시뮬레이션 설정이 아니라 “다양한 물리 조건 전체“에 대해 잘
-작동하도록 강제하면, 그중 어느 하나(실물 로봇의 실제 물리 조건)에도
-더 잘 일반화하는 경향이 생긴다 — Chapter 6(ML1)에서 배운 정규화가
-“모델을 덜 유연하게 만들어 분산을 줄인다“는 것과 비슷하게, 여기서는
-“환경 자체를 다양화해서 정책이 특정 시뮬레이션 설정에 과적합하지
-않게 만든다.”</p>
-<h2 id="133-gymnasiumpybullet-로봇-환경"><a class="header" href="#133-gymnasiumpybullet-로봇-환경">13.3 Gymnasium/PyBullet 로봇 환경</a></h2>
-<p>이번 학기 실습은 Gymnasium이 제공하는 로봇류 환경으로 진행한다 — 이미
-Chapter 1과 9에서 쓴 CartPole·Pendulum도 사실 아주 단순화된 “로봇
-제어” 문제다(막대의 균형을 잡는 것, 진자를 세우는 것 모두 관절 제어의
-가장 작은 형태다). 좀 더 로봇에 가까운 연속 제어 문제로 넘어가 보자:</p>
-<pre><code class="language-python">import gymnasium as gym
-import numpy as np
-
-env = gym.make("Pendulum-v1")  # 연속 행동공간을 가진 가장 단순한 "관절 제어" 문제
-obs, info = env.reset(seed=0)
-print("상태(cos theta, sin theta, 각속도):", obs)
-print("행동공간:", env.action_space)  # Box(-2.0, 2.0, (1,)) -- 연속값 토크
-
-# 손으로 설계한 간단한 PD(비례-미분) 제어기: 각도가 클수록, 각속도가 클수록 반대로 힘을 준다
-total_reward = 0.0
-for _ in range(50):
-    cos_th, sin_th, thdot = obs
-    theta = np.arctan2(sin_th, cos_th)
-    action = np.clip(-2.0 * theta - 0.5 * thdot, -2.0, 2.0)
-    obs, reward, terminated, truncated, info = env.step([action])
-    total_reward += reward
-print("PD 제어기의 50스텝 누적 보상:", round(total_reward, 2))
-env.close()
-</code></pre>
-<p>이 PD(Proportional-Derivative) 제어기는 강화학습이 전혀 아니다 — 사람이
-직접 설계한 규칙일 뿐이다. 그런데도 무작위 행동보다 훨씬 나은 성능을
-낸다(무작위 정책의 50스텝 누적 보상은 보통 -1200~-1600 근처인데, 이
-간단한 규칙은 -240 근처까지 개선된다). 이 비교가 보여주는 것: <strong>강화학습의
-목표는 이런 손으로 설계한 제어기보다 더 나은, 또는 사람이 규칙으로
-설계하기 어려운 상황에서도 작동하는 정책을 데이터로부터 직접 찾아내는
-것</strong>이다.</p>
-<h2 id="134-연속제어에-ppo-적용하기"><a class="header" href="#134-연속제어에-ppo-적용하기">13.4 연속제어에 PPO 적용하기</a></h2>
-<p>Chapter 11의 PPO는 이산 행동(softmax 정책)뿐 아니라 연속 행동에도
-자연스럽게 확장된다 — 신경망이 각 행동 차원마다 정규분포의 평균과
-표준편차를 출력하도록 하면 된다:</p>
-<p>\[\pi_\theta(a|s) = \mathcal{N}(a; \mu_\theta(s), \sigma_\theta(s)^2)\]</p>
-<p>로그 확률 \(\log \pi_\theta(a|s)\)은 정규분포의 확률밀도함수에서
-바로 계산되며, Chapter 10.4의 로그미분 트릭과 Chapter 11의 클리핑
-목적함수는 이산/연속 여부와 무관하게 형태가 그대로 유지된다 — “행동을
-어떻게 파라미터화하는가“만 바뀔 뿐, 그 뒤의 최적화 기계는 동일하다는
-것이 정책기반 방법의 큰 장점이다.</p>
-<pre><code class="language-python">import math
-
-def gaussian_log_prob(action, mu, sigma):
-    # 연속 행동에 대한 로그 확률 -- softmax 대신 정규분포를 쓴다는 점만 다르다
-    return -0.5 * math.log(2 * math.pi * sigma**2) - (action - mu)**2 / (2 * sigma**2)
-</code></pre>
-<p><strong>로봇 시뮬레이션은 지금까지 배운 알고리즘(DQN, PPO)을 “실제 물리
-법칙이 지배하는 연속 행동공간“이라는 더 현실적인 무대로 옮기는 시험대다
-— 다음 장에서는 이 시뮬레이션을 더 정교한 물리엔진으로, 그리고 대규모
-GPU 가속 환경으로 확장한다.</strong></p>
+                        <h1 id="123-multi-head-attention과-positional-encoding"><a class="header" href="#123-multi-head-attention과-positional-encoding">12.3 Multi-Head Attention과 Positional Encoding</a></h1>
+<h3 id="multi-head-attention"><a class="header" href="#multi-head-attention">Multi-Head Attention</a></h3>
+<p>Q, K, V를 한 세트만 쓰는 대신, 여러 세트(“헤드”, head)를 병렬로 두고
+각각 다른 관점의 관련성을 학습하게 한다 — 한 헤드는 문법적 관계(주어-동사)에,
+다른 헤드는 의미적 관계(동의어)에 집중하는 식으로 역할이 나뉘는 경향이
+관찰된다. 여러 헤드의 결과를 이어붙인(concatenate) 뒤 다시 한 번
+선형변환해서 최종 출력을 만든다.</p>
+<p>Chapter 7.2에서 랜덤 포레스트가 “서로 다른 트리 여러 개의 다수결“로
+단일 트리보다 안정적인 예측을 얻었던 것과 비슷한 직관이다 — 헤드
+하나만으로는 한 종류의 관계만 포착할 수 있지만, 여러 헤드를 병렬로
+두면 서로 다른 종류의 관계를 동시에 포착해서 합칠 수 있다. 다만
+랜덤 포레스트의 트리들은 서로 독립적으로 무작위성만으로 다양해지는
+반면, 멀티헤드의 각 헤드는 역전파를 통해 “서로 다른 역할을 맡는 것이
+전체 손실을 줄이는 데 유리하다“는 방향으로 스스로 분화한다는 차이가
+있다.</p>
+<h3 id="positional-encoding-순서-정보는-어떻게-넣는가"><a class="header" href="#positional-encoding-순서-정보는-어떻게-넣는가">Positional Encoding: 순서 정보는 어떻게 넣는가</a></h3>
+<p>어텐션 연산 자체는 순서를 전혀 구분하지 않는다 — \(QK^T\)는 단어들의
+순서를 뒤섞어도 각 쌍의 관련도 자체는 똑같이 계산된다(집합처럼 취급).
+그런데 “강아지가 고양이를 쫓는다“에서는 순서가 의미를 바꾼다. 그래서
+Transformer는 각 단어의 임베딩에 그 단어의 위치 정보를 담은 벡터
+(positional encoding, 사인/코사인 함수로 만든 고정된 패턴)를 <strong>더해서</strong>
+넣는다 — 이러면 같은 단어라도 위치가 다르면 입력 벡터 자체가 달라지므로,
+어텐션이 간접적으로 순서를 활용할 수 있다.</p>
+<h3 id="자주-하는-실수-positional-encoding을-빼먹고-어텐션만-쓰기"><a class="header" href="#자주-하는-실수-positional-encoding을-빼먹고-어텐션만-쓰기">자주 하는 실수: Positional Encoding을 빼먹고 어텐션만 쓰기</a></h3>
+<p>12.2절 실습에서 쓴 <code>attention</code> 함수를 그대로 문장 두 개 —
+“강아지가 고양이를 쫓는다“와 “고양이가 강아지를 쫓는다” — 에 적용하면
+어떻게 될까? 두 문장은 같은 세 단어(강아지, 고양이, 쫓는다)로
+이루어져 있으므로, 각 단어의 임베딩이 위치와 무관하게 고정되어 있다면
+(positional encoding 없이) <strong>두 문장에 대해 완전히 동일한 어텐션
+가중치와 출력이 나온다</strong> — “누가 누구를 쫓는지“가 통째로 사라지는
+것이다. 이는 Chapter 11.1 도입부에서 지적한, MLP/CNN에 단어를 그냥
+벡터 집합으로 넣었을 때 순서 정보가 사라지는 문제가 어텐션에서도
+<strong>형태만 바뀐 채 그대로 재발</strong>한 것이다 — RNN은 순차 처리 구조 자체가
+순서를 암묵적으로 인코딩했지만, 어텐션은 병렬 처리를 얻은 대신 그
+암묵적인 순서 정보를 잃었고, positional encoding으로 그걸 명시적으로
+다시 넣어줘야 한다. 실전에서 트랜스포머 구조를 처음부터 구현할 때
+이 단계를 빼먹으면, 모델이 학습되긴 하지만 어순에 둔감한 이상한
+결과를 낼 수 있다.</p>
+<h3 id="rnn-대비-이점"><a class="header" href="#rnn-대비-이점">RNN 대비 이점</a></h3>
+<p>Self-attention은 모든 단어 쌍을 <strong>한 번에</strong> 병렬로 계산한다 — 순차적으로
+처리할 필요가 없어 GPU 병렬성을 최대한 활용하고, “1번째 단어와 100번째
+단어의 관련성“도 중간 99단계를 거치지 않고 직접 계산된다(그래디언트 소실
+문제가 구조적으로 훨씬 덜하다). 대신 문장 길이의 제곱에 비례하는
+계산량(\(QK^T\)가 \(n \times n\) 행렬)이라는 새로운 비용이 생긴다 —
+이건 아주 긴 문서를 다룰 때의 실무적 한계로 이어진다.</p>
+<p><strong>“모든 단어를 한 번에 보고, 서로의 관련성을 직접 계산한다“는 이 아이디어
+하나가 지난 몇 년간 딥러닝을 가장 크게 바꾼 변화다.</strong></p>
+<h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
+<p><strong>Q. 문장 길이의 제곱에 비례하는 계산량이 실전에서 얼마나 문제가
+되나요?</strong> 문장이 1,000단어면 \(1000^2=100\text{만}\) 쌍, 10,000단어면
+\(1\text{억}\) 쌍을 계산해야 한다 — 길이가 10배 늘면 계산량은 100배
+늘어난다. 이 때문에 아주 긴 문서(책 한 권 분량)를 다루는 LLM은 이
+제곱 비용을 줄이는 다양한 근사 기법(희소 어텐션, 슬라이딩 윈도우 등)을
+함께 쓴다 — Chapter 13에서 LLM을 다룰 때 이 한계가 실전 문맥
+길이(context length)에 어떤 제약을 주는지 다시 언급한다.</p>
+<p><strong>Q. Positional encoding은 왜 학습하지 않고 고정된 사인/코사인
+함수를 쓰나요?</strong> 학습 가능한 위치 임베딩을 쓰는 것도 가능하고 실제로
+쓰이지만(예: BERT), 사인/코사인 기반 고정 인코딩은 학습 데이터에서 본
+적 없는 더 긴 문장에도 자연스럽게 확장된다는 장점이 있다 — 학습된
+위치 임베딩은 학습 때 본 최대 길이를 넘어서면 정의조차 안 되지만,
+수학 함수는 어떤 위치값에도 정의되기 때문이다.</p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (실습)</strong> 위 코드를 그대로 실행한 뒤, PD 제어기의 계수(<code>-2.0</code>,
-<code>-0.5</code>)를 각각 두 배로 키워보고, 절반으로 줄여도 보고, 50스텝 누적
-보상이 어떻게 달라지는지 비교하라. 계수가 너무 크거나 너무 작을 때
-각각 어떤 문제가 생기는지(진동하는지, 반응이 느린지) 관찰한 바를
-서술하라.</p>
-<p><strong>2. (코딩)</strong> 위 <code>gaussian_log_prob</code>(핵심 줄은 빈칸으로 남겨져 있다고
-가정)을 완성하라:</p>
+<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>scaled_dot_product_attention</code>을
+완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
 <pre><code class="language-python">import math
 
-def gaussian_log_prob(action, mu, sigma):
-    # ADD ADDITIONAL CODE HERE!!
-    # 정규분포 확률밀도함수의 로그: -0.5*log(2*pi*sigma^2) - (action-mu)^2/(2*sigma^2)
+def softmax(row):
+    m = max(row)
+    exps = [math.exp(v - m) for v in row]
+    total = sum(exps)
+    return [e / total for e in exps]
 
-print(round(gaussian_log_prob(0.0, 0.0, 1.0), 4))   # 표준정규분포 x=0에서의 로그밀도, 약 -0.9189
-print(round(gaussian_log_prob(2.0, 0.0, 1.0), 4))   # 평균에서 멀수록 로그확률이 더 작아짐(더 음수)
+def scaled_dot_product_attention(Q, K, V, d_k):
+    # ADD ADDITIONAL CODE HERE!!
+    # 1. scores[i][j] = (Q[i] . K[j]) / sqrt(d_k)
+    # 2. weights = 각 행에 softmax 적용
+    # 3. output[i] = weights[i]로 V의 가중합
+
+    return output, weights
+
+Q = [[1,0],[0,1]]
+K = [[1,0],[0,1]]
+V = [[10,0],[0,10]]
+output, weights = scaled_dot_product_attention(Q, K, V, d_k=2)
+print(weights)  # 각 단어가 "자기 자신"에 더 높은 가중치를 줌
 </code></pre>
-<p><strong>3. (개념 서술)</strong> 도메인 무작위화(domain randomization)가 왜 ML1
-Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
-있는지, “모델이 특정 조건 하나에 과적합하는 것을 막는다“는 관점에서
-두세 문장으로 설명하라.</p>
+<p><strong>2. (개념 서술)</strong> Self-attention이 RNN보다 그래디언트 소실에 덜 취약한
+이유를, “1번째 단어와 100번째 단어 사이의 경로 길이“라는 관점에서
+설명하라(Chapter 11의 BPTT와 비교).</p>
+<p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> 단어 2개짜리 문장에 대해, 다음
+벡터가 주어졌다: \(Q = \begin{pmatrix}1 &amp; 0\ 0 &amp; 1\end{pmatrix}\),
+\(K = \begin{pmatrix}1 &amp; 1\ 1 &amp; 0\end{pmatrix}\), \(V =
+\begin{pmatrix}5 &amp; 0\ 0 &amp; 5\end{pmatrix}\)(\(d_k=2\)).</p>
+<p>\(QK^T\)를 손으로 계산하고, \(\sqrt{d_k}\)로 나눈 뒤, 각 행에
+softmax를 적용해 어텐션 가중치 행렬을 구하고, 마지막으로 \(V\)와의
+가중합으로 최종 출력을 계산하라.</p>
+<p><strong>빈칸채움형 폴백 버전</strong>(자유 계산이 어려운 경우):</p>
+<pre><code>Step 1: QK^T 계산 (2x2 행렬)
+  (QK^T)[0][0] = Q[0].K[0] = 1*1 + 0*1 = ______________
+  (QK^T)[0][1] = Q[0].K[1] = 1*1 + 0*0 = ______________
+  (QK^T)[1][0] = Q[1].K[0] = 0*1 + 1*1 = ______________
+  (QK^T)[1][1] = Q[1].K[1] = 0*1 + 1*0 = ______________
+
+Step 2: sqrt(d_k) = sqrt(2) ≈ 1.41 로 모든 원소를 나눈다
+  scaled[0] = [______________, ______________]
+  scaled[1] = [______________, ______________]
+
+Step 3: 첫 번째 행에 softmax 적용
+  exp(scaled[0][0]) = ______________  (계산기 사용)
+  exp(scaled[0][1]) = ______________
+  weights[0] = [______________, ______________]  (합이 1이 되도록 정규화)
+
+Step 4: 출력[0] = weights[0][0] * V[0] + weights[0][1] * V[1]
+       = [______________, ______________]
+</code></pre>
+<p><strong>정확성 확인</strong>: 완성한 계산을 문제 1의
+<code>scaled_dot_product_attention(Q, K, V, d_k=2)</code> 출력과 대조해 일치하는지
+확인하라.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml2/chapter12.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter12/2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml2/chapter14.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter13.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -307,11 +316,11 @@ Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml2/chapter12.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter12/2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml2/chapter14.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter13.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -331,17 +340,17 @@ Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
         </script>
 
 
-        <script src="../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-09f2665d.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
 
-        <script src="../clipboard-1626706a.min.js"></script>
-        <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-609e4cb8.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
-        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

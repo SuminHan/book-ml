@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-28c96295.js";
+            window.path_to_searchindex_js = "searchindex-52155b50.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-218310d5.js"></script>
+        <script src="toc-77073610.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -4194,26 +4194,71 @@ h_1}\)의 크기를 계산하라. 이번엔 \(w_{hh}=1.5\)로 바꿔서 같은 �
 구조를 완전히 걷어내고 <strong>어텐션</strong>(attention) 메커니즘만으로 RNN보다 더
 좋은 성능을 냈다. 이 구조가 <strong>트랜스포머</strong>(Transformer)이며, 지금 우리가
 쓰는 거의 모든 대규모 언어모델(LLM)의 근간이다.</p>
-<h2 id="121-rnn의-순차성이라는-근본-문제"><a class="header" href="#121-rnn의-순차성이라는-근본-문제">12.1 RNN의 순차성이라는 근본 문제</a></h2>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#121-어텐션-아이디어와-querykeyvalue">12.1 어텐션 아이디어와 Query·Key·Value</a></li>
+<li><a href="#122-scaled-dot-product-attention과-self-attention">12.2 Scaled Dot-Product Attention과 Self-Attention</a></li>
+<li><a href="#123-multi-head-attention과-positional-encoding">12.3 Multi-Head Attention과 Positional Encoding</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="121-어텐션-아이디어와-querykeyvalue"><a class="header" href="#121-어텐션-아이디어와-querykeyvalue">12.1 어텐션 아이디어와 Query·Key·Value</a></h1>
+<h3 id="rnn의-순차성이라는-근본-문제"><a class="header" href="#rnn의-순차성이라는-근본-문제">RNN의 순차성이라는 근본 문제</a></h3>
 <p>Chapter 11에서 본 RNN은 한 단어씩 순서대로 처리해야 했다 — 100번째
 단어를 보려면 1번째부터 99번째까지 순서대로 거쳐야 한다. 이건 두 가지
 문제를 만든다: (1) GPU는 병렬 연산에 특화됐는데, 순차적 구조는 그
 병렬성을 활용하지 못해 느리다. (2) 먼 과거의 정보가 여러 단계를 거치며
 흐려진다(Chapter 11의 그래디언트 소실과 정확히 같은 문제).</p>
-<h2 id="122-어텐션이라는-아이디어"><a class="header" href="#122-어텐션이라는-아이디어">12.2 “어텐션“이라는 아이디어</a></h2>
+<h3 id="어텐션이라는-아이디어"><a class="header" href="#어텐션이라는-아이디어">“어텐션“이라는 아이디어</a></h3>
 <p>어텐션의 직관은 단순하다: “지금 이 단어를 이해하려면, 문장의 <strong>다른 모든
 단어를 한 번에</strong> 보고, 그중 관련 있는 단어에 더 집중(attend)한다.” “그
 동물은 도로를 건너지 않았다, 왜냐하면 <strong>그것은</strong> 너무 지쳐 있었기
 때문이다“라는 문장에서, “그것은“이 가리키는 게 “그 동물“인지 “도로“인지는
 문장 전체를 동시에 봐야 판단할 수 있다.</p>
-<h2 id="123-query-key-value"><a class="header" href="#123-query-key-value">12.3 Query, Key, Value</a></h2>
+<h3 id="query-key-value"><a class="header" href="#query-key-value">Query, Key, Value</a></h3>
 <p>각 단어(정확히는 각 단어의 임베딩 벡터)는 세 가지 벡터로 변환된다:
 <strong>Query</strong>(Q) “내가 지금 무엇을 찾고 있는가”, <strong>Key</strong>(K) “나는 어떤
 정보를 갖고 있는가”, <strong>Value</strong>(V) “실제로 전달할 내용”. 세 벡터 모두
 같은 입력 임베딩 \(x\)에 서로 다른 학습 가능한 가중치 행렬을 곱해서
 얻는다:</p>
 <p>\[Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V\]</p>
-<h2 id="124-scaled-dot-product-attention"><a class="header" href="#124-scaled-dot-product-attention">12.4 Scaled Dot-Product Attention</a></h2>
+<p>이 셋을 도서관에 비유하면 감이 잡힌다 — Query는 “내가 찾는 책의
+주제”(질문), Key는 “각 책의 색인 카드에 적힌 요약”(색인), Value는
+“실제 책의 내용“이다. Query를 모든 책의 Key와 비교해서 가장 관련
+있는 책들을 찾고, 그 관련도만큼 실제 내용(Value)을 섞어서 가져오는
+것이 바로 다음 절의 어텐션 연산이다.</p>
+<h3 id="손으로-한-번-같은-입력에서-q-k-v가-서로-다르게-계산되는-것-확인하기"><a class="header" href="#손으로-한-번-같은-입력에서-q-k-v가-서로-다르게-계산되는-것-확인하기">손으로 한 번: 같은 입력에서 Q, K, V가 서로 다르게 계산되는 것 확인하기</a></h3>
+<p>단어 2개, 각 임베딩이 \(x_1=(1,0)\), \(x_2=(0,1)\)인 아주 작은 예로,
+서로 다른 세 변환 행렬 \(W_Q=\begin{pmatrix}1&amp;0\0&amp;2\end{pmatrix}\),
+\(W_K=\begin{pmatrix}0.5&amp;0\0&amp;0.5\end{pmatrix}\),
+\(W_V=\begin{pmatrix}2&amp;1\1&amp;2\end{pmatrix}\)을 적용해보자.
+\(Q=XW_Q\), \(K=XW_K\), \(V=XW_V\)를 계산하면:</p>
+<p>\[Q=\begin{pmatrix}1&amp;0\0&amp;2\end{pmatrix}, \quad
+K=\begin{pmatrix}0.5&amp;0\0&amp;0.5\end{pmatrix}, \quad
+V=\begin{pmatrix}2&amp;1\1&amp;2\end{pmatrix}\]</p>
+<p>같은 입력 \(X\)에서 출발했는데도 \(Q, K, V\)가 서로 완전히 다른
+값으로 나온다 — 이 세 행렬이 각각 독립적인 학습 파라미터를 가지고
+있기 때문이다. \(W_Q\)는 두 번째 차원을 2배로 확대하고, \(W_K\)는
+모든 차원을 절반으로 축소하며, \(W_V\)는 두 차원을 서로 섞는다(비대각
+원소가 0이 아니다) — 이렇게 서로 다른 “역할“을 하는 변환들이 학습을
+통해 만들어진다.</p>
+<h3 id="자주-묻는-질문-29"><a class="header" href="#자주-묻는-질문-29">자주 묻는 질문</a></h3>
+<p><strong>Q. Q, K, V는 왜 같은 입력에서 서로 다른 세 가지로 나뉘나요? 그냥
+입력 자체를 비교하면 안 되나요?</strong> 만약 Q=K=V=X(변환 없이 원본 입력을
+그대로 씀)라면, “이 단어가 자기 자신과 얼마나 비슷한가“만 재게 되어
+표현력이 크게 제한된다. \(W_Q, W_K, W_V\)라는 서로 다른 학습 가능한
+변환을 두면, “무엇을 찾을지“와 “무엇을 제공할지“를 모델이 데이터로부터
+독립적으로 학습할 수 있다 — 예를 들어 대명사는 “나는 나를 가리키는
+명사를 찾는다“는 방향으로 \(W_Q\)가 학습되고, 명사는 “나는 대명사가
+찾는 대상이 될 수 있다“는 방향으로 \(W_K\)가 학습되는 식이다.</p>
+<p><strong>Q. 이 구조가 Chapter 3의 나이브베이즈나 Chapter 5의 SVM과 관련이
+있나요?</strong> 직접적인 수학적 연결은 없지만, “무엇이 무엇과 관련 있는지를
+내적(유사도)으로 잰다“는 아이디어 자체는 Chapter 5.3의 커널 함수
+\(K(x,x’)\)(두 점의 유사도를 재는 함수)와 정신적으로 닮아 있다 —
+둘 다 “원래 특징을 그대로 비교하는 대신, 학습되거나 설계된 변환을
+거친 뒤 비교한다“는 패턴을 공유한다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="122-scaled-dot-product-attention과-self-attention"><a class="header" href="#122-scaled-dot-product-attention과-self-attention">12.2 Scaled Dot-Product Attention과 Self-Attention</a></h1>
+<h3 id="scaled-dot-product-attention"><a class="header" href="#scaled-dot-product-attention">Scaled Dot-Product Attention</a></h3>
 <p>한 단어의 Query가 모든 단어의 Key와 얼마나 “관련 있는지“를 내적(dot
 product)으로 잰다:</p>
 <p>\[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\]</p>
@@ -4246,20 +4291,68 @@ def attention(Q, K, V, d_k):
                for t in range(len(V[0]))] for i in range(len(Q))]
     return output, weights
 </code></pre>
-<h2 id="125-self-attention-문장이-자기-자신을-본다"><a class="header" href="#125-self-attention-문장이-자기-자신을-본다">12.5 Self-Attention: 문장이 자기 자신을 본다</a></h2>
+<h3 id="self-attention-문장이-자기-자신을-본다"><a class="header" href="#self-attention-문장이-자기-자신을-본다">Self-Attention: 문장이 자기 자신을 본다</a></h3>
 <p>Q, K, V가 모두 <strong>같은 문장</strong>에서 나오면 “self-attention“이라 부른다 —
 각 단어가 같은 문장 안의 다른 모든 단어(자기 자신 포함)와의 관련도를
 계산한다. 이게 이번 장 도입부에서 본 “그것은“이 “그 동물“을 가리키는지
 판단하는 메커니즘이다: “그것은“의 Query가 문장 안 모든 단어의 Key와
 내적을 계산했을 때, “그 동물“의 Key와 가장 높은 점수가 나오도록
 학습된다.</p>
-<h2 id="126-multi-head-attention"><a class="header" href="#126-multi-head-attention">12.6 Multi-Head Attention</a></h2>
+<h3 id="실습-대명사-지시-관계를-어텐션-가중치로-시각화하기"><a class="header" href="#실습-대명사-지시-관계를-어텐션-가중치로-시각화하기">실습: 대명사 지시 관계를 어텐션 가중치로 시각화하기</a></h3>
+<p>이번 장 도입부의 “그 동물은 도로를 건너지 않았다, 그것은 지쳐 있었기
+때문이다” 문장을 아주 단순화해서, 네 단어 [동물, 도로, 건너지, 그것은]에
+직접 설계한 임베딩을 주고 self-attention을 계산해보자(실전에서는
+이 임베딩도 학습되지만, 여기서는 “그것은“이 의미적으로 “동물“과 가깝게
+설계된 임베딩을 손으로 지정했다):</p>
+<pre><code class="language-python">words = ["동물", "도로", "건너지", "그것은"]
+E = [[3,0,0], [0,3,0], [0,0,3], [2.8,0.3,0]]  # "그것은"이 "동물"과 유사하게 설계됨
+Q = K = V = E
+output, weights = attention(Q, K, V, d_k=3)
+for w, row in zip(words, weights):
+    print(w, [round(x, 3) for x in row])
+</code></pre>
+<pre><code>동물:   [0.582, 0.003, 0.003, 0.412]
+도로:   [0.005, 0.980, 0.005, 0.009]
+건너지: [0.005, 0.005, 0.984, 0.005]
+그것은: [0.561, 0.007, 0.004, 0.427]
+</code></pre>
+<p>“그것은” 행을 보면 “동물“에 56.1%, 자기 자신에 42.7%의 가중치를 주고,
+“도로”(0.7%)와 “건너지”(0.4%)는 사실상 무시한다 — 이게 정확히 이번 장
+도입부에서 말한 “그것은이 무엇을 가리키는지, 문장 전체를 보고
+판단한다“는 것이 숫자로 구현된 모습이다. 실제 트랜스포머에서는 이
+임베딩과 \(W_Q, W_K, W_V\)를 전부 데이터로부터 학습해서, 이런
+“의미적으로 관련된 단어에 집중하는” 패턴이 스스로 만들어지게 한다.</p>
+<h3 id="자주-묻는-질문-30"><a class="header" href="#자주-묻는-질문-30">자주 묻는 질문</a></h3>
+<p><strong>Q. 어텐션 가중치가 항상 “문법적으로 옳은” 대상에 집중하나요?</strong> 항상
+그렇지는 않다 — 학습된 모델의 어텐션 헤드를 실제로 들여다보면, 어떤
+헤드는 정확히 대명사-선행사 관계에 집중하지만, 다른 헤드는 그냥
+바로 이웃한 단어나 문장부호에 집중하는 등 사람이 보기에 “덜 해석
+가능한” 패턴을 학습하기도 한다 — 12.3절에서 배울 멀티헤드 구조가 바로
+이런 “서로 다른 역할을 가진 여러 헤드“를 병렬로 두는 이유다.</p>
+<p><strong>Q. softmax를 안 쓰고 그냥 내적값을 바로 가중치로 쓰면 안 되나요?</strong>
+내적값은 범위가 정해져 있지 않고(음수도 가능) 단어마다 스케일이 달라질
+수 있어서, 그대로 가중합에 쓰면 “가중치의 합이 1“이라는 보장이 없어
+출력의 스케일이 불안정해진다. softmax는 Chapter 2.3에서 로지스틱회귀의
+출력을 확률로 바꿔준 것과 같은 역할 — 임의의 실수를 “합이 1인, 항상
+양수인” 분포로 바꿔서 가중합을 안정적인 보간(interpolation)으로 만들어
+준다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="123-multi-head-attention과-positional-encoding"><a class="header" href="#123-multi-head-attention과-positional-encoding">12.3 Multi-Head Attention과 Positional Encoding</a></h1>
+<h3 id="multi-head-attention"><a class="header" href="#multi-head-attention">Multi-Head Attention</a></h3>
 <p>Q, K, V를 한 세트만 쓰는 대신, 여러 세트(“헤드”, head)를 병렬로 두고
 각각 다른 관점의 관련성을 학습하게 한다 — 한 헤드는 문법적 관계(주어-동사)에,
 다른 헤드는 의미적 관계(동의어)에 집중하는 식으로 역할이 나뉘는 경향이
 관찰된다. 여러 헤드의 결과를 이어붙인(concatenate) 뒤 다시 한 번
 선형변환해서 최종 출력을 만든다.</p>
-<h2 id="127-positional-encoding-순서-정보는-어떻게-넣는가"><a class="header" href="#127-positional-encoding-순서-정보는-어떻게-넣는가">12.7 Positional Encoding: 순서 정보는 어떻게 넣는가</a></h2>
+<p>Chapter 7.2에서 랜덤 포레스트가 “서로 다른 트리 여러 개의 다수결“로
+단일 트리보다 안정적인 예측을 얻었던 것과 비슷한 직관이다 — 헤드
+하나만으로는 한 종류의 관계만 포착할 수 있지만, 여러 헤드를 병렬로
+두면 서로 다른 종류의 관계를 동시에 포착해서 합칠 수 있다. 다만
+랜덤 포레스트의 트리들은 서로 독립적으로 무작위성만으로 다양해지는
+반면, 멀티헤드의 각 헤드는 역전파를 통해 “서로 다른 역할을 맡는 것이
+전체 손실을 줄이는 데 유리하다“는 방향으로 스스로 분화한다는 차이가
+있다.</p>
+<h3 id="positional-encoding-순서-정보는-어떻게-넣는가"><a class="header" href="#positional-encoding-순서-정보는-어떻게-넣는가">Positional Encoding: 순서 정보는 어떻게 넣는가</a></h3>
 <p>어텐션 연산 자체는 순서를 전혀 구분하지 않는다 — \(QK^T\)는 단어들의
 순서를 뒤섞어도 각 쌍의 관련도 자체는 똑같이 계산된다(집합처럼 취급).
 그런데 “강아지가 고양이를 쫓는다“에서는 순서가 의미를 바꾼다. 그래서
@@ -4267,7 +4360,22 @@ Transformer는 각 단어의 임베딩에 그 단어의 위치 정보를 담은 
 (positional encoding, 사인/코사인 함수로 만든 고정된 패턴)를 <strong>더해서</strong>
 넣는다 — 이러면 같은 단어라도 위치가 다르면 입력 벡터 자체가 달라지므로,
 어텐션이 간접적으로 순서를 활용할 수 있다.</p>
-<h2 id="128-rnn-대비-이점"><a class="header" href="#128-rnn-대비-이점">12.8 RNN 대비 이점</a></h2>
+<h3 id="자주-하는-실수-positional-encoding을-빼먹고-어텐션만-쓰기"><a class="header" href="#자주-하는-실수-positional-encoding을-빼먹고-어텐션만-쓰기">자주 하는 실수: Positional Encoding을 빼먹고 어텐션만 쓰기</a></h3>
+<p>12.2절 실습에서 쓴 <code>attention</code> 함수를 그대로 문장 두 개 —
+“강아지가 고양이를 쫓는다“와 “고양이가 강아지를 쫓는다” — 에 적용하면
+어떻게 될까? 두 문장은 같은 세 단어(강아지, 고양이, 쫓는다)로
+이루어져 있으므로, 각 단어의 임베딩이 위치와 무관하게 고정되어 있다면
+(positional encoding 없이) <strong>두 문장에 대해 완전히 동일한 어텐션
+가중치와 출력이 나온다</strong> — “누가 누구를 쫓는지“가 통째로 사라지는
+것이다. 이는 Chapter 11.1 도입부에서 지적한, MLP/CNN에 단어를 그냥
+벡터 집합으로 넣었을 때 순서 정보가 사라지는 문제가 어텐션에서도
+<strong>형태만 바뀐 채 그대로 재발</strong>한 것이다 — RNN은 순차 처리 구조 자체가
+순서를 암묵적으로 인코딩했지만, 어텐션은 병렬 처리를 얻은 대신 그
+암묵적인 순서 정보를 잃었고, positional encoding으로 그걸 명시적으로
+다시 넣어줘야 한다. 실전에서 트랜스포머 구조를 처음부터 구현할 때
+이 단계를 빼먹으면, 모델이 학습되긴 하지만 어순에 둔감한 이상한
+결과를 낼 수 있다.</p>
+<h3 id="rnn-대비-이점"><a class="header" href="#rnn-대비-이점">RNN 대비 이점</a></h3>
 <p>Self-attention은 모든 단어 쌍을 <strong>한 번에</strong> 병렬로 계산한다 — 순차적으로
 처리할 필요가 없어 GPU 병렬성을 최대한 활용하고, “1번째 단어와 100번째
 단어의 관련성“도 중간 99단계를 거치지 않고 직접 계산된다(그래디언트 소실
@@ -4276,6 +4384,20 @@ Transformer는 각 단어의 임베딩에 그 단어의 위치 정보를 담은 
 이건 아주 긴 문서를 다룰 때의 실무적 한계로 이어진다.</p>
 <p><strong>“모든 단어를 한 번에 보고, 서로의 관련성을 직접 계산한다“는 이 아이디어
 하나가 지난 몇 년간 딥러닝을 가장 크게 바꾼 변화다.</strong></p>
+<h3 id="자주-묻는-질문-31"><a class="header" href="#자주-묻는-질문-31">자주 묻는 질문</a></h3>
+<p><strong>Q. 문장 길이의 제곱에 비례하는 계산량이 실전에서 얼마나 문제가
+되나요?</strong> 문장이 1,000단어면 \(1000^2=100\text{만}\) 쌍, 10,000단어면
+\(1\text{억}\) 쌍을 계산해야 한다 — 길이가 10배 늘면 계산량은 100배
+늘어난다. 이 때문에 아주 긴 문서(책 한 권 분량)를 다루는 LLM은 이
+제곱 비용을 줄이는 다양한 근사 기법(희소 어텐션, 슬라이딩 윈도우 등)을
+함께 쓴다 — Chapter 13에서 LLM을 다룰 때 이 한계가 실전 문맥
+길이(context length)에 어떤 제약을 주는지 다시 언급한다.</p>
+<p><strong>Q. Positional encoding은 왜 학습하지 않고 고정된 사인/코사인
+함수를 쓰나요?</strong> 학습 가능한 위치 임베딩을 쓰는 것도 가능하고 실제로
+쓰이지만(예: BERT), 사인/코사인 기반 고정 인코딩은 학습 데이터에서 본
+적 없는 더 긴 문장에도 자연스럽게 확장된다는 장점이 있다 — 학습된
+위치 임베딩은 학습 때 본 최대 길이를 넘어서면 정의조차 안 되지만,
+수학 함수는 어떤 위치값에도 정의되기 때문이다.</p>
 <hr>
 <h2 id="연습문제-9"><a class="header" href="#연습문제-9">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>scaled_dot_product_attention</code>을
@@ -5405,7 +5527,7 @@ A, A, B, B 순서로 당기고 각각 보상 \(2, 0, 3, 1\)을 관찰했다고 �
 실제 사례다 — \(\varepsilon=0\)은 이론상 가장 “효율적으로 활용만
 한다“는 전략처럼 보이지만, 실전에서는 단 한 번의 나쁜 운으로 최적해를
 영원히 놓칠 수 있는 가장 위험한 선택이다.</p>
-<h3 id="자주-묻는-질문-29"><a class="header" href="#자주-묻는-질문-29">자주 묻는 질문</a></h3>
+<h3 id="자주-묻는-질문-32"><a class="header" href="#자주-묻는-질문-32">자주 묻는 질문</a></h3>
 <p><strong>Q. \(\varepsilon\)을 크게 잡을수록 항상 더 좋은가요?</strong> 아니다 —
 \(\varepsilon\)이 크면 나쁜 팔을 계속 무작위로 다시 시도하느라 그만큼
 누적 보상을 손해 본다(탐험에도 비용이 있다는 2.2절 실습의 핵심). 위
@@ -5487,7 +5609,7 @@ def ucb_bandit(true_means, c, steps):
 “모든 팔의 불확실성 보너스가 무한대인 상태에서 시작해서, 당겨볼수록
 그 무한대가 유한한 값으로 줄어든다“는 UCB의 논리를 자연스럽게
 확장한 것이기도 하다.</p>
-<h3 id="자주-묻는-질문-30"><a class="header" href="#자주-묻는-질문-30">자주 묻는 질문</a></h3>
+<h3 id="자주-묻는-질문-33"><a class="header" href="#자주-묻는-질문-33">자주 묻는 질문</a></h3>
 <p><strong>Q. \(c\)는 어떻게 정하나요?</strong> \(c\)가 클수록 불확실성 보너스가
 커져서 탐험을 더 적극적으로 하고, 작을수록(0에 가까울수록) 순수
 탐욕적 선택에 가까워진다 — Chapter 5.2의 SVM \(C\), Chapter 6의
@@ -5623,7 +5745,7 @@ A/B 테스트도 마찬가지다 — 두 광고 문구 중 어느 쪽이 클릭�
 \(\varepsilon\)-greedy, 낙관적 초기화, UCB, 이 세 가지 탐험 전략은
 형태만 바뀐 채 이 학기 내내(특히 Chapter 6의 ε-greedy) 반복해서
 등장한다.</strong></p>
-<h3 id="자주-묻는-질문-31"><a class="header" href="#자주-묻는-질문-31">자주 묻는 질문</a></h3>
+<h3 id="자주-묻는-질문-34"><a class="header" href="#자주-묻는-질문-34">자주 묻는 질문</a></h3>
 <p><strong>Q. 밴딧 문제에도 “정책”(policy)이라는 말을 쓰나요?</strong> 넓은 의미에서는
 그렇다 — “지금까지의 관찰을 보고 어떤 팔을 고를지 정하는 규칙”
 자체가 정책이라 부를 만하다. 다만 밴딧에는 상태가 없으므로, Chapter
