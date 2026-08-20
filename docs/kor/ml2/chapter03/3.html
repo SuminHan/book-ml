@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>BPTT와 numpy RNN 언어모델 실습 - Machine Learning 1/2 (한국어)</title>
+        <title>가치함수와 벨만 기대방정식 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,89 +178,114 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="112-bptt와-numpy-rnn-언어모델-실습"><a class="header" href="#112-bptt와-numpy-rnn-언어모델-실습">11.2 BPTT와 numpy RNN 언어모델 실습</a></h1>
-<h3 id="bptt-시간을-펼쳐서-역전파하기"><a class="header" href="#bptt-시간을-펼쳐서-역전파하기">BPTT: 시간을 펼쳐서 역전파하기</a></h3>
-<p>이 “요약을 계속 갱신한다“는 구조를 학습시키려면, 역전파를 시간 축을 따라
-펼쳐서 적용해야 한다. 시퀀스 길이 \(T\)만큼 신경망을 “펼쳐서(unroll)”
-각 시점을 독립된 층처럼 취급한 뒤 Chapter 9의 역전파를 그대로 적용하는 이
-방법을 <strong>BPTT</strong>(Backpropagation Through Time)라 부른다. \(h_t\)가
-\(h_{t-1}\)에, \(h_{t-1}\)이 \(h_{t-2}\)에 의존하는 사슬을 거슬러
-올라가야 하므로, \(h_1\)에 대한 그래디언트는 다음과 같은 형태의 곱을
-포함하게 된다:</p>
-<p>\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
-h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh’(z_t)) , W_{hh}\]</p>
-<p>매 시점의 그래디언트가 <strong>다음 시점에서 온 그래디언트 + 그 시점 자체의
-출력 오차</strong>를 합친 것이라는 점에서, 각 시점의 역전파는 Chapter 9.1의
-2층 신경망 역전파와 형태가 같다 — 다만 “은닉층에서 입력층으로” 대신
-“시점 \(t\)에서 시점 \(t{-}1\)로” 거슬러 올라간다는 점이 다를 뿐이다.</p>
-<h3 id="실습-numpy로-문자-단위-rnn-언어모델-학습시키기"><a class="header" href="#실습-numpy로-문자-단위-rnn-언어모델-학습시키기">실습: numpy로 문자 단위 RNN 언어모델 학습시키기</a></h3>
-<p>“abc“가 계속 반복되는 문자열 <code>"abcabcabcabc"</code>를 문자 단위로 예측하는
-아주 작은 RNN 언어모델을 numpy로 직접 학습시켜보자 — 입력은 각 시점의
-문자, 목표는 “다음 문자가 무엇인가“다.</p>
-<pre><code class="language-python">import numpy as np
-
-hidden_size = 8
-Wxh = np.random.randn(hidden_size, vocab_size) * 0.1
-Whh = np.random.randn(hidden_size, hidden_size) * 0.1
-Why = np.random.randn(vocab_size, hidden_size) * 0.1
-bh, by = np.zeros(hidden_size), np.zeros(vocab_size)
-
-def forward(inputs, h0):
-    h = h0
-    hs, ps = [], []
-    for idx in inputs:
-        x = one_hot(idx)
-        h = np.tanh(Wxh @ x + Whh @ h + bh)
-        p = softmax(Why @ h + by)
-        hs.append(h); ps.append(p)
-    return hs, ps
-# BPTT로 dWxh, dWhh, dWhy, dbh, dby를 구해 매 스텝 경사하강법으로 갱신
-</code></pre>
-<p>500 에폭 학습시키면(스크래치패드에서 실행 검증):</p>
-<pre><code>초기 손실: 11.97
-최종 손실: 0.0048
-</code></pre>
-<p>학습이 끝난 뒤 <code>'a'</code>부터 시작해서 모델이 다음 문자를 계속 예측하게
-시켜보면:</p>
-<pre><code>생성된 문자열: "abcabcabc"
-</code></pre>
-<p>정확히 원본 패턴을 재현한다 — 이 작은 예제가 하는 일이 바로 Chapter
-13의 LLM이 “다음 토큰을 예측한다“고 할 때 말하는 것의 가장 축소된
-형태다: 지금까지 본 시퀀스(은닉 상태에 요약된)를 바탕으로 다음 하나를
-맞히는 것을, 아주 긴 텍스트와 훨씬 큰 모델로 확장한 것이 LLM이다.</p>
-<h3 id="자주-하는-실수-그래디언트-클리핑을-빼먹는-것"><a class="header" href="#자주-하는-실수-그래디언트-클리핑을-빼먹는-것">자주 하는 실수: 그래디언트 클리핑을 빼먹는 것</a></h3>
-<p>위 학습 코드에는 <code>np.clip(dp, -5, 5, out=dp)</code>로 그래디언트를 일정
-범위로 잘라내는(clipping) 단계가 들어 있다 — 이걸 빼먹으면 어떻게
-될까? 11.3절에서 다룰 그래디언트 폭발이 학습 초반부터 발생해서, 가중치가
-<code>NaN</code>이나 발산하는 큰 값으로 튀어버릴 수 있다. Chapter 2.1의 학습률
-발산과 원인은 다르지만(학습률이 아니라 시퀀스 길이에 걸친 곱셈이
-원인) 증상은 똑같다 — 손실이 갑자기 <code>NaN</code>이 되면 그래디언트 폭발부터
-의심하고, 그래디언트 클리핑이나 더 작은 학습률을 먼저 시도하는 것이
-RNN 계열 모델 디버깅의 첫 단계다.</p>
+                        <h1 id="33-가치함수와-벨만-기대방정식"><a class="header" href="#33-가치함수와-벨만-기대방정식">3.3 가치함수와 벨만 기대방정식</a></h1>
+<h3 id="가치함수-리턴의-기댓값"><a class="header" href="#가치함수-리턴의-기댓값">가치함수: 리턴의 기댓값</a></h3>
+<p>리턴 \(G_t\)는 무작위 변수다(전이도 확률적일 수 있고, 정책도 확률적일
+수 있다) — 그래서 “이 상태가 얼마나 좋은가“를 하나의 숫자로 요약하려면
+<strong>기댓값</strong>을 쓴다. 정책(policy) \(\pi\)(각 상태에서 어떤 행동을
+할지 정하는 규칙, 확률적일 수도 있어 \(\pi(a|s)\)로 쓴다)를 따를 때,
+상태 \(s\)의 <strong>상태가치함수</strong>(state-value function)는:</p>
+<p>\[V^\pi(s) = \mathbb{E}_\pi[G_t \mid s_t = s]\]</p>
+<p>“상태 \(s\)에서 시작해서 정책 \(\pi\)를 계속 따른다면, 앞으로 받을
+할인된 보상의 합이 평균적으로 얼마인가“를 뜻한다. 비슷하게, “상태
+\(s\)에서 <strong>행동</strong> \(a\)를 하고 그 이후로는 \(\pi\)를 따른다면“의
+가치를 재는 <strong>행동가치함수</strong>(action-value function, Q-함수)도 있다:</p>
+<p>\[Q^\pi(s,a) = \mathbb{E}_\pi[G_t \mid s_t=s, a_t=a]\]</p>
+<h3 id="벨만-기대방정식-무한합을-재귀식으로"><a class="header" href="#벨만-기대방정식-무한합을-재귀식으로">벨만 기대방정식: 무한합을 재귀식으로</a></h3>
+<p>\(G_t\)의 정의를 한 스텝만 풀어써보면:</p>
+<p>\[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots = R_t + \gamma
+\big(R_{t+1} + \gamma R_{t+2} + \cdots\big) = R_t + \gamma G_{t+1}\]</p>
+<p>즉 <strong>리턴은 “지금 당장의 보상 + 할인된 다음 시점 리턴“으로 재귀적으로
+쓸 수 있다.</strong> 이 관찰을 \(V^\pi\)의 정의에 대입하면(기댓값의
+선형성을 이용):</p>
+<p>\[V^\pi(s) = \mathbb{E}_\pi\big[R_t + \gamma G_{t+1} \mid s_t=s\big] =
+\mathbb{E}_\pi\big[R_t + \gamma V^\pi(s_{t+1}) \mid s_t=s\big]\]</p>
+<p>이게 <strong>벨만 기대방정식</strong>(Bellman expectation equation)이다 — 무한히
+먼 미래까지 다 더해야 할 것 같던 \(V^\pi(s)\)가, “지금 보상 + 다음
+상태의 가치(할인됨)“라는 <strong>한 스텝짜리 재귀식</strong>으로 압축된다. 다음 장(동적계획법)은
+바로 이 재귀식을 실제로 계산 가능한 절차로 바꾸는 방법을 다룬다.</p>
+<h3 id="손으로-한-번-2상태-순환-mdp에서-벨만방정식-검산하기"><a class="header" href="#손으로-한-번-2상태-순환-mdp에서-벨만방정식-검산하기">손으로 한 번: 2상태 순환 MDP에서 벨만방정식 검산하기</a></h3>
+<p>상태 2개(S0, S1)가 서로를 오가는 아주 작은 MDP로 확인해보자. 정책이
+고정되어 있어(각 상태에서 할 수 있는 행동이 하나뿐이라고 하자) S0에서는
+항상 보상 \(R_0=1\)을 받고 S1로 이동하고, S1에서는 항상 보상
+\(R_1=2\)를 받고 S0로 돌아온다. \(\gamma=0.9\)일 때, 리턴의 무한
+등비급수를 직접 닫힌 형태로 풀면:</p>
+<p>\[V(S_0) = R_0 + \gamma R_1 + \gamma^2 R_0 + \cdots =
+\frac{R_0+\gamma R_1}{1-\gamma^2} = \frac{1+0.9\times2}{1-0.81}
+\approx 14.737\]</p>
+<p>\[V(S_1) = \frac{R_1+\gamma R_0}{1-\gamma^2} =
+\frac{2+0.9\times1}{1-0.81} \approx 15.263\]</p>
+<p>이제 이 값이 벨만 기대방정식 \(V(s) = R(s) + \gamma V(s’)\)을
+실제로 만족하는지 검산해보면:</p>
+<p>\[R_0 + \gamma V(S_1) = 1 + 0.9\times15.263 \approx 14.737 = V(S_0)
+\ \checkmark\]</p>
+<p>\[R_1 + \gamma V(S_0) = 2 + 0.9\times14.737 \approx 15.263 = V(S_1)
+\ \checkmark\]</p>
+<p>정확히 들어맞는다. 흥미로운 확인 하나 더: 벨만 방정식을 \(V_0=V_1=0\)에서
+시작해 200번 반복 대입하는 방식(다음 장에서 배울 <strong>정책평가</strong>의
+예고편)으로 풀어도 정확히 같은 값(14.737, 15.263)으로 수렴한다(스크래치패드에서
+검증) — “무한급수를 닫힌 형태로 직접 계산하기“와 “재귀식을 값이 안
+바뀔 때까지 반복 적용하기“라는 서로 다른 두 방법이 같은 답에
+도달한다는 것을 확인할 수 있다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
-<p><strong>Q. 왜 손실을 시퀀스 전체에 대해 한 번에 계산하나요? 시점마다 따로
-학습하면 안 되나요?</strong> 시점마다 따로 학습시키면, 각 시점의 예측이 그
-이전 시점들에 어떻게 의존하는지(BPTT가 계산하는 바로 그 의존성)를
-전혀 반영하지 못한다 — “다음 문자를 맞히는 능력“은 결국 “이전 문자들을
-얼마나 잘 요약했는가“에 달려 있으므로, 손실을 전체 시퀀스에 대해
-계산하고 역전파도 시간을 거슬러 전체에 대해 해야 은닉 상태가 실제로
-유용한 요약을 배우게 된다.</p>
-<p><strong>Q. 왜 이렇게 많은 에폭이 필요했나요?</strong> 이 예제는 일부러 아주 단순한
-구조(은닉 크기 8)와 기본 경사하강법으로 손으로 따라가기 쉽게
-만들었다 — 실전에서는 Adam 같은 더 정교한 옵티마이저(Chapter 9의
-SGD를 개선한 방법)와 더 큰 은닉 크기를 쓰면 훨씬 적은 반복으로도
-수렴한다. 중요한 것은 몇 에폭이 걸렸는가가 아니라, 손실이 실제로
-0에 가깝게 줄었고 생성된 문자열이 정답과 일치했다는 사실 자체다.</p>
+<p><strong>Q. \(V^\pi(s)\)와 \(Q^\pi(s,a)\)는 서로 어떻게 연결되나요?</strong>
+\(V^\pi(s)\)는 “그 상태에서 정책 \(\pi\)가 시키는 대로 행동했을
+때“의 가치이므로, 정책이 각 행동을 고를 확률로 \(Q^\pi\)를 가중평균한
+것과 같다: \(V^\pi(s) = \sum_a \pi(a|s)Q^\pi(s,a)\). 반대로
+\(Q^\pi(s,a)\)는 “이번 행동만 \(a\)로 강제로 고정하고, 그 다음부터는
+\(\pi\)를 따른다“는 뜻이므로 \(Q^\pi(s,a) = R(s,a) + \gamma
+\mathbb{E}_{s’\sim P(\cdot|s,a)}[V^\pi(s’)]\)로도 쓸 수 있다 — 두
+함수는 서로를 정의하는 데 쓰이는, 동전의 양면 같은 관계다.</p>
+<p><strong>Q. “최적” 정책의 가치함수는 어떻게 정의하나요?</strong> 이번 절의
+\(V^\pi, Q^\pi\)는 <strong>주어진</strong> 정책 \(\pi\)를 따랐을 때의 가치를
+잰다. 강화학습의 궁극적인 목표는 “가능한 모든 정책 중 가치가 가장
+높은” 최적 정책 \(\pi^*\)를 찾는 것인데, 그 정의와 계산법(벨만
+<strong>최적</strong>방정식, 이번 절의 벨만 <strong>기대</strong>방정식과 한 글자 차이지만
+\(\max\) 연산이 들어가 의미가 크게 달라진다)은 Chapter 4에서 바로
+이어서 다룬다.</p>
+<p><strong>MDP는 “지금 한 행동이 미래의 상태 자체를 바꾼다“는 사실 하나를
+Chapter 2의 밴딧에 추가한 것뿐이지만, 이 한 가지 차이가 강화학습을
+훨씬 더 어렵고, 훨씬 더 흥미로운 문제로 만든다.</strong></p>
+<hr>
+<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 위 코드를 참고해서, <code>FrozenLake-v1</code>(<code>is_slippery=False</code>)
+환경을 만들고 <code>env.observation_space</code>와 <code>env.action_space</code>를 출력해서
+상태·행동 공간이 각각 이산(discrete)인지 연속(continuous)인지, 몇
+가지인지 확인하라. CartPole과 비교했을 때 어떤 차이가 있는지 한 문장으로
+서술하라.</p>
+<pre><code class="language-python">import gymnasium as gym
+
+env = gym.make("FrozenLake-v1", is_slippery=False)
+# ADD ADDITIONAL CODE HERE!!
+# observation_space, action_space를 출력하고 CartPole과 비교
+</code></pre>
+<p><strong>2. (개념 서술)</strong> 마르코프 성질이 실제로는 성립하지 않을 것 같은
+상황을 하나 떠올려보라(예: 자율주행에서 “지금 화면 한 장“만으로 판단하는
+경우, 안개 속에서 방금 지나간 표지판 정보가 필요할 수 있다). 그런
+경우에도 마르코프 성질을 다시 성립시키려면 상태를 어떻게 다시 정의해야
+할지(예: 최근 몇 프레임을 함께 상태에 포함시키는 등) 한 문단으로
+제안하라.</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> 보상이 매 스텝 상수 \(R\)로
+고정된 경우(즉 \(R_t = R\) for all \(t\)), 리턴 \(G_t = \sum_{k=0}^\infty
+\gamma^k R\)이 \(\gamma &lt; 1\)일 때 닫힌 형태 \(G_t = \frac{R}{1-\gamma}\)로
+수렴함을 보여라.</p>
+<p><strong>힌트</strong>: 등비급수의 합 공식 \(\sum_{k=0}^\infty x^k = \frac{1}{1-x}\)
+(\(|x|&lt;1\)일 때)을 그대로 적용하면 된다. \(R=1, \gamma=0.9\)일 때
+\(G_t\)의 값을 직접 계산하고, \(\gamma=0.99\)로 바꿨을 때 값이 어떻게
+달라지는지도 계산해보라.</p>
+<p><strong>정확성 확인</strong>: \(\gamma\)가 1에 가까워질수록 \(G_t\)가 왜 점점
+커지는지(발산에 가까워지는지) 계산 결과를 바탕으로 한 문장으로
+설명하라.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../ml1/chapter11/1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml2/chapter03/2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../ml1/chapter11/3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml2/chapter04.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -270,11 +295,11 @@ SGD를 개선한 방법)와 더 큰 은닉 크기를 쓰면 훨씬 적은 반복
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../ml1/chapter11/1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml2/chapter03/2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../ml1/chapter11/3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml2/chapter04.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

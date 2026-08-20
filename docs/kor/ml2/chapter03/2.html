@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>BPTT와 numpy RNN 언어모델 실습 - Machine Learning 1/2 (한국어)</title>
+        <title>누적 보상, 할인율, 그리고 실습 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,89 +178,78 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="112-bptt와-numpy-rnn-언어모델-실습"><a class="header" href="#112-bptt와-numpy-rnn-언어모델-실습">11.2 BPTT와 numpy RNN 언어모델 실습</a></h1>
-<h3 id="bptt-시간을-펼쳐서-역전파하기"><a class="header" href="#bptt-시간을-펼쳐서-역전파하기">BPTT: 시간을 펼쳐서 역전파하기</a></h3>
-<p>이 “요약을 계속 갱신한다“는 구조를 학습시키려면, 역전파를 시간 축을 따라
-펼쳐서 적용해야 한다. 시퀀스 길이 \(T\)만큼 신경망을 “펼쳐서(unroll)”
-각 시점을 독립된 층처럼 취급한 뒤 Chapter 9의 역전파를 그대로 적용하는 이
-방법을 <strong>BPTT</strong>(Backpropagation Through Time)라 부른다. \(h_t\)가
-\(h_{t-1}\)에, \(h_{t-1}\)이 \(h_{t-2}\)에 의존하는 사슬을 거슬러
-올라가야 하므로, \(h_1\)에 대한 그래디언트는 다음과 같은 형태의 곱을
-포함하게 된다:</p>
-<p>\[\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^T \frac{\partial h_t}{\partial
-h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh’(z_t)) , W_{hh}\]</p>
-<p>매 시점의 그래디언트가 <strong>다음 시점에서 온 그래디언트 + 그 시점 자체의
-출력 오차</strong>를 합친 것이라는 점에서, 각 시점의 역전파는 Chapter 9.1의
-2층 신경망 역전파와 형태가 같다 — 다만 “은닉층에서 입력층으로” 대신
-“시점 \(t\)에서 시점 \(t{-}1\)로” 거슬러 올라간다는 점이 다를 뿐이다.</p>
-<h3 id="실습-numpy로-문자-단위-rnn-언어모델-학습시키기"><a class="header" href="#실습-numpy로-문자-단위-rnn-언어모델-학습시키기">실습: numpy로 문자 단위 RNN 언어모델 학습시키기</a></h3>
-<p>“abc“가 계속 반복되는 문자열 <code>"abcabcabcabc"</code>를 문자 단위로 예측하는
-아주 작은 RNN 언어모델을 numpy로 직접 학습시켜보자 — 입력은 각 시점의
-문자, 목표는 “다음 문자가 무엇인가“다.</p>
-<pre><code class="language-python">import numpy as np
+                        <h1 id="32-누적-보상-할인율-그리고-실습"><a class="header" href="#32-누적-보상-할인율-그리고-실습">3.2 누적 보상, 할인율, 그리고 실습</a></h1>
+<h3 id="누적-보상과-할인율"><a class="header" href="#누적-보상과-할인율">누적 보상과 할인율</a></h3>
+<p>강화학습의 목표는 한 스텝의 보상이 아니라, 앞으로 받을 보상들의 합 —
+<strong>리턴</strong>(return) \(G_t\) — 을 최대화하는 것이다:</p>
+<p>\[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k}\]</p>
+<p><strong>왜 할인율 \(\gamma\)가 필요한가</strong>: (1) 수학적으로, \(\gamma &lt; 1\)이면
+보상이 유계(bounded)인 한 이 무한급수가 항상 수렴한다(기하급수). \(\gamma=1\)
+이면 끝나지 않는 과업에서 리턴이 무한대로 발산할 수 있다. (2) 직관적으로,
+“지금 당장의 보상 1“이 “10스텝 뒤의 보상 1“보다 더 가치 있다고 보는
+경우가 많다 — 사람의 시간 선호나, 금융의 이자율 개념과 같은 방향이다.
+\(\gamma\)가 0에 가까우면 에이전트는 “근시안적”(당장의 보상만 중시)이고,
+1에 가까우면 “장기적”(먼 미래의 보상까지 충분히 고려)이 된다.</p>
+<pre><code class="language-python">import gymnasium as gym
 
-hidden_size = 8
-Wxh = np.random.randn(hidden_size, vocab_size) * 0.1
-Whh = np.random.randn(hidden_size, hidden_size) * 0.1
-Why = np.random.randn(vocab_size, hidden_size) * 0.1
-bh, by = np.zeros(hidden_size), np.zeros(vocab_size)
+env = gym.make("CartPole-v1")
+obs, info = env.reset(seed=0)
 
-def forward(inputs, h0):
-    h = h0
-    hs, ps = [], []
-    for idx in inputs:
-        x = one_hot(idx)
-        h = np.tanh(Wxh @ x + Whh @ h + bh)
-        p = softmax(Why @ h + by)
-        hs.append(h); ps.append(p)
-    return hs, ps
-# BPTT로 dWxh, dWhh, dWhy, dbh, dby를 구해 매 스텝 경사하강법으로 갱신
+# 이 환경에서 MDP의 다섯 요소를 실제로 확인해보자
+print("상태 공간 S:", env.observation_space)   # 4차원 연속 벡터
+print("행동 공간 A:", env.action_space)         # 2개의 이산 행동 (왼쪽/오른쪽 밀기)
+
+total_return, gamma, discount = 0.0, 0.95, 1.0
+for _ in range(10):
+    action = env.action_space.sample()
+    obs, reward, terminated, truncated, info = env.step(action)
+    total_return += discount * reward   # G_t를 직접 누적
+    discount *= gamma
+    if terminated or truncated:
+        break
+print("10스텝 동안의 할인된 리턴 G_0:", round(total_return, 3))
+env.close()
 </code></pre>
-<p>500 에폭 학습시키면(스크래치패드에서 실행 검증):</p>
-<pre><code>초기 손실: 11.97
-최종 손실: 0.0048
-</code></pre>
-<p>학습이 끝난 뒤 <code>'a'</code>부터 시작해서 모델이 다음 문자를 계속 예측하게
-시켜보면:</p>
-<pre><code>생성된 문자열: "abcabcabc"
-</code></pre>
-<p>정확히 원본 패턴을 재현한다 — 이 작은 예제가 하는 일이 바로 Chapter
-13의 LLM이 “다음 토큰을 예측한다“고 할 때 말하는 것의 가장 축소된
-형태다: 지금까지 본 시퀀스(은닉 상태에 요약된)를 바탕으로 다음 하나를
-맞히는 것을, 아주 긴 텍스트와 훨씬 큰 모델로 확장한 것이 LLM이다.</p>
-<h3 id="자주-하는-실수-그래디언트-클리핑을-빼먹는-것"><a class="header" href="#자주-하는-실수-그래디언트-클리핑을-빼먹는-것">자주 하는 실수: 그래디언트 클리핑을 빼먹는 것</a></h3>
-<p>위 학습 코드에는 <code>np.clip(dp, -5, 5, out=dp)</code>로 그래디언트를 일정
-범위로 잘라내는(clipping) 단계가 들어 있다 — 이걸 빼먹으면 어떻게
-될까? 11.3절에서 다룰 그래디언트 폭발이 학습 초반부터 발생해서, 가중치가
-<code>NaN</code>이나 발산하는 큰 값으로 튀어버릴 수 있다. Chapter 2.1의 학습률
-발산과 원인은 다르지만(학습률이 아니라 시퀀스 길이에 걸친 곱셈이
-원인) 증상은 똑같다 — 손실이 갑자기 <code>NaN</code>이 되면 그래디언트 폭발부터
-의심하고, 그래디언트 클리핑이나 더 작은 학습률을 먼저 시도하는 것이
-RNN 계열 모델 디버깅의 첫 단계다.</p>
+<p>이 코드에서 <code>reward</code>가 매 스텝 즉시 보상 \(R(s,a)\)이고, 환경이
+내부적으로 다음 상태로 전이시키는 규칙이 곧 \(P(s’|s,a)\)다 —
+Gymnasium 환경은 이 전이확률을 코드로 감춰두고 <code>step()</code> 함수 하나로
+캡슐화한 것뿐, MDP의 정의와 정확히 대응된다.</p>
+<h3 id="자주-하는-실수-할인율을-빼먹고-그냥-보상을-다-더하기"><a class="header" href="#자주-하는-실수-할인율을-빼먹고-그냥-보상을-다-더하기">자주 하는 실수: 할인율을 빼먹고 그냥 보상을 다 더하기</a></h3>
+<p>매 스텝 보상이 1씩 5번 들어온다고 하자(\(R_0=\cdots=R_4=1\)).
+할인율 없이 그냥 더하면 \(G_0 = 5\)지만, \(\gamma=0.9\)를 제대로
+적용하면:</p>
+<p>\[G_0 = 1 + 0.9 + 0.81 + 0.729 + 0.6561 = 4.0951\]</p>
+<p><strong>4.0951</strong>로, 단순 합(5)보다 항상 작다 — 할인율이 “미래 보상을
+깎아서” 계산하기 때문이다. 코드에서 <code>total_return += reward</code>처럼
+<code>discount</code>를 곱하는 걸 빼먹으면, 먼 미래의 보상과 당장의 보상을
+동등하게 취급하게 되어 (1) 값 자체가 실제 \(G_t\)의 정의와
+달라지고, (2) \(\gamma=1\)인 것과 같아져서 끝나지 않는 과업에서는
+무한대로 발산할 위험까지 생긴다 — 강화학습 코드를 디버깅할 때
+“리턴이 이상하게 크다“면 가장 먼저 할인율 곱셈이 빠지지 않았는지
+확인하는 것이 좋다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
-<p><strong>Q. 왜 손실을 시퀀스 전체에 대해 한 번에 계산하나요? 시점마다 따로
-학습하면 안 되나요?</strong> 시점마다 따로 학습시키면, 각 시점의 예측이 그
-이전 시점들에 어떻게 의존하는지(BPTT가 계산하는 바로 그 의존성)를
-전혀 반영하지 못한다 — “다음 문자를 맞히는 능력“은 결국 “이전 문자들을
-얼마나 잘 요약했는가“에 달려 있으므로, 손실을 전체 시퀀스에 대해
-계산하고 역전파도 시간을 거슬러 전체에 대해 해야 은닉 상태가 실제로
-유용한 요약을 배우게 된다.</p>
-<p><strong>Q. 왜 이렇게 많은 에폭이 필요했나요?</strong> 이 예제는 일부러 아주 단순한
-구조(은닉 크기 8)와 기본 경사하강법으로 손으로 따라가기 쉽게
-만들었다 — 실전에서는 Adam 같은 더 정교한 옵티마이저(Chapter 9의
-SGD를 개선한 방법)와 더 큰 은닉 크기를 쓰면 훨씬 적은 반복으로도
-수렴한다. 중요한 것은 몇 에폭이 걸렸는가가 아니라, 손실이 실제로
-0에 가깝게 줄었고 생성된 문자열이 정답과 일치했다는 사실 자체다.</p>
+<p><strong>Q. \(\gamma\)는 보통 얼마로 설정하나요?</strong> 0.9~0.99 사이가 흔하다 —
+CartPole처럼 한 에피소드가 몇백 스텝 이내로 짧은 문제는 0.95~0.99,
+아주 긴 호흡의 문제(수천 스텝 이상)는 0.99~0.999처럼 1에 더 가까운
+값을 써서 먼 미래의 보상도 무시되지 않게 한다. 위 손 계산에서 봤듯,
+\(\gamma\)가 작을수록 몇 스텝 뒤의 보상은 사실상 0에 가깝게
+깎여서 에이전트가 그 보상을 거의 신경 쓰지 않게 된다.</p>
+<p><strong>Q. 에피소드가 유한하게 끝나는 문제(CartPole처럼 넘어지면 끝)에서도
+할인율이 꼭 필요한가요?</strong> 유한한 에피소드라면 \(\gamma=1\)이어도
+리턴이 발산하지는 않는다(합이 유한 개 항이므로). 다만 \(\gamma&lt;1\)을
+쓰면 “당장의 보상을 더 중시한다“는 실용적인 효과가 있고, 학습 알고리즘의
+분산을 줄여 안정성을 높이는 부수 효과도 있어 유한 에피소드 문제에서도
+관례적으로 1보다 살짝 작은 값을 쓰는 경우가 많다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../ml1/chapter11/1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml2/chapter03/1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../ml1/chapter11/3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml2/chapter03/3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -270,11 +259,11 @@ SGD를 개선한 방법)와 더 큰 은닉 크기를 쓰면 훨씬 적은 반복
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../ml1/chapter11/1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml2/chapter03/1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../ml1/chapter11/3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml2/chapter03/3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
