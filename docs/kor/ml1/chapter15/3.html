@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL &amp; Monte Carlo Tree Search) - Machine Learning 1/2 (한국어)</title>
+        <title>GAN, Diffusion, 그리고 네 원리 비교 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-e96d0476.css">
-        <link rel="stylesheet" href="../css/chrome-d279d366.css">
-        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-9fca9ae1.css">
+        <link rel="stylesheet" href="../../theme/custom-9fca9ae1.css">
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-3c10ca82.js";
+            window.path_to_searchindex_js = "../../searchindex-3c10ca82.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-cf712baf.js"></script>
+        <script src="../../toc-cf712baf.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Machine Learning 1/2 (한국어)</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
@@ -178,131 +178,167 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-15-모델기반-rl과-몬테카를로-트리-탐색-model-based-rl--monte-carlo-tree-search"><a class="header" href="#chapter-15-모델기반-rl과-몬테카를로-트리-탐색-model-based-rl--monte-carlo-tree-search">Chapter 15. 모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL &amp; Monte Carlo Tree Search)</a></h1>
-<p>2016년, 딥마인드의 <strong>AlphaGo</strong>는 세계 최정상급 프로 바둑기사 이세돌을
-꺾어 큰 화제를 모았다. 바둑판의 경우의 수는 우주의 원자 수보다 많다고
-알려져 있어서, Chapter 9의 DQN처럼 “신경망으로 가치를 근사하는 것“만으로는
-충분하지 않았다 — AlphaGo의 핵심 무기 중 하나가 바로 이번 장의 주제,
-<strong>몬테카를로 트리 탐색</strong>(Monte Carlo Tree Search, MCTS)이다. 이번 장은
-Chapter 7.3에서 잠깐 맛본 “모델을 활용한 계획“이라는 아이디어를,
-게임처럼 명확한 규칙이 있는 문제에서 훨씬 강력하게 확장한 형태를 다룬다.</p>
-<h2 id="151-모델기반-rl-다시-보기"><a class="header" href="#151-모델기반-rl-다시-보기">15.1 모델기반 RL 다시 보기</a></h2>
-<p>Chapter 7.3의 Dyna-Q는 실제 경험으로 간단한 모델을 만들고, 그 모델로
-<strong>가상의 추가 학습</strong>을 했다. <strong>모델기반 강화학습</strong>(Model-Based RL)은
-이 아이디어를 일반화한 이름이다 — 환경의 모델(전이확률과 보상함수, 또는
-그 근사)을 학습하거나 알고 있다면, 그 모델을 이용해 “실제로 행동해보지
-않고도” 여러 수를 미리 시뮬레이션해볼 수 있다. Dyna-Q가 이걸 값 갱신에
-썼다면, MCTS는 이걸 <strong>지금 당장 어떤 행동을 할지 결정하는 데</strong> 직접
-쓴다.</p>
-<h2 id="152-바둑-같은-문제에서-모델은-공짜다"><a class="header" href="#152-바둑-같은-문제에서-모델은-공짜다">15.2 바둑 같은 문제에서 모델은 공짜다</a></h2>
-<p>체스나 바둑 같은 게임에는 특별한 사정이 있다 — 규칙이 완벽하게
-알려져 있다. “이 수를 두면 판이 정확히 이렇게 바뀐다“는 전이확률
-\(P(s’|s,a)\)를 배울 필요 없이 이미 알고 있는 것이다(Chapter 4의
-모델 기반 방법을 쓸 수 있는 이상적인 조건이다). 문제는 상태 수가
-너무 많아서(바둑판은 약 \(10^{170}\)가지) Chapter 4의 가치반복처럼
-모든 상태를 다 계산할 수 없다는 것이다 — 그래서 “지금 당장 놓인 상황
-근처만” 깊이 파고드는 탐색이 필요하다.</p>
-<h2 id="153-mcts-네-단계의-반복"><a class="header" href="#153-mcts-네-단계의-반복">15.3 MCTS: 네 단계의 반복</a></h2>
-<p>MCTS는 현재 상태에서 시작해, 정해진 횟수만큼 다음 네 단계를 반복해서
-“어떤 수가 가장 유망한가“에 대한 통계를 쌓는다:</p>
-<ol>
-<li><strong>선택</strong>(Selection): 트리의 루트(현재 상태)에서 시작해, 각 갈림길에서
-“지금까지의 성과“와 “아직 덜 시도해본 정도“를 함께 고려하는 규칙
-(Chapter 2의 UCB와 정확히 같은 발상)으로 자식 노드를 골라가며
-아직 다 확장되지 않은 노드까지 내려간다.</li>
-<li><strong>확장</strong>(Expansion): 그 노드에 새로운 자식 노드(아직 안 가본 수)를
-하나 추가한다.</li>
-<li><strong>시뮬레이션</strong>(Simulation/Rollout): 그 새 노드에서부터 게임이 끝날
-때까지 (간단한 정책으로, 극단적으로는 완전히 무작위로) 끝까지
-플레이해본다 — Chapter 5의 몬테카를로처럼, 실제로 끝까지 해보고
-결과(승/패)를 얻는다.</li>
-<li><strong>역전파</strong>(Backpropagation): 그 결과를, 선택 단계에서 지나온 모든
-노드에 통계로 반영한다(방문 횟수 +1, 승률 갱신) — 이 “역전파“는
-ML1 Chapter 9의 역전파와 이름만 같을 뿐 완전히 다른 개념이다:
-신경망의 그래디언트를 전달하는 게 아니라, 트리의 승패 통계를
-전달하는 것이다.</li>
-</ol>
-<p>이 네 단계를 수백~수만 번 반복한 뒤, 루트에서 <strong>가장 많이 방문된</strong>
-자식(가장 유망하다고 반복적으로 확인된 수)을 실제로 둘 수로 선택한다.</p>
-<pre><code class="language-python">import math, random
+                        <h1 id="153-gan-diffusion-그리고-네-원리-비교"><a class="header" href="#153-gan-diffusion-그리고-네-원리-비교">15.3 GAN, Diffusion, 그리고 네 원리 비교</a></h1>
+<h3 id="gan-생성자와-판별자의-min-max-게임"><a class="header" href="#gan-생성자와-판별자의-min-max-게임">GAN: 생성자와 판별자의 min-max 게임</a></h3>
+<p>2014년, 당시 대학원생이던 이언 굿펠로우(Ian Goodfellow)는 아이디어
+하나를 떠올렸다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신,
+<strong>두 개의 신경망이 서로 경쟁하게 만들면 어떨까?</strong> 하나는 가짜를 만드는
+위조범(생성자, Generator), 다른 하나는 진짜와 가짜를 구별하는
+감정사(판별자, Discriminator)로 두고 서로 계속 겨루게 하면, 위조범의
+실력이 점점 진짜에 가깝게 늘어나지 않을까? VAE가 “우도를 최대화한다“는
+명확한 단일 목표함수가 있었던 것과 달리, GAN은 두 신경망이 서로 다른,
+심지어 <strong>반대되는</strong> 목표를 갖고 동시에 학습된다.</p>
+<ul>
+<li><strong>생성자</strong>(Generator) \(G\): 무작위 노이즈 \(z \sim p(z)\)를
+입력받아 가짜 데이터 \(G(z)\)를 만든다.</li>
+<li><strong>판별자</strong>(Discriminator) \(D\): 데이터를 입력받아, 그것이 진짜일
+확률 \(D(x) \in [0,1]\)을 출력한다(Chapter 2의 로지스틱회귀와
+정확히 같은 형태).</li>
+</ul>
+<p>목적함수(min-max game):</p>
+<p>\[\min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] +
+\mathbb{E}_{z \sim p(z)}[\log(1 - D(G(z)))]\]</p>
+<pre><code class="language-python">def discriminator_loss(D_real, D_fake):
+    return -(math.log(D_real) + math.log(1 - D_fake))  # 판별자가 최소화할 손실
 
-def uct_select(node_children, parent_visits, c=1.4):
-    # node_children: {move: (wins, visits)}
-    # UCB1과 정확히 같은 형태 -- Chapter 2.3을 그대로 게임 트리에 적용한 것
-    return max(node_children, key=lambda m: node_children[m][0] / node_children[m][1] +
-               c * math.sqrt(math.log(parent_visits) / node_children[m][1]))
+def generator_loss(D_fake):
+    return -math.log(D_fake)  # 생성자가 최소화할 손실 (D_fake를 1에 가깝게)
 </code></pre>
-<h2 id="154-작은-예제로-확인하기"><a class="header" href="#154-작은-예제로-확인하기">15.4 작은 예제로 확인하기</a></h2>
-<p>돌을 1~3개씩 번갈아 가져가고, 마지막 돌을 가져가는 사람이 이기는
-간단한 게임(님 게임의 변형)에서 MCTS를 3000번 시뮬레이션 돌려보면,
-돌이 5개 남은 상황에서 “1개를 가져가서 상대에게 4개를 남기는” 수를
-가장 유망하다고 정확히 찾아낸다 — 실제로 이 게임의 수학적 필승 전략
-(남은 돌 수가 4의 배수가 되도록 만드는 것)과 정확히 일치하는 결과다.
-MCTS가 게임의 규칙 자체(4의 배수 전략)를 전혀 몰랐는데도, 오직
-“시뮬레이션을 많이 해보고 이긴 비율이 높은 수를 고른다“는 것만으로
-이 최적 전략을 스스로 찾아낸 것이다.</p>
-<h2 id="155-alphagoalphazero-mcts와-신경망의-결합"><a class="header" href="#155-alphagoalphazero-mcts와-신경망의-결합">15.5 AlphaGo/AlphaZero: MCTS와 신경망의 결합</a></h2>
-<p>순수 MCTS는 시뮬레이션 단계에서 무작위로(또는 아주 단순한 규칙으로)
-게임을 끝까지 진행한다 — 바둑처럼 한 수의 영향이 아주 나중에야
-드러나는 게임에서는 무작위 시뮬레이션이 부정확할 수 있다. AlphaGo와
-그 후속작 AlphaZero의 핵심 개선은, 이 무작위 롤아웃을 <strong>신경망</strong>으로
-대체한 것이다: 신경망 하나가 “이 상태에서 각 수가 얼마나 유망한가”
-(정책, Chapter 10의 \(\pi_\theta\)와 같은 역할)를, 다른 하나(또는
-같은 신경망의 다른 출력 헤드)가 “이 상태가 최종적으로 얼마나 유리한가”
-(가치, ML1 Chapter 4의 \(V(s)\)와 같은 역할)를 추정한다. MCTS는 이
-신경망들의 추정치를 길잡이 삼아 탐색을 훨씬 더 효율적으로 좁혀나가고,
-그렇게 MCTS로 찾아낸 더 정확한 수를 다시 신경망 학습의 정답(지도학습
-목표)으로 사용한다 — <strong>탐색(MCTS)과 학습(신경망)이 서로를 개선하는
-루프</strong>다.</p>
-<h2 id="156-멀티에이전트-rl-개관-선택"><a class="header" href="#156-멀티에이전트-rl-개관-선택">15.6 멀티에이전트 RL 개관 (선택)</a></h2>
-<p>지금까지는 에이전트가 하나뿐인 환경을 다뤘다. <strong>멀티에이전트
-강화학습</strong>(Multi-Agent RL)은 여러 에이전트가 같은 환경에서 동시에
-행동하는 경우를 다룬다 — 서로 협력할 수도(팀 스포츠, 물류 로봇들의
-협업), 경쟁할 수도(바둑, 게임 AI) 있다. MCTS 자체도 사실 “상대방도
-최선을 다한다“고 가정하는 2인 게임에서는 <strong>미니맥스</strong>(minimax) 탐색의
-확률적 근사로 볼 수 있다 — ML1 Chapter 15의 GAN에서 본 min-max
-게임과, “두 참여자가 서로 다른 목표로 상호작용한다“는 구조적 유사성이
-있다. 자세한 이론(내쉬 균형, 협력 게임 등)은 이 학기 범위를 넘지만,
-“에이전트가 하나가 아니면 문제 자체가 근본적으로 달라진다“는 점은
-기억해둘 만하다.</p>
-<p><strong>MCTS는 “모델이 있다면(규칙을 안다면), 실제로 행동하기 전에 미리
-수를 읽어볼 수 있다“는 아이디어를 극한까지 밀어붙인 방법이다 — Chapter
-7의 Dyna-Q가 학습된 모델로 값을 개선했다면, MCTS는 완벽한 모델로
-바로 지금의 결정 자체를 개선한다. 그리고 AlphaZero가 보여줬듯,
-이 탐색과 신경망 학습을 결합하면 순수 탐색도, 순수 신경망도 각각
-해내지 못한 성능에 도달할 수 있다.</strong></p>
+<p><strong>왜 “균형점“을 논해야 하는가</strong>: 두 네트워크가 서로 반대 목표로 동시에
+학습되므로, “학습이 끝났다“는 것이 무슨 의미인지부터 다시 정의해야
+한다. 게임이론에서 이런 안정 상태를 <strong>내쉬 균형</strong>(Nash equilibrium)이라
+부른다 — 어느 쪽도 혼자서 전략을 바꿔서 더 나아질 수 없는 상태다.
+이론적으로 이 게임의 내쉬 균형은 \(D(x) = 0.5\)(판별자가 진짜와
+가짜를 전혀 구별하지 못함)이고, \(G\)가 만드는 분포가 실제 데이터
+분포와 정확히 같아지는 지점임이 증명돼 있다.</p>
+<p>실전에서는 이론과 달리 GAN 학습이 자주 불안정하다 — 생성자가 판별자를
+속이는 몇 가지 패턴에만 몰려서 다양성을 잃는 현상(<strong>모드 붕괴, mode
+collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적이지만 생성
+품질이 다소 흐릿한(blurry) 경향이 있는 반면, GAN은 선명한 결과를 내지만
+학습이 까다롭다.</p>
+<h3 id="diffusion-노이즈를-점진적으로-되돌리기"><a class="header" href="#diffusion-노이즈를-점진적으로-되돌리기">Diffusion: 노이즈를 점진적으로 되돌리기</a></h3>
+<p><strong>Diffusion 모델</strong>은 세 번째 완전히 다른 접근이다. <strong>정방향
+과정</strong>(forward process)은 진짜 이미지 \(x_0\)에 아주 작은 노이즈를
+\(T\)번 반복해서 더해, 결국 \(x_T\)가 순수한 무작위 노이즈가 되게
+만든다(이 과정은 고정된 절차이지 학습 대상이 아니다). <strong>역방향
+과정</strong>(reverse process)은 신경망이 “한 단계 전 노이즈가 어땠는지“를
+예측하도록 학습된다 — 학습이 끝나면, 순수 노이즈 \(x_T\)에서 시작해
+이 역방향 단계를 \(T\)번 반복하면 새로운 이미지가 만들어진다.</p>
+<p>GAN이 “한 번에” 노이즈를 이미지로 바꾸려 하는 것과 달리, Diffusion은
+그 어려운 문제를 아주 작은 단계 \(T\)개로 잘게 쪼갠다 — 각 단계는
+“노이즈를 아주 조금만 제거하는” 훨씬 쉬운 문제이므로, 전체적으로 훨씬
+안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \(T\)번의 반복이
+필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
+이미지 생성 모델들(Stable Diffusion 등)이 이 원리를 쓴다.</p>
+<h3 id="네-원리-비교"><a class="header" href="#네-원리-비교">네 원리 비교</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>EM/GMM</th><th>VAE (우도 기반)</th><th>GAN (적대적)</th><th>Diffusion (스코어 기반)</th></tr>
+</thead>
+<tbody>
+<tr><td>잠재변수</td><td>이산(클러스터 번호)</td><td>연속 벡터</td><td>없음(노이즈를 직접 변환)</td><td>연속(노이즈 단계)</td></tr>
+<tr><td>학습 방법</td><td>E-step/M-step 반복</td><td>ELBO 최대화(역전파)</td><td>min-max 게임의 균형</td><td>각 단계 노이즈 예측 오차 최소화</td></tr>
+<tr><td>학습 안정성</td><td>안정적</td><td>비교적 안정적</td><td>불안정하기 쉬움</td><td>안정적</td></tr>
+<tr><td>생성 속도</td><td>—</td><td>빠름(한 번에)</td><td>빠름(한 번에)</td><td>느림(반복 필요)</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>하나의 원리만 배우고 끝냈다면 “생성형 모델 = 이런 것“이라고 좁게
+오해했을 것이다 — 네 원리를 나란히 보고 나서야, “관측되지 않은 구조가
+데이터를 만들어낸다“는 하나의 질문이 얼마나 다양한 방식으로 풀릴 수
+있는지가 보인다.</strong></p>
+<h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
+<p><strong>Q. 모드 붕괴(mode collapse)는 왜 생기나요?</strong> 생성자는 판별자를
+속이기만 하면 손실이 줄어든다 — 만약 어떤 한 종류의 가짜가 판별자를
+아주 잘 속인다는 것을 발견하면, 생성자 입장에서는 굳이 다른 다양한
+가짜를 만들 이유가 없다(그 하나만 계속 만들어도 손실이 낮게
+유지된다). 판별자가 그 “치팅“을 알아채고 대응하기 전까지, 생성자는
+그 좁은 영역에만 몰릴 유인이 있다 — VAE의 ELBO처럼 “다양성을
+명시적으로 요구하는 항“이 GAN의 기본 목적함수에는 없다는 것이 근본
+원인이다.</p>
+<p><strong>Q. Diffusion이 지금 가장 널리 쓰이는데, VAE나 GAN은 이제 안
+쓰이나요?</strong> 이미지 생성 분야에서는 Diffusion이 최근 주류가 됐지만,
+VAE의 핵심 아이디어(잠재 공간을 매끄럽게 만든다)는 여러 최신
+시스템에서 Diffusion과 결합되어 쓰인다(예: 픽셀 공간이 아니라 VAE로
+압축한 잠재 공간에서 Diffusion을 돌리는 구조 — Stable Diffusion이
+정확히 이 방식이다). GAN도 실시간성이 중요한(반복 없이 한 번에
+생성해야 하는) 응용에서는 여전히 쓰인다 — “하나가 다른 셋을 완전히
+대체했다“기보다, 각자 강점이 있는 도구로 함께 남아 있다.</p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 <code>uct_select</code>(핵심 줄은 빈칸으로 남겨져 있다고 가정)를
-완성하라:</p>
-<pre><code class="language-python">import math
-
-def uct_select(node_children, parent_visits, c=1.4):
-    # node_children: {move: (wins, visits)}
+<p><strong>1. (코딩)</strong> 위 <code>em_step</code>과, 다음 <code>kl_divergence_gaussian</code>(정규분포
+\(\mathcal{N}(\mu, \sigma^2)\)와 표준정규분포 사이의 KL divergence)을
+완성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
+<pre><code class="language-python">def em_step(data, means, sigmas, weights):
     # ADD ADDITIONAL CODE HERE!!
-    # 각 move에 대해 wins/visits + c*sqrt(log(parent_visits)/visits) 계산 후 최댓값의 move 반환
+    return new_means, new_sigmas, new_weights
 
-children = {"A": (7, 10), "B": (3, 5), "C": (0, 1)}
-print(uct_select(children, parent_visits=16))
-# C처럼 거의 안 시도해본 수는 불확실성 보너스가 커서 선택될 수 있음
+data = [1.0, 1.5, 0.8, 9.2, 10.1, 9.8]
+means, sigmas, weights = [2.0, 8.0], [1.0, 1.0], [0.5, 0.5]
+for _ in range(20):
+    means, sigmas, weights = em_step(data, means, sigmas, weights)
+print(means)  # 대략 [1.1, 9.7] 근처로 수렴
+
+def kl_divergence_gaussian(mu, log_var):
+    # log_var = log(sigma^2), D_KL = -0.5*(1 + log_var - mu^2 - exp(log_var))
+    # ADD ADDITIONAL CODE HERE!!
+
+print(kl_divergence_gaussian(mu=0.0, log_var=0.0))  # 0.0
+print(kl_divergence_gaussian(mu=2.0, log_var=0.0))  # 2.0
 </code></pre>
-<p><strong>2. (개념 서술)</strong> 15.3절의 4단계(선택-확장-시뮬레이션-역전파) 중,
-Chapter 2의 UCB와 가장 직접적으로 대응하는 단계는 어디인지, 그리고
-Chapter 5의 몬테카를로와 가장 직접적으로 대응하는 단계는 어디인지
-짝짓고 이유를 설명하라.</p>
-<p><strong>3. (개념 서술)</strong> AlphaZero가 무작위 롤아웃 대신 신경망을 쓰는 것이
-왜 “바둑처럼 한 수의 영향이 아주 나중에야 드러나는 게임“에서 특히
-중요한지, 무작위 롤아웃의 한계와 연결지어 설명하라.</p>
+<p><strong>2. (코딩)</strong> 위 <code>discriminator_loss</code>와 <code>generator_loss</code>를 완성하라:</p>
+<pre><code class="language-python">def discriminator_loss(D_real, D_fake):
+    # ADD ADDITIONAL CODE HERE!!
+
+def generator_loss(D_fake):
+    # ADD ADDITIONAL CODE HERE!!
+
+print(discriminator_loss(D_real=0.9, D_fake=0.1))
+print(generator_loss(D_fake=0.9))
+</code></pre>
+<p><strong>3. (개념 서술)</strong> GMM에서 각 클러스터의 분산을 아주 작은 값으로 고정하고
+학습하지 않는다면 왜 k-means와 같아지는지 설명하고, VAE(우도 기반)와
+GAN(적대적)의 생성 품질·학습 안정성 트레이드오프를 두세 문장으로
+비교하라.</p>
+<p><strong>4. (손유도, Tier B — 힌트 제공)</strong> 데이터 3개 \(x_1=1, x_2=9, x_3=10\),
+2개 클러스터, 현재 파라미터가 \(\mu_1=0, \sigma_1=1, \mu_2=9,
+\sigma_2=1, \pi_1=\pi_2=0.5\)라 하자. \(x_1\)에 대한 책임값
+\(\gamma_{1,1}\)과 \(\gamma_{1,2}\)를 손으로 계산하라.</p>
+<p><strong>힌트</strong>: 정규분포 확률밀도 \(\mathcal{N}(x;\mu,\sigma^2) =
+\frac{1}{\sigma\sqrt{2\pi}}e^{-(x-\mu)^2/2\sigma^2}\)를 \(x_1=1\)에
+대해 두 클러스터 각각 계산한 뒤 대입하라. \(\pi_1=\pi_2\)이므로
+실제로는 \(\pi\)가 약분되어 사라진다는 것도 확인하라.</p>
+<p><strong>5. (손유도, Tier C — 폴백 준비 대상)</strong> \(\log p_\theta(x) = \log
+\int p_\theta(x,z),dz\)에서 시작해서, 옌센 부등식(\(\log
+\mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 이용해 15.4절의 ELBO 부등식을
+유도하라.</p>
+<p><strong>빈칸채움형 폴백 버전</strong> (자유 유도가 어려운 경우):</p>
+<pre><code>Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
+                  = log E_q[ ______________ ]
+
+Step 2: 옌센 부등식(log가 오목함수) 적용:
+  log E_q[ p(x,z)/q(z|x) ] &gt;= E_q[ log(______________) ]
+
+Step 3: p(x,z) = p(x|z) * p(z)로 분해하면:
+  = E_q[ log p(x|z) ] + E_q[ ______________ ]
+
+Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
+
+결론: log p(x) &gt;= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
+</code></pre>
+<p><strong>정확성 확인</strong>: Step 2에서 부등호가 등호가 아니라 부등식인 이유를 한
+문장으로 설명하라(옌센 부등식이 언제 등식이 되는지: \(X\)가 상수일 때).</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml2/chapter14.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter15/2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml2/chapter16.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter16.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -312,11 +348,11 @@ Chapter 5의 몬테카를로와 가장 직접적으로 대응하는 단계는 �
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml2/chapter14.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter15/2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml2/chapter16.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter16.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -336,17 +372,17 @@ Chapter 5의 몬테카를로와 가장 직접적으로 대응하는 단계는 �
         </script>
 
 
-        <script src="../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-09f2665d.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
 
-        <script src="../clipboard-1626706a.min.js"></script>
-        <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-609e4cb8.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
-        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

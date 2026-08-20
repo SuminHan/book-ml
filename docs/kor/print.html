@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ccdf947.js";
+            window.path_to_searchindex_js = "searchindex-3c10ca82.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-be61a47b.js"></script>
+        <script src="toc-cf712baf.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -5137,7 +5137,15 @@ v^T\Sigma v - \lambda(v^Tv - 1)\)로 바꾼 뒤, \(v\)로 미분해서 0으로
 안 된 잠재변수가 데이터를 어떻게 만들어내는가”)을 신경망으로 확장한 VAE,
 그리고 완전히 다른 두 원리(적대적 학습, 점진적 노이즈 제거)로 같은 목표에
 도달하는 GAN·Diffusion까지, 생성형 모델의 네 가지 얼굴을 한 장에서 훑는다.</p>
-<h2 id="151-닭이-먼저냐-달걀이-먼저냐-잠재변수-문제"><a class="header" href="#151-닭이-먼저냐-달걀이-먼저냐-잠재변수-문제">15.1 닭이 먼저냐 달걀이 먼저냐: 잠재변수 문제</a></h2>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#151-em-알고리즘과-gmm">15.1 EM 알고리즘과 GMM</a></li>
+<li><a href="#152-vae-elbo와-실습">15.2 VAE: ELBO와 실습</a></li>
+<li><a href="#153-gan-diffusion-그리고-네-원리-비교">15.3 GAN, Diffusion, 그리고 네 원리 비교</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="151-em-알고리즘과-gmm"><a class="header" href="#151-em-알고리즘과-gmm">15.1 EM 알고리즘과 GMM</a></h1>
+<h3 id="닭이-먼저냐-달걀이-먼저냐-잠재변수-문제"><a class="header" href="#닭이-먼저냐-달걀이-먼저냐-잠재변수-문제">닭이 먼저냐 달걀이 먼저냐: 잠재변수 문제</a></h3>
 <p>Chapter 14의 k-means는 각 점을 <strong>딱 하나의</strong> 클러스터에 배정했다(하드
 할당, hard assignment). 그런데 실제 데이터는 클러스터 경계가 모호한
 경우가 많다 — 어떤 점은 클러스터 A에 60%, B에 40% 정도 속한다고 보는 게
@@ -5157,7 +5165,7 @@ GMM)은 각 클러스터를 정규분포로 표현하고(Chapter 3의 GDA와 같
 EM은 이 순환을 반복으로 풀어낸다: 하나를 (아무 값으로) 고정하고 다른
 하나를 구하고, 그걸로 다시 처음 것을 고치고, 이걸 값이 더 이상 바뀌지
 않을 때까지 반복한다.</p>
-<h2 id="152-em-알고리즘-e-step과-m-step"><a class="header" href="#152-em-알고리즘-e-step과-m-step">15.2 EM 알고리즘: E-step과 M-step</a></h2>
+<h3 id="em-알고리즘-e-step과-m-step"><a class="header" href="#em-알고리즘-e-step과-m-step">EM 알고리즘: E-step과 M-step</a></h3>
 <p><strong>E-step (Expectation)</strong>: 현재 각 클러스터의 파라미터(평균 \(\mu_k\),
 분산 \(\sigma_k^2\), 클러스터 비율 \(\pi_k\))가 주어졌다고 가정하고,
 각 데이터 점 \(x_i\)가 클러스터 \(k\)에 속할 사후확률(<strong>책임값</strong>,
@@ -5195,7 +5203,23 @@ def em_step(data, means, sigmas, weights):
 실제 값에 수렴한다. k-means와 나란히 놓고 보면 구조가 똑같다는 게
 보인다 — 사실 k-means는 GMM에서 모든 클러스터의 분산을 아주 작게(그래서
 책임값이 사실상 0 또는 1로 확정되게) 고정한 특수한 경우로 볼 수 있다.</p>
-<h2 id="153-em에서-vae로-잠재변수를-연속적으로-신경망으로"><a class="header" href="#153-em에서-vae로-잠재변수를-연속적으로-신경망으로">15.3 EM에서 VAE로: 잠재변수를 연속적으로, 신경망으로</a></h2>
+<h3 id="자주-묻는-질문-38"><a class="header" href="#자주-묻는-질문-38">자주 묻는 질문</a></h3>
+<p><strong>Q. EM이 항상 전역 최적해로 수렴하나요?</strong> 아니다 — E-step과 M-step을
+반복할 때마다 우도(likelihood)가 절대 감소하지 않는다는 것은 보장되지만
+(그래서 언젠가는 수렴한다), Chapter 4.3의 k-means와 마찬가지로 초기
+파라미터에 따라 <strong>지역 최적해</strong>에 갇힐 수 있다. 실전에서는 여러 번
+서로 다른 초기화로 EM을 돌려 가장 좋은 결과를 채택하는 방법을 흔히
+쓴다 — k-means의 “여러 번 초기화해서 최선을 고른다“는 전략과
+정확히 같은 대응책이다.</p>
+<p><strong>Q. GMM은 k-means보다 항상 더 좋은 선택인가요?</strong> 항상 그렇지는
+않다 — GMM은 각 클러스터가 정규분포를 따른다고 가정하고(Chapter
+3.2의 GDA와 같은 가정), 부드러운(soft) 할당을 계산하느라 k-means보다
+계산 비용이 더 든다. 클러스터가 실제로 겹쳐 있거나 모양이 서로 다를
+가능성이 있다면 GMM이 유리하고, 클러스터가 뚜렷이 분리돼 있고
+속도가 중요하다면 k-means로 충분한 경우가 많다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="152-vae-elbo와-실습"><a class="header" href="#152-vae-elbo와-실습">15.2 VAE: ELBO와 실습</a></h1>
+<h3 id="em에서-vae로-잠재변수를-연속적으로-신경망으로"><a class="header" href="#em에서-vae로-잠재변수를-연속적으로-신경망으로">EM에서 VAE로: 잠재변수를 연속적으로, 신경망으로</a></h3>
 <p>GMM은 “잠재변수 \(z\)(어느 클러스터인가)가 유한하고 이산적인” 가장
 단순한 경우다. 지금부터 배울 <strong>VAE</strong>(Variational Autoencoder, 2013년
 디데릭 킹마와 맥스 웰링)는 정확히 같은 질문 — “관측되지 않은 잠재변수가
@@ -5218,7 +5242,7 @@ VAE의 해법은 인코더가 하나의 점 \(z\)를 내놓는 대신, <strong>�
 \(P(x)\)를 직접(또는 그 근사치를) 최대화하도록 학습한다. 문제는
 \(p_\theta(x) = \int p_\theta(x|z)p(z),dz\)는 가능한 모든 \(z\)에
 대한 적분이라, 일반적으로 계산이 불가능하다(intractable).</p>
-<h2 id="154-elbo-계산-가능한-하한으로-우회하기"><a class="header" href="#154-elbo-계산-가능한-하한으로-우회하기">15.4 ELBO: 계산 가능한 하한으로 우회하기</a></h2>
+<h3 id="elbo-계산-가능한-하한으로-우회하기"><a class="header" href="#elbo-계산-가능한-하한으로-우회하기">ELBO: 계산 가능한 하한으로 우회하기</a></h3>
 <p>직접 계산할 수 없는 \(\log p_\theta(x)\) 대신, 다음이 성립함을 보일
 수 있다:</p>
 <p>\[\log p_\theta(x) \ge \mathbb{E}_{z \sim q_\phi(z|x)}[\log p_\theta(x|z)] -
@@ -5230,7 +5254,7 @@ D_{KL}\big(q_\phi(z|x) ,|, p(z)\big)\]</p>
 오토인코더의 복원 오차와 본질적으로 같다).</li>
 <li>둘째 항 \(D_{KL}(q_\phi(z|x)|p(z))\): <strong>정규화 항</strong> — 인코더가
 만든 분포 \(q_\phi(z|x)\)가, 목표로 하는 사전분포 \(p(z)\)(보통
-표준정규분포)에서 얼마나 벗어나 있는지(KL divergence, Chapter 2.6에서
+표준정규분포)에서 얼마나 벗어나 있는지(KL divergence, Chapter 2.3에서
 섀넌의 정보이론으로 소개한 그 개념). 이 항이 바로 잠재 공간을 매끄럽게
 만드는 힘이다.</li>
 </ul>
@@ -5250,7 +5274,61 @@ D_{KL}\big(q_\phi(z|x) ,|, p(z)\big)\]</p>
 흘러가지 못한다. VAE는 \(z = \mu + \sigma \odot \epsilon\)
 (\(\epsilon \sim \mathcal{N}(0,1)\)은 무작위성을 밖으로 빼낸 상수
 취급)으로 샘플링을 다시 쓰는 트릭으로 이 문제를 우회한다.</p>
-<h2 id="155-gan-생성자와-판별자의-min-max-게임"><a class="header" href="#155-gan-생성자와-판별자의-min-max-게임">15.5 GAN: 생성자와 판별자의 min-max 게임</a></h2>
+<h3 id="실습-두-봉우리-데이터로-작은-vae-학습시키기"><a class="header" href="#실습-두-봉우리-데이터로-작은-vae-학습시키기">실습: 두 봉우리 데이터로 작은 VAE 학습시키기</a></h3>
+<p>15.1절의 GMM 예제와 같은 모양(1 근처, 9 근처에 각각 모여 있는 두
+봉우리)의 1차원 데이터로 작은 VAE를 실제로 학습시켜보자:</p>
+<pre><code class="language-python">import torch, torch.nn as nn
+
+class VAE(nn.Module):
+    def __init__(self, latent_dim=2):
+        super().__init__()
+        self.enc = nn.Sequential(nn.Linear(1, 16), nn.ReLU())
+        self.mu = nn.Linear(16, latent_dim)
+        self.logvar = nn.Linear(16, latent_dim)
+        self.dec = nn.Sequential(nn.Linear(latent_dim, 16), nn.ReLU(), nn.Linear(16, 1))
+    def forward(self, x):
+        h = self.enc(x)
+        mu, logvar = self.mu(h), self.logvar(h)
+        z = mu + torch.exp(0.5*logvar) * torch.randn_like(mu)  # reparameterization trick
+        return self.dec(z), mu, logvar
+</code></pre>
+<p>500 에폭 학습 후(스크래치패드에서 실행 검증):</p>
+<pre><code>epoch 0:   loss=57.381  (복원 손실=54.392, KL=2.989)
+epoch 100: loss=3.051   (복원 손실=0.852,  KL=2.199)
+epoch 499: loss=2.063   (복원 손실=0.482,  KL=1.581)
+</code></pre>
+<p>학습이 진행되며 손실이 57.4에서 2.06까지 꾸준히 줄어든다. 학습이
+끝난 뒤 <strong>원본 데이터를 전혀 보지 않고</strong>, 표준정규분포 \(\mathcal{N}(0,1)\)에서
+\(z\)를 1000개 무작위로 뽑아 디코더에만 통과시켜보면:</p>
+<pre><code>생성된 샘플: 평균 4.83, 표준편차 3.84
+1(왼쪽 봉우리) 근처 비율: 59.1%,  9(오른쪽 봉우리) 근처 비율: 40.9%
+</code></pre>
+<p>원본 데이터가 두 봉우리(1 근처, 9 근처)에 대략 절반씩 있었는데,
+디코더가 잠재 공간의 표준정규분포 \(z\)만으로 그 두 봉우리를
+대략 6:4 비율로 재현해낸다 — 완벽하지는 않지만(학습 데이터를 직접
+보지 않고 잠재 공간에서 샘플링한 것치고는), “인코더가 데이터를 잠재
+공간에 매끄럽게 펼쳐놓고, 그 잠재 공간 어디서 샘플링해도 그럴듯한
+데이터가 나온다“는 15.3절의 VAE 설계 목표가 실제로 작동하는 것을
+확인할 수 있다.</p>
+<h3 id="자주-묻는-질문-39"><a class="header" href="#자주-묻는-질문-39">자주 묻는 질문</a></h3>
+<p><strong>Q. ELBO의 두 항 중 하나만 최적화하면 어떻게 되나요?</strong> 복원 항만
+최적화하면(KL 항 없이) 일반 오토인코더와 같아져서, 잠재 공간이
+매끄럽지 않게 되어 샘플링 품질이 나빠진다 — 위 실습에서 KL 항이
+없었다면 생성된 샘플이 원본 데이터의 두 봉우리를 재현하지 못했을
+가능성이 크다. 반대로 KL 항만 최적화하면(복원 항 없이) 인코더가
+아무 정보도 담지 않고 그냥 표준정규분포를 그대로 뱉는 방향으로
+“치팅“해버려서, 복원이 전혀 안 되는 무의미한 모델이 된다 — 두 항의
+균형이 VAE의 핵심이다.</p>
+<p><strong>Q. Reparameterization trick이 왜 꼭 필요한가요?</strong> Chapter 9에서
+역전파는 연쇄법칙으로 미분 가능한 연산들의 사슬을 거슬러 올라가는
+것이라 배웠다 — “확률분포에서 무작위로 하나를 뽑는다“는 연산 자체는
+미분이 정의되지 않는다. \(z=\mu+\sigma\odot\epsilon\)으로 다시 쓰면,
+무작위성은 \(\epsilon\)(입력과 무관한 상수 취급)에만 있고 \(\mu,
+\sigma\)로 가는 경로는 전부 미분 가능한 연산(곱셈, 덧셈)이 되어,
+역전파가 인코더 파라미터까지 정상적으로 흘러갈 수 있게 된다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="153-gan-diffusion-그리고-네-원리-비교"><a class="header" href="#153-gan-diffusion-그리고-네-원리-비교">15.3 GAN, Diffusion, 그리고 네 원리 비교</a></h1>
+<h3 id="gan-생성자와-판별자의-min-max-게임"><a class="header" href="#gan-생성자와-판별자의-min-max-게임">GAN: 생성자와 판별자의 min-max 게임</a></h3>
 <p>2014년, 당시 대학원생이던 이언 굿펠로우(Ian Goodfellow)는 아이디어
 하나를 떠올렸다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신,
 <strong>두 개의 신경망이 서로 경쟁하게 만들면 어떨까?</strong> 하나는 가짜를 만드는
@@ -5287,7 +5365,7 @@ def generator_loss(D_fake):
 collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적이지만 생성
 품질이 다소 흐릿한(blurry) 경향이 있는 반면, GAN은 선명한 결과를 내지만
 학습이 까다롭다.</p>
-<h2 id="156-diffusion-노이즈를-점진적으로-되돌리기"><a class="header" href="#156-diffusion-노이즈를-점진적으로-되돌리기">15.6 Diffusion: 노이즈를 점진적으로 되돌리기</a></h2>
+<h3 id="diffusion-노이즈를-점진적으로-되돌리기"><a class="header" href="#diffusion-노이즈를-점진적으로-되돌리기">Diffusion: 노이즈를 점진적으로 되돌리기</a></h3>
 <p><strong>Diffusion 모델</strong>은 세 번째 완전히 다른 접근이다. <strong>정방향
 과정</strong>(forward process)은 진짜 이미지 \(x_0\)에 아주 작은 노이즈를
 \(T\)번 반복해서 더해, 결국 \(x_T\)가 순수한 무작위 노이즈가 되게
@@ -5301,7 +5379,7 @@ collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적�
 안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \(T\)번의 반복이
 필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
 이미지 생성 모델들(Stable Diffusion 등)이 이 원리를 쓴다.</p>
-<h2 id="157-네-원리-비교"><a class="header" href="#157-네-원리-비교">15.7 네 원리 비교</a></h2>
+<h3 id="네-원리-비교"><a class="header" href="#네-원리-비교">네 원리 비교</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -5319,6 +5397,23 @@ collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적�
 오해했을 것이다 — 네 원리를 나란히 보고 나서야, “관측되지 않은 구조가
 데이터를 만들어낸다“는 하나의 질문이 얼마나 다양한 방식으로 풀릴 수
 있는지가 보인다.</strong></p>
+<h3 id="자주-묻는-질문-40"><a class="header" href="#자주-묻는-질문-40">자주 묻는 질문</a></h3>
+<p><strong>Q. 모드 붕괴(mode collapse)는 왜 생기나요?</strong> 생성자는 판별자를
+속이기만 하면 손실이 줄어든다 — 만약 어떤 한 종류의 가짜가 판별자를
+아주 잘 속인다는 것을 발견하면, 생성자 입장에서는 굳이 다른 다양한
+가짜를 만들 이유가 없다(그 하나만 계속 만들어도 손실이 낮게
+유지된다). 판별자가 그 “치팅“을 알아채고 대응하기 전까지, 생성자는
+그 좁은 영역에만 몰릴 유인이 있다 — VAE의 ELBO처럼 “다양성을
+명시적으로 요구하는 항“이 GAN의 기본 목적함수에는 없다는 것이 근본
+원인이다.</p>
+<p><strong>Q. Diffusion이 지금 가장 널리 쓰이는데, VAE나 GAN은 이제 안
+쓰이나요?</strong> 이미지 생성 분야에서는 Diffusion이 최근 주류가 됐지만,
+VAE의 핵심 아이디어(잠재 공간을 매끄럽게 만든다)는 여러 최신
+시스템에서 Diffusion과 결합되어 쓰인다(예: 픽셀 공간이 아니라 VAE로
+압축한 잠재 공간에서 Diffusion을 돌리는 구조 — Stable Diffusion이
+정확히 이 방식이다). GAN도 실시간성이 중요한(반복 없이 한 번에
+생성해야 하는) 응용에서는 여전히 쓰인다 — “하나가 다른 셋을 완전히
+대체했다“기보다, 각자 강점이 있는 도구로 함께 남아 있다.</p>
 <hr>
 <h2 id="연습문제-12"><a class="header" href="#연습문제-12">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 위 <code>em_step</code>과, 다음 <code>kl_divergence_gaussian</code>(정규분포
@@ -5720,7 +5815,7 @@ A, A, B, B 순서로 당기고 각각 보상 \(2, 0, 3, 1\)을 관찰했다고 �
 실제 사례다 — \(\varepsilon=0\)은 이론상 가장 “효율적으로 활용만
 한다“는 전략처럼 보이지만, 실전에서는 단 한 번의 나쁜 운으로 최적해를
 영원히 놓칠 수 있는 가장 위험한 선택이다.</p>
-<h3 id="자주-묻는-질문-38"><a class="header" href="#자주-묻는-질문-38">자주 묻는 질문</a></h3>
+<h3 id="자주-묻는-질문-41"><a class="header" href="#자주-묻는-질문-41">자주 묻는 질문</a></h3>
 <p><strong>Q. \(\varepsilon\)을 크게 잡을수록 항상 더 좋은가요?</strong> 아니다 —
 \(\varepsilon\)이 크면 나쁜 팔을 계속 무작위로 다시 시도하느라 그만큼
 누적 보상을 손해 본다(탐험에도 비용이 있다는 2.2절 실습의 핵심). 위
@@ -5802,7 +5897,7 @@ def ucb_bandit(true_means, c, steps):
 “모든 팔의 불확실성 보너스가 무한대인 상태에서 시작해서, 당겨볼수록
 그 무한대가 유한한 값으로 줄어든다“는 UCB의 논리를 자연스럽게
 확장한 것이기도 하다.</p>
-<h3 id="자주-묻는-질문-39"><a class="header" href="#자주-묻는-질문-39">자주 묻는 질문</a></h3>
+<h3 id="자주-묻는-질문-42"><a class="header" href="#자주-묻는-질문-42">자주 묻는 질문</a></h3>
 <p><strong>Q. \(c\)는 어떻게 정하나요?</strong> \(c\)가 클수록 불확실성 보너스가
 커져서 탐험을 더 적극적으로 하고, 작을수록(0에 가까울수록) 순수
 탐욕적 선택에 가까워진다 — Chapter 5.2의 SVM \(C\), Chapter 6의
@@ -5938,7 +6033,7 @@ A/B 테스트도 마찬가지다 — 두 광고 문구 중 어느 쪽이 클릭�
 \(\varepsilon\)-greedy, 낙관적 초기화, UCB, 이 세 가지 탐험 전략은
 형태만 바뀐 채 이 학기 내내(특히 Chapter 6의 ε-greedy) 반복해서
 등장한다.</strong></p>
-<h3 id="자주-묻는-질문-40"><a class="header" href="#자주-묻는-질문-40">자주 묻는 질문</a></h3>
+<h3 id="자주-묻는-질문-43"><a class="header" href="#자주-묻는-질문-43">자주 묻는 질문</a></h3>
 <p><strong>Q. 밴딧 문제에도 “정책”(policy)이라는 말을 쓰나요?</strong> 넓은 의미에서는
 그렇다 — “지금까지의 관찰을 보고 어떤 팔을 고를지 정하는 규칙”
 자체가 정책이라 부를 만하다. 다만 밴딧에는 상태가 없으므로, Chapter

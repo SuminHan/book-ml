@@ -61,6 +61,9 @@
     - [word2vec: 단어를 벡터로](ml1/chapter14/2.md)
     - [Node2Vec과 PageRank](ml1/chapter14/3.md)
 - [잠재변수 생성모델: EM/GMM에서 VAE, GAN, Diffusion까지 (Latent-Variable Generative Models)](ml1/chapter15.md)
+    - [EM 알고리즘과 GMM](ml1/chapter15/1.md)
+    - [VAE: ELBO와 실습](ml1/chapter15/2.md)
+    - [GAN, Diffusion, 그리고 네 원리 비교](ml1/chapter15/3.md)
 - [Block B 캡스톤: 팀 프로젝트와 ML1 총정리 (Block B Capstone & ML1 Review)](ml1/chapter16.md)
 
 # Machine Learning 2
