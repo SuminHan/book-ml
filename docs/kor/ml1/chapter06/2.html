@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-a60cbdd3.js";
+            window.path_to_searchindex_js = "../../searchindex-02867ced.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-35e07459.js"></script>
@@ -234,6 +234,60 @@ def cross_validate_lambda(X, y, lambdas, k=5, alpha=0.01, epochs=500):
 <p>정규화가 전혀 없을 때(\(\lambda=0\))도, 너무 강할 때(\(\lambda=10\))도
 검증 MSE가 오히려 나빠지고, 그 사이 어딘가에 최적점이 있다 — 이 U자
 모양이 바로 6.1절의 편향-분산 트레이드오프가 실제 숫자로 나타난 것이다.</p>
+<h3 id="손으로-한-번-4-fold-분할을-직접-손으로-나눠보기"><a class="header" href="#손으로-한-번-4-fold-분할을-직접-손으로-나눠보기">손으로 한 번: 4-fold 분할을 직접 손으로 나눠보기</a></h3>
+<p><code>k_fold_split</code>이 실제로 데이터를 어떻게 나누는지 손으로 따라가보자.
+샘플 12개(인덱스 0~11)를 \(k=4\)로 나누면 <code>fold_size = 12 // 4 = 3</code>이다.
+각 <code>fold_idx</code>에 대해 <code>start = fold_idx * 3</code>, <code>end = start + 3</code>(마지막
+fold만 나머지를 전부 포함하도록 <code>n</code>까지)이 검증용으로 빠진다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th><code>fold_idx</code></th><th>검증용(val) 인덱스</th><th>학습용(train) 인덱스</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>0, 1, 2</td><td>3, 4, …, 11</td></tr>
+<tr><td>1</td><td>3, 4, 5</td><td>0, 1, 2, 6, 7, …, 11</td></tr>
+<tr><td>2</td><td>6, 7, 8</td><td>0, 1, …, 5, 9, 10, 11</td></tr>
+<tr><td>3</td><td>9, 10, 11</td><td>0, 1, …, 8</td></tr>
+</tbody>
+</table>
+</div>
+<p>4번의 fold를 전부 돌리고 나면, 인덱스 0~11 <strong>각각이 정확히 한 번씩</strong>
+검증용으로 쓰이고 나머지 세 번은 학습용으로 쓰인다 — “데이터 전체를
+한 번씩은 검증에도 써본다“는 6.2절 서두의 설명이 실제로 이런 인덱스
+분할로 구현된다는 것을 확인할 수 있다. <code>cross_validate_lambda</code>는 이
+과정을 각 \(\lambda\) 후보마다 반복해서, 4번의 검증 오차를 평균 낸
+값으로 그 \(\lambda\)를 평가한다.</p>
+<h3 id="자주-하는-실수-섞지-않은-데이터를-그대로-fold로-나누기"><a class="header" href="#자주-하는-실수-섞지-않은-데이터를-그대로-fold로-나누기">자주 하는 실수: 섞지 않은 데이터를 그대로 fold로 나누기</a></h3>
+<p>위 <code>k_fold_split</code>은 데이터를 <strong>주어진 순서 그대로</strong> 앞에서부터 잘라
+나눈다 — 만약 데이터가 정렬되어 있다면 심각한 문제가 생긴다. 예를 들어
+샘플 12개 중 앞 6개가 전부 클래스 0, 뒤 6개가 전부 클래스 1로 정렬된
+데이터라면, <code>fold_idx=0</code>의 검증셋(인덱스 0,1,2)은 <strong>클래스 0만</strong>,
+<code>fold_idx=3</code>의 검증셋(인덱스 9,10,11)은 <strong>클래스 1만</strong> 포함하게 된다.
+이런 fold로 평가하면, 모델이 학습 데이터에서 본 클래스 비율과 검증
+fold의 클래스 비율이 서로 달라서 검증 성능이 실제보다 훨씬 나쁘게(또는
+우연히 좋게) 나올 수 있다 — 4.2절의 <code>tune_k</code>가 쓰는 <code>train_val_split</code>은
+<code>random.Random(seed).shuffle(idx)</code>로 먼저 섞은 뒤 나누는데, 여기
+<code>k_fold_split</code>은 그 섞는 단계가 빠져 있다는 차이에 주의해야 한다. 실전
+코드(<code>sklearn.model_selection.KFold(shuffle=True)</code> 또는 클래스 비율까지
+유지해주는 <code>StratifiedKFold</code>)를 쓸 때는 이 옵션을 반드시 켜는 습관을
+들이는 것이 좋다 — 데이터가 어떤 기준으로든 정렬되어 있을 가능성은
+생각보다 흔하다(시간순 로그, 라벨순 정렬된 원본 파일 등).</p>
+<h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
+<p><strong>Q. \(k\)는 몇으로 잡아야 하나요?</strong> \(k=5\) 또는 \(k=10\)이
+실전에서 가장 흔한 기본값이다. \(k\)가 커질수록(예: \(k=m\), 데이터
+개수만큼 — 이를 <strong>LOOCV</strong>, leave-one-out cross-validation이라 부른다)
+각 fold의 학습 데이터가 거의 전체 데이터와 같아져 편향은 줄지만, fold를
+\(m\)번 전부 다시 학습해야 해서 계산 비용이 커지고 fold 간 결과의
+분산도 커질 수 있다. \(k\)가 작을수록(예: \(k=3\)) 계산은 빠르지만
+각 fold의 학습 데이터가 상대적으로 작아져 편향이 커질 수 있다 —
+\(5\sim10\)이 이 둘 사이의 실용적인 절충점으로 알려져 있다.</p>
+<p><strong>Q. 교차검증은 항상 해야 하나요?</strong> 데이터가 아주 많다면(예: 수백만
+개) 굳이 \(k\)번 반복해서 학습할 필요 없이, 데이터를 한 번만
+train/validation으로 나눠도(6.3절의 단순 분할) 검증셋 자체가 이미
+충분히 커서 안정적인 평가가 된다. 데이터가 적을수록(수백~수천 개) 한
+번의 분할은 우연히 “쉬운” 또는 “어려운” 검증셋을 뽑을 위험이 커서,
+여러 번 나눠 평균 내는 교차검증의 가치가 커진다.</p>
 
                     </main>
 
