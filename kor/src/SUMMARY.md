@@ -124,5 +124,8 @@
     - [로봇 환경 탐색 실습](ml2/chapter13/2.md)
     - [연속제어환경에 PPO 적용하기](ml2/chapter13/3.md)
 - [고급 시뮬레이션: MuJoCo와 Isaac Sim (Advanced Simulation: MuJoCo & Isaac Sim)](ml2/chapter14.md)
+    - [MuJoCo와 정책 학습 실습](ml2/chapter14/1.md)
+    - [NVIDIA Isaac Sim과 GPU 가속의 원리](ml2/chapter14/2.md)
+    - [어떤 도구를 언제 쓰는가](ml2/chapter14/3.md)
 - [모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL & Monte Carlo Tree Search)](ml2/chapter15.md)
 - [Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone & Semester Review)](ml2/chapter16.md)
