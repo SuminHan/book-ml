@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a6c6e71b.js";
+            window.path_to_searchindex_js = "searchindex-d7318e2f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-5ea1b59b.js"></script>
+        <script src="toc-89cd2b14.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -7214,7 +7214,15 @@ Q(s,a)]\)가 참값 \(Q^<em>(s,a)\)로 수렴하기 위해 필요한 조건을 �
 “몇 스텝을 실제로 볼 것인가“라는 하나의 다이얼 위의 양 끝일 뿐임을
 보이고, 그 사이의 모든 지점을 아우르는 방법을 다룬다. 마지막으로는
 경험뿐 아니라 학습된 모델도 함께 활용하는 계획(planning)까지 살펴본다.</p>
-<h2 id="71-n-step-td-mc와-td0-사이의-다이얼"><a class="header" href="#71-n-step-td-mc와-td0-사이의-다이얼">7.1 n-step TD: MC와 TD(0) 사이의 다이얼</a></h2>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#71-n-step-td-mc와-td0-사이의-다이얼">7.1 n-step TD: MC와 TD(0) 사이의 다이얼</a></li>
+<li><a href="#72-적격흔적과-파라미터-튜닝-실습">7.2 적격흔적과 파라미터 튜닝 실습</a></li>
+<li><a href="#73-계획과-학습-dyna-q">7.3 계획과 학습: Dyna-Q</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="71-n-step-td-mc와-td0-사이의-다이얼"><a class="header" href="#71-n-step-td-mc와-td0-사이의-다이얼">7.1 n-step TD: MC와 TD(0) 사이의 다이얼</a></h1>
+<h3 id="n-step-td-mc와-td0-사이의-다이얼"><a class="header" href="#n-step-td-mc와-td0-사이의-다이얼">n-step TD: MC와 TD(0) 사이의 다이얼</a></h3>
 <p>TD(0)의 목표값은 \(r + \gamma V(s’)\)(1 스텝의 실제 보상 + 나머지는
 추정치)였다. 이걸 일반화해서, \(n\) 스텝만큼 실제로 관찰한 보상을 쓰고
 그 이후는 추정치로 대체하면:</p>
@@ -7257,7 +7265,47 @@ Q(s,a)]\)가 참값 \(Q^<em>(s,a)\)로 수렴하기 위해 필요한 조건을 �
 보면, 목표(오른쪽 끝, +1)에 가까운 상태일수록 가치가 매끄럽게 커지는
 것을 확인할 수 있다(예: 왼쪽 끝 -0.84 근처에서 오른쪽으로 갈수록 0.69
 근처까지 단조 증가).</p>
-<h2 id="72-적격흔적-모든-n을-동시에"><a class="header" href="#72-적격흔적-모든-n을-동시에">7.2 적격흔적: 모든 n을 동시에</a></h2>
+<h3 id="자주-묻는-질문-57"><a class="header" href="#자주-묻는-질문-57">자주 묻는 질문</a></h3>
+<p><strong>Q. n-step TD도 부트스트래핑인가요?</strong> 그렇다 — \(n\)이 유한하기만
+하면(\(n&lt;\infty\)) 목표값 \(G_t^{(n)}\)에 여전히 추정치
+\(V(s_{t+n})\)이 들어 있으므로 부트스트래핑이다. \(n\to\infty\)일
+때만(에피소드가 끝날 때까지 실제 보상만 쓸 때) 부트스트래핑이 완전히
+사라지고 순수 MC가 된다.</p>
+<p><strong>Q. 실전에서는 n을 얼마로 쓰나요?</strong> 문제와 데이터양에 따라 다르며,
+보통 몇 개(4~10 정도)의 후보를 검증 성능으로 비교해서 고른다 —
+이 절의 실습이 바로 그 튜닝 과정의 축소판이다. Chapter 9의 DQN
+계열 알고리즘 중에는 n-step 리턴을 기본 옵션으로 제공하는 구현도
+많다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="72-적격흔적과-파라미터-튜닝-실습"><a class="header" href="#72-적격흔적과-파라미터-튜닝-실습">7.2 적격흔적과 파라미터 튜닝 실습</a></h1>
+<h3 id="실습-n을-바꿔가며-random-walk에서-최적-지점-찾기"><a class="header" href="#실습-n을-바꿔가며-random-walk에서-최적-지점-찾기">실습: n을 바꿔가며 random walk에서 최적 지점 찾기</a></h3>
+<p>7.1절에서 “\(n\)이 커지면 편향은 줄고 분산은 커진다“고 했는데,
+실제로 이게 “적당한 \(n\)이 극단보다 낫다“는 결과로 이어지는지
+확인해보자. 7개의 상태(0~6, 0과 6은 종료 상태)가 일렬로 늘어선 표준
+“random walk” 환경 — 매 스텝 왼쪽/오른쪽으로 50:50 무작위 이동하고,
+오른쪽 끝(6)에 도달하면 보상 +1, 왼쪽 끝(0)에 도달하면 보상 0 —
+에서는 참값 \(V(s) = s/6\)이 정확히 알려져 있다(예:
+\(V(3)=0.5\)). 이 참값과, <code>n_step_td</code>로 짧게(10 에피소드) 학습한
+추정치 사이의 오차(RMS)를 \(n\)별로 비교하면(스크래치패드에서 20회
+반복 평균으로 검증):</p>
+<pre><code>n=1:  평균 RMS 오차 = 0.3410
+n=3:  평균 RMS 오차 = 0.1830
+n=5:  평균 RMS 오차 = 0.1687   &lt;- 최적
+n=10: 평균 RMS 오차 = 0.1883
+n=50: 평균 RMS 오차 = 0.2178
+</code></pre>
+<p>오차가 \(n\)에 대해 <strong>U자 모양</strong>으로 나타난다 — 양 극단(\(n=1\),
+\(n=50\))보다 중간 어딘가(\(n=5\))가 가장 낮은 오차를 보인다.
+\(n=1\)(TD(0))은 매 스텝 즉시 갱신하지만 추정치에 크게 의존해서
+(편향), 겨우 10 에피소드로는 그 편향을 다 씻어낼 시간이 부족하다.
+\(n=50\)(사실상 MC에 가깝다, 에피소드 길이가 보통 그보다 짧으므로)은
+편향은 없지만 각 갱신에 담긴 무작위성(분산)이 너무 커서, 적은
+에피소드로는 오히려 불안정하다. 그 사이 어딘가(\(n=5\))가 이번
+실험에서는 최적이었다 — 실전에서 \(n\)을 몇으로 잡을지는 이렇게
+데이터로 확인해야 하는 하이퍼파라미터라는 것을, Chapter 4.1의
+편향-분산 트레이드오프가 여기서 U자 곡선이라는 구체적인 숫자로 다시
+확인되는 셈이다.</p>
+<h3 id="적격흔적-모든-n을-동시에"><a class="header" href="#적격흔적-모든-n을-동시에">적격흔적: 모든 n을 동시에</a></h3>
 <p>n-step TD는 매번 \(n\)을 하나로 고정해야 한다. <strong>적격흔적</strong>
 (eligibility trace)은 다른 접근을 쓴다 — 모든 상태에 “최근에 얼마나
 자주, 얼마나 최근에 방문했는가“를 나타내는 흔적 \(e(s)\)를 붙여두고,
@@ -7273,7 +7321,9 @@ V(s) \leftarrow V(s) + \alpha , \delta_t , e(s) ; \text{(모든 } s \text{에 �
 흔적을 남겨서 후방(backward)으로 갱신을 퍼뜨리는” 방식으로 사실상 같은
 효과를 낸다는 것이 알려져 있다(전방 관점과 후방 관점의 등가성 — 자세한
 증명은 이 학기 범위를 넘는다).</p>
-<h2 id="73-계획과-학습-dyna-q"><a class="header" href="#73-계획과-학습-dyna-q">7.3 계획과 학습: Dyna-Q</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="73-계획과-학습-dyna-q"><a class="header" href="#73-계획과-학습-dyna-q">7.3 계획과 학습: Dyna-Q</a></h1>
+<h3 id="계획과-학습-dyna-q"><a class="header" href="#계획과-학습-dyna-q">계획과 학습: Dyna-Q</a></h3>
 <p>지금까지의 모델-프리 방법(MC, TD)은 경험을 한 번 쓰고 나면 버렸다.
 그런데 그 경험에는 사실 “이 상태에서 이 행동을 하면 대략 이런 보상과
 다음 상태가 나오더라“라는, 환경에 대한 정보가 담겨 있다. <strong>Dyna-Q</strong>는
@@ -7309,7 +7359,7 @@ def dyna_q(env_step, n_states, n_actions, n_episodes, planning_steps, alpha, gam
 <code>planning_steps=10</code>은 단 9 에피소드만에 도달한다 — 매 실제 스텝마다
 모델을 이용해 10번씩 추가로 학습하니, 같은 실제 경험으로 훨씬 더 많은
 것을 뽑아내는 것이다.</p>
-<h2 id="74-세-가지-축을-한자리에"><a class="header" href="#74-세-가지-축을-한자리에">7.4 세 가지 축을 한자리에</a></h2>
+<h3 id="세-가지-축을-한자리에"><a class="header" href="#세-가지-축을-한자리에">세 가지 축을 한자리에</a></h3>
 <p>이번 장에서 다룬 것들을 한 표로 정리하면, 이번 학기 Block A 전체가
 사실 “부트스트래핑을 얼마나 할 것인가“라는 하나의 질문에 대한 서로
 다른 답이었다는 게 보인다:</p>
@@ -7327,6 +7377,20 @@ def dyna_q(env_step, n_states, n_actions, n_episodes, planning_steps, alpha, gam
 </tbody>
 </table>
 </div>
+<h3 id="자주-묻는-질문-58"><a class="header" href="#자주-묻는-질문-58">자주 묻는 질문</a></h3>
+<p><strong>Q. Dyna-Q의 모델은 항상 정확한가요?</strong> 학습 초반에는 전혀 그렇지
+않다 — 아직 몇 번밖에 못 가본 (상태, 행동) 쌍의 모델은 부정확하거나
+아예 없을 수 있다. 그런데도 Dyna-Q가 잘 작동하는 이유는, 모델이
+부정확해도 “그 부정확한 모델로 계획한 결과“가 최소한 “아무것도
+안 하는 것“보다는 대체로 낫고, 실제 경험이 쌓일수록 모델도 함께
+정확해져서 계획의 품질도 함께 좋아지기 때문이다.</p>
+<p><strong>Q. planning_steps를 무한히 늘리면 항상 좋아지나요?</strong> 실제
+환경과의 상호작용 한 번당 계획에 쓰는 계산량이 커질 뿐, 계획
+자체는 이미 모은 경험 이상의 새로운 정보를 만들어내지 못한다 —
+모델이 부정확한 상태에서 계획만 과도하게 반복하면, 그 부정확함이
+Q값에 더 강하게 반영되어 오히려 해로울 수 있다(모델 오차의
+“복리 효과”). 실전에서는 <code>planning_steps</code>도 다른 하이퍼파라미터처럼
+검증 성능으로 튜닝한다.</p>
 <p><strong>부트스트래핑(추정치로 스스로를 갱신하는 것)을 아예 안 하는 것(MC)과
 매 스텝 하는 것(TD)은 두 극단일 뿐이다 — 실전에서는 그 사이 어딘가가,
 그리고 경험을 재사용하는 계획까지 더하는 것이 대체로 더 낫다는 것이
