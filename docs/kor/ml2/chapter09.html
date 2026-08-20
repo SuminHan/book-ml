@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-b890ccd1.js";
+            window.path_to_searchindex_js = "../searchindex-7b22fb26.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-6d2cdc83.js"></script>
+        <script src="../toc-72f8945c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -185,184 +185,12 @@
 알려주지 않고, 오직 화면 픽셀과 점수만 보고서. <strong>DQN</strong>(Deep
 Q-Network)이라 불린 이 결과는 2015년 Nature에 게재되며, 여러 게임에서
 사람 수준 또는 그 이상의 성능을 보였다.</p>
-<h2 id="91-q-테이블이-감당-못-하는-규모"><a class="header" href="#91-q-테이블이-감당-못-하는-규모">9.1 Q-테이블이 감당 못 하는 규모</a></h2>
-<p>Chapter 6의 Q-learning은 <code>Q[s][a]</code>라는 <strong>표</strong>(테이블)에 모든 상태-행동
-쌍의 값을 저장했다. 이건 상태가 몇백 개 수준일 때는 잘 작동하지만,
-Atari 게임의 화면(가로세로 수백 픽셀, 색상 조합)이 만들어낼 수 있는
-상태의 가짓수는 사실상 무한에 가깝다 — 테이블에 다 담을 수도 없고,
-대부분의 상태는 학습 중에 단 한 번도 안 나타난다. Chapter 4.5에서 짚은
-“바둑처럼 상태가 초천문학적으로 많으면 표로 저장하는 것 자체가
-불가능하다“는 문제가 바로 여기서 실제로 닥친다.</p>
-<h2 id="92-q-함수를-신경망으로-근사"><a class="header" href="#92-q-함수를-신경망으로-근사">9.2 Q-함수를 신경망으로 근사</a></h2>
-<p>DQN의 아이디어는 단순하다: 테이블 대신 <strong>신경망</strong>으로 \(Q(s,a)\)를
-근사하자(\(Q(s,a;\theta)\), \(\theta\)는 신경망 가중치). 비슷한
-화면(상태)은 신경망을 통해 비슷한 Q값을 내게 되므로, 한 번도 정확히 본
-적 없는 상태에도 일반화(generalize)할 수 있다. 손실함수는 Chapter 6의
-TD 오차를 제곱한 것이다:</p>
-<p>\[J(\theta) = \mathbb{E}\left[\left(r + \gamma \max_{a’} Q(s’,a’;\theta) -
-Q(s,a;\theta)\right)^2\right]\]</p>
-<p>이 손실을 최소화하도록 경사하강법(정확히는 역전파)으로 \(\theta\)를
-갱신한다 — 지도학습과 형태는 같지만, “정답“에 해당하는 목표값
-\(r + \gamma \max_{a’} Q(s’,a’;\theta)\) 자체가 지금 학습 중인
-\(\theta\)로 계산된다는 점이 다르다.</p>
-<pre><code class="language-python">import torch
-import torch.nn as nn
-
-class QNetwork(nn.Module):
-    def __init__(self, state_dim, n_actions):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(state_dim, 64), nn.ReLU(),
-            nn.Linear(64, 64), nn.ReLU(),
-            nn.Linear(64, n_actions),
-        )
-
-    def forward(self, x):
-        return self.net(x)
-</code></pre>
-<h2 id="93-문제-1-목표가-계속-움직인다"><a class="header" href="#93-문제-1-목표가-계속-움직인다">9.3 문제 1: 목표가 계속 움직인다</a></h2>
-<p>\(\theta\)가 매 스텝 갱신되면, 손실함수의 목표값도 매 스텝 바뀐다 —
-지도학습이라면 정답 \(y\)는 절대 안 바뀌는데, 여기선 “정답“이
-스스로를 쫓아다니는 셈이다. 이는 학습을 불안정하게 만든다(진동, 발산).</p>
-<p><strong>해결책: 타겟 네트워크</strong>(Target Network). \(Q\)와 똑같은 구조를
-가진 두 번째 신경망 \(Q(s,a;\theta^-)\)를 두고, 목표값 계산에는
-<strong>이 타겟 네트워크만</strong> 쓴다:</p>
-<p>\[J(\theta) = \mathbb{E}\left[\left(r + \gamma \max_{a’} Q(s’,a’;\theta^-) -
-Q(s,a;\theta)\right)^2\right]\]</p>
-<p>\(\theta^-\)는 매 스텝 갱신되지 않고, 일정 주기마다(예: 1000
-스텝마다) \(\theta\)의 현재 값으로 통째로 복사된다. 그 사이 구간
-동안 목표값은 고정돼 있으므로, 손실함수는(짧은 구간 동안은) 지도학습과
-똑같이 “정답이 고정된” 최적화 문제가 된다 — 움직이는 과녁을 고정시킨
-셈이다.</p>
-<pre><code class="language-python">def dqn_loss(Q_net, target_net, states, actions, rewards, next_states, dones, gamma):
-    q_pred = Q_net(states).gather(1, actions.unsqueeze(1)).squeeze(1)
-    with torch.no_grad():
-        q_next = target_net(next_states).max(dim=1).values
-        target = rewards + gamma * q_next * (1 - dones)
-    return ((target - q_pred) ** 2).mean()
-</code></pre>
-<h2 id="94-문제-2-데이터가-서로-상관돼-있다"><a class="header" href="#94-문제-2-데이터가-서로-상관돼-있다">9.4 문제 2: 데이터가 서로 상관돼 있다</a></h2>
-<p>연속된 프레임(상태)은 서로 거의 같아서, 순서대로 학습하면 최근 몇 개의
-비슷한 경험에 과도하게 치우친(overfitting) 학습이 된다 — 게다가 신경망
-학습은 미니배치가 서로 독립적이고 다양할수록 안정적이라는 가정에 기대고
-있다.</p>
-<p><strong>해결책: 경험 재현</strong>(Experience Replay). 에이전트가 경험한
-\((s, a, r, s’)\)를 바로 학습에 쓰지 않고, 일단 <strong>재현 버퍼</strong>(replay
-buffer)라는 큰 저장소에 쌓아둔다. 학습할 때는 이 버퍼에서 <strong>무작위로</strong>
-미니배치를 샘플링해서 쓴다 — 이러면 학습 배치가 시간적으로 인접한
-경험들로만 구성되는 것을 피하고, 오래된 경험도 다시 재사용할 수 있어
-데이터 효율도 좋아진다(Chapter 5.4에서 본 “과거 경험을 다른 목적으로
-재사용한다“는 아이디어의 또 다른 형태다).</p>
-<pre><code class="language-python">import random
-
-class ReplayBuffer:
-    def __init__(self, capacity):
-        self.buffer = []
-        self.capacity = capacity
-
-    def push(self, transition):
-        if len(self.buffer) &gt;= self.capacity:
-            self.buffer.pop(0)
-        self.buffer.append(transition)
-
-    def sample(self, batch_size):
-        return random.sample(self.buffer, batch_size)
-</code></pre>
-<h2 id="95-cartpole에서-dqn-실습"><a class="header" href="#95-cartpole에서-dqn-실습">9.5 CartPole에서 DQN 실습</a></h2>
-<p>Chapter 1.6에서 소개한 CartPole 환경에 위 조각들을 조합하면, 재현
-버퍼에서 미니배치를 뽑아 손실을 계산하고, 일정 주기마다 타겟
-네트워크를 동기화하는 학습 루프가 완성된다:</p>
-<pre><code class="language-python">import torch
-
-env_state_dim, n_actions = 4, 2  # CartPole 기준
-Q_net = QNetwork(env_state_dim, n_actions)
-target_net = QNetwork(env_state_dim, n_actions)
-target_net.load_state_dict(Q_net.state_dict())  # 처음엔 동일하게 초기화
-optimizer = torch.optim.Adam(Q_net.parameters(), lr=1e-3)
-buffer = ReplayBuffer(capacity=10000)
-
-# 한 번의 학습 스텝(버퍼에 데이터가 충분히 쌓인 뒤 반복 호출한다고 가정)
-def train_step(batch_size, gamma):
-    batch = buffer.sample(batch_size)
-    states = torch.tensor([b[0] for b in batch], dtype=torch.float32)
-    actions = torch.tensor([b[1] for b in batch])
-    rewards = torch.tensor([b[2] for b in batch], dtype=torch.float32)
-    next_states = torch.tensor([b[3] for b in batch], dtype=torch.float32)
-    dones = torch.tensor([b[4] for b in batch], dtype=torch.float32)
-    loss = dqn_loss(Q_net, target_net, states, actions, rewards, next_states, dones, gamma)
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-    return loss.item()
-</code></pre>
-<h2 id="96-두-장치의-공통점"><a class="header" href="#96-두-장치의-공통점">9.6 두 장치의 공통점</a></h2>
-<p>경험 재현과 타겟 네트워크는 서로 다른 문제(데이터 상관성 vs 움직이는
-목표)를 풀지만, 근본적으로 같은 철학을 공유한다: <strong>“지도학습이 잘
-작동하는 조건(독립적인 데이터, 고정된 정답)을, 강화학습이라는 원래 그
-조건이 깨진 환경에서 인위적으로 다시 만들어준다.”</strong></p>
-<p><strong>“강화학습에 신경망을 붙이면 저절로 잘 될 것“이라는 순진한 기대는
-틀렸다 — DQN의 진짜 기여는 신경망 자체가 아니라, 그 조합이 안정적으로
-학습되도록 만든 몇 가지 공학적 장치에 있다.</strong></p>
-<hr>
-<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 다음과 같은 <code>ReplayBuffer</code> 클래스와
-<code>should_update_target</code>을 완성하라(핵심 줄은 빈칸으로 남겨져 있다고
-가정):</p>
-<pre><code class="language-python">import random
-
-class ReplayBuffer:
-    def __init__(self, capacity):
-        self.buffer = []
-        self.capacity = capacity
-
-    def push(self, transition):
-        # ADD ADDITIONAL CODE HERE!!
-        # 버퍼가 capacity를 넘으면 가장 오래된 항목을 제거(FIFO)한 뒤 추가
-
-    def sample(self, batch_size):
-        # ADD ADDITIONAL CODE HERE!!
-        # 버퍼에서 batch_size개를 무작위 비복원추출로 반환
-
-buf = ReplayBuffer(capacity=3)
-buf.push(("s1","a1",1,"s2"))
-buf.push(("s2","a2",0,"s3"))
-buf.push(("s3","a3",1,"s4"))
-buf.push(("s4","a4",0,"s5"))  # 버퍼가 가득 차서 첫 번째 항목이 밀려남
-print(len(buf.buffer))  # 3
-print(buf.buffer[0])    # ("s2","a2",0,"s3")
-
-def should_update_target(step, update_freq):
-    # ADD ADDITIONAL CODE HERE!!
-
-print([should_update_target(s, 1000) for s in [999, 1000, 1500, 2000]])
-# [False, True, False, True]
-</code></pre>
-<p><strong>2. (실습)</strong> CartPole 환경(<code>gym.make("CartPole-v1")</code>)에서 무작위
-정책으로 100 스텝을 진행하며 <code>(state, action, reward, next_state, done)</code>을 <code>ReplayBuffer</code>에 채워 넣어라. 버퍼에 데이터가 32개 이상
-쌓이면 위 <code>train_step</code> 함수를 5번 호출해서 손실이 실제로 계산되고
-역전파가 되는지(에러 없이 실행되는지) 확인하라.</p>
-<p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> 타겟 네트워크 없이(즉 목표값
-계산에도 \(\theta\)를 그대로 쓴다고 하자) DQN을 학습시킨다고 하자.
-손실 \(J(\theta) = (r + \gamma \max_{a’} Q(s’,a’;\theta) -
-Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
-예측값 항 \(Q(s,a;\theta)\) <strong>둘 다</strong>에 나타난다는 것을 지적하고,
-이 때문에 그래디언트 업데이트 한 번이 “예측값을 목표값에 가깝게” 옮길
-뿐 아니라 “목표값 자체도 함께” 움직이게 만든다는 것을 논증하라. 그런
-다음, 타겟 네트워크(\(\theta^-\)를 목표값 계산에만 쓰고, 일정
-주기로만 갱신)가 이 문제를 어떻게 피하는지 설명하라.</p>
-<p><strong>빈칸채움형 폴백 버전</strong> (자유 논증이 어려운 경우):</p>
-<pre><code>타겟 네트워크가 없을 때:
-  theta는 max_a' Q(s',a';theta) 안에도, Q(s,a;theta) 안에도 등장한다.
-  theta를 한 번 업데이트하면 예측값은 목표값에 ______________ (가까워진다/멀어진다)
-  그런데 목표값 자체도 ______________ (같이 바뀐다/그대로다)
-
-타겟 네트워크(theta^-)가 있을 때:
-  theta^-는 매 스텝 ______________ (바뀐다/고정돼 있다)
-  따라서 theta를 업데이트하는 동안, 목표값은 ______________ (움직인다/고정돼 있다)
-</code></pre>
-<p><strong>정확성 확인</strong>: 타겟 네트워크의 갱신 주기(<code>update_freq</code>)를 극단적으로
-크게(예: 100만 스텝) 잡으면 어떤 문제가 생길지, 반대로 극단적으로
-작게(예: 1 스텝) 잡으면 어떤 문제가 생길지 각각 한 문장으로 설명하라.</p>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="chapter09/1.html">9.1 Q-테이블의 한계와 함수근사</a></li>
+<li><a href="chapter09/2.html">9.2 DQN의 안정화 장치와 실습</a></li>
+<li><a href="chapter09/3.html">9.3 경험 재현과 CartPole 학습곡선 실습</a></li>
+</ul>
 
                     </main>
 
@@ -372,7 +200,7 @@ Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml2/chapter10.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml2/chapter09/1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -386,7 +214,7 @@ Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml2/chapter10.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml2/chapter09/1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
