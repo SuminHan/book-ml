@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>퍼셉트론의 한계, 순전파, 역전파 - Machine Learning 1/2 (한국어)</title>
+        <title>프롬프팅 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,156 +178,77 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="91-퍼셉트론의-한계-순전파-역전파"><a class="header" href="#91-퍼셉트론의-한계-순전파-역전파">9.1 퍼셉트론의 한계, 순전파, 역전파</a></h1>
-<h3 id="퍼셉트론에서-다층-신경망으로"><a class="header" href="#퍼셉트론에서-다층-신경망으로">퍼셉트론에서 다층 신경망으로</a></h3>
-<p>해법은 놀랍도록 단순했다: 직선 하나로 안 되면, <strong>직선을 여러 개 겹쳐서 새로운
-공간을 만든 뒤 그 공간에서 다시 나누면 된다.</strong> 로지스틱회귀는 사실 입력층과
-출력층만 있는(은닉층이 없는) 가장 단순한 “신경망“으로 볼 수 있다:
-\(a = \sigma(w^Tx)\). <strong>다층 퍼셉트론</strong>(Multi-Layer Perceptron, MLP)은 그
-사이에 은닉층(hidden layer)을 하나 이상 끼워 넣는다 — 은닉층 하나만
-추가해도, XOR을 완벽히 풀 수 있는 경계를 만들 수 있다.</p>
-<p>왜 직선 하나로는 XOR이 안 되는지 표로 직접 확인해보자:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>\(x_1\)</th><th>\(x_2\)</th><th>XOR</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>1</td></tr>
-<tr><td>1</td><td>0</td><td>1</td></tr>
-<tr><td>1</td><td>1</td><td>0</td></tr>
-</tbody>
-</table>
-</div>
-<p>라벨이 1인 점 \((0,1), (1,0)\)과 라벨이 0인 점 \((0,0), (1,1)\)은
-정확히 대각선으로 교차 배치되어 있다 — 어떤 직선을 그어도 한쪽에는 항상
-서로 다른 라벨이 섞여 들어간다(직접 종이에 네 점을 찍고 직선을 그어보면
-바로 확인된다). 은닉층은 이 네 점을 <strong>다른 공간</strong>으로 옮겨서, 그 공간에서는
-직선 하나로 갈리도록 만드는 역할을 한다.</p>
-<h3 id="순전파-forward-propagation"><a class="header" href="#순전파-forward-propagation">순전파 (Forward Propagation)</a></h3>
-<p>입력 \(x\), 은닉층 가중치 \(W_1, b_1\), 출력층 가중치 \(W_2, b_2\)를
-가진 2층 신경망(입력 → 은닉 → 출력)의 순전파:</p>
-<p>\[z_1 = W_1 x + b_1, \quad a_1 = \sigma(z_1), \quad z_2 = W_2^T a_1 + b_2,
-\quad a_2 = \sigma(z_2)\]</p>
-<p>\(z\)는 활성화 함수를 적용하기 전(pre-activation), \(a\)는 적용한
-후(activation)다. 최종 출력 \(a_2\)가 예측값이다.</p>
-<h3 id="역전파-연쇄법칙을-거꾸로"><a class="header" href="#역전파-연쇄법칙을-거꾸로">역전파: 연쇄법칙을 거꾸로</a></h3>
-<p>은닉층을 추가하고 나니 새로운 문제가 생겼다: “그 은닉층의 가중치를 어떻게
-학습시키는가“다 — 출력층은 Chapter 2의 로지스틱회귀와 똑같이 그래디언트를
-계산하면 되지만, 은닉층은 정답을 직접 비교할 대상이 없다. 1986년 데이비드
-럼멜하트(David Rumelhart), 제프리 힌턴(Geoffrey Hinton), 로널드
-윌리엄스(Ronald Williams)가 대중화한 <strong>역전파</strong>(backpropagation) 알고리즘이
-이 문제를 풀었다: 출력층의 오차를 연쇄법칙(chain rule)으로 거꾸로 흘려보내,
-은닉층의 각 가중치가 최종 오차에 얼마나 책임이 있는지를 정확히 계산한다.</p>
-<p>손실함수 \(L\)이 주어졌을 때, 모든 가중치에 대한 \(\frac{\partial
-L}{\partial W}\)를 구해야 경사하강법을 적용할 수 있다. 문제는 \(W_1\)이
-최종 손실에 미치는 영향이 \(z_1 \to a_1 \to z_2 \to a_2 \to L\)이라는 긴
-사슬을 거친다는 것이다. 연쇄법칙은 이 사슬을 <strong>출력에서 입력 방향으로 거꾸로</strong>
-따라가며 미분을 하나씩 곱해 나가면 된다고 말해준다:</p>
-<ol>
-<li><strong>출력층 오차</strong>: \(\delta_2 = \frac{\partial L}{\partial z_2} = (a_2 - y)
-\sigma’(z_2)\) (Chapter 2에서 본 것과 같은 형태 — 교차 엔트로피와
-시그모이드의 조합은 항상 이렇게 깔끔해진다.)</li>
-<li><strong>은닉층 오차</strong>: \(\delta_1 = (W_2 \delta_2) \odot \sigma’(z_1)\) —
-출력층 오차 \(\delta_2\)를 \(W_2\)를 거슬러 은닉층으로 “돌려보낸” 뒤,
-은닉층 자체의 미분(\(\sigma’(z_1)\))을 곱한다. (\(\odot\)는 원소별 곱.)</li>
-<li><strong>그래디언트</strong>: \(\frac{\partial L}{\partial W_2} = \delta_2 \cdot
-a_1^T\), \(\frac{\partial L}{\partial W_1} = \delta_1 \cdot x^T\)</li>
-</ol>
-<p>“역전파“라는 이름의 의미가 바로 여기 있다: 오차(\(\delta\))가 출력층에서
-계산되고, 그 값이 은닉층 방향으로 <strong>거꾸로</strong> 전파(propagate)되면서 각 층의
-그래디언트를 만든다.</p>
-<h3 id="손으로-한-번-2-2-1-신경망에서-순전파와-역전파-한-스텝-직접-계산하기"><a class="header" href="#손으로-한-번-2-2-1-신경망에서-순전파와-역전파-한-스텝-직접-계산하기">손으로 한 번: 2-2-1 신경망에서 순전파와 역전파 한 스텝 직접 계산하기</a></h3>
-<p>구체적인 숫자로 위 과정을 손으로 따라가보자. 입력 \(x=(1,0)\), 목표
-\(y=1\)(XOR(1,0)=1)이고, 가중치가 \(W_1=\begin{bmatrix}0.5&amp;0.3\\-0.5&amp;0.8\end{bmatrix}\)
-(행=입력 차원, 열=은닉 유닛), \(b_1=(0.1,-0.2)\), \(W_2=(0.7,-0.6)\),
-\(b_2=0.1\)로 주어졌다고 하자.</p>
-<p><strong>순전파</strong>: \(z_1 = x^TW_1 + b_1 = (1\times0.5+0\times{-}0.5+0.1,\
-1\times0.3+0\times0.8-0.2) = (0.6,\ 0.1)\), \(a_1 = \sigma(z_1) \approx
-(0.646,\ 0.525)\). \(z_2 = a_1 \cdot W_2 + b_2 \approx 0.646\times0.7 +
-0.525\times({-}0.6) + 0.1 \approx 0.237\), \(a_2 = \sigma(0.237) \approx
-0.559\).</p>
-<p><strong>손실</strong>: \(L = \frac{1}{2}(a_2-y)^2 = \frac{1}{2}(0.559-1)^2 \approx
-0.097\).</p>
-<p><strong>역전파</strong>: \(\delta_2 = (a_2-y)\sigma’(z_2) \approx ({-}0.441)\times
-0.559\times(1-0.559) \approx {-}0.109\). \(\delta_1 = W_2\delta_2 \odot
-\sigma’(z_1) \approx (0.7\times({-}0.109), -0.6\times({-}0.109)) \odot
-(0.229, 0.249) \approx ({-}0.017,\ 0.016)\). 그래디언트는
-\(\frac{\partial L}{\partial W_2} \approx \delta_2 \cdot a_1 \approx
-({-}0.070,\ {-}0.057)\), \(\frac{\partial L}{\partial W_1} \approx x
-\otimes \delta_1\)(\(x_2=0\)이므로 두 번째 행은 0) \(\approx
-\begin{bmatrix}{-}0.017&amp;0.016\\0&amp;0\end{bmatrix}\)다(스크래치패드에서
-전체 자릿수까지 검증). 학습률 \(\alpha=0.5\)로 한 스텝 갱신하면 손실이
-\(0.097\)에서 \(0.087\)로 줄어든다 — 은닉층 가중치(\(W_1\))까지
-정확히 한 번의 역전파로 갱신됐다는 것이 이 계산의 핵심이다.</p>
-<h3 id="실습-numpy로-2층-신경망을-만들어-xor을-실제로-풀기"><a class="header" href="#실습-numpy로-2층-신경망을-만들어-xor을-실제로-풀기">실습: numpy로 2층 신경망을 만들어 XOR을 실제로 풀기</a></h3>
-<pre><code class="language-python">import math, random
+                        <h1 id="132-프롬프팅"><a class="header" href="#132-프롬프팅">13.2 프롬프팅</a></h1>
+<h3 id="프롬프팅-다시-학습시키지-않고-행동을-바꾸기"><a class="header" href="#프롬프팅-다시-학습시키지-않고-행동을-바꾸기">프롬프팅: 다시 학습시키지 않고 행동을 바꾸기</a></h3>
+<p>파인튜닝은 모델의 가중치 자체를 바꾸는 것이지만, <strong>프롬프팅</strong>(prompting)은
+가중치를 전혀 바꾸지 않고 입력(지시문, 예시)만으로 모델의 출력을 원하는
+방향으로 유도하는 방법이다.</p>
+<ul>
+<li><strong>Zero-shot</strong>: 예시 없이 지시문만 주고 바로 요청(“이 문장을 한국어로
+번역해줘: …”).</li>
+<li><strong>Few-shot</strong>: 몇 개의 입출력 예시를 프롬프트에 포함시켜, 모델이 패턴을
+파악하고 따라하게 유도.</li>
+<li><strong>Chain-of-Thought</strong>: “단계별로 생각해봐“처럼, 최종 답 전에 중간 추론
+과정을 출력하도록 유도 — 복잡한 추론 문제에서 정답률을 크게 높이는
+경우가 많다.</li>
+</ul>
+<p>몇 가지 예시를 프롬프트에 포함시키는 것만으로 모델이 새로운 형식의
+작업을 수행하게 만들 수 있다는 사실(few-shot prompting)은, 사전학습이
+얼마나 폭넓은 능력을 모델 안에 압축해뒀는지를 보여주는 증거이기도 하다.
+사전학습 데이터에는 “질문-답변”, “예시-패턴” 형태의 텍스트가 이미
+무수히 포함돼 있어서, 모델은 프롬프트 안에 비슷한 패턴을 보여주면 그
+패턴을 이어가는 방향으로 다음 토큰을 예측한다 — 새로운 지식을 학습하는
+게 아니라, 이미 갖고 있는 능력 중 어떤 것을 꺼내 쓸지를 프롬프트가
+가리키는 것에 가깝다.</p>
+<h3 id="실습-아주-단순화한-모델로-예시가-있으면-왜-더-잘-맞히는가-확인하기"><a class="header" href="#실습-아주-단순화한-모델로-예시가-있으면-왜-더-잘-맞히는가-확인하기">실습: 아주 단순화한 모델로 “예시가 있으면 왜 더 잘 맞히는가” 확인하기</a></h3>
+<p>실제 LLM은 이 책 범위를 넘는 방대한 신경망이지만, “프롬프트 안의
+토큰이 곧 다음 토큰 예측의 조건이 된다“는 핵심 메커니즘만큼은
+연습문제 1번의 <code>next_token_distribution</code>(문맥 단어 뒤에 어떤 단어가
+왔는지 빈도로 세는 아주 단순한 모델)로도 그 원리를 확인해볼 수 있다.</p>
+<pre><code class="language-python"># zero-shot: "사과는"이라는 패턴을 프롬프트에서 한 번도 보여주지 않음
+zero_shot_context = "오늘 기분이 좋다 사과는".split()
+print(next_token_distribution(zero_shot_context, "사과는"))
+# {}  -- 아무 근거가 없어 예측 불가
 
-def sigmoid(x):
-    return 1 / (1 + math.exp(-x))
-
-def sigmoid_prime(x):
-    s = sigmoid(x)
-    return s * (1 - s)
-
-def two_layer_forward(x, W1, b1, W2, b2):
-    z1 = [sum(W1[i][j] * x[j] for j in range(len(x))) + b1[i] for i in range(len(b1))]
-    a1 = [sigmoid(v) for v in z1]
-    z2 = sum(W2[i] * a1[i] for i in range(len(a1))) + b2
-    a2 = sigmoid(z2)
-    return a2, (x, z1, a1, z2, a2)
-
-def two_layer_backward(y_true, cache, W2):
-    x, z1, a1, z2, a2 = cache
-    delta2 = (a2 - y_true) * sigmoid_prime(z2)
-    delta1 = [W2[i] * delta2 * sigmoid_prime(z1[i]) for i in range(len(z1))]
-    grad_W2 = [delta2 * a1[i] for i in range(len(a1))]
-    grad_b2 = delta2
-    grad_W1 = [[delta1[i] * x[j] for j in range(len(x))] for i in range(len(delta1))]
-    grad_b1 = delta1
-    return grad_W1, grad_b1, grad_W2, grad_b2
+# few-shot: "OO는 OO이다" 패턴 예시 2개를 프롬프트에 포함시킨 뒤 질문
+few_shot_context = "사과는 과일이다 바나나는 과일이다 자동차는 기계이다 사과는".split()
+print(next_token_distribution(few_shot_context, "사과는"))
+# {'과일이다': 1.0}  -- 프롬프트 안의 예시가 곧바로 예측 근거가 됨
 </code></pre>
-<p>이 함수들로 XOR 데이터 4개(<code>[0,0]→0, [0,1]→1, [1,0]→1, [1,1]→0</code>)를
-은닉 유닛 4개짜리 신경망으로 5000 에폭 학습시키면(무작위 초기화,
-<code>numpy</code>로 벡터화한 버전을 스크래치패드에서 실행 검증):</p>
-<pre><code>최종 예측: [0.093, 0.911, 0.903, 0.103]
-반올림:    [0,     1,     1,     0    ]
-</code></pre>
-<p>정답 XOR 패턴(0, 1, 1, 0)과 정확히 일치한다 — 로지스틱회귀 혼자서는
-영원히 풀 수 없었던 문제를, 은닉층 하나와 역전파만으로 풀어낸 것이다.
-PyTorch/TensorFlow는 <code>.backward()</code> 한 줄로 이 모든 미분을 자동으로
-계산해준다(자동 미분, automatic differentiation). 하지만 그 자동 미분이
-내부에서 정확히 무엇을 하는지 모르면, 9.2절에서 볼 그래디언트가 사라지는
-문제를 마주쳤을 때 원인을 진단할 방법이 없다 — 이번 장 연습문제의
-목적은 라이브러리가 대신 해주는 그 연쇄법칙을, 딱 한 번은 손으로 끝까지
-따라가 보는 것이다.</p>
+<p>zero-shot에서는 “사과는“이라는 단어가 문맥에 등장한 적이 없어 예측
+자체가 불가능하다(빈 딕셔너리). few-shot에서는 프롬프트에 “사과는
+과일이다“라는 예시가 이미 포함되어 있어서, 모델이 그 패턴을 그대로
+근거로 삼아 100% 확신을 가지고 “과일이다“를 예측한다. 이 장난감
+모델은 실제 LLM의 훨씬 단순화된 버전이지만(진짜 LLM은 의미적으로
+유사한 새로운 단어에도 패턴을 일반화할 수 있다 — 여기서는 정확히 같은
+단어가 반복돼야만 작동한다), “프롬프트에 넣은 토큰이 곧바로 다음 예측의
+조건이 된다“는 기계적 원리 자체는 정확히 같다.</p>
+<h3 id="환각hallucination"><a class="header" href="#환각hallucination">환각(Hallucination)</a></h3>
+<p>LLM은 사실이 아닌 그럴듯한 문장을 자신 있게 만들어내기도 한다(<strong>환각,
+hallucination</strong>) — “다음 토큰으로 그럴듯한 것“을 예측하도록 학습됐을
+뿐, 사실 여부를 검증하는 과정이 내장돼 있지 않기 때문이다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
-<p><strong>Q. 은닉층은 왜 하나로 충분한가요, 여러 개는 언제 필요한가요?</strong>
-<strong>보편근사정리</strong>(universal approximation theorem)에 따르면, 은닉층
-하나(뉴런 수를 충분히 늘리면)만으로도 이론적으로 어떤 연속함수든
-근사할 수 있다 — XOR도 예외가 아니다. 하지만 “이론적으로 가능하다“와
-“학습이 쉽다“는 다른 문제다. 실전에서는 은닉층을 여러 개로 쌓는(깊게
-만드는) 쪽이, 같은 표현력을 훨씬 적은 총 뉴런 수로 달성하는 경우가
-많다 — Chapter 10의 CNN, Chapter 12의 트랜스포머 모두 이 “깊이“의
-효율성에 기대고 있다.</p>
-<p><strong>Q. 역전파가 매번 정확히 같은 미분을 계산한다는 걸 어떻게 확신하나요?</strong>
-<strong>수치 미분</strong>(numerical gradient checking)으로 검증할 수 있다 — 가중치
-하나를 아주 작게(\(\epsilon\)) 흔들어서 손실이 얼마나 바뀌는지
-직접 재는 것이다(\(\frac{L(w+\epsilon)-L(w-\epsilon)}{2\epsilon}\)).
-이 값이 역전파로 계산한 그래디언트와 거의 같으면(보통 소수점 몇 자리
-이내), 역전파 구현이 맞다는 증거가 된다 — 새 모델 구조를 직접 구현할
-때 실무에서 흔히 쓰는 디버깅 기법이다.</p>
+<p><strong>Q. Few-shot 예시는 몇 개나 넣어야 하나요?</strong> 정해진 답은 없다 —
+1~2개만으로 충분한 경우도 있고, 작업이 복잡할수록 더 많은 예시가
+도움이 되는 경향이 있다. 다만 Chapter 12.3에서 배운 어텐션의 계산량이
+문맥 길이의 제곱에 비례한다는 점을 고려하면, 예시를 무한정 늘리는
+것은 계산 비용과 응답 속도의 트레이드오프를 만든다.</p>
+<p><strong>Q. Chain-of-Thought가 왜 정확도를 높이나요?</strong> 13.1절에서 다음 토큰
+예측이 “지금까지 나온 토큰들“에 조건부로 이뤄진다고 배웠다 — 최종
+답을 곧바로 예측하게 하면 모델은 중간 추론 없이 “그럴듯한 답“을 한
+번에 내놓아야 하지만, 중간 추론 과정을 먼저 출력하게 하면 그 추론
+과정 자체가 다음 토큰(최종 답)의 조건이 되어, 모델이 스스로 만든
+중간 결과를 “참고 자료“처럼 활용할 수 있게 된다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../ml1/chapter09.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter13/1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../ml1/chapter09/2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter13/3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -337,11 +258,11 @@ PyTorch/TensorFlow는 <code>.backward()</code> 한 줄로 이 모든 미분을 �
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../ml1/chapter09.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter13/1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../ml1/chapter09/2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter13/3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

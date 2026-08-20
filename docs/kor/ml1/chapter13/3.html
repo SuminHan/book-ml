@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>퍼셉트론의 한계, 순전파, 역전파 - Machine Learning 1/2 (한국어)</title>
+        <title>포스트트레이닝: SFT, RLHF, DPO - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,156 +178,178 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="91-퍼셉트론의-한계-순전파-역전파"><a class="header" href="#91-퍼셉트론의-한계-순전파-역전파">9.1 퍼셉트론의 한계, 순전파, 역전파</a></h1>
-<h3 id="퍼셉트론에서-다층-신경망으로"><a class="header" href="#퍼셉트론에서-다층-신경망으로">퍼셉트론에서 다층 신경망으로</a></h3>
-<p>해법은 놀랍도록 단순했다: 직선 하나로 안 되면, <strong>직선을 여러 개 겹쳐서 새로운
-공간을 만든 뒤 그 공간에서 다시 나누면 된다.</strong> 로지스틱회귀는 사실 입력층과
-출력층만 있는(은닉층이 없는) 가장 단순한 “신경망“으로 볼 수 있다:
-\(a = \sigma(w^Tx)\). <strong>다층 퍼셉트론</strong>(Multi-Layer Perceptron, MLP)은 그
-사이에 은닉층(hidden layer)을 하나 이상 끼워 넣는다 — 은닉층 하나만
-추가해도, XOR을 완벽히 풀 수 있는 경계를 만들 수 있다.</p>
-<p>왜 직선 하나로는 XOR이 안 되는지 표로 직접 확인해보자:</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>\(x_1\)</th><th>\(x_2\)</th><th>XOR</th></tr>
-</thead>
-<tbody>
-<tr><td>0</td><td>0</td><td>0</td></tr>
-<tr><td>0</td><td>1</td><td>1</td></tr>
-<tr><td>1</td><td>0</td><td>1</td></tr>
-<tr><td>1</td><td>1</td><td>0</td></tr>
-</tbody>
-</table>
-</div>
-<p>라벨이 1인 점 \((0,1), (1,0)\)과 라벨이 0인 점 \((0,0), (1,1)\)은
-정확히 대각선으로 교차 배치되어 있다 — 어떤 직선을 그어도 한쪽에는 항상
-서로 다른 라벨이 섞여 들어간다(직접 종이에 네 점을 찍고 직선을 그어보면
-바로 확인된다). 은닉층은 이 네 점을 <strong>다른 공간</strong>으로 옮겨서, 그 공간에서는
-직선 하나로 갈리도록 만드는 역할을 한다.</p>
-<h3 id="순전파-forward-propagation"><a class="header" href="#순전파-forward-propagation">순전파 (Forward Propagation)</a></h3>
-<p>입력 \(x\), 은닉층 가중치 \(W_1, b_1\), 출력층 가중치 \(W_2, b_2\)를
-가진 2층 신경망(입력 → 은닉 → 출력)의 순전파:</p>
-<p>\[z_1 = W_1 x + b_1, \quad a_1 = \sigma(z_1), \quad z_2 = W_2^T a_1 + b_2,
-\quad a_2 = \sigma(z_2)\]</p>
-<p>\(z\)는 활성화 함수를 적용하기 전(pre-activation), \(a\)는 적용한
-후(activation)다. 최종 출력 \(a_2\)가 예측값이다.</p>
-<h3 id="역전파-연쇄법칙을-거꾸로"><a class="header" href="#역전파-연쇄법칙을-거꾸로">역전파: 연쇄법칙을 거꾸로</a></h3>
-<p>은닉층을 추가하고 나니 새로운 문제가 생겼다: “그 은닉층의 가중치를 어떻게
-학습시키는가“다 — 출력층은 Chapter 2의 로지스틱회귀와 똑같이 그래디언트를
-계산하면 되지만, 은닉층은 정답을 직접 비교할 대상이 없다. 1986년 데이비드
-럼멜하트(David Rumelhart), 제프리 힌턴(Geoffrey Hinton), 로널드
-윌리엄스(Ronald Williams)가 대중화한 <strong>역전파</strong>(backpropagation) 알고리즘이
-이 문제를 풀었다: 출력층의 오차를 연쇄법칙(chain rule)으로 거꾸로 흘려보내,
-은닉층의 각 가중치가 최종 오차에 얼마나 책임이 있는지를 정확히 계산한다.</p>
-<p>손실함수 \(L\)이 주어졌을 때, 모든 가중치에 대한 \(\frac{\partial
-L}{\partial W}\)를 구해야 경사하강법을 적용할 수 있다. 문제는 \(W_1\)이
-최종 손실에 미치는 영향이 \(z_1 \to a_1 \to z_2 \to a_2 \to L\)이라는 긴
-사슬을 거친다는 것이다. 연쇄법칙은 이 사슬을 <strong>출력에서 입력 방향으로 거꾸로</strong>
-따라가며 미분을 하나씩 곱해 나가면 된다고 말해준다:</p>
-<ol>
-<li><strong>출력층 오차</strong>: \(\delta_2 = \frac{\partial L}{\partial z_2} = (a_2 - y)
-\sigma’(z_2)\) (Chapter 2에서 본 것과 같은 형태 — 교차 엔트로피와
-시그모이드의 조합은 항상 이렇게 깔끔해진다.)</li>
-<li><strong>은닉층 오차</strong>: \(\delta_1 = (W_2 \delta_2) \odot \sigma’(z_1)\) —
-출력층 오차 \(\delta_2\)를 \(W_2\)를 거슬러 은닉층으로 “돌려보낸” 뒤,
-은닉층 자체의 미분(\(\sigma’(z_1)\))을 곱한다. (\(\odot\)는 원소별 곱.)</li>
-<li><strong>그래디언트</strong>: \(\frac{\partial L}{\partial W_2} = \delta_2 \cdot
-a_1^T\), \(\frac{\partial L}{\partial W_1} = \delta_1 \cdot x^T\)</li>
-</ol>
-<p>“역전파“라는 이름의 의미가 바로 여기 있다: 오차(\(\delta\))가 출력층에서
-계산되고, 그 값이 은닉층 방향으로 <strong>거꾸로</strong> 전파(propagate)되면서 각 층의
-그래디언트를 만든다.</p>
-<h3 id="손으로-한-번-2-2-1-신경망에서-순전파와-역전파-한-스텝-직접-계산하기"><a class="header" href="#손으로-한-번-2-2-1-신경망에서-순전파와-역전파-한-스텝-직접-계산하기">손으로 한 번: 2-2-1 신경망에서 순전파와 역전파 한 스텝 직접 계산하기</a></h3>
-<p>구체적인 숫자로 위 과정을 손으로 따라가보자. 입력 \(x=(1,0)\), 목표
-\(y=1\)(XOR(1,0)=1)이고, 가중치가 \(W_1=\begin{bmatrix}0.5&amp;0.3\\-0.5&amp;0.8\end{bmatrix}\)
-(행=입력 차원, 열=은닉 유닛), \(b_1=(0.1,-0.2)\), \(W_2=(0.7,-0.6)\),
-\(b_2=0.1\)로 주어졌다고 하자.</p>
-<p><strong>순전파</strong>: \(z_1 = x^TW_1 + b_1 = (1\times0.5+0\times{-}0.5+0.1,\
-1\times0.3+0\times0.8-0.2) = (0.6,\ 0.1)\), \(a_1 = \sigma(z_1) \approx
-(0.646,\ 0.525)\). \(z_2 = a_1 \cdot W_2 + b_2 \approx 0.646\times0.7 +
-0.525\times({-}0.6) + 0.1 \approx 0.237\), \(a_2 = \sigma(0.237) \approx
-0.559\).</p>
-<p><strong>손실</strong>: \(L = \frac{1}{2}(a_2-y)^2 = \frac{1}{2}(0.559-1)^2 \approx
-0.097\).</p>
-<p><strong>역전파</strong>: \(\delta_2 = (a_2-y)\sigma’(z_2) \approx ({-}0.441)\times
-0.559\times(1-0.559) \approx {-}0.109\). \(\delta_1 = W_2\delta_2 \odot
-\sigma’(z_1) \approx (0.7\times({-}0.109), -0.6\times({-}0.109)) \odot
-(0.229, 0.249) \approx ({-}0.017,\ 0.016)\). 그래디언트는
-\(\frac{\partial L}{\partial W_2} \approx \delta_2 \cdot a_1 \approx
-({-}0.070,\ {-}0.057)\), \(\frac{\partial L}{\partial W_1} \approx x
-\otimes \delta_1\)(\(x_2=0\)이므로 두 번째 행은 0) \(\approx
-\begin{bmatrix}{-}0.017&amp;0.016\\0&amp;0\end{bmatrix}\)다(스크래치패드에서
-전체 자릿수까지 검증). 학습률 \(\alpha=0.5\)로 한 스텝 갱신하면 손실이
-\(0.097\)에서 \(0.087\)로 줄어든다 — 은닉층 가중치(\(W_1\))까지
-정확히 한 번의 역전파로 갱신됐다는 것이 이 계산의 핵심이다.</p>
-<h3 id="실습-numpy로-2층-신경망을-만들어-xor을-실제로-풀기"><a class="header" href="#실습-numpy로-2층-신경망을-만들어-xor을-실제로-풀기">실습: numpy로 2층 신경망을 만들어 XOR을 실제로 풀기</a></h3>
-<pre><code class="language-python">import math, random
+                        <h1 id="133-포스트트레이닝-sft-rlhf-dpo"><a class="header" href="#133-포스트트레이닝-sft-rlhf-dpo">13.3 포스트트레이닝: SFT, RLHF, DPO</a></h1>
+<h3 id="사전학습만으로는-부족한-이유"><a class="header" href="#사전학습만으로는-부족한-이유">사전학습만으로는 부족한 이유</a></h3>
+<p>2022년, OpenAI는 InstructGPT 논문에서 놀라운 관찰을 보고했다 — 파라미터가
+100배 더 적은 모델이라도, 사람이 원하는 방식으로 다듬어졌다면 사전학습만
+거친 거대 모델보다 사람들이 훨씬 더 선호했다. 13.1절의 사전학습(다음
+토큰 예측)은 “그럴듯한 텍스트“를 만들어내지만, 그게 곧 “사람이 원하는
+대답“이라는 보장은 없다 — 사전학습 데이터에는 훌륭한 글도, 엉뚱하거나
+무례한 글도 섞여 있기 때문이다. 여기서부터는 사전학습된 모델을 “사람이
+실제로 원하는 방향“으로 다듬는 <strong>포스트트레이닝</strong> 단계를 다룬다.</p>
+<p><strong>SFT(지도 파인튜닝, Supervised Fine-Tuning)</strong>: 가장 단순한
+포스트트레이닝이다 — 사람이 직접 작성한 “이상적인 (질문, 답변)” 쌍을 모아,
+13.1절의 다음 토큰 예측 손실 그대로, 다만 데이터가 인터넷 텍스트가 아니라
+사람이 직접 쓴 고품질 예시로 바뀐다. 문제는 확장성이다: “좋은 답변이
+무엇인가“를 사람이 매번 처음부터 <strong>작성</strong>하는 것은 비용이 크다.</p>
+<h3 id="rlhf-작성-대신-비교로-보상모델을-학습한다"><a class="header" href="#rlhf-작성-대신-비교로-보상모델을-학습한다">RLHF: 작성 대신 비교로 보상모델을 학습한다</a></h3>
+<p><strong>RLHF</strong>(Reinforcement Learning from Human Feedback)는 다른 전략을
+쓴다 — 사람이 매번 “정답“을 새로 쓰는 대신, 모델이 만든 <strong>여러 답변 중
+어느 쪽이 더 나은지 고르기만</strong> 하면 된다(비교가 작성보다 훨씬 쉽고
+빠르다). 이 선호 데이터로 <strong>보상모델</strong>(Reward Model)을 학습시킨 뒤, 그
+보상모델의 점수를 최대화하도록 언어모델 자체를 조정한다.</p>
+<p><strong>1단계 — 보상모델 학습</strong>: 같은 질문 \(x\)에 대해 모델이 만든 두 답변
+\(y_w\)(사람이 더 선호한 쪽, winner)와 \(y_l\)(덜 선호한 쪽,
+loser)이 있을 때, 보상모델 \(r_\phi(x,y)\)가 \(y_w\)에 더 높은
+점수를 주도록 학습한다. 브래들리-테리 모델(Bradley-Terry model)은 이
+선호 확률을 시그모이드로 모델링한다:</p>
+<p>\[P(y_w \succ y_l \mid x) = \sigma\big(r_\phi(x,y_w) - r_\phi(x,y_l)\big)\]</p>
+<p>이 확률을 최대화하는 손실은 <strong>정확히 Chapter 2의 로지스틱회귀와 같은
+교차 엔트로피 형태</strong>다 — “정답 라벨“이 “\(y_w\)가 이겼다“는 사실
+하나뿐인 이진분류 문제이기 때문이다:</p>
+<pre><code class="language-python">import math
 
-def sigmoid(x):
-    return 1 / (1 + math.exp(-x))
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
 
-def sigmoid_prime(x):
-    s = sigmoid(x)
-    return s * (1 - s)
-
-def two_layer_forward(x, W1, b1, W2, b2):
-    z1 = [sum(W1[i][j] * x[j] for j in range(len(x))) + b1[i] for i in range(len(b1))]
-    a1 = [sigmoid(v) for v in z1]
-    z2 = sum(W2[i] * a1[i] for i in range(len(a1))) + b2
-    a2 = sigmoid(z2)
-    return a2, (x, z1, a1, z2, a2)
-
-def two_layer_backward(y_true, cache, W2):
-    x, z1, a1, z2, a2 = cache
-    delta2 = (a2 - y_true) * sigmoid_prime(z2)
-    delta1 = [W2[i] * delta2 * sigmoid_prime(z1[i]) for i in range(len(z1))]
-    grad_W2 = [delta2 * a1[i] for i in range(len(a1))]
-    grad_b2 = delta2
-    grad_W1 = [[delta1[i] * x[j] for j in range(len(x))] for i in range(len(delta1))]
-    grad_b1 = delta1
-    return grad_W1, grad_b1, grad_W2, grad_b2
+def reward_model_loss(r_win, r_lose):
+    # Bradley-Terry: P(y_w &gt; y_l) = sigmoid(r_win - r_lose)
+    return -math.log(sigmoid(r_win - r_lose))
 </code></pre>
-<p>이 함수들로 XOR 데이터 4개(<code>[0,0]→0, [0,1]→1, [1,0]→1, [1,1]→0</code>)를
-은닉 유닛 4개짜리 신경망으로 5000 에폭 학습시키면(무작위 초기화,
-<code>numpy</code>로 벡터화한 버전을 스크래치패드에서 실행 검증):</p>
-<pre><code>최종 예측: [0.093, 0.911, 0.903, 0.103]
-반올림:    [0,     1,     1,     0    ]
-</code></pre>
-<p>정답 XOR 패턴(0, 1, 1, 0)과 정확히 일치한다 — 로지스틱회귀 혼자서는
-영원히 풀 수 없었던 문제를, 은닉층 하나와 역전파만으로 풀어낸 것이다.
-PyTorch/TensorFlow는 <code>.backward()</code> 한 줄로 이 모든 미분을 자동으로
-계산해준다(자동 미분, automatic differentiation). 하지만 그 자동 미분이
-내부에서 정확히 무엇을 하는지 모르면, 9.2절에서 볼 그래디언트가 사라지는
-문제를 마주쳤을 때 원인을 진단할 방법이 없다 — 이번 장 연습문제의
-목적은 라이브러리가 대신 해주는 그 연쇄법칙을, 딱 한 번은 손으로 끝까지
-따라가 보는 것이다.</p>
+<p><strong>2단계 — 강화학습으로 정책 학습</strong>: 보상모델이 준비되면, 언어모델을
+“질문 \(x\)라는 상태에서, 답변 \(y\)라는 행동을 순차적으로(토큰
+하나씩) 고르는 정책(policy)“으로 취급하고, 보상모델의 점수
+\(r_\phi(x,y)\)를 보상 삼아 <strong>강화학습</strong>(Reinforcement Learning, 상태·
+행동·보상으로 이루어진 문제를 다루는 학습 방식 — 이번 학기에서는 다루지
+않고, ML2가 전문으로 다룬다)으로 언어모델의 파라미터를 조정한다. 이때
+가장 널리 쓰이는 알고리즘이 <strong>PPO</strong>(Proximal Policy Optimization)다.
+자세한 유도는 ML2에서 다루지만, 여기서는 목적함수의 형태만 짚어본다:</p>
+<p>\[J(\theta) = \mathbb{E}\left[r_\phi(x,y)\right] - \beta , D_{KL}\big(\pi_\theta(\cdot|x) ,|, \pi_{\text{ref}}(\cdot|x)\big)\]</p>
+<p>왜 뒤쪽의 페널티 항이 필요한가: 보상모델도 결국 근사에 불과하므로, 정책이
+보상모델의 허점을 악용해 점수만 높이고 실제로는 이상한 텍스트를 만들어낼
+위험이 있다(<strong>보상 해킹</strong>, reward hacking). 사전학습된 원래 모델(SFT
+모델) \(\pi_{\text{ref}}\)에서 너무 멀리 벗어나지 않도록 KL 발산
+페널티(Chapter 2.3에서 도입한 그 개념)로 묶어두면, “말이 되는 문장” 안에서만
+보상을 높이도록 제약할 수 있다.</p>
+<h3 id="dpo-peftlora-에이전트rag-개관"><a class="header" href="#dpo-peftlora-에이전트rag-개관">DPO, PEFT/LoRA, 에이전트·RAG 개관</a></h3>
+<p><strong>DPO</strong>(Direct Preference Optimization, 2023): RLHF는 (1) 보상모델을
+따로 학습하고 (2) 그 보상모델로 강화학습을 돌리는 2단계 과정이라 복잡하고
+불안정할 수 있다. DPO는 수학적으로, RLHF 목적함수의 최적 정책이 보상함수를
+\(\pi_\theta\)와 \(\pi_{\text{ref}}\)의 비율로 직접 표현할 수 있음을
+보이고, 그 관계를 보상모델 손실에 대입해 <strong>보상모델도 강화학습 루프도
+없이, 선호 데이터에서 정책을 곧바로 학습</strong>하는 손실을 유도한다 — 즉
+바로 위 RLHF의 2단계 과정 전체를, 지도학습 손실 하나로 대체한다:</p>
+<p>\[\mathcal{L}_{\text{DPO}} = -\log \sigma\left(\beta \log
+\frac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)} - \beta \log
+\frac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\right)\]</p>
+<p>형태를 보면 여전히 위의 보상모델 손실과 똑같은 로지스틱 손실이다 —
+다만 “보상“의 역할을 \(\beta \log(\pi_\theta/\pi_{\text{ref}})\)(정책이
+기준 모델보다 그 답변을 얼마나 더 선호하게 됐는가)이 대신한다. 별도의
+보상모델과 강화학습 루프 없이 지도학습 한 번으로 RLHF와 이론적으로 같은
+지점에 도달한다는 것이 DPO의 매력이다.</p>
+<p><strong>PEFT/LoRA</strong>(Parameter-Efficient Fine-Tuning / Low-Rank Adaptation):
+수십~수백억 개 파라미터 전체를 파인튜닝하는 것은 계산·저장 비용이 크다.
+LoRA는 원래 가중치 \(W\)를 고정한 채, 훨씬 작은 두 저차원 행렬의 곱
+\(\Delta W = BA\)(\(B, A\)의 차원이 \(W\)보다 훨씬 작다)만 학습해서
+\(W + \Delta W\)를 새 가중치로 쓴다 — 학습해야 할 파라미터 수를
+수백 분의 1로 줄이면서도 실전에서 전체 파인튜닝과 비슷한 성능을 낸다.
+Chapter 10.3의 “합성곱 층을 고정하고 분류층만 학습“하는 전이학습과 같은
+정신을 공유하되, “일부 층을 통째로 고정“하는 대신 “모든 층에 아주 작은
+저차원 보정치만 추가로 학습“한다는 점이 다르다.</p>
+<p><strong>에이전트와 RAG</strong>(Retrieval-Augmented Generation): 프롬프팅만으로는
+모델이 모르는 최신 정보나 외부 문서를 답할 수 없다. RAG는 질문과 관련된
+문서를 먼저 검색해 프롬프트에 함께 넣어주고, 에이전트(agent)는 여기서
+한 걸음 더 나아가 모델이 검색·계산기·코드 실행 같은 <strong>도구를 스스로
+호출</strong>하도록 만든다 — 둘 다 “모델의 파라미터 안에 모든 지식을 우겨넣는”
+대신 “모델이 필요할 때 바깥 정보/도구에 접근하게 한다“는 같은 방향의
+해법이다.</p>
+<p><strong>LLM 자체는 새로운 알고리즘이 아니라, Chapter 12에서 배운 Transformer를
+극단적으로 큰 규모로 학습시킨 결과다. 사전학습이 “무엇이든 그럴듯하게
+잇는 법“을 가르친다면, 포스트트레이닝은 그중 “사람이 실제로 원하는
+것“만 골라내는 단계다 — 그리고 그 정교화 과정은 지도학습(SFT, DPO)과
+강화학습(RLHF)이라는 이번 학기에 배운 서로 다른 두 도구가 함께 쓰이는
+자리이기도 하다.</strong></p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
-<p><strong>Q. 은닉층은 왜 하나로 충분한가요, 여러 개는 언제 필요한가요?</strong>
-<strong>보편근사정리</strong>(universal approximation theorem)에 따르면, 은닉층
-하나(뉴런 수를 충분히 늘리면)만으로도 이론적으로 어떤 연속함수든
-근사할 수 있다 — XOR도 예외가 아니다. 하지만 “이론적으로 가능하다“와
-“학습이 쉽다“는 다른 문제다. 실전에서는 은닉층을 여러 개로 쌓는(깊게
-만드는) 쪽이, 같은 표현력을 훨씬 적은 총 뉴런 수로 달성하는 경우가
-많다 — Chapter 10의 CNN, Chapter 12의 트랜스포머 모두 이 “깊이“의
-효율성에 기대고 있다.</p>
-<p><strong>Q. 역전파가 매번 정확히 같은 미분을 계산한다는 걸 어떻게 확신하나요?</strong>
-<strong>수치 미분</strong>(numerical gradient checking)으로 검증할 수 있다 — 가중치
-하나를 아주 작게(\(\epsilon\)) 흔들어서 손실이 얼마나 바뀌는지
-직접 재는 것이다(\(\frac{L(w+\epsilon)-L(w-\epsilon)}{2\epsilon}\)).
-이 값이 역전파로 계산한 그래디언트와 거의 같으면(보통 소수점 몇 자리
-이내), 역전파 구현이 맞다는 증거가 된다 — 새 모델 구조를 직접 구현할
-때 실무에서 흔히 쓰는 디버깅 기법이다.</p>
+<p><strong>Q. SFT만으로는 왜 부족한가요? RLHF/DPO가 꼭 필요한가요?</strong> SFT는
+사람이 작성한 “이상적인 답변“을 그대로 흉내 내도록 가르칠 뿐이라,
+사람이 작성할 수 있는 답변 품질을 넘어서기 어렵다. RLHF/DPO는 “여러
+후보 중 어느 게 더 나은지 비교“하는 훨씬 쉬운 형태의 데이터로부터
+학습하므로, 모델이 사람이 직접 쓰지 않은 새로운 표현이라도 “더 선호될
+만한” 방향을 스스로 탐색할 여지가 생긴다 — 다만 그만큼 학습이
+불안정해질 위험(보상 해킹 등)도 함께 커진다.</p>
+<p><strong>Q. DPO가 RLHF보다 항상 나은가요?</strong> 이론적으로 같은 최적점에
+도달한다고 알려져 있지만, 실전에서는 데이터 품질이나 하이퍼파라미터에
+따라 어느 쪽이 더 나은 결과를 내는지가 갈린다. DPO는 구현이 단순하고
+학습이 안정적이라는 실무적 장점이 커서 최근 널리 채택되지만, RLHF의
+2단계 구조(별도의 보상모델)가 특정 상황(보상 신호를 다른 곳에도
+재사용하고 싶을 때 등)에서는 여전히 유리할 수 있다.</p>
+<hr>
+<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>next_token_distribution</code>을 완성하고(아주
+단순화된 언어모델 시뮬레이션), 위 <code>reward_model_loss</code>와 DPO 손실
+<code>dpo_loss</code>를 작성하라(핵심 줄은 빈칸으로 남겨져 있다고 가정):</p>
+<pre><code class="language-python">def next_token_distribution(corpus_tokens, context_word):
+    # ADD ADDITIONAL CODE HERE!!
+    # context_word가 등장한 모든 위치에서, 바로 다음 토큰을 세어
+    # {다음단어: 확률} 딕셔너리로 반환
+
+corpus = "나는 학교에 간다 나는 집에 간다 나는 학교에 있다".split()
+print(next_token_distribution(corpus, "나는"))
+# {"학교에": 2/3, "집에": 1/3}
+
+import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+def reward_model_loss(r_win, r_lose):
+    # ADD ADDITIONAL CODE HERE!!
+    # -log(sigmoid(r_win - r_lose))
+
+def dpo_loss(logp_win_theta, logp_win_ref, logp_lose_theta, logp_lose_ref, beta):
+    # ADD ADDITIONAL CODE HERE!!
+    # log_ratio_win = beta * (logp_win_theta - logp_win_ref)
+    # log_ratio_lose = beta * (logp_lose_theta - logp_lose_ref)
+    # -log(sigmoid(log_ratio_win - log_ratio_lose))
+
+print(round(reward_model_loss(r_win=2.0, r_lose=-1.0), 3))  # 0.049 -- 잘 구분하면 손실이 작다
+print(round(reward_model_loss(r_win=-1.0, r_lose=2.0), 3))  # 3.049 -- 거꾸로면 손실이 크다
+</code></pre>
+<p><strong>2. (프롬프트 설계 + 개념 서술)</strong> (a) 다음 두 프롬프트 중 어느 쪽이
+chain-of-thought 기법을 쓴 것인지 표시하고, 왜 복잡한 산술/논리 문제에서
+chain-of-thought 프롬프트가 더 정확한 답을 내는 경향이 있는지 설명하라.</p>
+<blockquote>
+<p>(A) “23×17은 얼마인가? 답만 말해줘.”</p>
+<p>(B) “23×17을 계산해줘. 단계별로 어떻게 계산하는지 먼저 보여준 다음
+최종 답을 말해줘.”</p>
+</blockquote>
+<p>(b) RLHF의 목적함수에 있는 KL 발산 페널티를 만약 완전히 없앤다면 어떤
+문제가 생길 수 있는지, “보상 해킹“이라는 용어를 써서 설명하라.</p>
+<p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> 브래들리-테리 손실
+\(\mathcal{L} = -\log\sigma(r_\phi(x,y_w) - r_\phi(x,y_l))\)를
+\(r_\phi(x,y_w)\)로 미분한 결과가, Chapter 2의 로지스틱회귀 손실을
+미분했을 때와 같은 \((\text{예측} - \text{정답})\) 꼴의 그래디언트로
+정리됨을 보여라.</p>
+<p><strong>힌트</strong>: \(z = r_\phi(x,y_w) - r_\phi(x,y_l)\)로 치환하면
+\(\mathcal{L} = -\log\sigma(z)\)이고, 이는 “정답 라벨이 항상 1인”
+로지스틱회귀 손실 \(-\log h_w(x)\)와 정확히 같은 형태다. Chapter
+2.3에서 유도한 \(\frac{d}{dz}(-\log\sigma(z)) = \sigma(z) - 1\)을
+그대로 재사용해서 \(\frac{\partial \mathcal{L}}{\partial
+r_\phi(x,y_w)}\)를 구하라.</p>
+<p><strong>정확성 확인</strong>: 구한 그래디언트의 부호를 보고, 모델이 이미
+\(y_w\)를 확신 있게 선호하고 있을 때(\(\sigma(z) \to 1\))
+그래디언트가 왜 0에 가까워지는지(즉 더 이상 크게 갱신하지 않는지)
+한 문장으로 설명하라.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../ml1/chapter09.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter13/2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../ml1/chapter09/2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter14.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -337,11 +359,11 @@ PyTorch/TensorFlow는 <code>.backward()</code> 한 줄로 이 모든 미분을 �
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../ml1/chapter09.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter13/2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../ml1/chapter09/2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter14.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
