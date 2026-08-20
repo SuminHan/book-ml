@@ -57,6 +57,9 @@
     - [프롬프팅](ml1/chapter13/2.md)
     - [포스트트레이닝: SFT, RLHF, DPO](ml1/chapter13/3.md)
 - [표현학습: PCA, word2vec, Node2Vec, PageRank (Representation Learning)](ml1/chapter14.md)
+    - [PCA: 분산을 최대로 보존하는 축 찾기](ml1/chapter14/1.md)
+    - [word2vec: 단어를 벡터로](ml1/chapter14/2.md)
+    - [Node2Vec과 PageRank](ml1/chapter14/3.md)
 - [잠재변수 생성모델: EM/GMM에서 VAE, GAN, Diffusion까지 (Latent-Variable Generative Models)](ml1/chapter15.md)
 - [Block B 캡스톤: 팀 프로젝트와 ML1 총정리 (Block B Capstone & ML1 Review)](ml1/chapter16.md)
 
