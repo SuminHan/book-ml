@@ -65,6 +65,9 @@
     - [VAE: ELBO와 실습](ml1/chapter15/2.md)
     - [GAN, Diffusion, 그리고 네 원리 비교](ml1/chapter15/3.md)
 - [Block B 캡스톤: 팀 프로젝트와 ML1 총정리 (Block B Capstone & ML1 Review)](ml1/chapter16.md)
+    - [팀 프로젝트: 구조와 발표](ml1/chapter16/1.md)
+    - [Peer-Review](ml1/chapter16/2.md)
+    - [ML1 총정리와 ML2로 가는 길](ml1/chapter16/3.md)
 
 # Machine Learning 2
 
