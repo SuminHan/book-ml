@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>강화학습이란 무엇인가, 그리고 이번 학기 로드맵 - Machine Learning 1/2 (한국어)</title>
+        <title>합성곱, 출력 크기, 파라미터 수와 FLOPs - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,68 +178,105 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="11-강화학습이란-무엇인가-그리고-이번-학기-로드맵"><a class="header" href="#11-강화학습이란-무엇인가-그리고-이번-학기-로드맵">1.1 강화학습이란 무엇인가, 그리고 이번 학기 로드맵</a></h1>
-<h3 id="지도학습과-무엇이-다른가"><a class="header" href="#지도학습과-무엇이-다른가">지도학습과 무엇이 다른가</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th></th><th>지도학습</th><th>강화학습</th></tr>
-</thead>
-<tbody>
-<tr><td>데이터</td><td>미리 주어짐, \((x,y)\) 쌍</td><td>에이전트가 행동하며 스스로 만들어냄</td></tr>
-<tr><td>신호</td><td>정답 \(y\)</td><td>보상(reward) — 얼마나 좋았는지의 점수</td></tr>
-<tr><td>시간</td><td>각 샘플이 독립적</td><td>지금 행동이 미래에 보게 될 상태에 영향을 줌</td></tr>
-<tr><td>새로운 딜레마</td><td>없음</td><td>탐험(exploration) vs 활용(exploitation)</td></tr>
-</tbody>
-</table>
-</div>
-<p>가장 중요한 차이는 <strong>데이터가 미리 주어지지 않는다</strong>는 것이다. 지도학습은
-“이미 모아둔 사진과 라벨“로 학습하지만, 강화학습 에이전트는 지금 이 순간
-어떤 행동을 하느냐에 따라 다음에 어떤 상태를 보게 될지가 달라진다 — 아직
-가보지 않은 길을 시도해볼 것인가(<strong>탐험</strong>), 아니면 지금까지 가장 좋다고
-알려진 선택을 반복할 것인가(<strong>활용</strong>)? 이 완전히 새로운 딜레마가 이번
-학기 내내 형태를 바꿔가며 반복해서 등장한다.</p>
-<h3 id="왜-하필-로봇-시뮬레이션인가"><a class="header" href="#왜-하필-로봇-시뮬레이션인가">왜 하필 로봇 시뮬레이션인가</a></h3>
-<p>강화학습이 실제로 힘을 발휘하는 대표적인 무대가 로봇 제어다 — 관절에 얼마나
-힘을 줄지, 어느 방향으로 움직일지를 사람이 규칙으로 일일이 정해주는 대신,
-시행착오를 통해 “넘어지지 않고 걷는 법“을 스스로 찾아내게 하는 것이다. 이번
-학기는 게임 화면 같은 추상적인 예제뿐 아니라, 실제로 물리 엔진 위에서 로봇을
-움직여보는 시뮬레이션 환경(Chapter 13~14에서 본격적으로 다룬다)을 실습에
-사용한다.</p>
-<h3 id="이번-학기-로드맵"><a class="header" href="#이번-학기-로드맵">이번 학기 로드맵</a></h3>
-<ul>
-<li><strong>Chapter 2~7 (Block A)</strong>: 강화학습의 이론적 뼈대를 표(table) 기반으로
-차근차근 쌓는다 — 멀티암 밴딧에서 시작해, MDP, 동적계획법, 몬테카를로,
-시간차 학습, n-step/적격흔적까지. 이 순서는 강화학습의 표준 교과서인
-Sutton과 Barto의 <em>Reinforcement Learning: An Introduction</em>의 목차를
-그대로 따른다.</li>
-<li><strong>Chapter 8</strong>: Block A 팀 프로젝트와 중간고사 준비.</li>
-<li><strong>Chapter 9~11 (Block B 전반)</strong>: 표 대신 신경망으로 확장하는 심층강화학습
-(DQN)과, Q값을 거치지 않고 정책을 직접 학습하는 정책기반 방법(REINFORCE,
-PPO)까지.</li>
-<li><strong>Chapter 12</strong>: 모방학습과 인간 피드백 — 시행착오 대신 시연이나 선호로부터
-배우는 법.</li>
-<li><strong>Chapter 13~14</strong>: 로봇 시뮬레이션과 제어의 기초, 그리고 더 정교한
-물리엔진(MuJoCo)과 GPU 가속 시뮬레이션(NVIDIA Isaac Sim)까지.</li>
-<li><strong>Chapter 15</strong>: 환경의 모델을 직접 활용하는 모델기반 RL과, 바둑을 정복한
-AlphaGo의 핵심 아이디어인 몬테카를로 트리 탐색(MCTS).</li>
-<li><strong>Chapter 16</strong>: Block B 팀 프로젝트와 학기 총정리.</li>
-</ul>
-<h3 id="이-과목은-ml1과-완전히-독립적이다"><a class="header" href="#이-과목은-ml1과-완전히-독립적이다">이 과목은 ML1과 완전히 독립적이다</a></h3>
-<p>ML1을 듣지 않았어도 이 과목을 바로 시작할 수 있다 — 이번 학기가 필요로 하는
-신경망 지식은 순전파, 역전파, 그리고 경사하강법으로 손실을 줄인다는 감각
-정도이며, 바로 다음 절(1.2)에서 그 핵심만 압축해서 다시 짚는다. (ML1을 먼저
-들었다면 익숙한 내용이니 빠르게 훑고 넘어가도 좋다.)</p>
+                        <h1 id="101-합성곱-출력-크기-파라미터-수와-flops"><a class="header" href="#101-합성곱-출력-크기-파라미터-수와-flops">10.1 합성곱, 출력 크기, 파라미터 수와 FLOPs</a></h1>
+<h3 id="mlp로-이미지를-다루면-안-되는-이유"><a class="header" href="#mlp로-이미지를-다루면-안-되는-이유">MLP로 이미지를 다루면 안 되는 이유</a></h3>
+<p>Chapter 9의 다층 퍼셉트론(MLP)에 이미지를 입력하려면, 가로세로 픽셀을 모두
+펼쳐서 하나의 긴 벡터로 만들어야 한다. 200×200 흑백 이미지만 해도 4만 개의
+입력이고, 첫 은닉층 뉴런이 1000개면 그것만으로 4천만 개의 가중치가 필요하다 —
+게다가 이 방식은 “고양이가 사진 왼쪽 위에 있든 오른쪽 아래에 있든 같은
+고양이“라는 사실을 전혀 활용하지 못한다. 픽셀 하나 위치만 옮겨도 완전히 다른
+입력으로 취급된다.</p>
+<h3 id="합성곱-작은-필터를-온-이미지에-재사용"><a class="header" href="#합성곱-작은-필터를-온-이미지에-재사용">합성곱: 작은 필터를 온 이미지에 재사용</a></h3>
+<p>CNN의 핵심 아이디어는 허블과 비셀이 발견한 것과 같다: 이미지 <strong>전체</strong>를 한
+번에 보는 대신, 작은 필터(예: 3×3)를 이미지 전체에 걸쳐 <strong>똑같이 재사용</strong>하면서
+슬라이드시킨다. \(k \times k\) 필터(커널, kernel)를 입력 위에서 슬라이드시키며,
+각 위치에서 필터와 겹치는 영역의 원소별 곱의 합을 계산한다:</p>
+<pre><code class="language-python">def conv2d(image, kernel):
+    img_h, img_w = len(image), len(image[0])
+    k = len(kernel)
+    out_h, out_w = img_h - k + 1, img_w - k + 1
+    output = [[0.0] * out_w for _ in range(out_h)]
+    for i in range(out_h):
+        for j in range(out_w):
+            total = 0.0
+            for di in range(k):
+                for dj in range(k):
+                    total += image[i+di][j+dj] * kernel[di][dj]
+            output[i][j] = total
+    return output
+</code></pre>
+<p>각 필터는 특정 패턴(수직선, 모서리 등)에 강하게 반응하도록 <strong>학습</strong>된다 —
+필터의 값 자체가 학습 대상 파라미터다. “모서리를 감지하는 필터“는 이미지의
+어느 위치에서든 똑같이 모서리를 감지해야 하므로, 같은 가중치를 위치마다 새로
+배울 필요가 없다 — 이 재사용(파라미터 공유, parameter sharing) 덕분에 MLP보다
+훨씬 적은 파라미터로 훨씬 큰 이미지를 다룰 수 있다.</p>
+<h3 id="출력-크기-공식"><a class="header" href="#출력-크기-공식">출력 크기 공식</a></h3>
+<p>입력 크기 \(n \times n\), 필터 크기 \(k \times k\), 패딩(padding)
+\(p\)(입력 가장자리에 0을 두르는 픽셀 수), 스트라이드(stride) \(s\)(필터가
+한 번에 이동하는 칸 수)일 때, 출력 크기는:</p>
+<p>\[n_{\text{out}} = \left\lfloor \frac{n + 2p - k}{s} \right\rfloor + 1\]</p>
+<p>예: \(n=28, k=3, p=0, s=1\)이면 \(n_{\text{out}} = 28-3+1 = 26\). 패딩
+없이는 필터를 지날 때마다 이미지가 점점 작아진다 — <code>p = (k-1)/2</code>로
+설정하면(<strong>same padding</strong>) 출력 크기를 입력과 같게 유지할 수 있다.</p>
+<h3 id="파라미터-수와-연산량-계산"><a class="header" href="#파라미터-수와-연산량-계산">파라미터 수와 연산량 계산</a></h3>
+<p>\(C_{\text{in}}\)개 입력 채널, \(C_{\text{out}}\)개 출력 채널(즉 필터
+개수), 필터 크기 \(k \times k\)인 합성곱 층의 파라미터 수(bias 포함):</p>
+<p>\[\text{params} = (k \times k \times C_{\text{in}} + 1) \times C_{\text{out}}\]</p>
+<p>이걸 같은 크기의 완전연결층(fully-connected layer, 입력을 펼쳐서 다
+연결)과 비교하면 CNN의 효율이 확연히 드러난다. 예: 32×32×3 이미지, 필터
+3×3, 출력 채널 16개인 합성곱 층은 \((3 \times 3 \times 3 + 1) \times 16 =
+448\)개의 파라미터만 쓴다. 같은 입력을 완전연결층(출력 뉴런도 32×32×16개라
+가정)에 연결하려면 수백만 개가 필요하다.</p>
+<p><strong>연산량(FLOPs)은 파라미터 수와는 다른 질문이다</strong>: 파라미터 수는 “얼마나
+많은 숫자를 저장해야 하는가“를 재지만, 실제 계산 비용(속도)은 “몇 번의
+곱셈-덧셈을 하는가“로 잰다. 출력의 한 위치, 한 채널을 계산하려면 \(k
+\times k \times C_{\text{in}}\)번의 곱셈이 필요하고, 이걸 출력의 모든
+위치(\(n_{\text{out}} \times n_{\text{out}}\)개)와 모든 필터
+(\(C_{\text{out}}\)개)마다 반복하므로:</p>
+<p>\[\text{FLOPs} \approx n_{\text{out}}^2 \times C_{\text{out}} \times (k
+\times k \times C_{\text{in}})\]</p>
+<p>파라미터 수 공식과 거의 똑같이 생겼지만, <strong>파라미터 수엔 없던
+\(n_{\text{out}}^2\)이 곱해진다</strong> — 같은 필터(같은 파라미터)를 출력
+위치마다 재사용하니 파라미터는 적어도, 실제 계산은 그 위치 수만큼 반복해서
+일어나기 때문이다.</p>
+<p>예: 224×224 흑백 이미지(\(C_{\text{in}}=1\))에 3×3 필터 1개
+(\(C_{\text{out}}=1\), 패딩 없음, 스트라이드 1)를 적용하면
+\(n_{\text{out}}=224-3+1=222\)이고:</p>
+<p>\[\text{FLOPs} = 222^2 \times 1 \times (3\times3\times1) = 49{,}284
+\times 9 = 443{,}556\]</p>
+<p>약 44만 번의 곱셈-덧셈이다. 실제 CNN은 필터를 1개가 아니라 수십~수백 개
+쓴다 — 같은 입력에 필터를 64개로 늘리면(\(C_{\text{out}}=64\))
+연산량도 정확히 64배인 약 2,839만 번이 된다. <strong>커널(필터) 개수를 늘리면
+파라미터 수와 연산량이 똑같이 정비례로 늘어난다</strong>는 뜻이다. 실제 CNN은
+이런 합성곱 층을 수십~수백 개 쌓으므로, 전체 연산량은 모델 설계 시
+파라미터 수 못지않게 중요하게 따지는 지표다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch09_cnn_structure.svg" alt="CNN에서 합성곱을 거칠 때마다 공간 크기(가로×세로)는 줄고 채널 수(깊이)는 늘어나는 모습 — 10.1의 연습문제 네트워크(32×32×3 → Conv5×5,6 → Pool2×2 → Conv5×5,16)를 그대로 시각화한 것"><span class="img-wrapper"><img src="../../images/ch09_cnn_structure.svg" alt="CNN에서 합성곱을 거칠 때마다 공간 크기(가로×세로)는 줄고 채널 수(깊이)는 늘어나는 모습 — 10.1의 연습문제 네트워크(32×32×3 → Conv5×5,6 → Pool2×2 → Conv5×5,16)를 그대로 시각화한 것"></span></label></p>
+<h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
+<p><strong>Q. 필터 크기는 왜 보통 홀수(3×3, 5×5)인가요?</strong> 홀수 필터는 정확히
+중심 픽셀이 하나 있어서, “이 필터가 어느 픽셀을 중심으로 패턴을 본다“는
+해석이 자연스럽다 — 짝수 필터(예: 2×2)는 중심이 픽셀과 픽셀 사이에
+걸쳐서 이런 대칭적인 해석이 어려워진다. 실전에서는 3×3 필터를 여러 겹
+쌓는 것이 5×5나 7×7 필터 하나를 쓰는 것보다 같은 수용장을 더 적은
+파라미터로 만들 수 있어(예: 3×3 두 개는 5×5 하나와 같은 수용장을
+\((3\times3\times2)=18\) vs \(5\times5=25\) 파라미터로 만든다) 더
+널리 쓰인다.</p>
+<p><strong>Q. 파라미터가 적으면 항상 좋은 건가요?</strong> 파라미터가 적으면 학습이
+빠르고 과적합(Chapter 6) 위험이 줄어들지만, 표현력도 함께 줄어든다 —
+Chapter 4.1의 편향-분산 트레이드오프가 여기서도 그대로 적용된다. CNN이
+MLP보다 이미지에서 항상 유리한 이유는 단순히 “파라미터가 적어서“가
+아니라, 그 적은 파라미터가 “위치 불변성“이라는 이미지의 실제 구조에
+정확히 맞는 가정(귀납적 편향, inductive bias)을 인코딩하고 있기
+때문이다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../ml2/chapter01.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter10.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../ml2/chapter01/2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter10/2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -249,11 +286,11 @@ AlphaGo의 핵심 아이디어인 몬테카를로 트리 탐색(MCTS).</li>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../ml2/chapter01.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter10.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../ml2/chapter01/2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter10/2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
