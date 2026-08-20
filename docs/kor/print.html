@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8b231159.js";
+            window.path_to_searchindex_js = "searchindex-d108fd5f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-641018a6.js"></script>
+        <script src="toc-acf17bc4.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -8602,7 +8602,15 @@ print(round(reward_model_loss(2.0, -1.0), 3))  # 0.049
 마찰)을 거쳐 로봇을 움직인다는 사실까지 감안해야 한다. 이번 장은
 Chapter 9~12에서 배운 알고리즘들을 실제로 적용해볼 로봇 시뮬레이션의
 기초 개념을 다룬다.</p>
-<h2 id="131-로봇공학-기초-개념-상태공간과-운동학"><a class="header" href="#131-로봇공학-기초-개념-상태공간과-운동학">13.1 로봇공학 기초 개념: 상태공간과 운동학</a></h2>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#131-로봇공학-기초와-sim-to-real">13.1 로봇공학 기초와 Sim-to-Real</a></li>
+<li><a href="#132-로봇-환경-탐색-실습">13.2 로봇 환경 탐색 실습</a></li>
+<li><a href="#133-연속제어환경에-ppo-적용하기">13.3 연속제어환경에 PPO 적용하기</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="131-로봇공학-기초와-sim-to-real"><a class="header" href="#131-로봇공학-기초와-sim-to-real">13.1 로봇공학 기초와 Sim-to-Real</a></h1>
+<h3 id="로봇공학-기초-개념-상태공간과-운동학"><a class="header" href="#로봇공학-기초-개념-상태공간과-운동학">로봇공학 기초 개념: 상태공간과 운동학</a></h3>
 <p>로봇의 상태는 보통 각 관절의 <strong>각도</strong>와 <strong>각속도</strong>로 표현된다 — 2관절
 로봇 팔이라면 상태는 \((\theta_1, \theta_2, \dot\theta_1,
 \dot\theta_2)\)처럼 4차원 벡터가 된다. <strong>정기구학</strong>(forward
@@ -8613,7 +8621,7 @@ kinematics)은 이 관절 각도들로부터 팔 끝(end-effector)의 실제 위
 것은 단 하나다: <strong>상태와 행동이 이제 물리적으로 의미 있는 연속값이라는
 것</strong>이다 — Chapter 3.1에서 배운 MDP의 \(\mathcal{S}, \mathcal{A}\)가
 이제 추상적인 기호가 아니라 실제 각도·힘의 단위를 갖는다.</p>
-<h2 id="132-시뮬레이션이-필요한-이유-sim-to-real"><a class="header" href="#132-시뮬레이션이-필요한-이유-sim-to-real">13.2 시뮬레이션이 필요한 이유: sim-to-real</a></h2>
+<h3 id="시뮬레이션이-필요한-이유-sim-to-real"><a class="header" href="#시뮬레이션이-필요한-이유-sim-to-real">시뮬레이션이 필요한 이유: sim-to-real</a></h3>
 <p>실물 로봇으로 강화학습을 직접 학습시키면 몇 가지 현실적인 문제에
 부딪힌다 — 수만 번의 시행착오 동안 로봇이 고장 나거나, 사람에게 위험할
 수 있고, 무엇보다 <strong>느리다</strong>(물리 세계는 컴퓨터 시뮬레이션보다 훨씬
@@ -8632,7 +8640,24 @@ randomization) — 시뮬레이션의 물리 파라미터(마찰, 질량, 조명
 “모델을 덜 유연하게 만들어 분산을 줄인다“는 것과 비슷하게, 여기서는
 “환경 자체를 다양화해서 정책이 특정 시뮬레이션 설정에 과적합하지
 않게 만든다.”</p>
-<h2 id="133-gymnasiumpybullet-로봇-환경"><a class="header" href="#133-gymnasiumpybullet-로봇-환경">13.3 Gymnasium/PyBullet 로봇 환경</a></h2>
+<h3 id="자주-묻는-질문-72"><a class="header" href="#자주-묻는-질문-72">자주 묻는 질문</a></h3>
+<p><strong>Q. 상태공간이 “물리적으로 의미 있다“는 게 왜 중요한가요?</strong>
+CartPole이나 GridWorld 같은 장난감 환경에서는 상태가 추상적인
+숫자여도 상관없었지만, 로봇 제어에서는 상태(관절 각도)와 행동(토크)의
+물리적 단위·범위가 실제 하드웨어의 한계와 직결된다 — 예를 들어
+학습된 정책이 물리적으로 불가능한 토크를 요구하면 실물 로봇에
+적용할 수 없다. Chapter 10.1 FAQ에서 배운 연속 행동공간의 정책이
+출력하는 평균·표준편차도, 이 물리적 범위(<code>action_space.low/high</code>)
+안으로 제한하는 후처리가 항상 필요하다.</p>
+<p><strong>Q. 도메인 무작위화는 항상 도움이 되나요?</strong> 너무 과하면 오히려
+학습이 어려워질 수 있다 — 물리 파라미터를 극단적으로 넓은 범위로
+무작위화하면, 정책이 “모든 가능한 물리 조건“이라는 지나치게 어려운
+문제를 풀어야 해서 학습 자체가 느려지거나 불안정해질 수 있다.
+Chapter 6(ML1)의 정규화 강도(\(\lambda\))처럼, 무작위화의 범위도
+“너무 좁으면 현실 격차가 안 줄고, 너무 넓으면 학습 자체가 어려워지는”
+트레이드오프가 있는 하이퍼파라미터다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="132-로봇-환경-탐색-실습"><a class="header" href="#132-로봇-환경-탐색-실습">13.2 로봇 환경 탐색 실습</a></h1>
 <p>이번 학기 실습은 Gymnasium이 제공하는 로봇류 환경으로 진행한다 — 이미
 Chapter 1과 9에서 쓴 CartPole·Pendulum도 사실 아주 단순화된 “로봇
 제어” 문제다(막대의 균형을 잡는 것, 진자를 세우는 것 모두 관절 제어의
@@ -8663,13 +8688,68 @@ env.close()
 목표는 이런 손으로 설계한 제어기보다 더 나은, 또는 사람이 규칙으로
 설계하기 어려운 상황에서도 작동하는 정책을 데이터로부터 직접 찾아내는
 것</strong>이다.</p>
-<h2 id="134-연속제어에-ppo-적용하기"><a class="header" href="#134-연속제어에-ppo-적용하기">13.4 연속제어에 PPO 적용하기</a></h2>
+<h3 id="로봇팔사족보행-환경-탐색하기"><a class="header" href="#로봇팔사족보행-환경-탐색하기">로봇팔·사족보행 환경 탐색하기</a></h3>
+<p>Pendulum이 관절 하나짜리 가장 단순한 문제였다면, 이제 관절이 여러 개인
+진짜 “로봇” 환경을 살펴보자. Gymnasium은 MuJoCo 물리엔진(다음 장에서
+자세히 다룬다) 기반의 로봇 환경을 여러 개 제공한다 — <code>Reacher-v5</code>(2관절
+로봇팔이 목표 지점에 끝을 맞추는 과제)와 <code>Ant-v5</code>(다리 4개짜리
+사족보행 로봇이 앞으로 걷는 과제)를 살펴보자:</p>
+<pre><code class="language-python">import gymnasium as gym
+
+for name in ["Reacher-v5", "Ant-v5"]:
+    env = gym.make(name)
+    print(name, "상태공간:", env.observation_space.shape,
+          "행동공간:", env.action_space.shape, env.action_space.low[:2], env.action_space.high[:2])
+    obs, info = env.reset(seed=0)
+    total_reward = 0.0
+    for _ in range(100):
+        a = env.action_space.sample()  # 아직 학습 전이므로 무작위 행동
+        obs, r, term, trunc, info = env.step(a)
+        total_reward += r
+        if term or trunc:
+            break
+    print(f"  무작위 정책 100스텝 누적 보상: {total_reward:.2f}")
+    env.close()
+</code></pre>
+<p>실행 결과(스크래치패드에서 검증):</p>
+<pre><code>Reacher-v5 상태공간: (10,) 행동공간: (2,) [-1. -1.] [1. 1.]
+  무작위 정책 100스텝 누적 보상: -41.60
+
+Ant-v5 상태공간: (105,) 행동공간: (8,) [-1. -1.] [1. 1.]
+  무작위 정책 100스텝 누적 보상: -4.07
+</code></pre>
+<p>Reacher는 상태 10차원(관절 각도·각속도 + 목표 위치)에 행동 2차원(두
+관절의 토크), Ant는 상태 105차원(몸통·다리 8개 관절의 자세 정보)에
+행동 8차원(다리 8개 관절의 토크)이다 — Chapter 9~11에서 다룬
+CartPole(상태 4차원, 행동 2개 중 선택)이나 Pendulum(상태 3차원,
+행동 1차원)과 비교하면 상태·행동공간이 훨씬 크고 복잡하다는 것을
+숫자로 바로 체감할 수 있다. 이런 고차원 연속 제어 문제에서, “Q값의
+최댓값을 찾는다“는 Chapter 9의 DQN 접근이 왜 어려워지는지(행동
+8차원의 연속공간 전체에서 최댓값을 찾아야 한다)와, Chapter 10~11의
+정책기반 방법이 왜 이런 문제의 표준이 되는지가 자연스럽게 이어진다.</p>
+<h3 id="자주-묻는-질문-73"><a class="header" href="#자주-묻는-질문-73">자주 묻는 질문</a></h3>
+<p><strong>Q. PyBullet과 MuJoCo 중 뭘 써야 하나요?</strong> 둘 다 물리 시뮬레이션
+엔진이고 Gymnasium이 양쪽 다 지원한다 — MuJoCo는 계산 정확도(특히
+접촉·마찰)가 높아 최근 연구에서 더 널리 쓰이고, <code>pip install gymnasium[mujoco]</code>만으로 별도 컴파일 없이 설치되는 것도 장점이다.
+PyBullet은 오픈소스로 시작해 접근성이 좋았지만, 최근에는 MuJoCo가
+무료로 공개되면서 연구·실습 표준이 MuJoCo 쪽으로 많이 옮겨갔다 —
+이번 학기 로봇 실습은 MuJoCo를 기본으로 진행한다(Chapter 14에서
+물리엔진 자체를 더 자세히 비교한다).</p>
+<p><strong>Q. Reacher와 Ant의 상태·행동공간 크기가 왜 이렇게 다른가요?</strong>
+자유도(degree of freedom)의 차이다 — Reacher는 팔 관절이 2개뿐이라
+“팔 끝을 목표에 맞춘다“는 비교적 단순한 문제지만, Ant는 다리 4개
+(각 다리에 관절 2개씩, 총 8개)를 조율해서 균형을 잡으며 걸어야
+하므로 상태·행동공간 모두 훨씬 크다 — 몸에 붙은 관절이 많을수록
+“동시에 조율해야 하는 변수“가 늘어난다는 점이, 로봇 제어가 왜 어려운
+문제인지를 가장 직접적으로 보여준다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="133-연속제어환경에-ppo-적용하기"><a class="header" href="#133-연속제어환경에-ppo-적용하기">13.3 연속제어환경에 PPO 적용하기</a></h1>
 <p>Chapter 11의 PPO는 이산 행동(softmax 정책)뿐 아니라 연속 행동에도
 자연스럽게 확장된다 — 신경망이 각 행동 차원마다 정규분포의 평균과
 표준편차를 출력하도록 하면 된다:</p>
 <p>\[\pi_\theta(a|s) = \mathcal{N}(a; \mu_\theta(s), \sigma_\theta(s)^2)\]</p>
 <p>로그 확률 \(\log \pi_\theta(a|s)\)은 정규분포의 확률밀도함수에서
-바로 계산되며, Chapter 10.4의 로그미분 트릭과 Chapter 11의 클리핑
+바로 계산되며, Chapter 10.1의 로그미분 트릭과 Chapter 11.2의 클리핑
 목적함수는 이산/연속 여부와 무관하게 형태가 그대로 유지된다 — “행동을
 어떻게 파라미터화하는가“만 바뀔 뿐, 그 뒤의 최적화 기계는 동일하다는
 것이 정책기반 방법의 큰 장점이다.</p>
@@ -8679,6 +8759,40 @@ def gaussian_log_prob(action, mu, sigma):
     # 연속 행동에 대한 로그 확률 -- softmax 대신 정규분포를 쓴다는 점만 다르다
     return -0.5 * math.log(2 * math.pi * sigma**2) - (action - mu)**2 / (2 * sigma**2)
 </code></pre>
+<h3 id="실습-reacher-로봇팔에서-ppo-학습시키기"><a class="header" href="#실습-reacher-로봇팔에서-ppo-학습시키기">실습: Reacher 로봇팔에서 PPO 학습시키기</a></h3>
+<p>Chapter 11.2의 Pendulum PPO 실습과 완전히 같은 코드(<code>GaussianPolicy</code>,
+<code>ValueNet</code>, GAE, 클리핑 손실)를 이번 절에서 다룬 <code>Reacher-v5</code>(2관절
+로봇팔이 목표에 끝을 맞추는 과제)에 그대로 적용해보자 — 환경 이름만
+바뀔 뿐 알고리즘 코드는 한 줄도 안 바뀐다는 것이 정책기반 방법의
+범용성을 다시 한번 보여준다. 100번의 반복(반복당 200 스텝, 총 2만
+스텝) 학습시키면(스크래치패드에서 실행 검증):</p>
+<pre><code>무작위 정책 평균 리턴(10 에피소드):    -43.72
+학습 전 10 에피소드 평균 리턴:         -45.85
+학습 후 마지막 10 에피소드 평균 리턴:  -37.40
+</code></pre>
+<p>무작위 정책(-43.72)과 학습 극초반(-45.85)이 거의 비슷한 수준에서
+시작해, 2만 스텝의 짧은 학습만으로도 -37.40까지 개선됐다 — 약
+18% 향상이다. Chapter 11.2의 Pendulum 실습(12만 스텝, 약 30%
+개선)과 비교하면 개선 폭이 더 작은데, 이는 Reacher가 상태·행동공간이
+더 복잡하고(13.2절에서 확인한 대로) 목표 지점이 매 에피소드 무작위로
+바뀌어 문제 자체가 더 어렵기 때문이다 — 실전 로봇 학습에서 수백만
+스텝 단위의 훈련 시간을 계획하는 이유가 바로 이렇게 문제가 복잡해질수록
+필요한 데이터도 함께 늘어나기 때문이다.</p>
+<h3 id="자주-묻는-질문-74"><a class="header" href="#자주-묻는-질문-74">자주 묻는 질문</a></h3>
+<p><strong>Q. 왜 같은 PPO 코드를 Pendulum과 Reacher에 그대로 쓸 수 있나요?</strong>
+PPO의 신경망 구조(<code>GaussianPolicy</code>, <code>ValueNet</code>)는 입력 차원(상태
+차원)과 출력 차원(행동 차원)만 환경에 맞게 바뀌면 되고, 나머지
+로직(GAE 계산, 클리핑 손실)은 상태·행동이 무엇을 의미하는지 전혀
+몰라도 작동한다 — Chapter 9.1에서 배운 “함수근사“의 일반성이 여기서도
+그대로 발휘된다. 이것이 심층강화학습이 다양한 로봇 문제에 재사용 가능한
+이유다.</p>
+<p><strong>Q. 학습 스텝을 늘리면 얼마나 더 좋아질까요?</strong> 일반적으로 계속
+개선되지만 수익 체감(diminishing returns)이 있다 — 처음 몇만 스텝은
+“완전히 무작위” 상태에서 “그럴듯한” 상태로 빠르게 개선되지만, 그
+이후 “그럴듯함“에서 “정교함“으로 가는 데는 훨씬 더 많은 스텝이
+필요한 경우가 많다. 실전에서는 검증 곡선이 평평해지는 지점을 보고
+학습을 멈추거나(Chapter 6(ML1)의 조기 종료와 같은 원리), 계산 예산
+안에서 가능한 만큼 학습시킨다.</p>
 <p><strong>로봇 시뮬레이션은 지금까지 배운 알고리즘(DQN, PPO)을 “실제 물리
 법칙이 지배하는 연속 행동공간“이라는 더 현실적인 무대로 옮기는 시험대다
 — 다음 장에서는 이 시뮬레이션을 더 정교한 물리엔진으로, 그리고 대규모
