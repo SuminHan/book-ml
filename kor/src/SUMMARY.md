@@ -128,4 +128,7 @@
     - [NVIDIA Isaac Sim과 GPU 가속의 원리](ml2/chapter14/2.md)
     - [어떤 도구를 언제 쓰는가](ml2/chapter14/3.md)
 - [모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL & Monte Carlo Tree Search)](ml2/chapter15.md)
+    - [모델기반 RL 개관: Dyna-Q 재조명과 "공짜 모델"](ml2/chapter15/1.md)
+    - [몬테카를로 트리 탐색: 이론과 실습](ml2/chapter15/2.md)
+    - [멀티에이전트 RL 개관 (선택)](ml2/chapter15/3.md)
 - [Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone & Semester Review)](ml2/chapter16.md)
