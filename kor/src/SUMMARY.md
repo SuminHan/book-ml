@@ -132,3 +132,6 @@
     - [몬테카를로 트리 탐색: 이론과 실습](ml2/chapter15/2.md)
     - [멀티에이전트 RL 개관 (선택)](ml2/chapter15/3.md)
 - [Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone & Semester Review)](ml2/chapter16.md)
+    - [팀 프로젝트: 발표](ml2/chapter16/1.md)
+    - [Peer-Review](ml2/chapter16/2.md)
+    - [ML2 총정리와 학기를 넘어서](ml2/chapter16/3.md)
