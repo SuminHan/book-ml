@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-e893437a.js";
+            window.path_to_searchindex_js = "searchindex-94dfb01b.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-fb15667c.js"></script>
+        <script src="toc-330ee423.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -8165,7 +8165,15 @@ on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그
 제안한 <strong>PPO</strong>(Proximal Policy Optimization, Schulman 외)는 데이터를
 몇 번 더 재사용하면서도, 정책이 한 번에 너무 멀리 움직이지 못하게 막는
 실용적인 해법이다.</p>
-<h2 id="111-신뢰-영역이라는-직관"><a class="header" href="#111-신뢰-영역이라는-직관">11.1 신뢰 영역이라는 직관</a></h2>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#111-신뢰-영역과-확률비">11.1 신뢰 영역과 확률비</a></li>
+<li><a href="#112-ppo-클리핑과-연속-제어-실습">11.2 PPO 클리핑과 연속 제어 실습</a></li>
+<li><a href="#113-gae와-ppo가-표준이-된-이유">11.3 GAE와 PPO가 표준이 된 이유</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="111-신뢰-영역과-확률비"><a class="header" href="#111-신뢰-영역과-확률비">11.1 신뢰 영역과 확률비</a></h1>
+<h3 id="신뢰-영역이라는-직관"><a class="header" href="#신뢰-영역이라는-직관">신뢰 영역이라는 직관</a></h3>
 <p>산을 내려갈 때 안개가 껴서 한 치 앞만 보인다고 하자. 경사가 가장 가파른
 방향으로 무작정 큰 걸음을 내디디면, 그 방향의 지형이 어떻게 바뀌는지도
 모른 채 절벽으로 떨어질 수 있다. 안전한 전략은 “한 걸음의 크기를 믿을
@@ -8173,7 +8181,7 @@ on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그
 PPO의 핵심 아이디어가 바로 이것이다. 정책이 한 번의 업데이트로 너무
 크게 바뀌지 않도록 제약을 걸어서, 매 스텝이 실제로 개선을 보장하는
 좁은 범위 안에서만 이동하게 한다.</p>
-<h2 id="112-확률비와-중요도-샘플링"><a class="header" href="#112-확률비와-중요도-샘플링">11.2 확률비와 중요도 샘플링</a></h2>
+<h3 id="확률비와-중요도-샘플링"><a class="header" href="#확률비와-중요도-샘플링">확률비와 중요도 샘플링</a></h3>
 <p>핵심 도구는 <strong>확률비</strong>(probability ratio)다 — 지금 업데이트하려는
 정책 \(\pi_\theta\)와, 데이터를 모을 때 썼던 정책
 \(\pi_{\theta_{\text{old}}}\)가 같은 행동에 부여하는 확률의 비다:</p>
@@ -8181,32 +8189,31 @@ PPO의 핵심 아이디어가 바로 이것이다. 정책이 한 번의 업데�
 \quad r_t(\theta_{\text{old}}) = 1\]</p>
 <p>\(r_t\)가 1보다 크면 그 행동을 전보다 더 선호하게 됐다는 뜻, 1보다
 작으면 덜 선호한다는 뜻이다. 이 비율을 쓰면 “옛 정책이 모은 데이터“를
-“새 정책 관점에서” 재사용할 수 있다(<strong>중요도 샘플링</strong> — Chapter 5.4에서
+“새 정책 관점에서” 재사용할 수 있다(<strong>중요도 샘플링</strong> — Chapter 5.3에서
 MC의 off-policy 학습에 처음 등장했던 바로 그 도구가 여기서 다시
 쓰인다):</p>
 <p>\[L^{IS}(\theta) = \mathbb{E}_t[r_t(\theta) A_t]\]</p>
-<p>\(A_t\)는 Chapter 10.7에서 정의한 어드밴티지, \(A_t := G_t -
+<p>\(A_t\)는 Chapter 10.3에서 정의한 어드밴티지, \(A_t := G_t -
 V(s_t)\)다. 문제는 이 목적함수를 그냥 최대화하면 \(r_t\)가
 한없이 커지도록(같은 행동만 계속 더 밀어주도록) 학습이 폭주할 수
 있다는 것이다 — 데이터는 재사용되지만, “정책이 너무 멀리 움직이지
 않는다“는 보장은 어디에도 없다.</p>
-<h2 id="113-gae-어드밴티지를-더-안정적으로-추정하기"><a class="header" href="#113-gae-어드밴티지를-더-안정적으로-추정하기">11.3 GAE: 어드밴티지를 더 안정적으로 추정하기</a></h2>
-<p>Chapter 10.7의 어드밴티지 \(A_t = G_t - V(s_t)\)는 실제 리턴 \(G_t\)를
-그대로 쓰므로 여전히 분산이 크다. <strong>GAE</strong>(Generalized Advantage
-Estimation)는 Chapter 7의 n-step/적격흔적과 정확히 같은 아이디어를
-어드밴티지 추정에 적용한다 — 여러 \(n\)-step 어드밴티지 추정치를
-\(\lambda\)로 가중평균해서, 분산은 낮추되 편향은 적당히만 감수하는
-절충점을 찾는다:</p>
-<p>\[A_t^{\text{GAE}} = \sum_{k=0}^\infty (\gamma\lambda)^k \delta_{t+k},
-\qquad \delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)\]</p>
-<p>\(\delta_t\)는 Chapter 6.1의 TD 오차 그 자체다 — GAE는 결국 “여러
-시점의 TD 오차를 적격흔적처럼 지수적으로 가중합해서 하나의 어드밴티지
-추정치를 만든다“는 것으로 요약된다. \(\lambda=0\)이면 TD(0) 기반
-어드밴티지(분산 작고 편향 큼), \(\lambda=1\)이면 몬테카를로 기반
-어드밴티지(편향 없고 분산 큼)에 가까워진다 — Chapter 7.2의 다이얼이
-여기서도 그대로 등장한다. 실전 PPO 구현은 거의 항상 GAE로 계산한
-\(A_t\)를 쓴다.</p>
-<h2 id="114-클리핑-너무-멀리-못-가게-막기"><a class="header" href="#114-클리핑-너무-멀리-못-가게-막기">11.4 클리핑: 너무 멀리 못 가게 막기</a></h2>
+<h3 id="자주-묻는-질문-67"><a class="header" href="#자주-묻는-질문-67">자주 묻는 질문</a></h3>
+<p><strong>Q. \(r_t(\theta_{\text{old}})=1\)이 항상 성립하는 이유는
+무엇인가요?</strong> 방금 데이터를 모은 시점에는 “지금 정책“과 “데이터를
+모은 정책“이 완전히 같으므로, 같은 행동에 부여하는 확률도 당연히
+같다(비율이 1) — 그 이후 몇 번의 경사 상승 스텝을 거치며 \(\theta\)가
+\(\theta_{\text{old}}\)에서 조금씩 멀어지면서 \(r_t\)가 1에서
+벗어나기 시작한다.</p>
+<p><strong>Q. 중요도 샘플링 하나만으로는 왜 부족한가요?</strong> Chapter 5.3에서
+배운 것처럼 중요도 샘플링 자체는 “옛 데이터를 새 정책 관점으로
+재가중“할 뿐, 그 재가중이 만드는 그래디언트의 크기에는 아무 제약이
+없다 — 극단적으로 \(r_t\)가 매우 커지면 그 한 샘플이 전체
+업데이트를 지배해버릴 수 있다. 11.2절에서 배울 클리핑이 바로 이
+“크기 제한“을 추가하는 장치다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="112-ppo-클리핑과-연속-제어-실습"><a class="header" href="#112-ppo-클리핑과-연속-제어-실습">11.2 PPO 클리핑과 연속 제어 실습</a></h1>
+<h3 id="클리핑-너무-멀리-못-가게-막기"><a class="header" href="#클리핑-너무-멀리-못-가게-막기">클리핑: 너무 멀리 못 가게 막기</a></h3>
 <p>PPO의 해법은 단순하다 — \(r_t\)가 \([1-\epsilon, 1+\epsilon]\)
 (보통 \(\epsilon = 0.2\)) 범위를 벗어나면, 그 구간 밖으로 나간
 만큼의 이득을 깎아버린다:</p>
@@ -8228,7 +8235,75 @@ Estimation)는 Chapter 7의 n-step/적격흔적과 정확히 같은 아이디어
     clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
     return min(unclipped, clipped)  # 목적함수(최대화 대상)의 한 샘플분
 </code></pre>
-<h2 id="115-왜-ppo가-표준이-됐는가"><a class="header" href="#115-왜-ppo가-표준이-됐는가">11.5 왜 PPO가 표준이 됐는가</a></h2>
+<h3 id="실습-연속-제어-환경pendulum에서-ppo-학습시키기"><a class="header" href="#실습-연속-제어-환경pendulum에서-ppo-학습시키기">실습: 연속 제어 환경(Pendulum)에서 PPO 학습시키기</a></h3>
+<p>Chapter 10.1 FAQ에서 언급한 대로, 연속 행동공간에서는 정책이 정규분포의
+평균·표준편차를 출력한다. Pendulum-v1(진자를 세워서 유지하는 고전적인
+연속 제어 과제, 행동은 -2~+2Nm의 토크 하나)에 PPO를 적용해보자:</p>
+<pre><code class="language-python">class GaussianPolicy(nn.Module):
+    def __init__(self, state_dim, act_dim):
+        super().__init__()
+        self.net = nn.Sequential(nn.Linear(state_dim,64), nn.Tanh(), nn.Linear(64,64), nn.Tanh())
+        self.mu = nn.Linear(64, act_dim)
+        self.log_std = nn.Parameter(torch.zeros(act_dim) - 0.5)  # 학습 가능한 표준편차
+    def forward(self, x):
+        h = self.net(x)
+        mu = torch.tanh(self.mu(h)) * act_high   # 행동 범위에 맞게 스케일
+        std = torch.exp(self.log_std)
+        return mu, std
+
+# 행동 샘플링: dist = Normal(mu, std); a = dist.sample(); logp = dist.log_prob(a).sum()
+# GAE로 advantage 계산 -&gt; 4 에폭 동안 미니배치 재사용 -&gt; ppo_clip_loss로 정책 갱신
+</code></pre>
+<p>300번의 반복(반복당 400 스텝씩 환경과 상호작용, 총 약 12만 스텝)
+학습시키면(스크래치패드에서 실행 검증, Pendulum 리턴은 항상 음수이며
+0에 가까울수록 좋다):</p>
+<pre><code>처음 10 에피소드 평균 리턴:  -1551.7
+마지막 10 에피소드 평균 리턴: -1092.2
+</code></pre>
+<p>약 30% 개선됐지만, 여전히 절댓값이 크고 학습 곡선도 매끄럽지만은
+않다(중간 지점에서 오히려 성능이 나빠지는 구간도 있었다) — 이는
+구현이 잘못된 게 아니라, Pendulum 같은 연속 제어 문제는 완전히
+수렴하려면 이번 실습보다 훨씬 많은 스텝(수십만~수백만)이 필요하다는
+것을 보여주는 정직한 결과다. Chapter 9.3의 DQN(CartPole, 300
+에피소드 만에 상당히 개선)과 비교하면, 연속 제어가 이산 제어보다
+일반적으로 학습이 더 오래 걸린다는 것도 함께 확인할 수 있다 —
+Chapter 13~14의 로봇 시뮬레이션에서는 이런 이유로 보통 수백만
+스텝 단위의 학습 시간을 계획한다.</p>
+<h3 id="자주-묻는-질문-68"><a class="header" href="#자주-묻는-질문-68">자주 묻는 질문</a></h3>
+<p><strong>Q. 표준편차(<code>log_std</code>)를 왜 상태와 무관한 파라미터로 뒀나요?</strong>
+구현을 단순화하기 위한 흔한 선택이다 — 상태에 따라 탐험의 정도를
+다르게 하고 싶다면 <code>log_std</code>도 신경망 출력으로 만들 수 있지만,
+많은 PPO 구현은 “탐험 정도는 학습이 진행되며 전역적으로 줄어든다“는
+가정으로 상태와 무관한 학습 가능 파라미터 하나로 충분히 잘 작동한다.</p>
+<p><strong>Q. 왜 매 반복마다 데이터를 새로 모으나요? 재현 버퍼(Chapter
+9.4)처럼 저장해두고 계속 쓰면 안 되나요?</strong> PPO는 on-policy 방법의
+연장선이다 — 클리핑이 “\(r_t\)가 1에서 크게 벗어나지 않는다“는
+전제로 설계되어 있는데, 데이터가 너무 오래된(정책이 그동안 많이
+바뀐) 것이라면 애초에 \(r_t\)가 클리핑 범위를 크게 벗어나 학습에
+거의 기여하지 못한다. 그래서 매 반복마다 새로 모은 데이터를 몇
+에폭(이번 실습에서는 4번)만 재사용하고 버리는 것이 표준이다 —
+Chapter 9의 경험재현(오래된 데이터를 계속 재사용)과 정반대의 전략인
+셈이다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="113-gae와-ppo가-표준이-된-이유"><a class="header" href="#113-gae와-ppo가-표준이-된-이유">11.3 GAE와 PPO가 표준이 된 이유</a></h1>
+<h3 id="gae-어드밴티지를-더-안정적으로-추정하기"><a class="header" href="#gae-어드밴티지를-더-안정적으로-추정하기">GAE: 어드밴티지를 더 안정적으로 추정하기</a></h3>
+<p>Chapter 10.3의 어드밴티지 \(A_t = G_t - V(s_t)\)는 실제 리턴 \(G_t\)를
+그대로 쓰므로 여전히 분산이 크다. <strong>GAE</strong>(Generalized Advantage
+Estimation)는 Chapter 7의 n-step/적격흔적과 정확히 같은 아이디어를
+어드밴티지 추정에 적용한다 — 여러 \(n\)-step 어드밴티지 추정치를
+\(\lambda\)로 가중평균해서, 분산은 낮추되 편향은 적당히만 감수하는
+절충점을 찾는다:</p>
+<p>\[A_t^{\text{GAE}} = \sum_{k=0}^\infty (\gamma\lambda)^k \delta_{t+k},
+\qquad \delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)\]</p>
+<p>\(\delta_t\)는 Chapter 6.1의 TD 오차 그 자체다 — GAE는 결국 “여러
+시점의 TD 오차를 적격흔적처럼 지수적으로 가중합해서 하나의 어드밴티지
+추정치를 만든다“는 것으로 요약된다. \(\lambda=0\)이면 TD(0) 기반
+어드밴티지(분산 작고 편향 큼), \(\lambda=1\)이면 몬테카를로 기반
+어드밴티지(편향 없고 분산 큼)에 가까워진다 — Chapter 7.2의 다이얼이
+여기서도 그대로 등장한다. 실전 PPO 구현은 거의 항상 GAE로 계산한
+\(A_t\)를 쓴다(11.2절 실습의 <code>compute_gae</code> 함수가 바로 이 식을
+그대로 구현한 것이다).</p>
+<h3 id="왜-ppo가-표준이-됐는가"><a class="header" href="#왜-ppo가-표준이-됐는가">왜 PPO가 표준이 됐는가</a></h3>
 <p>PPO 이전에 같은 문제(너무 큰 업데이트로 인한 정책 붕괴)를 풀던
 방법은 <strong>TRPO</strong>(Trust Region Policy Optimization, 2015)였다 — KL
 divergence 제약을 명시적으로 걸고, 2차 미분(피셔 정보 행렬)과
@@ -8247,6 +8322,22 @@ II)뿐 아니라, 사람 피드백에 맞게 언어모델을 조정하는 RLHF�
 업데이트가 너무 커지지 않게 막는다 — Chapter 13~14에서 다룰 로봇
 시뮬레이션의 연속 제어 문제에 PPO가 표준으로 쓰이는 이유가 바로 이
 안정성이다.</strong></p>
+<h3 id="자주-묻는-질문-69"><a class="header" href="#자주-묻는-질문-69">자주 묻는 질문</a></h3>
+<p><strong>Q. GAE의 \(\lambda\)와 PPO의 클리핑 \(\epsilon\)은 서로
+독립적인 하이퍼파라미터인가요?</strong> 역할은 다르지만 함께 학습 안정성에
+영향을 준다 — \(\lambda\)는 “어드밴티지 추정 자체의 편향-분산“을,
+\(\epsilon\)은 “그 추정을 바탕으로 정책을 얼마나 크게 바꿀
+것인가“를 조절한다. 어드밴티지 추정이 노이즈가 크면(\(\lambda\)가
+1에 가까우면) 클리핑이 그 노이즈로부터 정책을 보호하는 역할이 더
+중요해진다 — 실전에서는 둘을 함께 튜닝하는 경우가 많다.</p>
+<p><strong>Q. RLHF(Chapter 13)에서 PPO는 정확히 무엇을 “행동“으로 보나요?</strong>
+언어모델을 정책으로 볼 때, “상태“는 지금까지 생성된 토큰들, “행동“은
+다음에 고를 토큰, “보상“은 Chapter 13에서 배운 보상모델의 점수다 —
+토큰 하나하나를 고르는 것이 이산 행동 선택이므로, 이번 장에서 배운
+이산 행동공간 PPO(11.2절의 클리핑 목적함수)가 사실상 그대로
+적용된다. 연속 제어(로봇)와 언어모델이라는 완전히 다른 응용에 같은
+알고리즘이 쓰이는 것 자체가, PPO가 “행동공간의 형태에 크게 의존하지
+않는” 범용적인 도구라는 증거다.</p>
 <hr>
 <h2 id="연습문제-22"><a class="header" href="#연습문제-22">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 위 <code>ppo_clip_loss</code>(핵심 줄은 빈칸으로 남겨져 있다고
