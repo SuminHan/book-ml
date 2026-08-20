@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>강화학습이란 무엇인가, 그리고 이번 학기 로드맵 - Machine Learning 1/2 (한국어)</title>
+        <title>그래디언트 소실·폭발, 활성함수, 초기화 - Machine Learning 1/2 (한국어)</title>
 
 
         <!-- Custom HTML head -->
@@ -178,68 +178,96 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="11-강화학습이란-무엇인가-그리고-이번-학기-로드맵"><a class="header" href="#11-강화학습이란-무엇인가-그리고-이번-학기-로드맵">1.1 강화학습이란 무엇인가, 그리고 이번 학기 로드맵</a></h1>
-<h3 id="지도학습과-무엇이-다른가"><a class="header" href="#지도학습과-무엇이-다른가">지도학습과 무엇이 다른가</a></h3>
+                        <h1 id="92-그래디언트-소실폭발-활성함수-초기화"><a class="header" href="#92-그래디언트-소실폭발-활성함수-초기화">9.2 그래디언트 소실·폭발, 활성함수, 초기화</a></h1>
+<h3 id="시그모이드의-숨은-함정-그래디언트-소실"><a class="header" href="#시그모이드의-숨은-함정-그래디언트-소실">시그모이드의 숨은 함정: 그래디언트 소실</a></h3>
+<p>역전파는 이론적으로 층이 몇 개든 상관없이 그래디언트를 계산할 수 있다. 그런데
+실제로 층을 10개, 20개로 깊게 쌓아보면 이상한 일이 벌어진다: 입력에 가까운
+층의 가중치는 학습이 거의 진행되지 않는다. 오랫동안 신경망이 “얕게“만(2~3층)
+쓰였던 이유 중 하나가 바로 이것이다 — 깊게 쌓을수록 학습이 오히려 더 안
+되는 역설.</p>
+<p>원인은 시그모이드 함수 자체에 있다. \(\sigma’(z) = \sigma(z)(1-\sigma(z))\)의
+최댓값은 \(z=0\)에서 겨우 0.25다. 역전파는 층을 거슬러 올라갈 때마다 이
+미분값을 <strong>곱해서</strong> 전달하는데(9.1절의 \(\delta_1 = (W_2\delta_2) \odot
+\sigma’(z_1)\)이 층마다 반복된다고 생각하면), 층이 10개면 최대
+\(0.25^{10} \approx 0.00000095\)만큼 줄어든 신호가 첫 번째 층에 도달한다 —
+사실상 0이다. 이게 <strong>그래디언트 소실(vanishing gradient)</strong> 문제다. 반대로
+가중치 초기화가 잘못되면 그래디언트가 층을 거칠수록 오히려 폭발적으로
+커지는 <strong>그래디언트 폭발</strong>(exploding gradient)도 일어날 수 있다.</p>
+<p>\(L\)개 층을 가진 신경망에서, 첫 번째 층의 가중치에 대한 그래디언트는
+연쇄법칙으로 다음과 같은 형태가 된다(각 층의 활성함수 미분과 가중치의 곱):</p>
+<p>\[\frac{\partial L}{\partial W_1} \propto \prod_{l=2}^{L} \sigma’(z_l) \cdot W_l\]</p>
+<ul>
+<li>각 \(\sigma’(z_l) &lt; 1\)이면(시그모이드), 이 곱은 층이 많을수록 지수적으로
+0에 가까워진다 — <strong>그래디언트 소실</strong>.</li>
+<li>각 항이 1보다 크면(예: 가중치가 너무 크게 초기화됨), 곱이 지수적으로
+커진다 — <strong>그래디언트 폭발</strong>.</li>
+</ul>
+<h3 id="실습-10층-시그모이드-네트워크에서-그래디언트가-실제로-사라지는-것-확인하기"><a class="header" href="#실습-10층-시그모이드-네트워크에서-그래디언트가-실제로-사라지는-것-확인하기">실습: 10층 시그모이드 네트워크에서 그래디언트가 실제로 사라지는 것 확인하기</a></h3>
+<p>폭 10짜리 뉴런을 가진 시그모이드 층 10개를 무작위 가중치로 쌓고, 출력에서
+입력 방향으로 그래디언트(크기 1에서 시작)를 역전파시키며 각 층에서의
+그래디언트 노름(norm)을 측정하면:</p>
+<pre><code>출력층 →                                                    입력층
+[3.162, 1.217, 0.677, 0.269, 0.081, 0.034, 0.014, 0.007, 0.004, 0.001, 0.001]
+</code></pre>
+<p>출력층 근처(3.16)에서 입력층 근처(0.0006)까지, 10개 층을 거치며
+그래디언트가 <strong>5000배 이상</strong> 줄어든다 — 위에서 유도한 \(0.25^{10}\)이
+이론적 상한이었을 뿐인데도, 실제 무작위 가중치 시뮬레이션에서도 이렇게
+극적으로 줄어드는 것을 확인할 수 있다(스크래치패드에서 검증). 입력에
+가까운 층은 사실상 그래디언트를 받지 못해 학습이 멈춘 것과 다름없는
+상태가 된다.</p>
+<h3 id="활성함수-activation-functions"><a class="header" href="#활성함수-activation-functions">활성함수 (Activation Functions)</a></h3>
+<p>이 절부터 배우는 활성함수, 초기화, 그리고 9.3절의 정규화(dropout, batch
+normalization) 같은 기법들은 전부 겉보기엔 서로 다른 트릭 같지만, 사실
+대부분 이 한 가지 문제 — “깊은 네트워크에서도 그래디언트가 살아서 전달되게
+하려면 어떻게 해야 하는가” — 를 푸는 여러 각도의 답이다.</p>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th></th><th>지도학습</th><th>강화학습</th></tr>
+<tr><th>함수</th><th>정의</th><th>미분</th><th>특징</th></tr>
 </thead>
 <tbody>
-<tr><td>데이터</td><td>미리 주어짐, \((x,y)\) 쌍</td><td>에이전트가 행동하며 스스로 만들어냄</td></tr>
-<tr><td>신호</td><td>정답 \(y\)</td><td>보상(reward) — 얼마나 좋았는지의 점수</td></tr>
-<tr><td>시간</td><td>각 샘플이 독립적</td><td>지금 행동이 미래에 보게 될 상태에 영향을 줌</td></tr>
-<tr><td>새로운 딜레마</td><td>없음</td><td>탐험(exploration) vs 활용(exploitation)</td></tr>
+<tr><td>Sigmoid</td><td>\(\frac{1}{1+e^{-z}}\)</td><td>\(\sigma(z)(1-\sigma(z))\), 최댓값 0.25</td><td>출력이 (0,1) — 확률 해석에 유용하나 그래디언트 소실에 취약</td></tr>
+<tr><td>Tanh</td><td>\(\frac{e^z-e^{-z}}{e^z+e^{-z}}\)</td><td>최댓값 1</td><td>출력이 (-1,1), sigmoid보다는 낫지만 여전히 양 끝에서 포화(saturate)</td></tr>
+<tr><td>ReLU</td><td>\(\max(0, z)\)</td><td>\(z&gt;0\)이면 1, \(z&lt;0\)이면 0</td><td>양수 구간에서 미분이 항상 1 — 그래디언트가 층을 거쳐도 작아지지 않음</td></tr>
 </tbody>
 </table>
 </div>
-<p>가장 중요한 차이는 <strong>데이터가 미리 주어지지 않는다</strong>는 것이다. 지도학습은
-“이미 모아둔 사진과 라벨“로 학습하지만, 강화학습 에이전트는 지금 이 순간
-어떤 행동을 하느냐에 따라 다음에 어떤 상태를 보게 될지가 달라진다 — 아직
-가보지 않은 길을 시도해볼 것인가(<strong>탐험</strong>), 아니면 지금까지 가장 좋다고
-알려진 선택을 반복할 것인가(<strong>활용</strong>)? 이 완전히 새로운 딜레마가 이번
-학기 내내 형태를 바꿔가며 반복해서 등장한다.</p>
-<h3 id="왜-하필-로봇-시뮬레이션인가"><a class="header" href="#왜-하필-로봇-시뮬레이션인가">왜 하필 로봇 시뮬레이션인가</a></h3>
-<p>강화학습이 실제로 힘을 발휘하는 대표적인 무대가 로봇 제어다 — 관절에 얼마나
-힘을 줄지, 어느 방향으로 움직일지를 사람이 규칙으로 일일이 정해주는 대신,
-시행착오를 통해 “넘어지지 않고 걷는 법“을 스스로 찾아내게 하는 것이다. 이번
-학기는 게임 화면 같은 추상적인 예제뿐 아니라, 실제로 물리 엔진 위에서 로봇을
-움직여보는 시뮬레이션 환경(Chapter 13~14에서 본격적으로 다룬다)을 실습에
-사용한다.</p>
-<h3 id="이번-학기-로드맵"><a class="header" href="#이번-학기-로드맵">이번 학기 로드맵</a></h3>
-<ul>
-<li><strong>Chapter 2~7 (Block A)</strong>: 강화학습의 이론적 뼈대를 표(table) 기반으로
-차근차근 쌓는다 — 멀티암 밴딧에서 시작해, MDP, 동적계획법, 몬테카를로,
-시간차 학습, n-step/적격흔적까지. 이 순서는 강화학습의 표준 교과서인
-Sutton과 Barto의 <em>Reinforcement Learning: An Introduction</em>의 목차를
-그대로 따른다.</li>
-<li><strong>Chapter 8</strong>: Block A 팀 프로젝트와 중간고사 준비.</li>
-<li><strong>Chapter 9~11 (Block B 전반)</strong>: 표 대신 신경망으로 확장하는 심층강화학습
-(DQN)과, Q값을 거치지 않고 정책을 직접 학습하는 정책기반 방법(REINFORCE,
-PPO)까지.</li>
-<li><strong>Chapter 12</strong>: 모방학습과 인간 피드백 — 시행착오 대신 시연이나 선호로부터
-배우는 법.</li>
-<li><strong>Chapter 13~14</strong>: 로봇 시뮬레이션과 제어의 기초, 그리고 더 정교한
-물리엔진(MuJoCo)과 GPU 가속 시뮬레이션(NVIDIA Isaac Sim)까지.</li>
-<li><strong>Chapter 15</strong>: 환경의 모델을 직접 활용하는 모델기반 RL과, 바둑을 정복한
-AlphaGo의 핵심 아이디어인 몬테카를로 트리 탐색(MCTS).</li>
-<li><strong>Chapter 16</strong>: Block B 팀 프로젝트와 학기 총정리.</li>
-</ul>
-<h3 id="이-과목은-ml1과-완전히-독립적이다"><a class="header" href="#이-과목은-ml1과-완전히-독립적이다">이 과목은 ML1과 완전히 독립적이다</a></h3>
-<p>ML1을 듣지 않았어도 이 과목을 바로 시작할 수 있다 — 이번 학기가 필요로 하는
-신경망 지식은 순전파, 역전파, 그리고 경사하강법으로 손실을 줄인다는 감각
-정도이며, 바로 다음 절(1.2)에서 그 핵심만 압축해서 다시 짚는다. (ML1을 먼저
-들었다면 익숙한 내용이니 빠르게 훑고 넘어가도 좋다.)</p>
+<p>ReLU는 미분값이 0 아니면 1이라 곱해도 작아지지 않는다. ReLU는 \(z&lt;0\)일 때
+미분이 정확히 0이 되어 뉴런이 “죽는”(dying ReLU) 문제가 있지만, 계산이
+단순하고 양수 구간에서 그래디언트 소실이 없어 현재 가장 널리 쓰이는 기본
+선택지다. ReLU를 쓰면 활성화된 뉴런에서는 \(\sigma’(z_l)=1\)이라 위 곱이
+최소한 활성함수 때문에 작아지지는 않는다 — 물론 가중치 \(W_l\) 자체의 크기
+문제는 별도로 남는다(그래서 아래 초기화 기법들이 필요하다).</p>
+<h3 id="가중치-초기화"><a class="header" href="#가중치-초기화">가중치 초기화</a></h3>
+<p>가중치를 모두 0으로 초기화하면 모든 뉴런이 똑같이 학습돼(대칭성 문제,
+symmetry breaking 실패) 층을 여러 개 쌓는 의미가 없어진다. 너무 크게
+초기화하면 그래디언트 폭발, 너무 작게 하면 소실 위험이 커진다. Xavier/He
+초기화 같은 방법은 층의 입출력 뉴런 수를 고려해 적절한 분산으로 가중치를
+무작위 초기화한다 — 그래디언트가 층을 거쳐도 크기가 유지되도록 설계된 값이다.</p>
+<p><strong>자주 하는 실수: 초기화 표준편차를 아무 값이나 고정해서 쓰기</strong>. 실제로
+표준편차가 다른 세 가지 초기화로 10개 층(ReLU, 각 층 100개 뉴런)을 통과한
+뒤 활성값의 분산이 어떻게 변하는지 재보면:</p>
+<pre><code>표준편차=1.0(너무 큼):  0.995 → 34.2 → 1701 → ... → 7.4×10^16 (폭발)
+표준편차=0.01(너무 작음): 1.001 → 0.003 → 0.000 → ... → 0.000 (소실)
+He 초기화(표준편차≈0.141): 1.004 → 0.673 → 0.684 → ... → 1.191 (안정)
+</code></pre>
+<p>표준편차를 1.0으로 고정하면 단 몇 개 층 만에 활성값이 천문학적으로
+커지고(그래디언트 폭발로 이어진다), 0.01로 고정하면 몇 개 층 만에
+사실상 0으로 죽어버린다(그래디언트 소실로 이어진다). He 초기화(표준편차
+\(\approx\sqrt{2/\text{입력뉴런수}}\), 여기서는 \(\sqrt{2/100}\approx0.141\))만
+10개 층을 거쳐도 분산이 대략 1 근처로 안정적으로 유지된다(스크래치패드에서
+검증) — “적당해 보이는 숫자“를 감으로 고르는 것과 뉴런 수를 고려해 정확히
+계산하는 것 사이의 차이가 이렇게 크다.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../ml2/chapter01.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../ml1/chapter09/1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../ml2/chapter01/2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../ml1/chapter09/3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -249,11 +277,11 @@ AlphaGo의 핵심 아이디어인 몬테카를로 트리 탐색(MCTS).</li>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../ml2/chapter01.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../ml1/chapter09/1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../ml2/chapter01/2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../ml1/chapter09/3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
