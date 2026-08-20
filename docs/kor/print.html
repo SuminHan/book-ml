@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d7318e2f.js";
+            window.path_to_searchindex_js = "searchindex-b890ccd1.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-89cd2b14.js"></script>
+        <script src="toc-6d2cdc83.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -7431,25 +7431,64 @@ def dyna_q(env_step, n_states, n_actions, n_episodes, planning_steps, alpha, gam
 강화학습의 표 기반(tabular) 이론 전체를 훑었다. 이번 장은 새 개념 대신,
 이 이론들을 Gymnasium의 표 기반 환경에서 직접 구현해보고 비교하며,
 중간고사를 준비하는 자리다.</p>
-<h2 id="81-프로젝트-구조"><a class="header" href="#81-프로젝트-구조">8.1 프로젝트 구조</a></h2>
+<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<ul>
+<li><a href="#81-팀-프로젝트-구조와-발표">8.1 팀 프로젝트: 구조와 발표</a></li>
+<li><a href="#82-peer-review-1">8.2 Peer-Review</a></li>
+<li><a href="#83-중간고사-대비-총정리-1">8.3 중간고사 대비 총정리</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="81-팀-프로젝트-구조와-발표"><a class="header" href="#81-팀-프로젝트-구조와-발표">8.1 팀 프로젝트: 구조와 발표</a></h1>
+<h3 id="프로젝트-구조-2"><a class="header" href="#프로젝트-구조-2">프로젝트 구조</a></h3>
 <ul>
 <li><strong>환경</strong>: Gymnasium의 표 기반(이산 상태·행동) 환경 중 하나를 고른다
-— <code>FrozenLake-v1</code>, <code>CliffWalking-v0</code>, <code>Taxi-v3</code> 등이 좋은 후보다.</li>
+— <code>FrozenLake-v1</code>, <code>CliffWalking-v1</code>, <code>Taxi-v3</code> 등이 좋은 후보다.</li>
 <li><strong>적용</strong>: Chapter 4~7의 알고리즘 중 <strong>최소 두 가지</strong>(예: Q-learning과
 SARSA, 또는 MC 제어와 n-step TD)를 같은 환경에 적용하고 학습 곡선과
 최종 정책을 비교한다.</li>
 <li><strong>필수 요구사항 — 수식적 정당화 최소 1개</strong>: 예를 들어 (1) Q-learning과
-SARSA를 비교했다면 Chapter 6.3~6.4의 on-policy/off-policy 차이로 두
+SARSA를 비교했다면 Chapter 6.2~6.3의 on-policy/off-policy 차이로 두
 정책이 왜 다르게 학습됐는지 설명, (2) \(\varepsilon\)이나 \(\alpha\)를
-바꿔가며 실험했다면 Chapter 6.5의 수렴 조건과 연결지어 설명, (3)
+바꿔가며 실험했다면 Chapter 6.3의 수렴 조건과 연결지어 설명, (3)
 Dyna-Q를 썼다면 Chapter 7.3의 계획 스텝 수와 학습 속도의 관계를 직접
 측정해서 제시.</li>
 </ul>
-<h2 id="82-발표-블록-1"><a class="header" href="#82-발표-블록-1">8.2 발표 (블록 1)</a></h2>
+<h3 id="손으로-한-번-수식적-정당화의-좋은-예와-나쁜-예-비교하기-1"><a class="header" href="#손으로-한-번-수식적-정당화의-좋은-예와-나쁜-예-비교하기-1">손으로 한 번: “수식적 정당화“의 좋은 예와 나쁜 예 비교하기</a></h3>
+<p>어떤 팀이 CliffWalking에서 “Q-learning이 SARSA보다 최종 평가 점수가
+더 높았다(-13 vs -17)“는 결과를 얻었다고 하자.</p>
+<p><strong>나쁜 설명</strong>: “Q-learning이 SARSA보다 점수가 더 높았다. Q-learning이
+더 좋은 알고리즘인 것 같다.”</p>
+<p><strong>좋은 설명</strong>: “학습 도중(탐험 포함) 평균 리턴은 SARSA가 더 높았다
+(-31 vs -53) — Chapter 6.3에서 배운 대로, Q-learning은 목표 정책(항상
+최선)의 가치를 학습하는 off-policy 방법이라 절벽 옆 최단 경로를
+학습했고, 그 경로는 탐험으로 인한 실수 한 번이 큰 손해(-100)로
+이어진다. 반면 SARSA는 실제 행동 방식(탐험 포함)까지 감안하는
+on-policy 방법이라 더 안전한 경로를 선호했다. 학습을 마치고 탐험 없이
+(ε=0) 정책만 평가하면 Q-learning의 경로가 더 짧아 점수가 더 높지만
+(-13 vs -17), 이건 ’더 좋은 알고리즘’이 아니라 ’두 알고리즘이 애초에
+다른 질문에 답하고 있다’는 것을 보여준다.”</p>
+<p>두 설명은 같은 숫자를 말하지만, 좋은 설명은 그 숫자 뒤에 있는
+<strong>알고리즘의 설계 차이</strong>를 짚어낸다 — 이것이 이 학기 프로젝트가
+요구하는 “수식적 정당화“의 실제 의미다.</p>
+<h3 id="발표-1"><a class="header" href="#발표-1">발표</a></h3>
 <p>팀당 5~7분: 문제 정의(환경 설명, 1분) → 적용한 알고리즘과 이유(2분) →
 학습 곡선/최종 정책 비교와 수식적 정당화(2~3분) → 잘 안 됐던 부분과
 원인 진단(1분).</p>
-<h2 id="83-peer-review-블록-2"><a class="header" href="#83-peer-review-블록-2">8.3 Peer-Review (블록 2)</a></h2>
+<h3 id="자주-묻는-질문-59"><a class="header" href="#자주-묻는-질문-59">자주 묻는 질문</a></h3>
+<p><strong>Q. 두 알고리즘의 성능이 거의 같으면 어떻게 발표하나요?</strong> ML1
+Chapter 8.1의 같은 조언이 여기도 적용된다 — 성능이 비슷하다는 것
+자체가 흥미로운 관찰이다. 특히 이번 학기에서는 “학습 도중 성능“과
+“학습 후 평가 성능“을 나눠서 비교하면(위 CliffWalking 예시처럼),
+겉보기엔 비슷해 보여도 실제로는 다른 트레이드오프를 만들고 있다는
+것을 발견할 수 있다.</p>
+<p><strong>Q. 환경을 무작위로 여러 번 실행했을 때 결과가 매번 다른데,
+어떻게 비교해야 하나요?</strong> 강화학습은 탐험과 환경 자체의 무작위성
+때문에 한 번의 실행 결과만으로 비교하면 우연에 좌우될 수 있다 —
+Chapter 6.2 실습처럼 여러 시드(seed)로 반복 실행한 평균(과 가능하면
+분산)을 비교하는 것이 표준적인 방법이다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="82-peer-review-1"><a class="header" href="#82-peer-review-1">8.2 Peer-Review</a></h1>
+<h3 id="peer-review-1"><a class="header" href="#peer-review-1">Peer-Review</a></h3>
 <p>다른 두 팀의 발표를 다음 체크리스트로 평가한다:</p>
 <div class="table-wrapper">
 <table>
@@ -7464,7 +7503,25 @@ Dyna-Q를 썼다면 Chapter 7.3의 계획 스텝 수와 학습 속도의 관계�
 </tbody>
 </table>
 </div>
-<h2 id="84-중간고사-대비-총정리-블록-3"><a class="header" href="#84-중간고사-대비-총정리-블록-3">8.4 중간고사 대비 총정리 (블록 3)</a></h2>
+<h3 id="자주-하는-실수-학습-곡선-한-번만-보고-결론-내리기"><a class="header" href="#자주-하는-실수-학습-곡선-한-번만-보고-결론-내리기">자주 하는 실수: 학습 곡선 한 번만 보고 결론 내리기</a></h3>
+<p>ML1 Chapter 8.2에서 다룬 “구체적으로 반박 가능한 질문“의 원칙이
+여기서도 그대로 적용된다. 강화학습 프로젝트에서 특히 자주 나오는
+부실한 리뷰 패턴은 “학습 곡선이 잘 올라갔으니 성공“이라고만 판단하는
+것이다 — 그 학습 곡선이 무작위 시드 하나만 돌린 결과인지, 여러 번
+반복해서 일관된 경향인지, \(\varepsilon\)이 충분히 감소했는지(또는
+고정된 채로 남아 최종 정책 평가에까지 탐험이 섞여 있지는 않은지)를
+먼저 물어야 한다 — “이 학습 곡선, 시드를 바꿔서 다시 돌려도 같은
+모양이 나올까요?“처럼 발표팀이 실제로 다시 확인해봐야 답할 수 있는
+질문을 던지는 것이 좋은 리뷰다.</p>
+<h3 id="자주-묻는-질문-60"><a class="header" href="#자주-묻는-질문-60">자주 묻는 질문</a></h3>
+<p><strong>Q. Peer-review에서 하이퍼파라미터 선택 근거까지 물어봐야 하나요?</strong>
+그렇다 — \(\alpha\), \(\varepsilon\), \(\gamma\) 같은
+하이퍼파라미터를 “적당히” 골랐다면, 그 값이 결과에 얼마나 큰 영향을
+주는지(Chapter 7.2의 n 파라미터 튜닝 실습처럼) 확인했는지 물어보는
+것이 방법론 적절성 평가의 핵심이다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="83-중간고사-대비-총정리-1"><a class="header" href="#83-중간고사-대비-총정리-1">8.3 중간고사 대비 총정리</a></h1>
+<h3 id="장별-핵심-질문-정리-1"><a class="header" href="#장별-핵심-질문-정리-1">장별 핵심 질문 정리</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -7484,10 +7541,58 @@ Dyna-Q를 썼다면 Chapter 7.3의 계획 스텝 수와 학습 속도의 관계�
 포함)로 구성된다 — 특히 “벨만방정식을 터미널부터 거꾸로 대입해서
 직접 풀기”(Chapter 4)와 “TD 오차의 수렴 조건 논증하기”(Chapter 6)
 패턴이 다른 MDP에도 그대로 적용되는지 확인하는 것이 좋은 복습이다.</p>
+<h3 id="확인-문제-장을-넘나드는-복습-문제-4개"><a class="header" href="#확인-문제-장을-넘나드는-복습-문제-4개">확인 문제: 장을 넘나드는 복습 문제 4개</a></h3>
+<p><strong>1.</strong> Chapter 2의 밴딧과 Chapter 3의 MDP는 어떤 관계인가?</p>
+<blockquote>
+<p>답: 밴딧은 상태가 정확히 하나뿐이고 그 상태에서 어떤 행동을 해도
+항상 같은 상태로 “전이“하는 특수한 MDP로 볼 수 있다(Chapter 3.1
+FAQ). 탐험-활용 딜레마는 이 특수한 경우에도 그대로 남아있고,
+Chapter 5~6의 \(\varepsilon\)-greedy는 그 딜레마를 다루는 같은
+전략이 MDP 전체로 확장된 형태다.</p>
+</blockquote>
+<p><strong>2.</strong> Chapter 4의 정책반복·가치반복과 Chapter 5~6의 MC·TD는 둘 다
+“가치함수를 계산한다“는 같은 목표를 갖는다. 가장 근본적인 차이는
+무엇인가?</p>
+<blockquote>
+<p>답: Chapter 4는 전이확률 \(P(s’|s,a)\)를 정확히 안다고 가정하고
+벨만방정식을 반복 대입으로 직접 계산한다(모델 기반). Chapter 5~6은
+\(P\)를 몰라도 실제 경험(에피소드 또는 한 스텝)으로부터 가치를
+추정한다(모델 프리) — 다만 둘 다 “벨만방정식이라는 같은 재귀
+구조“에 기대고 있다는 점은 같다.</p>
+</blockquote>
+<p><strong>3.</strong> MC, TD(0), n-step TD의 목표값을 편향-분산 관점에서 한 줄씩
+비교하면?</p>
+<blockquote>
+<p>답: MC는 실제 리턴 \(G_t\)를 그대로 써서 편향은 없지만 분산이
+크고, TD(0)는 한 스텝 실제 보상 + 추정치를 써서 분산은 작지만
+편향이 있으며, n-step TD는 그 사이 어딘가(\(n\)이 다이얼)에서
+Chapter 7.2 실습처럼 U자 모양의 트레이드오프를 만든다.</p>
+</blockquote>
+<p><strong>4.</strong> SARSA와 Q-learning은 둘 다 TD 오차로 Q값을 갱신하지만
+on-policy/off-policy로 나뉜다. 이 구분이 실전에서 왜 중요한가?</p>
+<blockquote>
+<p>답: 학습이 실제 위험한 환경(로봇이 실제로 넘어질 수 있는 상황
+등)에서 일어난다면, 학습 도중의 안전까지 고려하는 SARSA(on-policy)
+계열이 유리하다. 시뮬레이터에서 안전하게 충분히 학습한 뒤 최종
+배포 성능만 중요하다면, 목표 정책의 최적성을 직접 학습하는
+Q-learning(off-policy)이 유리하다(Chapter 6.3).</p>
+</blockquote>
 <p><strong>Chapter 2~7에서 배운 모든 알고리즘은 결국 하나의 질문에 대한 답이다
 — “미래의 불확실한 보상을 지금 어떻게 수치화할 것인가?” 이제 이
 질문에 신경망을 결합해서, 표에 담을 수 없을 만큼 큰 문제로 나아갈
 차례다.</strong></p>
+<h3 id="자주-묻는-질문-61"><a class="header" href="#자주-묻는-질문-61">자주 묻는 질문</a></h3>
+<p><strong>Q. 중간고사에 코딩 문제도 나오나요?</strong> ML1 Chapter 8.3와 같은
+형식 — 이번 학기의 손유도 연습문제(Tier A/B/C)와 같은 방식의, 핵심
+로직이 빈칸으로 남겨진 함수를 완성하는 문제가 나올 수 있다. Chapter
+4, 6, 7에서 반복해서 연습한 “TD 갱신 규칙을 코드로 정확히 옮기기”
+패턴이 가장 가까운 연습이다.</p>
+<p><strong>Q. Block B(Chapter 9~16)를 준비하려면 지금 뭘 더 다져둬야
+하나요?</strong> Q-함수(Chapter 6)의 정의와 벨만 최적방정식(Chapter 4)을
+확실히 이해해두는 것이 가장 중요하다 — Chapter 9의 DQN은 사실
+“Q-learning의 Q-테이블을 신경망으로 바꾼 것“에 가깝고, 나머지
+개념(TD 오차, 경험재현, off-policy)은 이번 학기에서 이미 다룬
+것들의 재사용이다.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-9-함수근사와-dqn-function-approximation--deep-q-networks"><a class="header" href="#chapter-9-함수근사와-dqn-function-approximation--deep-q-networks">Chapter 9. 함수근사와 DQN (Function Approximation &amp; Deep Q-Networks)</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter09_dqn_tricks.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
