@@ -38,6 +38,27 @@
 ol.chapter > li.chapter-item {
     opacity: 0.5;
 }
+
+/* Marks prose newly added by the cq (local-model) content-expansion pass,
+   vs. the `pre-cq-expansion` git tag -- see tools/highlight_new_content.py.
+   Existing text stays the theme's normal color; only new text turns blue.
+   Code blocks/inline code are never tagged cq-new by that script, but the
+   ":not(pre):not(code)" guard + the inherit rule below are kept as defense
+   in depth. mdBook's theme switcher puts a class (navy/coal/ayu/rust) on
+   <html>; the default (no class, or "light") is a light background, so a
+   single darker-than-default blue works for light/rust and a lighter blue
+   for the dark themes (navy/coal/ayu). */
+.cq-new:not(pre):not(code) {
+    color: #1a56db;
+}
+html.navy .cq-new:not(pre):not(code),
+html.coal .cq-new:not(pre):not(code),
+html.ayu .cq-new:not(pre):not(code) {
+    color: #7ab0ff;
+}
+.cq-new :is(code, pre) {
+    color: inherit;
+}
 ol.chapter > li.chapter-item:has(> ol.section) {
     opacity: 1;
 }
