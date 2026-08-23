@@ -1,0 +1,42 @@
+digraph review_flow {
+    rankdir=TB;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="8.2 Peer-Review — '반박 가능한' 리뷰를 쓰는 과정",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=11,
+           penwidth=1.3, margin="0.15,0.08"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9.5, color="#495057", penwidth=1.5];
+
+    A [label="다른 팀 발표 + 슬라이드 읽기\n(상대가 무엇을 주장하는지 파악)"];
+
+    subgraph cluster_check {
+        label="체크리스트를 항목별로 적용";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fillcolor="#e9ecef", fontsize=10];
+        B1 [label="1. 문제 정의\n무엇을 예측하려 했는지 명확한가"];
+        B2 [label="2. 방법론 적절성\n데이터 특성에 맞는 모델인가"];
+        B3 [label="3. 수식적 정당화\n요구사항을 충족하고 타당한가"];
+        B4 [label="4. 결과의 정직성\n잘 안 된 부분도 분석했는가"];
+    }
+
+    C [label="각 항목에 대해 질문을 초안하기", fillcolor="#e7f0fd"];
+    D [shape=diamond, style="filled,rounded",
+       label="구체적인 챕터·개념을\n근거로 들고 있는가?", fillcolor="#fff8e1"];
+    E [label="채택 — 반박 가능한 질문\n(예: 'Chapter 6의 교차검증을\n안 썼는데, 우연일 가능성은 없는가?')",
+       fillcolor="#d1e7dd", fontcolor="#0f5132"];
+    F [label="쓰기 다시 — 감상평은 리뷰가 아님\n('발표 잘 들었습니다', '결과가 인상적이네요')",
+       fillcolor="#fdecea", fontcolor="#842029"];
+    G [label="구체성 레벨로 채점", fillcolor="#d1e7dd", fontcolor="#0f5132"];
+
+    A -> B1;
+    B1 -> B2; B2 -> B3; B3 -> B4;
+    B4 -> C;
+    C -> D;
+    D -> E [label="예"];
+    D -> F [label="아니오"];
+    F -> C [style=dashed, color="#c0392b", penwidth=1.8,
+            label="Ch02.3·Ch06.3 등 개념을\n근거로 다시 쓰기"];
+    E -> G;
+}

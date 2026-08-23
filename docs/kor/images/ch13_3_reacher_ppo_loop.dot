@@ -1,0 +1,31 @@
+digraph reacher_ppo_loop {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t, bgcolor="white",
+           label="Reacher-v5 + PPO 한 스텝 — Actor가 10차원 상태를 받아 2차원 가우시안을 만들고, 샘플한 토크로 MuJoCo 물리가 팔을 움직인다. Critic은 같은 상태에서 V(s)를 추정해 GAE 어드밴티지를 만든다. 실물에 배포하는 것은 샘플링이 아닌 평균 mu(s)."];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=11.5,
+           penwidth=1.4, margin="0.16,0.09"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=10, color="#495057", penwidth=1.5];
+
+    obs  [label="상태 s (10차원)\ncos θ (2) + sin θ (2) + 목표 (2)\n+ 각속도 (2) + (fingertip−target) (2)", fillcolor="#e9ecef"];
+    actor[label="Actor: GaussianPolicy\n트렁크 64-64\n→ mu(s), log_std", fillcolor="#fff3cd"];
+    dist [label="a ~ N(mu(s), sigma^2)\n(2차원, 샘플링)", fillcolor="#d1e7dd"];
+    phys [label="MuJoCo 물리 시뮬레이션\n2관절 팔이 토크를 받아 움직임\ndt = 0.02 s, 50스텝 = 1초", fillcolor="#cfe2ff"];
+    nxt  [label="다음 상태 s' + 보상\nr = -||fingertip - target|| - ||a||^2", fillcolor="#e9ecef"];
+    crit [label="Critic: ValueNet\nV(s) 추정", fillcolor="#f8d7da"];
+    adv  [label="어드밴티지 A_t\nGAE + 정규화", fillcolor="#f8d7da"];
+    mu   [label="mu(s) — 결정적 평균\n(배포용 정책)", fillcolor="#fff3cd"];
+    robot[label="실물 로봇 (sim-to-real)", shape=ellipse, fillcolor="#d1e7dd"];
+
+    obs  -> actor;
+    actor -> dist [label="샘플링"];
+    dist -> phys [label="토크 a (clip ±1)"];
+    phys -> nxt;
+    nxt  -> obs  [style=dotted, label="다음 스텝"];
+    obs  -> crit [label="s"];
+    crit -> adv  [label="V(s)"];
+    adv  -> actor [style=dotted, constraint=false,
+                  label="클립된 PPO 목적함수로 갱신"];
+    actor -> mu [style=dashed, label="평균만 사용"];
+    mu -> robot [style=dashed];
+}

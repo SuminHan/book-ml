@@ -1,0 +1,49 @@
+digraph corridor {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", bgcolor="white", pad="0.4", labelloc=t,
+           label="3×4 회랑: 시연 경로(파랑)와 시연 밖 상태. 초록=목표, 빨강=위험칸, 주황=시연에 없던 시작 (1,3) — BC의 기본 행동 'right'가 벽에 막혀 제자리. DAgger는 (1,3)에서 전문가의 'up'을 배워 탈출",
+           labeljust=c];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           penwidth=1.8, fontsize=13, margin="0.18,0.12", fixedsize=true,
+           width="0.75", height="0.55"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=11, penwidth=2.0,
+           arrowsize=0.8, color="#495057"];
+    link  [style=invis, arrowsize=0.001, penwidth=0.001];
+
+    /* grid cell colors */
+    c00 [label="(0,0)", fillcolor="#cfe2ff"];
+    c10 [label="(1,0)", fillcolor="#cfe2ff"];
+    c20 [label="(2,0)", fillcolor="#cfe2ff", style="rounded,filled,bold", penwidth=2.4];
+    c01 [label="(0,1)", fillcolor="#cfe2ff"];
+    c11 [label="(1,1)", fillcolor="#f8d7da"];
+    c21 [label="(2,1)", fillcolor="#f1f3f5"];
+    c02 [label="(0,2)", fillcolor="#cfe2ff"];
+    c12 [label="(1,2)", fillcolor="#f8d7da"];
+    c22 [label="(2,2)", fillcolor="#f1f3f5"];
+    goal  [label="목표\n(0,3)", fillcolor="#d1e7dd", style="rounded,filled,bold", penwidth=2.4, fontcolor="#0f5132"];
+    stuck [label="(1,3)", fillcolor="#fff3cd", style="rounded,filled,bold", penwidth=2.4, fontcolor="#664d03"];
+
+    /* invisible grid topology: ranks = columns */
+    { rank=same; c00; c10; c20; }
+    { rank=same; c01; c11; c21; }
+    { rank=same; c02; c12; c22; }
+    { rank=same; goal; stuck; c13x [style=invis, shape=point, width=0.001, label=""]; }
+    c00 -> c01 [class=link]; c10 -> c11 [class=link]; c20 -> c21 [class=link];
+    c01 -> c02 [class=link, color="#1971c2", label="시연 경로(BC 학습 데이터)", labeldistance="2.6"]; c11 -> c12 [class=link]; c21 -> c22 [class=link];
+    c02 -> goal [class=link]; c12 -> stuck [class=link]; c22 -> c13x [class=link];
+    c00 -> c10 [class=link]; c10 -> c20 [class=link];
+    c01 -> c11 [class=link]; c11 -> c21 [class=link];
+    c02 -> c12 [class=link]; c12 -> c22 [class=link];
+    goal -> stuck [class=link]; stuck -> c13x [class=link];
+
+    /* demo path (blue) */
+    c20 -> c10 [color="#1971c2"];
+    c10 -> c00 [color="#1971c2"];
+    c00 -> c01 [color="#1971c2"];
+    c02 -> goal [color="#1971c2"];
+    c01 -> c02 [label="시연 경로(BC 학습 데이터)", color="#1971c2", constraint=false, labeldistance="2.6"];
+
+    /* stuck self-loop (default action right bounces off wall) */
+    stuck -> stuck [label="기본 행동 'right'\n벽에 막혀 제자리", color="#e8590c",
+                    style="dashed,bold", constraint=false];
+}

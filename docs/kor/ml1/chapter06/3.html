@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,12 +179,55 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="63-trainvaltest-분리-원칙-실전"><a class="header" href="#63-trainvaltest-분리-원칙-실전">6.3 train/val/test 분리 원칙 실전</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter06_3_train_val_test.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: train/val/test 분리"></a></p>
+<h3 id="왜-3분할이-필요한가-배운-것과-재는-것을-나누어야-한다"><a class="header" href="#왜-3분할이-필요한가-배운-것과-재는-것을-나누어야-한다">왜 3분할이 필요한가: “배운 것“과 “재는 것“을 나누어야 한다</a></h3>
+<p>머신러닝 파이프라인은 사실 <strong>두 가지 완전히 다른 일을 동시에</strong> 한다. 하나는
+<strong>배우는 일</strong>(train 데이터로 모델의 파라미터를 정하는 것)이고, 다른 하나는
+<strong>재는 일</strong>(그 모델이 <em>보지 못한</em> 데이터에서 얼마나 잘하는지 평가하는 것)이다.
+이 둘을 같은 데이터로 하면 치명적인 문제가 생긴다 — 모델이 “재는 데이터“까지
+보고 만들어졌으므로, 그 데이터에서의 점수는 “학습을 얼마나
+잘 했는가“를 재는 게 아니라 “기억을 얼마나 잘 했는가“를 재게 된다.
+Chapter 4.1의 과적합이 “train에서 완벽, test에서 참사“로 나타나는 것과
+정확히 같은 구조다.</p>
+<p>6.1절의 정규화(\(\lambda\))와 6.2절의 교차검증은 이 문제를 <em>완화</em>했지만,
+“어떤 데이터로 무엇을 결정하는가“라는 <strong>역할 분리</strong> 자체를 정한 곳은 아직 없다.
+이 절은 그 역할을 정한다: 데이터를 세 조각으로 나눠, 각 조각이 서로 다른 질문
+에 답하도록 <strong>각각 딱 한 역할만</strong> 쓰기로 약속하는 것 — train은 배운다, val은
+모델을 고르고, test는 딱 한 번만 최종 점수를 준다.</p>
 <h3 id="모델-선택의-원칙"><a class="header" href="#모델-선택의-원칙">모델 선택의 원칙</a></h3>
 <p>학습 데이터로 파라미터(\(w\))를 정하고, 검증
 데이터로 하이퍼파라미터(\(\lambda\), \(k\)의 kNN, 트리 깊이 등)를
 정하고, <strong>테스트 데이터</strong>로는 최종 성능만 딱 한 번 확인한다 — 테스트
 데이터를 하이퍼파라미터 튜닝에 쓰면 “부정행위”(테스트 데이터를 몰래
 봐서 고른 모델)와 다를 게 없다.</p>
+<p>이 원칙을 한 줄로 압축하면 <strong>“정보의 흐름 방향을 정한다”</strong> 는 것이다.
+train은 val·test로, val은 최종 모델로 정보가 흐를 수 있지만, <strong>test에서는
+어디로도 정보가 흘러나와서는 안 된다</strong>. test는 파이프라인의 <em>마지막 관문</em> —
+한 번 지나가면 돌아올 수 없다. 아래에서 이 “흐름“을 그림으로 그리고, 그
+금지가 실제로 깨질 때마다 성능 숫자가 어떻게 부풀어 오르는지 하나씩 확인할
+것이다.</p>
+<h3 id="정보-흐름-어디서-어디로만-가야-하는가"><a class="header" href="#정보-흐름-어디서-어디로만-가야-하는가">정보 흐름: 어디서 어디로만 가야 하는가</a></h3>
+<p>3분할의 원칙을 한 장의 다이어그램으로 그리면 아래와 같다. 허용된 흐름(실선)은
+왼쪽(train)에서 시작해 val을 거쳐 최종 모델로 흐르고, <strong>테스트(빨간 점선)에서
+나가는 모든 화살표는 금지</strong>다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch06_3_info_flow.svg" alt="train/val/test 세 조각 사이의 정보 흐름 — train→val→모델만 허용(실선), 테스트에서 나가는 모든 방향(빨간 점선)은 금지"><span class="img-wrapper"><img src="../../images/ch06_3_info_flow.svg" alt="train/val/test 세 조각 사이의 정보 흐름 — train→val→모델만 허용(실선), 테스트에서 나가는 모든 방향(빨간 점선)은 금지"></span></label></p>
+<p>화살표를 하나씩 읽어보자:</p>
+<ul>
+<li><strong>train → val / test</strong>: 전처리 통계량(평균·표준편차, PCA 축 등)을
+<em>train으로만 fit</em>하고 val·test에는 그걸 <em>apply</em>하는 방향. “train에서 배운
+규칙을 안 본 데이터에 적용“하는 것이 허용되는 유일한 교차다.</li>
+<li><strong>train → 모델</strong>: \(w\)를 fit하는 방향.</li>
+<li><strong>val → 모델</strong>: 하이퍼파라미터를 고르는 방향. val은 “후보 모델들 중 어느
+쪽이 좋은지” 판정하는 역할을 하므로, 여기서 정보가 모델(= 하이퍼파라미터
+선택)로 흐르는 것은 정당한 용도다.</li>
+<li><strong>test → (val / train / 모델)</strong>: <strong>모두 금지.</strong> 테스트를 보고
+하이퍼파라미터를 다시 고르면(test→모델 금지), 테스트를 train에 다시 넣거나
+분할을 바꿀 때 test를 기준으로 움직이면(test→train/val 금지) — 전부
+“테스트를 살짝 훔쳐보았다“는 뜻이다.</li>
+</ul>
+<p>이 다이어그램이 이 절의 “지도“다. 다음 세 절(선택 편향, 시계열, 그룹 분할)은
+이 지도의 <strong>빨간 점선을 한 번씩 밟아봤을 때</strong> 실제 숫자가 어떻게 변하는지를
+각각 다른 각도에서 보여준다.</p>
 <h3 id="3분할이-실제로-깨지는-흔한-실수"><a class="header" href="#3분할이-실제로-깨지는-흔한-실수">3분할이 실제로 깨지는 흔한 실수</a></h3>
 <p>이 원칙이 무너지는 흔한 패턴 세 가지: (1) 테스트 데이터로 여러 모델을
 비교해보고 가장 잘 나온 걸 고르는 것(“살짝 훔쳐보기”), (2) 검증 데이터
@@ -194,6 +237,11 @@
 데이터의 정보가 전처리 단계에서 이미 학습에 스며든다(“data leakage”).
 Chapter 8, 16의 팀 프로젝트와 ML2의 팀 프로젝트에서도 이 3분할 원칙을
 그대로 지켜야 한다.</p>
+<p>세 가지 실수가 모두 같은 범주(“test 정보가 다른 곳으로 흘러나감”)에 속한다는
+점을 주의하라 — 겉모양은 달라(모델을 고르는 것 / 전처리 순서 / …) 보여도,
+다 같은 <strong>정보 흐름의 역주행</strong>이다. 그래서 “이 코드에 leakage가 있는가?“를
+묻는보다 좋은 질문은 <strong>“test(또는 val)의 정보가 학습이나 선택 단계에 닿았
+는가?”</strong> — 아래 §에서 이 질문을 숫자로 답할 수 있는 도구를 하나씩 만든다.</p>
 <h3 id="손으로-한-번-데이터-누수leakage를-숫자로-확인하기"><a class="header" href="#손으로-한-번-데이터-누수leakage를-숫자로-확인하기">손으로 한 번: 데이터 누수(leakage)를 숫자로 확인하기</a></h3>
 <p>세 번째 실수(“정규화 통계량을 전체 데이터로 미리 계산하는 것”)가 실제로
 어떤 왜곡을 만드는지 숫자로 확인해보자. 값 \(1\)부터 \(10\)까지의
@@ -225,6 +273,183 @@ Chapter 8, 16의 팀 프로젝트와 ML2의 팀 프로젝트에서도 이 3분�
 결측치 대체에 쓰는 평균값 등, “데이터를 보고 계산하는 모든 통계량“에
 같은 원칙이 적용된다: <strong>반드시 train으로만 계산하고, val/test에는 그
 계산된 통계량을 그대로 적용만 한다.</strong></p>
+<p>같은 예시를 그림으로 보면 더 선명하다 — 왼쪽은 원본 축, 오른쪽은 z-스코어
+축인데, <strong>같은 test 값 [8,9,10]이 어떤 통계량으로 나누느냐에 따라 “극단적
+새로운 데이터(z=2~3)“와 “평범한 데이터(z≈1)“로 각각</strong> 보인다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch06_3_leakage_zscore.svg" alt="정규화 통계량 누수의 효과 — 왼쪽: 원본 축에서 test(8~10)는 train 범위(1~7)를 벗어남, 오른쪽: 전체 데이터로 fit한 std(2.87)로 나누면 test의 z가 0.87~1.57로 ’평범’해 보이지만 train만 fit한 std(2.0)로 나누면 2.0~3.0으로 ’극단’으로 보임"><span class="img-wrapper"><img src="../../images/ch06_3_leakage_zscore.svg" alt="정규화 통계량 누수의 효과 — 왼쪽: 원본 축에서 test(8~10)는 train 범위(1~7)를 벗어남, 오른쪽: 전체 데이터로 fit한 std(2.87)로 나누면 test의 z가 0.87~1.57로 ’평범’해 보이지만 train만 fit한 std(2.0)로 나누면 2.0~3.0으로 ’극단’으로 보임"></span></label></p>
+<p><strong>왜 std가 test 때문에 커지는가</strong> — 전체 10개의 표준편차(2.872)를
+train 7개(2.0)와 비교하면, test의 큰 값들(8,9,10)이 <em>분산의 계산에 이미
+들어와</em> 전체 std를 끌어올린 것이다. 그래서 test 값을 그 “이미 test를
+본” std로 나누면 z가 작아(“평범”) 보이는 것이다 — <strong>재고 싶은 것(test)이
+재는 자(통계량)를 미리 바꿔놓은 것</strong>이 바로 누수의 핵심이다. scikit-learn의
+<code>StandardScaler().fit(X_train)</code> → <code>.transform(X_test)</code>이 이 원칙의 표준
+구현이며, <code>.fit_transform(X_all)</code>을 val·test에 쓰면 위 표의 “누수” 열과
+동일한 위장이 일어난다.</p>
+<h3 id="테스트를-살짝-훔쳐보기의-통계-선택-편향selection-bias"><a class="header" href="#테스트를-살짝-훔쳐보기의-통계-선택-편향selection-bias">테스트를 “살짝 훔쳐보기“의 통계: 선택 편향(selection bias)</a></h3>
+<p>“테스트로 여러 후보를 돌려보고 제일 잘 나온 걸 고른다” — 이 한 줄의
+“살짝 훔쳐보기“가 <em>정량적으로</em> 얼마나 낙관적인지, 확률로 계산해보자. 각
+후보의 테스트 성능을 (진짜 성능 + 우연한 잡음)으로 모델링하고, 잡음을
+독립 정규분포 \(\mathcal{N}(0, \sigma^2)\)라 하자. 후보 \(m\)개 중
+<strong>최고 점</strong>을 고르는 행위는 \(m\)번의 잡음 뽑기 중 \(\max\)를 고르는
+것과 같다. 그런데 \(m\)개 독립 정규분포의 max는 평균(=0, 진짜 성능)보다
+<strong>항상 위쪽으로 치우친다</strong> — \(m\)이 커질수록 max는 더 위로 올라간다.</p>
+<p>실습 노트북 §2에서 \(\sigma=1\), 진짜 성능 0인 경우를 4만 번 시뮬레이션
+해, 후보 수 \(m\)에 따라 “고른 최고 점“의 평균 \(\mathbb{E}[\max]\)을
+재면:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>후보 수 \(m\)</th><th>\(\mathbb{E}[\max]\) (진짜 성능 0, \(\sigma=1\))</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>\(\approx 0\)</td></tr>
+<tr><td>2</td><td>0.56</td></tr>
+<tr><td>5</td><td>1.16</td></tr>
+<tr><td>10</td><td>1.53</td></tr>
+<tr><td>20</td><td>1.86</td></tr>
+<tr><td>50</td><td>2.25</td></tr>
+<tr><td>100</td><td>2.51</td></tr>
+<tr><td>500</td><td>3.04</td></tr>
+</tbody>
+</table>
+</div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch06_3_selection_bias.svg" alt="후보 수 m(로그 축)에 따른 E[max] 곡선 — 잡음 한 개(sigma=1)를 붉은 점선으로 표시. m=50이면 잡음의 2배 이상, m=100이면 2.5배 부풀어 오른다"><span class="img-wrapper"><img src="../../images/ch06_3_selection_bias.svg" alt="후보 수 m(로그 축)에 따른 E[max] 곡선 — 잡음 한 개(sigma=1)를 붉은 점선으로 표시. m=50이면 잡음의 2배 이상, m=100이면 2.5배 부풀어 오른다"></span></label></p>
+<p>이 표가 “테스트로 모델을 고르면 안 된다“는 원칙의 <strong>수학적 근거</strong>다:</p>
+<ul>
+<li>\(m=1\)이면 편향이 0 — 후보 한 개만 있으면 “고르다“는 행위가 없다.</li>
+<li>\(m=5\)(\(\lambda\) 후보 5개)만 되도 \(\approx 1.16\), \(m=50\)이면
+\(\approx 2.25\) — <strong>잡음 한 개(\(\sigma=1\))의 2배 이상</strong>이
+테스트 성능에 <em>부풀려</em> 올라간다.</li>
+<li>실전에서는 \(m\)이 “모델 수 × 하이퍼파라미터 수“의 <strong>곱</strong>으로 커지기
+쉽다(모델 5개 × \(\lambda\) 20개 = 100개 후보 → 부풀림 \(\approx 2.5\)).
+“살짝” 훔쳐본 것일지라도, 후보가 쌓이면 편향은 선형이 아니라
+<em>로그 스케일로</em> 계속 커진다.</li>
+</ul>
+<p>이 편향이 <strong>test가 아니라 val에 걸리는 한</strong> 정직하다 — val은
+“모델을 고르는 역할“이라 선택 편향을 <em>예상대로</em> 먹고, <strong>test는 한 번만
+마지막에</strong> 쓰이므로 그 편향에 노출되지 않는다. 그런데 test로 고르면
+<em>재야 할 대상(test)이 고르는 과정에 쓰여서</em> test 자체가 §2의
+\(\mathbb{E}[\max]\)를 그대로 먹고 만다 — <strong>평가자가 동시에 선수
+선발위원</strong>이 되는 셈이다. (참고: \(\sigma\)는 “성능 측정의 흔들림”
+크기를 뜻하며, 실제에서는 \(\sigma\)를 곱하면 된다 — 잡음이 3배면
+부풀림도 3배로 커진다.)</p>
+<p><strong>한 줄 교훈</strong>: 모델/하이퍼파라미터 후보가 \(m\)개라면, “제일 좋은
+test 점“은 진짜 성능보다 \(\mathbb{E}[\max]\)만큼 <em>평균적으로</em> 높다.
+따라서 “이 test 점수로 논문/보고서를 쓰면“은 \(m\)이 1이어야 정직하고,
+\(m\)이 크면 그 수치는 <em>하한</em>이 아니라 <em>낙관적 상한</em>에 가깝다.</p>
+<h3 id="자주-하는-실수-시계열-데이터를-무작위로-나누기"><a class="header" href="#자주-하는-실수-시계열-데이터를-무작위로-나누기">자주 하는 실수: 시계열 데이터를 무작위로 나누기</a></h3>
+<p>환자 단위 누수와 같은 “단위” 문제의 다른 얼굴이 <strong>시간 순서</strong>다. 6.2절의
+<code>k_fold_split</code>이 “주어진 순서 그대로 자르는” 것이 문제인 것처럼, 시계열은
+<strong>데이터가 이미 시간순으로 정렬되어 있을 때 무작위 shuffle이 구조를 깨는</strong>
+방향으로 작용한다. 실습 노트북 §5에서 추세(매일 +1)가 있는 일일 데이터
+365일을 만들고, kNN으로 무작위 분할과 시간순 분할을 비교하면:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>분할 방식</th><th>test RMSE</th></tr>
+</thead>
+<tbody>
+<tr><td>무작위 분할</td><td>0.81</td></tr>
+<tr><td>시간순 분할(뒤 20% = test)</td><td>44.1</td></tr>
+</tbody>
+</table>
+</div>
+<p>왜 이렇게 다른가 — <strong>무작위 분할</strong>에서는 test 점들이 시간축 곳곳에
+흩어지고, 각 test 점의 <em>시간 근처</em>에는 train 점이 항상 있으므로(과거든
+미래든 가리지 않고) kNN이 잘 맞힌다. 하지만 이건 **미래 값을 과거 값으로
+“예측”**한 것이므로, 실전(미래는 아직 없음)에서는 성립하지 않는다 —
+평가 시점에는 test 점의 시간 <em>이후</em> train 점이 존재할 수 없다. <strong>시간순
+분할</strong>에서는 test가 train의 시간 범위(horizon)를 벗어나므로 kNN이 밖으로
+외삽하게 되고, 추세를 못 쫓아 RMSE가 급등한다. 이 44.1이 <strong>실제
+일반화 성능</strong>에 가까운 값이다.</p>
+<p>교훈은 “시계열은 무작위가 아니라 <strong>시간순으로</strong> 나눠야 한다“는 것, 그리고
+더 근본적으로는 <strong>“실전에서 겹치지 않을 것“을 같은 조각에 두지 말라</strong>는
+것이다. 로그, 주가, 환자 반복 측정, IoT 센서 등 <em>시간/순서가 의미 있는</em>
+데이터에서는 <code>train_test_split(shuffle=False)</code>(시간순)나
+<code>sklearn.model_selection.TimeSeriesSplit</code>을 쓰고, 그룹이 있는 데이터
+(환자, 기기, 지점 등)에서는 <code>GroupKFold</code>/<code>GroupShuffleSplit</code>을 쓰는 것이
+표준이다.</p>
+<h3 id="실습-diabetes에서-3분할-파이프라인-전체"><a class="header" href="#실습-diabetes에서-3분할-파이프라인-전체">실습: diabetes에서 3분할 파이프라인 전체</a></h3>
+<p>이 절의 원칙을 <strong>하나의 흐름</strong>으로 묶어 코드 전체를 보여준다.
+scikit-learn의 <code>load_diabetes</code>(442건, 10개 특징)를 쓰고: (1) 2단계 분할로
+train/val/test를 만들고, (2) \(\lambda\) 후보를 돌려 <strong>val RMSE로만</strong>
+최적 \(\lambda\)를 고르고, (3) 그 \(\lambda\)로 train으로만 fit한 뒤
+<strong>test RMSE를 딱 한 번</strong> 재고, (4) 대조로 (잘못) test로 \(\lambda\)를
+고르면 어떤 차이가 나는지 보인다.</p>
+<pre><code class="language-python">import numpy as np
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.datasets import load_diabetes
+
+data = load_diabetes()
+X, y = data.data, data.target
+
+# 1) 2단계 3분할: 전체 40%를 (val+test)로 떼고, 그 40%를 절반씩
+Xtr, Xtemp, ytr, ytemp = train_test_split(X, y, test_size=0.4, random_state=0)
+Xva, Xte, yva, yte = train_test_split(Xtemp, ytemp, test_size=0.5, random_state=0)
+print(f"크기: train={len(Xtr)}  val={len(Xva)}  test={len(Xte)}")
+
+# 2) val RMSE로만 lambda 고르기 (선택 편향은 val에서만)
+lams = [0.1, 1.0, 10.0, 100.0, 1000.0]
+val_rmse = {lam: np.sqrt(mean_squared_error(yva,
+              Ridge(alpha=lam).fit(Xtr, ytr).predict(Xva))) for lam in lams}
+print("val RMSE per lambda:", {k: round(float(v), 2) for k, v in val_rmse.items()})
+best = min(val_rmse, key=val_rmse.get)
+
+# 3) 그 lambda로 train만 fit, test RMSE 한 번만
+final_test = np.sqrt(mean_squared_error(yte,
+              Ridge(alpha=best).fit(Xtr, ytr).predict(Xte)))
+print(f"val로 고른 lambda = {best}  -&gt;  최종 test RMSE (한 번만) = {final_test:.2f}")
+
+# 4) 대조: (잘못) test로 lambda 고르기
+test_rmse = {lam: np.sqrt(mean_squared_error(yte,
+               Ridge(alpha=lam).fit(Xtr, ytr).predict(Xte))) for lam in lams}
+print(f"(잘못) test로 고르면 lambda = {min(test_rmse, key=test_rmse.get)}")
+</code></pre>
+<pre><code>크기: train=265  val=88  test=89
+val RMSE per lambda: {0.1: 58.07, 1.0: 61.75, 10.0: 73.04, 100.0: 77.49, 1000.0: 78.07}
+val로 고른 lambda = 0.1  -&gt;  최종 test RMSE (한 번만) = 53.79
+(잘못) test로 고르면 lambda = 1.0
+</code></pre>
+<p><strong>핵심은 숫자보다 절차</strong>다. val로 고른 \(\lambda\)와 test로 고른
+\(\lambda\)는 (이 작은 데이터에서) <em>같을 수도, 다를 수도</em> 있다 — 위 실행
+에서는 0.1 vs 1.0으로 다르지만, 우연히 같아도 <em>원칙적으로는</em> test를
+선택에 썼으므로 그 test 수치는 §선택편향의 \(\mathbb{E}[\max]\)를
+먹고 있는 <strong>부풀려진 추정치</strong>다. val로 고르면 test는 <em>아직 한 번도 안
+본</em> 데이터로 남아 최종 수치를 정직하게 재주지만, test로 고르면 <em>재야 할
+대상</em>이 <em>고르는 과정</em>에 쓰여버린다. 데이터가 커질수록 이 절차적 차이가
+실제 숫자 차이를 더 크게 벌린다(§선택편향에서 \(m\)이 커질수록
+\(\mathbb{E}[\max]\)가 커지듯). <strong>같은 모델, 같은 코드인데도 “λ를
+어디서 고르느냐“만 달라져 최종 test 점의 <em>신뢰성</em>이 달라지는 것</strong> —
+이것이 3분할이 “코드가 아니라 <em>절차</em>“의 문제임을 보여주는 예다.</p>
+<h4 id="확인-문제-2단계-3분할은-정말-겹치지-않는가"><a class="header" href="#확인-문제-2단계-3분할은-정말-겹치지-않는가">확인 문제: 2단계 3분할은 정말 겹치지 않는가</a></h4>
+<p>실전에서는 데이터를 <em>한 번에</em> 3등분하기보다 <strong>2단계</strong>로 나눈다(위 실습
+코드가 그렇다): 전체의 40%를 (val+test)로 떼고, 그 40%를 다시 절반씩
+val/test로. 이 2단계가 <strong>서로 안 겹치는</strong>(pairwise disjoint) train/val/test
+를 만드는지, 손으로 인덱스를 추적해 확인해보자. 샘플 100개(인덱스 0~99)를
+“앞 60개=train, 뒤 40개=temp“으로 1차 분할하고, temp(인덱스 60~99)를
+“앞 20개=val(60~79), 뒤 20개=test(80~99)“로 2차 분할한다고 하자:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>조각</th><th>인덱스 범위</th><th>개수</th></tr>
+</thead>
+<tbody>
+<tr><td>train</td><td>0~59</td><td>60</td></tr>
+<tr><td>val</td><td>60~79</td><td>20</td></tr>
+<tr><td>test</td><td>80~99</td><td>20</td></tr>
+</tbody>
+</table>
+</div>
+<p>이 세 범위가 서로 겹치지 않는지(train과 val, train과 test, val과 test
+두루), 그리고 val과 test를 합치면 정확히 “처음 떼어둔 뒤 40%”(인덱스
+60~99)와 일치하는지 확인하라. (힌트: 두 조각의 인덱스 집합의 <strong>교집합이
+빈집합</strong>인지, val ∪ test가 60~99와 <strong>등치</strong>인지. 실습 노트북 §7에서
+<code>train_test_split</code> 두 번을 unique id로 추적해 이 성질이 실제로
+보존되는지 코드도 확인한다.) — “한 번에 3등분“과 “2단계 분할“이
+<strong>동일한 disjoint 조건</strong>을 만족한다는 것을 보이면, 2단계 분할을 써도
+3분할 원칙을 위반하지 않는다는 것이 확인된다.</p>
 <h3 id="유명한-사례-의료-ai-논문들을-뒤흔든-환자-단위-누수"><a class="header" href="#유명한-사례-의료-ai-논문들을-뒤흔든-환자-단위-누수">유명한 사례: 의료 AI 논문들을 뒤흔든 “환자 단위 누수”</a></h3>
 <p>의료 영상 AI 연구에서 실제로 자주 발견되는 데이터 누수 유형이 있다 —
 같은 환자를 촬영한 여러 장의 스캔 이미지 중 일부는 train에, 일부는
@@ -234,11 +459,62 @@ test에 무작위로 흩어져 들어가는 경우다. 같은 환자의 스캔�
 살짝 다른 각도에서 다시 알아보는” 셈이 되어버린다 — 논문에 보고된
 정확도가 실제 새로운 환자에게 적용했을 때보다 부풀려지는 것이다. 이
 문제는 여러 의료 AI 논문에서 사후에 지적되어 재현성 논쟁으로 이어진
-바 있다. 교훈은 명확하다 — 데이터를 무작위로만 나누는 것으로는
+바 있다.</p>
+<p>이 “환자를 외운다“는 현상을 숫자로 재현하면 실습 노트북 §4의 예
+(환자 100명, 각 5장 스캔, kNN)에서:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>분할 방식</th><th>test RMSE</th></tr>
+</thead>
+<tbody>
+<tr><td>무작위 분할(이미지 단위)</td><td>1.04</td></tr>
+<tr><td>환자(그룹) 분할</td><td>3.65</td></tr>
+</tbody>
+</table>
+</div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch06_3_patient_leakage.svg" alt="환자 단위 누수 — 왼쪽(무작위 분할): 같은 환자의 5장 blob이 train(파랑)/test(빨강)으로 blob 안에 섞임. 오른쪽(환자 분할): blob이 통째로 한 쪽에만. kNN은 왼쪽에서는 blob 안 이웃으로 환자를 ’인식’한다"><span class="img-wrapper"><img src="../../images/ch06_3_patient_leakage.svg" alt="환자 단위 누수 — 왼쪽(무작위 분할): 같은 환자의 5장 blob이 train(파랑)/test(빨강)으로 blob 안에 섞임. 오른쪽(환자 분할): blob이 통째로 한 쪽에만. kNN은 왼쪽에서는 blob 안 이웃으로 환자를 ’인식’한다"></span></label></p>
+<p>무작위 분할 RMSE(\(\approx 1.0\))가 환자별 값의 표준편차(2.0)보다
+훨씬 낮다 — <strong>새로운 환자를 예측하는 것은 이론적으로
+\(\sigma\sqrt{2}\approx 2.8\) 아래로 내려갈 수 없는데</strong> 1.0을
+“성취“했다. 이건 모델이 <em>관계를 배운</em> 것이 아니라 <strong>환자를 외운
+것</strong>이다. 실전에서 <code>sklearn.model_selection.GroupKFold</code>(그룹 키=환자)를
+써야 하는 이유가 바로 여기 — “실전에서 실제로 겹칠 수 없는 단위“를
+그룹 키로, 그 단위의 모든 샘플을 <em>한쪽</em>에만 두도록 만드는 것이다.</p>
+<p>교훈은 명확하다 — 데이터를 무작위로만 나누는 것으로는
 부족하고, <strong>“실전에서 실제로 겹칠 수 없는 단위”(이 경우 환자)를 기준으로
 분리해야</strong> 한다는 것이다. Chapter 8, 16의 팀 프로젝트에서 시계열
 데이터나 그룹화된 데이터를 다룬다면, 단순 무작위 분할 대신 이런 그룹
 단위 분할(<code>sklearn.model_selection.GroupKFold</code> 등)을 고려해야 한다.</p>
+<pre><code class="language-python">from sklearn.model_selection import GroupKFold
+import numpy as np
+groups = np.repeat(np.arange(100), 5)   # 100환자 x 5장, 그룹키=환자
+gkf = GroupKFold(n_splits=5)
+for tr_idx, te_idx in gkf.split(X, y, groups=groups):
+    pass  # 같은 환자(그룹)의 5장은 항상 train 또는 test 중 하나로만
+</code></pre>
+<p><code>GroupKFold</code>는 각 fold마다 <em>다른 환자</em>들을 train/test에 배정하므로,
+같은 환자의 5장은 <em>절대</em> train/test에 걸리지 않는다 — 6.2절의
+“fold가 구조를 깨면 안 된다“는 원칙의 그룹 버전이다.</p>
+<h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
+<p><strong>1.</strong> 아래 중 <em>테스트 정보가 다른 단계로 흘러나가는</em> 것에 모두 체크하라:
+(a) val RMSE로 \(\lambda\)를 고른다 (b) test RMSE로 \(\lambda\)를
+고른다 (c) <code>StandardScaler().fit(X_all)</code> 후 train/val/test에 transform (d)
+train으로 fit한 스케일러로 test를 transform (e) test에서 제일 잘 맞는
+모델을 보고, “이 모델을 더 잘 맞추려고” train에 test를 추가로 넣는다.</p>
+<p><strong>2.</strong> 모델 후보 10개 × \(\lambda\) 후보 10개 = 100개 조합을 <em>테스트
+데이터</em>로 평가해 가장 좋은 조합을 고른다. 잡음 \(\sigma=0.5\)라면,
+“고른 조합의 test 점“은 진짜(평균) 성능보다 <strong>평균적으로</strong> 얼마나
+높을까? (힌트: §선택편향의 \(\mathbb{E}[\max]\)를 \(\sigma\)로
+곱하라.)</p>
+<p><strong>3.</strong> 아래 2단계 3분할 중 <em>원칙 위반</em>인 것을 골라라:
+(가) 80/20 → (20%를) val/test 10/10, (나) 80/20 → test에서 제일 좋은
+\(\lambda\) 골라서 train/val에 다시 적용, (다) train으로 fit한
+PCA로 val/test 투영.</p>
+<p><strong>4.</strong> “데이터가 100개뿐이라 3분할하면 test가 20개밖에 안 된다.
+그래서 val을 빼고 80/20만 쓰고, test로 \(\lambda\)를 고르되
+’최종 수치는 그 test의 5-fold 평균’으로 보고하자“는 제안을 평가하라.
+어떤 점이 원칙을 지키고, 어떤 점이 위반하는가?</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 데이터가 너무 적어서 3분할하면 각 조각이 너무 작아지는데 어떻게
 하나요?</strong> 이런 경우 test를 아예 따로 떼어두는 대신, 6.2절의 교차검증으로
@@ -253,10 +529,42 @@ LOOCV(6.2절 FAQ)까지 고려할 수 있지만, 그래도 test를 완전히 없
 (수백만 개) val과 test가 각각 전체의 1~2%만 되어도 통계적으로 충분히
 안정적인 평가가 가능하므로, 그만큼 더 많은 비율을 학습에 할당하는
 경우도 흔하다.</p>
-<p><strong>정규화는 “모델을 덜 유연하게 만들어서 분산을 줄인다“는 Chapter 4.1의
+<p><strong>Q. val로 \(\lambda\)를 고르고, test로 “한 번” 확인했는데,
+test 결과가 너무 기대에 못 미쳐서 val을 다시 보고 \(\lambda\)를
+살짝만 조정했다. 이 test 수치를 신뢰할 수 있나?</strong> <strong>아니다.</strong> “살짝만”
+조정한 순간 test는 <em>선택 과정에 쓰였다</em> — §선택편향의 관점에서는
+후보 수 \(m\)이 1에서 2로 늘어난 셈이라 편향이 0에서
+\(\mathbb{E}[\max\text{ of 2}]\)로 뛴다. 원칙적으로 이 test 수치는
+“2번 봤다“는 것을 명시해야 하고, 정직한 추정치는 <em>새로 확보한</em>
+test에서 다시 한 번만 재는 것이다. “한 번만“은 <strong>정말로 한 번</strong>이라는
+뜻이다 — 한 번 보고 마음에 안 들면, <em>같은 test를</em> 다시 보며
+“이번엔 진짜 마지막으로“라고 해도 이미 두 번째다.</p>
+<p><strong>Q. 교차검증(6.2절)을 쓰면 test는 굳이 필요없지 않나요?</strong>
+<em>보통</em>은 그렇지만, “정확히 한 번“의 최종 성능이 필요한
+(논문 제출, 배포 전 검증 등) 상황에서는 필요하다. k-fold CV는 <em>val
+역할</em> — 하이퍼파라미터를 고른다. test는 <em>최종 판정</em> — 고른 결과를
+<em>아무 선택 없이</em> 처음 보는 데이터로 검증한다. CV만 있으면 “고르는
+과정“만 있고 “판정“이 없다. 특히 <strong>CV를 여러 번(\(\lambda\)마다, 시드마다)
+돌리면서</strong> test 점수를 보고 결정 내리면, test가 다시 <em>선택에</em> 쓰인다 —
+test도 결국 “CV를 돌리는 횟수“만큼의 선택 편향을 먹는다.</p>
+<p><strong>Q. 전처리(스케일링, 임베딩, 결측치 대체)를 <em>모델과 함께</em>
+파이프라인으로 묶으면 leak이 안 생기나요?</strong> 그 반대 — <strong>파이프라인으로
+묶는 것이 leak을 막는 정석</strong>이다. <code>sklearn.pipeline.Pipeline([ ('scaler', StandardScaler()), ('model', Ridge())])</code>에서 <code>pipeline.fit(X_train, y_train)</code>만 하고 <code>pipeline.predict(X_test)</code>를 쓰면, scaler가 <em>train만</em>
+fit되어 val/test에는 <em>train 통계량</em>이 자동으로 적용된다. 반대로
+<code>scaler.fit_transform(X_all)</code>을 <em>분할 전에</em> 하고 조각을 나눠주면
+§손으로한번의 “누수” 열이 그대로 재현된다 — <strong>전처리 fit은 항상
+<em>분할 이후</em>, train 조각에만</strong> 일어나야 한다.</p>
+<h3 id="정리"><a class="header" href="#정리">정리</a></h3>
+<p>정규화는 “모델을 덜 유연하게 만들어서 분산을 줄인다“는 Chapter 4.1의
 편향-분산 원리를, 손실함수에 항 하나를 더하는 것만으로 실제로 조절
 가능하게 만든 도구다 — 그리고 그 조절 손잡이(\(\lambda\)) 자체는
-교차검증이라는 또 다른 절차로 정해야 한다.</strong></p>
+교차검증이라는 또 다른 절차로 정해야 한다.</p>
+<p>그리고 그 교차검증/분리 <em>절차</em> 자체가 이 절의 주제다 — <strong>train으로
+\(w\), val로 \(\lambda\), test로 딱 한 번의 최종 점수.</strong> 이 세
+역할을 한 조각이 <em>두 가지</em>로 겸하면(특히 test가 <em>재는 것</em>과 <em>고르는
+것</em>을 겸하면), §선택편향이 보여준 것처럼 보고된 숫자는 <em>진짜 성능</em>이
+아니라 <em>잡음의 max</em>가 되어버린다. 3분할은 “데이터를 셋으로 쪼갠다“는
+기계적 절차가 아니라, <strong>정보의 흐름에 방벽을 세우는</strong> 일이다.</p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 위 <code>ridge_gradient_descent</code>와 <code>k_fold_split</code>(핵심 줄은
@@ -280,14 +588,35 @@ print(k_fold_split(list(range(10)), k=5, fold_idx=2))  # ([...], [4, 5])
 함께 답하라: 특징이 10,000개인데 그중 실제로 결과에 영향을 주는 특징은
 20개 정도일 것이라 추정되는 유전자 발현 데이터 분석 문제.</p>
 <p><strong>3. (손유도, Tier A — 자유 유도)</strong> L2 정규화가 있는 선형회귀(Ridge
-회귀)의 비용함수 \(J(w) = \frac{1}{2m}|Xw-y|^2 + \frac{\lambda}{2}|w|^2\)를
+회귀)의 비용함수 \(J(w) = \frac{1}{2m}\|Xw-y\|^2 + \frac{\lambda}{2}\|w\|^2\)를
 \(w\)에 대해 미분해 0으로 놓고, 닫힌 형태의 해가</p>
 <p>\[w^* = (X^TX + \lambda I)^{-1}X^Ty\]</p>
 <p>가 됨을 유도하라(Chapter 2의 정규방정식 유도와 같은 방식을 재사용하되,
-정규화 항의 미분 \(\nabla_w \frac{\lambda}{2}|w|^2 = \lambda w\)를
+정규화 항의 미분 \(\nabla_w \frac{\lambda}{2}\|w\|^2 = \lambda w\)를
 추가로 이용한다). \(\lambda \to 0\)일 때 이 식이 Chapter 2의 정규방정식
-\(w^<em>=(X^TX)^{-1}X^Ty\)로 돌아감을 확인하고, \(\lambda \to \infty\)일
-때 \(w^</em>\)가 어떤 값에 가까워지는지 한 문장으로 설명하라.</p>
+\(w^*=(X^TX)^{-1}X^Ty\)로 돌아감을 확인하고, \(\lambda \to \infty\)일
+때 \(w^*\)가 어떤 값에 가까워지는지 한 문장으로 설명하라.</p>
+<p><strong>4. (코딩)</strong> 아래 <code>group_k_fold</code>를 완성하라: <code>groups</code> 리스트가 각 샘플의
+그룹(예: 환자 ID)을 나타낼 때, \(k\)개의 fold를 만들어 <em>같은 그룹의
+샘플이 항상 같은 fold</em>에 들어가도록 배정하라(각 fold는 서로 다른
+그룹들의 합집합). <code>k=2</code>, <code>groups=[0,0,1,1,2,2]</code>에서 <code>fold_idx=0</code>일 때
+train/val 인덱스를 반환한다.</p>
+<pre><code class="language-python">def group_k_fold(groups, k, fold_idx):
+    # ADD ADDITIONAL CODE HERE!!
+    # unique 그룹을 k개로 나눠, fold_idx번째 그룹 묶음의 샘플을 val,
+    # 나머지를 train으로 반환 (같은 그룹은 절대 train/val에 걸리지 않음)
+
+print(group_k_fold([0,0,1,1,2,2], k=2, fold_idx=0))  # (train, val) — val의 그룹은 {1,2} 중 일부
+</code></pre>
+<p><strong>5. (개념 서술)</strong> §선택편향의 시뮬레이션(후보 \(m\)개 중 max)을
+<em>너무</em> 단순화한 것이라 비판하는 학생이 있다 — “실제 모델 성능은
+독립 정규 잡음이 아니라 서로 상관되어 있을 텐데.” 이 비판에 대해,
+(a) 상관 잡음일 때 \(\mathbb{E}[\max]\)가 독립 정규의 그것보다
+크고 작을 수 있는지, (b) 그럼에도 불구하고 3분할 원칙이 여전히
+필요한 이유를 두세 문장으로 답하라. (힌트: 상관 잡음은 “모든 후보가
+함께 좋아질 때“를 만들고, 독립 가정은 그걸 못 재는데, <em>최고 점</em>을
+<em>한 조각의 데이터</em>로 고르는 행위 자체가 상관 여부와 무관하게 그
+조각에 편향을 심는다는 점을 생각해라.)</p>
 
                     </main>
 
@@ -340,8 +669,8 @@ print(k_fold_split(list(range(10)), k=5, fold_idx=2))  # ([...], [4, 5])
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

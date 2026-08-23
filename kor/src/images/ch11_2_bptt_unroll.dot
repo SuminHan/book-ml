@@ -1,0 +1,55 @@
+digraph bptt_unroll {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="RNN을 시간 축(T) 방향으로 펼쳐서 보는 계산 그래프\n같은 가중치(W_xh, W_hh, W_hy)가 시점마다 재사용 → 각 시점의 그래디언트는 같은 가중치에 더해짐(+=)\n역전파(BPTT)는 손실 L에서 시작해 왼쪽(먼 과거 h_1)으로 화살표와 반대 방향으로 흐른다",
+           labeljust=c, bgcolor="white", pad="0.35", ranksep="1.15", nodesep="0.55"];
+    node  [fontname="Noto Sans CJK KR", shape=ellipse, style="filled",
+           fontcolor="#212529", fontsize=13, penwidth=1.6, margin="0.16,0.10"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=11.5, color="#495057",
+           penwidth=1.7];
+
+    // ---- input row (bottom) ----
+    x1 [label="x_1 (a)", fillcolor="#e9ecef"];
+    x2 [label="x_2 (b)", fillcolor="#e9ecef"];
+    x3 [label="x_3 (c)", fillcolor="#e9ecef"];
+    x4 [label="x_4", fillcolor="#f8f9fa", style="filled,dashed"];
+
+    // ---- hidden row (middle) ----
+    h0 [label="h_0", fillcolor="#fff3cd", shape=box, style="rounded,filled,dashed"];
+    h1 [label="h_1", fillcolor="#fff3cd"];
+    h2 [label="h_2", fillcolor="#fff3cd"];
+    h3 [label="h_3", fillcolor="#fff3cd"];
+
+    // ---- output row (top) ----
+    y1 [label="y_1", fillcolor="#cfe2ff"];
+    y2 [label="y_2", fillcolor="#cfe2ff"];
+    y3 [label="y_3", fillcolor="#cfe2ff"];
+
+    // ---- loss ----
+    L  [label="L = -Σ log p_t·y_t", fillcolor="#d1e7dd", shape=box,
+        style="rounded,filled,bold", penwidth=2.2, fontcolor="#0f5132"];
+
+    // forward: input -> hidden (W_xh)
+    x1 -> h1 [label="W_xh"];
+    x2 -> h2 [label="W_xh"];
+    x3 -> h3 [label="W_xh"];
+
+    // recurrent: h_{t-1} -> h_t (W_hh)
+    h0 -> h1 [label="W_hh", color="#b02a37", penwidth=2.2];
+    h1 -> h2 [label="W_hh", color="#b02a37", penwidth=2.2];
+    h2 -> h3 [label="W_hh", color="#b02a37", penwidth=2.2];
+
+    // output: h_t -> y_t (W_hy)
+    h1 -> y1 [label="W_hy", color="#1864ab"];
+    h2 -> y2 [label="W_hy", color="#1864ab"];
+    h3 -> y3 [label="W_hy", color="#1864ab"];
+
+    // outputs -> loss
+    y1 -> L [style="dashed", color="#868e96"];
+    y2 -> L [style="dashed", color="#868e96"];
+    y3 -> L [style="dashed", color="#868e96"];
+
+    // backprop direction: from last step back to first (opposite of W_hh)
+    h3 -> h1 [label="BPTT 역전파: T → 1", style="dashed,bold", color="#e8590c",
+               penwidth=2.4, constraint=false, arrowhead=vee];
+}

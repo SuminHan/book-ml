@@ -1,0 +1,91 @@
+digraph blockB_rl_map {
+    rankdir=TB;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="Block B(Ch09~15) 개념 지도 — 한 질문: '정답 없이, 내가 만든 경험만으로, 로봇 스케일까지 배우는가?'",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=10.5,
+           penwidth=1.3, margin="0.18,0.1"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9, color="#495057", penwidth=1.5];
+
+    Q [label="한 개의 큰 질문:\n'정답 없이, 내가 만든 경험만으로,\n로봇 스케일까지 배우는가?'\n(3단계: 모델 정의 → 수치화 → 개선)",
+        fillcolor="#fff8e1", fontcolor="#7a4f00", penwidth=2, fontsize=11.5];
+
+    subgraph cluster_scale {
+        label="1. 왜 이제 신경망인가 (Ch09~10)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fillcolor="#e9ecef", fontsize=10];
+        N1 [label="표 기반 RL의 한계 (Ch06→09)\n상태가 고차·연속이 되면 Q 표가 '폭발'\n→ Q-함수를 함수 근사(신경망)로"];
+        N2 [label="가치 기반: DQN (Ch09)\n신경망 Q(s,a) + 리플레이 버퍼 + 타겟 네트워크\noff-policy: 누가 만든 경험과 무관 (Ch06의 벨만방정식)"];
+        N3 [label="정책 기반 (Ch10)\nREINFORCE: ∇log π × 리턴 (분산 큼)\n→ Actor-Critic: TD 오차로 어드밴티지, 연속 행동"];
+        N1 -> N2 [style=invis];
+        N1 -> N3 [style=invis];
+    }
+
+    subgraph cluster_stable {
+        label="2. 어떻게 안정하게, 또 시행착오 없이 (Ch11~12)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fontsize=10];
+        P1 [label="PPO (Ch11)\n클리핑된 목적함수: 한 업데이트의 '점프 반경' 제한\nGAE(λ): TD 오차의 편향-분산 다이얼",
+             fillcolor="#dbeafe"];
+        P2 [label="모방학습 (Ch12.1)\n시연 데이터로 지도학습 (행동복제)\n복합 오차(covariate shift) → DAgger",
+             fillcolor="#d1e7dd"];
+        P3 [label="RLHF (Ch12.2~3)\n사람의 선호 → 보상 모델 → PPO로 최적화\n'정답' 대신 '선호'를 레이블로",
+             fillcolor="#d1e7dd"];
+        P1 -> P2 [style=invis];
+        P2 -> P3 [style=invis];
+    }
+
+    subgraph cluster_stage {
+        label="3. 어디에서 배우는가: 무대의 스케일 (Ch13~15)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fontsize=10];
+        E1 [label="물리 시뮬레이션 (Ch13)\n동역학 M(θ)θ̈+h=τ, PD 제어(사람이 설계한 정책)\nsim-to-real: 현실 격차 = 편이 → 도메인 무작위화",
+             fillcolor="#fce8e6"];
+        E2 [label="엔진 절충 (Ch14)\nMuJoCo: 접촉·마찰 정밀도\nIsaac Sim: GPU 병렬로 수천 환경 동시",
+             fillcolor="#fce8e6"];
+        E3 [label="MCTS (Ch15)\n완전한 모델(규칙)이 있을 때:\nUCT(UCB를 각 노드에) + 자기대국(AlphaZero)",
+             fillcolor="#fce8e6"];
+        E1 -> E2 [style=invis];
+        E2 -> E3 [style=invis];
+    }
+
+    subgraph cluster_axes {
+        label="4. 모든 경로를 가로지르는 축 (Block A에서 이어짐)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fillcolor="#e9ecef", fontsize=9.5];
+        X1 [label="편향-분산\nn(Ch07) · λ(Ch11) ·\n정규화(Ch09, ML1 Ch06)"];
+        X2 [label="탐험\nε-greedy(Ch02) → UCB(Ch02)\n→ UCT(Ch15)"];
+        X3 [label="on / off-policy\n'데이터를 누가 만들었는가'\n(Ch06, Ch09, Ch10~11)"];
+        X4 [label="모델 유무\n모델 기반(Ch04, Ch15)\nvs 모델 프리(Ch05~12)"];
+        X1 -> X2 -> X3 -> X4 [style=invis];
+    }
+
+    BB [label="학기 끝: Block B 캡스톤 (Ch16)\n'하나의 환경에서 정직한 숫자로 증명하라'\nrubric 45%가 정직성 (시드·평가 분리·베이스라인)",
+        fillcolor="#f3e5f5", fontcolor="#4a2d5e", penwidth=1.8];
+
+    Q -> N1;
+    N1 -> N2 [label="가치 기반으로"];
+    N1 -> N3 [label="정책 기반으로"];
+    N3 -> P1 [label="그래디언트를\n안정하려면", style=bold];
+    P1 -> P3 [label="RLHF가 쓰는\n최적화기"];
+    P1 -> E1 [label="13.3: 시뮬레이션에서\nPPO로 Reacher 학습", style=bold, color="#7048a8"];
+    P2 -> E1 [label="시연 데이터로\n시작, 시뮬레이션으로 다듬음"];
+    E1 -> E2 [label="무대 규모를 정하는\n엔진 선택"];
+
+    N2 -> X3 [label="리플레이 버퍼\n(off-policy)", style=dashed, color="#90a4ae"];
+    N3 -> X3 [label="옛 데이터 무효\n(on-policy)", style=dashed, color="#90a4ae"];
+    P1 -> X3 [label="클립 보정으로\n몇 에폭 재사용", style=dashed, color="#90a4ae"];
+    P1 -> X1 [label="λ가 다이얼", style=dashed, color="#90a4ae"];
+    E3 -> X2 [label="UCT = 매 노드의 UCB", style=dashed, color="#90a4ae"];
+    E3 -> X4 [label="완전 모델이\n전제", style=dashed, color="#90a4ae"];
+    N2 -> X4 [label="모델 프리", style=dashed, color="#90a4ae"];
+
+    P1 -> BB [label="연속 제어의\n표준 도구", style=bold, color="#7048a8"];
+    E1 -> BB [label="프로젝트 무대\n(16.1 발표)", style=bold, color="#7048a8", penwidth=2];
+    E3 -> BB [label="세 번째 경로:\n완전 모델로 미리 읽기", style=bold, color="#7048a8"];
+}

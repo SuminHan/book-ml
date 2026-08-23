@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -185,11 +185,67 @@
 “몇 스텝을 실제로 볼 것인가“라는 하나의 다이얼 위의 양 끝일 뿐임을
 보이고, 그 사이의 모든 지점을 아우르는 방법을 다룬다. 마지막으로는
 경험뿐 아니라 학습된 모델도 함께 활용하는 계획(planning)까지 살펴본다.</p>
+<p><strong>이전 챕터와의 연결.</strong> Chapter 6의 시간차 학습에서 TD(0)는
+“한 스텝의 실제 보상 + 다음 상태의 현재 추정치“를 목표값으로 쓰며
+부트스트래핑을 익혔고, SARSA와 Q-learning은 on-policy와 off-policy를
+가르는 선택까지 다뤘다. 이번 장은 바로 그 목표값의 “한 스텝“이라는
+부분을 일반적인 \(n\) 스텝으로 풀어내면서 시작한다. <strong>다음 챕터와의
+연결.</strong> n-step TD, TD(\(\lambda\)), Dyna-Q는 모두 “부트스트래핑을
+얼마나 할 것인가“라는 하나의 질문에 대한 서로 다른 답이다. Chapter 8의
+Block A 캡스톤에서는 이 세 개를 Gymnasium의 표 기반 환경에서 직접
+구현·비교하며 팀 프로젝트로 정리하고, 이후 Chapter 9의 DQN에서는
+n-step 리턴이 실전 알고리즘의 기본 옵션으로 다시 만난다.</p>
+<h2 id="학습-목표"><a class="header" href="#학습-목표">학습 목표</a></h2>
+<ul>
+<li>이 챕터를 마치면, n-step 리턴 \(G_t^{(n)}\)을 정의하고, \(n=1\)이
+정확히 TD(0)이고 에피소드 길이 이상이면 자동으로 MC가 되는 것을 코드로
+확인하며, 7-state random walk에서 \(n\)별 RMS 오차의 U자 곡선을 그릴
+수 있다.</li>
+<li>이 챕터를 마치면, 적격흔적 \(e(s)\)의 갱신식을 쓰고, 하나의 TD 오차가
+“얼마나 자주·얼마나 최근에” 방문한 상태들을 동시에 갱신하는지를 작은
+예제로 손으로 추적할 수 있다.</li>
+<li>이 챕터를 마치면, \(\lambda\)가 “n을 하나로 고르는 문제“를
+“가중치 분포 \(\lambda^{n-1}\)의 형태를 고르는 문제“로 바꾼다는
+등가성을 설명하고, 하이퍼파라미터를 단일 실행이 아니라 여러 시드의
+평균으로만 고르는 이유를 설명할 수 있다.</li>
+<li>이 챕터를 마치면, Dyna-Q의 루프(경험→학습→모델 저장→계획)를
+그릴 수 있고, 5×5 격자 실험의 숫자로 계획이 수렴을 얼마나 가속하고
+한계 효과가 어느 지점부터 생기는지 해석할 수 있다.</li>
+</ul>
+<p>세 수업 블록은 한 흐름을 이룬다. 먼저 <strong>7.1</strong>에서 MC와 TD(0) 사이의
+다이얼 \(n\)을 정의하고, 왜 “보편적인 최적 \(n\)“이 존재하지 않는지
+U자 곡선의 숫자로 확인한다. <strong>7.2</strong>에서는 그 “n을 고르는” 부담 자체를
+제거하는 적격흔적을 배운다 — 같은 편향-분산 트레이드오프를, 하나의 값
+을 고르는 문제에서 가중치 분포의 형태를 고르는 문제로 승화시킨다.
+마지막으로 <strong>7.3</strong>은 질문을 바꾼다. “부트스트래핑을 얼마나 할 것인가”
+가 아니라 “같은 실제 경험을 몇 번 더 쓸 것인가” — 모델 기반 계획은
+경험의 효율을 높이는 또 하나의 축이기 때문이다. Block A 후반부가
+사실 이 하나의 질문을 세 가지 다른 다이얼로 반복해서 묻는 것임을
+체감하면, Chapter 8에서 세 알고리즘을 한 프로젝트 안에 모아 비교하기가
+훨씬 수월해진다.</p>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="chapter07/1.html">7.1 n-step TD: MC와 TD(0) 사이의 다이얼</a></li>
-<li><a href="chapter07/2.html">7.2 적격흔적과 파라미터 튜닝 실습</a></li>
-<li><a href="chapter07/3.html">7.3 계획과 학습: Dyna-Q</a></li>
+<li><a href="chapter07/1.html">7.1 n-step TD: MC와 TD(0) 사이의 다이얼</a>
+n-step 리턴 \(G_t^{(n)}\)을 정의하고, 7-state random walk에서
+\(n \in \{1, 3, 5, 10, 50\}\)으로 30 seed 반복 실험해 U자
+곡선을 그린다. online 관점 코드의 핵심인 \(n{-}1\) 스텝 갱신 지연
+(<code>tau = t - n + 1</code>)과 “할인 지수를 하나만 잘못 세면 n=1에서도
+수렴하지 않는다“는 오프바이원 버그를 디버깅 실습으로 다룬다.</li>
+<li><a href="chapter07/2.html">7.2 적격흔적과 파라미터 튜닝 실습</a>
+“얼마나 자주·얼마나 최근에 방문했는가“를 기록한 흔적 \(e(s)\)를
+이용해 하나의 TD 오차로 모든 상태를 동시에 갱신하는 TD(\(\lambda\))를
+배운다. \(\lambda\)는 \(n\)을 하나 고르는 문제를 가중치 분포
+\(\lambda^{n-1}\)의 형태를 고르는 문제로 바꾼다(\(\lambda=0\)가
+TD(0), \(\lambda=1\)가 MC). 실습에서는 \(n\)과 \(\lambda\)를
+바꿔가며 U자 곡선을 20회 반복 평균으로 그리되, 단 하나의 실행만으로는
+U자 바닥을 신뢰할 수 없다는 함정을 실제 숫자로 확인한다.</li>
+<li><a href="chapter07/3.html">7.3 계획과 학습: Dyna-Q</a>
+Dyna-Q가 본 \((s,a)\)의 결과 \((r,s’)\)를 모델로 저장하고, 실제
+스텝마다 모델에서 무작위 \((s,a)\)를 뽑아 가상으로 TD(0) 갱신하는
+“경험→학습→모델 저장→계획” 루프를 다룬다. 3상태 예제로 값이 모델로
+“거꾸로” 퍼지는 과정을 손으로 추적하고, 5×5 격자 실험에서
+<code>planning_steps</code>를 0→30으로 늘리면 수렴 에피소드가 334→35로 줄어드는
+가속과 그 한계 효과를 측정한다.</li>
 </ul>
 
                     </main>
@@ -243,8 +299,8 @@
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

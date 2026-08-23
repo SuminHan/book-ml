@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -186,11 +186,61 @@
 불리는 방법의 시작이다. 120년도 더 전에 나온 이 아이디어가, 지금은 수백
 차원짜리 이미지 임베딩을 사람이 눈으로 볼 수 있는 2차원으로 줄이는 데도 그대로
 쓰인다.</p>
+<p>넓히면 이 질문이 곧 <strong>표현학습</strong>(representation learning)이다: 관측 데이터
+속에 숨어 있는 저차원 “요약 모습“을 찾아내는 일. 이 장은 데이터의 종류를
+바꾸어가며 그 주제를 세 단계로 확장한다. 이미 벡터인 데이터를 회전·압축하는
+선형 도구(PCA)에서 출발해, 벡터가 아니었던 <strong>단어</strong>를 학습으로 벡터로 만드는
+word2vec으로, 그리고 벡터가 아니었던 <strong>그래프 노드</strong>까지 벡터로 만드는
+Node2Vec과 PageRank까지 이른다. 바뀌는 것은 데이터의 형태(행렬 → 텍스트 →
+그래프)뿐이며, “함께 자주 나타나는 것들은 가까운 벡터로 모인다“는 핵심 원칙은
+처음부터 끝까지 한 줄이다.</p>
+<p>그런데 왜 이렇게까지 차원을 줄이고 “벡터 공간“을 만들고 싶은가? 두 가지 이유가
+겹친다. 첫째, 저차원 표현은 <strong>실용</strong>적이다: 데이터가 사람이 눈으로 볼 수 있을
+만큼 작아지고, 거리 기반 모델(kNN, k-means)이 차원의 저주 없이 동작하며,
+저장·추론 비용도 크게 줄어든다. 둘째, 그것은 <strong>이해</strong>를 가능하게 한다:
+“유사한 것이 가까운 곳으로 모이는” 하나의 벡터 공간을 만들면, 그 공간 위에서
+군집화·유사 검색·추론을 모두 같은 방식으로 할 수 있다. 이 장의 세 알고리즘은
+모두 이 “벡터 공간 만들기“를, 서로 다른 형태의 데이터에 대해, 하는 방법이다.</p>
+<p><strong>이 장이 어디에서 오고 어디로 가나.</strong> 이전 장(Chapter 13, LLM)에서 본
+“다음 토큰 예측이 지식을 부산물로 남긴다“는 이야기의 바로 앞자리에 이 장이
+있다. word2vec이 하는 “중심 단어 하나로 주변 단어를 맞히는” 작은 게임을 데이터
+규모와 모델 크기만 키우면 LLM의 사전학습이 되기 때문이다 — 즉 이 장은 다음 장의
+LLM이 <strong>어떻게 동작하는지</strong>를, 그 원형이 되는 “작은 게임“에서 먼저 이해하는 장이다.
+“학습 목표는 수단일 뿐, 그 과정에서 나오는 임베딩이 진짜 목표물“이라는 패턴도
+여기서 처음 등장한다. 반대로 다음 장(Chapter 15, 잠재변수 생성모델)은 이 장을
+뒤집어본다: 이 장이 관측 데이터 속에 숨은 저차원 구조를 <strong>찾는</strong> 쪽이라면, 15장은
+그 구조(잠재 공간)가 데이터를 어떻게 <strong>만들어내는가</strong>를 학습하는 생성 모델
+(EM/GMM → VAE → GAN·Diffusion)로 넘어간다. 이 장에서 만든 임베딩 공간은 곧
+15장의 “잠재 공간“이 첫 모습을 드러내는 자리다.</p>
+<p><strong>이 장을 마치면:</strong></p>
+<ul>
+<li>공분산 행렬의 고유값 문제를 이용해 “분산을 최대화하라“는 문장이 곧 “가장 큰
+고유벡터를 찾아라“는 말과 같다는 것을 라그랑주 승수법으로 유도하고 설명할 수
+있다.</li>
+<li>bag-of-words·one-hot의 한계를 짚고, skip-gram과 네거티브 샘플링이 단어
+벡터를 어떻게 만드는지, “왕 − 남자 + 여자 ≈ 여왕“이 왜 성립하는지
+설명할 수 있다.</li>
+<li>그래프 노드를 무작위 걷기 시퀀스로 바꿔 word2vec에 그대로 돌리는
+Node2Vec의 원리와 p·q 계수의 역할을 설명할 수 있다.</li>
+<li>PageRank가 무작위 걷기의 “장기 체류 확률“이라는 재귀식임을 알고,
+Node2Vec의 무작위 걷기와 같은 뿌리임을 연결해 설명할 수 있다.</li>
+</ul>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="chapter14/1.html">14.1 PCA: 분산을 최대로 보존하는 축 찾기</a></li>
-<li><a href="chapter14/2.html">14.2 word2vec: 단어를 벡터로</a></li>
-<li><a href="chapter14/3.html">14.3 Node2Vec과 PageRank</a></li>
+<li><a href="chapter14/1.html">14.1 PCA: 분산을 최대로 보존하는 축 찾기</a> — 비지도학습의
+관점에서 차원축소의 필요성(차원의 저주·비용·시각화)을 짚고, 중심화 →
+공분산 행렬 → 고유값/고유벡터로 주성분을 찾는 절차를 다룬다. 4개 점의
+손계산과 붓꽃 실습에서 버린 성분의 고유값이 재구성 오차와 정확히 같음을
+확인한다.</li>
+<li><a href="chapter14/2.html">14.2 word2vec: 단어를 벡터로</a> — bag-of-words·LSI부터
+word2vec까지의 흐름을 지나 skip-gram의 구조와 네거티브 샘플링을 다루고,
+학습된 벡터의 기하학에서 “왕 − 남자 + 여자 ≈ 여왕” 같은 선형 관계를
+들여다본다.</li>
+<li><a href="chapter14/3.html">14.3 Node2Vec과 PageRank</a> — 무작위 걷기로 “문장“을 만들어
+노드 임베딩을 학습하는 Node2Vec과 p·q 계수를 다루고, 같은 무작위 걷기를
+“중요도“라는 다른 질문에 쓴 PageRank의 재귀식·댐핑 팩터를 짚는다. Zachary
+카라테 클럽에서 라벨 없이도 두 파벌과 허브 노드가 회복되는 모습을
+확인한다.</li>
 </ul>
 
                     </main>
@@ -244,8 +294,8 @@
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

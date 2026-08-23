@@ -1,0 +1,533 @@
+<title>ML1/ML2 집필 현황</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+__KATEX_ASSETS__
+<style>
+:root {
+  --bg: #f6f5f1;
+  --card-bg: #fbfaf7;
+  --card-header-bg: #f1efe8;
+  --border: #e1ddd2;
+  --text-primary: #201f1a;
+  --text-secondary: #5b594e;
+  --text-muted: #928f80;
+  --accent: #2354a5;
+  --status-not-started: #e4e1d6;
+  --status-in-progress: #6d9be0;
+  --status-done-1: #bfe2c8;
+  --status-done-2: #7bc794;
+  --status-done-3: #3d9e5f;
+  --status-done-4: #1f7a4d;
+  --status-partial: #8a5fd1;
+  --status-failed: #d1451f;
+  --cell-border: rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161a;
+    --card-bg: #1a1d22;
+    --card-header-bg: #21242a;
+    --border: #2b2e35;
+    --text-primary: #ecebe5;
+    --text-secondary: #b6b3a6;
+    --text-muted: #767468;
+    --accent: #6ea8ff;
+    --status-not-started: #2c2f36;
+    --status-in-progress: #4d7fc9;
+    --status-done-1: #1c4a2c;
+    --status-done-2: #1f6238;
+    --status-done-3: #217e46;
+    --status-done-4: #24a35c;
+    --status-partial: #9d7ae0;
+    --status-failed: #d9622f;
+    --cell-border: rgba(255,255,255,.05);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14161a;
+  --card-bg: #1a1d22;
+  --card-header-bg: #21242a;
+  --border: #2b2e35;
+  --text-primary: #ecebe5;
+  --text-secondary: #b6b3a6;
+  --text-muted: #767468;
+  --accent: #6ea8ff;
+  --status-not-started: #2c2f36;
+  --status-in-progress: #4d7fc9;
+  --status-done-1: #1c4a2c;
+  --status-done-2: #1f6238;
+  --status-done-3: #217e46;
+  --status-done-4: #24a35c;
+  --status-partial: #9d7ae0;
+  --status-failed: #d9622f;
+  --cell-border: rgba(255,255,255,.05);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: "IBM Plex Sans KR", "Noto Sans KR", -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  padding: clamp(18px, 4vw, 48px);
+}
+.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.wrap { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+h1 { margin: 0; font-size: clamp(21px, 3vw, 27px); font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.subtitle { color: var(--text-secondary); font-size: 13.5px; max-width: 66ch; }
+.status-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--text-secondary); }
+.status-legend .item { display: flex; align-items: center; gap: 6px; }
+.status-legend .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; border: 1px solid var(--cell-border); }
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.card-head {
+  background: var(--card-header-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 11px 18px;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+}
+.card-head h2 { margin: 0; font-size: 15px; font-weight: 600; }
+.card-head .book-stat { font-size: 12px; color: var(--text-secondary); font-family: "IBM Plex Mono", monospace; }
+
+.grid-area { padding: 18px 18px 8px; overflow-x: auto; }
+.grid-inner { display: inline-flex; gap: 10px; min-width: 100%; }
+.row-labels { display: flex; flex-direction: column; gap: 3px; padding-top: 17px; flex-shrink: 0; }
+.row-labels span { height: 13px; line-height: 13px; font-size: 10.5px; color: var(--text-muted); font-family: "IBM Plex Mono", monospace; }
+.chapters { display: flex; gap: 3px; }
+.chapter-col { display: flex; flex-direction: column; gap: 3px; }
+.chapter-col .col-label {
+  height: 14px; font-size: 10px; color: var(--text-muted); text-align: center;
+  font-family: "IBM Plex Mono", monospace;
+}
+.cell {
+  width: 13px; height: 13px;
+  border-radius: 3px;
+  background: var(--status-not-started);
+  border: 1px solid var(--cell-border);
+  cursor: default;
+}
+.cell[data-status="in_progress"] { background: var(--status-in-progress); animation: pulse 1.7s ease-in-out infinite; }
+.cell[data-status="failed"] { background: var(--status-failed); }
+.cell[data-status="done"][data-tier="1"] { background: var(--status-done-1); }
+.cell[data-status="done"][data-tier="2"] { background: var(--status-done-2); }
+.cell[data-status="done"][data-tier="3"] { background: var(--status-done-3); }
+.cell[data-status="done"][data-tier="4"] { background: var(--status-done-4); }
+.cell[data-status="partial"] { background: var(--status-partial); }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+@media (prefers-reduced-motion: reduce) { .cell[data-status="in_progress"] { animation: none; } }
+.cell[data-capstone="1"] {
+  border-radius: 50%;
+  border: 2px dashed var(--text-secondary);
+}
+.cell[data-status="done"], .cell[data-status="partial"] { cursor: pointer; }
+.cell[data-status="done"]:hover, .cell[data-status="partial"]:hover { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+#modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(15,14,10,.5);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  padding: clamp(12px, 4vw, 48px);
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+}
+#modal-overlay.show { display: flex; }
+#modal-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 760px;
+  width: 100%;
+  margin-top: clamp(0px, 2vh, 40px);
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+.modal-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  padding: 20px 24px 0;
+}
+.modal-eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--text-muted); letter-spacing: .04em; margin-bottom: 4px; }
+.modal-head h2 { margin: 0; font-size: 19px; font-weight: 700; text-wrap: balance; }
+#modalClose {
+  background: var(--surface-2, var(--card-header-bg));
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 30px; height: 30px; border-radius: 8px;
+  font-size: 18px; line-height: 1; cursor: pointer;
+  flex-shrink: 0;
+}
+#modalClose:hover { color: var(--text-primary); }
+#modalClose:focus-visible, .cell:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.modal-meta {
+  padding: 10px 24px 0;
+  display: flex; flex-wrap: wrap; gap: 10px;
+  font-size: 12px; color: var(--text-secondary); font-family: "IBM Plex Mono", monospace;
+}
+.modal-body {
+  padding: 18px 24px 28px;
+  max-height: 68vh;
+  overflow-y: auto;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.modal-body h1, .modal-body h2, .modal-body h3 { line-height: 1.35; text-wrap: balance; }
+.modal-body h1 { font-size: 20px; margin: 0 0 12px; }
+.modal-body h2 { font-size: 17px; margin: 24px 0 10px; }
+.modal-body h3 { font-size: 15.5px; margin: 20px 0 8px; color: var(--accent); }
+.modal-body p { margin: 0 0 14px; color: var(--text-primary); }
+/* mdBook wraps h1-h3 in a self-anchor <a> (permalink) and every inline
+   markdown link is a plain <a> too -- neither picks up the h3 accent
+   color above (anchors get their own UA color), so without this they
+   fall back to the browser's raw default link blue. On iOS dark mode
+   that default reads as a harsh, low-contrast glow -- use the theme's
+   own accent token instead, in both themes. */
+.modal-body a { color: var(--accent); text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.modal-body a:hover, .modal-body a:focus-visible { text-decoration-color: currentColor; }
+.modal-body ul, .modal-body ol { margin: 0 0 14px; padding-left: 22px; }
+.modal-body li { margin-bottom: 4px; }
+.modal-body code { font-family: "IBM Plex Mono", monospace; font-size: .9em; background: var(--card-header-bg); padding: .1em .35em; border-radius: 4px; }
+.modal-body pre { background: var(--card-header-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; margin: 0 0 14px; }
+.modal-body pre code { background: none; padding: 0; }
+/* mdBook wraps figures in a click-to-zoom widget (checkbox + duplicate
+   <img> for the enlarged overlay) that needs the live site's CSS/JS to
+   behave -- here we just show the plain image and hide the zoom rig. */
+.modal-body .checkbox-img { display: none; }
+.modal-body .img-wrapper { display: none; }
+.modal-body .fig-caption {
+  font-size: 13px; color: var(--text-secondary); font-style: italic;
+  background: var(--card-header-bg); border: 1px dashed var(--border);
+  border-radius: 8px; padding: 10px 14px; margin: 0 0 14px;
+}
+.modal-body img { max-width: 100%; height: auto; }
+.modal-body table.md-raw-table { display: block; overflow-x: auto; white-space: pre; font-family: "IBM Plex Mono", monospace; font-size: 12.5px; background: var(--card-header-bg); padding: 10px 12px; border-radius: 8px; }
+.modal-hint { font-size: 11.5px; color: var(--text-muted); padding: 0 24px 16px; margin-top: -6px; }
+.modal-partial-flag { color: var(--status-partial); font-weight: 600; }
+
+.card-foot {
+  padding: 8px 18px 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+.card-foot .hint { font-size: 11.5px; color: var(--text-muted); }
+.legend { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
+.legend .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; border: 1px solid var(--cell-border); }
+
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border);
+}
+.stat-strip .stat { padding: 16px 12px; text-align: center; border-left: 1px solid var(--border); }
+.stat-strip .stat:first-child { border-left: none; }
+.stat .n { font-family: "IBM Plex Mono", monospace; font-size: 24px; font-weight: 600; }
+.stat.done .n { color: var(--status-done-4); }
+.stat.partial .n { color: var(--status-partial); }
+.stat.in_progress .n { color: var(--status-in-progress); }
+.stat .l { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+.lang-block { display: flex; flex-direction: column; gap: 14px; }
+.lang-header { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.lang-title { margin: 0; font-size: 18px; font-weight: 700; }
+.lang-progress { font-size: 12.5px; color: var(--text-secondary); font-family: "IBM Plex Mono", monospace; }
+.lang-note { margin: -6px 0 0; font-size: 12.5px; color: var(--text-muted); }
+
+#tooltip {
+  position: fixed; pointer-events: none;
+  background: var(--text-primary); color: var(--bg);
+  font-size: 12px; line-height: 1.45; padding: 8px 10px; border-radius: 7px;
+  max-width: 300px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  opacity: 0; transform: translateY(4px); transition: opacity .1s ease, transform .1s ease;
+  z-index: 50;
+}
+#tooltip.show { opacity: 1; transform: translateY(0); }
+#tooltip .tt-title { font-weight: 600; margin-bottom: 3px; }
+#tooltip .tt-row { opacity: .75; }
+#tooltip .tt-summary { opacity: 1; margin-top: 5px; padding-top: 5px; border-top: 1px solid rgba(255,255,255,.2); }
+#tooltip .tt-capstone { opacity: 1; font-weight: 500; }
+
+footer { color: var(--text-muted); font-size: 12px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">book-ml &middot; kor &middot; cq expansion pipeline</span>
+    <h1>ML1 / ML2 교재 집필 현황</h1>
+    <p class="subtitle">로컬 Qwen(cq)이 각 절을 50분 분량 + 실습 노트북으로 확장하는 자동화 배치 진행상황입니다. 실시간 갱신은 아니고 진행될 때마다 다시 게시됩니다.</p>
+    <div class="status-legend">
+      <span class="item"><span class="swatch" style="background:var(--status-not-started)"></span>대기</span>
+      <span class="item"><span class="swatch" style="background:var(--status-in-progress)"></span>진행중</span>
+      <span class="item"><span class="swatch" style="background:var(--status-done-4)"></span>완료</span>
+      <span class="item"><span class="swatch" style="background:var(--status-partial)"></span>부분완료(읽기 가능, 마무리 필요)</span>
+      <span class="item"><span class="swatch" style="background:var(--status-failed)"></span>실패</span>
+    </div>
+  </header>
+
+  <div id="kor-section" class="lang-block"></div>
+  <div id="eng-section" class="lang-block"></div>
+
+  <footer>
+    <span>기준 커밋: <span class="mono" id="baseRef"></span></span>
+    <span>마지막 업데이트: <span class="mono" id="genTime"></span></span>
+  </footer>
+</div>
+
+<div id="tooltip"></div>
+
+<div id="modal-overlay">
+  <div id="modal-panel">
+    <div class="modal-head">
+      <div>
+        <div class="modal-eyebrow" id="modalEyebrow"></div>
+        <h2 id="modalTitle"></h2>
+      </div>
+      <button id="modalClose" aria-label="닫기">&times;</button>
+    </div>
+    <div class="modal-meta" id="modalMeta"></div>
+    <p class="modal-hint">수식은 KaTeX로 렌더링됩니다 (실제 사이트는 MathJax 사용 — 표기가 미세하게 다를 수 있음)</p>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const DATA = __PROGRESS_JSON__;
+
+const STATUS_LABEL = { not_started: "대기", in_progress: "진행중", done: "완료", partial: "부분완료", failed: "실패" };
+const BOOK_LABEL = { ml1: "Machine Learning 1", ml2: "Machine Learning 2" };
+
+function el(tag, attrs, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("data-")) e.setAttribute(k, v);
+    else e[k] = v;
+  }
+  for (const c of children) if (c != null) e.append(c);
+  return e;
+}
+
+function doneTier(item) {
+  const delta = item.word_count_after - item.word_count_before;
+  if (delta > 3000) return 4;
+  if (delta > 1800) return 3;
+  if (delta > 800) return 2;
+  return 1;
+}
+
+function cellFor(item) {
+  const attrs = { class: "cell", "data-status": item.status };
+  if (item.status === "done") attrs["data-tier"] = String(doneTier(item));
+  if (item.is_capstone) attrs["data-capstone"] = "1";
+  const readable = (item.status === "done" || item.status === "partial") && item.html_content;
+  if (readable) {
+    attrs.tabIndex = "0";
+    attrs.role = "button";
+    attrs["aria-label"] = item.kind === "opener"
+      ? `Chapter ${parseInt(item.chapter, 10)} 개요 읽기`
+      : `${item.chapter}.${item.section} ${item.title} 읽기`;
+  }
+  const cell = el("div", attrs);
+  cell.addEventListener("mouseenter", (ev) => showTooltip(ev, item));
+  cell.addEventListener("mousemove", moveTooltip);
+  cell.addEventListener("mouseleave", hideTooltip);
+  if (readable) {
+    cell.addEventListener("click", () => openModal(item));
+    cell.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openModal(item); }
+    });
+  }
+  return cell;
+}
+
+// granularity "section": rows = .1/.2/.3 under each chapter (kor, already split)
+// granularity "chapter": one cell per chapter (eng, not split into sections yet)
+function renderBookCard(bookKey, items, granularity) {
+  const byChapter = {};
+  for (const it of items) (byChapter[it.chapter] ||= []).push(it);
+  const chapterNums = Object.keys(byChapter).sort();
+  // Stats (header count + bottom strip) are scoped to the *sections* only
+  // (kind !== "opener") so the familiar "X / 48 sections" framing doesn't
+  // shift just because the opener row exists -- the opener row still
+  // renders in the grid below, just outside these tallies.
+  const statItems = items.filter(i => i.kind !== "opener");
+  const openerItems = items.filter(i => i.kind === "opener");
+  const done = statItems.filter(i => i.status === "done").length;
+  const partial = statItems.filter(i => i.status === "partial").length;
+  const inProgress = statItems.filter(i => i.status === "in_progress").length;
+  const failed = statItems.filter(i => i.status === "failed").length;
+  const notStarted = statItems.length - done - partial - inProgress - failed;
+  const openerDone = openerItems.filter(i => i.status === "done").length;
+
+  const card = el("div", { class: "card" });
+  card.append(el("div", { class: "card-head" },
+    el("h2", {}, BOOK_LABEL[bookKey] || bookKey),
+    el("span", { class: "book-stat" },
+      `${done} / ${statItems.length} ${granularity === "section" ? "sections" : "chapters"}`
+      + (openerItems.length ? ` · 개요 ${openerDone}/${openerItems.length}` : "")),
+  ));
+
+  const gridArea = el("div", { class: "grid-area" });
+  const gridInner = el("div", { class: "grid-inner" });
+  const rowLabels = granularity === "section"
+    ? el("div", { class: "row-labels" }, el("span", {}, "개요"), el("span", {}, ".1"), el("span", {}, ".2"), el("span", {}, ".3"))
+    : el("div", { class: "row-labels" }, el("span", {}, ""));
+  gridInner.append(rowLabels);
+
+  const chaptersEl = el("div", { class: "chapters" });
+  for (const cnum of chapterNums) {
+    const col = el("div", { class: "chapter-col" });
+    col.append(el("div", { class: "col-label" }, String(parseInt(cnum, 10))));
+    if (granularity === "section") {
+      const bySec = {};
+      for (const it of byChapter[cnum]) bySec[it.section] = it;
+      for (const snum of ["0", "1", "2", "3"]) {
+        const it = bySec[snum];
+        col.append(it ? cellFor(it) : el("div", { class: "cell", style: "visibility:hidden" }));
+      }
+    } else {
+      col.append(cellFor(byChapter[cnum][0]));
+    }
+    chaptersEl.append(col);
+  }
+  gridInner.append(chaptersEl);
+  gridArea.append(gridInner);
+  card.append(gridArea);
+
+  card.append(el("div", { class: "card-foot" },
+    el("span", { class: "hint" },
+      granularity === "section"
+        ? "각 사각형 = 절 하나 (가로: 챕터, 세로: 개요/.1/.2/.3) · 점선 원 = 팀프로젝트/Peer-Review 절 · hover로 상세 정보 · 완료(초록) 절은 클릭하면 본문 읽기"
+        : "각 사각형 = 챕터 하나 (아직 절로 안 나뉨) · hover로 상세 정보"),
+    el("div", { class: "legend" },
+      el("span", {}, "Less"),
+      el("span", { class: "swatch", style: "background:var(--status-not-started)" }),
+      el("span", { class: "swatch", style: "background:var(--status-done-1)" }),
+      el("span", { class: "swatch", style: "background:var(--status-done-2)" }),
+      el("span", { class: "swatch", style: "background:var(--status-done-3)" }),
+      el("span", { class: "swatch", style: "background:var(--status-done-4)" }),
+      el("span", {}, "More"),
+    ),
+  ));
+
+  const strip = el("div", { class: "stat-strip" });
+  strip.append(
+    el("div", { class: "stat done" }, el("div", { class: "n" }, String(done)), el("div", { class: "l" }, granularity === "section" ? "완료된 절" : "완료된 챕터")),
+    el("div", { class: "stat partial" }, el("div", { class: "n" }, String(partial)), el("div", { class: "l" }, "부분완료")),
+    el("div", { class: "stat in_progress" }, el("div", { class: "n" }, String(inProgress)), el("div", { class: "l" }, "진행중")),
+    el("div", { class: "stat" }, el("div", { class: "n" }, String(notStarted)), el("div", { class: "l" }, "대기중")),
+  );
+  card.append(strip);
+  return card;
+}
+
+function renderLanguage(containerId, langData, headerLabel, note) {
+  const container = document.getElementById(containerId);
+  container.append(el("div", { class: "lang-header" },
+    el("h2", { class: "lang-title" }, headerLabel),
+    el("span", { class: "lang-progress" },
+      `${langData.counts.done} / ${langData.total} ${langData.granularity === "section" ? "sections" : "chapters"} 완료`),
+  ));
+  if (note) container.append(el("p", { class: "lang-note" }, note));
+  const byBook = {};
+  for (const it of langData.items) (byBook[it.book] ||= []).push(it);
+  for (const bookKey of Object.keys(byBook).sort()) {
+    container.append(renderBookCard(bookKey, byBook[bookKey], langData.granularity));
+  }
+}
+
+function render() {
+  renderLanguage("kor-section", DATA.kor, "🇰🇷 한국어판", null);
+  renderLanguage("eng-section", DATA.eng, "🇺🇸 English", DATA.eng.note);
+  document.getElementById("baseRef").textContent = DATA.base_ref;
+  document.getElementById("genTime").textContent = DATA.generated_at;
+}
+
+const tooltip = document.getElementById("tooltip");
+function showTooltip(ev, item) {
+  const isOpener = item.kind === "opener";
+  const delta = item.word_count_after - item.word_count_before;
+  const deltaStr = delta > 0 ? `+${delta}` : "변화 없음";
+  const label = isOpener ? `Ch.${parseInt(item.chapter, 10)}` : `${item.chapter}.${item.section}`;
+  const summaryHtml = item.summary
+    ? `<div class="tt-row tt-summary">${item.summary}</div>` : "";
+  const capstoneHtml = item.is_capstone
+    ? `<div class="tt-row tt-capstone">🎓 팀프로젝트 / Peer-Review / 총정리 절</div>` : "";
+  const notebookHtml = isOpener ? "" : `<div class="tt-row">노트북: ${item.notebook ? "있음" : "없음"}</div>`;
+  tooltip.innerHTML = `
+    <div class="tt-title">${label} ${isOpener ? "챕터 개요" : item.title}</div>
+    ${capstoneHtml}
+    <div class="tt-row">${STATUS_LABEL[item.status]} &middot; 단어수 ${item.word_count_before} → ${item.word_count_after} (${deltaStr})</div>
+    ${notebookHtml}
+    ${summaryHtml}
+  `;
+  tooltip.classList.add("show");
+  moveTooltip(ev);
+}
+function moveTooltip(ev) {
+  const pad = 14;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + 300 > window.innerWidth) x = ev.clientX - 300 - pad;
+  if (y + 110 > window.innerHeight) y = ev.clientY - 110 - pad;
+  tooltip.style.left = x + "px";
+  tooltip.style.top = y + "px";
+}
+function hideTooltip() { tooltip.classList.remove("show"); }
+
+// Modal content is the *actual* mdbook-rendered HTML for that section
+// (extracted from docs/kor/.../N.html by generate_progress_data.py), not a
+// hand-rolled markdown parser -- so links/lists/tables/headings all render
+// exactly as the real site would. Math (\( \) / \[ \]) is left as raw LaTeX
+// text since MathJax isn't bundled into this artifact.
+const modalOverlay = document.getElementById("modal-overlay");
+function openModal(item) {
+  const isOpener = item.kind === "opener";
+  document.getElementById("modalEyebrow").textContent =
+    `${BOOK_LABEL[item.book] || item.book} · Chapter ${parseInt(item.chapter, 10)}`;
+  document.getElementById("modalTitle").textContent = isOpener
+    ? `Chapter ${parseInt(item.chapter, 10)} 개요 -- ${item.chapter_title}`
+    : `${item.chapter}.${item.section} ${item.title}`;
+  const delta = item.word_count_after - item.word_count_before;
+  const statusNote = item.status === "partial"
+    ? `<span class="modal-partial-flag">⚠ 부분완료 -- 노트북 등 마무리 작업 남음</span>` : "";
+  const notebookSpan = isOpener ? "" : `<span>노트북: ${item.notebook ? "있음" : "없음"}</span>`;
+  document.getElementById("modalMeta").innerHTML = `
+    <span>${item.word_count_before} → ${item.word_count_after} 단어 (+${delta})</span>
+    ${notebookSpan}
+    ${statusNote}
+  `;
+  const bodyEl = document.getElementById("modalBody");
+  bodyEl.innerHTML = item.html_content;
+  if (window.renderMathInElement) {
+    try {
+      renderMathInElement(bodyEl, {
+        delimiters: [
+          { left: "\\[", right: "\\]", display: true },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        throwOnError: false,
+      });
+    } catch (e) { /* leave raw LaTeX text if KaTeX fails on something */ }
+  }
+  modalOverlay.classList.add("show");
+  document.getElementById("modalClose").focus();
+}
+function closeModal() { modalOverlay.classList.remove("show"); }
+document.getElementById("modalClose").addEventListener("click", closeModal);
+modalOverlay.addEventListener("click", (ev) => { if (ev.target === modalOverlay) closeModal(); });
+document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") closeModal(); });
+
+render();
+</script>

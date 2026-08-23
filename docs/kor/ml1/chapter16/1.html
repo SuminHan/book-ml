@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,68 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="161-팀-프로젝트-구조와-발표"><a class="header" href="#161-팀-프로젝트-구조와-발표">16.1 팀 프로젝트: 구조와 발표</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter16_1_dl_baseline.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: 딥러닝 베이스라인 검증"></a></p>
+<h3 id="왜-block-b의-시작에-또-프로젝트를-하는가"><a class="header" href="#왜-block-b의-시작에-또-프로젝트를-하는가">왜 Block B의 시작에 또 프로젝트를 하는가</a></h3>
+<p>Chapter 8.1(Block A 캡스톤)에서 이미 한 번 프로젝트를 했으니, “왜 또
+하는가“가 먼저 나올 질문이다. 답은 이 두 프로젝트가 <strong>검증하는 대상이
+달라서</strong>다. Chapter 8의 프로젝트가 검증한 것은 “Chapter 2~7의 도구가
+실제 데이터 앞에서도 작동하는가” — 즉 <strong>정형 데이터를 다루는 고전 ML의
+완결</strong>이었다. 이번 프로젝트(Chapter 9~15의 도구)가 검증해야 하는 것은
+또 다른 문장이다: <strong>“신경망과 그 이후의 도구가, 이 데이터에 정말 필요한
+것인가”</strong>. 이 두 문장은 모양은 같지만 무게가 다르다. 전자는 “도구가
+맞는가“를, 후자는 **“도구가 필요한가”**를 묻기 때문이다 — 후자는
+“아예 안 쓰는 것(GBDT, Chapter 7)과 비교해서” 물어야 성립한다.</p>
+<p>이 차이는 실전에서도 그대로 나타난다. 산업 현장의 많은 팀은 이미지나
+텍스트 데이터를 처음 만났을 때 “신경망을 돌려보자“가 아니라
+“<strong>이 문제를 정형 문제로 치환해서 GBDT로 해결할 수 있는가</strong>“부터
+묻는다. Chapter 7.3에서 보듯, 정형 데이터에서는 지금도 GBDT 계열이
+신경망과 비등하거나 이기는 경우가 흔하기 때문이다. 그러니 이번
+프로젝트를 “딥러닝을 써야 한다“는 대명제로 시작하는 팀은 이미
+채점 기준에서 감점된 상태다 — <strong>딥러닝이 필요한 이유를 스스로
+증명하는 쪽</strong>이어야 한다. 이 절은 그 증명의 구조(일정·구조·채점)를
+정한다.</p>
+<h3 id="전체-그림-4주-파이프라인"><a class="header" href="#전체-그림-4주-파이프라인">전체 그림: 4주 파이프라인</a></h3>
+<p>진행 순서를 한 장으로 그리면 Chapter 8.1과 같은 4박스 흐름인데, <strong>박스에
+써진 장이 Ch09~15로 바뀐 것</strong>이 차이다. 왼쪽에서 오른쪽으로
+<strong>데이터 → 파이프라인 → 평가 → 발표</strong>로 흐르고, 각 박스가 Block B의
+어느 장에서 배운 원칙을 집행하는지 함께 적어두었다. 붉은 점선(평가 →
+파이프라인)이 핵심이다 — test에서 <strong>누수(Ch06.3)를 발견했거나,
+train/val 곡선이 과적합의 모양이면(Ch09.3, 10.2) 돌아가서</strong> 다시 해야
+한다는 뜻이다.</p>
+<p>Block A와 한 가지 구조적 차이가 있다. 8.1의 파이프라인에서는
+“모델 고르기“가 Box②의 한 박스였지만, 16.1에서는 <strong>“이 문제를 정형
+(→Ch07 GBDT)으로 풀 것인가, 비정형(→Ch09~15 신경망)으로 풀 것인가”
+라는 분기가 Box①과 Box② 사이에 들어온다</strong> — 이 분기의 결과가
+뒤의 모든 선택을 결정하므로, M1(문제 정의)에서 이미 정해야 한다.
+프로젝트에서 “한 번 지나가면 돌아올 수 없는” 것은 test 한 번의 측정
+뿐이고, 그 외 모든 단계는 되돌아갈 수 있다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch16_1_project_pipeline.svg" alt="팀 프로젝트 파이프라인 — 데이터 선정·문제 정의(1주, ‘정형이면 GBDT?’ 분기 포함) → 3분할·전처리·신경망·val 튜닝(2~3주) → test 한 번 측정·수식적 정당화(3~4주) → 발표·peer-review(4주); test에서 누수·과적합 발견 시 파이프라인으로 되돌아가는 붉은 점선 포함"><span class="img-wrapper"><img src="../../images/ch16_1_project_pipeline.svg" alt="팀 프로젝트 파이프라인 — 데이터 선정·문제 정의(1주, ‘정형이면 GBDT?’ 분기 포함) → 3분할·전처리·신경망·val 튜닝(2~3주) → test 한 번 측정·수식적 정당화(3~4주) → 발표·peer-review(4주); test에서 누수·과적합 발견 시 파이프라인으로 되돌아가는 붉은 점선 포함"></span></label></p>
+<h3 id="일정과-마일스톤"><a class="header" href="#일정과-마일스톤">일정과 마일스톤</a></h3>
+<p>4주(각 주 = 수업 3회)는 아래처럼 나뉜다. <strong>마일스톤 M1~M4가 제출물</strong>이고,
+M1·M2는 팀 전체가 모여 함께 결정하는 것(데이터·문제·모델 후보를
+개인별로 골라온 뒤 회의에서 확정)이다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>주</th><th>해야 할 일</th><th>마일스톤(제출)</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>데이터 후보 2~3개 조사(크기·라벨·결측치), <strong>정형/비정형 판정(§“왜 딥러닝”)</strong>, 팀 회의, <strong>문제 정의 문서</strong>: 행이 무엇인지, 라벨이 무엇인지, 주 지표는 무엇인지, 베이스라인(무작위·GBDT)은 무엇인지, <strong>“왜 딥러닝인가” 초안</strong></td><td><strong>M1</strong> 문제 정의 + 데이터 선택 + “왜 DL” 1페이지</td></tr>
+<tr><td>2</td><td>3분할(Ch06.3)로 코드 스캐폴드, 전처리(train으로만 fit), <strong>1개 신경망 엔드투엔드 동작 확인</strong>(최소 CNN 또는 Transformer 1블록), <strong>GBDT 베이스라인 측정</strong></td><td><strong>M2</strong> 중간코드 리뷰(코드 + GBDT·신경망 베이스라인 숫자 각 1줄)</td></tr>
+<tr><td>3</td><td>나머지 기법 적용/조합, val/교차검증(Ch06.2)으로 하이퍼파라미터·구조 튜닝, <strong>test 최종 측정(한 번만)</strong>, 학습 곡선(에포크 vs train/val) 도출</td><td><strong>M3</strong> 학습 곡선 1장 + 최종 test 숫자 + GBDT 비교 숫자</td></tr>
+<tr><td>4</td><td>수식적 정당화 작성, 보고서·발표 슬라이드 완성, <strong>발표(5~7분, 마지막에 “왜 DL” 답변)</strong>, <strong>peer-review 2팀</strong></td><td><strong>M4</strong> 보고서 + 발표 + 리뷰 2건</td></tr>
+</tbody>
+</table>
+</div>
+<p>“왜 마일스톤이 이 모양인가“는 Chapter 8.1의 논리와 같다 — M2에서
+<strong>베이스라인 숫자 한 줄</strong>을 제출하게 하는 이유는, 이 숫자를
+보고해야 “신경망을 만들었다“고 말할 수 있는지 판정할 수 있기
+때문이다(§“두 층의 베이스라인”). M3에서 <strong>학습 곡선 한 장</strong>을
+요구하는 이유는, “최종 성능 숫자“만 제출하면 에포크 수를 어떻게 정했는지
+검증할 수 없기 때문이다 — 곡선이 있으면 val 곡선이 실제로 하이퍼파라미터
+선택에 쓰였는지가 그림에서 바로 드러난다. 단, Block B의 곡선은
+<strong>에포크(또는 배치)를 x축</strong>으로 한다 — 8.1이 <code>n_estimators</code>를 x축으로
+했던 것과 다르다. 이유는 아래 §“학습 곡선“에서 설명한다.</p>
 <h3 id="프로젝트-구조"><a class="header" href="#프로젝트-구조">프로젝트 구조</a></h3>
 <ul>
 <li><strong>데이터</strong>: Kaggle, UCI 외에 Hugging Face Datasets(huggingface.co/datasets)도
@@ -191,9 +253,193 @@
 정당화, (2) 정규화 기법(dropout 등)을 썼다면 Chapter 9.3에서 그
 효과를 설명, (3) 생성모델 프로젝트라면 Chapter 15의 ELBO나 min-max
 목적함수 중 하나를 실제 구현에 연결.</li>
+<li><strong>GBDT 비교(필수)</strong>: 같은 데이터에 Chapter 7.3의 GBDT(또는
+랜덤포레스트)를 <strong>베이스라인으로</strong> 돌려, 신경망이 이보다 나은지
+확인한다. 이 숫자가 §“발표“의 “왜 딥러닝인가” 질문에 대한 근거의
+출발점이다.</li>
 <li>Chapter 8의 프로젝트와 마찬가지로 train/validation/test 분리(Chapter
 6.3)를 지킨다.</li>
 </ul>
+<p><strong>데이터 고르기 실전 가이드</strong>: Chapter 8.1의 5개 기준(행의 물리적
+단위, 레이아웃의 함정, 시계열, 클래스 비율, 크기)은 그대로 적용된다.
+그 위에 Block B에서만 추가되는 기준이 하나 있다 — <strong>(6) 이 데이터의
+“원시 특징“이 이미 정형으로 추출되어 있는가.</strong> 이 기준이 정형/비정형
+판정(§“왜 딥러닝”)의 실전판이다. (1) 이미 수치·범주 열로만 구성된
+표(UCI 대부분)라면 정형 — GBDT와 비교해야 한다. (2) 원소가
+<strong>픽셀·음파·토큰</strong>인 원시 배열(이미지 32×32×3, 오디오 웨이브폼,
+문장)이라면 비정형 — 여기에 “손으로” 특징을 만들기는 어려우므로
+신경망이 특징 추출기 역할을 하는 것이다. (3) 애매한 경우(예: 이미
+워드임베딩으로 벡터화된 텍스트)라면, “원시 토큰으로 직접
+모델링한다“는 선택을 해 Ch13 도구의 필요성을 스스로 만드는 것도
+합법이다 — 단, 그 선택의 이유를 M1에 적어야 한다.</p>
+<p>같은 기준으로 실제 후보 데이터셋을 미리 살펴보면, “이 데이터는
+정형인가, 비정형인가, 그리고 함정은 무엇인가“가 한 줄로 정리된다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>데이터셋</th><th>크기</th><th>정형/비정형</th><th>문제 정의</th><th>주의할 함정</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>sklearn digits</strong> (실습용)</td><td>1,797×64 (8×8 회색)</td><td>정형(이미지지만 이미 64-dim 벡터로 flattening됨)</td><td>숫자 이미지 → 0~9 분류</td><td>데이터가 작아(64차원) 신경망이 GBDT를 <strong>이기지 못하는 것이 정상</strong> — 이 점이 바로 §“왜 DL“의 교육 포인트</td></tr>
+<tr><td><strong>CIFAR-10</strong> (HF)</td><td>60,000×32×32×3</td><td>비정형(원시 픽셀)</td><td>10개 물체 이미지 분류</td><td>레이블 불균형 없음 — 정확도 OK. 데이터 증강(회전·뒤집기, Ch10) 없이는 train/val 격차 큼</td></tr>
+<tr><td><strong>CIFAR-100</strong> (HF)</td><td>60,000×32×32×3</td><td>비정형</td><td>100개 물체 분류</td><td>클래스 100개 — macro-F1 또는 top-1 정확도 + 베이스라인(무작위 1%) 명시</td></tr>
+<tr><td><strong>IMDb Movie Reviews</strong> (HF)</td><td>50,000 문장</td><td>비정형(텍스트)</td><td>긍정/부정 감지</td><td>문장 길이 불균형 — Ch11의 패딩/마스킹. BERT 토크나이저 vs 단순 토큰화 비교 가능</td></tr>
+<tr><td><strong>Kaggle Toxic Comments</strong></td><td>159,576×6(라벨)</td><td>비정형(텍스트)</td><td>6개 독성 라벨 다중 라벨 분류</td><td><strong>다중 라벨</strong>(한 문장이 여러 독성) — 시그모이드 출력 + 각 라벨별 F1. 클래스 불균형 라벨 있음 → 라벨별 PR-AUC</td></tr>
+<tr><td><strong>EMNIST</strong> (HF)</td><td>112,800×28×28</td><td>비정형(원시 픽셀)</td><td>글자 분류(10개 숫자 + 26개 알파벳 대소문자)</td><td>클래스 62개 — digits보다 어려우며, CNN이 “8×8로 flatten한 GBDT“보다 확실히 앞서는 규모(28×28=784-dim)</td></tr>
+</tbody>
+</table>
+</div>
+<p>“기본 코스“를 정한다면 <strong>sklearn digits → EMNIST</strong>의 2단계가 좋다.
+digits에서 “정형(64-dim)으로는 GBDT와 대등하거나 못 이긴다“를
+<strong>스스로 눈으로 확인</strong>한 뒤, 같은 이미지 문제를 28×28(784-dim)으로
+확대하면 CNN의 우위가 드러나는 모습을 비교하는 것 — 이 2단 구조가
+§“왜 딥러닝인가” 질문에 <strong>숫자로</strong> 답하는 가장 깔끔한 경로다. (단,
+시간이 부족하면 EMNIST만 하고, digits의 GBDT 대등성은 이 절의
+실습 노트북 §“GBDT vs CNN“에서 이미 확인한 것을 인용하면 된다.)</p>
+<h3 id="두-층의-베이스라인-무작위와-gbdt"><a class="header" href="#두-층의-베이스라인-무작위와-gbdt">두 층의 베이스라인: “무작위“와 “GBDT”</a></h3>
+<p>Chapter 8.1에서 배운 <strong>다수 클래스 베이스라인</strong>(train에서 가장 많이
+나온 클래스를 전부 예측)은 이번에도 제로점이다. 다만 Block B에서는
+그 위에 <strong>두 번째 층 — GBDT 베이스라인</strong>을 의무로 올린다. 이 두 층이
+“모델을 만들었다“는 주장을 단계별로 검증한다:</p>
+<ol>
+<li><strong>1층: 무작위(또는 다수 클래스)</strong> — 모델이 <em>아무것도</em> 배운
+상태의 하한. 10클래스 균형 데이터라면 무작위 정확도는 10%다.</li>
+<li><strong>2층: GBDT(Ch07.3)</strong> — <em>정형 도구의</em> 상한에 가까운 기준.
+“신경망이 정형 도구보다 나은가“를 묻는 기준선이다.</li>
+<li><strong>본인 모델(신경망)</strong> — 위 두 층을 <strong>둘 다</strong> 넘어야 “이 데이터에
+딥러닝이 필요했다“고 말할 수 있다.</li>
+</ol>
+<p>이 3층 구조가 왜 중요한지는 실습 노트북의 숫자가 보여준다.
+sklearn digits(1,797개, 8×8=64차원)를 8:1:1로 stratify 분할
+(train 1,437 / val 180 / test 180)하면:</p>
+<ul>
+<li>다수 클래스(숫자 ‘1’, train에서 146개) 베이스라인의 val 정확도
+<strong>0.100</strong>, test 정확도 <strong>0.100</strong> — 10클래스 균형 데이터의
+우연(Chapter 2.3의 베이스레이트).</li>
+<li><strong>GBDT(200트리, 학습률 0.1)</strong>: val 정확도 <strong>0.983</strong>, test
+정확도 <strong>0.944</strong>, test macro-F1 <strong>0.944</strong>.</li>
+<li><strong>작은 CNN</strong>(아래 §“손으로 한 번“의 구조, 35,914 파라미터):
+test 정확도 <strong>0.939</strong> — GBDT(0.944)에 <strong>비등~소폭 열세.</strong></li>
+</ul>
+<p><strong>여기서 핵심</strong>: digits 같은 작은 정형 데이터에서는 <strong>신경망이
+GBDT를 (소폭) 이기지 못하는 것이 <em>예상되는</em> 결과</strong>다. Grinsztajn,
+Oyallon, Varoquaux의 2022년 분석(“Why do tree-based models still
+outperform deep learning on typical tabular data?”)이 실증한
+결론이 바로 이것 — <strong>저차원의 정형 데이터에서는 GBDT가 신경망을
+이기고, 신경망의 우위는 (a) 차원이 높은 데이터(텍스트를 원시
+토큰으로 보면 10⁴~10⁵차원), (b) 데이터가 아주 큰 경우, (c)
+특징이 <em>공유되는</em> 국소 구조(이미지)일 때</strong> 나타난다. digits는
+64차원(저차원)이므로 GBDT가 앞서는 쪽이 <em>예상</em>이다 — 그리고
+실습 노트북의 실험은 정확히 그렇게 나온다(64차원에서 GBDT
+0.944 ≻ CNN 0.939, 격차 0.006).</p>
+<p>이 “예상대로 졌다“를 <strong>한 단계 더</strong> 밀어본 것이 이번 절의 핵심
+실험이다. <em>같은</em> digits 이미지를 8×8에서 <strong>28×28으로 확대</strong>
+(784차원)해서 다시 비교하면, 64차원에서는 GBDT가 0.006 앞섰던
+것과 <strong>반대로</strong> 784차원에서는 CNN(0.961)이 GBDT(0.944)를
+<strong>0.017로 역전</strong>시킨다. <em>변수를 하나만(차원) 바꿨는데</em> 격차가
+<strong>닫히고 심지어 뒤집히는</strong> 것 — 이 0.006 → −0.017이 바로
+축 2(규모)의 <em>증거</em>다. 8×8에서는 “이미지“라고 해도 64개
+수치로 flattening되어 <strong>정형</strong>이고, 28×28(784개 픽셀)에서는
+“국소 구조를 공유하는 원시 픽셀“에 가까워지는 순간 CNN의
+공유·평행불변 편향이 일을 시작하는 것이다. 이 실험까지
+스스로 세운 팀의 “왜 DL” 답변은 이렇다:</p>
+<p><strong>“64차원 정형에서는 GBDT 0.944가 상한이고 내 CNN(0.939)은 이를
+어깨너머로 확인했으며, 같은 데이터를 784차원으로 확대하자 CNN이
+오히려 0.961로 GBDT를 역전시켰다 — 즉, <em>내 문제가</em> 차원·규모가
+크다면(EMNIST, CIFAR) CNN의 우위는 이 추세의 연장선이라는 것을
+숫자로 보여준다.”</strong> 이 논리가 “왜 DL” 질문에 대한 <strong>정직한</strong>
+답이다 — “신경망이 좋다“가 아니라 <strong>“언제(어떤 차원·구조에서)
+신경망이 좋은지“를 한 차원 변화로 실증</strong>한 것이다.</p>
+<h3 id="왜-고전-ml이-아니라-딥러닝인가--이-프로젝트의-핵심-질문"><a class="header" href="#왜-고전-ml이-아니라-딥러닝인가--이-프로젝트의-핵심-질문">“왜 고전 ML이 아니라 딥러닝인가” — 이 프로젝트의 핵심 질문</a></h3>
+<p>이 절의 제목이 “구조와 발표“지만, 실제 채점이 가장 강하게 보는 것은
+이 한 문장이다. 아래는 이 질문에 <strong>구조적으로</strong> 답하는 방법 —
+“감“이 아니라 <strong>두 개의 축과 두 개의 숫자</strong>로 답한다.</p>
+<p><strong>(축 1) 데이터의 구조: 정형인가, 원시(비정형)인가.</strong> §“데이터
+고르기“의 기준 (6)다. 정형(수치/범주 열)이면 기본 전제는 “GBDT와
+비교하라“이고, 비정형(픽셀/음파/토큰)이면 “신경망이 특징 추출기”
+라는 주장이 성립할 <em>가능</em>이 생긴다.</p>
+<p><strong>(축 2) 데이터의 규모: 특징이 <em>공유</em>되는가, 크기만큼 비용이
+오르는가.</strong> 이 축은 “왜 CNN“을 수학적으로 설명한다 — Chapter 10.1의
+파라미터 수 공식이다. 아래 §“손으로 한 번“에서 같은 이미지 크기에
+“flatten해서 FC“와 “3×3 conv“의 파라미터 수를 나란히 놓으면,
+<strong>해상도 S가 커질수록 FC는 \(S^2\)배로, conv는 <em>상수</em>로
+남는</strong> 것을 직접 계산한다. 이 차이가 “이미지가 커질수록 CNN이
+필요해진다“의 <em>수학</em>이다.</p>
+<p><strong>(숫자 1) GBDT 베이스라인</strong> — “신경망이 정형 상한을 넘는가”.
+<strong>(숫자 2) 학습 곡선에서 train/val의 격차</strong> — 신경망이
+<strong>데이터가 커질수록 val 곡선이 계속 상승</strong>한다면(GBDT는 일찍
+포화), “이 문제는 규모가 커지면 딥러닝에 유리하다“는 <strong>전망</strong>까지
+제시할 수 있다.</p>
+<p>이 네 가지(축 2개 + 숫자 2개)를 보고서와 발표에 담으면, “왜
+딥러닝인가“는 막연한 의문이 아니라 <strong>반박 가능한 주장</strong>이 된다 —
+16.2에서 peer-review가 이 주장을 <em>심사</em>하는 기준이기도 하다.</p>
+<p><strong>역사적 일화로 이 축을 붙잡자.</strong> 2011년까지 이미지 분류의 최선은
+“사람이 손으로 만든 특징(HOG, SIFT) + 선형 분류자/GBDT“였는데,
+2012년 AlexNet
+(ImageNet, 128만 이미지)가 오차율을 기존보다 <strong>절대 10%p 가까이
+줄여</strong> ImageNet 경쟁을 사실상 끝냈다. 이 전회의 본질은 “신경망이
+마법“이 아니라, <strong>① 데이터(ImageNet)가 갑자기 충분히 커지고 ②
+GPU가 학습을 가능하게 한</strong> 순간이었다 — 축 2(규모)가 축 1(비정형)을
+결정지운 대표 사례다. 반대로, “정형 표 데이터“에서는 2020년대에도
+GBDT가 최선에 가까운 것이 Grinsztajn et al. 2022의 결과다. 두 사례를
+나란히 두면, “왜 DL“의 답이 <strong>데이터의 구조와 규모</strong>에서 나와야
+하는 이유가 직관적으로 보인다.</p>
+<h3 id="손으로-한-번-cnn의-파라미터-수로-왜-cnn을-계산하기"><a class="header" href="#손으로-한-번-cnn의-파라미터-수로-왜-cnn을-계산하기">손으로 한 번: CNN의 파라미터 수로 “왜 CNN“을 계산하기</a></h3>
+<p>수식적 정당화(필수 요구사항 1번)의 가장 빠른 예시를, Chapter 10.1의
+공식으로 손으로 해보자. 실습 노트북의 구조</p>
+<p>\[
+1\times8\times8 \;\xrightarrow{\text{Conv2d}(1,32,3,\ \text{padding}=1,\ \text{stride}=2)}\;
+32\times4\times4 \;\xrightarrow{\text{MaxPool2d}(2)}\; 32\times2\times2
+\;\xrightarrow{\text{Flatten}}\; 128 \;\xrightarrow{\text{FC}}\; 256
+\;\xrightarrow{\text{ReLU}}\; 256 \;\xrightarrow{\text{FC}}\; 10
+\]</p>
+<p>에 대해 각 층의 파라미터 수(Chapter 10.1: conv는
+\(\text{in\_ch}\times k\times k\times\text{out\_ch}+\text{out\_ch}\),
+FC는 \(\text{in}\times\text{out}+\text{out}\))를 계산한다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>층</th><th>공식</th><th>파라미터 수</th></tr>
+</thead>
+<tbody>
+<tr><td>Conv2d(1→32, 3×3)</td><td>\(1\times3\times3\times32 + 32\)</td><td><strong>320</strong></td></tr>
+<tr><td>MaxPool2d(2)</td><td>(파라미터 없음)</td><td>0</td></tr>
+<tr><td>FC 128→256</td><td>\(128\times256 + 256\)</td><td><strong>33,024</strong></td></tr>
+<tr><td>FC 256→10</td><td>\(256\times10 + 10\)</td><td><strong>2,570</strong></td></tr>
+<tr><td><strong>합계</strong></td><td></td><td><strong>35,914</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p>이 합계를 PyTorch로 <code>sum(p.numel() for p in model.parameters())</code>를
+돌려 **정확히 일치(35,914)**하는지 확인하는 것 — “10.1의 공식으로
+설계를 정당화“라는 요구사항의 뼈대가 라이브러리 없이도 성립하는
+것이다.</p>
+<p>그런데 이 숫자의 <em>의미</em>는 비교해야 보인다. 같은 8×8 입력을
+<strong>flatten(64-dim)해서</strong> <code>64→64→10</code>의 단순 MLP를 만들면 파라미터는
+<strong>4,810</strong>개뿐이다 — conv 층(320)보다 <strong>작다.</strong> 즉, 작은 데이터에서는
+“신경망을 깊게/넓게 하는 것” 자체가 비용을 더 씀이 아니라,
+<strong>입력 차원(flatten)이 작으면</strong> 오히려 GBDT(특수한 파라미터가 아예
+없음)가 효율적이다. 여기서 “왜 CNN“의 진짜 이유가 드러난다 —
+CNN이 유리한 것은 <em>작을 때</em>가 아니라 <strong>해상도 S가 커질 때</strong>다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>해상도 \(S\)</th><th>“flatten → 256” FC 파라미터 (\(S^2\times256\))</th><th>3×3 conv(1→32) 파라미터</th><th>비율</th></tr>
+</thead>
+<tbody>
+<tr><td>8</td><td>16,384</td><td>320</td><td>51×</td></tr>
+<tr><td>32</td><td>262,144</td><td>320</td><td>819×</td></tr>
+<tr><td>64</td><td>1,048,576</td><td>320</td><td>3,277×</td></tr>
+<tr><td>224</td><td>12,845,056</td><td>320</td><td>40,141×</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>flatten은 해상도 제곱(\(S^2\))으로</strong> 파라미터가 폭증하지만,
+<strong>conv는 해상도와 무관하게 320으로 일정</strong>하다 — 이 <em>상수 vs
+제곱</em>의 차이가 “이미지가 커질수록 CNN(파라미터 공유,
+평행불변)이 필수“를 수학적으로 말하는 것이다. 이 표 한 장이
+“왜 CNN을 골랐는가“에 대한 <strong>수식적 정당화</strong>로 그대로 쓰인다 —
+발표 슬라이드에 그대로 올리면 되는 형태다.</p>
 <h3 id="발표"><a class="header" href="#발표">발표</a></h3>
 <p>형식은 Chapter 8.1과 동일하다(문제 정의 → 방법론 → 결과와 정당화 → 한계
 분석, 팀당 5~7분). 다만 이번엔 발표 마지막에 “왜 고전 ML이 아니라
@@ -204,6 +450,193 @@
 “어떤 고전 ML 모델이 이 데이터에 맞는가“를 물었다면, 이번 프로젝트는
 한 단계 더 나아가 “애초에 딥러닝이 필요한 문제인가“부터 스스로
 판단해야 한다.</p>
+<p>발표의 <strong>마지막 1분을 “왜 DL” 질문에 전념</strong>하도록 시간 배분을
+고정한다: 문제 정의(1분) → 데이터와 정형/비정형 판정(1분) →
+적용한 딥러닝 기법과 구조(2분) → 결과와 GBDT 비교·수식적
+정당화(2분) → <strong>“왜 DL인가”(1분)</strong> — 이 1분은 §“왜 고전 ML이
+아니라“의 2축+2숫자로 채워야 하며, “정형인데도 신경망“이라면
+GBDT와의 숫자 비교를 <strong>반드시</strong> 포함한다. 8.1처럼 “잘 안 된
+부분“을 정직하게 말하는 습관도 유지한다 — 학습이 안 된
+부분을 Chapter 9(역전파/그래디언트)·9.3(정규화)·10.2(과적합)의
+개념으로 진단하는 것이 “방법론을 실제로 이해했는가“의 증거다.</p>
+<h3 id="학습-곡선-block-b에서-x축이-에포크인-이유"><a class="header" href="#학습-곡선-block-b에서-x축이-에포크인-이유">학습 곡선: Block B에서 x축이 “에포크“인 이유</a></h3>
+<p>8.1의 학습 곡선은 <code>n_estimators</code>(트리 개수)를 x축으로 했다 —
+GBDT는 “모델을 <em>크게</em> 만드는” 파라미터가 트리 수이므로,
+x축이 곧 **용량(capacity)**였다. Block B의 신경망에서는
+**x축이 에포크(데이터를 반복해서 보는 횟수)**로 바뀐다. 이유는
+신경망의 “용량“은 구조(층 수·너비)로 고정하고, <strong>학습량(에포크)을
+바꾸어</strong> train/val 곡선을 그리는 것이 표준이기 때문이다 —
+구조를 바꾸면 모델 자체가 달라지므로(GBDT의 트리 수만큼 “같은
+모델의 크기“가 아님) 에포크를 x축으로 한다.</p>
+<p>아래가 실습 노트북에서 그렸을 때의 모습이다 — 왼쪽이 GBDT의
+<code>n_estimators</code> 곡선(train이 50트리에서 1.0으로 포화), 오른쪽이
+CNN의 에포크 곡선(train 손실이 0으로 가는데 val 손실은 꺾임
+포인트 이후로 상승 — 그 꺾임이 에포크를 정하는 근거).</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch16_1_dl_curves.svg" alt="학습 곡선 비교 — 왼쪽: GBDT의 n_estimators에 따른 train/val 정확도(train은 50트리에서 1.0 포화, val은 그 사이에서만 느리게 상승). 오른쪽: CNN의 에포크에 따른 train/val 손실(train 손실은 0으로 수렴, val 손실은 최솟값 이후 상승 — 꺾임 포인트에서 에포크를 정한다)"><span class="img-wrapper"><img src="../../images/ch16_1_dl_curves.svg" alt="학습 곡선 비교 — 왼쪽: GBDT의 n_estimators에 따른 train/val 정확도(train은 50트리에서 1.0 포화, val은 그 사이에서만 느리게 상승). 오른쪽: CNN의 에포크에 따른 train/val 손실(train 손실은 0으로 수렴, val 손실은 최솟값 이후 상승 — 꺾임 포인트에서 에포크를 정한다)"></span></label></p>
+<p>GBDT(200트리 기준)의 곡선을 실습에서 보면: <code>n_estimators</code> 20에서
+train 정확도 0.988·val 0.944, 50에서 <strong>train 1.000·val 0.961</strong>,
+200에서 <strong>train 1.000·val 0.983</strong> — <strong>train은 50트리에서 이미
+1.0으로 포화</strong>되고 val은 그 사이에서만 느리게 오른다. “train
+곡선은 배운 것을 재고, val 곡선만 재는 것을 한다“는 6.3절의
+원칙이 그대로 적용된다. 신경망도 마찬가지다 — <strong>에포크를 늘리면
+train 손실은 0으로 가지만 val 손실은 어느 에포크 이후에
+오른다</strong>(과적합, Ch09.3). 이 val 곡선의 *곡률(언제 꺾이는가)*이
+에포크 수·학습률·정규화 강도를 정하는 근거가 되며, M3에서 요구하는
+“학습 곡선 1장“이 바로 이 val 꺾임 포인트를 보여야 한다.</p>
+<h3 id="보고서-구조-m4"><a class="header" href="#보고서-구조-m4">보고서 구조 (M4)</a></h3>
+<p>Chapter 8.1의 6절 구조를 그대로 쓰되, <strong>2절과 5절이 Block B용으로
+바뀐다</strong>.</p>
+<ol>
+<li><strong>문제 정의</strong> (0.5p): 행의 물리적 단위, 라벨, 주 지표, <strong>두 층의
+베이스라인(무작위·GBDT)</strong>. <strong>정형/비정형 판정 + 그 근거</strong>(§“왜
+DL“의 축 1).</li>
+<li><strong>데이터와 전처리</strong> (1p): 원본 통계, <strong>train으로만 fit한
+전처리</strong> 명시(이미지는 0~1 스케일, 텍스트는 토크나이저/패딩),
+분할 비율 + stratify/패딩 여부.</li>
+<li><strong>모델 선택과 이유</strong> (1~2p): <strong>적용한 딥러닝 기법 ≥1개</strong>와
+**그 구조(층·크기)**를 Chapter 10.1 공식으로 정당화(§“손으로
+한 번”), 그리고 <strong>왜 GBDT가 아니라</strong> 이 기법인가(축 2).</li>
+<li><strong>결과</strong> (1p): 최종 test 숫자(한 번), <strong>에포크 학습 곡선 1장</strong>,
+<strong>GBDT·무작위와의 비교 표</strong>.</li>
+<li><strong>수식적 정당화</strong> (1p): 필수 1개(10.1 파라미터 공식 / 9.3
+정규화 / 15 ELBO) — §“손으로 한 번“의 표를 그대로 쓴다.</li>
+<li><strong>잘 안 된 부분과 원인 진단</strong> (0.5p): <strong>필수</strong>. “학습이
+안 된/과적합된 부분을 Ch09·09.3·10.2의 개념으로 진단” —
+8.1의 “모두 잘 됐다” 경고가 그대로 적용된다.</li>
+</ol>
+<h3 id="채점-기준-rubric"><a class="header" href="#채점-기준-rubric">채점 기준 (rubric)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>항목</th><th>비중</th><th>좋은 답</th></tr>
+</thead>
+<tbody>
+<tr><td>문제 정의와 데이터</td><td>15%</td><td>행·라벨·지표·<strong>두 층 베이스라인</strong>이 명확하고, <strong>정형/비정형 판정</strong>이 데이터 특성에 근거함</td></tr>
+<tr><td>방법론 적절성</td><td>25%</td><td><strong>GBDT와 비교해서</strong> “왜 이 딥러닝 기법“의 근거가 Ch07·Ch10의 개념(차원·구조·공유)으로 설명됨</td></tr>
+<tr><td>검증의 정직성</td><td>25%</td><td>3분할·train-fit·test 한 번·베이스라인·<strong>에포크 학습 곡선</strong>·val 튜닝이 보고서에서 추적 가능</td></tr>
+<tr><td>수식적 정당화</td><td>20%</td><td>Ch09~15의 공식(10.1 파라미터, 9.3 정규화, 15 ELBO 중 ≥1개)으로 “왜“를 설명했고, 관측(숫자)과 일치</td></tr>
+<tr><td>결과의 정직성과 반성</td><td>15%</td><td>GBDT보다 못 한 부분·학습이 안 된 부분을 숨기지 않고 Ch09~15의 개념으로 진단</td></tr>
+</tbody>
+</table>
+</div>
+<p>“방법론 적절성“이 8.1의 “이 데이터에 맞는 <em>고전 ML 모델</em>“에서
+**“이 데이터에 딥러닝이 필요한가, 그리고 그 중 왜 <em>이</em> 기법인가”**로
+확장된 것이 차이다 — 이 항목이 25%를 차지하는 이유는, 이번
+프로젝트의 성공이 “신경망을 돌렸는가“가 아니라 **“신경망이
+<em>필요했는지</em>를 GBDT와 비교해 판정했는가”**이기 때문이다. 성능이
+GBDT보다 0.5%p 낮아도, “64차원 정형이므로 GBDT가 상한이고,
+그래서 나는 EMNIST(784차원)로 확대해 검증했다“는 논리까지 세우면
+“방법론 적절성“과 “반성“에서 높은 점수를 받는다.</p>
+<h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
+<p>프로젝트에서 반복해서 보이는 실수 — 각각이 Chapter 9~15의 어떤
+원칙을 깨는지 짚어두면, 16.2에서 다른 팀을 리뷰할 때
+“반박 가능한 질문“으로 바꿀 수 있다.</p>
+<ul>
+<li><strong>GBDT 베이스라인 없이 “신경망 정확도 0.95” 발표</strong>: §“두 층의
+베이스라인“의 2층이 빠진 것. “정형이면 GBDT와 비교” 원칙(Ch07.3)
+위반. 리뷰 질문 예: “같은 데이터에 GBDT를 돌리면 몇 %인가요?
+신경망의 0.95가 GBDT보다 <em>상대</em>로 얼마나 좋은지 알려주세요.”</li>
+<li><strong>“신경망이 최신이라서“라는 이유</strong>: §“왜 DL“의 2축+2숫자가
+전부 빠져 있다. “최신“은 근거가 아니다 — 2022년 Grinsztajn et al.
+결과가 보여주듯 정형에서는 GBDT가 여전히 경쟁적이다.</li>
+<li><strong>에포크를 test로 정하기</strong>: “test 정확도가 더 높아지는 에포크까지
+돌렸다” — 6.3절의 test-한-번 원칙 위반. 에포크·학습률·구조는
+<strong>val 곡선만</strong>으로 정한다(§“학습 곡선”).</li>
+<li><strong>flatten해서 GBDT와 비교하는 것 자체를 “신경망이 졌다“로
+결론</strong>: digits(64-dim)에서 GBDT와 비등한 것은 <em>예상된</em> 결과다
+(§“두 층의 베이스라인”). “64차원 정형“과 “28×28 원시 픽셀“을
+구분하지 않고 “신경망이 형편없다“거나 “GBDT가 더 좋다“로
+단순 결론내는 것 — 차원/구조의 효과를 분리해서 논해야 한다.</li>
+<li><strong>데이터 증강 없이 “val 과적합“만 보고 dropout만 올리기</strong>:
+Ch10.2의 과적합이 <em>데이터가 부족해서</em>인지, <em>모델이 너무 커서</em>인지
+먼저 구분해야 한다 — 증강(데이터 쪽)과 dropout/L2(모델 쪽)은
+다른 처방이다(Ch09.3).</li>
+</ul>
+<h3 id="실습-왜-dl의-숫자를-코드로-검증해보기"><a class="header" href="#실습-왜-dl의-숫자를-코드로-검증해보기">실습: “왜 DL“의 숫자를 코드로 검증해보기</a></h3>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter16_1_dl_baseline.ipynb">실습 노트북</a>
+(제목 바로 위의 Colab 배지)에서 이 절의 핵심 주장 —
+“정형·저차원에서는 GBDT가 상한이고, CNN의 우위는 구조(공유)와
+규모에서 온다” — 를 sklearn digits만으로(외부 데이터 다운로드
+없이, CPU에서도 충분히) 한 흐름에 걸쳐 검증한다:</p>
+<ol>
+<li><strong>문제 정의</strong> — digits(1,797×64), 0~9 분류, 주 지표 정확도.</li>
+<li><strong>3분할</strong> (train 1,437 / val 180 / test 180, stratify).</li>
+<li><strong>두 층 베이스라인</strong> — 다수 클래스(숫자 ‘1’) val/test 정확도
+0.100.</li>
+<li><strong>GBDT 베이스라인</strong> — GBDT(200트리) val 0.983 / test 0.944 /
+macro-F1 0.944.</li>
+<li><strong>CNN 파라미터 공식</strong> — §“손으로 한 번“의 표를 코드로 재계산,
+torch와 <strong>정확히 일치(35,914)</strong> 확인.</li>
+<li><strong>GBDT vs CNN (64차원)</strong> — torch로 §“손으로 한 번“의 작은 CNN
+학습 → test <strong>0.939</strong>. GBDT(0.944)에 소폭 열세(격차 0.006) —
+§“두 층“의 <em>“예상된 결과”</em> 확인.</li>
+<li><strong>8×8 → 28×28 확대 실험</strong> — <em>같은</em> digits를 784차원으로
+확대해서 다시 GBDT(0.944) vs CNN(0.961) — 64차원의 0.006
+열세가 **0.017로 역전(신경망 우위)**되는 것이 축 2(규모)의
+증거.</li>
+<li><strong>해상도 vs 파라미터</strong> — flatten FC(\(S^2\))와 conv(상수)의
+파라미터 수 표를 코드 생성.</li>
+<li><strong>학습 곡선</strong> — GBDT의 <code>n_estimators</code> 곡선(train 50트리에서
+1.0 포화) + CNN의 <strong>에포크</strong> 곡선(train 손실 0으로, val 손실은
+그 뒤로 꺾임).</li>
+<li><strong>선택 편향</strong> — “에포크·구조 후보를 test로 골랐다면“의
+\(\mathbb{E}[\max]\) 부풀림(§8.1과 동일, Ch06.3).</li>
+</ol>
+<p>이 흐름이 §“보고서 구조“의 6절로, 다시 16.2의 체크리스트
+(“왜 DL” 추가 항목 포함)로 매핑된다 — <strong>같은 절차를 세 가지
+언어(코드, 보고서, 리뷰)로 말할 수 있어야</strong> 이 프로젝트가
+끝난 것이다.</p>
+<h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
+<p>각 문항은 이 절의 절차와 Chapter 9~15의 개념을 동시에 확인한다.</p>
+<p><strong>1.</strong> 어떤 팀이 CIFAR-10(60,000개 32×32 이미지)으로 CNN을 만들어
+test 정확도 0.82를 내고, “신경망이 GBDT보다 좋다“고 결론냈다.
+§“두 층의 베이스라인“과 §“왜 DL“의 관점에서, 이 결론이 성립하려면
+<strong>먼저 확인해야 할 숫자 하나</strong>와, 그 이유를 답하라.</p>
+<blockquote>
+<p>답: <strong>같은 flatten(32×32×3=3,072-dim) 데이터에 GBDT를 돌려 얻은
+test 정확도</strong>다. “신경망이 <em>좋다</em>는 것은 GBDT보다 <em>상대</em>로
+좋은지“를 보여줘야 성립하며(2층 베이스라인), flatten하면 CIFAR
+32×32는 3,072차원(64차원의 digits보다 훨씬 고차원)이라 GBDT가
+CNN에 육박할 수도 있다 — 그 비교 없이는 “신경망이 좋다“는
+주장이 1층(무작위)만 이긴 것에 그칠 수 있다.</p>
+</blockquote>
+<p><strong>2.</strong> Chapter 10.1의 공식으로, 입력 3×32×32에 <code>Conv2d(3,64,3, padding=1)</code> 한 층의 파라미터 수를 계산하고, “이 공식이 flatten
+FC와 달리 해상도와 무관하다“는 것을 S=32일 때 flatten(→256)의
+파라미터와 비교해 보여라.</p>
+<blockquote>
+<p>답: conv는 \(3\times3\times3\times64 + 64 = 1{,}792\)
+(해상도 32와 무관). flatten FC(3×32×32→256)는
+\(3{,}072\times256 + 256 = 786{,}688\) — conv의 약 439배.
+해상도가 64가 되면 FC는 \(12{,}288\times256\)으로 4배가
+되는데 conv는 그대로 1,792 — 이 <em>상수 vs 제곱</em>이 “커질수록
+CNN“의 근거다.</p>
+</blockquote>
+<p><strong>3.</strong> 신경망의 학습 곡선에서 <strong>train 손실이 0.01, val 손실이
+0.40</strong>인 에포크까지 “test가 더 좋아질 때까지” 돌렸다고 보고했다.
+Ch09.3의 과적합과 Ch06.3의 test-한-번 원칙을 들어, 이 행위가
+깨진 원칙 <em>두 가지를</em> 짚고, 올바르게 에포크를 정하는 방법을
+말하라.</p>
+<blockquote>
+<p>답: (1) train/val 격차 0.39는 <strong>과적합</strong>(Ch09.3) — train 손실이
+0으로 가는데 val이 오르는 구간이다. (2) “test가 좋아질 때까지”
+는 <strong>test를 튜닝에 쓰는</strong> 선택 편향(Ch06.3) — test는 <em>한 번</em>
+만. 올바르게는 <strong>val 손실의 최솟값(또는 plateau)이 나는 에포크</strong>를
+정한 뒤, 그 에포크로 <strong>test를 딱 한 번</strong> 측정한다.</p>
+</blockquote>
+<p><strong>4.</strong> “우리 팀은 정형 표 데이터(5,000행×12열)인데 LLM을
+fine-tune했다“고 발표한다. §“왜 DL“의 2축(구조·규모)과
+Grinsztajn et al. 2022의 결과를 들어, 이 선택에 <strong>반박 가능한
+질문 하나</strong>를 Ch07의 개념을 근거로 만들어라.</p>
+<blockquote>
+<p>답: 축 1(구조)이 정형이고 축 2(규모)도 작아 12열이므로,
+Grinsztajn et al. 2022에 따르면 <strong>GBDT가 신경망에 경쟁적/우위</strong>
+인 영역이다. 질문: “12열·5,000행 정형에서 LLM fine-tune의
+test 성능이, 같은 데이터의 GBDT(Ch07.3)와 비교해서 <em>절대적으로</em>
+얼마나 더 좋나요? 그리고 그 차이가 ‘특징의 국소 공유’ 같은
+<em>구조적</em> 이득이 아니라 단순히 용량 때문이라면, 이 문제는
+정형이므로 GBDT가 상한인데 왜 LLM을 선택했나요?” — “최신이라서”
+로 답할 수 없는, Ch07(GBDT)를 근거로 둔 질문이다.</p>
+</blockquote>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 정형 데이터에 굳이 신경망을 써도 되나요?</strong> 된다 — 다만 Chapter
 7.3에서 배웠듯, 정형 데이터에서는 지금도 GBDT 계열이 신경망보다
@@ -211,13 +644,30 @@
 이 문제에 더 적합하다고 판단했는지”(예: 특징 사이의 복잡한 상호작용을
 자동으로 학습하고 싶었다, 다른 딥러닝 모듈과 결합할 계획이 있다 등)를
 발표에서 설명할 수 있어야 한다 — “그냥 딥러닝이 최신이라서“는 충분한
-근거가 아니다.</p>
+근거가 아니다. §“두 층의 베이스라인“에서 요구하는 GBDT 비교 숫자가
+이 질문에 대한 <em>증거</em>가 되어야 한다.</p>
 <p><strong>Q. Chapter 9~15 중 여러 기법을 동시에 써도 되나요?</strong> 권장한다 —
 예를 들어 CNN으로 이미지 특징을 뽑은 뒤 어텐션으로 그 특징들을
 조합하는 식으로 여러 장의 도구를 함께 쓰면, “왜 이 조합을
 골랐는가“라는 추가적인 설계 근거를 보여줄 기회가 된다. 다만 필수
 요구사항(수식적 정당화 최소 1개)은 그중 하나의 기법에 대해서만
 충족하면 된다.</p>
+<p><strong>Q. GPU가 없는데 CNN을 돌릴 수 있나요?</strong> 됩니다 — 이 프로젝트의
+“기본 코스”(digits 8×8, EMNIST 28×28, CIFAR-32×32)는 Colab의
+<strong>무료 CPU/T4</strong>로도 4주 안에 충분합니다. 실습 노트북의 작은
+CNN(35,914 파라미터)은 CPU에서도 수 분이면 수렴합니다.
+대규모(ResNet, BERT full fine-tune)가 필요하면 Hugging Face의
+<strong>pretrained</strong> 모델을 <em>transfer</em>해 마지막 층만 학습하는 방식을 쓰면
+된다 — 이 경우 수식적 정당화는 “왜 이 pretrained 구조를
+선택했는가”(Ch13의 사전학습)로 바꾸면 됩니다.</p>
+<p><strong>Q. “왜 DL” 질문에 GBDT가 이기면(신경망이 못 이기면) 점수가
+떨어지나요?</strong> 떨어지지 않는다 — 오히려 <strong>정직한 결과</strong>다.
+§“두 층의 베이스라인“에서 보듯, 64차원 정형(digits)에서 GBDT와
+비등한 것은 <em>예상</em>된 결과이며, 이걸 “그래서 내 문제는 차원이 더
+큰(784-dim) EMNIST여야 CNN 우위를 검증할 수 있다“는 논리로
+연결하면 “방법론 적절성“과 “반성“에서 <strong>높은</strong> 점수를 받는다.
+감점이 되는 것은 GBDT를 돌려놓고도 “신경망 0.94“만 보고
+“신경망이 좋다“고 <em>단순</em> 결론내는 경우다.</p>
 
                     </main>
 
@@ -270,8 +720,8 @@
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

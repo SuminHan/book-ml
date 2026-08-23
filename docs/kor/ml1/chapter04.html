@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -182,12 +182,68 @@
 <p>“당신은 가장 가까운 다섯 친구의 평균이다“라는 말이 있다. 이 문장을 그대로
 알고리즘으로 옮기면 <strong>k-최근접이웃</strong>(k-Nearest Neighbors, kNN)이 된다: 새로운
 데이터를 분류하고 싶으면, 학습도 모델도 필요 없이 그냥 “가장 가까운 \(k\)개의
-기존 데이터가 뭐라고 답했는지 보고 다수결로 따라간다.”</p>
+기존 데이터가 뭐라고 답했는지 보고 다수결로 따라간다.” 이 단순한 한 줄이
+이번 장의 첫 주인공이다.</p>
+<p>그런데 kNN은 여기서 끝이 아니다. “가장 가까운“이라는 말에 거리를 직접 쓰는
+또 다른 알고리즘이 하나 더 있다 — 이번 장의 두 번째 주인공, 비지도(라벨 없는)
+클러스터링을 하는 <strong>k-means</strong>다. kNN이 새 점의 클래스를 “가장 가까운 학습
+점의 다수결“로 정한다면, k-means는 라벨이 전혀 없는 점들끼리 “서로 가까운
+점은 한 덩어리“라는 거리 정보만으로 데이터의 구조를 쪼개는 것이다. 둘 다
+<strong>거리를 재는 데서 출발</strong>한다는 공통점이, 이 두 알고리즘을 한 장에 묶는
+이유다.</p>
+<p>이 장은 Chapter 3(생성 모델)과 이어진다. Chapter 3의 나이브베이즈는 “특징들이
+서로 독립“이라는 강한 가정을 세워 차원의 저주를 <em>피해</em>내는 모델이었다. 이번
+장에서는 거리를 직접 재는 모델이 차원의 저주를 <em>정면으로</em> 맞게 되는 모습을
+본다 — 특징이 수백 개가 되면 “가장 가까운 이웃“조차 멀어지고, 이웃 간 거리
+차이 자체가 사라지기 때문이다. 즉 Chapter 3에서 회피한 문제가, 이번 장에서는
+회피할 수 없는 문제로 되돌아온다. 그리고 다음 장 Chapter 5(SVM과 커널)로
+넘어가는 다리가 여기서 놓인다. kNN의 결정경계는 점 하나하나의 “이웃 순위“에
+따라 결정되는 <em>국소적</em> 경계(보로노이 다이어그램)다. Chapter 5는 반대로
+“무수히 많은 경계선 중 어떤 것이 새 데이터에 가장 <em>안전</em>한가“라는 <em>전역적·기하학적</em>
+질문을 던지며, 그 답으로 마진 최대화(SVM)와 커널 트릭을 소개한다.</p>
+<p>좀 더 크게 보면, 이번 장은 지금까지의 “파라미터를 맞춰 모형을 만든다”
+(Chapter 1~3의 선형·로지스틱·생성 모델)에서 한 걸음 나아가, <em>파라미터 없이
+점과 점을 비교</em>하는 비모수(nonparametric) 방법과, 이 책에서 처음 등장하는
+비지도(unsupervised) 학습을 동시에 소개하는 <strong>전환점</strong>이다. “거리를 어떻게
+재는가“라는 공통 언어를 여기서 익혀두면, 이후 SVM의 마진(5장)이나 GMM(15장)
+같은 기하학적 모델로 넘어갈 때 자연스러워진다.</p>
+<h2 id="학습-목표"><a class="header" href="#학습-목표">학습 목표</a></h2>
+<p>이 챕터를 마치면 다음을 할 수 있다.</p>
+<ul>
+<li>kNN이 학습 단계 없이 데이터를 저장해 두고 예측 시점에 거리를 재는
+<strong>게으른(lazy)·비모수</strong> 방법임을 설명하고, \(k\)를 키울수록 결정경계가
+톱니바퀴(과적합)에서 매끄러운 직선(과소적합)으로 변하는 과정을
+<strong>편향-분산 트레이드오프</strong>로 설명할 수 있다.</li>
+<li>차원의 저주가 왜 “가까운 이웃“이라는 개념을 무너뜨리는지 부피 공식과
+이웃 간 거리 스케일로 <strong>정량적으로</strong> 설명하고, 검증셋으로 \(k\)를 튜닝하는
+코드를 직접 작성할 수 있다.</li>
+<li>k-means의 ‘할당→갱신’ 반복이 실제로 <strong>클러스터 내 분산(SSE)을 단조감소</strong>
+시켜 수렴하는 최적화 문제임을 두 단계의 수학으로 보여줄 수 있다.</li>
+<li>초기화에 따라 다른 지역최적해에 빠지는 문제를 **k-means++**와 <code>n_init</code>
+반복으로 완화하고, k-means가 경계를 *볼록(직선)*으로만 그리는 구조적 한계와
+15장 GMM으로의 연결을 짚을 수 있다.</li>
+</ul>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="chapter04/1.html">4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프</a></li>
-<li><a href="chapter04/2.html">4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기</a></li>
-<li><a href="chapter04/3.html">4.3 k-means 클러스터링</a></li>
+<li><a href="chapter04/1.html">4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프</a> —
+kNN이 “저장만 하고, 예측 때 거리를 재는” 게으른 방법임을 알고리즘과 계산
+비용(\(O(m \cdot d)\)) 측면에서 정리한다. 유클리드/맨해튼 거리와 특징
+정규화(스케일이 큰 축이 거리를 독차지하는 함정, 정규화 전후 정확도
+0.556 → 1.000 예시)를 다룬 뒤, \(k\)를 키우며 결정경계가 보로노이
+다이어그램에서 매끄러운 직선으로 변하는 과정을 수치 실험으로 편향·분산을
+직접 측정한다.</li>
+<li><a href="chapter04/2.html">4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기</a> —
+차원이 커질수록 “가장 가까운 이웃“조차 멀어지고 11번째/1번째 이웃의 거리
+비율이 1에 수렴하는 차원의 저주를 부피 공식 \(p^{1/n}\)과 시뮬레이션으로
+보여준다. 정보 없는 노이즈 특징을 붙여가며 kNN 검증 정확도가 무작위
+(0.507)로 무너지는 실험으로 확인한 뒤, 검증셋으로 \(k\)를 고르는 <code>tune_k</code>를
+작성하고 “훈련 정확도만으로 고르면 항상 \(k=1\)이 나오는” 함정을 짚는다.</li>
+<li><a href="chapter04/3.html">4.3 k-means 클러스터링</a> — 라벨 없이 거리만으로 데이터의
+구조를 쪼개는 비지도 클러스터링 k-means를 소개한다. ‘할당→갱신’ 반복이
+클러스터 내 분산(SSE)을 절대 늘리지 않으므로 수렴하지만 <em>어디로</em>
+수렴하는지는 초기화에 달린(비볼록) 문제임을 수학으로 보여주고, \(k\)
+선택(엘보우), k-means++ 초기화, 그리고 “경계가 항상 직선(볼록)“이라는
+구조적 한계와 로이드(1957)·매퀸(1967)의 동시 발견 이야기를 다룬다.</li>
 </ul>
 
                     </main>
@@ -241,8 +297,8 @@
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

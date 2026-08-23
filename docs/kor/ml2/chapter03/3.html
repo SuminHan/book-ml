@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,26 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="33-가치함수와-벨만-기대방정식"><a class="header" href="#33-가치함수와-벨만-기대방정식">3.3 가치함수와 벨만 기대방정식</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter03_3_bellman_value.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<h3 id="이-절에서-어디로-가는지"><a class="header" href="#이-절에서-어디로-가는지">이 절에서 어디로 가는지</a></h3>
+<p>지금까지 우리는 (3.1) MDP의 다섯 요소와 (3.2) 리턴 \(G_t\)·할인율
+\(\gamma\)를 배웠다. 아직 “이 상태가 얼마나 좋은가“를 <strong>한 숫자로</strong>
+말해주는 도구는 없다. 이번 절은 그 도구를 만든다. 흐름은 정확히 이
+네 가지다:</p>
+<ol>
+<li><strong>가치함수</strong> \(V^\pi, Q^\pi\) — “이 상태(상태+행동)에서 정책
+\(\pi\)를 따랐을 때 기대 리턴“을 정의한다.</li>
+<li><strong>벨만 기대방정식</strong> — 그 기대 리턴을 “지금 보상 + 다음 상태 가치
+(할인)“라는 <strong>한 스텝짜리 재귀식</strong>으로 바꾼다.</li>
+<li><strong>수치 계산</strong> — 그 재귀식을 “값이 안 바뀔 때까지 반복 대입“하는
+절차(반복적 정책평가)로 풀고, 손계산값과 맞는지 검산한다.</li>
+<li><strong>연결고리</strong> — 이 재귀식이 다음 장 동적계획법의 <strong>정책평가</strong>와,
+궁극적으로는 Chapter 4의 <strong>최적</strong>방정식(\(\max\)이 붙은 것)으로
+이어지는 길목임을 보여준다.</li>
+</ol>
+<p>이 네 가지를 다 마치면, “MDP의 한 상태의 가치를 재귀적으로 계산하는
+절차“를 손으로, 코드로, 그리고 (수학적으로는) 유일하게 보장받는다는
+세 가지 언어로 말할 수 있다. 50분 수업의 전부다.</p>
 <h3 id="가치함수-리턴의-기댓값"><a class="header" href="#가치함수-리턴의-기댓값">가치함수: 리턴의 기댓값</a></h3>
 <p>리턴 \(G_t\)는 무작위 변수다(전이도 확률적일 수 있고, 정책도 확률적일
 수 있다) — 그래서 “이 상태가 얼마나 좋은가“를 하나의 숫자로 요약하려면
@@ -191,6 +211,40 @@
 \(s\)에서 <strong>행동</strong> \(a\)를 하고 그 이후로는 \(\pi\)를 따른다면“의
 가치를 재는 <strong>행동가치함수</strong>(action-value function, Q-함수)도 있다:</p>
 <p>\[Q^\pi(s,a) = \mathbb{E}_\pi[G_t \mid s_t=s, a_t=a]\]</p>
+<p><strong>두 개를 왜 둘 다 정의하는가</strong> — 둘 다 “리턴의 기댓값“인데, <strong>어디를
+고정하는지가 다르다.</strong> \(V^\pi(s)\)는 “상태만 고정, 그 뒤의 행동은
+모두 \(\pi\)가 정한다.” \(Q^\pi(s,a)\)는 “상태 <strong>와 첫 행동</strong>을
+고정, 그 다음부터는 \(\pi\)가 정한다.” 이 차이는 정의를 조금 세는
+정도에서 그치지 않고, <strong>알고리즘이 무엇을 계산·비교하는지</strong>를 결정한다.
+동적계획법의 정책향상(policy improvement)은 “지금 이 상태에서 어떤
+행동이 가장 좋은가“를 물어보는데, 그 물음은 상태 하나의 가치
+\(V^\pi(s)\)만으로는 답할 수 없고, 각 행동의 가치 \(Q^\pi(s,a)\)를
+행동마다 비교해야 한다. 즉 \(Q\)가 있으면 <strong>비교</strong>할 수 있고,
+\(V\)만 있으면 <strong>비교</strong>할 수 없다. 그래서 둘 다 필요한 것이다.</p>
+<p><strong>직관: “이 상태의 가격표”</strong> \(V^\pi\)는 상태 공간에 매 상태마다
+하나의 숫자를 매기는 함수 — 상태별 “가격표“다. \(Q^\pi\)는
+“상태-행동” 조합마다 하나의 숫자를 매기는, 좀 더 잘게 쪼갠 가격표다.
+“이 상태에서 앞으로 평균적으로 얼마를 벌 수 있나“라는 질문에
+\(V^\pi(s)\)가 바로 답을 주는 숫자다. 중요한 것은 <strong>이 숫자가
+“실제로 벌어지는 리턴“이 아니라 그 기댓값</strong>이라는 점이다. 같은
+상태에서 시작해도 전이가 확률적이면 매 에피소드마다 리턴이 다르다 —
+\(V^\pi(s)\)는 “이 상태에서 출발하면 평균적으로 이 정도“를 말해
+주는 <strong>요약 통계</strong>다.</p>
+<h4 id="표로-비교-vpi-vs-qpi"><a class="header" href="#표로-비교-vpi-vs-qpi">표로 비교: \(V^\pi\) vs \(Q^\pi\)</a></h4>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>\(V^\pi(s)\) 상태가치</th><th>\(Q^\pi(s,a)\) 행동가치</th></tr>
+</thead>
+<tbody>
+<tr><td>고정하는 것</td><td>상태 \(s\) (행동은 \(\pi\)가 정함)</td><td>상태 \(s\) <strong>와 첫 행동</strong> \(a\)</td></tr>
+<tr><td>무작위성</td><td>행동 <strong>과</strong> 전이 모두</td><td>첫 행동만 제거, 전이만 남음</td></tr>
+<tr><td>매기는 대상</td><td>\(\mathcal{S}\) 에 하나씩</td><td>\(\mathcal{S}\times\mathcal{A}\) 에 하나씩</td></tr>
+<tr><td>“무엇을” 측정</td><td>그 상태에서 \(\pi\)를 따를 때의 기대 리턴</td><td>그 상태에서 \(a\)를 한 다음 \(\pi\)를 따를 때의 기대 리턴</td></tr>
+<tr><td>주로 쓰이는 곳</td><td>“이 상태가 좋은가” (정책평가, 가치 추정)</td><td>“이 상태에서 어떤 행동이 좋은가” (정책비교/향상, Q-학습)</td></tr>
+</tbody>
+</table>
+</div>
 <h3 id="벨만-기대방정식-무한합을-재귀식으로"><a class="header" href="#벨만-기대방정식-무한합을-재귀식으로">벨만 기대방정식: 무한합을 재귀식으로</a></h3>
 <p>\(G_t\)의 정의를 한 스텝만 풀어써보면:</p>
 <p>\[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots = R_t + \gamma
@@ -198,12 +252,109 @@
 <p>즉 <strong>리턴은 “지금 당장의 보상 + 할인된 다음 시점 리턴“으로 재귀적으로
 쓸 수 있다.</strong> 이 관찰을 \(V^\pi\)의 정의에 대입하면(기댓값의
 선형성을 이용):</p>
-<p>\[V^\pi(s) = \mathbb{E}_\pi\big[R_t + \gamma G_{t+1} \mid s_t=s\big] =
-\mathbb{E}_\pi\big[R_t + \gamma V^\pi(s_{t+1}) \mid s_t=s\big]\]</p>
+<p>\[V^\pi(s) = \mathbb{E}\<em>\pi\big[R_t + \gamma G\</em>{t+1} \mid s_t=s\big] =
+\mathbb{E}\<em>\pi\big[R_t + \gamma V^\pi(s\</em>{t+1}) \mid s_t=s\big]\]</p>
 <p>이게 <strong>벨만 기대방정식</strong>(Bellman expectation equation)이다 — 무한히
 먼 미래까지 다 더해야 할 것 같던 \(V^\pi(s)\)가, “지금 보상 + 다음
-상태의 가치(할인됨)“라는 <strong>한 스텝짜리 재귀식</strong>으로 압축된다. 다음 장(동적계획법)은
-바로 이 재귀식을 실제로 계산 가능한 절차로 바꾸는 방법을 다룬다.</p>
+상태의 가치(할인됨)“라는 <strong>한 스텝짜리 재귀식</strong>으로 압축된다.</p>
+<p><strong>왜 \(G_{t+1}\)을 \(V^\pi(s_{t+1})\)로 바꿀 수 있는가</strong> — 이것이
+이 절에서 가장 “왜?“가 필요한 순간이다. \(G_{t+1}\)은 <strong>구체적
+경로</strong> 하나(실제로 벌어진 특정 보상 열)의 리턴이고, \(V^\pi(s_{t+1})\)
+은 “상태 \(s_{t+1}\)에서 출발하는 <strong>모든 경로</strong>의 리턴의 평균“이다.
+이 둘이 같아도 되는 이유는 <strong>마르코프 성질</strong>(3.1절)이다. 다음 상태
+\(s_{t+1}\)가 정해졌다면, 그 뒤에 이어질 보상 열의 분포는 <strong>어떻게
+\(s_{t+1}\)에 왔는지에 의존하지 않는다.</strong> 따라서 “여기까지 어떤
+경로를 통해 왔느냐“는 정보 전체를 버리고 “지금 \(s_{t+1}\)에 있다“는
+사실 하나로만 조건부 지을 수 있다 — 그 조건부 기댓값이 바로
+\(V^\pi(s_{t+1})\)의 정의다. 벨만방정식은 결국 <strong>마르코프 성질을
+“한 스텝만” 적용한 결과</strong>인 셈이다. 3.1절의 성질이 왜 강화학습의
+뼈대인가를, 수식 한 줄이 정확히 보여준다.</p>
+<h4 id="이-재귀식이-얼마나-강력한가--상태가-100만-개여도"><a class="header" href="#이-재귀식이-얼마나-강력한가--상태가-100만-개여도">이 재귀식이 얼마나 강력한가 — 상태가 100만 개여도</a></h4>
+<p>재귀식의 가장 큰 쓸모는 <strong>계산량</strong>이다. 정의대로 \(V^\pi(s)\)를
+계산하려면 상태 \(s\)에서 출발해 <strong>무한히 많은 경로</strong>를 모두
+탐색하고 각각의 할인 리턴을 평균내야 한다 — 상태가 100만 개면
+경로 수는 사실상 무한대로 폭증한다. 그런데 벨만방정식은 “상태 \(s\)
+의 가치를 알려면 <strong>인접 상태들</strong> \(s’\)의 가치만 알면 된다“고
+말한다. 즉 100만 개의 상태를 모두 한 번씩 “인접 상태의 가치에
+지금 보상을 더하는” 일로 계산할 수 있다 — <strong>경로 탐색이
+상태별 한 스텝 연산으로</strong> 압축된다. 이 “무한 경로 → 인접 상태만“이
+바로 동적계획법(dynamic programming)이라는 이름의 핵심
+아이디어이며, 다음 장의 정책평가 알고리즘 전체가
+이 한 줄의 직접적 결과물이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch03_3_bellman_tree.svg" alt="벨만방정식의 첫 스텝 분해 — 확률적 정책(각 1/2)으로 두 가지가 갈렸다가, 같은 상태 s_1 · s_0 로 다시 모인다. “같은 상태는 같은 가지“를 하나의 노드로 병합하는 것이 무한 경로를 상태 수(여기서 2개)로 줄이는 재귀식의 기하학적 모습"><span class="img-wrapper"><img src="../../images/ch03_3_bellman_tree.svg" alt="벨만방정식의 첫 스텝 분해 — 확률적 정책(각 1/2)으로 두 가지가 갈렸다가, 같은 상태 s_1 · s_0 로 다시 모인다. “같은 상태는 같은 가지“를 하나의 노드로 병합하는 것이 무한 경로를 상태 수(여기서 2개)로 줄이는 재귀식의 기하학적 모습"></span></label></p>
+<p><strong>그림 읽어보기</strong> — 왼쪽 노드는 “지금” 상태 \(s_0\)이다. \(s_0\)에서
+두 행동 \(a_0\)(보상 1), \(a_1\)(보상 3)이 각 1/2 확률로
+선택되고, 둘 다 상태 \(s_1\)로 전이한다(각각 p=1). 다시 \(s_1\)에서
+한 행동(보상 2)으로 \(s_0\)로 돌아온다. <strong>주목할 점</strong>: 세 번째
+수준에서 다시 \(s_0\)가 두 번 등장한다 — 이 두 가지는 <strong>“다음
+상태가 같으면 그 뒤가 같다”</strong> 는 마르코프 성질에 의해 <strong>같은 기댓값</strong>
+\(\gamma\cdot V(s_0)\)를 공유한다. 이 “같은 상태를 하나의 노드로
+병합“하는 작업이 벨만방정식의 기하학적 모습이다. 경로 수(무한)를
+상태 수(여기서는 2개)로 줄이는 것이다.</p>
+<h3 id="확률적-mdp로-손계산-v와-q가-실제로-이어지는-것을-보여주기"><a class="header" href="#확률적-mdp로-손계산-v와-q가-실제로-이어지는-것을-보여주기">확률적 MDP로 손계산: V와 Q가 실제로 이어지는 것을 보여주기</a></h3>
+<p>위 재귀식은 “이론“이지만, 실제로 \(V\)와 \(Q\)가 서로를 정의하는
+“동전의 양면“인지 숫자로 확인해보자. 이번에는 <strong>각 상태에서 행동을
+고르는 정책이 확률적</strong>인 MDP를 만든다 — 3.2절의 예가 모든 전이가
+결정적(각 상태에서 할 수 있는 행동 하나, 확률 1)이었으므로, 여기서
+는 확률적 <strong>정책</strong>이 \(V\)와 \(Q\)를 어떻게 이어주는지 보여줄
+수 있다.</p>
+<p><strong>MDP 정의</strong>: 상태 2개(\(S_0, S_1\)), \(\gamma=0.9\).</p>
+<ul>
+<li>\(S_0\)에서 정책 \(\pi\)는 \(a_0\)를 1/2, \(a_1\)를 1/2 확률로
+고른다.
+<ul>
+<li>\(a_0\): 즉시 보상 \(R=1\), 반드시 \(S_1\)로 전이</li>
+<li>\(a_1\): 즉시 보상 \(R=3\), 반드시 \(S_1\)로 전이</li>
+</ul>
+</li>
+<li>\(S_1\)에서 정책 \(\pi\)는 항상 \(a_0\)를 고른다:
+<ul>
+<li>\(a_0\): 즉시 보상 \(R=2\), 반드시 \(S_0\)로 전이</li>
+</ul>
+</li>
+</ul>
+<p><strong>\(Q^\pi\)부터 계산</strong>: 각 (상태,행동)의 행동가치는 “그 행동의
+즉시 보상 + 다음 상태의 가치(할인)“다.</p>
+<p>\[Q^\pi(S_0, a_0) = 1 + 0.9\,V^\pi(S_1)\]
+\[Q^\pi(S_0, a_1) = 3 + 0.9\,V^\pi(S_1)\]
+\[Q^\pi(S_1, a_0) = 2 + 0.9\,V^\pi(S_0)\]</p>
+<p><strong>\(V^\pi\)는 정책의 행동을 확률로 가중평균</strong>:</p>
+<p>\[V^\pi(S_0) = \tfrac{1}{2}Q^\pi(S_0,a_0) + \tfrac{1}{2}Q^\pi(S_0,a_1)
+= \tfrac{1}{2}(1+0.9V^\pi(S_1)) + \tfrac{1}{2}(3+0.9V^\pi(S_1))\]</p>
+<p>\[= \tfrac{1}{2}\cdot4 + 0.9\,V^\pi(S_1) = 2 + 0.9\,V^\pi(S_1)\]</p>
+<p>\(S_1\)에서는 행동을 하나만(확률 1로 \(a_0\)) 고르므로:</p>
+<p>\[V^\pi(S_1) = Q^\pi(S_1,a_0) = 2 + 0.9\,V^\pi(S_0)\]</p>
+<p><strong>이제 이 연립방정식을 푼다.</strong> \(V^\pi(S_1) = 2 + 0.9 V^\pi(S_0)\)를
+첫 번째 식에 대입:</p>
+<p>\[V^\pi(S_0) = 2 + 0.9\big(2 + 0.9\,V^\pi(S_0)\big)
+= 2 + 1.8 + 0.81\,V^\pi(S_0) = 3.8 + 0.81\,V^\pi(S_0)\]</p>
+<p>\(V^\pi(S_0)(1 - 0.81) = 3.8\)이므로 \(V^\pi(S_0) = 3.8/0.19 = 20\).
+다시 대입하면 \(V^\pi(S_1) = 2 + 0.9\cdot20 = 20\). <strong>둘 다 정확히
+20</strong>이다. \(Q\) 값으로 되돌아와서 \(V = \sum_a \pi(a|s) Q\)가
+정말 성립하는지 검산:</p>
+<ul>
+<li>\(Q^\pi(S_0,a_0) = 1 + 0.9\cdot20 = 19\),
+\(Q^\pi(S_0,a_1) = 3 + 0.9\cdot20 = 21\).
+\(\tfrac{1}{2}(19) + \tfrac{1}{2}(21) = 20 = V^\pi(S_0)\) ✓</li>
+<li>\(Q^\pi(S_1,a_0) = 2 + 0.9\cdot20 = 20 = V^\pi(S_1)\) ✓</li>
+</ul>
+<p><strong>이 예가 보여준 것</strong>: (1) \(V\)는 각 행동을 정책 확률로 가중평균한
+\(Q\)의 합과 정확히 일치한다 — “동전의 양면“이 수식 수준에서 성립
+한다. (2) \(S_0\)와 \(S_1\)의 <strong>가치가 같다(20=20)</strong> — “보상이
+1인 행동“과 “보상이 3인 행동“을 1/2씩 골라서 <strong>기대 즉시 보상이 2</strong>
+이 되는 \(S_0\)는, 항상 보상 2를 받는 \(S_1\)과 <strong>기대 리턴이
+같다.</strong> 상태의 가치는 “매 스텝 보장되는 보상“이 아니라 <strong>정책이
+정하는 기대(평균) 보상</strong>에 의해 결정되는 것이다. 아래 <strong>결정적</strong> 예와
+대조하면 명확해진다: 결정적 예(\(R_0=1, R_1=2\))에서는
+\(V(S_0)\approx14.737\neq15.263\approx V(S_1)\)로 <strong>두 상태의
+가치가 다르다.</strong> 같은 “서로 오가는 2상태” 구조인데도, 보상(1,2)이
+<strong>고정</strong>되어 있어서 상태마다 평균 보상이 달라지는 것이다. 반면
+이번 <strong>확률적</strong> 예에서는 \(S_0\)의 <strong>기대</strong> 보상이 2로
+<strong>합쳐지다 보니</strong> \(S_1\)의 고정 보상 2와 같아 두 가치가
+동일해진다 — <strong>기대값</strong>으로 값이 결정됨을 극명하게 보여주는
+반례다. (주의: 두 상태의 가치가 “같다“는 이 특수한 1/2-1/2 예의
+<strong>우연</strong>이지, 일반적으로는 다르다 — 아래 확인 문제 (a)(c)에서
+정책을 0.1-0.9로 바꾸면 다시 달라지는 것을 직접 확인한다.)</p>
 <h3 id="손으로-한-번-2상태-순환-mdp에서-벨만방정식-검산하기"><a class="header" href="#손으로-한-번-2상태-순환-mdp에서-벨만방정식-검산하기">손으로 한 번: 2상태 순환 MDP에서 벨만방정식 검산하기</a></h3>
 <p>상태 2개(S0, S1)가 서로를 오가는 아주 작은 MDP로 확인해보자. 정책이
 고정되어 있어(각 상태에서 할 수 있는 행동이 하나뿐이라고 하자) S0에서는
@@ -227,6 +378,182 @@
 검증) — “무한급수를 닫힌 형태로 직접 계산하기“와 “재귀식을 값이 안
 바뀔 때까지 반복 적용하기“라는 서로 다른 두 방법이 같은 답에
 도달한다는 것을 확인할 수 있다.</p>
+<h3 id="반복-대입-재귀식을-실제로-푸는-절차-다음-장의-예고편"><a class="header" href="#반복-대입-재귀식을-실제로-푸는-절차-다음-장의-예고편">반복 대입: 재귀식을 실제로 푸는 절차 (다음 장의 예고편)</a></h3>
+<p>“값이 안 바뀔 때까지 반복 대입“이 정확히 어떤 절차를 말하는지 —
+그리고 그것이 다음 장의 <strong>정책평가</strong>의 핵심 루프인지 — 코드로 한
+번만 더 정확히 짚자. 벨만방정식 \(V(s) = R(s) + \gamma V(s’)\)를
+**가치 반복(value iteration)**이라 불리는 방식으로 풀면:</p>
+<pre><code class="language-python">def policy_evaluation_value_iteration(P, R, policy, gamma,
+                                       max_iter=200, theta=1e-6):
+    # P[s][a] = [(prob, next_state), ...]
+    # R[s][a] = 즉시 보상 ; policy[s] = 상태 s에서 고르는 행동
+    n = len(P)
+    V = [0.0] * n                     # 0으로 시작 (초기값은 아무거나)
+    for it in range(1, max_iter+1):
+        V_new = list(V)               # 동기식: 이번 반복은 전부 "이전" V를 쓴다
+        delta = 0.0
+        for s in range(n):
+            a = policy[s]
+            v_new = R[s][a] + gamma * sum(p * V[s2] for p, s2 in P[s][a])
+            delta = max(delta, abs(v_new - V[s]))
+            V_new[s] = v_new
+        V = V_new
+        if delta &lt; theta:             # 값이 (거의) 안 바뀌면 멈춤
+            break
+    return V, it
+</code></pre>
+<p><strong>동기식(synchronous)으로 쓴 이유</strong>: 매 반복에서 <strong>모든</strong> 상태가
+<strong>이전</strong> 반복의 \(V\)를 참조해 갱신된다. 그러면 “반복을 \(k\)번
+돌렸을 때 반영된 것“이 정확히 **“미래 \(k\)스텝까지의 리턴”**이
+된다(반복 1 = 즉시 보상만, 반복 2 = 2스텝까지, …). 갱신을 그 자리
+바로 하는 방식(Gauss-Seidel)도 같은 답으로 수렴하지만, “반복 횟수
+= 보는 미래 스텝 수“라는 직관이 조금 흐려진다. 이번 절에서는 그
+직관이 핵심이라 동기식으로 쓴다.</p>
+<p>이것은 <strong>재귀식 좌변의 \(V(s)\)를 우변으로 계속 갱신</strong>하는 단순한
+루프다. 처음엔 \(V=0\)로 “아무것도 모른다“는 상태를 두고, 매 반복에서
+“인접 상태의 (직전) 가치“를 이용해 각 상태를 갱신한다. \(\gamma&lt;1\)
+이면 이 반복은 <strong>보증이 있다</strong>: 모든 \(V(s)\)가 벨만방정식의 <strong>고정점</strong>
+(fixed point, 좌변=우변인 값)으로 수렴한다 — 아래 “고정점” 섹션에서
+증명한다. 위 2상태 예(\(R_0=1, R_1=2, \gamma=0.9\))를 이 함수로
+\(V_0=V_1=0\)에서 200번 돌리면:</p>
+<ul>
+<li>반복 1: \(V_0=1.000, V_1=2.000\) — “즉시 보상만” 반영됨</li>
+<li>반복 10: \(V_0=9.598, V_1=9.941\) — 10스텝까지의 리턴이 반영됨</li>
+<li>반복 50: \(V_0=14.661, V_1=15.185\)</li>
+<li>반복 200: \(V_0=14.737, V_1=15.263\) — <strong>닫힌 형태와 정확히 일치</strong></li>
+</ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch03_3_value_iteration_convergence.svg" alt="반복적 정책평가 수렴 곡선 — V=0에서 시작해 V(S0), V(S1)가 기하급수적으로 닫힌해(14.737, 15.263)로 접근. 반복 횟수가 곧 “보는 미래 스텝 수“에 해당한다"><span class="img-wrapper"><img src="../../images/ch03_3_value_iteration_convergence.svg" alt="반복적 정책평가 수렴 곡선 — V=0에서 시작해 V(S0), V(S1)가 기하급수적으로 닫힌해(14.737, 15.263)로 접근. 반복 횟수가 곧 “보는 미래 스텝 수“에 해당한다"></span></label></p>
+<p><strong>“반복 k번 ≈ 미래 k스텝까지의 리턴”</strong> — 이 직관이 가치 반복의
+본질이다. 반복을 한 번 더 하면 “한 스텝 더 먼 미래“가 반영된다.
+\(\gamma^k\)가 빠르게 0으로 줄어들므로(여기서 \(\gamma=0.9\),
+10스텝이면 \(0.9^{10}\approx0.35\), 50스텝이면 \(\approx 0.005\)),
+<strong>수렴은 기하급수적으로 빨라진다.</strong> 수렴의 “속도“를 좌우하는 것이
+바로 \(\gamma\)이며, \(\gamma\)가 1에 가까울수록(장기적일수록)
+수렴이 느려지는 이유이기도 하다.</p>
+<p><strong>왜 \(\gamma&lt;1\)이면 수렴하는가(증명 개요)</strong> — 벨만 연산자를
+\(\mathcal{B}^\pi V(s) = R(s,\pi(s)) + \gamma\,\mathbb{E}_{s’}[V(s’)]\)
+라고 쓰자. 두 값 함수 \(V, W\)에 대해 \(\gamma&lt;1\)이면:</p>
+<p>\[\big\|\mathcal{B}^\pi V - \mathcal{B}^\pi W\big\|_\infty
+\;\le\; \gamma\, \|V - W\|_\infty\]</p>
+<p>(\(\|\cdot\|_\infty\) = 최대 절댓값, 즉 “어떤 상태에서 가장 많이
+다르냐.”) 즉 <strong>벨만 연산자는 \(\gamma\)를 계수로 줄이는
+수축(squeeze) 연산</strong>이다. 바나흐 고정점 정리(Banach fixed-point
+theorem)에 의해, 수축 연산은 <strong>고정점이 딱 하나</strong> 존재하고, <strong>어떤
+초기값에서 출발해도</strong> 그 고정점으로 수렴한다. 이 한 줄의 정리가
+“가치 반복이 항상 (고유한) 답으로 수렴한다“는 보장의 전부다.
+<strong>\(\gamma=1\)이면</strong> 수축 상수가 1이 되어 이 보장이 <strong>사라진다</strong>
+— 수렴하지 않거나, 유한 에피소드여도 경계가 무한대가 되면 발산할
+수 있다. 3.2절에서 “\(\gamma&lt;1\)이면 수렴“이라 말한 것이, 여기서
+<strong>수학적으로 왜 그런가</strong>가 보이는 것이다.</p>
+<p><strong>고정점의 유일성</strong> — \(\gamma&lt;1\)이면 벨만방정식을 만족하는
+\(V^\pi\)는 <strong>정확히 하나뿐</strong>이다. 즉 “이 정책의 가치함수“라는
+개념이 <strong>의미가 있는(well-defined)</strong> 것의 근거다. \(\gamma=1\)이면
+고정점이 없거나(발산) 여러 개(상수만큼의 자유도)일 수 있어
+“이 정책의 가치“가 불명확해질 수 있다.</p>
+<h3 id="벨만방정식이라는-이름의-유래-역사"><a class="header" href="#벨만방정식이라는-이름의-유래-역사">“벨만방정식“이라는 이름의 유래 (역사)</a></h3>
+<p>이 재귀식 — “현재 가치 = 지금 보상 + 할인된 다음 상태 가치” — 을
+발견하고 이름을 붙인 사람이 <strong>리처드 벨만(Richard Bellman, 1920–1984)</strong>
+이다. 1950년대 벨만은 “복잡한 최적화 문제를 작은 부분 문제로
+쪼개서 그 답을 재귀적으로 조합한다“는 **동적계획법(dynamic
+programming)**을 체계화했고, 그 핵심 장치가 바로 이 재귀식이다.
+그가 “차원의 저주(curse of dimensionality)“라는 용어를 만든
+것으로도 유명하다(이번 장 머리말). <strong>“Bellman equation“은
+강화학습만의 개념이 아니다</strong> — 최적제어, 금융공학, 확률과정
+통계 등 “시간에 따라 상태가 변하며 순차적으로 결정해야 하는
+문제” 전반에서 쓰이는, 20세기 수학의 가장 널리 인용된
+재귀식 중 하나다. 강화학습에서 이 방정식이 “기대”(expectation)
+버전(이 절)과 “최적”(optimality, \(\max\)이 붙은, Chapter 4)
+버전으로 나뉘어 등장하는 것뿐, 뼈대는 벨만이 70여 년 전에
+세운 것과 정확히 같다. 이번 절에서 “기대” 버전(\(\mathbb{E}_\pi\))을,
+Chapter 4에서 “최적” 버전(\(\max_a\))을 배울 것이다.</p>
+<h3 id="벨만방정식의-세-가지-읽기방식"><a class="header" href="#벨만방정식의-세-가지-읽기방식">벨만방정식의 세 가지 읽기방식</a></h3>
+<p>같은 방정식 \(V^\pi(s) = \mathbb{E}_\pi[R_t + \gamma V^\pi(s_{t+1})
+\mid s_t=s]\)을 <strong>세 가지 각도</strong>로 읽을 수 있고, 이 세 가지가
+각각 다른 알고리즘/관점을 낳는다:</p>
+<ol>
+<li><strong>정의(definition)로서</strong>: “이 정책 \(\pi\)의 상태가치는
+다음 조건을 만족하는 (유일한) 함수다.” — 이 절의 관점. \(V^\pi\)를
+<strong>정의하는</strong> 방정식.</li>
+<li><strong>계산 절차(procedure)로서</strong>: “값이 안 바뀔 때까지
+\(V \leftarrow \mathcal{B}^\pi V\)로 반복 대입.” — 위
+정책평가 코드. <strong>다음 장 동적계획법</strong>의 알고리즘.</li>
+<li><strong>학습 목표(learning target)로서</strong>: “신경망이 이 방정식의
+좌변과 우변을 같게 되도록 학습하자.” — <strong>Chapter 9 DQN</strong>의
+손실함수. DQN의 손실
+\((r + \gamma \max_{a’} Q_{\theta^-}(s’,a’) - Q_\theta(s,a))^2\)
+는 정확히 “벨만방정식의 좌변(예측값)과 우변(목표값)의 오차“다.</li>
+</ol>
+<p><strong>이 한 줄이 강화학습 전체의 뼈대다.</strong> 가치함수(3.3) →
+정책평가(Ch.4) → 동적계획법(Ch.4) → Q-학습·DQN(Ch.6, 9) →
+정책 그래디언트(Ch.10)까지, 사실상 모든 알고리즘은 <strong>이 재귀식을
+어떤 형태로 계산/학습하는가</strong>를 다룬다. “벨만방정식을 몇 가지
+버전으로 바꿔서 푸는 학기“라고 이번 학기를 요약할 수 있을 정도다.</p>
+<h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
+<p><strong>실수 1: “다음 상태의 가치“에 할인율 \(\gamma\)를 빼먹기</strong>
+\(V(s) = R(s) + V(s’)\)처럼 \(\gamma\)를 빼면, 3.2절에서
+본 대로 “당장의 보상“과 “아주 먼 미래의 보상“을 동등하게
+취급하게 된다. 결정적 2상태 예에서 \(\gamma\)를 빼면
+\(V_0 = 1 + V_1\), \(V_1 = 2 + V_0\)가 되어
+\(V_0 - V_1 = 1\)이면서도 \(V_1 - V_0 = 2\)가 되어
+**모순(해 없음)**이 된다 — \(\gamma&lt;1\)이 없으면 이 단순한
+2상태 예의 방정식에도 해가 없다. 할인율은 “무한합이
+수렴하게” 하고 “고정점이 존재하도록” 하는 <strong>수학적 장치</strong>이기도
+한 것이다.</p>
+<p><strong>실수 2: “가치함수“를 “실제 에피소드 리턴“과 혼동하기</strong>
+\(V^\pi(s)\)는 <strong>기댓값</strong>이다. “상태 \(s\)에서 시작하면 리턴이
+반드시 \(V^\pi(s)\)가 된다“가 <strong>아니다.</strong> 전이가 확률적이거나
+정책이 확률적이면 매 에피소드마다 다른 리턴이 나오고, \(V^\pi(s)\)
+는 그 <strong>평균</strong>이다. “가치가 14.737인 상태“에서 10번 시작하면
+10번 중 10번이 정확히 14.737이 아니라, 10번의 평균이
+<strong>대략</strong> 14.737에 가까울 뿐이다. (단, 결정적 MDP·결정적
+정책에서는 매번 같은 리턴이 나와 기댓값=실제값이 일치한다 —
+위의 2상태 예가 그런 경우.)</p>
+<p><strong>실수 3: “벨만방정식을 만족하는 V는 하나“라고 단정하지 않기</strong>
+\(\gamma&lt;1\)이면 (상단의 “수축” 논의로) 고정점이 <strong>유일</strong>하다.
+반면 “\(V\)를 0으로 시작해서 반복했는데 14.737이 나왔고,
+다른 친구가 \(V_0=V_1=100\)에서 시작해서도 14.737이 나왔네” —
+<strong>초기값에 무관하게 같은 답</strong>으로 수렴하는 것이 정상이다.
+만약 “초기값에 따라 다른 값으로 수렴했다“면, (1) \(\gamma\ge1\)로
+설정했거나, (2) 코드에 할인율 곱셈이 빠져 있거나(실수 1),
+(3) 전이확률 합이 1이 아닌 잘못된 MDP를 정의한 것 중 하나다.
+“초기값 무관 수렴“은 벨만방정식 코드가 <strong>맞는지</strong>를 확인하는
+간단한 건강체크다.</p>
+<h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
+<p><strong>(a) (계산)</strong> 위 확률적 2상태 예에서 \(S_0\)의 행동 \(a_1\)(보상
+3)의 확률을 1/2에서 <strong>0.9</strong>로 바꾼다(\(a_0\)는 0.1). 이 새로운
+정책 \(\pi’\)에 대해 \(V^{\pi’}(S_0)\)와 \(V^{\pi’}(S_1)\)을
+연립방정식으로 다시 세워 풀어라(원래 1/2-1/2 정책에서 둘 다 20이
+던 것과 달리, 이제 <strong>다르게</strong> 된다). (힌트: \(V^{\pi’}(S_0) =
+0.1(1) + 0.9(3) + 0.9\,V^{\pi’}(S_1)\), \(V^{\pi’}(S_1) =
+2 + 0.9\,V^{\pi’}(S_0)\).)</p>
+<p><strong>(b) (계산)</strong> \(R_t = R\)(상수)이고 \(\gamma=0.99\), \(R=1\)일
+때 리턴 \(G_0 = R/(1-\gamma)\)의 값을 구하고, \(\gamma=0.9\)
+경우와 비교하라. \(\gamma\)가 1에 가까워질수록 값이 어떻게
+변하는지 한 문장으로. (힌트: 연습문제 3.)</p>
+<p><strong>(c) (코딩)</strong> 위의 <code>policy_evaluation_value_iteration</code> 함수를
+쓰어, (1) 결정적 2상태 예(\(R_0=1, R_1=2, \gamma=0.9\)),
+(2) 확률적 2상태 예의 <strong>원래</strong> 정책(1/2-1/2, \(\gamma=0.9\)),
+(3) 확인 문제 (a)의 <strong>바뀐</strong> 정책(0.1-0.9, \(\gamma=0.9\)) 각각에
+대해 \(V\)를 계산하라. 다음 두 가지를 확인하라:</p>
+<ul>
+<li>(1)의 \(V(S_0), V(S_1)\)가 서로 <strong>다르고</strong>(14.737 vs 15.263),
+(2)에서는 둘이 <strong>같다</strong>(20 vs 20)는 것을,</li>
+<li>(3)에서는 다시 <strong>다르게</strong> 변한다는 것((a)의 손계산값과 일치하는지
+대조).
+“같은 2상태 순환 구조인데도, (2)에서만 두 상태의 가치가 같은
+이유“를 한 문장으로 설명하라(힌트: 각 상태의 <strong>기대 즉시 보상</strong>을
+비교해라).</li>
+</ul>
+<p><strong>(d) (개념 서술)</strong> “벨만방정식은 마르코프 성질을 한 스텝만
+적용한 결과“라는 문장을, 위 “왜 \(G_{t+1}\)을
+\(V^\pi(s_{t+1})\)로 바꿀 수 있는가” 섹션을 참고해 자신의
+말로 두세 문장으로 풀어쓰라.</p>
+<p><strong>(e) (디버깅)</strong> <code>policy_evaluation_value_iteration</code>에서
+<code>gamma * sum(...)</code>의 <code>gamma</code>를 1.0으로 바꾼다(\(\gamma=1\)).
+결정적 2상태 예에서 이 반복이 <strong>수렴하는가, 발산하는가,
+아무것도 아닌가?</strong> (힌트: \(\gamma=1\)이면 수축 상수가 1 →
+보장 없음. 실제 반복을 200번 돌려 \(V_0, V_1\)의 추이를
+관찰하라.)</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. \(V^\pi(s)\)와 \(Q^\pi(s,a)\)는 서로 어떻게 연결되나요?</strong>
 \(V^\pi(s)\)는 “그 상태에서 정책 \(\pi\)가 시키는 대로 행동했을
@@ -243,6 +570,50 @@
 <strong>최적</strong>방정식, 이번 절의 벨만 <strong>기대</strong>방정식과 한 글자 차이지만
 \(\max\) 연산이 들어가 의미가 크게 달라진다)은 Chapter 4에서 바로
 이어서 다룬다.</p>
+<p><strong>Q. “기대방정식“이라는 말이 있는데, “기대(expectation)“가
+어디에 있는 건가요?</strong> 방정식 안의 \(\mathbb{E}_\pi\)가 바로
+“기대“다. \(V^\pi(s) = \mathbb{E}_\pi[R_t + \gamma
+V^\pi(s_{t+1})\mid s_t=s]\)에서 이 기댓값은 <strong>두 가지 무작위성</strong>
+에 대해 취한다: (1) 정책이 행동을 확률적으로 고르는
+무작위성 \(\pi(a|s)\), (2) 환경의 전이가 확률적으로
+나타나는 무작위성 \(P(s’|s,a)\). 결정적 MDP+결정적
+정책(위 2상태 예)에서는 이 둘이 모두 사라져
+\(V(s) = R(s) + \gamma V(s’)\)의 단순한 등식으로
+축소된다. “기대“라는 이름은 <strong>이 무작위성이 있을 때</strong>
+의미를 가진다.</p>
+<p><strong>Q. 벨만방정식은 “방정식“인데, 왜 “풀어야” 하는 건가요?
+답이 이미 \(V^\pi(s) = \mathbb{E}_\pi[G_t \mid s_t=s]\)로
+쓰여 있는 것 아닌가?</strong> “정의“와 “계산“을 구별해야 한다.
+\(V^\pi(s) = \mathbb{E}_\pi[G_t\mid s_t=s]\)는 <strong>무한한
+경로의 리턴을 평균</strong>하라는 정의다 — 실제로 계산하려면 무한
+경로를 모두 탐색해야 해 <strong>계산 불가능</strong>하다. 벨만방정식
+\(V(s) = R(s) + \gamma V(s’)\)는 같은 \(V^\pi\)를
+<strong>인접 상태만</strong> 쓰도록 <strong>재귀적으로 다시 표현</strong>한 것이다.
+“무한 경로“를 “한 스텝“으로 압축한 이 재귀 표현이 <strong>계산
+가능</strong>하다. 방정식을 “풀다“는 곧 이 재귀 표현을
+반복 대입(value iteration)해 <strong>수치적 답</strong>을 뽑아내는 것을
+뜻한다 — 정의(무한합)와 계산(재귀식)을 연결하는 다리다.</p>
+<p><strong>Q. \(\gamma\)가 0이면 벨만방정식은?</strong> \(\gamma=0\)이면
+\(V^\pi(s) = R(s,\pi(s))\) — “지금 당장의 보상만“이
+가치가 된다. 에이전트가 <strong>완전히 근시안적</strong>(myopic)이 되어
+미래를 전혀 고려하지 않는다. \(\gamma=1\)에 가까워지면
+<strong>장기적</strong>이 된다. \(\gamma\)는 “미래를 얼마나 멀리
+볼 것인가“를 조절하는 **노브(knob)**이며, 3.2절에서
+“근시안적 vs 장기적“이라 한 것이 수식으로
+\(V(s) = R(s) + \gamma V(s’)\)의 \(\gamma\) 항에
+정확히 대응한다.</p>
+<p><strong>Q. 이 절의 “반복 대입“이 Chapter 4의 “정책평가“와
+관계가?</strong> <strong>정확히 같은 알고리즘</strong>이다. 이 절에서
+“예고편“으로 간단히 보여준 반복 대입
+(\(V \leftarrow R + \gamma\,\mathbb{E}[V]\) 루프)은
+Chapter 4 동적계획법에서 **정책평가(policy
+evaluation)**라고 이름 붙여, “임의의 정책 \(\pi\)의 가치
+\(V^\pi\)를 계산하는” 표준 알고리즘으로
+정식화된다. 또한 “이 평가된 정책을 이용해 <strong>더 좋은
+정책</strong>을 만드는” 단계(<strong>정책향상</strong>, policy improvement)를
+<strong>정책평가와 교대로</strong> 반복하는 것이 **정책반복(policy iteration)**이며,
+그것이 동적계획법의 완형이다. 즉 이 절의 10줄 코드가
+다음 장의 알고리즘 전체의 <strong>뼈대</strong>인 것이다.</p>
 <p><strong>MDP는 “지금 한 행동이 미래의 상태 자체를 바꾼다“는 사실 하나를
 Chapter 2의 밴딧에 추가한 것뿐이지만, 이 한 가지 차이가 강화학습을
 훨씬 더 어렵고, 훨씬 더 흥미로운 문제로 만든다.</strong></p>
@@ -276,6 +647,12 @@ env = gym.make("FrozenLake-v1", is_slippery=False)
 <p><strong>정확성 확인</strong>: \(\gamma\)가 1에 가까워질수록 \(G_t\)가 왜 점점
 커지는지(발산에 가까워지는지) 계산 결과를 바탕으로 한 문장으로
 설명하라.</p>
+<p><strong>4. (코딩)</strong> 확인 문제 (c)의 코드 — <code>policy_evaluation_value_iteration</code>을
+두 개의 2상태 MDP(결정적/확률적)에 적용해 \(V\)를 계산하고,
+손계산값(결정적: 14.737/15.263, 확률적 1/2-1/2: 20/20)과 일치하는지
+<code>assert</code>로 확인하라. 추가로 <strong>초기값</strong>을 \(0\)과 \(100\)으로 각각
+바꿔도 같은 값으로 수렴하는지(초기값 무관성) 확인하라 — 이것이
+“고정점이 유일하고 반복이 수렴한다“는 보장의 구체적 모습이다.</p>
 
                     </main>
 
@@ -328,8 +705,8 @@ env = gym.make("FrozenLake-v1", is_slippery=False)
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

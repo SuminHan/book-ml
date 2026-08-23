@@ -1,0 +1,30 @@
+digraph ch13_3_posttraining {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", bgcolor="white", pad=0.25,
+           ranksep=0.65, nodesep=0.45];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           penwidth=1.4, fontsize=12.5, margin="0.18,0.1"];
+    edge  [penwidth=1.6, arrowsize=0.8];
+
+    pre [label="사전학습된 LM\n(13.1 — 다음 토큰 예측)", fillcolor="#f0f0f0", color="#666666", fontsize=13];
+    sft [label="SFT\n(사람이 작성한 Q&A 쌍으로\n교차 엔트로피 학습)", fillcolor="#dae8fc", color="#4878a8"];
+    pref [label="선호 데이터\n(같은 질문에 두 답변,\n'어느 쪽이 낫나' 선택)", fillcolor="#fff2cc", color="#b08900"];
+    rm  [label="보상모델 r_φ(x,y)\n(Bradley-Terry 손실)", fillcolor="#ffe6cc", color="#d95f02"];
+    rl  [label="RLHF (PPO)\nE[r] − β·KL(π‖π_ref) 최대화", fillcolor="#f8cecc", color="#b85450"];
+    dpo [label="DPO\n(보상모델 없이 선호 데이터로\n정책 직접 학습)", fillcolor="#e1d5e7", color="#9673a6"];
+    aligned [label="정렬된 모델\n(사람이 선호하는 방식으로\n답변)", fillcolor="#d9ead3", color="#1a9641", fontsize=13];
+    lora [label="LoRA / PEFT\nΔW = BA (저차원 보정만 학습)\n— 어느 단계든 적용 가능", fillcolor="#f5f5f5", color="#999999", style="rounded,dashed,filled"];
+    rag [label="추론 시: RAG / 에이전트\n(외부 문서 검색 · 도구 호출)\n— 학습 없이 지식을 보완", fillcolor="#f5f5f5", color="#999999", style="rounded,dashed,filled"];
+
+    pre -> sft;
+    sft -> rl;
+    pref -> rm;
+    rm -> rl;
+    rl -> aligned;
+    sft -> dpo [label="π_ref = SFT 모델", fontsize=10.5, labeldistance=2.2];
+    pref -> dpo;
+    dpo -> aligned;
+    lora -> sft [style=dashed, color="#999999", constraint=false];
+    lora -> dpo [style=dashed, color="#999999", constraint=false];
+    aligned -> rag [style=dashed, color="#999999", constraint=false, label="추론 시점", fontsize=10.5];
+}

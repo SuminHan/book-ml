@@ -1,0 +1,29 @@
+digraph td0_bootstrap {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t, labeljust=c, bgcolor="white", nodesep=0.5, ranksep=0.55,
+           label=<<b>TD(0) 부트스트래핑 — 한 스텝에서 실제 보상(파랑)과 아직 부정확한 추정치 V(s')(빨강, 점선)이 만나는 자리</b><br/><font color="#5b6b7b">7-state random walk(±1 이동, 0·6 터미널, 매 스텝 +1), gamma = 1.0, alpha = 0.5, V를 0으로 시작. 첫 에피소드 3→4→5→6의 4→5 스텝: 에피소드가 끝나지 않았는데도 V(4)를 0.50으로 갱신.</font>>];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fontsize=13, penwidth=1.4, margin="0.22,0.14"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=11.5, penwidth=1.6];
+
+    S4 [label=<<b>상태 s = 4</b><br/>V(4) = <font color="#1a3d7c">0.00</font> (현재 추정값)>];
+    S5 [label=<<b>상태 s' = 5</b><br/>V(5) = <font color="#1a3d7c">0.00</font> (현재 추정값 — 아직 부정확)>];
+
+    R  [label=<<font color="#1a3d7c"><b>실제 보상 r = +1</b></font><br/>(4→5 전이에서 관찰한 매스텝 보상)>];
+    T  [label=<<b>TD(0) 목표값</b><br/><font color="#9c2b1e">r + gamma * V(5)</font> = 1 + 1 * 0.00 = <b>1.00</b> >, fillcolor="#fdecea"];
+    UP [label=<<b>TD(0) 갱신</b><br/>V(4) = V(4) + alpha * (목표 - V(4))<br/><font>= 0.00 + 0.5 * (1.00 - 0.00) = <b>0.50</b></font> >, fillcolor="#fff8e1"];
+
+    S4 -> T [label="한 스텝 전이 (보상 r = +1 관찰)", color="#1a3d7c"];
+    S5 -> T [label=<<font color="#9c2b1e">부트스트랩: 추정치 V(5)를 '미래 가치'로 대입</font>>, color="#9c2b1e", style=dashed];
+    T  -> UP [label=<<font color="#9c2b1e">TD 오차</font> = 목표 - V(4) = 1.00 - 0.00 = 1.00>];
+    UP -> S4 [label="V(4)를 0.50으로 갱신", color="#37474f", style=dashed];
+
+    PROP [label=<<font color="#37474f">에피소드(3→4→5→6)가 끝난 뒤에는</font><br/><font color="#37474f">V(5) = 0.50이 되어, <b>다음에</b> 4가 방문되면<br/>목표값이 1 + V(5) = <b>1.50</b>으로 커진다 — 정보 전파</font>>,
+           fillcolor="#eef4fb", shape=box];
+    S5 -> PROP [style=invis];
+    PROP -> S4 [style=invis];
+
+    {rank=same; S4; S5}
+    {rank=same; R; T}
+    R -> S4 [style=invis];
+}

@@ -1,0 +1,47 @@
+digraph roadmap {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="ML2 한 학기 로드맵 — Block A: 표 기반 도구 순서대로 쌓기, Block B: 신경망·로봇으로 확장",
+           labeljust=c, bgcolor="white", nodesep=0.35, ranksep=0.75];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="#e8f0fe", fontcolor="#1a2b4a", fontsize=12.5,
+           penwidth=1.4, margin="0.18,0.10"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=10, color="#5b6b7b",
+           penwidth=1.5];
+
+    subgraph cluster_A {
+        label="Block A — 표(Table) 기반: 신경망 없이 RL 이론 완성 (Ch.2~8)";
+        fontname="Noto Sans CJK KR"; fontsize=14; fontcolor="#1a3d7c";
+        style="rounded"; fillcolor="#f7f9fd"; color="#8aa4d6";
+        ch2 [label="Ch.2 멀티암 밴딧\nε-greedy · UCB\n(탐험/활용의 원형)"];
+        ch3 [label="Ch.3 MDP\n상태·행동·전이·보상\n할인율 γ"];
+        ch4 [label="Ch.4 동적계획법\n정책반복 · 가치반복\n(모델을 안다면)"];
+        ch5 [label="Ch.5 몬테카를로\n에피소드 완주 → 리턴\n(모델 불필요)"];
+        ch6 [label="Ch.6 시간차 학습\nTD(0) · Q-learning\n(표 기반의 완성)"];
+        ch7 [label="Ch.7 n-step · 적격흔적\n편향–분산의 다이얼"];
+        ch8 [label="Ch.8 Block A 캡스톤\n팀 프로젝트 + 중간고사",
+             shape=box, fillcolor="#fff3cd", color="#c9a227", fontcolor="#6b5900",
+             style="rounded,filled,dashed"];
+        ch2 -> ch3 -> ch4 -> ch5 -> ch6 -> ch7 -> ch8;
+    }
+
+    subgraph cluster_B {
+        label="Block B — 신경망 + 로봇 시뮬레이션 (Ch.9~16)";
+        fontname="Noto Sans CJK KR"; fontsize=14; fontcolor="#1c5d3a";
+        style="rounded"; fillcolor="#f4fbf7"; color="#7fc49a";
+        ch9  [label="Ch.9 DQN\nQ-테이블 → 신경망\n(Atari)"];
+        ch10 [label="Ch.10 정책기반\nREINFORCE\n(연속 행동)"];
+        ch11 [label="Ch.11 PPO\n클래핑 · GAE\n(실무 표준)"];
+        ch12 [label="Ch.12 모방학습 · RLHF\n시연·선호로부터"];
+        ch13 [label="Ch.13 로봇 시뮬레이션\nSim-to-Real · 보상 설계"];
+        ch14 [label="Ch.14 MuJoCo · Isaac Sim\nGPU 가속 물리"];
+        ch15 [label="Ch.15 모델기반 RL · MCTS\nAlphaGo의 핵심"];
+        ch16 [label="Ch.16 Block B 캡스톤\n팀 프로젝트 + 총정리",
+              shape=box, fillcolor="#fff3cd", color="#c9a227", fontcolor="#6b5900",
+              style="rounded,filled,dashed"];
+        ch9 -> ch10 -> ch11 -> ch12 -> ch13 -> ch14 -> ch15 -> ch16;
+    }
+
+    ch8 -> ch9 [label="신경망 + 로봇 시뮬레이션으로 확장", color="#c0392b",
+                 fontcolor="#c0392b", penwidth=2.4, style=bold];
+}

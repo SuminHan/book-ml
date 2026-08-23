@@ -1,0 +1,40 @@
+digraph ch14_3_tool_decision {
+    rankdir=TB;
+    graph [fontname="Noto Sans CJK KR", bgcolor="white", pad=0.25,
+           ranksep=0.55, nodesep=0.45];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           penwidth=1.4, fontsize=12.5, margin="0.22,0.12"];
+    edge  [penwidth=1.6, arrowsize=0.85, fontname="Noto Sans CJK KR", fontsize=11];
+
+    START [label="내 작업은?", shape=ellipse, fillcolor="#f0f0f0",
+           color="#666666", fontsize=13];
+
+    Q1 [label="Q1. 강한 접촉이 핵심인가?\n(발이 바닥을 차는 보행, 부딪힘)",
+        shape=diamond, fillcolor="#dae8fc", color="#4878a8"];
+
+    Q2 [label="Q2. 단일 CPU로 수 시간~날 단위까지\n기다릴 수 없는 대규모 학습인가?\n(1억+ 스텝)",
+        shape=diamond, fillcolor="#dae8fc", color="#4878a8"];
+
+    Q3 [label="Q3. 적합한 GPU가 있는가?\n(RTX 4080/16GB급 이상, RT 코어)",
+        shape=diamond, fillcolor="#dae8fc", color="#4878a8"];
+
+    A1 [label="Gymnasium 기본 환경 (CPU)\nCartPole, Pendulum —\n정밀 LCP 접촉 불필요",
+        fillcolor="#d5e8d4", color="#82b366"];
+
+    A2 [label="MuJoCo (CPU, 정밀)\n초~분(수 시간) 단위면 충분 —\n14.1의 LCP 접촉으로 보행 학습",
+        fillcolor="#d5e8d4", color="#82b366"];
+
+    A3 [label="Isaac Sim (GPU 병렬)\n정밀 + 센서 리얼리즘,\n경험률 수천 배 (14.2)",
+        fillcolor="#f8cecc", color="#b85450"];
+
+    A4 [label="GPU 대기 or 규모 축소\n(MuJoCo-XLA 자동 병렬은 대안)",
+        fillcolor="#fff2cc", color="#d6b656"];
+
+    START -> Q1;
+    Q1 -> A1 [label="아니오"];
+    Q1 -> Q2 [label="예"];
+    Q2 -> A2 [label="아니오 (초~분~수 시간이면 OK)"];
+    Q2 -> Q3 [label="예"];
+    Q3 -> A3 [label="예"];
+    Q3 -> A4 [label="아니오"];
+}

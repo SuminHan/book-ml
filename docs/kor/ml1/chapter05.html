@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -188,12 +188,61 @@
 이 질문의 답이 <strong>서포트 벡터 머신</strong>(Support Vector Machine, SVM)이다 —
 2010년대 딥러닝이 대세가 되기 전까지, 손글씨 인식부터 텍스트 분류까지
 가장 널리 쓰인 분류기였다.</p>
+<p>이 챕터는 바로 앞 Chapter 4(“거리 기반 모델과 클러스터링”)와 짝을 이룬다.
+kNN은 예측할 때마다 “가장 가까운 이웃을 불러와 다수결“을 하는 방법이라 결정
+경계를 아예 만들지 않지만, SVM은 학습 단계에서 <strong>하나의 명시적 경계</strong> — 마진이
+가장 넓은 직선(초평면) — 을 찾아버린다. 두 모델은 “거리“라는 공통 언어를 공유
+하지만, 거리를 언제·어떻게 쓰는지 정반대다: kNN은 예측 시점에 거리를 재는
+반면, SVM은 마진(경계에서 가장 가까운 점까지의 거리)을 학습 시점에 최대화한다.
+이번 챕터가 남기는 유산은 다음 Chapter 6(“정규화와 모델 선택”)으로 이어진다.
+5.2절의 하이퍼파라미터 \(C\)는 “마진을 넓게 잡을 것인가, 위반을 덜 허용할
+것인가“를 조절하는 손잡이인데, 이것은 정규화 세기를 조절하는 \(\lambda\)와
+정확히 같은 종류의 트레이드오프다 — Chapter 6은 이 “충실도 vs 단순함“의 손잡이를
+L1/L2 페널티와 교차검증이라는 일반 틀로 확장한다.</p>
+<p><strong>학습 목표</strong> — 이 챕터를 마치면 다음을 할 수 있다:</p>
+<ul>
+<li>두 클래스를 가르는 경계선이 무수히 많은데, 마진이 가장 큰 직선이 왜 새
+데이터에 가장 안전한지 설명하고, 마진을 \(2/\|w\|\)로 써 “마진 최대화“를
+제약 아래 \(\|w\|\) 최소화 문제로 바꿀 수 있다.</li>
+<li>경계의 위치를 “떠받치는” <strong>서포트 벡터</strong>가 실제로 몇 개인지 손으로 확인하고,
+로지스틱회귀가 모든 데이터를 손실에 반영하는 것과 대비시킬 수 있다.</li>
+<li>완벽히 분리 안 되는 데이터에 <strong>여유 변수</strong>와 <strong>힌지 손실</strong>을 도입해야 하는
+이유를 설명하고, \(C\)가 크면/작으면 경계가 어떻게 달라지는지(과적합 vs
+과소적합) 예측할 수 있다.</li>
+<li>XOR·동심원처럼 직선으로 원리적으로 나눌 수 없는 데이터가 <strong>고차원으로
+옮기면</strong> 평평한 초평면으로 분리되는 이유를 보이고, <strong>커널 트릭</strong>이 고차원
+계산 없이 내적만으로 이를 해내는 원리를 설명할 수 있다.</li>
+</ul>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="chapter05/1.html">5.1 마진 최대화와 서포트 벡터</a></li>
-<li><a href="chapter05/2.html">5.2 소프트 마진: 완벽히 나뉘지 않는 데이터</a></li>
-<li><a href="chapter05/3.html">5.3 커널 트릭: 선형분리가 안 되는 데이터</a></li>
+<li><a href="chapter05/1.html">5.1 마진 최대화와 서포트 벡터</a> — “무수히 많은 분할 직선 중
+가장 안전한 하나“를 기하학으로 골라보는 절이다. 스케일 불변성 때문에 “마진을
+키운다“가 원래는 정해지지 않은 문제임을 짚고, 마진 제약
+\(y^{(i)}(w^Tx^{(i)}+b)\ge 1\) 아래에서 마진이 \(2/\|w\|\)임을 거리
+공식으로 유도한 뒤, 대칭 데이터로 최적 경계를 손으로 구한다. 경계에서 가장
+가까운 <strong>서포트 벡터</strong>만이 경계를 결정한다는 사실을 눈으로 확인한다.</li>
+<li><a href="chapter05/2.html">5.2 소프트 마진: 완벽히 나뉘지 않는 데이터</a> — 하드 마진이
+“완벽히 선형분리 가능“이라는 전제를 품고 있어 라벨 오류 하나에도 해가
+사라진다는 문제를 고친다. 각 데이터마다 위반을 허용하는 <strong>여유 변수</strong>
+\(\xi\)와 <strong>힌지 손실</strong> \(\max(0, 1-y^{(i)}(w^Tx^{(i)}+b))\)을 도입해
+목적함수를 \(\frac{1}{2}\|w\|^2 + C\sum\_i \xi^{(i)}\)로 쓰고,
+\(C\)가 “이상치 용인도“를 조절하는 손잡이임을 이상치를 집어넣은 데이터로
+실증한다.</li>
+<li><a href="chapter05/3.html">5.3 커널 트릭: 선형분리가 안 되는 데이터</a> — 소프트 마진조차
+직선(초평면) 경계를 전제하는 한, 노이즈가 없어도 직선으로는 원리적으로 못
+나뉘는 XOR·동심원에는 막힌다. \(x\_1^2+x\_2^2\) 같은 새 축을 더하면
+곡면으로만 나뉘던 관계가 평면 분리가 된다는 원리를 보여준 뒤, 쌍대 문제에서
+데이터가 <strong>내적</strong> \(\phi(x^{(i)})\cdot\phi(x^{(j)})\)로만 등장함을
+확인하고, 이를 우회하는 <strong>커널 함수</strong>와 RBF/다항 커널, 경계의 구부러짐을
+조절하는 \(\gamma\)까지 실습으로 확인한다.</li>
 </ul>
+<p>세 블록의 순서 자체는 “전제를 하나씩 덜어내는” 과정이다. 5.1절은 데이터가
+완벽히 선형분리 가능하다고 <strong>전제</strong>하고 최적의 직선을 구하고, 5.2절은 그
+전제를 내려놓고 위반을 허용하며, 5.3절은 “경계가 직선이다“라는 마지막 전제
+조차 내려놓는다. 전제를 덜어낼 때마다 마진·서포트 벡터·쌍대 문제라는
+수학적 장치가 그대로 보존되고 일반화되는 것을 보면, “같은 문제를 더 약한
+가정에서 푼다“는 것이 실제로 어떻게 일어나는지를 한 학기 중에서도 가장
+명확하게 볼 수 있다.</p>
 
                     </main>
 
@@ -246,8 +295,8 @@
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

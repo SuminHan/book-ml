@@ -1,0 +1,43 @@
+digraph reg_toolbox {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="신경망 정규화·학습률 스케줄링 도구 지도 — '과적합'과 '학습 불안정' 두 문제별, 어떤 도구가 어떤 축을 푸는가",
+           labeljust=c, bgcolor="white", pad=0.3];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=10.5,
+           penwidth=1.3, margin="0.15,0.08"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9, color="#495057", penwidth=1.5];
+
+    // ---- 문제 1: 과적합 ----
+    subgraph cluster_overfit {
+        label="문제 1. 과적합\n(train 정확도 ≫ val)";
+        labeljust=c; fontsize=11.5; fontcolor="#7a1f1f";
+        color="#f3b1b1"; style="rounded,filled"; fillcolor="#fdf3f3";
+        margin=10;
+        P1 [label="데이터를 '외우면'\nval이 뒤처진다\n(Ch04.1 분산)", fillcolor="#ffe3e3", shape=box];
+        T1 [label="Dropout\n공적응 억제\n(뉴런이 서로 의존 못 함)\np = 0.2~0.5", fillcolor="#fff3cd"];
+        T2 [label="Weight decay\n가중치 크기 축소\n(Ch06 λ의 얼굴)\nw ← (1−η·wd)·w", fillcolor="#fff3cd"];
+        T3 [label="더 많은 데이터\n· 데이터 증강\n(근본 해법)", fillcolor="#fff3cd"];
+        P1 -> T1;  P1 -> T2;  P1 -> T3;
+    }
+
+    // ---- 문제 2: 학습 불안정 / 느림 ----
+    subgraph cluster_unstable {
+        label="문제 2. 학습 불안정 / 느림";
+        labeljust=c; fontsize=11.5; fontcolor="#1f4d7a";
+        color="#a8c5f3"; style="rounded,filled"; fillcolor="#f2f7fd";
+        margin=10;
+        P2 [label="손실이 안 줄거나\n초기화·배치·lr에\n예민하다", fillcolor="#dbe9ff", shape=box];
+        T4 [label="BatchNorm /\nLayerNorm\n층간 분포를 매 스텝 재설정\n→ 큰 lr 안전, 초기화 덜 예민\n(Ch9.2 소실·폭발 완화)", fillcolor="#e8f0fe"];
+        T5 [label="LR scheduling\n초반 큰 lr, 후반 작은 lr\nStepLR · Cosine · Warmup\n(골짜기 바닥에 정확히 착지)", fillcolor="#e8f0fe"];
+        P2 -> T4;  P2 -> T5;
+    }
+
+    // ---- 함께 쓰기 ----
+    C  [label="함께 쓰되, val 곡선으로\n하나씩 튜닝 —\n과도한 조합은 과정규화\n(train·val이 함께 떨어짐)",
+        fillcolor="#eaf7ea", style="rounded,filled", shape=note];
+    T1 -> C [style=dashed, color="#888"];
+    T4 -> C [style=dashed, color="#888"];
+    T2 -> C [style=dashed, color="#888"];
+    T5 -> C [style=dashed, color="#888"];
+}

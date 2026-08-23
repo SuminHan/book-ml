@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,24 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="71-n-step-td-mc와-td0-사이의-다이얼"><a class="header" href="#71-n-step-td-mc와-td0-사이의-다이얼">7.1 n-step TD: MC와 TD(0) 사이의 다이얼</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter07_1_n_step_td.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<h3 id="복습-두-극단--mc와-td0"><a class="header" href="#복습-두-극단--mc와-td0">복습: 두 극단 — MC와 TD(0)</a></h3>
+<p>Chapter 5의 몬테카를로(MC)와 Chapter 6의 TD(0)는 “상태 가치 \(V(s)\)의
+목표값으로 무엇을 쓸 것인가“라는 질문의 서로 다른 답이었다. MC의
+목표값은 에피소드 <strong>끝까지</strong>의 실제 보상 합(실제 리턴) \(G_t\)이었고,
+TD(0)의 목표값은 \(r + \gamma V(s’)\)(1 스텝의 실제 보상 + 나머지는
+추정치)였다. 이 두 목표값을 나란히 놓고 쓰면, 사실 <strong>같은 구조의 다른
+길이</strong>라는 게 보인다:</p>
+<ul>
+<li><strong>TD(0)</strong>: \(r_t + \gamma V(s_{t+1})\) — 실제 보상 \(1\)개 +
+추정치</li>
+<li><strong>MC</strong>: \(r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \cdots\) —
+실제 보상을 끝까지 전부 + 추정치 없음</li>
+</ul>
+<p>즉, 차이는 “실제 보상을 <strong>몇 개</strong> 쓸 것인가“가 1개와 “끝까지 전부”
+의 차이일 뿐이다. 그런데 1개와 “끝까지” 사이의 <strong>아무 정수</strong>도 가능해야
+한다 — \(n\)개의 실제 보상 합 + 나머지 부분은 추정치, 라는 목표값을
+쓰자. 이것이 <strong>n-step TD</strong>다.</p>
 <h3 id="n-step-td-mc와-td0-사이의-다이얼"><a class="header" href="#n-step-td-mc와-td0-사이의-다이얼">n-step TD: MC와 TD(0) 사이의 다이얼</a></h3>
 <p>TD(0)의 목표값은 \(r + \gamma V(s’)\)(1 스텝의 실제 보상 + 나머지는
 추정치)였다. 이걸 일반화해서, \(n\) 스텝만큼 실제로 관찰한 보상을 쓰고
@@ -190,14 +208,50 @@
 <strong>편향은 줄고 분산은 커진다</strong>(Chapter 6.1의 표에서 본 그 트레이드오프의
 연속선상에 있다) — \(n\)은 그 사이 어딘가에서 상황에 맞게 고르는
 하이퍼파라미터다.</p>
-<pre><code class="language-python">def n_step_td(env_step, n, n_episodes, alpha, gamma, n_states, start_state):
+<p><strong>정리하면:</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>\(n\)</th><th>실제 보상</th><th>추정치(부트스트래핑)</th><th>갱신</th></tr>
+</thead>
+<tbody>
+<tr><td>TD(0)</td><td>1</td><td>\(R_t\) 1개</td><td>\(V(s_{t+1})\)</td><td>매 스텝 즉시</td></tr>
+<tr><td>n-step TD</td><td>\(n\)</td><td>\(R_t, \dots, R_{t+n-1}\) \(n\)개</td><td>\(V(s_{t+n})\)</td><td>매 스텝(첫 갱신은 \(n-1\) 스텝 지연)</td></tr>
+<tr><td>MC</td><td>\(\infty\)</td><td>끝까지 전부</td><td>없음</td><td>에피소드 종료 시</td></tr>
+</tbody>
+</table>
+</div>
+<p>여기서 한 가지 <strong>기다려야 하는 시간</strong>이 생긴다는 점에 주목하라.
+\(G_t^{(n)}\)의 목표값을 계산하려면 \(t\)에서 \(t+n-1\)까지의
+보상이 다 모이어야 하므로, \(t\)번 상태의 <strong>첫</strong> 갱신은 최소
+\(n-1\) 스텝이 지나서야 가능해진다. \(n=1\)이면 매 스텝 즉시
+갱신했던 TD(0)와 달리, \(n\)이 클수록 “학습의 시차“가 커진다. 이
+시차가 갱신 <strong>횟수</strong>에는 영향을 주지 않는다는 점(아래 FAQ에서
+확인)은 반직관적이므로, 실습에서 직접 세어보자.</p>
+<h3 id="코드로-보는-n-step-td"><a class="header" href="#코드로-보는-n-step-td">코드로 보는 n-step TD</a></h3>
+<p>7개 상태 random walk(상태 0과 6이 터미널, \(1\sim5\)가 이동 상태,
+매 스텝 50:50으로 좌우 이동, 왼쪽 끝에 \(-1\)·오른쪽 끝에 \(+1\)
+보상, \(\gamma = 0.9\), 중간 상태 3에서 시작) 위에서 \(n\)을
+바꿔가며 학습하는 함수다:</p>
+<pre><code class="language-python">import random
+
+def env_step(s, a):
+    """random walk 환경. a: 0=left, 1=right (무작위 정책이라 a는 무시)."""
+    ns = s + (1 if random.random() &lt; 0.5 else -1)
+    if ns == 0:
+        return 0, -1.0, True   # 왼쪽 끝 도착: 보상 -1, 종료
+    if ns == 6:
+        return 6, 1.0, True    # 오른쪽 끝 도착: 보상 +1, 종료
+    return ns, 0.0, False
+
+def n_step_td(env_step, n, n_episodes, alpha, gamma, n_states, start_state):
     V = [0.0] * n_states
     for _ in range(n_episodes):
         states, rewards = [start_state], []
         s, T, t = start_state, float('inf'), 0
         while True:
             if t &lt; T:
-                a = 0 if False else __import__('random').randrange(2)  # 데모용 무작위 정책
+                a = random.randrange(2)  # 데모용 무작위 정책
                 ns, r, done = env_step(s, a)
                 states.append(ns)
                 rewards.append(r)
@@ -206,7 +260,7 @@
                 s = ns
             tau = t - n + 1  # tau번째 상태를 지금 갱신
             if tau &gt;= 0:
-                G = sum(gamma ** (i - tau - 1) * rewards[i]
+                G = sum(gamma ** (i - tau) * rewards[i]
                         for i in range(tau, min(tau + n, len(rewards))))
                 if tau + n &lt; T:
                     G += gamma ** n * V[states[tau + n]]
@@ -216,12 +270,212 @@
             t += 1
     return V
 </code></pre>
-<p><code>tau</code>(갱신 대상 시점)가 항상 현재 시점보다 \(n-1\)만큼 뒤처져 있다는
+<p>세 부품을 따로 뜯어보자.</p>
+<p><strong><code>tau</code>는 왜 현재 시점보다 \(n-1\)만큼 뒤처지는가.</strong> <code>tau</code>(갱신
+대상 시점)가 항상 현재 시점보다 \(n-1\)만큼 뒤처져 있다는
 점에 주목하라 — \(n\) 스텝만큼의 실제 보상이 다 모여야 그 목표값을
-계산할 수 있기 때문이다. 7개 상태짜리 1차원 격자에서 <code>n=3</code>으로 학습시켜
-보면, 목표(오른쪽 끝, +1)에 가까운 상태일수록 가치가 매끄럽게 커지는
-것을 확인할 수 있다(예: 왼쪽 끝 -0.84 근처에서 오른쪽으로 갈수록 0.69
-근처까지 단조 증가).</p>
+계산할 수 있기 때문이다. <code>t</code>가 한 스텝씩 앞으로 갈 때마다,
+“갱신할 차례인” 상태 <code>tau</code>도 한 칸씩 앞으로 밀려나간다. 에피소드가
+끝난 뒤(<code>t &gt;= T</code>)에도 이 밀림이 <code>tau == T-1</code>이 될 때까지
+계속되는 이유도 바로 이것이다 — 아직 \(n\) 스텝의 목표값을
+계산 못 한 상태가 남아 있어서다.</p>
+<p><strong>중요: 목표값의 할인 지수를 세어라.</strong> \(G_t^{(n)}\)의 정의에서
+\(R_{t+k}\)의 지수는 \(k\)다. <code>tau</code>번 상태를 갱신할 때
+<code>rewards[tau]</code>(= \(R_{tau}\))의 지수는 \(0\),
+<code>rewards[tau+1]</code>(= \(R_{tau+1}\))의 지수는 \(1\), …, 즉
+<code>rewards[i]</code>의 지수는 \(i - tau\)다. 여기서 <strong>하나만</strong>
+틀리(<code>gamma ** (i - tau - 1)</code>처럼) 쓰면, 각 보상이
+\(\gamma^{-1}\)만큼 <strong>덜</strong> 할인된 — 곧 편향된 — 목표값이 만들어져
+\(n=1\)일 때조차 TD(0)의 목표값이 아니게 된다. 실제로 위 함수의
+보상 가중치를 <code>i - tau - 1</code>로 쓰면, \(n=1\)이면서 2000 에피소드
+학습 후에도 \(V(5) \approx 0.84\)로 참값 \(+0.5643\)에서 크게
+벗어나 <strong>수렴하지 않는다</strong>. 지수 하나가 틀리면 “TD(0)를 쓰는
+것“이 아니라 “편향된 목표값을 끝없이 쓰는 것“이 되는 셈이다 — 확인
+문제 3에서 이 버그를 의도적으로 넣었다 빼면서 직접 확인해볼 수 있다.</p>
+<p><strong><code>tau + n &lt; T</code> 분기 — “에피소드가 윈도우 안에 끝났는가”.</strong>
+\(tau + n &lt; T\)이면(\(n\) 스텝 윈도우가 끝나기 전에 에피소드가
+끝나지 않았다면) 목표값에 \(\gamma^n V(s_{tau+n})\)를 더한다.
+\(tau + n \ge T\)이면(에피소드가 그 안에 끝났다) 보상이 다
+모이지 못해 <strong>추정치 항을 생략</strong>하고, 실제로 모은 보상분만 쓴다
+(보상 합을 계산하는 <code>min(tau + n, len(rewards))</code>가 이 절단을
+처리한다). 이 “끝에서 추정치 절단” 덕분에, <strong>\(n\)이 에피소드
+길이보다 길면 n-step TD는 자동으로 MC가 된다</strong> — 실습에서
+<code>n=50</code>이 사실상 MC로 동작하는 이유가 이것이다(이 환경의 에피소드
+길이는 보통 50보다 짧으므로).</p>
+<p><strong>참값은 얼마인가.</strong> 이 random walk의 참값 \(V^\pi(s)\)는
+벨만방정식(상태 1~5가 미지수인 연립 일차방정식, 연습문제 2에서
+직접 풀어보자)으로 정확히 구할 수 있다:</p>
+<p>\[V^* = [0,\; -0.5643,\; -0.2539,\; 0,\; +0.2539,\; +0.5643,\; 0]\]</p>
+<p>대칭성(좌우가 미러링) 때문에 \(V(3) = 0\), \(V(2) = -V(4)\),
+\(V(1) = -V(5)\)가 성립한다. 7개 상태 random walk에서 <code>n=3</code>으로
+10 에피소드 학습(\(\alpha = 0.1\), seed 고정)시켜 보면, 이 참값의
+모양을 대략 따라가며 목표(오른쪽 끝, +1)에 가까운 상태일수록
+가치가 매끄럽게 커지는 것을 확인할 수 있다(예: 상태 1에서
+\(-0.48\) 근처에서 오른쪽으로 갈수록 상태 5에서 \(+0.37\)
+근처까지 단조 증가). 에피소드가 10개뿐이라 참값까지 다 도달하진
+않지만, 방향(오른쪽이 왼쪽보다 가치가 높다)은 이미 잡혀 있는
+상태다.</p>
+<h3 id="online-관점-vs-forward-관점"><a class="header" href="#online-관점-vs-forward-관점">online 관점 vs forward 관점</a></h3>
+<p>위 코드를 <strong>online 관점</strong>(online view)이라고 한다 — 학습이
+<strong>진행되면서</strong> 목표를 만들어 갱신하는 방식. “지금 \(t\) 스텝을
+왔다“고 할 때, <em>지금까지 실제로 쌓인</em> \(R_t, \dots, R_{t+n-1}\)
+을 모아 \(G_t^{(n)}\)을 계산한다. 위 코드의 <code>tau = t - n + 1</code>
+과 <code>tau + n &lt; T</code> 분기가 바로 online 관점의 산물이다.</p>
+<p>반면 <strong>forward 관점</strong>(forward view)은, “어떤 \(n\)을 쓰느냐“가
+<strong>같은 경험 위에서 서로 다른 목표값을 만들어내는 것</strong>을 시간축을
+<em>앞에서 뒤로</em> 읽는 관점으로 기술한다. 같은 trajectory가 주어졌을
+때, \(n=1\)의 목표는 \(R_t + \gamma V(s_{t+1})\),
+\(n=2\)의 목표는 \(R_t + \gamma R_{t+1} + \gamma^2
+V(s_{t+2})\)로, <strong>같은 경험에서 다른 목표가 생긴다.</strong></p>
+<p>왜 두 관점을 둘 다 아는 것이 좋은가?</p>
+<ol>
+<li><strong>online 관점</strong>은 실제 알고리즘의 실행 순서(갱신 시차,
+에피소드 끝 처리)를 정확히 반영한다.</li>
+<li><strong>forward 관점</strong>은 “n이 커지면 MC에 가까워진다“는 직관
+(목표값의 <em>정의 자체</em>에서 \(n \to \infty\)가 MC의 리턴이
+됨)를 가장 투명하게 보여준다.</li>
+</ol>
+<p>두 관점이 <em>동일한 학습 알고리즘</em>을 기술한다는 사실은, 7.2절의
+적격흔적이 “모든 \(n\)을 동시에” 쓰는 기법으로 이어서 설명할
+때 핵심이 된다 — 적격흔적은 forward 관점에서 “n별로 다른 목표“를
+<em>한 번의 실제 경험</em> 위에서 <strong>가중합</strong>으로 만들어주는 기계다.
+이번 절에서는 online 관점 코드를 중심으로 하고, forward 관점은
+“왜 n이 커지면 편향은 줄고 분산은 커지는가“를 설명할 때 쓴다.</p>
+<h3 id="왜-n이-커지면-편향은-줄고-분산은-커지는가"><a class="header" href="#왜-n이-커지면-편향은-줄고-분산은-커지는가">왜 \(n\)이 커지면 편향은 줄고 분산은 커지는가</a></h3>
+<p>\(V\)가 이미 참값 \(V^\pi\)라면, \(G_t^{(n)}\)의 기대값은
+정확히 \(V^\pi(s_t)\)다 — 실제 보상 합이 “앞으로 받을 할인된
+보상의 기댓값“의 <em>단일 샘플</em>이기 때문이다(어떤 \(n\)에서든
+이것은 성립한다). 그런데 학습 초반의 \(V\)는 참값과 다르다.
+목표값에 추정치 \(V(s_{t+n})\)가 <strong>일부</strong> 섞여 있다는 것 —
+이것이 **편향(bias)**의 출처다. \(n\)이 커질수록 목표값에서
+추정치 비중이 줄고 실제 보상 비중이 커지므로, \(V\)가 부정확해도
+목표값이 참값에 더 가까워진다(편향 감소). 대신, 실제 보상의 합이
+길어질수록 각 스텝의 전이·보상 확률이라는 무작위성이 더 많이
+누적되어 목표값의 **분산(variance)**은 커진다 — MC가 “분산
+극대“인 이유와 정확히 같다.</p>
+<p>이 트레이드오프가 <strong>숫자로</strong> 어떻게 나타나는지 위 random walk에서
+확인해보자. 각 \(n \in \{1, 3, 5, 10, 50\}\)으로 10 에피소드
+학습(\(\alpha = 0.1, \gamma = 0.9\))을 30개 seed로 반복해
+평균하고, 추정값과 참값의 <strong>RMS 오차</strong>를 구하면:</p>
+<pre><code>n=1 :  RMS 0.4007   (TD(0))
+n=3 :  RMS 0.3061   &lt;- 이 환경·예산에서 최적
+n=5 :  RMS 0.3493
+n=10:  RMS 0.3994
+n=50:  RMS 0.4170   (사실상 MC)
+</code></pre>
+<p>오차가 \(n\)에 대해 <strong>U자 모양</strong>이다 — 양 극단(\(n=1\),
+\(n=50\))보다 중간 어딘가(\(n=3\))가 가장 낮은 오차를
+보인다. \(n=1\)(TD(0))은 매 스텝 즉시 갱신하지만 추정치에
+크게 의존해서(편향), 겨우 10 에피소드로는 그 편향을 다
+씻어낼 시간이 부족하다. \(n=50\)(사실상 MC에 가깝다,
+에피소드 길이가 보통 그보다 짧으므로)은 편향은 없지만 각
+갱신에 담긴 무작위성(분산)이 너무 커서, 적은 에피소드로는
+오히려 불안정하다. 그 사이 어딘가(\(n=3\))가 이번 실험에서는
+최적이었다 — 실전에서 \(n\)을 몇으로 잡을지는 이렇게 데이터로
+확인해야 하는 하이퍼파라미터라는 것, 즉 ML1 Chapter 4.1에서
+본 <strong>편향-분산 트레이드오프</strong>가 여기서 U자 곡선이라는
+구체적인 숫자로 다시 확인되는 셈이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch07_1_nstep_ucurve.svg" alt="n-step TD의 편향-분산 트레이드오프 — 7개 상태 random walk(참값 V = [0, -0.56, -0.25, 0, +0.25, +0.56, 0])에서 n = 1,3,5,10,50으로 바꿔가며 학습했을 때 추정 V와 참값의 RMS 오차(30 seed 평균). (a) 에피소드 10개: U자 곡선의 최저점이 n=3. (b) 에피소드 500개: 최저점이 작은 n(n=1) 쪽으로 이동하고, 큰 n의 패널티는 여전히 남아 있다"><span class="img-wrapper"><img src="../../images/ch07_1_nstep_ucurve.svg" alt="n-step TD의 편향-분산 트레이드오프 — 7개 상태 random walk(참값 V = [0, -0.56, -0.25, 0, +0.25, +0.56, 0])에서 n = 1,3,5,10,50으로 바꿔가며 학습했을 때 추정 V와 참값의 RMS 오차(30 seed 평균). (a) 에피소드 10개: U자 곡선의 최저점이 n=3. (b) 에피소드 500개: 최저점이 작은 n(n=1) 쪽으로 이동하고, 큰 n의 패널티는 여전히 남아 있다"></span></label></p>
+<p>그림의 두 패널을 비교할 것. 에피소드 10개(좌)에서는 \(n=3\)이
+두드러지게 가장 낮지만, 에피소드 500개(우)로 늘리면 최저점이
+\(n=1\) 쪽으로 <strong>이동</strong>한다(\(n=1\): 0.268,
+\(n=3\): 0.336, \(n=50\): 0.457) — 데이터가 쌓일수록
+“갱신이 잦고 분산이 작은” TD(0) 쪽의 이점이 살아나기
+때문이다. 한편 큰 \(n\)(\(n=50\)) 쪽 패널티는 예산이 커져도
+크게 줄지 않는다. <strong>결론: “보편적인 최적 n“은 없다 — 최적 n은
+에피소드 예산·환경의 확률적 정도·할인율에 따라 움직이는
+하이퍼파라미터다.</strong> 이것이 실전에서 n을 검증으로 튜닝해야
+하는 이유이며, 7.2절의 적격흔적이 “n을 고르는 문제” 자체를
+피(모든 n을 흔적으로 가중합)하는 대안인 이유이기도 하다.</p>
+<p><strong>\(n\)을 고르는 경험칙.</strong> (i) 에피소드가 <strong>짧고</strong> 경험 횟수가
+<strong>많다</strong>면 \(n = \infty\)(MC)나 작은 \(n\)(TD(0))이 안전하다 —
+편향을 씻어낼 데이터가 있으므로. (ii) 에피소드가 <strong>길고</strong>
+경험 횟수가 <strong>적다</strong>면 중간 \(n\)(3~10)이 편향을 줄이면서
+분산을 관리해 준다. (iii) 에피소드가 <strong>끝이 없다</strong>(continuing
+task)면 MC 자체가 불가능하므로 유한 \(n\) 또는 적격흔적
+(7.2절)을 쓴다. 실전 DQN 계열 알고리즘(Chapter 9)에서도
+n-step 리턴은 기본 옵션으로 제공되며, 보통 3~10 범위로
+튜닝한다.</p>
+<h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
+<ul>
+<li><strong>보상 합산의 할인 지수를 잘못 세는 것.</strong> 앞선 “중요: 목표값의
+할인 지수를 세어라“에서 본 문제다. <code>i - tau - 1</code>로 쓰면
+\(n=1\)일 때조차 TD(0)가 아닌 <strong>편향된 목표값</strong>을 쓰게
+되고, 2000 에피소드 학습 후에도 참값에 도달하지 않는다.
+“왜 안 수렴하지?“라고 느끼면 먼저 이 지수를 확인하라.</li>
+<li><strong><code>tau = t</code>(지금 상태를 지금 갱신)로 쓰는 것.</strong> \(t\)번
+상태의 목표값 \(G_t^{(n)}\)은 \(R_t, \dots, R_{t+n-1}\)이
+다 모인 시점, 즉 <code>t + n - 1</code>에야 계산된다. <code>tau = t</code>로 쓰면
+아직 모이지 않은 보상을 참조해서 인덱스 에러가 나거나,
+0으로 채워져 편향된 목표값이 된다. <code>tau = t - n + 1</code>이
+정확한 표현이다.</li>
+<li><strong>보상 합이 \(n\)개를 넘지 않는지 안 확인하는 것.</strong>
+에피소드 중간이 아니라 <strong>끝 근처</strong>에서는 실제로 남은
+보상이 \(n\)개보다 적다(예: \(n=3\)인데 2스텝 남음).
+<code>min(tau + n, len(rewards))</code>로 상한을 안 걸면 인덱스
+에러가 나거나, “없는 보상“을 0으로 처리해 목표값이
+틀어진다. 같은 정신으로, 추정치 항도 <code>tau + n &lt; T</code>
+조건이 없으면 에피소드가 이미 끝난 뒤에 \(V\)을
+더하는(또는 존재하지 않는 인덱스를 참조하는) 오류가
+생긴다.</li>
+<li><strong>“\(n\)을 에피소드 길이보다 크게 하면 갱신이 안
+된다“고 오해하는 것.</strong> 갱신은 에피소드당 <em>모든</em> 이동
+상태(\(0 \le \tau \le T-1\))마다 정확히 한 번씩 일어난다
+— \(n\)이 길어도 에피소드 종료 직후의 “꼬리
+갱신”(보상이 \(n\)개 모이지 못한 절단 목표값)으로
+처리되기 때문이다(코드에서 <code>t &gt;= T</code> 구간이 <code>tau == T-1</code>까지 계속되는 이유). \(n\)이 바꾸는 것은 갱신
+<strong>횟수</strong>가 아니라, 첫 갱신까지의 <strong>시차</strong>와 목표값의
+<strong>구성</strong>(실제/추정 비율)이다.</li>
+<li><strong>“이 환경에서 n=3이 최적이었다“고 일반화하는 것.</strong>
+U자 곡선의 최저점은 에피소드 예산·환경에 따라
+움직인다(위 그림에서 10 에피소드 → n=3, 500 에피소드
+→ n=1). 실전에서는 n을 검증 데이터로 튜닝하는 것이
+표준이며, 7.2절의 적격흔적은 이 튜닝 자체를 줄이는
+방향의 대안이다.</li>
+</ul>
+<h3 id="실습-n을-바꿔가며-random-walk에서-최적-지점-찾기"><a class="header" href="#실습-n을-바꿔가며-random-walk에서-최적-지점-찾기">실습: n을 바꿔가며 random walk에서 최적 지점 찾기</a></h3>
+<p>7.1절의 U-자 곡선을 직접 만들어보자. 같은 random walk
+환경에서 \(n \in \{1, 3, 5, 10, 50\}\)으로 각각 10
+에피소드 학습(\(\alpha = 0.1, \gamma = 0.9\), 30 seed
+평균)을 하고 RMS 오차를 비교하면, 위 표와 그림의 좌측
+패널과 같은 U자 곡선이 재현된다(최저점 n=3, RMS
+0.3061).</p>
+<p><strong>추가 과제: 에피소드 예산도 바꿔보기.</strong> 에피소드 수를
+10에서 500으로 늘려 다시 그리면, 위 그림의 우측 패널처럼
+최저점이 \(n=1\) 쪽으로 이동한다. 이 결과를 보고
+“실전에서 n을 고를 때 어떤 상황을 고려해야 하는가“를
+한 문장으로 설명해보자. (힌트: 에피소드 예산이 적을 때
+와 많을 때, U자 곡선의 최저점 <em>위치</em>가 어떻게 달라지는가?
+그게 왜 그런가?)</p>
+<h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
+<ol>
+<li><strong>\(n=1\)이 정확히 TD(0)임을 코드로 확인.</strong>
+<code>n_step_td</code>에서 <code>n=1</code>로 실행하고, 갱신에 쓰이는 <code>G</code>가
+\(R_{tau} + \gamma V(s_{tau+1})\)(TD(0)의 목표값)와
+동일한지 손으로 한 스텝 추적해서 확인하라. (힌트:
+<code>tau + 1 &lt; T</code>일 때만 추정치 항이 추가된다. 에피소드
+마지막 스텝에서는 추정치 항이 없어 \(G = R_{tau}\)만
+된다 — 이것이 “터미널 상태의 V는 0“과 일치하는지
+생각해보라.)</li>
+<li><strong>\(n \to \infty\)가 MC임을 확인.</strong> 에피소드가 길이
+\(T\)에서 끝난다고 할 때(\(V(s_T) = 0\)),
+\(n \ge T\)인 n-step TD의 \(t\)번 상태 목표값이
+실제 리턴 \(G_t = \sum_{k=0}^{T-t-1} \gamma^k
+R_{t+k}\)와 동일한지 보여라.</li>
+<li><strong>보상 가중치 버그의 효과.</strong> <code>n_step_td</code>에서
+<code>gamma ** (i - tau)</code>를 <code>gamma ** (i - tau - 1)</code>로
+바꾸고, <code>n=1</code>로 2000 에피소드 학습하면 참값
+\([0, -0.56, -0.25, 0, +0.25, +0.56, 0]\)에 도달하지
+못함을 확인하라. 이 버그가 “목표값의 편향이 수렴
+고정점 자체를 바꾼다“는 점을 어떻게 보여주는지 한
+문장으로 설명하라.</li>
+<li><strong>갱신 횟수 세기.</strong> 에피소드 길이가 \(T\)일 때,
+\(n = 1\)과 \(n = 3\)과 \(n = T + 1\)인 n-step
+TD 각각에서 <strong>그 에피소드 중 몇 번의 갱신</strong>이 일어나는지
+코드를 추적해서 세어라. (힌트: <code>tau</code>가 어떤 범위까지
+갱신되고, 언제 <code>break</code>하는가? 세 경우에 갱신 횟수가
+모두 같은가?)</li>
+</ol>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. n-step TD도 부트스트래핑인가요?</strong> 그렇다 — \(n\)이 유한하기만
 하면(\(n&lt;\infty\)) 목표값 \(G_t^{(n)}\)에 여전히 추정치
@@ -232,7 +486,90 @@
 보통 몇 개(4~10 정도)의 후보를 검증 성능으로 비교해서 고른다 —
 이 절의 실습이 바로 그 튜닝 과정의 축소판이다. Chapter 9의 DQN
 계열 알고리즘 중에는 n-step 리턴을 기본 옵션으로 제공하는 구현도
-많다.</p>
+많다. (경험 재현 버퍼를 쓰는 DQN은 버퍼에서 미니배치를 무작위로
+뽑으므로, “시간적으로 \(n\) 스텝 앞“의 경험을 버퍼에서
+이어붙여 n-step 목표값을 만들 수도 있다 — 이 변형은 Chapter 9
+실습에서 마주칠 수 있다.)</p>
+<p><strong>Q. n-step TD의 에피소드당 갱신 횟수는 TD(0)와 MC와 어떻게
+다른가?</strong> <strong>같다</strong> — 이동 상태가 \(T\)개인 에피소드에서,
+TD(0)도 n-step TD도 각 상태마다 정확히 한 번씩(총 \(T\)번)
+갱신한다. n-step TD에서 첫 \(n-1\) 상태는 “갱신이 늦어지는”
+뿐이지(\(n-1\) 스텝 뒤에 갱신) 사라지지 않으며, 에피소드가
+끝난 뒤에도 <code>tau == T-1</code>이 될 때까지 꼬리 갱신이 이어진다.
+\(n\)이 바꾸는 것은 갱신 <strong>횟수</strong>가 아니라, 첫 갱신까지의
+<strong>시차</strong>와 목표값의 <strong>구성</strong>(실제 보상 \(n\)개 + 추정치 vs
+실제 보상 1개 + 추정치)이다. MC는 (첫방문 기준) 에피소드가
+<strong>끝난 뒤</strong>에 각 상태를 한 번씩 갱신한다는 점에서 갱신
+<em>시점</em>이 다르다.</p>
+<p><strong>Q. n이 클수록 목표값의 분산이 커진다는 건, “갱신당
+변동“이 크다는 뜻인가요?</strong> 그렇다 — 같은 \(V\) 기준으로
+보아, 목표값 \(G_t^{(n)}\)이 실현값마다 흔들리는 폭이
+\(n\)에 따라 달라진다. \(n=1\)이면 한 스텝의 전이
+무작위성만 반영되고, \(n\)이 커지면 \(n\) 스텝치의
+전이·보상 무작위성이 합쳐진다(보상이 0인 스텝이 많아도
+<em>전이</em>의 무작위성은 누적된다 — 이 random walk에서는 보상
+0의 스텝도 “어디로 갔는가“에 따라 이후 경로가 달라지므로).
+같은 총 “정보“를 작은 덩어리(잦은 갱신)로 나누어 갱신하는 것
+과 큰 덩어리(드물지만 큰 갱신)로 나누는 것의 차이는, ML1
+Chapter 9에서 본 <strong>배치 크기 트레이드오프</strong>(작은 배치는
+경사가 노이져스하지만 갱신이 잦고, 큰 배치는 매 갱신이
+안정적)와 같은 구조다.</p>
+<p><strong>Q. n-step TD와 적격흔적(7.2절)은 정말 같은 것을
+계산하는가?</strong> “같은 것을 계산한다“기보다는, “같은 효과
+(모든 n을 가중합)를 <strong>다른 순서</strong>로 만든다“가 정확하다.
+n-step TD는 <em>n을 하나 고정</em>해 그 하나의 목표값으로
+갱신하고, 적격흔적은 <em>한 번의 경험</em>에서 모든 n의
+목표값을 <strong>가중합</strong>으로 만들어 <em>동시에</em> 갱신한다.
+\(\lambda\)는 “어떤 n에 얼마만큼 가중치를 두느냐“를
+조절하는 다이얼이 되며, 7.2절에서 “전방 관점과 후방
+관점의 등가성“으로 이 연결을 다룬다.</p>
+<hr>
+<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> <code>n_step_td</code>의 핵심 줄(빈칸으로 남겨져 있다고
+가정)을 완성하고, 7개 상태 random walk에서
+\(n = 1, 3, 5, 10, 50\)으로 각각 10 에피소드
+학습(\(\alpha = 0.1, \gamma = 0.9\))한 추정 \(V\)와
+참값 \([0, -0.5643, -0.2539, 0, +0.2539, +0.5643, 0]\)
+의 RMS 오차를 계산하라. U자 곡선이 나오는지 확인하고,
+에피소드 수를 500으로 늘렸을 때 최저점의 이동도
+관찰하라:</p>
+<pre><code class="language-python">def n_step_td(env_step, n, n_episodes, alpha, gamma, n_states, start_state):
+    V = [0.0] * n_states
+    for _ in range(n_episodes):
+        states, rewards = [start_state], []
+        s, T, t = start_state, float('inf'), 0
+        while True:
+            if t &lt; T:
+                a = random.randrange(2)
+                ns, r, done = env_step(s, a)
+                states.append(ns)
+                rewards.append(r)
+                if done:
+                    T = t + 1
+                s = ns
+            tau = t - n + 1
+            # ADD ADDITIONAL CODE HERE!!
+            # tau &gt;= 0 이면: G = n-step 목표값 (보상 합 + 추정치 항)
+            #               V[states[tau]] 갱신
+            # tau == T - 1 이면 break, 아니면 t += 1
+    return V
+</code></pre>
+<p><strong>2. (수치 계산)</strong> 7개 상태 random walk의 참값 \(V^\pi(s)\)를
+벨만방정식으로 직접 풀어라. 상태 1~5가 미지수이고, 각
+상태에서 좌우 50:50 이동한다(상태 1에서 왼쪽이면 보상
+\(-1\)과 함께 터미널 0, 상태 5에서 오른쪽이면 보상
+\(+1\)과 함께 터미널 6, \(\gamma = 0.9\)). 연립
+일차방정식 5개를 세우고 풀어,
+\(V(1) = -0.5643, V(2) = -0.2539, V(3) = 0,
+V(4) = +0.2539, V(5) = +0.5643\)임을 확인하라. (힌트:
+대칭성 \(V(3)=0, V(2)=-V(4), V(1)=-V(5)\)를 이용하면
+미지수가 2개로 줄어든다.)</p>
+<p><strong>3. (개념 서술)</strong> n-step TD의 online 관점 코드에서
+<code>tau = t - n + 1</code>인 이유를 “갱신 시차” 개념으로 설명하고,
+이 시차가 에피소드당 갱신 <strong>횟수</strong>에 영향을 주지
+않는 이유를 한 문장으로 설명하라. (힌트: 확인 문제 4의
+세 갱신 횟수 — 세 경우 모두 같은가? 같은 이유가
+무엇인가?)</p>
 
                     </main>
 
@@ -285,8 +622,8 @@
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,13 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="83-중간고사-대비-총정리"><a class="header" href="#83-중간고사-대비-총정리">8.3 중간고사 대비 총정리</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter08_3_review_diagnostic.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: 복습 자가진단"></a></p>
+<p>이 절은 다른 절과 달리 <strong>새로운 개념이 하나도 없다</strong>. 하는 일은 세 가지뿐이다 —
+(1) Chapter 2~7의 이론을 “손으로 재현할 수 있는 형태“로 압축한다, (2)
+준비도를 스스로 재는 <strong>자가진단</strong>을 준다, (3) 8.1절에서 4주간 쌓아온
+프로젝트 절차를 복습 자료로 다시 쓴다. 시험은 “Block A의 개념을 새로운
+MDP에 적용하는 것“이므로, 암기는 여기서 쓸모가 없고, 이 절은 그 대신
+<strong>“스스로 유도하는 습관”</strong> 하나에 맞추어져 있다.</p>
 <h3 id="장별-핵심-질문-정리"><a class="header" href="#장별-핵심-질문-정리">장별 핵심 질문 정리</a></h3>
 <div class="table-wrapper">
 <table>
@@ -199,6 +206,142 @@
 포함)로 구성된다 — 특히 “벨만방정식을 터미널부터 거꾸로 대입해서
 직접 풀기”(Chapter 4)와 “TD 오차의 수렴 조건 논증하기”(Chapter 6)
 패턴이 다른 MDP에도 그대로 적용되는지 확인하는 것이 좋은 복습이다.</p>
+<p><strong>시험 형식(참고)</strong>: 100분, 4문항. 문항 1은 유도 템플릿 ①(거꾸로
+대입)을 새로운 MDP에 적용하는 손계산, 문항 2는 벨만방정식·정책반복
+관련 유도나 수렴 논증, 문항 3은 MC/TD 갱신 규칙의 수치 계산(경로
+따라가기), 문항 4는 개념 비교 단답(SARSA vs Q-learning, 편향-분산,
+on/off-policy)이다. <strong>모든 문항은 계산 과정을 보여야 한다</strong> — 최종
+답만 맞고 과정이 따라오지 않으면, 과정이 맞던 지점까지만 부분점이
+된다. 8.1절 프로젝트의 “수식적 정당화“를 채점할 때 쓰던 기준과
+정확히 같은 기준이다.</p>
+<h3 id="유도-템플릿-3가지--시험에-빠짐없이-나오는-손유도"><a class="header" href="#유도-템플릿-3가지--시험에-빠짐없이-나오는-손유도">유도 템플릿 3가지 — 시험에 빠짐없이 나오는 손유도</a></h3>
+<p>손유도 문항은 실제로는 세 가지 “뼈대“를 반복해서 바꾼 것에 불과하다.
+뼈대를 외우는 것이 아니라 <strong>각 뼈대의 빈칸을 스스로 채울 수 있는
+것</strong>이 목표다. 각 템플릿마다 (a) 뼈대, (b) 손으로 푼 작은 예제,
+(c) “왜 이게 답인지“를 한 줄로 말할 수 있는가를 함께 본다.</p>
+<h4 id="템플릿-①-거꾸로-대입-backward-induction"><a class="header" href="#템플릿-①-거꾸로-대입-backward-induction">템플릿 ① 거꾸로 대입 (backward induction)</a></h4>
+<p><strong>뼈대</strong>: 전이가 “앞으로만” 흐르는 MDP에서는 벨만방정식
+\(V^\pi(s) = R(s, \pi(s)) + \gamma V^\pi(s’)\)을 <strong>터미널
+상태에서 출발해 거꾸로 한 칸씩 대입</strong>하면 연립방정식을 풀지 않아도
+풀린다.</p>
+<p><strong>왜 동작하는가</strong>: 벨만방정식을 모든 상태에서 쓰면 “연립방정식“인데,
+전이 그래프가 <strong>사이클 없이 한 방향으로만 흐를 때</strong> — 상태 0→1→2
+사슬처럼, 혹은 유한 스텝 후 “끝“이 보장된 게임 — 는 이 연립방정식의
+마지막 줄이 더 이상 다른 상태를 참조하지 않는다. 그러면 해가 터미널
+에서 출발해 앞 상태들로 “퍼져 나간다”. Chapter 3의 3칸 보드게임,
+Chapter 5의 블랙잭(한 판은 유한), 7.3절의 5×5 격자 — 전부 이
+유형이다.</p>
+<p><strong>작은 예제</strong>(4.3절 연습문제 2와 같은 3-state 사슬,
+\(\gamma=0.9\)): 상태 0→1(보상 −1), 1→2(보상 −1), 2는 터미널.</p>
+<p>\[V(2) = 0 \quad(\text{터미널})\]
+\[V(1) = -1 + 0.9\,V(2) = -1\]
+\[V(0) = -1 + 0.9\,V(1) = -1.9\]</p>
+<p>끝. <strong>정확성 확인</strong>(시험 답안에 한 줄로 적을 것): 구한
+\(V=(−1.9, −1, 0)\)를 벨만방정식 <strong>양변에 다시 대입하면</strong> 각
+상태에서 왼쪽과 오른쪽이 일치하는가? (실습 노트북 §1~2가 이 검증
+을 코드로 한다.)</p>
+<p><strong>자주 하는 실수</strong>: (1) 터미널 진입 보상 자체를 빼먹기, (2) 대입
+방향을 거꾸로 쓰기 — \(V(1) = -1 + 0.9V(0)\)로 쓰는 순간이다.
+대입 방향은 <strong>“다음 상태의 값이 이미 알려진 쪽”</strong> — 전이 화살표와
+반대 방향이다.</p>
+<h4 id="템플릿-②-후보검증-candidate--verify"><a class="header" href="#템플릿-②-후보검증-candidate--verify">템플릿 ② 후보+검증 (candidate &amp; verify)</a></h4>
+<p><strong>뼈대</strong>: (1) 최적값의 <strong>후보</strong>를 추측한다, (2) 그 후보가 성립하는
+것을 <em>가정하고</em> 방정식을 푼다, (3) 각 상태에서 후보의 행동이
+<em>정말로</em> 다른 행동보다 나은지 <strong>검증</strong>한다. 벨만 최적방정식
+\(Q^*(s,a) = R + \gamma \max_{a’} Q^*(s’,a’)\)의 \(\max\)는
+“어떤 행동이 argmax인지를 알지 못하면 펼칠 수 없는” 함수다 — 그래서
+“검증“이 <strong>선택이 아니라 필수</strong>다.</p>
+<p><strong>작은 예제</strong> — 강의에서 안 써본 <em>새</em> MDP. 상태 S, G, T,
+\(\gamma = 0.9\). S에서는 “달리기(run)“와 “쉬기(rest)” 중 하나:
+run은 0.7 확률로 G로, 0.3 확률로 S로 미끄러지며 돌아온다(보상 0).
+rest는 S에 남는다(보상 −1). G에서는 “받기(collect)“가 T로 가고
+보상 +3. T는 터미널.</p>
+<p><strong>Step 1 (후보 추측)</strong>: +3을 받는 유일한 길은 G에서 collect다 —
+\(Q^*(G,\text{collect}) = 3 + \gamma \cdot 0 = 3\). S에서
+rest는 매 스텝 −1만 계속 내는 행동이다. 후보: <strong>run@S,
+collect@G</strong>.</p>
+<p><strong>Step 2 (해 구하기)</strong>: run@S가 최선이라는 가정 하에,</p>
+<p>\[V^*(S) = 0.9\big(0.7\,V^*(G) + 0.3\,V^*(S)\big)
+= 1.89 + 0.27\,V^*(S)\]</p>
+<p>자기 자신으로 돌아오는 확률(\(0.9 \times 0.3 = 0.27\)) 때문에
+\(V^*(S)\)가 자기 자신에 대해 나온 — 한쪽으로 모으면</p>
+<p>\[V^*(S) = \frac{1.89}{1 - 0.27} = \frac{1.89}{0.73}
+= \frac{189}{73} \approx 2.589\]</p>
+<p><strong>Step 3 (검증)</strong>: run이 정말 rest보다 나은가?</p>
+<p>\[Q^*(S,\text{run}) = 2.589 \;&gt; \; Q^*(S,\text{rest})
+= -1 + 0.9 \times 2.589 = 1.330 \;\;\checkmark\]</p>
+<p>일치하므로 후보가 성립하고, 답은 \(V^*(S) = 2.589\),
+\(V^*(G) = 3\).</p>
+<p><strong>정확성 확인</strong>: Step 3이 <strong>형식이 아니라 안전장치</strong>다 — Step 1의
+추측이 틀렸다면 Step 2의 값은 “틀린 정책을 최적인 것처럼 놓고
+푼” 값이고, Step 3의 부등호가 뒤집힌다. (만약 계산 결과가
+\(Q(\text{rest}) = 3.5 &gt; Q(\text{run})\)이었으면, 그것이
+“후보가 틀렸으니 다시 추측하라“는 신호다.)</p>
+<p><strong>정책반복과의 연결</strong>: 이 템플릿은 4.2절 정책반복의
+“improve + evaluate” 루프를 손으로 단축한 것이다. 이 예에서
+\(\pi_0 =\) rest@S로 시작했다면, 정책평가는
+\(V^\pi(S) = \frac{-1}{1-0.9} = -10\)을 주었고, improve 단계에서
+\(Q^\pi(S,\text{run}) = 0.9(2.1 + 0.3 \times (-10)) = -0.81 &gt;
+-10\)으로 run으로 교체되고, 재평가에서 다시 2.589가 나온다 —
+<strong>1회 반복</strong>에 같은 답이다. “후보 추측은 정책반복을 손으로 건너뛰는
+단축키“라는 말을 시험에서 할 수 있으면 이 템플릿은 끝이다.</p>
+<h4 id="템플릿-③-수렴-논증-축소-사상--기하급수-감소"><a class="header" href="#템플릿-③-수렴-논증-축소-사상--기하급수-감소">템플릿 ③ 수렴 논증: 축소 사상 → 기하급수 감소</a></h4>
+<p><strong>뼈대</strong>: “T는 \(\gamma\)-축소 사상이다“가 주어졌을 때,
+“임의의 초기값에서 T를 반복하면 수렴한다“를 논증하려면:</p>
+<ol>
+<li>오차를 \(\|V_n - V^*\|\)라 표기한다.</li>
+<li>\(V^*\)가 고정점이라, \(\|V_n - V^*\| = \|T V_{n-1} - T V^*\|
+\le \gamma \|V_{n-1} - V^*\|\).</li>
+<li>n번 반복하면 \(\|V_n - V^*\| \le \gamma^n
+\|V_0 - V^*\|\).</li>
+<li>\(\gamma &lt; 1\)이므로 \(\gamma^n \to 0\) — 수렴.</li>
+</ol>
+<p><strong>왜 이 뼈대가 표준인가</strong>: 4.3절 연습문제 3의 빈칸채움형 폴백이
+정확히 이 4줄이고, Chapter 6의 TD(0)/Q-learning 수렴 논증도 같은
+뼈대에 조건을 바꾼 것이다 — “TD 오차가 0인 Q” ↔ “고정점“이 대응하고,
+“\(\alpha\) 충분히 작고 모든 (s,a)를 무한히 방문“이 축소 조건
+역할을 대신한다(확률적 설정에서는 기댓값에서만 축소가 성립한다는
+주의가 붙는다 — Ch06의 FAQ를 복습).</p>
+<p><strong>숫자 감각</strong> (\(\gamma = 0.9\)일 때):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>반복 수 n</th><th>\(\gamma^n\)</th><th>뜻</th></tr>
+</thead>
+<tbody>
+<tr><td>5</td><td>0.590</td><td>초기 오차의 59% 이하로 줄었다</td></tr>
+<tr><td>10</td><td>0.349</td><td></td></tr>
+<tr><td>20</td><td>0.122</td><td>약 1/8</td></tr>
+<tr><td>50</td><td>0.0052</td><td>초기 오차의 99.5%가 사라졌다</td></tr>
+</tbody>
+</table>
+</div>
+<p>“오차가 1% 이하가 되기까지 몇 번의 반복이 필요한가?“라는 시험
+질문은 \(\gamma^n &lt; 0.01\)을 \(n\)에 대해 푸는 것 —
+\(n &gt; \ln 0.01 / \ln 0.9 \approx 44\)번이다. 실습 노트북 §4가
+이 경합수 감소를 그림으로 보여준다.</p>
+<p><strong>자주 하는 실수</strong>: Step 2에 쓸 “\(V^*\)는 고정점“이라는 전제를
+잊는다 — 이것이 없으면 \(T V_{n-1} - T V^*\)을
+\(T(V_{n-1} - V^*)\)처럼 처리할 근거가 없다. Q-learning 버전에서는
+(1) \(\alpha\) 충분히 작음, (2) 모든 (s,a)의 무한 방문,
+(3) TD 오차 0 ⇔ 벨만 최적방정식의 해, 라는 6.3절 연습문제 3의
+<strong>세 조건</strong>을 빠뜨리지 않는 것이 채점 기준이다.</p>
+<h3 id="block-a-개념-지도"><a class="header" href="#block-a-개념-지도">Block A 개념 지도</a></h3>
+<p>여섯 장은 여섯 개의 독립 주제라기보다, <strong>“미래의 불확실한 보상을
+지금 어떻게 수치화할 것인가“라는 한 질문에 여섯 가지 각도에서 답
+하는 것</strong>이다. 복습은 “주제 6개“를 훑는 것이 아니라 이 한 질문의
+“답들 사이의 관계“를 다시 그리는 일이다:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch08_3_rl_concept_map.svg" alt="Block A(Ch02~07) 개념 지도 — 중앙의 큰 질문: ‘미래의 불확실한 보상을 지금 어떻게 수치화할 것인가?’. 위: 문제 정식화(Ch02~03) — 밴딧(특수 MDP) → MDP 5요소·마르코프 성질 → 리턴과 할인율 γ. 가운데: 4가지 경로 — 모델 기반(벨만방정식 → 정책반복/가치반복, Ch04)과 모델 프리(MC, Ch05 → TD 학습, Ch06 → n-step·적격흔적·Dyna-Q, Ch07). 아래: 모든 경관을 가로지르는 공통 축 — 편향-분산, 탐험(ε-greedy·낙관적 초기화·UCB), 수렴(목표값 오차→0, α 작게, 무한 방문), on/off-policy. 오른쪽: Block B(Ch09~16)로 이어가는 화살표 — Q 표를 신경망으로(DQN), 로봇 시뮬레이션으로"><span class="img-wrapper"><img src="../../images/ch08_3_rl_concept_map.svg" alt="Block A(Ch02~07) 개념 지도 — 중앙의 큰 질문: ‘미래의 불확실한 보상을 지금 어떻게 수치화할 것인가?’. 위: 문제 정식화(Ch02~03) — 밴딧(특수 MDP) → MDP 5요소·마르코프 성질 → 리턴과 할인율 γ. 가운데: 4가지 경로 — 모델 기반(벨만방정식 → 정책반복/가치반복, Ch04)과 모델 프리(MC, Ch05 → TD 학습, Ch06 → n-step·적격흔적·Dyna-Q, Ch07). 아래: 모든 경관을 가로지르는 공통 축 — 편향-분산, 탐험(ε-greedy·낙관적 초기화·UCB), 수렴(목표값 오차→0, α 작게, 무한 방문), on/off-policy. 오른쪽: Block B(Ch09~16)로 이어가는 화살표 — Q 표를 신경망으로(DQN), 로봇 시뮬레이션으로"></span></label></p>
+<p>이 지도를 읽는 법이 시험 기법 두 가지를 만들어 준다. <strong>(1) “질문이
+지도의 어디를 가리키는지”</strong> — “SARSA는 on-policy인가“는
+가운데 행(TD 박스)과 아래 행(on/off-policy 축)이 만나는 <strong>엣지</strong>를
+묻는 질문이고, “왜 n=5가 n=1보다 좋은가“는 n-step 박스와
+편향-분산 축의 엣지를 묻는 질문이다. 질문에 대해 “이것은 어떤
+박스와 어떤 축의 교차점인가“를 5초 안에 짚으면, 답을 그 축의
+용어로 말할 수 있다. <strong>(2) “엣지가 곧 ’왜’다”</strong> — 박스(개념
+정의) 자체를 묻는 문항은 드물고, 빈출 문항은 거의 전부 <strong>엣지</strong>
+(왜 MC→TD인가, 왜 ε-greedy가 모든 박스에 붙는가, 왜 γ는 1보다
+작아야 하는가)에 있다. 박스는 외우기 쉬운데, 엣지가 시험이다.</p>
 <h3 id="확인-문제-장을-넘나드는-복습-문제-4개"><a class="header" href="#확인-문제-장을-넘나드는-복습-문제-4개">확인 문제: 장을 넘나드는 복습 문제 4개</a></h3>
 <p><strong>1.</strong> Chapter 2의 밴딧과 Chapter 3의 MDP는 어떤 관계인가?</p>
 <blockquote>
@@ -239,6 +382,155 @@ Q-learning(off-policy)이 유리하다(Chapter 6.3).</p>
 — “미래의 불확실한 보상을 지금 어떻게 수치화할 것인가?” 이제 이
 질문에 신경망을 결합해서, 표에 담을 수 없을 만큼 큰 문제로 나아갈
 차례다.</strong></p>
+<h3 id="복습-자가진단-20문항"><a class="header" href="#복습-자가진단-20문항">복습 자가진단: 20문항</a></h3>
+<p>시험 전 10분짜리 자가진단이다 — 각 문항에 대해 **10초 안에 한
+문장으로 답을 말할 수 있으면 O, 막히면 ✗**를 표한다. 18개 이상이면
+준비 완료, 15~17이면 ✗가 모인 장 위주로 “자주 하는 실수“와 확인
+문제를 다시, 12~14이면 §“유도 템플릿 3가지“를 손으로 다시 풀고,
+12개 미만이면 §“복습 주간 일정“을 건너뛰지 않는다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>#</th><th>한 문장 질문</th><th>장</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>밴딧에서 “지금까지 몇 번 당겼는가“가 상태에 들어가야 하는 이유는?</td><td>Ch02</td></tr>
+<tr><td>2</td><td>ε-greedy, 낙관적 초기화, UCB — 각각 탐험을 유도하는 방식 한 단어로</td><td>Ch02</td></tr>
+<tr><td>3</td><td>MDP 5요소 중 보상함수를 제외한 네 가지를 쓰시오</td><td>Ch03</td></tr>
+<tr><td>4</td><td>\(\gamma &lt; 1\)이 단순 편의가 아니라 <em>필수</em>인 경우는?</td><td>Ch03</td></tr>
+<tr><td>5</td><td>밴딧과 MDP의 관계를 한 문장으로</td><td>Ch02→03</td></tr>
+<tr><td>6</td><td>벨만 <em>방정식</em>과 벨만 <em>최적</em>방정식의 차이를 한 문장으로</td><td>Ch04</td></tr>
+<tr><td>7</td><td>“T는 \(\gamma\)-축소 사상이다“를 수식 없이 한 문장으로</td><td>Ch04</td></tr>
+<tr><td>8</td><td>모든 상태가 전이 한 번 만에 터미널에 닿는 MDP에서, 정책평가는 몇 번의 반복이면 끝나고 왜?</td><td>Ch04</td></tr>
+<tr><td>9</td><td>첫방문 MC가 왜 편향 없는가?</td><td>Ch05</td></tr>
+<tr><td>10</td><td>MC 제어와 SARSA는 갱신하는 “목표값“이 어떻게 다른가?</td><td>Ch05→06</td></tr>
+<tr><td>11</td><td>MC와 TD(0)의 목표값을 각각 수식으로 쓰시오</td><td>Ch05/06</td></tr>
+<tr><td>12</td><td>“TD 오차가 0“이 “벨만방정식을 만족한다“와 같은 말인 이유는?</td><td>Ch06</td></tr>
+<tr><td>13</td><td>SARSA와 Q-learning의 차이를 한 문장으로</td><td>Ch06</td></tr>
+<tr><td>14</td><td>CliffWalking에서 “더 짧은 경로“를 배운 알고리즘은? 학습중 리턴이 오히려 더 나쁜 이유는?</td><td>Ch06</td></tr>
+<tr><td>15</td><td>n-step 리턴 \(G_t^{(n)}\)을 수식으로, 그리고 \(n=1\)과 \(n=\infty\)(유한 에피소드)는 무엇으로 퇴화하는가?</td><td>Ch07</td></tr>
+<tr><td>16</td><td>적격흔적의 감쇠율 \(\gamma\lambda\)에서 \(\lambda\)의 역할은?</td><td>Ch07</td></tr>
+<tr><td>17</td><td>Dyna-Q의 모델이 저장하는 것은? 계획 한 스텝의 비용(대가)은?</td><td>Ch07</td></tr>
+<tr><td>18</td><td>같은 정책의 가치를 추정할 때 분산이 큰 쪽: MC vs TD(0)?</td><td>Ch05/06</td></tr>
+<tr><td>19</td><td>off-policy가 무엇이고, 왜 중요도 샘플링이 필요한가?</td><td>Ch05/06</td></tr>
+<tr><td>20</td><td>Q-learning이 \(Q^*\)로 수렴해도, 행동 정책(ε-greedy)이 최적이라 말하지 못하는 이유는?</td><td>Ch06</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>답 (한 줄)</strong>:</p>
+<ol>
+<li>ε-greedy/UCB를 계산하려면 횟수가 필요 — 횟수 없는 상태로선 “10회 중 5득점“과 “1회 5득점“을 구별 못 한다.</li>
+<li>ε-greedy: 확률적 랜덤 / 낙관적 초기화: 못 간 값을 크게 / UCB: 불확실성 보너스(상한) 추가.</li>
+<li>상태 공간 \(\mathcal S\), 행동 공간 \(\mathcal A\), 전이확률 \(P\), 초기 상태 분포.</li>
+<li>에피소드가 끝나지 않는 무한 호라이즌 — 할인 없는 무한 보상 합은 발산하고, 축소 사상 논증도 \(\gamma&lt;1\)이 전제다.</li>
+<li>상태가 하나뿐인 특수한 MDP(3.1 FAQ).</li>
+<li>주어진 정책의 가치를 평가 vs 최선 정책의 가치를 찾음 — 차이 = \(\max\) 한 줄.</li>
+<li>임의의 두 가치에 T를 적용하면 거리가 \(\gamma\)배 이하로 줄어든다.</li>
+<li>한 번 — \(V(s) = R(s,\pi(s)) + \gamma \cdot 0\) (다음 상태가 터미널이면 \(V(s’)=0\)).</li>
+<li>방문 이후 <em>실제로 실현된</em> 리턴을 그대로 목표값으로 쓰므로 참값의 무편향 추정(부트스트래핑 없음).</li>
+<li>MC 제어: 방문 후 에피소드 끝까지의 실제 리턴 / SARSA: 다음 <em>실제 고른</em> 행동을 포함한 1스텝 목표값.</li>
+<li>MC: \(G_t = R_{t+1} + \gamma R_{t+2} + \cdots\) / TD(0): \(R_{t+1} + \gamma V(s_{t+1})\).</li>
+<li>TD 오차 \(\delta =\) (목표값 − 현재 추정)이 모든 (s,a)에서 0인 것 ⇔ 해당 방정식의 해인 것.</li>
+<li>실행하는 정책(행동)의 가치를 배우는가(SARSA) vs 탐욕 정책의 가치를 배우는가(Q-learning) — 갱신식에 \(\max\)이 들어가는지 여부.</li>
+<li>Q-learning(절벽 옆 13스텝) — 학습 도중 ε 실수 한 번이 −100으로 이어지는 경로라 학습중 리턴은 더 나쁨.</li>
+<li>\(G_t^{(n)} = \sum_{k=0}^{n-1} \gamma^k R_{t+k+1} + \gamma^n V(s_{t+n})\); \(n=1\) → TD(0), \(n=\infty\) → MC.</li>
+<li>“과거 방문을 얼마나 오래 기억할지“의 다이얼 — \(\lambda=0\)이 TD(0), \(\lambda=1\)이 MC에 가까움.</li>
+<li>(s,a)마다 마지막으로 관찰한 \((r,s’)\); 계획은 모델 오차(부정확한 예측의 복리 증식)를 비용으로 한다.</li>
+<li>MC — 전체 리턴의 무작위성을 평균해야 하므로.</li>
+<li>실행하는 정책과 (평가·갱신할) 목표 정책이 다른 것; 행동 정책으로 뽑은 리턴을 목표 정책 기준으로 보정하려면 가중치(중요도)가 필요.</li>
+<li>수렴의 대상은 *목표 정책(탐욕)*의 \(Q^*\)이지, 탐험 수단인 ε-greedy 행동 정책 자체가 아님.</li>
+</ol>
+<h3 id="복습-주간-일정-시험-전-1주"><a class="header" href="#복습-주간-일정-시험-전-1주">복습 주간 일정 (시험 전 1주)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>요일</th><th>할 일</th><th>시간</th></tr>
+</thead>
+<tbody>
+<tr><td>월</td><td>20문항 자가진단 1차 → ✗가 모인 2~3개 장을 특정</td><td>30분</td></tr>
+<tr><td>화</td><td>§“유도 템플릿 3가지“의 예제를 전부 손으로 풀고, 노트북으로 검증</td><td>2시간</td></tr>
+<tr><td>수</td><td>특정 장의 “자주 하는 실수” + 해당 장 확인 문제 재독</td><td>2시간</td></tr>
+<tr><td>목</td><td>8.1절 프로젝트 노트북을 처음부터 재실행 — “코드의 각 단계를 설명할 수 있는가“에 집중</td><td>90분</td></tr>
+<tr><td>금</td><td>이 절 확인 문제 4개 + 8.1절 확인 문제 4개를 <strong>참고 없이</strong> 풀어보기</td><td>1시간</td></tr>
+<tr><td>토 오전</td><td>20문항 자가진단 2차 — 월요일과 ✗ 개수 비교</td><td>30분</td></tr>
+<tr><td>일</td><td><strong>새로운 내용 금지</strong> — 충분한 수면</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<p>순서가 왜 이 모양인가: <strong>유도가 재독보다 먼저</strong>다 — 손으로 유도
+한 뒤에야 “막힌 지점“이 명확해져서, 재독이 “다 읽어보기“가 아니라
+“막힌 지점만 파기“가 된다. <strong>실험이 마지막</strong>인 이유는, 프로젝트
+코드가 “새로운 MDP에 개념을 적용하는 것” 그 자체의 가장 좋은
+연습이고, 공식이 손에 익은 뒤에야 코드 각 줄에 붙을 개념이
+보이기 때문이다.</p>
+<h3 id="자주-하는-실수-복습판"><a class="header" href="#자주-하는-실수-복습판">자주 하는 실수 (복습판)</a></h3>
+<ul>
+<li><strong>갱신식을 외우되 “왜“는 놓치기</strong>: Q-learning 갱신식
+\(Q \leftarrow Q + \alpha[r + \gamma \max_{a’} Q(s’,a’) -
+Q]\)는 떠올려도, “목표값이 \(r + \gamma \max\)인 <em>이유</em>“를
+묻으면 멈춘다 — 시험은 과정을 묻는다. 정답의 길은 6.3절의
+두 문장 유도다: “벨만 최적방정식의 좌변을 현재 추정치로,
+우변을 그대로 쓰고, 추정치를 목표값으로 한 발 다가간다.”</li>
+<li><strong>“수렴했다“와 “좋다“를 혼동하기</strong>: 수렴은 <strong>추정값</strong>의
+성질(고정된 값에 가까워지는가)이고, 좋다(최적에 가까움)는
+<strong>정책</strong>의 성질이다. 탐험이 부족한 정책은 <em>틀린 값으로 정확히</em>
+수렴할 수 있다 — 8.1절의 SARSA −500 고착은 그 극단 예시다.
+“수렴했으니까 문제 없다“는 답안은 시험에서 감점이다.</li>
+<li><strong>γ를 “삼 개 역할” 없이 외우기</strong>: \(\gamma\)는 (1) 리턴
+정의의 “미래를 얼마나 세게 셀지”(Ch03), (2) 축소 사상의
+“축소 계수”(Ch04), (3) 적격흔적 감쇠 \(\gamma\lambda\)의
+한 인자(Ch07)로 세 번 등장한다. “왜 γ는 1보다 작아야 하는가?”
+에는 세 역할로 답할 때 완전한 답이 된다.</li>
+<li><strong>편향-분산을 Ch05에만 쓰기</strong>: n-step의 \(n\)(Ch07),
+\(\varepsilon\) 스케줄(8.1), Dyna의 <code>planning_steps</code>(Ch07)는
+전부 “두 극단 사이 다이얼“이라는 같은 구조다. “편향-분산”
+이라는 단어가 MC/TD 맥락에서만 나올 수 있다면, 이 학기의 절반
+은 아직 손에 안 들어온 것이다.</li>
+<li><strong>프로젝트 “잘 안 된 부분“을 복습 자료로 안 쓰기</strong>: 시험에
+“이 실험의 이상한 결과를 원인으로 진단하라“형 문항이 있다면,
+그 자료는 정확히 8.1절에서 보고서에 썼던 “잘 안 된 부분과 원인
+진단” 절이다. 자기 프로젝트의 실패 한 건을 개념으로 해석한
+능력은 어떤 참고서로도 대체되지 않는다.</li>
+</ul>
+<h3 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h3>
+<p><strong>1. (손유도, Tier B — 힌트 제공)</strong> 4.3절 연습문제 2와 같은
+3-state MDP를 놓고 \(V(s)\)를 구한다: State 0은 항상 State 1로
+이동(보상 −1), State 1은 항상 State 2로 이동(보상 −1), State 2는
+종료 상태(\(V(2)=0\)). 할인율 \(\gamma = 0.9\). 템플릿 ①대로
+터미널부터 거꾸로 대입한다.</p>
+<p><strong>힌트</strong>: \(V(2)=0\) → \(V(1) = ?\) → \(V(0) = ?\).</p>
+<p><strong>정확성 확인</strong>: 4.3절의 <code>policy_evaluation</code>으로 같은 MDP를 실행한
+값과 일치하는지 비교하라(실습 노트북 §1).</p>
+<p><strong>2. (개념, Tier A)</strong> n-step 리턴 \(G_t^{(n)}\)에서 \(n\)을 1에서
+\(\infty\)로 키울 때, 편향은 어떻게 변하고 분산은 어떻게 변하는가?
+각각 이유를 한 문장으로, 그리고 “최적의 \(n\)은 문제마다 다르다“의
+이유를 7.2절의 U자 곡선을 연결지어 한 문장으로 답하라.</p>
+<p><strong>3. (손유도, Tier C — 빈칸 채움)</strong> 수렴 논증의 빈칸을 채운다
+(4.3절 연습문제 3과 같은 형식):</p>
+<pre><code>가정: T는 gamma-축소 사상이고, V*는 T의 고정점(TV* = V*).
+      V_{n+1} = T V_n.
+
+Step 1: ||V_1 - V*|| = ||T V_0 - T V*|| &lt;= gamma * ||________||
+Step 2: ||V_2 - V*|| &lt;= gamma * ||V_1 - V*|| &lt;= gamma^2 * ||________||
+Step 3: ||V_n - V*|| &lt;= gamma^n * ||________||
+
+결론: gamma &lt; 1이므로 gamma^n -&gt; ____, 따라서 V_n -&gt; ____.
+</code></pre>
+<p><strong>4. (코딩)</strong> 아래 TD(0) 가치 갱신의 빈칸을 채운다(시험 코딩
+문항과 같은 형식 — 핵심 로직만 빈칸):</p>
+<pre><code class="language-python">def td0_update(V, s, r, ns, done, alpha, gamma):
+    # 목표값 = ???  (done이면 V[ns]를 포함하면 안 된다)
+    target = ???
+    V[s] += ???
+</code></pre>
+<p><strong>정확성 확인</strong>: (a) <code>done=True</code>일 때 목표값이 \(r\)이 되는지
+직접 출력으로 확인, (b) 7.2절의 random walk 환경에서
+\(\alpha=1.0\)과 \(\alpha=0.1\)을 비교해 “α가 너무 크면
+수렴하지 않고 흔들린다“를 관찰한다.</p>
+<p><strong>5. (개념, Tier A)</strong> §“복습 자가진단“의 20문항에서 본인이 ✗를
+표한 것 중 3개를 골라, 각각에 해당하는 장·절과 “말했어야 할 한
+줄“을 <strong>자기 언어로</strong> 쓴다. — 이것이 이 절의 산출물이다. 시험은
+정확히 “그 세 문장에 답할 수 있는가“를 묻는 자리다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 중간고사에 코딩 문제도 나오나요?</strong> ML1 Chapter 8.3와 같은
 형식 — 이번 학기의 손유도 연습문제(Tier A/B/C)와 같은 방식의, 핵심
@@ -251,6 +543,25 @@ Q-learning(off-policy)이 유리하다(Chapter 6.3).</p>
 “Q-learning의 Q-테이블을 신경망으로 바꾼 것“에 가깝고, 나머지
 개념(TD 오차, 경험재현, off-policy)은 이번 학기에서 이미 다룬
 것들의 재사용이다.</p>
+<p><strong>Q. 여섯 장을 전부 똑같은 비중으로 공부해야 하나요?</strong>
+§“복습 자가진단“의 20문항이 가장 빠른 자가진단이다 — 막힘없이
+설명할 수 있는 장은 가볍게 훑고, ✗가 모인 장에 시간을 더 쓴다.
+특히 손유도 문제(거꾸로 대입, 후보+검증, 축소 사상 논증, TD 수렴
+조건)는 시험에서 그대로 다시 나올 가능성이 높으므로 우선순위를
+높게 둔다.</p>
+<p><strong>Q. 프로젝트(8.1)와 시험 준비 중 어느 쪽을 우선해야 하나요?</strong>
+이분법이 성립하지 않는다 — 중간고사는 “개념을 새로운 MDP에
+적용하는 것“이고, 그것의 가장 좋은 연습 자료는 <strong>자신의 프로젝트
+코드</strong>다. 보고서의 결과를 “벨만방정식부터 다시 유도해 보기“는
+그대로 시험 연습이고, 프로젝트가 훈련시킨 “프로토콜의 정직성”
+(시드 ≥3, 평가 분리, 베이스라인) 습관은 시험의 실험 해석 문항에서
+직접 점수로 환산된다.</p>
+<p><strong>Q. 개념 지도의 엣지를 “어떤 순서로” 복습해야 하나요?</strong> 시험
+문항 빈출 순서와 거의 같다: (1) MC→TD(왜 에피소드 끝을 기다리지
+않는가), (2) TD 박스 ↔ 편향-분산 축(n의 다이얼), (3) TD 박스 ↔
+on/off-policy 축(SARSA vs Q-learning), (4) MDP 박스 → 모든 박스
+(모든 알고리즘이 벨만방정식에 기대는가). 네 개를 한 문장씩 말할
+수 있으면 지도는 끝난 것이다.</p>
 
                     </main>
 
@@ -303,8 +614,8 @@ Q-learning(off-policy)이 유리하다(Chapter 6.3).</p>
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

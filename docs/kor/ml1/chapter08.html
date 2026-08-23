@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -184,11 +184,62 @@
 다뤘지만, 실전 데이터 앞에서는 “이 문제에 어떤 모델이 맞는가“를 스스로
 판단해야 한다. 이번 장은 새 개념을 배우는 대신, 지금까지 배운 것을 실제
 데이터에 적용해보고, 다른 팀의 결과를 검토하며, 중간고사를 준비하는 자리다.</p>
+<p><strong>이 순서가 왜 여기인가.</strong> Chapter 7에서 트리 앙상블(랜덤포레스트, GBDT)과
+그 해석(SHAP)까지 다루면서, 정형 데이터를 다루는 대표적인 도구를 거의 다
+손에 쥔 셈이 되었다 — Block B의 신경망 없이도 실전 데이터셋의 상당수를
+이 도구들만으로 다룰 수 있다. 이제 “각 장의 코드가 실제 데이터 앞에서도
+작동하는가“를 확인할 가장 좋은 시점이고, 이 검증을 통과한 팀은 Block B로
+가서도 같은 절차(데이터 고르기, val로 비교, test 한 번)를 더 깊은 모델에
+적용할 준비가 된다. 그 다음 Chapter 9에서는 직선 하나로 경계를 그을 수 없는
+문제(XOR)를 풀기 위해 은닉층과 역전파를 다룬다 — 이번 장에서 몸에 밴
+“성능을 정직하게 재는 절차“와 “결과를 개념으로 설명하는 습관“은 층이
+깊어질수록, 오히려 더 절실해진다.</p>
+<p>이번 장을 마치면, 다음을 할 수 있다:</p>
+<ul>
+<li>데이터를 보고 Chapter 2~7의 모델·지표·전처리·분할을 스스로 선택하고,
+그 선택을 데이터 특성과 배운 개념으로 근거지을 수 있다.</li>
+<li>3분할(train/val/test)·베이스라인·“test 한 번” 원칙을 지킨 정직한 검증
+절차를 실제 데이터에서 끝까지 수행하고, 그 결과를 보고서와 발표로
+제시할 수 있다.</li>
+<li>다른 팀의 발표를 체크리스트로 검토하고, 장·절을 명시한 반박 가능한
+질문을 써서 그 결과를 더 단단하게 만들 수 있다.</li>
+<li>중간고사의 핵심 유도(로지스틱회귀 경사하강 1스텝, SVM에서 C의 역할,
+목적함수의 “적합도+단순성” 두 항 구조)을 빈칸 없이 종이에 재현할
+수 있다.</li>
+</ul>
+<p>세 블록을 한눈에 보면, 같은 절차(데이터 고르기 → train으로만 fit하는
+전처리 → val로 모델 비교 → test 한 번 측정)를 다른 언어로 말하는
+역할을 나눈 것이다 — 8.1은 그 절차를 <strong>코드와 보고서</strong>로 수행하고,
+8.2는 <strong>리뷰</strong>로 심사하며, 8.3은 <strong>시험 문항</strong>으로 다시 쓴다. 8.1의
+마지막 문장인 “같은 절차를 세 가지 언어(코드, 보고서, 리뷰)로 말할
+수 있어야 이 프로젝트가 끝난 것“이, 이 장 전체의 통과 기준이다.</p>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="chapter08/1.html">8.1 팀 프로젝트: 데이터 선정부터 발표까지</a></li>
-<li><a href="chapter08/2.html">8.2 Peer-Review</a></li>
-<li><a href="chapter08/3.html">8.3 중간고사 대비 총정리</a></li>
+<li><a href="chapter08/1.html">8.1 팀 프로젝트: 데이터 선정부터 발표까지</a> —
+UCI/Kaggle의 정형 데이터셋을 팀이 고르고, 4주 파이프라인(데이터·문제
+정의 → 3분할·train으로만 fit하는 전처리·모델 2종 이상 비교·val 튜닝 →
+test 한 번 측정 → 보고서·발표)을 끝까지 수행한다. 데이터 고를 때의
+함정(행의 물리적 단위, 그룹·시계열 누수, 클래스 비율에 따른 지표 선택)
+을 먼저 점검하고, 다수 클래스 베이스라인 숫자, “후보가 모델 수 ×
+하이퍼파라미터 수로 커질 때 test가 얼마나 부풀어 오르는가“의 선택
+편향 계산, SHAP·편향-분산·PR-AUC 중 하나로 결과의 “왜“를 설명하는
+수식적 정당화가 핵심 요구사항이다. 채점 기준에서 “방법론 적절성 +
+검증의 정직성“이 50%를 차지하는 이유 — 높은 성능이 아니라 <strong>성능
+숫자를 정직하게 얻은 절차</strong>가 이 프로젝트의 산출물이다.</li>
+<li><a href="chapter08/2.html">8.2 Peer-Review</a> — 이번 주엔 네가 심사위원이다. 다른 두
+팀의 발표를 체크리스트(문제 정의/방법론/수식적 정당화/결과의 정직성)로
+검토하고, “발표팀이 제대로 답하지 못하면 결과가 흔들리는” 반박 가능한
+질문을 만든다. Popper의 반증주의와 Amgen 재현 실험으로 “왜 반박 가능한
+질문인가“를 짚고, 사기 탐지 데이터(99.8:0.2)의 가상 발표를 놓고
+“정확도의 함정“을 코드로 재현해 좋은 리뷰의 구조(관찰 + 개념 + 왜
+문제인지)를 체득한다. 채점의 축은 체크리스트를 “채웠는가“가 아니라
+“그 안의 질문이 얼마나 구체적인가“다.</li>
+<li><a href="chapter08/3.html">8.3 중간고사 대비 총정리</a> — Block A 여섯 장을 시험
+언어로 압축한다. 장별 핵심 질문 자가진단과 시험에서 반복되는 질문
+유형 4가지(유도, “~를 키우면?” 정성 추론, 모델 비교, 코드·절차
+판정)를 정리하고, 유도 템플릿 3가지(로지스틱회귀 경사 1스텝, SVM KKT의
+4구간, 목적함수의 두 항 구조)를 실제로 종이에 풀어 실습 노트북으로
+숫자를 검증한다.</li>
 </ul>
 
                     </main>
@@ -242,8 +293,8 @@
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

@@ -1,0 +1,64 @@
+digraph ch12_3_transformer_block {
+    rankdir=TB;
+    graph [fontname="Noto Sans CJK KR", bgcolor="white", pad=0.3,
+           ranksep=0.55, nodesep=0.45];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           penwidth=1.4, fontsize=12, margin="0.18,0.1"];
+    edge  [penwidth=1.6, arrowsize=0.8, fontname="Noto Sans CJK KR",
+           fontsize=11];
+
+    /* ============ 인코더 (왼쪽) ============ */
+    IN_ENC [label="인코더 입력\n토큰 임베딩 + positional encoding\n(n × d_model)",
+            fillcolor="#f0f0f0", color="#666666", fontsize=12];
+
+    subgraph cluster_enc {
+        label="인코더 블록  (× 6)";
+        labelloc=n; color="#4878a8"; style="rounded";
+        fontcolor="#4878a8"; fontsize=14; fontname="Noto Sans CJK KR";
+        MHA [label="multi-head self-attention\n(마스크 없음 — 양방향, 문장 전체를 봄)",
+             fillcolor="#dae8fc", color="#4878a8"];
+        AN1 [label="Add & Norm  (잔차 + LayerNorm)",
+             fillcolor="#ffffff", color="#999999"];
+        FFNE [label="position-wise feed-forward\n(512 → 2048 → 512, 각 위치 독립)",
+              fillcolor="#d9ead3", color="#1a9641"];
+        AN2 [label="Add & Norm  (잔차 + LayerNorm)",
+             fillcolor="#ffffff", color="#999999"];
+        MHA -> AN1 -> FFNE -> AN2;
+    }
+
+    ENC_OUT [label="인코더 최종 출력\n(각 단어의 '문맥화' 표현, n × d_model)",
+             fillcolor="#dae8fc", color="#4878a8", shape=ellipse];
+
+    IN_ENC -> MHA;
+    AN2 -> ENC_OUT;
+
+    /* ============ 디코더 (오른쪽) ============ */
+    IN_DEC [label="디코더 입력\n토큰 임베딩 + positional encoding\n(학습: 정답 시퀀스, 추론: 지금까지 생성된 것)",
+            fillcolor="#f0f0f0", color="#666666", fontsize=12];
+
+    subgraph cluster_dec {
+        label="디코더 블록  (× 6)";
+        labelloc=n; color="#9673a6"; style="rounded";
+        fontcolor="#9673a6"; fontsize=14; fontname="Noto Sans CJK KR";
+        MSA [label="masked multi-head self-attention\n(causal mask: 왼쪽만 봄 — 미래를 보지 않음)",
+             fillcolor="#dae8fc", color="#4878a8"];
+        AN3 [label="Add & Norm", fillcolor="#ffffff", color="#999999"];
+        CSA [label="multi-head cross-attention\nQuery = 디코더,  Key·Value = 인코더 출력",
+             fillcolor="#ffe6cc", color="#d95f02"];
+        AN4 [label="Add & Norm", fillcolor="#ffffff", color="#999999"];
+        FFND [label="position-wise feed-forward\n(512 → 2048 → 512)",
+              fillcolor="#d9ead3", color="#1a9641"];
+        AN5 [label="Add & Norm", fillcolor="#ffffff", color="#999999"];
+        MSA -> AN3 -> CSA -> AN4 -> FFND -> AN5;
+    }
+
+    OUT_L [label="linear (d_model → 어휘 크기 V) + softmax\n→ 다음 토큰 확률 분포  P(x_{t+1} | x_1, …, x_t)",
+           fillcolor="#e1d5e7", color="#9673a6", shape=ellipse];
+
+    IN_DEC -> MSA;
+    AN5 -> OUT_L;
+
+    /* 인코더 → 디코더 연결 (cross-attention의 K, V) */
+    ENC_OUT -> CSA [label="Key · Value", style="dashed", color="#d95f02",
+                     penwidth=1.8];
+}

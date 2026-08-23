@@ -1,0 +1,47 @@
+digraph ch13_1_pretrain_finetune {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", bgcolor="white", pad=0.25,
+           ranksep=0.7, nodesep=0.5];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           penwidth=1.4, fontsize=13, margin="0.18,0.1"];
+    edge  [penwidth=1.6, arrowsize=0.8, fontname="Noto Sans CJK KR"];
+
+    DATA [label="인터넷 규모의 텍스트\n(웹 문서, 위키, 책, 코드…)\n수천억~수조 개의 토큰",
+          fillcolor="#f0f0f0", color="#666666", fontsize=13];
+
+    subgraph cluster_pre {
+        label="사전학습 (Pretraining)";
+        labelloc=n; color="#4878a8"; style="rounded";
+        fontcolor="#4878a8"; fontsize=14; fontname="Noto Sans CJK KR";
+        GOAL [label="다음 토큰 예측\nP(x_t | x_1, …, x_t-1)\n교차 엔트로피 최소화",
+              fillcolor="#dae8fc", color="#4878a8"];
+        COST [label="수천 개 GPU\n수 주 ~ 수 달", shape=note,
+              fillcolor="#fff2cc", color="#d6b656", fontsize=12];
+        GOAL -> COST [style="dashed", color="#d6b656", arrowsize=0.6];
+    }
+
+    BASE [label="기본 모델 (base model)\n폭넓은 지식·언어 능력\n(지시 따르는 '예절'은 없음)",
+          fillcolor="#e1d5e7", color="#9673a6", shape=ellipse];
+
+    FT_DATA [label="작지만 고품질 데이터\n(질문-답변, 선호 비교…)",
+             fillcolor="#f0f0f0", color="#666666", fontsize=12];
+
+    subgraph cluster_ft {
+        label="파인튜닝 (Fine-tuning)";
+        labelloc=n; color="#1a9641"; style="rounded";
+        fontcolor="#1a9641"; fontsize=14; fontname="Noto Sans CJK KR";
+        SFT [label="SFT → RLHF\n(13.3절)", fillcolor="#d9ead3", color="#1a9641"];
+        FCOST [label="소규모 클러스터면 충분\n(수 시간 ~ 수 주)", shape=note,
+               fillcolor="#fff2cc", color="#d6b656", fontsize=12];
+        SFT -> FCOST [style="dashed", color="#d6b656", arrowsize=0.6];
+    }
+
+    INSTRUCT [label="지시를 따르는 모델\n(채팅봇, 도우미)",
+              fillcolor="#d9ead3", color="#1a9641", shape=ellipse];
+
+    DATA -> GOAL [label="학습"];
+    GOAL -> BASE [label="가중치"];
+    BASE -> SFT [label="가중치 재사용"];
+    FT_DATA -> SFT [label="학습"];
+    SFT -> INSTRUCT [label="가중치 다듬기"];
+}

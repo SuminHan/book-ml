@@ -1,0 +1,59 @@
+digraph capstone_pipeline {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="팀 프로젝트 파이프라인 — 4주: 연속제어 환경 선정 → 발표 (Block B 캡스톤)",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=10.5,
+           penwidth=1.3, margin="0.18,0.1"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9, color="#495057", penwidth=1.5];
+
+    subgraph cluster_p1 {
+        label="① 환경과 문제 (1주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fillcolor="#e9ecef", fontsize=10];
+        N1 [label="연속제어 환경 고르기\n(Pendulum / CartPole /\nMuJoCo 기반)"];
+        N2 [label="문제 정의:\nMDP 5요소, 상태·행동 공간,\n주 지표 + 이론적 리턴 상한"];
+        N3 [label="베이스라인:\n무작위 정책 평균 리턴\n측정(100 에피소드)"];
+        N1 -> N2 -> N3 [style=invis];
+    }
+
+    subgraph cluster_p2 {
+        label="② 알고리즘과 구현 (2~3주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fontsize=10];
+        N4 [label="Ch9~15 알고리즘 ≥ 1개 적용\n(DQN / PPO / 모방학습 / MCTS)"];
+        N5 [label="시드 ≥ 3개 실행:\n학습 도중 리턴(이동평균)\n+ 학습 후 평가(동일 프로토콜)"];
+        N6 [label="하이퍼파라미터\n(γ, λ, ε_clip, 스케일링…):\n선택 근거를 Ch10~13 개념으로"];
+        N4 -> N5 -> N6 [style=invis];
+    }
+
+    subgraph cluster_p3 {
+        label="③ 평가와 정당화 (3~4주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fontsize=10];
+        N7 [label="시드 비교 표 +\n학습 곡선 1장(필수)"];
+        N8 [label="수식적 정당화 ≥ 1개:\nCh9~15 개념으로 '왜' 설명\n(11.3 클리핑 / 12.1 복합오차 /\n13.1 현실격차 …)"];
+        N9 [label="보고서: 결과 +\n잘 안 된 부분의 원인\n정직하게(필수 절)"];
+        N7 -> N8 -> N9 [style=invis];
+    }
+
+    subgraph cluster_p4 {
+        label="④ 발표와 검토 (4주차)";
+        labeljust=l; fontsize=12; fontcolor="#0f5132";
+        color="#79bb98"; style="rounded,filled"; fillcolor="#f0f7f3";
+        node [fillcolor="#d1e7dd", fontsize=10];
+        N10 [label="발표 5~7분\n(마지막 1분: 원인 진단)"];
+        N11 [label="peer-review 2팀\n(16.2 체크리스트)"];
+        N10 -> N11 [style=invis];
+    }
+
+    N3 -> N4 [label="문제 고정"];
+    N6 -> N7 [label="최종 결과 확정"];
+    N9 -> N10 [label="보고서"];
+    N7 -> N4 [label="시드 편차 비정상·\n평가 프로토콜 결함 발견 시\n돌아가서 다시",
+               style=dashed, color="#c0392b", penwidth=1.8];
+}

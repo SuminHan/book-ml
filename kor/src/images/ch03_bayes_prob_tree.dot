@@ -1,0 +1,32 @@
+digraph prob_tree {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="1000통의 메일 — '무료' 조건부 세계(세로 합 215통) 안의 스팸 비율 180/215",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=12.5,
+           penwidth=1.4, margin="0.18,0.10"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=10.5, color="#495057", penwidth=1.6];
+
+    R  [label="1000통", fillcolor="#e9ecef"];
+    SP [label="스팸\n300통 (30%)", fillcolor="#fff3cd"];
+    HM [label="정상\n700통 (70%)", fillcolor="#cfe2ff"];
+
+    SP1 [label="'무료' 있음\n300 × 0.60 = 180통", fillcolor="#fff3cd"];
+    SP2 [label="'무료' 없음\n120통", fillcolor="#fff3cd", style="rounded,filled,dashed"];
+    HM1 [label="'무료' 있음\n700 × 0.05 = 35통", fillcolor="#cfe2ff"];
+    HM2 [label="'무료' 없음\n665통", fillcolor="#cfe2ff", style="rounded,filled,dashed"];
+
+    T  [label="P(스팸 | '무료')\n180 / (180+35) ≈ 0.837",
+        fillcolor="#d1e7dd", shape=box, style="rounded,filled,bold",
+        penwidth=2.2, fontcolor="#0f5132"];
+
+    R  -> SP [label="0.30"];
+    R  -> HM [label="0.70"];
+    SP -> SP1 [label="0.60"];
+    SP -> SP2 [label="0.40"];
+    HM -> HM1 [label="0.05"];
+    HM -> HM2 [label="0.95"];
+    SP1 -> T;
+    HM1 -> T;
+}

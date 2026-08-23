@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -189,11 +189,65 @@ on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그
 제안한 <strong>PPO</strong>(Proximal Policy Optimization, Schulman 외)는 데이터를
 몇 번 더 재사용하면서도, 정책이 한 번에 너무 멀리 움직이지 못하게 막는
 실용적인 해법이다.</p>
+<p>이 장은 Chapter 10이 남긴 두 공백을 정확히 메우는 장이다. Chapter 10에서
+연속 행동공간을 위한 정책 그래디언트 기계(정책 그래디언트 정리,
+REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 “한 번 쓰고 버리는”
+것이었고 업데이트 스텝의 크기는 “무제한“이었다. 이 장은 <strong>신뢰 영역</strong>과
+<strong>확률비</strong>라는 두 도구로 이 두 문제를 한 번에 풀고, 그것이 클리핑이라는
+한 줄의 식으로 압축되는 과정을 따라간다. 다음 장(Chapter 12, 모방학습과
+인간 피드백)에서는 보상의 시행착오 대신 사람의 시연과 선호로부터 배우는
+방법으로 방향을 돌린다 — Chapter 2~11의 보상 최적화 알고리즘 중 가장
+강한 것인 PPO가, Chapter 12에서 “왜 보상 최적화만으론 안 되는가“를
+비교하기 위한 기준점이 된다.</p>
+<h2 id="학습-목표"><a class="header" href="#학습-목표">학습 목표</a></h2>
+<ul>
+<li>이 챕터를 마치면 “신뢰 영역“의 뜻(한 번의 업데이트에서 정책이 움직일
+수 있는 크기를 KL 발산으로 잰 “믿을 수 있는 범위“로 제한하는 것)을
+설명할 수 있고, 중요도 샘플링 목적함수
+\(L^{IS}(\theta) = \mathbb{E}_t[r_t(\theta) A_t]\)의 그래디언트가
+\(r_t = 1\)에서는 평범한 정책 그래디언트와 정확히 같아지는 것을
+유도할 수 있다.</li>
+<li>이 챕터를 마치면 PPO 클리핑 목적함수 \(L^{CLIP}\)의 모양을
+손으로 그려서 설명할 수 있다 — min이 만드는 “모서리“가, 좋은 행동을
+더 밀어주거나 나쁜 행동을 더 억제하는 <strong>개선 방향에만</strong> 그래디언트를
+0으로 만들고 악화 방향에는 발동하지 않는 비대칭을 어떻게 만들어내는지.</li>
+<li>이 챕터를 마치면 GAE(Generalized Advantage Estimation, TD 오차를
+지수적으로 가중합해서 TD와 MC 사이를 \(\lambda\) 다이얼로 절충하는
+어드밴티지 추정)와 엔트로피 보너스가 탐험 유지에 왜 필요한지 설명할
+수 있다.</li>
+<li>이 챕터를 마치면 PPO 한 반복의 전체 데이터 흐름(경험 수집 → GAE →
+미니배치 정규화 → M 에폭 미니배치 재사용 →
+\(\theta_{\text{old}}\) 갱신)을 따라갈 수 있고, 연속 제어
+환경(Pendulum)에서 PPO를 학습시킬 수 있다.</li>
+</ul>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="chapter11/1.html">11.1 신뢰 영역과 확률비</a></li>
-<li><a href="chapter11/2.html">11.2 PPO 클리핑과 연속 제어 실습</a></li>
-<li><a href="chapter11/3.html">11.3 GAE와 PPO가 표준이 된 이유</a></li>
+<li><a href="chapter11/1.html">11.1 신뢰 영역과 확률비</a> — 11.2의 클리핑으로 합쳐질
+“재료“를 준비하는 절이다. 신뢰 영역(정책의 한 번 움직임을 KL 발산으로
+잰 “믿을 수 있는 범위” 안으로 제한하는 직관)과 확률비
+\(r_t = \pi_\theta / \pi_{\text{old}}\)를 소개하고, 확률비로
+목적함수를 다시 쓰면 옛 정책이 모은 데이터를 중요도 샘플링으로
+재사용할 수 있으며 그 그래디언트가 정책 그래디언트에 계수
+\(r_t\)가 곱해진 형태라는 것을 유도한다. 2-행동 softmax 정책으로
+\(r_t\)가 실제로 어떻게 움직이는지 손으로 계산해본다.</li>
+<li><a href="chapter11/2.html">11.2 PPO 클리핑과 연속 제어 실습</a> — 신뢰 영역 제약식을
+목적함수에 직접 박아 넣는 한 줄,
+\(\min(r_t A_t,\ \text{clip}(r_t, 1-\epsilon, 1+\epsilon)A_t)\),
+이 만들어내는 목적함수의 모양을 손으로 확인한다. \(A_t &gt; 0\)이면
+\(r_t &gt; 1+\epsilon\) 이후, \(A_t &lt; 0\)이면 \(r_t &lt; 1-\epsilon\)
+이후 “추가 이득“이 0이 되는 min의 비대칭을 그림과 함께 짚는다.
+이어서 Pendulum 환경(행동: -2~+2Nm 톱의 하나)의 연속 행동공간에서
+PPO를 통째로 구현해본다 — 가우시안 정책, 그리고 정책 손실 + 가치
+손실 − 엔트로피 보너스로 이루어진 전체 목적함수까지.</li>
+<li><a href="chapter11/3.html">11.3 GAE와 PPO가 표준이 된 이유</a> — PPO를 실전용으로
+만든 마지막 두 조각인 GAE와 엔트로피 보너스를 배운다. GAE가
+“여러 시점의 TD 오차를 적격흔적처럼 지수적으로 가중합“하는 것임을
+정리로 보이고, 3스텝 에피소드에서 \(\lambda\)만 바꾸면 어드밴티지
+추정치의 부호까지 달라지는 것을 손으로 계산한다. TRPO보다 이론적
+보장은 약하지만 구현이 훨씬 단순한 PPO가 왜 실제로 TRPO를 밀어내고
+표준이 됐는지 정리하고, “PPO를 돌린다“는 것이 실제로 어떤 코드
+묶음(경험 수집 → GAE → 정규화 → M 에폭 →
+\(\theta_{\text{old}}\) 갱신)인지 전체 그림으로 마무리한다.</li>
 </ul>
 
                     </main>
@@ -247,8 +301,8 @@ on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

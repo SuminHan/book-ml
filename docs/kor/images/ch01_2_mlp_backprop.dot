@@ -1,0 +1,55 @@
+digraph mlp_backprop {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="1-2-1 신경망(은닉 활성 ReLU): 순전파(실선, →)와 역전파(붉은 점선, ←) — 본문 손계산 예제의 수치 (x=1, y=3)",
+           labeljust=c, bgcolor="white", pad=0.3];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=10,
+           penwidth=1.3, margin="0.18,0.1"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9, color="#495057", penwidth=1.5];
+
+    subgraph cluster_in {
+        label="입력층"; labeljust=l; fontsize=11; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        X [label="x = 1\n정답 y = 3"];
+    }
+    subgraph cluster_hid {
+        label="은닉층 (2유닛, ReLU)"; labeljust=l; fontsize=11;
+        fontcolor="#343a40"; color="#adb5bd"; style="rounded,filled";
+        fillcolor="#f8f9fa";
+        node [fillcolor="#e7f1ff"];
+        H1 [label="z1,1 = 2·1 = 2\na1,1 = ReLU(2) = 2"];
+        H2 [label="z1,2 = −1·1 = −1\na1,2 = ReLU(−1) = 0\n(“죽은” 유닛)"];
+        H1 -> H2 [style=invis];
+    }
+    subgraph cluster_out {
+        label="출력층 (선형)"; labeljust=l; fontsize=11;
+        fontcolor="#343a40"; color="#adb5bd"; style="rounded,filled";
+        fillcolor="#f8f9fa";
+        node [fillcolor="#e9ecef"];
+        O [label="예측 = 1·2 + 1·0 = 2\n손실 J = (2−3)² = 1\n오차 err = 2−3 = −1"];
+    }
+
+    X  -> H1 [label="W1,1 = +2,  b1,1 = 0"];
+    X  -> H2 [label="W1,2 = −1,  b1,2 = 0"];
+    H1 -> O  [label="W2,1 = +1"];
+    H2 -> O  [label="W2,2 = +1,  b2 = 0"];
+
+    O  -> H1 [style=dashed, color="#c92a2a",
+              label="δ1,1 = 2·err·W2,1·ReLU′(2) = −2"];
+    O  -> H2 [style=dashed, color="#c92a2a",
+              label="δ1,2 = 2·err·W2,2·ReLU′(−1) = 0\n(ReLU′=0 → 그래디언트 차단)"];
+
+    subgraph cluster_grad {
+        label="그래디언트 (경사하강으로 갱신)"; labeljust=l; fontsize=11;
+        fontcolor="#343a40"; color="#495057"; style="rounded,filled";
+        fillcolor="#f1f3f5";
+        node [fillcolor="#d3f9d8", fontsize=9.5];
+        G2 [label="출력층:  ∂J/∂W2 = (−4, 0),  ∂J/∂b2 = −2"];
+        G1 [label="은닉층:  ∂J/∂W1 = (−2, 0),  ∂J/∂b1 = (−2, 0)"];
+        G2 -> G1 [style=invis];
+    }
+    O  -> G2 [style=dashed, color="#2f9e44", label="× a1 = (2, 0)"];
+    H1 -> G1 [style=dashed, color="#2f9e44", label="δ1,1 × x = −2·1"];
+    H2 -> G1 [style=dashed, color="#2f9e44", label="δ1,2 × x = 0"];
+}

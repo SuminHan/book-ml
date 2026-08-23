@@ -1,0 +1,25 @@
+digraph rlhf_loop {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="선호 기반 보상모델 학습 루프(RLHF)\n사람은 '정답 행동'이 아니라 '두 시도 중 어느 쪽이 나은지'만 알려줌 — 그 비교만으로 보상모델 r_φ가 학습되고, 그 보상으로 정책이 다시 개선된다",
+           labeljust=c, bgcolor="white", pad="0.35", ranksep="1.15", nodesep="0.7"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fontcolor="#212529", fontsize=12.5, penwidth=1.7, margin="0.22,0.14"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=11.5, color="#495057",
+           penwidth=1.9];
+
+    pol  [label="정책 π_θ\n(로봇 컨트롤러 또는 LLM)", fillcolor="#cfe2ff"];
+    gen  [label="같은 상황 x에서\n두 궤적(응답) 생성\ny_w, y_l", fillcolor="#e9ecef"];
+    hum  [label="사람 선호\ny_w ≻ y_l\n(어느 쪽이 나은지 고르기)", fillcolor="#fff3cd",
+           style="rounded,filled,bold", penwidth=2.2, fontcolor="#664d03"];
+    rm   [label="보상모델 r_φ 학습\nBradley-Terry\n- log σ(r_φ(x,y_w) − r_φ(x,y_l))", fillcolor="#d1e7dd",
+           style="rounded,filled,bold", penwidth=2.2, fontcolor="#0f5132"];
+    rl   [label="정책 개선\nr_φ(x,y)를 보상으로 쓰는\n강화학습(PPO 등)", fillcolor="#f8d7da"];
+
+    pol -> gen  [label="① 시도"];
+    gen -> hum  [label="② 비교 요청"];
+    hum -> rm   [label="③ 선호 쌍 (x, y_w, y_l)"];
+    rm  -> rl   [label="④ 보상으로 활용"];
+    rl  -> pol  [label="⑤ 정책 갱신", style="dashed,bold", color="#e8590c",
+                 penwidth=2.4];
+}

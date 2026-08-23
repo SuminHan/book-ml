@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -183,12 +183,66 @@
 강화학습의 표 기반(tabular) 이론 전체를 훑었다. 이번 장은 새 개념 대신,
 이 이론들을 Gymnasium의 표 기반 환경에서 직접 구현해보고 비교하며,
 중간고사를 준비하는 자리다.</p>
+<p>이전 장(Chapter 7)에서 MC와 TD(0)가 “몇 스텝을 실제로 볼 것인가“라는
+하나의 다이얼 위의 양 끝임을 보고, 적격흔적과 Dyna-Q 계획까지 다뤘다 —
+표 기반의 도구는 이제 끝까지 손에 쥔 셈이다. 이번 장은 그 도구를 교재가
+고른 환경이 아니라 팀이 직접 고른 환경에서, 여러분의 프로토콜로써 써보는
+마지막 장이다. 그리고 다음 장(Chapter 9)에서는 Q-테이블을 신경망으로
+통째로 바꾸는 DQN으로 넘어가는데, 이 프로젝트에서 Q-함수·벨만
+최적방정식·on/off-policy를 체득할수록 그 건너뛸 거리가 짧아진다.</p>
+<p>이번 장에는 학기 초부터 준비해온 “역전“도 기다리고 있다. 지금까지
+여러분이 해본 것은 “교재가 고른 환경, 교재가 고른 파라미터, 교재가 고른
+시드“에서 코드가 동작하는지 확인하는 것뿐이었다 — 이제 환경을 고르고,
+알고리즘을 고르고, 결과가 흔들리면 시드와 프로토콜을 점검해서 다시
+고르는 것까지가 여러분의 몫이다. 더 나아가 8.2절에서는 발표자가 아니라
+심사자가 된다. “좋은 결과를 만든 것“이 아니라 “그 결과가 남이 재현·반박할
+수 있는 정직한 절차로 얻어진 것“을 증명하는 것이 이번 장의 주제이며,
+중간고사가 과정을 채점하는 기준도 바로 그 습관에서 온다.</p>
+<p><strong>이 챕터를 마치면</strong> 다음과 같은 일을 할 수 있다.</p>
+<ul>
+<li>Gymnasium의 표 기반 환경(FrozenLake, CliffWalking, Taxi 등)에서
+두 개 이상의 알고리즘을 구현하고, 시드 ≥3개 실행 + greedy
+(\(\varepsilon=0\)) 평가를 분리하는 비교 프로토콜로 결과를
+비교·보고할 수 있다.</li>
+<li>관찰한 숫자가 “왜” 그렇게 나왔는지를 Chapter 2~7의 개념(예:
+on/off-policy, 편향-분산)으로 수식적으로 정당화하고, 잘 안 된
+부분까지 숨기지 않고 원인을 진단해 보고할 수 있다.</li>
+<li>4항목 체크리스트(환경 설명·알고리즘 선택·수식적 정당화·결과의
+정직성)로 다른 팀의 발표를 리뷰하며, 답하려면 새 실험이 필요한
+반박 가능한 질문(3점 질문)을 쓸 수 있다.</li>
+<li>중간고사 손유도의 세 템플릿(거꾸로 대입, 후보+검증, 축소 사상 수렴
+논증)의 빈칸을 스스로 채우고, 20문항 자가진단으로 준비도를 재볼
+수 있다.</li>
+</ul>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="chapter08/1.html">8.1 팀 프로젝트: 구조와 발표</a></li>
-<li><a href="chapter08/2.html">8.2 Peer-Review</a></li>
-<li><a href="chapter08/3.html">8.3 중간고사 대비 총정리</a></li>
+<li><a href="chapter08/1.html">8.1 팀 프로젝트: 구조와 발표</a> — 프로젝트의 구조와
+4주 일정을 정의한다. 상태-행동 공간 크기·보상 구조·확률적 전이
+여부를 기준으로 Gymnasium 환경 후보에 점수를 매겨 고르고, 두 개
+이상 알고리즘을 시드 ≥3개로 학습시킨 뒤 학습중 리턴과 greedy
+(\(\varepsilon=0\)) 평가 리턴을 반드시 분리해 보고하는 비교
+프로토콜을 세운다. 4주 마일스톤(M1~M4), 보고서 6절의 구조, “실험
+프로토콜의 정직성”+“결과의 정직성“이 채점의 절반을 차지하는 rubric,
+그리고 CliffWalking에서 SARSA vs Q-learning을 비교한 “수식적
+정당화“의 좋은/나쁜 예가 여기에 있다.</li>
+<li><a href="chapter08/2.html">8.2 Peer-Review</a> — 4주째, 역전이 일어나는 블록이다.
+각 팀이 다른 두 팀의 발표를 4항목 체크리스트로 심사하고 리뷰 2통을
+작성하는데, 채점의 축은 리뷰의 <em>양</em>이 아니라 “3점 반박 가능 질문”
+의 질이다. 시드 1개 실험, 평가 시 \(\varepsilon\)을 켜둔 채
+비교, 베이스라인(무작위 정책) 부재 같은 강화학습 프로젝트 특유의
+“우연히 좋은” 패턴 5가지를 짚어내는 법을, 가상 발표 하나를 실제로
+리뷰하는 실습으로 배운다.</li>
+<li><a href="chapter08/3.html">8.3 중간고사 대비 총정리</a> — 새 개념이 전혀 없는
+절이다. Chapter 2~7을 세 손유도 템플릿(거꾸로 대입, 후보+검증, 축소
+사상 → 기하급수 감소)과 Block A 개념 지도로 압축하고, 20문항 복습
+자가진단과 시험 전 1주 일정을 제시한다. 시험은 “Block A의 개념을
+새로운 MDP에 적용하는 것“이므로, 암기 대신 “스스로 유도하는 습관”
+하나에 맞추어져 있다.</li>
 </ul>
+<p>세 블록을 모두 마치면, “코드가 동작한다“는 증거보다 한 단계 위인
+“이 문제를 내가 설계하고 정직하게 평가할 수 있다“는 증거를 손에 쥔다.
+그 습관 — 시드, 평가 분리, 반박 가능한 질문 — 은 다음 장의 DQN에서,
+그리고 Block B의 캡스톤까지 그대로 이어진다.</p>
 
                     </main>
 
@@ -241,8 +295,8 @@
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

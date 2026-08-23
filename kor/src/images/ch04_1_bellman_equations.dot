@@ -1,0 +1,39 @@
+digraph bellman_equations {
+    rankdir=TB;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="벨만 방정식 4종 — '한 스텝 재귀'라는 같은 구조가 2×2로 확장된다 (행: V vs Q, 열: 정책을 따르기 vs 최댓값)",
+           labeljust=c, bgcolor="white", nodesep=0.55, ranksep=0.65];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fontsize=13, penwidth=1.4, margin="0.22,0.14"];
+    edge  [fontname="Noto Sans CJK KR"];
+
+    colE [label=<<b>벨만 <font color="#1a3d7c">기대</font>방정식</b><br/>정책 π를 <b>따른다</b> — 주어진 정책 평가>,
+           shape=none, fontcolor="#1a3d7c", fontsize=13.5, fillcolor="transparent"];
+    colO [label=<<b>벨만 <font color="#9c2b1e">최적</font>방정식</b><br/>모든 행동 중 <b>최선(max)</b> — 최적 정책 찾기>,
+           shape=none, fontcolor="#9c2b1e", fontsize=13.5, fillcolor="transparent"];
+    rowV [label=<<b>상태가치</b><br/>V(s): '그 상태에서<br/>정책대로 행동하면'>,
+           shape=none, fontcolor="#37474f", fontsize=12, fillcolor="transparent"];
+    rowQ [label=<<b>행동가치</b><br/>Q(s,a): '그 상태에서<br/>행동 a를 강제하면'>,
+           shape=none, fontcolor="#37474f", fontsize=12, fillcolor="transparent"];
+
+    vE [label=<<b>V^π(s)</b> = R(s, <font color="#1a3d7c">π(s)</font>) + γ Σ<sub>s'</sub> P(s'|s, <font color="#1a3d7c">π(s)</font>) V^π(s')>,
+         fillcolor="#e8f0fe", fontcolor="#1a2b4a"];
+    vO [label=<<b>V*(s)</b> = <font color="#9c2b1e"><b>max</b></font><sub>a</sub> [ R(s,a) + γ Σ<sub>s'</sub> P(s'|s,a) V*(s')] >,
+         fillcolor="#fdecea", fontcolor="#1a2b4a"];
+    qE [label=<<b>Q^π(s,a)</b> = R(s,a) + γ Σ<sub>s'</sub> P(s'|s,a) V^π(s')>,
+         fillcolor="#e8f0fe", fontcolor="#1a2b4a"];
+    qO [label=<<b>Q*(s,a)</b> = R(s,a) + γ Σ<sub>s'</sub> P(s'|s,a) <font color="#9c2b1e"><b>max</b></font><sub>a'</sub> Q*(s',a')>,
+         fillcolor="#fdecea", fontcolor="#1a2b4a"];
+
+    foot [label=<<font color="#5b6b7b">한 글자짜리 차이 — 'π(s)를 따른다'(파랑) vs 'max<sub>a</sub>를 취한다'(빨강) — 가<br/>'정책 평가'와 '최적 정책 찾기'라는 두 문제를 가른다. V^π를 알면 Q^π는<br/>Q(s,π(s)) = V^π(s)로, V*를 알면 최적 정책은 π*(s) = argmax<sub>a</sub> Q*(s,a)로 즉시 나온다.</font>>,
+           shape=none, fillcolor="transparent", fontsize=11];
+
+    {rank=same; rowV; colE; colO}
+    {rank=same; rowV; vE; vO}
+    {rank=same; rowQ; qE; qO}
+    colE -> vE [style=invis];
+    colO -> vO [style=invis];
+    vE -> qE [style=invis];
+    vO -> qO [style=invis];
+    qO -> foot [style=invis];
+}

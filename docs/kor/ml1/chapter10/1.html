@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="101-합성곱-출력-크기-파라미터-수와-flops"><a class="header" href="#101-합성곱-출력-크기-파라미터-수와-flops">10.1 합성곱, 출력 크기, 파라미터 수와 FLOPs</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter10_1_conv_output_size.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: 합성곱·출력크기·FLOPs"></a></p>
 <h3 id="mlp로-이미지를-다루면-안-되는-이유"><a class="header" href="#mlp로-이미지를-다루면-안-되는-이유">MLP로 이미지를 다루면 안 되는 이유</a></h3>
 <p>Chapter 9의 다층 퍼셉트론(MLP)에 이미지를 입력하려면, 가로세로 픽셀을 모두
 펼쳐서 하나의 긴 벡터로 만들어야 한다. 200×200 흑백 이미지만 해도 4만 개의
@@ -210,6 +211,94 @@
 어느 위치에서든 똑같이 모서리를 감지해야 하므로, 같은 가중치를 위치마다 새로
 배울 필요가 없다 — 이 재사용(파라미터 공유, parameter sharing) 덕분에 MLP보다
 훨씬 적은 파라미터로 훨씬 큰 이미지를 다룰 수 있다.</p>
+<h3 id="합성곱이라는-이름의-뜻-뒤집기flip는-어디로-사라졌나"><a class="header" href="#합성곱이라는-이름의-뜻-뒤집기flip는-어디로-사라졌나">“합성곱“이라는 이름의 뜻: 뒤집기(flip)는 어디로 사라졌나?</a></h3>
+<p>신호처리 교과서의 정의로, 두 수열 \(f\)와 \(k\)의 <strong>합성곱</strong>(convolution)은
+이렇게 정의된다:</p>
+<p>\[(f * k)(i) = \sum_{j} k(j)\, f(i - j)\]</p>
+<p>\(i - j\)를 주목하라 — 커널이 입력과 곱해질 때 <strong>뒤집힌(flipped) 모습</strong>으로
+겹쳐진다. 그런데 위 <code>conv2d</code> 코드는 <code>image[i+di][j+dj] * kernel[di][dj]</code> —
+뒤집기 없이 그대로 곱한다. 신호처리 용어로 우리가 실제로 구현한 것은
+**상관(corrélation, correlation)**이고, “합성곱“이 아니다. 그런데도 딥러닝
+세계(PyTorch·TensorFlow 포함)는 이 연산을 “convolution“이라고 부른다.</p>
+<p>왜 아무도 신경 쓰지 않는가? 세 가지 이유다. <strong>첫째, 필터의 값은 학습 대상
+파라미터</strong>이기 때문이다. “정답 필터“가 따로 있는 게 아니라 네트워크가 스스로
+찾아내므로, 뒤집힌 버전이 다른 반응을 낸다면 가중치를 뒤집힌 것으로 학습
+시키면 그만이다 — 표현 가능한 함수의 <em>집합</em>은 뒤집기를 하든 안 하든 정확히
+같다. <strong>둘째, 실수 필터는 고정되어 손으로 설계되는 경우</strong>(예: 특정 주파수만
+통과시키는 DSP 필터)에 한해 뒤집기가 실질적 차이가 되는데, 학습되는 CNN에서
+는 그런 경우가 사실상 없다. <strong>셋째, 이름의 기원</strong>이다 — 합성곱 정의로부터
+“시스템 출력이 임펄스 응답의 뒤집힌 버전과 입력의 합성곱“이라는 표현이 나오는
+것은 선형 시불변(LTI) 시스템 이론(스피커를 통과한 기타 소리를 예로 들자)에서
+왔고, 후쿠시마의 네오코그니트론(1980) 이래 이 분야의 이름이 그대로 이어져
+온 것이다. <strong>코드와 수식에서는 “각 위치의 원소별 곱의 합“을 그냥
+“합성곱“이라고 쓰면 된다 — 이 분야 전체가 그렇게 쓰고 있다.</strong></p>
+<h3 id="손으로-한-번-33-필터가-55-이미지를-스캐닝하면"><a class="header" href="#손으로-한-번-33-필터가-55-이미지를-스캐닝하면">손으로 한 번: 3×3 필터가 5×5 이미지를 스캐닝하면</a></h3>
+<p>앞의 <code>conv2d</code>를 종이 위에서도 실제로 돌려보자. 5×5 흑백 이미지(2번 열에
+수직 흰선, 밝기 1, 배경 0)에, 중심 열만 1인 3×3 필터(“수직선 탐지기“의
+가장 단순한 버전)를 적용한다:</p>
+<p>입력 이미지 \(5\times5\):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>열 0</th><th>열 1</th><th><strong>열 2</strong></th><th>열 3</th><th>열 4</th></tr>
+</thead>
+<tbody>
+<tr><td>행 0</td><td>0</td><td>0</td><td><strong>1</strong></td><td>0</td><td>0</td></tr>
+<tr><td>행 1</td><td>0</td><td>0</td><td><strong>1</strong></td><td>0</td><td>0</td></tr>
+<tr><td>행 2</td><td>0</td><td>0</td><td><strong>1</strong></td><td>0</td><td>0</td></tr>
+<tr><td>행 3</td><td>0</td><td>0</td><td><strong>1</strong></td><td>0</td><td>0</td></tr>
+<tr><td>행 4</td><td>0</td><td>0</td><td><strong>1</strong></td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<p>필터 \(3\times3\):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th></th><th></th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td><strong>1</strong></td><td>0</td></tr>
+<tr><td>0</td><td><strong>1</strong></td><td>0</td></tr>
+<tr><td>0</td><td><strong>1</strong></td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<p>출력은 \(5-3+1=3\)이므로 \(3\times3\)이고, 9개 위치 중 중심 위치
+\((i=1, j=1)\) 하나를 직접 계산해본다 — 필터가 이미지의 중심 \(3\times3\)
+영역(행 1~3, 열 1~3)을 덮는다:</p>
+<p>\[
+\begin{aligned}
+&amp;0\!\cdot\!0 + 1\!\cdot\!1 + 0\!\cdot\!0 \quad (\text{행 1})\
++&amp;0\!\cdot\!0 + 1\!\cdot\!1 + 0\!\cdot\!0 \quad (\text{행 2})\
++&amp;0\!\cdot\!0 + 1\!\cdot\!1 + 0\!\cdot\!0 \quad (\text{행 3})\
+=&amp;\ 0+1+0 + 0+1+0 + 0+1+0 = 3
+\end{aligned}
+\]</p>
+<p>나머지 위치도 같은 방식으로 계산하면(9개 위치 전부 — 실습 노트북 §1에서
+numpy로 그대로 실행해본다):</p>
+<p>출력 \(3\times3\):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>j=0 (열 1 위)</th><th><strong>j=1 (열 2 위)</strong></th><th>j=2 (열 3 위)</th></tr>
+</thead>
+<tbody>
+<tr><td>i=0</td><td>0</td><td><strong>3</strong></td><td>0</td></tr>
+<tr><td>i=1</td><td>0</td><td><strong>3</strong></td><td>0</td></tr>
+<tr><td>i=2</td><td>0</td><td><strong>3</strong></td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<p>필터의 유일한 nonzero인 중심 열이 선(열 2) 위에만 있을 때 반응한다 — 그래서
+출력 지도에 수직선이 똑같이 그해진다. 세 가지가 한꺼번에 보인다: (1) 5×5
+입력이 3×3으로 “줄어든” 것은 <code>out = n−k+1</code>의 자연스러운 결과다(다음 절에서
+정리), (2) 같은 가중치가 <strong>어느 위치에서든</strong> 같은 패턴에 반응하는 것이
+파라미터 공유의 구체적 모습이고, (3) “수직선“이라는 패턴이 <em>원본 스케일
+그대로</em> 다음 층으로 전달된다 — 원본이 5칸짜리 선이든 500칸짜리 선이든,
+출력 지도 위에서는 “3×3 지도의 중심 열이 밝다“로 똑같이 표현되기 때문이다.
+이 마지막 점이 합성곱이 “규모를 초월한” 특징을 만든 기반이며, Chapter 10
+전반부(10.2~10.3)에서 풀링·수용장이 이 아이디어를 확장한다.</p>
 <h3 id="출력-크기-공식"><a class="header" href="#출력-크기-공식">출력 크기 공식</a></h3>
 <p>입력 크기 \(n \times n\), 필터 크기 \(k \times k\), 패딩(padding)
 \(p\)(입력 가장자리에 0을 두르는 픽셀 수), 스트라이드(stride) \(s\)(필터가
@@ -218,6 +307,57 @@
 <p>예: \(n=28, k=3, p=0, s=1\)이면 \(n_{\text{out}} = 28-3+1 = 26\). 패딩
 없이는 필터를 지날 때마다 이미지가 점점 작아진다 — <code>p = (k-1)/2</code>로
 설정하면(<strong>same padding</strong>) 출력 크기를 입력과 같게 유지할 수 있다.</p>
+<h4 id="유도-필터가-다-들어가는-위치를-세자"><a class="header" href="#유도-필터가-다-들어가는-위치를-세자">유도: “필터가 다 들어가는 위치를 세자”</a></h4>
+<p>공식은 미적분의 공식처럼 보이지만, 실제로는 <strong>세는 문제</strong>다. 필터의 왼쪽
+끝(1D로 줄여서 생각하자)이 놓일 수 있는 위치를 세면 된다.</p>
+<ul>
+<li>필터는 입력 <em>안쪽</em>에 완전히 들어와야 하므로, 시작 위치의 최댓값은
+\(n-k\)다(그 위치에서 필터의 오른쪽 끝은 \(n-k+k-1 = n-1\), 정확히
+마지막 픽셀).</li>
+<li>스트라이드 \(s\)로 이동하므로 시작 위치는 \(0, s, 2s, 3s, \ldots\)
+중 \(\le n-k\)인 것들이다. 이 등차수열의 항의 개수가
+\(\left\lfloor \frac{n-k}{s} \right\rfloor + 1\).</li>
+<li>패딩 \(p\)는 입력을 \(n \to n+2p\)로 만들어 주므로(왼쪽과 오른쪽
+<strong>두 쪽</strong>에 \(p\)씩 — 그래서 공식에는 \(2p\)가 들어간다), \(n\)을
+\(n+2p\)로 치환하면 위 공식이 나온다.</li>
+</ul>
+<p>8×8 입력, 3×3 필터(\(p=0\))에서 스트라이드만 바꾸며 직접 세어보면:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>스트라이드 \(s\)</th><th>시작 위치 (0-indexed)</th><th>개수</th><th>공식 \(\lfloor(8-3)/s\rfloor+1\)</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>0, 1, 2, 3, 4, 5</td><td>6</td><td>\(\lfloor 5/1\rfloor+1=6\)</td></tr>
+<tr><td>2</td><td>0, 2, 4</td><td>3</td><td>\(\lfloor 5/2\rfloor+1=3\)</td></tr>
+<tr><td>4</td><td>0, 4</td><td>2</td><td>\(\lfloor 5/4\rfloor+1=2\)</td></tr>
+</tbody>
+</table>
+</div>
+<p>직접 세는 것과 공식이 \(s\)이 1이 아닌 순간에도 일치한다 — \(s=4\)
+경우를 보면, “5칸을 4칸씩 건너뛰면 0과 4 두 곳“이라는 세기와
+\(\lfloor 5/4 \rfloor + 1 = 2\)가 같은 숫자임을 확인한다. (수직·수평
+방향은 독립적으로 같은 계산을 하므로 2D에서는 이 값을 양쪽에 적용한다 —
+사각형 입력이면 출력도 사각형이다.)</p>
+<p><strong>패딩이 왜 “2p“인가 — 공식에서 가장 많이 범하는 실수</strong>: 코드의
+<code>padding=1</code>은 <em>한 변당</em> 1픽셀이지만, 총 늘어나는 길이는 왼쪽+오른쪽 =
+\(2p\)다. TensorFlow 계열의 명명에서는 패딩 없는 경우를 <code>padding="valid"</code>
+(필터가 다 들어가는 위치만, = 위 유도), 크기를 유지하는 패딩을
+<code>padding="same"</code>이라고 부른다 — “same“의 의미는 \(k\)가 홀수일 때
+\(p=(k-1)/2\)인 경우로, \(n_{\text{out}} = n\)이 된다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch10_1_padding_strides.svg" alt="같은 28×28 입력(흰 칸), 3×3 필터에 패딩 p와 스트라이드 s를 바꾸면 유효한 필터 시작 위치(틱)의 개수 — 즉 출력 크기 n_out — 가 어떻게 변하는지 1D로 그린 것. 위왼쪽 p=0,s=1 → 26개, 위오른쪽 p=1,s=1 → 28개(same padding), 아래왼쪽 p=0,s=2 → 13개, 아래오른쪽 p=1,s=2 → 14개. 회색 칸은 패딩"><span class="img-wrapper"><img src="../../images/ch10_1_padding_strides.svg" alt="같은 28×28 입력(흰 칸), 3×3 필터에 패딩 p와 스트라이드 s를 바꾸면 유효한 필터 시작 위치(틱)의 개수 — 즉 출력 크기 n_out — 가 어떻게 변하는지 1D로 그린 것. 위왼쪽 p=0,s=1 → 26개, 위오른쪽 p=1,s=1 → 28개(same padding), 아래왼쪽 p=0,s=2 → 13개, 아래오른쪽 p=1,s=2 → 14개. 회색 칸은 패딩"></span></label></p>
+<p>위 그림은 28×28, k=3을 1D로 줄여 네 가지 (p, s) 조합을 비교한 것이다. 회색
+칸이 패딩이고 흰 칸이 원래 입력이며, 각 틱(tick)은 유효한 필터 시작
+위치 하나씩이다 — **틱의 개수가 곧 \(n_{\text{out}}\)**이다. 네 경우의
+숫자(26, 28, 13, 14)는 모두 공식
+\(\lfloor(28+2p-3)/s\rfloor+1\)으로 그대로 계산된다.</p>
+<h4 id="스트라이드-s2가-실제로-하는-일"><a class="header" href="#스트라이드-s2가-실제로-하는-일">스트라이드 s=2가 실제로 하는 일</a></h4>
+<p>\(s=2\)는 1D에서 길이를 반으로, 2D에서는 <strong>가로와 세로 둘 다</strong> 반으로
+줄인다 — 즉 공간 <strong>면적</strong>은 1/4로 줄어든다. 예: 224×224에 k=3, p=1, s=2
+이면 \(n_{\text{out}} = \lfloor(224+2-3)/2\rfloor+1 = 112\) — AlexNet의
+첫 합성곱 층이 정확히 이 설정(224→112)으로 다운샘플링한다. 10.2절에서
+2×2 풀링도 면적을 1/4로 줄여준다는 것을 보게 되는데, 그러면 둘 중 무엇을
+쓰느냐는 질문이 자연스럽게 생긴다 — 이 절 FAQ에서 비교한다.</p>
 <h3 id="파라미터-수와-연산량-계산"><a class="header" href="#파라미터-수와-연산량-계산">파라미터 수와 연산량 계산</a></h3>
 <p>\(C_{\text{in}}\)개 입력 채널, \(C_{\text{out}}\)개 출력 채널(즉 필터
 개수), 필터 크기 \(k \times k\)인 합성곱 층의 파라미터 수(bias 포함):</p>
@@ -250,7 +390,120 @@
 파라미터 수와 연산량이 똑같이 정비례로 늘어난다</strong>는 뜻이다. 실제 CNN은
 이런 합성곱 층을 수십~수백 개 쌓으므로, 전체 연산량은 모델 설계 시
 파라미터 수 못지않게 중요하게 따지는 지표다.</p>
+<h4 id="손계산-표-미니-lenet-세-층의-비용"><a class="header" href="#손계산-표-미니-lenet-세-층의-비용">손계산 표: 미니 LeNet 세 층의 비용</a></h4>
+<p>“비용의 대부분이 어느 층에서 오는가“에 대한 감각을 만들기 위해, 28×28
+흑백 이미지를 세 합성곱 층과 한 풀링으로 줄여가는 작은 네트워크를 층별로
+계산해보자(실습 노트북 §3에서 numpy로 그대로 재계산한다):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>층</th><th>연산</th><th>출력 크기</th><th>파라미터</th><th>FLOPs</th></tr>
+</thead>
+<tbody>
+<tr><td>입력</td><td>28×28×1</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>conv 1</td><td>k=3, \(C_{out}=4\), p=0, s=1</td><td>26×26×4</td><td>40</td><td>24,336</td></tr>
+<tr><td>conv 2</td><td>k=3, \(C_{in}=4\), \(C_{out}=8\), p=0, s=1</td><td>24×24×8</td><td>296</td><td>165,888</td></tr>
+<tr><td>pool</td><td>2×2 max pooling (s=2)</td><td>12×12×8</td><td>0</td><td>(비교 연산 864회)</td></tr>
+<tr><td>conv 3</td><td>k=3, \(C_{in}=8\), \(C_{out}=16\), p=0, s=1</td><td>10×10×16</td><td>1,168</td><td>115,200</td></tr>
+<tr><td><strong>합계</strong></td><td></td><td>10×10×16</td><td><strong>1,504</strong></td><td><strong>305,424</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p>예를 하나 직접 따라가보자 — conv 2의 FLOPs: \(n_{\text{out}}=26-3+1=24\),
+\(24^2 = 576\)개 출력 위치, 각 위치에서 \(C_{out}=8\)개 필터 ×
+\(k^2 C_{in} = 9\times4=36\)회 곱셈-덧셈 → \(576\times8\times36 =
+165{,}888\). 표에서 세 가지 관찰이 가능하다:</p>
+<ol>
+<li><strong>파라미터 수는 뒤로 갈수록 커지지만(40 → 296 → 1,168), FLOPs의
+최댓값은 conv 2다</strong>(165,888). FLOPs는 \(n_{\text{out}}^2\)에
+비례하는데, conv 2가 공간적으로 가장 크기(24×24) 때문이다 —
+conv 3은 채널이 2배지만 공간은 1/4(10×10)라 연산량은 오히려 적다.
+**파라미터는 “재고”(층당 고정 저장), FLOPs는 “유량”(출력 위치마다
+반복되는 계산)**이다 — 네트워크를 설계할 때 한쪽만 보고서는 안 된다.</li>
+<li><strong>풀링은 파라미터가 0</strong>이고, 비용도 곱셈-덧셈이 아니라 <em>비교</em>(4개 중
+최댓값 찾기)다 — 보통 FLOPs 합계에서 무시할 만큼 작다(위 표에서는
+괄호로 따로 표기).</li>
+<li>위 세 합성곱 층을 <strong>같은 출력 체적</strong>(10×10×16 = 1,600개 값)의
+완전연결층 하나로 대체하면 — 784(=28×28)개 입력을 1,600개 뉴런에
+다 연결하면 — 파라미터는 \(784\times1{,}600+1{,}600 = 1{,}256{,}000\),
+즉 합성곱 스택 전체의 <strong>약 835배</strong>다. FLOPs도 \(784\times1{,}600 =
+1{,}254{,}400\)으로 합성곱 스택(305,424)의 <strong>약 4.1배</strong>. 같은
+양의 정보를 “한 번에” 보는 대신 작은 패치를 재사용하는 합성곱이
+<strong>약 0.12%의 파라미터와 1/4의 연산</strong>으로 같은 체적의 특징을 만든
+것이다 — 게다가 위치 불변성이라는 귀납적 편향까지 덤으로 가진다.</li>
+</ol>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch09_cnn_structure.svg" alt="CNN에서 합성곱을 거칠 때마다 공간 크기(가로×세로)는 줄고 채널 수(깊이)는 늘어나는 모습 — 10.1의 연습문제 네트워크(32×32×3 → Conv5×5,6 → Pool2×2 → Conv5×5,16)를 그대로 시각화한 것"><span class="img-wrapper"><img src="../../images/ch09_cnn_structure.svg" alt="CNN에서 합성곱을 거칠 때마다 공간 크기(가로×세로)는 줄고 채널 수(깊이)는 늘어나는 모습 — 10.1의 연습문제 네트워크(32×32×3 → Conv5×5,6 → Pool2×2 → Conv5×5,16)를 그대로 시각화한 것"></span></label></p>
+<h3 id="자주-하는-실수-이-절의-공식이-걸리는-두-곳"><a class="header" href="#자주-하는-실수-이-절의-공식이-걸리는-두-곳">자주 하는 실수: 이 절의 공식이 걸리는 두 곳</a></h3>
+<p><strong>실수 1 — “패딩은 출력에 더해지는 거다.”</strong> 출력 크기 공식을 처음 쓸
+때 가장 흔한 혼란이다. n=28, k=3, p=1, s=1의 출력이 “28+2=30“이라고
+생각하는 것 — 패딩 픽셀 자체가 출력을 만든다고 오해하는 것이다. <strong>패딩은
+출력 위치를 새로 만들지 않는다</strong> — “벗어나갈 것 같았던” 위치(필터가
+원본 이미지의 경계를 넘는 위치)를 유효하게 만들어 주는 역할뿐이다.
+정리하면: 출력 = “패딩된 입력 안에서 필터가 완전히 들어가는 위치 수” =
+\(\lfloor(28+2-3)/1\rfloor+1 = 28\). 패딩의 정당한 용도는
+“same padding으로 <em>크기를 유지</em>하는 것“이지, “출력을 키우는 것“이 아니다.</p>
+<p><strong>실수 2 — “FLOPs = 파라미터 수 × 고정 계수.”</strong> 완전연결층에서는 샘플
+당 FLOPs가 약 2×(파라미터 수) — 각 가중치가 한 번의 곱셈-덧셈을 하므로 —
+라, 이 습관을 합성곱 층에도 무의식적으로 적용하기 쉽다. 그러나 합성곱
+층의 FLOPs/파라미터 비율은 \(n_{\text{out}}^2\)이며 <strong>층마다 다르다</strong>.
+구체적으로, 같은 224×224(\(C_{in}=1\)) 입력, 64개 출력 채널인 두
+층을 비교하자:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>층</th><th>필터</th><th>파라미터</th><th>FLOPs</th></tr>
+</thead>
+<tbody>
+<tr><td>A: 3×3</td><td>p=0, s=1</td><td>(9+1)×64 = 640</td><td>222²×64×9 ≈ 2,839만</td></tr>
+<tr><td>B: 1×1</td><td>p=0, s=1</td><td>(1+1)×64 = 128</td><td>224²×64×1 ≈ 321만</td></tr>
+</tbody>
+</table>
+</div>
+<p>파라미터 비율은 5배(640/128)인데, FLOPs 비율은 약 <strong>8.8배</strong>
+(28,387,584 / 3,211,264)다 — A가 출력 위치마다 9배의 곱셈-덧셈을 하기
+때문이다. <strong>연산량을 비교할 때는 “파라미터 몇 배“가 아니라 공식으로
+직접 계산</strong>해야 한다는 뜻이다. (1×1 합성곱 — 위 B — 은 공간 크기를
+그대로 둔 채 채널만 선형 결합하는 연산이라, “경량으로 채널을 섞는다“는
+용도로 VGG와 ResNet의 중간층에서 실전에서 많이 쓰인다. 10.2에서 구조
+속에서 다시 만난다.)</p>
+<h3 id="실습"><a class="header" href="#실습">실습</a></h3>
+<p>앞의 표들을 코드 한 페이지로 묶어둔다(패딩/스트라이드 그림까지 포함한
+완전 버전은 실습 노트북 §2·§3에서 실행한다):</p>
+<pre><code class="language-python">def out_size(n, k, p=0, s=1):
+    return (n + 2*p - k) // s + 1          # 1D 한 방향의 출력 크기
+
+def conv_cost(n_in, k, c_in, c_out, p=0, s=1):
+    n_out = out_size(n_in, k, p, s)
+    params = (k*k*c_in + 1) * c_out        # bias 포함
+    flops  = n_out**2 * c_out * (k*k*c_in) # 출력 위치마다 반복
+    return n_out, params, flops
+
+print(conv_cost(28, 3, 1, 4))    # (26, 40, 24336)   &lt;- 표의 conv 1
+print(conv_cost(26, 3, 4, 8))    # (24, 296, 165888) &lt;- 표의 conv 2
+print(conv_cost(12, 3, 8, 16))   # (10, 1168, 115200) &lt;- 표의 conv 3
+print(sum(conv_cost(n, k, ci, co)[1]
+          for n, k, ci, co in [(28,3,1,4), (26,3,4,8), (12,3,8,16)]))
+# 1504  &lt;- 표의 파라미터 합계와 일치
+</code></pre>
+<p>세 줄의 출력과 합계 1,504가 손계산 표와 정확히 일치하는 것을 확인하면,
+“수식 → 코드 → 표“가 하나의 계산을 세 번으로 확인한 셈이다 — 이 절의
+세 공식(\(n_{\text{out}}\), params, FLOPs)이 서로 독립이 아니라
+<strong>같은 입력 \((n,k,p,s,C_{in},C_{out})\)에서 나란히 계산되는 하나의
+패키지</strong>라는 감각이 이 코드에 담겨 있다.</p>
+<h3 id="핵심-공식-한눈에"><a class="header" href="#핵심-공식-한눈에">핵심 공식 한눈에</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>항목</th><th>공식</th><th>무엇을 재나</th></tr>
+</thead>
+<tbody>
+<tr><td>출력 크기</td><td>\(n_{\text{out}}=\lfloor(n+2p-k)/s\rfloor+1\)</td><td>합성곱 후 공간 크기 (가로/세로 각각)</td></tr>
+<tr><td>파라미터</td><td>\((k^2 C_{\text{in}}+1)\,C_{\text{out}}\)</td><td>저장해야 할 가중치 수 (bias 포함)</td></tr>
+<tr><td>FLOPs</td><td>\(n_{\text{out}}^2\,C_{\text{out}}\,k^2 C_{\text{in}}\)</td><td>곱셈-덧셈 횟수 (출력 위치마다 반복)</td></tr>
+<tr><td>관계</td><td>FLOPs ≈ (bias 뺀 params) × \(n_{\text{out}}^2\)</td><td>“재고“와 “유량“의 차이</td></tr>
+</tbody>
+</table>
+</div>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 필터 크기는 왜 보통 홀수(3×3, 5×5)인가요?</strong> 홀수 필터는 정확히
 중심 픽셀이 하나 있어서, “이 필터가 어느 픽셀을 중심으로 패턴을 본다“는
@@ -267,6 +520,57 @@ MLP보다 이미지에서 항상 유리한 이유는 단순히 “파라미터�
 아니라, 그 적은 파라미터가 “위치 불변성“이라는 이미지의 실제 구조에
 정확히 맞는 가정(귀납적 편향, inductive bias)을 인코딩하고 있기
 때문이다.</p>
+<p><strong>Q. 스트라이드 2와 2×2 풀링은 무슨 차이인가요? 둘 다 면적을 1/4로 줄이는데.</strong>
+세 가지 차이다. (1) <strong>정보 처리 방식</strong>: max pooling은 4개 픽셀 중 3개를
+<strong>버리고</strong> 최댓값 하나만 남긴다(미분 불가, 정보가 돌이킬 수 없이 사라짐).
+반면 stride-2 합성곱은 겹치지 않는 각 창 안의 \(k^2C_{in}\)개 값을
+<strong>가중치로 합성</strong>해 한 값으로 만든다(미분 가능, 그리고 “다운샘플링
+직전에는 뭘 살릴지“가 학습 대상이 된다). (2) <strong>자유도</strong>: 풀링은 창
+크기(2×2)와 축소율(1/2)이 함께 묶여 있지만, stride 합성곱은 필터
+크기와 스트라이드를 독립적으로 고를 수 있다(예: 5×5, s=2). (3) <strong>역사</strong>:
+LeNet·AlexNet·VGG 시절에는 max pooling이 표준 다운샘플러였지만, ResNet
+이후 고해상도 네트워크에서는 <strong>stride-2 합성곱</strong>이 주류가 됐다 —
+다운샘플링 자체를 네트워크가 학습하게 하기 때문이다. 현대 네트워크는
+둘을 섞어 쓰는 경우가 많다.</p>
+<p><strong>Q. FLOPs 공식에 bias의 “+1“이 없는데, 빠뜨린 것인가요?</strong> bias는
+출력 위치당 <strong>한 번만 더해지는</strong> 값이라, 그 비용은
+\(n_{\text{out}}^2 C_{\text{out}}\) — 주항
+\(n_{\text{out}}^2 C_{\text{out}} k^2 C_{\text{in}}\) 대비 1 차수
+낮은 차수 항이다(\(k^2C_{\text{in}}\ge 9\)인 일반적 3×3 층에서는
+약 10% 미만). 그래서 표준 FLOPs 관례는 곱셈-덧셈(MAC) 수
+\(k^2 C_{\text{in}}\)으로 세고 bias를 무시한다. (엄밀히
+“곱셈 k²C_in 회 + 덧셈 k²C_in 회“를 다 세면 2×MAC 관례도 있는데,
+비율 계산에는 양쪽이 동일한 계수로 약분되므로 관례를 정해 두면 된다.)</p>
+<p><strong>Q. PyTorch에서 28×28 입력의 3×3 conv 출력이 정말 26×26인가요?</strong>
+맞다 — <code>nn.Conv2d(1, 4, 3)</code>(기본값 padding=0, stride=1)의 출력은 26×26,
+<code>nn.Conv2d(1, 4, 3, padding=1)</code>의 출력은 28×28이다. PyTorch의
+<code>padding</code> 인자는 이 절 공식의 <strong>한 변당 패딩 수 p</strong> 그대로다(총
+2p). <code>same</code>/<code>valid</code> 이름은 쓰지 않지만, p=(k−1)/2의 same padding
+트릭은 똑같이 동작한다. (참고: 26×26 입력에 또 p=0의 3×3을 쓰면 24×24 —
+짝수/홀수가 층을 지나며 바뀌지만, 이건 순수한 “크기 장부” 문제일 뿐
+오류가 아니다.)</p>
+<h3 id="확인-문제-숫자-네-개"><a class="header" href="#확인-문제-숫자-네-개">확인 문제: 숫자 네 개</a></h3>
+<ol>
+<li><strong>출력 크기.</strong> 56×56 입력, 3×3 필터, 패딩 1, 스트라이드 2일 때 출력
+크기를 계산하라. (힌트: \(\lfloor(56+2-3)/2\rfloor+1\) — LeNet 계열
+네트워크의 224→112 다운샘플링이 이 계산의 2배 크기 버전이다.)</li>
+<li><strong>파라미터와 FLOPs.</strong> 28×28(\(C_{in}=16\))에 5×5 필터,
+\(C_{out}=32\), p=0, s=1인 합성곱 층의 (a) 출력 크기, (b)
+파라미터 수(bias 포함), (c) FLOPs를 계산하라. (힌트:
+\(n_{\text{out}}=24\), params=(25×16+1)×32, FLOPs=
+\(24^2\times32\times(25\times16)\).)</li>
+<li><strong>MLP 비교.</strong> 앞의 “손계산 표” 네트워크(파라미터 합계 1,504, FLOPs
+305,424)와 같은 출력 체적(1,600개 값)을 내는 완전연결층 하나
+(784개 입력 → 1,600개 뉴런)의 파라미터 수와 샘플당 FLOPs를 계산하고
+각각 몇 배인지 구하라. (힌트: FLOPs 비율은 “4배 안팎“이고 파라미터
+비율은 그보다 훨씬 크다 — 왜 둘의 비율이 다른지 한 문장으로도
+설명해보자.)</li>
+<li><strong>실수 찾기.</strong> 동기 노트: “28×28, k=3, p=1, <strong>s=2</strong> → 출력
+(28−3+1)/2 + 2 = 15.” 정답은 14다 — 이 계산 과정의 개념적 오류를
+짚어라. (힌트: 패딩은 스트라이드로 나누기 <strong>전</strong>에 입력에 더해져야
+한다: \(\lfloor(28+2-3)/2\rfloor+1 = 14\). s=1에서는 두 계산이
+우연히 일치하지만, s≥2에서 갈린다.)</li>
+</ol>
 
                     </main>
 
@@ -319,8 +623,8 @@ MLP보다 이미지에서 항상 유리한 이유는 단순히 “파라미터�
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

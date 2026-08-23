@@ -1,0 +1,28 @@
+digraph G {
+  rankdir=LR;
+  graph [fontname="Noto Sans CJK KR", label="연속 행동공간 PPO의 Actor(정책) 구조 — Reacher 실습",
+         labelloc=t, fontsize=15];
+  node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled", fillcolor="#EAF2FB",
+         fontcolor="#1A1A1A", fontsize=12];
+  edge  [fontname="Noto Sans CJK KR", fontsize=10, color="#555555"];
+
+  s    [label="상태 s (10차원)\n관절각 cos/sin 4 + 목표 2 + 각속도 2 +\n(fingertip−target) 오차벡터 2"];
+  h1   [label="Linear(10→64) + tanh"];
+  h2   [label="Linear(64→64) + tanh"];
+  muh  [label="μ 헤드: Linear(64→2) + tanh ×1.0\n(평균을 행동 범위 [-1, 1]로)"];
+  ls   [shape=ellipse, fillcolor="#FFF6E5",
+         label="log_std (학습 가능 파라미터, 2차원)\nσ = exp(log_std) — 상태와 무관하게 전역"];
+  g    [shape=ellipse, fillcolor="#F3E8FF",
+         label="가우시안 정책 π_θ(a|s)\n= N(a; μ_θ(s), σ_θ(s)²)\nlog π = -½ log(2πσ²) - (a-μ)²/(2σ²)  [차원별, 합산]"];
+  a    [label="행동 a 샘플 (2차원 토크)\nclip(a, -1, 1) 후 환경에 전달"];
+  e    [fillcolor="#E8F5E9",
+         label="Reacher-v5 (MuJoCo)\n물리 시뮬레이션, dt = 0.02 s"];
+  v    [fillcolor="#FDECEC",
+         label="ValueNet (Critic)\nV_φ(s) — 같은 10차원 상태 입력\nGAE의 어드밴티지·리턴 목표 계산"];
+
+  s -> h1 -> h2 -> muh -> g;
+  ls -> g;
+  g -> a -> e;
+  e -> s [label="다음 상태, 보상 r = -거리 - ||a||²"];
+  s -> v [style=dashed];
+}

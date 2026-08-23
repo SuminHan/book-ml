@@ -1,0 +1,73 @@
+digraph lstm_cell {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="LSTM 셀: 게이트(곱, 오렌지)는 조절 스위치, 셀 상태 C(덧셈, 초록)는 정보를 통째로 전달하는 고속도로",
+           labeljust=c, bgcolor="white", pad=0.35, nodesep=0.55, ranksep=0.85];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=10,
+           penwidth=1.4, margin="0.16,0.09"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9, color="#495057", penwidth=1.6];
+
+    subgraph cluster_in {
+        label="입력 (시점 t)"; labeljust=l; fontsize=11; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        x_t  [label="x_t (현재 입력)"];
+        h_p  [label="h_{t-1} (이전 은닉 상태)"];
+        C_p  [label="C_{t-1} (이전 셀 상태)", fillcolor="#d3f9d8", penwidth=2];
+        x_t -> h_p [style=invis]; h_p -> C_p [style=invis];
+    }
+
+    subgraph cluster_gate {
+        label="게이트 (σ, 0~1의 조절 스위치)"; labeljust=l; fontsize=11;
+        fontcolor="#343a40"; color="#adb5bd"; style="rounded,filled";
+        fillcolor="#f8f9fa";
+        node [shape=ellipse, fillcolor="#ffe8cc", penwidth=1.6];
+        f_g [label="망각 게이트 f_t"];
+        i_g [label="입력 게이트 i_t"];
+        o_g [label="출력 게이트 o_t"];
+        C_tilde [label="후보 셀  C̃_t = tanh(W_C·[h,x])", shape=box, fillcolor="#fff9db", penwidth=1.6];
+        f_g -> i_g [style=invis]; i_g -> C_tilde [style=invis]; C_tilde -> o_g [style=invis];
+    }
+
+    subgraph cluster_add {
+        label="합성 (정보 본체는 '덧셈'으로)"; labeljust=l; fontsize=11;
+        fontcolor="#343a40"; color="#495057"; style="rounded,filled"; fillcolor="#f1f3f5";
+        node [shape=circle, fillcolor="#d3f9d8", penwidth=2.2, fontsize=15, margin="0.06"];
+        plus1 [label="+"];
+        plus2 [label="+"];
+        plus1 -> plus2 [style=invis];
+    }
+
+    subgraph cluster_out {
+        label="출력 (시점 t)"; labeljust=l; fontsize=11; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        C_t [label="C_t (셀 상태)", fillcolor="#d3f9d8", penwidth=2];
+        h_t [label="h_t = o_t · tanh(C_t)\n(현재 은닉 상태)", fillcolor="#e7f1ff"];
+        C_t -> h_t [style=invis];
+    }
+
+    // 입력이 게이트와 후보 셀에 분기
+    x_t -> f_g [label=""];
+    x_t -> i_g [label=""];
+    x_t -> C_tilde [label=""];
+    x_t -> o_g [label=""];
+    h_p -> f_g [style=dashed, color="#868e96"];
+    h_p -> i_g [style=dashed, color="#868e96"];
+    h_p -> C_tilde [style=dashed, color="#868e96"];
+    h_p -> o_g [style=dashed, color="#868e96"];
+
+    // 망각 게이트: 셀 상태를 곱으로 조절 (크기 조절 스위치)
+    f_g -> plus1 [label="×  (기억 유지 비율)"];
+    // 셀 상태 고속도로: C_{t-1}이 망각 게이트를 거쳐 덧셈에 합류
+    C_p -> plus1 [color="#2f9e44", penwidth=3, label="C_{t-1} (정보 본체)"];
+    // 입력 게이트가 후보 셀을 곱해 새 정보를 추가
+    i_g -> plus1 [label="×  (신규 기록 비율)"];
+    C_tilde -> plus1 [label=""];
+
+    // 합성된 것이 새 셀 상태
+    plus1 -> C_t [color="#2f9e44", penwidth=3, label="C_t = f_t·C_{t-1} + i_t·C̃_t"];
+
+    // 출력 경로: 셀 상태를 tanh 후 출력 게이트가 조절
+    C_t -> h_t [color="#1971c2", penwidth=2, label="tanh(C_t) → o_t ×  (출력)"];
+    o_g -> h_t [label="×"];
+}

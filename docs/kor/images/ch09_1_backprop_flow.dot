@@ -1,0 +1,58 @@
+digraph backprop_flow {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="2-2-1 신경망: 순전파(실선, →)와 역전파(붉은 점선, ←) — 손계산 예제의 수치",
+           labeljust=c, bgcolor="white", pad=0.3];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=10,
+           penwidth=1.3, margin="0.18,0.1"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9, color="#495057", penwidth=1.5];
+
+    subgraph cluster_in {
+        label="입력층"; labeljust=l; fontsize=11; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        X [label="x = (1, 0)\\ny = 1 (XOR)"];
+    }
+    subgraph cluster_hid {
+        label="은닉층 (2유닛, 활성함수 σ)"; labeljust=l; fontsize=11;
+        fontcolor="#343a40"; color="#adb5bd"; style="rounded,filled";
+        fillcolor="#f8f9fa";
+        node [fillcolor="#e7f1ff"];
+        H1 [label="z1,1 = 0.6\\na1,1 = σ(0.6) ≈ 0.646"];
+        H2 [label="z1,2 = 0.1\\na1,2 = σ(0.1) ≈ 0.525"];
+        H1 -> H2 [style=invis];
+    }
+    subgraph cluster_out {
+        label="출력층 (σ)"; labeljust=l; fontsize=11; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fillcolor="#e9ecef"];
+        O [label="z2 = 0.237\\na2 = σ(0.237) ≈ 0.559"];
+    }
+    L [label="손실 L ≈ 0.097\\nL = ½(a2−y)²", fillcolor="#fff3cd"];
+
+    X  -> H1 [label="x1 가중치 +0.5 (x2 가중치 −0.5, x2=0)\\nb1,1=+0.1"];
+    X  -> H2 [label="x1 가중치 +0.3 (x2 가중치 +0.8, x2=0)\\nb1,2=−0.2"];
+    H1 -> O  [label="W2,1=+0.7"];
+    H2 -> O  [label="W2,2=−0.6, b2=+0.1"];
+    O  -> L  [label=""];
+
+    L  -> O  [style=dashed, color="#c92a2a",
+              label="δ2 = (a2−y)σ′(z2) ≈ −0.109"];
+    O  -> H1 [style=dashed, color="#c92a2a",
+              label="×W2,1 × σ′(z1,1)\\nδ1,1 ≈ −0.017"];
+    O  -> H2 [style=dashed, color="#c92a2a",
+              label="×W2,2 × σ′(z1,2)\\nδ1,2 ≈ +0.016"];
+
+    subgraph cluster_grad {
+        label="그래디언트 (경사하강으로 갱신)"; labeljust=l; fontsize=11;
+        fontcolor="#343a40"; color="#495057"; style="rounded,filled";
+        fillcolor="#f1f3f5";
+        node [fillcolor="#d3f9d8", fontsize=9.5];
+        G2 [label="∂L/∂W2 = δ2·a1ᵀ ≈ (−0.070, −0.057)"];
+        G1 [label="∂L/∂W1 = x⊗δ1 ≈ [[−0.017, +0.016],[0, 0]]"];
+        G2 -> G1 [style=invis];
+    }
+    O  -> G2 [style=dashed, color="#2f9e44", label="×a1ᵀ"];
+    H1 -> G1 [style=dashed, color="#2f9e44", label="×x⊤"];
+    H2 -> G1 [style=dashed, color="#2f9e44", label="×x⊤"];
+}

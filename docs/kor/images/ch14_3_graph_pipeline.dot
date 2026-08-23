@@ -1,0 +1,21 @@
+digraph ch14_3_graph_pipeline {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="word2vec의 파이프라인을 그래프에 이식: '문장'의 역할만 무작위 걷기로 바꿨다",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=12,
+           penwidth=1.4, margin="0.2,0.12"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=10.5, color="#495057", penwidth=1.6];
+
+    G  [label="그래프\n(노드 34개, 친분 edge 78개)", fillcolor="#e9ecef"];
+    W  [label="무작위 걷기 × 340\n각 걷기 8개 노드 — '문장'\n노드 = '단어'", fillcolor="#dae8fc"];
+    P  [label="skip-gram 학습\n중심 노드의 이웃 노드 예측\n(14.2절 코드 그대로)", fillcolor="#fff3cd"];
+    E  [label="노드 임베딩\n34 × 8차원 벡터", fillcolor="#d5e8d4"];
+    PCA [label="PCA/SVD로 2D 투영\n파벌 갈라짐 눈으로 확인", fillcolor="#f8cecc"];
+
+    G -> W [label="각 노드에서\n10회 걷기"];
+    W -> P;
+    P -> E [label="입력 가중치 행\n이 그대로 임베딩"];
+    E -> PCA;
+}

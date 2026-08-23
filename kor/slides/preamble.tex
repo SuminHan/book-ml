@@ -1,0 +1,79 @@
+% Shared Beamer preamble for book-ml lecture slides.
+% Every per-section deck should \input{../preamble.tex} (adjust relative
+% path to reach kor/slides/preamble.tex) right after \documentclass, then
+% define \slidetitle/\slidesubtitle and \begin{document}.
+%
+% Style target: dense, one-idea-per-slide academic slides, modeled on
+% "Existence and Well-definedness of Optimal Policy in Finite MDPs"
+% (Sumin Han) — theorem/claim boxes, numbered derivation steps, small
+% comparison tables, footer "Made by Sumin Han · suminkaist@gmail.com  n/N".
+
+\documentclass[aspectratio=169,10pt]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{kotex}          % Korean typesetting (xelatex/lualatex recommended)
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\beamertemplatenavigationsymbolsempty
+
+% ---- Palette --------------------------------------------------------
+\definecolor{bookblue}{RGB}{21,67,130}
+\definecolor{bookaccent}{RGB}{0,120,140}
+\definecolor{bookgray}{RGB}{90,90,90}
+
+\setbeamercolor{title}{fg=bookblue}
+\setbeamercolor{frametitle}{fg=white,bg=bookblue}
+\setbeamercolor{structure}{fg=bookblue}
+\setbeamercolor{block title}{fg=white,bg=bookaccent}
+\setbeamercolor{block body}{fg=black,bg=bookaccent!8}
+\setbeamerfont{frametitle}{series=\bfseries}
+
+% ---- Footer: "Made by Sumin Han · suminkaist@gmail.com   n/N" -------
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.75\paperwidth,ht=2.4ex,dp=1ex,left,leftskip=1em]{}%
+      \usebeamerfont{author in head/foot}\tiny\color{bookgray}%
+      Made by Sumin Han \textperiodcentered\ suminkaist@gmail.com
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.4ex,dp=1ex,right,rightskip=1em]{}%
+      \usebeamerfont{page number in head/foot}\tiny\color{bookgray}%
+      \insertframenumber{}/\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+
+% ---- Reusable environments ------------------------------------------
+\newenvironment{keyidea}[1]{\begin{block}{#1}}{\end{block}}
+\newenvironment{caution}[1]{\begin{alertblock}{#1}}{\end{alertblock}}
+% For worked examples use beamer's built-in: \begin{exampleblock}{제목}...\end{exampleblock}
+
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  keywordstyle=\color{bookblue}\bfseries,
+  commentstyle=\color{bookgray}\itshape,
+}
+
+% ---- Title-slide helper: define these before \begin{document} ------
+% \slidetitle{Chapter N.M — 절 제목}
+% \slidesubtitle{Book name (ML1/ML2), Chapter N: 장 제목}
+\newcommand{\slidetitle}[1]{\title{#1}}
+\newcommand{\slidesubtitle}[1]{\subtitle{#1}}
+\author{Sumin Han}
+\institute{suminkaist@gmail.com}
+\date{}

@@ -1,0 +1,15 @@
+digraph agent_env_loop {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="강화학습 루프 — 환경이 상태·보상을 주면, 에이전트는 정책으로 행동을 골라 환경에 돌려준다 (무한 반복)",
+           labeljust=c, bgcolor="white", nodesep=0.6, ranksep=0.9];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fontcolor="#212529", fontsize=12.5, penwidth=1.4, margin="0.18,0.10"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=11, color="#495057", penwidth=1.5];
+
+    env   [label="환경 (Environment)\n(로봇 · 게임 · 시뮬레이터)", fillcolor="#cfe2ff"];
+    agent [label="에이전트 (Agent)\n정책 π(a|s)으로 행동 a 선택", fillcolor="#d1e7dd"];
+
+    env   -> agent [label="상태 s, 보상 r"];
+    agent -> env   [label="행동 a"];
+}

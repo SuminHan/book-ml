@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="42-정책-반복과-gridworld-실습"><a class="header" href="#42-정책-반복과-gridworld-실습">4.2 정책 반복과 GridWorld 실습</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter04_2_policy_iteration.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <h3 id="정책-반복"><a class="header" href="#정책-반복">정책 반복</a></h3>
 <p><strong>정책 반복</strong>(Policy Iteration)은 최적해를 향해 두 단계를 번갈아
 반복한다:</p>
@@ -189,6 +190,129 @@
 \sum_{s’} P(s’|s,a) V^\pi(s’)]\).</li>
 </ol>
 <p>정책이 더 이상 안 바뀔 때까지 반복하면 최적 정책에 도달한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch04_2_policy_iteration_loop.svg" alt="정책 반복의 두 단계가 서로를 먹여 살리는 구조 — 평가가 개선행동(각 행의 argmax)을 산출하고, 개선이 다음 평가의 대상(새 정책)을 산출한다. 개선 단계가 “아무것도 바꾸지 않았다“는 신호가 수렴 판정이다"><span class="img-wrapper"><img src="../../images/ch04_2_policy_iteration_loop.svg" alt="정책 반복의 두 단계가 서로를 먹여 살리는 구조 — 평가가 개선행동(각 행의 argmax)을 산출하고, 개선이 다음 평가의 대상(새 정책)을 산출한다. 개선 단계가 “아무것도 바꾸지 않았다“는 신호가 수렴 판정이다"></span></label></p>
+<p><strong>왜 이 두 단계인가.</strong> 각각 하나만으로는 문제가 풀리지 않는다. 정책평가
+alone은 “지금 정책이 얼마나 좋은가“를 답할 뿐, “어떻게 고쳐야 하는가“를
+말해주지 않는다(4.1절 FAQ에서 확인했듯, 정책평가만으로는 “이 정책이
+최적인가“를 판별할 수 없다). 반대로 정책개선만으로는 한 발도 뗄 수
+없다 — “더 나은 행동“을 \(V^\pi\) 기준으로 판단해야 하는데(위
+\(\arg\max\)의 우변을 보라), 정책이 바뀌면 \(V^\pi\) 자체가 바뀌므로
+다시 계산해야 한다. 두 단계가 서로의 출력을 입력으로 먹는
+구조(위 그림)라서, <strong>평가 → 개선 → 평가 → …</strong> 으로 돌려야 하고,
+“개선이 아무것도 바꾸지 않았다“는 순간이 멈춤 신호다.</p>
+<p><strong>개선 단계는 4.1절의 \(Q^\pi\) 표를 “행별로 argmax“하는 것.</strong>
+개선 식의 우변 \(R(s,a) + \gamma \sum_{s’} P(s’|s,a) V^\pi(s’)\)는
+4.1절에서 정의한 \(Q^\pi(s,a)\) 그 자체다. 즉 4.1절이 직접 채워본
+\(Q^\pi\) 표가 정책개선의 <strong>점수표</strong>이고, 개선 단계는 그 표의 각 행에서
+최댓값을 따는 동작이다. 4.1절의 예에서 “오른쪽” 정책의 \(Q^{\text{right}}\)
+표는 각 행의 \(\arg\max\)가 정책 자신과 모든 상태에서 일치했다 —
+“오른쪽” 정책은 <strong>자기 자신의 기준으로도 이미 바꿀 것이 없는</strong> 상태,
+즉 정책개선의 <strong>고정점</strong>이다. 이번 절에서는 (a) 실습으로 이 정책이
+정책 반복에서 첫 sweep에서 멈추는 것을 보고, (b) “개선의 고정점인
+정책은 최적인가?“를 정리로 보인다.</p>
+<h3 id="이론-멈추면-최적인-이유--단조-증가와-유한성"><a class="header" href="#이론-멈추면-최적인-이유--단조-증가와-유한성">이론: “멈추면 최적“인 이유 — 단조 증가와 유한성</a></h3>
+<p>정책 반복을 “반복하면 된다“로 받아들이기 전에, 두 질문을 해결해야
+한다.</p>
+<p><strong>질문 1. 개선한 정책이 정말로 안 나빠지는가?</strong> (가치가 감소한다면
+“최적해“라는 말 자체가 성립하지 않는다.)</p>
+<p><strong>정책개선 정리 (단조 증가).</strong> \(\pi’\)이 \(\pi\)를 <strong>모든 상태에서
+동시에</strong> 개선한 정책이면, 모든 \(s\)에서 \(V^{\pi’}(s) \ge V^\pi(s)\)다.</p>
+<p>증명은 두 줄이다.</p>
+<ul>
+<li>
+<p>(i) \(V^{\pi’}(s)\)의 <strong>정의</strong>(첫 스텝은 \(\pi’(s)\), 그 이후도
+\(\pi’\)를 따름)에 의해
+\[V^{\pi’}(s) = R(s,\pi’(s)) + \gamma \sum_{s’} P(s’|s,\pi’(s))\,
+V^{\pi’}(s’)\]
+과, <strong>\(V^{\pi’}\) ≥ \(V^\pi\)를 유도 중이라는 점을 이용해</strong>(i)의
+우변에서 \(V^{\pi’}\)를 더 작은 \(V^\pi\)로 바꿔다면… — 아, 순서를
+정리하자. 실제로는 아래 두 부등식을 연쇄시킨다:</p>
+<p>\[V^{\pi’}(s) = \max_{a}\left[R(s,a) + \gamma \sum_{s’} P(s’|s,a)\,
+V^{\pi’}(s’)\right] \text{ 에 } a = \pi’(s) \text{를 대입} \;\Rightarrow\;
+V^{\pi’}(s) \ge R(s,\pi’(s)) + \gamma \sum_{s’} P(s’|s,\pi’(s))\, V^{\pi’}(s’)\]</p>
+<p>(이 단계는 “max가 특정 성원 이상“이라는 자명한 사실.)</p>
+</li>
+<li>
+<p>(ii) \(\pi’(s)\)의 <strong>정의</strong>(\(V^\pi\) 기준 argmax)에 의해,
+\(\pi’(s)\)의 점수가 <strong>모든</strong> 행동의 점수 중 최대이므로 현재 정책
+\(\pi(s)\)의 점수보다 작을 수 없다:
+\[R(s,\pi’(s)) + \gamma \sum_{s’} P(s’|s,\pi’(s))\, V^{\pi}(s’)
+\ge R(s,\pi(s)) + \gamma \sum_{s’} P(s’|s,\pi(s))\, V^{\pi}(s’)
+= V^\pi(s)\]
+(마지막 등호는 벨만 기대방정식.)</p>
+</li>
+</ul>
+<p>두 줄을 합치면:</p>
+<p>\[V^{\pi’}(s) \;\ge\; R(s,\pi’(s)) + \gamma \sum_{s’} P(s’|s,\pi’(s))\,
+V^{\pi}(s’) \;\ge\; V^\pi(s)\]</p>
+<p>첫 번째 부등호는 “max가 \(a=\pi’(s)\)보다 작은 값을 주지 않는다“에서,
+두 번째는 위 (ii)에서 나온다. \(\square\)</p>
+<p><strong>한 칸 손계산으로 체감하기.</strong> 5칸 GridWorld에서 “왼쪽” 정책
+(\(V^{\text{left}} = -10\)이 모든 칸)을 개선한다고 하자. 칸 3에서 두
+행동의 점수:</p>
+<p>\[Q^{\text{left}}(3, \text{left}) = -1 + 0.9 \times (-10) = -10
+\qquad Q^{\text{left}}(3, \text{right}) = -1 + 0.9 \times V(4) = -1 + 0 = -1\]</p>
+<p>right가 이겨서 \(\pi’(3) = \text{right}\). 그러면 \(V^{\pi’}(3) = -1\)
+(칸 3에서는 이제 목표에 1걸음)이 되어 이전의 \(-10\)보다 좋아졌다.
+한편 칸 0은 \(\pi’\)에서도 여전히 왼쪽이라 \(V^{\pi’}(0) = -10\) 그대로다
+— “같거나 낫다“는 <strong>칸마다</strong>(점순, componentwise) 성립한다는 뜻이다.
+아래 실습에서 실제로 정책이 칸 3 → 칸 2 → 칸 1 → 칸 0 순서로,
+<strong>바깥 반복마다 딱 한 칸씩</strong> 고쳐지는 것을 볼 수 있다.</p>
+<p><strong>질문 2. 영원히 계속 안 돌아가고, 멈춤 지점이 최적인가?</strong></p>
+<p>먼저 “멈춤“의 정의를 엄밀히 하자. 알고리즘이 멈추는 조건은 “모든
+\(s\)에서 \(\pi(s) \in \arg\max_a Q^\pi(s,a)\)“다 — 즉, 정책이
+<strong>자기 자신의 가치함수 기준으로도</strong> 바꿀 것이 없는 상태다. 이 조건에서
+직접적으로 읽을 수 있는 것이 핵심이다:</p>
+<p>\[V^\pi(s) = \max_a \left[R(s,a) + \gamma \sum_{s’} P(s’|s,a)\,
+V^\pi(s’)\right] \quad (\text{모든 } s)\]</p>
+<p>이것은 4.1절의 <strong>벨만 최적방정식</strong>이다. 4.3절에서 증명할 바나흐 고정점
+정리에 의해 이 방정식의 해는 유일하므로 \(V^\pi = V^*\) — <strong>“개선의
+고정점에서 멈췄다“는 말은 “가치가 \(V^*\)다“는 것과 같은
+말</strong>이다. (이 “고정점 판별“이 실습에서 <code>stable</code> 플래그가 하는 일의
+수학적 정체가 된다.)</p>
+<p><strong>유한성.</strong> MDP가 상태 \(n\)개·상태당 행동 \(m\)개라면 결정론적
+정책의 총수는 \(m^n\)개(유한)다. 각 바깥 반복에서 가치는 감소하지
+않고(위 정리), 정책은 유한집합을 돌아다닐 뿐이다. 여기에 개선 규칙의
+동점 처리를 <strong>고정</strong>해 놓으면(예: 항상 가장 작은 행동 번호를
+선호), 정책 수열은 유한집합 위에서의 <strong>결정적 함수</strong>의 궤적이 되므로
+언젠가 멈추거나 주기 궤도에 들어간다. 주기 궤도에 들어갔더라도 그
+궤도 안의 모든 정책은 같은 가치 \(V\)를 갖고, 그 \(V\)는 벨만
+최적방정식을 만족한다(궤도 내 어떤 정책 \(\pi\)를 잡아도,
+\(\pi’ = \text{improve}(\pi)\)이 \(V\) 기준의 greedy 정책이고
+\(V^{\pi’} = V\)이므로, \(V = V^{\pi’}(s) = \max_a [R + \gamma \sum P
+V]\)) — 따라서 <strong>어느 경우든 “가치 기준의 최적“에 도달한다</strong>.
+(정리보다 강한 고전적 결과로, 바깥 반복 횟수는 \(n(m-1)\)회 이하로
+상한된다는 것이 알려져 있다 — 각 상태의 행동이 “최선” 쪽으로
+갈아타는 횟수가 \(m-1\)회를 넘을 수 없기 때문이다. 증명은 생략.)</p>
+<p><strong>실전적 상한: 얼마나 “나쁜” 정책이라도 얼마나 빨리 탈출하나.</strong>
+단조 증가 정리는 “나빠지지 않는다“를 주지만, “얼마나 빨리 좋아지는가“는
+주지 않는다. 다만 벨만방정식의 수축 성질(4.3절)로부터
+<strong>두 정책 가치의 차를 줄이는 상한</strong>을 바로 쓸 수 있다:</p>
+<p>\[\max_s \big|V^{\pi’}(s) - V^\pi(s)\big|
+\;\le\; \frac{1 - \gamma}{\gamma} \cdot \max_s \big|V^*(s) - V^\pi(s)\big|
+\;\le\; \frac{1}{\gamma} \max_s |V^* - V^\pi| \cdot (1-\gamma)\]</p>
+<p>— 깔끔하게 쓰면, 어떤 정책 \(\pi\)의 가치와 최적 가치의 최대 차이를
+\(\Delta = \max_s |V^*(s) - V^\pi(s)|\)로 놓으면(\(\Delta \le
+\frac{2\,\max|V^*|}{1-\gamma}\)로 유계), 한 번의 <strong>완전한</strong> 정책
+개선후 차이는 \(\gamma\)배 이하로 줄어든다(증명은 4.3절의 축소 사상
+논증과 같다 — \(T^\pi V^\pi = V^\pi\)가 \(\gamma\)-축소 성질을
+쓰는 표준 논증). 5칸 GridWorld에서 “왼쪽” 정책의 경우:
+\(\max|V^*| = 3.439\), \(\max|V^{\text{left}}| = 10\)이므로
+\(\Delta \le 10 + 3.439 \approx 13.44\), 개선 한 번 후
+\(\Delta \le 0.9 \times 13.44 \approx 12.1\)로 줄어야 한다. 실제로는
+이보다 훨씬 빠르게(칸 3이 한 번에 -10에서 -1로) 좋아지지만, 이
+상한이 주는 메시지는 실무적이다 — <strong>초기 정책이 아무리 엉망이어도,
+\(\gamma\)가 1에서 충분히 멀지만 한 한 바퀴(평가+개선)에
+오차가 고정 비율로 줄어든다.</strong> \(\gamma = 0.99\)처럼 1에 가깝다면
+이 상한도 느려져, 정책 반복의 전체 비용이 크게 불어난다.</p>
+<p><strong>“평가만 하면 안 된다“는 반례.</strong> 4.1절의 “왼쪽” 정책
+(\(V = -10\) 모든 칸)을 떠올려라. 이 정책을 <strong>평가만</strong> 하면 “이
+정책은 가치 -10이다“가 전부다. 그런데 개선 단계를 <strong>한 번</strong>만 끼워도
+칸 3이 right로 바뀌고(\(V(3): -10 \to -1\)), 그 정보가 다음 평가에서
+칸 2로, 다음에 칸 1로… 퍼져나간다. <strong>평가 alone은 현재 정책의
+“점수“만 찍고, 개선 단계가 그 점수표를 “갈아탈 방향“으로 번역한다.</strong>
+정책 반복의 힘은 이 두 단계의 곱, 즉 “점수 측정“과 “방향 추출“을
+결합했다는 데 있다.</p>
 <h3 id="실습-5칸짜리-gridworld에서-정책-반복-직접-돌려보기"><a class="header" href="#실습-5칸짜리-gridworld에서-정책-반복-직접-돌려보기">실습: 5칸짜리 GridWorld에서 정책 반복 직접 돌려보기</a></h3>
 <p>한 줄로 늘어선 5개의 칸(0~4) 위에서, 왼쪽/오른쪽으로만 움직일 수 있고
 칸 4에 도달하면 끝나는(보상 0) 아주 작은 GridWorld를 만들어보자. 그
@@ -228,21 +352,334 @@ outer 반복 횟수: 2,  내부 정책평가 sweep 총합: 10
 최적 정책이 나왔고, 정책개선 단계에서 “더 바꿀 게 없다“는 것만 한
 번 더 확인하고 끝났다 — 정책 반복이 얼마나 빨리 수렴하는지는 초기
 정책을 얼마나 잘 골랐는지에 따라 크게 달라진다는 것을 보여주는
-예시이기도 하다. \(V(0)=-3.439\)는 칸 0에서 목표(칸 4)까지 최단
+예시이기도 한다. \(V(0)=-3.439\)는 칸 0에서 목표(칸 4)까지 최단
 경로로 4번 이동해야 하는 비용(\(-1-0.9-0.81-0.729\approx-3.439\))과
 정확히 일치한다 — 손으로 검산해볼 만하다(연습문제 2번과 같은 구조).</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch04_2_policy_iteration_walkthrough.svg" alt="5칸 GridWorld의 최적 가치함수 &#92;(V^*&#92;)와 최적 정책 &#92;(&#92;pi^*&#92;) — 칸 4(목표, 종료)에서 칸 0까지 각 칸의 &#92;(V^*&#92;)는 “목표까지 걸음 수의 할인 비용“이다. 최적 정책은 모든 칸에서 “오른쪽”. 이 &#92;(V^* = [-3.439, -2.710, -1.900, -1.000, 0]&#92;)가 이번 장의 모든 알고리즘(정책 반복·수정된 정책 반복·가치 반복)의 정답 기준"><span class="img-wrapper"><img src="../../images/ch04_2_policy_iteration_walkthrough.svg" alt="5칸 GridWorld의 최적 가치함수 &#92;(V^*&#92;)와 최적 정책 &#92;(&#92;pi^*&#92;) — 칸 4(목표, 종료)에서 칸 0까지 각 칸의 &#92;(V^*&#92;)는 “목표까지 걸음 수의 할인 비용“이다. 최적 정책은 모든 칸에서 “오른쪽”. 이 &#92;(V^* = [-3.439, -2.710, -1.900, -1.000, 0]&#92;)가 이번 장의 모든 알고리즘(정책 반복·수정된 정책 반복·가치 반복)의 정답 기준"></span></label></p>
+<p><strong>이제 의도적으로 최악의 출발을 해보자.</strong> “왼쪽” 정책
+(모든 칸에서 왼쪽, 벽에 붙어 무한 루프 → \(V = -10\))에서 시작해
+같은 <code>policy_iteration</code>을 돌리면, 정책이 <strong>바깥 반복마다 딱 한 칸씩</strong>
+오른쪽으로 고쳐진다:</p>
+<pre><code>outer 1:  [L, L, L, L, ·]  →  [L, L, L, R, ·]   평가 sweep 133,  V = [-10.00, -10.00, -10.00, -10.00,  0.00]
+outer 2:  [L, L, L, R, ·]  →  [L, L, R, R, ·]   평가 sweep 133,  V = [-10.00, -10.00, -10.00,  -1.00,  0.00]
+outer 3:  [L, L, R, R, ·]  →  [L, R, R, R, ·]   평가 sweep 133,  V = [-10.00, -10.00,  -1.90,  -1.00,  0.00]
+outer 4:  [L, R, R, R, ·]  →  [R, R, R, R, ·]   평가 sweep 133,  V = [-10.00,  -2.71,  -1.90,  -1.00,  0.00]
+outer 5:  [R, R, R, R, ·]  →  (변화 없음)       평가 sweep   5,  V = [ -3.44,  -2.71,  -1.90,  -1.00,  0.00]
+</code></pre>
+<p>(\(L\) = left, \(R\) = right, \(·\) = 목표 칸 — 종료 상태라
+행동 의미 없음.)</p>
+<p>왜 <strong>칸 3이 가장 먼저</strong> 바뀌는가? outer 1의 정책평가에서
+\(V^{\text{left}}\)가 모두 \(-10\)인 상태에서 칸 3의 두 행동을
+비교하면, \(Q(3, \text{left}) = -1 + 0.9 \times (-10) = -10\)이고
+\(Q(3, \text{right}) = -1 + 0.9 \times V(4) = -1 + 0 = -1\) —
+<strong>목표(\(V=0\))가 바로 옆</strong>인 칸 3에서만 right가 압도적으로 낫다.
+칸 0~2에서는 \(Q(s, \text{right}) = -1 + 0.9 \times (-10) = -10\)으로
+left와 <strong>동점</strong>이므로(4.1절 FAQ의 동점 논쟁이 여기서 살아 움직인다)
+<code>max</code>는 기존 left를 그대로 둔다. outer 2에서 칸 3의 가치가
+\(-1\)으로 갱신되자 이번엔 칸 2에서 right가 이기고
+(\(Q(2,\text{right}) = -1 + 0.9 \times (-1) = -1.9 &gt; -10\)), 이
+“목표가 가까워졌다“는 정보가 바깥 반복마다 한 칸씩 왼쪽으로
+전파된다 — 4.1절의 “정보는 한 sweep에 한 칸 전파된다“는 그림의
+<strong>바깥 반복 버전</strong>이다.</p>
+<p>이 실행의 <strong>총 sweep 수는 \(133 \times 4 + 5 = 537\)</strong>. 같은 문제를
+“오른쪽“에서 시작하면 \(133\)? 아, \(5 + 5 = 10\)이었다 —
+<strong>같은 알고리즘, 같은 문제, 시작 정책만 바꾸면 총 계산량이 약
+54배</strong> 달라진다. 이것이 “정책 반복의 속도는 초기 정책에 민감하다“는
+말의 실질이며, 동시에 다음 절의 가치 반복이 “초기 정책에 무관하게
+\(V^*\)로 직접 간다“는 설계 의도의 동기다.</p>
+<p><strong>세 방법 나란히.</strong> 같은 5칸 GridWorld, \(\theta = 10^{-6}\),
+“왼쪽“에서 시작(가치 반복은 초기값 0) 기준으로:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>방법</th><th style="text-align: center">바깥 반복</th><th style="text-align: center">내부 평가 sweep</th><th style="text-align: center"><strong>총 sweep</strong></th></tr>
+</thead>
+<tbody>
+<tr><td>정책 반복 (완전 수렴)</td><td style="text-align: center">5</td><td style="text-align: center">\(133 \times 4 + 5\)</td><td style="text-align: center"><strong>537</strong></td></tr>
+<tr><td>수정된 정책 반복 (\(k=2\))</td><td style="text-align: center">5</td><td style="text-align: center">\(2 \times 5\)</td><td style="text-align: center"><strong>10</strong></td></tr>
+<tr><td>수정된 정책 반복 (\(k=1\)) = 가치 반복</td><td style="text-align: center">5</td><td style="text-align: center">\(1 \times 5\)</td><td style="text-align: center"><strong>5</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p>이 표를 <strong>과대해석하면 안 된다</strong> — 여기서는 “완전 수렴” 정책 반복이
+매 바퀴에 133 sweep(벽에 붙은 무한 루프를 \(\gamma = 0.9\)로
+할인까지 다 풀어내야 하기 때문)를 내고, 그걸 4번이나 반복하는
+최악의 경로다. 다른 MDP에서는 정책이 한 번에 여러 칸 바뀌어
+완전 수렴이 더 싸질 수도 있다 — 어느 쪽이 총 계산량이 적을지는
+문제마다 다르다(4.3절의 비교 실습에서도 같은 결론). 표에서
+확실한 것만: <strong>세 방법은 모두 정확히 같은 \(V^*\)와 같은
+최적(가치)에 도달한다</strong> — 다르거나 같은 <em>속도</em>의 경로가, 같은
+고정점을 향한다.</p>
+<h3 id="수정된-정책-반복-가치-반복은-특별한-경우"><a class="header" href="#수정된-정책-반복-가치-반복은-특별한-경우">수정된 정책 반복: 가치 반복은 “특별한 경우”</a></h3>
+<p>위 표의 마지막 두 행이 이번 절에서 예고했던 연결고리를 보여준다 —
+<strong>정책평가를 끝까지 수렴시키지 않고 \(k\) sweep만 돌린 뒤 바로
+개선</strong>하는 변형:</p>
+<pre><code class="language-python">def modified_policy_iteration(P, R, n_actions, gamma, k):
+    """k = 내부 정책평가 sweep 수. k=1이면 가치 반복과 동일."""
+    policy = [0] * n_states  # 이번 실습은 "왼쪽"에서 시작
+    V = [0.0] * n_states
+    while True:
+        for _ in range(k):                       # 평가: k sweep만
+            for s in range(n_states):
+                a = policy[s]
+                V[s] = R[s][a] + gamma * sum(p * V[ns] for p, ns in P[s][a])
+        stable = True
+        for s in range(n_states):                # 개선: argmax
+            best_a = max(range(n_actions),
+                         key=lambda a: R[s][a] + gamma * sum(p * V[ns] for p, ns in P[s][a]))
+            if best_a != policy[s]:
+                policy[s] = best_a
+                stable = False
+        if stable:
+            return V, policy
+</code></pre>
+<p>실행 결과(모두 “왼쪽” 출발, \(\theta\) 판정 없이 “정책 변화 여부“로
+멈춤):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th style="text-align: center">\(k\)</th><th style="text-align: center">바깥 반복</th><th style="text-align: center">총 sweep</th><th>최종 \(V\)</th></tr>
+</thead>
+<tbody>
+<tr><td style="text-align: center">1</td><td style="text-align: center">5</td><td style="text-align: center">5</td><td>\([-3.439, -2.710, -1.900, -1.000, 0]\)</td></tr>
+<tr><td style="text-align: center">2</td><td style="text-align: center">5</td><td style="text-align: center">10</td><td>동일</td></tr>
+<tr><td style="text-align: center">3</td><td style="text-align: center">5</td><td style="text-align: center">15</td><td>동일</td></tr>
+<tr><td style="text-align: center">5</td><td style="text-align: center">5</td><td style="text-align: center">25</td><td>동일</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>\(k=1\)가 4.3절의 가치 반복과 정확히 같은 알고리즘</strong>이라는 것을
+확인해보자: “평가 1 sweep“는 각 상태의 \(V\)를 \(\max_a\)[보상 +
+할인 미래값]으로 갱신하는 한 바퀴(정책을 “평가 중“에 argmax로
+교체)이고, “개선“은 이미 그 sweep 안의 argmax로 흡수된다. 두
+표현(평가+개선 분리 vs 한 sweep에 통합)은 <strong>동일한 연산의
+다른 분해</strong>다. \(k\)를 1에서 \(\infty\)(완전 수렴)로 늘리면
+가치 반복에서 정책 반복으로 <strong>연속적으로</strong> 이어진다:</p>
+<p>\[\text{가치 반복} (=k1) \;\to\; k=2 \;\to\; k=3 \;\to\; \cdots
+\;\to\; \text{정책 반복} (=k\infty)\]</p>
+<p><strong>\(k\)가 작아도 왜 최적인가.</strong> “평가도 끝까지 안 시켰는데
+최적에 도달한다고?” — 수렴 보장은 4.1절의 축소 사상(contraction)
+논증 위에 그대로 서 있다: \(k\) sweep의 정책평가 연산
+\(T^{\pi,k}\)는 “\(T^\pi\)를 \(k\)번 적용“이므로 여전히
+\(\gamma^k\)-축소 사상이다(\(\gamma^k &lt; \gamma &lt; 1\)).
+“축소 사상의 반복 적용은 고정점에 수렴한다“는 바나흐 정리(4.3절)가
+여기서도 그대로 적용되고, “고정점에서 멈추면 최적“이라는 이번 절의
+논증도 변함없다(멈춤 조건이 여전히 “자기 기준 argmax와 일치”
+이므로). 다만 <strong>수렴 속도</strong>만 \(k\)에 따라 변한다 — \(k\)가
+작을수록 각 바퀴가 가볍고, 그 대신 바퀴를 더 돌릴 수 있다.
+실무적으로 \(k\)는 “이 MDP에서 정책평가 한 sweep의 비용 대비
+얼마나 정확한 \(V^\pi\)가 필요한가“의 trade-off로 정한다.</p>
+<h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
+<ul>
+<li><strong>“평가 → 개선” 순서를 뒤집거나, 개선 전에 평가를 안 하고
+개선한다.</strong> 개선 식의 \(V^\pi\)는 <strong>현재</strong> 정책의 가치를
+요구한다. 이전 정책의 \(V\)로 개선을 하면 “낡은 점수표로
+갈아탈 방향을 고르는” 셈이 되어 단조 증가 정리의 전제(같은
+\(V^\pi\) 기준 평가와 개선)가 깨진다. 코드로 치면
+<code>V = policy_evaluation(...)</code>을 <code>while</code> <strong>안쪽</strong>에 두는 것이
+맞고, 루프 밖에서 한 번만 계산해 두고 재사용하면 안 된다.</li>
+<li><strong>개선 단계에서 일부 상태만(예: “값이 가장 나쁜” 상태부터)
+고친다.</strong> 위 정리(단조 증가)는 <strong>모든 상태를 동시에</strong> 개선할 때
+성립한다. 상태별로 순서대로 하나씩 고치면(그 사이 \(V\)를
+갱신하지 않으면) “고친 상태의 기준이 된 \(V\)와, 아직 안
+고친 상태의 기준이 된 \(V\)가 다른” 상황이 되어 정리의
+증명이 직접 적용되지 않는다. (실제로는 이런 변형도 보통
+수렴하지만, 그 보장은 다른 논증 — 4.3절의 가치 반복 수렴
+논증에 가까움 — 이 필요하고, 이번 절의 정리는 “동시 개선“에
+대해 성립한다.)</li>
+<li><strong>\(\arg\max\) 동점을 “임의로” 처리하면서 결과를 믿는다.</strong>
+동점이 있는 MDP에서는 동점 처리 규칙(행동 순서, <code>max</code>의 첫
+발견, 항상 같은 번호 선호)에 따라 <strong>결과 정책</strong>이 달라진다 —
+다만 <strong>가치(\(V^*\))는 항상 같다</strong>(위 “유한성” 논증의
+마지막 부분). 즉 “이 정책이 유일한 최적“이라고 단정하지 말고,
+“이 정책은 최적 중 하나“로 이해하라. <code>max</code>가 첫 번째 최댓값을
+반환하므로 행동 순서 \([0, 1, 2, \ldots]\)에 편향이 생긴다는
+것도 기억하라(아래 FAQ·실습).</li>
+<li><strong>“정책 반복이 몇 번이면 끝나는지“를 문제 없이 예측한다.</strong>
+바깥 반복 상한 \(n(m-1)\)은 <strong>최악의 경우</strong> 상한이고,
+실제로는 초기 정책에 따라 2번(이번 절 첫 실습)이 될 수도,
+\(n(m-1)\)에 가까울 수도 있다(최악 경로의 예가 있는지
+생각해보면 “정책이 한 칸씩만 갈아타는” 직선형 MDP가 그
+형태다 — 이번 절의 “왼쪽” 출발 실행이 miniature 버전).
+상한을 “예상 소요 시간“으로 착각하면, 큰 MDP에서 정책 반복을
+돌렸을 때 “왜 이렇게 안 끝나지” 하고 당황할 수 있다.</li>
+<li><strong>\(\theta\)(평가 수렴 판정)와 “정책 변화 여부“를 혼동한다.</strong>
+완전한 정책 반복에는 <strong>수렴 판정이 두 개</strong> 있다 — 내부
+정책평가의 <code>delta &lt; theta</code>(평가가 끝났는가)와 바깥 루프의
+<code>stable</code>(개선이 아무것도 안 바꿨는가). 둘 다 필요하고,
+<code>theta</code>를 너무 느슨하게(예: \(1\)) 쓰면 평가가 “거의 안
+된” \(V^\pi\)로 개선을 해 잘못된 argmax를 고를 수 있다.
+(반대로 <code>theta</code>가 극도로 타이트해도 결과는 변하지 않는다 —
+4.1절의 논거와 같다.)</li>
+</ul>
+<h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
+<ol>
+<li>(개념) 이번 절의 “멈춤 조건 = 벨만 최적방정식 성립” 논증을
+<strong>자기 말로</strong> 세 문장 이내로 요약하라. (힌트: ① 멈춤 조건은
+각 상태에서 \(\pi(s)\)가 \(Q^\pi\)의 argmax다. ② 그러면
+\(V^\pi\)는 어떤 방정식을 만족하는가? ③ 그 방정식의 해가
+유일하다는 4.3절의 결과는 무엇을 보장하는가?)</li>
+<li>(수치) “왼쪽” 출발 정책 반복의 outer 3에서 정책이
+\([L, L, R, R, ·]\)이 되고 \(V = [-10, -10, -1.9, -1, 0]\)가
+되었다. <strong>왜 \(V(2) = -1.9\)인가</strong> — \(V(2) = -1 + 0.9\,V(3)\)
+로(외부 정책평가의 수렴값이 아닌, <strong>이번 outer의 수렴된
+\(V^\pi\)</strong>) 손으로 계산하고, \(-1.9 = -1 - 0.9\)라는
+“칸 2에서 목표까지 2걸음의 할인 비용“과 일치함을 확인하라.
+(힌트: \(V(3) = -1\)을 쓰면 \(-1 + 0.9 \times (-1) = ?\))</li>
+<li>(코드) <code>modified_policy_iteration</code>에서 \(k\)를 \(10\)으로
+하면 총 sweep는 얼마가 되는가? 바깥 반복은? (힌트: 이번 절의
+표 패턴 — 바깥 반복은 \(k\)와 무관하게 5, 총 sweep은
+\(5k\). 실제로 돌려 확인하라.) 그리고 \(k=100\)으로
+하면? (바깥 반복이 5로 유지되는 이유를 한 문장으로
+설명하라 — “정책이 바뀐 횟수“는 \(k\)와 무관하기
+때문이다.)</li>
+<li>(생각) 이번 절의 “상한” 논증에서, \(\gamma = 0.99\)이면
+한 바퀴에 오차가 \(0.99\)배로만 줄어든다. \(\Delta_0 =
+13.44\)에서 \(\Delta &lt; 0.01\)가 되려면 <strong>몇 바퀴</strong>
+필요인가? (힌트: \(13.44 \times 0.99^k &lt; 0.01\)를
+\(\log\)로 풀어라. \(k \approx \log(0.01/13.44)/\log(0.99)
+\approx 717\). 이 숫자가 “정책 반복도 \(\gamma\)에 민감하다“는
+말을 뒷받침하는가?</li>
+</ol>
+<h3 id="실습-동점--어떤-최적인가를-고르는-것은-개선-규칙-가치는-아니다"><a class="header" href="#실습-동점--어떤-최적인가를-고르는-것은-개선-규칙-가치는-아니다">실습: 동점 — “어떤 최적인가“를 고르는 것은 개선 규칙, “가치“는 아니다</a></h3>
+<p>이번 절의 “유한성” 논증에서 “동점이 있으면 결과 정책은 달라질
+수 있지만 <strong>가치는 항상 같다</strong>“라고 했다. 이 말을 작은 MDP로
+직접 확인하자. 상태 0이 <strong>두 개의 문</strong>(행동 0, 1)을 가지고, 각각
+방 1(보상 \(+1\)을 주고 종료)과 방 2(보상 \(+1\)을 주고 종료)로
+가며, 방 1·2는 자기 자신으로만 전이하는(self-loop) MDP:</p>
+<pre><code class="language-python">n_states, n_actions, gamma = 3, 2, 0.9
+P, R = {}, {}
+for s in range(n_states):
+    P[s], R[s] = {}, {}
+P[0][0], R[0][0] = [(1.0, 1)], 1.0   # 문 a0 → 방 1 (+1, 종료)
+P[0][1], R[0][1] = [(1.0, 2)], 1.0   # 문 a1 → 방 2 (+1, 종료)
+P[1][0], R[1][0] = [(1.0, 1)], 0.0   # 방 1: self-loop (종료)
+P[1][1], R[1][1] = [(1.0, 1)], 0.0
+P[2][0], R[2][0] = [(1.0, 2)], 0.0   # 방 2: self-loop (종료)
+P[2][1], R[2][1] = [(1.0, 2)], 0.0
+
+def policy_iteration_tie(P, R, n_actions, gamma, tie_break):
+    """tie_break: 'first' = 동점 시 가장 작은 행동 번호,
+                   'last'  = 동점 시 가장 큰 행동 번호."""
+    policy = [0] * n_states
+    while True:
+        V = policy_evaluation(P, R, policy, gamma)
+        stable = True
+        for s in range(n_states):
+            qs = [R[s][a] + gamma * sum(p*V[ns] for p, ns in P[s][a])
+                  for a in range(n_actions)]
+            best = max(qs)
+            cands = [a for a in range(n_actions) if abs(qs[a] - best) &lt; 1e-12]
+            chosen = cands[0] if tie_break == 'first' else cands[-1]
+            if chosen != policy[s]:
+                policy[s] = chosen
+                stable = False
+        if stable:
+            return V, policy
+
+V_first, pol_first = policy_iteration_tie(P, R, n_actions, gamma, 'first')
+V_last,  pol_last  = policy_iteration_tie(P, R, n_actions, gamma, 'last')
+print("first:", pol_first, [f"{v:.4f}" for v in V_first])
+print("last :", pol_last,  [f"{v:.4f}" for v in V_last])
+</code></pre>
+<pre><code>first: [0, 0, 0] [1.0000, 0.0000, 0.0000]
+last : [1, 1, 1] [1.0000, 0.0000, 0.0000]
+</code></pre>
+<p>상태 0에서 두 행동을 비교하면 \(Q(0, \text{left}) = 1 + 0 = 1\)이고
+\(Q(0, \text{right}) = 1 + 0 = 1\) — <strong>완벽한 동점</strong>. <code>max</code>가
+첫 발견을 반환하는 표준 구현은 항상 \(0\)을, “마지막 발견“을
+반환하는 구현은 항상 \(1\)을 고른다. <strong>결과 정책은 완전히
+다르고</strong>(<code>[0,0,0]</code> vs <code>[1,1,1]</code>), \(V\)는 <strong>완전히 같다</strong>
+(\([1, 0, 0]\)). 이것이 위 “유한성” 논증이 약속한 그대로다 —
+<strong>동점 MDP에서 “최적 정책“은 유일하지 않을 수 있다</strong>(여기서는
+상태 0의 문 선택에 따라 2개 이상의 최적 정책이 공존), 하지만
+<strong>“최적 가치 \(V^*\)“는 유일</strong>하다. 실전에서 동점이 중요한
+사유: (a) 같은 \(V^*\)를 전제로, 정책은 <strong>추가 기준</strong>(예:
+동점 시 더 안전한 행동 선호, 행동의 물리적 비용)으로 골라야
+하며, (b) “정책이 다르다“는 이유로 “알고리즘이 실패했다“고
+판단하면 안 된다 — <strong>\(V^*\)가 일치하면 성공</strong>이다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 정책개선 단계에서 “더 나은 행동“이 여러 개 동점이면 어떻게
 하나요?</strong> 이론적으로는 동점인 행동 중 아무거나 골라도 정책개선의
 성질(가치가 감소하지 않는다)은 그대로 유지된다. 실전 구현에서는
 <code>max</code>가 첫 번째로 만나는 최댓값을 반환하므로, 행동 순서에 따라 결과
-정책이 달라질 수 있지만 그 가치(\(V\))는 항상 같다.</p>
+정책이 달라질 수 있지만 그 가치(\(V\))는 항상 같다. (위 실습이
+바로 이 말을 실행한 것 — <code>[0,0,0]</code>과 <code>[1,1,1]</code>은 둘 다 최적,
+\(V^* = [1,0,0]\)은 유일.)</p>
 <p><strong>Q. 정책 반복은 항상 정책평가를 끝까지(수렴할 때까지) 해야 하나요?</strong>
 아니다 — 정책평가를 완전히 수렴시키지 않고 몇 번만 돌린 뒤 바로
 정책개선으로 넘어가도 여전히 결국 최적 정책에 수렴한다는 것이 알려져
 있다(<strong>수정된 정책 반복</strong>, modified policy iteration). 극단적으로
 정책평가를 <strong>딱 한 번</strong>만 하고 바로 개선하는 것을 반복하면, 다음
-절에서 배울 가치반복과 정확히 같아진다.</p>
+절에서 배울 가치반복과 정확히 같아진다. (이번 절의 표 — \(k=1\)이
+가치 반복과 같은 총 sweep(5)을 낸다 — 가 바로 이 “같아진다“의
+내용이다.)</p>
+<p><strong>Q. “왼쪽” 출발이 537 sweep, “오른쪽” 출발이 10 sweep — 같은
+알고리즘인데 왜 이렇게 차이나나요?</strong> <strong>평가 단계의 sweep 수</strong>가
+초기 정책에 따라 달라지기 때문이다. “왼쪽” 정책의 평가는 벽에 붙은
+무한 루프(\(-10\) 수렴)를 \(\gamma = 0.9\)로 할인해
+\(10^{-6}\)까지 풀어내야 하므로 133 sweep이 걸리고(4.1절에서 이미
+확인), “오른쪽” 정책의 평가는 5 sweep 만에 끝난다(목표까지의
+최대 거리 4 + 여유). 바깥 반복 <strong>횟수</strong>도 초기 정책에 따라 달라진다
+(5 vs 2) — “정책이 갈아탈 칸“의 수가 초기 정책에 의존하기
+때문이다. 두 요인(스weep 수 × 바퀴 수)이 곱해져 총 계산량이
+초기 정책에 민감해진다.</p>
+<p><strong>Q. 정책 반복은 “실전“에서 어디에 쓰이나요?</strong> 상태 공간이 작고
+\(P, R\)를 정확히 아는 문제 — 작은 그리드 월드, 재고 관리,
+스케줄링 — 에서는 지금도 그대로 쓴다(4.3절 FAQ 참조). 하지만
+“\(P\)를 모른다“는 모델프리 문제(Chapter 5~7)나 “상태가 너무
+크다“는 문제(Chapter 9 DQN)에서는 직접 쓰이지 <strong>않고</strong>, 대신 이 절의
+<strong>논증 구조</strong>(평가 → 개선 → 단조 증가 → 고정점=최적)가
+TD 학습·Q-learning의 “왜 수렴하는가” 논의의 <strong>뼈대</strong>로
+재사용된다. 특히 “정책이 자기 기준 argmax와 일치하면 최적“이라는
+판별법은, DQN에서 “Q-망이 벨만 최적방정식을 만족하는가“를
+확인하는 residual 검사(Chapter 9)의 이론적 원형이다.</p>
+<hr>
+<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 4.1절의 <code>policy_evaluation</code>(sweep 카운트 포함)를 불러와
+<code>policy_iteration</code>을 완성하고, **“왼쪽” 정책 \([0,0,0,0,0]\)**에서
+시작해 최종 \(V = [-3.439,-2.710,-1.900,-1.000,0]\)에 **5 iter(총
+537 sweep)**으로 도달하는지 확인하라. 매 iter의 <strong>바뀐 상태가
+s=3 → s=2 → s=1 → s=0 순</strong>으로 한 칸씩 전파되는 것도 확인하라.</p>
+<pre><code class="language-python">def policy_iteration(P, R, n_actions, gamma, init_policy, theta=1e-6):
+    n_states = len(P)
+    policy = list(init_policy)
+    total_sweeps, n_iter = 0, 0
+    while True:
+        V, sweeps = policy_evaluation(P, R, policy, gamma, theta)
+        total_sweeps += sweeps
+        n_iter += 1
+        stable = True
+        for s in range(n_states):
+            # ADD ADDITIONAL CODE HERE!!
+            # best_a = max(range(n_actions),
+            #              key=lambda a: R[s][a] + gamma * sum(p*V[ns] for p,ns in P[s][a]))
+            # if best_a != policy[s]: policy[s] = best_a; stable = False
+        if stable:
+            break
+    return V, policy, n_iter, total_sweeps
+
+V, pol, it, sw = policy_iteration(P, R, n_actions, gamma, [0,0,0,0,0])
+# 기대: V≈[-3.439,-2.710,-1.900,-1.000,0], it=5, sw=537, pol=[1,1,1,1,0]
+</code></pre>
+<p><strong>2. (수치 계산)</strong> “왼쪽” 출발 정책 반복에서 **iter 1의 바뀐 상태
+s=3의 개선 폭(\(+9.0\))**과 **iter 2의 s=2 개선 폭(\(+8.1\))**을
+<strong>손으로</strong> 구하라. (힌트: \(V^{[0,0,0,0,0]}(3) = -10\)이고,
+s=3이 right로 바뀌면 \(V(3) = -1 + 0.9 \times 0 = -1\)이므로
+\(-10 \to -1 = +9.0\). iter 2에서는 \(V(3)=-1\)이 기준이 되어
+\(V(2) = -1 + 0.9 \times (-1) = -1.9\)로 \(-10 \to -1.9 = +8.1\).)
+<strong>두 개선 폭의 비(\(8.1/9.0\))가 \(\gamma\)와 같은 이유</strong>를
+한 문장으로 설명하라. (힌트: “목표가 가까워졌다“는 혜택이 한 칸
+더 멀어질 때마다 한 번 더 \(\gamma\)를 당긴다.)</p>
+<p><strong>3. (개념 서술)</strong> “정책 반복(완전 수렴) ↔ 수정된 정책 반복(\(k\))
+↔ 가치 반복(\(k=1\))“이 <strong>같은 알고리즘의 \(k\) 스펙트럼</strong>이라고
+했다. (a) \(k=1\)일 때 <strong>왜</strong> 4.3절의 <code>value_iteration</code>과 구조적으로
+같은 루프가 되는지(평가 sweep 1회 + argmax 개선의 <strong>순서와 횟수</strong>)
+설명하라. (b) 본문의 표에서 \(k=1,2,3,5\)의 총 sweep(5, 10, 15, 25)가
+모두 <strong>5 iter</strong>에 같은 \(V^*\)에 도달하는 이유는 “정책이 바뀐
+횟수(5)“가 \(k\)와 <strong>무관</strong>하기 때문인데, 이것이 MDP의
+<strong>구조</strong>(최악의 출발에서 한 칸씩만 바뀜)에 의존한다는 점을
+한 문장 덧붙여라.</p>
 
                     </main>
 
@@ -295,8 +732,8 @@ outer 반복 횟수: 2,  내부 정책평가 sweep 총합: 10
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

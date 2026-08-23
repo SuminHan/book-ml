@@ -1,0 +1,23 @@
+digraph BellmanTree {
+  rankdir=LR;
+  graph [fontname="Noto Sans CJK KR", labelloc=t,
+         label="G_t = R_t + \gamma G_{t+1} 의 분화 — 같은 상태는 같은 가지",
+         fontsize=14];
+  node  [fontname="Noto Sans CJK KR", fontsize=12];
+  edge  [fontname="Noto Sans CJK KR", fontsize=10, color="#495057"];
+
+  s0  [label="s\textsubscript{0}\n(지금)", shape=circle, style=filled, fillcolor="#fde68a", width=0.6, color="#b45309"];
+  s1a [label="s\textsubscript{1}", shape=circle, style=filled, fillcolor="#bbf7d0", width=0.5];
+  s1b [label="s\textsubscript{1}", shape=circle, style=filled, fillcolor="#bbf7d0", width=0.5];
+  s0a [label="s\textsubscript{0}", shape=circle, style=filled, fillcolor="#bbf7d0", width=0.5];
+  s0b [label="s\textsubscript{0}", shape=circle, style=filled, fillcolor="#bbf7d0", width=0.5];
+  v0a [label="\gamma\cdotV(s\textsubscript{0})\n(이하 무한 분지)", shape=box, style=filled, fillcolor="#e5e7eb", width=1.0];
+  v0b [label="\gamma\cdotV(s\textsubscript{0})\n(이하 무한 분지)", shape=box, style=filled, fillcolor="#e5e7eb", width=1.0];
+
+  s0  -> s1a [label="a\textsubscript{0}, r=1, p=1/2"];
+  s0  -> s1b [label="a\textsubscript{1}, r=3, p=1/2"];
+  s1a -> s0a [label="a, r=2, p=1"];
+  s1b -> s0b [label="a, r=2, p=1"];
+  s0a -> v0a [label=""];
+  s0b -> v0b [label=""];
+}

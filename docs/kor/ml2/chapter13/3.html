@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="133-연속제어환경에-ppo-적용하기"><a class="header" href="#133-연속제어환경에-ppo-적용하기">13.3 연속제어환경에 PPO 적용하기</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter13_3_ppo_reacher.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: PPO Reacher"></a></p>
 <p>Chapter 11의 PPO는 이산 행동(softmax 정책)뿐 아니라 연속 행동에도
 자연스럽게 확장된다 — 신경망이 각 행동 차원마다 정규분포의 평균과
 표준편차를 출력하도록 하면 된다:</p>
@@ -194,27 +195,285 @@ def gaussian_log_prob(action, mu, sigma):
     # 연속 행동에 대한 로그 확률 -- softmax 대신 정규분포를 쓴다는 점만 다르다
     return -0.5 * math.log(2 * math.pi * sigma**2) - (action - mu)**2 / (2 * sigma**2)
 </code></pre>
-<h3 id="실습-reacher-로봇팔에서-ppo-학습시키기"><a class="header" href="#실습-reacher-로봇팔에서-ppo-학습시키기">실습: Reacher 로봇팔에서 PPO 학습시키기</a></h3>
-<p>Chapter 11.2의 Pendulum PPO 실습과 완전히 같은 코드(<code>GaussianPolicy</code>,
-<code>ValueNet</code>, GAE, 클리핑 손실)를 이번 절에서 다룬 <code>Reacher-v5</code>(2관절
-로봇팔이 목표에 끝을 맞추는 과제)에 그대로 적용해보자 — 환경 이름만
-바뀔 뿐 알고리즘 코드는 한 줄도 안 바뀐다는 것이 정책기반 방법의
-범용성을 다시 한번 보여준다. 100번의 반복(반복당 200 스텝, 총 2만
-스텝) 학습시키면(스크래치패드에서 실행 검증):</p>
-<pre><code>무작위 정책 평균 리턴(10 에피소드):    -43.72
-학습 전 10 에피소드 평균 리턴:         -45.85
-학습 후 마지막 10 에피소드 평균 리턴:  -37.40
+<h3 id="actor의-구조-평균-헤드--전역-표준편차"><a class="header" href="#actor의-구조-평균-헤드--전역-표준편차">Actor의 구조: 평균 헤드 + 전역 표준편차</a></h3>
+<p>실습에서 쓸 Actor(정책) 네트워크의 구조를 먼저 짚어두자:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_gaussian_policy_structure.svg" alt="연속 행동공간 PPO의 Actor(정책) 구조 — 10차원 상태(관절각 cos/sin, 목표, 각속도, fingertip−target 오차벡터)가 64-64 트렁크를 거쳐 μ 헤드(tanh ×1.0, 행동 범위 [-1,1]로 평균을 맞춤)와 전역 log_std 파라미터가 합쳐져 2차원 가우시안 정책 π_θ(a|s)를 만들고, 샘플한 토크를 클립해서 Reacher-v5(MuJoCo, dt=0.02s)로 전달. ValueNet(Critic)은 같은 상태에서 V(s)를 추정해 GAE의 어드밴티지·리턴 목표를 계산"><span class="img-wrapper"><img src="../../images/ch13_3_gaussian_policy_structure.svg" alt="연속 행동공간 PPO의 Actor(정책) 구조 — 10차원 상태(관절각 cos/sin, 목표, 각속도, fingertip−target 오차벡터)가 64-64 트렁크를 거쳐 μ 헤드(tanh ×1.0, 행동 범위 [-1,1]로 평균을 맞춤)와 전역 log_std 파라미터가 합쳐져 2차원 가우시안 정책 π_θ(a|s)를 만들고, 샘플한 토크를 클립해서 Reacher-v5(MuJoCo, dt=0.02s)로 전달. ValueNet(Critic)은 같은 상태에서 V(s)를 추정해 GAE의 어드밴티지·리턴 목표를 계산"></span></label></p>
+<p>세 부분으로 나뉜다. (1) <strong>트렁크</strong>(64-64 은층)가 10차원 상태를
+처리한다 — Chapter 11.2의 Pendulum Actor와 같은 뼈대로, 입력 차원만
+바뀌었다. (2) <strong>μ 헤드</strong>가 64차원 특징을 2차원 평균으로 바꾼다 —
+출력을 <code>tanh</code>해서 1.0을 곱한 것에 주목하라: 평균을 행동 범위
+\([-1, 1]\) 안에 가둬두면, 정책의 “중심“이 로봇이 낼 수 있는
+범위를 벗어날 일이 없다. (3) <strong>log_std 파라미터</strong>가 표준편차를
+담는다 — 여기서 \(\sigma_\theta\)에 \(s\)가 붙지 않는 것이
+가장 의외일 것이다: 표준편차는 상태별 함수가 아니라 <strong>모든 상태에
+공유되는 2차원 벡터</strong> 하나다.</p>
+<p>“왜 \(\sigma\)도 상태 함수(두 번째 헤드에서 \(\log \sigma(s)\)
+출력)로 하지 않는가?” — 그렇게 할 수는 있지만, 표준 PPO
+구현(11.2절 포함)은 전역 버전이 두 가지 이유에서 일반적이다.
+첫째, <strong>파라미터 경제성</strong>: 상태별 \(\sigma\)는 64→2 출력 헤드가
+하나 더 늘어나지만, 이득은 제한적이다 — “얼마나 대담하게 탐색할지“는
+대부분의 제어 과업에서 <em>상태의</em> 성질보다 <em>과업 전체</em>의 성질이기
+때문이다. 둘째, <strong>안정성</strong>: \(\log \sigma\)는 엔트로피 보상에
+직접 들어가는 값이라(11.2절의 <code>-0.01 * d.entropy()</code>), 상태마다
+\(\sigma\)가 들썩이면 엔트로피 항도 상태마다 들썩여 그래디언트를
+불안정하게 만든다. “간단한 것부터, 안 되면서 복잡하게“라는 11.1절
+클리핑 하이퍼파라미터 선택의 교훈이 또 한 번 등장하는 셈이다.</p>
+<h3 id="로그-확률의-함정-밀도의-로그이므로-양수일-수-있다"><a class="header" href="#로그-확률의-함정-밀도의-로그이므로-양수일-수-있다">로그 확률의 함정: <em>밀도</em>의 로그이므로 양수일 수 있다</a></h3>
+<p>이산 행동(10.2절 softmax)에서는 정책이 유한 집합 위의 확률분포이므로
+\(\pi(a|s) \in [0, 1]\)이고 \(\log \pi(a|s) \le 0\)이 항상
+성립했다. 연속 행동에서는 이 직관이 <strong>깨진다</strong>:
+\(\pi_\theta(a|s)\)는 <em>확률</em>이 아니라 <strong>확률밀도</strong>인데, 밀도는
+\([0, 1]\)로 묶이지 않고 얼마든지 1보다 커질 수 있다.
+\(\sigma\)가 작으면 평균에서의 밀도가</p>
+<p>\[\frac{1}{\sigma\sqrt{2\pi}}\]</p>
+<p>로, \(\sigma = 0.25\)일 때 1.596, \(\sigma = 0.1\)일 때는
+3.99까지 커진다. 즉 <strong>로그 확률이 양수일 수 있다</strong> — 실습 코드의
+<code>Normal.log_prob</code>가 드물게 양수를 돌려주면 버그가 아니라 이 현상이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_logprob_sigma.svg" alt="왼쪽(a): 가우시안(μ=0)의 log 밀도를 σ=1.0/0.61/0.25/0.10 네 곡선으로 그린 그림 — σ가 작을수록 곡선이 좁고 높으며 정점이 0 위(양수)로 올라옴. σ=0.10 곡선은 정점이 log(3.99)≈1.38. 오른쪽(b): σ = exp(log_std) 곡선 — log_std가 학습 파라미터이며, 이 절 실습이 log_std ≤ 0 (즉 σ ≤ 1)로 클램프하는 상한이 빨간 점선으로 표시됨. 초깃값 log_std = -0.5 (σ ≈ 0.61)"><span class="img-wrapper"><img src="../../images/ch13_3_logprob_sigma.svg" alt="왼쪽(a): 가우시안(μ=0)의 log 밀도를 σ=1.0/0.61/0.25/0.10 네 곡선으로 그린 그림 — σ가 작을수록 곡선이 좁고 높으며 정점이 0 위(양수)로 올라옴. σ=0.10 곡선은 정점이 log(3.99)≈1.38. 오른쪽(b): σ = exp(log_std) 곡선 — log_std가 학습 파라미터이며, 이 절 실습이 log_std ≤ 0 (즉 σ ≤ 1)로 클램프하는 상한이 빨간 점선으로 표시됨. 초깃값 log_std = -0.5 (σ ≈ 0.61)"></span></label></p>
+<p>이 사실이 PPO에서 왜 중요한가? 클리핑 목적함수(11.2절)는 두 밀도의
+<strong>비</strong></p>
+<p>\[r_t = \exp\big( \log \pi_\text{new}(a|s) - \log
+\pi_\text{old}(a|s) \big)\]</p>
+<p>만 보므로, 로그 밀도의 <em>차이</em>를 취하는 순간 상수 항
+\(-\tfrac{1}{2}\log(2\pi\sigma^2)\)가 서로 소거된다 — 로그 밀도가
+양수이든 음수이든 무관하다. “목적함수의 구조가 행동 파라미터화에
+무관하다“는 이 절 첫 문단의 주장이 식 수준에서 확인되는 순간이다.</p>
+<p>그림 (b)와 함께, 표준편차 자체가 <strong>학습 대상</strong>이라는 점도 짚자.
+단, \(\sigma\)를 <em>직접</em> 배우지 않고 <strong>\(\log \sigma\)</strong>(코드에서
+의 <code>log_std</code>)를 배운다 — \(\sigma = \exp(\log \sigma)\) 한 줄이
+\(\sigma &gt; 0\)을 자동으로 보장해서, “0은 안 돼“를 후처리
+(<code>relu</code>/<code>softplus</code>)로 강제할 필요가 없기 때문이다. 그림의
+\(\log \sigma \le 0\) (즉 \(\sigma \le 1\)) 클램프는 왜 두는가 —
+그 이유는 뒤의 “자주 하는 실수” 3번에서 열린다.</p>
+<h3 id="reacher-v5-상태-10차원-행동-2차원의-내면"><a class="header" href="#reacher-v5-상태-10차원-행동-2차원의-내면">Reacher-v5: “상태 10차원, 행동 2차원“의 내면</a></h3>
+<p>13.2절에서 Reacher의 공간 크기(상태 10, 행동 2)만 봤다면, 이번에는
+각 차원이 <em>무엇</em>인지 열어보자. <code>Reacher-v5</code>는 링크 길이가 <strong>0.1 m +
+0.11 m</strong>인 2관절 평면 로봇팔이다(팔 끝 fingertip는 팔꿈치 기준
+0.11 m 더 이어져, 완전히 쭉 펴면 <strong>0.21 m</strong>까지 닿는다). 과제는
+<strong>50스텝(실시간 1초, dt = 0.02 s)</strong> 안에 fingertip을 무작위로
+생성된 목표 지점에 붙이는 것이다:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_reacher_task.svg" alt="Reacher-v5 상시도 — 원점에 고정된 어깨에서 0.1 m 링크(팔꿈치)와 0.11 m 링크(fingertip)가 뻗은 2관절 팔, 팔꿈치를 기준으로 -40도 접힌 자세. 빨강 별이 목표(반경 0.2 원 안의 무작위 지점), 녹색이 fingertip, 회색 화살표가 오차 벡터 fingertip−target. 하단 박스: 팔이 쭉 펴면 0.21 m라 목표(≤0.2 m)는 거의 항상 도달 가능하다는 13.1절 도달 가능 영역의 연결"><span class="img-wrapper"><img src="../../images/ch13_3_reacher_task.svg" alt="Reacher-v5 상시도 — 원점에 고정된 어깨에서 0.1 m 링크(팔꿈치)와 0.11 m 링크(fingertip)가 뻗은 2관절 팔, 팔꿈치를 기준으로 -40도 접힌 자세. 빨강 별이 목표(반경 0.2 원 안의 무작위 지점), 녹색이 fingertip, 회색 화살표가 오차 벡터 fingertip−target. 하단 박스: 팔이 쭉 펴면 0.21 m라 목표(≤0.2 m)는 거의 항상 도달 가능하다는 13.1절 도달 가능 영역의 연결"></span></label></p>
+<p>10차원 상태는 이렇게 놓여 있다(Gymnasium 소스 <code>reacher_v5.py</code>의
+<code>_get_obs</code>):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>인덱스</th><th>내용</th><th>의미</th></tr>
+</thead>
+<tbody>
+<tr><td>obs[0:2]</td><td>\(\cos\theta_1, \cos\theta_2\)</td><td>두 관절각의 코사인</td></tr>
+<tr><td>obs[2:4]</td><td>\(\sin\theta_1, \sin\theta_2\)</td><td>두 관절각의 사인</td></tr>
+<tr><td>obs[4:6]</td><td>\((x_t, y_t)\)</td><td>목표 지점 좌표 (m)</td></tr>
+<tr><td>obs[6:8]</td><td>\(\dot\theta_1, \dot\theta_2\)</td><td>두 관절의 각속도 (rad/s)</td></tr>
+<tr><td>obs[8:10]</td><td>fingertip − target</td><td>fingertip에서 목표까지의 <strong>오차 벡터</strong> (m)</td></tr>
+</tbody>
+</table>
+</div>
+<p>이 표에서 세 가지를 읽자. (1) <strong>각도를 그대로 주지 않고 (cos, sin)
+쌍으로 준다</strong> — \(\theta\)와 \(\theta + 2\pi\)는 물리적으로
+같은 자세인데, 원래 각도 \(\theta\)는 \(\pm\pi\) 경계에서
+숫자가 급격히 점프하는 <em>불연속</em> 특징이다. cos/sin은 매끄러운 주기함수라
+신경망이 “같은 자세“를 같은 입력으로 본다. Pendulum이
+(cos θ, sin θ, \(\dot\theta\))인 이유(Chapter 1, 11.2절)와 정확히
+같은 설계 원칙 — <strong>신경망이 다루기 쉬운 특징을 주자</strong>. (2)
+<strong>환경이 “오차“를 obs[8:10]으로 직접 준다</strong> — 아래 베이스라인의
+1줄 규칙 <code>action = -k × obs[8:10]</code>이 바로 이 벡터를 쓰는 것이다.
+(3) <strong>목표 지점은 반경 0.2 m 원판 안에서 버림표본법(rejection
+sampling)으로 놓인다</strong>:</p>
+<pre><code class="language-python"># Reacher-v5 reset_model의 핵심 (Gymnasium 소스)
+while True:
+    self.goal = self.np_random.uniform(low=-0.2, high=0.2, size=2)
+    if np.linalg.norm(self.goal) &lt; 0.2:   # 반경 0.2 원판 안에 들어오면 채택
+        break
 </code></pre>
-<p>무작위 정책(-43.72)과 학습 극초반(-45.85)이 거의 비슷한 수준에서
-시작해, 2만 스텝의 짧은 학습만으로도 -37.40까지 개선됐다 — 약
-18% 향상이다. Chapter 11.2의 Pendulum 실습(12만 스텝, 약 30%
-개선)과 비교하면 개선 폭이 더 작은데, 이는 Reacher가 상태·행동공간이
-더 복잡하고(13.2절에서 확인한 대로) 목표 지점이 매 에피소드 무작위로
-바뀌어 문제 자체가 더 어렵기 때문이다 — 실전 로봇 학습에서 수백만
-스텝 단위의 훈련 시간을 계획하는 이유가 바로 이렇게 문제가 복잡해질수록
-필요한 데이터도 함께 늘어나기 때문이다.</p>
+<p>왜 정확히 0.2인가? 팔이 쭉 펴도 0.21 m까지밖에 닿지 않으므로 —
+13.1절의 “도달 가능 영역”(reachable workspace)에서 보았듯, 목표가
+팔의 도달 범위를 넘으면 과업 자체가 <em>불가능</em>해진다. 0.2 &lt; 0.21의
+설계는 “거의 항상 닿을 수 있다“를 보장하면서, 간간히 닿기 어려운
+목표가 나와 문제가 지나치게 쉬워지지는 않게 한다. (참고: 반경
+\(R\)인 원판의 균등 지점이 <em>중심</em>으로부터 갖는 평균 거리는
+\(2R/3 \approx 0.133\) m — 즉 목표는 평균적으로 원점 부근에
+놓인다는 뜻이지, fingertip(원점에서 약 0.21 m)과의 평균 거리를
+주지는 않는다.)</p>
+<p>스텝당 보상은 두 항의 합이며, <code>info</code>에서 두 항을 따로 볼 수 있다:</p>
+<p>\[r = \underbrace{-1.0 \times \lVert p_\text{tip} - p_\text{target}
+\rVert}_\text{거리 항} \;-\; \underbrace{1.0 \times \lVert a \rVert^2}
+_\text{제어 비용}\]</p>
+<p>제어 비용의 가중치가 <strong>1.0</strong>이라는 점에 주의하라(문서 문자열
+docstring에는 0.1이라고 적혀 있으나, 소스의 기본값은
+<code>reward_control_weight=1</code>이다 — <strong>문서와 코드가 다르면 코드가
+맞다</strong>, 이 분야에서는 자주 일어나는 일이다). 왜 “행동이 크면 벌을
+주는” 항을 넣는가? 실물 로봇에서 큰 토크는 모터의 부담·발열·기계
+마모이기 때문이다. <strong>보상 함수는 공학적 제약이 수학으로 번역되는
+장소</strong>다 — 이 항을 무시한 정책은 시뮬레이션에서는 “자주 흔들어서
+근접“하는 전략을 배울 수 있지만, 실물에서는 액추에이터를 고치는
+정책이다.</p>
+<h3 id="베이스라인-배우기-전에-네-가지-정책의-점수를-재라"><a class="header" href="#베이스라인-배우기-전에-네-가지-정책의-점수를-재라">베이스라인: 배우기 전에 네 가지 정책의 점수를 재라</a></h3>
+<p>PPO를 돌리기 전에, <strong>학습을 전혀 쓰지 않는 정책</strong>들의 리턴을
+측정한다 — 13.1절의 PD vs RL 비교, 13.2절의 PD 그리드와 같은
+“베이스라인을 먼저 재라“의 습관이다:</p>
+<pre><code class="language-python">import numpy as np
+import gymnasium as gym
+
+def evaluate(policy_fn, n_ep=10, seed0=100):
+    env = gym.make("Reacher-v5"); rets = []
+    for ep in range(n_ep):
+        s, _ = env.reset(seed=seed0 + ep)
+        tot = 0.0
+        for _ in range(50):
+            s, r, term, trunc, _ = env.step(policy_fn(s))
+            tot += r
+            if term or trunc:
+                break
+        rets.append(tot)
+    env.close()
+    return float(np.mean(rets))
+
+env0 = gym.make("Reacher-v5")
+print(f"무력(토크 0) 정책:       {evaluate(lambda s: np.zeros(2)):.2f}")
+print(f"무작위 정책:             {evaluate(lambda s: env0.action_space.sample()):.2f}")
+print(f"비례제어기 k=0.5:        {evaluate(lambda s: np.clip(-0.5 * s[8:10], -1, 1)):.2f}")
+print(f"비례제어기 k=2.0:        {evaluate(lambda s: np.clip(-2.0 * s[8:10], -1, 1)):.2f}")
+</code></pre>
+<p>실행 결과(시드 42, 각 행당 10 에피소드 평균):</p>
+<pre><code>무력(토크 0) 정책:            -13.06
+무작위 정책:              -44.34
+비례제어기 k=0.5:          -9.32
+비례제어기 k=2.0:         -14.57
+</code></pre>
+<p>이 네 수를 읽는 연습이 값지다. <strong>무작위 ≈ −44.3</strong>: 팔이 토크로
+흔들리므로 거리 항이 “무력” 경우보다 나빠지고, 제어 비용까지
+\(50 \times E[\lVert a \rVert^2] \approx 50 \times \tfrac{2}{3}
+\approx 33.3\)이 쌓인다(\([-1, 1]^2\)의 균등행동에서
+\(\lVert a \rVert^2\)의 평균은 차원당 \(\tfrac{1}{3}\)씩, 두
+차원 합계 \(\tfrac{2}{3}\)) — 합계로 −40 부근과 일치한다.
+<strong>무력 −13.1</strong>: 제어 비용이 0이라 초기 자세의 fingertip(원점에서
+약 0.21 m)와 목표(반경 0.2 원판 안)의 거리만 남는 것으로,
+스텝당 약 0.25 m × 50 ≈ −13과 맞는다. 그리고
+<strong>비례제어기 k=0.5(−9.3)가 k=2.0(−14.6)보다 낫다</strong> — 이득이
+<em>크면</em> 오히려 나빠진다. 왜? 미분 항이 없는 비례제어는 감쇠가
+없어, \(k\)가 크면 목표점을 <strong>과충격</strong>(overshoot)해서 주위를
+진동하게 되고, 진동할 때마다 \(\lVert a \rVert^2\) 벌(여기선
+가중치 1.0이라 작지 않다)을 반복해서 낸다. 13.1절에서 진자
+동역학으로 유도한 “PD 이득은 클수록 좋은 게 아니다”(\(k_p\)
+조건)가 2관절 팔에서도, <em>수식 없이 실험으로만</em> 같은 교훈을 주는
+장면이다. <strong>손으로 만든 1줄 규칙의 바(基準)는 −9.3</strong> — RL이
+“사람이 쓴 규칙을 이긴다“는 것을 보여주려면 이 선을 넘어야 한다.</p>
+<h3 id="실습-reacher-로봇팔에서-ppo-학습시키기"><a class="header" href="#실습-reacher-로봇팔에서-ppo-학습시키기">실습: Reacher 로봇팔에서 PPO 학습시키기</a></h3>
+<p>Chapter 11.2의 Pendulum PPO 실습과 <strong>완전히 같은 코드</strong>
+(<code>GaussianPolicy</code>, <code>ValueNet</code>, GAE, 클리핑 손실)를 이번 절에서
+다룬 <code>Reacher-v5</code>(2관절 로봇팔이 목표에 끝을 맞추는 과제)에
+그대로 적용해보자 — 환경 이름과 입출력 차원(10→2)만 바뀌고 알고리즘
+코드는 한 줄도 안 바뀐다는 것이 정책기반 방법의 범용성을 다시 한번
+보여준다. PPO가 Reacher 한 스텝에서 어떤 순서로 돌아가는지 아래
+그림에 담았다:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_reacher_ppo_loop.svg" alt="Reacher-v5 + PPO 한 스텝의 흐름 — 10차원 상태(관절각 cos/sin, 목표, 각속도, 오차벡터)가 Actor(GaussianPolicy, 트렁크 64-64)로 들어가 mu(s)·log_std를 만들고, a ~ N(mu, sigma^2)에서 샘플한 토크를 clip(±1)해서 MuJoCo 물리 시뮬레이션(2관절 팔, dt=0.02s, 50스텝=1초)에 전달. 물리가 다음 상태 s’와 보상 r = -||fingertip−target|| - ||a||^2 를 만든다. Critic(ValueNet)은 같은 상태에서 V(s)를 추정하고 GAE+정규화 어드밴티지를 만들어 클립된 PPO 목적함수로 Actor를 갱신. Actor의 평균 mu(s)만 실물 로봇(시뮬레이션 없는 순수 s→a 함수)에 배포"><span class="img-wrapper"><img src="../../images/ch13_3_reacher_ppo_loop.svg" alt="Reacher-v5 + PPO 한 스텝의 흐름 — 10차원 상태(관절각 cos/sin, 목표, 각속도, 오차벡터)가 Actor(GaussianPolicy, 트렁크 64-64)로 들어가 mu(s)·log_std를 만들고, a ~ N(mu, sigma^2)에서 샘플한 토크를 clip(±1)해서 MuJoCo 물리 시뮬레이션(2관절 팔, dt=0.02s, 50스텝=1초)에 전달. 물리가 다음 상태 s’와 보상 r = -||fingertip−target|| - ||a||^2 를 만든다. Critic(ValueNet)은 같은 상태에서 V(s)를 추정하고 GAE+정규화 어드밴티지를 만들어 클립된 PPO 목적함수로 Actor를 갱신. Actor의 평균 mu(s)만 실물 로봇(시뮬레이션 없는 순수 s→a 함수)에 배포"></span></label></p>
+<p>먼저 짧은 실행부터 — 100번의 반복(반복당 200 스텝, 총 2만 스텝,
+시드 42, 스크래치패드에서 실행 검증):</p>
+<pre><code>무작위 정책:                         -44.34
+손으로 만든 비례제어기 (k=0.5):        -9.32
+PPO 2만 스텝 후 — 결정론적(μ만 출력): -11.92 (학습 전) → -12.14 (후)
+PPO 2만 스텝 후 — 확률적(샘플링 포함): -42.60 (학습 전) → -52.51 (후)
+</code></pre>
+<p>2만 스텝에서는 PPO가 아직 “출발선“이다 — <strong>배포 가능한</strong> 정책인
+결정론적(μ만 출력) 곡선은 거의 움직이지 않았고, 샘플링 노이즈가
+탄 확률적 곡선은 오히려 나빠졌다. “PPO가 실패했나?“라고 생각하기
+이른바: 연속 제어 과업은 11.2절에서 보았듯(Pendulum도 12만 스텝에
+수렴하지 못했다) 짧은 예산으로는 “아직“이다. 다만 여기서 Pendulum
+실습과 다른 점은, <strong>두 곡선을 따로따로 봐서</strong> 현상을 더 선명하게
+읽을 수 있다는 것이다. 그래서 같은 코드를 100만 스텝
+(1000 반복 × 1024 스텝, 시드 42, 로컬 실행 약 5분, 검증 완료)까지
+늘렸다:</p>
+<pre><code>결정론적(μ만) 곡선:   -11.92 (학습 전) → -11.37 (마지막) — 중간에 -9 ~ -17 사이 변동
+확률적(샘플링 포함) 곡선: -42.60 (학습 전) → -61.98 (마지막) — 계속 악화
+최종 σ: [1.0, 1.0]  (클램프 상한에 고정됨)
+</code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_ppo_reacher_curves.svg" alt="Reacher-v5에서 PPO 학습 곡선 두 개(시드 42, 1000 반복 × 1024 스텝 = 총 1,024,000 스텝) — 파랑 실선이 결정론적 정책(μ만 출력, 로봇에 배포되는 형태)으로 -11.9 부근에서 -9와 -17 사이를 오가며 마지막 -11.37, 회색 점선이 손으로 만든 비례제어기 k=0.5 ≈ -9.3, 은색 세로점선이 무작위 정책 ≈ -44.3, 주황 실선이 학습 중 수집한 확률적 에피소드(샘플링 노이즈 포함)로 -54 부근에서 시작해 -62까지 계속 악화됨. y축이 뒤집혀 있어 위(0 근처)일수록 좋음 — “노이즈 있는 학습 에피소드는 나빠져도, 배포 가능한 평균 정책이 기준“이라는 두 곡선 현상의 시각화"><span class="img-wrapper"><img src="../../images/ch13_3_ppo_reacher_curves.svg" alt="Reacher-v5에서 PPO 학습 곡선 두 개(시드 42, 1000 반복 × 1024 스텝 = 총 1,024,000 스텝) — 파랑 실선이 결정론적 정책(μ만 출력, 로봇에 배포되는 형태)으로 -11.9 부근에서 -9와 -17 사이를 오가며 마지막 -11.37, 회색 점선이 손으로 만든 비례제어기 k=0.5 ≈ -9.3, 은색 세로점선이 무작위 정책 ≈ -44.3, 주황 실선이 학습 중 수집한 확률적 에피소드(샘플링 노이즈 포함)로 -54 부근에서 시작해 -62까지 계속 악화됨. y축이 뒤집혀 있어 위(0 근처)일수록 좋음 — “노이즈 있는 학습 에피소드는 나빠져도, 배포 가능한 평균 정책이 기준“이라는 두 곡선 현상의 시각화"></span></label></p>
+<p>그림에서 세 가지를 읽자. <strong>(1) 결정론적 곡선이 손으로 만든
+제어기(−9.3)와 같은 선상</strong>이다 — 작은 네트워크(64-64)와 100만
+스텝의 예산으로, PPO는 “1줄 규칙과 어깨를 나란히 하는” 팔을
+배웠다. (2) <strong>확률적 곡선은 계속 나빠진다</strong> — 11.2절의 엔트로피
+보상(<code>-0.01 * d.entropy()</code>)이 “큰 \(\sigma\)“을 계속 보상해서
+\(\sigma\)를 1.0 클램프 상한까지 밀어올렸고, 그러면 <em>샘플링한</em>
+에피소드는 노이즈로 가득 차 리턴이 악화된다. (3) <strong>두 곡선은 같은
+정책의 <em>다른 측면</em></strong>이다 — 배포 대상인 평균 \(\mu(s)\)는
+나아진 반면, 학습을 위한 <em>수단</em>인 노이즈 있는 샘플은 나빠진
+것뿐이다.</p>
+<h3 id="배포하는-것은-무엇인가-평균-μs-샘플이-아니다"><a class="header" href="#배포하는-것은-무엇인가-평균-μs-샘플이-아니다">배포하는 것은 무엇인가: 평균 μ(s), 샘플이 아니다</a></h3>
+<p>두 곡선 현상은 이번 절의 가장 중요한 교훈이라, 여기서 멈춰
+볼 만하다. <strong>탐색(exploration)과 활용(exploitation)은 다른
+제품이다.</strong> 학습 중에는 정책이 <em>다양한</em> 행동 집합을 샘플링해서
+정보 있는 데이터를 모아야 하므로, 엔트로피 보상이 의도적으로
+\(\sigma\)를 부풀리는 <em>것</em>이 맞다. 그러나 실물 로봇에 배포되는
+산출물은 **결정론적 신호 \(\mu(s)\)**다 — 로봇이 “σ=1인
+정규분포에서 토크를 뽑아 클립한다“는 식으로 움직이는 일은
+없다. Chapter 2의 \(\varepsilon\)-greedy와 같은 구조를 다시
+보는 셈이다: 학습 중엔 \(\varepsilon &gt; 0\)로 탐색, 평가할 땐
+\(\varepsilon = 0\)(순수 greedy). 연속 정책에서 “greedy“가
+되는 것이 곧 <strong>평균만 출력</strong>하는 것이다.</p>
+<p>여기서 <strong>학습된 정책을 평가하는 규칙</strong>이 정해진다:</p>
+<ol>
+<li><strong>별개의 환경 인스턴스</strong>에서 돌리기(학습 루프의 상태를
+오염시키지 않게),</li>
+<li><strong>\(\mu\)만</strong> 출력하기(샘플링 안 함),</li>
+<li><strong>고정된 시드 여러 개</strong>(예: 10 에피소드)의 평균을 보고,</li>
+<li>확률적 곡선은 “탐색이 아직 얼마나 큰가“의 <em>진단 지표</em>로만
+참고하기.</li>
+</ol>
+<p>실전 워크플로우는 “큰 \(\sigma\)로 학습 → 학습 말미에
+\(\sigma\)를 줄인다(시감쇠, annealing)“거나, 배포 단계에서
+샘플링을 그냥 끄고 \(\mu\)만 읽는 것이다. 13.1절의 sim-to-real
+파이프라인에서 배포 산출물이 정확히 이 “물리 시뮬레이션 없는
+순수 함수 \(s \mapsto \mu(s)\)“라는 점을 떠올려라 — 신경망
+<em>자체</em>가 제어기가 되므로, 학습 중에만 존재하던 MuJoCo를 실물
+로봇에서는 빼버려도 된다.</p>
+<h3 id="역사적-일화-같은-코드-다른-환경이-표준-레시피가-되기까지"><a class="header" href="#역사적-일화-같은-코드-다른-환경이-표준-레시피가-되기까지">역사적 일화: “같은 코드, 다른 환경“이 표준 레시피가 되기까지</a></h3>
+<p>이번 절의 “환경 이름만 바꿔도 된다“는 경험은 교육적 편의가 아니라,
+심층 강화학습의 <em>산업 표준</em>이다. PPO 논문(Schulman et al., 2017)이
+나올 때 실험 섹션은 <strong>같은 PPO 코드로 MuJoCo 로봇 30여 종</strong>(Walker2D,
+Hopper, Ant, HalfCheetah, …)을 훈련시켜 그 표를 내는데, 이것이
+연속제어 시대의 벤치마크 표가 됐다. “물리엔진 + PPO” 조합은 심층 RL
+의 제어 능력을 처음 <em>검증 가능한</em> 형태로 만들었다 — 그전까지
+“RL로 로봇을 제어한다“는 주장은 대부분 손으로 만든 예외였다.
+그리고 바로 이 “알고리즘은 환경에서 분리된다“는 구조가, 2020~2021년
+GPU 대량병렬 실험(OpenAI의 A1 사족보행 로봇 시연, “하나의 GPU로
+수천 개 환경“을 돌린 Isaac Gym 시대)을 가능하게 했다 — 알고리즘이
+환경과 이렇게 깔끔하게 분리되지 않았다면, 그런 시스템을 <em>쓸 수
+없이</em> 만드는 데도 그만큼의 시간이 걸렸을 것이다. 이 책의
+14~16장도 같은 구조를 반복한다: <strong>알고리즘은 고정, 환경만
+바꾸는 것</strong>.</p>
+<h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
+<p><strong>1. 학습 중의 노이즈 있는 에피소드 리턴을 정책의 성능으로
+판단하는 것.</strong> 이번 절의 두 곡선 현상(확률적 곡선은 악화,
+결정론적 곡선은 개선)은 오진(誤診)의 전형적인 원천이다:
+“노이즈 에피소드“만 보면 “학습할수록 정책이 나빠졌다“고 결론 내리고
+<em>구 weights</em>로 돌아가는 실수를 한다 — 그런데 <em>배포 가능한</em> 산출물
+\(\mu(s)\)가 바로 좋아지고 있는 쪽이다. 규칙: <strong>탐색을 위한
+학습 곡선 ≠ 배포 품질 곡선</strong>.</p>
+<p><strong>2. PPO가 손으로 만든 제어기와 비슷해지면 “구현에 버그가 있다“고
+의심하는 것.</strong> 이번 실험에서 PPO(100만 스텝)는 −11.4 부근으로
+끝나, 1줄 비례제어기(−9.3)와 대략 동급이다. “구현이 틀렸다“고
+결론짓기 전에 이 순서로 점검하라: (1) <strong>예산</strong> — 로봇 과업에서
+100만 스텝은 장난감이고, 논문들은 수백만~수천만 스텝을 쓴다,
+(2) <strong>구조적 우위</strong> — 1줄 제어기는 “오차 벡터” obs[8:10]을 환경이
+<em>공짜로</em> 줘서 쓰는데, PPO는 같은 매핑을 시행착오로 <em>배워야</em> 한다
+— 작은 예산에서는 공짜 신호를 이기기 어렵다, (3) <strong>σ 클램프</strong> —
+\(\sigma\)가 상한에 붙어 있으면 탐색 데이터의 질도 상한이
+걸린다. 실전 프로젝트의 표준은 손으로 만든 제어기를 <em>베이스라인</em>으로
+두고 RL이 그 위에 <em>추가</em>로 이득을 주는지 재는 것(13.1절의 구조)이다
+— “동급“은 작은 예산에서의 <em>예상치</em>, 버그가 아니다.</p>
+<p><strong>3. \(\sigma\) 상한을 두지 않고 내버려 두는 것.</strong> Reacher의
+행동 범위는 \([-1, 1]\)인데 클램프가 없으면 엔트로피 보상이
+\(\sigma\)를 2, 3으로 밀어올리고, 그러면 <strong>샘플의 상당 부분이
+범위 밖으로 나가 <code>np.clip</code>에게 잘린다</strong>. 이 순간 실제로 실행되는
+행동의 분포는 정책 그래디언트(10.1절 로그미분 트릭)가 가정한
+가우시안이 아니라 <em>잘려서 변형된</em> 분포가 된다 — 트릭의 전제(“행동이
+정책 분포에서 뽑혔다”)가 깨지는 것이다. 클립은 “거의 발생하지
+않아야” 정상 신호고, 클립 빈도가 높으면 \(\sigma\)(또는 μ 헤드의
+스케일링)를 <em>줄여야</em> 하는 징후다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
-<p><strong>Q. 왜 같은 PPO 코드를 Pendulum과 Reacher에 그대로 쓸 수 있나요?</strong>
+<p><strong>Q. 왜 같은 PPO 코드를 Pendulum과 Reacher에 그대로 쓸 수
+있나요?</strong>
 PPO의 신경망 구조(<code>GaussianPolicy</code>, <code>ValueNet</code>)는 입력 차원(상태
 차원)과 출력 차원(행동 차원)만 환경에 맞게 바뀌면 되고, 나머지
 로직(GAE 계산, 클리핑 손실)은 상태·행동이 무엇을 의미하는지 전혀
@@ -227,18 +486,58 @@ PPO의 신경망 구조(<code>GaussianPolicy</code>, <code>ValueNet</code>)는 �
 이후 “그럴듯함“에서 “정교함“으로 가는 데는 훨씬 더 많은 스텝이
 필요한 경우가 많다. 실전에서는 검증 곡선이 평평해지는 지점을 보고
 학습을 멈추거나(Chapter 6(ML1)의 조기 종료와 같은 원리), 계산 예산
-안에서 가능한 만큼 학습시킨다.</p>
+안에서 가능한 만큼 학습시킨다. 이번 절의 2만 → 100만 스텝 비교가
+바로 그 “평평해지는 지점“을 확인하는 가장 작은 예다.</p>
+<p><strong>Q. 학습 가능한 \(\sigma\) 대신 고정값(예: 0.1)을 써도
+되나요?</strong>
+동작은 하지만 적응 장치를 하나 잃는다. 학습 가능한 \(\sigma\) +
+엔트로피 보상의 역할은 “학습이 진행될수록 탐색을 <em>자동으로</em> 줄인다”
+는 것 — 고정 \(\sigma\)는 “훈련 전체 기간에 맞는 값“을 사람이
+미리 골라야 하는데, 그 값은 학습 전반부든 후반부에든 보통 틀린
+값이다. 초기값은 행동 범위의 크기에 맞는 스케일(여기선
+\([-1, 1]\) 범위에 \(e^{-0.5} \approx 0.61\))로 두는 것이
+관행이다.</p>
+<p><strong>Q. 왜 보상 속에 \(-\lVert a \rVert^2\) 항이 있나요?</strong>
+“큰 행동에 대한 벌” 그 이상의 역할이다 — 액추에이터의 에너지·발열·
+마모라는 <em>공학적 제약</em>이 목적함수로 번역된 것이다. 이 항이 없으면
+정책은 “고빈도·큰 진폭의 토크 진동”(fingertip을 더 빨리 이동시키는
+방법)에 인센티브를 받아 그 전략을 <em>배우게</em> 되고, 시뮬레이션에서는
+숫자일 뿐이지만
+실물 로봇에서는 모터 과열·기계적 손상이 된다. 직접 로봇 과업을
+만들 때는 <strong>실물에서 “절대 일어나면 안 되는 것“부터 페널티 항으로
+써라</strong>.</p>
+<p><strong>Q. Reacher는 종료(terminated)가 없어요 — GAE 계산에 영향이
+있나요?</strong>
+없다. Reacher엔 “성공/실패 이벤트“가 없고, 에피소드는 시간 제한
+(truncation, 50스텝)으로만 끝난다. GAE 코드(11.2절)의 <code>dones</code> 신호
+가 에피소드 경계(last 처리)를 담당하므로, terminated/truncated의
+구분(Chapter 3의 5-튜플 API)이 알고리즘을 바꾸지 않는다. 다만
+CartPole처럼 <em>진짜</em> 종료(막대가 쓰러짐)가 있는 환경에서는 터미널
+이후의 상태값이 0인 반면, Reacher의 “시간 제한 이후“는 여전히
+정상 상태가 존재한다는 <em>미묘한</em> 차이가 있다 — 5-튜플 API가 이
+차이를 표현하기 위해 존재하는 이유를 여기서 한 번 더 체감할 수
+있다.</p>
+<blockquote>
+<p><strong>핵심 정리</strong>: 연속 정책은 각 행동 차원마다 가우시안의
+(μ, σ)를 출력하는 것, 로그 확률은 <em>밀도</em>의 로그(양수 가능)다.
+그 뒤의 모든 기계 — 로그미분 트릭, 클리핑, GAE — 는 그대로다.
+**배포 산출물은 결정론적 μ(s)**이고, 노이즈 있는 샘플은 학습의
+<em>수단</em>이지 제품이 아니다 — 정책 평가는 μ로 한다. 로봇 과업에서
+PPO는 “환경 이름만 바뀐 같은 코드“이며, 손으로 만든 제어기는
+경쟁자가 아니라 <em>베이스라인</em>이다.</p>
+</blockquote>
 <p><strong>로봇 시뮬레이션은 지금까지 배운 알고리즘(DQN, PPO)을 “실제 물리
 법칙이 지배하는 연속 행동공간“이라는 더 현실적인 무대로 옮기는 시험대다
 — 다음 장에서는 이 시뮬레이션을 더 정교한 물리엔진으로, 그리고 대규모
 GPU 가속 환경으로 확장한다.</strong></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (실습)</strong> 위 코드를 그대로 실행한 뒤, PD 제어기의 계수(<code>-2.0</code>,
-<code>-0.5</code>)를 각각 두 배로 키워보고, 절반으로 줄여도 보고, 50스텝 누적
-보상이 어떻게 달라지는지 비교하라. 계수가 너무 크거나 너무 작을 때
-각각 어떤 문제가 생기는지(진동하는지, 반응이 느린지) 관찰한 바를
-서술하라.</p>
+<p><strong>1. (실습)</strong> 위 베이스라인 코드를 그대로 실행한 뒤, 비례 이득
+\(k\)를 두 배로 키워(k=1.0) 보고, 절반으로 줄여(k=0.25) 보고,
+50스텝 누적 보상이 어떻게 달라지는지 비교하라. 이득이 너무 크거나
+너무 작을 때 각각 어떤 문제가 생기는지(진동하는지, 반응이 느린지)
+관찰한 바를, 보상의 두 항(거리, \(\lVert a \rVert^2\))으로
+설명하라.</p>
 <p><strong>2. (코딩)</strong> 위 <code>gaussian_log_prob</code>(핵심 줄은 빈칸으로 남겨져 있다고
 가정)을 완성하라:</p>
 <pre><code class="language-python">import math
@@ -254,6 +553,11 @@ print(round(gaussian_log_prob(2.0, 0.0, 1.0), 4))   # 평균에서 멀수록 로
 Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
 있는지, “모델이 특정 조건 하나에 과적합하는 것을 막는다“는 관점에서
 두세 문장으로 설명하라.</p>
+<p><strong>4. (개념 서술)</strong> 이번 절의 두 곡선 현상에서, <em>확률적</em> 학습 곡선이
+나빠지는 동안 <em>결정론적</em> 곡선이 개선되는 이유를 한 문장으로 말하고,
+“로봇에 배포될 정책의 품질“을 평가하는 올바른 척도가 결정론적 곡선
+인 이유를 두세 문장으로 설명하라(힌트: 로봇이 실제로 받는 것은
+샘플이 아니라 무엇인가? 탐색 노이즈의 <em>목적</em>은 무엇이었나?).</p>
 
                     </main>
 
@@ -306,8 +610,8 @@ Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

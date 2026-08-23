@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="103-actor-critic"><a class="header" href="#103-actor-critic">10.3 Actor-Critic</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_3_actor_critic.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <h3 id="actor-critic-분산을-줄이는-개선"><a class="header" href="#actor-critic-분산을-줄이는-개선">Actor-Critic: 분산을 줄이는 개선</a></h3>
 <p>REINFORCE는 \(G_t\)(실제로 관찰된 누적 보상)를 그대로 쓰는데, 이건
 하나의 에피소드를 샘플링한 결과라 노이즈가 크다(분산이 높다).
@@ -194,6 +195,261 @@
 연속적인 행동 공간에서도 학습한다. Chapter 4에서 증명했듯이 유한한
 MDP라면 최적 정책 \(\pi^*\)는 항상 존재한다 — policy gradient는
 그 존재가 보장하는 목표를 향해 직접 나아가는 방법이다.</strong></p>
+<h3 id="먼저-문제부터-reinforce의-업데이트-신호가-너무-시끄러운-이유"><a class="header" href="#먼저-문제부터-reinforce의-업데이트-신호가-너무-시끄러운-이유">먼저 문제부터: REINFORCE의 업데이트 신호가 “너무 시끄러운” 이유</a></h3>
+<p>10.2절의 CartPole REINFORCE는 처음 20 에피소드 평균 14.1에서 마지막
+20 에피소드 평균 99.5, 최고 500으로 개선됐다 — 배운 것은 배운 것이다.
+그런데 시드를 세 번 바꿔가며 실행하면 학습 곡선이 시드마다 <strong>다른
+모양</strong>으로 나온다. 어떤 시드는 98에피소드만에 리턴 250을 돌파하지만,
+다른 시드는 300에피소드를 다 배워도 150 안팎에 머물기도 한다.
+이 “거친” 움직임은 코드의 버그가 아니라 <strong>REINFORCE 자체의 높은
+분산</strong>이다.</p>
+<p>왜 분산이 큰가. REINFORCE의 업데이트 신호는 \(G_t\) — 시점 \(t\)
+부터 에피소드가 끝날 때까지 <strong>실제로 쌓인 총 보상</strong>이다. CartPole의
+보상은 매 스텝 +1이므로, \(G_t\)는 결국 “폴이 몇 스텝 뒤에
+무너졌는가“에 거의 전적으로 달려 있다. 그런데 몇 스텝 뒤로 무너지는가는
+“이 스텝의 행동이 좋았는가“와 별개인 요소 — 초기 기울기의 작은 차이,
+샘플링의 운 — 에 크게 좌우된다. REINFORCE는 그 운을 업데이트
+신호의 크기로 <strong>그대로</strong> 받아들인다: 운 좋게 오래 버틴 에피소드에선
+그 날 한 행동 <em>전부</em>를 크게 강화하고, 운 없이 일찍 무너진 에피소드에선
+전부 크게 낮춘다. <strong>신호에 노이즈가 크게 섞인 채</strong> 경사 상승을
+돌리는 셈이다.</p>
+<p>이 문제는 Chapter 5의 중요도 샘플링과 같은 뿌리다 — “기댓값을 샘플
+하나로 추정하면 흔들린다”. 그때의 해법은 “샘플을 더 뽑아 평균“이었다.
+RL에서는 그 해법이 그대로 먹지 않는다: 한 에피소드의 샘플은 <em>현재
+정책이 실제로 행동한 결과</em> 자체라서, “같은 상황에서 더 뽑자“는
+말이 쉽게 안 된다(매 에피소드가 새 행동의 대가라는 비용이 있다).
+Actor-Critic은 다른 길로 간다 — <strong>샘플 하나하나에 “기준값“을 대고,
+절대 보상이 아니라 “평균보다 얼마나 더 좋았는지“라는 상대적 향상으로
+신호를 만든다.</strong></p>
+<h3 id="베이스라인-행동에-무관한-값을-빼도-기댓값은-안-바뀐다"><a class="header" href="#베이스라인-행동에-무관한-값을-빼도-기댓값은-안-바뀐다">베이스라인: “행동에 무관한 값“을 빼도 기댓값은 안 바뀐다</a></h3>
+<p>핵심 수학적 사실은 놀라울 정도로 단순하다. \(b(s_t)\)를 <strong>현재
+상태 \(s_t\)에만 의존하고, 행동 \(a_t\)에는 전혀 의존하지
+않는</strong> 어떤 값이라고 하자(Chapter 4의 가치함수 \(V(s_t)\)가
+그런 값의 대표 예). 그러면</p>
+<p>\[\mathbb{E}_{a_t \sim \pi(\cdot|s_t)}\left[\nabla_\theta \log
+\pi_\theta(a_t|s_t)\, b(s_t)\right] = b(s_t)\,
+\mathbb{E}_{a_t}\left[\nabla_\theta \log \pi_\theta(a_t|s_t)\right]
+= b(s_t)\, \underbrace{\sum_{a_t} \nabla_\theta \pi_\theta(a_t|s_t)}_{=0}
+= 0\]</p>
+<p>세 단계: (1) \(b(s_t)\)는 \(a_t\)와 무관한 상수라 기댓값 밖으로
+나온다, (2) \(\nabla \log \pi = \nabla \pi / \pi\)이므로
+\(\sum_a \pi(a) \nabla \log \pi(a) = \sum_a \nabla \pi(a)\),
+(3) 모든 행동의 확률 합은 \(1\)이고, 상수의 미분은 \(0\).</p>
+<p>이로부터 베이스라인의 성질이 한 줄로 나온다:</p>
+<p>\[\mathbb{E}\left[(G_t - b(s_t))\, \nabla_\theta \log \pi_\theta
+(a_t|s_t)\right] = \mathbb{E}\left[G_t \nabla_\theta \log
+\pi_\theta(a_t|s_t)\right] - \underbrace{b(s_t) \, \mathbb{E}
+\left[\nabla_\theta \log \pi_\theta(a_t|s_t)\right]}_{=0}\]</p>
+<p><strong>그래디언트 기댓값(= 진짜 기울기 방향)은 \(b(s_t)\)를 빼도
+그대로다.</strong> 그런데 분산은 다르다: 같은 행동을 고르는 상황에서도
+\(G_t\)가 크게 흔들리던 신호가, \(b(s_t)\)를 빼고 나면 “기준에서
+얼마나 벗어나는가“로 줄어든다. 분산을 최소화하는 최적의
+베이스라인은 바로 \(b^*(s_t) = \mathbb{E}[G_t | s_t] =
+V^\pi(s_t)\) — <strong>그냥 가치함수다.</strong> (이 최적성도 전체분산법칙으로
+짧게 나오지만, 이번 학기에는 “기댓값을 빼면 흔들림이 줄어든다“는
+평균-분산 직관까지만 기억하자.) “왜 베이스라인을 빼야 하는가“의
+완전한 답은 이 두 줄 — <strong>기댓값은 불변, 분산은 감소</strong> — 으로
+압축된다.</p>
+<h3 id="숫자로-검증-2행동-밴딧의-한-스텝"><a class="header" href="#숫자로-검증-2행동-밴딧의-한-스텝">숫자로 검증: 2행동 밴딧의 한 스텝</a></h3>
+<p>가장 단순한 환경에서 손으로 확인하자. 행동 0은 보상 \(+1.0\),
+행동 1은 \(+1.8\)을 주는 1스텝 밴딧. 상태 특징값 \(s = 1\),
+소프트맥스 정책 \(\pi(a|s) = \text{softmax}([0, 0])\)이므로
+\(p(a=0) = p(a=1) = 0.5\). (10.2절 연습문제 1의 정책
+파라미터화와 정확히 같은 형태다.)</p>
+<p>먼저 참값: \(V(s) = 0.5 \times 1.0 + 0.5 \times 1.8 = 1.4\).
+소프트맥스 정책의 그래디언트(연습문제 1의 공식)에서
+\(\nabla \log \pi(a=0|s) = [0.5, -0.5]\),
+\(\nabla \log \pi(a=1|s) = [-0.5, 0.5]\)다. 이제 “이 한 스텝에서
+샘플로 나오는 그래디언트“를 두 방식으로 각각 계산한다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>a=0이 나왔을 때</th><th>a=1이 나왔을 때</th><th>기댓값(= 진짜 기울기)</th></tr>
+</thead>
+<tbody>
+<tr><td>REINFORCE: \(G_t \nabla\log\pi\)</td><td>\(+1.0 \times [0.5, -0.5] = [0.5, -0.5]\)</td><td>\(+1.8 \times [-0.5, 0.5] = [-0.9, 0.9]\)</td><td>\(0.5[0.5,-0.5] + 0.5[-0.9,0.9] = [-0.2, 0.2]\)</td></tr>
+<tr><td>베이스라인: \((G_t - V)\nabla\log\pi\)</td><td>\((1.0-1.4)\times[0.5,-0.5] = [-0.2, 0.2]\)</td><td>\((1.8-1.4)\times[-0.5,0.5] = [-0.2, 0.2]\)</td><td>\([-0.2, 0.2]\)</td></tr>
+</tbody>
+</table>
+</div>
+<p>두 줄을 비교해보자. <strong>기댓값은 \([-0.2, 0.2]\)로 완전히 같다</strong> —
+둘 다 “행동 1(보상 +1.8)의 확률을 올리는 방향“이다. 하지만
+샘플 하나하나의 모양이 다르다: REINFORCE는 a=0이면 \([0.5, -0.5]\),
+a=1이면 \([-0.9, 0.9]\) — 첫 성분이 \(1.4\)나 튀어다니는
+신호를 매 스텝 무작위로 받는 셈이다. 베이스라인 버전은 <strong>두 샘플이
+정확히 같은 벡터</strong> \([-0.2, 0.2]\)를 낸다 — 이 작은 예에서는
+분산이 정확히 \(0\)이 된다. “평균은 그대로, 흔들림은 줄어든다“는
+말이 숫자로 보인 것이다.</p>
+<p>한 걸음 더: 베이스라인이 <em>틀린 값</em>이어도 기댓값은 안 바뀐다.
+\(b = 1.9\)(참값 1.4와 다른 값)로 빼면 샘플은
+\([-0.45, 0.45]\) / \([0.05, -0.05]\)가 되지만, 기댓값은
+여전히 \([-0.2, 0.2]\)다. 이 사실이 실전적으로 중요한 이유는
+하나 — <strong>Critic은 “완벽할 때까지” 기다릴 필요가 없다.</strong> 처음부터
+정확하지 않아도, 대략 근사한 \(V\)만 있으면 분산은 크게 줄고
+기댓값은 안 훼손된다. Critic이 “쓰이면서 학습하고, 학습하면서
+더 정확해진다“는 상호보완 구조가 성립하는 근거가 바로 이
+불변성이다.</p>
+<h3 id="어드밴티지-평균보다-얼마나-더-좋았는가"><a class="header" href="#어드밴티지-평균보다-얼마나-더-좋았는가">어드밴티지: “평균보다 얼마나 더 좋았는가”</a></h3>
+<p>\(A_t := G_t - V(s_t)\)를 <strong>어드밴티지</strong>(advantage)라고
+부른다. \(V(s_t) = \mathbb{E}[G_t | s_t]\)는 “이 상태에서의
+<em>평균적</em> 수준“이므로, \(A_t\)는 말 그대로 <strong>평균 대비 향상분</strong>이다:</p>
+<ul>
+<li>\(A_t &gt; 0\): “이 상태에서 이 행동을 했더니, 평균 수준보다 더
+좋은 결과를 냈다” → 그 행동의 확률을 <strong>올린다</strong>.</li>
+<li>\(A_t &lt; 0\): “평균보다 나쁜 결과를 냈다” → 확률을 <strong>내린다</strong>.</li>
+</ul>
+<p>한 줄의 맥락을 붙이자면: 10.2절 “자주 하는 실수“에서 보았듯,
+리턴을 정규화할 때 <code>returns - returns.mean()</code>는 <strong>에피소드 내
+모든 \(G_t\)의 평균</strong>을 뺀, 가장 느슨한 베이스라인이었다.
+Actor-Critic은 그 평균을 “에피소드 내 평균“에서 **상태별 가치함수
+\(V(s_t)\)**로 업그레이드한 것이다 — 같은 상태마다 각기 다른,
+상태 의존적 기준값을 쓰는 것이다.</p>
+<h3 id="알고리즘-두-손실함수와-두-역할"><a class="header" href="#알고리즘-두-손실함수와-두-역할">알고리즘: 두 손실함수와 두 역할</a></h3>
+<p>이제 10.2절의 REINFORCE 코드에서 딱 두 가지를 바꾼다. (1)
+\(G_t\)를 \(A_t = G_t - V(s_t)\)로, (2) \(V(s_t)\)를
+내준다는 Critic(값을 예측하는 출력층)을 하나 더 붙인다. PyTorch로
+쓰면:</p>
+<pre><code class="language-python">import torch, torch.nn as nn
+
+class ActorCriticNet(nn.Module):
+    def __init__(self, state_dim, n_actions):
+        super().__init__()
+        self.shared = nn.Sequential(nn.Linear(state_dim, 64), nn.ReLU())
+        self.actor_head = nn.Linear(64, n_actions)  # Actor: 각 행동의 확률
+        self.critic_head = nn.Linear(64, 1)         # Critic: 상태 가치 V(s)
+    def forward(self, x):
+        h = self.shared(x)
+        return torch.softmax(self.actor_head(h), dim=-1), self.critic_head(h).squeeze(-1)
+
+net = ActorCriticNet(4, 2)  # CartPole: 상태 4차원, 행동 2개
+opt = torch.optim.Adam(net.parameters(), lr=1e-3)
+
+def a2c_episode(env, seed, gamma):
+    s, _ = env.reset(seed=seed)
+    states, log_probs, rewards, nexts = [], [], [], []
+    for _ in range(500):
+        st = torch.tensor(s, dtype=torch.float32)
+        states.append(st)
+        probs, _ = net(st)
+        dist = torch.distributions.Categorical(probs)
+        a = dist.sample()
+        log_probs.append(dist.log_prob(a))          # log pi(a_t|s_t)
+        s, r, term, trunc, _ = env.step(a.item())
+        rewards.append(r)
+        nexts.append(torch.tensor(s, dtype=torch.float32))
+        if term or trunc:
+            break
+    # --- 1) Actor 갱신: REINFORCE에서 G_t -&gt; A_t = G_t - V(s_t)만 바꿈 ---
+    G, rets = 0.0, []
+    for r in reversed(rewards):
+        G = r + gamma * G
+        rets.insert(0, G)
+    rets = torch.tensor(rets)
+    vs = torch.stack([net(st)[1] for st in states])  # V(s_t)
+    adv = rets - vs.detach()                         # A_t (상수로 취급!)
+    actor_loss = -sum(lp * ad for lp, ad in zip(log_probs, adv))
+    opt.zero_grad(); actor_loss.backward(); opt.step()
+    # --- 2) Critic 갱신: Chapter 6의 TD(0) 값 학습 그대로 ---
+    with torch.no_grad():
+        vnext = torch.stack([net(ns)[1] for ns in nexts])
+    critic_loss = nn.functional.mse_loss(vs, torch.tensor(rewards) + gamma * vnext)
+    opt.zero_grad(); critic_loss.backward(); opt.step()
+    return sum(rewards)
+</code></pre>
+<p>두 손실함수의 역할을 짚으면, 이번 학기 배운 것들의 “재조합“이라는
+게 보인다:</p>
+<ul>
+<li><strong>Actor 손실</strong> \(-\sum_t \log \pi(a_t|s_t) \, A_t\) — 10.2절
+REINFORCE 손실의 \(G_t\) 자리에 \(A_t\)가 들어간 것이다.
+10.2절에서 <code>returns</code>를 정규화한 줄이 “에피소드 평균을 뺀
+초짜 베이스라인“이었다면, 여기서는 <code>vs</code>라는 학습된 네트워크의
+출력이 그 역할을 한다.</li>
+<li><strong>Critic 손실</strong> \((r_t + \gamma V(s_{t+1}) - V(s_t))^2\) —
+Chapter 6의 <strong>TD(0) 값 학습</strong>을 그대로 쓴 것이다. 즉 Critic은
+부트스트랩으로 배우는(분산이 작은) 학습자이고, Actor는 에피소드
+리턴(분산이 큰) 신호를 쓰는 학습자 — <strong>Critic이 Actor의 노이즈를
+잡아주는 구조</strong>다.</li>
+</ul>
+<p>두 출력(정책, 가치)은 앞부분 <code>shared</code> 층을 공유하고 마지막
+출력층만 다르다 — FAQ에서 언급한 “특징 추출을 공유하는” 실제
+구현의 전형이다. <code>A2C</code>라는 이름도 여기서 온다: <strong>A</strong>dvantage
+<strong>A</strong>ctor-<strong>C</strong>ritic(DeepMind, 2016) — “A“가 바로 오늘 배운
+어드밴티지를 가리킨다. (위 코드는 한 에피소드당 한 번 갱신하는
+간소화 버전이고, 원판 A2C/A3C는 매 스텝마다 갱신한다.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch10_3_actor_critic_structure.svg" alt="Actor-Critic 구조도: 상태 s_t -&gt; 공유 특성 층 -&gt; Actor 헤드(softmax 정책)와 Critic 헤드(V(s_t)). Actor에서 행동 a_t를 샘플링해 환경으로 보내고, 환경은 보상 r_t와 다음 상태 s_{t+1}을 반환. 리턴 G_t와 Critic의 V(s_t)가 만나 어드밴티지 A_t = G_t - V(s_t)를 만들고, Actor 손실(-sum log pi * A_t)과 Critic 손실(TD(0) MSE)이 각각 Adam으로 파라미터를 갱신 — 갱신된 파라미터가 다시 공유 층으로 돌아오는 순환 구조"><span class="img-wrapper"><img src="../../images/ch10_3_actor_critic_structure.svg" alt="Actor-Critic 구조도: 상태 s_t -&gt; 공유 특성 층 -&gt; Actor 헤드(softmax 정책)와 Critic 헤드(V(s_t)). Actor에서 행동 a_t를 샘플링해 환경으로 보내고, 환경은 보상 r_t와 다음 상태 s_{t+1}을 반환. 리턴 G_t와 Critic의 V(s_t)가 만나 어드밴티지 A_t = G_t - V(s_t)를 만들고, Actor 손실(-sum log pi * A_t)과 Critic 손실(TD(0) MSE)이 각각 Adam으로 파라미터를 갱신 — 갱신된 파라미터가 다시 공유 층으로 돌아오는 순환 구조"></span></label></p>
+<h3 id="실습-cartpole에서-reinforce와-a2c의-학습-곡선을-비교"><a class="header" href="#실습-cartpole에서-reinforce와-a2c의-학습-곡선을-비교">실습: CartPole에서 REINFORCE와 A2C의 학습 곡선을 비교</a></h3>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_3_actor_critic.ipynb">Colab 노트북</a>
+에는 두 알고리즘을 300 에피소드씩, 세 시드(0, 1, 2)로 학습시켜
+비교하는 완전한 코드가 있다. 요약하면:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>알고리즘 (시드)</th><th>처음 20 에피소드 평균</th><th>마지막 20 에피소드 평균</th><th>최고 리턴</th><th>리턴 250 첫 도달</th></tr>
+</thead>
+<tbody>
+<tr><td>REINFORCE (0)</td><td>14.1</td><td>99.5</td><td>500</td><td>194</td></tr>
+<tr><td>REINFORCE (1)</td><td>42.5</td><td>251.4</td><td>500</td><td>150</td></tr>
+<tr><td>REINFORCE (2)</td><td>17.5</td><td>151.9</td><td>500</td><td>98</td></tr>
+<tr><td>A2C (0)</td><td>20.6</td><td>211.3</td><td>500</td><td>299</td></tr>
+<tr><td>A2C (1)</td><td>21.6</td><td>177.9</td><td>500</td><td>277</td></tr>
+<tr><td>A2C (2)</td><td>20.4</td><td>184.2</td><td>476</td><td>— (미도달)</td></tr>
+</tbody>
+</table>
+</div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch10_3_reinforce_vs_a2c.svg" alt="왼쪽: REINFORCE와 A2C의 CartPole 리턴 학습 곡선(세 시드 각 300 에피소드, 20에피소드 이동평균). REINFORCE 곡선은 시드마다 100~250 사이로 크게 갈라지는 반면, A2C 곡선은 세 시드 모두 180~210 대에서 비슷한 높이로 수렴. 오른쪽: 마지막 20 에피소드 평균 리턴의 시드 간 박스플롯 — A2C의 박스가 REINFORCE보다 좁음(시드 간 변동이 작음)"><span class="img-wrapper"><img src="../../images/ch10_3_reinforce_vs_a2c.svg" alt="왼쪽: REINFORCE와 A2C의 CartPole 리턴 학습 곡선(세 시드 각 300 에피소드, 20에피소드 이동평균). REINFORCE 곡선은 시드마다 100~250 사이로 크게 갈라지는 반면, A2C 곡선은 세 시드 모두 180~210 대에서 비슷한 높이로 수렴. 오른쪽: 마지막 20 에피소드 평균 리턴의 시드 간 박스플롯 — A2C의 박스가 REINFORCE보다 좁음(시드 간 변동이 작음)"></span></label></p>
+<p>세 가지를 읽자. <strong>(1) 시작점은 A2C가 균일하다</strong> — 처음 20 에피소드
+평균이 REINFORCE는 14.1~42.5로 흩어진 반면, A2C는 20.4~21.6로
+모인다. “시드 불운“의 영향이 기준값을 빼면서 줄었다는 뜻이다.
+<strong>(2) 마지막 20 에피소드도 A2C가 좁다</strong> — A2C는 178~211의 좁은
+밴드에, REINFORCE는 99.5~251.4로 150 넘게 벌어져 있다. 분산
+감소가 시드 간 <em>일관성</em>으로 나타난 것이다. <strong>(3) 도달 <em>속도</em>는
+이야기가 다르다</strong> — 이 실험(300 에피소드, 시드 0~2)에서는
+REINFORCE가 오히려 250 돌파가 빠른 시드가 있었다. 이것은
+“REINFORCE가 더 좋다“는 뜻이 <strong>아니다</strong>: 분산이 크면 <em>위쪽</em>으로도
+많이 튀기 때문이다. 분산 감소의 실제 이득 — 안정성을 유지하면서
+학습을 <em>훨씬</em> 오래, <em>훨씬</em> 큰 환경에서 돌릴 수 있게 된 것 — 은
+Chapter 11에서 PPO가 어드밴티지를 클리핑된 목적함수에 재사용하면서
+비로소 온전히 수확된다.</p>
+<h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
+<p><strong>1. <code>adv = rets - vs.detach()</code>에서 <code>.detach()</code>를 빼는 것.</strong>
+<code>vs</code>는 <code>net</code>의 Critic 헤드 출력이므로, <code>actor_loss.backward()</code>를
+돌리면 actor_loss의 그래디언트가 <code>vs</code>를 타고 <strong>Critic 헤드
+파라미터까지</strong> 흘러가 Actor 갱신 과정에서 Critic도 함께 갱신된다 —
+“두 손실이 각자 역할을 할 것“이라는 구조가 무너진다. 어드밴티지는
+Actor 손실 안에서는 <strong>상수</strong>(미분 대상이 아닌 곱수)로 취급해야
+하므로 <code>.detach()</code>가 필요한 것이다. 이 버그는 “Critic이 이상하게
+빨리/느리게 학습하는” 형태로만 나타나서 찾기 어렵다.</p>
+<p><strong>2. Critic의 목표값에 \(G_t\)(몬테카를로 리턴)를 쓰는 것.</strong>
+Critic 손실을 \((G_t - V(s_t))^2\)로 쓰면 Critic도 MC
+학습자가 된다 — 안 틀리지만 <strong>부트스트랩이 사라져 Critic의 분산이
+커진다.</strong> Critic은 “Actor의 노이즈를 잡아줄 사람“인데,
+자기 자신이 노이즈가 많으면 기준값 \(V(s_t)\)이 흔들리고,
+그 흔들림이 그대로 Actor의 어드밴티지에 전이된다. “Critic은
+TD(0)(Chapter 6의 부트스트랩, 분산 작음)으로, Actor는 MC 리턴으로”
+— 이 비대칭이 의도된 설계다.</p>
+<p><strong>3. “베이스라인을 넣었더니 학습 속도가 달라졌다“고 하면 버그로
+판단하는 것.</strong> 베이스라인은 기댓값(진짜 기울기 방향)은 바꾸지
+않지만 <strong>분산은</strong> 바꾼다 — 신호의 크기가 달라지므로 <em>실효
+스텝 크기</em>가 달라져 학습 속도(수렴 에피소드 수)가 바뀌는 것은
+<strong>정상</strong>이다. 속도가 바뀌었다고 해서 기댓값(진짜 기울기 방향)이
+깨진 것은 아니다 — 실제로는 변하지 않는다(위 밴딧 예의
+\(b=1.9\) 행이 그 증거다).</p>
+<h3 id="역사적-일화-뇌의-도파민이-바로-td-오차"><a class="header" href="#역사적-일화-뇌의-도파민이-바로-td-오차">역사적 일화: 뇌의 도파민이 바로 TD 오차</a></h3>
+<p>“TD 오차“가 단순한 수학적 편의가 아니라는 증거가 1997년에
+나왔다. Schultz, Dayan, Montague는 원숭이의 뇌에서 <strong>도파민
+신경세포</strong>가 보상을 받을 때마다 “예측보다 좋으면 발화량 증가,
+예측보다 나쁘면 감소, 그리고 예측이 정확히 서 있으면 보상이
+오기 <em>전</em>의 신호(큐) 시점에 발화가 앞당겨진다“는 패턴을
+측정했다 — 이것은 \(\delta_t = r_t + \gamma V(s_{t+1}) -
+V(s_t)\), 즉 <strong>정확히 TD 오차</strong>다. “예측하지 못했던 좋은 소식“을
+보내는 뇌의 신호와, 강화학습이 쓰는 “예측 오차” 신호가
+수학적으로 일치한다는 뜻이다. Actor-Critic의 “Critic“은 값
+함수를 예측하는 신경망이지만, 뇌에서는 이 역할이 도파민
+회로에, “Actor“의 역할은 그 신호를 행동 선택에 쓰는 기저핵
+회로에 해당한다는 대응으로까지 이어진다. 강화학습 이론이
+생물학 신호를 <em>설명</em>에 성공한, 이 분야에서 가장 유명한
+일화 중 하나다. (11.3절의 GAE도 이 TD 오차 \(\delta_t\)를
+여러 개 가중평균한 것 — 같은 뿌리다.)</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. Actor와 Critic은 왜 따로 학습하나요? 하나로 합칠 수는
 없나요?</strong> 둘은 서로 다른 것을 예측한다 — Actor는 “어떤 행동을 할
@@ -210,6 +466,34 @@ Actor-Critic 구조가 된다.</p>
 2번). 다만 각 샘플 하나하나를 보면 \(G_t\) 자체의 큰 변동폭이
 \(V(s_t)\)만큼 상쇄되어 분산은 확실히 줄어든다 — “평균은 그대로,
 흔들림은 줄어든다“는 것이 베이스라인의 핵심 효과다.</p>
+<p><strong>Q. Actor-Critic은 on-policy인가요, off-policy인가요?</strong>
+이 절의 구현은 <strong>on-policy</strong>다 — Actor와 Critic이 모두
+<em>현재 정책</em>이 만든 경험(에피소드)에서만 학습하고, 그 경험을
+재사용하지도 않는다(경험 재생 버퍼 없음). REINFORCE가 on-policy
+였던 것과 같은 이유다. off-policy Actor-Critic(DQN + 정책
+결합, Chapter 9의 경험 재생을 붙인 변형)도 존재하지만, 이번
+학기의 표준 흐름 — A2C → Chapter 11 PPO — 은 on-policy
+패밀리 안에서 “분산을 줄이는” 방향으로 발전한다.</p>
+<p><strong>Q. CartPole처럼 이산 행동공간인데, 굳이 Actor-Critic을 써야
+할까요? DQN이면 됐지.</strong> 맞는 말에 가깝다 — 이산 공간이라면
+Chapter 9의 DQN이 더 데이터 효율적일 때가 많다. Actor-Critic이
+필수인 순간은 (1) <strong>연속 행동공간</strong>(로봇 관절 힘, Chapter
+13~14)에서 \(\max_a Q(s,a)\)를 계산할 수 없을 때, (2)
+<strong>탐색 정책</strong> 자체를 확률적으로 학습하고 싶을 때(행동을 샘플링
+해서 “다른 선택“도 시도하게 해야 하는 경우)다. 게다가 이번
+절의 어드밴티지 \(A_t\)는 PPO의 입력이 되므로, PPO를
+사용할 때까지 이 구조를 <em>실무적으로</em> 익숙해져 있어야 한다.</p>
+<blockquote>
+<p><strong>핵심 정리</strong>: REINFORCE의 신호 \(G_t\)에는 “운“이 섞여
+있다. <strong>베이스라인</strong> \(b(s_t)\) — 행동에 무관한 값 — 을 빼도
+그래디언트의 <strong>기댓값은 그대로</strong>이고(행동의 확률 합이 1
+임에서), <strong>분산만 줄어든다.</strong> 분산을 최소화하는 베이스라인은
+\(V(s_t)\) 자체 — 따라서 <strong>가치함수를 Critic이라 부르고,
+\(G_t - V(s_t)\)를 어드밴티지라 부르며</strong>, Actor는 이
+어드밴티지로, Critic은 TD(0)으로, <em>동시에</em> 학습한다. “절대
+보상“이 아니라 “평균 대비 향상“으로 배우는 이 한 가지 아이디어가
+Chapter 11의 PPO로 이어진다.</p>
+</blockquote>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 간단한 이산 행동공간(2개 행동) softmax 정책에 대해, 한
@@ -238,10 +522,10 @@ def reinforce_update(theta, episode, alpha, gamma):
 “베이스라인(baseline)을 빼도 그래디언트의 기댓값은 바뀌지 않는다“는
 사실과 연결지어 두세 문장으로 설명하라(직관 수준으로 충분하다).</p>
 <p><strong>3. (손유도, Tier C — 최우선 폴백 대상)</strong> 정책 \(\pi_\theta\) 하에서
-기대 리턴 \(J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]\)의
+기대 리턴 \(J(\theta) = \mathbb{E}\_{\tau \sim \pi_\theta}[R(\tau)]\)의
 그래디언트가</p>
-<p>\[\nabla_\theta J(\theta) = \mathbb{E}_{\tau}\left[\sum_t \nabla_\theta \log
-\pi_\theta(a_t|s_t) , G_t\right]\]</p>
+<p>\[\nabla_\theta J(\theta) = \mathbb{E}\_{\tau}\left[\sum_t \nabla_\theta \log
+\pi_\theta(a_t|s_t) \, G_t\right]\]</p>
 <p>가 됨을, 로그미분 트릭을 사용하여 유도하라. (수학 상위권/희망자
 대상 심화 — 대부분은 아래 워크시트를 기본값으로 한다.)</p>
 <p><strong>빈칸채움형 워크시트 버전</strong> (기본값):</p>
@@ -264,6 +548,21 @@ Step 3: 궤적 확률 P(tau;theta) = prod_t pi_theta(a_t|s_t) * (환경전이확
 왜 중요한지 한 문장으로 설명하라(힌트: 이게 없으면 환경 모델을
 몰라도 정책만으로 학습 가능하다는 model-free RL의 핵심 성질이
 깨진다).</p>
+<p><strong>4. (개념)</strong> 본문의 <code>adv = rets - vs.detach()</code> 줄에서 <code>.detach()</code>를
+빼면, <code>actor_loss.backward(); opt.step()</code>을 실행한 <strong>후</strong>에
+<code>critic_head</code>의 파라미터 값이 어떻게 달라지는가? (1~2 문장으로 답.
+힌트: <code>vs</code>는 어떤 네트워크의 출력인가, 그래디언트는 어디까지
+흘러가는가.)</p>
+<p><strong>5. (수치)</strong> 본문 밴딧 예(보상 \(+1.0\)/\(+1.8\), \(s=1\))에서
+\(p(a=0) = 0.3\)(즉 \(\theta\)가 (0,0)가 아닌, 행동 1을 약간
+선호하는 정책)로 바꿨다고 하자. (a) 새로운 \(V(s)\)를 계산하고,
+(b) REINFORCE 그래디언트 기댓값
+\(\mathbb{E}[G_t \nabla \log \pi] = p_0 \cdot 1.0 \cdot
+\nabla\log\pi(a=0) + p_1 \cdot 1.8 \cdot \nabla\log\pi(a=1)\)을
+두 성분으로 계산하라. (c) 이 벡터의 방향이 어떤 행위의 확률을
+올리려 하는지(행동 0/1 중) 한 문장으로 말하라. (힌트: 방향은
+“더 좋은 행동” 쪽으로 향해야 한다 — 그래디언트가 그런 방향으로
+나오지 않으면 어딘가를 잘못 계산한 것이다.)</p>
 
                     </main>
 
@@ -316,8 +615,8 @@ Step 3: 궤적 확률 P(tau;theta) = prod_t pi_theta(a_t|s_t) * (환경전이확
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

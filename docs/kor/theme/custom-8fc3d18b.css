@@ -1,0 +1,64 @@
+/* Hide the sidebar fold-toggle arrow entirely. Chapters still auto-expand
+   to reveal their children when you navigate onto that chapter (mdBook's
+   built-in active-page logic handles this via JS, independent of this
+   toggle) -- this just removes the manual click-to-expand affordance for
+   chapters you aren't currently viewing, matching a plain collapsed-title
+   look. */
+.chapter-fold-toggle {
+    display: none;
+}
+
+/* Fixed badge linking to the other language edition (injected by
+   lang-switch.js since mdBook's SUMMARY.md parser can't hold external
+   links -- it always tries to resolve them as local chapter files). */
+.lang-switch-badge {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    background: var(--sidebar-bg, #2354a5);
+    color: var(--sidebar-fg, #fff) !important;
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+.lang-switch-badge:hover {
+    opacity: 0.85;
+}
+
+/* Sidebar progress indicator: a top-level chapter that has been split into
+   numbered sub-blocks (N.1/N.2/N.3, i.e. it has a nested <ol class="section">)
+   is "done" and shown at full strength; chapters still in the old flat
+   single-page format are dimmed. Scoped to direct children of the root
+   <ol class="chapter"> so nested sub-block items (already full strength)
+   aren't affected. */
+ol.chapter > li.chapter-item {
+    opacity: 0.5;
+}
+
+/* Marks prose newly added by the cq (local-model) content-expansion pass,
+   vs. the `pre-cq-expansion` git tag -- see tools/highlight_new_content.py.
+   Existing text stays the theme's normal color; only new text turns blue.
+   Code blocks/inline code are never tagged cq-new by that script, but the
+   ":not(pre):not(code)" guard + the inherit rule below are kept as defense
+   in depth. mdBook's theme switcher puts a class (navy/coal/ayu/rust) on
+   <html>; the default (no class, or "light") is a light background, so a
+   single darker-than-default blue works for light/rust and a lighter blue
+   for the dark themes (navy/coal/ayu). */
+.cq-new:not(pre):not(code) {
+    color: #1a56db;
+}
+html.navy .cq-new:not(pre):not(code),
+html.coal .cq-new:not(pre):not(code),
+html.ayu .cq-new:not(pre):not(code) {
+    color: #7ab0ff;
+}
+.cq-new :is(code, pre) {
+    color: inherit;
+}
+ol.chapter > li.chapter-item:has(> ol.section) {
+    opacity: 1;
+}

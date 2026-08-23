@@ -1,0 +1,31 @@
+digraph lawnmower {
+  rankdir=LR;
+  graph [fontname="DejaVu Sans", labelloc="t", fontsize=16,
+         label="잔디깎는 기 MDP — 정책 pi_0: 반시계 방향 순회(화살표).\n시작: 네 모퉁이(★) 균등 선택. 전이: 의도한 방향 0.8 / 반대 방향 0.2(미끄러짐).\n보상: 이동마다 -0.1, 터미널(정리함) 진입 시 +1. gamma=0.9",
+         labeljust="l"];
+  node [shape=box, style=filled, fillcolor="#f5f5f5", fontname="DejaVu Sans", width=0.9, height=0.9];
+  edge [fontname="DejaVu Sans", fontsize=11, color="#333333", arrowsize=0.8];
+
+  "00" [label="★ (0,0)", fillcolor="#fff3cd"];
+  "01" [label="(0,1)"];
+  "02" [label="★ (0,2)", fillcolor="#fff3cd"];
+  "10" [label="★ (1,0)", fillcolor="#fff3cd"];
+  "11" [label="(1,1)\n정리함\n(터미널)", fillcolor="#c8e6c9", color="#2e7d32", penwidth=2];
+  "12" [label="(1,2)"];
+  "20" [label="★ (2,0)", fillcolor="#fff3cd"];
+  "21" [label="(2,1)"];
+  "22" [label="★ (2,2)", fillcolor="#fff3cd"];
+
+  {rank=same; "00" -> "10" -> "20" [style=invis];}
+  {rank=same; "01" -> "11" -> "21" [style=invis];}
+  {rank=same; "02" -> "12" -> "22" [style=invis];}
+
+  "00" -> "01" [label="-0.1"];
+  "01" -> "02" [label="-0.1"];
+  "02" -> "12" [label="-0.1"];
+  "12" -> "11" [label="+1", color="#2e7d32", penwidth=1.5];
+  "22" -> "21" [label="-0.1"];
+  "21" -> "20" [label="-0.1"];
+  "20" -> "10" [label="-0.1"];
+  "10" -> "11" [label="+1", color="#2e7d32", penwidth=1.5];
+}

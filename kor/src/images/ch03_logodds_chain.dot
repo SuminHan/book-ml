@@ -1,0 +1,18 @@
+digraph logodds_chain {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="증거가 쌓일 때마다 오즈가 가능도비(likelihood ratio) 만큼만 곱해서 갱신된다",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=12.5,
+           penwidth=1.4, margin="0.18,0.10"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=10.5, color="#495057", penwidth=1.6];
+
+    P0 [label="사전오즈\n0.3/0.7 ≈ 0.43", fillcolor="#e9ecef"];
+    P1 [label="사후오즈\n0.43 × 12 ≈ 5.1\nP(스팸) ≈ 0.837", fillcolor="#fff3cd"];
+    P2 [label="사후오즈\n5.1 × 20 ≈ 103\nP(스팸) ≈ 0.990", fillcolor="#d1e7dd",
+        shape=box, style="rounded,filled,bold", penwidth=2.2, fontcolor="#0f5132"];
+
+    P0 -> P1 [label="× 12\n'무료' 가능도비 0.6/0.05"];
+    P1 -> P2 [label="× 20\n'당첨' 가능도비 0.4/0.02"];
+}

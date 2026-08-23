@@ -1,0 +1,59 @@
+digraph rl_project_pipeline {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="팀 프로젝트 파이프라인 — 4주: 환경 선정 → 발표 (Block A 캡스톤)",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=10.5,
+           penwidth=1.3, margin="0.18,0.1"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9, color="#495057", penwidth=1.5];
+
+    subgraph cluster_p1 {
+        label="① 환경과 문제 (1주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fillcolor="#e9ecef", fontsize=10];
+        N1 [label="표 기반 환경 고르기\n(FrozenLake / CliffWalking /\nTaxi)"];
+        N2 [label="문제 정의:\nMDP 5요소, 주 지표\n(Ch3.1)"];
+        N3 [label="베이스라인:\n무작위 정책 평균 리턴\n측정"];
+        N1 -> N2 -> N3 [style=invis];
+    }
+
+    subgraph cluster_p2 {
+        label="② 구현과 실험 (2~3주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fontsize=10];
+        N4 [label="Ch4~7 알고리즘 ≥ 2개 구현\n(SARSA vs Q-learning,\nMC vs n-step ...)"];
+        N5 [label="시드 ≥ 3개 실행:\n학습 도중 리턴 +\ngreedy(ε=0) 평가\n(모두 동일 프로토콜)"];
+        N6 [label="ε/α 스케줄 튜닝:\n두 알고리즘에\n동일 스케줄만"];
+        N4 -> N5 -> N6 [style=invis];
+    }
+
+    subgraph cluster_p3 {
+        label="③ 평가와 정당화 (3~4주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fontsize=10];
+        N7 [label="시드 비교 표 +\n학습 곡선 1장"];
+        N8 [label="수식적 정당화 ≥ 1개:\n배운 개념(Ch4~7)으로\n'왜' 설명"];
+        N9 [label="보고서: 결과 +\n잘 안 된 부분의 원인\n정직하게"];
+        N7 -> N8 -> N9 [style=invis];
+    }
+
+    subgraph cluster_p4 {
+        label="④ 발표와 검토 (4주차)";
+        labeljust=l; fontsize=12; fontcolor="#0f5132";
+        color="#79bb98"; style="rounded,filled"; fillcolor="#f0f7f3";
+        node [fillcolor="#d1e7dd", fontsize=10];
+        N10 [label="발표 5~7분\n(8.1)"];
+        N11 [label="peer-review 2팀\n(8.2 체크리스트)"];
+        N10 -> N11 [style=invis];
+    }
+
+    N3 -> N4 [label="문제 고정"];
+    N6 -> N7 [label="최종 결과 확정"];
+    N9 -> N10 [label="보고서"];
+    N7 -> N4 [label="시드 편차 비정상·\n프로토콜 결함 발견 시\n돌아가서 다시",
+               style=dashed, color="#c0392b", penwidth=1.8];
+}

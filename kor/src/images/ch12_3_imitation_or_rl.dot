@@ -1,0 +1,39 @@
+digraph imitation_or_rl {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="시연·비교(모방학습)와 보상·상호작용(강화학습) — 무엇으로 배울 것인가\n'가진 자원'(시연, 비교, 보상함수, 안전한 상호작용)을 확인하며 결정",
+           labeljust=c, bgcolor="white", pad="0.35", ranksep="0.95", nodesep="0.8"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fontcolor="#212529", fontsize=12, penwidth=1.7, margin="0.22,0.14"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=11, color="#495057", penwidth=1.9];
+
+    q1 [label="① 전문가가 시연할 수 있는가?\n(또는 잘 동작하는 기존 정책이 있는가?)", fillcolor="#fff3cd",
+         style="rounded,filled,bold", penwidth=2.2, fontcolor="#664d03"];
+
+    bc  [label="행동 복제(BC) — 12.1절\n(s,a) 시연에 대한 지도학습", fillcolor="#cfe2ff"];
+    q2  [label="② 시연에 없는 상태로\n비틀어질 여지가 있는가?\n(긴 episode, 교란, 노이즈)", fillcolor="#fff3cd",
+         style="rounded,filled,bold", penwidth=2.2, fontcolor="#664d03"];
+    dagger [label="DAgger — 12.1절\n자신의 경로에서 마주친 상태에 대해\n전문가에게 즉답받기", fillcolor="#cfe2ff"];
+
+    q3  [label="② 시연을 대신해 '비교'를\n받을 수 있는가?\n(둘 중 나은 쪽을 가려내는 것)", fillcolor="#fff3cd",
+         style="rounded,filled,bold", penwidth=2.2, fontcolor="#664d03"];
+    pref [label="선호 기반 보상모델 — 12.2절\n비교 데이터만으로 r_φ 학습\n(전문가 수준을 넘을 수 있음)", fillcolor="#d1e7dd",
+          style="rounded,filled,bold", penwidth=2.2, fontcolor="#0f5132"];
+
+    q4  [label="③ 보상함수를 직접 설계할 수\n있고, 탐험이 안전·저렴한가?", fillcolor="#fff3cd",
+         style="rounded,filled,bold", penwidth=2.2, fontcolor="#664d03"];
+    rl  [label="순수 강화학습 — Ch.2~11\n시행착오(탐험)로 보상 최적화", fillcolor="#f8d7da"];
+
+    hybrid [label="하이브리드 — 실전의 표준\n시연(BC)이나 선호보상으로 '그럴듯한\n초기 정책'을 만들고, PPO(Ch.11)로\n미세조정해 전문가의 한계를 넘음", fillcolor="#e2d9f3",
+            style="rounded,filled,bold", penwidth=2.4, fontcolor="#4a3366"];
+
+    q1 -> bc   [label="예"];
+    q1 -> q3   [label="아니오"];
+    q3 -> pref [label="예"];
+    q3 -> q4   [label="아니오"];
+    q4 -> rl   [label="예"];
+    bc  -> q2;
+    q2 -> hybrid [label="예 — 시연으로 못 채운 영역을 RL이 채움"];
+    q2 -> dagger [label="예 — 전문가가 즉답 가능하면"];
+    pref -> hybrid [label="r_φ를 PPO의 보상으로"];
+}

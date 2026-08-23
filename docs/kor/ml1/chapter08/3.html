@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -179,6 +179,16 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="83-중간고사-대비-총정리"><a class="header" href="#83-중간고사-대비-총정리">8.3 중간고사 대비 총정리</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter08_3_review_diagnostic.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: 복습 자가진단 실습"></a></p>
+<p>Block A(Chapter 2~8)의 마지막 블록이다. 이번 수업은 새 개념이 없다 — 대신
+지금까지의 “알고 있는 것“이 <strong>시험장에서 빈 종이에 스스로 재현될 수 있는
+정도</strong>인지 점검하는 자리다. “수업에선 이해했다“와 “시험장에서 유도할
+수 있다“는 서로 다른 역량이다 — 특히 손유도 문제와 “왜?” 질문이 나오는
+시험에서는 후자가 직접 점수로 연결된다. 그래서 이 절의 구조는 단순하다:
+<strong>시험에서 가장 자주 나오는 질문 유형을 4개로 뽑고, 그중 “손으로 써야
+하는” 3가지(유도 템플릿 ①②③)를 실제로 종이에 풀고, 나머지는 자가진단
+플로우와 확인 문제 9개로 채운다.</strong> 실습 노트북(페이지 상단 Colab 배지)은
+이 세 템플릿의 숫자를 코드로 검증해 준다.</p>
 <h3 id="장별-핵심-질문-정리"><a class="header" href="#장별-핵심-질문-정리">장별 핵심 질문 정리</a></h3>
 <div class="table-wrapper">
 <table>
@@ -198,14 +208,356 @@
 <p>중간고사는 이 여섯 장의 개념을 새로운 상황에 적용하는 문제(손유도 포함)로
 구성된다 — Chapter 2, 6에서 연습한 정규방정식·Ridge 회귀 유도 패턴이
 다른 손실함수에도 그대로 적용되는지 확인하는 것이 좋은 복습이다.</p>
-<h3 id="확인-문제-장을-넘나드는-복습-문제-6개"><a class="header" href="#확인-문제-장을-넘나드는-복습-문제-6개">확인 문제: 장을 넘나드는 복습 문제 6개</a></h3>
+<p>이 표는 “다시 봐야 할 개념“의 <em>목록</em>으로 읽지 말고, <strong>“핵심 질문“에 한
+문장으로 답할 수 있는가</strong>의 자가진단 도구로 쓰자. 여섯 문항 전부 막힘없이
+답하면 이 절의 나머지 부분은 빠르게 훑으면 되고, 답이 중간에 끊기는 장이
+보이면 그 장의 “다시 봐야 할 개념“으로 돌아가 해당 절의 확인 문제를
+2~3개 풀어보는 것이 가장 효율적인 시간 배분이다.</p>
+<h3 id="시험에서-반복되는-질문-유형-4가지"><a class="header" href="#시험에서-반복되는-질문-유형-4가지">시험에서 반복되는 질문 유형 4가지</a></h3>
+<p>Block A 여섯 장의 시험 문항을 유형별로 모으면 실제로는 네 가지 밖에
+없다 — 문항의 피부는 달라도 뼈대는 이 중 하나다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>유형</th><th>예</th><th>이 절의 어디에서 준비하나</th></tr>
+</thead>
+<tbody>
+<tr><td>① <strong>유도(빈칸 완성)</strong></td><td>“경사하강 1스텝의 빈칸을 채우시오”, “KKT 조건에서 해를 구하시오”</td><td>§유도 템플릿 ①②</td></tr>
+<tr><td>② <strong>“X를 키우면?” 정성 추론</strong></td><td>“C를 크게 하면?”, “λ를 0으로 하면?”, “트리 깊이를 늘리면?”</td><td>§유도 템플릿 ②③, §편향-분산 스펙트럼</td></tr>
+<tr><td>③ <strong>모델 비교(장 넘나들기)</strong></td><td>“kNN과 SVM은 왜 둘 다 스케일링이 필요한가?”, “RF와 GBDT의 차이는?”</td><td>§확인 문제 1~6</td></tr>
+<tr><td>④ <strong>실전 코드·절차 판정</strong></td><td>“이 파이프라인의 누수 지점은?”, “이 발표의 약점과 질문 하나”</td><td>§누수 원칙, 8.1·8.2절</td></tr>
+</tbody>
+</table>
+</div>
+<p>유형 ①과 ②가 이 절의 “손으로 한 번” 세 템플릿으로, ③이 확인 문제로,
+④는 8.1·8.2절에서 이미 연습한 것(리뷰 체크리스트, “자주 하는 실수”)으로
+준비된다. 즉 <strong>①②를 실제로 종이에 써보고, ③④는 기존 섹션을 훑으면</strong>
+시험 준비가 끝나는 구조다.</p>
+<h3 id="손으로-한-번-유도-템플릿-①--로지스틱회귀-경사하강-1스텝"><a class="header" href="#손으로-한-번-유도-템플릿-①--로지스틱회귀-경사하강-1스텝">손으로 한 번: 유도 템플릿 ① — 로지스틱회귀 경사하강, 1스텝</a></h3>
+<p>Ch02.3에서 경사하강을 배웠을 때, “경사가 \((\hat p - y) x\)로 나온다는
+것“을 <strong>믿었</strong>다. 시험에서는 그 믿음을 <strong>재현</strong>해야 한다. 아래 4단계가
+그 템플릿이다 — 손실이 무엇이든 “예측 대입 → 미분 → 1/n 곱하기 →
+업데이트“의 순서만 지킨다면 같은 모양으로 쓰인다.</p>
+<p><strong>문제</strong>: 1차원 입력 \(n=3\) 샘플, \(x=(1,2,3)\), \(y=(0,1,1)\),
+현재 \(w=0.1\), \(b=0\), 학습률 \(\eta=0.5\). 교차 엔트로피 손실
+\(\ell = -\frac1n\sum_i [y_i\log\hat p_i + (1-y_i)\log(1-\hat p_i)]\)
+(\(\hat p_i=\sigma(wx_i+b)\))에서 <strong>경사하강 1스텝</strong>을 손으로 수행하라.</p>
+<p><strong>1단계 — 예측 대입</strong>. \(z_i = wx_i+b = (0.1, 0.2, 0.3)\)이므로
+시그모이드를 대입한다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>샘플</th><th>\(x_i, y_i\)</th><th>\(z_i\)</th><th>\(\hat p_i = \sigma(z_i)\)</th><th>\(\hat p_i - y_i\)</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>(1, 0)</td><td>0.1</td><td>0.524979</td><td>\(+0.524979\)</td></tr>
+<tr><td>2</td><td>(2, 1)</td><td>0.2</td><td>0.549834</td><td>\(-0.450166\)</td></tr>
+<tr><td>3</td><td>(3, 1)</td><td>0.3</td><td>0.574443</td><td>\(-0.425557\)</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>2단계 — 손실 계산</strong>(미분 전에 대수의 정확성을 점검).</p>
+<p>\[\ell = -\frac13\big[\log(0.475021) + \log(0.549834) + \log(0.574443)\big]
+= \frac{0.744436 + 0.597797 + 0.554336}{3} \approx 0.6322\]</p>
+<p><strong>3단계 — 경사</strong>. Ch02.3의 \(\frac{\partial \ell}{\partial w}
+= \frac1n\sum_i(\hat p_i - y_i)x_i\)에 대입:</p>
+<p>\[\frac13\Big[\underbrace{(+0.524979)(1)}_{\text{샘플1}} +
+\underbrace{(-0.450166)(2)}_{\text{샘플2}} +
+\underbrace{(-0.425557)(3)}_{\text{샘플3}}\Big]
+= \frac{0.524979 - 0.900332 - 1.276671}{3}
+= \frac{-1.652024}{3} = -0.550675\]</p>
+<p>\(\frac{\partial \ell}{\partial b} = \frac13\sum_i(\hat p_i - y_i)
+= -0.116915\)도 함께 구한다.</p>
+<p><strong>4단계 — 업데이트</strong>. \(w \leftarrow 0.1 - 0.5\times(-0.550675)
+= 0.375338\), \(b \leftarrow 0 - 0.5\times(-0.116915) = +0.058457\).</p>
+<p><strong>“왜?” — 부호 읽기</strong>: 샘플 1은 실제 0인데 0.525로 예측했으므로
+\((\hat p - y) &gt; 0\) — 양수 기여가 \(w\)를 <strong>작아지는</strong> 쪽으로 당긴다
+(예측 확률을 0 쪽으로 낮추려는 힘). 샘플 2·3은 실제 1인데 0.55·0.57로
+예측했으므로 음수 기여로 \(w\)를 <strong>크는</strong> 쪽으로 밀어올린다. 그런데
+\(x_i\)가 곱하기 때문에 \(x=3\)인 샘플 3의 기여(−1.277)는 \(x=1\)인
+샘플 1(+0.525)의 2.4배 무게를 가진다 — <strong>“크게 틀린” 샘플이 아니라
+“큰 특징 값으로 틀린” 샘플이 더 강한 힘</strong>을 준다. 그래서 경사가 음수이고
+\(w\)가 0.1에서 0.375로 오른다. 시험 답안에서 이 부호·가중 해석 한 줄이
+“대입만 한 답“과 “이해한 답“을 가른다.</p>
+<p><strong>“왜 \((\hat p-y)x\)인가?”</strong>(빈칸 문제의 빈 칸은 보통 여기다).
+연쇄법칙: \(\frac{\partial}{\partial w}[-\log\hat p] = -\frac1{\hat p}
+\cdot \frac{d\hat p}{dz}\cdot\frac{dz}{dw}\), 그리고
+\(\frac{d\sigma}{dz}=\sigma(1-\sigma)\)이므로
+\(\frac1{\hat p}\cdot\hat p(1-\hat p) = 1-\hat p\)로 시그모이드의 미분이
+<strong>정말 예쁜 형태</strong>로 정리되어 \((\hat p - y)\)만 남는다. “시그모이드의
+미분이 시그모이드 자기self를 곱한 것“이 이 깔끔함의 원인이다. 이 경사가
+정말 미분인 것인지 의심이 든다면 손실 \(\ell(w)\)를 \(w\)의 함수로 직접
+짜서 유한차분 \(\frac{\ell(w+\delta)-\ell(w-\delta)}{2\delta}\)로 교차
+검증할 수 있다 — 실습 노트북 §1이 정확히 그걸 해서 −0.550675와 일치함을
+보여준다.</p>
+<h3 id="손으로-한-번-유도-템플릿-②--svm-kkt-조건-c가-실제로-바꾸는-것"><a class="header" href="#손으로-한-번-유도-템플릿-②--svm-kkt-조건-c가-실제로-바꾸는-것">손으로 한 번: 유도 템플릿 ② — SVM KKT 조건, “C가 실제로 바꾸는 것”</a></h3>
+<p>Ch05.2의 소프트 마진 SVM에서 “C가 커지면 마진이 커진다“는 <strong>잘못된
+직감</strong>을 시험에서 확인하는 문제가 자주 나온다. 아래 장난감 문제로 KKT를
+손으로 풀어 보면, 그 직감이 어디서 꺾이는지 숫자로 보인다.</p>
+<p><strong>문제</strong>: 1차원 4개 점(실습 노트북은 sklearn 입력용으로 2차원으로 놓았을
+뿐, 계산된 해는 모든 C에서 두 번째 특징 계수가 0이다):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>점</th><th>\(x\)</th><th>\(y\)</th><th>역할</th></tr>
+</thead>
+<tbody>
+<tr><td>A</td><td>−1</td><td>+1</td><td></td></tr>
+<tr><td>B</td><td>−1</td><td>+1</td><td>A와 같은 위치(다중점)</td></tr>
+<tr><td>C</td><td>+2</td><td>−1</td><td></td></tr>
+<tr><td>E</td><td>−0.2</td><td>−1</td><td><strong>이상치</strong> — −1 클래스인데 +1 쪽에 붙어 있음</td></tr>
+</tbody>
+</table>
+</div>
+<p>목적함수 \(\min_{w,b}\ \tfrac12 w^2 + C\sum_i \xi_i\)
+(약분 \(y_i(wx_i+b) \ge 1-\xi_i,\ \xi_i \ge 0\)). Ch05.2의 KKT 세
+조건을 떠올린다:</p>
+<ol>
+<li><strong>0 ≤ αᵢ ≤ C</strong> — α는 “점 i에게 쓰인 위반 예산”. C가 전체 예산이면
+α는 각 점에 배정된 몫이다.</li>
+<li><strong>αᵢξᵢ = 0</strong> — 마진 위반(ξᵢ&gt;0)을 하는 점은 α가 상한 C에
+꽉 차 있다.</li>
+<li><strong>αᵢ(yᵢf(xᵢ) − 1 + ξᵢ) = 0</strong> —
+<ul>
+<li>αᵢ = 0: 마진 바깥(\(y_i f(x_i) \ge 1\)), 해에 영향 없음.</li>
+<li>0 &lt; αᵢ &lt; C: <strong>마진 위에 정확히</strong> (\(y_i f(x_i) = 1\)).</li>
+<li>αᵢ = C: 마진 안 또는 오분류(\(y_i f(x_i) \le 1\)).</li>
+</ul>
+</li>
+</ol>
+<p>그리고 정합성(stationarity): \(w = \sum_i \alpha_i y_i x_i\),
+\(\sum_i \alpha_i y_i = 0\)(이 문제에선 클래스가 2:2라
+\(\alpha_A+\alpha_B = \alpha_C+\alpha_E\)). A·B가 같은 \((x,y)\)이므로
+대칭으로 \(\alpha_A=\alpha_B \triangleq a\). 이제 C를 0에서부터 올리며
+각 구간의 해를 구한다 — <strong>이 4단계가 템플릿</strong>이다(구간 경계는 “어떤
+α가 상한/0에 닿는가“로 구한다):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>구간</th><th>\(C\) 범위</th><th>α</th><th>\(w, b\)</th><th>\(|w|^2\)</th><th>마진 \(2/|w|\)</th><th>SV</th></tr>
+</thead>
+<tbody>
+<tr><td>I</td><td>\(C \le \tfrac{10}{57}\approx0.175\)</td><td>전부 = C</td><td>\(-3.8C,\ 1.9C\)</td><td>\(14.44\,C^2\)</td><td>\(\tfrac{2}{3.8C}\) (52.6→3.0)</td><td>A,B,C,E</td></tr>
+<tr><td>II</td><td>\(\tfrac{10}{57} &lt; C &lt; \tfrac56\)</td><td>\(\alpha_E=C\), \(a=\tfrac19+\tfrac{11}{30}C\), \(\alpha_C=\tfrac29-\tfrac4{15}C\)</td><td><strong>\(-\tfrac23,\ \tfrac13\) 고정</strong></td><td><strong>4/9</strong> (고정)</td><td><strong>3.0</strong> (고정)</td><td>A,B,C (E는 마진 안)</td></tr>
+<tr><td>III</td><td>\(\tfrac56 &lt; C &lt; \tfrac{25}{8}\)</td><td>\(\alpha_E=C\), \(a=C/2\), \(\alpha_C=0\)</td><td>\(-0.8C,\ 1-0.8C\)</td><td>\(0.64\,C^2\)</td><td>\(\tfrac{2.5}{C}\) (3.0→0.8)</td><td>A,B,E</td></tr>
+<tr><td>IV</td><td>\(C \ge \tfrac{25}{8}=3.125\)</td><td>\(a=\tfrac{25}{16}\), \(\alpha_E=\tfrac{25}{8}\), \(\alpha_C=0\)</td><td><strong>\(-\tfrac52,\ -\tfrac32\) 고정</strong></td><td><strong>6.25</strong> (고정)</td><td><strong>0.8</strong> (고정)</td><td>A,B,E</td></tr>
+</tbody>
+</table>
+</div>
+<p>(구간 경계: I→II는 A·B가 마진 위에 올 때까지 \(f(-1)=5.7C=1 \Rightarrow
+C=10/57\). II→III은 \(\alpha_C=0\)가 되는 \(C=5/6\). III→IV은 E가
+마진 위에 오기까지 \(y_E f(x_E)=0.64C-1=1 \Rightarrow C=25/8\). 참고로
+E는 \(C&lt;25/16=1.5625\)에서는 아직 <strong>오분류</strong> 상태다.)</p>
+<p>이 표를 읽는 법 — “C가 무엇을 바꾸는가“의 정답이 여기에 있다:</p>
+<ul>
+<li><strong>구간 I</strong>(C 작음): 예산이 작아 <strong>모든 점</strong>이 상한 C에 꽉 찬다. 경계는
+\(x=0.5\)에 고정(±1·+2 군의 중점)이고 C가 커지면 마진이 \(C\)에
+비례해 팽창한다(\(14.44C^2\)). “C를 올리면 마진이 커진다“는 직감이
+<strong>유일하게</strong> 맞는 구간이다.</li>
+<li><strong>구간 II</strong>: A·B가 마진 위에 닿자(\(C\approx0.175\)) 이상치 E의
+위반(ξᵢ&gt;0)이 αᵢ=C로 최대 배정되고, 경계는 \(w=-\tfrac23,\ b=\tfrac13\)
+로 <strong>정지</strong>한다. 마진 3.0은 +1 군(−1)과 C(+2) 사이의 최대 마진 —
+<strong>이상치를 무시하고 가능할 만큼</strong> 큰 마진이다. 여기서 C를 올려도
+\(\|w\|^2\)은 4/9에서 움직이지 않는다.</li>
+<li><strong>구간 III</strong>: E의 위반 비용이 너무 커지자(C≥5/6) C(+2)가 마진에서
+빠지고(\(\alpha_C=0\)), 경계가 <strong>왼쪽으로 미끄러지며</strong> E를 감싸기
+시작한다(\(w=-0.8C\)). 마진은 3.0에서 \(\tfrac{2.5}{C}\)로 <strong>줄어든다</strong>
+(C를 올리면 마진이 줄어드는 구간!). \(C=25/16\)에서 E가 마침내
+올바르게 분류된다.</li>
+<li><strong>구간 IV</strong>(\(C\ge3.125\)): E도 마진 위에 닿으면 해는
+\(w=-\tfrac52,\ b=-\tfrac32\)로 <strong>다시 정지</strong>한다. 이제 경계는 A(−1,+1)와
+<strong>이상치 E</strong>(−0.2,−1)가 정한다 — 이 두 점의 중점 −0.6, 반갭 0.4, 마진
+0.8. <strong>C를 100으로 올려도 \(\|w\|^2=6.25\), 마진 0.8, 경계 x=−0.6은
+변하지 않는다.</strong></li>
+</ul>
+<p><strong>“왜?”</strong>: C가 바꾸는 것은 마진의 <em>크기</em>가 아니라 **“이상치 E의 위반을
+얼마까지 사들이는가”**다. 이 문제에서 달성 가능한 마진의 범위는 지오메트리가
+정한다 — 이상치를 무시하면 최대 3.0(−1과 +2 사이), 이상치를 마진 안에
+넣으려면 0.8(−1과 −0.2 사이)까지만 가능하다. C는 그 두 극단 사이의
+트레이드오프를 선택할 뿐, “무한히 큰 마진“이라는 선택지는 존재하지
+않는다. 시험에서 “C를 크게 하면 무엇이 변하고 무엇이 변하지 않는가“를
+물으면, 이 4구간표의 <strong>구간 IV</strong> — “C ≥ C* 이후 해는 C에 무관하다” —
+가 정답의 뼈대다. 실습 노트북 §2가 이 4구간표를 실제 C 스위프로 검증하고
+(\(\|w\|^2\)이 14.44C²로 오르면 4/9로 수평, 0.64C²로 다시 오르면
+6.25로 수평), αᵢ를 <code>dual_coef_</code>로 읽어 손계산과 대조한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch08_3_svm_C_effect.svg" alt="SVM 소프트 마진 4구간 — 같은 4점(이상치 E 포함) 데이터에서 C를 0.0001~100으로 올리며 실제 ‖w‖²(파랑 점)을 그린 것이다. 파란 실선이 두 번 꺾여 수평이 되는 것이 손계산의 직접적 결과: 구간 I(14.44C², 초록 점선) → 구간 II(4/9 수평, 주황) → 구간 III(0.64C², 보라) → 구간 IV(6.25 수평, 빨강). 세 수직 점선(10/57, 5/6, 25/8)이 구간의 경계. C를 아무리 올려도 ‖w‖²은 6.25를 넘지 않는다"><span class="img-wrapper"><img src="../../images/ch08_3_svm_C_effect.svg" alt="SVM 소프트 마진 4구간 — 같은 4점(이상치 E 포함) 데이터에서 C를 0.0001~100으로 올리며 실제 ‖w‖²(파랑 점)을 그린 것이다. 파란 실선이 두 번 꺾여 수평이 되는 것이 손계산의 직접적 결과: 구간 I(14.44C², 초록 점선) → 구간 II(4/9 수평, 주황) → 구간 III(0.64C², 보라) → 구간 IV(6.25 수평, 빨강). 세 수직 점선(10/57, 5/6, 25/8)이 구간의 경계. C를 아무리 올려도 ‖w‖²은 6.25를 넘지 않는다"></span></label></p>
+<h3 id="손으로-한-번-유도-템플릿-③--두-항의-구조ridge--lasso--svm--gbdt"><a class="header" href="#손으로-한-번-유도-템플릿-③--두-항의-구조ridge--lasso--svm--gbdt">손으로 한 번: 유도 템플릿 ③ — “두 항의 구조”(Ridge · Lasso · SVM · GBDT)</a></h3>
+<p>확인 문제 3이 짚은 대로, Ch02~07의 모델들은 목적함수가 <strong>“적합도 +
+단순성“의 두 항</strong>이라는 공통 구조를 가진다. 시험의 “~의 목적함수를 쓰고
+각 항이 무엇을 하는지 설명하시오“는 이 표를 쓰는 것과 같다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>모델</th><th>목적함수</th><th>적합도 항</th><th>단순성 항</th><th>노브(트레이드오프)</th></tr>
+</thead>
+<tbody>
+<tr><td>Ridge (Ch06)</td><td>\(\ell_{\text{MSE}} + \frac{\lambda}{2}|w|^2\)</td><td>\(\ell_{\text{MSE}}\): 데이터에 맞추기</td><td>\(|w|^2\): 가중치 축소(분산↓)</td><td>\(\lambda\) (0→무정규화, ∞→w=0)</td></tr>
+<tr><td>Lasso (Ch06)</td><td>\(\ell_{\text{MSE}} + \lambda|w|_1\)</td><td>위와 같음</td><td>\(|w|_1\): <strong>정확히 0</strong> 만드는 켄(kink)</td><td>\(\lambda\)</td></tr>
+<tr><td>소프트 마진 SVM (Ch05.2)</td><td>\(\tfrac12|w|^2 + C\sum_i \xi_i\)</td><td>\(C\sum\xi_i\): 위반 사들이기</td><td>\(\tfrac12|w|^2\): 마진 최대화</td><td>\(C\) (0→w=0, ∞→하드마진)</td></tr>
+<tr><td>GBDT (Ch07.3)</td><td>(반복) 잔차에 트리를 적합하고 \(\eta\)로 축소</td><td>트리: 잔차(적합의 잔여)를 설명</td><td>\(\eta\)(학습률), \(n\)(트리 수)</td><td>\(\eta\), \(n\)</td></tr>
+<tr><td>kNN (Ch04)</td><td><em>(파라미터 없음 — 모든 점 memorize)</em></td><td>“적합” = 전량 암기</td><td>\(k\): 이웃 평균으로 매끄럽게</td><td>\(k\) (1→암기, ∞→다수 클래스)</td></tr>
+</tbody>
+</table>
+</div>
+<p>패턴 한 줄: <strong>적합도 항은 “데이터에 잘 맞추는 것“을, 단순성 항은
+“모델을 단순하게 유지하는 것“을 재고, 노브 하나가 둘의 비중을 조절한다.</strong>
+노브를 0으로 가면 적합만 남고(과적합 위험, Ch04.1), ∞로 가면 단순성만
+남는다. 두 모델의 노브가 <strong>역방향</strong>인 점에 주의: Ridge의 \(\lambda\)는
+“크면 단순“인데, SVM의 \(C\)는 **“크면 적합(위반을 덜 허용)”**이다 —
+“λ를 크게 하면?“과 “C를 크게 하면?” 문항은 정반대 방향으로 답해야 한다.
+kNN은 목적함수가 아예 없으므로 이 틀에 끼지 않는다 — “kNN의 정규화 항은?”
+이라는 함정 문항의 정답은 “없다. k 자체가 매끄러미(간접적 단순성)를
+조절할 뿐“이다.</p>
+<h3 id="편향-분산-스펙트럼-같은-데이터-네-모델"><a class="header" href="#편향-분산-스펙트럼-같은-데이터-네-모델">편향-분산 스펙트럼: 같은 데이터, 네 모델</a></h3>
+<p>“유연한 모델 vs 단순한 모델“을 <strong>같은 데이터</strong>에서 놓고 train/val을
+동시에 보는 문제는 Ch04.1·Ch06.2·Ch07.3의 개념을 한 문항에 끼워 넣는
+전형이다. diabetes(442×10)로 train 265 / val 88 / test 89 (Ch06.3 원칙대로
+스케일러 fit은 train으로만)를 나눠 4개 모델을 돌리면 아래 표가 나온다
+(실습 노트북 §3):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>모델</th><th>train R²</th><th>val R²</th><th>격차 (train − val)</th></tr>
+</thead>
+<tbody>
+<tr><td>Ridge(\(\lambda{=}10^{-4}\)) [Ch02,06]</td><td>0.579</td><td>0.443</td><td>0.137</td></tr>
+<tr><td>Ridge(\(\lambda{=}1\)) [Ch06]</td><td>0.579</td><td>0.442</td><td>0.137</td></tr>
+<tr><td>kNN(k=5) [Ch04]</td><td>0.618</td><td>0.329</td><td>0.290</td></tr>
+<tr><td>Tree(무제한 깊이) [Ch07.1]</td><td>1.000</td><td><strong>−0.014</strong></td><td><strong>1.014</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch08_3_model_spectrum.svg" alt="유연성 스펙트럼 — 같은 diabetes 데이터에 네 모델: Ridge(λ=1e-4, λ=1) → kNN(k=5) → 무제한 트리의 train R²(파랑)·val R²(빨강) 막대와 gap 라벨. 왼쪽→오른쪽으로 갈수록 train은 올라가고 val은 벌어지며, 트리는 train 1.000인데 val이 0 아래(−0.014)로 처진다"><span class="img-wrapper"><img src="../../images/ch08_3_model_spectrum.svg" alt="유연성 스펙트럼 — 같은 diabetes 데이터에 네 모델: Ridge(λ=1e-4, λ=1) → kNN(k=5) → 무제한 트리의 train R²(파랑)·val R²(빨강) 막대와 gap 라벨. 왼쪽→오른쪽으로 갈수록 train은 올라가고 val은 벌어지며, 트리는 train 1.000인데 val이 0 아래(−0.014)로 처진다"></span></label></p>
+<p>읽는 법(= 시험 답안 구조):</p>
+<ul>
+<li><strong>왼쪽 → 오른쪽으로 갈수록 모델의 유연성(가용 자유도)이 커진다.</strong>
+Ridge는 10개 가중치에 \(\lambda\)로 매달아 자유도를 조절하는 “연속
+스펙트럼“의 한 점이고, 무제한 트리는 265건을 전부 외우는 “스펙트럼의
+끝“이다.</li>
+<li>격차가 큰 모델(오른쪽)은 <strong>분산</strong>이 크다 — Ch04.1의 언어로는 “모델
+추정량이 train 데이터의 선택에 따라 크게 흔들린다.” 격차가 작은 모델
+(왼쪽)은 <strong>편향</strong>이 크다 — Ch06의 언어로는 “평균적으로 진실을 향한
+systematic한 오차.”</li>
+<li>트리의 val R²가 <strong>0 아래</strong>(음수)라는 것: train에서 1.000을 찍고도
+검증 데이터에서는 <em>평균만 예측하는 모델보다 나쁘다</em>는 뜻이다. Ch06.2의
+U자 곡선에서 “\(\lambda \to 0\) 쪽 끝“이 실제로 이렇게 처져 있음을
+보여주는 숫자다. (“train R²=1.000이니까 좋은 모델“이라는 답안은 이
+한 줄로 반박된다.)</li>
+<li><strong>Ridge(10⁻⁴)와 Ridge(1)가 거의 같다</strong>는 점도 읽자: 표준화한 265개
+샘플에서 \(\lambda=1\)은 데이터 스케일 대비 아직 매우 작은 벌금이다
+— “\(\lambda\)가 1로 작아 보이지만 실제로도 작을 수 있다“는 감각
+(Ch06.1의 스케일 의존성)이 여기 있다.</li>
+</ul>
+<p>이 그림의 교훈은 8.1절의 GBDT 학습 곡선(§“test를 한 번만”)과 동일하다 —
+<strong>train 곡선은 “배운 것을” 재고, val 곡선만 “재는 것을” 한다.</strong></p>
+<h3 id="장을-넘나드는-동치성-gda와-로지스틱회귀는-정말-같은-경계인가"><a class="header" href="#장을-넘나드는-동치성-gda와-로지스틱회귀는-정말-같은-경계인가">장을 넘나드는 동치성: GDA와 로지스틱회귀는 정말 같은 경계인가</a></h3>
+<p>확인 문제 1의 답은 “둘 다 \(P(y{=}1\mid x)=\sigma(w^Tx+b)\)라는 같은
+<strong>형태</strong>에 도달한다“는 것이었다. 그런데 “동치“는 어디까지 진실인가?
+breast_cancer(569×30)로 실측해보면 답이 정교해진다(실습 노트북 §4;
+train/test = 70/30, stratify, 스케일러는 train으로만 fit):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>측정</th><th>값</th></tr>
+</thead>
+<tbody>
+<tr><td>로지스틱회귀 test AUC (판별적, Ch02)</td><td>0.9934</td></tr>
+<tr><td>GDA/LDA test AUC (생성적, Ch03)</td><td>0.9855</td></tr>
+<tr><td>두 모델의 test 출력 확률 상관계수</td><td>0.900</td></tr>
+<tr><td>경계 벡터 방향 유사도 \(\cos(w_{\text{logit}}, w_{\text{GDA}})\)</td><td>0.203</td></tr>
+<tr><td>test 클래스 라벨 일치율</td><td>93.6%</td></tr>
+</tbody>
+</table>
+</div>
+<p>즉: <strong>결정 경계(분류)는 거의 같고(라벨 93.6% 일치, AUC 0.99 부근),
+출력 확률도 꽤 비슷하지만(상관 0.900), 경계 벡터 \(w\)의 방향은
+사실 다르다(cos 0.203).</strong> Ch03.2의 동치성은 <strong>\(P(x\mid y)\)가
+정규분포라는 전제 하에</strong> 성립하는 등식이다 — 이 데이터가 정규분포가
+아니므로 전제가 약하게 깨지고, “같은 <strong>형태</strong>의 경계, <strong>다른 계수</strong>“가
+나온다. 시험에서 “GDA와 로지스틱회귀는 동치인가“를 물으면 <strong>“정규분포
+가정이 성립하면 계수까지 같은 방향의 경계지만, 전제가 깨지면 경계의
+<em>형태</em>(시그모이드-선형)만 같고 계수는 경로(생성적 vs 판별적)에 따라
+다르다”</strong> — 이 전제·반례 한 쌍이 있는 답이 3점 답안이다. “동치“를
+“계수도 같다“로 지나치게 강하게 확장하지 않는 것이 정직한 답안이다.</p>
+<h3 id="누수-원칙-숫자로-전처리-통계를-어디에서-fit하는가"><a class="header" href="#누수-원칙-숫자로-전처리-통계를-어디에서-fit하는가">누수 원칙, 숫자로: 전처리 통계를 어디에서 fit하는가</a></h3>
+<p>확인 문제 6의 “가장 흔히 깨지는 지점” — <code>StandardScaler</code>의 <code>fit</code>(평균·
+표준편차)을 <strong>전체</strong> 데이터로 하는 것 — 의 효과를 diabetes 데이터
+(위 스펙트럼과 같은 분할)에서 실측하면(실습 노트북 §5):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>스케일러 fit 범위</th><th>val R²</th></tr>
+</thead>
+<tbody>
+<tr><td>전체(train+val+test) — <strong>원칙 위반</strong></td><td>0.4417</td></tr>
+<tr><td>train만 — 원칙 준수</td><td>0.4417</td></tr>
+</tbody>
+</table>
+</div>
+<p>차이는 \(3\times10^{-5}\) — <strong>거의 없다.</strong> 이 “거의 없다“가 정답이다:
+diabetes는 “행 하나 = 독립 관측“이어서 train의 평균/표준편차와 전체의
+것이 거의 같다. 누수가 <strong>크게</strong> 벌어지는 것은 Ch06.3의 환자 예처럼
+<strong>동일 실체(환자, 계좌, 사용자)가 train과 val/test에 동시에 들어와
+정보를 공유할 때</strong>다 — 그때는 <code>fit</code>의 위치가 아니라 <strong>분할 자체</strong>가
+문제를 만든다(§“자주 하는 실수” 2번). “누수는 항상 val 숫자를 부풀린다”
+가 아니라 <strong>“누수가 커지는 조건(공유된 실체, 시간 순서)“을 설명할 수
+있는가</strong>가 이 개념의 시험 판정 기준이다.</p>
+<h3 id="자가진단-5문항-빠른-체크와-40분-모의-문제"><a class="header" href="#자가진단-5문항-빠른-체크와-40분-모의-문제">자가진단: 5문항 빠른 체크와 40분 모의 문제</a></h3>
+<p>시험 1주일 전, 아래 5문항을 <strong>종이에</strong> 답해볼 수 있다면 Block A의
+핵심은 잡은 것이다(답은 전부 이 절과 8.1·8.2절에 있다).</p>
+<ol>
+<li><strong>장별 핵심 질문</strong> 6문항 중, 한 문장도 멈추지 않고 답할 수 있는 것이
+몇 개인가? (5개 이상이면 양호)</li>
+<li>유도 템플릿 ①의 4단계를 빈칸 없이 쓸 수 있는가? (\(\hat p\) 대입 →
+\(\ell\) 계산 → \(\frac1n\sum(\hat p-y)x\) → \(w-\eta\nabla\).
+숫자 −0.5507까지 재현)</li>
+<li>유도 템플릿 ②에서 “C ≥ 25/8 이후 왜 \(\|w\|^2=6.25\)로 고정되는가“를
+KKT 세 조건으로 쓸 수 있는가?</li>
+<li>같은 데이터에서 “train R² = 1.000“인 모델에 대해, 편향-분산 언어로
+2문장 진단을 쓸 수 있는가?</li>
+<li>8.2절의 가상 발표(99.8:0.2 데이터, 정확도 99.7% vs 99.8%)에 대해,
+장·절을 명시한 반박 가능한 질문 하나를 쓸 수 있는가?</li>
+</ol>
+<p><strong>40분 모의 문제</strong>(시험 시간 감각 연습): ① 유도 1문항 12분(템플릿 ①
+또는 ②, 시계 보며) → ② “C를 키우면 / λ를 키우면” 정성 문제 8분 →
+③ 장 넘나들기 비교 문제 8분(확인 문제 1~6 중 무작위) → ④ 코드 판정
+문제 6분(§“자주 하는 실수” 중 하나를 “이 코드 어디가 문제인가” 형식
+으로) → ⑤ 남은 6분은 ②의 답을 <strong>반대로</strong>(C를 0으로 하면?) 다시
+쓰기. ⑤를 할 수 있으면 “노브 트레이드오프” 양방향 이해가 완성된 것이다.</p>
+<h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
+<p>Block A 개념에서 시험과 복습 둘 다에서 반복되는 실수 6가지 —
+각각이 “왜“를 빠뜨린 실수다.</p>
+<ul>
+<li><strong>경사 부호/계수 혼동</strong>(템플릿 ①): \(w \leftarrow w-\eta\nabla\)의
+<strong>마이너스</strong>를 빼먹거나, 평균 손실의 \(1/n\)을 빼먹어 숫자가 n배로
+틀린다. 실습: 위 예의 경사가 −0.5507이 아니라 −1.652가 나와야 하는
+상황(= \(1/n\) 누락)을 의식적으로 만들어 보고, 어느 단계에서 \(1/n\)이
+들어가는지 확인.</li>
+<li><strong>“C를 키우면 마진이 무한히 커진다”</strong>(템플릿 ②): 위 4구간표의
+구간 IV — C ≥ 3.125 이후 \(\|w\|^2\)은 6.25로 고정된다. “C가 바꾸는
+것은 위반 허용(어떤 점이 SV인가)이지 마진의 상한은 아니다.”</li>
+<li><strong>“동치“를 “계수가 같다“로 확장</strong>(§동치성): 정규분포 전제가 깨지면
+경계의 <em>형태</em>만 같고 \(w\) 방향은 다르다(cos 0.203). 답안에 “전제”
+한 단어가 없으면 2점.</li>
+<li><strong>“train R² = 1.000이면 좋은 모델”</strong>(§스펙트럼): 무제한 트리는
+train 1.000 / val −0.014 — val(또는 gap)로만 판단.</li>
+<li><strong>스케일러를 전체로 fit하면서 “데이터가 깨끗해서 차이가 안 났을
+뿐“이라고 넘어감</strong>(§누수): 깨끗한 데이터에서는 차이가 작아도,
+환자/계좌 단위 데이터에서는 격차가 커진다 — “누수가 커지는 조건“을
+함께 써야 만점.</li>
+<li><strong>Ridge의 \(\lambda\)와 SVM의 \(C\)를 같은 방향의 노브로 생각</strong>
+(템플릿 ③): \(\lambda\)는 “크면 단순”, \(C\)는 “크면 적합(위반을 덜 허용)”
+— 정반대. “노브를 크게 하면” 문항에서 가장 흔한 0점.</li>
+</ul>
+<h3 id="확인-문제-장을-넘나드는-복습-문제-9개"><a class="header" href="#확인-문제-장을-넘나드는-복습-문제-9개">확인 문제: 장을 넘나드는 복습 문제 9개</a></h3>
 <p>각 문항은 여러 장의 개념을 동시에 확인한다 — 먼저 스스로 답해본 뒤
-아래 답과 비교해보자.</p>
+아래 답과 비교해보자. 1~6은 장 넘나들기(유형 ③), 7~9는 이번 절의 유도
+템플릿(유형 ①②)에 대응한다.</p>
 <p><strong>1.</strong> 로지스틱회귀(Ch02)와 GDA(Ch03)는 둘 다 어떤 공통된 최종 형태에
 도달하는가?</p>
 <blockquote>
 <p>답: 둘 다 \(P(y{=}1|x)=\sigma(w^Tx+b)\)라는 같은 시그모이드-선형
-형태에 도달한다(Ch03.2). 다만 로지스틱회귀는 이 형태를 판별적으로
+형태에 도달한다(Ch03.2). 다만 로지ส틱회귀는 이 형태를 판별적으로
 직접 학습하고, GDA는 정규분포를 가정한 생성적 모델링에서 베이즈
 정리로 유도해낸다는 경로가 다르다.</p>
 </blockquote>
@@ -221,7 +573,7 @@
 항의 합“이라는 공통 구조를 갖는다. 각각 어떤 두 항인가?</p>
 <blockquote>
 <p>답: Ridge는 “적합도(원래 손실) + \(\lambda\)×가중치 크기”, SVM
-소프트 마진은 “\(\frac{1}{2}|w|^2\)(마진 최대화) + \(C\)×위반
+소프트 마진은 “\(\frac{1}{2}\|w\|^2\)(마진 최대화) + \(C\)×위반
 정도(힌지 손실)“다. 둘 다 “데이터에 잘 맞추기“와 “모델을 단순하게
 유지하기” 사이의 트레이드오프를 하나의 하이퍼파라미터(\(\lambda\)
 또는 \(C\))로 조절한다는 점이 같다.</p>
@@ -253,6 +605,43 @@ train/val/test로 나누기 <strong>전에</strong> 전체 데이터로 미리 �
 때 <code>fit</code>은 반드시 train 데이터에만 적용하고, val/test에는 <code>transform</code>
 만 적용해야 한다.</p>
 </blockquote>
+<p><strong>7.</strong> (템플릿 ②) 유도 템플릿 ②의 4점 문제에서, \(C=3.125\)와
+\(C=100\)의 해(\(w^*, b^*\), SV 집합)는 같다. KKT 조건으로 <strong>왜</strong>
+같은지, 그리고 \(C\)를 더 키워도 바뀌지 않는 마진의 **상한 값(0.8)**을
+두 점의 지오메트리에서 직접 구해보자.</p>
+<blockquote>
+<p>답: \(C\ge25/8\)에서는 A·B(−1,+1)와 이상치 E(−0.2,−1)가 모두
+마진 위에 있고(0&lt;αᵢ&lt;C), C(+2)는 마진 바깥(α_C=0)이다 — 이 세 상태
+(마진 위/위/바깥)는 C의 크기에 의존하지 않으므로 KKT의 해도 C에
+무관하다. 마진의 상한은 <strong>가장 가까운 다른 클래스 두 점</strong>이 정한다:
+A(−1,+1)와 E(−0.2,−1) 사이의 거리 0.8이므로 경계는 중점 −0.6,
+반갭 0.4, 마진 \(2/\|w\|=0.8 \Rightarrow \|w\|=2.5,\ \|w\|^2=6.25\).</p>
+</blockquote>
+<p><strong>8.</strong> (템플릿 ①) 유도 템플릿 ①에서 학습률을 \(\eta=0.5\) 대신
+\(\eta=2\)로 쓴다면 1스텝 후의 \(w, b\)는? 그리고 “학습률을 크게
+하면 항상 빨리 수렴한다“가 왜 성급한 결론인지, 이 숫자만으로 말할 수
+있는 한계는?</p>
+<blockquote>
+<p>답: \(w=0.1-2\times(-0.550675)=1.201350\),
+\(b=0-2\times(-0.116915)=0.233830\) — 스텝이 정확히 4배. 한계:
+손실면이 볼록(교차 엔트로피는 볼록)이므로 이 방향의 큰 스텝은 손실을
+<em>낮추기는</em> 한다, 그러나 스텝이 경사 변화율에 비해 너무 크면 다음
+스텝에서 반대쪽으로 <strong>오버슈팅</strong>하며 손실이 튀어오를 수 있다 —
+1스텝만으로는 “수렴“이 아니라 “더 큰 스텝“만을 볼 수 있다.
+(Ch09 Block B에서 학습률 스케줄링이 이 주제의 일반화다.)</p>
+</blockquote>
+<p><strong>9.</strong> (템플릿 ③) Lasso(Ch06.1)의 목적함수 두 항을 쓰고, “왜 L1은
+가중치를 <strong>정확히 0</strong>으로 만들지만 L2는 (유한한 \(\lambda\)에서는)
+그렇지 않은가“를 한 문장으로 답하자.</p>
+<blockquote>
+<p>답: \(\min_w \ell_{\text{MSE}}(w) + \lambda\|w\|_1\).
+\(\|w\|_1\)는 \(w_j=0\)에 **켄(kink)**을 만들어, 원래 손실
+기울기의 절댓값이 \(\lambda\) 이하이면 정답이 그 켄에 딱 붙어
+\(w_j=0\)이 된다(Ch06.1의 소스 스로싱 \(\mathcal{T}_\lambda\)).
+반면 \(\|w\|^2\)은 0에서 기울기가 0인 매끄러운 볼록함수라
+\(w_j\)를 0으로 <em>가까이</em> 당기지만 유한한 \(\lambda\)로는 정확히
+0까지 데려가지 못한다.</p>
+</blockquote>
 <p><strong>지금까지 배운 어떤 모델도 “항상 최선“이지 않다 — 실전에서는 데이터의
 특성을 보고 어떤 도구를 쓸지 스스로 판단해야 한다는 것이, 이번 프로젝트가
 남기는 가장 중요한 교훈이다.</strong></p>
@@ -267,6 +656,27 @@ train/val/test로 나누기 <strong>전에</strong> 전체 데이터로 미리 �
 더 쓰는 것이 효율적이다. 특히 손유도 문제(정규방정식, GDA↔로지스틱회귀
 동치성, 마진 공식 등)는 시험에서 그대로 다시 나올 가능성이 높으므로
 우선순위를 높게 두는 것이 좋다.</p>
+<p><strong>Q. 시험 전날에 이 절의 어떤 숫자를 기억해두면 좋나요?</strong>
+<strong>세 숫자</strong>를 종이에 쓸 수 있으면 되며, 각각이 한 장의 핵심 유도를
+압축한다: <strong>(1) −0.5507</strong>(템플릿 ①의 1스텝 경사, Ch02),
+<strong>(2) C* = 3.125 이후 ‖w‖² = 6.25로 고정</strong>(템플릿 ②의 마진 상한 0.8,
+Ch05), <strong>(3) 무제한 트리의 train 1.000 / val −0.014, 격차 ≈ 1.0</strong>
+(§스펙트럼, Ch04·06·07). 이 세 숫자를 “어떤 가정에서, 왜” 나오는 수로
+설명할 수 있으면 유도 문제의 뼈대는 확보한 것이다 — 숫자 자체는
+실습 노트북에서 언제든 재현된다.</p>
+<p><strong>Q. “장 넘나들기” 문제(확인 문제 1~6)는 어떻게 연습하나요?</strong>
+한 문항을 <strong>두 장의 언어로 각 한 문장씩</strong> 답해보는 것이 훈련이다.
+예를 들어 확인 문제 4(나이브베이즈 vs 트리, 스케일링 불필요)는
+“Ch03.3의 언어: \(P(x_j \mid y)\)를 독립 추정하므로 거리 계산이 없다”</p>
+<ul>
+<li>“Ch07.1의 언어: 순서(&gt;threshold)만 쓰므로 스케일에 불변“으로 나눠
+쓰면, 시험장에서 한쪽 장만 떠올라도 다른 쪽에서 이어붙일 수 있다.</li>
+</ul>
+<p><strong>Q. 실습 노트북의 <code>IMG</code> 경로가 로컬 경로인데 Colab에서 되나요?</strong>
+본문 상단의 Colab 배지로 열면 첫 코드 셀의 \(IMG\)를 <code>"/tmp"</code>로
+바꾸고 실행하면 된다(노트북 첫 마크다운 셀에 메모가 있다). 그림(SVG)
+생성이 목적이 아니라 <strong>§1~§5의 숫자가 본문과 일치하는지</strong> 확인하는 것이니,
+Colab에서는 <code>savefig</code> 줄만 주석내고 출력만 보는 것도 방법이다.</p>
 
                     </main>
 
@@ -319,8 +729,8 @@ train/val/test로 나누기 <strong>전에</strong> 전체 데이터로 미리 �
         <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

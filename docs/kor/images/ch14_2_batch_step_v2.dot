@@ -1,0 +1,39 @@
+
+digraph ch14_2_batch_step_v2 {
+    rankdir=TB;
+    graph [fontname="Noto Sans CJK KR", bgcolor="white", pad=0.25,
+           ranksep=0.6, nodesep=0.35];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           penwidth=1.4, fontsize=12, margin="0.2,0.1"];
+    edge  [penwidth=1.6, arrowsize=0.85, fontname="Noto Sans CJK KR", fontsize=11];
+
+    subgraph cluster_cpu {
+        label="CPU: 환경 스텝을 하나씩 (호출 4,096회)";
+        style=dashed; color="#999999"; labeljust=l; fontcolor="#555555";
+        C1 [label="env 1 스텝", fillcolor="#f0f0f0"];
+        C2 [label="env 2 스텝", fillcolor="#f0f0f0"];
+        C3 [label="env 3 스텝", fillcolor="#f0f0f0"];
+        C4 [label="env 4096 스텝 …", fillcolor="#f0f0f0"];
+        C1 -> C2 [label="그 다음에"];
+        C2 -> C3;
+        C3 -> C4;
+    }
+
+    subgraph cluster_gpu {
+        label="GPU: 상태를 한 텐서에, 커널 1회 호출 (코어 수천 개 동시)";
+        style=dashed; color="#4878a8"; labeljust=l; fontcolor="#4878a8";
+        B1 [label="env 1 상태", fillcolor="#dae8fc"];
+        B2 [label="env 2 상태", fillcolor="#dae8fc"];
+        B3 [label="env 4096 상태", fillcolor="#dae8fc"];
+        ARR [label="모든 환경의 상태를\n한 개의 연속 배열(텐서, 4096 × 상태차원)에\n나란히 담는다",
+             fillcolor="#fff2cc", shape=note, width=5.8];
+        K  [label="물리 스텝 커널 1회 호출\n(행동 배치 → 역학 → 접촉 → 통합)\n→ 4096개 환경의 다음 상태를 동시에",
+             fillcolor="#d5e8d4", color="#82b366", width=5.8];
+        ARR -> B1; ARR -> B2; ARR -> B3;
+        B1 -> K; B2 -> K; B3 -> K;
+    }
+
+    NOTE [label="공유되는 것은 *코드(물리 법칙)*, 달라지는 것은 *상태(초기조건)*\n— CNN이 필터를 모든 위치와 공유하는 것과 같은 구조 (ML1 10.1)",
+          shape=note, fillcolor="#ffffff", fontsize=11];
+    K -> NOTE [style=dotted, color="#888888"];
+}

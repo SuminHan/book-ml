@@ -1,0 +1,35 @@
+// 2.3절 그림: 밴딧(=1-상태 MDP) vs 2-상태 MDP
+// 본문 캡션과 일치: 왼쪽 s* 위에 팔 A/B/C의 자기 전이만.
+// 오른쪽 s0 -> s1 (실선), s1 -> s0 (점선).
+// "다른 상태로 넘어가는 전이"가 밴딧에 없는 유일한 추가 요소.
+digraph G {
+    rankdir=LR;
+    fontname="Noto Sans CJK KR";
+    node [fontname="Noto Sans CJK KR", fontsize=18, shape=ellipse, style="filled", fillcolor="#eef3fb", penwidth=1.5];
+    edge [fontname="Noto Sans CJK KR", fontsize=15, penwidth=1.8];
+    label="밴딧 = 1-상태 MDP          2-상태 MDP";
+    labelloc=t;
+    fontsize=24;
+
+    subgraph cluster_bandit {
+        label="밴딧:  S = {s*}  (팔 = 행동 A, B, C)";
+        fontname="Noto Sans CJK KR"; fontsize=16; labelloc=t;
+        style=rounded; color="#999999";
+        sstar [label="s*\n(유일한 상태)", shape=circle, width=1.1, height=1.1, fillcolor="#fff6e5"];
+        // 세 팔의 자기 전이: 어떤 팔을 당겨도 다시 s*로 돌아온다 (P(s*|s*,a)=1)
+        sstar -> sstar [label="A  (r = q(A))", pos="e,0,-28 c,0,0 0,28"];
+        sstar -> sstar [label="B  (r = q(B))", pos="e,0,28  c,0,0 0,-28"];
+        sstar -> sstar [label="C  (r = q(C))", pos="e,30,0 c,30,0 30,0"];
+    }
+
+    subgraph cluster_mdp {
+        label="MDP:  S = {s0, s1}";
+        fontname="Noto Sans CJK KR"; fontsize=16; labelloc=t;
+        style=rounded; color="#999999";
+        s0 [label="s0", fillcolor="#eaf7ea"];
+        s1 [label="s1", fillcolor="#eaf7ea"];
+        // 다른 상태로 넘어가는 전이 — 밴딧에 없는 유일한 추가 요소
+        s0 -> s1 [label="행동 (r = R(s0,a))", color="#1a7f37", style=solid, penwidth=2.4];
+        s1 -> s0 [label="행동 (r = R(s1,a))", color="#6b7280", style=dashed, penwidth=2.0];
+    }
+}

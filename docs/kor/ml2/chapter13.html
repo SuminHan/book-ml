@@ -28,7 +28,7 @@
         <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="../theme/custom-d4f54358.css">
+        <link rel="stylesheet" href="../theme/custom-8fc3d18b.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f36c49b8.js";
+            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -185,11 +185,51 @@
 마찰)을 거쳐 로봇을 움직인다는 사실까지 감안해야 한다. 이번 장은
 Chapter 9~12에서 배운 알고리즘들을 실제로 적용해볼 로봇 시뮬레이션의
 기초 개념을 다룬다.</p>
+<p>이 연결고리를 이전·다음 챕터와 함께 짚어보자. Chapter 12(“모방학습과
+인간 피드백”)에서는 시행착오가 위험하거나 비싸다는 문제를, 사람의 시연과
+선호로부터 배우는 방식으로 우회했다. 그러나 모방학습도 결국 막대한
+로봇 데이터가 필요하고, 실물 로봇에서 그 데이터를 모으는 일은 여전히
+비싸다 — 그래서 “시뮬레이터 안에서 먼저 익히고, 이후에 실물로 옮긴다“는
+절차야말로 강화학습이든 모방학습이든 공통된 전제다. 이번 장이 바로 그
+전제를 세우는 장이다. 한편, 이번 장에서 쓰는 Gymnasium의 기본 환경들은
+물리를 간단한 닫힌형식 근사식으로 계산해서 빠르기는 한데, 접촉이나 마찰
+같은 물리는 거칠게만 흉내 낸다. 다음 장(“고급 시뮬레이션: MuJoCo와 Isaac
+Sim”)에서는 이 물리 엔진을 실전 로봇 연구 수준으로 한 단계 올려본다.</p>
+<p>이번 챕터의 학습 목표는 다음과 같다.</p>
+<ul>
+<li>로봇공학의 3대 기둥 — 상태공간(관절 각도·각속도), 운동학(정규/역기구학),
+동역학(미분방정식) — 을 제 언어로 설명할 수 있고, “시뮬레이션의 한
+스텝“이 수학적으로 무엇을 의미하는지(미분방정식의 시간 적분) 말할 수 있다.</li>
+<li>시뮬레이션과 실물 사이의 격차(sim-to-real gap)가 왜 생기는지(무작위
+노이즈가 아니라 시스템틱한 편차) 설명하고, 도메인 무작위화와 시스템 ID가
+그 격차를 줄이려는 서로 다른 시도임을 짚을 수 있다.</li>
+<li>연속 제어 정책을 평가할 때 창(horizon)을 고정하고 여러 시드의 평균을
+구하는 평가 프로토콜을 스스로 세우고, PD 제어 같은 사람이 만든
+베이스라인과 정당한 비교를 할 수 있다.</li>
+<li>Chapter 11의 PPO를 이산 행동에서 연속 행동(가우시안 정책)으로 확장해,
+Reacher 환경에서 목표를 추적하는 정책을 학습시킬 수 있다.</li>
+</ul>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="chapter13/1.html">13.1 로봇공학 기초와 Sim-to-Real</a></li>
-<li><a href="chapter13/2.html">13.2 로봇 환경 탐색 실습</a></li>
-<li><a href="chapter13/3.html">13.3 연속제어환경에 PPO 적용하기</a></li>
+<li><a href="chapter13/1.html">13.1 로봇공학 기초와 Sim-to-Real</a>
+2관절 로봇팔의 정규/역기구학(중학 삼각비와 코사인 정리로 손 계산되며,
+역기구학에는 해가 여러 개라는 사실이 정책 설계와 왜 연결되는지)과 진자의
+동역학 방정식에서 출발해, “시뮬레이션“이 미분방정식을 작은 시간 간격으로
+끊어 적분하는 것임을 확인한다. 사람이 직접 설계하는 첫 “정책“인 PD
+제어까지 짚고, 시뮬레이터 정책이 실물에 옮기면 왜 무너지는지
+(현실 격차)와 그 대응책(도메인 무작위화, 시스템 ID)을 다룬다.</li>
+<li><a href="chapter13/2.html">13.2 로봇 환경 탐색 실습</a>
+Pendulum 환경에서 손으로 만든 PD 제어기의 이득 \((k_p, k_d)\)를
+그리드 탐색하며, 평가 프로토콜(창 고정, 여러 시드 평균, 결과를 보고
+창을 바꾸지 않기)을 실험 규칙으로 세운다. “좋은 점수“가 곧 “과제 달성“은
+아님을 궤적으로 검증하고, Reacher·Ant 환경으로 넘어가 105차원 상태
+벡터를 읽는 법과 “큰 로봇“의 물리적 대가(스텝당 계산 시간)를 살펴본다.</li>
+<li><a href="chapter13/3.html">13.3 연속제어환경에 PPO 적용하기</a>
+정책을 정규분포로 파라미터화해 이산 PPO의 기계가 그대로 동작함을 보고,
+Reacher-v5의 10차원 상태·2차원 행동의 내면(각도는 왜 cos/sin 쌍으로 주는지,
+목표는 왜 무작위로 놓이는지)을 뜯어본다. 배우기 전에 네 가지 베이스라인의
+점수를 재고 PPO로 정책을 학습시키며, 학습 시에는 샘플이지만 배포 시에는
+평균 \(\mu(s)\)를 행동으로 쓴다는 점 같은 실전 함정을 정리한다.</li>
 </ul>
 
                     </main>
@@ -243,8 +283,8 @@ Chapter 9~12에서 배운 알고리즘들을 실제로 적용해볼 로봇 시�
         <script src="../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../theme/lang-switch-4a10d7d3.js"></script>
-        <script src="../theme/mathjax-v3-c5c63ed7.js"></script>
+        <script src="../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../theme/mathjax-v3-f54fc4b8.js"></script>
 
 
 

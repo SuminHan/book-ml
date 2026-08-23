@@ -1,0 +1,20 @@
+digraph dyna_q {
+    rankdir=LR;
+    node [shape=box, style="rounded,filled", fillcolor="#f5f7fa", fontname="Helvetica", fontsize=12];
+    edge [fontname="Helvetica", fontsize=10, color="#555"];
+
+    env  [label="Real environment\nstep (s, a) -> (r, s')", fillcolor="#e3f2fd"];
+    upd  [label="TD(0) update on real\nexperience", fillcolor="#e8f5e9"];
+    mdl  [label="model[(s,a)] = (r, s')\n(store the experience)"];
+    smp  [label="sample (s,a) from model\n(planning_steps times)"];
+    plan [label="TD(0) update on model\nprediction (planning)", fillcolor="#fff3e0"];
+    q    [label="Q table\nepsilon-greedy action", fillcolor="#f3e5f5"];
+
+    env  -> upd  [label="real (r, s')"];
+    env  -> mdl;
+    mdl  -> smp;
+    smp  -> plan [label="predicted (r, s')"];
+    upd  -> q;
+    plan -> q    [label="x planning_steps"];
+    q    -> env  [label="action a", style=bold, color="#1565c0"];
+}

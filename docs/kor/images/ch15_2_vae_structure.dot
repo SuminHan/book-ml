@@ -1,0 +1,40 @@
+digraph vae_structure {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="VAE 구조 — 학습 모드(실선)와 생성 모드(점선, 빨강). 인코더 q(z|x)는 학습 시에만 사용; 생성 시에는 사전분포 p(z)에서 z를 직접 뽑아 디코더에만 통과시킨다.",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=12.5,
+           penwidth=1.4, margin="0.18,0.10"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=10.5, color="#495057", penwidth=1.6];
+
+    x    [label="입력 x", fillcolor="#e9ecef"];
+    enc  [label="인코더 q_φ(z|x)\n(신경망)", fillcolor="#fff3cd"];
+    mu   [label="μ(x)", fillcolor="#fff3cd"];
+    sg   [label="σ²(x)", fillcolor="#fff3cd"];
+    z    [label="z = μ + σ⊙ε\n(ε ~ N(0,I))", fillcolor="#d1e7dd"];
+    dec  [label="디코더 p_θ(x|z)\n(신경망)", fillcolor="#cfe2ff"];
+    xhat [label="x̂ (복원·생성)", fillcolor="#cfe2ff"];
+
+    prior [label="사전분포 p(z) = N(0,I)", shape=ellipse, fillcolor="#f8d7da"];
+    recon [label="복원 손실\nMSE(x, x̂)", shape=box, fillcolor="#e9ecef"];
+    kl    [label="KL 항\nD_KL(q(z|x) ‖ p(z))", shape=box, fillcolor="#e9ecef"];
+    loss  [label="손실 = 복원 + β·KL\n(= 음의 ELBO, 최소화)", shape=box, fillcolor="#f8d7da"];
+
+    x -> enc;
+    enc -> mu;
+    enc -> sg;
+    mu -> z;
+    sg -> z;
+    z -> dec;
+    dec -> xhat;
+
+    prior -> z [style=dashed, color="#b02a37", label="생성 모드: 여기서 z를 샘플"];
+    xhat -> recon;
+    x -> recon [style=dashed];
+    mu -> kl [style=dashed, color="#862e9c"];
+    sg -> kl [style=dashed, color="#862e9c"];
+    prior -> kl [style=dashed, color="#862e9c"];
+    recon -> loss;
+    kl -> loss;
+}

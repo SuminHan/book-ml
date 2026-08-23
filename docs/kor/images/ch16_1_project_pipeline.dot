@@ -1,0 +1,75 @@
+digraph project_pipeline {
+    rankdir=LR;
+    graph [fontname="Noto Sans CJK KR", labelloc=t,
+           label="팀 프로젝트 파이프라인 — 4주: 데이터 선정 → 발표 (Block B 캡스톤)",
+           labeljust=c, bgcolor="white"];
+    node  [fontname="Noto Sans CJK KR", shape=box, style="rounded,filled",
+           fillcolor="white", fontcolor="#212529", fontsize=10.5,
+           penwidth=1.3, margin="0.18,0.1"];
+    edge  [fontname="Noto Sans CJK KR", fontsize=9, color="#495057", penwidth=1.5];
+
+    subgraph cluster_p1 {
+        label="① 데이터와 문제 (1주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fillcolor="#e9ecef", fontsize=10];
+        N1 [label="데이터 고르기\n(Kaggle / UCI / Hugging Face)"];
+        N2 [label="문제 정의:\n무엇을, 어떤 라벨로\n예측하는가"];
+        N3 [label="베이스라인 2층:\n무작위(Ch02.3) +\nGBDT(Ch07.3)"];
+        N1 -> N2 -> N3 [style=invis];
+    }
+
+    subgraph cluster_branch {
+        label="② 분기: '정형이면 GBDT?' (1주차)";
+        labeljust=l; fontsize=12; fontcolor="#7a4b00";
+        color="#e0b060"; style="rounded,filled"; fillcolor="#fff8ec";
+        edge [color="#b08030", penwidth=1.3];
+        node [fillcolor="#fdeecb", fontsize=10, penwidth=1.6];
+        B1 [label="데이터가 정형인가?\n(수치·범주 열)", shape=diamond];
+        B2 [label="정형 → GBDT가 상한\n정형으로 풀거나\n차원·규모 확대 논리\n(§'왜 DL')", shape=box];
+        B3 [label="비정형(픽셀·토큰) →\n신경망이 특징 추출기\n(Ch09~15)", shape=box];
+        B1 -> B2 [label="예"];
+        B1 -> B3 [label="아니오"];
+    }
+
+    subgraph cluster_p3 {
+        label="③ 파이프라인 (2~3주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fontsize=10];
+        N4 [label="train/val/test 3분할\n(Ch06.3 — test는 한 번만)"];
+        N5 [label="전처리:\n이미지 0~1 스케일·토큰\ntrain으로만 fit"];
+        N6 [label="Ch09~15에서\n딥러닝 기법 ≥1개 적용\n(예: CNN)"];
+        N7 [label="하이퍼파라미터·구조 튜닝:\nval/에포크 곡선만 사용\n(Ch06.2)"];
+        N4 -> N5 -> N6 -> N7 [style=invis];
+    }
+
+    subgraph cluster_p4 {
+        label="④ 평가와 정당화 (3~4주차)";
+        labeljust=l; fontsize=12; fontcolor="#343a40";
+        color="#adb5bd"; style="rounded,filled"; fillcolor="#f8f9fa";
+        node [fontsize=10];
+        N8 [label="test 최종 측정 — 딱 한 번\n(accuracy · F1 / PR-AUC)"];
+        N9 [label="수식적 정당화 ≥ 1개:\nCh10.1 파라미터 공식 /\nCh09.3 정규화 / Ch15 ELBO"];
+        N10 [label="보고서: 결과 + GBDT 비교 +\n잘 안 된 부분의 원인\n정직하게"];
+        N8 -> N9 -> N10 [style=invis];
+    }
+
+    subgraph cluster_p5 {
+        label="⑤ 발표와 검토 (4주차)";
+        labeljust=l; fontsize=12; fontcolor="#0f5132";
+        color="#79bb98"; style="rounded,filled"; fillcolor="#f0f7f3";
+        node [fillcolor="#d1e7dd", fontsize=10];
+        N11 [label="발표 5~7분\n(마지막 1분: '왜 DL인가')"];
+        N12 [label="peer-review 2팀\n(16.2 체크리스트)"];
+        N11 -> N12 [style=invis];
+    }
+
+    N3 -> B1 [label="M1: 문제 고정"];
+    B2 -> N4 [label="GBDT 비교 필수"];
+    B3 -> N4 [label="GBDT 비교 필수"];
+    N7 -> N8 [label="최종 모델 확정"];
+    N10 -> N11 [label="보고서"];
+    N8 -> N4 [label="누수·과적합 발견 시\n돌아가서 다시",
+               style=dashed, color="#c0392b", penwidth=1.8];
+}
