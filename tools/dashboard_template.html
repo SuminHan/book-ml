@@ -107,6 +107,10 @@ h1 { margin: 0; font-size: clamp(21px, 3vw, 27px); font-weight: 700; letter-spac
 .grid-inner { display: inline-flex; gap: 10px; min-width: 100%; }
 .row-labels { display: flex; flex-direction: column; gap: 3px; padding-top: 17px; flex-shrink: 0; }
 .row-labels span { height: 13px; line-height: 13px; font-size: 10.5px; color: var(--text-muted); font-family: "IBM Plex Mono", monospace; }
+/* one extra line of breathing room between the opener row ("개요") and the
+   numbered .1/.2/.3 section rows below it -- applied to both the label
+   column and every chapter column's opener cell so rows stay aligned. */
+.row-labels span.opener-row, .chapter-col .cell.opener-row { margin-bottom: 9px; }
 .chapters { display: flex; gap: 3px; }
 .chapter-col { display: flex; flex-direction: column; gap: 3px; }
 .chapter-col .col-label {
@@ -382,7 +386,7 @@ function renderBookCard(bookKey, items, granularity) {
   const gridArea = el("div", { class: "grid-area" });
   const gridInner = el("div", { class: "grid-inner" });
   const rowLabels = granularity === "section"
-    ? el("div", { class: "row-labels" }, el("span", {}, "개요"), el("span", {}, ".1"), el("span", {}, ".2"), el("span", {}, ".3"))
+    ? el("div", { class: "row-labels" }, el("span", { class: "opener-row" }, "개요"), el("span", {}, ".1"), el("span", {}, ".2"), el("span", {}, ".3"))
     : el("div", { class: "row-labels" }, el("span", {}, ""));
   gridInner.append(rowLabels);
 
@@ -395,7 +399,9 @@ function renderBookCard(bookKey, items, granularity) {
       for (const it of byChapter[cnum]) bySec[it.section] = it;
       for (const snum of ["0", "1", "2", "3"]) {
         const it = bySec[snum];
-        col.append(it ? cellFor(it) : el("div", { class: "cell", style: "visibility:hidden" }));
+        const cellEl = it ? cellFor(it) : el("div", { class: "cell", style: "visibility:hidden" });
+        if (snum === "0") cellEl.classList.add("opener-row");
+        col.append(cellEl);
       }
     } else {
       col.append(cellFor(byChapter[cnum][0]));
