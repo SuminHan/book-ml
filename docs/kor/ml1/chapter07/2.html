@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -182,7 +182,7 @@
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter07_2_random_forest.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: 랜덤 포레스트"></a></p>
 <h3 id="트리-하나에서-숲으로"><a class="header" href="#트리-하나에서-숲으로">트리 하나에서 숲으로</a></h3>
 <p>트리 하나는 데이터를 완벽하게 외워버리기(과적합) 쉽다. <strong>랜덤 포레스트</strong>(Random
-Forest)의 아이디어는 단순하다: 서로 조금씩 다른 트리를 여러 개 만들고, 그
+Forest)<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup>의 아이디어는 단순하다: 서로 조금씩 다른 트리를 여러 개 만들고, 그
 트리들의 다수결로 예측한다. 두 가지 무작위성을 더한다:</p>
 <ol>
 <li><strong>배깅</strong>(Bootstrap Aggregating): 각 트리는 원본 데이터에서 복원추출(중복
@@ -210,13 +210,13 @@ Forest)의 아이디어는 단순하다: 서로 조금씩 다른 트리를 여�
 &amp; 팀시라이니, 1993), 모델의 불확실성을 “무작위로 데이터를 다시 뽑아 다시
 학습시키는 횟수“로 직접 재는 방법이다. 랜덤 포레스트는 이 부트스트랩을
 <strong>트리의 학습 데이터</strong>에 그대로 적용한 것이다 — 각 트리가 “다르게 보게 만드는”
-것, 즉 배깅이다.</p>
+것, 즉 배깅(bagging)<sup class="footnote-reference" id="fr-bagging-1"><a href="#footnote-bagging">2</a></sup>이다.</p>
 <p>마지막 퍼즐 조각, <strong>특징 무작위화</strong>는 2001년 레오 브레이만(Leo Breiman)의
-“Random Forests” 논문에서 완성됐다. 그는 배깅만으로는(특히 어떤 특징이 유난히
+“Random Forests” 논문<sup class="footnote-reference" id="fr-breiman2001-1"><a href="#footnote-breiman2001">3</a></sup>에서 완성됐다. 그는 배깅만으로는(특히 어떤 특징이 유난히
 강한 데이터에서) 트리들이 너무 닮는다는 문제를, “각 분기에서 특징의 무작위
 하위 집합만 고려하자“는 두 번째 무작위성으로 풀었다. 이 두 가지의
 조합(부트스트랩 + 특징 무작위화)이 바로 우리가 쓰는 랜덤 포레스트다.</p>
-<h3 id="실습-sklearn으로-결정-트리-시각화하기"><a class="header" href="#실습-sklearn으로-결정-트리-시각화하기">실습: sklearn으로 결정 트리 시각화하기</a></h3>
+<h3 id="실습-sklearn으로-결정-트리-시각화하기4"><a class="header" href="#실습-sklearn으로-결정-트리-시각화하기4">실습: sklearn으로 결정 트리 시각화하기<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">4</a></sup></a></h3>
 <p>트리가 실제로 “어떤 질문들을 순서대로 던지는지” 눈으로 확인해보자 —
 유방암 진단 데이터셋(양성/악성)에 깊이 3짜리 트리를 학습시킨다:</p>
 <pre><code class="language-python">from sklearn.datasets import load_breast_cancer
@@ -342,7 +342,7 @@ test score: 0.959
 <li>표준편차(오차막대)는 트리가 늘어날수록 <strong>줄어든다</strong> — “전문가“가
 많을수록 소수 의견에 흔들리지 않기 때문.</li>
 <li>여기서 정확도가 <strong>떨어지는 지점이 없다</strong> — 트리를 더 늘려도 과적합이
-오지 않는다(아래 GBDT 비교 참조). 그래서 실전에서는 검증 성능이
+오지 않는다(아래 GBDT<sup class="footnote-reference" id="fr-friedman2001-1"><a href="#footnote-friedman2001">5</a></sup> 비교 참조). 그래서 실전에서는 검증 성능이
 “정체“되는 지점보다 여유를 두어(예: 100~300) 쓰는 편이 안전하다.</li>
 </ol>
 <h3 id="숲-전체가-어떤-특징을-보는가"><a class="header" href="#숲-전체가-어떤-특징을-보는가">숲 전체가 어떤 특징을 보는가</a></h3>
@@ -355,7 +355,7 @@ test score: 0.959
 (0.135), <code>mean concave points</code>(0.131) 순으로 중요하다. “worst(최악)”
 특징들이 상위권을 점한 것은, 실제 진단에서 “가장 나쁜 상태를 나타내는”
 특징이 가장 결정적이었음을 뜻한다. (단, 이 중요도는 <strong>상관관계에 편향</strong>될
-수 있다 — 7.3절의 SHAP이 이 한계를 보완하는 “예측 단위” 설명이다.)</p>
+수 있다 — 7.3절의 SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">6</a></sup>이 이 한계를 보완하는 “예측 단위” 설명이다.)</p>
 <h3 id="특징-무작위화의-효과-강한-특징이-루트를-독점하는가"><a class="header" href="#특징-무작위화의-효과-강한-특징이-루트를-독점하는가">특징 무작위화의 효과: “강한 특징“이 루트를 독점하는가</a></h3>
 <p>자주 묻는 질문 1번의 주장 — “강한 특징이 있으면 배깅만 쓴 트리들이
 모두 그 특징으로 루트를 나눠서 닮아간다” — 을 숫자로 확인하자. 배깅만
@@ -440,6 +440,27 @@ OOB 점수를 계산하고, 임계값을 튜닝할 때(Chapter 2.3) 쓰일 수 �
 쓰라. \(T=25\).)</p>
 <p><strong>3. (개념)</strong> OOB 점수가 0.90인데 test 정확도가 0.83이라면, 어떤
 문제를 의심할 수 있는가, 그 이유를 설명하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-cs229">
+<p>더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — 이 절의 배깅(bootstrap aggregating)과 앙상블의 편향-분산 효과는 CS229 강의 노트의 “Ensembles” 장과 겹친다. <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-bagging">
+<p>Bühlmann, P., Hüsler, J. (1997). “Bagging Predictors.” <em>The Annals of Statistics</em> 25(1), 47–68. — 배깅(bootstrap aggregating)의 원 논문. <a href="#fr-bagging-1">↩</a></p>
+</li>
+<li id="footnote-breiman2001">
+<p>Breiman, L. (2001). “Random Forests.” <em>Machine Learning</em> 45(1), 5–32. — 랜덤 포레스트의 원 논문. 배깅 + 특징 무작위화(각 분기에서 무작위 특징 하위집합)의 조합을 제안했다. <a href="#fr-breiman2001-1">↩</a></p>
+</li>
+<li id="footnote-scikitlearn">
+<p>Pedregosa, F. et al. (2012). “Scikit-learn: Machine Learning in Python.” arXiv:1201.0490. <a href="#fr-scikitlearn-1">↩</a></p>
+</li>
+<li id="footnote-friedman2001">
+<p>Friedman, J. H. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” <em>The Annals of Statistics</em> 29(5), 1189–1232. — GBDT(그라디언트 부스팅)의 원 논문. 이전 모델의 그라디언트(잔차)를 좇아 트리를 순차적으로 학습하는, 배깅 계열(랜덤 포레스트)과 다른 앙상블 방법이다. <a href="#fr-friedman2001-1">↩</a></p>
+</li>
+<li id="footnote-shap">
+<p>Lundberg, S. M., Lee, S.-I. (2017). “A Unified Approach to Interpreting Model Predictions.” NeurIPS 2017. arXiv:1705.07874. — SHAP(Shapley Additive exPlanations)의 원 논문. Shapley 가치(게임론)를 기계학습 예측 해명에 적용해 “각 특징이 예측값에 얼마를 기여했는지“를 유일하게 공정한 분해로 정의한다. <a href="#fr-shap-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

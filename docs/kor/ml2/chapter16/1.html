@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -185,11 +185,12 @@
 평가할 수 있다“의 차이에 대한 첫 답을 냈다면 — 팀이 환경을 고르고, 알고리즘을
 구현하고, 시드 여러 번을 돌리고, 결과를 정직하게 보고하는 경험을 쌓았다는 뜻
 이다. Chapter 9~15가 이제 두 번째 절반의 도구를 전부 손에 쥐어준 상태다: 표 대신
-신경망(DQN), 정책을 직접 학습(REINFORCE, PPO), 시연·선호로부터 배우기
+신경망(DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">1</a></sup>), 정책을 직접 학습(REINFORCE, PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">2</a></sup>), 시연·선호로부터 배우기
 (모방학습), 물리 시뮬레이션(MuJoCo, Isaac Sim), 트리 탐색(MCTS).
 16.1은 <strong>Chapter 8과 쌍(pair)인 절</strong>이다 — Block A와 정확히 같은 절차
 (환경 고르기 → 구현 → 시드 프로토콜 → 수식적 정당화 → 정직한 발표)를
 완전히 다른 무대(연속제어 + 신경망)에서 다시 집행하는 것이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)"><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)"></span></label></p>
 <p>8.1절과의 차이를 한 장으로 정리하면:</p>
 <div class="table-wrapper">
 <table>
@@ -209,15 +210,15 @@
 <p>왜 알고리즘 수는 “2개 이상“에서 “1개 이상“으로 줄어드는가? Block A에서는
 두 번째 알고리즘이 갱신 규칙 한 줄의 차이(6.3절)였는데, Block B에서는
 각 알고리즘이 별개의 신경망 학습 파이프라인이다 — DQN은 리플레이 버퍼와
-타깃 네트워크가, PPO는 GAE와 클리핑이, 모방학습은 시연 데이터셋이 따라온다.
+타깃 네트워크가, PPO는 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">3</a></sup>와 클리핑이, 모방학습은 시연 데이터셋이 따라온다.
 팀 단위 현실적 예산은 “한 파이프라인을 제대로 돌리고, 여유가 있으면 비교“다.
 <strong>변하지 않는 것이 핵심이다</strong> — 시드, 베이스라인, 평가 분리는 알고리즘과
 무관한 “강화학습 실험의 골격“이라 Block A와 동일하다.</p>
 <blockquote>
 <p><strong>역사: 왜 진자인가.</strong> Pendulum은 OpenAI 생태계의 오픈소스
-라이브러리(baselines → stable-baselines) 시대부터 연속 제어의 “hello
+라이브러리(baselines → stable-baselines)<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">4</a></sup> 시대부터 연속 제어의 “hello
 world“였다 — 라이브러리의 PPO 튜토리얼 표준 예제가 Pendulum이었고,
-11.2절의 PPO 논문(Schulman et al., 2017)은 같은 계열의 클래식
+11.2절의 PPO 논문(Schulman et al., 2017)<sup class="footnote-reference" id="fr-ppo-2"><a href="#footnote-ppo">2</a></sup>은 같은 계열의 클래식
 MuJoCo 연속 제어 과제(Swimmer, Hopper 등)에서 알고리즘을 검증했다.
 Pendulum은 그 과제들 중 “가장 작은” 구성원이다 — 3차원 상태, 1차원
 행동, 에피소드 종료도 목표 상태도 없는 “매 스텝 균형해야 하는”
@@ -226,6 +227,7 @@ Pendulum은 그 과제들 중 “가장 작은” 구성원이다 — 3차원 �
 학습 곡선 위에서 ’정책이 지금 무엇을 하고 있는지’를 가장 선명하게
 보여주기 때문</strong>이다.</p>
 </blockquote>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="프로젝트-구조"><a class="header" href="#프로젝트-구조">프로젝트 구조</a></h3>
 <ul>
 <li><strong>환경</strong>: PyBullet 또는 Gymnasium의 연속제어 환경(Pendulum,
@@ -407,6 +409,7 @@ Block B에서는 Pendulum 12만 스텝이 CPU에서 22초인 반면 MuJoCo
 당 텐서 변환의 반복, CPU 스레드 수)이 정직한 대응이다 — 11.2절
 코드 자체가 22초 안에 끝난다는 것은 “22초가 정상“이라는 기준선이
 있다는 뜻이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label></p>
 <h3 id="손으로-한-번-수식적-정당화의-좋은-예와-나쁜-예-비교하기"><a class="header" href="#손으로-한-번-수식적-정당화의-좋은-예와-나쁜-예-비교하기">손으로 한 번: “수식적 정당화“의 좋은 예와 나쁜 예 비교하기</a></h3>
 <p>어떤 팀이 Pendulum 환경에 PPO를 적용해 “학습이 잘 됐다“고 발표한다고
 하자. Chapter 11.2에서 스크래치패드로 실행 검증한 실제 결과는 다음과
@@ -448,7 +451,7 @@ Block B에서는 Pendulum 12만 스텝이 CPU에서 22초인 반면 MuJoCo
 이 알고리즘에 골랐는가</strong>(§“환경 고르는 실전 가이드“의 “무대”
 논리), 하이퍼파라미터(\(\gamma\), \(\lambda\),
 \(\epsilon_{\text{clip}}\), 보상 스케일링 등)와 선택
-근거(Ch10~13 개념).</li>
+근거(Ch10~13 개념)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">5</a></sup>.</li>
 <li><strong>실험 프로토콜</strong> (1p): 시드 목록, 학습 예산(반복 수 × 스텝 수),
 <strong>평가 프로토콜(결정적 \(a=\mu\), 에피소드 수, 모든 시드에
 동일) 명시</strong>, 하이퍼파라미터 선택 절차(어떤 곡선으로, 어떤
@@ -669,6 +672,28 @@ FAQ와 13~14절의 예산 원리로 진단했고 재확인 계획을 세웠다�
 \(\gamma\)/\(\lambda\), 평가 프로토콜)을 구분해야 한다 —
 (b)가 실질적 산출물이며, “라이브러리 기본값을 그대로 썼습니다“만
 으로는 방법론 적절성 점수의 근거가 되지 않는다.</p>
+<p>이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">6</a></sup></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a> <a href="#fr-ppo-2">↩2</a></p>
+</li>
+<li id="footnote-gae">
+<p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>
+</li>
+<li id="footnote-gym">
+<p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

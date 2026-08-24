@@ -16,6 +16,7 @@ import base64
 import json
 import re
 import subprocess
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO = Path("/home/smhan/book-ml")
@@ -140,6 +141,61 @@ def running_task_ids():
         for m in re.finditer(r'batch_(?:prompts|logs)/([\w]+)\.(?:txt|log)', line):
             ids.add(m.group(1))
     return ids
+
+
+def _task_kind(task_id):
+    if task_id.startswith("reflib_"):
+        return "레퍼런스 라이브러리"
+    if task_id.endswith("_cite"):
+        return "각주/그림 삽입"
+    if "_opener" in task_id:
+        return "챕터 개요 확장"
+    return "절 확장/마무리"
+
+
+def running_tasks_detail():
+    """Richer live view for the dashboard's "지금 실행 중" panel: task_id,
+    which pipeline it belongs to, and an absolute UTC start timestamp
+    (derived from `ps etimes=` on the cq_run_once.py PID -- stable even
+    though the process itself was launched with start_new_session=True,
+    since /proc's start time isn't affected by session detachment).
+    An absolute timestamp instead of a frozen elapsed-seconds count so the
+    dashboard's own JS can tick it live against the *viewer's* clock --
+    a static "18초" is already wrong by the time someone opens the page."""
+    try:
+        out = subprocess.run(
+            ["ps", "-eo", "pid,etimes,args"], capture_output=True, text=True
+        ).stdout
+    except Exception:
+        return []
+    now = datetime.now(timezone.utc)
+    tasks = []
+    for line in out.splitlines():
+        if "cq_run_once.py" not in line or "grep" in line:
+            continue
+        parts = line.strip().split(None, 2)
+        if len(parts) < 3:
+            continue
+        pid, etimes, args = parts
+        m = re.search(r'batch_(?:prompts|logs)/([\w]+)\.(?:txt|log)', args)
+        if not m:
+            continue
+        task_id = m.group(1)
+        started_at = (now - timedelta(seconds=int(etimes))).isoformat() if etimes.isdigit() else None
+        tasks.append({
+            "task_id": task_id, "pid": pid,
+            "started_at": started_at,
+            "kind": _task_kind(task_id),
+        })
+    # de-dupe (the same task_id can appear twice in `args` matches across
+    # wrapper/child processes) keeping the lowest PID (the original)
+    seen, out_list = {}, []
+    for t in sorted(tasks, key=lambda x: x["pid"]):
+        if t["task_id"] in seen:
+            continue
+        seen[t["task_id"]] = True
+        out_list.append(t)
+    return sorted(out_list, key=lambda x: x["started_at"] or "")
 
 
 def _search_done_failed(text):
@@ -338,9 +394,131 @@ def build_eng():
     return out, counts
 
 
+FOOTNOTE_REF_RE = re.compile(r'\[\^([a-zA-Z0-9_-]+)\](?!:)')
+ARXIV_ID_RE = re.compile(r'arXiv:\s*(\d{4}\.\d{4,5})', re.IGNORECASE)
+
+
+def paper_url(venue):
+    """Best-effort link for the reference list: an arXiv abstract-page URL
+    if the venue string names one, else None (list just shows venue text)."""
+    m = ARXIV_ID_RE.search(venue or "")
+    return f"https://arxiv.org/abs/{m.group(1)}" if m else None
+
+
+def find_citations(slug):
+    """Every kor/src/<book>/chapterNN[/S].md that actually references
+    [^slug] (a footnote *use*, not its `[^slug]: ...` definition line) --
+    scanned fresh each build so this reflects whatever citation_orchestrator.py
+    has inserted so far, no separate bookkeeping file needed."""
+    hits = []
+    for md_path in sorted((REPO / "kor" / "src").glob("ml*/chapter*/*.md")) + \
+                    sorted((REPO / "kor" / "src").glob("ml*/chapter*.md")):
+        text = md_path.read_text(encoding="utf-8", errors="replace")
+        # a *reference* is any [^slug] occurrence on a line that isn't
+        # itself the "[^slug]: ..." definition line
+        refs = set()
+        for line in text.splitlines():
+            for m in FOOTNOTE_REF_RE.finditer(line):
+                if line.lstrip().startswith(f"[^{m.group(1)}]:"):
+                    continue
+                refs.add(m.group(1))
+        if slug not in refs:
+            continue
+        rel = md_path.relative_to(REPO / "kor" / "src")
+        parts = rel.with_suffix("").parts  # e.g. ('ml2','chapter03','1') or ('ml2','chapter03')
+        book = parts[0]
+        chapter = parts[1].replace("chapter", "")
+        section = parts[2] if len(parts) > 2 else None
+        label = f"{book} {int(chapter)}.{section}" if section else f"{book} {int(chapter)} 개요"
+        hits.append({"book": book, "chapter": chapter, "section": section, "label": label})
+    return hits
+
+
+def build_reference_library():
+    """Gallery data for the reference-figure library (tools/reference_library_
+    orchestrator.py's output: kor/src/images/ref_<slug>.png + .json). Images
+    are small crops (tens to low hundreds of KB each), so unlike the
+    section content this embeds them as base64 data URIs directly -- no
+    need for the lightweight-caption-only trick that section figures use."""
+    images_dir = REPO / "kor" / "src" / "images"
+    items = []
+    for png_path in sorted(images_dir.glob("ref_*.png")):
+        slug = png_path.stem[len("ref_"):]
+        json_path = images_dir / f"ref_{slug}.json"
+        meta = {}
+        if json_path.exists():
+            try:
+                meta = json.loads(json_path.read_text())
+            except json.JSONDecodeError:
+                meta = {}
+        mime = MIME_BY_EXT.get(png_path.suffix, "image/png")
+        b64 = base64.b64encode(png_path.read_bytes()).decode("ascii")
+        items.append({
+            "slug": slug,
+            "title": meta.get("title", slug),
+            "authors": meta.get("authors", ""),
+            "year": meta.get("year"),
+            "venue": meta.get("venue", ""),
+            "footnote": meta.get("footnote", ""),
+            "figure_caption": meta.get("figure_caption", ""),
+            "has_metadata": bool(meta),
+            "image_data_uri": f"data:{mime};base64,{b64}",
+            "bytes": png_path.stat().st_size,
+            "cited_in": find_citations(slug),
+            "url": paper_url(meta.get("venue", "")),
+        })
+    return items
+
+
+# Official Stanford URLs for the slug list in stanford_materials_orchestrator.py
+# (from the user's own link-verification pass) -- linking out to these
+# instead of embedding the PDFs: same "cite, don't redistribute" policy as
+# the Sutton&Barto textbook, and these are copyrighted course slides (a
+# single paper *figure* is a defensible fair-use quote; a whole deck isn't).
+# status: "confirmed" (fetched live), "uncertain" (site reorganized since,
+# probably works but not guaranteed identical), "missing" (no live link found).
+_STANFORD_URLS = {
+    "cs230_lecture02": ("https://cs230.stanford.edu/fall_2025/2/lecture_2.pdf", "uncertain"),
+    "cs230_lecture05": ("https://cs230.stanford.edu/fall_2025/5/lecture_5.pdf", "uncertain"),
+    "cs230_lecture06_main": ("https://cs230.stanford.edu/fall_2024/lecture_5.pdf", "uncertain"),
+    "cs230_lecture06_guest": ("https://cs230.stanford.edu/fall_2024/lecture5_guest.pdf", "uncertain"),
+    "cs230_lecture08": ("https://cs230.stanford.edu/fall_2025/8/lecture_8.pdf", "uncertain"),
+    "cs230_lecture09": (None, "missing"),
+    "cs230_lecture09_guest": (None, "missing"),
+    "cs230_lecture10": ("https://cs230.stanford.edu/fall_2025/10/lecture_10.pdf", "uncertain"),
+    "cs230_c5m4_transformer": ("https://cs230.stanford.edu/fall_2025/10/C5_W4.pdf", "uncertain"),
+    "cs224n_derivatives": (None, "missing"),
+    "cs224n_python_review": (
+        "https://web.stanford.edu/class/cs224n/slides_w25/2024%20CS224N%20Python%20Review%20Session%20Slides.pptx.pdf",
+        "uncertain",
+    ),
+}
+
+
+def build_stanford_catalog():
+    """External-reference catalog (tools/stanford_materials_orchestrator.py's
+    output): local Stanford course PDFs the user already has, matched to
+    book-ml chapters. No files embedded (the PDFs stay outside the repo,
+    same policy as the Sutton&Barto textbook) -- just the metadata, plus a
+    link to the official host so "view it" goes to Stanford's own site."""
+    catalog_path = REPO / "tools" / "stanford_catalog.json"
+    if not catalog_path.exists():
+        return []
+    try:
+        items = json.loads(catalog_path.read_text())
+    except json.JSONDecodeError:
+        return []
+    for it in items:
+        url, status = _STANFORD_URLS.get(it.get("slug"), (None, "missing"))
+        it["url"] = url
+        it["url_status"] = status
+    return items
+
+
 def main():
     kor_sections, kor_counts = build_kor()
     eng_chapters, eng_counts = build_eng()
+    reference_library = build_reference_library()
 
     data = {
         "generated_at": subprocess.run(["date", "-Iseconds"], capture_output=True, text=True).stdout.strip(),
@@ -348,6 +526,9 @@ def main():
         "kor": {"granularity": "section", "counts": kor_counts, "total": len(kor_sections), "items": kor_sections},
         "eng": {"granularity": "chapter", "counts": eng_counts, "total": len(eng_chapters), "items": eng_chapters,
                 "note": "영어판은 아직 kor처럼 N.1/N.2/N.3 절로 안 나뉘어 있어 챕터 단위로만 추적됨"},
+        "reference_library": reference_library,
+        "stanford_catalog": build_stanford_catalog(),
+        "running_tasks": running_tasks_detail(),
     }
     print(json.dumps(data, ensure_ascii=False, indent=2))
 

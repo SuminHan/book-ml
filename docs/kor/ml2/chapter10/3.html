@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -189,14 +189,15 @@
 가치함수(Critic)를 동시에 학습하는 구조다. 자세한 유도는 이 학기
 범위를 넘어서지만, “정책 하나만 학습하는 것보다, 가치함수의 도움을
 받으면 더 안정적으로 학습된다“는 아이디어는 기억해둘 만하다 — 이
-어드밴티지는 Chapter 11의 PPO에서 그대로 재사용된다.</p>
+어드밴티지는 Chapter 11의 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">1</a></sup>에서 그대로 재사용된다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p><strong>Q-learning이 “얼마나 좋은지 평가한 뒤 최선을 고른다“는 간접적
 전략이라면, 정책기반 방법은 “무엇을 할지” 자체를 직접, 그리고
 연속적인 행동 공간에서도 학습한다. Chapter 4에서 증명했듯이 유한한
 MDP라면 최적 정책 \(\pi^*\)는 항상 존재한다 — policy gradient는
 그 존재가 보장하는 목표를 향해 직접 나아가는 방법이다.</strong></p>
 <h3 id="먼저-문제부터-reinforce의-업데이트-신호가-너무-시끄러운-이유"><a class="header" href="#먼저-문제부터-reinforce의-업데이트-신호가-너무-시끄러운-이유">먼저 문제부터: REINFORCE의 업데이트 신호가 “너무 시끄러운” 이유</a></h3>
-<p>10.2절의 CartPole REINFORCE는 처음 20 에피소드 평균 14.1에서 마지막
+<p>10.2절의 CartPole<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">2</a></sup> REINFORCE는 처음 20 에피소드 평균 14.1에서 마지막
 20 에피소드 평균 99.5, 최고 500으로 개선됐다 — 배운 것은 배운 것이다.
 그런데 시드를 세 번 바꿔가며 실행하면 학습 곡선이 시드마다 <strong>다른
 모양</strong>으로 나온다. 어떤 시드는 98에피소드만에 리턴 250을 돌파하지만,
@@ -307,7 +308,7 @@ Actor-Critic은 그 평균을 “에피소드 내 평균“에서 **상태별 �
 <h3 id="알고리즘-두-손실함수와-두-역할"><a class="header" href="#알고리즘-두-손실함수와-두-역할">알고리즘: 두 손실함수와 두 역할</a></h3>
 <p>이제 10.2절의 REINFORCE 코드에서 딱 두 가지를 바꾼다. (1)
 \(G_t\)를 \(A_t = G_t - V(s_t)\)로, (2) \(V(s_t)\)를
-내준다는 Critic(값을 예측하는 출력층)을 하나 더 붙인다. PyTorch로
+내준다는 Critic(값을 예측하는 출력층)을 하나 더 붙인다. PyTorch로<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">3</a></sup>
 쓰면:</p>
 <pre><code class="language-python">import torch, torch.nn as nn
 
@@ -373,9 +374,10 @@ Chapter 6의 <strong>TD(0) 값 학습</strong>을 그대로 쓴 것이다. 즉 C
 <p>두 출력(정책, 가치)은 앞부분 <code>shared</code> 층을 공유하고 마지막
 출력층만 다르다 — FAQ에서 언급한 “특징 추출을 공유하는” 실제
 구현의 전형이다. <code>A2C</code>라는 이름도 여기서 온다: <strong>A</strong>dvantage
-<strong>A</strong>ctor-<strong>C</strong>ritic(DeepMind, 2016) — “A“가 바로 오늘 배운
+<strong>A</strong>ctor-<strong>C</strong>ritic(DeepMind, 2016)<sup class="footnote-reference" id="fr-a3c-1"><a href="#footnote-a3c">4</a></sup> — “A“가 바로 오늘 배운
 어드밴티지를 가리킨다. (위 코드는 한 에피소드당 한 번 갱신하는
 간소화 버전이고, 원판 A2C/A3C는 매 스텝마다 갱신한다.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."><span class="img-wrapper"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch10_3_actor_critic_structure.svg" alt="Actor-Critic 구조도: 상태 s_t -&gt; 공유 특성 층 -&gt; Actor 헤드(softmax 정책)와 Critic 헤드(V(s_t)). Actor에서 행동 a_t를 샘플링해 환경으로 보내고, 환경은 보상 r_t와 다음 상태 s_{t+1}을 반환. 리턴 G_t와 Critic의 V(s_t)가 만나 어드밴티지 A_t = G_t - V(s_t)를 만들고, Actor 손실(-sum log pi * A_t)과 Critic 손실(TD(0) MSE)이 각각 Adam으로 파라미터를 갱신 — 갱신된 파라미터가 다시 공유 층으로 돌아오는 순환 구조"><span class="img-wrapper"><img src="../../images/ch10_3_actor_critic_structure.svg" alt="Actor-Critic 구조도: 상태 s_t -&gt; 공유 특성 층 -&gt; Actor 헤드(softmax 정책)와 Critic 헤드(V(s_t)). Actor에서 행동 a_t를 샘플링해 환경으로 보내고, 환경은 보상 r_t와 다음 상태 s_{t+1}을 반환. 리턴 G_t와 Critic의 V(s_t)가 만나 어드밴티지 A_t = G_t - V(s_t)를 만들고, Actor 손실(-sum log pi * A_t)과 Critic 손실(TD(0) MSE)이 각각 Adam으로 파라미터를 갱신 — 갱신된 파라미터가 다시 공유 층으로 돌아오는 순환 구조"></span></label></p>
 <h3 id="실습-cartpole에서-reinforce와-a2c의-학습-곡선을-비교"><a class="header" href="#실습-cartpole에서-reinforce와-a2c의-학습-곡선을-비교">실습: CartPole에서 REINFORCE와 A2C의 학습 곡선을 비교</a></h3>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter10_3_actor_critic.ipynb">Colab 노트북</a>
@@ -436,7 +438,7 @@ TD(0)(Chapter 6의 부트스트랩, 분산 작음)으로, Actor는 MC 리턴으�
 \(b=1.9\) 행이 그 증거다).</p>
 <h3 id="역사적-일화-뇌의-도파민이-바로-td-오차"><a class="header" href="#역사적-일화-뇌의-도파민이-바로-td-오차">역사적 일화: 뇌의 도파민이 바로 TD 오차</a></h3>
 <p>“TD 오차“가 단순한 수학적 편의가 아니라는 증거가 1997년에
-나왔다. Schultz, Dayan, Montague는 원숭이의 뇌에서 <strong>도파민
+나왔다. Schultz, Dayan, Montague<sup class="footnote-reference" id="fr-schultz-1"><a href="#footnote-schultz">5</a></sup>는 원숭이의 뇌에서 <strong>도파민
 신경세포</strong>가 보상을 받을 때마다 “예측보다 좋으면 발화량 증가,
 예측보다 나쁘면 감소, 그리고 예측이 정확히 서 있으면 보상이
 오기 <em>전</em>의 신호(큐) 시점에 발화가 앞당겨진다“는 패턴을
@@ -448,8 +450,9 @@ V(s_t)\), 즉 <strong>정확히 TD 오차</strong>다. “예측하지 못했던
 회로에, “Actor“의 역할은 그 신호를 행동 선택에 쓰는 기저핵
 회로에 해당한다는 대응으로까지 이어진다. 강화학습 이론이
 생물학 신호를 <em>설명</em>에 성공한, 이 분야에서 가장 유명한
-일화 중 하나다. (11.3절의 GAE도 이 TD 오차 \(\delta_t\)를
+일화 중 하나다. (11.3절의 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">6</a></sup>도 이 TD 오차 \(\delta_t\)를
 여러 개 가중평균한 것 — 같은 뿌리다.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label></p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. Actor와 Critic은 왜 따로 학습하나요? 하나로 합칠 수는
 없나요?</strong> 둘은 서로 다른 것을 예측한다 — Actor는 “어떤 행동을 할
@@ -476,13 +479,14 @@ Actor-Critic 구조가 된다.</p>
 패밀리 안에서 “분산을 줄이는” 방향으로 발전한다.</p>
 <p><strong>Q. CartPole처럼 이산 행동공간인데, 굳이 Actor-Critic을 써야
 할까요? DQN이면 됐지.</strong> 맞는 말에 가깝다 — 이산 공간이라면
-Chapter 9의 DQN이 더 데이터 효율적일 때가 많다. Actor-Critic이
+Chapter 9의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">7</a></sup>이 더 데이터 효율적일 때가 많다. Actor-Critic이
 필수인 순간은 (1) <strong>연속 행동공간</strong>(로봇 관절 힘, Chapter
 13~14)에서 \(\max_a Q(s,a)\)를 계산할 수 없을 때, (2)
 <strong>탐색 정책</strong> 자체를 확률적으로 학습하고 싶을 때(행동을 샘플링
 해서 “다른 선택“도 시도하게 해야 하는 경우)다. 게다가 이번
 절의 어드밴티지 \(A_t\)는 PPO의 입력이 되므로, PPO를
-사용할 때까지 이 구조를 <em>실무적으로</em> 익숙해져 있어야 한다.</p>
+사용할 때까지 이 구조를 <em>실무적으로</em> 익숙해져 있어야 한다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">8</a></sup></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <blockquote>
 <p><strong>핵심 정리</strong>: REINFORCE의 신호 \(G_t\)에는 “운“이 섞여
 있다. <strong>베이스라인</strong> \(b(s_t)\) — 행동에 무관한 값 — 을 빼도
@@ -563,6 +567,33 @@ Step 3: 궤적 확률 P(tau;theta) = prod_t pi_theta(a_t|s_t) * (환경전이확
 올리려 하는지(행동 0/1 중) 한 문장으로 말하라. (힌트: 방향은
 “더 좋은 행동” 쪽으로 향해야 한다 — 그래디언트가 그런 방향으로
 나오지 않으면 어딘가를 잘못 계산한 것이다.)</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-gym">
+<p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-pytorch">
+<p>Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” NeurIPS 2019. arXiv:1912.01703. <a href="#fr-pytorch-1">↩</a></p>
+</li>
+<li id="footnote-a3c">
+<p>Mnih, V. et al. (2016). “Asynchronous Methods for Deep Reinforcement Learning.” arXiv:1602.01783. <a href="#fr-a3c-1">↩</a></p>
+</li>
+<li id="footnote-schultz">
+<p>Schultz, W., Dayan, P., Montague, P. R. (1997). “A Neural Substrate of Prediction and Reward.” Science 275(5306), 1593–1599. — 원숭이에서 도파민 신경세포가 TD 오차처럼 보상 예측에 반응함을 측정한 원 논문. <a href="#fr-schultz-1">↩</a></p>
+</li>
+<li id="footnote-gae">
+<p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

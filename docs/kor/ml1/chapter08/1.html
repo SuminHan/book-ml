@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -185,7 +185,9 @@
 데 필요한 대표적인 도구를 거의 다 손에 쥔 셈이다 — 이후 Block B에서 배울
 신경망 없이도, 실전 데이터셋 상당수를 이 도구들만으로 충분히 다룰 수 있다.
 지금이 “각 장의 코드가 실제 데이터 앞에서도 작동하는가“를 확인할 가장 좋은
-시점이다.</p>
+시점이다. 더 깊이 보려면 이 절의 주제(회귀·분류·모델 선택·검증)를
+다루는 Stanford CS229 Machine Learning 강의 노트<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup>도 참고할 수
+있다.</p>
 <p>이 프로젝트는 <strong>검증의 성격</strong>에서도 특별하다. Chapter 2~7의 각 실습은
 “교재가 고른 데이터, 교재가 고른 모델“에서 코드가 돌아가는지 확인하는
 것이었지만, 이번 프로젝트에서는 <strong>데이터를 고르고, 모델을 고르고, 결과가
@@ -228,16 +230,16 @@ M3에서 <strong>학습 곡선 한 장</strong>을 요구하는 이유는, “�
 하이퍼파라미터 선택에 쓰였는지가 그림에서 바로 드러난다.</p>
 <h3 id="프로젝트-구조"><a class="header" href="#프로젝트-구조">프로젝트 구조</a></h3>
 <ul>
-<li><strong>데이터</strong>: Kaggle(kaggle.com/datasets), UCI Machine Learning Repository
+<li><strong>데이터</strong>: Kaggle(kaggle.com/datasets), UCI Machine Learning Repository<sup class="footnote-reference" id="fr-ucirepo-1"><a href="#footnote-ucirepo">2</a></sup>
 (archive.ics.uci.edu) 중에서 정형 데이터를 하나 고른다 — 이번 프로젝트는
 Chapter 2~7의 분류/회귀 모델을 검증하는 것이 목표이므로, 이미지나 텍스트보다
 표(행/열) 형태 데이터가 적합하다.</li>
-<li><strong>적용</strong>: Chapter 2~7 중 <strong>최소 두 가지 모델</strong>(예: 로지스틱회귀와 GBDT)을
+<li><strong>적용</strong>: Chapter 2~7 중 <strong>최소 두 가지 모델</strong>(예: 로지스틱회귀와 GBDT<sup class="footnote-reference" id="fr-gbdt-1"><a href="#footnote-gbdt">3</a></sup>)을
 같은 데이터에 적용하고 성능을 비교한다.</li>
 <li><strong>필수 요구사항 — 수식적 정당화 최소 1개</strong>: 예를 들어 (1) 정규화를
 적용했다면 Chapter 6의 편향-분산 관점에서 왜 성능이 바뀌었는지 설명,
-(2) GBDT를 썼다면 Chapter 7의 SHAP으로 예측 하나를 분해해서 설명,
-(3) 여러 모델을 비교했다면 Chapter 2.3의 PR-AUC로 클래스 불균형을 고려한
+(2) GBDT를 썼다면 Chapter 7의 SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">4</a></sup>으로 예측 하나를 분해해서 설명,
+(3) 여러 모델을 비교했다면 Chapter 2.3의 PR-AUC<sup class="footnote-reference" id="fr-fawcett-roc-1"><a href="#footnote-fawcett-roc">5</a></sup>로 클래스 불균형을 고려한
 비교를 제시.</li>
 <li><strong>검증 원칙 준수</strong>: Chapter 6.3의 train/validation/test 3분할을 반드시
 지킨다 — 테스트 데이터 성능은 딱 한 번만 확인한다.</li>
@@ -248,7 +250,7 @@ Chapter 2~7의 분류/회귀 모델을 검증하는 것이 목표이므로, 이�
 예측 대상 단위를 일반화하는가“를 묻기 어렵다. (2) <strong>레이아웃의 함정</strong>이
 있는가 — 같은 환자의 여러 검사 결과가 여러 행으로 흩어져 있다면
 무작위 분할이 누수를 만든다(Chapter 6.3의 환자 단위 누수;
-<code>GroupKFold</code>가 필요). (3) <strong>시계열은 시간순으로</strong> 나눠야 한다(6.3절
+<code>GroupKFold</code><sup class="footnote-reference" id="fr-sklearn-1"><a href="#footnote-sklearn">6</a></sup>가 필요). (3) <strong>시계열은 시간순으로</strong> 나눠야 한다(6.3절
 노트북 §5). (4) <strong>클래스 비율을 먼저 보고 지표를 정한다</strong> — 99:1이면
 지표는 정확도가 아니라 PR-AUC/재현율이 된다(Chapter 2.3의 정확도의
 함정). (5) <strong>크기</strong> — 100행 미만이면 교차검증의 폴드가 너무 작아 숫자가
@@ -265,7 +267,7 @@ Chapter 2~7의 분류/회귀 모델을 검증하는 것이 목표이므로, 이�
 <tr><td><strong>Heart Failure</strong>(UCI)</td><td>1,000×14, 약 7:3</td><td>입원 후 28일 내 사망</td><td>클래스 약간 불균형 — F1·PR-AUC 함께 보고</td></tr>
 <tr><td><strong>Poker Hand</strong>(UCI)</td><td>1,025×13, 10클래스</td><td>카드 5장에서 패 손의 등급</td><td>다중 클래스 — 베이스라인은 10%(무작위)</td></tr>
 <tr><td><strong>Space Guests</strong>(Kaggle)</td><td>4,500×14, 균형</td><td>우주여행객의 목적지 성좌</td><td>결측치 다수 — 결측치 대체를 <strong>train으로만</strong></td></tr>
-<tr><td><strong>Credit Card</strong>(Kaggle)</td><td>28만×31, 99.8:0.2</td><td>이상거래(사기) 탐지</td><td>극단적 불균형 — 정확도 금지, PR-AUC 필수(8.2절 예)</td></tr>
+<tr><td><strong>Credit Card</strong>(Kaggle)<sup class="footnote-reference" id="fr-dalpozzolo-1"><a href="#footnote-dalpozzolo">7</a></sup></td><td>28만×31, 99.8:0.2</td><td>이상거래(사기) 탐지</td><td>극단적 불균형 — 정확도 금지, PR-AUC 필수(8.2절 예)</td></tr>
 </tbody>
 </table>
 </div>
@@ -421,7 +423,7 @@ test는 한 번만 쓰이므로 부풀림이 test에 전이되지 않는다 — 
 순위와 test F1 순위가 같은가요? test로 고르면 두 순서가
 달라질 수 있다는 것을 시드 3개로 확인해 볼 수 있나요?”</li>
 <li><strong>정규화/결측치 통계를 전체 데이터로 fit</strong>: 6.3절의 “정규화
-통계량 누수” — <code>StandardScaler</code>의 <code>fit</code>을 train+val+test 전체에
+통계량 누수” — <code>StandardScaler</code><sup class="footnote-reference" id="fr-sklearn-2"><a href="#footnote-sklearn">6</a></sup>의 <code>fit</code>을 train+val+test 전체에
 적용하면 test의 정보가 전처리에 스민다. <code>fit(X_train)</code> →
 <code>transform(X_val)</code>, <code>transform(X_test)</code>가 정석이다.</li>
 <li><strong>베이스라인 없이 성능 보고</strong>: §“베이스라인“에서 본 대로,
@@ -459,7 +461,7 @@ Block B까지 이어진다.</p>
 <li><strong>3분할</strong> (train 341 / val 114 / test 114, stratify) — unique
 id로 pairwise disjoint를 기계적으로 점검.</li>
 <li><strong>전처리</strong> — <code>StandardScaler</code>를 <strong>train으로만 fit</strong>.</li>
-<li><strong>5개 모델 후보</strong> (로지스틱회귀·kNN·트리·랜덤포레스트·GBDT)
+<li><strong>5개 모델 후보</strong> (로지스틱회귀·kNN·트리·랜덤포레스트<sup class="footnote-reference" id="fr-randomforest-1"><a href="#footnote-randomforest">8</a></sup>·GBDT)
 를 val F1로 비교 → kNN(k=5)가 0.973로 1위.</li>
 <li><strong>베이스라인</strong> — 다수 클래스(malignant) 모델의 val F1 0.774.
 kNN이 이를 0.198 상회해야 “모델을 만들었다“고 말할 수 있다.</li>
@@ -563,6 +565,33 @@ B가 A의 코드를 모르는 상태에서 정당화를 쓰는(=§“나쁜 설�
 모델을 2개로 줄이고(요구사항의 최소선은 2개), “잘 안 된 부분”
 절에 “시간 부족으로 3번째 모델을 못 돌렸다“를 정직하게 쓰는 것이,
 성능 숫자를 부풀리는 것보다 항상 낫다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-cs229">
+<p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-ucirepo">
+<p>Dua, D., Graff, C. (2019). “UCI Machine Learning Repository.” Irvine, CA: University of California, Irvine, School of Computer Engineering. http://archive.ics.uci.edu <a href="#fr-ucirepo-1">↩</a></p>
+</li>
+<li id="footnote-gbdt">
+<p>Friedman, J. H. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” The Annals of Statistics 29(5), 1189–1232. DOI: 10.1214/AOS/1013203451 <a href="#fr-gbdt-1">↩</a></p>
+</li>
+<li id="footnote-shap">
+<p>Lundberg, S. M., Lee, S.-I. (2017). “A Unified Approach to Interpreting Model Predictions.” NeurIPS 2017. arXiv:1705.07874. <a href="#fr-shap-1">↩</a></p>
+</li>
+<li id="footnote-fawcett-roc">
+<p>Fawcett, T. (2006). “An introduction to ROC analysis.” Pattern Recognition Letters 27(8). DOI: 10.1016/j.patrec.2005.10.010. <a href="#fr-fawcett-roc-1">↩</a></p>
+</li>
+<li id="footnote-sklearn">
+<p>Pedregosa, F. et al. (2012). “Scikit-learn: Machine Learning in Python.” arXiv:1201.0490. <a href="#fr-sklearn-1">↩</a> <a href="#fr-sklearn-2">↩2</a></p>
+</li>
+<li id="footnote-dalpozzolo">
+<p>Dal Pozzolo, E., Caelen, O., Johnson, M. A., Bontemporal, G. (2014). “Calibrating Probability with Undersampling for Unbalanced Classification.” IEEE International Joint Conference on Neural Networks (IJCNN) 2014. <a href="#fr-dalpozzolo-1">↩</a></p>
+</li>
+<li id="footnote-randomforest">
+<p>Breiman, L. (2001). “Random Forests.” Machine Learning 45(1), 5–32. DOI: 10.1023/A:1010933404324 <a href="#fr-randomforest-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

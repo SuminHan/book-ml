@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -181,7 +181,7 @@
                         <h1 id="43-가치-반복-수렴-증명-그리고-모델-기반이라는-전제"><a class="header" href="#43-가치-반복-수렴-증명-그리고-모델-기반이라는-전제">4.3 가치 반복, 수렴 증명, 그리고 모델 기반이라는 전제</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter04_3_value_iteration_banach.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <h3 id="가치-반복"><a class="header" href="#가치-반복">가치 반복</a></h3>
-<p><strong>가치 반복</strong>(Value Iteration)은 정책평가와 정책개선을 합쳐서, 정책평가를
+<p><strong>가치 반복</strong><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">1</a></sup> (Value Iteration)은 정책평가와 정책개선을 합쳐서, 정책평가를
 끝까지 수렴시키지 않고 딱 한 번만 하고 바로 개선하는 것을 매 스텝
 반복한다 — 벨만 최적방정식 자체를 반복 대입으로 직접 푸는 것과 같다:</p>
 <pre><code class="language-python">def value_iteration(P, R, n_actions, gamma, theta=1e-6):
@@ -259,7 +259,7 @@ V^*\))이다. 둘은 4.1절의 벨만방정식 2×2 표에서 “기대” 열�
 스텝이면“의 눈금자를 준다 — 목표까지의 최대 거리(이 예에선 4)와,
 할인이 \(\gamma^k\)로 충분히 작아질 때까지의 \(k\)가 그 상한이다.
 둘째, “한 번에 내다보는 스텝 수를 늘려가며 근사한다“는 관점은
-Chapter 14의 **모델 기반 강화학습(MPC, Model Predictive Control)**과
+Chapter 14의 <strong>모델 기반 강화학습(MPC, Model Predictive Control)</strong><sup class="footnote-reference" id="fr-mpc-1"><a href="#footnote-mpc">2</a></sup>과
 동일한 사상이다 — MPC는 매 결정 시점에 “앞으로 \(k\)스텝만”
 내다보며 최적 행동을 고르고, \(k\)(예측 지평, prediction horizon)를
 키울수록 장기 계획을 더 잘 반영한다. 가치 반복은 그 \(k\)를
@@ -300,7 +300,7 @@ policy = [1, 1, 1, 1, 0]                       # 정책반복과 완전히 동�
 버전은 같은 고정점에 수렴한다는 보장은 변하지 않는다.</p>
 <h3 id="정책반복과-가치반복은-같은-알고리즘의-두-극한"><a class="header" href="#정책반복과-가치반복은-같은-알고리즘의-두-극한">정책반복과 가치반복은 “같은 알고리즘의 두 극한”</a></h3>
 <p>4.2절 FAQ에서 예고했듯, 정책평가를 <strong>완전 수렴 없이 \(k\)sweep만</strong>
-돌리고 바로 정책개선으로 넘어가는 변형(<strong>수정된 정책 반복</strong>,
+돌리고 바로 정책개선으로 넘어가는 변형(<strong>수정된 정책 반복</strong><sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">1</a></sup>,
 modified policy iteration)을 \(k\)에 따라 나열하면,</p>
 <div class="table-wrapper">
 <table>
@@ -356,21 +356,22 @@ theorem)는 이런 축소 사상이 항상 <strong>유일한 고정점</strong>�
 <p>이 증명이 보장하는 건 “존재“이지 “계산 가능성“이나 “저장 가능성“이
 아니라는 점도 중요하다 — 바둑처럼 상태 수가 초천문학적으로 많으면(약
 \(10^{170}\)), \(\pi^*\)가 이론적으로 존재해도 모든 상태에 대해
-표로 저장하는 것 자체가 불가능하다. Chapter 9(DQN)에서 배울, 표 대신
+표로 저장하는 것 자체가 불가능하다. Chapter 9(DQN)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">3</a></sup>에서 배울, 표 대신
 신경망으로 근사하는 방법이 필요해지는 이유가 바로 여기서 나온다. (이
 거듭제곱법이 왜 수렴하는지는, 그래프 위에서 무작위 걷기의 정상분포를
-구하는 Chapter 14.3의 PageRank 알고리즘과 정확히 같은 수학이다.)</p>
+구하는 Chapter 14.3의 PageRank<sup class="footnote-reference" id="fr-brinpage-1"><a href="#footnote-brinpage">4</a></sup> 알고리즘과 정확히 같은 수학이다.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <h3 id="모델-기반이라는-전제"><a class="header" href="#모델-기반이라는-전제">모델 기반이라는 전제</a></h3>
 <p>이번 장의 모든 알고리즘은 전이확률 \(P(s’|s,a)\)를 <strong>정확히 알고
 있다는</strong> 전제 위에 서 있다 — 체스라면 “이 수를 두면 상대는 어떻게
 반응할 확률이 얼마인가“를 미리 다 알아야 한다는 뜻인데, 현실에서는
 대부분 이걸 알 수 없다. Chapter 5·6은 이 모델을 몰라도 경험만으로
-학습하는 방법(몬테카를로, 시간차 학습)을 다룬다.</p>
+학습하는 방법(몬테카를로, 시간차 학습)을 다룬다.<sup class="footnote-reference" id="fr-suttonbarto-3"><a href="#footnote-suttonbarto">1</a></sup></p>
 <p><strong>동적계획법의 핵심 아이디어(“큰 문제 = 작은 부분 문제 + 재귀”)는
 컴퓨터공학 전반에서 반복해서 등장하는 패턴이고, 강화학습은 그 패턴을
 “미래의 불확실한 보상을 어떻게 지금 계산할 것인가“라는 문제에 적용한
 것이다 — 그리고 그 반복이 항상 정답에 수렴한다는 것 자체가, 축소
-사상이라는 하나의 수학적 성질로 보장된다.</strong></p>
+사상이라는 하나의 수학적 성질로 보장된다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">5</a></sup> <sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">6</a></sup></strong></p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 실전 강화학습에서 정책반복·가치반복을 직접 쓰나요?</strong> 상태
 공간이 작고 \(P, R\)을 정확히 아는 문제(작은 그리드월드, 재고
@@ -432,6 +433,27 @@ Step 3: n번 반복하면 ||V_n - V*|| &lt;= gamma^n * ||______________||
 <p><strong>정확성 확인</strong>: 이 결과가 “정책평가·가치반복이 초기값 \(V_0\)를
 아무렇게나(예: 전부 0으로) 잡아도 항상 같은 답에 도달한다“는 사실을
 왜 보장하는지 한 문장으로 설명하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a> <a href="#fr-suttonbarto-2">↩2</a> <a href="#fr-suttonbarto-3">↩3</a></p>
+</li>
+<li id="footnote-mpc">
+<p>Mayne, D., Rawlings, J. B., Rao, C. V., Scokaert, P. O. (2000). “Constrained model predictive control: Stability and optimality.” Automatica 36(6), 789–814. <a href="#fr-mpc-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-brinpage">
+<p>Brin, S., Page, L. (1998). “The Anatomy of a Large-Scale Hypertextual Web Search Engine.” 7th International World Wide Web Conference (WWW7), Brisbane, Australia. (후에 Computer Networks 30(1-7), 107–117로 재인쇄.) <a href="#fr-brinpage-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning.” https://www.davidsilver.uk/teaching/ <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

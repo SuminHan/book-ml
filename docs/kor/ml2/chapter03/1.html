@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -181,7 +181,7 @@
                         <h1 id="31-mdp의-다섯-요소와-마르코프-성질"><a class="header" href="#31-mdp의-다섯-요소와-마르코프-성질">3.1 MDP의 다섯 요소와 마르코프 성질</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter03_1_mdp_elements.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <h3 id="이-절에서-무엇을-만들-것인가"><a class="header" href="#이-절에서-무엇을-만들-것인가">이 절에서 무엇을 만들 것인가</a></h3>
-<p>이 절은 두 가지를 만든다. 첫째, 강화학습 문제를 <strong>수학적으로 한 줄에
+<p>이 절은 두 가지를 만든다. 첫째, 강화학습 문제를 <strong>수학적으로 한 줄에<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">1</a></sup>
 쓰는 법</strong>을 얻는다 — MDP는 다섯 가지 요소 \((\mathcal{S}, \mathcal{A}, P,
 R, \gamma)\) 하나로 “게임의 규칙 전체“를 닫는 형식이다. 둘째, 그 형식이
 성립하려면 필요한 <strong>마르코프 성질</strong>의 정확한 의미와, 그것이 실제로는
@@ -261,6 +261,7 @@ Chapter 4~6(최적화) — 이 드라마의 둘째막이다.</p>
 쓰인 \(P\)와 \(R\)가 그대로 수식에 대입된다 — 형식과 계산이 분리
 되지 않고 정확히 이어지는 것을 확인하게 된다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch03_mdp_transition_diagram.svg" alt="3상태 보드게임 MDP — 상태 0에서 시작, right(실선)/wait(점선) 전이, 미끄러짐 확률 0.3, 터미널 2에 진입 시 보상 +3(그 외 매 스텝 -1)"><span class="img-wrapper"><img src="../../images/ch03_mdp_transition_diagram.svg" alt="3상태 보드게임 MDP — 상태 0에서 시작, right(실선)/wait(점선) 전이, 미끄러짐 확률 0.3, 터미널 2에 진입 시 보상 +3(그 외 매 스텝 -1)"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gym.png" alt="OpenAI Gym에 포함된 일부 환경들의 화면 — CarRacing, Go, AirRaid, LunarLander, MountainCar, Walker2d, Doom, Reacher (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_gym.png" alt="OpenAI Gym에 포함된 일부 환경들의 화면 — CarRacing, Go, AirRaid, LunarLander, MountainCar, Walker2d, Doom, Reacher (원 논문 Figure 1)."></span></label> <sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">2</a></sup></p>
 <h3 id="각-요소-하나씩-왜를-붙여서"><a class="header" href="#각-요소-하나씩-왜를-붙여서">각 요소 하나씩: “왜“를 붙여서</a></h3>
 <p><strong>\(\mathcal{S}\), 상태 공간.</strong> 상태는 “에이전트의 관점에서의 세계의
 완전한 기술“이어야 한다. CartPole의 상태
@@ -279,7 +280,7 @@ Chapter 4~6(최적화) — 이 드라마의 둘째막이다.</p>
 가“의 문제다 — 이산이면 상태×행동 크기의 표, 연속이면 연속 출력의
 신경망(Chapter 9 vs 10~11의 분기가 여기서 나온다).</p>
 <p><strong>\(P\), 전이확률.</strong> \(P(s’|s,a)\)는 “이 게임의 물리 법칙“이다.
-Gymnasium 환경에서는 이 함수가 <code>step()</code> 함수의 내부 구현으로 감춰져
+Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">3</a></sup> 환경에서는 이 함수가 <code>step()</code> 함수의 내부 구현으로 감춰져
 있고, 우리는 <strong>샘플</strong>(실제 전이)만 관찰할 수 있다. 두 가지 사용 방식이
 있다: <strong>모델 기반</strong>(model-based, Chapter 4~5의 동적계획법)은 \(P\)를
 (추정해서) 명시적으로 써서 계획을 세우고, <strong>모델 없는</strong>(model-free,
@@ -304,8 +305,8 @@ Chapter 6~11)은 \(P\)를 전혀 쓰지 않고 경험(실제 전이 샘플)에�
 \(\gamma &lt; 1\)은 “에이전트가 영원히 살지 않는 세계“를 뜻하며, 이것이
 \(V^\pi, Q^\pi\)가 유계 함수로 존재하게 하는 <strong>수학적 필요 조건</strong>이다.</p>
 <h3 id="마르코프-성질"><a class="header" href="#마르코프-성질">마르코프 성질</a></h3>
-<p><strong>마르코프 성질</strong>(Markov property): 다음 상태는 오직 <strong>현재</strong> 상태와
-행동에만 의존한다 — 어떻게 지금 상태에 도달했는지(과거 전체 이력)는
+<p><strong>마르코프 성질</strong>(Markov property)<sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">1</a></sup>: 다음 상태는 오직
+<strong>현재</strong> 상태와 행동에만 의존한다 — 어떻게 지금 상태에 도달했는지(과거 전체 이력)는
 상관없다:</p>
 <p>\[P(s_{t+1} | s_t, a_t, s_{t-1}, a_{t-1}, \ldots, s_0) = P(s_{t+1} | s_t, a_t)\]</p>
 <p>예: 체스판의 현재 배치만 알면, 거기까지 어떤 수순을 거쳐왔는지는 다음
@@ -441,7 +442,7 @@ MDP“로, 이 절의 모든 정의가 퇴화된 형태로 적용된다(FAQ 참�
 에 민감하므로, 샘플 수와 추정 오차의 관계를 Chapter 5에서 자세히 다룬다.</p>
 <h3 id="실습-mdp의-요소를-실제로-읽기--gymnasium에서-mathcals"><a class="header" href="#실습-mdp의-요소를-실제로-읽기--gymnasium에서-mathcals">실습: MDP의 요소를 실제로 읽기 — Gymnasium에서 \(\mathcal{S},</a></h3>
 <p>\mathcal{A}\)를 확인하기</p>
-<p>이론의 다섯 요소를 실제 환경의 API와 대응시키자. <code>FrozenLake-v1</code>
+<p>이론의 다섯 요소를 실제 환경의 API와 대응시키자. <code>FrozenLake-v1</code><sup class="footnote-reference" id="fr-gym-2"><a href="#footnote-gym">2</a></sup>
 (얼음 위를 미끄러지지 않게 건너는 문제)와 <code>CartPole-v1</code>을 만들고,
 각각의 \(\mathcal{S}\)와 \(\mathcal{A}\)를 출력한다:</p>
 <pre><code class="language-python">import gymnasium as gym
@@ -584,10 +585,13 @@ env.close()
 이 형식이 성립하면, (1) 가치를 \(V^\pi(s)\)와 같은 “상태에만
 인자화된 함수“로 정의할 수 있고(3.3), (2) 벨만방정식이라는 한 스텝
 재귀식으로 가치를 계산할 수 있고(3.3), (3) 정책평가·Q-learning·
-DQN·PPO까지 — <strong>이 형식 위에서 쓰인 모든 알고리즘</strong>을 도출할 수 있다.
-마르코프 성질이 “깨진” 문제(POMDP)는 이 문법의 전제가 깨진 것이므로,
+DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup>·PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">5</a></sup>까지 — <strong>이 형식 위에서 쓰인 모든 알고리즘</strong>을
+도출할 수 있다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
+<p>마르코프 성질이 “깨진” 문제(POMDP)는 이 문법의 전제가 깨진 것이므로,
 “상태를 재설계해서 성질을 다시 성립시키는 것“이 항상 첫 번째
-해결책이다.</p>
+해결책이다. 이 주제를 더 깊이 보려면 <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">6</a></sup>, <sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">7</a></sup></p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 마르코프 성질이 실제 문제에서 항상 성립하나요?</strong> 엄밀하게는
 거의 항상 근사다 — 예를 들어 자율주행에서 “카메라 한 장“만 상태로
@@ -691,6 +695,30 @@ nonzero만 쓰면 된다). <code>is_slippery=True</code>일 때와 \(P\)가 어�
 자주 일어나면 기대 리턴이 작아진다“는 직관이 맞는지 한 문장으로
 논평하라.</p>
 </blockquote>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — MDP의 다섯 요소와 마르코프 성질은 이 표준 교과서 3장(기본 모델)에서 체계적으로 다뤄진다. <a href="#fr-suttonbarto-1">↩</a> <a href="#fr-suttonbarto-2">↩2</a></p>
+</li>
+<li id="footnote-gym">
+<p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a> <a href="#fr-gym-2">↩2</a></p>
+</li>
+<li id="footnote-gymnasium">
+<p>Towers, M. et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning.” https://www.davidsilver.uk/teaching/ — MDP와 마르코프 성질을 이 절과 같은 수준에서 다루는 표준 강의자료다. <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

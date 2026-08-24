@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -274,7 +274,7 @@ def sarsa_train(env_step, n_states, n_actions, n_episodes, alpha, gamma, epsilon
 구분이 CliffWalking에서 어떤 경로 차이로 이어지는지 아래 실습에서
 구체적으로 본다.</p>
 <h3 id="실습-cliffwalking-환경에서-sarsa-학습시키기"><a class="header" href="#실습-cliffwalking-환경에서-sarsa-학습시키기">실습: CliffWalking 환경에서 SARSA 학습시키기</a></h3>
-<p>Gymnasium의 <code>CliffWalking-v1</code>은 4×12 격자에서, 출발점 바로 옆
+<p>Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">1</a></sup>의 <code>CliffWalking-v1</code>은 4×12 격자에서, 출발점 바로 옆
 한 줄이 전부 절벽(밟으면 보상 -100을 받고 출발점으로 되돌아감)인
 환경이다 — 목표까지 가는 가장 짧은 길이 정확히 그 절벽 바로 옆을
 스치는 길이라, “짧지만 위험한 길“과 “길지만 안전한 길” 사이의
@@ -429,7 +429,7 @@ Q값은 \(\approx -109\) 쪽으로 계속 갱신당하고, 그 칸들에
 배우는 알고리즘이므로, <strong>학습 중의 \(\varepsilon\)이 어떤 값을
 갖고 있었는가가 배운 경로의 모양을 결정</strong>한다. (decay가
 Q-learning에서 어떤 역할을 하는지는 6.3절에서 같은 환경으로
-다시 본다.)</p>
+다시 본다. 이 주제를 더 깊이 보려면: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">2</a></sup>)</p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <ul>
 <li><strong>갱신 뒤 <code>s, a = ns, na</code>를 <code>s = ns</code>만 하면 “SARSA“가 아니다.</strong>
@@ -509,7 +509,7 @@ Q(s,a)]\)의 다섯 요소 (\(s, a, r, s’, a’\)) 중, 환경이
 최적의 \(Q^*\))에 수렴한다는 사실이, Sutton과 Barto의 교과서
 (1998)에서 <strong>CliffWalking 예제</strong>와 함께 정형화되면서 비로소
 강화학습을 지배하는 근본 축이 된다. 이 실습의
-<code>CliffWalking-v1</code>은 정확히 그 교과서 예제다 — 40년 넘게
+<code>CliffWalking-v1</code>은 정확히 그 교과서<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">3</a></sup> 예제다 — 40년 넘게
 “on-policy vs off-policy를 보여주는 표준 실험“으로 쓰이고
 있는 것이다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
@@ -531,7 +531,7 @@ Chapter 3.1 FAQ의 관점에서 보면, 이 재사용은 사실 우연이 아니
 기대값의 한 항으로 <strong>자동으로</strong> 들어오게 된다. 위험 회피로
 <strong>보이는</strong> 것은 on-policy라는 성격의 <strong>부수적 결과</strong>다. (진짜
 “떨어질 <strong>확률 자체</strong>를 최소화하는” 목표가 필요하다면, 기대
-리턴이 아닌 다른 목표(예: CVaR)를 설계해야 하며, 그것은 이 강의
+리턴이 아닌 다른 목표(예: CVaR<sup class="footnote-reference" id="fr-cvar-1"><a href="#footnote-cvar">4</a></sup>)를 설계해야 하며, 그것은 이 강의
 의 범위 밖이다.)</p>
 <p><strong>Q. \(\gamma=1.0\)과 \(\gamma=0.99\) 중 무엇을 써야
 하나요?</strong> 에피소드 과업에서는 둘 다 문제없다. \(\gamma=1\)은
@@ -550,6 +550,21 @@ CliffWalking 실습은 그 “답“이 구체적으로 어떤 모양인지 보�
 6.3절에서는 이 갱신식의 한 항 — \(Q(s’,a’)\) — 만을
 \(\max\)으로 바꿔, 질문이 “이상적인 정책은 얼마나 좋은가“로
 바뀌었을 때 경로가 어떻게 달라지는지 본다.</strong></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-gymnasium">
+<p>Towers, M., Kwiatkowski, A., Terry, J., et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032 (NeurIPS 2025 Datasets and Benchmarks). <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>이 주제를 더 깊이 보려면 — Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — on-policy/off-policy 가치학습(SARSA vs Q-learning)과 ε-greedy 탐험은 CS234의 model-free 학습 강의에서 직접 겹친다. <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — on-policy/off-policy 구별과 CliffWalking 예제(원서 1998 1st ed. Figure 6.7)는 6.2절 “역사“에서 짚은 대로, 이 표준 교과서가 정형화한 것이다. <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-cvar">
+<p>Rockafellar, R. T., Uryasev, S. (2000). “Optimization of Conditional Value-at-Risk.” Journal of Risk 2(3), 21–41 — 본문에서 언급한 CVaR(조건부 가치위험) 위험측도의 원 논문. <a href="#fr-cvar-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

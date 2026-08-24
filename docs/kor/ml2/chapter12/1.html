@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -237,7 +237,7 @@ def train_behavior_cloning(demos, epochs, lr):
 보여준 <em>그</em> 장면이 아니라, <em>자신의 작은 실수로 빗나간</em> 낯선
 장면에 부딪히면 차가 멈춰 서거나 위험한 행동을 했다. 이 “시연
 안의 장면은 잘하고, 시연 밖의 장면은 못하고“라는 실패 패턴이
-2011년에야 Ross, Gordon &amp; Bagnell에 의해 <strong>복합 오차</strong>(compounding
+2011년에야 Ross, Gordon &amp; Bagnell<sup class="footnote-reference" id="fr-dagger-1"><a href="#footnote-dagger">1</a></sup>에 의해 <strong>복합 오차</strong>(compounding
 error)로 이론화됐고, 같은 논문이 그 해법을 <strong>DAgger</strong>로 제시했다
 — 12.3절의 역사적 배경 박스에서도 다시 만나게 될 이 논문이
 바로 이 절의 두 번째 주인공이다.</p>
@@ -342,7 +342,7 @@ def bc(s):
 학습한다. 이 과정을 반복하면, 학습 데이터가 점점 “정책이 실제로 방문하는
 상태“들을 포함하게 되어 복합 오차가 줄어든다 — Chapter 6의 SARSA가
 “실제로 따르는 정책“의 가치를 배우는 것과 비슷한 정신이다: <strong>이론상
-이상적인 상황이 아니라, 실제로 마주칠 상황을 기준으로 학습한다.</strong></p>
+이상적인 상황이 아니라, 실제로 마주칠 상황을 기준으로 학습한다.</strong> <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">2</a></sup></p>
 <h3 id="dagger-알고리즘-정책이-직접-달리고-전문가가-답만-한다"><a class="header" href="#dagger-알고리즘-정책이-직접-달리고-전문가가-답만-한다">DAgger 알고리즘: “정책이 직접 달리고, 전문가가 답만 한다”</a></h3>
 <p>문제를 정식화했으니 해법의 구조가 보인다. 배포 오차
 \(\mathbb{E}_{s \sim d_\pi} L(s)\)를 줄이려면, 학습 데이터가
@@ -505,7 +505,7 @@ DAgger가 아니라 12.3절의 BC+RL 하이브리드(또는 12.2절의 선호
 이 행동“이 아니라 “이 두 시도 중 저쪽이 낫다“로만 라벨을 받을
 수 있는 상황(12.2절의 걸음걸이 비교 등)에서는 DAgger의 ③을
 Bradley-Terry 손실로 대체하는 <strong>GAIL</strong>(Generative Adversarial
-Imitation Learning) 계열 방법이 쓰인다 — 12.2절이 그 변주다.</li>
+Imitation Learning)<sup class="footnote-reference" id="fr-gail-1"><a href="#footnote-gail">3</a></sup> 계열 방법이 쓰인다 — 12.2절이 그 변주다.</li>
 </ul>
 <h3 id="자주-하는-실수-시연이-부족해서를-시연-수량-부족으로-읽기"><a class="header" href="#자주-하는-실수-시연이-부족해서를-시연-수량-부족으로-읽기">자주 하는 실수: “시연이 부족해서“를 “시연 <em>수량</em> 부족“으로 읽기</a></h3>
 <p>위 (1,3) 예제를 두고 가장 흔한 반응은 “그럼 전문가가 다른 시작
@@ -589,11 +589,12 @@ DAgger의 반복 횟수 자체를 하이퍼파라미터로 신중히 정해야 �
 정리하죠?</strong> 사람이 주는 <em>것</em>이 다르면 알고리즘이 달라진다.
 (상태, <em>정답 행동</em>)를 주면 → DAgger(지도학습, 상한=전문가).
 (두 <em>시도</em> 중 <em>더 나은 쪽</em>)를 주면 → 선호 기반 보상모델(12.2절,
-PPO로 <em>전문가를 넘을 수 있음</em>). <em>아무것도</em> 주지 않고 <em>보상함수</em>만
+PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">4</a></sup>로 <em>전문가를 넘을 수 있음</em>). <em>아무것도</em> 주지 않고 <em>보상함수</em>만
 주면 → 순수 RL(Ch.2~11). 실전 표준은 첫 번째 또는 두 번째로
 “그럴듯한 초기 정책“을 만들고, 그 위에서 세 번째(RL)로 한계를
 넘게 하는 하이브리드 — 12.3절의 결정 흐름도에서 이 셋이 하나의
 그림으로 합쳐진다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 이익이 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 이익이 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <hr>
 <p><strong>모방학습의 지름길(행동 복제)은 “시연 데이터 위의 오차“와
 “배포 시의 오차“가 같은 분포 위에서 측정될 때만 지름길이다 —
@@ -609,6 +610,21 @@ PPO로 <em>전문가를 넘을 수 있음</em>). <em>아무것도</em> 주지 �
 다. 그리고 DAgger도 방문하지 못한 상태는 커버하지 못한다 —
 그 잔여가 BC+RL(12.3절)과 선호 기반(12.2절)이 존재하는
 이유다.</strong></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-dagger">
+<p>Ross, A. W., Gordon, G. J., Bagnell, J. A. (2011). “A Reduction of Imitation Learning to Structured Output Classification.” ICML 2011. <a href="#fr-dagger-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 절의 주제(모방학습, 행동 복제, DAgger)를 같은 맥락에서 다루는 강의 자료. 이 주제를 더 깊이 보려면 참고. <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-gail">
+<p>Ho, J., Ermon, S. (2016). “Generative Adversarial Imitation Learning.” ICML 2016. arXiv:1606.03476. <a href="#fr-gail-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

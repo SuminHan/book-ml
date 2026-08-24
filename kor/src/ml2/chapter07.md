@@ -12,11 +12,11 @@ Chapter 5의 몬테카를로와 Chapter 6의 TD(0)는 언뜻 서로 다른 두 �
 부트스트래핑을 익혔고, SARSA와 Q-learning은 on-policy와 off-policy를
 가르는 선택까지 다뤘다. 이번 장은 바로 그 목표값의 "한 스텝"이라는
 부분을 일반적인 \\(n\\) 스텝으로 풀어내면서 시작한다. **다음 챕터와의
-연결.** n-step TD, TD(\\(\lambda\\)), Dyna-Q는 모두 "부트스트래핑을
+연결.** n-step TD, TD(\\(\lambda\\)), Dyna-Q[^suttonbarto]는 모두 "부트스트래핑을
 얼마나 할 것인가"라는 하나의 질문에 대한 서로 다른 답이다. Chapter 8의
-Block A 캡스톤에서는 이 세 개를 Gymnasium의 표 기반 환경에서 직접
-구현·비교하며 팀 프로젝트로 정리하고, 이후 Chapter 9의 DQN에서는
-n-step 리턴이 실전 알고리즘의 기본 옵션으로 다시 만난다.
+Block A 캡스톤에서는 이 세 개를 Gymnasium[^gymnasium]의 표 기반 환경에서 직접
+구현·비교하며 팀 프로젝트로 정리하고, 이후 Chapter 9의 DQN[^dqn]에서는
+n-step 리턴이 실전 알고리즘의 기본 옵션으로 다시 만난다. 이 주제를 더 깊이 다루는 자료: [^cs234]
 
 ## 학습 목표
 
@@ -39,13 +39,15 @@ n-step 리턴이 실전 알고리즘의 기본 옵션으로 다시 만난다.
 다이얼 \\(n\\)을 정의하고, 왜 "보편적인 최적 \\(n\\)"이 존재하지 않는지
 U자 곡선의 숫자로 확인한다. **7.2**에서는 그 "n을 고르는" 부담 자체를
 제거하는 적격흔적을 배운다 — 같은 편향-분산 트레이드오프를, 하나의 값
-을 고르는 문제에서 가중치 분포의 형태를 고르는 문제로 승화시킨다.
+을 고르는 문제에서 가중치 분포의 형태를 고르는 문제로 승화시킨다[^suttonbarto].
 마지막으로 **7.3**은 질문을 바꾼다. "부트스트래핑을 얼마나 할 것인가"
 가 아니라 "같은 실제 경험을 몇 번 더 쓸 것인가" — 모델 기반 계획은
 경험의 효율을 높이는 또 하나의 축이기 때문이다. Block A 후반부가
 사실 이 하나의 질문을 세 가지 다른 다이얼로 반복해서 묻는 것임을
 체감하면, Chapter 8에서 세 알고리즘을 한 프로젝트 안에 모아 비교하기가
 훨씬 수월해진다.
+
+![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
 
 이번 주는 세 개의 수업 블록으로 진행된다:
 
@@ -70,3 +72,11 @@ U자 곡선의 숫자로 확인한다. **7.2**에서는 그 "n을 고르는" 부
   "거꾸로" 퍼지는 과정을 손으로 추적하고, 5×5 격자 실험에서
   `planning_steps`를 0→30으로 늘리면 수렴 에피소드가 334→35로 줄어드는
   가속과 그 한계 효과를 측정한다.
+
+[^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html
+
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+
+[^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)
+
+[^gymnasium]: Towers, M. et al. (2024). "Gymnasium: A Standard Interface for Reinforcement Learning Environments." arXiv:2407.17032.

@@ -5,13 +5,15 @@
 2013년, 딥마인드는 Q-learning의 Q-테이블을 신경망으로 통째로 바꾼
 알고리즘으로 Atari 2600 게임 여러 개를 학습시켰다 — 게임의 규칙을 전혀
 알려주지 않고, 오직 화면 픽셀과 점수만 보고서. **DQN**(Deep
-Q-Network)이라 불린 이 결과는 2015년 Nature에 게재되며, 여러 게임에서
+Q-Network)[^dqn]이라 불린 이 결과는 2015년 Nature에 게재되며, 여러 게임에서
 사람 수준 또는 그 이상의 성능을 보였다. 표(tabular)로 배웠던 강화학습이
-여기서 "배운 것을 한 번도 본 적 없는 상태에도 퍼뜨리는" 함수근사와
-만나면서, 실용적인 규모로 첫발을 내딛는 순간이다.
+여기서 "배운 것을 한 번도 본 적 없는 상태에도 퍼뜨리는"
+함수근사[^suttonbarto]와 만나면서, 실용적인 규모로 첫발을 내딛는 순간이다.
+
+![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
 
 **이전 챕터와의 연결.** Chapter 8의 캡스톤에서 밴딧부터 n-step까지
-표 기반 강화학습의 이론 전체를 Gymnasium의 작은 격자 환경에서 직접
+표 기반 강화학습의 이론 전체를 Gymnasium[^gymnasium]의 작은 격자 환경에서 직접
 구현해 보았다. 그런데 그 모든 알고리즘은 "상태-행동 쌍을 표에
 하나하나 적어 넣는다"는 전제 위에 서 있었다. 이 챕터는 바로 그 전제를
 버린다 — 상태가 너무 많거나 연속일 때 표로는 원리적으로 불가능하다는
@@ -22,7 +24,7 @@ Q-Network)이라 불린 이 결과는 2015년 Nature에 게재되며, 여러 게
 행동이 연속량이면 이 최댓값을 취하는 것 자체가 불가능해진다.
 Chapter 10에서는 이 문제를 정면으로 마주하며, Q-함수를 우회하고
 정책을 직접 학습하는 **정책기반 강화학습**(policy-based RL)으로
-건너든다.
+건너든다. 이 주제를 더 깊이 다루는 자료: [^cs234]
 
 ## 학습 목표
 
@@ -40,7 +42,7 @@ Chapter 10에서는 이 문제를 정면으로 마주하며, Q-함수를 우회�
   buffer에서 무작위 미니배치를 샘플링)이 상관 제거와 데이터 재사용의
   두 이득을 동시에 주는 이유를 설명할 수 있다.
 - 이 챕터를 마치면, 두 장치를 하나로 조립한 DQN 알고리즘을 CartPole에서
-  돌려 실제 **학습곡선**을 그리고, 버퍼가 차기 전에 학습을 시작하거나
+  돌려 실제 **학습곡선**[^cartpole]을 그리고, 버퍼가 차기 전에 학습을 시작하거나
   단일 시드로만 판단하는 실수를 피하며 여러 시드의 곡선을 함께 읽을
   수 있다.
 
@@ -76,3 +78,9 @@ CartPole의 진짜 학습곡선으로 합친다.
   `dqn_loss`+타겟 네트워크, `ReplayBuffer`)을 CartPole에서 합쳐
   진짜 학습곡선을 그리며, 버퍼 크기와 다중 시드 같은 실무 포인트까지
   다룬다.
+
+[^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)
+[^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 함수근사(function approximation)로 표 기반 강화학습을 확장하는 구도는 이 표준 교과서 8장 "Function Approximation and Generalization"에서 체계적으로 다뤄진다.
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+[^gymnasium]: Towers, M. et al. (2024). "Gymnasium: A Standard Interface for Reinforcement Learning Environments." arXiv:2407.17032.
+[^cartpole]: Brockman, G. et al. (2016). "OpenAI Gym." arXiv:1606.01540. (CartPole은 이 라이브러리의 환경)

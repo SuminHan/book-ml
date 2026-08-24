@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -196,7 +196,7 @@
 반영할 수 있어야 한다.</p>
 <h3 id="역사-elman-네트워크와-시간-속의-구조"><a class="header" href="#역사-elman-네트워크와-시간-속의-구조">역사: Elman 네트워크와 “시간 속의 구조”</a></h3>
 <p>RNN의 원형은 1990년 인지과학자 제프리 엘먼(Jeffrey Elman)의 논문
-“Finding Structure in Time“에서 나왔다. Elman은 언어를 배우는 아이가
+“Finding Structure in Time”<sup class="footnote-reference" id="fr-elman1990-1"><a href="#footnote-elman1990">1</a></sup>에서 나왔다. Elman은 언어를 배우는 아이가
 단어 목록을 외우는 게 아니라 <strong>시간에 걸친 패턴</strong>을 추출한다고 보고,
 그 메커니즘을 신경망으로 모델링하려 했다. 그의 구조는 지금의 RNN과
 거의 똑같다: 은닉층을 “센트럴 유닛”(지금의 입력을 처리)과 “라테럴
@@ -209,7 +209,7 @@
 상태가 구분해 내는 듯이 행동한다는 관찰이다(사실 이 실험은 나중에
 비판받기도 했지만, “같은 토큰도 맥락에 따라 다른 내적 표현을 가져야
 한다“는 직관의 원형이 되었다). 1997년 호흐하이터(Hochreiter)와 슘드허버(Schmidhuber)가 제안한
-<strong>LSTM</strong> — “이 요약을 영원히 안 버리겠다“는 장치를 추가한 RNN — 가
+<strong>LSTM</strong><sup class="footnote-reference" id="fr-hochreiter1997lstm-1"><a href="#footnote-hochreiter1997lstm">2</a></sup> — “이 요약을 영원히 안 버리겠다“는 장치를 추가한 RNN — 가
 2010년대 음성인식·번역에서 비약적인 성능을 보여주면서 RNN은 비로소
 주류가 되었다(11.3절에서 다시 만난다).</p>
 <h3 id="은닉-상태-지금까지-읽은-것의-요약"><a class="header" href="#은닉-상태-지금까지-읽은-것의-요약">은닉 상태: 지금까지 읽은 것의 요약</a></h3>
@@ -219,7 +219,7 @@
 읽고 남은 요약“도 함께 입력받는다 — 이렇게 하면 지금 시점의 출력이 과거
 전체의 맥락에 영향을 받을 수 있다.</p>
 <p>이 “요약“을 조금 더 구체적으로 상상해보자. \(h_t\)는 길이가 \(T\)인
-문장 전체(단어 \(T\)개의 임베딩을 이으면 \(Td\)차원)를 \(h\)차원의
+문장 전체(단어 \(T\)개의 임베딩<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">3</a></sup>을 이으면 \(Td\)차원)를 \(h\)차원의
 벡터로 <strong>압축</strong>하는 것이다. \(h\)가 작을수록 압축률이 높아지고 정보
 손실이 커진다 — Chapter 3의 주성분분석(PCA)이 “데이터를 저차원 공간에
 내리는 것“이었다면, RNN은 “시간 축을 따라 데이터를 저차원 공간에
@@ -228,6 +228,7 @@
 <strong>다시 읽을 수 없도록</strong> 압축해야 한다(언어 모델처럼 다음 단어를 예측하는
 과제에서는 미래 정보가 없는 것이 오히려 정확하다). “한 번 읽고 잊되,
 잊지 말아야 할 것은 벡터에 남기는” 이 장치가 RNN의 전부다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."></span></label></p>
 <h3 id="rnn의-순전파"><a class="header" href="#rnn의-순전파">RNN의 순전파</a></h3>
 <p>시점 \(t\)마다 입력 \(x_t\)와 이전 은닉 상태 \(h_{t-1}\)을 받아, 새
 은닉 상태 \(h_t\)와 (필요하면) 출력 \(y_t\)를 낸다:</p>
@@ -396,7 +397,7 @@ z_4 &amp;= 0.1\cdot 4 + 0.9\cdot 0.532 = 0.879
 \(\tanh\)의 범위가 \([-1,1]\)에 갇혀 있어 발산 자체가 불가능하지만,
 <strong>은닉 크기가 큰(\(H &gt; 1\)) RNN에서는 \(W_{hh}\)의 고유값이 1보다
 크면 \(h_t\)가 실제로 발산하거나 진동할 수 있다</strong> — 11.2절의
-“자주 하는 실수“에서 다룰 그래디언트 폭발과 같은 뿌리다.</p>
+“자주 하는 실수“에서 다룰 그래디언트 폭발과 같은 뿌리다.<sup class="footnote-reference" id="fr-pascanu2013-1"><a href="#footnote-pascanu2013">4</a></sup></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch11_1_scalar_convergence.svg" alt="스칼라 RNN(w_xh=0.5, w_hh=0.8/0.9, x_t=1, h_0=0)의 은닉 상태 h_t가 시점 t를 따라 고정점 h*로 수렴하는 모습. w_hh=0.8(파란 실선)은 고정점 0.820으로, w_hh=0.9(주황 점선)은 0.853으로 수렴한다 — 둘 다 약 6단계 만에 정착한다. 가로축은 시점 t, 세로축은 h_t"><span class="img-wrapper"><img src="../../images/ch11_1_scalar_convergence.svg" alt="스칼라 RNN(w_xh=0.5, w_hh=0.8/0.9, x_t=1, h_0=0)의 은닉 상태 h_t가 시점 t를 따라 고정점 h*로 수렴하는 모습. w_hh=0.8(파란 실선)은 고정점 0.820으로, w_hh=0.9(주황 점선)은 0.853으로 수렴한다 — 둘 다 약 6단계 만에 정착한다. 가로축은 시점 t, 세로축은 h_t"></span></label></p>
 <h3 id="자주-하는-실수-두-가지"><a class="header" href="#자주-하는-실수-두-가지">자주 하는 실수: 두 가지</a></h3>
 <p><strong>실수 1 — “\(h_t\)는 \(x_t\)만 의존한다.”</strong> RNN을 처음 접할 때
@@ -468,10 +469,10 @@ for x in [2.0, 3.0, 1.0, 4.0]:
 <p><strong>Q. 입력과 출력의 길이가 다른 경우(번역처럼)는 어떻게 하나요?</strong> 위
 <code>rnn_forward</code>는 입력 시퀀스 전체를 다 읽고 매 시점 출력을 내는 구조지만,
 “입력을 끝까지 다 읽은 뒤 마지막 은닉 상태 하나로부터 새로운 시퀀스를
-순차적으로 생성“하는 <strong>인코더-디코더</strong>(encoder-decoder) 구조를 쓰면 입력과
+순차적으로 생성“하는 <strong>인코더-디코더</strong>(encoder-decoder)<sup class="footnote-reference" id="fr-sutskever2014seq2seq-1"><a href="#footnote-sutskever2014seq2seq">5</a></sup> 구조를 쓰면 입력과
 출력 길이가 달라도 된다 — Chapter 12에서 배울 Attention이 정확히 이
 구조의 한계(긴 입력을 하나의 벡터로 압축하면 정보가 손실된다)를 보완하는
-데서 출발한다.</p>
+데서 출발한다<sup class="footnote-reference" id="fr-bahdanau2014attention-1"><a href="#footnote-bahdanau2014attention">6</a></sup>.</p>
 <p><strong>Q. 왜 입력 벡터를 그냥 길게(문장 전체를 펼쳐서) MLP에 넣지 않는가?</strong>
 세 가지 이유다. (1) <strong>파라미터</strong>: 문장 길이 \(T\) × 임베딩 차원 \(d\)
 개 입력을 100개 뉴런의 은닉층에 연결하면 \(100 T d\)개 가중치 — \(T\)에
@@ -483,7 +484,9 @@ for x in [2.0, 3.0, 1.0, 4.0]:
 “이건 100번째 위치의 단어“라는 정보(위치 인코딩, Chapter 12)를
 별도로 주어야 하는데, RNN은 순차적 처리 자체가 위치 정보를
 자동으로 반영한다. (그럼에도 불구하고, “어차피 RNN은 순차적이라
-느리다“는 이유로 Transformer가 주류가 된 이유도 11.3절에서 본다.)</p>
+느리다“는 이유로 Transformer<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">7</a></sup>가 주류가 된 이유도 11.3절에서
+본다.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."></span></label></p>
 <p><strong>Q. 은닉 상태는 왜 \(\tanh\)를 쓰나요? 시그모이드(\(0 \sim 1\))도 되는데.</strong>
 두 가지 이유다. (1) <strong>중심화</strong>: \(\tanh\)의 출력 범위는
 \([-1, 1]\)이라 0을 중심으로 대칭인데, 시그모이드(\([0,1]\))는
@@ -501,7 +504,7 @@ for x in [2.0, 3.0, 1.0, 4.0]:
 실전에서는 (a) 0으로 고정(가장 흔함), (b) 학습 가능한 파라미터
 벡터로, (c) 이전 시퀀스의 최종 은닉 상태를 이어받아 <strong>이어지는
 시퀀스</strong>를 처리하는 데 쓰기도 한다 — 음성인식에서 “전 문장의
-마지막 상태를 다음 문장의 초기 상태로” 쓰는 방식이 이 (c)다.</p>
+마지막 상태를 다음 문장의 초기 상태로” 쓰는 방식이 이 (c)다<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">8</a></sup>.</p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음 <code>rnn_forward_scalar</code>(은닉 상태가 스칼라인 가장
@@ -551,6 +554,33 @@ h_3\)를 계산하라. (힌트: \(\tanh(2) \approx 0.964\),
 “\(\tanh\)의 포화“가 수렴을 <strong>부추기는</strong> 동시에 11.3절의
 그래디언트 소실을 <strong>조성하는</strong> 동일한 원인임을 한 문단으로
 설명하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-elman1990">
+<p>Elman, J. L. (1990). “Finding Structure in Time.” <em>Cognitive Science</em> 14(2), 179–211. — RNN의 원 논문. 은닉 상태의 출력을 다음 시점 입력으로 되돌리는 라테럴 유닛(순환 연결)을 도입한 Elman 네트워크를 제안했다. <a href="#fr-elman1990-1">↩</a></p>
+</li>
+<li id="footnote-hochreiter1997lstm">
+<p>Hochreiter, S., Schmidhuber, J. (1997). “Long Short-Term Memory.” <em>Neural Computation</em> 9(8), 1735–1780. — LSTM의 원 논문. RNN의 그래디언트 소실을 완화하기 위해 셀 상태(cell state)를 다루는 게이트 구조를 제안했다. <a href="#fr-hochreiter1997lstm-1">↩</a></p>
+</li>
+<li id="footnote-word2vec">
+<p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781. — 단어 임베딩(word embedding)의 대표 논문으로, 문맥에서 단어의 분포적 의미를 학습하는 CBOW/Skip-gram을 제안했다. <a href="#fr-word2vec-1">↩</a></p>
+</li>
+<li id="footnote-pascanu2013">
+<p>Pascanu, R., Mikolov, T., Bengio, Y. (2013). “On the difficulty of training recurrent neural networks.” ICML 2013, 1310–1318. arXiv:1211.5063. — RNN 학습의 그래디언트 소실/폭발 문제를 분석한 논문으로, \(W\_{hh}\)의 스펙트럼 규범(가장 큰 고유값 크기)이 1보다 작으면 그래디언트가 기하급수적으로 소실되고, 1보다 크면 폭주한다는 것을 정리했다. 이 절의 고정점 “증폭 인자” 분석과 정확히 같은 주제다. <a href="#fr-pascanu2013-1">↩</a></p>
+</li>
+<li id="footnote-sutskever2014seq2seq">
+<p>Sutskever, I., Vinyals, O., Le, Q. V. (2014). “Sequence to Sequence Learning with Neural Networks.” NeurIPS 2014. arXiv:1409.3215. <a href="#fr-sutskever2014seq2seq-1">↩</a></p>
+</li>
+<li id="footnote-bahdanau2014attention">
+<p>Bahdanau, D., Cho, K., Bengio, Y. (2014). “Neural Machine Translation by Jointly Learning to Align and Translate.” arXiv:1409.0473. <a href="#fr-bahdanau2014attention-1">↩</a></p>
+</li>
+<li id="footnote-transformer">
+<p>Vaswani, A. et al. (2017). “Attention Is All You Need.” arXiv:1706.03762. <a href="#fr-transformer-1">↩</a></p>
+</li>
+<li id="footnote-cs224n">
+<p>더 깊이 보려면: Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/ <a href="#fr-cs224n-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

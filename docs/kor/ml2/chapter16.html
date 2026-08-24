@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -179,14 +179,18 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="chapter-16-block-b-캡스톤-팀-프로젝트와-학기-총정리-block-b-capstone--semester-review"><a class="header" href="#chapter-16-block-b-캡스톤-팀-프로젝트와-학기-총정리-block-b-capstone--semester-review">Chapter 16. Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone &amp; Semester Review)</a></h1>
-<p>Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN), 정책을 직접
-학습하고(REINFORCE, PPO), 사람의 시연·선호로부터 배우고(모방학습), 실제
-물리 시뮬레이션(MuJoCo, Isaac Sim)과 트리 탐색(MCTS)까지 다뤘다. 이번
-장은 Chapter 8의 짝이다 — 이 두 번째 절반의 도구들을 로봇 시뮬레이션
-환경에 직접 적용해보고, 학기 전체를 총정리한다.</p>
+<p>Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">1</a></sup>, 정책을
+직접 학습하고(REINFORCE, PPO)<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">2</a></sup>, 사람의 시연·선호로부터
+배우고(모방학습)<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">3</a></sup>, 실제 물리 시뮬레이션(MuJoCo<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">4</a></sup>, Isaac Sim<sup class="footnote-reference" id="fr-isaacsim-1"><a href="#footnote-isaacsim">5</a></sup>)과 트리
+탐색(MCTS)<sup class="footnote-reference" id="fr-mcts-1"><a href="#footnote-mcts">6</a></sup>까지 다뤘다. 이번 장은 Chapter 8의 짝이다 — 이 두 번째 절반의
+도구들을 로봇 시뮬레이션 환경에 직접 적용해보고, 학기 전체를 총정리한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
 <p>왜 이 순서인가. 이전 장(“모델기반 RL과 몬테카를로 트리 탐색”)은
-“모델이 있을 때“의 도구 상자 마지막 조각, MCTS를 보여줬다 — AlphaGo의
-무기였던 UCT로 트리를 탐색하고, 정책·가치 네트워크가 탐색을 어떻게 돕는지
+“모델이 있을 때“의 도구 상자 마지막 조각, MCTS를 보여줬다 — AlphaGo<sup class="footnote-reference" id="fr-alphago-1"><a href="#footnote-alphago">7</a></sup>의
+무기였던 UCT<sup class="footnote-reference" id="fr-uct-1"><a href="#footnote-uct">8</a></sup>로 트리를 탐색하고, 정책·가치 네트워크가 탐색을
+어떻게 돕는지
 짚은 장이다. Chapter 15가 이 두 번째 절반에서 새 도구를 추가한 마지막 장
 인 셈이므로, 이 장부터는 배울 개념이 남지 않는다. 대신 이 책은 손에 든
 도구들을 실제 로봇 시뮬레이션 환경에 직접 적용해, 그 결과를 정직하게
@@ -195,6 +199,7 @@
 다른 무대 — 연속 제어 + 신경망 — 에서 다시 집행한다. 세 절은 “프로젝트를
 실행해 발표한다(16.1) → 서로를 심사한다(16.2) → 학기 전체를 자기 것으로
 다진다(16.3)“라는 하나의 아크를 이룬다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_alphago.png" alt="정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1)."><span class="img-wrapper"><img src="../images/ref_alphago.png" alt="정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1)."></span></label></p>
 <p>이번 챕터의 학습 목표는 다음과 같다.</p>
 <ul>
 <li>연속제어 환경에서 4주 파이프라인(환경 고르기 → 구현 → 평가 → 발표)으로
@@ -237,8 +242,38 @@
 경로(동적계획법, 몬테카를로, SARSA, Q-learning)로 풀어 “같은
 방정식, 다른 형태“를 숫자로 확인한다. 그 뒤 ML2 개념 지도, 20문항
 복습 자가진단, 학기 이후에 가져갈 세 가지와 최신 동향(오프라인 RL,
-범용 로봇 정책, sim-to-real)으로 이 학기를 마무리한다.</li>
+범용 로봇 정책, sim-to-real)으로 이 학기를 마무리한다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">9</a></sup></li>
 </ul>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-rlhf">
+<p>Christiano, P. et al. (2017). “Deep reinforcement learning from human preferences.” NeurIPS 2017. arXiv:1706.03741. <a href="#fr-rlhf-1">↩</a></p>
+</li>
+<li id="footnote-mujoco">
+<p>Todorov, E., Eret, T., Tassa, Y. (2012). “MuJoCo: A physics engine for model-based control.” IROS 2012, 5026–5033. <a href="#fr-mujoco-1">↩</a></p>
+</li>
+<li id="footnote-isaacsim">
+<p>Gao, S., Pagnucco, M., Bednarz, T., Song, Y. (2026). “NVIDIA Isaac Sim: Enabling Scalable, GPU-Accelerated Simulation for Robotics.” arXiv:2606.03551. <a href="#fr-isaacsim-1">↩</a></p>
+</li>
+<li id="footnote-mcts">
+<p>Browne, C. B., Cowling, P. I., White, M., et al. (2012). “A Survey of Monte Carlo Tree Search Methods.” IEEE Transactions on Computational Intelligence and AI in Games 4(1), 1–43. MCTS 방법론을 체계적으로 정리한 대표적 서베이 — “Monte-Carlo Tree Search“라는 이름과 선택·확장·평가·역전파의 표준 4단계 체계가 이 무렵 확립되었다. <a href="#fr-mcts-1">↩</a></p>
+</li>
+<li id="footnote-alphago">
+<p>Silver, D. et al. (2016). “Mastering the game of Go with deep neural networks and tree search.” Nature 529, 484–489. <a href="#fr-alphago-1">↩</a></p>
+</li>
+<li id="footnote-uct">
+<p>Kocsis, L., Szepesvári, C. (2006). “Bandit based Monte-Carlo Planning.” ECML 2006, LNAI 4212, 282–293. — UCT(Upper Confidence bounds applied to Trees)의 원 논문. <a href="#fr-uct-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>이 장의 주제(연속제어 RL, 팀 프로젝트 실습, 시드·베이스라인·평가 분리 프로토콜)를 더 깊이 다루는 자료: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

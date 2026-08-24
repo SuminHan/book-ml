@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -183,14 +183,14 @@
 <h3 id="왜-이번-주가-역전의-주인가"><a class="header" href="#왜-이번-주가-역전의-주인가">왜 이번 주가 “역전“의 주인가</a></h3>
 <p>16.1에서 각 팀은 <strong>발표팀</strong>으로서 자신의 딥러닝 프로젝트를 5~7분 안에
 설명해야 했다. 이번 블록(16.2)에서는 역할이 역전된다 — <strong>이번에는 네가
-심사위원이다.</strong> 다른 두 팀의 발표를 듣고, Chapter 8.2의 체크리스트를
+심사위원이다</strong><sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">1</a></sup>. 다른 두 팀의 발표를 듣고, Chapter 8.2의 체크리스트를
 적용해서 리뷰를 쓰고, 그 리뷰의 품질로 네가 채점받는다. 8.2에서 한
 “Block A의 발표를 심사“하는 행위의 Block B 버전이므로, “왜 반박
 가능한 질문이 좋은 리뷰인가“에 대한 논의(Popper의 반증주의, Amgen
-재현 실험)는 8.2절을 다시 읽으면 된다. 이번 절은 그 위의 <strong>두 가지를
+재현 실험<sup class="footnote-reference" id="fr-amgen2011-1"><a href="#footnote-amgen2011">2</a></sup>)는 8.2절을 다시 읽으면 된다. 이번 절은 그 위의 <strong>두 가지를
 추가</strong>한다.</p>
-<p>첫째, 심사 대상이 달라졌다. 8.2의 발표는 로지스틱회귀, kNN, GBDT 같은
-고전 ML 모델의 발표였는데, 이번엔 CNN, RNN/Transformer, VAE 계열
+<p>첫째, 심사 대상이 달라졌다. 8.2의 발표는 로지스틱회귀, kNN, GBDT<sup class="footnote-reference" id="fr-friedman-1"><a href="#footnote-friedman">3</a></sup> 같은
+고전 ML 모델의 발표였는데, 이번엔 CNN, RNN/Transformer, VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">4</a></sup> 계열
 딥러닝 모델의 발표다. 같은 발표라도 “이 모델 선택이 데이터에 맞는가“를
 판단하는 데 필요한 개념이 더 많아진다 — 데이터가 비정형인지, 그
 비정형성에 맞는 아키텍처를 골랐는지, 그리고 “정형 데이터인데 왜
@@ -265,20 +265,21 @@ Block B에서 “3점의 리뷰“가 실제로 어떻게 생기는지 한 가�
 높은 확률로 3점짜리 질문을 만들어내는 영역이다. 아래 결정나무가 그
 “아키텍처-데이터 매칭“을 정리한 것이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch16_2_review_decision_tree.svg" alt="딥러닝 발표 리뷰 — ‘왜 딥러닝인가’ 판단 나무. 데이터가 비정형(이미지/텍스트/오디오)인가로 분기: 예 → 데이터 구조와 아키텍처의 귀납적 편향이 일치하는가? (이미지→CNN, Ch10.1 / 시퀀스→RNN·Transformer, Ch11-12 / 잠재변수 생성→VAE·GAN, Ch15) 일치 → 3점 질문 ‘이 구조적 특성을 아키텍처의 어떤 부분이 이용하나?’; 불일치(예: 이미지인데 완전연결) → 3점 질문 ‘파라미터 수 공식(Ch10.1)으로 왜 이 설계가 적절하죠?’. 아니오(정형 데이터) → GBDT·로지스틱회귀 베이스라인과 val에서 비교했는가? (Ch7.3) 예 → 비교 표와 수치 제시 확인; 아니오 → 3점 질문 ‘GBDT를 val에서 돌려봤나요?’"><span class="img-wrapper"><img src="../../images/ch16_2_review_decision_tree.svg" alt="딥러닝 발표 리뷰 — ‘왜 딥러닝인가’ 판단 나무. 데이터가 비정형(이미지/텍스트/오디오)인가로 분기: 예 → 데이터 구조와 아키텍처의 귀납적 편향이 일치하는가? (이미지→CNN, Ch10.1 / 시퀀스→RNN·Transformer, Ch11-12 / 잠재변수 생성→VAE·GAN, Ch15) 일치 → 3점 질문 ‘이 구조적 특성을 아키텍처의 어떤 부분이 이용하나?’; 불일치(예: 이미지인데 완전연결) → 3점 질문 ‘파라미터 수 공식(Ch10.1)으로 왜 이 설계가 적절하죠?’. 아니오(정형 데이터) → GBDT·로지스틱회귀 베이스라인과 val에서 비교했는가? (Ch7.3) 예 → 비교 표와 수치 제시 확인; 아니오 → 3점 질문 ‘GBDT를 val에서 돌려봤나요?’"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gan.png" alt="GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_gan.png" alt="GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다 (원 논문 Figure 1)."></span></label></p>
 <p>이 그림을 읽는 방법은 8.2의 “리뷰 쓰는 과정” 그림과 동일하다 —
 <strong>체크리스트의 “방법론 적절성” 항목을 채울 때, 왼쪽에서 오른쪽으로
 한 번만 따라가면 된다.</strong> 분기점에서 “예/아니오“가 정해지지 않는
 발표(예: 데이터가 “의미 있는 단위가 있는 표“인지 애매한 이미지
 표 데이터)라면, 그 자체를 질문으로 바꾼다 — “행의 물리적 단위가
 무엇인지, 그 단위 기준으로 3분할(Ch06.3)을 했는지“가 곧 3점
-리뷰가 된다.</p>
+리뷰가 된다.<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">5</a></sup></p>
 <h3 id="딥러닝-발표를-리뷰할-때-보는-것-block-a와-무엇이-다른가"><a class="header" href="#딥러닝-발표를-리뷰할-때-보는-것-block-a와-무엇이-다른가">딥러닝 발표를 리뷰할 때 보는 것: Block A와 무엇이 다른가</a></h3>
 <p>같은 체크리스트라도, 심사 대상이 신경망이 되면 <strong>같은 개념이 더
 날카로워진다.</strong> Block A의 발표에서 “모델을 어떻게 고르셨나요?“라는
 질문은 “kNN의 k를 5로 한 이유는?“에 머물렀지만, Block B의 발표에서는
 같은 질문이 아래처럼 깊어진다.</p>
 <p><strong>(1) 데이터 구조 ↔ 아키텍처의 귀납적 편향.</strong> Chapter 10.1에서 배운
-대로, CNN의 국소 receptive field + 파라미터 공유는 “이미지의 인접
+대로, CNN<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">6</a></sup>의 국소 receptive field + 파라미터 공유는 “이미지의 인접
 픽셀이 서로 상관 있다“는 <em>인과적</em> 가정을 코드 속에 심어 넣는 것이다.
 이 가정이 데이터에 맞아야 CNN은 GBDT보다 유리해지고(Chapter 7.3의
 “GBDT vs 신경망” 비교), 안 맞으면(예: 이미지가 아니라 “셀 하나 =
@@ -287,6 +288,7 @@ Block B에서 “3점의 리뷰“가 실제로 어떻게 생기는지 한 가�
 무작위로 회전·이동시켰을 때 val 정확도가 얼마나 변하나요?” 이
 질문은 발표팀이 <strong>새 실험</strong>(데이터 증강의 효과를 측정하는 run)을
 해야만 답할 수 있으므로 8.2의 기준대로 3점이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
 <p><strong>(2) 학습의 시간 차원 — 에폭.</strong> 고전 ML 모델은 “fit() 한 번“으로
 끝나지만, 신경망은 에폭을 돌리는 <strong>과정</strong>이 모델의 일부분이다.
 Chapter 8.1의 M3 마일스톤(“학습 곡선 1장”, 하이퍼파라미터는
@@ -296,7 +298,7 @@ val 곡선으로만 정한다)이 신경망에서는 <strong>에폭 수를 정�
 300을 골랐는데, val 곡선이 언제 정점에 도달했나요? 정점 이후에
 돌린 100개 에폭이 val에서 무엇을 바꾸었나요?” — 이 질문에 답하려면
 학습 곡선(16.1의 M3 마일스톤)을 다시 꺼내 봐야 한다.</p>
-<p><strong>(3) 확률의 신뢰도 — 교정.</strong> “정확도 95%“를 넘겨도 “모델이
+<p><strong>(3) 확률의 신뢰도 — 교정.</strong><sup class="footnote-reference" id="fr-guo2017calibration-1"><a href="#footnote-guo2017calibration">7</a></sup> “정확도 95%“를 넘겨도 “모델이
 0.99 확률로 예측한 건 중 99%가 정말 맞았는가”(calibration)는
 별개의 질문이다. Chapter 9.2의 교차엔트로피가 낮더라도, 확률
 스케일 전체가 왜곡된 모델(0.99를 말해도 실제로는 0.87)은
@@ -305,7 +307,9 @@ val 곡선으로만 정한다)이 신경망에서는 <strong>에폭 수를 정�
 교정이 <em>구조적으로</em> 좋아서 이 질문이 잘 나오지 않았지만,
 신경망+드롭아웃에서는 드롭아웃 <em>ON</em> 상태에서 확률을 뽑으면
 교정이 악화되는 것이 알려져 있어, 리뷰어가 “드롭아웃 off로
-확률을 뽑았나요?“라고 묻는 것은 합리적인 3점 질문이다.</p>
+확률을 뽑았나요?“라고 묻는 것은 합리적인 3점 질문이다.<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">8</a></sup></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조."><span class="img-wrapper"><img src="../../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)."></span></label></p>
 <h3 id="자주-하는-실수-정확도가-높으니-좋은-모델이라는-리뷰"><a class="header" href="#자주-하는-실수-정확도가-높으니-좋은-모델이라는-리뷰">자주 하는 실수: “정확도가 높으니 좋은 모델“이라는 리뷰</a></h3>
 <p>Chapter 8.2에서 다룬 “구체적으로 반박 가능한 질문“의 원칙이 여기서도
 그대로 적용된다. 딥러닝 프로젝트에서 특히 자주 나오는 부실한 리뷰
@@ -401,7 +405,7 @@ max를 고르는 부풀림)과 같은 크기인지 — 즉, 이 1%p 차이가
 <tr><td>3</td><td>“dropout 0.5를 넣었다”</td><td>“dropout률 0.0/0.3/0.5/0.7을 val로 스윕한 결과가 있나요? Ch09.3의 정규화 효과 기준으로, 이 0.5가 <em>val 곡선으로 정한</em> 값인지, 아니면 그냥 0.5를 쓴 것인지?”</td><td>Ch09.3 정규화/드롭아웃</td></tr>
 <tr><td>4</td><td>“CNN을 썼다”(이미지 데이터)</td><td>“이 이미지에서 <em>위치</em>가 실제로 정보인가요 — 무작위 회전·이동(데이터 증강)을 하면 val 정확도가 얼마나 변하나요? Ch10.1의 국소 편향이 이 데이터에서 실제로 작동하는 증거가 되나요?”</td><td>Ch10.1 CNN의 국소 구조</td></tr>
 <tr><td>5</td><td>“정형 데이터인데 신경망을 썼다”</td><td>“Ch07.3의 GBDT를 <em>같은 val 분할</em>에서 F1로 비교했나요? Ch06.3의 선택 편향 기준으로, 두 모델의 차이는 잡음보다 큰 근거인가?”</td><td>Ch07.3 GBDT, Ch06.3</td></tr>
-<tr><td>6</td><td>“RNN/Transformer로 시퀀스를 처리했다”</td><td>“시퀀스를 <em>시간순으로</em> 3분할(Ch06.3)했나요? 무작위 분할이면 같은 시퀀스의 앞뒤가 train/test에 섞여 누수가 됩니다 — 분할 방법을 코드로 보여주세요.”</td><td>Ch06.3 시계열/그룹 분할, Ch11 RNN</td></tr>
+<tr><td>6</td><td>“RNN/Transformer<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">9</a></sup>로 시퀀스를 처리했다”</td><td>“시퀀스를 <em>시간순으로</em> 3분할(Ch06.3)했나요? 무작위 분할이면 같은 시퀀스의 앞뒤가 train/test에 섞여 누수가 됩니다 — 분할 방법을 코드로 보여주세요.”</td><td>Ch06.3 시계열/그룹 분할, Ch11 RNN</td></tr>
 </tbody>
 </table>
 </div>
@@ -410,6 +414,7 @@ max를 고르는 부풀림)과 같은 크기인지 — 즉, 이 1%p 차이가
 있고, #2~#6이 Block B에서 새로 등장하는 패턴이다. 리뷰를 쓸 때
 이 표를 한 번 보고, <em>발표에서 실제로 나온 것</em>에 해당하는 행의
 “근거 개념” 칸을 리뷰 템플릿(아래)의 5번 빈칸에 옮기면 된다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."></span></label></p>
 <h3 id="리뷰-템플릿"><a class="header" href="#리뷰-템플릿">리뷰 템플릿</a></h3>
 <p>8.2의 템플릿과 동일한 구조에 “왜 딥러닝인가” 항목(5번)을
 추가했다.</p>
@@ -623,6 +628,36 @@ $2N$까지 돌리면 val이 더 좋아질 것“이라는 주장이 성립할
 학습률 스케줄)를 val 곡선으로 정했는가“를 추가로 확인하는
 것이 유일한 차이이며, 이는 위 §“딥러닝 발표를 리뷰할 때
 보는 것“의 (2)(3)에 해당한다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-cs224n">
+<p>Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/ — 이 절에서 다루는 Transformer·RNN 계열 발표를 더 깊이 보려면. <a href="#fr-cs224n-1">↩</a></p>
+</li>
+<li id="footnote-amgen2011">
+<p>Amgen 사의 내부 재현성 연구(2011년 보도): 1999~2005년에 발표된 ‘주요(landmark)’ 생물학 논문 53편을 자체 재현한 결과, 재현에 성공한 것은 6편뿐 — ‘재현성 위기’ 논쟁의 대표 사례. (본 책 8.2절에서 다루고 있다.) <a href="#fr-amgen2011-1">↩</a></p>
+</li>
+<li id="footnote-friedman">
+<p>Friedman, J. H. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” Annals of Statistics 29(5), 1189–1232. — GBDT(그래디언트 부스팅)의 원 논문으로, 이 절의 “GBDT 베이스라인”(딥러닝 모델과 Ch07.3에서의 비교)이 근거 두는 고전적 결과. <a href="#fr-friedman-1">↩</a></p>
+</li>
+<li id="footnote-vae">
+<p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1">↩</a></p>
+</li>
+<li id="footnote-gan">
+<p>Goodfellow, I. J. et al. (2014). “Generative Adversarial Networks.” arXiv:1406.2661. — GAN의 원 논문. 이 절의 판단나무 ‘잠재변수 생성→VAE·GAN, Ch15’ 분기에 해당하며, Ch15에서 다룬다. <a href="#fr-gan-1">↩</a></p>
+</li>
+<li id="footnote-alexnet">
+<p>Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). “ImageNet Classification with Deep Convolutional Neural Networks.” NeurIPS 2012. <a href="#fr-alexnet-1">↩</a></p>
+</li>
+<li id="footnote-guo2017calibration">
+<p>Guo, C., Pleiss, G., Sun, Y., Weinberger, K. Q. (2017). “On Calibration of Modern Neural Networks.” arXiv:1706.04599 — 현대 신경망이 확률적으로 잘 교정되어 있지 않음을 실증하고, temperature scaling 등 교정 방법을 제안한 논문. <a href="#fr-guo2017calibration-1">↩</a></p>
+</li>
+<li id="footnote-dropout">
+<p>Srivastava, N., Hinton, G. E., Krizhevsky, A., et al. (2014). “Dropout: A Simple Way to Prevent Neural Networks from Overfitting.” JMLR 15(2014) 1929-1958. <a href="#fr-dropout-1">↩</a></p>
+</li>
+<li id="footnote-transformer">
+<p>Vaswani, A. et al. (2017). “Attention Is All You Need.” arXiv:1706.03762. <a href="#fr-transformer-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

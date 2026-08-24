@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -313,8 +313,8 @@ def logistic_gradient_descent(X, y, alpha, epochs):
 가장 작은 기울기(\(w_1\)가 작음)로 0.5를 겨우 넘겨 예측되었다 —
 <strong>한 샘플이 “반쯤 맞고” 반쯤 틀린 예측을 받으면 그래디언트도 그만큼 작아진다</strong>는
 것이 직관이다. (이 예는 실습 노트북 §2의 완전한 데이터로 확장되어 있다 —
-numpy 버전으로 300 epoch 돌리면 \(w = [-1.494, 1.345, 0.608]\), 최종
-손실 0.3626, sklearn의 <code>LogisticRegression(C=1e6)</code>와 거의 같은
+numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">1</a></sup> 버전으로 300 epoch 돌리면 \(w = [-1.494, 1.345, 0.608]\), 최종
+손실 0.3626, sklearn<sup class="footnote-reference" id="fr-scikit-learn-1"><a href="#footnote-scikit-learn">2</a></sup>의 <code>LogisticRegression(C=1e6)</code>와 거의 같은
 \([-1.573, 1.492, 0.662]\)를 확인한다.)</p>
 <h3 id="정확도만으로는-안-되는-이유"><a class="header" href="#정확도만으로는-안-되는-이유">“정확도“만으로는 안 되는 이유</a></h3>
 <p>암 검진 모델을 상상해보자. 전체 환자의 99%가 정상이라면, “무조건 정상“이라고만
@@ -441,7 +441,7 @@ Precision은 떨어진다. <strong>PR-AUC</strong>(Precision-Recall 곡선 아�
 <p>실습 노트북 §5에서 이걸 검증한다. 위 스팸 데이터(테스트 세트 양성 비율
 15.3%)에서:</p>
 <ul>
-<li>학습한 모델: PR-AUC = 0.642, ROC-AUC = 0.805</li>
+<li>학습한 모델: PR-AUC = 0.642, ROC-AUC = 0.805<sup class="footnote-reference" id="fr-fawcett-roc-1"><a href="#footnote-fawcett-roc">3</a></sup></li>
 <li><strong>무조건 0 모델</strong>: 정확도 0.847, PR-AUC = <strong>0.153</strong>(= 양성 비율 0.15와
 일치), ROC-AUC = 0.5</li>
 </ul>
@@ -492,7 +492,7 @@ PR-AUC + 비용 최소화는 “이 문제를 실제로 풀 때 어떤 임계값
 손실 \(-\log p\)가 <code>log(0) = -inf</code>가 되어 NaN이 된다.</strong> 실전 코드에서
 흔히 쓰는 해결책:</p>
 <ul>
-<li><code>scipy.special.expit(z)</code>(C로 구현된, 오버플로 없는 시그모이드)</li>
+<li><code>scipy.special.expit(z)</code>(C로 구현된, 오버플로 없는 시그모이드)<sup class="footnote-reference" id="fr-scipy-1"><a href="#footnote-scipy">4</a></sup></li>
 <li><code>np.where(z &gt;= 0, 1/(1+np.exp(-z)), np.exp(z)/(1+np.exp(z)))</code>
 — 음수 영역과 양수 영역을 나눠서 계산</li>
 <li>손실 계산 시 <code>np.clip(h, 1e-12, 1-1e-12)</code>로 확률을 0/1에 딱 붙지
@@ -542,7 +542,8 @@ Precision/Recall 트레이드오프와 비용 최소화 임계값(≈0.14) 직�
 §6에서 본문 실습 코드를 실행한다.</p>
 <p><strong>선형회귀와 로지스틱회귀는 겉보기엔 다른 문제(숫자 예측 vs. 확률 예측)를
 풀지만, 뜯어보면 “선형모델 → 손실함수 정의 → 경사하강법으로 최소화“라는
-완전히 같은 파이프라인이다 — 이 패턴은 이번 학기 내내 반복된다.</strong></p>
+완전히 같은 파이프라인이다 — 이 패턴은 이번 학기 내내 반복된다.</strong>
+더 깊이 보려면: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">5</a></sup></p>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
 <ol>
 <li>\(w^Tx = -2\)일 때 \(h_w(x)\)는 몇이고, 이 예는 음성으로 예측되는가?
@@ -637,6 +638,24 @@ J^{(i)}}{\partial h}\)를 구하라(h는 \(h_w(x^{(i)})\)의 줄임 표기,
 x_j^{(i)}\)임을 이용해 세 조각을 연쇄법칙으로 곱하면, 놀랍게도
 \(h(1-h)\) 항이 통째로 약분되어 사라진다 — 왜 그런지 확인하라. 유도한
 결과가 2.1절의 선형회귀 그래디언트와 형태가 똑같다는 것도 확인하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-numpy">
+<p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1">↩</a></p>
+</li>
+<li id="footnote-scikit-learn">
+<p>Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, B., Thirion, B., Grisel, O., Blondel, M., Louppe, G., Prettenhofer, P., Weiss, R., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., Duchesnay, E. (2011). “Scikit-learn: Machine Learning in Python.” Journal of Machine Learning Research 12, 2825–2830. <a href="#fr-scikit-learn-1">↩</a></p>
+</li>
+<li id="footnote-fawcett-roc">
+<p>Fawcett, T. (2006). “An introduction to ROC analysis.” Pattern Recognition Letters 27(8). DOI: 10.1016/j.patrec.2005.10.010. <a href="#fr-fawcett-roc-1">↩</a></p>
+</li>
+<li id="footnote-scipy">
+<p>Virtanen, P., Gommers, R., Oliphant, T. E., et al. (2019). “SciPy 1.0–Fundamental Algorithms for Scientific Computing in Python.” arXiv:1907.10121. <a href="#fr-scipy-1">↩</a></p>
+</li>
+<li id="footnote-cs229">
+<p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

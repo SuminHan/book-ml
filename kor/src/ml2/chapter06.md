@@ -8,7 +8,7 @@
 **시간차 학습**(Temporal-Difference, TD)은 이 기다림 자체를 없앤다 — 한
 스텝만 진행해보고, "지금 추정치"와 "방금 관찰한 보상 + 다음 상태의
 추정치"의 차이만큼 즉시 갱신한다. 모델도 필요 없고, 에피소드가 끝나기를
-기다릴 필요도 없는, 강화학습에서 가장 널리 쓰이는 절충안이다.
+기다릴 필요도 없는, 강화학습에서 가장 널리 쓰이는 절충안이다[^suttonbarto].
 
 **이전 챕터와의 연결.** Chapter 5의 몬테카를로(MC)는 "모델이 필요
 없다"는 장점을 확보했지만, 에피소드가 끝날 때까지 실제 리턴을 모아야
@@ -22,7 +22,7 @@
 에피소드 끝까지 본다. 이 둘은 사실 "몇 스텝을 실제로 볼 것인가"라는 하나의
 다이얼 위의 양 끝일 뿐이다. Chapter 7에서는 이 다이얼의 모든 지점을 아우르는
 n-step 부트스트래핑과 적격흔적(eligibility traces)을 다루고, 경험뿐 아니라
-학습된 모델까지 함께 쓰는 계획(planning, Dyna-Q)으로 나아간다.
+학습된 모델까지 함께 쓰는 계획(planning, Dyna-Q)으로 나아간다. 이 주제를 더 깊이 다루는 자료: [^cs234]
 
 ## 학습 목표
 
@@ -46,8 +46,10 @@ n-step 부트스트래핑과 적격흔적(eligibility traces)을 다루고, 경�
 \\(Q(s',a')\\)을 \\(\max\\)으로 바꿔 off-policy(Q-learning)로 건너뛴다.
 "어떤 가치함수를 갱신하느냐"는 6.1→6.2에서, "목표값의 다음 행동을
 어떻게 채우느냐"는 6.2→6.3에서 바뀐다. 이 두 갈림을 붙잡으면, 이
-챕터 이후 DQN(Chapter 9)·액터-크리틱(Chapter 11)까지 이어지는
+챕터 이후 DQN(Chapter 9)[^dqn]·액터-크리틱(Chapter 11)까지 이어지는
 on-policy/off-policy의 큰 축도 미리 놓기 쉬워진다.
+
+![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
 
 ## 이번 주 수업 블록
 
@@ -63,7 +65,7 @@ on-policy/off-policy의 큰 축도 미리 놓기 쉬워진다.
   실제로 고른 다음 행동 \\(a'\\)를 목표값에 쓰는 on-policy 알고리즘
   SARSA를 배운다. 4×12 절벽 격자 CliffWalking에서 SARSA가 왜 절벽을
   피하는 17스텝 안전 경로를 배우는지(탐험 위험이 \\(\varepsilon\\)-greedy
-  가치에 가격으로 들어와 있기 때문) 숫자로 풀어내고, \\(\varepsilon\\)
+  가치에 가격으로 들어와 있기 때문[^silvercourse]) 숫자로 풀어내고, \\(\varepsilon\\)
   감쇠가 배운 경로의 모양까지 바꾸는 것도 실험한다.
 - [6.3 Q-learning과 SARSA·Q-learning 경로 비교](chapter06/3.md)
   \\(Q(s',a')\\)를 \\(\max\_{a'}Q(s',a')\\)로 바꾼 off-policy
@@ -72,3 +74,11 @@ on-policy/off-policy의 큰 축도 미리 놓기 쉬워진다.
   SARSA(안전 17스텝)와 Q-learning(최단 13스텝)가 답하는 질문이 다르다는
   것을 학습 도중/탐욕적 리턴의 비교 숫자로 보여준다(5.3절의 중요도
   샘플링과도 연결한다).
+
+[^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html
+
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+
+[^silvercourse]: Silver, D. (2015). "UCL Course on Reinforcement Learning," Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0).
+
+[^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -209,6 +209,7 @@ Q(s,a;\theta)\right)^2\right]\]</p>
         target = rewards + gamma * q_next * (1 - dones)
     return ((target - q_pred) ** 2).mean()
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p>코드 속 두 줄을 9.1절과 대응시켜 천천히 보자. <code>q_pred</code>는 <strong>예측</strong>
 \(Q(s,a;\theta)\)이고, <code>q_next</code>는 <strong>목표의 원료</strong>
 \(\max_{a’} Q(s’,a’;\theta^-)\)다 — 9.1절의 “같은 \(\theta\)가
@@ -351,11 +352,11 @@ def dqn_train(env, n_episodes, max_steps, batch_size=32, gamma=0.99,
         s = env.reset()
     return Q_net
 </code></pre>
-<p>하이퍼파라미터를 하나씩 짚자. <strong><code>lr=1e-3</code> + Adam</strong> — DQN의
+<p>하이퍼파라미터를 하나씩 짚자. <strong><code>lr=1e-3</code> + Adam</strong><sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">1</a></sup> — DQN의
 표준 시작점. (표 Q-learning의 \(\alpha\)와 단위 비교 실수는
 9.1절 “자주 하는 실수” 참고.) <strong><code>update_freq=100</code></strong> — 타겟
 네트워크의 \(C\). 이 절의 주제다. <strong><code>eps_decay=0.995</code></strong> —
-\(\varepsilon\)-greedy(Chapter 2)를 에피소드마다 0.995배
+\(\varepsilon\)-greedy(Chapter 2)<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">2</a></sup>를 에피소드마다 0.995배
 줄여, “처음엔 탐색, 끝엔 착취“로. <strong><code>batch_size=32</code></strong> — RL에서는
 작은 배치가 일반적이다. 배치가 크면 큰 배치가 “독립·다양한
 샘플“이라는 가정을 더 잘 만족할 것 같지만, 오프폴리시 버퍼에서
@@ -384,8 +385,8 @@ Q(s’,a’) - Q(s,a)\big)\]</p>
 학습시킨 이 시스템은, 바로 이 “목표가 움직인다“는 불안정성을
 실제로 겪었고, 당시 쓰던 완화책이 “목표 계산용 네트워크를
 덜 자주 갱신한다“는 것이었다. Sutton &amp; Barto(1998)의 저서는
-이것을 “지연된(damped) 목표“로 정리했다. 그리고 2013년
-딥마인드의 DQN(Mnih et al., 2015년 Nature에 게재)이 <strong>타겟
+이것을 “지연된(damped) 목표“로 정리했다<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">3</a></sup>. 그리고 2013년
+딥마인드의 DQN(Mnih et al., 2015년 Nature에 게재)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup>이 <strong>타겟
 네트워크 + 경험 재현</strong>의 조합으로 이 불안정성을 사실상 제어하며
 “26개 Atari 게임에서 사람 수준“의 결과를 만들었다 — 9.1절에서
 말했듯, DQN의 기여는 “신경망을 붙였다“가 아니라 <strong>이 두 장치를
@@ -395,9 +396,9 @@ Q(s’,a’) - Q(s,a)\big)\]</p>
 자연스러운 확장이고, 소프트웨어 \(\theta^- \leftarrow
 \tau\theta + (1-\tau)\theta^-\)는 1960년대 확률근사
 (stochastic approximation) 문헌의 <strong>Polyak averaging</strong>에서
-온 이름이다. 두 방식은 2018년 <strong>Rainbow</strong> 논문(Hessel et al.)에서
+온 이름이다. 두 방식은 2018년 <strong>Rainbow</strong> 논문(Hessel et al.)<sup class="footnote-reference" id="fr-rainbow-1"><a href="#footnote-rainbow">5</a></sup>에서
 “극단 \(\tau\) vs 극단 주기“라는 하나의 스펙트럼으로 통합
-정리되며, 연속제어 계열의 DQN 변형(DDPG 계열)에서는 소프트
+정리되며, 연속제어 계열의 DQN 변형(DDPG 계열)<sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">6</a></sup>에서는 소프트
 업데이트(\(\tau = 10^{-3} \sim 10^{-2}\))가 사실상 표준이
 되었다.</p>
 <h3 id="실습-움직이는-목표는-학습을-실제로-얼마나-변질시키는가"><a class="header" href="#실습-움직이는-목표는-학습을-실제로-얼마나-변질시키는가">실습: 움직이는 목표는 학습을 실제로 얼마나 변질시키는가?</a></h3>
@@ -466,7 +467,7 @@ i.i.d.라면:</p>
 없애지는 못하지만, “과대추정된 값이 C스텝 동안 목표에 고정
 되어 자기 자신을 계속 먹인다“는 <strong>자기 증폭 루프를 차단</strong>한다 —
 그래서 (B)는 참값 4.720에 +5%까지만 오차로 접근한다. 편향의
-<em>근원</em>을 직접 겨냥한 것이 <strong>Double DQN</strong>이다(9.3절 예고:
+<em>근원</em>을 직접 겨냥한 것이 <strong>Double DQN</strong><sup class="footnote-reference" id="fr-doubledqn-1"><a href="#footnote-doubledqn">7</a></sup>이다(9.3절 예고:
 “행동은 온라인 네트워크가 고르고, <em>평가</em>는 타겟 네트워크가
 한다”).</p>
 <p><strong>3. (B)의 TD 손실이 0이 되지 않는다 — 오히려 (A)보다 높다.</strong>
@@ -485,7 +486,7 @@ CartPole(연속 4차원 상태)에서는 경험 재현과 타겟 네트워크의
 효가가 함께, 그리고 더 크게 나타난다(9.3절). 여기서 본
 <strong>방향성</strong>(움직이는 목표 → 과대추정, 타겟 → 참값에 가까움)은
 견고하지만, <em>크기</em>(27% vs 5%)는 이 실험의 수치일 뿐
-일반 법칙으로 읽지 말 것.</p>
+일반 법칙으로 읽지 말 것<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">8</a></sup>.</p>
 <h3 id="손으로-한-번-소프트-업데이트의-느림을-숫자로"><a class="header" href="#손으로-한-번-소프트-업데이트의-느림을-숫자로">손으로 한 번: 소프트 업데이트의 “느림“을 숫자로</a></h3>
 <p>자주 묻는 질문에서 예고한 소프트 업데이트 \(\theta^- \leftarrow
 \theta^- + \tau(\theta - \theta^-)\)의 “조금씩“이 정확히 얼마나
@@ -619,7 +620,7 @@ vs “목표가 너무 새서 다시 움직이는가” 사이의 하이퍼파�
 <p><strong>Q. <code>target_net</code>을 매번 <code>θ</code>로 완전히 덮어쓰지 않고 조금씩만
 섞는 방법도 있나요?</strong> 있다 — <code>θ⁻ ← τθ + (1-τ)θ⁻</code>처럼 아주 작은
 비율(\(\tau\), 예: 0.005)만 반영해서 매 스텝 부드럽게 갱신하는
-<strong>소프트 업데이트</strong>(soft update, Polyak averaging)도 널리 쓰인다.
+<strong>소프트 업데이트</strong>(soft update, Polyak averaging)<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">9</a></sup>도 널리 쓰인다.
 이번 장의 “일정 주기마다 통째로 복사“하는 방식은 <strong>하드
 업데이트</strong>라 부르며, 소프트 업데이트는 그 극단(주기=1, 복사 비율
 100%) 대신 “아주 조금씩 계속” 따라가게 해서 더 부드러운 변화를
@@ -661,9 +662,11 @@ off-policy 보장 같은 이론적 성질에 영향을 주나?</strong> 바꾸�
 깊은학습의 안정화 관용구다. Adam 모멘텀은 *파라미터
 <em>변화량</em>의 지수 이동 평균, 타겟 네트워크(소프트 업데이트)는
 <em>파라미터 자체</em>의 지수 이동 평균, 배치정규화 running
-통계량(ML1 Chapter 5)은 <em>데이터 통계량</em>의 지수 이동 평균이다.
+통계량(ML1 Chapter 5)<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">10</a></sup>은 <em>데이터 통계량</em>의 지수 이동 평균이다.
 “지금 값을 그대로 믿지 말고, 지연된 평균을 쓰자“는 공통
 정신을 공유한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."></span></label></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 아래 <code>hard_update</code>와 <code>soft_update</code>를 완성하고
@@ -707,6 +710,39 @@ def soft_update(target, online, tau):
 더해 CartPole 학습곡선에서 “정말 더 잘 train되는지“를
 확인한다.</p>
 </blockquote>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-adam">
+<p>Kingma, D. P., Ba, J. (2015). “Adam: A Method for Stochastic Optimization.” ICLR 2015. arXiv:1412.6980. <a href="#fr-adam-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning,” Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0). <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-rainbow">
+<p>Hessel, M., Modayil, J., van Hasselt, H., Schaul, T., Ostrovski, G., Dabney, W., Horgan, D., Piot, B., Azar, M., Silver, D. (2018). “Rainbow: Combining Improvements in Deep Reinforcement Learning.” ICML 2018. arXiv:1710.02298. <a href="#fr-rainbow-1">↩</a></p>
+</li>
+<li id="footnote-ddpg">
+<p>Lillicrap, T. P., Hunt, J. J., Pritzel, A., et al. (2015). “Continuous control with deep reinforcement learning.” ICLR 2016. arXiv:1509.02971. <a href="#fr-ddpg-1">↩</a></p>
+</li>
+<li id="footnote-doubledqn">
+<p>van Hasselt, H., Guez, A., Silver, D. (2015). “Deep Reinforcement Learning with Double Q-learning.” NeurIPS 2015. arXiv:1509.06461. <a href="#fr-doubledqn-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-batchnorm">
+<p>Ioffe, S., Szegedy, C. (2015). “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift.” arXiv:1502.03167. <a href="#fr-batchnorm-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

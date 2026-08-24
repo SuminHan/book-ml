@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -189,10 +189,10 @@
 <strong>유효 시계(effective horizon)</strong> — 로 바꾸는 법, (3) \(\gamma\)를 바꾸면
 “같은 환경에서 다른 행동을 최적으로” 만드는 예 — 할인율이 단순한
 정규화 장치가 아니라 <strong>목표를 바꾸는</strong> 매개변수임을 직접 확인, (4)
-Gymnasium에서 CartPole로 할인된 리턴을 실제로 누적해보는 실습.</p>
+Gymnasium에서 CartPole로 할인된 리턴을 실제로 누적해보는 실습.<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">1</a></sup></p>
 <h3 id="누적-보상과-할인율"><a class="header" href="#누적-보상과-할인율">누적 보상과 할인율</a></h3>
 <p>강화학습의 목표는 한 스텝의 보상이 아니라, 앞으로 받을 보상들의 합 —
-<strong>리턴</strong>(return) \(G_t\) — 을 최대화하는 것이다:</p>
+<strong>리턴</strong>(return) \(G_t\) — 을 최대화하는 것이다:<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">2</a></sup></p>
 <p>\[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k}\]</p>
 <p><strong>왜 할인율 \(\gamma\)가 필요한가</strong>: (1) 수학적으로, \(\gamma &lt; 1\)이면
 보상이 유계(bounded)인 한 이 무한급수가 항상 수렴한다(기하급수). \(\gamma=1\)
@@ -200,7 +200,7 @@ Gymnasium에서 CartPole로 할인된 리턴을 실제로 누적해보는 실습
 “지금 당장의 보상 1“이 “10스텝 뒤의 보상 1“보다 더 가치 있다고 보는
 경우가 많다 — 사람의 시간 선호나, 금융의 이자율 개념과 같은 방향이다.
 \(\gamma\)가 0에 가까우면 에이전트는 “근시안적”(당장의 보상만 중시)이고,
-1에 가까우면 “장기적”(먼 미래의 보상까지 충분히 고려)이 된다.</p>
+1에 가까우면 “장기적”(먼 미래의 보상까지 충분히 고려)이 된다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">3</a></sup></p>
 <p>이 무한합은 실제로는 <strong>닫힌 형태로</strong> 잘 풀린다. \(\gamma &lt; 1\)이면
 기하급수의 합 공식을 그대로 쓸 수 있다. 보상이 매 스텝 같은 값 \(R\)으로
 고정된 간단한 경우부터:</p>
@@ -274,7 +274,7 @@ Gymnasium에서 CartPole로 할인된 리턴을 실제로 누적해보는 실습
 에피소드를 다 보려면 \(\gamma = 0.05^{1/500} \approx 0.994\),
 100스텝짜리 환경이면 \(\gamma = 0.05^{1/100} \approx 0.97\)이
 적절하다. “환경의 수명에 \(\gamma\)를 맞춘다“는 실전 관행이 바로
-이 식에서 온다.</p>
+이 식에서 온다.<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">4</a></sup></p>
 <p><strong>“5%로 깎였다“가 왜 “사실상 무시“인가?</strong> — \(H\)스텝 <strong>이후</strong>에
 들어오는 모든 보상의 합은, 그 직전 스텝의 보상에
 \(\frac{\epsilon}{1-\gamma}\)를 곱한 것 이상으로 클 수 없다.
@@ -346,14 +346,14 @@ R_4=3\)인 환경이 있다고 하자. \(\gamma=1\)이면 \(G_0 = 1+3 = 4\).
 행동을 “옳은” 행동으로 만드느냐</strong>를 정하는 설계 변수이기도 한다.</p>
 <p><strong>역사적 맥락</strong>: 이 “현재 보상을 미래 보상의 기댓값에 더해 재귀적으로
 정의한다“는 관점은 1950년대 벨만(Richard Bellman)의 <strong>동적계획법</strong>
-(dynamic programming)에서 나왔다. 벨만이 “복잡한 문제를 한 번에
+(dynamic programming)<sup class="footnote-reference" id="fr-bellman-1"><a href="#footnote-bellman">5</a></sup>에서 나왔다. 벨만이 “복잡한 문제를 한 번에
 풀지 말고, 한 스텝만 보고 나머지는 부분 문제로 위임하라“고 한 통찰
 이 바로 3.3절의 벨만방정식인데, 그 식의 “한 스텝“을 <strong>지금</strong>과
 <strong>미래</strong>로 나누어 가중하는 비율이 바로 \(\gamma\)다. 할인율은
 “수학의 편의“가 아니라, **결정 이론의 시간 가중(time
 discounting)**을 MDP에 이식한 것이다.</p>
 <h3 id="실습-cartpole에서-할인된-리턴-직접-누적하기"><a class="header" href="#실습-cartpole에서-할인된-리턴-직접-누적하기">실습: CartPole에서 할인된 리턴 직접 누적하기</a></h3>
-<p>이론을 Gymnasium의 실제 환경으로 옮겨보자. CartPole은 매 스텝 살아
+<p>이론을 Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">6</a></sup>의 실제 환경으로 옮겨보자. CartPole은 매 스텝 살아
 있으면 \(+1\)을 주므로(1.3절), <strong>보상이 전부 1</strong>인 특수한 경우다 —
 이때 리턴은 “얼마나 오래 버텼는가“의 <strong>할인된 버전</strong>이 된다.</p>
 <pre><code class="language-python">import gymnasium as gym
@@ -422,7 +422,7 @@ gamma=0.99: 무작위 정책 평균 리턴 = 20.77  (500스텝 다 버틸 때 �
 비교하면 안 된다</strong> — 서로 다른 화폐 단위(할인 기준)의 숫자이기
 때문이다. <strong>같은 \(\gamma\) 안에서만</strong> 리턴의 크기를 비교하는
 것이 정석이다. (이 “화이트라벨” 같은 주의는 Chapter 5~7에서
-<strong>리플레이 버퍼</strong>에 여러 환경·다른 \(\gamma\)로 모은 전이를 함께
+<strong>리플레이 버퍼</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">7</a></sup>에 여러 환경·다른 \(\gamma\)로 모은 전이를 함께
 쓸 때 실제로 문제가 된다.)</p>
 <p>아래 그림은 이 절의 두 실전 결과를 한 장에 모은 것이다. (왼쪽)
 <strong>베이스라인</strong>: 같은 무작위 정책을 돌려도 \(\gamma\)를 0.9 → 0.99로
@@ -434,6 +434,7 @@ gamma=0.99: 무작위 정책 평균 리턴 = 20.77  (500스텝 다 버틸 때 �
 \(\gamma^2\)를 할인율로 쓰는 것과 같으므로 곡선이 가장 빨리
 0으로 곤두박질한다.
 <label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch03_2_gamma_policy_crossover.svg" alt="왼쪽: CartPole 무작위 정책(200시드)의 평균 할인된 리턴이 할인율 γ에 대해 단조 증가 (8.62→13.07→20.77, 에러 막대는 표준편차), 점선은 500스텝 상한 1/(1−γ). 오른쪽: 매 스텝 보상 1의 10스텝 에피소드에서 정상 할인(초록, γ=0.95에서 8.03)/할인 없이 더함(빨강 점선, 10)/두 번 할인(주황 점선, 6.58)의 리턴 곡선"><span class="img-wrapper"><img src="../../images/ch03_2_gamma_policy_crossover.svg" alt="왼쪽: CartPole 무작위 정책(200시드)의 평균 할인된 리턴이 할인율 γ에 대해 단조 증가 (8.62→13.07→20.77, 에러 막대는 표준편차), 점선은 500스텝 상한 1/(1−γ). 오른쪽: 매 스텝 보상 1의 10스텝 에피소드에서 정상 할인(초록, γ=0.95에서 8.03)/할인 없이 더함(빨강 점선, 10)/두 번 할인(주황 점선, 6.58)의 리턴 곡선"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <h3 id="자주-하는-실수-할인율을-빼먹고-그냥-보상을-다-더하기"><a class="header" href="#자주-하는-실수-할인율을-빼먹고-그냥-보상을-다-더하기">자주 하는 실수: 할인율을 빼먹고 그냥 보상을 다 더하기</a></h3>
 <p>매 스텝 보상이 1씩 5번 들어온다고 하자(\(R_0=\cdots=R_4=1\)).
 할인율 없이 그냥 더하면 \(G_0 = 5\)지만, \(\gamma=0.9\)를 제대로
@@ -570,6 +571,30 @@ CartPole처럼 한 에피소드가 몇백 스텝 이내로 짧은 문제는 0.95
 \(\gamma=0.9\)이면 \(V^A(0)=-63.36 &lt; V^B(0)\approx 5.26\)(B가
 좋음). \(\gamma\)를 0에서 1 사이로 늘리며 \(V^A(0)\)와
 \(V^B(0)\)의 <strong>부호 차이</strong>가 바뀌는 지점을 찾으면 된다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-gym">
+<p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 리턴(할인된 누적 보상)의 정의와 할인율의 역할은 이 표준 교과서 3장(유한 MDP)에서 체계적으로 다뤄진다. <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>이 주제를 더 깊이 보려면 — Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 절의 리턴·할인율 정의와 유효 시계(할인율 선택)는 CS234의 MDP·할인된 보상 강의 주제와 직접 겹친다. <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning.” https://www.davidsilver.uk/teaching/ — 할인율을 에피소드 길이(유효 시계)에 맞추는 이 절의 실전 관행은 이 강의자료의 표준 참조자료 중 하나다. <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+<li id="footnote-bellman">
+<p>Bellman, R. E. (1957). “Dynamic Programming.” Princeton University Press — 동적계획법의 원전. 본 절의 “역사적 맥락” 단락이 소개하는 벨만의 통찰(복잡한 문제를 한 스텝만 보고 나머지는 부분 문제로 위임)이 바로 이 책에서 나온다. <a href="#fr-bellman-1">↩</a></p>
+</li>
+<li id="footnote-gymnasium">
+<p>Towers, M., Kwiatkowski, A., Terry, J., Balis, J. U., De Cola, G., Deleu, T., Goulão, M., Kallinteris, A., Krimmel, M., KG, A., Perez-Vicente, R., Pierré, A., Schulhoff, S., Tai, J. J., Tan, H., Younis, O. G. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) — 리플레이 버퍼(replay buffer)를 제안한 원 논문이다. <a href="#fr-dqn-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

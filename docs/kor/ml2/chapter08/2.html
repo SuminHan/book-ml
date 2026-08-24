@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -192,7 +192,7 @@ Popper의 반증주의 — <em>한 주장은 “그것이 틀렸음을 보여주
 (정확도의 함정, ML1 Ch02.3)이거나 테스트셋 유출(ML1 Ch06.3)일
 가능성을 짚어내는 질문“으로 번역됐고, 이번 절에서는 <strong>강화학습
 프로젝트 특유의 “우연히 좋은 것처럼 보이는” 패턴</strong>을 짚어내는 질문으로
-번역된다. Amgen 재현 실험(2011)에서 53편의 ‘landmark’ 논문 중 6편
+번역된다. Amgen 재현 실험(2011)<sup class="footnote-reference" id="fr-begleyellis-1"><a href="#footnote-begleyellis">1</a></sup>에서 53편의 ‘landmark’ 논문 중 6편
 밖에 재현되지 않았다는 교훈도 그대로 유효하다: <strong>좋은 결과는 스스로를
 증명하지 못하고, 결과가 남이 재현·반박할 수 있도록 만들어졌는지가
 기준이다.</strong> 강화학습에서는 이 위험이 더 높다 — 아래 §“강화학습
@@ -244,7 +244,7 @@ Popper의 반증주의 — <em>한 주장은 “그것이 틀렸음을 보여주
 없으면, 뒤의 모든 숫자가 “무엇의 평균“인지 모른다. 8.1의 §“비교
 프로토콜“이 왜 <em>학습 도중 성과</em>와 <em>학습 후 평가 성과</em>를 나눠
 보고하게 하는지가 바로 이 항목의 핵심이다.</li>
-<li><strong>알고리즘 선택</strong> — “Q-learning과 SARSA를 골랐다“가 아니라,
+<li><strong>알고리즘 선택</strong> — “Q-learning<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">2</a></sup>과 SARSA를 골랐다“가 아니라,
 <em>이 환경의 어떤 특성</em>(상태 공간 크기, 보상 구조, 확률적 전이)이
 그 비교를 정당화하는지 보는 것이다(§8.1의 환경 선택표). FrozenLake
 (16×4, 미끄럼)에서 n-step TD(Ch07.2)와 MC(Ch05.3)를 비교하는 것과,
@@ -386,7 +386,7 @@ Q-learning −45.3, 발표팀의 숫자 재현.</li>
 결과를 \(\varepsilon=0\)(탐욕적)으로 200 에피소드 재평가 →
 <strong>Q-learning −13 (13스텝) vs SARSA −17 (17스텝): 순위가
 뒤집힌다.</strong> 손계산으로 왜 Q-learning 쪽만 크게 망가지는지
-확인한다. 이 환경(Gymnasium CliffWalking-v1)에서 절벽은
+확인한다. 이 환경(Gymnasium CliffWalking-v1)<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">3</a></sup>에서 절벽은
 아래쪽(3행)의 열 1~10에 있고, 두 정책의 greedy 경로는:
 <ul>
 <li><strong>Q-learning (13스텝)</strong>: 시작(3행) → 2행 → <strong>절벽 바로
@@ -482,10 +482,10 @@ CliffWalking-v1, 위 설정)에서는 3시드 모두 −13/−13/−13,
 <p>이 실수가 특히 강화학습에서 <em>구조적으로</em> 더 위험한 이유는, 학습
 곡선의 “오르다/안 오르다“가 <strong>학습의 진전과 분리될 수 있기
 때문</strong>이다. Atari의 Montezuma’s Revenge 게임은 이 분리를 극적으로
-보여준 사례다 — Mnih et al. (2015)의 DQN 에이전트는 이 게임에서
+보여준 사례다 — Mnih et al. (2015)의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup> 에이전트는 이 게임에서
 수백만 스텝을 학습해도 <em>점수</em>가 거의 0에 머물렀고, 그 평탄한
 점수 곡선은 오랫동안 “에이전트가 아무것도 배우지 못한다“는
-판단의 근거가 됐다. 2019년 모델 기반 방법 R2D2(Kaiser,
+판단의 근거가 됐다. 2019년 모델 기반 방법 R2D2<sup class="footnote-reference" id="fr-r2d2-1"><a href="#footnote-r2d2">5</a></sup> (Kaiser,
 Babaeizadeh et al.)가 이 게임을 처음 풀어냈을 때, “점수 0“이
 문제의 <em>난이도</em>나 <em>방법의 한계</em>였다는 것이 확인된 것이다 —
 <strong>하나의 지표(점수)가 평탄했다는 사실만으로는 “배우지 못했다“를
@@ -495,6 +495,7 @@ Babaeizadeh et al.)가 이 게임을 처음 풀어냈을 때, “점수 0“이
 중간 지표</em>(예: 특정 구역 도달 여부, Q값의 변화)는 개선됐나요?
 평탄한 것이 <em>측정하지 않은 지표</em> 때문은 아닌가요?”(3점)으로
 번역하는 것이 좋은 리뷰다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p>학습 곡선을 보고 던져야 할 <strong>질문 3가지</strong>를 한 장으로 정리한다 —
 이 3가지가 §“5가지 패턴“의 1·2번과 8.1 §“비교 프로토콜“을
 리뷰어의 언어로 압축한 것이다.</p>
@@ -523,7 +524,8 @@ Babaeizadeh et al.)가 이 게임을 처음 풀어냈을 때, “점수 0“이
 해결해두는 것이 발표 중에 3점 리뷰를 받는 것보다 항상 낫다.
 Block B의 Chapter 16.1(신경망 강화학습 캡스톤)도 동일한
 구조(발표 → peer-review)를 쓰므로, 이 셀프-리뷰 습관이
-학기 말까지 이어진다.</p>
+학기 말까지 이어진다.
+더 깊이 다루는 자료: 스탠포드 CS234 강화학습 강좌<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">6</a></sup>.</p>
 <h3 id="확인-문제-리뷰어가-될-때-쓰는-판단력"><a class="header" href="#확인-문제-리뷰어가-될-때-쓰는-판단력">확인 문제: 리뷰어가 될 때 쓰는 판단력</a></h3>
 <p>각 문항은 <em>리뷰어가 될 때</em> 쓰는 판단력을 확인한다 — 먼저 스스로
 답해본 뒤 아래 답과 비교해보자.</p>
@@ -663,6 +665,27 @@ Ch06.3의 수렴 조건을 떠올리면, 절벽 위에서 한 번의 무작위
 흔들기 때문이다(§“5가지 패턴“의 1·2·5번이 모두 이
 항목에 해당). 4개 항목의 확인 흔적(템플릿 1~4번) + 1개의
 3점 질문(5번)이 최소 충족 조건이다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-begleyellis">
+<p>Begley, C. G., Ellis, L. M. (2012). “Raise standards for preclinical cancer research.” Nature 483, 531–533. (53편의 고영향력 임상전(preclinical) 논문을 Amgen에서 재시험해 핵심 결과 6편만 재현됐음을 보고한 논문.) <a href="#fr-begleyellis-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-gymnasium">
+<p>Towers, M., Kwiatkowski, A., Terry, J., et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. (전신 OpenAI Gym: Brockman, G., Cheung, V., et al. (2016). “OpenAI Gym.” arXiv:1606.01540.) <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-r2d2">
+<p>Kaiser, L., Babaeizadeh, M., et al. (2019). “Model-Based Reinforcement Learning for Atari.” arXiv:1903.00374. <a href="#fr-r2d2-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -290,10 +290,11 @@ off-policy MC는 행동 정책과 목표 정책의 리턴 분포가 다르므로
 보정이 필요했던 반면, TD는 “한 스텝 목표값“을 쓰므로 보정이 필요하지
 않는 것이다 — 같은 off-policy 문제를, 분포 보정(중요도 샘플링)과
 고정점 근사(부트스트래핑)라는 <strong>두 개의 전혀 다른 도구</strong>로 푸는
-것이다. 이것이 Chapter 9(DQN)에서 경험재현 버퍼(과거에 다른 정책이
-모은 데이터를 재사용)를 자유롭게 쓸 수 있는 이유이기도 하다.</p>
+것이다. 이것이 Chapter 9(DQN)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">1</a></sup>에서 경험재현 버퍼(과거에 다른
+정책이 모은 데이터를 재사용)를 자유롭게 쓸 수 있는 이유이기도 한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <h3 id="실습-sarsa와-q-learning이-cliffwalking에서-배우는-경로-비교하기"><a class="header" href="#실습-sarsa와-q-learning이-cliffwalking에서-배우는-경로-비교하기">실습: SARSA와 Q-learning이 CliffWalking에서 배우는 경로 비교하기</a></h3>
-<p>CliffWalking 환경 — 시작점에서 목표까지 가는 길 바로 옆에 떨어지면
+<p>CliffWalking<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">2</a></sup> 환경 — 시작점에서 목표까지 가는 길 바로 옆에 떨어지면
 큰 벌점(-100)을 받고 출발점으로 되돌아가는 절벽이 있는 격자 — 에서
 SARSA와 Q-learning을 각각 500 에피소드(\(\alpha=0.5\),
 \(\gamma=1.0\), \(\varepsilon=0.1\)) 학습시키면(스크래치패드에서
@@ -345,13 +346,13 @@ SARSA와 Q-learning을 각각 500 에피소드(\(\alpha=0.5\),
 off-policy 학습을 모니터링할 때는 “학습 도중의 행동 리턴“이 아니라
 <strong>목표 정책으로 평가한 리턴</strong>(\(\varepsilon=0\) 롤아웃, 또는
 별개의 평가 정책의 리턴)을 보라는 교훈이다 — 이 “평가 정책과
-학습 정책을 분리해서 보는” 습관이 Chapter 9(DQN)과 Chapter 11(PPO)
+학습 정책을 분리해서 보는” 습관이 Chapter 9(DQN)과 Chapter 11(PPO)<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">3</a></sup>
 의 학습 곡선 읽기로 이어진다.</p>
 <h3 id="varepsilon을-줄여가며-학습하기-탐험에서-착취로"><a class="header" href="#varepsilon을-줄여가며-학습하기-탐험에서-착취로">\(\varepsilon\)을 줄여가며 학습하기: 탐험에서 착취로</a></h3>
 <p>5.2절의 MC 제어에서 \(\varepsilon\)를 에피소드가 진행됨에 따라
 줄여가며 학습하는(\(\varepsilon\)-decay) 것을 보았다. Q-learning에
 서도 이 decay가 같은 역할을 한다. \(\varepsilon\)를 처음엔 크고
-(탐험을 많이) 나중에 0으로(착취, exploitation) 줄이면:</p>
+(탐험을 많이) 나중에 0으로(착취, exploitation)<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">4</a></sup> 줄이면:</p>
 <ul>
 <li><strong>학습 초반</strong>(\(\varepsilon\) 큼): 거의 모든 행동이 시도되므로
 \(Q\)값들이 충분히 방문되어 \(\max_{a’}Q(s’,a’)\)가 믿을 만한
@@ -513,6 +514,7 @@ vs 정책특정)으로 귀결되는 것이다.</p>
 Q-learning과 SARSA의 차이는, 똑같은 부트스트래핑 아이디어를 “이상적인
 목표 정책“에 적용하느냐 “실제 행동 정책“에 적용하느냐라는, 아주 작지만
 결과는 크게 갈리는 선택에서 나온다.</strong></p>
+<p>이 주제를 더 깊이 보려면: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">5</a></sup></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음과 같은 함수 <code>q_learning_train</code>을 완성하라(핵심 줄은
@@ -557,6 +559,24 @@ Q(s,a)]\)가 참값 \(Q^*(s,a)\)로 수렴하기 위해 필요한 조건을 다�
 <p><strong>정확성 확인</strong>: 위 세 가지 논증이 각각 Q-learning 알고리즘의 어느
 부분(TD 오차 계산, <code>alpha</code> 파라미터, <code>epsilon_greedy</code> 함수)에
 대응하는지 짝지어라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — CliffWalking(절벽 걷기) 환경은 이 표준 교과서 6장 “Temporal-Difference Learning“의 대표 예제로, SARSA(교과서의 경우 Q-함수 대신 상태가치함수)로 절벽을 회피하는 경로가 학습되는 과정이 원서에서 다뤄진다. <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning,” Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0) — ε를 줄여가며 탐험을 착취로 전환해가는 이 절의 주제를 다룬다. <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>더 깊이 보려면 — Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

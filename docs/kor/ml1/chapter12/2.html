@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -181,8 +181,11 @@
                         <h1 id="122-scaled-dot-product-attention과-self-attention"><a class="header" href="#122-scaled-dot-product-attention과-self-attention">12.2 Scaled Dot-Product Attention과 Self-Attention</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter12_2_scaled_dot_attention.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: Scaled Dot-Product Attention 실습"></a></p>
 <h3 id="scaled-dot-product-attention"><a class="header" href="#scaled-dot-product-attention">Scaled Dot-Product Attention</a></h3>
-<p>한 단어의 Query가 모든 단어의 Key와 얼마나 “관련 있는지“를 내적(dot
-product)으로 잰다:</p>
+<p>Scaled dot-product attention은 Transformer 원논문<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">1</a></sup>의 핵심
+연산이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."></span></label></p>
+<p>한 단어의 Query가 모든 단어의 Key와 얼마나 “관련 있는지”<sup class="footnote-reference" id="fr-bahdanau-1"><a href="#footnote-bahdanau">2</a></sup>를
+내적(dot product)으로 잰다<sup class="footnote-reference" id="fr-luong-1"><a href="#footnote-luong">3</a></sup>:</p>
 <p>\[\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V\]</p>
 <p>단계별로 뜯어보면:</p>
 <ol>
@@ -405,10 +408,11 @@ v_j\) (\(\sum_j w_{ij} = 1\), \(w_{ij} \ge 0\))는 **V의 원행들의
 “강아지가 고양이를 쫓는다“와 “고양이가 강아지를 쫓는다“가
 <em>같은</em> 어텐션 출력을 내는 것은, 이 순서 불변성의 <em>직접 결과</em>다.
 이 문제를 해결하는 <strong>positional encoding</strong>(각 단어의 임베딩에
-위치 정보를 더하는 고정된 사인/코사인 벡터)은 12.3절의 주제다 —
+위치 정보를 더하는 고정된 사인/코사인 벡터<sup class="footnote-reference" id="fr-transformer-2"><a href="#footnote-transformer">1</a></sup> <sup class="footnote-reference" id="fr-posenc-1"><a href="#footnote-posenc">4</a></sup>)은 12.3절의 주제다 —
 여기서는 “어텐션이 <em>순서를 모른다</em>“는 사실 자체를 기억해 두자.
 (왜 이 구분이 중요한지는 12.3절의 “자주 하는 실수” 섹션에서
-“positional encoding을 빼먹으면 어떨까“를 통해 다시 확인한다.)</p>
+“positional encoding을 빼먹으면 어떨까“를 통해 다시 확인한다.
+이 주제를 더 깊이 다루는 자료: Stanford CS224N<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">5</a></sup>.)</p>
 <h3 id="실습-대명사-지시-관계를-어텐션-가중치로-시각화하기"><a class="header" href="#실습-대명사-지시-관계를-어텐션-가중치로-시각화하기">실습: 대명사 지시 관계를 어텐션 가중치로 시각화하기</a></h3>
 <p>이번 장 도입부의 “그 동물은 도로를 건너지 않았다, 그것은 지쳐 있었기
 때문이다” 문장을 아주 단순화해서, 네 단어 [동물, 도로, 건너지,
@@ -549,7 +553,7 @@ V의 4개 원행들의 볼록 껍질 안에 있는지 확인하는 <em>단순한
 그렇지는 않다 — 학습된 모델의 어텐션 헤드를 실제로 들여다보면, 어떤
 헤드는 정확히 대명사-선행사 관계에 집중하지만, 다른 헤드는 그냥
 바로 이웃한 단어나 문장부호에 집중하는 등 사람이 보기에 “덜 해석
-가능한” 패턴을 학습하기도 한다 — 12.3절에서 배울 멀티헤드 구조가 바로
+가능한” 패턴을 학습하기도 한다<sup class="footnote-reference" id="fr-heads-1"><a href="#footnote-heads">6</a></sup> — 12.3절에서 배울 멀티헤드 구조가 바로
 이런 “서로 다른 역할을 가진 여러 헤드“를 병렬로 두는 이유다.</p>
 <p><strong>Q. softmax를 안 쓰고 그냥 내적값을 바로 가중치로 쓰면 안 되나요?</strong>
 내적값은 범위가 정해져 있지 않고(음수도 가능) 단어마다 스케일이 달라질
@@ -603,9 +607,10 @@ Cauchy-Schwarz 부등식 \(q_i \cdot q_j \le \|q_i\| \, \|q_j\|\)
 자신의</em> Value를 <em>기본적으로</em> 포함시켜, “이 단어의 <em>기존</em>
 정보가 <em>완전히</em> 사라지지 않고” <em>다른</em> 단어의 정보가
 <em>추가</em>되는 형태로 동작하게 해주는 것이, 학습 안정성에 <em>긍정적</em>
-이다. (이 “자기 주입 + 잔차” 조합이, 10.2절에서 본 ResNet의
+이다. (이 “자기 주입 + 잔차” 조합이, 10.2절에서 본 ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">7</a></sup>의
 \(y = F(x) + x\)와 <em>정신적으로</em> 닮아 있다 — “출력 = 입력의
 일부 + 새로운 정보” 패턴.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."><span class="img-wrapper"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."></span></label></p>
 <p><strong>Q. 어텐션 가중치의 “합이 1“이라는 것은, <em>출력</em>의 “스케일
 보존“을 <em>정확히</em> 보장하나요?</strong> <em>대부분</em>의 경우 <em>거의</em> 그렇지만,
 <em>정확히</em>는 아니다. 출력 \(o_i = \sum_j w_{ij} v_j\)는 V의 <em>원행</em>
@@ -620,6 +625,30 @@ V 원행의 스케일이 <em>다르</em>면 출력 스케일도 <em>그</em> 스
 <strong>“출력이 V 원행들 <em>사이에</em> 있는(볼록성)”</strong> 것이지,
 “출력의 <em>스케일</em>이 V의 <em>어떤</em> 스케일을 <em>정확히</em> 유지“하는
 것은 아니다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-transformer">
+<p>Vaswani, A. et al. (2017). “Attention Is All You Need.” arXiv:1706.03762. <a href="#fr-transformer-1">↩</a> <a href="#fr-transformer-2">↩2</a></p>
+</li>
+<li id="footnote-bahdanau">
+<p>Bahdanau, D., Cho, K., Bengio, Y. (2014). “Neural Machine Translation by Jointly Learning to Align and Translate.” ICLR 2015. arXiv:1409.0473. — 어텐션 메커니즘을 처음 제안한 논문으로, “하나의 입력(인코더) 단어가 다른 모든 입력 단어와 얼마나 관련 있는지“를 배율로 계산해 출력에 가중합하는 구조다. <a href="#fr-bahdanau-1">↩</a></p>
+</li>
+<li id="footnote-luong">
+<p>Luong, M.-T., Pham, H., Manning, C. D. (2015). “Effective Approaches to Attention-based Neural Machine Translation.” ICLR 2016. arXiv:1508.04025. — additive/multiplicative/dot-product의 세 가지 어텐션 스코어링 방식을 제안한 논문으로, dot-product attention은 Transformer의 scaled dot-product attention의 직접적 전신이다. <a href="#fr-luong-1">↩</a></p>
+</li>
+<li id="footnote-posenc">
+<p>Vaswani, A. et al. (2017)의 Transformer 원논문 Section 3.5 “Positional Encoding” — 어텐션이 순서에 불변이므로, sin/cos 함수의 다양한 주파수 합성으로 만든 고정 벡터를 각 단어의 임베딩에 더해 위치 정보를 주입하는 방식을 제안했다. <a href="#fr-posenc-1">↩</a></p>
+</li>
+<li id="footnote-cs224n">
+<p>Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/ <a href="#fr-cs224n-1">↩</a></p>
+</li>
+<li id="footnote-heads">
+<p>Michel, P., Levy, O., Neubig, G. (2019). “Are Sixteen Heads Really Better than One?” arXiv:1905.10650. <a href="#fr-heads-1">↩</a></p>
+</li>
+<li id="footnote-resnet">
+<p>He, K., Zhang, X., et al. (2015). “Deep Residual Learning for Image Recognition.” arXiv:1512.03385. <a href="#fr-resnet-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

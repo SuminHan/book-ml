@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -283,7 +283,9 @@ n개의 미지수 \(V(s)\)에 대한 n개 일차방정식을 푸는 일이다. �
 GridWorld에서 “수백~수천 sweep“가 자연스러운 숫자가 된다.</li>
 <li><strong>수렴은 초기값에 무관하다.</strong> 여기서는 0으로 시작했지만, 값을
 \(V = [100, -50, 10]\)처럼 아무렇게나 잡아도 정확히 같은
-\(V^\pi\)로 수렴한다(4.3절에서 바나흐 고정점 정리로 증명됨).</li>
+\(V^\pi\)로 수렴한다(4.3절에서 바나흐 고정점 정리로 증명됨). 이
+반복적 정책평가(algorithms 4.1–4.2)는 Sutton과 Barto의 표준
+교과서<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">1</a></sup>에서도 동일한 방식으로 정의·증명된다.</li>
 </ol>
 <p>(4.3절 연습문제 2의 3-state 직선 MDP는 이 예의 <strong>비순환</strong> 특수 경우다 —
 전이 그래프가 순환이 없으면 “터미널부터 거꾸로 대입“만으로 답이 나와
@@ -470,7 +472,8 @@ optimality)이다 — 최적 경로의 부분 경로도 최적이다. “상태 
 \(V^*\) 표를 배우는 대신 \(Q^*\) 표(신경망)를 배우고, \(\arg\max\)
 로 정책을 읽어낸다. 이번 절에서 \(Q^\pi\) 표를 직접 채워본
 경험이, DQN의 “Q값을 추정하는 신경망“이 <strong>무엇을</strong> 추정하는지
-이해하는 데 바로 쓰인다.</p>
+이해하는 데 바로 쓰인다.<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">2</a></sup></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><strong>역사: 이 이름이 붙은 이유.</strong> “벨만방정식“의 벨만은 리처드
 벨만(Richard Bellman, 1920~1984)이다 — 2차대전 중 탄약 포대에
 “최적 포사거리 배분” 문제를 풀던 미군 수학자였고, 전후(戰後)
@@ -639,6 +642,9 @@ sweep, \(\gamma = 0.99\)이면 \(\log(10^{-6})/\log(0.99) \approx
 \(Q^\pi\)를 추정하는 방법. 이 절의 반복법이 “모델 기반“의
 <strong>정답 기준</strong>(ground truth) 역할을 하므로, 이후 모델프리
 알고리즘의 “정확성“을 이 절의 값과 비교해 평가하게 된다.</p>
+<p>정책평가·벨만방정식은 이 책 ML2 전체를 관통하는 주제이며, 이 주제를
+더 깊이 다루는 자료로는 Stanford CS234(Reinforcement Learning)
+강의<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">3</a></sup>를 참고할 수 있다.</p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 4.1절의 3-state 순환 MDP(상태 0→1, 상태 1은 2로
@@ -679,6 +685,18 @@ V^{\text{right}}(0)\) — 상태 0에서 left를 하면 보상 -1을 받고,
 코드 결과(-4.0951)와 일치하는지 확인하라. 이 계산이 “벽에
 부딪혀 같은 상태로 돌아오는” 행동의 가치를 <strong>한 스텝만</strong>으로
 압축하는 벨만 재귀의 본질을 보여준다고 한 문장으로 설명하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

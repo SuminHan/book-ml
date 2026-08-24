@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -181,14 +181,14 @@
                         <h1 id="91-퍼셉트론의-한계-순전파-역전파"><a class="header" href="#91-퍼셉트론의-한계-순전파-역전파">9.1 퍼셉트론의 한계, 순전파, 역전파</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter09_1_backprop_xor.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: XOR을 푸는 2층 신경망"></a></p>
 <h3 id="퍼셉트론-ai의-시작이었고-ai의-실망이기도-했던-모델"><a class="header" href="#퍼셉트론-ai의-시작이었고-ai의-실망이기도-했던-모델">퍼셉트론: “AI의 시작“이었고 “AI의 실망“이기도 했던 모델</a></h3>
-<p>1958년 프랭크 로젠블라트(Frank Rosenblatt)가 코넬 대학에서 <strong>퍼셉트론</strong>(perceptron)을 발표했을 때, 대중매체는 “컴퓨터가 배운다”, “컴퓨터가 본다”, 심지어 “우주 탐사에 쓰일 1세대 로봇“이라고 보도했다. 로젠블라트는 코넬의 계산기 연구소(Cornell Aeronautical Laboratory)에 재직 중이었고, 퍼셉트론은 실제로 (당시 기준으로) 비행기 조종사의 얼굴을 인식하는 실험까지 했다. 모델은 Chapter 2의 로지스틱회귀와 거의 같다 — 시그모이드 대신 <strong>스텝함수</strong> \(\text{sgn}(z)\)를 쓴 것만 차이:</p>
+<p>1958년 프랭크 로젠블라트(Frank Rosenblatt)가 코넬 대학에서 <strong>퍼셉트론</strong>(perceptron)<sup class="footnote-reference" id="fr-perceptron-1"><a href="#footnote-perceptron">1</a></sup>을 발표했을 때, 대중매체는 “컴퓨터가 배운다”, “컴퓨터가 본다”, 심지어 “우주 탐사에 쓰일 1세대 로봇“이라고 보도했다. 로젠블라트는 코넬의 계산기 연구소(Cornell Aeronautical Laboratory)에 재직 중이었고, 퍼셉트론은 실제로 (당시 기준으로) 비행기 조종사의 얼굴을 인식하는 실험까지 했다. 모델은 Chapter 2의 로지스틱회귀와 거의 같다 — 시그모이드 대신 <strong>스텝함수</strong> \(\text{sgn}(z)\)를 쓴 것만 차이:</p>
 <p>\[\hat{y} = \text{sgn}\left(\sum_{j=1}^{d} w_j x_j + b\right) = \text{sgn}(w^Tx + b)\]</p>
 <p>학습법도 Chapter 2.1의 경사하강법의 선조인 <strong>퍼셉트론 학습 규칙</strong> — 틀린 예제에 대해 가중치를 오차 방향으로만 갱신:</p>
 <p>\[\text{틀렸을 때: } w \leftarrow w + yx, \quad \text{맞았을 때: } w \leftarrow w\]</p>
-<p>(이 규칙은 선형분리 가능한 데이터에서 반드시 수렴한다는 <strong>퍼셉트론 수렴 정리</strong>가 있다 — Chapter 2.1의 그래디언트 업데이트 \(w \leftarrow w + \alpha \cdot (y-\hat{y})\, x\)와 비교하면, 로지스틱회귀의 업데이트가 “오차 크기에 비례하는 연속형“이고 퍼셉트론 규칙은 그것을 0/1로 끊어버린 이산형이라고 볼 수 있다.) 당시 언론의 흥분은 이해가 된다: <strong>학습하는 기계</strong>를 만들어낸 것이기 때문이다. 그런데 이 흥분은 11년 만에 냉탕으로 떨어진다.</p>
+<p>(이 규칙은 선형분리 가능한 데이터에서 반드시 수렴한다는 <strong>퍼셉트론 수렴 정리</strong><sup class="footnote-reference" id="fr-perceptron-2"><a href="#footnote-perceptron">1</a></sup>가 있다 — Chapter 2.1의 그래디언트 업데이트 \(w \leftarrow w + \alpha \cdot (y-\hat{y})\, x\)와 비교하면, 로지스틱회귀의 업데이트가 “오차 크기에 비례하는 연속형“이고 퍼셉트론 규칙은 그것을 0/1로 끊어버린 이산형이라고 볼 수 있다.) 당시 언론의 흥분은 이해가 된다: <strong>학습하는 기계</strong>를 만들어낸 것이기 때문이다. 그런데 이 흥분은 11년 만에 냉탕으로 떨어진다.</p>
 <h3 id="1969-perceptrons-xor의-벽과-ai의-겨울"><a class="header" href="#1969-perceptrons-xor의-벽과-ai의-겨울">1969, 《Perceptrons》: XOR의 벽과 AI의 겨울</a></h3>
-<p>1969년, 마빈 민스키(Marvin Minsky)와 시모어 페퍼트(Seymour Papert)가 MIT에서 쓴 책 <em>Perceptrons</em>가 단층 퍼셉트론의 한계를 수학적으로 증명했다: 단층 퍼셉트론은 <strong>XOR</strong>(두 입력이 다르면 1, 같으면 0)를 아무리 학습시켜도 절대 맞출 수 없다. 그 한계가 얼마나 근본적인지 — “학습률이 부족해서”, “데이터가 부족해서“가 아니라 <strong>모델 구조 자체</strong>가 불가능하다는 것 — 이 다음 절의 주제다.</p>
-<p>이 책의 영향은 학문적 결과를 넘어 산업의 방향을 돌렸다. 퍼셉트론은 당시 가장 뜨거운 AI 연구 주제였는데, 그 책이 “단층 신경망은 논리회로조차 못 만든다“고 판사처럼 단정한 것이다. 투자와 논문 수가 급감했고, 1970년대 후반~1980년대 중반으로 이어진 1차 “AI 겨울(AI winter)“의 직접적인 원인 중 하나가 됐다. (민스키·페퍼트의 정리가 단층 퍼셉트론의 <em>수학적 한계</em>를 정확히 짚은 것은 맞되, 대중적으로는 “신경망은 쓸모없다“는 과도한 일반화로 읽혔다는 평가가 많다.) 그 긴 동면기를 깨운 것이 1986년 럼멜하트, 힌턴, 윌리엄스의 역전파 대중화 논문이었다 — 그리고 이 절의 마지막까지 가보면, 동면기를 깨운 것이 바로 “XOR의 벽을 넘는 단 하나의 구조“라는 걸 알게 된다.</p>
+<p>1969년, 마빈 민스키(Marvin Minsky)와 시모어 페퍼트(Seymour Papert)가 MIT에서 쓴 책 <em>Perceptrons</em><sup class="footnote-reference" id="fr-minskypapert-1"><a href="#footnote-minskypapert">2</a></sup>가 단층 퍼셉트론의 한계를 수학적으로 증명했다: 단층 퍼셉트론은 <strong>XOR</strong>(두 입력이 다르면 1, 같으면 0)를 아무리 학습시켜도 절대 맞출 수 없다. 그 한계가 얼마나 근본적인지 — “학습률이 부족해서”, “데이터가 부족해서“가 아니라 <strong>모델 구조 자체</strong>가 불가능하다는 것 — 이 다음 절의 주제다.</p>
+<p>이 책의 영향은 학문적 결과를 넘어 산업의 방향을 돌렸다. 퍼셉트론은 당시 가장 뜨거운 AI 연구 주제였는데, 그 책이 “단층 신경망은 논리회로조차 못 만든다“고 판사처럼 단정한 것이다. 투자와 논문 수가 급감했고, 1970년대 후반~1980년대 중반으로 이어진 1차 “AI 겨울(AI winter)“의 직접적인 원인 중 하나가 됐다. (민스키·페퍼트의 정리가 단층 퍼셉트론의 <em>수학적 한계</em>를 정확히 짚은 것은 맞되, 대중적으로는 “신경망은 쓸모없다“는 과도한 일반화로 읽혔다는 평가가 많다.) 그 긴 동면기를 깨운 것이 1986년 럼멜하트, 힌턴, 윌리엄스의 역전파 대중화 논문<sup class="footnote-reference" id="fr-rwh86-1"><a href="#footnote-rwh86">3</a></sup>이었다 — 그리고 이 절의 마지막까지 가보면, 동면기를 깨운 것이 바로 “XOR의 벽을 넘는 단 하나의 구조“라는 걸 알게 된다.</p>
 <h3 id="퍼셉트론에서-다층-신경망으로"><a class="header" href="#퍼셉트론에서-다층-신경망으로">퍼셉트론에서 다층 신경망으로</a></h3>
 <p>해법은 놀랍도록 단순했다: 직선 하나로 안 되면, <strong>직선을 여러 개 겹쳐서 새로운
 공간을 만든 뒤 그 공간에서 다시 나누면 된다.</strong> 로지스틱회귀는 사실 입력층과
@@ -278,8 +278,8 @@
 <p><strong>컨벤션 주의</strong>: 위 수식에서는 \(W_1\)이 <strong>행=은닉 유닛, 열=입력
 차원</strong>의 컨벤션(\(W_1 \in \mathbb{R}^{m \times d}\), \(m\) = 은닉 유닛
 수, \(d\) = 입력 차원)을 쓴다. 그러면 \(z_1 = W_1 x + b_1\)가
-자연스럽고, PyTorch/TensorFlow의 <code>Linear</code> 계층(가중치 행=출력 뉴런,
-열=입력 뉴런)과도 일치한다. 아래 손계산 예제의 \(W_1\) 행렬은
+자연스럽고, PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">4</a></sup>/TensorFlow의 <code>Linear</code> 계층(가중치 행=출력 뉴런,
+열=입력 뉴런)과도 일치한다<sup class="footnote-reference" id="fr-tensorflow-1"><a href="#footnote-tensorflow">5</a></sup>. 아래 손계산 예제의 \(W_1\) 행렬은
 <strong>전치된 배치</strong>(행=입력 차원, 열=은닉 유닛)로 쓰고 그에 맞춰
 \(z_1 = x^TW_1 + b_1\)를 사용한다 — 두 표기는 정확히 같은
 수치를 주지만, 이 “같은 값이 서로 전치된 모습으로 쓰여 있다“는 점이
@@ -393,7 +393,7 @@ W_2\), \(\partial L/\partial W_1\))를 만든다는 것이다. 이 그림에서
 <h4 id="수치-미분-검증-역전파가-맞다는-것을-기계로-확인하기"><a class="header" href="#수치-미분-검증-역전파가-맞다는-것을-기계로-확인하기">수치 미분 검증: 역전파가 “맞다“는 것을 기계로 확인하기</a></h4>
 <p>손으로 계산한 그래디언트가 맞는다는 걸 <strong>기계로</strong> 확인하는 표준 기법이
 <strong>수치 미분</strong>(numerical gradient checking)이다. 어떤 가중치 하나를 아주
-작게(\(\epsilon = 10^{-6}\)) 흔들어서 손실이 얼마나 바뀌는지 직접 재보는 것:</p>
+작게(\(\epsilon = 10^{-6}\)) 흔들어서 손실이 얼마나 바뀌는지 직접 재보는 것<sup class="footnote-reference" id="fr-gradientcheck-1"><a href="#footnote-gradientcheck">6</a></sup>:</p>
 <p>\[\frac{\partial L}{\partial w} \approx
 \frac{L(w+\epsilon) - L(w-\epsilon)}{2\epsilon}\]</p>
 <p>이 값이 역전파로 계산한 그래디언트와 거의 같으면(보통 소수점 몇 자리
@@ -462,7 +462,7 @@ def two_layer_backward(y_true, cache, W2):
 <p>정답 XOR 패턴(0, 1, 1, 0)과 정확히 일치한다 — 로지스틱회귀 혼자서는
 영원히 풀 수 없었던 문제를, 은닉층 하나와 역전파만으로 풀어낸 것이다.
 PyTorch/TensorFlow는 <code>.backward()</code> 한 줄로 이 모든 미분을 자동으로
-계산해준다(자동 미분, automatic differentiation). 하지만 그 자동 미분이
+계산해준다(자동 미분, automatic differentiation)<sup class="footnote-reference" id="fr-autosurvey-1"><a href="#footnote-autosurvey">7</a></sup>. 하지만 그 자동 미분이
 내부에서 정확히 무엇을 하는지 모르면, 9.2절에서 볼 그래디언트가 사라지는
 문제를 마주쳤을 때 원인을 진단할 방법이 없다 — 이번 장 연습문제의
 목적은 라이브러리가 대신 해주는 그 연쇄법칙을, 딱 한 번은 손으로 끝까지
@@ -491,7 +491,7 @@ PyTorch/TensorFlow는 <code>.backward()</code> 한 줄로 이 모든 미분을 �
 <p>모든 은닉 유닛이 동일한 \(a_{1,i}\)를 출력하므로, 출력층이 보는 것은
 “같은 값 4개를 가중치 합산” — 사실상 1차원 입력이다. XOR을 분리할
 표현력이 구조적으로 없다. (이 문제는 9.2절의 “가중치 초기화” 섹션에서
-Xavier/He 초기화로 해결한다.)</p>
+Xavier/He 초기화로 해결한다<sup class="footnote-reference" id="fr-heinit-1"><a href="#footnote-heinit">8</a></sup>.)</p>
 <p><strong>학습률</strong>: 같은 구조(은닉 4개, 무작위 초기화, 시드 고정)에서 학습률만
 바꿔 5000 에폭 학습시키면:</p>
 <pre><code>α = 0.01: 손실 0.124 (사실상 무학습 — "느리다"가 아니라 "못 배운다")
@@ -506,7 +506,7 @@ Xavier/He 초기화로 해결한다.)</p>
 손실함수가 더 복잡해지면 \(\alpha\)가 너무 크면 발산한다(Chapter 2.1의
 “발산” 조건). <strong>학습률의 “적당함“은 문제별로 다르다</strong> — 이 절의 XOR 예제에서
 \(\alpha=0.5\)가 동작한다고 해서, 10만개 데이터의 CNN에서 \(\alpha=0.5\)가
-동작하는 것은 아니다.</p>
+동작하는 것은 아니다.<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">9</a></sup></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <p><strong>① 가중치를 0으로 초기화하는 것</strong> — 모든 은닉 유닛이 동일한 출력을
 내어 대칭이 깨지지 않고, XOR을 포함해 어떤 선형비분리 문제도 풀리지
@@ -530,7 +530,7 @@ Xavier/He 초기화로 해결한다.)</p>
 다룬다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 은닉층은 왜 하나로 충분한가요, 여러 개는 언제 필요한가요?</strong>
-<strong>보편근사정리</strong>(universal approximation theorem)에 따르면, 은닉층
+<strong>보편근사정리</strong>(universal approximation theorem)<sup class="footnote-reference" id="fr-uat-1"><a href="#footnote-uat">10</a></sup>에 따르면, 은닉층
 하나(뉴런 수를 충분히 늘리면)만으로도 이론적으로 어떤 연속함수든
 근사할 수 있다 — XOR도 예외가 아니다. 하지만 “이론적으로 가능하다“와
 “학습이 쉽다“는 다른 문제다. 실전에서는 은닉층을 여러 개로 쌓는(깊게
@@ -562,7 +562,8 @@ Xavier/He 초기화로 해결한다.)</p>
 동급 연산을 층마다 한 번 한다. 따라서 “한 에폭의 총 계산량“은
 순전파 1회 + 역전파 1회 ≈ 2× 순전파이다. (미니배치 배치는 이 둘을
 배치 행렬 곱으로 벡터화해서 GPU에서 병렬화한다 — 9.3절의
-BatchNorm이 이 미니배치 단위를 전제로 한다.)</p>
+BatchNorm이 이 미니배치 단위를 전제로 한다<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">11</a></sup>.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."></span></label></p>
 <h3 id="확인-문제-역전파의-세-가지를-다시-말해보자"><a class="header" href="#확인-문제-역전파의-세-가지를-다시-말해보자">확인 문제: 역전파의 세 가지를 다시 말해보자</a></h3>
 <ol>
 <li><strong>XOR의 부등식 모순.</strong> \((w_1, w_2, b)\)가 네 점의 라벨을
@@ -581,6 +582,42 @@ BatchNorm이 이 미니배치 단위를 전제로 한다.)</p>
 MSE를 썼을 때의 \(\delta_2\)와 비교하면 어떤 차이가 있는가,
 그리고 그 차이가 “포화된 예측에서도 그래디언트가 살아있는”
 것과 어떻게 연결되는지 한 문장으로 설명하라.</li>
+</ol>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-perceptron">
+<p>Rosenblatt, F. (1958). “The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain.” Psychological Review 65(6), 386–408. <a href="#fr-perceptron-1">↩</a> <a href="#fr-perceptron-2">↩2</a></p>
+</li>
+<li id="footnote-minskypapert">
+<p>Minsky, M., Papert, S. (1969). “Perceptrons: An Introduction to Computational Geometry in Perceptual Analysis.” MIT Press. — 단층 퍼셉트론이 XOR(및 그 밖의 선형비분리 함수)를 표현할 수 없음을 수학적으로 증명한 원서로, 본문에서 언급한 1차 “AI 겨울“을 직접 촉발한 책이다. <a href="#fr-minskypapert-1">↩</a></p>
+</li>
+<li id="footnote-rwh86">
+<p>Rumelhart, D. E., Hinton, G. E., Williams, R. J. (1986). “Learning representations by back-propagating errors.” Nature 323, 533–536. <a href="#fr-rwh86-1">↩</a></p>
+</li>
+<li id="footnote-pytorch">
+<p>Paszke, A., Gross, S., Massa, F., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” arXiv:1912.01703. — 본 절 실습 코드(<code>.backward()</code> 자동 미분)가 전제로 하는 프레임워크의 원 논문. <a href="#fr-pytorch-1">↩</a></p>
+</li>
+<li id="footnote-tensorflow">
+<p>Abadi, M., et al. (2016). “TensorFlow: A system for large-scale machine learning.” arXiv:1603.04467. <a href="#fr-tensorflow-1">↩</a></p>
+</li>
+<li id="footnote-gradientcheck">
+<p>Goodfellow, I., Bengio, Y., Courville, A. (2016). “Deep Learning.” MIT Press. (무료 공개: https://www.deeplearningbook.org/) — 역전파와 수치 미분 검증(gradient checking)이 표준으로 다뤄지는 교재. <a href="#fr-gradientcheck-1">↩</a></p>
+</li>
+<li id="footnote-autosurvey">
+<p>Baydin, A. G., Pearlmutter, B. A., Radul, A. A., Siskind, J. M. (2018). “Automatic differentiation in machine learning: a survey.” JMLR 18(153), 1–43. arXiv:1502.05767. — 역전파보다 일반화된 “자동 미분(autodiff)” 기법에 대한 정석적 서베이로, 본 절 실습에서 PyTorch/TensorFlow의 <code>.backward()</code>가 구현하는 동적 계산 그래프/미분가능 프로그래밍을 체계적으로 정리한다. <a href="#fr-autosurvey-1">↩</a></p>
+</li>
+<li id="footnote-heinit">
+<p>He, K., Zhang, X., Ren, S., Sun, J. (2015). “Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.” arXiv:1502.01852. — ReLU 네트워크를 위한 가중치 초기화 분포(He 초기화)를 제안한 논문. Xavier 초기화는 Glorot, X., Bengio, Y. (2010) “Understanding the Difficulty of Training Deep Feedforward Neural Networks,” AISTATS 2010에 제안됨. <a href="#fr-heinit-1">↩</a></p>
+</li>
+<li id="footnote-cs230">
+<p>더 깊이 보려면: Stanford CS230: Deep Learning. https://cs230.stanford.edu/ — 이 절의 순전파·역전파(XOR 예제), 가중치 초기화, 학습률 선택은 CS230의 신경망·역전파·최적화 단원과 직접 겹친다. <a href="#fr-cs230-1">↩</a></p>
+</li>
+<li id="footnote-uat">
+<p>Hornik, K. (1991). “Approximation capabilities of multilayer feedforward networks.” Neural Networks 4(2), 251–257. <a href="#fr-uat-1">↩</a></p>
+</li>
+<li id="footnote-batchnorm">
+<p>Ioffe, S., Szegedy, C. (2015). “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift.” arXiv:1502.03167. — 미니배치 단위로 특징을 정규화해 더 큰 학습률과 빠른 수렴을 가능하게 하는 기법으로, 9.3절에서 자세히 다룬다. <a href="#fr-batchnorm-1">↩</a></p>
+</li>
 </ol>
 
                     </main>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -213,7 +213,8 @@ deep learning에서 <strong>weight decay</strong>(가중치 감쇠)라는 이름
 불량(ill-conditioned) 최소제곱 문제에 같은 기법을 써왔고, 통계학자
 호엘·케나드(Hoerl &amp; Kennard)는 \(\lambda I\)를 더한 행렬이 손실면 위에
 “등정(ridge) 모양“의 돌출을 만들었다는 뜻에서 <strong>ridge 회귀</strong>라 불렀다.
-Lasso는 그 26년 뒤, 1996년 티브시라니(Tibshirani)가 제안한 것이다 — 장
+Lasso는 그 26년 뒤, 1996년 티브시라니(Tibshirani)<sup class="footnote-reference" id="fr-tibshirani1996-1"><a href="#footnote-tibshirani1996">1</a></sup>가 제안한
+것이다 — 장
 도입부의 일화와 같은 논문이다. 핵심 발견은 “페널티의 <em>모양</em>만
 바꿨는데(\(\sum w_j^2\) → \(\sum|w_j|\)) 정확히 0이 <em>자동으로</em>
 나온다“는 것이었고, 이 절의 주된 소재다.</p>
@@ -250,7 +251,7 @@ Lasso는 그 26년 뒤, 1996년 티브시라니(Tibshirani)가 제안한 것이�
 <em>대수적 모습</em>이며, \(|w|\)가 미분불가능해 구배하강을 그대로 쓸 수
 없는 Lasso를 <strong>좌표하강</strong>(coordinate descent — 한 번에 \(w_j\) 하나만
 이 공식으로 갱신, 나머지는 고정)으로 푸는 이유가 바로 이것이다.
-scikit-learn의 <code>Lasso</code>가 내부적으로 하는 일이 이 공식의 반복이다
+scikit-learn<sup class="footnote-reference" id="fr-scikit-learn-1"><a href="#footnote-scikit-learn">2</a></sup>의 <code>Lasso</code>가 내부적으로 하는 일이 이 공식의 반복이다
 (실습 노트북 §4에서 이 좌표하강을 손으로 구현해 <code>Lasso</code>와 동일한 해가
 나오는지 대조한다).</p>
 <p><strong>실습: 계수 경로(coefficient path) — 0은 점진적인 것이 아니라 도착지.</strong>
@@ -445,6 +446,8 @@ Lasso는 <strong>진짜 계수 2를 정확히 가진 \(x_1\)을 0으로 만들�
 못 맞추는 정도}} + \underbrace{\text{Var}[\hat f(x)]}_{\text{훈련 데이터가
 바뀔 때 예측이 흔들리는 정도}} + \underbrace{\sigma^2}_{\text{데이터의
 잡음}}\]</p>
+<p>(편향-분산 트레이드오프를 더 깊이 다루는 자료: Stanford CS229
+강의록<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">3</a></sup>.)</p>
 <p>\(\lambda\)가 이 분해에서 <em>어떤 방향</em>으로 모델을 움직이는지, 4.1절의
 수치 실험(\(f^*(x)=\sin(2\pi x)\), 잡음 \(\sigma=0.5\), 100점,
 300회 재추출)과 <em>완전히 같은 방식으로</em> 재측정한다. 이번엔 모델이
@@ -589,6 +592,18 @@ soft-thresholding(\(|z_j|\le\lambda\)이면 0)으로 약한 특징을
 정규화 대상에서 제외한다. 그리고 “\(\lambda\) 자체는 얼마가
 적당한가” — 그 U자형 곡선의 바닥을 <em>정직하게</em> 고르는 절차는
 6.2절(교차검증)과 6.3절(train/val/test)에서 다룬다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-tibshirani1996">
+<p>Tibshirani, R. (1996). “Regression Shrinkage and Selection via the Lasso.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 58(1), 267–284. <a href="#fr-tibshirani1996-1">↩</a></p>
+</li>
+<li id="footnote-scikit-learn">
+<p>Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). “Scikit-learn: Machine Learning in Python.” <em>Journal of Machine Learning Research</em> 12, 2825–2830. arXiv:1201.0490. <a href="#fr-scikit-learn-1">↩</a></p>
+</li>
+<li id="footnote-cs229">
+<p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

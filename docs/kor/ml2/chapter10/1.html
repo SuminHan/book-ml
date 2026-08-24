@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -205,11 +205,12 @@
 Chapter 6·9의 “Q를 배우고 argmax로 정책을 뽑는다“는 방식이 본질적으로
 이 결정적 정책이었고(10.2절 FAQ에서 “그것도 policy gradient
 family인가요?” 질문이 이 점을 다시 짚는다), 확률적 정책은
-샘플링이 곧 탐험이라는 보너스를 주므로 Chapter 11의 PPO까지 이
+샘플링이 곧 탐험이라는 보너스를 주므로 Chapter 11의 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">1</a></sup>까지 이
 형태로 간다. “정책“이라는 말은 이번 장에서 확률분포라는 뜻으로
 쓰인다고 기억하면, 이후 “정책의 그래디언트“라는 말이 왜
 \(\nabla_\theta \log \pi_\theta(a|s)\)라는 <em>확률의</em> 미분인지가
 자연스럽게 읽힌다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch10_1_policy_based_flow.svg" alt="정책기반 강화학습의 구조도. 좌측: 가치기반(DQN) 경로 — 상태 s_t가 Q-네트워크를 거쳐 각 행동의 가치 Q(s,a)를 내고, argmax로 행동을 결정. 우측: 정책기반 경로 — 상태 s_t가 정책 네트워크를 거쳐 행동 확률분포 pi_theta(a|s_t)를 내고, 분포에서 행동을 샘플링(추첨)해 환경에 보냄. 환경은 두 경로 모두에 r_{t+1}과 s_{t+1}을 반환하며, 정책기반 경로에서는 리턴 G_t가 곱수로 그래디언트를 만들어 policy update(경사 상승)를 수행한다"><span class="img-wrapper"><img src="../../images/ch10_1_policy_based_flow.svg" alt="정책기반 강화학습의 구조도. 좌측: 가치기반(DQN) 경로 — 상태 s_t가 Q-네트워크를 거쳐 각 행동의 가치 Q(s,a)를 내고, argmax로 행동을 결정. 우측: 정책기반 경로 — 상태 s_t가 정책 네트워크를 거쳐 행동 확률분포 pi_theta(a|s_t)를 내고, 분포에서 행동을 샘플링(추첨)해 환경에 보냄. 환경은 두 경로 모두에 r_{t+1}과 s_{t+1}을 반환하며, 정책기반 경로에서는 리턴 G_t가 곱수로 그래디언트를 만들어 policy update(경사 상승)를 수행한다"></span></label></p>
 <p>두 경로를 나란히 보면 이번 절의 목표가 한눈에 보인다. 왼쪽
 (Chapter 6·9)은 “각 행동의 점수“를 먼저 내고 그중 <strong>최댓값</strong>을
@@ -312,10 +313,11 @@ Chapter 11의 PPO도 이 항을 목적함수에 포함시키며(실제로 PPO의
 <p>즉, “엔트로피를 올리는 방향“도 \(\nabla_\theta \log \pi\)로
 표현된다는 뜻이다. 이번 절에서 엔트로피가 중요한 이유는 <em>도입</em>이
 아니라, <strong>그래디언트가 같은 구조</strong>라는 사실이다: REINFORCE
-(10.2절)·A2C(10.3절)·PPO(Chapter 11)는 모두
+(10.2절)·A2C(10.3절)<sup class="footnote-reference" id="fr-a3c-1"><a href="#footnote-a3c">2</a></sup>·PPO(Chapter 11)는 모두
 \(G_t\) 대신 \(-\log \pi\)를 “가중치“로 쓰는 <em>같은</em> 업데이트
 식 — 이 절의 정리가 “리턴을 넘어선 보너스 항“까지 포괄한다는
 증거다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."><span class="img-wrapper"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."></span></label></p>
 <h3 id="보상을-미분한다는-이상한-문제"><a class="header" href="#보상을-미분한다는-이상한-문제">“보상을 미분한다“는 이상한 문제</a></h3>
 <p>문제는 “기대 보상을 최대화하는 \(\theta\)를 찾는다“는 목표를 그대로
 미분하려고 하면 이상한 벽에 부딪힌다는 것이다: 기대 보상은 “무작위로
@@ -832,7 +834,7 @@ f(x;\theta)\)는 <em>최대</em> <em>우도</em> <em>추정</em>(MLE)의
 <em>작업</em> — 이며, <em>Policy</em> <em>Gradient</em> <em>Theorem</em>은
 <em>바로</em> <em>이</em> <em>스코어</em> <em>함수</em>를 <em>가중치</em>로
 <em>쓰는</em> <em>구조</em>다.</p>
-<p><em>Williams</em>(1992)가 <em>정책</em> <em>그래디언트</em> <em>방법</em>을
+<p><em>Williams</em>(1992)가<sup class="footnote-reference" id="fr-williams92-1"><a href="#footnote-williams92">3</a></sup> <em>정책</em> <em>그래디언트</em> <em>방법</em>을
 <em>정식</em> <em>논증</em>할 <em>때</em>, <em>동일</em> <em>알고리즘</em>을
 <em>통계학</em> <em>문헌</em>의 <em>스코어</em> <em>함수</em> <em>추정치</em>와
 <em>같은</em> <em>것</em>으로 <em>정확히</em> <em>식별</em>했다. <em>따라서</em>
@@ -840,7 +842,7 @@ f(x;\theta)\)는 <em>최대</em> <em>우도</em> <em>추정</em>(MLE)의
 <em>아니라</em>, <em>고전</em> <em>통계</em> <em>기법</em>의 <em>RL</em>
 <em>적용</em>“이라고 <em>읽을</em> <em>수</em> <em>있다</em>. <em>반면</em>,
 <em>10.2</em> <em>절</em> <em>역사</em> <em>섹션</em>에서 <em>짚은</em> <em>바와</em>
-<em>같이</em>, <em>Sutton</em>의 <em>1984</em>년 <em>박사</em> <em>학위논문</em>에는
+<em>같이</em>, <em>Sutton</em>의 <em>1984</em>년 <em>박사</em> <em>학위논문</em><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>에는
 <em>이미</em> <em>“행동의</em> <em>결과를</em> <em>보면서</em> <em>행동</em>
 <em>확률을</em> *조정한다”*는 <em>같은</em> <em>계열</em>의
 <em>알고리즘</em>이 <em>나왔다</em> — <em>수학적</em> <em>근거</em>
@@ -921,15 +923,18 @@ _파라미터화”_인 _이유_다: <em>정규</em> <em>분포는</em>
 <em>복잡한</em> <em>분포</em> <em>구조</em> <em>를</em> <em>가지는</em>
 <em>태스크에서</em> <em>표현력</em> <em>한계</em> <em>에</em> <em>부딪힌다</em>
 — <em>이</em> <em>한계</em> <em>를</em> <em>극복</em> <em>하기</em> <em>위해</em>
-<em>GAN</em> <em>기반</em> <em>정책</em> <em>또는</em> <em>미분</em> <em>가능</em>
-<em>정상</em> <em>흐름</em> <em>정책이</em> <em>연구</em> <em>되고</em>
+<em>GAN</em><sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">5</a></sup> <em>기반</em> <em>정책</em> <em>또는</em> <em>미분</em> <em>가능</em>
+<em>정상</em> <em>흐름</em> <em>정책</em><sup class="footnote-reference" id="fr-normalizingflow-1"><a href="#footnote-normalizingflow">6</a></sup> <em>이</em> <em>연구</em> <em>되고</em>
 <em>있다</em>.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."><span class="img-wrapper"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."></span></label></p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 정책기반 방법이 Chapter 6·9의 가치기반 방법보다 항상 나은가요?</strong>
 아니다 — 연속 행동공간에서는 정책기반(또는 이번 장 이후의
 Actor-Critic·PPO)이 사실상 유일한 선택지지만, 이산 행동공간이 작고
-데이터가 충분하다면 Q-learning/DQN이 더 안정적이고 데이터 효율적인
-경우가 많다. 10.2절의 실습에서 REINFORCE와 Chapter 9의 DQN을
+데이터가 충분하다면 Q-learning/DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">7</a></sup>이 더 안정적이고 데이터
+효율적인 경우가 많다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
+<p>10.2절의 실습에서 REINFORCE와 Chapter 9의 DQN을
 CartPole(이산 행동공간)에서 비교하며 이 차이를 직접 확인한다.</p>
 <p><strong>Q. \(\pi_\theta(a|s)\)가 연속 행동공간에서는 어떤 형태인가요?</strong>
 이산 행동공간에서는 softmax로 “각 행동의 확률“을 직접 내놓지만,
@@ -949,7 +954,7 @@ CartPole(이산 행동공간)에서 비교하며 이 차이를 직접 확인한�
 <em>대신</em> *\(a = \pi_\theta(s)\)*의 <em>미분</em>
 *\(\nabla_\theta a\)*가 <em>등장</em> <em>한다</em>. <em>이</em>
 <em>“결정적</em> <em>정책</em> *그래디언트”*는
-<em>Chapter</em> <em>13</em> <em>의</em> <em>DDPG</em>/<em>TD3</em>/<em>SAC</em>에서
+<em>Chapter</em> <em>13</em> <em>의</em> <em>DDPG</em><sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">8</a></sup>/<em>TD3</em><sup class="footnote-reference" id="fr-td3-1"><a href="#footnote-td3">9</a></sup>/<em>SAC</em><sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">10</a></sup>에서
 <em>다루며</em>, <em>Actor</em> <em>Critic</em> <em>구조</em>는
 <em>유사하지만</em> <em>미분</em> <em>구조</em>가 <em>다르다</em>.
 <em>확률적</em> <em>정책</em>(이번 <em>절</em>)과 <em>결정적</em>
@@ -986,7 +991,44 @@ CartPole(이산 행동공간)에서 비교하며 이 차이를 직접 확인한�
 <em>베이스라인</em> <em>추가</em>로 <em>분산</em> <em>감소</em>
 (<em>Actor-Critic</em>), <em>Chapter</em> <em>11</em>에서는
 <em>클립</em> + <em>재사용</em>으로 <em>안정성</em>(<em>PPO</em>)을
-<em>추가</em>한다.</p>
+<em>추가</em>한다. 정책 그래디언트와 Actor-Critic을 더 깊이 다루는
+자료: Stanford CS234(Reinforcement Learning)<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">11</a></sup>.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-a3c">
+<p>Mnih, V. et al. (2016). “Asynchronous Methods for Deep Reinforcement Learning.” arXiv:1602.01783. <a href="#fr-a3c-1">↩</a></p>
+</li>
+<li id="footnote-williams92">
+<p>Williams, R. J. (1992). “Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning.” Machine Learning 8(3), 229–262. — 스코어함수 추정치와 정책 그래디언트(REINFORCE 계열)를 동일하게 식별한 원 논문. <a href="#fr-williams92-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-gan">
+<p>Goodfellow, I. J. et al. (2014). “Generative Adversarial Networks.” arXiv:1406.2661. <a href="#fr-gan-1">↩</a></p>
+</li>
+<li id="footnote-normalizingflow">
+<p>Dinh, L., Sohl-Dickstein, J., Bengio, S. (2016). “Density Estimation Using Real NVP.” arXiv:1605.08803. <a href="#fr-normalizingflow-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-ddpg">
+<p>Lillicrap, T. P. et al. (2015). “Continuous Control with Deep Reinforcement Learning.” arXiv:1509.02971. <a href="#fr-ddpg-1">↩</a></p>
+</li>
+<li id="footnote-td3">
+<p>Fujimoto, S., van Hoof, H., Meger, D. (2018). “Addressing Function Approximation Error in Actor-Critic Methods.” arXiv:1802.09477. <a href="#fr-td3-1">↩</a></p>
+</li>
+<li id="footnote-sac">
+<p>Haarnoja, T., Zhou, A., Abbeel, P., Levine, S. (2018). “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv:1801.01290. <a href="#fr-sac-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

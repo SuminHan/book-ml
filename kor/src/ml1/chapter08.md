@@ -1,13 +1,13 @@
 # Chapter 8. Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone: Team Project & Review)
 
 Chapter 2~7에서 배운 회귀, 생성적 분류(나이브베이즈/GDA), 거리·마진 기반
-모델(kNN, SVM), 정규화, 트리 앙상블(GBDT)은 각각 독립된 장의 문제처럼
+모델(kNN, SVM[^vapnik1995]), 정규화, 트리 앙상블(GBDT)[^gbdt][^cs229]은 각각 독립된 장의 문제처럼
 다뤘지만, 실전 데이터 앞에서는 "이 문제에 어떤 모델이 맞는가"를 스스로
 판단해야 한다. 이번 장은 새 개념을 배우는 대신, 지금까지 배운 것을 실제
 데이터에 적용해보고, 다른 팀의 결과를 검토하며, 중간고사를 준비하는 자리다.
 
-**이 순서가 왜 여기인가.** Chapter 7에서 트리 앙상블(랜덤포레스트, GBDT)과
-그 해석(SHAP)까지 다루면서, 정형 데이터를 다루는 대표적인 도구를 거의 다
+**이 순서가 왜 여기인가.** Chapter 7에서 트리 앙상블(랜덤포레스트[^randomforest], GBDT)과
+그 해석(SHAP)[^shap]까지 다루면서, 정형 데이터를 다루는 대표적인 도구를 거의 다
 손에 쥔 셈이 되었다 — Block B의 신경망 없이도 실전 데이터셋의 상당수를
 이 도구들만으로 다룰 수 있다. 이제 "각 장의 코드가 실제 데이터 앞에서도
 작동하는가"를 확인할 가장 좋은 시점이고, 이 검증을 통과한 팀은 Block B로
@@ -40,7 +40,7 @@ Chapter 2~7에서 배운 회귀, 생성적 분류(나이브베이즈/GDA), 거�
 이번 주는 세 개의 수업 블록으로 진행된다:
 
 - [8.1 팀 프로젝트: 데이터 선정부터 발표까지](chapter08/1.md) —
-  UCI/Kaggle의 정형 데이터셋을 팀이 고르고, 4주 파이프라인(데이터·문제
+  UCI[^ucirepo]/Kaggle의 정형 데이터셋을 팀이 고르고, 4주 파이프라인(데이터·문제
   정의 → 3분할·train으로만 fit하는 전처리·모델 2종 이상 비교·val 튜닝 →
   test 한 번 측정 → 보고서·발표)을 끝까지 수행한다. 데이터 고를 때의
   함정(행의 물리적 단위, 그룹·시계열 누수, 클래스 비율에 따른 지표 선택)
@@ -53,7 +53,7 @@ Chapter 2~7에서 배운 회귀, 생성적 분류(나이브베이즈/GDA), 거�
 - [8.2 Peer-Review](chapter08/2.md) — 이번 주엔 네가 심사위원이다. 다른 두
   팀의 발표를 체크리스트(문제 정의/방법론/수식적 정당화/결과의 정직성)로
   검토하고, "발표팀이 제대로 답하지 못하면 결과가 흔들리는" 반박 가능한
-  질문을 만든다. Popper의 반증주의와 Amgen 재현 실험으로 "왜 반박 가능한
+  질문을 만든다. Popper의 반증주의와 Amgen 재현 실험[^amgen2011]으로 "왜 반박 가능한
   질문인가"를 짚고, 사기 탐지 데이터(99.8:0.2)의 가상 발표를 놓고
   "정확도의 함정"을 코드로 재현해 좋은 리뷰의 구조(관찰 + 개념 + 왜
   문제인지)를 체득한다. 채점의 축은 체크리스트를 "채웠는가"가 아니라
@@ -64,3 +64,11 @@ Chapter 2~7에서 배운 회귀, 생성적 분류(나이브베이즈/GDA), 거�
   판정)를 정리하고, 유도 템플릿 3가지(로지스틱회귀 경사 1스텝, SVM KKT의
   4구간, 목적함수의 두 항 구조)를 실제로 종이에 풀어 실습 노트북으로
   숫자를 검증한다.
+
+[^cs229]: 더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — Block A의 회귀·분류 모델(로지스틱회귀, SVM, kNN, 정규화, 교차검증)과 CS229 강의 노트의 핵심 단원들이 직접 겹친다.
+[^shap]: Lundberg, S. M., Lee, S.-I. (2017). "A Unified Approach to Interpreting Model Predictions." NeurIPS 2017, arXiv:1705.07874. — 모델 예측을 해밍 가치로 분해하는 SHAP의 원 논문.
+[^amgen2011]: Amgen 사의 내부 재현성 연구(2011) — 1999~2005년에 발표된 '주요(landmark)' 생물학 논문 53편의 재현 시도에서 6편만이 재현되었다는 결과를 2011년에 보고했다. 정식 학술 저널이 아닌 기업 내부 보고·보도 형태로 알려졌으며, 이후 '재현성 위기' 논쟁의 대표적 사례로 인용되어 왔다.
+[^gbdt]: Friedman, J. H. (2001). "Greedy Function Approximation: A Gradient Boosting Machine." Annals of Statistics, 29(5), 1189–1232. — 그레디언트 부스팅(GBDT)의 원 논문.
+[^randomforest]: Breiman, L. (2001). "Random Forests." Machine Learning, 45(1), 5–32. — 랜덤포레스트의 원 논문.
+[^vapnik1995]: Vapnik, V. N. (1995). "The Nature of Statistical Learning Theory." Springer, New York. — SVM의 이론적 기반을 정리한 표준 단행본 (소프트 마진 SVM 원 논문인 Cortes & Vapnik (1995)과 같은 계열).
+[^ucirepo]: Dua, D., Graff, C. (2019). "UCI Machine Learning Repository." Irvine, CA: University of California, Irvine, School of Computer Engineering. http://archive.ics.uci.edu

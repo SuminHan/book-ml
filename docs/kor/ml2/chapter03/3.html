@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -245,7 +245,7 @@
 </tbody>
 </table>
 </div>
-<h3 id="벨만-기대방정식-무한합을-재귀식으로"><a class="header" href="#벨만-기대방정식-무한합을-재귀식으로">벨만 기대방정식: 무한합을 재귀식으로</a></h3>
+<h3 id="벨만-기대방정식-무한합을-재귀식으로-1"><a class="header" href="#벨만-기대방정식-무한합을-재귀식으로-1">벨만 기대방정식: 무한합을 재귀식으로 <sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">1</a></sup></a></h3>
 <p>\(G_t\)의 정의를 한 스텝만 풀어써보면:</p>
 <p>\[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots = R_t + \gamma
 \big(R_{t+1} + \gamma R_{t+2} + \cdots\big) = R_t + \gamma G_{t+1}\]</p>
@@ -464,7 +464,7 @@ programming)**을 체계화했고, 그 핵심 장치가 바로 이 재귀식이�
 재귀식 중 하나다. 강화학습에서 이 방정식이 “기대”(expectation)
 버전(이 절)과 “최적”(optimality, \(\max\)이 붙은, Chapter 4)
 버전으로 나뉘어 등장하는 것뿐, 뼈대는 벨만이 70여 년 전에
-세운 것과 정확히 같다. 이번 절에서 “기대” 버전(\(\mathbb{E}_\pi\))을,
+세운 것과 정확히 같다.<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">2</a></sup> 이번 절에서 “기대” 버전(\(\mathbb{E}_\pi\))을,
 Chapter 4에서 “최적” 버전(\(\max_a\))을 배울 것이다.</p>
 <h3 id="벨만방정식의-세-가지-읽기방식"><a class="header" href="#벨만방정식의-세-가지-읽기방식">벨만방정식의 세 가지 읽기방식</a></h3>
 <p>같은 방정식 \(V^\pi(s) = \mathbb{E}_\pi[R_t + \gamma V^\pi(s_{t+1})
@@ -478,7 +478,7 @@ Chapter 4에서 “최적” 버전(\(\max_a\))을 배울 것이다.</p>
 \(V \leftarrow \mathcal{B}^\pi V\)로 반복 대입.” — 위
 정책평가 코드. <strong>다음 장 동적계획법</strong>의 알고리즘.</li>
 <li><strong>학습 목표(learning target)로서</strong>: “신경망이 이 방정식의
-좌변과 우변을 같게 되도록 학습하자.” — <strong>Chapter 9 DQN</strong>의
+좌변과 우변을 같게 되도록 학습하자.” — <strong>Chapter 9 DQN</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">3</a></sup>의
 손실함수. DQN의 손실
 \((r + \gamma \max_{a’} Q_{\theta^-}(s’,a’) - Q_\theta(s,a))^2\)
 는 정확히 “벨만방정식의 좌변(예측값)과 우변(목표값)의 오차“다.</li>
@@ -487,7 +487,8 @@ Chapter 4에서 “최적” 버전(\(\max_a\))을 배울 것이다.</p>
 정책평가(Ch.4) → 동적계획법(Ch.4) → Q-학습·DQN(Ch.6, 9) →
 정책 그래디언트(Ch.10)까지, 사실상 모든 알고리즘은 <strong>이 재귀식을
 어떤 형태로 계산/학습하는가</strong>를 다룬다. “벨만방정식을 몇 가지
-버전으로 바꿔서 푸는 학기“라고 이번 학기를 요약할 수 있을 정도다.</p>
+버전으로 바꿔서 푸는 학기“라고 이번 학기를 요약할 수 있을 정도다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">4</a></sup></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <p><strong>실수 1: “다음 상태의 가치“에 할인율 \(\gamma\)를 빼먹기</strong>
 \(V(s) = R(s) + V(s’)\)처럼 \(\gamma\)를 빼면, 3.2절에서
@@ -619,7 +620,7 @@ Chapter 2의 밴딧에 추가한 것뿐이지만, 이 한 가지 차이가 강�
 훨씬 더 어렵고, 훨씬 더 흥미로운 문제로 만든다.</strong></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
-<p><strong>1. (코딩)</strong> 위 코드를 참고해서, <code>FrozenLake-v1</code>(<code>is_slippery=False</code>)
+<p><strong>1. (코딩)</strong> 위 코드를 참고해서, <code>FrozenLake-v1</code>(<code>is_slippery=False</code>)<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">5</a></sup>
 환경을 만들고 <code>env.observation_space</code>와 <code>env.action_space</code>를 출력해서
 상태·행동 공간이 각각 이산(discrete)인지 연속(continuous)인지, 몇
 가지인지 확인하라. CartPole과 비교했을 때 어떤 차이가 있는지 한 문장으로
@@ -653,6 +654,24 @@ env = gym.make("FrozenLake-v1", is_slippery=False)
 <code>assert</code>로 확인하라. 추가로 <strong>초기값</strong>을 \(0\)과 \(100\)으로 각각
 바꿔도 같은 값으로 수렴하는지(초기값 무관성) 확인하라 — 이것이
 “고정점이 유일하고 반복이 수렴한다“는 보장의 구체적 모습이다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 가치함수와 벨만 기대방정식(상태가치·행동가치, 정책평가)은 이 표준 교과서 3장에서 체계적으로 다뤄진다. <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>이 주제를 더 깊이 보려면 — David Silver, “UCL Course on Reinforcement Learning” (Lecture 4: Value Functions and Bellman Equations). https://www.davidsilver.uk/teaching/ <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>이 주제를 더 깊이 보려면 — Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-gymnasium">
+<p>Towers, M. et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032 — 연습문제에서 쓰는 RL 환경의 표준 인터페이스. OpenAI Gym(Brockman, G. et al. (2016). “OpenAI Gym.” arXiv:1606.01540)의 포크로, 여기서 쓰이는 FrozenLake·CartPole 등 환경들이 기원한 표준 API다. <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

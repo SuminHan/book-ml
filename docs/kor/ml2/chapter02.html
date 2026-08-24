@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -183,7 +183,7 @@
 각 손잡이는 서로 다른, 그러나 당신은 모르는 평균 보상을 가지고 있다.
 제한된 횟수만 당길 수 있다면, 어떤 순서로 손잡이를 당겨야 총 보상을
 최대화할 수 있을까? 이 단순한 질문 — <strong>멀티암 밴딧</strong>(Multi-Armed
-Bandit) 문제 — 이 강화학습이 다루는 모든 문제의 가장 작은 뼈대다. 다음
+Bandit) 문제<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">1</a></sup> — 이 강화학습이 다루는 모든 문제의 가장 작은 뼈대다. 다음
 장부터 배울 상태(state)도, 여러 스텝에 걸친 전이(transition)도 없이,
 “탐험과 활용의 딜레마“라는 강화학습의 핵심 문제 하나만 순수하게 남겨둔
 가장 단순한 형태이기 때문이다.</p>
@@ -191,28 +191,28 @@ Bandit) 문제 — 이 강화학습이 다루는 모든 문제의 가장 작은 
 <p>이전 장에서는 이번 학기의 무대를 마련했다 — “행동하고, 그 결과로
 나중에 돌아오는 보상만 보고 스스로 좋은 행동을 찾아내야 하는 문제“를
 강화학습으로 정의하고, 앞으로 함수 근사기로 쓸 신경망과 Gymnasium
-실습 환경을 확인했다. 이 장의 밴딧 문제는 바로 그 무대의 첫 수업에
+<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">2</a></sup> 실습 환경을 확인했다. 이 장의 밴딧 문제는 바로 그 무대의 첫 수업에
 해당한다 — 강화학습의 정의가 구체적으로 드러나는 가장 작은 문제다.
 상태도 전이도 없고, “행동 → 보상“이라는 반복 구조와 매 순간 무엇을
 할지 결정하는 문제만 남는다. 다음 장(MDP 정식화)에서는 바로 이 밴딧에
 <strong>상태</strong>라는 재료를 하나 더해서, 강화학습 문제를 수학적으로 엄밀하게
 정의하는 틀을 세운다. 즉, 이 장은 다음 장부터 이어질 MDP·가치함수·
 벨만방정식이라는 산에 오르기 전, “탐험-활용의 딜레마” 하나만 먼저
-낱으로 다뤄 직감을 기르는 출발점인 셈이다.</p>
+낱으로 다뤄 직감을 기르는 출발점인 셈이다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">3</a></sup></p>
 <h2 id="이-챕터를-마치면"><a class="header" href="#이-챕터를-마치면">이 챕터를 마치면</a></h2>
 <ul>
 <li>k개의 팔(arm)이 각자 모르는 진짜 평균 보상 \(q^\*(a)\)을 가진
 밴딧 문제를 총보상과 후회(regret)라는 두 잣대로 정식화하고, 순수
 탐욕적 선택이 “단 한 번의 나쁜 운에 영영 박힐 수 있다“는 이유를
 한 문장으로 설명할 수 있다.</li>
-<li>ε-greedy와 증분 갱신식 \(Q \leftarrow Q + \frac{1}{N}(R-Q)\)을
+<li>ε-greedy<sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">1</a></sup>와 증분 갱신식 \(Q \leftarrow Q + \frac{1}{N}(R-Q)\)을
 직접 코드로 구현하고, 이 갱신식이 “지금까지 관찰한 보상의 평균을
 하나씩 온라인으로 갱신하는 것“과 수학적으로 같은 이유를 손으로
 확인할 수 있다.</li>
-<li>ε-greedy, 낙관적 초기화, UCB 세 전략을 “탐험이 어떻게 만들어지는가”
+<li>ε-greedy, 낙관적 초기화, UCB<sup class="footnote-reference" id="fr-ucb-1"><a href="#footnote-ucb">4</a></sup> 세 전략을 “탐험이 어떻게 만들어지는가”
 (고정 확률 / 초기값 예약 / 매 스텝 불확실성 재계산) 기준으로 비교하고,
 고정 환경과 시간이 지나면 팔의 순위가 뒤바뀌는 비정상(non-stationary)
-환경에서 각각 어떤 전략이 유리한지 설명할 수 있다.</li>
+환경에서 각각 어떤 전략이 유리한지 설명할 수 있다.<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">5</a></sup></li>
 <li>밴딧을 “상태가 하나뿐인 MDP“로 다시 해석하고, “상태“가 들어오는
 순간 문제의 무엇이 커지는지(좋은 <strong>팔</strong> 1개 찾기 → 좋은 <strong>정책</strong>
 찾기) 한 문장으로 말할 수 있다.</li>
@@ -247,6 +247,24 @@ Bandit) 문제 — 이 강화학습이 다루는 모든 문제의 가장 작은 
 “지금 한 행동이 다음 상태 자체를 바꾸는가?“라는 판정 기준으로
 “밴딧인가, MDP인가?“를 구분하는 법을 배운다.</li>
 </ul>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a> <a href="#fr-suttonbarto-2">↩2</a></p>
+</li>
+<li id="footnote-gymnasium">
+<p>Towers, M., Kwiatkowski, A., Terry, J., et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-ucb">
+<p>Auer, P., Cesa-Bianchi, N., Fischer, P. (2002). “Finite-time Analysis of the Multiarmed Bandit Problem.” Machine Learning 47(2/3), 235–256. — UCB1 알고리즘과 로그 후회 경계의 원 논문. <a href="#fr-ucb-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning,” Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0). <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

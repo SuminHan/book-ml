@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -281,7 +281,7 @@ variance)보다 훨씬 빠르게 얻을 수 있다.</p>
 <h3 id="k를-고르는-법-엘보우elbow-방법"><a class="header" href="#k를-고르는-법-엘보우elbow-방법">\(k\)를 고르는 법: 엘보우(elbow) 방법</a></h3>
 <p>여러 \(k\)에 대해 클러스터 내 분산(within-cluster variance)을 그려보고,
 감소폭이 급격히 줄어드는 지점(“팔꿈치”, elbow)을 고르는 방법이 흔히
-쓰인다. 앞선 3-블롭 장난감 데이터(3개의 원형 덩어리, 각 50점)에
+쓰인다.<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup> 앞선 3-블롭 장난감 데이터(3개의 원형 덩어리, 각 50점)에
 \(k=1\)부터 \(6\)까지 적용해서 실제로 해보자. 각 \(k\)마다 무작위
 초기화 10번을 돌려서 가장 작은 SSE를 취하면:</p>
 <div class="table-wrapper">
@@ -405,7 +405,7 @@ k-means는 보통 한두 번의 반복만으로 빠르게 수렴한다.</p>
 중심점은 오른쪽 덩어리의 점들이 상대적으로 더 높은 확률로
 추첨되므로, 같은 덩어리에 두 중심점이 몰리는 상황을 구조적으로
 막는다. 왜 거리를 <strong>제곱</strong>해서 쓰느냐는 물음에는 Arthur와
-Vassilvitskii(2006)의 k-means++ 논문이 답을 준다: \(D(x)^2\)에
+Vassilvitskii(2006)의 k-means++ 논문<sup class="footnote-reference" id="fr-kmeanspp-1"><a href="#footnote-kmeanspp">2</a></sup>이 답을 준다: \(D(x)^2\)에
 비례한 이 선택을 쓸 때, k-means가 수렴시킨 최종 분할의 SSE가 <strong>기댓값
 기준</strong>으로 최적 분할 SSE의 \(O(\log k)\)배 이내(원论文的 bound는
 \(8\ln k + 7\)배)에 머문다는 <strong>증명 가능한 근사 보장</strong>이 성립한다 —
@@ -548,6 +548,15 @@ SSE가 훨씬 크게 나오는 것을 직접 확인해보라:</p>
 \(k\)개“라는 개념 자체가 왜 점점 의미를 잃는지 한 문단으로 설명하라.
 (힌트: k-means의 할당 단계가 “가장 가까운 중심점“을 고르는 것인데,
 이 차원의 저주가 k-means에 그대로 적용된다는 점을 연결해서 쓰라.)</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-cs229">
+<p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-kmeanspp">
+<p>Arthur, D., Vassilvitskii, S. (2006). “k-means++: The Advantages of Careful Seeding.” SIAM Journal on Computing 38(1), 215–230. k-means++의 \(D(x)^2\)-비례 선택에 대한 \(O(\log k)\) 근사 보증을 증명한 원 논문. <a href="#fr-kmeanspp-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

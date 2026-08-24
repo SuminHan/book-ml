@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -217,7 +217,7 @@ pooling)은 \(2\times2\) 영역마다 최댓값 하나만 남긴다 — 위치�
 질감(texture) 같은 분포 정보를 더 잘 유지한다는 장점이 있어 쓰이곤
 했지만, 실전에서는 최대풀링이 압도적으로 널리 쓰인다 — 소수 강한 반응이
 “이 특징이 있다“는 증거이므로. 또 다른 극단으로, <strong>전역 평균
-풀링</strong>(global average pooling)은 채널 전체(\(h \times w\) 모든 위치)의
+풀링</strong>(global average pooling)<sup class="footnote-reference" id="fr-gap-1"><a href="#footnote-gap">1</a></sup>은 채널 전체(\(h \times w\) 모든 위치)의
 평균을 하나만 남겨 공간 차원을 아예 없애 버린다 — “16×16 특징지도를
 펼치면 256개 숫자“가 아니라 “이 채널의 평균 반응 1개“로, 마지막
 완전연결층의 파라미터를 대폭 줄이는 용도로 쓰인다(아래 VGG16에서).</p>
@@ -294,8 +294,9 @@ print(max_pool(fm, 2))  # [[1, 3], [1, 4]]
 <h3 id="cnn의-전형적인-구조-lenet에서-resnet까지"><a class="header" href="#cnn의-전형적인-구조-lenet에서-resnet까지">CNN의 전형적인 구조: LeNet에서 ResNet까지</a></h3>
 <p><code>[합성곱 → 활성함수(ReLU) → 풀링]</code>을 여러 번 쌓아 공간 크기는 줄이고
 채널(특징) 수는 늘려가다가, 마지막에 완전연결층 한두 개를 붙여 분류 결과를
-낸다. 1998년 얀 르쿤의 <strong>LeNet</strong>이 손글씨 숫자 인식에 처음 이 패턴을
-성공적으로 적용한 이래(Chapter 4.2에서 만난 바로 그 LeNet이다), 얕은 층은
+낸다. 1998년 얀 르쿤의 <strong>LeNet</strong><sup class="footnote-reference" id="fr-lenet-1"><a href="#footnote-lenet">2</a></sup>이 손글씨 숫자 인식에 처음 이
+패턴을 성공적으로 적용한 이래(Chapter 4.2에서 만난 바로 그 LeNet이다),
+얕은 층은
 선/모서리 같은 저수준 패턴을, 깊은 층으로 갈수록 눈/코/바퀴 같은 고수준
 패턴을 감지하도록 학습되는 이 계층 구조 자체는 지금도 그대로 유지된다 —
 허블과 비셀이 관찰한, 단순 세포에서 복합 세포로 이어지는 계층 구조와 같은
@@ -335,14 +336,16 @@ print(max_pool(fm, 2))  # [[1, 3], [1, 4]]
 채널은 1→120으로 늘었다 — 10.2절 전체를 관통하는 “좁아지고 깊어진다“는
 경향의 원형이다.</p>
 <p>이 “좁아지고 깊어진다“는 패턴은 1990년대 후반부터 2012년 ImageNet
-경쟁까지 거의 그대로 유지됐다. 2012년 <strong>AlexNet</strong>(크리제프스키·수다르산·
-헝튼)이 ImageNet 우승을 하면서 CNN의 시대가 열렸는데, 구조의 “원형“은
-LeNet과 같은 <code>[Conv→ReLU→Pool]</code> 반복이었다 — 다만 채널 수(64, 128, 256,
-512)와 깊이를 크게 늘린 것이다. 2014년 <strong>VGGNet</strong>(시모얀·지서만)은 더
+경쟁<sup class="footnote-reference" id="fr-imagenet-1"><a href="#footnote-imagenet">3</a></sup>까지 거의 그대로 유지됐다. 2012년 <strong>AlexNet</strong>(크리제프스키·수다르산·
+헝튼)이 ImageNet 우승을 하면서 CNN의 시대가 열렸는데<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">4</a></sup>, 구조의
+“원형“은 LeNet과 같은 <code>[Conv→ReLU→Pool]</code> 반복이었다 — 다만 채널 수(64, 128, 256,
+512)와 깊이를 크게 늘린 것이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
+<p>2014년 <strong>VGGNet</strong>(시모얀·지서만)<sup class="footnote-reference" id="fr-vgg-1"><a href="#footnote-vgg">5</a></sup>은 더
 간단해 보이지만 강력한 관찰을 실증했다 — <strong>5×5 필터 하나를 3×3 필터
 두 개로 대체하면, 같은 수용장(5×5)을 더 적은 파라미터로, 더 비선형으로
 (ReLU가 두 번 들어감) 만들 수 있다</strong>. VGGNet은 3×3 합성곱만 쌓은
-16층짜리(VGG16)로 같은 대회 2위(1위는 GoogLeNet)를 차지했고, “깊이
+16층짜리(VGG16)로 같은 대회 2위(1위는 GoogLeNet<sup class="footnote-reference" id="fr-googlenet-1"><a href="#footnote-googlenet">6</a></sup>)를 차지했고, “깊이
 자체가 곧 힘“이라는 메시지를 널리 퍼뜨렸다.</p>
 <p><strong>그런데 여기서 문제가 생겼다.</strong></p>
 <h3 id="resnet과-스킵-연결-더-깊이-쌓을-수-있게"><a class="header" href="#resnet과-스킵-연결-더-깊이-쌓을-수-있게">ResNet과 스킵 연결: 더 깊이 쌓을 수 있게</a></h3>
@@ -351,9 +354,11 @@ CNN을 더 깊게 쌓을수록 성능이 좋아질 줄 알았는데, 어느 지�
 오히려 <strong>더 나빠졌다</strong>. 이건 과적합 때문이 아니었다(학습 데이터에 대한
 성능조차 나빠졌다) — 층을 더해도 그래디언트가 온전히 전달되지 못해, 깊은
 층이 사실상 “학습이 안 되는” 문제였다(Chapter 9의 그래디언트 소실이
-CNN에서도 그대로 재발한 것이다). 그들의 해법 <strong>ResNet</strong>(Residual Network)은
-놀랍도록 단순했고, 지금 쓰이는 거의 모든 대형 CNN·Transformer 구조의 기본
-재료가 됐다.</p>
+CNN에서도 그대로 재발한 것이다). 그들의 해법 <strong>ResNet</strong>(Residual
+Network)<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">7</a></sup>은 놀랍도록 단순했고, 지금 쓰이는 거의 모든 대형 CNN·Transformer 구조의 기본
+재료가 됐다<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">8</a></sup>.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."><span class="img-wrapper"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."></span></label></p>
 <p>이 현상을 <strong>깊이 열화</strong>(degradation)라고 부른다. “더 깊은 네트워크가
 더 얕은 네트워크를 <em>담아낼</em> 수 있다”(예: 20층 네트워크에서 뒤 10층을
 항등 함수로 초기화하면 앞 10층 네트워크와 정확히 동일)하므로, 이론상
@@ -432,7 +437,7 @@ training과 validation이 <em>같이</em> 나빠졌다).</p>
 <strong>정확히 일치</strong>해야 한다. 그런데 10.2절의 “채널은 늘고 공간은 줄어든다“는
 패턴을 따르면, \(F\)가 채널 64→128이나 2×2 풀링으로 공간 28×28→14×14를
 변환할 때 \(x\)는 그대로 64채널 28×28이라 그대로 더할 수 없다.
-ResNet의 실제 해결법은 <strong>1×1 합성곱</strong>(공간 크기 유지, 채널 수만 바꿈)으로
+ResNet의 실제 해결법은 <strong>1×1 합성곱</strong><sup class="footnote-reference" id="fr-nin-1"><a href="#footnote-nin">9</a></sup> (공간 크기 유지, 채널 수만 바꿈)으로
 \(x\)의 차원을 \(F(x)\)와 맞춰준 뒤 더하는 것(필요하면 2×2
 스트라이드 1×1 합성곱으로 공간도 동시에 축소)이다. “잔차 블록을
 그림으로 그리면 입력이 우회해서 출력에 더해진다는 것“은 변하지 않지만,
@@ -454,7 +459,8 @@ ResNet의 실제 해결법은 <strong>1×1 합성곱</strong>(공간 크기 유�
 재정의한 것임을 보여준다.</p>
 <h3 id="배치-정규화-스킵-연결의-공범"><a class="header" href="#배치-정규화-스킵-연결의-공범">배치 정규화: 스킵 연결의 “공범”</a></h3>
 <p>ResNet 논문은 스킵 연결만 고안한 것이 아니라, <strong>배치 정규화</strong>
-(batch normalization)를 결합해 깊은 CNN의 학습 안정성을 크게 높였다.
+(batch normalization)<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">10</a></sup>를 결합해 깊은 CNN의 학습 안정성을 크게
+높였다.
 배치 정규화는 합성곱 층 <em>사이에</em> 넣는 층으로, 각 미니배치의 활성값
 분포를 평균 0·분산 1로 표준화한 뒤, 학습 가능한 \(\gamma\)(스케일)
 와 \(\beta\)(오프셋)를 다시 곱해/더해 “표준화가 너무 강하지 않게”
@@ -464,6 +470,7 @@ y = \gamma \hat{x} + \beta\]</p>
 <p>(여기서 \(\mu_B, \sigma_B^2\)은 해당 미니배치 전체 활성값의
 평균·분산, \(\epsilon\)은 0으로 나누는 것을 막는 작은 상수(예:
 \(10^{-5}\)).)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."></span></label></p>
 <p>배치 정규화가 ResNet과 함께 쓰인 이유는, Chapter 9.2의 초기화 문제를
 <em>층마다</em> 해결해준다는 점이다. 무작위 초기화로 100층을 쌓으면 활성값의
 분산이 층마다 달라지는데(폭발 또는 소실), 배치 정규화는 각 층 출력을
@@ -583,7 +590,8 @@ validation만 떨어지는 현상인데, 여기서는 training <em>자체</em>�
 나빠진 것이다 — 즉 “모델이 표현할 수 없어서“가 아니라 “최적화
 (경사하강)가 깊게 내려가지 못해서“라는 증거다. 이 실험이
 “깊이 열화 = 최적화 문제“라는 진단을 가능하게 했고, 스킵 연결
-(최적화 경로 개선)이 해답이 된 것이다.</p>
+(최적화 경로 개선)이 해답이 된 것이다. 이 주제를 더 다루는 자료:
+<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">11</a></sup></p>
 <hr>
 <h2 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h2>
 <ol>
@@ -608,6 +616,42 @@ validation만 떨어지는 현상인데, 여기서는 training <em>자체</em>�
 마지막 분류층만 재학습“하는 설계가 <em>왜</em> 자연스러운지 LeNet-5의
 구조(마지막 합성곱 C5가 공간 1×1·채널 120을 내는 것)를 들어
 한 문단으로 설명하라.</li>
+</ol>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-gap">
+<p>Springenberg, J. T., Dosovitskiy, A., Brox, T., Riedmiller, M. (2014). “Striving for Simplicity: The All Convolutional Net.” arXiv:1412.6806. — 완전연결층을 없애고 마지막 분류 헤드를 전역 평균 풀링(GAP)으로 대체한 올-컨볼루션 네트워크 논문. <a href="#fr-gap-1">↩</a></p>
+</li>
+<li id="footnote-lenet">
+<p>LeCun, Y., Bottou, L., Bengio, Y., Haffner, P. (1998). “Gradient-Based Learning Applied to Document Recognition.” <em>Proceedings of the IEEE</em> 86(11), 2278–2324. — LeNet의 원 논문. <a href="#fr-lenet-1">↩</a></p>
+</li>
+<li id="footnote-imagenet">
+<p>Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., Fei-Fei, L. (2009). “ImageNet: A Large-Scale Hierarchical Image Database.” IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2009. — 이 절에서 여러 번 나오는 ImageNet 데이터셋(약 1400만 장, 워드넷 위계 기반 2만 1천 개 클래스)의 원 논문. <a href="#fr-imagenet-1">↩</a></p>
+</li>
+<li id="footnote-alexnet">
+<p>Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). “ImageNet Classification with Deep Convolutional Neural Networks.” NeurIPS 2012. <a href="#fr-alexnet-1">↩</a></p>
+</li>
+<li id="footnote-vgg">
+<p>Simonyan, K., Zisserman, A. (2014). “Very Deep Convolutional Networks for Large-Scale Image Recognition.” arXiv:1409.1556. — 16·19층의 매우 깊은 CNN(VGGNet)의 원 논문. <a href="#fr-vgg-1">↩</a></p>
+</li>
+<li id="footnote-googlenet">
+<p>Szegedy, C., Liu, W., Jia, Y., Sermanet, P., Reed, S., Anguelov, D., Erhan, D., Vanhoucke, V., Rabinovich, A. (2015). “Going Deeper with Convolutions.” ICLR 2015. arXiv:1409.4842. — GoogLeNet(ILSVRC-2014 우승)의 원 논문. <a href="#fr-googlenet-1">↩</a></p>
+</li>
+<li id="footnote-resnet">
+<p>He, K., Zhang, X., et al. (2015). “Deep Residual Learning for Image Recognition.” arXiv:1512.03385. <a href="#fr-resnet-1">↩</a></p>
+</li>
+<li id="footnote-transformer">
+<p>Vaswani, A. et al. (2017). “Attention Is All You Need.” arXiv:1706.03762. <a href="#fr-transformer-1">↩</a></p>
+</li>
+<li id="footnote-nin">
+<p>Lin, M., Chen, Q., Yan, S. (2013). “Network In Network.” arXiv:1312.4400. — 1×1 합성곱(mini-conv)을 풀링층·완전연결층의 대체로 처음 사용한 원 논문. ResNet의 차원 매칭 스킵 연결에 쓰이는 1×1 합성곱은 이 아이디어를 계승한다. <a href="#fr-nin-1">↩</a></p>
+</li>
+<li id="footnote-batchnorm">
+<p>Ioffe, S., Szegedy, C. (2015). “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift.” arXiv:1502.03167. <a href="#fr-batchnorm-1">↩</a></p>
+</li>
+<li id="footnote-cs230">
+<p>Stanford CS230: Deep Learning. https://cs230.stanford.edu/ <a href="#fr-cs230-1">↩</a></p>
+</li>
 </ol>
 
                     </main>

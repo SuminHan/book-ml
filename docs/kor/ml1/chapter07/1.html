@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -189,8 +189,8 @@
 지는지, (2) “잘 나누는 질문“을 재는 <strong>지니불순도</strong>와 <strong>정보이득</strong>의 정의와
 “왜” 그 수식인지, (3) 손으로 두 가지 분기를 비교해 “좋은 질문“을 직접 고르는
 연산, (4) 실제로 트리를 자를 때 언제 멈추느냐(과적합과 U자 곡선)까지 다룬다.
-7.2절에서 이 <strong>트리 하나</strong>를 여러 개 합쳐 <strong>숲</strong>(랜덤 포레스트)으로 키우고,
-7.3절에서 <strong>순차적으로</strong> 합쳐 <strong>GBDT</strong>로 키우는 것이므로, 이번 절의 “트리
+7.2절에서 이 <strong>트리 하나</strong>를 여러 개 합쳐 <strong>숲</strong>(랜덤 포레스트)<sup class="footnote-reference" id="fr-randomforest-1"><a href="#footnote-randomforest">1</a></sup>으로 키우고,
+7.3절에서 <strong>순차적으로</strong> 합쳐 <strong>GBDT</strong><sup class="footnote-reference" id="fr-gbdt-1"><a href="#footnote-gbdt">2</a></sup>로 키우는 것이므로, 이번 절의 “트리
 하나를 잘 나누는 원리“가 이 장의 전부에서 재사용된다.</p>
 <h3 id="결정-트리의-구조"><a class="header" href="#결정-트리의-구조">결정 트리의 구조</a></h3>
 <p>결정 트리는 이진나무다. 각 <strong>내부 노드</strong>(internal node)는 하나의 질문(예:
@@ -212,7 +212,7 @@
 대출 심사 모델에서 “이 신청자가 거절된 이유“를 물으면, “소득 &lt; 3000만원 →
 연령 &gt; 45세 → 거절“이라는 경로를 <strong>그대로 읽어</strong>주면 된다. 이 “경로 = 설명”
 특성이 결정 트리를 <strong>설명가능성</strong>(interpretability)이 높은 모델로 만들며,
-이 장(7.3절의 SHAP)에서 그 대가를 다시 논한다.</p>
+이 장(7.3절의 SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">3</a></sup>)에서 그 대가를 다시 논한다.</p>
 <p><strong>왜 질문이 “축에 평행“한가?</strong> 결정 트리의 질문은 언제나 하나의 특징
 하나만 쓴다: “\(x_j &gt; t\)?“의 형태. 여러 특징을 섞은 “\(x_1 + x_2 &gt;
 5\)?” 같은 대각선 경계는 <strong>한 번에</strong> 만들 수 없다. 그래서 트리의 결정
@@ -238,7 +238,7 @@ Chris Quinlan이 “연관 규칙/분류 문제를 예·아니오 질문의 트�
 Friedman, Olshen, Stone의 고전. CART가 (1) 회귀 문제를 같은 트리 틀로
 확장하고, (2) 분기 기준을 <strong>지니불순도</strong>(분류)와 <strong>제곱오차 감소</strong>(회귀)
 라는 지금 우리가 쓰는 지표로 표준화했다. scikit-learn의
-<code>DecisionTreeClassifier</code>가 CART 계열이다.</li>
+<code>DecisionTreeClassifier</code>가 CART 계열이다.<sup class="footnote-reference" id="fr-sklearn-1"><a href="#footnote-sklearn">4</a></sup></li>
 </ul>
 <p>“스무고개 → CART“로 이어지는 이 흐름의 핵심은 하나다: <strong>사람이 “잘
 좁히는 질문“을 직감으로 고르는 것을, “지니불순도/엔트로피 감소량“이라는
@@ -386,7 +386,7 @@ t=3: L=['A', 'A', 'A'] R=['B', 'B', 'B']
 <h3 id="실습-sklearn으로-실제-트리를-배우고-읽기"><a class="header" href="#실습-sklearn으로-실제-트리를-배우고-읽기">실습: sklearn으로 실제 트리를 배우고, “읽기”</a></h3>
 <p>7.2절이 “숲“을 만든다면, 이번 절은 <strong>트리 하나</strong>를 실제로 배우고,
 그가 어떤 질문을 던지는지 <strong>읽어</strong>본다. 유방암 진단 데이터셋(양성/악성,
-30개 특징)을 train/test 7:3으로 나누고, <strong>깊이 3</strong>짜리 트리를 학습시킨다:</p>
+30개 특징)<sup class="footnote-reference" id="fr-breast_cancer-1"><a href="#footnote-breast_cancer">5</a></sup>을 train/test 7:3으로 나누고, <strong>깊이 3</strong>짜리 트리를 학습시킨다:</p>
 <pre><code class="language-python">from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, export_text
@@ -614,7 +614,7 @@ GBDT(<code>GradientBoostingRegressor</code>)를 다룰 때 이 “리프=평균,
 걸려 실무적으로 불가능하다. 그래서 CART는 “충분히 좋고, 빠르다“는
 탐욕스러운 근사를 쓴다 — 이 “탐욕 근사“가 랜덤 포레스트(7.2절, 여러
 탐욕 트리를 평균)와 GBDT(7.3절, 탐욕 트리를 순차 보정)로 넘어가는
-동기이기도 하다.</p>
+동기이기도 하다.<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">6</a></sup></p>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
 <p><strong>1. (개념)</strong> 결정 트리의 결정 경계가 “축에 평행한 직선 조각이 이어진
 계단“으로밖에 나올 수 없는 이유를, 질문의 형태(”\(x_j &gt; t\)?“ 하나만
@@ -687,6 +687,27 @@ print(best_split(X, y, 0))   # (4.0, 0.5) -- x&lt;=4 로 완벽하게 나뉨
 </code></pre>
 <p>(정답을 미리 말해주지 않지만, 문제 2의 <code>p=0.9</code> 케이스와 <strong>대칭</strong>이므로
 같은 수치가 나와야 한다.)</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-randomforest">
+<p>Breiman, L. (2001). “Random Forests.” <em>Machine Learning</em> 45(1), 5–32. — 랜덤 포레스트의 원 논문. 배깅 + 특징 무작위화(각 분기에서 무작위 특징 하위집합)의 조합을 제안했다. <a href="#fr-randomforest-1">↩</a></p>
+</li>
+<li id="footnote-gbdt">
+<p>Friedman, J. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” Annals of Statistics 29(5), 1189–1232. — 그래디언트 부스팅(GBDT)의 원 논문. <a href="#fr-gbdt-1">↩</a></p>
+</li>
+<li id="footnote-shap">
+<p>Lundberg, S. M., Lee, S.-I. (2017). “A Unified Approach to Interpreting Model Predictions.” NeurIPS (NIPS) 2017. arXiv:1705.07874. — SHAP(Shapley Additive exPlanations)의 원 논문. <a href="#fr-shap-1">↩</a></p>
+</li>
+<li id="footnote-sklearn">
+<p>Pedregosa, F. et al. (2011). “Scikit-learn: Machine Learning in Python.” Journal of Machine Learning Research 12(2011) 2825–2830. arXiv:1201.0490. — 이 장 실습에서 쓰는 <code>DecisionTreeClassifier</code>, <code>export_text</code>, <code>load_breast_cancer</code> 등 트리 관련 API를 제공하는 scikit-learn 라이브러리의 원 논문. <a href="#fr-sklearn-1">↩</a></p>
+</li>
+<li id="footnote-breast_cancer">
+<p>scikit-learn <code>load_breast_cancer</code> 데이터셋 — 위스콘신 진단 유방암(Wisconsin Diagnostic Breast Cancer, WDBC)의 고전 데이터로, 유방 종양 세포 핵의 30개 수치 특징과 양성/악성 이분 라벨 569개. <a href="#fr-breast_cancer-1">↩</a></p>
+</li>
+<li id="footnote-cs229">
+<p>더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — 이 절의 결정 트리(지니불순도, 정보이득, 탐욕스러운 분기, 가지치기)는 CS229 강의 노트의 Decision Trees 단원과 겹친다. <a href="#fr-cs229-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

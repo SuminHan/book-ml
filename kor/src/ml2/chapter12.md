@@ -8,20 +8,24 @@ Chapter 2~11에서 배운 모든 알고리즘은 에이전트가 스스로 시�
 
 ## 왜 이 순서인가
 
-Chapter 11에서 PPO — 보상함수를 코드로 쓸 수 있고, 에이전트가 안전하게
+Chapter 11에서 PPO[^ppo] — 보상함수를 코드로 쓸 수 있고, 에이전트가 안전하게
 탐험할 수 있는 환경이 주어지면 에이전트가 스스로 시행착오로 최적 정책을
 찾는 알고리즘으로 끝났다. 이 장은 그 두 전제 — 자연스러운 운동은 어떤
 스칼라 함수로도 쓸 수 없고, 실세계 탐험은 사람을 다치게 할 수 있다 — 가
 동시에 무너지는 문제들에 대한 답이다. 다음 장 "로봇 시뮬레이션과 제어
 기초"는 이 장의 방법들을 실제 로봇 시뮬레이션 환경으로 옮겨, 시연으로
-만든 초기 정책을 PPO가 어떻게 미세조정하는지 구체적으로 본다.
+만든 초기 정책을 PPO가 어떻게 미세조정하는지 구체적으로 본다. 이 주제
+(모방학습과 RLHF)를 더 깊이 다루는 자료로 스탠포드 CS234: Reinforcement
+Learning을 추천한다.[^cs234]
+
+![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
 
 ## 세 절이 이어지는 방식
 
 세 절은 "시연에서 배운다 (12.1) → 비교에서 배운다 (12.2) → 어떤 쪽을
 쓸 것인가 (12.3)" 순서다. 12.1은 모방학습을 "시연 데이터를 지도학습에
 꽂아 넣는 지름길"로 세우고 그 한계인 복합 오차를 드러낸다. 12.2는
-사람의 신호를 "정답 행동"에서 "둘 중 나은 쪽"으로 일반화해, 보상모델이라는
+사람의 신호를 "정답 행동"에서 "둘 중 나은 쪽"으로 일반화해, 보상모델[^rlhf]이라는
 우회로로 전문가 상한을 넘을 수 있는 길을 연다. 12.3는 둘을 실험으로
 통합해 원칙이 아니라 숫자로 선택 기준을 준다.
 
@@ -30,7 +34,7 @@ Chapter 11에서 PPO — 보상함수를 코드로 쓸 수 있고, 에이전트�
 - 행동 복제를 "(상태, 행동) 시연 쌍을 라벨로 쓰는 지도학습 문제"로
   설명하고, 학습 분포와 배포 시 분포가 어긋나며 오차가 눈덩이치는
   **복합 오차**의 본질을 한 문장으로 짚을 수 있다.
-- DAgger 네 줄 — 에이전트가 자신의 정책으로 달리고, 전문가가 방문한
+- DAgger[^dagger] 네 줄 — 에이전트가 자신의 정책으로 달리고, 전문가가 방문한
   상태에 라벨만 답하는 반복 — 을 장난감 환경에 적용해 보고, "시연을
   더 많이 모으는 것"이 그 실패를 해결하지 못하는 이유(수량이 아니라
   분포 문제)를 설명할 수 있다.
@@ -53,7 +57,7 @@ Chapter 11에서 PPO — 보상함수를 코드로 쓸 수 있고, 에이전트�
 - [12.2 선호 기반 보상모델과 실습](chapter12/2.md) — "정답을 시연하는
   것"이 어렵고 "두 시도 중 나은 쪽을 고르는 것"이 쉬운 문제(자연스러운
   걸음걸이 등)에는, 비교 데이터만으로 Bradley-Terry 보상모델을 학습하고
-  그 점수를 PPO의 보상으로 쓴다 — LLM을 다듬는 RLHF와 같은 구조다.
+  그 점수를 PPO의 보수로 쓴다 — LLM을 다듬는 RLHF[^instructgpt]와 같은 구조다.
   선호 쌍 300개로 숨겨진 보상함수의 방향(비율)을 복원하는 실습, 그리고
   이 대리 보상이 보상모델의 약점을 파고드는 보상 해킹 위험을 안고
   있다는 점도 확인한다.
@@ -64,3 +68,13 @@ Chapter 11에서 PPO — 보상함수를 코드로 쓸 수 있고, 에이전트�
   들어가는 이유, 순수 RL이 8스텝 최적을 찾되 학습 중 위험 행동을 30회
   하는 이유, 하이브리드 BC+RL이 초기 안전성(9회)과 추월 속도(193 vs
   273 episode)를 동시에 얻는 이유를 숫자로 확인한다.
+
+![Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다.](../images/ref_rlhf.png)
+
+![InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습.](../images/ref_instructgpt.png)
+
+[^ppo]: Schulman, J. et al. (2017). "Proximal Policy Optimization Algorithms." arXiv:1707.06347.
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+[^rlhf]: Christiano, P. et al. (2017). "Deep reinforcement learning from human preferences." NeurIPS 2017. arXiv:1706.03741.
+[^dagger]: Ross, S., Gordon, G. J., Bagnell, J. A. (2011). "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning." AISTATS 2011. arXiv:1011.0686.
+[^instructgpt]: Ouyang, L. et al. (2022). "Training language models to follow instructions with human feedback." arXiv:2203.02155.

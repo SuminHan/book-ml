@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -199,9 +199,9 @@
 <tr><td>Ch02</td><td>같은 선형모델로 회귀와 분류를 어떻게 모두 푸는가</td><td>경사하강법, 정규방정식, 교차 엔트로피</td></tr>
 <tr><td>Ch03</td><td>생성적 접근과 판별적 접근의 차이는 무엇인가</td><td>베이즈 정리, GDA/로지스틱회귀의 관계</td></tr>
 <tr><td>Ch04</td><td>“가깝다“만으로 예측하는 것의 한계는 무엇인가</td><td>편향-분산, 차원의 저주</td></tr>
-<tr><td>Ch05</td><td>확률이 아니라 마진으로 경계를 정하면 무엇이 달라지는가</td><td>서포트 벡터, 커널 트릭</td></tr>
+<tr><td>Ch05</td><td>확률이 아니라 마진으로 경계를 정하면 무엇이 달라지는가</td><td>서포트 벡터, 커널 트릭<sup class="footnote-reference" id="fr-cortespapnikas95-1"><a href="#footnote-cortespapnikas95">1</a></sup></td></tr>
 <tr><td>Ch06</td><td>과적합을 손실함수로 어떻게 통제하는가</td><td>L1/L2 정규화, 교차검증</td></tr>
-<tr><td>Ch07</td><td>트리를 어떻게 앙상블하고, 그 예측을 어떻게 설명하는가</td><td>정보이득, 랜덤포레스트 vs GBDT, SHAP</td></tr>
+<tr><td>Ch07</td><td>트리를 어떻게 앙상블하고, 그 예측을 어떻게 설명하는가</td><td>정보이득, 랜덤포레스트<sup class="footnote-reference" id="fr-rf-1"><a href="#footnote-rf">2</a></sup> vs GBDT<sup class="footnote-reference" id="fr-gbdt-1"><a href="#footnote-gbdt">3</a></sup>, SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">4</a></sup></td></tr>
 </tbody>
 </table>
 </div>
@@ -294,7 +294,7 @@
 <p>Ch05.2의 소프트 마진 SVM에서 “C가 커지면 마진이 커진다“는 <strong>잘못된
 직감</strong>을 시험에서 확인하는 문제가 자주 나온다. 아래 장난감 문제로 KKT를
 손으로 풀어 보면, 그 직감이 어디서 꺾이는지 숫자로 보인다.</p>
-<p><strong>문제</strong>: 1차원 4개 점(실습 노트북은 sklearn 입력용으로 2차원으로 놓았을
+<p><strong>문제</strong>: 1차원 4개 점(실습 노트북은 sklearn 입력용으로<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">5</a></sup> 2차원으로 놓았을
 뿐, 계산된 해는 모든 C에서 두 번째 특징 계수가 0이다):</p>
 <div class="table-wrapper">
 <table>
@@ -392,7 +392,7 @@ E는 \(C&lt;25/16=1.5625\)에서는 아직 <strong>오분류</strong> 상태다.
 </thead>
 <tbody>
 <tr><td>Ridge (Ch06)</td><td>\(\ell_{\text{MSE}} + \frac{\lambda}{2}|w|^2\)</td><td>\(\ell_{\text{MSE}}\): 데이터에 맞추기</td><td>\(|w|^2\): 가중치 축소(분산↓)</td><td>\(\lambda\) (0→무정규화, ∞→w=0)</td></tr>
-<tr><td>Lasso (Ch06)</td><td>\(\ell_{\text{MSE}} + \lambda|w|_1\)</td><td>위와 같음</td><td>\(|w|_1\): <strong>정확히 0</strong> 만드는 켄(kink)</td><td>\(\lambda\)</td></tr>
+<tr><td>Lasso (Ch06)<sup class="footnote-reference" id="fr-tibshirani1996-1"><a href="#footnote-tibshirani1996">6</a></sup></td><td>\(\ell_{\text{MSE}} + \lambda|w|_1\)</td><td>위와 같음</td><td>\(|w|_1\): <strong>정확히 0</strong> 만드는 켄(kink)</td><td>\(\lambda\)</td></tr>
 <tr><td>소프트 마진 SVM (Ch05.2)</td><td>\(\tfrac12|w|^2 + C\sum_i \xi_i\)</td><td>\(C\sum\xi_i\): 위반 사들이기</td><td>\(\tfrac12|w|^2\): 마진 최대화</td><td>\(C\) (0→w=0, ∞→하드마진)</td></tr>
 <tr><td>GBDT (Ch07.3)</td><td>(반복) 잔차에 트리를 적합하고 \(\eta\)로 축소</td><td>트리: 잔차(적합의 잔여)를 설명</td><td>\(\eta\)(학습률), \(n\)(트리 수)</td><td>\(\eta\), \(n\)</td></tr>
 <tr><td>kNN (Ch04)</td><td><em>(파라미터 없음 — 모든 점 memorize)</em></td><td>“적합” = 전량 암기</td><td>\(k\): 이웃 평균으로 매끄럽게</td><td>\(k\) (1→암기, ∞→다수 클래스)</td></tr>
@@ -411,7 +411,7 @@ kNN은 목적함수가 아예 없으므로 이 틀에 끼지 않는다 — “kN
 <h3 id="편향-분산-스펙트럼-같은-데이터-네-모델"><a class="header" href="#편향-분산-스펙트럼-같은-데이터-네-모델">편향-분산 스펙트럼: 같은 데이터, 네 모델</a></h3>
 <p>“유연한 모델 vs 단순한 모델“을 <strong>같은 데이터</strong>에서 놓고 train/val을
 동시에 보는 문제는 Ch04.1·Ch06.2·Ch07.3의 개념을 한 문항에 끼워 넣는
-전형이다. diabetes(442×10)로 train 265 / val 88 / test 89 (Ch06.3 원칙대로
+전형이다. diabetes(442×10)<sup class="footnote-reference" id="fr-diabetes-1"><a href="#footnote-diabetes">7</a></sup>로 train 265 / val 88 / test 89 (Ch06.3 원칙대로
 스케일러 fit은 train으로만)를 나눠 4개 모델을 돌리면 아래 표가 나온다
 (실습 노트북 §3):</p>
 <div class="table-wrapper">
@@ -453,7 +453,7 @@ U자 곡선에서 “\(\lambda \to 0\) 쪽 끝“이 실제로 이렇게 처져 
 <h3 id="장을-넘나드는-동치성-gda와-로지스틱회귀는-정말-같은-경계인가"><a class="header" href="#장을-넘나드는-동치성-gda와-로지스틱회귀는-정말-같은-경계인가">장을 넘나드는 동치성: GDA와 로지스틱회귀는 정말 같은 경계인가</a></h3>
 <p>확인 문제 1의 답은 “둘 다 \(P(y{=}1\mid x)=\sigma(w^Tx+b)\)라는 같은
 <strong>형태</strong>에 도달한다“는 것이었다. 그런데 “동치“는 어디까지 진실인가?
-breast_cancer(569×30)로 실측해보면 답이 정교해진다(실습 노트북 §4;
+breast_cancer(569×30)<sup class="footnote-reference" id="fr-breast_cancer-1"><a href="#footnote-breast_cancer">8</a></sup>로 실측해보면 답이 정교해진다(실습 노트북 §4;
 train/test = 70/30, stratify, 스케일러는 train으로만 fit):</p>
 <div class="table-wrapper">
 <table>
@@ -663,7 +663,7 @@ A(−1,+1)와 E(−0.2,−1) 사이의 거리 0.8이므로 경계는 중점 −0
 Ch05), <strong>(3) 무제한 트리의 train 1.000 / val −0.014, 격차 ≈ 1.0</strong>
 (§스펙트럼, Ch04·06·07). 이 세 숫자를 “어떤 가정에서, 왜” 나오는 수로
 설명할 수 있으면 유도 문제의 뼈대는 확보한 것이다 — 숫자 자체는
-실습 노트북에서 언제든 재현된다.</p>
+실습 노트북에서 언제든 재현된다.<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">9</a></sup></p>
 <p><strong>Q. “장 넘나들기” 문제(확인 문제 1~6)는 어떻게 연습하나요?</strong>
 한 문항을 <strong>두 장의 언어로 각 한 문장씩</strong> 답해보는 것이 훈련이다.
 예를 들어 확인 문제 4(나이브베이즈 vs 트리, 스케일링 불필요)는
@@ -677,6 +677,36 @@ Ch05), <strong>(3) 무제한 트리의 train 1.000 / val −0.014, 격차 ≈ 1.
 바꾸고 실행하면 된다(노트북 첫 마크다운 셀에 메모가 있다). 그림(SVG)
 생성이 목적이 아니라 <strong>§1~§5의 숫자가 본문과 일치하는지</strong> 확인하는 것이니,
 Colab에서는 <code>savefig</code> 줄만 주석내고 출력만 보는 것도 방법이다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-cortespapnikas95">
+<p>Cortes, C., Vapnik, V. (1995). “Support-Vector Networks.” Machine Learning 20(3), 273–297. — 소프트 마진 SVM(여유 변수 + \(C\) 트레이드오프)의 원 논문. <a href="#fr-cortespapnikas95-1">↩</a></p>
+</li>
+<li id="footnote-rf">
+<p>Breiman, L. (2001). “Random Forests.” Machine Learning 45(1) 5–32. — 개별 트리를 무작위 특징 부분집합과 부채집합(Bagging)으로 학습해 앙상블하는 랜덤포레스트의 원 논문. <a href="#fr-rf-1">↩</a></p>
+</li>
+<li id="footnote-gbdt">
+<p>Friedman, J. H. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” Annals of Statistics 29(5) 1189–1232. — 이전 트리의 잔차(구배)를 순차적으로 보완하는 GBDT(그레디언트 부스팅)의 원 논문. <a href="#fr-gbdt-1">↩</a></p>
+</li>
+<li id="footnote-shap">
+<p>Lundberg, S. M., Lee, S.-I. (2017). “A Unified Approach to Interpreting Model Predictions.” NeurIPS 2017, arXiv:1705.07874. — 모델 예측을 해밍 가치로 분해하는 SHAP의 원 논문. <a href="#fr-shap-1">↩</a></p>
+</li>
+<li id="footnote-scikitlearn">
+<p>Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2012). “Scikit-learn: Machine Learning in Python.” arXiv:1201.0490. — 위 SVM 손계산 실습 노트북에서 쓰는 <code>SVC</code>·<code>dual_coef_</code>, 스펙트럼·누수 실측에서 쓰는 스케일러 등 scikit-learn API를 제공하는 라이브러리의 원 논문. <a href="#fr-scikitlearn-1">↩</a></p>
+</li>
+<li id="footnote-tibshirani1996">
+<p>Tibshirani, R. (1996). “Regression Shrinkage and Selection via the Lasso.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 58(1), 267–284. — Lasso(L1 정규화)의 원 논문. <a href="#fr-tibshirani1996-1">↩</a></p>
+</li>
+<li id="footnote-diabetes">
+<p>scikit-learn <code>load_diabetes</code> 데이터셋 — 442명의 환자, 10개 임상 특징, 1년 후의 질환 진행도 수치(회귀 목표값). <a href="#fr-diabetes-1">↩</a></p>
+</li>
+<li id="footnote-breast_cancer">
+<p>scikit-learn <code>load_breast_cancer</code> 데이터셋 — 위스콘신 진단 유방암(Wisconsin Diagnostic Breast Cancer, WDBC)의 고전 데이터로, 유방 종양 세포 핵의 30개 수치 특징과 양성/악성 이분 라벨 569개. <a href="#fr-breast_cancer-1">↩</a></p>
+</li>
+<li id="footnote-cs229">
+<p>더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — 이 절의 복습 범위(경사하강, 정규화, 교차검증, 편향-분산)와 CS229 강의 노트의 핵심 단원들이 겹친다. <a href="#fr-cs229-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

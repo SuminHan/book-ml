@@ -36,10 +36,10 @@ Block A가 막 끝난 지금, 지난 6개 장에서 배운 회귀·생성·거�
 - **그래디언트 소실·폭발을 진단하고, 그에 맞는 활성함수와 초기화를 고를
   수 있다** — 층이 깊어질수록 연쇄법칙의 곱이 어떻게 지수적으로 작아지거나
   커지는지 설명하고, 문제(활성함수, 층 크기)에 맞는 선택(ReLU 계열,
-  Xavier/He)을 정당화한다.
-- **정규화와 학습률 스케줄링을 목적에 맞게 적용할 수 있다** — dropout,
-  BatchNorm, 가중치 감쇠를 과적합·불안정한 학습 상황에 맞게 쓰고, "초반에
-  크게, 후반에 작게"라는 학습률 스케줄링(StepLR, 코사인, warmup)의 원리와
+  Xavier/He)을 정당화한다.[^he][^xavier]
+- **정규화와 학습률 스케줄링을 목적에 맞게 적용할 수 있다** — dropout[^dropout],
+  BatchNorm[^batchnorm], 가중치 감쇠를 과적합·불안정한 학습 상황에 맞게 쓰고, "초반에
+  크게, 후반에 작게"라는 학습률 스케줄링(StepLR, 코사인, warmup)[^sgdr]의 원리와
   초기 학습률 고르는 실무 기준을 적용한다.
 
 세 절은 한 사슬로 이어진다: 9.1에서 역전파로 계산한 그래디언트는 "연쇄법칙의
@@ -64,5 +64,17 @@ Block A가 막 끝난 지금, 지난 6개 장에서 배운 회귀·생성·거�
   정규화(dropout, BatchNorm, 가중치 감쇠)가 각각 과적합과 학습 불안정을
   어떻게 다스리는지 살펴본 뒤, 학습률 스케줄링(StepLR, 코사인, warmup)의
   "왜" — 골짜기 바닥에서 큰 스텝은 진동하고 작은 스텝만으로는 못 도착하는
-  이유 — 과 초기 학습률(α₀)을 고르는 실무 기준을 PyTorch 실험과 함께
+  이유 — 과 초기 학습률(α₀)을 고르는 실무 기준을 PyTorch[^pytorch] 실험과 함께
   다룬다.
+
+이 장의 정규화 도구(dropout·BatchNorm) 원 논문의 그림과, 이 절 전체를 더 깊이 다루는 자료: [^cs230].
+![표준 신경망(a)과 드롭아웃을 적용한 '얇아진' 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1).](../images/ref_dropout.png)
+![Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다.](../images/ref_batchnorm.png)
+
+[^he]: He, K., Zhang, X., Ren, S., Sun, J. (2015). "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification." arXiv:1502.01852. — ReLU 네트워크를 위한 가중치 초기화 분포(He 초기화)를 제안한 논문.
+[^xavier]: Glorot, X., Bengio, Y. (2010). "Understanding the Difficulty of Training Deep Feedforward Neural Networks." AISTATS 2010.
+[^dropout]: Srivastava, N., Hinton, G. E., Krizhevsky, A., et al. (2014). "Dropout: A Simple Way to Prevent Neural Networks from Overfitting." JMLR 15(2014) 1929-1958.
+[^batchnorm]: Ioffe, S., Szegedy, C. (2015). "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift." arXiv:1502.03167.
+[^cs230]: 더 깊이 보려면: Stanford CS230: Deep Learning. https://cs230.stanford.edu/ — 이 절의 활성함수·초기화(Xavier/He), dropout, BatchNorm, 학습률 스케줄링 단원과 직접 겹친다.
+[^sgdr]: Loshchilov, I., Hutter, F. (2016). "SGDR: Stochastic Gradient Descent with Warm Restarts." arXiv:1608.03983. — 코사인 어닐링(코사인) + 웜 리스타트(warmup) 기반의 학습률 스케줄링을 제안한 원 논문.
+[^pytorch]: Paszke, A., Gross, S., Massa, F., et al. (2019). "PyTorch: An Imperative Style, High-Performance Deep Learning Library." arXiv:1912.01703. — 9.3의 학습률 스케줄링 실험(및 9.1의 `.backward()` 자동 미분)이 전제로 하는 프레임워크의 원 논문.

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -205,7 +205,7 @@
 (이 사슬 분해는 Chapter 11에서 RNN으로 시퀀스를 모델링할 때, 각
 시간 단계의 예측을 곱해서 문장 확률을 계산했던 것과 같은 수학적
 근거다.)</p>
-<p>이 확률은 Chapter 12에서 배운 Transformer(정확히는 미래 토큰을 보지
+<p>이 확률은 Chapter 12에서 배운 Transformer<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">1</a></sup> (정확히는 미래 토큰을 보지
 못하게 마스킹한 decoder-only Transformer)로 계산된다. 학습은 실제 다음
 토큰과 예측 확률분포 사이의 교차 엔트로피 손실(Chapter 2.3에서 섀넌의
 정보이론으로부터 도입한 그 손실과 정확히 같은 형태)을 최소화하는 방향으로
@@ -215,6 +215,7 @@
 으로 엄밀히 정의한다), “모델이 다음 토큰을 고를 때 평균적으로 몇
 개의 선택지를 두고 헤매는 것과 같은가“를 뜻한다 — 낮을수록 모델이
 확신을 갖고 예측한다는 뜻이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."></span></label></p>
 <pre><code class="language-python">def next_token_probs(logits):
     # logits: 어휘 사전의 각 토큰에 대한 원점수(raw score)
     # softmax를 적용하면 "다음 토큰이 각각일 확률"이 된다
@@ -224,7 +225,7 @@
 <p>“토큰“이 단어의 일부 조각일 수 있다는 점은 실용적 이유가 있다. 문법상
 단어는 유한하지만 실제 쓰이는 단어는 거의 무한하다(합성어, 고유명사,
 새로 지어지는 말), 반면 모델이 표현할 수 있는 벡터 수(= 어휘 사전 크기)는
-유한하다(실제 모델은 대략 3만~20만). <strong>BPE</strong>(Byte Pair Encoding)는 이
+유한하다(실제 모델은 대략 3만~20만). <strong>BPE</strong>(Byte Pair Encoding)<sup class="footnote-reference" id="fr-bpe-1"><a href="#footnote-bpe">2</a></sup>는 이
 모순을 해결하는 표준 방법이다: 처음에 토큰을 문자(한글 글자, 바이트) 단위로
 쪄놓고, **“문서에서 가장 자주 함께 나타나는 두 인접 토큰“을 반복해서
 병합(merge)**하며 어휘 사전이 목표 크기(예: 32,768개)가 될 때까지
@@ -364,7 +365,7 @@ softmax를 적용하면:</p>
 <strong>softmax의 출력은 곧 “모델의 확신 정도“를 실수 벡터로 표현한 것</strong>이며,
 이 벡터를 실제 정답과 비교하는 것이 교차 엔트로피 손실이다.</p>
 <h3 id="온도temperature-확신도를-조절하는-손"><a class="header" href="#온도temperature-확신도를-조절하는-손">온도(Temperature): 확신도를 조절하는 손</a></h3>
-<p>softmax에 <strong>온도(temperature)</strong> \(T &gt; 0\)를 넣으면,</p>
+<p>softmax에 <strong>온도(temperature)</strong><sup class="footnote-reference" id="fr-curiousdegeneration-1"><a href="#footnote-curiousdegeneration">3</a></sup> \(T &gt; 0\)를 넣으면,</p>
 <p>\[P(x_t = j) = \frac{e^{z_j/T}}{\sum_{k} e^{z_k/T}}\]</p>
 <p>원점수를 \(T\)로 나눠준 뒤 softmax를 하는 것과 같다. \(T &lt; 1\)이면
 원점수 차이가 <strong>늘어</strong> 분포가 더 <strong>점근(peaky)</strong> 해지고(확신이 강해짐),
@@ -449,17 +450,18 @@ P(x_t \mid x_1, \ldots, x_{t-1})\]</p>
 조합) — 이 중 대다수가 corpus에 한 번도 등장하지 않아 0 확률이
 되고, <strong>스무딩</strong>(smoothing, 등장하지 않은 조합에도 작은 확률을
 분배하는 기술)이 필수가 되었다.</p>
-<p>2013년 <strong>word2vec</strong>(Mikolov et al.)이 “단어의 의미 = 그 단어 주변에
+<p>2013년 <strong>word2vec</strong>(Mikolov et al.<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">4</a></sup>)이 “단어의 의미 = 그 단어 주변에
 자주 등장하는 다른 단어들의 분포“라는 분포 가설을 효율적으로 학습
 하는 **임베딩(embedding)**을 만들어, 단어 단위의 의미 벡터를
 구현했다. 그리고 2017년 <strong>Transformer</strong>(Chapter 12)가 <strong>자기-
 어텐션</strong>으로 “문장 전체의 모든 토큰을 동시에 조건부로” 보고,
 <strong>스케일(scale)만</strong> 키워가면 성능이 계속 올라간다는 것을
-보여주면서, “다음 토큰 예측“이라는 80년 된 과제가 <strong>LLM</strong>이라는
+보여주면서, “다음 토큰 예측“이라는 80년 된 과제가 <strong>LLM</strong><sup class="footnote-reference" id="fr-gpt3-1"><a href="#footnote-gpt3">5</a></sup>이라는
 새로운 현상을 만들어낸 것이다. 이번 절이 “단순한 게임“이 아니라
 “문장 전체 분포 학습“과 동일하다는 것과, BPE가 OOV를 원천적으로
 피한다는 것은, 이 역사적 흐름(단어 → 임베딩 → 조각)이 <strong>어휘의
 유한성</strong>이라는 한계를 어떻게 우회해왔는지를 보여준다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."></span></label></p>
 <h3 id="사전학습-vs-파인튜닝"><a class="header" href="#사전학습-vs-파인튜닝">사전학습 vs 파인튜닝</a></h3>
 <div class="table-wrapper">
 <table>
@@ -468,19 +470,22 @@ P(x_t \mid x_1, \ldots, x_{t-1})\]</p>
 </thead>
 <tbody>
 <tr><td>데이터</td><td>인터넷 규모의 방대한 텍스트</td><td>특정 목적에 맞는 비교적 적은 데이터</td></tr>
-<tr><td>목표</td><td>다음 토큰 예측(비지도)</td><td>특정 작업(대화, 지시 따르기 등)에 맞춘 지도학습</td></tr>
+<tr><td>목표</td><td>다음 토큰 예측(비지도)</td><td>특정 작업(대화, 지시 따르기 등)에 맞춘 지도학습<sup class="footnote-reference" id="fr-gpt1-1"><a href="#footnote-gpt1">6</a></sup></td></tr>
 <tr><td>결과</td><td>폭넓지만 다듬어지지 않은 능력</td><td>목적에 맞게 다듬어진 행동</td></tr>
 </tbody>
 </table>
 </div>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_1_pretrain_finetune_pipeline.svg" alt="인터넷 규모 텍스트로 다음 토큰 예측을 학습하는 사전학습(수천 GPU, 수 주~수 달) → 기본 모델 → 질문-답변/선호 데이터로 SFT·RLHF 파인튜닝(소규모 클러스터, 수 시간~수 주) → 지시를 따르는 모델의 2단계 파이프라인. 파인튜닝은 사전학습의 가중치를 재사용한다는 것이 핵심이다"><span class="img-wrapper"><img src="../../images/ch13_1_pretrain_finetune_pipeline.svg" alt="인터넷 규모 텍스트로 다음 토큰 예측을 학습하는 사전학습(수천 GPU, 수 주~수 달) → 기본 모델 → 질문-답변/선호 데이터로 SFT·RLHF 파인튜닝(소규모 클러스터, 수 시간~수 주) → 지시를 따르는 모델의 2단계 파이프라인. 파인튜닝은 사전학습의 가중치를 재사용한다는 것이 핵심이다"></span></label></p>
+<p>![인터넷 규모 텍스트로 다음 토큰 예측을 학습하는 사전학습(수천 GPU, 수 주~수 달) → 기본 모델 → 질문-답변/선호 데이터로 SFT·RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">7</a></sup> <sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">8</a></sup> 파인튜닝(소규모 클러스터, 수 시간~수 주) → 지시를 따르는 모델의 2단계 파이프라인. 파인튜닝은 사전학습의 가중치를 재사용한다는 것이 핵심이다](../../images/ch13_1_pretrain_finetune_pipeline.svg)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)를 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)를 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."><span class="img-wrapper"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."></span></label></p>
 <p>사전학습은 계산 비용이 막대하지만(수천 개의 GPU로 몇 주~몇 달),
 파인튜닝은 상대적으로 적은 자원으로 가능하다 — “기초를 다시 배우지
 않고, 이미 아는 것을 특정 방향으로 다듬는다“는 것이 파인튜닝의 효율성의
-핵심이다. Chapter 10.3의 전이학습(사전학습된 CNN의 앞쪽 층은 고정하고
+핵심이다. Chapter 10.3의 전이학습<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">9</a></sup> (사전학습된 CNN의 앞쪽 층은 고정하고
 마지막 층만 다시 학습)과 정확히 같은 논리다 — 이미지 대신 텍스트,
 합성곱 필터 대신 Transformer 가중치일 뿐, “폭넓게 학습된 표현을
 재사용한다“는 아이디어 자체는 동일하다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
 <p>이 “가중치 재사용“을 숫자로 감각해 보자. Chapter 10.3에서 CNN의
 <strong>앞쪽 층(저수준 특징: 모서리, 색상)은 이미지에 공통</strong>이라 고정하고
 <strong>마지막 층(고수준 특징: 고양이인지 개인지)만 작업마다 재학습</strong>한다고
@@ -491,7 +496,7 @@ P(x_t \mid x_1, \ldots, x_{t-1})\]</p>
 의미/행동 특징</strong>을 담당한다. 사전학습이 앞쪽 층에 “언어와 세상에
 대한 폭넓은 지식“을 이미 집어넣었으므로, 파인튜닝은 <strong>뒤쪽 층
 중심으로</strong> “어떤 상황에서 어떤 답변을 할 것인가“라는 <strong>행동
-매핑만</strong> 다듬으면 된다 — 전체 파라미터의 소수%(LoRA, 13.3절)만
+매핑만</strong> 다듬으면 된다 — 전체 파라미터의 소수%(LoRA<sup class="footnote-reference" id="fr-lora-1"><a href="#footnote-lora">10</a></sup>, 13.3절)만
 갱신해도 효과가 큰 이유다. <strong>앞쪽을 재학습하면(= 사전학습을 다시
 하면) 이미 축적한 지식을 파괴하면서</strong> 작업에 맞지 않는 방향으로
 편향시키는 위험이 있어, 파인튜닝에서는 앞쪽을 <strong>고정하거나 아주
@@ -513,11 +518,11 @@ P(x_t \mid x_1, \ldots, x_{t-1})\]</p>
 재는 벤치마크를 항상 함께 본다.</p>
 <p><strong>Q. 사전학습 데이터의 양과 모델 크기는 어떤 관계인가요?</strong> 모델
 파라미터 수, 학습 데이터 양, 계산량 사이에는 경험적으로 관찰된
-관계(스케일링 법칙, scaling law)가 있다 — 셋 중 하나만 키우고
+관계(스케일링 법칙, scaling law<sup class="footnote-reference" id="fr-scalinglaw-1"><a href="#footnote-scalinglaw">11</a></sup>)가 있다 — 셋 중 하나만 키우고
 나머지를 그대로 두면 성능 개선이 금방 한계에 부딪히고, 셋을 함께
 적절한 비율로 키워야 계속 성능이 좋아진다는 것이 관찰됐다. 이
 관계가 최근 몇 년간 “모델을 얼마나 크게, 데이터를 얼마나 많이 모아야
-하는가“를 결정하는 실무적 지침으로 널리 쓰인다.</p>
+하는가“를 결정하는 실무적 지침으로 널리 쓰인다. 이 주제를 더 다루는 자료: <sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">12</a></sup></p>
 <p><strong>Q. “다음 토큰 예측“이라는 목표는 너무 단순한 것 아닌가요? 추론이나
 사실을 어떻게 배울 수 있나요?</strong> 다음 토큰 예측이 단순해 보이지만,
 <strong>데이터의 분포</strong>가 단순하지 않다. 인터넷 텍스트에는 “질문 → 추론 →
@@ -528,8 +533,8 @@ P(x_t \mid x_1, \ldots, x_{t-1})\]</p>
 압축해야 한다 — “1 + 1 = ?” 다음에 “2“가 확실히 오는 분포를
 만들려면 “덧셈“이라는 연산의 <strong>규칙</strong>을(외운 것 이상으로)
 일반화해야 한다. 이 “단순한 목표 + 복잡한 분포 = 일반화되는 능력“이
-바로 **신흥 능력(emergent ability)**의 기원이며, 13.2절의
-chain-of-thought(중간 추론을 출력하게 함)가 이 일반화 능력을
+바로 <strong>신흥 능력(emergent ability)</strong><sup class="footnote-reference" id="fr-emergentability-1"><a href="#footnote-emergentability">13</a></sup>의 기원이며, 13.2절의
+chain-of-thought(중간 추론을 출력하게 함)<sup class="footnote-reference" id="fr-cot-1"><a href="#footnote-cot">14</a></sup>가 이 일반화 능력을
 <strong>의식적으로 유도</strong>하는 메커니즘이다.</p>
 <p><strong>Q. BPE의 “병합” 횟수(어휘 크기)를 어떻게 정하나요?</strong> 경험적으로
 <strong>3만~20만</strong> 범위가 표준이다. 작으면(예: 3만) 토큰이 길어져(한
@@ -639,6 +644,51 @@ bigram PPL ≈ 1.19(문맥을 쓸수록 낮아짐, 과소표본·OOV 한계 체�
 단순 MLP)를 한국어 corpus로 다음 토큰 예측 학습시켜, **학습
 곡선(손실 감소)**을 그려 “다음 토큰 예측 = 분포 학습“을
 수치로 확인</li>
+</ol>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-transformer">
+<p>Vaswani, A. et al. (2017). “Attention Is All You Need.” arXiv:1706.03762. <a href="#fr-transformer-1">↩</a></p>
+</li>
+<li id="footnote-bpe">
+<p>Sennrich, R., Haddow, B., Birch, A. (2016). “Neural Machine Translation of Rare Words with Subword Units.” ACL 2016. arXiv:1508.07909. <a href="#fr-bpe-1">↩</a></p>
+</li>
+<li id="footnote-curiousdegeneration">
+<p>Holtzman, A., Buys, J., Du, L., Forbes, M., Choi, Y. (2019). “The Curious Case of Neural Text Degeneration.” arXiv:1904.09751. <a href="#fr-curiousdegeneration-1">↩</a></p>
+</li>
+<li id="footnote-word2vec">
+<p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781. <a href="#fr-word2vec-1">↩</a></p>
+</li>
+<li id="footnote-gpt3">
+<p>Brown, T. B. et al. (2020). “Language Models are Few-Shot Learners.” arXiv:2005.14165. <a href="#fr-gpt3-1">↩</a></p>
+</li>
+<li id="footnote-gpt1">
+<p>Radford, A., Narasimhan, K., Salimans, T., Sutskever, I. (2018). “Improving Language Understanding by Generative Pre-Training.” OpenAI technical report. <a href="#fr-gpt1-1">↩</a></p>
+</li>
+<li id="footnote-rlhf">
+<p>Christiano, P. et al. (2017). “Deep reinforcement learning from human preferences.” NeurIPS 2017. arXiv:1706.03741. <a href="#fr-rlhf-1">↩</a></p>
+</li>
+<li id="footnote-instructgpt">
+<p>Ouyang, L. et al. (2022). “Training language models to follow instructions with human feedback.” arXiv:2203.02155. <a href="#fr-instructgpt-1">↩</a></p>
+</li>
+<li id="footnote-alexnet">
+<p>Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). “ImageNet Classification with Deep Convolutional Neural Networks.” NeurIPS 2012. <a href="#fr-alexnet-1">↩</a></p>
+</li>
+<li id="footnote-lora">
+<p>Hu, E. J., Shen, Y., Wallis, P., et al. (2021). “LoRA: Low-Rank Adaptation of Large Language Models.” arXiv:2106.09685. <a href="#fr-lora-1">↩</a></p>
+</li>
+<li id="footnote-scalinglaw">
+<p>Kaplan, J., McCandlish, S., Henighan, T., et al. (2020). “Scaling Laws for Neural Language Models.” arXiv:2001.08361. <a href="#fr-scalinglaw-1">↩</a></p>
+</li>
+<li id="footnote-cs224n">
+<p>Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/ <a href="#fr-cs224n-1">↩</a></p>
+</li>
+<li id="footnote-emergentability">
+<p>Wei, J., Tay, Y., Bommasani, R., et al. (2022). “Emergent Abilities of Large Language Models.” arXiv:2206.07682. <a href="#fr-emergentability-1">↩</a></p>
+</li>
+<li id="footnote-cot">
+<p>Wei, J., Wang, X., Schuurmans, D., et al. (2022). “Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.” arXiv:2201.11903. <a href="#fr-cot-1">↩</a></p>
+</li>
 </ol>
 
                     </main>

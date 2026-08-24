@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -181,13 +181,14 @@
                         <h1 id="143-node2vec과-pagerank"><a class="header" href="#143-node2vec과-pagerank">14.3 Node2Vec과 PageRank</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter14_3_node2vec_pagerank.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: Node2Vec·PageRank 실습"></a></p>
 <h3 id="node2vec-같은-아이디어를-그래프로"><a class="header" href="#node2vec-같은-아이디어를-그래프로">Node2Vec: 같은 아이디어를 그래프로</a></h3>
-<p><strong>Node2Vec</strong>은 word2vec의 skip-gram을 그대로 재사용하되, “문장” 대신
+<p><strong>Node2Vec</strong><sup class="footnote-reference" id="fr-node2vec-1"><a href="#footnote-node2vec">1</a></sup>은 word2vec<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">2</a></sup>의 skip-gram을 그대로 재사용하되, “문장” 대신
 그래프 위의 <strong>무작위 걷기</strong>(random walk)로 만든 노드 시퀀스를 입력으로
 쓴다 — 한 노드에서 출발해 무작위로 이웃을 따라가며 만든 경로가 곧
 “문장“이고, 그 경로 위의 노드들이 “단어“다. “비슷한 이웃 구조를 가진
 노드는 비슷한 벡터를 갖게 된다“는 것도, word2vec의 “비슷한 문맥에
 나오는 단어는 비슷한 벡터를 갖는다“는 원리를 그래프에 그대로 물려준
 결과다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."></span></label></p>
 <h3 id="왜-무작위-걷기가-문장을-대신하는-자연스러운-선택인가"><a class="header" href="#왜-무작위-걷기가-문장을-대신하는-자연스러운-선택인가">왜 “무작위 걷기“가 “문장“을 대신하는 자연스러운 선택인가</a></h3>
 <p>word2vec에서 “문장“이 가진 본질은 단순하다 — <strong>어떤 것들이 어떤 순서로
 함께 나타나는지</strong>를 담고 있다. 그래프 노드의 “함께 나타남“은 무엇인가?
@@ -210,9 +211,9 @@ node 33(관장)의 도는 17, node 0(감독)의 도는 16이라 — 두 파벌
 자동으로 구조적으로 중요한 노드에 더 많은 “학습 예산“을 배정해준다고
 볼 수 있다.</p>
 <p>한 가지 주석을 달아두자 — 방금 쓴 “영원히 돌아다닌 뒤 각 노드에 머무는
-비율“이라는 질문은, 댐핑을 빼면 곧바로 <strong>PageRank</strong> 그 자체다. 이
+비율“이라는 질문은, 댐핑을 빼면 곧바로 <strong>PageRank</strong><sup class="footnote-reference" id="fr-brinpage-1"><a href="#footnote-brinpage">3</a></sup> 그 자체다. 이
 절의 후반부가 정확히 이 질문에 더 정교한 답(PageRank)을 붙인다.</p>
-<p><strong>Zachary’s Karate Club</strong>은 이 아이디어를 테스트하는 표준 예제
+<p><strong>Zachary’s Karate Club</strong><sup class="footnote-reference" id="fr-zachary-1"><a href="#footnote-zachary">4</a></sup>은 이 아이디어를 테스트하는 표준 예제
 데이터셋이다 — 1977년 인류학자 웨인 재커리(Wayne Zachary)가 한 가라테
 동호회 34명의 친분 관계를 기록했는데, 마침 이 동호회가 감독(node 0)과
 관장(node 33) 두 파벌로 실제 분열됐다. 34개 노드, 78개의 친분
@@ -306,7 +307,7 @@ Leskovec, 2016)의 가장 단순한 특수한 경우다 — 이 논문의 실제
 </thead>
 <tbody>
 <tr><td>\((p=1, q=16)\) — “node2vec”</td><td>BFS형(넓이 우선)</td><td><strong>구조적 동치</strong>(structural equivalence) — 역할의 유사성</td></tr>
-<tr><td>\((p=16, q=1)\) — “deep walk”</td><td>DFS형(깊이 우선)</td><td><strong>동질성</strong>(homophily) — 같은 커뮤니티 속한 것의 유사성</td></tr>
+<tr><td>\((p=16, q=1)\) — “deep walk”<sup class="footnote-reference" id="fr-deepwalk-1"><a href="#footnote-deepwalk">5</a></sup></td><td>DFS형(깊이 우선)</td><td><strong>동질성</strong>(homophily) — 같은 커뮤니티 속한 것의 유사성</td></tr>
 </tbody>
 </table>
 </div>
@@ -505,7 +506,7 @@ PR(C) = 0.125 + 0.5\,PR(B)\]</p>
 정리</strong>(Banach fixed point theorem)와 정확히 같은 논리다 — “어떤
 변환을 값이 안 바뀔 때까지 반복해서 적용하면 결국 고정점(fixed
 point)에 도달한다“는 같은 수학이, 여기서는 “그래프 위 확률분포“에,
-강화학습에서는 “상태의 가치함수“에 적용된다.</p>
+강화학습에서는 “상태의 가치함수“에 적용된다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">6</a></sup></p>
 <p>수렴이 얼마나 빠른지: 매 반복의 변화량(전체 노드 중 최대
 \(|\Delta PR|\))은 <strong>지수적으로</strong> 줄어든다. 카라테 클럽에서는
 \(d=0.85\)일 때 대략 45회 반복이면 \(10^{-9}\) 이내로 수렴했고,
@@ -657,6 +658,27 @@ v^T\Sigma v - \lambda(v^Tv - 1)\)로 바꾼 뒤, \(v\)로 미분해서 0으로
 3×3 선형방정식 계를 세팅하고, 각 값의 <strong>크기 순서</strong>와 그 이유를
 예측한 뒤(정확한 값이 필요 없다), 본문의 <code>pagerank</code> 함수로 계산해
 예측이 맞는지 확인하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-node2vec">
+<p>Grover, A., Leskovec, J. (2016). “node2vec: Scalable Feature Learning for Networks.” KDD 2016. arXiv:1607.00653. <a href="#fr-node2vec-1">↩</a></p>
+</li>
+<li id="footnote-word2vec">
+<p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781. <a href="#fr-word2vec-1">↩</a></p>
+</li>
+<li id="footnote-brinpage">
+<p>Brin, S., Page, L. (1998). “The Anatomy of a Large-Scale Hypertextual Web Search Engine.” 7th International World Wide Web Conference (WWW7), Brisbane, Australia. (후에 Computer Networks 30(1-7), 107–117로 재인쇄.) <a href="#fr-brinpage-1">↩</a></p>
+</li>
+<li id="footnote-zachary">
+<p>Zachary, W. W. (1977). “An Information Flow Model for Social Network Structural Analysis.” Journal of Anthropological Research 33(4), 195–213. <a href="#fr-zachary-1">↩</a></p>
+</li>
+<li id="footnote-deepwalk">
+<p>Perozzi, B., Al-Rfou, R., Skiena, S. (2014). “DeepWalk: Online Learning of Social Representations.” KDD 2014. arXiv:1403.6652. <a href="#fr-deepwalk-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>더 깊이 보려면: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 절의 무작위 걷기(마코프 체인)와 PageRank 거듭제곱법의 고정점 수렴은 CS234의 MDP·가치 반복(value iteration)·벨만 방정식과 직접 겹치며, 본문에서 안내하는 ML2 Chapter 4의 주제이기도 하다. <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

@@ -5,14 +5,16 @@
 모델들은 모두 RNN(또는 그 변형인 LSTM)을 기반으로 했는데, 이 논문은 순환
 구조를 완전히 걷어내고 **어텐션**(attention) 메커니즘만으로 RNN보다 더
 좋은 성능을 냈다. 이 구조가 **트랜스포머**(Transformer)이며, 지금 우리가
-쓰는 거의 모든 대규모 언어모델(LLM)의 근간이다.
+쓰는 거의 모든 대규모 언어모델(LLM)의 근간이다.[^transformer]
+
+![트랜스포머 전체 구조 -- 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1).](../images/ref_transformer.png)
 
 Chapter 11에서 우리는 RNN/LSTM이 순환 구조로 "기억을 이끈다"는 것을,
 그리고 그 기억이 두 가지 비용을 치른다는 것을 보았다: 병렬화가 안 되는
 순차 연산, 그리고 먼 과거의 정보가 흐려지는 그래디언트 소실. 어텐션은
 그 두 가지 비용에 대한 답안이다. 흥미로운 것은 어텐션의 기원이 새로운
 아키텍처가 아니라 RNN에 붙인 "패치"였다는 점이다 — 2014년 기계번역
-연구(Bahdanau et al.)에서 "원문 전체를 은닉 상태 한 개에 압축하는
+연구(Bahdanau et al.)([^bahdanau])에서 "원문 전체를 은닉 상태 한 개에 압축하는
 병목"을 발견하고, "생성의 각 단계마다 원문에 다시 돌아가 적절한 비율로
 쓴다"는 아이디어를 도입한 것이다. 3년 뒤 "Attention Is All You Need"의
 저자들이 한 것은 그 메커니즘 하나만 남기고 RNN 본체를 통째로 걷어내는
@@ -64,3 +66,9 @@ positional encoding)이 어떤 직관 위에서 왜 그 형태인지 하나씩 �
   "파라미터는 그대로, 관점은 h배" 설계, 시계(clock)로 보는
   positional encoding의 회전 성질과 "왜 더하기인가", 그리고 causal
   mask와 전체 트랜스포머 블록 조립까지 RNN 대비로 마무리한다.
+
+이 장의 주제(어텐션과 트랜스포머)를 더 깊이 다루는 자료: [^cs224n]
+
+[^transformer]: Vaswani, A. et al. (2017). "Attention Is All You Need." arXiv:1706.03762.
+[^bahdanau]: Bahdanau, D., Cho, K., Bengio, Y. (2014). "Neural Machine Translation by Jointly Learning to Align and Translate." arXiv:1409.0473.
+[^cs224n]: Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/

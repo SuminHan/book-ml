@@ -1,8 +1,8 @@
 # Chapter 8. Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone: Team Project & Review)
 
 Chapter 2~7은 밴딧, MDP, 동적계획법, 몬테카를로, 시간차 학습, n-step까지
-강화학습의 표 기반(tabular) 이론 전체를 훑었다. 이번 장은 새 개념 대신,
-이 이론들을 Gymnasium의 표 기반 환경에서 직접 구현해보고 비교하며,
+강화학습의 표 기반(tabular) 이론 전체를 훑었다[^suttonbarto]. 이번 장은 새 개념 대신,
+이 이론들을 Gymnasium[^gym]의 표 기반 환경에서 직접 구현해보고 비교하며,
 중간고사를 준비하는 자리다.
 
 이전 장(Chapter 7)에서 MC와 TD(0)가 "몇 스텝을 실제로 볼 것인가"라는
@@ -10,8 +10,10 @@ Chapter 2~7은 밴딧, MDP, 동적계획법, 몬테카를로, 시간차 학습, 
 표 기반의 도구는 이제 끝까지 손에 쥔 셈이다. 이번 장은 그 도구를 교재가
 고른 환경이 아니라 팀이 직접 고른 환경에서, 여러분의 프로토콜로써 써보는
 마지막 장이다. 그리고 다음 장(Chapter 9)에서는 Q-테이블을 신경망으로
-통째로 바꾸는 DQN으로 넘어가는데, 이 프로젝트에서 Q-함수·벨만
+통째로 바꾸는 DQN[^dqn]으로 넘어가는데, 이 프로젝트에서 Q-함수·벨만
 최적방정식·on/off-policy를 체득할수록 그 건너뛸 거리가 짧아진다.
+
+![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
 
 이번 장에는 학기 초부터 준비해온 "역전"도 기다리고 있다. 지금까지
 여러분이 해본 것은 "교재가 고른 환경, 교재가 고른 파라미터, 교재가 고른
@@ -66,4 +68,13 @@ Chapter 2~7은 밴딧, MDP, 동적계획법, 몬테카를로, 시간차 학습, 
 세 블록을 모두 마치면, "코드가 동작한다"는 증거보다 한 단계 위인
 "이 문제를 내가 설계하고 정직하게 평가할 수 있다"는 증거를 손에 쥔다.
 그 습관 — 시드, 평가 분리, 반박 가능한 질문 — 은 다음 장의 DQN에서,
-그리고 Block B의 캡스톤까지 그대로 이어진다.
+그리고 Block B의 캡스톤까지 그대로 이어진다. 이 주제를 더 깊이 다루는
+자료: [^cs234]
+
+[^gym]: Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). "OpenAI Gym." arXiv:1606.01540.
+
+[^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)
+
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+
+[^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html

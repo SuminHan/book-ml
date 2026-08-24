@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -249,12 +249,14 @@ def mc_control(env_step, n_states, n_actions, n_episodes, epsilon, gamma, start_
 <p><strong>핵심 정리</strong>: \(\varepsilon\)-greedy MC 제어는 (1) 탐험을 섞은
 행동 정책 \(\pi\)의 \(Q^{\pi}\)를 추정하고, (2) 거기서
 \(\arg\max\)를 취해 결정론적 정책을 만들어낸다. “추정 대상“과
-“최종 배포 정책“이 살짝 달라지는 이 미묘함은 Chapter 9의 DQN과
-Chapter 11의 PPO에서도 계속 따라다닌다.</p>
+“최종 배포 정책“이 살짝 달라지는 이 미묘함은 Chapter 9의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">1</a></sup>과
+Chapter 11의 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">2</a></sup>에서도 계속 따라다닌다.</p>
 </blockquote>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="실습-블랙잭에서-mc-제어로-언제-카드를-더-받을지-학습하기"><a class="header" href="#실습-블랙잭에서-mc-제어로-언제-카드를-더-받을지-학습하기">실습: 블랙잭에서 MC 제어로 “언제 카드를 더 받을지” 학습하기</a></h3>
-<p>Sutton &amp; Barto의 강화학습 교재에서 MC 제어를 소개할 때 쓰는 표준
-예제가 블랙잭이다 — 규칙이 간단하면서도(카드를 더 받을지 멈출지,
+<p>Sutton &amp; Barto의 강화학습 교재<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">3</a></sup>에서 MC 제어를 소개할 때
+쓰는 표준 예제가 블랙잭이다 — 규칙이 간단하면서도(카드를 더 받을지 멈출지,
 딜러와 최종 합을 비교) 상태 전이가 복잡해서(카드 덱 전체의 확률
 분포) 동적계획법으로 정확한 전이확률을 계산하기는 번거롭지만, MC는
 그냥 게임을 실제로 여러 번 시뮬레이션하면 그만이라는 것을 잘 보여준다.
@@ -374,7 +376,8 @@ MC가 올바른 쪽(히트)을 골랐다. 전체 110개 학습
 새 (상태, 행동) 쌍을 방문하지 못해, 아직 제대로 추정되지 않은
 상태의 Q가 <strong>영원히</strong> 그 자리에서 멈춘다 — 탐험의 대가(낮은
 즉석 보상)를 치르지 않으면, 새로운 지식을 얻을 기회도 사라진다.
-“탐험 vs 착취” 트레이드오프의 가장 정직한 모습이다.</p>
+“탐험 vs 착취” 트레이드오프의 가장 정직한 모습이다.
+이 주제를 더 다루는 자료: <sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">4</a></sup>, <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">5</a></sup></p>
 </blockquote>
 <h3 id="자주-하는-실수-방문-횟수가-적은-상태의-q값을-그대로-믿기"><a class="header" href="#자주-하는-실수-방문-횟수가-적은-상태의-q값을-그대로-믿기">자주 하는 실수: 방문 횟수가 적은 상태의 Q값을 그대로 믿기</a></h3>
 <p>위 실습에서 플레이어 합이 낮고(12~13) 애매한 상태들은 20 근처 상태들보다
@@ -492,6 +495,24 @@ MC가 올바른 쪽(히트)을 골랐다. 전체 110개 학습
 \(\pi(a_{\text{bad}}|s) = \varepsilon/2\). \(Q^{\pi}\)는
 “그리디일 때“뿐 아니라 “무작위로 비그리디를 고를 때“의 보상도
 평균에 섞어 넣으므로, \(Q^{*}\)에 비해 그 평균이 낮아진다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning.” https://www.davidsilver.uk/teaching/ <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

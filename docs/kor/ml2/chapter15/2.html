@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -208,12 +208,12 @@ ML1 Chapter 9의 역전파와 이름만 같을 뿐 완전히 다른 개념이다
 <p>“무작위로 끝까지 해보고(시뮬레이션), 그 결과를 트리의 통계로
 적재적재하게 나누어 모은다(선택+역전파)“는 이 아이디어의 계보는
 1990년대 오톨로(Othello) 프로그램의 moa* 알고리즘까지 거슬러 올라간다.
-2006년 Kocsis와 Szepesvári가 이 가문의 방법들을 <strong>UCT</strong>(Upper
+2006년 Kocsis와 Szepesvári가 이 가문의 방법들을 <strong>UCT</strong><sup class="footnote-reference" id="fr-uct-1"><a href="#footnote-uct">1</a></sup> (Upper
 Confidence bound applied to Trees)라는 이름으로 정리하며, Chapter 2.2의
 팔레트 아머드 밴딧(bandit) 문제를 트리 탐색에 연결하는 정확한 수식을
 줬고, 이 UCT가 바로 오늘 배울 선택 규칙이다. 이후 MCTS는 바둑,
 체스, 광물자원 게임 등 “경우의 수가 너무 많아 완전탐색이 불가능한”
-문제들의 표준 계획 알고리즘이 되었으며, 2016년 AlphaGo의 핵심
+문제들의 표준 계획 알고리즘이 되었으며, 2016년 AlphaGo의 핵심<sup class="footnote-reference" id="fr-alphago-1"><a href="#footnote-alphago">2</a></sup>
 구성요소가 되었다.</p>
 <p>네 단계가 <strong>왜</strong> 저 순서로 결합되어야 하는지, 하나의 시뮬레이션을
 따라가보자. 루트(돌 5개, 내 차례)에서 시작하면: ① 선택 — 루트에 자식
@@ -228,7 +228,7 @@ Confidence bound applied to Trees)라는 이름으로 정리하며, Chapter 2.2�
 보장이 여기에서 온다. 4회차부터 선택 단계의 UCT가 실제로
 작용하기 시작한다.</p>
 <h3 id="uct-선택-단계의-규칙"><a class="header" href="#uct-선택-단계의-규칙">UCT: 선택 단계의 규칙</a></h3>
-<p>선택 단계의 “성과 + 덜 시도해본 정도“는 UCB1의 수식과 <strong>정확히 같은
+<p>선택 단계의 “성과 + 덜 시도해본 정도“는 UCB1<sup class="footnote-reference" id="fr-ucb1-1"><a href="#footnote-ucb1">3</a></sup>의 수식과 <strong>정확히 같은
 형태</strong>다. 노드 \(s\)에서 자식 \(a\)를 고를 때:</p>
 <p>\[ \text{UCT}(s, a) \;=\; \frac{Q(s,a)}{N(s,a)} \;+\; c\, \sqrt{\frac{\ln N(s)}{N(s,a)}} \]</p>
 <p>여기서 \(Q(s,a)\)는 자식 \(a\)의 누적 승(수), \(N(s,a)\)는 방문 횟수,
@@ -556,7 +556,7 @@ UCT의 활용 항이 사라져 탐험 항만으로 동작하게 되고, 방문�
 게임에서는 무작위 롤아웃도 충분히 정확한 신호를 준다. 하지만
 바둑처럼 한 수의 영향이 아주 나중에야 드러나는 게임에서는, 무작위로
 끝까지 두는 롤아웃 하나하나가 사실상 노이즈에 가까워서 부정확할 수
-있다. AlphaGo와 그 후속작 AlphaZero의 핵심 개선은, 이 무작위 롤아웃을
+있다. AlphaGo와 그 후속작 AlphaZero의 핵심<sup class="footnote-reference" id="fr-alphazero-1"><a href="#footnote-alphazero">4</a></sup> 개선은, 이 무작위 롤아웃을
 <strong>신경망</strong>으로 대체한 것이다: 신경망 하나가 “이 상태에서 각 수가
 얼마나 유망한가”(정책, Chapter 10.1의 \(\pi_\theta\)와 같은
 역할)를, 다른 하나(또는 같은 신경망의 다른 출력 헤드)가 “이 상태가
@@ -565,7 +565,8 @@ UCT의 활용 항이 사라져 탐험 항만으로 동작하게 되고, 방문�
 훨씬 더 효율적으로 좁혀나가고, 그렇게 MCTS로 찾아낸 더 정확한 수를
 다시 신경망 학습의 정답(지도학습 목표)으로 사용한다 —
 <strong>탐색(MCTS)과 학습(신경망)이 서로를 개선하는 루프</strong>다.</p>
-<p>이 결합에서 선택 규칙도 UCT에서 <strong>PUCT</strong>로 발전한다:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alphago.png" alt="정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_alphago.png" alt="정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1)."></span></label></p>
+<p>이 결합에서 선택 규칙도 UCT<sup class="footnote-reference" id="fr-uct-2"><a href="#footnote-uct">1</a></sup>에서 <strong>PUCT</strong><sup class="footnote-reference" id="fr-alphago-2"><a href="#footnote-alphago">2</a></sup>로 발전한다:</p>
 <p>\[ \text{PUCT}(s,a) \;=\; \frac{Q(s,a)}{N(s)+N(s,a)} \;+\; c_{\text{puct}}\,
 P_{\theta}(s,a)\, \frac{\sqrt{N(s)}}{1+N(s,a)} \]</p>
 <p>차이는 탐험 항이다. UCT의 탐험 항 \(c\sqrt{\ln N(s)/N(s,a)}\)는
@@ -592,7 +593,8 @@ P_{\theta}(s,a)\, \frac{\sqrt{N(s)}}{1+N(s,a)} \]</p>
 규모에서, “유망한 가지만 표본추출로 파고든다“는 MCTS의
 원칙(15.1절 틱택토 실습의 격차의 극한)이 사실상 <strong>유일한</strong>
 길이었다 — 그리고 그 표본추출의 방향을 신경망이 가중해준
-PUCT + self-play 루프가 이세돌 승부를 만들어냈다.</p>
+PUCT + self-play 루프가 이세돌 승부를 만들어냈다. 이 절의
+주제(목표 기반 RL과 계획)를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">5</a></sup>.</p>
 <h3 id="자주-하는-실수-롤아웃-정책과-시뮬레이션-횟수를-혼동하기"><a class="header" href="#자주-하는-실수-롤아웃-정책과-시뮬레이션-횟수를-혼동하기">자주 하는 실수: 롤아웃 정책과 시뮬레이션 횟수를 혼동하기</a></h3>
 <p>MCTS를 처음 구현할 때 흔히 겪는 두 가지 실수가 있다. 첫째, <strong>롤아웃
 정책을 너무 정교하게 만들려는 것</strong>이다 — “무작위 롤아웃은 부정확하니
@@ -616,7 +618,7 @@ PUCT + self-play 루프가 이세돌 승부를 만들어냈다.</p>
 위한 예제다 — 실전에서 MCTS를 쓰는 이유는 바둑처럼 완전탐색이
 아예 불가능한 문제이기 때문이다.</p>
 <p><strong>Q. MCTS는 지도학습이나 강화학습 알고리즘인가요?</strong> 엄밀히는 둘 다
-아니다 — <strong>계획(planning)</strong> 알고리즘이다. Chapter 4의 가치반복처럼
+아니다 — <strong>계획(planning)</strong><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">6</a></sup> 알고리즘이다. Chapter 4의 가치반복처럼
 모델(규칙)이 있다는 전제하에 “지금 무엇을 할지“를 계산하는 방법이지,
 Chapter 9~11처럼 파라미터를 경사하강으로 갱신해 정책을 학습하는
 알고리즘이 아니다. AlphaZero가 강력한 이유는 정확히 이 계획
@@ -631,8 +633,8 @@ visits)다. 방문이 적을 때 승률 추정치는 노이져스한데(20번 �
 지표는 대개 같은 수를 가리키며(위 실습에서 그랬듯), 예산이
 끝났을 때 승률 격차가 확실히 큰 예외 상황에서만 승률 최대를
 쓰는 변형도 있다.</p>
-<p><strong>Q. MCTS가 보여주는 “승률 98.7%“는, 실제로 무작위 상대와
-맞대결했을 때의 승률(67%)과 같은 의미인가요?</strong> 아니다 — 이
+<p>**Q. MCTS가 보여주는 “승률 98.7%“는, 실제로 무작위 상대와
+맞대결했을 때의 승률(67%)과 같은 의미인가요?<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">7</a></sup> 아니다 — 이
 구분의 이해가 “트리와 롤아웃의 역할 분담” 절의 핵심이다.
 98.7%는 <strong>트리가 “상대 대응에 대한 내 필승 응답“을 통계에
 저장한 뒤</strong>의 합성 추정치로, 순수 무작위 승률(2/3)을
@@ -669,6 +671,30 @@ UCT 값을 계산하고 어떤 수가 선택되는지 판정하라. (힌트:
 기억하는 부분“과 “롤아웃이 표본추출하는 부분“의 분업으로
 설명하라. 이 갭은 어떤 게임에서 커지고 어떤 게임에서 작으며,
 왜 그런가? (힌트: 남은 게임의 <strong>깊이</strong>에 주목하라.)</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-uct">
+<p>Kocsis, L., Szepesvári, C. (2006). “Bandit based Monte-Carlo Planning.” ECML 2006 (Lecture Notes in AI 4212, 280–294). <a href="#fr-uct-1">↩</a> <a href="#fr-uct-2">↩2</a></p>
+</li>
+<li id="footnote-alphago">
+<p>Silver, D. et al. (2016). “Mastering the game of Go with deep neural networks and tree search.” Nature 529, 484–489. <a href="#fr-alphago-1">↩</a> <a href="#fr-alphago-2">↩2</a></p>
+</li>
+<li id="footnote-ucb1">
+<p>Auer, P., Cesa-Bianchi, N., Fischer, P. (2002). “Finite-time Analysis of the Multiarmed Bandit Problem.” Machine Learning 47(2-3), 235–256. (UCB1의 원 논문.) <a href="#fr-ucb1-1">↩</a></p>
+</li>
+<li id="footnote-alphazero">
+<p>Silver, D. et al. (2017). “Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm.” arXiv:1712.01815. <a href="#fr-alphazero-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2 ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning,” Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0). <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

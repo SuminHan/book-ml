@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -188,7 +188,7 @@
 <li><strong>Zero-shot</strong>: 예시 없이 지시문만 주고 바로 요청(“이 문장을 한국어로
 번역해줘: …”).</li>
 <li><strong>Few-shot</strong>: 몇 개의 입출력 예시를 프롬프트에 포함시켜, 모델이 패턴을
-파악하고 따라하게 유도.</li>
+파악하고 따라하게 유도<sup class="footnote-reference" id="fr-fewshot-1"><a href="#footnote-fewshot">1</a></sup>.</li>
 <li><strong>Chain-of-Thought</strong>: “단계별로 생각해봐“처럼, 최종 답 전에 중간 추론
 과정을 출력하도록 유도 — 복잡한 추론 문제에서 정답률을 크게 높이는
 경우가 많다.</li>
@@ -230,11 +230,12 @@ few-shot 예시 3개를 붙이면, 질문의 다음 토큰을 예측할 때의 �
 \(n^2\)으로 커진다는 비용 면의 함의도 자동으로 따라온다.</p>
 <p>(부수적 일화 하나: 1950년대 언어학자 Chomsky가 문법을 생성하는
 “변환 규칙(transformations)“을 말했을 때와, 2017년 “변환기
-(transformer)” 아키텍처가 등장한 것은 용어만 같을 뿐 무관하다. 다만
+(transformer)” 아키텍처<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">2</a></sup>가 등장한 것은 용어만 같을 뿐 무관하다. 다만
 흥미로운 것은, Chomsky의 변환 규칙과 트랜스포머의 어텐션이 모두
 “문장 안의 요소들이 서로를 조건으로 삼아 어떻게 변하는지“를 기술한다는
 점이다 — 프롬프팅은 바로 이 “서로를 조건으로 삼는” 성질을 <em>입력 수준</em>에서
 이용하는 것이다.)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)"></span></label></p>
 <h3 id="실습-아주-단순화한-모델로-예시가-있으면-왜-더-잘-맞히는가-확인하기"><a class="header" href="#실습-아주-단순화한-모델로-예시가-있으면-왜-더-잘-맞히는가-확인하기">실습: 아주 단순화한 모델로 “예시가 있으면 왜 더 잘 맞히는가” 확인하기</a></h3>
 <p>실제 LLM은 이 책 범위를 넘는 방대한 신경망이지만, “프롬프트 안의
 토큰이 곧 다음 토큰 예측의 조건이 된다“는 핵심 메커니즘만큼은
@@ -276,20 +277,20 @@ print(next_token_distribution(few_shot_context, "비행기는"))
 모델의 출력이 흔들릴 수 있다.</li>
 <li><strong>라벨 순서 효과</strong>: 예시의 라벨 배열 자체가 출력을 바이어스한다 —
 “예시들 중 majority가 ’그렇다’였다“는 패턴이 모델의 출력을 “그렇다”
-쪽으로 기울게 하는 현상이 실제로 관측된다. 그래서 정답 분포가 편향된
+쪽으로 기울게 하는 현상이 실제로 관측된다<sup class="footnote-reference" id="fr-demolabels-1"><a href="#footnote-demolabels">3</a></sup>. 그래서 정답 분포가 편향된
 작업(예: “위반 여부” 판정에서 위반이 드문 경우)에는 라벨 순서를 의도적으로
 섞어줘야 하는 경우가 있다.</li>
 <li><strong>1~4개가 일반</strong>: 대부분의 작업에서는 1~4개의 예시로 충분하다. 13.3절에서
-다룰 SFT/RLHF가 “수천~수만 개의 예시를 <em>가중치</em>에 새기는” 방법이라면,
+다룰 SFT/RLHF<sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">4</a></sup>가 “수천~수만 개의 예시를 <em>가중치</em>에 새기는” 방법이라면,
 few-shot은 “지금 이 질문 한 번에 대해서만, <em>컨텍스트</em> 안에 넣는”
 방법이다 — 양과 지속성에서 차이가 있다.</li>
 </ul>
 <h3 id="chain-of-thought-단계별로-생각해봐의-메커니즘"><a class="header" href="#chain-of-thought-단계별로-생각해봐의-메커니즘">Chain-of-Thought: “단계별로 생각해봐“의 메커니즘</a></h3>
 <p><strong>Chain-of-Thought</strong>(사슬추론, CoT)는 2022년 Wei et al.(Google Brain)의
-논문에서 체계적으로 보고된 기법이다 — “27×43을 계산해라” 같은 산술 문제에
+논문<sup class="footnote-reference" id="fr-cot-1"><a href="#footnote-cot">5</a></sup>에서 체계적으로 보고된 기법이다 — “27×43을 계산해라” 같은 산술 문제에
 “단계별로 풀어봐”(think step by step) 한마디를 붙이면, 정답률이
 현저히 올라간다는 관찰이다. 같은 해 Kojima et al.는 더 극단적인 결과를
-보였다: *“Let’s think step by step.”*이라는 짧은 영어 문장 하나를
+보였다: *“Let’s think step by step.”*이라는 짧은 영어 문장 하나를<sup class="footnote-reference" id="fr-zsr-1"><a href="#footnote-zsr">6</a></sup>
 질문 뒤에 붙이기만 해도(예시 없이, 지시 한 줄) 추론 성능이 크게
 좋아진다는 것이다.</p>
 <p>왜 이것이 작동하는가 — 13.1절의 조건부 확률 관점에서 보면 의외로
@@ -363,10 +364,10 @@ softmax를 적용한 것)라고 배웠다. 그 분포에서 실제로 어떤 토
 </table>
 </div>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_2_temperature.svg" alt="같은 logits [2.0, 1.0, 0.5, 0.2]에 temperature 0.2~3.0을 적용할 때 최상위 토큰의 확률 곡선(왼쪽, T→0일수록 1로 수렴)과 T=0.5/1.0/2.0에서의 분포 막대(오른쪽, T가 크면 분포가 평탄해짐)"><span class="img-wrapper"><img src="../../images/ch13_2_temperature.svg" alt="같은 logits [2.0, 1.0, 0.5, 0.2]에 temperature 0.2~3.0을 적용할 때 최상위 토큰의 확률 곡선(왼쪽, T→0일수록 1로 수렴)과 T=0.5/1.0/2.0에서의 분포 막대(오른쪽, T가 크면 분포가 평탄해짐)"></span></label></p>
-<p><strong>top-k</strong>: 확률 상위 \(k\)개 토큰 <em>만</em>에서 샘플링한다(나머지는 확률 0).
+<p><strong>top-k</strong><sup class="footnote-reference" id="fr-topk-1"><a href="#footnote-topk">7</a></sup>: 확률 상위 \(k\)개 토큰 <em>만</em>에서 샘플링한다(나머지는 확률 0).
 \(k=1\)이면 greedy와 같다.</p>
-<p><strong>top-p (nucleus sampling)</strong>: 누적 확률이 \(p\)에 도달하는 <em>최소</em> 토큰
-집합 안에서 샘플링한다. 분포가 가파르면(예: 다음 단어가 거의 결정된
+<p><strong>top-p (nucleus sampling)</strong><sup class="footnote-reference" id="fr-nucleus-1"><a href="#footnote-nucleus">8</a></sup>: 누적 확률이 \(p\)에 도달하는 <em>최소</em>
+토큰 집합 안에서 샘플링한다. 분포가 가파르면(예: 다음 단어가 거의 결정된
 경우) 그 집합은 작아지고, 평평하면(예: 시의 첫 줄 같은 자유도가 높은
 경우) 커진다 — <strong>상황에 맞춰 자동으로 “선택지 폭“을 조절</strong>한다는 것이
 top-k와의 차이이자 장점이다.</p>
@@ -397,7 +398,7 @@ top-k와의 차이이자 장점이다.</p>
 <em>포함</em>되기 때문일 뿐이다. (그래서 system message를 “지키지 않으면”
 이라는 표현이 애매해진다 — 모델에게는 그저 긴 컨텍스트의 앞부분일
 뿐이다.)</p>
-<p>**RAG(Retrieval-Augmented Generation)**와 <strong>에이전트</strong>는 이 “프롬프트에
+<p><strong>RAG(Retrieval-Augmented Generation)</strong><sup class="footnote-reference" id="fr-rag-1"><a href="#footnote-rag">9</a></sup>와 <strong>에이전트</strong>는 이 “프롬프트에
 무엇을 넣느냐“의 문제를 한 단계 더 확장한 것이다(13.3절에서 상세히):
 RAG는 질문과 관련된 문서를 <em>검색해서</em> 프롬프트에 붙여 “이 문서에 기반해
 답하라“고 하고, 에이전트는 모델이 검색·계산기·코드 실행 같은 <em>도구</em>를
@@ -407,7 +408,7 @@ RAG는 질문과 관련된 문서를 <em>검색해서</em> 프롬프트에 붙�
 그 자체다.</p>
 <h3 id="환각hallucination"><a class="header" href="#환각hallucination">환각(Hallucination)</a></h3>
 <p>LLM은 사실이 아닌 그럴듯한 문장을 자신 있게 만들어내기도 한다(<strong>환각,
-hallucination</strong>) — “다음 토큰으로 그럴듯한 것“을 예측하도록 학습됐을
+hallucination</strong>)<sup class="footnote-reference" id="fr-hallucinationsurvey-1"><a href="#footnote-hallucinationsurvey">10</a></sup> — “다음 토큰으로 그럴듯한 것“을 예측하도록 학습됐을
 뿐, 사실 여부를 검증하는 과정이 내장돼 있지 않기 때문이다.</p>
 <p>이것을 13.1절의 학습 목표와 연결하면 더 명확해진다. 사전학습의 손실은
 “실제 다음 토큰과 예측의 교차 엔트로피“이고, 이 손실을 최소화하는
@@ -433,7 +434,8 @@ B라고 말할 수 있다.</p>
 답하라“고 지시한다 — 모델이 <em>가진</em> 문맥 안에서 답을 만들어야 하므로
 지어낼 여지가 줄어든다.</li>
 <li><strong>“모르면 모른다고 해” 지시</strong>: 효과는 있으나 보장이 아니다.</li>
-<li><strong>Self-consistency</strong>: CoT를 <em>여러 번</em> 샘플링해서(\(T&gt;0\)로) 나온
+<li><strong>Self-consistency</strong><sup class="footnote-reference" id="fr-selfconsistency-1"><a href="#footnote-selfconsistency">11</a></sup>: CoT를 <em>여러 번</em> 샘플링해서(\(T&gt;0\)로)
+나온
 최종 답들 중 <em>다수결</em>을 채택한다 — 한 번의 추론이 틀려도 여러 번 중
 다수가 맞으면 그 오차가 상쇄된다. CoT의 “중간 결과를 조건으로 쓴다“는
 메커니즘과, sampling의 “여러 경로를 탐색한다“는 메커니즘을 <em>조합</em>한
@@ -450,7 +452,7 @@ B라고 말할 수 있다.</p>
 혼란스러워한다. 형식은 <em>모두</em> 동일해야 한다.</li>
 <li><strong>“프롬프트가 길수록 좋다”</strong>: 컨텍스트 윈도우에는 한계가 있고
 (12.3절의 \(n^2\) 계산량), 지나치게 긴 프롬프트에서는 <em>중간</em> 부분에
-있는 정보의 영향이 오히려 줄어든다는 현상(“lost in the middle”)이
+있는 정보의 영향이 오히려 줄어든다는 현상(“lost in the middle”)<sup class="footnote-reference" id="fr-lostmiddle-1"><a href="#footnote-lostmiddle">12</a></sup>이
 보고돼 있다. 핵심 지시문은 <em>앞</em>이나 <em>뒤</em>에 두는 것이 안전하다.</li>
 <li><strong>“temperature 0이면 환각이 사라진다”</strong>: temperature 0은 <em>결정적</em>
 (deterministic)을 의미할 뿐, <em>정확</em>을 의미하지는 않는다. 틀린
@@ -534,6 +536,49 @@ few-shot의 출력 대조(본문 코드 블록 재현)</li>
 <li>CoT vs 직접 답 확률 시뮬레이션 — 3단계 추론, 각 부분 추론 성공률
 (중간 결과를 <em>조건으로</em> 쓸 때 0.9 vs 조건 없이 0.5), 4,000회 반복:
 직접 ≈ \(0.5^3 = 0.125\), CoT ≈ \(0.9^3 = 0.729\)</li>
+</ol>
+<p>프롬프팅과 추론을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">13</a></sup></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-fewshot">
+<p>Brown, T. B., Mann, B., Ryder, N., et al. (2020). “Language Models are Few-Shot Learners.” arXiv:2005.14165. <a href="#fr-fewshot-1">↩</a></p>
+</li>
+<li id="footnote-transformer">
+<p>Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., Polosukhin, I. (2017). “Attention Is All You Need.” NeurIPS 2017. arXiv:1706.03762. <a href="#fr-transformer-1">↩</a></p>
+</li>
+<li id="footnote-demolabels">
+<p>Min, S., Lyu, X., Holtzman, A., Artetxe, M., Lewis, M., Hajishirzi, H., Zettlemoyer, L. (2022). “Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?” EMNLP 2022. arXiv:2202.12837. — few-shot 데모네스트레이션에서 (1) 라벨 공간, (2) 입력 분포, (3) 형식, 그리고 <strong>라벨의 배치가</strong> 성능을 결정함을 분석한 논문(라벨 순서 효과의 대표 연구). <a href="#fr-demolabels-1">↩</a></p>
+</li>
+<li id="footnote-instructgpt">
+<p>Ouyang, L. et al. (2022). “Training language models to follow instructions with human feedback.” arXiv:2203.02155. <a href="#fr-instructgpt-1">↩</a></p>
+</li>
+<li id="footnote-cot">
+<p>Wei, J., Wang, X., Schuurmans, D., Bosma, M., Ichter, B., Xia, F., Chi, E., Le, Q., Zhou, D. (2022). “Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.” arXiv:2201.11903. <a href="#fr-cot-1">↩</a></p>
+</li>
+<li id="footnote-zsr">
+<p>Kojima, T., Gu, S. S., Reid, M., Matsuo, Y., Iwasawa, Y. (2022). “Large Language Models are Zero-Shot Reasoners.” arXiv:2205.11916. <a href="#fr-zsr-1">↩</a></p>
+</li>
+<li id="footnote-topk">
+<p>Fan, A., Lewis, M., Dauphin, Y. (2018). “Hierarchical Neural Story Generation.” arXiv:1805.04833. — top-k 샘플링 전략을 제안한 원 논문. <a href="#fr-topk-1">↩</a></p>
+</li>
+<li id="footnote-nucleus">
+<p>Holtzman, A., Buys, J., Du, L., Forbes, M., Choi, Y. (2019). “The Curious Case of Neural Text Degeneration.” ICLR 2020. arXiv:1904.09751. — top-p(핵 샘플링) 샘플링 전략을 제안한 원 논문. <a href="#fr-nucleus-1">↩</a></p>
+</li>
+<li id="footnote-rag">
+<p>Lewis, P., Perez, E., Piktus, A., et al. (2020). “Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. <a href="#fr-rag-1">↩</a></p>
+</li>
+<li id="footnote-hallucinationsurvey">
+<p>Ji, Z., Lee, N., Frieske, R., Yu, T., Su, D., Xu, Y., Ishii, E., Bang, Y. J., Madotto, A., Fung, P. (2023). “Survey of Hallucination in Natural Language Generation.” ACM Computing Surveys 55(12). arXiv:2202.03629. — 환각의 측정·완화 기법과 LLM 환각까지 포괄하는 대표 서베이. <a href="#fr-hallucinationsurvey-1">↩</a></p>
+</li>
+<li id="footnote-selfconsistency">
+<p>Wang, X., Wei, J., Schuurmans, D., Le, Q., Chi, E., Narang, S., Chowdhery, A., Zhou, D. (2022). “Self-Consistency Improves Chain of Thought Reasoning in Language Models.” ICLR 2023. arXiv:2203.11171. <a href="#fr-selfconsistency-1">↩</a></p>
+</li>
+<li id="footnote-lostmiddle">
+<p>Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., Liang, P. (2023). “Lost in the Middle: How Language Models Use Long Contexts.” TACL 2023. arXiv:2307.03172. <a href="#fr-lostmiddle-1">↩</a></p>
+</li>
+<li id="footnote-cs224n">
+<p>Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/ <a href="#fr-cs224n-1">↩</a></p>
+</li>
 </ol>
 
                     </main>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -192,7 +192,7 @@
 “한쪽 끝과 반대쪽 끝“을 가를 뿐, “대각선“을 가를 수 없다. 좀 더 현실적인
 예는 <strong>동심원</strong>이다: 안쪽 원과 바깥쪽 원의 두 클래스는 직선이 아니라
 <strong>원</strong>으로만 나뉜다. 이 두 패턴(사분면 교차, 원형 경계)은 실전에서
-“선형 특징으로 충분히 설명되지 않는 비선형 관계“의 축소판이다.</p>
+“선형 특징으로 충분히 설명되지 않는 비선형 관계“의 축소판이다 <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup>.</p>
 <p>이 절의 질문은 하나다: <strong>경계를 휘게 하면서도 5.1절의 모든 재산
 (마진 최대화, 서포트 벡터, \(\frac{2}{\|w\|}\) 공식)을 유지할 수
 있을까?</strong> 답은 “있고, 방법은 고차원“이다 — 하지만 그 고차원은 최대
@@ -229,7 +229,7 @@
 <p>문제는 \(\phi(x)\)를 명시적으로 계산하면 차원이 감당 못 하게 커질 수
 있다는 것이다. 3차원 리프트는 예외적으로 작았다. 다항식 특징을 도수
 \(d\)까지 추가하면 \(\binom{n+d}{d}\)개, RBF는 <strong>무한</strong>개.
-<strong>커널 트릭</strong>(kernel trick)은 이걸 피해간다 — SVM의 최적화
+<strong>커널 트릭</strong>(kernel trick)<sup class="footnote-reference" id="fr-cortespapnikas95-1"><a href="#footnote-cortespapnikas95">2</a></sup>은 이걸 피해간다 — SVM의 최적화
 문제를 (라그랑주 쌍대) 다른 형태로 바꾸면, 데이터가 항상 \(\phi(x^{(i)})
 \cdot \phi(x^{(j)})\)(내적) 형태로만 등장한다는 것이 알려져 있다. 그렇다면
 \(\phi\)를 직접 계산하지 않고, 이 내적값 자체를 곧바로 계산해주는
@@ -328,7 +328,7 @@ primal에서는 \(w=(1/6,1/6)\)을 직접 들고 다녔지만, 쌍대에서는
 </ul>
 <p>(커널의 표준 정의를 \(\exp(-\gamma\|x-x’\|^2)\)로 쓰는 문헌도
 많은데, \(\gamma = \frac{1}{2\sigma^2}\)으로 서로 대응한다.
-scikit-learn의 <code>SVC</code>는 <code>gamma</code>를 받는다.)</p>
+scikit-learn<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">3</a></sup>의 <code>SVC</code>는 <code>gamma</code>를 받는다.)</p>
 <p><strong>다항 커널은 “도수 d 이하의 모든 단항식“을 내포한다.</strong>
 \((x\cdot x’ + 1)^d\)를 다항식으로 전개하면 도수 \(d\) 이하의
 모든 단항식 \(x_1^{a_1} x_2^{a_2} \cdots\)(\(a_1+a_2+\cdots \le d\))
@@ -669,7 +669,7 @@ CNN 포함)과 나란히 가장 강력한 성능을 보인 방법 중 하나가 
 이번 장에서 배운 커널 SVM이었다 — RBF 커널을 쓴 SVM은 필기체
 숫자처럼 명확한 직선으로 나뉘지 않는 복잡한 패턴에서도 오차율을
 한 자릿수 퍼센트대까지 끌어내렸다. 이 챕터 도입부에서 언급했듯,
-2010년대 초반 딥러닝(특히 Chapter 10의 CNN)이 대세가 되기 전까지
+2010년대 초반 딥러닝(특히 Chapter 10의 CNN<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">4</a></sup>)이 대세가 되기 전까지
 커널 SVM은 이미지 인식부터 텍스트 분류(스팸 필터링에도 나이브베이즈와
 나란히 쓰였다), 생물정보학의 유전자 데이터 분류까지 폭넓게 쓰인
 “만능 분류기“에 가까웠다. 지금도 데이터가 수천~수만 개 수준으로
@@ -749,12 +749,13 @@ XOR 예제에서 \(d=2\)가 정확히 필요했지만, <strong>실전에서는
 이 기교가 <strong>수학적으로 우연히 발견된</strong> 것이 아니라, “내적만
 계산하면 \(\phi\)의 차원이 얼마든 상관없다“는 구조를
 의도적으로 <strong>이용</strong>한 것임을 강조한다. 1990년대 중반 바프닉과
-코르테스가 SVM의 쌍대 문제를 개발하면서 이 구조를 발견했고,
+코르테스가 SVM의 쌍대 문제를 개발하면서 <sup class="footnote-reference" id="fr-cortespapnikas95-2"><a href="#footnote-cortespapnikas95">2</a></sup> 이 구조를 발견했고,
 “커널 트릭“이라는 이름은 이후 머신러닝 커뮤니티에서 붙었다.
 중요한 것은 이 “트릭“이 <strong>SVM에만 국한되지 않는다</strong>는 것이다 —
 “내적으로만 계산하면 고차원 변환을 우회할 수 있다“는 원리는
-RBF 네트워크, Gaussian Processes, 그리고 신경망의 <strong>커널
-정리</strong>(neural tangent kernel)까지 이어진다.</p>
+RBF 네트워크, Gaussian Processes <sup class="footnote-reference" id="fr-rasmussenwilliams-1"><a href="#footnote-rasmussenwilliams">5</a></sup>, 그리고
+신경망의 <strong>커널 정리</strong>(neural tangent kernel) <sup class="footnote-reference" id="fr-nukernel-1"><a href="#footnote-nukernel">6</a></sup>까지
+이어진다.</p>
 <p><strong>확인 문제</strong>: 앞 “2×2 커널 행렬” 예제에서, 만약 서포트 벡터가
 \((3,3)\) 하나뿐이었다면(\((-3,-3)\)이 마진 바깥에 있었다면),
 쌍대 문제는 어떻게 변할까? (힌트: KKT 조건에 의해 \(\alpha_4=0\)
@@ -767,6 +768,7 @@ RBF 네트워크, Gaussian Processes, 그리고 신경망의 <strong>커널
 극한“과 같은 구조다. 이 “서포트 벡터가 하나뿐이면 쌍대 문제가
 퇴화한다“는 사실을 5.2절의 “\(C=0.01\)에서는 서포트 벡터가
 14개“라는 관측과 어떻게 연결할 수 있는가?)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 위 <code>hinge_loss_gradient_descent</code>(핵심 줄은 빈칸으로 남겨져
@@ -795,6 +797,27 @@ print(w, b)  # 대략 [0.17, 0.17], 0.0 근처 -- 원점을 지나는 대칭적�
 너비가 이 거리의 2배(양성·음성 서포트 벡터 양쪽)임을 설명하고, 왜
 “\(\|w\|\)를 최소화하는 것“이 “마진을 최대화하는 것“과 같은지 한
 문장으로 정리하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-cs229">
+<p>더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — 이 절의 주제는 CS229의 커널 방법(Kernel Methods) 강의 노트(고차원 매핑, 커널 트릭, SVM의 쌍대 문제)와 정확히 겹친다. <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-cortespapnikas95">
+<p>Cortes, C., Vapnik, V. (1995). “Support-Vector Networks.” Machine Learning 20(3), 273–297. — SVM(라그랑주 쌍대 문제와 커널 방법을 포함한)의 원 논문. <a href="#fr-cortespapnikas95-1">↩</a> <a href="#fr-cortespapnikas95-2">↩2</a></p>
+</li>
+<li id="footnote-scikitlearn">
+<p>Pedregosa, F. et al. (2012). “Scikit-learn: Machine Learning in Python.” arXiv:1201.0490. <a href="#fr-scikitlearn-1">↩</a></p>
+</li>
+<li id="footnote-alexnet">
+<p>Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). “ImageNet Classification with Deep Convolutional Neural Networks.” NeurIPS 2012. <a href="#fr-alexnet-1">↩</a></p>
+</li>
+<li id="footnote-rasmussenwilliams">
+<p>Rasmussen, C. E., Williams, D. K. (2006). “Gaussian Processes for Machine Learning.” MIT Press — Gaussian Process(가우시안 과정)을 커널 함수로 정의하는 표준 교과서. 본문의 “Gaussian Processes“는 이 책에서 다룬다. <a href="#fr-rasmussenwilliams-1">↩</a></p>
+</li>
+<li id="footnote-nukernel">
+<p>Jacot, A., Gabriel, F., Hongler, C. (2018). “Neural Tangent Kernel: Convergence and Generalization in Neural Networks.” NeurIPS 2018, arXiv:1806.07572 — 깊은 신경망의 학습 동학이 커널 회귀(ridge regression)로 근사되는 “신경 접선 커널(Neural Tangent Kernel, NTK)“을 도입한 원 논문. <a href="#fr-nukernel-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

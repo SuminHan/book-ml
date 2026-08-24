@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -180,14 +180,14 @@
                     <main>
                         <h1 id="chapter-6-정규화와-모델-선택-regularization--model-selection"><a class="header" href="#chapter-6-정규화와-모델-선택-regularization--model-selection">Chapter 6. 정규화와 모델 선택 (Regularization &amp; Model Selection)</a></h1>
 <p>1996년, 통계학자 로버트 팁시라니(Robert Tibshirani)는 “Lasso”(Least Absolute
-Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 단순했다 —
+Shrinkage and Selection Operator)<sup class="footnote-reference" id="fr-tibshirani1996-1"><a href="#footnote-tibshirani1996">1</a></sup>라는 방법을 제안했다. 아이디어는 단순했다 —
 회귀의 손실함수에 가중치 절댓값의 합을 페널티로 더하면, 놀랍게도 중요하지 않은
 특징의 가중치가 <strong>정확히 0</strong>이 되어버린다. 특징이 수천 개인 문제에서 “어떤
 특징이 진짜 중요한가“를 사람이 일일이 고르는 대신, 손실함수 하나를 바꾸는 것
 으로 모델이 스스로 걸러낸다는 뜻이다. 이번 장은 Chapter 4.1에서 본 편향-분산
 트레이드오프를 실제로 <strong>조절하는 손잡이</strong>를 다룬다.</p>
 <h2 id="이미-써본-그-손잡이-chapter-5의-c"><a class="header" href="#이미-써본-그-손잡이-chapter-5의-c">이미 써본 그 손잡이: Chapter 5의 \(C\)</a></h2>
-<p>앞 장(Chapter 5)의 소프트 마진 SVM은 사실 이 장의 아이디어를 이미 쓰고 있었다.
+<p>앞 장(Chapter 5)의 소프트 마진 SVM<sup class="footnote-reference" id="fr-cortespapnikas95-1"><a href="#footnote-cortespapnikas95">2</a></sup>은 사실 이 장의 아이디어를 이미 쓰고 있었다.
 목적함수 \(\frac{1}{2}\|w\|^2 + C\sum_{i}\xi^{(i)}\)는 “가중치 \(w\)를
 작게 유지하라“는 항과 “제약 위반을 허용하되 벌을 물린다“는 항의 합인데,
 \(\|w\|^2\) 자체가 L2 페널티이며 \(C\)는 이 장의 \(\lambda\)와
@@ -195,7 +195,7 @@ Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 
 그 손잡이를 돌리고 있었던 셈이다. 다만 Chapter 5가 보여준 것은 “그런 손잡이가
 있고, 돌리면 모델이 바뀐다“는 사실뿐이었고, <strong>손잡이의 크기를 앞의 데이터만으로
 어떻게 정할 것인가</strong>라는 질문에는 답하지 않았다. 이번 장은 바로 그 질문에 답한다.</p>
-<p>그리고 다음 장(트리 기반 모델: 결정트리에서 GBDT까지)에서 트리의 복잡도를
+<p>그리고 다음 장(트리 기반 모델: 결정트리에서 GBDT<sup class="footnote-reference" id="fr-gbdt-1"><a href="#footnote-gbdt">3</a></sup>까지)에서 트리의 복잡도를
 조절하는 손잡이는 가중치 페널티가 아니라 “트리 깊이”, “분할 횟수” 같은 것들이
 된다. 하지만 “수많은 후보 중 어떤 설정이 최적인가?“라는 질문은 똑같이 남고,
 그 답을 만드는 틀 — 검증, 교차검증, train/val/test 분리 — 이 바로 이 장에서
@@ -208,8 +208,8 @@ Shrinkage and Selection Operator)라는 방법을 제안했다. 아이디어는 
 있고, L2 페널티가 매끄러운 축소(shrinkage)를, L1 페널티가 중요하지 않은
 가중치를 <strong>정확히 0</strong>으로 만들어 특징 선택까지 해내는 이유를 짚을 수 있다.</li>
 <li>\(\lambda\)를 편향-분산 트레이드오프 위를 이동시키는 “손잡이“로
-해석하고, 계수 경로(coefficient path) 같은 숫자 실험으로 그 효과를
-확인할 수 있다.</li>
+해석하고, 계수 경로(coefficient path)<sup class="footnote-reference" id="fr-lars2004-1"><a href="#footnote-lars2004">4</a></sup> 같은 숫자 실험으로
+그 효과를 확인할 수 있다.</li>
 <li>k-겹 교차검증으로 \(\lambda\) 후보들을 검증 성능 기준으로 비교해
 최적값을 고를 수 있고, U자형 검증 곡선의 왼쪽을 과적합·오른쪽을
 과소적합으로 읽을 수 있다.</li>
@@ -240,6 +240,25 @@ Ridge 회귀로 확인한다.</li>
 튜닝, 전처리 통계량을 전체 데이터로 fit하는 누수라는 세 가지 흔한
 위반이 각각 점수를 어떻게 부풀리는지 숫자로 추적한다.</li>
 </ul>
+<p>이 장의 주제(정규화, 교차검증, 모델 선택)를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">5</a></sup></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-tibshirani1996">
+<p>Tibshirani, R. (1996). “Regression Shrinkage and Selection via the Lasso.” <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 58(1), 267–284. — Lasso(L1 정규화)의 원 논문. <a href="#fr-tibshirani1996-1">↩</a></p>
+</li>
+<li id="footnote-cortespapnikas95">
+<p>Cortes, C., Vapnik, V. (1995). “Support-Vector Networks.” Machine Learning 20(3), 273–297. — 소프트 마진 SVM(여유 변수 + \(C\) 트레이드오프)의 원 논문. <a href="#fr-cortespapnikas95-1">↩</a></p>
+</li>
+<li id="footnote-gbdt">
+<p>Friedman, J. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” Annals of Statistics 29(5), 1189–1232. — 그래디언트 부스팅(GBDT)의 원 논문. <a href="#fr-gbdt-1">↩</a></p>
+</li>
+<li id="footnote-lars2004">
+<p>Efron, B., Hastie, T., Johnstone, I., Tibshirani, R. (2004). “Least Angle Regression.” <em>Annals of Statistics</em> 32(2), 407–451. — LARS 알고리즘 원 논문. LASSO 계수 경로(coefficient path)를 O(p²)로 효율적으로 계산하는 방법을 제시한다. <a href="#fr-lars2004-1">↩</a></p>
+</li>
+<li id="footnote-cs229">
+<p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -185,13 +185,14 @@
 이번 블록(16.2)에서는 역할이 역전된다 — <strong>이번에는 네가 심사위원이다.</strong>
 다른 두 팀의 발표를 듣고, 아래 체크리스트를 적용해서 <strong>리뷰 두 통</strong>을
 작성하고, 그 리뷰의 <em>질</em>로 채점받는다. “왜 반박 가능한 질문이 좋은
-리뷰인가“에 대한 근거(Popper의 반증주의, Amgen 재현 실험)는 ML1 Chapter
+리뷰인가“에 대한 근거(Popper의 반증주의, Amgen 재현 실험<sup class="footnote-reference" id="fr-amgen2011-1"><a href="#footnote-amgen2011">1</a></sup>)는 ML1 Chapter
 8.2와 ML2 Chapter 8.2에서 이미 충분히 다뤘으므로 여기서는 다시 반복하지
 않고, 그 위의 <strong>신경망 강화학습이라는 새로운 대상에 무엇을 추가하는가</strong>만
 다룬다.</p>
 <p>심사 대상이 8.2에서와 달라진 점이 두 가지다. 첫째, 알고리즘이
-<em>신경망</em>에 올라탄 강화학습이 됐다 — DQN(Ch09), REINFORCE·Actor-Critic
-(Ch10), PPO(Ch11), 모방학습(Ch12), 시뮬레이션 기반(Ch13~14), MCTS
+<em>신경망</em>에 올라탄 강화학습이 됐다 — DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">2</a></sup> (Ch09), REINFORCE·Actor-Critic
+(Ch10), PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">3</a></sup> (Ch11), 모방학습<sup class="footnote-reference" id="fr-dagger-1"><a href="#footnote-dagger">4</a></sup> (Ch12), 시뮬레이션 기반(Ch13~14),
+MCTS<sup class="footnote-reference" id="fr-uct-1"><a href="#footnote-uct">5</a></sup>
 (Ch15)까지. 같은 “이 선택이 환경에 맞는가“를 판단하는 데 필요한 개념이
 훨씬 많아진다. 8.2에서는 “CliffWalking에 SARSA vs Q-learning이
 맞는가“처럼 <em>한 장</em>의 개념으로 판단할 수 있었는데, 이제는 “Pendulum
@@ -249,6 +250,7 @@
 기준표</strong>를 공유해야 “감점“과 “좋은 지적“이 같은 언어로 이야기될 수 있다.
 각 항목이 <em>신경망 강화학습</em> 프로젝트에서는 구체적으로 무엇을 보는지
 하나씩 풀어본다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <ul>
 <li><strong>환경 설명</strong> — MDP 5요소(Ch03.1) 중 <em>상태·행동·보상</em>이 보고서에서
 추적 가능한지 본다. “Pendulum을 썼다” 한 줄만 있고 <em>주 지표가
@@ -266,18 +268,25 @@
 학습 신호가 약함)를 겪는다.</li>
 <li><strong>수식적 정당화</strong> — 16.1의 “수식적 정당화 최소 1개” 요구사항을 채웠는지는
 <em>형식</em> 문제이고, 이 항목은 <em>내용</em>을 본다: 짚은 개념(예: Ch11.3의
-GAE \(\lambda\))이 <strong>실제로 관찰한 숫자와 일치</strong>하는가. “GAE의
+GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">6</a></sup> \(\lambda\))이 <strong>실제로 관찰한 숫자와 일치</strong>하는가. “GAE의
 \(\lambda\)가 편향-분산 트레이드오프를 조절한다“는 문장만 있고
 <em>\(\lambda\)를 바꿔서 실제로 어드밴티지의 분산이 어떻게 변했는지</em>
 실측이 없으면, 그 문장은 <em>이 실험에 붙은</em> 설명이 아니라 <em>어디에나
 붙을</em> 설명이다.</li>
+</ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
+<ul>
 <li><strong>결과의 정직성</strong> — 신경망의 <em>초기화 시드</em>를 몇 개 돌렸는지, 시드별
 이동평균이 <em>사라지지 않고</em> 보고에 들어갔는지, “완전히 수렴하지
 않았다“는 사실을 숨기지 않는지를 본다. 이 항목은 “결과가 좋았는가“가
 아니라 “결과가 <em>정직한 절차</em>로 얻어졌는가“를 본다 — 16.1의 예시처럼
 “12만 스텝으로는 절반도 안 왔다“는 정직한 보고가, 부풀린 성공 스토리
 보다 훨씬 좋은 발표인 이유가 여기 있다.</li>
-<li><strong>탐험-활용 균형</strong> — Ch02의 멀티암 밴딧에서 배운 탐험-활용 딜레마가
+</ul>
+<p>![3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG<sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">7</a></sup>/TRPO<sup class="footnote-reference" id="fr-trpo-1"><a href="#footnote-trpo">8</a></sup>/SAC<sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">9</a></sup> 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다.](../../images/ref_gae.png)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."><span class="img-wrapper"><img src="../../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."></span></label></p>
+<ul>
+<li><strong>탐험-활용 균형</strong> — Ch02의 멀티암 밴딧에서 배운 탐험-활용 딜레마<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">10</a></sup>가
 <em>실제 학습 곡선</em>에서 어떻게 드러나는지 본다. 신경망 RL에서는 탐험이
 \(\varepsilon\)-greedy(DQN, Ch09.2)나 가우시안 정책의
 \(\sigma\)(Ch10.2, Ch11.2)로 구현된다 — “탐험을 줄여가며(감쇠
@@ -639,6 +648,43 @@ Chapter 12.1의 복합 오차(전문가 데이터 분포 밖에서 성능 저하
 가 3점 질문이다 — 발표팀이 “네, 그래서 결론에 ’수렴하지 않았다’고
 적었습니다“라고 답할 수 있으면 통과, “아… 몰랐습니다“면 그 <em>수렴
 여부 미인식</em> 자체가 “결과의 정직성“에서 감점 요인이다.</p>
+<p>이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">11</a></sup></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-amgen2011">
+<p>Amgen 사의 내부 재현성 연구(2011년 보도): 1999~2005년에 발표된 ‘주요(landmark)’ 생물학 논문 53편을 자체 재현한 결과, 재현에 성공한 것은 6편뿐 — ‘재현성 위기’ 논쟁의 대표 사례. (본 책 8.2절에서 다루고 있다.) <a href="#fr-amgen2011-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-dagger">
+<p>Ross, S., Gordon, G. J., Bagnell, J. A. (2010). “A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning.” ECML 2010. arXiv:1011.0686. <a href="#fr-dagger-1">↩</a></p>
+</li>
+<li id="footnote-uct">
+<p>Kocsis, L., Szepesvári, C. (2006). “Bandit Based Monte-Carlo Planning.” ECML 2006, pp. 282–293. <a href="#fr-uct-1">↩</a></p>
+</li>
+<li id="footnote-gae">
+<p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>
+</li>
+<li id="footnote-ddpg">
+<p>Lillicrap, T. P. et al. (2015). “Continuous control with deep reinforcement learning.” arXiv:1509.02971. <a href="#fr-ddpg-1">↩</a></p>
+</li>
+<li id="footnote-trpo">
+<p>Schulman, J. et al. (2015). “Trust Region Policy Optimization.” ICML 2015. arXiv:1502.05477. <a href="#fr-trpo-1">↩</a></p>
+</li>
+<li id="footnote-sac">
+<p>Haarnoja, T., Zhou, A., Abbeel, P., Levine, S. (2018). “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” arXiv:1801.01290. <a href="#fr-sac-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning,” Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0). <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

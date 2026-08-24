@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -188,7 +188,8 @@
 사람이 매번 “정답 행동“을 알려주는 대신, 로봇이 만든 <strong>두 개의 시도(궤적)
 중 어느 쪽이 더 나은지 고르기만</strong> 하면 된다 — 이 아이디어는 형태만
 바뀌었을 뿐, LLM을 사람이 원하는 방향으로 다듬는 RLHF(Reinforcement
-Learning from Human Feedback)와 정확히 같은 구조다.</p>
+Learning from Human Feedback)<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">1</a></sup>와 정확히 같은 구조다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
 <p>같은 상황 \(x\)에 대해 로봇이 만든 두 궤적 \(y_w\)(사람이 더
 선호한 쪽)와 \(y_l\)(덜 선호한 쪽)이 있을 때, 보상모델
 \(r_\phi(x,y)\)가 \(y_w\)에 더 높은 점수를 주도록 학습한다.
@@ -202,10 +203,11 @@ Learning from Human Feedback)와 정확히 같은 구조다.</p>
     return -math.log(sigmoid(r_win - r_lose))
 </code></pre>
 <p>이렇게 학습된 보상모델 \(r_\phi\)가 준비되면, 그 점수를 Chapter
-9~11에서 배운 강화학습 알고리즘(특히 PPO)의 보상으로 그대로 사용해서
+9~11에서 배운 강화학습 알고리즘(특히 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">2</a></sup>)의 보상으로 그대로 사용해서
 정책을 학습시킬 수 있다 — “사람이 직접 보상함수를 수식으로 설계하기
 어려운 문제”(자연스러운 걸음걸이가 정확히 무엇인지 수식으로 정의하기는
 어렵지만, 두 개를 보고 비교하기는 쉽다)에서 특히 강력한 전략이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="왜-시연이-아니라-비교인가--두-가지-이유"><a class="header" href="#왜-시연이-아니라-비교인가--두-가지-이유">왜 “시연“이 아니라 “비교“인가 — 두 가지 이유</a></h3>
 <p>“정답을 시연해서 행동 복제(12.1절)로 배우면 되지 않는가“라고 묻기 쉽다.
 시연이 가능한 문제라면 12.1절이 실제로 더 단순하고 안전한 선택이다.
@@ -245,6 +247,10 @@ Learning from Human Feedback)와 정확히 같은 구조다.</p>
 같은 <em>정지</em> 문제다 — 탐색도, 환경과의 상호작용도 없다. 실전(예: LLM
 RLHF)에서는 사람의 “어느 쪽 답변이 더 나은가” 응답 수만~수십만 개를
 수집해 신경망 보상모델을 훈련한다.</p>
+<p>LLM에서 위 두 단계 파이프라인 — “사람의 선호 데이터로 보상모델을 학습하고,
+그 보상을 PPO에 넣어 정책을 최적화한다” — 은 실제로 챗봇을 훈련하는
+표준적인 방법이다.<sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">3</a></sup></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."><span class="img-wrapper"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."></span></label></p>
 <p><strong>단계 2 — 보상 최적화(강화학습).</strong> 학습된 \(r_\phi(x,y)\)를
 <em>보상함수로 그대로</em> PPO(Chapter 11)의 보상으로 넣고 정책을 최적화한다.
 여기서 “보상이 사람“이 아니라 “사람의 선호를 학습한 <em>대리 모델</em>“이 된다.
@@ -274,7 +280,7 @@ RLHF)에서는 사람의 “어느 쪽 답변이 더 나은가” 응답 수만~
 점수 매긴 지역)을 파고들며 점수는 오르는 데 실제 선호는 안 좋아지는</strong>
 행동을 배울 수 있다. 이는 바로 <strong>Goodhart의 법칙</strong>(Goodhart’s law) —
 “측정 지표가 목적이 되면 더 이상 좋은 지표가 아니다” — 의 강화학습
-버전이다: 보상을 “사람의 <em>진짜</em> 선호“가 아니라 “보상모델의 <em>출력</em>“으로
+버전이다 <sup class="footnote-reference" id="fr-rewardhacking-1"><a href="#footnote-rewardhacking">4</a></sup>: 보상을 “사람의 <em>진짜</em> 선호“가 아니라 “보상모델의 <em>출력</em>“으로
 대치한 순간, 정책이 최적화하는 대상은 <em>진짜 선호</em>가 아니라 <em>보상모델
 출력을 높이는 것</em>이 돼 버린다. Chapter 13의 로봇
 제어에서는 이것이 “로봇이 실제 보상을 회피하는 <em>다른</em> 지표(예: 벽에
@@ -421,7 +427,7 @@ RLHF의 필수 조건이 아니다.</p>
 <p><strong>Q. 이번 절의 “사람이 두 궤적을 비교“와 12.1절 DAgger의 “전문가가
 새 상태에 대해 정답 행동 알려주기“의 차이는 무엇인가?</strong> 둘 다 “사람이
 학습에 개입한다“는 공통점이 있지만, 사람이 <em>제공하는 것</em>이
-달랐다. DAgger는 (상태, <em>정답 행동</em>) 쌍을 주는 <em>지도학습</em>이고(=
+달랐다. DAgger<sup class="footnote-reference" id="fr-dagger-1"><a href="#footnote-dagger">5</a></sup>는 (상태, <em>정답 행동</em>) 쌍을 주는 <em>지도학습</em>이고(=
 시연), 이 절은 (두 <em>시도</em> 중 <em>더 나은 쪽</em>)만 주는 <em>비교</em>를
 준다. 정답 행동을 주면 그 행동을 <em>복사</em>할 뿐이지만(상한=사람), 더
 나은 쪽만 주면 정책이 그 방향 <em>이상을 탐험</em>할 수 있다(상한 초월
@@ -436,6 +442,28 @@ RLHF의 필수 조건이 아니다.</p>
 그 “대리 모델 보상으로의 교체“가 강력한 동시에 보상모델의 약점을
 파고드는 보상 해킹의 입구이기도 하다 — 이 점은 Chapter 13의 로봇
 제어에서 구체적으로 확인한다.</em></em></p>
+<p>이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">6</a></sup></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-rlhf">
+<p>Christiano, P. et al. (2017). “Deep reinforcement learning from human preferences.” NeurIPS 2017. arXiv:1706.03741. <a href="#fr-rlhf-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-instructgpt">
+<p>Ouyang, L. et al. (2022). “Training language models to follow instructions with human feedback.” arXiv:2203.02155. <a href="#fr-instructgpt-1">↩</a></p>
+</li>
+<li id="footnote-rewardhacking">
+<p>Skalse, J., Howe, N. H. R., Krasheninnikov, D., Krueger, D. (2022). “Defining and Characterizing Reward Hacking.” arXiv:2209.13085. <a href="#fr-rewardhacking-1">↩</a></p>
+</li>
+<li id="footnote-dagger">
+<p>Ross, S., Gordon, G. J., Bagnell, J. A. (2011). “A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning.” ICML 2011. arXiv:1011.0686. <a href="#fr-dagger-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

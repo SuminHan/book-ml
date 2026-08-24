@@ -1,14 +1,21 @@
 # Chapter 16. Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone & Semester Review)
 
-Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN), 정책을 직접
-학습하고(REINFORCE, PPO), 사람의 시연·선호로부터 배우고(모방학습), 실제
-물리 시뮬레이션(MuJoCo, Isaac Sim)과 트리 탐색(MCTS)까지 다뤘다. 이번
-장은 Chapter 8의 짝이다 — 이 두 번째 절반의 도구들을 로봇 시뮬레이션
-환경에 직접 적용해보고, 학기 전체를 총정리한다.
+Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN)[^dqn], 정책을
+직접 학습하고(REINFORCE, PPO)[^ppo], 사람의 시연·선호로부터
+배우고(모방학습)[^rlhf], 실제 물리 시뮬레이션(MuJoCo[^mujoco], Isaac Sim[^isaacsim])과 트리
+탐색(MCTS)[^mcts]까지 다뤘다. 이번 장은 Chapter 8의 짝이다 — 이 두 번째 절반의
+도구들을 로봇 시뮬레이션 환경에 직접 적용해보고, 학기 전체를 총정리한다.
+
+![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
+
+![서로게이트 함수 L\_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
+
+![Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다.](../images/ref_rlhf.png)
 
 왜 이 순서인가. 이전 장("모델기반 RL과 몬테카를로 트리 탐색")은
-"모델이 있을 때"의 도구 상자 마지막 조각, MCTS를 보여줬다 — AlphaGo의
-무기였던 UCT로 트리를 탐색하고, 정책·가치 네트워크가 탐색을 어떻게 돕는지
+"모델이 있을 때"의 도구 상자 마지막 조각, MCTS를 보여줬다 — AlphaGo[^alphago]의
+무기였던 UCT[^uct]로 트리를 탐색하고, 정책·가치 네트워크가 탐색을
+어떻게 돕는지
 짚은 장이다. Chapter 15가 이 두 번째 절반에서 새 도구를 추가한 마지막 장
 인 셈이므로, 이 장부터는 배울 개념이 남지 않는다. 대신 이 책은 손에 든
 도구들을 실제 로봇 시뮬레이션 환경에 직접 적용해, 그 결과를 정직하게
@@ -17,6 +24,8 @@ Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN), �
 다른 무대 — 연속 제어 + 신경망 — 에서 다시 집행한다. 세 절은 "프로젝트를
 실행해 발표한다(16.1) → 서로를 심사한다(16.2) → 학기 전체를 자기 것으로
 다진다(16.3)"라는 하나의 아크를 이룬다.
+
+![정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1).](../images/ref_alphago.png)
 
 이번 챕터의 학습 목표는 다음과 같다.
 
@@ -60,4 +69,14 @@ Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN), �
   경로(동적계획법, 몬테카를로, SARSA, Q-learning)로 풀어 "같은
   방정식, 다른 형태"를 숫자로 확인한다. 그 뒤 ML2 개념 지도, 20문항
   복습 자가진단, 학기 이후에 가져갈 세 가지와 최신 동향(오프라인 RL,
-  범용 로봇 정책, sim-to-real)으로 이 학기를 마무리한다.
+  범용 로봇 정책, sim-to-real)으로 이 학기를 마무리한다.[^cs234]
+
+[^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)
+[^ppo]: Schulman, J. et al. (2017). "Proximal Policy Optimization Algorithms." arXiv:1707.06347.
+[^rlhf]: Christiano, P. et al. (2017). "Deep reinforcement learning from human preferences." NeurIPS 2017. arXiv:1706.03741.
+[^alphago]: Silver, D. et al. (2016). "Mastering the game of Go with deep neural networks and tree search." Nature 529, 484–489.
+[^cs234]: 이 장의 주제(연속제어 RL, 팀 프로젝트 실습, 시드·베이스라인·평가 분리 프로토콜)를 더 깊이 다루는 자료: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+[^uct]: Kocsis, L., Szepesvári, C. (2006). "Bandit based Monte-Carlo Planning." ECML 2006, LNAI 4212, 282–293. — UCT(Upper Confidence bounds applied to Trees)의 원 논문.
+[^mujoco]: Todorov, E., Eret, T., Tassa, Y. (2012). "MuJoCo: A physics engine for model-based control." IROS 2012, 5026–5033.
+[^isaacsim]: Gao, S., Pagnucco, M., Bednarz, T., Song, Y. (2026). "NVIDIA Isaac Sim: Enabling Scalable, GPU-Accelerated Simulation for Robotics." arXiv:2606.03551.
+[^mcts]: Browne, C. B., Cowling, P. I., White, M., et al. (2012). "A Survey of Monte Carlo Tree Search Methods." IEEE Transactions on Computational Intelligence and AI in Games 4(1), 1–43. MCTS 방법론을 체계적으로 정리한 대표적 서베이 — "Monte-Carlo Tree Search"라는 이름과 선택·확장·평가·역전파의 표준 4단계 체계가 이 무렵 확립되었다.

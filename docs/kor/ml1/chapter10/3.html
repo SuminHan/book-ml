@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -199,7 +199,7 @@
 이미 잘한다)가 아니라 “여러 개, 각기 다른 위치“를 하나의 전진전파(forward
 pass)로 어떻게 다루는가다. 2010년대 탐지 연구는 정확히 이 두 질문에
 서로 다른 구조로 답해 온 역사(R-CNN → Fast R-CNN → YOLO → …)인데,
-이 절에서는 그중 첫발이자 가장 단순한 <strong>R-CNN</strong>(2014, Girshick 등)을
+이 절에서는 그중 첫발이자 가장 단순한 <strong>R-CNN</strong>(2014, Girshick 등)<sup class="footnote-reference" id="fr-rcnn-1"><a href="#footnote-rcnn">1</a></sup>을
 한 번 파헤쳐 “CNN 위에 다른 헤드(head)를 붙이면 문제가 바뀐다“는
 골격을 확인한다.</p>
 <h4 id="r-cnn-후보--특징--판정-3단계-파이프라인"><a class="header" href="#r-cnn-후보--특징--판정-3단계-파이프라인">R-CNN: “후보 → 특징 → 판정” 3단계 파이프라인</a></h4>
@@ -233,18 +233,18 @@ pass)로 어떻게 다루는가다. 2010년대 탐지 연구는 정확히 이 �
 모델들이 이 분업을 처음 체계화했다.) 대가는 <strong>속도</strong>였다 — PASCAL VOC
 2012 테스트세트(20,000장) 전체를 한 GPU로 돌리면 약 <strong>463초</strong>, 같은
 조건 슬라이딩 윈도우 방식이 약 <strong>605초</strong>(논문 수치, 약 1.3배)로
-“느리지만 정확했다”. 이 정확도가 2014년 ImageNet·PASCAL 탐지를 제패
+“느리지만 정확했다”. 이 정확도가 2014년 ImageNet<sup class="footnote-reference" id="fr-imagenet-1"><a href="#footnote-imagenet">2</a></sup>·PASCAL 탐지를 제패
 (전 SOTA 대비 15%대 mAP 향상)했고, 이후 연구는 전부 “정확도를 유지한
 채 이 파이프라인을 어떻게 빠르게 할 것인가“였다:</p>
 <ul>
-<li><strong>Fast R-CNN</strong>(2015): 2,000개 후보를 <em>각각</em> 통과시키는 대신, 이미지
+<li><strong>Fast R-CNN</strong>(2015)<sup class="footnote-reference" id="fr-fastrcnn-1"><a href="#footnote-fastrcnn">3</a></sup>: 2,000개 후보를 <em>각각</em> 통과시키는 대신, 이미지
 하나를 한 번 통과시켜 특징맵을 만들고 후보마다 해당 영역의 특징만
 <strong>풀링으로 공유</strong> 재사용한다 — 2,000회 전진전파가 1회로 줄어 10배
 이상 빠진다.</li>
-<li><strong>Faster R-CNN</strong>(2015): 후보 추출(셀렉티브 서치) 자체도 학습 가능한
+<li><strong>Faster R-CNN</strong>(2015)<sup class="footnote-reference" id="fr-fasterrcnn-1"><a href="#footnote-fasterrcnn">4</a></sup>: 후보 추출(셀렉티브 서치) 자체도 학습 가능한
 합성곱 층(RPN, Region Proposal Network)으로 바꾼다 — “2012년
 딥러닝 이전 기술“이 파이프라인에서 마지막 남은 고리였다.</li>
-<li><strong>YOLO</strong>(2016, “You Only Look Once”): 후보도 단계도 없애고, 10.2
+<li><strong>YOLO</strong>(2016, “You Only Look Once”)<sup class="footnote-reference" id="fr-yolo-1"><a href="#footnote-yolo">5</a></sup>: 후보도 단계도 없애고, 10.2
 마지막처럼 특징맵의 <strong>격자 위치마다</strong> (클래스, 박스 좌표)를 <strong>한
 번의</strong> 전진전파로 직접 회귀한다 — 탐지를 “회귀 문제로” 재정의한 것.
 실시간 탐지의 표준이 됐고, 자율주행·영상 인식의 기본기가 됐다.</li>
@@ -289,7 +289,7 @@ pass)로 어떻게 다루는가다. 2010년대 탐지 연구는 정확히 이 �
 비율은 박스를 함께 키우면(스케일하면) 변하지 않는다 — “얼마나 겹치는가”
 자체만 잰다. (탐지 모델의 <strong>훈련 라벨링</strong>에서도 IoU가 쓰인다: 예측
 박스가 정답 박스와 IoU ≥ 0.5이면 “탐지 성공“으로 쳐주는 정밀도 평가
-규칙이 PASCAL VOC·COCO 표준이다 — 같은 함수가 학습·평가 양쪽에
+규칙이 PASCAL VOC·COCO<sup class="footnote-reference" id="fr-coco-1"><a href="#footnote-coco">6</a></sup> 표준이다 — 같은 함수가 학습·평가 양쪽에
 들어가는 셈이다.)</p>
 <div class="table-wrapper">
 <table>
@@ -323,7 +323,7 @@ IoU 0.68 &gt; 0.5 → <strong>제거</strong>. 남은 C(0.75)가 보관되고, D
 규칙이 가장 일반화된다. 파이프라인의 모든 부위가 미분 가능해야
 하는 것은 아니다.</p>
 <h4 id="분할-격자-위치마다-붙은-분류기"><a class="header" href="#분할-격자-위치마다-붙은-분류기">분할: “격자 위치마다 붙은 분류기”</a></h4>
-<p>10.2의 분류 네트워크를 끝까지 펼쳐보자 — VGG 계열처럼 224×224 입력이
+<p>10.2의 분류 네트워크를 끝까지 펼쳐보자 — VGG 계열<sup class="footnote-reference" id="fr-vgg-1"><a href="#footnote-vgg">7</a></sup>처럼 224×224 입력이
 2×2 최대풀링을 5번 거치면 공간 크기는 \(224/2^5 = 7\)로 줄고, 마지막
 합성곱 층의 출력은 \(7\times7\) <strong>격자</strong>(채널 512개)다. 분류 헤드란
 그 격자를 펼쳐서 1,000개 클래스 점수 하나로 모으는 층일 뿐이다.</p>
@@ -345,7 +345,7 @@ IoU 0.68 &gt; 0.5 → <strong>제거</strong>. 남은 C(0.75)가 보관되고, D
 아니라 7×7 격자점인 이유는 풀링이 공간 정보를 반으로 줄인 5번의 결과
 — 그래서 실제 분할 모델은 10.2의 풀링을 줄이고, U-Net처럼 공간
 해상도를 다시 되살리는 구조를 쓴다, 아래에서.)</p>
-<p><strong>해상도 복원: U-Net</strong>(2015, Ronneberger 등). “7×7 격자의 예측을
+<p><strong>해상도 복원: U-Net</strong>(2015, Ronneberger 등)<sup class="footnote-reference" id="fr-unet-1"><a href="#footnote-unet">8</a></sup>. “7×7 격자의 예측을
 224×224 원본으로 되돌린다“는 것은 공간 크기를 5번 <em>더블업</em>(업
 샘플링)하는 문제다 — 풀링의 역방향. <strong>U-Net</strong>은 10.2의 “줄여가는”
 코더(encoder) 끝에 업샘플링으로 “늘려가는” 디코더(decoder)를
@@ -353,11 +353,12 @@ IoU 0.68 &gt; 0.5 → <strong>제거</strong>. 남은 C(0.75)가 보관되고, D
 도로인지(정확한 경계)를 되찾기 어렵다 — 위치 정보는 풀링에 이미
 버려졌기 때문이다. 해결책은 10.2의 <strong>스킵 연결</strong>이다 — 코더의 <em>초기
 층</em>(위치 정보가 아직 살아 있는 층)의 특징맵을 디코더의 <em>해당 레벨</em>에
-<strong>그대로 건너뛰어 더한다</strong>. ResNet이 스킵 연결로 <em>깊이</em>를 쌓을 수
+<strong>그대로 건너뛰어 더한다</strong>. ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">9</a></sup>이 스킵 연결로 <em>깊이</em>를 쌓을 수
 있게 했다면, U-Net은 스킵 연결로 <em>해상도</em>를 되찾은 셈이다. U-Net이
 오늘날 <strong>의료 영상 분할</strong>(병리 슬라이드, 초음파)의 표준인 이유는
 “몇십 장의 라벨만으로도 쓸만하게 학습된다“는 점 — 아래 절의
-전이학습·소데이터 이야기와 정확히 겹치는 지점이다.</p>
+전이학습·소데이터 이야기와 정확히 겹치는 지점이다.<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">10</a></sup></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."><span class="img-wrapper"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."></span></label></p>
 <h3 id="전이학습-처음부터-다시-배우지-않는다"><a class="header" href="#전이학습-처음부터-다시-배우지-않는다">전이학습: 처음부터 다시 배우지 않는다</a></h3>
 <p>ImageNet(수백만 장의 이미지) 같은 대규모 데이터로 미리 학습된 CNN의
 앞쪽 층들은 선/모서리/질감 같은 아주 범용적인 패턴을 감지하도록 학습돼
@@ -374,7 +375,7 @@ IoU 0.68 &gt; 0.5 → <strong>제거</strong>. 남은 C(0.75)가 보관되고, D
 데이터가 어느 정도 있을 때 특징 추출보다 더 좋은 성능을 낸다.</li>
 </ul>
 <p><strong>“앞쪽 층은 범용하다“는 말의 첫 증거.</strong> 이 주장은 추측이 아니라
-<em>보여준</em> 것 — AlexNet 논문(Krizhevsky 등, 2012)이 학습된 첫
+<em>보여준</em> 것 — AlexNet 논문(Krizhevsky 등, 2012)<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">11</a></sup>이 학습된 첫
 합성곱 층의 필터를 그림으로 인쇄했고, 거기서는 방향/색 대비를 감지하는
 Gabor 같은 필터들이 늘어서 있었다 — 장 머리에서 허블·비셀이 고양이
 시각피질에서 본 단순 세포의 수용장과 동일한 종류의 패턴이다. ImageNet
@@ -383,6 +384,7 @@ Gabor 같은 필터들이 늘어서 있었다 — 장 머리에서 허블·비�
 특징이 눈·바퀴·사물 부분으로 “사물화“되는 계층 구조(10.2) 때문에,
 <strong>앞으로 갈수록 재사용 가치가 높다</strong> — 전이학습은 정확히 이 비대칭을
 이용한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
 <p><strong>같은 작은 작업에서 세 가지 방식 비교.</strong> 이 주장이 “실제로” 성립하는지
 10.2의 <code>SmallCNN</code>(세로줄/가로줄 분류) 위에서 실험으로 확인한다 —
 동일 아키텍처·동일 데이터(300 학습/200 검증)·동일 30 에폭, <em>다만
@@ -538,7 +540,7 @@ opt = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr
 <tbody>
 <tr><td>분류</td><td>벡터 1개(K개 클래스 점수)</td><td>격자 펼치기 + 선형층 1개</td><td>VGG, ResNet</td></tr>
 <tr><td>객체 탐지</td><td>(클래스, 박스 좌표 4개) × N개 사물</td><td>후보 생성 + 박스별 분류기(SVM) + NMS</td><td>R-CNN, Fast R-CNN, YOLO</td></tr>
-<tr><td>의미론적 분할</td><td>입력과 같은 크기의 클래스 지도</td><td>위치별 공유 1×1 합성곱(출력 채널 = 클래스 수)</td><td>U-Net, FCN</td></tr>
+<tr><td>의미론적 분할</td><td>입력과 같은 크기의 클래스 지도</td><td>위치별 공유 1×1 합성곱(출력 채널 = 클래스 수)</td><td>U-Net, FCN<sup class="footnote-reference" id="fr-fcn-1"><a href="#footnote-fcn">12</a></sup></td></tr>
 <tr><td>전이학습</td><td>(위 중 아무거나)</td><td>헤드만 재학습, 또는 낮은 학습률로 전체 미세조정</td><td>—</td></tr>
 </tbody>
 </table>
@@ -650,6 +652,45 @@ x_{l-1}} = \frac{\partial F_l}{\partial x_{l-1}} + 1\)이다. 이 곱을
 항</strong>이 정확히 1로 살아남는다는 것을 보여라. 스킵 연결이 없는 경우(Chapter
 9의 \(\prod_l \sigma’(z_l)\cdot W_l\))와 비교했을 때, 이 “+1” 항이 왜
 그래디언트 소실을 근본적으로 막아주는지 한 문단으로 설명하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-rcnn">
+<p>Girshick, R., Donahue, J., Darrell, T., Malik, J. (2014). “Rich feature hierarchies for accurate object detection and semantic segmentation.” ICCV 2014. arXiv:1311.2524. <a href="#fr-rcnn-1">↩</a></p>
+</li>
+<li id="footnote-imagenet">
+<p>Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., Fei-Fei, L. (2009). “ImageNet: A Large-Scale Hierarchical Image Database.” CVPR 2009. <a href="#fr-imagenet-1">↩</a></p>
+</li>
+<li id="footnote-fastrcnn">
+<p>Girshick, R. (2015). “Fast R-CNN.” ICCV 2015. arXiv:1504.08083. <a href="#fr-fastrcnn-1">↩</a></p>
+</li>
+<li id="footnote-fasterrcnn">
+<p>Ren, S., He, K., Girshick, R., Sun, J. (2015). “Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.” NeurIPS 2015. arXiv:1506.01497. <a href="#fr-fasterrcnn-1">↩</a></p>
+</li>
+<li id="footnote-yolo">
+<p>Redmon, J., Divvala, S., Girshick, R., Farhadi, A. (2016). “You Only Look Once: Unified, Real-Time Object Detection.” CVPR 2016. arXiv:1506.02640. <a href="#fr-yolo-1">↩</a></p>
+</li>
+<li id="footnote-coco">
+<p>Lin, T.-Y., Maire, M., Belongie, S., et al. (2014). “Microsoft COCO: Common Objects in Context.” ECCV 2014. arXiv:1405.0312. <a href="#fr-coco-1">↩</a></p>
+</li>
+<li id="footnote-vgg">
+<p>Simonyan, K., Zisserman, A. (2015). “Very Deep Convolutional Networks for Large-Scale Image Recognition.” ICLR 2015. arXiv:1409.1556. <a href="#fr-vgg-1">↩</a></p>
+</li>
+<li id="footnote-unet">
+<p>Ronneberger, O., Fischer, P., Brox, T. (2015). “U-Net: Convolutional Networks for Biomedical Image Segmentation.” arXiv:1505.04597. <a href="#fr-unet-1">↩</a></p>
+</li>
+<li id="footnote-resnet">
+<p>He, K., Zhang, X., et al. (2015). “Deep Residual Learning for Image Recognition.” arXiv:1512.03385. <a href="#fr-resnet-1">↩</a></p>
+</li>
+<li id="footnote-cs230">
+<p>더 깊이 보려면: Stanford CS230: Deep Learning. https://cs230.stanford.edu/ — 이 절의 객체 탐지(R-CNN 계열), 의미론적 분할(U-Net), 전이학습(특징 추출/미세조정)은 CS230의 Object Detection, Image Segmentation, Transfer Learning 강의와 직접 겹친다. <a href="#fr-cs230-1">↩</a></p>
+</li>
+<li id="footnote-alexnet">
+<p>Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). “ImageNet Classification with Deep Convolutional Neural Networks.” NeurIPS 2012. <a href="#fr-alexnet-1">↩</a></p>
+</li>
+<li id="footnote-fcn">
+<p>Long, J., Shelhamer, E., Darrell, T. (2015). “Fully Convolutional Networks for Semantic Segmentation.” CVPR 2015. arXiv:1411.4038. <a href="#fr-fcn-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

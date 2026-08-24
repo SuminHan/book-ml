@@ -1,11 +1,11 @@
 # Chapter 14. 고급 시뮬레이션: MuJoCo와 Isaac Sim (Advanced Simulation: MuJoCo & Isaac Sim)
 
-Chapter 13에서 쓴 Gymnasium의 기본 환경들은 물리를 간단한 근사식으로만
+Chapter 13에서 쓴 Gymnasium[^gym]의 기본 환경들은 물리를 간단한 근사식으로만
 계산한다 — 학습 속도는 빠르지만, 접촉(contact)이나 마찰처럼 로봇
 제어에서 중요한 물리 현상은 거칠게만 흉내 낸다. 실전 로봇 연구에서는
 훨씬 정교한 물리엔진을 쓴다. 이번 장은 그중 두 가지 — CPU에서도 도는
-정밀한 물리엔진 **MuJoCo**와, GPU로 수천 개의 시뮬레이션을 동시에 돌리는
-**NVIDIA Isaac Sim** — 을 소개하고, 언제 무엇을 쓸지 정리한다.
+정밀한 물리엔진 **MuJoCo**[^mujoco]와, GPU로 수천 개의 시뮬레이션을 동시에 돌리는
+**NVIDIA Isaac Sim**[^isaacgym] — 을 소개하고, 언제 무엇을 쓸지 정리한다.
 두 도구를 놓고 이 장이 줄곧 묻는 질문은 하나다: **같은 강화학습
 알고리즘 위에 시뮬레이터를 교체했을 때, 무엇이 바뀌고 무엇이 그대로
 남는가.** 정밀하고 빠른 물리는 어디까지 필요한가, 그 비용을 누가
@@ -13,17 +13,19 @@ Chapter 13에서 쓴 Gymnasium의 기본 환경들은 물리를 간단한 근사
 블록의 줄거리다.
 
 왜 이 순서인가. Chapter 13("로봇 시뮬레이션과 제어 기초")은 "시뮬레이터
-안에서 먼저 익히고, 이후에 실물로 옮긴다"는 전제를 세웠다 — PPO를 연속
+안에서 먼저 익히고, 이후에 실물로 옮긴다"는 전제를 세웠다 — PPO[^ppo]를 연속
 행동으로 확장해 Reacher를 학습시키고, 평가 프로토콜을 세웠으며, 시뮬레이션
-과 실물의 격차(reality gap)와 그 대응책(도메인 무작위화, 시스템 ID)까지
+과 실물의 격차(reality gap)와 그 대응책(도메인 무작위화[^domainrandomization], 시스템 ID)까지
 짚었다. 이번 장은 그 전제에서 **알고리즘은 그대로 두고, 시뮬레이터 자체를
 실전 연구 수준으로 올리는** 장이다 — 같은 `env.step()` 위에 물리엔진만
 바꾸면 된다는 사실까지 직접 확인한다. 한편 다음 장("모델기반 RL과
-몬테카를로 트리 탐색")은 그 물리 모델이 주어지지 않는 문제 — 모델이
+몬테카를로 트리 탐색[^cs234]")은 그 물리 모델이 주어지지 않는 문제 — 모델이
 *학습될 대상*이 되는 경우 — 로 넘어간다. 시뮬레이터가 주는 경험인지,
 배운 모델이 주는 경험인지에 따라 "경험을 모으는 방식"이 어떻게 달라지는지
 생각하려면, 이번 장의 시뮬레이션 경험이 어떤 계산인지부터 짚어둬야
 한다.
+
+![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
 
 이번 챕터의 학습 목표는 다음과 같다.
 
@@ -64,3 +66,14 @@ Chapter 13에서 쓴 Gymnasium의 기본 환경들은 물리를 간단한 근사
   축임을 구분한다. 초당 스텝 수를 실측해 "총 스텝 수 ÷ 초당 스텝 수 =
   실 시간"으로 계산하며, "CartPole 벤치마크로 'CPU면 충분'이라 결론내는
   것" 같은 자주 하는 실수를 포함해 30초 결정 절차까지 만든다.
+
+[^ppo]: Schulman, J. et al. (2017). "Proximal Policy Optimization Algorithms." arXiv:1707.06347.
+
+[^domainrandomization]: Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., Abbeel, P. (2017). "Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World." IROS 2017. arXiv:1703.06907.
+
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+
+[^gym]: Brockman, G. et al. (2016). "OpenAI Gym." arXiv:1606.01540. (Gymnasium은 Gym의 공식 후속 프로젝트)
+
+[^isaacgym]: Makoviychuk, V., Wawrzyniak, L., Guo, Y., Lu, M., Storey, K., Macklin, M., Hoeller, D., Rudin, N., Allshire, A., Handa, A., State, G. (2021). "Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning." arXiv:2108.10470. (Isaac Sim의 기반이 되는 GPU 병렬 물리 시뮬레이션의 원 논문)
+[^mujoco]: Todorov, E., Erez, T., Tassa, Y. (2012). "MuJoCo: A physics engine for model-based control." IROS 2012 (IEEE/RSJ International Conference on Intelligent Robots and Systems), pp. 5026-5033.

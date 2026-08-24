@@ -22,7 +22,7 @@ Chapter 3에서 MDP를 정식화했지만, "누적 보상을 최대화하는 행
 모델을 전혀 몰라도 에피소드를 실제로 플레이해보며 경험만으로 가치와
 정책을 배우는 방법이다.
 
-세 절이 같은 예제 위에서 진행되니 직관이 쌓인다. 5칸짜리 GridWorld(
+세 절이 같은 예제 위에서 진행되니 직관이 쌓인다. 5칸짜리 GridWorld[^suttonbarto] (
 칸 0~4, 칸 4가 목표, 걸음마다 \\(-1\\)의 보상, \\(\\gamma = 0.9\\))로
 시작해 4.1절에서는 그 위에 정해진 두 정책의 가치를 나란히 평가하고,
 4.2절에서는 정책 반복을 돌려 최적 정책을 "직접" 발견하며, 4.3절에서는
@@ -68,7 +68,19 @@ Chapter 3에서 MDP를 정식화했지만, "누적 보상을 최대화하는 행
 한 줄로 요약하면, 이번 장에서 배울 것은 "벨만방정식은 **연립방정식이
 아니라 반복 대입으로 푸는 것**"이라는 감각이다. 이 감각은 이후 장들
 에서 그대로 재사용된다: Chapter 6의 시간차(TD) 업데이트는 이 반복을
-"모델 대신 경험으로" 근사한 것이고, Chapter 9의 DQN은 같은 벨만
+"모델 대신 경험으로" 근사한 것이고, Chapter 9의 DQN[^dqn]은 같은 벨만
 최적방정식의 고정점을 신경망으로 찾아가는 것이다. 즉, 이번 장의
 알고리즘은 모델 기반이라는 제약이 있지만, "최적해 = 벨만방정식의
 고정점"이라는 뼈대는 이후 모든 장의 기준점이 된다.
+
+![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
+
+이 장의 동적계획법을 함수근사 기반으로 확장하는 주제(모델 기반 RL과
+Dyna 계열 프레임워크)를 더 깊이 보려면: [^cs234] 동적계획법 자체에
+대한 더 깊이 있는 강의자료로는 UCL의 David Silver 강화학습 강의를
+참고하라: [^silvercourse]
+
+[^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+[^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 이 장의 주제(동적계획법)는 이 표준 교과서 4장 "Dynamic Programming"과 직접 대응한다.
+[^silvercourse]: Silver, D. (2015). "UCL Course on Reinforcement Learning." https://www.davidsilver.uk/teaching/

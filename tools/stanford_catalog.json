@@ -1,0 +1,353 @@
+[
+  {
+    "slug": "cs224n_derivatives",
+    "filename": "derivatives.pdf",
+    "course": "CS224N",
+    "title": "Derivatives, Backpropagation, and Vectorization (Justin Johnson, 2017-09-06)",
+    "summary": "스칼라 미분에서 출발해 체인룰, 벡터 입출력 자코비안, 텐서 입출력 일반화 자코비안(일반화 행렬)까지 미분의 언어를 정리한다. 이 도구를 사용해 손실 L을 가중치에 대한 일반화 자코비안 곱으로 표현하며, 자코비안 행렬을 메모리에 다 담을 수 없으므로 필요한 부분만 계산하는 역전파를 유도한다. 마지막에 벡터화로 미분 계산과 전산 그래디언트(autograd)의 연결을 설명한다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "09",
+        "section": "1",
+        "label": "9.1 퍼셉트론의 한계, 순전파, 역전파",
+        "why": "체인룰로 역전파의 δ 식을 유도한다는 점이 이 노트의 역전파 유도와 직접 대응한다"
+      },
+      {
+        "book": "ml1",
+        "chapter": "09",
+        "section": "2",
+        "label": "9.2 그래디언트 소실·폭발, 활성함수, 초기화",
+        "why": "역전파가 미분값을 층마다 곱해 전달하는 구조(자코비안의 행 곱)가 그래디언트 소실의 원인인 점을 함께 다룬다"
+      },
+      {
+        "book": "ml1",
+        "chapter": "11",
+        "section": "2",
+        "label": "11.2 BPTT와 numpy RNN 언어모델 실습",
+        "why": "BPTT는 이 노트의 체인룰·자코비안 도구를 시간축 사슬에 그대로 적용한 사례다"
+      }
+    ]
+  },
+  {
+    "slug": "cs224n_python_review",
+    "filename": "CS224N_Python_Review_Session_Slides.pdf",
+    "course": "CS224N",
+    "title": "Python Review Session (CS224N - Winter 25)",
+    "summary": "CS224N(자연어 처리)의 Python 복습 세션 슬라이드로, Python이 딥러닝 생태계(PyTorch, TensorFlow)의 표준이 된 이유와 설치/환경 관리(conda, pip, venv, Jupyter)부터 언어 기초(타이핑, 데이터 구조, 반복문, 클래스)를 다룬다. 마지막으론 NumPy를 소개하며, 과학계산과 ML 코딩의 실용 팁까지 아우르는 실무 진입 교재이다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "01",
+        "section": "3",
+        "label": "1.3 데이터사이언스 파이프라인과 사전지식 리뷰",
+        "why": "이 절의 '수학과 Python 사전지식 리뷰' 부록이 순수 Python(리스트, for 루프)과 numpy 벡터 연산 기초를 다루어, 이 강의가 가르치는 내용과 정확히 겹친다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "11",
+        "section": "2",
+        "label": "11.2 BPTT와 numpy RNN 언어모델 실습",
+        "why": "numpy만으로 RNN과 BPTT를 구현하는 실습이라, 이 강의의 NumPy 섹션이 바로 그 실습의 전제 기술이다."
+      },
+      {
+        "book": "ml2",
+        "chapter": "01",
+        "section": "3",
+        "label": "ML2 1.3 실습 환경 세팅: Gymnasium",
+        "why": "Gymnasium 설치/실습 환경 구축절로, 이 강의의 'Setting Up'(pip/conda/venv) 섹션과 동일한 환경 관리 주제를 실습 중심으로 다룬다."
+      }
+    ]
+  },
+  {
+    "slug": "cs230_c5m4_transformer",
+    "filename": "C5M4_transformer.pdf",
+    "course": "CS230",
+    "title": "Transformers Intuition",
+    "summary": "앤드류 응(deeplearning.ai)의 CS230 슬라이드로, RNN/GRU/LSTM 기반 seq2seq 모델의 순차 처리 한계를 지적하며 트랜스포머 도입을 동기화한다. Self-Attention의 직관을 'Jane visite l'Afrique en septembre' 예시로 풀어 Q·K·V를 정의하고, Attention(Q,K,V) = softmax(QK^T/√d_k)V인 scaled dot-product attention과 Multi-Head Attention(여러 헤드의 concat 후 선형변환)까지 단계별로 전개한다. 마지막 슬라이드에서는 masked multi-head attention과 feed-forward를 갖춘 트랜스포머 인코더-디코더 전체 구조를 보여준다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "12",
+        "section": "1",
+        "label": "12.1 어텐션 아이디어와 Query·Key·Value",
+        "why": "슬라이드의 'Self-Attention Intuition' 부분이 어텐션의 동기와 Q·K·V의 역할을 같은 예문으로 설명하고 있어 이 절과 거의 1:1로 겹친다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "12",
+        "section": "2",
+        "label": "12.2 Scaled Dot-Product Attention과 Self-Attention",
+        "why": "슬라이드가 Attention(Q,K,V) = softmax(QK^T/d_k) V 수식과 self-attention을 직접 다루며, 이 절의 핵심 수식과 동일하다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "12",
+        "section": "3",
+        "label": "12.3 Multi-Head Attention과 Positional Encoding",
+        "why": "슬라이드의 Multi-Head Attention 파트(head_i = Attention(W_Q^i Q, W_K^i K, W_V^i V), concat 후 W_o 선형변환)가 이 절의 내용과 직접 대응한다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "11",
+        "section": "1",
+        "label": "11.1 RNN: 은닉 상태와 순전파",
+        "why": "슬라이드의 'Transformers Motivation' 페이지가 RNN/GRU/LSTM의 순차 처리 복잡도를 트랜스포머 도입의 동기로 제시하는데, 이는 11장의 RNN 한계 논의에서 출발한다."
+      }
+    ]
+  },
+  {
+    "slug": "cs230_lecture02",
+    "filename": "lecture02.pdf",
+    "course": "CS230",
+    "title": "Key AI Concepts Through Case Studies",
+    "summary": "CS230 2강(Kian Katanforoosh)은 먼저 지난 주 개념을 정리하며 로지스틱회귀를 신경망으로 보고, 은닉층과 깊어지는 네트워크(인코딩·feature learning)까지 순전파 구조를 쌓아 올린다. 이어 데이&나이트 이미지 분류, 트리거 워드 감지, 얼굴 인증(FaceNet의 triplet loss, 인코더 네트워크)이라는 3개의 감독학습 프로젝트 사례를 데이터·구조·손실함수 관점으로 분석한다. 후반부에서는 라벨이 없는 이미지 임베딩을 위한 자기지도학습(SimCLR 대조학습), 다음 토큰 예측으로 자기지도를 하는 GPT, 그리고 CLIP/ImageBind 같은 멀티모달 임베딩(약한 지도)을 소개한다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "09",
+        "section": "1",
+        "label": "9.1 퍼셉트론의 한계, 순전파, 역전파",
+        "why": "강의 초반 Recap이 로지스틱회귀(단층 시그모이드)부터 멀티클래스 출력, 은닉층 1개, 더 깊은 네트워크('인코딩')로 이어가며 순전파 구조를 단계적으로 쌓는 과정은 9.1의 '퍼셉트론에서 다층 신경망으로' 서사와 직접 겹친다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "10",
+        "section": null,
+        "label": "10장 CNN 기초와 응용",
+        "why": "데이&나이트 분류에 '얕은 CNN이면 충분'이라고 제안하고, 얼굴 인증 인코더 네트워크도 CNN 계열이라는 전제 위에서 다루는 등, 이 장의 CNN 구조·적용이 강의 사례들의 기반 구조다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": "1",
+        "label": "13.1 언어모델링: 다음 토큰 예측과 사전학습·파인튜닝",
+        "why": "강의가 'GPT도 텍스트로 자기지도학습을 한다'며 다음 토큰 예측을 자기지도의 대표 사례로 들고, 단순한 예측 목표에서 문법·지식 같은 능력이 부각된다고 설명하는 부분은 13.1의 '다음 토큰 예측이 부산물로 문법·지식을 남긴다'와 동일하다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "14",
+        "section": "2",
+        "label": "14.2 word2vec: 단어를 벡터로",
+        "why": "강의의 '임베딩 = 가까움이면 유사한 표현, 예측 작업의 부산물로 학습된 벡터' 주제(얼굴 임베딩, 멀티모달 임베딩)는 14.2의 '임베딩은 학습으로 저차원 벡터를 만들고, 예측 목표는 수단일 뿐 진짜 결과물은 부산물 벡터'라는 임베딩 학습 개념과 맞닿아 있다."
+      }
+    ]
+  },
+  {
+    "slug": "cs230_lecture05",
+    "filename": "lecture05.pdf",
+    "course": "CS230",
+    "title": "Deep Reinforcement Learning",
+    "summary": "AlphaGo와 Atari 논문을 동기로 삼아 강화학습 기초(에이전트-환경 루프, MDP, Q-테이블, 할인된 리턴, 벨만 재귀)를 5상태 격자 예제로부터 유도하고, 이를 신경망으로 확장한 Deep Q-Learning(DQN)을 다룬다. DQN의 손실(목표값 y = r + γ max_a' Q(s',a')), Atari Breakout 사전처리(grayscale화·다운샘플), 경험 재현·타겟 네트워크 등 실전 학습 팁, 탐색-활용 트레이드오프, 경쟁적 자기플레이 등 고급 주제를 지나, 후반부에서는 RLHF(사전학습 Recap, SFT, 인간 선호로 보상모델 학습)를 다룬다.",
+    "related_chapters": [
+      {
+        "book": "ml2",
+        "chapter": "09",
+        "section": "2",
+        "label": "9.2 DQN의 안정화 장치와 실습",
+        "why": "강의의 핵심 파트인 DQN(타겟 네트워크, 목표값 y=r+γmaxQ(s',a')로 움직이는 문제를 해결, 학습 팁)은 이 절의 '문제 1: 목표가 계속 움직인다 → 타겟 네트워크' 내용과 직접 겹친다."
+      },
+      {
+        "book": "ml2",
+        "chapter": "06",
+        "section": "3",
+        "label": "6.3 Q-learning과 SARSA·Q-learning 경로 비교",
+        "why": "강의가 5상태 격자 Q-테이블 예제로 Q(s,a)를 '지금 보상 + γ × 다음 상태 최선 보상' 재귀로 손계산해 유도하는 과정은 Q-learning 백업식(r + γ max Q(s',a'))의 직관과 동일하다."
+      },
+      {
+        "book": "ml2",
+        "chapter": "03",
+        "section": "3",
+        "label": "3.3 가치함수와 벨만 기대방정식",
+        "why": "강의 도입부 'Recycling is good' 절이 가치함수 Q, 할인율 γ=0.9, 누적 보상(return)을 재귀적으로 정의하는 내용으로 이 절의 가치함수·벨만 기대방정식과 정확히 대응한다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": "3",
+        "label": "13.3 포스트트레이닝: SFT, RLHF, DPO",
+        "why": "강의 Part II(Reinforcement Learning From Human Feedback)가 사전학습 Recap에서 SFT·인간 선호 기반 보상모델 학습으로 넘어가는 흐름은 이 절의 포스트트레이닝(SFT → RLHF) 서술과 겹친다."
+      }
+    ]
+  },
+  {
+    "slug": "cs230_lecture06_guest",
+    "filename": "lecture06_guest.pdf",
+    "course": "CS230",
+    "title": "Label-Efficient Medical AI (Guest Lecture, Pranav Rajpurkar)",
+    "summary": "Stanford의 Pranav Rajpurkar(Google/Microsoft)가 의료 AI의 최신 전선을 소개한 게스트 강의로, '라벨 집약적 → 라벨 효율적' 전환을 핵심 축으로 삼는다. 2D 사전학습 ConvNet을 3D 영상의학 작업(무릎 MRI, 폐렴, 부비동염)에 붙이는 전이학습과, 흉부 X-ray·ECG의 자기지도/대조학습으로 라벨 없이 표현을 배우는 방법을 다룬다. 뒤이어 AI 알고리즘이 의사 진단에 어떤 도움이 되는지(CheXnet·HeadXNet·CheXaid)를 임상 협업·랜덤컨트롤 연구로 검증하고, 공개 벤치마크(MIMIC-CXR, CheXpert, NIH Chest X-Ray14) 구축과 임상 워크플로 일반화 문제를 마무리한다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "10",
+        "section": "3",
+        "label": "10.3 분류를 넘어서: 탐지, 분할, 전이학습",
+        "why": "이 강의의 전반부가 ImageNet 사전학습 2D ConvNet을 3D 의료 작업(1000개 예시로 0.85 정확도)에 재사용하는 전이학습 사례로 구성되며, 10.3의 '전이학습: 처음부터 다시 배우지 않는다' 절(프리트레인에 대한 동조·미세조정)과 정확히 대응한다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "06",
+        "section": "3",
+        "label": "6.3 train/val/test 분리 원칙 실전",
+        "why": "강의 후반부가 'Datasets are toy task setups'으로 새 지역·환자군·임상 환경으로의 일반화를 다루는데, 6.3의 test셋 '보지 못한 데이터로 최종 측정' 원칙과 외부 검증(external validation)의 필요성이 같은 문제의식이다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "02",
+        "section": "3",
+        "label": "2.3 로지스틱회귀: 시그모이드에서 PR-AUC까지",
+        "why": "의사 보조 연구를 정확도·민감도·특이도(예: CheXaid의 0.653/0.728/0.609 표)로 보고 하는데, 2.3이 이 평가 지표들과 불균형 데이터에서 PR-AUC를 사용하는 이유를 다루어 측정 언어가 겹친다."
+      }
+    ]
+  },
+  {
+    "slug": "cs230_lecture06_main",
+    "filename": "lecture06_main.pdf",
+    "course": "CS230",
+    "title": "Case Study: Cell Segmentation, Train/Dev/Test Splitting & Transfer Learning",
+    "summary": "CS230 (Kian Katanforoosh)의 케이스 스터디 강의다. 현미경 이미지 10만 장(세 종류의 현미경 A/B/C)으로 세포를 분할하는 문제를 세팅하고, 목표 현미경 C의 분포에 맞춰 train/dev/test를 90:5:5로 어떻게 나눌지 묻는다. 이어 전이학습을 다룬다: 성능이 안 나오는 모델 M1에 다른 라벨 데이터셋으로 훈련한 M2의 가중치를 이식할 때, 옮길 레이어 수(l), 새로 붙일 헤드 레이어 수(la), 동결 레이어 수(lf)라는 하이퍼파라미터를 어떻게 튜닝해야 하는지 질문을 제시한다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "06",
+        "section": "3",
+        "label": "6.3 train/val/test 분리 원칙 실전",
+        "why": "강의 2~3페이지가 정확히 train/dev/test 분할 비율(90:5:5)과 dev/test 분포 일치 원칙을 다루는데, 이 절이 3분할의 역할 분리와 정보 흐름 원칙을 설명하는 부분이다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "10",
+        "section": "3",
+        "label": "10.3 분류를 넘어서: 탐지, 분할, 전이학습",
+        "why": "강의의 문제 영역(세포 분할)이 분할 문제이고, 전이학습 섹션이 M2→M1 이식 시 옮길/동결 레이어와 새 헤드라는 하이퍼파라미터를 다루는데, 이 절도 분할과 전이학습을 CNN 응용으로 다룬다."
+      }
+    ]
+  },
+  {
+    "slug": "cs230_lecture08",
+    "filename": "lecture08.pdf",
+    "course": "CS230",
+    "title": "Beyond the model: Enhancing LLM applications",
+    "summary": "모델 자체를 넘어 LLM 응용을 어떻게 강화할 것인지를 다루는 강의다. 단독 LLM의 문제(통제하기 어려움, 의료 진단 같은 도메인 지식 갭, 제한된 컨텍스트 윈도우)로 시작해, 프롬프트 엔지니어링(기본 원칙, 템플릿, zero/few-shot, 프롬프트 체인, LLM-as-judge) → 파인튜닝(신중하게) → RAG → 에이전트 AI 워크플로(멀티에이전트 포함) 순서로 진전한다. 고객지원 AI 에이전트 구축 사례로 마무리한다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": "2",
+        "label": "13.2 프롬프팅",
+        "why": "강의 2부(프롬프트 엔지니어링: zero/few-shot, 프롬프트 체인, 프롬프트 테스트)가 13.2절의 zero-shot/few-shot/chain-of-thought/프롬프트 체인 내용과 정확히 겹친다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": "3",
+        "label": "13.3 포스트트레이닝: SFT, RLHF, DPO",
+        "why": "강의의 파인튜닝 3부와 RAG/에이전트 4·5부가 13.3절의 SFT(파인튜닝)과 '에이전트·RAG 개관' 소절과 겹치며, 강의가 강조하는 '파인튜닝 vs RAG(지식 vs 형식)' 구분도 같은 지점이다."
+      }
+    ]
+  },
+  {
+    "slug": "cs230_lecture09",
+    "filename": "lecture09.pdf",
+    "course": "CS230",
+    "title": "AI 코딩과 소프트웨어 엔지니어링의 가속 (AI coding & the acceleration of software engineering)",
+    "summary": "앤드류 응의 짧은 키노트 슬라이드로, AI가 수행할 수 있는 작업의 길이가 약 7개월마다 2배씩 커지고 AI 코딩 덕분에 프로토타입·프로덕션 소프트웨어 개발이 10배 빨라진다는 주장을 다룬다. LLM, RAG, 에이전트 워크플로우, 음성 AI 같은 AI 빌딩블록을 조합해 소프트웨어를 더 강력하게 만드는 방식을 강조하고, 코딩이 빨라지면서 병목이 제품 관리(PM) 쪽으로 옮겨가는 '제품 관리 병목' 문제를 지적한다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": null,
+        "label": "13장 LLM: 사전학습, 프롬프팅, 정렬",
+        "why": "이 강의의 중심 주제인 AI 코딩(코드를 생성·유지하는 LLM 기반 도구)은 이 장에서 다루는 대규모 언어모델의 대표적 응용이며, 슬라이드가 반복적으로 'LLM'을 첫 번째 빌딩블록으로 꼽는다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": "2",
+        "label": "13.2 프롬프팅",
+        "why": "AI 코딩 도구가 파인튜닝 없이 프롬프트(지시문·예시)만으로 LLM의 출력을 유도해 코드를 만들어내는 방식은 이 절의 zero/few-shot·CoT 프롬프팅과 정확히 같은 메커니즘이다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "01",
+        "section": "1",
+        "label": "1.1 아주 짧은 역사와 이번 학기 로드맵",
+        "why": "'AI가 할 수 있는 작업의 길이가 7개월마다 2배'라는 가속 논지는 2012년 딥러닝 이후 간격이 계속 짧아진다는 이 절의 AI 역사·가속 서술과 직접 연결된다."
+      }
+    ]
+  },
+  {
+    "slug": "cs230_lecture09_guest",
+    "filename": "lecture09_guest.pdf",
+    "course": "CS230",
+    "title": "Navigating Your AI Career",
+    "summary": "CS230의 AI 커리어 게스트 강의로, AI 노동시장과 채용 풍경(비즈니스·ROI를 이해하고 리스크까지 관리하는 엔지니어로 변화)을 먼저 짚는다. 이어 LLM 어시스턴트(ChatGPT, GitHub Copilot)로 코드를 쓰는 '바이브 코딩'의 양면성과 좋은/나쁜 기술부채, 그리고 책임감 있는 사용을 위한 프레임워크를 다룬다. 마지막에는 AI 하이프 사이클·버블을 읽고, 온디바이스 'Small AI', 모든 디바이스에 내장되는 AI, 그리고 'AI → Artificial Understanding'으로의 전환 등 미래 지형과 '깊은 기초 + 비즈니스 우선'이라는 행동계획으로 마무리한다.",
+    "related_chapters": [
+      {
+        "book": "ml2",
+        "chapter": "16",
+        "section": "3",
+        "label": "ML2 16.3 ML2 총정리와 학기를 넘어서",
+        "why": "이 강연이 'AI 커리어를 어떻게 항해할 것인가'를 주제로 하는 것과 직접 대응하며, 이 절은 '졸업 후 어떤 방향을 파고들 것인가(오프라인 RL·범용 로봇 정책·Sim-to-Real 등 산업/학계 주류 방향)'를 다루는 책의 대표 커리어/전망 섹션이다"
+      },
+      {
+        "book": "ml1",
+        "chapter": "01",
+        "section": "1",
+        "label": "1.1 아주 짧은 역사와 이번 학기 로드맵",
+        "why": "슬라이드의 '하이프 사이클·버블·The Overall Landscape' 파트가 AI 붐-침체 역사를 다루는데, 이 절이 '두 번의 AI 겨울'과 1943~2025 연표(2022 ChatGPT 포함)로 같은 붐-침체 구조를 기술한다"
+      },
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": "2",
+        "label": "13.2 프롬프팅",
+        "why": "강연의 'Vibe Coding' 섹션이 ChatGPT·Copilot 같은 LLM 어시스턴트를 프롬프트로 조작해 코드를 생성·수정하는 것을 말하는데, 가중치 없이 프롬프트만으로 동작을 유도한다는 점에서 프롬프팅과 정확히 겹친다"
+      },
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": null,
+        "label": "13장 LLM: 사전학습, 프롬프팅, 정렬",
+        "why": "강연이 LLM을 '동작하는 도구'로 쓰고 'AI → Artificial Understanding(문맥·의도·뉘앙스를 이해하는 AI)'으로의 전환을 강조하는데, 이 장이 트랜스포머를 구조가 아닌 도구로 다시 보고 학습→사용→정렬 전 생애주기를 쫓는 프레이밍과 맞닿아 있다"
+      }
+    ]
+  },
+  {
+    "slug": "cs230_lecture10",
+    "filename": "lecture10.pdf",
+    "course": "CS230",
+    "title": "What's Going On Inside My Model? (Lecture 9)",
+    "summary": "신경망 해석/가해석(interpretability) 강의다. 200B 모델 디버깅 사례 연구로 시작해, CNN 해석 기법 — saliency map, integrated gradients, occlusion sensitivity, class activation maps(CAM), gradient ascent(클래스 모델 시각화), 데이터셋 탐색, deconvolution(DeconvNet, Zeiler & Fergus) — 을 다룬다. 이어 트랜스포머의 attention·embedding 기반 현대 표현 분석, 학습·스케일링 진단(loss 곡선, scaling laws), 그리고 능력·안전 대시보드까지를 다룬다.",
+    "related_chapters": [
+      {
+        "book": "ml1",
+        "chapter": "10",
+        "section": "2",
+        "label": "10.2 풀링과 전형적인 CNN 구조",
+        "why": "강의가 DeconvNet·dataset search로 합성곱/풀링 층별 필터, 특징지도, 수차장(receptive field)을 시각화하는 내용은 이 절의 전형적 CNN 구조 설명의 해석적 연장선이다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "10",
+        "section": "3",
+        "label": "10.3 분류를 넘어서: 탐지, 분할, 전이학습",
+        "why": "강의의 class activation maps(CAM) 파트가 '분류 네트워크를 localization에 쓰는 것'으로 소개돼 탐지(위치까지 붙은 분류)와 직접 이어진다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "12",
+        "section": "1",
+        "label": "12.1 어텐션 아이디어와 Query·Key·Value",
+        "why": "강의의 '현대 표현 분석' 절이 CNN의 필터 시각화에 대응하는 트랜포머의 attention·embedding 시각화(attention head 분석)를 설명한다."
+      },
+      {
+        "book": "ml1",
+        "chapter": "13",
+        "section": "1",
+        "label": "13.1 언어모델링: 다음 토큰 예측과 사전학습·파인튜닝",
+        "why": "강의의 학습·스케일링 진단(loss 곡선, gradient norm, Chinchilla scaling laws)과 능력·안전 대시보드는 LLM 사전학습 실무 모니터링 관점의 내용이다."
+      }
+    ]
+  }
+]

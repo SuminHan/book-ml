@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -182,7 +182,9 @@
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter08_1_team_project.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: 팀 프로젝트 미니 예시"></a></p>
 <h3 id="왜-지금-프로젝트를-하는가"><a class="header" href="#왜-지금-프로젝트를-하는가">왜 지금 프로젝트를 하는가</a></h3>
 <p>Chapter 2~7에서 밴딧부터 n-step TD·Dyna-Q까지, 표 기반 강화학습의 이론과
-알고리즘을 거의 다 손에 쥔 셈이다. 그런데 이 학기까지 해본 것은 전부
+알고리즘을 거의 다 손에 쥔 셈이다 — 이 과정은 Sutton과 Barto의 표준
+강화학습 교과서가 다루는 내용과 거의 1:1로 겹친다<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">1</a></sup>. 그런데
+이 학기까지 해본 것은 전부
 “교재가 고른 환경, 교재가 고른 파라미터, 교재가 고른 시드“에서 코드가
 동작하는지 확인하는 것이었다. 지금 필요한 것은 그 한 단계 위로 올라가는
 것 — <strong>환경을 고르고, 알고리즘 두 개를 고르고, 결과가 흔들리면 시드와
@@ -192,7 +194,7 @@
 peer-review)를 손에 넣게 된다.</p>
 <h3 id="프로젝트-구조"><a class="header" href="#프로젝트-구조">프로젝트 구조</a></h3>
 <ul>
-<li><strong>환경</strong>: Gymnasium의 표 기반(이산 상태·행동) 환경 중 하나를 고른다
+<li><strong>환경</strong>: Gymnasium<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">2</a></sup>의 표 기반(이산 상태·행동) 환경 중 하나를 고른다
 — <code>FrozenLake-v1</code>, <code>CliffWalking-v1</code>, <code>Taxi-v3</code> 등이 좋은 후보다.</li>
 <li><strong>적용</strong>: Chapter 4~7의 알고리즘 중 <strong>최소 두 가지</strong>(예: Q-learning과
 SARSA, 또는 MC 제어와 n-step TD)를 같은 환경에 적용하고 학습 곡선과
@@ -302,7 +304,10 @@ SARSA는 17스텝 안전 경로(−17)를 <strong>세 시드 모두</strong> 일
 스케줄</strong>을 적용하는 것 — 한쪽에만 감쇠를 쓰면 “감쇠의 효과“와
 “알고리즘의 차이“가 뒤섞여 어느 쪽도 설명할 수 없게 된다.
 (b) 만약 다른 환경·학습 예산에서 스케줄이 차이를 만든다면,
-그 차이는 수식적 정당화(§“손으로 한 번”)의 일부가 되어야 한다.</p>
+그 차이는 수식적 정당화(§“손으로 한 번”)의 일부가 되어야 한다.
+탐험/활용 트레이드오프와 \(\varepsilon\)-greedy 스케줄 설계의
+개념을 강의 형식으로 더 깊이 다루는 자료: David Silver의 UCL
+강화학습 강좌 (Lecture 9: Exploration and Exploitation)<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">3</a></sup>.</p>
 <pre><code class="language-python">def make_epsilon_schedule(n_episodes, eps_start=1.0, eps_end=0.01):
     def eps_fn(episode):  # 선형 감쇠
         return max(eps_end, eps_start + (eps_end - eps_start) * episode / n_episodes)
@@ -462,7 +467,8 @@ on/off-policy 차이(절벽 옆 최단 경로 vs 안전 경로)로 설명된다.
 실패에 가까운 실험까지 <strong>배운 개념으로 해석한</strong> 증거라서 더 높은 점수를
 받는다. Block B의 Chapter 16.1(신경망
 강화학습 캡스톤)도 동일한 구조를 쓰므로, 이 습관이 학기 말까지
-이어진다.</p>
+이어진다. 표 기반 강화학습 전체를 강의 형식으로 더 깊이 다루는
+자료: Stanford CS234 (Reinforcement Learning)<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">4</a></sup>.</p>
 <h3 id="실습-미니-프로젝트를-한-흐름으로-코드로-돌려보기"><a class="header" href="#실습-미니-프로젝트를-한-흐름으로-코드로-돌려보기">실습: 미니 프로젝트를 한 흐름으로 코드로 돌려보기</a></h3>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter08_1_team_project.ipynb">실습 노트북</a>
 (제목 바로 위의 Colab 배지)에서 이 절의 전체 흐름을 한 번에 통과시켜
@@ -602,6 +608,21 @@ Chapter 6.2 실습처럼 여러 시드(seed)로 반복 실행한 평균(과 가�
 권장된다“고 쓰는 것이, “모두 잘 됐다“로 감추는 것보다 항상
 낫다. 8.2절 체크리스트의 “결과의 정직성” 항목이 정확히
 이런 정직한 한계 서술을 보고 있는 것이다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-gym">
+<p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning,” Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0). <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

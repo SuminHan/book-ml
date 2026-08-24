@@ -1,7 +1,7 @@
 # Chapter 4. 거리 기반 모델과 클러스터링: kNN과 k-means (Distance-Based Models & Clustering)
 
 "당신은 가장 가까운 다섯 친구의 평균이다"라는 말이 있다. 이 문장을 그대로
-알고리즘으로 옮기면 **k-최근접이웃**(k-Nearest Neighbors, kNN)이 된다: 새로운
+알고리즘으로 옮기면 **k-최근접이웃**(k-Nearest Neighbors, kNN)[^cs229]이 된다: 새로운
 데이터를 분류하고 싶으면, 학습도 모델도 필요 없이 그냥 "가장 가까운 \\(k\\)개의
 기존 데이터가 뭐라고 답했는지 보고 다수결로 따라간다." 이 단순한 한 줄이
 이번 장의 첫 주인공이다.
@@ -45,7 +45,7 @@
   코드를 직접 작성할 수 있다.
 - k-means의 '할당→갱신' 반복이 실제로 **클러스터 내 분산(SSE)을 단조감소**
   시켜 수렴하는 최적화 문제임을 두 단계의 수학으로 보여줄 수 있다.
-- 초기화에 따라 다른 지역최적해에 빠지는 문제를 **k-means++**와 `n_init`
+- 초기화에 따라 다른 지역최적해에 빠지는 문제를 **k-means++**[^kmeanspp]와 `n_init`
   반복으로 완화하고, k-means가 경계를 *볼록(직선)*으로만 그리는 구조적 한계와
   15장 GMM으로의 연결을 짚을 수 있다.
 
@@ -70,3 +70,6 @@
   수렴하는지는 초기화에 달린(비볼록) 문제임을 수학으로 보여주고, \\(k\\)
   선택(엘보우), k-means++ 초기화, 그리고 "경계가 항상 직선(볼록)"이라는
   구조적 한계와 로이드(1957)·매퀸(1967)의 동시 발견 이야기를 다룬다.
+
+[^cs229]: 더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes (k-최근접이웃과 k-means를 핵심 주제로 다룸). https://cs229.stanford.edu/main_notes.pdf
+[^kmeanspp]: Arthur, D., Vassilvitskii, S. (2007). "k-means++: The advantages of careful seeding." Proceedings of the 18th Annual ACM-SIAM Symposium on Discrete Algorithms (SODA 2007).

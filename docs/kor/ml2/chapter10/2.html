@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -228,7 +228,7 @@ def reinforce_update(theta, episode, alpha, gamma):
 </code></pre>
 <p>여기서 정책은 가능한 가장 단순한 형태로 두었다: 1차원 상태
 특징 \(s\)에 대한 선형 로짓 \((\theta_0 s, \theta_1 s)\)에
-softmax. 신경망은 등장하지 않는다 — 위 PyTorch 실습의
+softmax. 신경망은 등장하지 않는다 — 위 PyTorch 실습<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">1</a></sup>의
 <code>PolicyNet</code>에서 볼 것처럼, 실제에서는 이 선형 부분을
 \(f_\theta(s)\) 신경망으로 바꿀 뿐 <strong>갱신 식의 구조는
 동일하다</strong>.</p>
@@ -304,9 +304,9 @@ P(s_{t+1}|s_t,a_t)\)를 로그로 바꾸면, <strong>환경의 전이확률
 남고 환경 모델은 전혀 등장하지 않는다 — 환경이 어떻게 작동하는지
 몰라도 정책을 학습할 수 있다는, model-free RL의 핵심 성질이 여기서
 나온다.</p>
-<h3 id="실습-pytorch로-reinforce를-cartpole에서-학습시키기"><a class="header" href="#실습-pytorch로-reinforce를-cartpole에서-학습시키기">실습: PyTorch로 REINFORCE를 CartPole에서 학습시키기</a></h3>
+<h3 id="실습-pytorch로-reinforce를-cartpole2에서-학습시키기"><a class="header" href="#실습-pytorch로-reinforce를-cartpole2에서-학습시키기">실습: PyTorch로 REINFORCE를 CartPole<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">2</a></sup>에서 학습시키기</a></h3>
 <p>위 손 구현 대신, PyTorch의 자동 미분을 이용하면 훨씬 간결하게 같은
-알고리즘을 구현할 수 있다:</p>
+알고리즘을 구현할 수 있다<sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">3</a></sup>:</p>
 <pre><code class="language-python">import torch, torch.nn as nn
 
 class PolicyNet(nn.Module):
@@ -360,13 +360,16 @@ one-vs-rest 그래디언트 식이, 정확히 이 <code>.backward()</code>가 �
 20 에피소드 평균 144~191, 최고 359~500), 하지만 큰 그림은
 안정적이다: <strong>“10대에서 100대로 오르지만 500에 도달해
 포화되지 못한다.”</strong></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch10_2_reinforce_cartpole_curve.svg" alt="CartPole에서 REINFORCE 300 에피소드 학습 곡선. 연회색은 에피소드별 리턴, 파란 실선은 20 에피소드 이동 평균, 빨간 점선은 만점 500. 이동 평균은 약 13에서 약 100으로 상승하며, 개별 에피소드는 큰 변동(노이즈)을 보인다"><span class="img-wrapper"><img src="../../images/ch10_2_reinforce_cartpole_curve.svg" alt="CartPole에서 REINFORCE 300 에피소드 학습 곡선. 연회색은 에피소드별 리턴, 파란 실선은 20 에피소드 이동 평균, 빨간 점선은 만점 500. 이동 평균은 약 13에서 약 100으로 상승하며, 개별 에피소드는 큰 변동(노이즈)을 보인다"></span></label></p>
-<p>Chapter 9.3의 DQN(같은 300 에피소드에서 마지막 20 에피소드 평균
+<p>![CartPole에서 REINFORCE 300 에피소드 학습 곡선. 연회색은 에피소드별 리턴, 파란 실선은 20 에피소드 이동 평균, 빨간 점선은 만점 500. 이동 평균은 약 13에서 약 100으로 상승하며, 개별 에피소드는 큰 변동(노이즈)을 보인다 (원 논문: Sutton 1984, CartPole 정책 그래디언트 실험)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>](../../images/ch10_2_reinforce_cartpole_curve.svg)</p>
+<p>Chapter 9.3의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">5</a></sup> (같은 300 에피소드에서 마지막 20 에피소드 평균
 145.35, 최고 500)과 비교하면, REINFORCE는 개선되긴 했지만
 (14.05→99.45) DQN보다 훨씬 느리고 불안정하게 학습된다 — 이건
 REINFORCE 구현이 잘못된 게 아니라, 10.3절에서 다룰 “REINFORCE는
 분산이 크다“는 알려진 한계가 실제 숫자로 드러난 것이다. 다음
-장(Actor-Critic, PPO)이 정확히 이 문제를 개선하려는 시도다.</p>
+장(Actor-Critic, PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">6</a></sup>)이 정확히 이 문제를 개선하려는 시도다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
+<p>![3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">7</a></sup>.](../../images/ref_gae.png)</p>
 <h3 id="자주-하는-실수-리턴을-정규화하지-않고-그대로-쓰기"><a class="header" href="#자주-하는-실수-리턴을-정규화하지-않고-그대로-쓰기">자주 하는 실수: 리턴을 정규화하지 않고 그대로 쓰기</a></h3>
 <p>위 코드의 <code>returns = (returns - returns.mean()) / (returns.std() + 1e-8)</code> 줄을 빼고 원래 리턴 \(G_t\)를 그대로 쓰면 어떻게 될까?
 CartPole의 리턴은 항상 양수(매 스텝 +1의 보상)이므로, 모든 행동의
@@ -447,7 +450,7 @@ b(1,s)\,\nabla_\theta\log\pi(1|s)\)를 전개해보며 답하라.</p>
 <h3 id="역사-40년-전부터-있는-이름"><a class="header" href="#역사-40년-전부터-있는-이름">역사: 40년 전부터 있는 이름</a></h3>
 <p>“좋은 궤적의 행동 확률을 올리고, 나쁜 궤적의 행동 확률을
 내린다“는 정책 그래디언트의 아이디어는 생각보다 오래됐다.
-Sutton의 1984년 MIT 박사 학위논문에는 이미 “행동의 결과를
+Sutton의 1984년 MIT 박사 학위논문<sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">4</a></sup>에는 이미 “행동의 결과를
 보면서 행동 확률을 조정한다“는 같은 계열의 알고리즘이
 나왔고, <strong>REINFORCE</strong>(REINforce — reinforcement + force의
 줄임)라는 이름의 구체적 알고리즘은 1990년대에 정식 제안됐다.
@@ -467,7 +470,7 @@ Actor-Critic)과 같은 에피소드 경험의 재사용 횟수(Chapter 11
 PPO)를 고를 때만 예외로, <strong>오늘날 모든 정책 그래디언트
 알고리즘에서 같은 식</strong>이다. 이번 절이 “빨라서” 중요한 게
 아니라, 이후 모든 개선이 “REINFORCE의 이 특정 부분을 바꾼
-것“이라는 사실의 기준점이 되어서 중요하다.</p>
+것“이라는 사실의 기준점이 되어서 중요하다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">8</a></sup> <sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">9</a></sup></p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. REINFORCE는 에피소드가 끝날 때까지 갱신을 안 한다고
 했는데, 그럼 이건 Chapter 5의 “몬테카를로” 방식인가요?</strong>
@@ -512,6 +515,36 @@ V(s_t)\), 어드밴티지)으로 바꿔 <strong>매 스텝마다</strong> 갱신
 붙인 추정, 에피소드당 1회 사용 → 여러 회 사용 + 클리핑)을
 바꾼 것“이라는 사실을 REINFORCE를 먼저 머리에 들어야 볼 수
 있다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-pytorch">
+<p>Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” NeurIPS 2019. arXiv:1912.01703. <a href="#fr-pytorch-1">↩</a></p>
+</li>
+<li id="footnote-gym">
+<p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-adam">
+<p>Kingma, D. P., Ba, J. (2015). “Adam: A Method for Stochastic Optimization.” ICLR 2015. arXiv:1412.6980. <a href="#fr-adam-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a> <a href="#fr-suttonbarto-2">↩2</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-gae">
+<p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning.” https://www.davidsilver.uk/teaching/ <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

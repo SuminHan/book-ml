@@ -1,22 +1,28 @@
 # Chapter 16. Block B 캡스톤: 팀 프로젝트와 ML1 총정리 (Block B Capstone & ML1 Review)
 
-Chapter 9~15는 신경망 기초에서 시작해 CNN, 시퀀스 모델, Transformer, LLM,
+Chapter 9~15는 신경망 기초에서 시작해 CNN, 시퀀스 모델, Transformer[^transformer], LLM,
 그리고 잠재변수 생성모델까지 현대 딥러닝의 핵심 계보를 훑었다. 이번 장은
 Chapter 8의 짝이다 — 새 개념 대신, 이 두 번째 절반의 도구들을 실제 데이터에
 적용해보고 학기를 총정리하는 자리다.
 
-**이 순서가 왜 여기인가.** Chapter 15에서 EM/GMM에서 출발해 VAE, GAN,
-Diffusion까지 — 관측되지 않은 잠재변수로 데이터를 만들어내는 생성모델의
+![트랜스포머 전체 구조 -- 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1).](../images/ref_transformer.png)
+
+**이 순서가 왜 여기인가.** Chapter 15에서 EM/GMM에서 출발해 VAE[^vae], GAN[^gan],
+Diffusion[^ddpm]까지 — 관측되지 않은 잠재변수로 데이터를 만들어내는 생성모델의
 네 가지 얼굴까지 손을 잡았다. Block B의 도구상자는 이제 채워진 셈이다.
 Block A(Chapter 2~7)가 Chapter 8에서 "정형 데이터를 다루는 고전 ML의
 완결"을 검증했다면, 이번 캡스톤은 그와 같은 구조로 Block B의 도구를 실제
 데이터 앞에 세운다. 다만 검증의 무게는 다르다. Chapter 8이 "배운 도구가
 이 데이터에 **맞는가**"를 물었다면, 이번 프로젝트는 "이 데이터에
-**딥러닝이 필요한가**"를 — 정형 데이터의 상한인 GBDT(Chapter 7)와 비교해서
+**딥러닝이 필요한가**"를 — 정형 데이터의 상한인 GBDT(Chapter 7)[^gbdt]와 비교해서
 스스로 증명해야 한다. 그리고 이 장은 ML1의 마지막 장이다. 다음(ML2)은
 정답 `y`가 있는 세계에서 벗어난다 — 정답 대신 **보상**만 주어지고 에이전트가
-스스로 데이터를 만들어가는 강화학습·로봇의 세계다. 이번 장은 그 다리를
+스스로 데이터를 만들어가는 강화학습·로봇의 세계다[^cs234]. 이번 장은 그 다리를
 건너기 전에, 이 학기 전체를 하나의 절차로 닫는 마지막 점검이다.
+
+![VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조.](../images/ref_vae.png)
+
+![Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다.](../images/ref_gan.png)
 
 ## 학습 목표
 
@@ -66,3 +72,10 @@ Block A(Chapter 2~7)가 Chapter 8에서 "정형 데이터를 다루는 고전 ML
   ML2(보상 `r`만 있는 강화학습·로봇)를 나란히 놓고, 4단계 구조는 그대로
   살면서 ①의 모델(정책)과 ④의 데이터(에이전트의 경험)만 바뀐다는 "같은
   구조, 다른 질문"을 짚는다.
+
+[^transformer]: Vaswani, A. et al. (2017). "Attention Is All You Need." arXiv:1706.03762.
+[^vae]: Kingma, D. P., Welling, M. (2013). "Auto-Encoding Variational Bayes." arXiv:1312.6114.
+[^gan]: Goodfellow, I. J. et al. (2014). "Generative Adversarial Networks." arXiv:1406.2661.
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+[^ddpm]: Ho, J., Jain, A., Abbeel, P. (2020). "Denoising Diffusion Probabilistic Models." arXiv:2006.11239.
+[^gbdt]: Friedman, J. H. (2001). "Greedy Function Approximation: A Gradient Boosting Machine." Annals of Statistics 29(5), 1189–1232.

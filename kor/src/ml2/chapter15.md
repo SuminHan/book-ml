@@ -1,20 +1,24 @@
 # Chapter 15. 모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL & Monte Carlo Tree Search)
 
-2016년, 딥마인드의 **AlphaGo**는 세계 최정상급 프로 바둑기사 이세돌을
+2016년, 딥마인드의 **AlphaGo**[^alphago]는 세계 최정상급 프로 바둑기사 이세돌을
 꺾어 큰 화제를 모았다. 바둑판의 경우의 수는 우주의 원자 수보다 많다고
-알려져 있어서, Chapter 9의 DQN처럼 "신경망으로 가치를 근사하는 것"만으로는
+알려져 있어서, Chapter 9의 DQN[^dqn]처럼 "신경망으로 가치를 근사하는 것"만으로는
 충분하지 않았다 — AlphaGo의 핵심 무기 중 하나가 바로 이번 장의 주제,
-**몬테카를로 트리 탐색**(Monte Carlo Tree Search, MCTS)이다. 이번 장은
+**몬테카를로 트리 탐색**(Monte Carlo Tree Search, MCTS)[^uct]이다. 이번 장은
 Chapter 7.3에서 잠깐 맛본 "모델을 활용한 계획"이라는 아이디어를,
 게임처럼 명확한 규칙이 있는 문제에서 훨씬 강력하게 확장한 형태를 다룬다.
 
+![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
+
+![정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1).](../images/ref_alphago.png)
+
 이 연결고리를 이전·다음 챕터와 함께 짚어보자. 그동안의 ML2 강의 —
-DQN, REINFORCE/PPO, 모방학습까지 — 는 대부분 모델이 없는(model-free)
+DQN, REINFORCE/PPO[^ppo], 모방학습까지 — 는 대부분 모델이 없는(model-free)
 환경에서 시행착오로 배우는 방법들이었다. 이번 장은 그 반대편,
 환경의 규칙이 주어졌을 때 그 **모델**을 이용해 미리 계획하고 결정하는
-방법을 다룬다. 이 두 축이 합쳐져야 비로소 AlphaGo/AlphaZero 같은
-게임 AI가 완성된다. 이전의 Chapter 14("고급 시뮬레이션: MuJoCo와
-Isaac Sim")에서 실전 물리엔진 두 가지를 소개했는데, 그 시뮬레이터
+방법을 다룬다. 이 두 축이 합쳐져야 비로소 AlphaGo/AlphaZero[^alphazero] 같은
+게임 AI가 완성된다. 이전의 Chapter 14("고급 시뮬레이션: MuJoCo[^mujoco]와
+Isaac Sim[^isaacsim]")에서 실전 물리엔진 두 가지를 소개했는데, 그 시뮬레이터
 자체가 로봇 분야에서 모델이 *주어진* 경우, 즉 known model에 해당한다.
 이번 장은 13~14장에서 시뮬레이터 위를 "배우며" 다닌 경험을, "모델로
 계획한다"는 관점 위에서 한 번 더 짚어보는 장이다. 그리고 다음 장("Block
@@ -22,17 +26,19 @@ B 캡스톤: 팀 프로젝트와 학기 총정리")에서는 MCTS를 포함해 �
 배운 모든 도구를 로봇 시뮬레이션 팀 프로젝트에 직접 적용한다 — 이번 장
 은 그 캡스톤에 들어가기 전, 새 도구를 챙기는 마지막 장이다.
 
+![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 이익이 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
+
 이번 챕터의 학습 목표는 다음과 같다.
 
 - 모델기반 RL을 "모델이 어디에서 오느냐"(known model/learned model)와
   "모델을 무엇에 쓰느냐"(학습/계획)라는 두 축으로 정리하고, 가치반복·
-  Dyna-Q·MCTS·모델 예측 제어(MPC)가 각각 그 표의 어디에 앉는지 설명할
+  Dyna-Q[^suttonbarto]·MCTS·모델 예측 제어(MPC)가 각각 그 표의 어디에 앉는지 설명할
   수 있다.
 - MCTS의 네 단계(선택·확장·시뮬레이션·역전파)가 한 번의 시뮬레이션에서
   각각 무슨 일을 하는지 단계별로 설명하고, 님 게임에서 MCTS를 직접
   구현해 시뮬레이션 횟수와 탐색 상수 \\(c\\)가 찾은 전략에 미치는
   영향을 실험으로 확인한다.
-- 선택 규칙 UCT가 Chapter 2.2의 UCB를 트리 탐색에 적용한 것임을
+- 선택 규칙 UCT[^uct]가 Chapter 2.2의 UCB[^ucb]를 트리 탐색에 적용한 것임을
   설명하고, AlphaGo/AlphaZero가 MCTS에 신경망을 어떻게 결합해
   확장했는지 그 구조를 짚을 수 있다.
 - (선택) 여러 에이전트가 함께 학습하면 "내 시점의 환경"이 학습 도중
@@ -70,4 +76,15 @@ B 캡스톤: 팀 프로젝트와 학기 총정리")에서는 MCTS를 포함해 �
   조율 게임, 바위-가위-보 세 게임 모두 똑같이 단순한 Q-learning인데,
   결과만 보상 구조에 따라 완전히 달라지는 세 가지 학습 동역학을
   관찰하고, 내쉬 균형과 MCTS·미니맥스·자기 자신과의 대국
-  (self-play)과의 연결고리를 살펴본다.
+  (self-play)과의 연결고리를 살펴본다.[^cs234]
+
+[^alphago]: Silver, D. et al. (2016). "Mastering the game of Go with deep neural networks and tree search." Nature 529, 484–489.
+[^alphazero]: Silver, D. et al. (2017). "Mastering the game of Go without human knowledge." Nature 550(7676), 354–359.
+[^uct]: Kocsis, L., Szepesvári, C. (2006). "Bandit Based Monte-Carlo Planning." ECML 2006, pp. 282–293.
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 장의 주제(모델기반 RL, 몬테카를로 트리 탐색)를 더 깊이 다루는 자료.
+[^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)
+[^ppo]: Schulman, J. et al. (2017). "Proximal Policy Optimization Algorithms." arXiv:1707.06347.
+[^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 이 장의 주제(모델로 계획하는 모델기반 RL, Dyna 계열 접근)는 이 표준 교과서의 "Model-Based RL" 장(모델 기반 강화학습)에 대응한다.
+[^mujoco]: Todorov, E., Erez, T., Tassa, Y. (2012). "MuJoCo: A physics engine for model-based control." IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2012). DOI: 10.1109/IROS.2012.6386109.
+[^isaacsim]: Makoviychuk, V. et al. (2021). "Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning." arXiv:2108.10470. (Isaac Sim의 기반이 되는 GPU 병렬 물리 시뮬레이션의 원 논문)
+[^ucb]: Auer, P., Cesa-Bianchi, N., Fischer, P. (2002). "Finite-time Analysis of the Multiarmed Bandit Problem." Machine Learning 47(2/3), 235–256. — UCB1 알고리즘과 로그 후회 경계의 원 논문.

@@ -287,6 +287,14 @@ _SINGLE_BACKSLASH_MATH = _re.compile(r'(?<!\\)\\([()\[\]{}|,;!%&$#])')
 # it as an emphasis delimiter while still emitting a literal `_` for KaTeX.
 _MATH_SPAN = _re.compile(r'\\\\\((.*?)\\\\\)|\\\\\[(.*?)\\\\\]', _re.DOTALL)
 _BARE_UNDERSCORE = _re.compile(r'(?<!\\)_')
+# A footnote reference immediately followed by `(` -- e.g. "DQN[^dqn](Ch09)"
+# -- is CommonMark link syntax `[text](url)` in disguise: pulldown-cmark
+# reads `[^dqn]` as literal link TEXT (not a footnote ref) and `(Ch09)` as
+# the URL, rendering `<a href="Ch09">^dqn</a>` instead of a footnote. A
+# single space between them is enough to stop the link-syntax match while
+# leaving the footnote reference intact.
+_FOOTNOTE_THEN_PAREN = _re.compile(r'(\[\^[a-zA-Z0-9_-]+\])\(')
+
 # Same failure mode, different character: bare `*` (optimal-value notation,
 # e.g. V^*, Q^*, \pi^*) inside a math span is valid LaTeX but CommonMark
 # reads paired `*`s as emphasis -- it swallows the asterisks and wraps the
@@ -310,6 +318,11 @@ def fix_math_delimiters(path: Path):
         text = fixed
         print(f"[orchestrator] fixed {n} single-backslash math delimiter(s) in {path.relative_to(REPO)}", flush=True)
 
+    text, fn_n = _FOOTNOTE_THEN_PAREN.subn(r'\1 (', text)
+    if fn_n:
+        print(f"[orchestrator] inserted space after {fn_n} footnote-then-paren "
+              f"link-syntax collision(s) in {path.relative_to(REPO)}", flush=True)
+
     underscore_hits = [0]
     asterisk_hits = [0]
 
@@ -330,7 +343,7 @@ def fix_math_delimiters(path: Path):
     if underscore_hits[0] or asterisk_hits[0]:
         text = text2
 
-    if n or underscore_hits[0] or asterisk_hits[0]:
+    if n or fn_n or underscore_hits[0] or asterisk_hits[0]:
         path.write_text(text, encoding="utf-8")
 
     fffd = text.count("�")

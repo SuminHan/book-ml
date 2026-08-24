@@ -48,7 +48,7 @@ model-based 강화학습이었다. 이번 챕터는 그 모델을 통째로 버�
 - [5.1 모델 없이 배운다: MC 예측](chapter05/1.md) — 가치함수는
   "리턴의 **기댓값**"으로 정의되는데, MC는 그 기댓값을 "실제로
   플레이해서 모은 샘플의 평균"으로 대체한다. **잔디깎는 기(Lawnmower)**
-  MDP에서 DP의 정확해와 첫방문 MC가 서로 다른 경로로 **같은 숫자**에
+  MDP[^suttonbarto]에서 DP의 정확해와 첫방문 MC가 서로 다른 경로로 **같은 숫자**에
   도달하는 과정을 따라가고, 왜 첫방문 MC가 **무방위**(bias가 없음)
   인지를 증명한다. "첫방문"을 뒤에서부터 훑어 "마지막 방문"으로 오독하기
   쉬운 함정도 짚는다.
@@ -71,4 +71,7 @@ model-based 강화학습이었다. 이번 챕터는 그 모델을 통째로 버�
 
 세 블록을 모두 마치면, MC가 "모델 없이 배운다"는 대가로 치른 비용 —
 **에피소드를 끝까지 기다려야 한다**는 것 — 을 체감하게 된다. 바로 그
-문제를 Chapter 6의 시간차 학습이 푼다.
+문제를 Chapter 6의 시간차 학습이 푼다. 이 주제를 더 깊이 다루는 자료: [^cs234]
+
+[^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 이 챕터의 잔디깎는 기(lawnmower) MDP, 첫방문 MC 예측, 블랙잭 MC 제어는 모두 이 표준 교과서 5장 "Monte Carlo Methods"의 대표 예제다.
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/

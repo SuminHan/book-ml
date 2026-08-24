@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -224,7 +224,7 @@
 \(x\) 공간을 여러 조각(각각 다른 선형 영역)으로 쪼개고, 마지막 선형 층은
 각 조각 안에서 <strong>각각 다른 기울기</strong>의 직선을 이어붙인다. 층이 하나 더
 쌓일 때마다 이 “조각 쪼개기“가 기하급수적으로 세진다 — <strong>깊이가 곧
-표현력의 지수</strong>가 되는 이유다.</p>
+표현력의 지수</strong>가 되는 이유다. 이 주제를 더 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">1</a></sup></p>
 <p>이 “조각“이 실제로 신경망 안에서 어떻게 만들어지는지, 그리고 <strong>활성
 함수 없이 두 층이 하나로 합쳐지는 것</strong>을 코드로 직접 확인하고 싶다면
 상단 <strong>Open In Colab</strong> 배지의 실습 노트북(chapter01_2_nn_mini_review.ipynb)
@@ -288,7 +288,7 @@
 수 있지만, 층을 여러 개 쌓으면 한 파라미터의 변화가 최종 손실에 도달하기까지
 거치는 경로가 길어진다 — 역전파는 이 긴 경로를 “출력의 오차를 한 층씩
 거슬러 올려보내며” 정확하고 효율적으로 계산하는 절차다. 이번 학기에서는
-PyTorch의 <code>nn.Module</code>과 <code>.backward()</code>로 이 계산을 자동으로 처리한다 — 손으로
+PyTorch의 <code>nn.Module</code>과 <code>.backward()</code>로 이 계산을 자동으로 처리한다<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">2</a></sup> — 손으로
 유도하는 연습은 이미 (ML1을 들었다면) 끝냈다고 가정한다.</p>
 <p><strong>그래도 한 번은 숫자로</strong> 역전파가 “출력의 오차를 거슬러 올려보낸다“는
 말이 실제로 무슨 뜻인지, 손으로 계산해보자. 아래는 <strong>1-2-1 신경망</strong>(입력 1개,
@@ -499,16 +499,17 @@ PyTorch는 <code>.backward()</code>를 반복 호출하면 그래디언트가 <s
 **보상 \(r\)**로 평가 → <strong>정책의 가치를 낮추는 방향</strong>으로 \(W\)
 업데이트. <strong>정답 \(y\)가 없다</strong> — 대신 “이 행동이 얼마나 좋은가“를
 보상으로 간접적으로 평가한다.</p>
-<p>구체적으로, **Q-학습의 신경망 버전(DQN, Chapter 9)**에서:</p>
+<p>구체적으로, <strong>Q-학습의 신경망 버전(DQN, Chapter 9)</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">3</a></sup>에서:</p>
 <ul>
 <li><strong>모델</strong>: \(Q_\theta(s, a)\) — 상태-행동 쌍에 대한 “장래 누적
 보상 예측“을 내는 신경망</li>
 <li><strong>손실</strong>: \(J = \mathbb{E}\left[(r + \gamma \max_{a’} Q_{\theta^-}(s’, a’) -
-Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)의 “왼쪽“과
+Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>의 “왼쪽“과
 “오른쪽“의 오차</li>
 <li><strong>학습</strong>: 동일한 <code>zero_grad()</code> → <code>backward()</code> → <code>step()</code> 세 줄</li>
 </ul>
-<p>**정책 기반(REINFORCE, PPO, Chapter 10~11)**에서는:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
+<p><strong>정책 기반(REINFORCE, PPO, Chapter 10~11)</strong><sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">5</a></sup>에서는:</p>
 <ul>
 <li><strong>모델</strong>: \(\pi_\theta(a|s)\) — 상태 \(s\)에서 각 행동의 확률을
 내는 신경망(출력층 소프트맥스)</li>
@@ -516,6 +517,7 @@ Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)의 �
 “보상이 큰 행동의 확률을 올린다“는 정책 그래디언트 정리</li>
 <li><strong>학습</strong>: 여전히 동일한 세 줄</li>
 </ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p><strong>핵심 인사이트</strong>: 강화학습의 “새로움“은 <strong>학습 알고리즘이 아니라
 손실함수의 정의</strong>에 있다. 손실함수만 “보상 기반“으로 바뀔 뿐,
 <code>zero_grad()</code> → <code>backward()</code> → <code>step()</code>의 세 줄은 <strong>하나도 변하지
@@ -542,7 +544,7 @@ Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)의 �
 폭주하거나 사라져 학습 자체가 시작되지 않는다(ML1 Chapter 9의
 “초기화의 중요성”). 이번 절의 <code>MLP(1, 16, 1)</code>에서 <code>hidden_dim=16</code>이
 “적당히” 큰 이유는, PyTorch의 <code>nn.Linear</code>가 <strong>Kaiming 초기화</strong>(입력
-차원에 반비례하는 균등 분포)를 기본적으로 쓰기 때문이다. <code>hidden_dim</code>을
+차원에 반비례하는 균등 분포)<sup class="footnote-reference" id="fr-kaiming-1"><a href="#footnote-kaiming">6</a></sup>를 기본적으로 쓰기 때문이다. <code>hidden_dim</code>을
 1024로 늘리면 학습이 느려지거나 발산할 수 있다 — <strong>깊이는 표현력을
 주지만, 안정성은 초기화가 보장</strong>한다.</p>
 <p><strong>실수 2: <code>zero_grad()</code>를 빼먹기</strong> — PyTorch는 <code>.backward()</code>를 반복하면
@@ -565,7 +567,7 @@ Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)의 �
 직접 유도할 때, 그리고 Chapter 12(모방학습)에서 “왜 이 손실을 쓰나?“를
 질문할 때, 역전파의 <strong>구조</strong>(위 “연쇄법칙의 구조를 한 줄로” 섹션)가
 직접적으로 필요하게 된다. <strong>자동화가 알아서 하니까 원리를 모를 필요는
-없다</strong> — 하지만 <strong>디버깅과 설계</strong>를 하려면 원리가 필요하다.</p>
+없다</strong> — 하지만 <strong>디버깅과 설계</strong>를 하려면 원리가 필요하다. 이 주제를 더 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">7</a></sup></p>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
 <p><strong>(a) (개념)</strong> 2층 신경망에서 은닉층의 활성 함수를 <strong>제거</strong>(항등 함수로
 교체)하면, 이 네트워크가 표현할 수 있는 함수의 집합은 어떻게
@@ -618,7 +620,7 @@ capacity)으로 정하는 <strong>하이퍼파라미터</strong>다.</p>
 문제는 <strong>모든</strong> 유닛이 동시에 죽으면(일반적으로 학습률이 너무 클 때)
 그려지는 경우다. 이번 학기에서는 기본 ReLU를 쓰되, “학습이 갑자기
 멈추면 유닛이 다 죽은 것은 아닌가“를 debug 체크리스트에 넣으라.
-(대안 활성: Leaky ReLU, GELU — ML1 Chapter 9에서 다룸)</p>
+(대안 활성: Leaky ReLU, GELU<sup class="footnote-reference" id="fr-gelu-1"><a href="#footnote-gelu">8</a></sup> — ML1 Chapter 9에서 다룸)</p>
 <p><strong>Q. “이번 학기에서 역전파를 직접 쓸 일이 정말 없는가?”</strong>
 <code>.backward()</code>를 <strong>호출</strong>하는 것은 항상 PyTorch가 한다. 하지만
 <strong>손실함수를 정의</strong>하는 것은 항상 <strong>네가</strong> 한다. Chapter 10의
@@ -628,7 +630,7 @@ PPO에서 클리핑 목적함수(\(L^{CLIP}\))를 직접 쓰는 순간, “이 �
 “자동“이지만, <strong>손실의 방향</strong>을 설계하는 것은 자동화되지 않는다.
 이번 절에서 역전파의 구조를 이해해두는 것이, 바로 이 “손실 설계”
 능력의 기초다.</p>
-<p><strong>Q. “Adam이 뭔데, 그냥 경사하강(SGD)하면 안 되나?”</strong>
+<p><strong>Q. “Adam이 뭔데, 그냥 경사하강(SGD)하면 안 되나?”</strong><sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">9</a></sup>
 Adam은 <strong>적응적 학습률</strong>을 가진 경사하강의 변형이다. SGD는 모든
 파라미터에 같은 \(\eta\)를 쓰지만, Adam은 각 파라미터의 <strong>과거
 그래디언트의 평균과 분산</strong>을 추적해 “이 파라미터는 자주 큰 그래디언트를
@@ -644,7 +646,40 @@ SGD의 기본 원리를 배웠다).</p>
 이 모든 것이 <code>zero_grad()</code> → <code>backward()</code> → <code>step()</code> 세 줄로
 축약된다는 것 — 이 네 가지가 이번 학기 16개 챕터의 <strong>공통 언어</strong>다.
 다음 절(1.3)에서는 이 언어를 처음 사용할 <strong>무대</strong>, 즉 Gymnasium
-시뮬레이션 환경,를 세팅한다.</p>
+시뮬레이션 환경<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">10</a></sup>,를 세팅한다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-cs230">
+<p>Stanford CS230: Deep Learning. https://cs230.stanford.edu/ <a href="#fr-cs230-1">↩</a></p>
+</li>
+<li id="footnote-pytorch">
+<p>Paszke, A. et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” arXiv:1912.01703. <a href="#fr-pytorch-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-kaiming">
+<p>He, K., Zhang, X., Ren, S., Sun, J. (2015). “Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.” arXiv:1502.01852. <a href="#fr-kaiming-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-gelu">
+<p>Hendrycks, D., Gimpel, K. (2016). “Gaussian Error Linear Units (GELUs).” arXiv:1606.08415. <a href="#fr-gelu-1">↩</a></p>
+</li>
+<li id="footnote-adam">
+<p>Kingma, D. P., Ba, J. (2015). “Adam: A Method for Stochastic Optimization.” ICLR 2015 (arXiv:1412.6980). <a href="#fr-adam-1">↩</a></p>
+</li>
+<li id="footnote-gym">
+<p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. (Gymnasium은 이 프로젝트의 현대적 후속판이다.) <a href="#fr-gym-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

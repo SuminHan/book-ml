@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -184,7 +184,7 @@
 <p>Chapter 14의 k-means는 각 점을 <strong>딱 하나의</strong> 클러스터에 배정했다(하드
 할당, hard assignment). 그런데 실제 데이터는 클러스터 경계가 모호한
 경우가 많다 — 어떤 점은 클러스터 A에 60%, B에 40% 정도 속한다고 보는 게
-더 자연스러울 수 있다. <strong>가우시안 혼합모델</strong>(Gaussian Mixture Model,
+더 자연스러울 수 있다. <strong>가우시안 혼합모델</strong><sup class="footnote-reference" id="fr-gmm-1"><a href="#footnote-gmm">1</a></sup> (Gaussian Mixture Model,
 GMM)은 각 클러스터를 정규분포로 표현하고(Chapter 3의 GDA와 같은 가정),
 각 점이 어느 클러스터에서 나왔는지를 <strong>확률</strong>로 표현한다.</p>
 <p>문제는 이렇다 — 각 점이 어느 클러스터에서 나왔는지를 나타내는 변수
@@ -202,7 +202,7 @@ EM은 이 순환을 반복으로 풀어낸다: 하나를 (아무 값으로) 고�
 않을 때까지 반복한다.</p>
 <h3 id="유명한-사례-절차의-이름이-그대로-알고리즘-이름이-된-논문"><a class="header" href="#유명한-사례-절차의-이름이-그대로-알고리즘-이름이-된-논문">유명한 사례: 절차의 이름이 그대로 알고리즘 이름이 된 논문</a></h3>
 <p>1977년, 통계학자 아서 뎀스터(Arthur Dempster), 낸 레어드(Nan Laird),
-도널드 루빈(Donald Rubin)이 잡지 <em>JRSS-B</em>에 발표한 “Maximum Likelihood
+도널드 루빈(Donald Rubin)<sup class="footnote-reference" id="fr-em1977-1"><a href="#footnote-em1977">2</a></sup>이 잡지 <em>JRSS-B</em>에 발표한 “Maximum Likelihood
 from Incomplete Data via the EM Algorithm“은 통계학에서 가장 많이
 인용된 논문 중 하나로 꼽힌다. 그런데 놀랍게도 이 논문의 ’발명품’은
 “전혀 새로운 수학“이 아니었다. E-step이 쓰는 계산(현재 파라미터에서의
@@ -315,10 +315,11 @@ def em_step(data, means, sigmas, weights):
 \mathcal{F}(\theta_{\text{new}}, \gamma) \ge
 \mathcal{F}(\theta_{\text{old}}, \gamma) =
 \log p(x; \theta_{\text{old}})\) — <strong>우도가 매 반복마다
-절대 줄지 않는다</strong>. 15.2절의 VAE는 “E-step의 사후확률을 정확히
+절대 줄지 않는다</strong>. 15.2절의 VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">3</a></sup>는 “E-step의 사후확률을 정확히
 계산할 수 없을 때(연속 무한한 잠재변수) 이 하한을 신경망
 \(q_\phi(z|x)\)로 근사해서 역전파로 올린다“는 알고리즘이므로,
 EM과 VAE는 <em>같은 부등식의 두 실행 전략</em>이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조."><span class="img-wrapper"><img src="../../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조."></span></label></p>
 <p>이 보장이 6개 데이터의 실행에서 실제로 작동하는지 확인해보자
 (\(m=6\), 데이터 \([1.0, 1.5, 0.8, 9.2, 10.1, 9.8]\), 초기값
 \(\mu=[2, 8], \sigma=[1, 1], \pi=[0.5, 0.5]\)):</p>
@@ -431,8 +432,10 @@ EM을 돌려보면(노트북 5절):</p>
 클러스터를 추가해도 피팅이 나아지지 않는다는 뜻인데(기존 덩어리를
 쪼개는 것뿐), BIC 벌점(\(p\)가 11에서 15로 늘어)이 판을 뒤집는다.
 4.3절의 엘보우가 “감소폭이 꺾이는 지점“을 <strong>눈</strong>으로 찾았다면, BIC는
-같은 결정을 하나의 <strong>숫자</strong>로 내리는 원리 있는 버전이다.</p>
+같은 결정을 하나의 <strong>숫자</strong>로 내리는 원리 있는 버전이다.
+EM과 혼합모델을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">4</a></sup>.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"><span class="img-wrapper"><img src="../../images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."><span class="img-wrapper"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."></span></label></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <p><strong>실수 1 — EM을 한 번만 돌려 믿기 (k-means의 실수보다 더 위험하다).</strong>
 k-means의 “나쁜 초기화 → 나쁜 지역최적해”(4.3절)는 GMM에도
@@ -520,7 +523,7 @@ M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
 \(\epsilon\) 미만” 같은 수렴 기준을 둔다. 또 차원이 높으면
 공분산 행렬 \(\Sigma_k\)가 특이(singular, 역행렬이 없는) 행렬에
 <strong>가깝게</strong> 수렴하기 쉬워서, 실전 라이브러리(<code>sklearn.mixture.GaussianMixture</code>
-등)는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
+등)<sup class="footnote-reference" id="fr-sklearn-1"><a href="#footnote-sklearn">5</a></sup>는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
 공분산을 쓰거나 (iii) \(\Sigma_k + \epsilon I\) 같은
 정규화를 넣는 옵션을 제공한다.</p>
 <p><strong>Q. GMM은 “생성 모델“이라면서 어떻게 데이터를 <em>만들어</em>냅니까?</strong>
@@ -528,7 +531,7 @@ M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
 가지고 있다 — 새 점을 만들려면 (1) 주사위 \(\pi\)로 \(z\)를 뽑고,
 (2) 그 \(z = k\)의 \(\mathcal{N}(\mu_k, \Sigma_k)\)에서 \(x\)를
 샘플링하면 된다. 이 “생성” 능력이 Chapter 15의 나머지 절
-(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN이 노이즈에서)의
+(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">6</a></sup>이 노이즈에서)의
 “데이터 생성“과 정확히 같은 질문의 가장 단순한 버전이다 —
 연습문제 1이 바로 이 함수를 작성하게 한다.</p>
 <hr>
@@ -612,6 +615,27 @@ Step 3:  log(a/b) = log a - log b로 분해하면:
 을 보여준 것이다 — 15.2절의 VAE는 E-step을 정확히 계산할 수
 없는(연속 잠재변수) 세계에서 이 같은 하한을 신경망으로 근사해서
 역전파로 올리는, 같은 수학의 다른 실행 전략이다.</strong></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-gmm">
+<p>McLachlan, G. J., Krishnan, T. (2008). “The EM Algorithm and Extensions.” 2nd ed. Wiley. <a href="#fr-gmm-1">↩</a></p>
+</li>
+<li id="footnote-em1977">
+<p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society, Series B (Methodological), 39(1), 1-38. https://doi.org/10.1111/j.2517-6161.1977.tb01682.x <a href="#fr-em1977-1">↩</a></p>
+</li>
+<li id="footnote-vae">
+<p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1">↩</a></p>
+</li>
+<li id="footnote-cs229">
+<p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-sklearn">
+<p>Pedregosa, F. et al. (2011). “Scikit-learn: Machine Learning in Python.” JMLR 12(2011) 2825-2830. arXiv:1201.0490. <a href="#fr-sklearn-1">↩</a></p>
+</li>
+<li id="footnote-gan">
+<p>Goodfellow, I. J. et al. (2014). “Generative Adversarial Networks.” arXiv:1406.2661. <a href="#fr-gan-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

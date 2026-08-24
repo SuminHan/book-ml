@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -259,7 +259,7 @@ y = l_1 \sin\theta_1 + l_2 \sin(\theta_1+\theta_2)\]</p>
 균형이다(진자를 위로 세우는 과제가 어려운 이유). (2) \(u\)의
 계수 \(3/(ml^2)\)는 “같은 토크가 무거울수록(\(m\)↑),
 길수록(\(l\)↑) 작은 가속을 준다“는 관성의 법칙 그 자체다.</p>
-<p>이 식이 실제 코드가 되는 순간을 보자 — Gymnasium의 <code>Pendulum-v1</code>
+<p>이 식이 실제 코드가 되는 순간을 보자 — Gymnasium <sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">1</a></sup>의 <code>Pendulum-v1</code>
 (13.2절 실습의 주인공)가 내부에서 정확히 이 식을 쓰고 있다:
 \(g = 10, m = l = 1\)로 대입하면
 \(\ddot\theta = 15\sin\theta + 3u\), 그리고 이를 <strong>오일러
@@ -333,8 +333,9 @@ RL이 PD를 이겨야 하는 곳은 “사람이 식을 세우기 어려운” �
 계수, 센서 잡음, 재질의 미세한 차이 등) — 시뮬레이션에서만 잘 작동하고
 실물에서는 실패하는 정책을 <strong>현실 격차</strong>(reality gap)라 부른다. 이
 격차를 줄이는 대표적인 방법이 <strong>도메인 무작위화</strong>(domain
-randomization) — 시뮬레이션의 물리 파라미터(마찰, 질량, 조명 등)를
-매 학습 에피소드마다 무작위로 바꿔가며 학습시키는 것이다. 정책이 하나의
+randomization) <sup class="footnote-reference" id="fr-domainrand-1"><a href="#footnote-domainrand">2</a></sup> — 시뮬레이션의 물리 파라미터(마찰,
+질량, 조명 등)를 매 학습 에피소드마다 무작위로 바꿔가며 학습시키는
+것이다. 정책이 하나의
 고정된 시뮬레이션 설정이 아니라 “다양한 물리 조건 전체“에 대해 잘
 작동하도록 강제하면, 그중 어느 하나(실물 로봇의 실제 물리 조건)에도
 더 잘 일반화하는 경향이 생긴다 — Chapter 6(ML1)에서 배운 정규화가
@@ -456,8 +457,8 @@ fine-tuning을 <em>조합</em>하는 것이 표준이며, 이 절에서 배운 �
 <h3 id="역사적-일화-바나나를-뒤집은-손-mujoco의-10년"><a class="header" href="#역사적-일화-바나나를-뒤집은-손-mujoco의-10년">역사적 일화: 바나나를 뒤집은 손, MuJoCo의 10년</a></h3>
 <p>이 분야에서 “sim-to-real이 통하는가“는 2010년대 내내 열린
 질문이었고, 답은 두 차례의 시범으로 굳어졌다. 첫 번째는
-<strong>MuJoCo</strong>의 등장이다(2012년 개발 시작, 2015년 공개, 2018년
-무료 오픈소스) — 특히 <em>접촉·마찰</em> 모델링이 정밀하고 빠르다는
+<strong>MuJoCo</strong><sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">3</a></sup>의 등장이다(2012년 개발 시작, 2015년 공개,
+2018년 무료 오픈소스) — 특히 <em>접촉·마찰</em> 모델링이 정밀하고 빠르다는
 이유로, 2018년 이후 로봇 RL 논문에서 표준 물리 엔진이 됐다
 (13.2절 FAQ의 PyBullet vs MuJoCo 비교가 바로 이 맥락이다).
 두 번째는 <strong>OpenAI의 바나나 뒤집기</strong>(2021) — 10개 손가락
@@ -545,7 +546,7 @@ h = \tau\)가 “토크 ↔ 가속“을 계산한다. 시뮬레이션은
 (파라미터 측정)로 줄인다. 무작위화 범위는 정규화
 강도와 같은 트레이드오프 하이퍼파라미터이며,
 “시뮬레이션 최고점“은 “실물 최적“을 함의하지
-않는다.</p>
+않는다. <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">4</a></sup></p>
 </blockquote>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
@@ -585,6 +586,21 @@ print(np.round(fk(np.deg2rad(30), np.deg2rad(60)), 3))  # (0.433, 0.75)
 무작위화하는 것“의 본질적 차이를 각각 한 문장으로 말하라
 (힌트: 전자에서 인간은 <em>해답</em>을 쓰고, 후자에서는 <em>문제</em>의
 범위를 쓰는가?)</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-gym">
+<p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. — 표준 RL 환경 라이브러리 OpenAI Gym의 원 논문. Gymnasium은 그 유지보수 계승 버전이며, <code>Pendulum-v1</code>은 그 대표적 연속 제어 환경이다. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-domainrand">
+<p>Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., Abbeel, P. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” IROS 2017. arXiv:1703.06907. — 시뮬레이션의 물리·외관 파라미터를 무작위화해 시뮬레이터에서 학습한 시선 추적 네트워크를 실제 로봇에 전이한 원 논문. <a href="#fr-domainrand-1">↩</a></p>
+</li>
+<li id="footnote-mujoco">
+<p>Todorov, E., Erez, T., Tassa, Y. (2012). “MuJoCo: A physics engine for model-based control.” IROS 2012. DOI: 10.1109/IROS.2012.6386109. — 로봇 시뮬레이터 MuJoCo의 원 논문. 접촉·마찰 모델링이 정밀하고 빠르다는 특징으로 2018년 무료 오픈소스 공개 이후 로봇 RL 논문에서 사실상 표준 물리 엔진이 됐다. <a href="#fr-mujoco-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>이 절의 주제(로봇 동역학, sim-to-real, 도메인 무작위화)를 더 깊이 다루는 자료: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

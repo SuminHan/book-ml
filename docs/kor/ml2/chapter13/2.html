@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -180,7 +180,7 @@
                     <main>
                         <h1 id="132-로봇-환경-탐색-실습"><a class="header" href="#132-로봇-환경-탐색-실습">13.2 로봇 환경 탐색 실습</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter13_2_robot_envs.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>이번 학기 실습은 Gymnasium이 제공하는 로봇류 환경으로 진행한다 — 이미
+<p>이번 학기 실습은 Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">1</a></sup>이 제공하는 로봇류 환경으로 진행한다 — 이미
 Chapter 1과 9에서 쓴 CartPole·Pendulum도 사실 아주 단순화된 “로봇
 제어” 문제다(막대의 균형을 잡는 것, 진자를 세우는 것 모두 관절 제어의
 가장 작은 형태다). 좀 더 로봇에 가까운 연속 제어 문제로 넘어가 보자:</p>
@@ -361,10 +361,11 @@ Ant-v5 (에피소드가 100스텝 전에 조기 종료됨):
 다룬 CartPole(상태 4차원, 행동 2개 중 선택)이나 Pendulum(상태
 3차원, 행동 1차원)과 비교하면 상태·행동공간이 훨씬 크고 복잡하다
 는 것을 숫자로 바로 체감할 수 있다. 이런 고차원 연속 제어 문제
-에서, “Q값의 최댓값을 찾는다“는 Chapter 9의 DQN 접근이 왜
+에서, “Q값의 최댓값을 찾는다“는 Chapter 9의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">2</a></sup> 접근이 왜
 어려워지는지(행동 8차원의 연속공간 전체에서 최댓값을 찾아야
 한다)와, Chapter 10~11의 정책기반 방법이 왜 이런 문제의 표준이
-되는지가 자연스럽게 이어진다.</p>
+되는지가 자연스럽게 이어진다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">3</a></sup>.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <h3 id="ant의-점수가-양수인-에피소드-보상은-장부다"><a class="header" href="#ant의-점수가-양수인-에피소드-보상은-장부다">Ant의 점수가 양수인 에피소드: 보상은 “장부“다</a></h3>
 <p>위 숫자(시드 0~2)는 모두 음수지만, 무작위 Ant 에피소드 중에는 <strong>리턴이
 양수</strong>인 것이 있다(시드 4: <strong>\(+3.60\)</strong>, 16스텝에서
@@ -413,12 +414,13 @@ _\text{제어비용} \;-\; \underbrace{5 \times 10^{-4} \times
 유지하기 위해 읽어야 하는 정보(몸통 자세 13 + 속도 14 +
 접촉 78)가 돌릴 수 있는 노브(8개 토크)보다 훨씬 많다는 뜻이며,
 이는 “8개 토크를 <em>어떤 상태에 주목해서</em> 정할 것인가“라는
-<strong>주의(attention) 문제</strong>를 포함한다. 13.3절의 PPO Actor가
+<strong>주의(attention) 문제</strong>를 포함한다. 13.3절의 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">4</a></sup> Actor가
 Reacher(10차원)에서 64-64 트렁크를 쓰는 구조는 이 문제의
 직접적 결과다 — “읽는 양“이 105로 커져도(환경만 바뀌면
 입력 차원만 바뀌는, 13.3절 FAQ의 “같은 코드 다른 환경”)
 트렁크가 그 105차원을 64차원 특징으로 압축해야 8개 출력
 헤드가 다루기 쉬운 크기가 된다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="큰-로봇의-물리적-대가-스텝당-시간"><a class="header" href="#큰-로봇의-물리적-대가-스텝당-시간">“큰 로봇“의 물리적 대가: 스텝당 시간</a></h3>
 <p>모델이 크면 스텝당 계산도 무거워진다 — 재보자(노트북 8번 셀,
 <code>env.step()</code> 루프 2000회, 로컬 측정):</p>
@@ -501,10 +503,11 @@ PyBullet은 오픈소스로 시작해 접근성이 좋았지만, 최근에는 Mu
 16스텝에 끝나기도 한다 — 평가 코드에 영향이 있나요?</strong>
 있지만 아주 작다 — <code>step</code>의 5-튜플에서 <code>terminated or truncated</code>
 로 <code>break</code>하는 한 줄만 있으면 둘 다 같은 루프로 처리된다(이
-절의 평가 코드가 그 구조). 알고리즘(GAE 등) 레벨의 영향은 13.3절 FAQ에서
+절의 평가 코드가 그 구조). 알고리즘(GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">5</a></sup> 등) 레벨의 영향은 13.3절 FAQ에서
 다룬다. 중요한 것은 <strong>평가 지표가 “고정 100스텝“을 가정하지
 않아야</strong> 한다는 점: 에피소드가 16스텝에서 끝나면 그 뒤의
 “가상의 84스텝 리턴 0“을 덧붙이는 식의 처리를 하면 안 된다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label></p>
 <blockquote>
 <p><strong>핵심 정리</strong>: 로봇 환경 실습의 첫 단계는 알고리즘이 아니라
 <strong>평가 프로토콜</strong>이다 — 창 고정, 다중 시드 평균, 조기 종료
@@ -563,6 +566,24 @@ Chapter 10~11의 정책기반 방법은 같은 위치에서 무엇을 <em>대신
 이 구조가 “상태를 많이 읽되 행동은 적게 쓴다“는 13.3절
 PPO의 Actor 구조를 Ant에 이식했을 때의 형태(105→64-64→8)와
 어떻게 연결되는지 두 문장으로 설명하라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-gymnasium">
+<p>Towers, M. et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-gae">
+<p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -184,7 +184,7 @@
 <p><strong>MuJoCo</strong>(Multi-Joint dynamics with Contact)는 로봇의 관절, 접촉,
 마찰을 물리적으로 정확하게 계산하도록 설계된 물리엔진이다 — 원래
 상용 소프트웨어였다가 2021년 무료로 공개되며 로봇 강화학습 연구의
-사실상 표준 도구가 됐다. MuJoCo의 모델은 XML로 물체의 형태, 관절,
+사실상 표준 도구가 됐다<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">1</a></sup>. MuJoCo의 모델은 XML로 물체의 형태, 관절,
 질량 등을 정의하고, 이를 반복적으로 스텝시켜 물리 시뮬레이션을
 진행한다:</p>
 <pre><code class="language-python">import mujoco
@@ -224,12 +224,14 @@ gt^2\)이 예측하는 0.951m과 거의 정확히 일치한다(실제 시뮬레�
 값 0.95).</p>
 <p>이 코드는 공 하나가 중력에 따라 자유낙하하는 가장 단순한 예시지만,
 같은 API(<code>MjModel</code>, <code>MjData</code>, <code>mj_step</code>)로 다리가 여러 개인 로봇, 로봇
-팔, 인간형 로봇까지 표현할 수 있다 — Gymnasium의 <code>HalfCheetah</code>,
+팔, 인간형 로봇까지 표현할 수 있다 — Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">2</a></sup>의 <code>HalfCheetah</code>,
 <code>Ant</code>, <code>Humanoid</code> 같은 연속제어 환경들이 실제로 이 MuJoCo 엔진 위에
-만들어져 있다(Chapter 13.2에서 쓴 <code>Reacher-v5</code>, <code>Ant-v5</code>도 마찬가지다).
-Chapter 9~13에서 배운 DQN·PPO 알고리즘은 환경이 CartPole이든 MuJoCo
+만들어져 있다<sup class="footnote-reference" id="fr-duanbenchmark-1"><a href="#footnote-duanbenchmark">3</a></sup> (Chapter 13.2에서 쓴 <code>Reacher-v5</code>, <code>Ant-v5</code>도 마찬가지다).
+Chapter 9~13에서 배운 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup>·PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">5</a></sup> 알고리즘은 환경이 CartPole이든 MuJoCo
 기반 로봇이든 바뀌지 않는다 — <code>env.step()</code> 인터페이스만 지키면,
 물리엔진이 훨씬 정교해져도 알고리즘 쪽 코드는 그대로다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="실습-직접-정의한-mujoco-모델에-제어-정책-적용하기"><a class="header" href="#실습-직접-정의한-mujoco-모델에-제어-정책-적용하기">실습: 직접 정의한 MuJoCo 모델에 제어 정책 적용하기</a></h3>
 <p>Gymnasium 래퍼 없이, MuJoCo API를 직접 써서 진자 하나를 정의하고
 제어해보자 — 관절(<code>hinge</code>)과 그 관절에 힘을 가하는 액추에이터
@@ -331,7 +333,7 @@ Gymnasium 환경 클래스를 직접 작성하게 된다.</p>
 틀리면, 아무리 잘 학습해도 안착하지 않는다.</p>
 <blockquote>
 <p><strong>확인: D항 없이 학습은 될까?</strong> 이 “P만으론 진동” 현상은
-강화학습과도 직결된다. 정책 그래디언트로 “어떤 토크가 좋은가“를
+강화학습과도 직결된다. 정책 그래디언트<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">6</a></sup>로 “어떤 토크가 좋은가“를
 배우게 하려면, 좋은 정책(=D항 포함)과 나쁜 정책(=P만)의 리턴이
 <strong>확실하게</strong> 달라야 한다. 위 표처럼 P만으로 200스텝을 못 넘기거나
 발산하면, 보상 신호 자체가 “이 정책은 처참하다“가 돼 오히려
@@ -386,7 +388,7 @@ Gymnasium 환경 클래스를 직접 작성하게 된다.</p>
 을 <code>MuJoCoPendulum()</code>으로 바꾸는 <em>한 줄</em>만 고치면 MuJoCo 진자 위에서
 동작한다 — 물리엔진이 <code>Pendulum</code>의 단순 근사에서 MuJoCo의 정밀
 접촉·마찰로 바뀌어도, 정책이 배우는 (상태, 행동, 보상)의 <em>흐름</em>
-자체는 동일하다.</p>
+자체는 동일하다. 이 주제를 더 깊이 보려면: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">7</a></sup></p>
 <h3 id="왜-mujoco가-정밀한가-접촉과-마찰을-lcp로-푼다"><a class="header" href="#왜-mujoco가-정밀한가-접촉과-마찰을-lcp로-푼다">왜 MuJoCo가 “정밀“한가: 접촉과 마찰을 LCP로 푼다</a></h3>
 <p>표제의 “정밀“은 단순한 속도나 모델 크기가 아니다. 핵심은 **접촉
 (contact)**을 푸는 방식이다. 공이 바닥에 닿는 순간은 물리에서
@@ -436,9 +438,9 @@ model-based control”*이라는 논문과 함께 공개했다. 이름은
 제어</em>(시스템 모델을 알고 그 모델을 최적 제어에 넣는 방식)의
 <em>재현성</em>과 <em>속도</em>를 위해 설계됐다 — 접촉을 LCP로 푸는 것도
 이 최적화 관점의 자연스러운 결과다. 2021년 Todorov가 MuJoCo를
-무료로 오픈소스화하면서, GPU 병렬 시뮬레이터(14.2의 Isaac Sim)가
+무료로 오픈소스화하면서, GPU 병렬 시뮬레이터(14.2의 Isaac Sim)<sup class="footnote-reference" id="fr-isaacgym-1"><a href="#footnote-isaacgym">8</a></sup>가
 없어도 CPU에서 정밀 로봇 물리를 돌릴 수 있게 돼, OpenAI의
-<code>gym</code>에서 DeepMind의 로봇 연구까지 사실상 표준 물리엔진이 됐다.
+<code>gym</code><sup class="footnote-reference" id="fr-openaigym-1"><a href="#footnote-openaigym">9</a></sup>에서 DeepMind의 로봇 연구까지 사실상 표준 물리엔진이 됐다.
 이번 절에서 직접 XML로 모델을 정의하고 <code>ctrl</code>에 값을 넣는 경험은,
 이 “모델 기반“의 “모델“을 <em>손으로</em> 만져보는 것이다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
@@ -458,13 +460,47 @@ model-based control”*이라는 논문과 함께 공개했다. 이름은
 <em>그대로</em> 돌려도 되나요?</strong> <code>reset()</code>/<code>step()</code>이 같은 시그니처를
 지키면, PPO 코드는 <code>env</code> 인자로 <code>MuJoCoPendulum()</code>을 받기만 하면
 됩니다. 다만 두 가지 <em>실전</em> 차이(아래 “확인 문제” 3번과 연결)가
-있습니다. (1) 보상/저장의 스케일이 다르다 — PPO의 GAE·어드밴티지
+있습니다. (1) 보상/저장의 스케일이 다르다 — PPO의 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">10</a></sup>·어드밴티지
 정규화는 보상의 범위에 민감하므로, 이 진자의 “-각도²” 보상이
 CartPole의 “+1/스텝“보다 절대값이 크면 정규화 파라미터를 다시
 맞춰야 한다. (2) Gymnasium 환경은 <code>env.reset(seed=...)</code>로 <em>결정적</em>
 시드가 보장되지만, 직접 만든 클래스는 <code>reset</code>에서 시드를 <code>np.random default_rng</code>에 넘겨줘야 “같은 시드 → 같은 궤적“이 성립한다 —
 위 코드에서 <code>self.rng = np.random.default_rng(seed)</code>가 바로 그
 역할을 한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-mujoco">
+<p>Todorov, E. et al. (2012). “MuJoCo: A physics engine for model-based control.” IROS 2012. (2021년 무료 오픈소스 공개: https://mujoco.org) <a href="#fr-mujoco-1">↩</a></p>
+</li>
+<li id="footnote-gymnasium">
+<p>Towers, M., Kwiatkowski, A., Terry, J., et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” NeurIPS Datasets and Benchmarks 2025. arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+<li id="footnote-duanbenchmark">
+<p>Duan, Y. et al. (2016). “Benchmarking Deep Reinforcement Learning for Continuous Control.” ICML 2016. arXiv:1604.06778. <a href="#fr-duanbenchmark-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-isaacgym">
+<p>Makoviychuk, V., Wawrzyniak, L., Guo, Y., et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. <a href="#fr-isaacgym-1">↩</a></p>
+</li>
+<li id="footnote-openaigym">
+<p>Brockman, G. et al. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-openaigym-1">↩</a></p>
+</li>
+<li id="footnote-gae">
+<p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

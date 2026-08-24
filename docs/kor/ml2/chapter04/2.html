@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -181,7 +181,7 @@
                         <h1 id="42-정책-반복과-gridworld-실습"><a class="header" href="#42-정책-반복과-gridworld-실습">4.2 정책 반복과 GridWorld 실습</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter04_2_policy_iteration.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <h3 id="정책-반복"><a class="header" href="#정책-반복">정책 반복</a></h3>
-<p><strong>정책 반복</strong>(Policy Iteration)은 최적해를 향해 두 단계를 번갈아
+<p><strong>정책 반복</strong><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">1</a></sup> (Policy Iteration)은 최적해를 향해 두 단계를 번갈아
 반복한다:</p>
 <ol>
 <li><strong>정책평가</strong>: 현재 정책 \(\pi\)의 \(V^\pi\)를 계산한다(4.1절).</li>
@@ -468,7 +468,7 @@ left와 <strong>동점</strong>이므로(4.1절 FAQ의 동점 논쟁이 여기�
 이므로). 다만 <strong>수렴 속도</strong>만 \(k\)에 따라 변한다 — \(k\)가
 작을수록 각 바퀴가 가볍고, 그 대신 바퀴를 더 돌릴 수 있다.
 실무적으로 \(k\)는 “이 MDP에서 정책평가 한 sweep의 비용 대비
-얼마나 정확한 \(V^\pi\)가 필요한가“의 trade-off로 정한다.</p>
+얼마나 정확한 \(V^\pi\)가 필요한가“의 trade-off로 정한다. 정책 반복과 가치 반복이 수확할 최적 정책의 구조를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">2</a></sup></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <ul>
 <li><strong>“평가 → 개선” 순서를 뒤집거나, 개선 전에 평가를 안 하고
@@ -628,12 +628,13 @@ last : [1, 1, 1] [1.0000, 0.0000, 0.0000]
 \(P, R\)를 정확히 아는 문제 — 작은 그리드 월드, 재고 관리,
 스케줄링 — 에서는 지금도 그대로 쓴다(4.3절 FAQ 참조). 하지만
 “\(P\)를 모른다“는 모델프리 문제(Chapter 5~7)나 “상태가 너무
-크다“는 문제(Chapter 9 DQN)에서는 직접 쓰이지 <strong>않고</strong>, 대신 이 절의
+크다“는 문제(Chapter 9 DQN)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">3</a></sup>에서는 직접 쓰이지 <strong>않고</strong>, 대신 이 절의
 <strong>논증 구조</strong>(평가 → 개선 → 단조 증가 → 고정점=최적)가
 TD 학습·Q-learning의 “왜 수렴하는가” 논의의 <strong>뼈대</strong>로
 재사용된다. 특히 “정책이 자기 기준 argmax와 일치하면 최적“이라는
 판별법은, DQN에서 “Q-망이 벨만 최적방정식을 만족하는가“를
 확인하는 residual 검사(Chapter 9)의 이론적 원형이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)"><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)"></span></label></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 4.1절의 <code>policy_evaluation</code>(sweep 카운트 포함)를 불러와
@@ -680,6 +681,18 @@ s=3이 right로 바뀌면 \(V(3) = -1 + 0.9 \times 0 = -1\)이므로
 횟수(5)“가 \(k\)와 <strong>무관</strong>하기 때문인데, 이것이 MDP의
 <strong>구조</strong>(최악의 출발에서 한 칸씩만 바뀜)에 의존한다는 점을
 한 문장 덧붙여라.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

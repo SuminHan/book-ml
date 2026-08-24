@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -182,16 +182,18 @@
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_vae_elbo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: VAE"></a>
 <a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_gan.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GAN"></a></p>
 <p>1977년, 통계학자 아서 뎀스터(Arthur Dempster), 낸 레어드(Nan Laird), 도널드
-루빈(Donald Rubin)은 “불완전한 데이터로부터의 최대우도추정“이라는 논문에서,
+루빈(Donald Rubin)<sup class="footnote-reference" id="fr-em1977-1"><a href="#footnote-em1977">1</a></sup>은 “불완전한 데이터로부터의 최대우도추정“이라는 논문에서,
 겉보기엔 서로 다른 여러 통계 문제들이 사실 하나의 공통된 구조 — <strong>일부
 정보가 관측되지 않았을 때(잠재변수), 그 정보를 알았다면 쉬웠을 계산을
 반복적으로 근사한다</strong> — 를 공유한다는 것을 보였다. 이번 장은 그들이 정리한
 <strong>EM</strong>(Expectation-Maximization) 알고리즘에서 시작해, 정확히 같은 질문(“관측
-안 된 잠재변수가 데이터를 어떻게 만들어내는가”)을 신경망으로 확장한 VAE,
+안 된 잠재변수가 데이터를 어떻게 만들어내는가”)을 신경망으로 확장한 VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">2</a></sup>,
 그리고 완전히 다른 두 원리(적대적 학습, 점진적 노이즈 제거)로 같은 목표에
 도달하는 GAN·Diffusion까지, 생성형 모델의 네 가지 얼굴을 한 장에서 훑는다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조."><span class="img-wrapper"><img src="../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."></span></label></p>
 <p>이 질문은 Chapter 14 “표현학습“의 연장선이다. 거기서 우리는 “정보를 담는
-벡터로 데이터를 압축한다“는 직관을 배웠다 — PCA의 주성분, word2vec의 단어
+벡터로 데이터를 압축한다“는 직관을 배웠다 — PCA의 주성분, word2vec<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">3</a></sup>의 단어
 벡터. 이번 장은 그 압축된 표현에 <strong>확률</strong>을 입힌다. 잠재변수 \(z\)는
 단 하나의 점사상이 아니라 데이터의 “설명“이 되고, 질문은 둘로 갈라진다 —
 “관측된 \(x\)로부터 보이지 않는 \(z\)를 어떻게 추론할 것인가”, 그리고
@@ -204,7 +206,7 @@
 도구 상자가 된다. 동시에 이 장은 Block B(Chapter 9~15)를 관통해온
 신경망 도구가 데이터를 설명하는 확률 모델로 완성되는 지점이다 —
 이제까지 배운 모든 역전파가 이번 장에서는 잠재변수의 분포를
-최적화하는 데 쓰인다.</p>
+최적화하는 데 쓰인다.<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">4</a></sup></p>
 <p>이 챕터를 마치면 다음을 할 수 있다:</p>
 <ul>
 <li>EM 알고리즘의 E-step/M-step을 “잠재변수를 안다면 MLE가 쉽다“는 두 줄
@@ -230,19 +232,59 @@
 뒤, k-means와의 차이(타원형 클러스터), BIC으로 하는 \(K\) 선택,
 분산 붕괴 실패 사례까지 다룬다.</li>
 <li><a href="chapter15/2.html">15.2 VAE: ELBO와 실습</a> — 잠재변수를 연속 벡터로,
-계산 불가능한 E-step을 신경망으로 대체한 VAE를 배운다. 옌센 부등식 한
+계산 불가능한 E-step을 신경망으로 대체한 VAE<sup class="footnote-reference" id="fr-vae-2"><a href="#footnote-vae">2</a></sup>를 배운다. 옌센 부등식 한
 번으로 ELBO를 유도하고 복원 항·KL 정규화 항의 의미를 확인한 뒤, 두
 봉우리 데이터로 작은 VAE를 실제로 학습해 표준정규분포에서 \(z\)를 뽑아
-디코더만 통과시키는 생성 모드까지 확인한다(리파라미터화 트릭, β-VAE,
+디코더만 통과시키는 생성 모드까지 확인한다(리파라미터화 트릭, β-VAE<sup class="footnote-reference" id="fr-beta_vae-1"><a href="#footnote-beta_vae">5</a></sup>,
 “흐릿한” 생성 이미지의 원인 포함).</li>
 <li><a href="chapter15/3.html">15.3 GAN, Diffusion, 그리고 네 원리 비교</a> — 우도
-기반과 다른 두 패러다임을 만난다. GAN은 생성자·판별자의 min-max 게임
-(내쉬 균형, 1차원 장난감의 균형점 계산, 모드 붕괴, WGAN·CycleGAN·
-StyleGAN까지)이고, Diffusion은 노이즈를 한 단계씩 제거하는 MSE 회귀
-문제(DDPM/DDIM, VAE 잠재 공간을 쓰는 Stable Diffusion)다. 마지막으로
+기반과 다른 두 패러다임을 만난다. GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">6</a></sup>은 생성자·판별자의 min-max 게임
+(내쉬 균형, 1차원 장난감의 균형점 계산, 모드 붕괴, WGAN<sup class="footnote-reference" id="fr-wgan-1"><a href="#footnote-wgan">7</a></sup>·CycleGAN<sup class="footnote-reference" id="fr-cyclegan-1"><a href="#footnote-cyclegan">8</a></sup>·
+StyleGAN<sup class="footnote-reference" id="fr-stylegan-1"><a href="#footnote-stylegan">9</a></sup>까지)이고, Diffusion은 노이즈를 한 단계씩 제거하는 MSE 회귀
+문제(DDPM<sup class="footnote-reference" id="fr-ddpm-1"><a href="#footnote-ddpm">10</a></sup>/DDIM<sup class="footnote-reference" id="fr-ddim-1"><a href="#footnote-ddim">11</a></sup>, VAE 잠재 공간을 쓰는 Stable Diffusion<sup class="footnote-reference" id="fr-stablediffusion-1"><a href="#footnote-stablediffusion">12</a></sup>)다. 마지막으로
 네 원리를 잠재변수/학습 방법/안정성/생성 속도로 나란히 비교해 장을
 마무리한다.</li>
 </ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."><span class="img-wrapper"><img src="../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."></span></label></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-em1977">
+<p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society, Series B (Methodological), 39(1), 1-38. https://doi.org/10.1111/j.2517-6161.1977.tb01682.x <a href="#fr-em1977-1">↩</a></p>
+</li>
+<li id="footnote-vae">
+<p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1">↩</a> <a href="#fr-vae-2">↩2</a></p>
+</li>
+<li id="footnote-word2vec">
+<p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781. <a href="#fr-word2vec-1">↩</a></p>
+</li>
+<li id="footnote-cs230">
+<p>Stanford CS230: Deep Learning. https://cs230.stanford.edu/ <a href="#fr-cs230-1">↩</a></p>
+</li>
+<li id="footnote-beta_vae">
+<p>Higgins, I., Matthey, L., Pal, A., et al. (2017). “beta-VAE: Learning Basic Visual Concepts with a Constrained Variational Framework.” ICLR 2017. arXiv:1806.03916. <a href="#fr-beta_vae-1">↩</a></p>
+</li>
+<li id="footnote-gan">
+<p>Goodfellow, I. J. et al. (2014). “Generative Adversarial Networks.” arXiv:1406.2661. <a href="#fr-gan-1">↩</a></p>
+</li>
+<li id="footnote-wgan">
+<p>Arjovsky, M., Chintala, S., Bottou, L. (2017). “Wasserstein GAN.” arXiv:1701.07875. <a href="#fr-wgan-1">↩</a></p>
+</li>
+<li id="footnote-cyclegan">
+<p>Zhu, J.-Y., Park, T., Isola, P., Efros, A. A. (2017). “Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks.” CVPR 2017. arXiv:1703.10593. <a href="#fr-cyclegan-1">↩</a></p>
+</li>
+<li id="footnote-stylegan">
+<p>Karras, T., Laine, S., Aila, T. (2018). “A Style-Based Generator Architecture for Generative Adversarial Networks.” arXiv:1812.04948. <a href="#fr-stylegan-1">↩</a></p>
+</li>
+<li id="footnote-ddpm">
+<p>Ho, J., Jain, A., Abbeel, P. (2020). “Denoising Diffusion Probabilistic Models.” NeurIPS 2020. arXiv:2006.11239. <a href="#fr-ddpm-1">↩</a></p>
+</li>
+<li id="footnote-ddim">
+<p>Song, J., Meng, C., Ermon, S. (2021). “Denoising Diffusion Implicit Models.” ICLR 2021. arXiv:2010.02502. <a href="#fr-ddim-1">↩</a></p>
+</li>
+<li id="footnote-stablediffusion">
+<p>Rombach, R., Blattmann, A., Lorenz, D., Esser, P., Ommer, B. (2022). “High-Resolution Image Synthesis with Latent Diffusion Models.” CVPR 2022. arXiv:2112.10752. <a href="#fr-stablediffusion-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

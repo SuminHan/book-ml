@@ -6,7 +6,7 @@ dimensionality)"라는 용어를 만들면서 동적계획법(dynamic programmin
 더 작은 부분 문제로 쪼개서 그 답을 재귀적으로 조합하라" — 는 지금 강화학습
 이론 전체의 뼈대를 이루고 있다. 이번 장은 Chapter 2의 밴딧에 "상태"를
 더해서, 강화학습 문제를 수학적으로 엄밀하게 정의하는 틀 — **MDP**(Markov
-Decision Process) — 를 세운다.
+Decision Process)[^suttonbarto] — 를 세운다.
 
 왜 바로 이 순서인가. Chapter 2의 멀티암 밴딧은 상태도 전이도 없이
 "탐험과 활용의 딜레마" 하나만 순수하게 남긴, 강화학습의 가장 작은 뼈대였다.
@@ -16,9 +16,11 @@ Decision Process) — 를 세운다.
 MDP였다. 이번 장은 한쪽으로는 Chapter 2가 남긴 문제를 엄밀한 형식으로 정식화
 하고, 다른 한쪽으로는 그 정식화된 문제를 다음 장에서 "풀기" 위해 필요한 도구를
 미리 닦아두는, 강화학습 이론 전체의 **문법**을 정하는 장이다. 이 "문법"을
-확실히 잡아야, Chapter 4의 정책평가, Chapter 6의 Q-러닝, Chapter 9의 DQN
+확실히 잡아야, Chapter 4의 정책평가, Chapter 6의 Q-러닝, Chapter 9의 DQN[^dqn]
 손실함수가 사실은 **동일한 재귀식**(벨만방정식)을 각각 다른 방식으로 계산·
 학습하는 것임을 뒤에서 알아볼 수 있다.
+
+![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
 
 **학습 목표** — 이 챕터를 마치면 다음과 같다:
 
@@ -61,6 +63,10 @@ MDP였다. 이번 장은 한쪽으로는 Chapter 2가 남긴 문제를 엄밀한
 시작한다. 이번 장에서 세운 목표 — "누적 보상을 최대화하는 행동을 고른다" —
 는 아직 계산 불가능해 보이지만, 벨만 기대방정식(3.3)이 그 무한합을 재귀적
 관계로 다시 써준 덕분에, 전이확률 \\(P\\)를 정확히 안다는 전제(모델 기반)
-아래 그 재귀식을 계산하는 **정책평가**와 최적 정책을 찾는 **정책반복·가치반복**
-을 다룬다. 즉 이번 장은 "문제를 정의하는" 장이고, Chapter 4부터는 그 정의를
+아래 그 재귀식을 계산하는 **정책평가**와 최적 정책을 찾는 **정책반복·가치반복**[^cs234]을
+다룬다. 즉 이번 장은 "문제를 정의하는" 장이고, Chapter 4부터는 그 정의를
 "풀어가는" 장으로 넘어간다.
+
+[^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html
+[^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
+[^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)

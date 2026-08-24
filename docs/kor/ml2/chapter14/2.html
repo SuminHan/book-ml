@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -209,8 +209,8 @@ CPU 위에서, numpy 한 줄로, 직접 재볼 수 있다. 이 절의 흐름은:
 <tr><th>환경</th><th>물리 수준</th><th>초당 스텝 수</th></tr>
 </thead>
 <tbody>
-<tr><td>CartPole-v1 (Gymnasium 기본)</td><td>단순 근사</td><td>약 242,000</td></tr>
-<tr><td>Pendulum (MuJoCo, 14.1의 진자)</td><td>정밀(단일 관절)</td><td>약 246,000</td></tr>
+<tr><td>CartPole-v1 (Gymnasium 기본)<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">1</a></sup></td><td>단순 근사</td><td>약 242,000</td></tr>
+<tr><td>Pendulum (MuJoCo<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">2</a></sup>, 14.1의 진자)</td><td>정밀(단일 관절)</td><td>약 246,000</td></tr>
 <tr><td>Ant-v5 (MuJoCo, 사족보행)</td><td>정밀(복잡한 접촉)</td><td>약 5,900</td></tr>
 </tbody>
 </table>
@@ -401,13 +401,14 @@ CNN에서 같은 필터가 <em>다른 위치의 다른 픽셀</em>을 볼 때 �
 Chapter 9의 경험재현 버퍼가 “순식간에 채워지는” 이유다.
 (2) <em>정책 업데이트</em>: 1,000개 진자의 궤적이 <em>동시에</em> 모였다고 해서,
 그 1,000개 <em>트랙</em>을 정책 그래디언트에 <em>한 번에</em> 쓸 수는 <em>없다</em> —
-Chapter 11.2의 PPO 미니배치는 <em>연속된</em> (상태, 행동, 리턴) <em>트플</em>을
+Chapter 11.2의 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">3</a></sup> 미니배치는 <em>연속된</em> (상태, 행동, 리턴) <em>트플</em>을
 요구하며, 1,000개 <em>독립</em> 트랙을 하나의 미니배치로 묶는 것은
 <em>가능하지만</em> <em>의미가 다르다</em> (각 트랙의 리턴이 <em>자신의</em> 초깃값
 분포에서 오므로, 한 미니배치 안의 트랙 간 분산이 커진다 — Chapter
-11.2의 GAE 보너가 이를 일부 처리한다). 즉, <strong>GPU 병렬은 “경험을
+11.2의 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">4</a></sup> 보너가 이를 일부 처리한다). 즉, <strong>GPU 병렬은 “경험을
 <em>모으는</em> 속도“를 키우고, “경험을 <em>쓰는</em> 효율“은 별개 축</strong>이다
 — 14.3의 “확인“에서 정확히 이 둘을 독립 축으로 정리한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="자주-하는-실수-코어가-많으니까-자동으로-빨라진다고-생각하는-것"><a class="header" href="#자주-하는-실수-코어가-많으니까-자동으로-빨라진다고-생각하는-것">자주 하는 실수: “코어가 많으니까 자동으로 빨라진다“고 생각하는 것</a></h3>
 <p>GPU 병렬의 가장 흔한 오류를, “왜 틀린가“까지 붙여 정리한다:</p>
 <div class="table-wrapper">
@@ -491,21 +492,22 @@ N배가 된다. <em>순차</em>는 N이 커질수록 <em>총</em> 시간이 N배
 <h3 id="역사-gpu로-수천-개를--cuda에서-isaac-sim까지"><a class="header" href="#역사-gpu로-수천-개를--cuda에서-isaac-sim까지">역사: “GPU로 수천 개를” — CUDA에서 Isaac Sim까지</a></h3>
 <p>Isaac Sim의 “GPU로 수천 개를 동시에“라는 아이디어는 <em>새것</em>이 아니다.
 그 뿌리는 2007년 NVIDIA가 공개한 <strong>CUDA</strong>(Compute Unified Device
-Architecture)에 있다 — CUDA가 <em>개발자</em>에게 “GPU 코어에 데이터를
+Architecture)<sup class="footnote-reference" id="fr-cuda-1"><a href="#footnote-cuda">5</a></sup>에 있다 — CUDA가 <em>개발자</em>에게 “GPU 코어에 데이터를
 나란히 놓고, 커널을 한 번 호출하면 수천 개 코어가 동시에 수행한다“는
 <em>프로그래밍 모델</em>을 제공하기 전까지, GPU는 <em>렌더링</em> 전용이었다.
 CUDA가 “데이터 나란히 + 커널 1회“라는 <em>구조</em>를 개발자에게 열었고,
 <em>로봇 물리</em>를 그 구조에 <em>맞춰 재설계</em>한 것이
-<strong>MuJoCo-XLA</strong>(2021, Todorov 등 — 14.1의 MuJoCo를 TPU/GPU로 <em>자동</em>
+<strong>MuJoCo-XLA</strong><sup class="footnote-reference" id="fr-mujocoxla-1"><a href="#footnote-mujocoxla">6</a></sup> (2021, Todorov 등 — 14.1의 MuJoCo를 TPU/GPU로 <em>자동</em>
 병렬화)와, <em>전용</em> 시뮬레이터로 <em>상품화</em>한 <strong>Isaac Sim</strong>(NVIDIA,
-2023 정식 출시)이다.</p>
+2023 정식 출시)<sup class="footnote-reference" id="fr-isaacsim-1"><a href="#footnote-isaacsim">7</a></sup>이다.</p>
 <p>이 흐름의 <em>논리</em>를 한 줄로: <strong>CUDA(2007)가 “GPU에 데이터를 나란히
 놓고 커널 한 번“이라는 <em>프로그래밍 모델</em>을 열었다 → MuJoCo-XLA(2021)가
 <em>정밀 물리</em>(LCP 접촉, 14.1)를 그 모델에 <em>자동</em>으로 옮겼다 → Isaac
 Sim(2023)이 <em>로봇 시뮬레이터 전체</em>(물리 + 렌더링 + 센서)를 그 모델
 위로 <em>상품화</em>했다.</strong> 세 단계 모두 “공유하는 것은 코드, 달라지는
 것은 상태“라는 <em>같은</em> 뼈대 위에, <em>순차 부분</em>을 줄이고 <em>배치 크기</em>를
-크게 하는 <em>엔지니어링</em>의 진화다.</p>
+크게 하는 <em>엔지니어링</em>의 진화다. 이 주제(대규모 GPU 병렬 강화학습)를
+더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">8</a></sup></p>
 <p><strong>Isaac Sim이 “RT 코어가 필요하다“는 제약의 이유</strong>도 이 역사와
 직결된다. Isaac Sim은 <em>물리</em>만 GPU로 돌리는 게 아니라, <em>렌더링</em>
 (카메라 센서 시뮬레이션)까지 GPU에서 돌린다 — 렌더링은 <em>광선
@@ -518,7 +520,7 @@ Isaac Sim을 못 돌린다“는 제약은 <em>렌더링</em> 축(시각적 리�
 아니다“라는 <em>정확한</em> 이유다.</strong> (14.3의 Q3가 바로 이 지점을
 다룬다.)</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
-<p><strong>Q. GPU 가속 시뮬레이션에서도 Chapter 9~11의 알고리즘(DQN, PPO)을
+<p><strong>Q. GPU 가속 시뮬레이션에서도 Chapter 9~11의 알고리즘(DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">9</a></sup>, PPO)을
 그대로 쓸 수 있나요?</strong> 그렇다 — 알고리즘 자체는 “환경이 한 번에
 경험을 몇 개 주는가“와 무관하게 정의된다. 다만 실전 구현에서는
 수천 개의 환경 복제본이 동시에 만드는 데이터를 한꺼번에 배치로
@@ -553,6 +555,37 @@ XLA/CUDA로 <em>자동</em> 병렬화 — <em>렌더링 없음</em>, <em>CPU MuJ
 엔진도 MuJoCo가 <em>아님</em>(NVIDIA Warp 기반). “정밀 물리만 GPU로“면
 MuJoCo-XLA, “물리 + <em>카메라로 판단하는</em> 정책“이면 Isaac Sim —
 14.3의 Q1/Q3가 바로 이 구분을 결정 절차에 넣는다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-gymnasium">
+<p>Towers, M. et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a></p>
+</li>
+<li id="footnote-mujoco">
+<p>Todorov, E. (2012). “MuJoCo: A physics and control engine for model-based control.” IROS 2012. <a href="#fr-mujoco-1">↩</a></p>
+</li>
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-gae">
+<p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>
+</li>
+<li id="footnote-cuda">
+<p>NVIDIA (2007). CUDA Toolkit — GPU가 범용 병렬 컴퓨팅에 쓸 수 있게 해준 프로그래밍 모델. 공식 문서: https://docs.nvidia.com/cuda/ <a href="#fr-cuda-1">↩</a></p>
+</li>
+<li id="footnote-mujocoxla">
+<p>Todorov, E., Eghbali, R., Zhou, Y., et al. (2022). “MuJoCo-XLA: A High Performance Physics Simulation Environment for Robot Learning.” <a href="#fr-mujocoxla-1">↩</a></p>
+</li>
+<li id="footnote-isaacsim">
+<p>Isaac Sim의 GPU 물리 시뮬레이션 코어(이전 세대 제품명 Isaac Gym)를 소개한 논문: Makoviychuk, V. et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. <a href="#fr-isaacsim-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 

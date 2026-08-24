@@ -32,11 +32,12 @@ CNN이 가중치를 **공간**(이미지 위 위치)에 걸쳐 재사용한다�
   파라미터 수와 FLOPs를 MLP와 비교해 "왜 합성곱이 효율적인가"를 숫자로
   설명한다.
 - 합성곱과 풀링이 "좁아지고 깊어지는" CNN 구조를 만들 때 각각 (패턴 감지
-  vs. 수용장 확대·해상도 축소) 어떤 역할을 하는지 설명하고, LeNet에서 ResNet
+  vs. 수용장 확대·해상도 축소) 어떤 역할을 하는지 설명하고, LeNet에서
+  ResNet[^resnet]
   까지 구조가 어떻게 변했는지, 스킵 연결이 왜 깊은망을 가능하게 하는지
   서술한다.
-- 분류 모델 위에 탐지·분할 헤드(R-CNN, IoU/NMS, 1×1 합성곱, U-Net)를 붙여
-  새 문제를 정의하는 방식을 이해하고, 전이학습(특징 추출 vs. 미세조정)이
+- 분류 모델 위에 탐지·분할 헤드(R-CNN, IoU/NMS, 1×1 합성곱[^googlenet], U-Net)를 붙여
+  새 문제를 정의하는 방식을 이해하고, 전이학습[^transferlearning] (특징 추출 vs. 미세조정)이
   언제·왜 유리한지 판단한다.
 
 이 장을 관통하는 하나의 실은 **"재사용"**이다. 합성곱은 같은 필터를 이미지의
@@ -58,12 +59,30 @@ CNN이 가중치를 **공간**(이미지 위 위치)에 걸쳐 재사용한다�
   대비한다.
 - [10.2 풀링과 전형적인 CNN 구조](chapter10/2.md) — 최대·평균·전역 평균
   풀링이 공간 크기를 줄이고 미세 이동에 둔감한 특징을 주며, 층을 쌓을수록
-  수용장이 넓어지는 기제를 다룬다. LeNet-5 → AlexNet → VGGNet의 구조를 10.1의
-  공식으로 풀어본 뒤, 깊이를 쌓을 때 다시 나타나는 그래디언트 소실(깊이
-  열화)을 스킵 연결(ResNet)과 배치 정규화로 어떻게 해결하는지 PyTorch 실습으로
-  확인한다.
+  수용장이 넓어지는 기제를 다룬다. LeNet-5 → AlexNet[^alexnet] →
+  VGGNet[^vggnet]의 구조를 10.1의 공식으로 풀어본 뒤, 깊이를 쌓을 때
+  다시 나타나는 그래디언트 소실(깊이 열화)을 스킵 연결(ResNet)과 배치
+  정규화[^batchnorm]로 어떻게 해결하는지 PyTorch 실습으로 확인한다.
+
+![AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조.](../images/ref_alexnet.png)
+
+![Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x)).](../images/ref_resnet.png)
+
+![Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다.](../images/ref_batchnorm.png)
 - [10.3 분류를 넘어서: 탐지, 분할, 전이학습](chapter10/3.md) — "클래스
-  벡터 1개"를 내는 분류기를 넘어, 위치까지 붙은 객체 탐지(R-CNN 3단계
-  파이프라인, IoU·NMS)와 픽셀 단위 분할(1×1 합성곱 헤드, U-Net)로 확장한다.
+  벡터 1개"를 내는 분류기를 넘어, 위치까지 붙은 객체 탐지(R-CNN[^rcnn] 3단계
+  파이프라인, IoU·NMS)와 픽셀 단위 분할(1×1 합성곱
+  헤드, U-Net[^unet][^fcn])로 확장한다.
   마지막으로 사전학습된 CNN의 앞쪽 층을 재사용하는 전이학습(특징 추출 vs.
-  미세조정)을 작은 실험으로 비교한다.
+  미세조정)을 작은 실험으로 비교한다. 이 주제를 더 깊이 다루는 자료: [^cs230].
+
+[^alexnet]: Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). "ImageNet Classification with Deep Convolutional Neural Networks." NeurIPS 2012.
+[^resnet]: He, K., Zhang, X., et al. (2015). "Deep Residual Learning for Image Recognition." arXiv:1512.03385.
+[^batchnorm]: Ioffe, S., Szegedy, C. (2015). "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift." arXiv:1502.03167.
+[^rcnn]: Girshick, R., Donahue, J., Darrell, T., Malik, J. (2014). "Rich feature hierarchies for accurate object detection and semantic segmentation." CVPR 2014. arXiv:1311.2524.
+[^unet]: Ronneberger, O., Fischer, P., Brox, T. (2015). "U-Net: Convolutional Networks for Biomedical Image Segmentation." arXiv:1505.04597.
+[^cs230]: 더 깊이 보려면: Stanford CS230: Deep Learning. https://cs230.stanford.edu/
+[^vggnet]: Simonyan, K., Zisserman, A. (2014). "Very Deep Convolutional Networks for Large-Scale Image Recognition." ICLR 2015. arXiv:1409.1556.
+[^fcn]: Long, J., Shelhamer, E., Darrell, T. (2014). "Fully Convolutional Networks for Semantic Segmentation." CVPR 2015. arXiv:1411.4038.
+[^googlenet]: Szegedy, C., Liu, W., Jia, Y., et al. (2014). "Going Deeper with Convolutions." arXiv:1409.4842 (CVPR 2015).
+[^transferlearning]: Pan, S. J., Yang, Q. (2010). "A Survey on Transfer Learning." IEEE Transactions on Knowledge and Data Engineering 22(10), 134–151. doi:10.1109/TKDE.2009.191.

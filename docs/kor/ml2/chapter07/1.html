@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-62e67b8c.js";
+            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -196,7 +196,7 @@ TD(0)의 목표값은 \(r + \gamma V(s’)\)(1 스텝의 실제 보상 + 나머�
 <p>즉, 차이는 “실제 보상을 <strong>몇 개</strong> 쓸 것인가“가 1개와 “끝까지 전부”
 의 차이일 뿐이다. 그런데 1개와 “끝까지” 사이의 <strong>아무 정수</strong>도 가능해야
 한다 — \(n\)개의 실제 보상 합 + 나머지 부분은 추정치, 라는 목표값을
-쓰자. 이것이 <strong>n-step TD</strong>다.</p>
+쓰자. 이것이 <strong>n-step TD</strong><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">1</a></sup> <sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">2</a></sup>다.</p>
 <h3 id="n-step-td-mc와-td0-사이의-다이얼"><a class="header" href="#n-step-td-mc와-td0-사이의-다이얼">n-step TD: MC와 TD(0) 사이의 다이얼</a></h3>
 <p>TD(0)의 목표값은 \(r + \gamma V(s’)\)(1 스텝의 실제 보상 + 나머지는
 추정치)였다. 이걸 일반화해서, \(n\) 스텝만큼 실제로 관찰한 보상을 쓰고
@@ -386,16 +386,18 @@ n=50:  RMS 0.4170   (사실상 MC)
 에피소드 예산·환경의 확률적 정도·할인율에 따라 움직이는
 하이퍼파라미터다.</strong> 이것이 실전에서 n을 검증으로 튜닝해야
 하는 이유이며, 7.2절의 적격흔적이 “n을 고르는 문제” 자체를
-피(모든 n을 흔적으로 가중합)하는 대안인 이유이기도 하다.</p>
+피(모든 n을 흔적으로 가중합)하는 대안인 이유이기도
+하다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">3</a></sup></p>
 <p><strong>\(n\)을 고르는 경험칙.</strong> (i) 에피소드가 <strong>짧고</strong> 경험 횟수가
 <strong>많다</strong>면 \(n = \infty\)(MC)나 작은 \(n\)(TD(0))이 안전하다 —
 편향을 씻어낼 데이터가 있으므로. (ii) 에피소드가 <strong>길고</strong>
 경험 횟수가 <strong>적다</strong>면 중간 \(n\)(3~10)이 편향을 줄이면서
 분산을 관리해 준다. (iii) 에피소드가 <strong>끝이 없다</strong>(continuing
 task)면 MC 자체가 불가능하므로 유한 \(n\) 또는 적격흔적
-(7.2절)을 쓴다. 실전 DQN 계열 알고리즘(Chapter 9)에서도
+(7.2절)을 쓴다. 실전 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup> 계열 알고리즘(Chapter 9)에서도
 n-step 리턴은 기본 옵션으로 제공되며, 보통 3~10 범위로
 튜닝한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)"><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)"></span></label></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <ul>
 <li><strong>보상 합산의 할인 지수를 잘못 세는 것.</strong> 앞선 “중요: 목표값의
@@ -570,6 +572,21 @@ V(4) = +0.2539, V(5) = +0.5643\)임을 확인하라. (힌트:
 않는 이유를 한 문장으로 설명하라. (힌트: 확인 문제 4의
 세 갱신 횟수 — 세 경우 모두 같은가? 같은 이유가
 무엇인가?)</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — MC/TD의 극단과 n-step TD·적격흔적으로 이어지는 편향-분산 스펙트럼이 이 표준 교과서(Chapter 5~7)의 주된 내용이다. <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-silvercourse">
+<p>Silver, D. (2015). “UCL Course on Reinforcement Learning.” https://www.davidsilver.uk/teaching/ — MC와 TD 학습의 스펙트럼(n-step TD 포함)을 이 절과 같은 맥락으로 다루는 강의 자료. <a href="#fr-silvercourse-1">↩</a></p>
+</li>
+<li id="footnote-cs234">
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — n-step TD, 적격흔적, 편향-분산 트레이드오프를 같은 맥락에서 다루는 강의 자료. 이 주제를 더 깊이 보려면 참고. <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+</ol>
 
                     </main>
 
