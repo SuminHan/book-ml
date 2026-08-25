@@ -68,8 +68,6 @@ word2vec[^word2vec], Node2Vec[^node2vec], PageRank는 모두 "단어·노드·�
   순서대로 짚고, LoRA[^lora]/PEFT와 RAG[^rag]·에이전트[^react]까지 한 장에
   모은 전체 지도를 제시한다[^peft].
 
-![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
-
 이 장의 주제(언어모델 사전학습, 프롬프팅, 정렬)를 더 깊이 다루는 자료:
 [^cs224n]
 
