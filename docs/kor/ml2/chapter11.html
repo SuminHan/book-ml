@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -189,7 +189,6 @@ on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그
 제안한 <strong>PPO</strong><sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">1</a></sup> (Proximal Policy Optimization, Schulman 외)는 데이터를
 몇 번 더 재사용하면서도, 정책이 한 번에 너무 멀리 움직이지 못하게 막는
 실용적인 해법이다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p>이 장은 Chapter 10이 남긴 두 공백을 정확히 메우는 장이다. Chapter 10에서
 연속 행동공간을 위한 정책 그래디언트 기계(정책 그래디언트 정리,
 REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 “한 번 쓰고 버리는”
@@ -221,7 +220,7 @@ REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 “한 번 쓰고 
 \(\theta_{\text{old}}\) 갱신)을 따라갈 수 있고, 연속 제어
 환경(Pendulum)에서 PPO를 학습시킬 수 있다.</li>
 </ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label> <sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">3</a></sup> <sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">4</a></sup></p>
+<p><sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">3</a></sup> <sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">4</a></sup></p>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
 <li><a href="chapter11/1.html">11.1 신뢰 영역과 확률비</a> — 11.2의 클리핑으로 합쳐질
@@ -251,7 +250,6 @@ PPO를 통째로 구현해본다 — 가우시안 정책, 그리고 정책 손�
 묶음(경험 수집 → GAE → 정규화 → M 에폭 →
 \(\theta_{\text{old}}\) 갱신)인지 전체 그림으로 마무리한다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">7</a></sup></li>
 </ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."><span class="img-wrapper"><img src="../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."></span></label></p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-ppo">

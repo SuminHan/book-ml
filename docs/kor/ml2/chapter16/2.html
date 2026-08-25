@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -250,41 +250,44 @@ MCTS<sup class="footnote-reference" id="fr-uct-1"><a href="#footnote-uct">5</a><
 기준표</strong>를 공유해야 “감점“과 “좋은 지적“이 같은 언어로 이야기될 수 있다.
 각 항목이 <em>신경망 강화학습</em> 프로젝트에서는 구체적으로 무엇을 보는지
 하나씩 풀어본다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <ul>
-<li><strong>환경 설명</strong> — MDP 5요소(Ch03.1) 중 <em>상태·행동·보상</em>이 보고서에서
+<li>
+<p><strong>환경 설명</strong> — MDP 5요소(Ch03.1) 중 <em>상태·행동·보상</em>이 보고서에서
 추적 가능한지 본다. “Pendulum을 썼다” 한 줄만 있고 <em>주 지표가
 무엇인지</em>(학습 도중 에피소드 리턴? 이동평균? 평가 리턴?), <em>리턴의
 부호 규약</em>(Pendulum은 항상 음수, 0에 가까울수록 좋은지)이 없으면 뒤의
 모든 숫자가 “무엇의 평균“인지 모른다. 16.1의 학습 곡선 요구사항이
-<em>에피소드 단위</em> 리턴인지 <em>스텝 단위</em> 평균인지도 이 항목에서 확인한다.</li>
-<li><strong>알고리즘 선택</strong> — “PPO를 골랐다“가 아니라, <em>이 환경의 어떤 특성</em>이
+<em>에피소드 단위</em> 리턴인지 <em>스텝 단위</em> 평균인지도 이 항목에서 확인한다.</p>
+</li>
+<li>
+<p><strong>알고리즘 선택</strong> — “PPO를 골랐다“가 아니라, <em>이 환경의 어떤 특성</em>이
 그 선택을 정당화하는지 본다. 행동 공간이 <strong>연속</strong>인지 <strong>이산</strong>인지는
 가장 먼저 봐야 하는 분기다 — DQN(Ch09)은 <em>이산</em> 행동을 전제로
 \(Q(s,a)\)를 표처럼 출력하는 구조라 연속 행동(Pendulum, Reacher)에
 그대로 쓰면 “행동을 어떻게 이산화했는가“라는 추가 전제가 붙는다.
 보상이 <strong>희소</strong>한지(Ch15.2의 보너스 구조)도 알고리즘 선택의 근거가
 된다 — 희소 보상에 DQN은 Q값의 <em>희소성 문제</em>(대부분 스텝이 0이라
-학습 신호가 약함)를 겪는다.</li>
-<li><strong>수식적 정당화</strong> — 16.1의 “수식적 정당화 최소 1개” 요구사항을 채웠는지는
+학습 신호가 약함)를 겪는다.</p>
+</li>
+<li>
+<p><strong>수식적 정당화</strong> — 16.1의 “수식적 정당화 최소 1개” 요구사항을 채웠는지는
 <em>형식</em> 문제이고, 이 항목은 <em>내용</em>을 본다: 짚은 개념(예: Ch11.3의
 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">6</a></sup> \(\lambda\))이 <strong>실제로 관찰한 숫자와 일치</strong>하는가. “GAE의
 \(\lambda\)가 편향-분산 트레이드오프를 조절한다“는 문장만 있고
 <em>\(\lambda\)를 바꿔서 실제로 어드밴티지의 분산이 어떻게 변했는지</em>
 실측이 없으면, 그 문장은 <em>이 실험에 붙은</em> 설명이 아니라 <em>어디에나
-붙을</em> 설명이다.</li>
-</ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
-<ul>
-<li><strong>결과의 정직성</strong> — 신경망의 <em>초기화 시드</em>를 몇 개 돌렸는지, 시드별
+붙을</em> 설명이다.</p>
+</li>
+<li>
+<p><strong>결과의 정직성</strong> — 신경망의 <em>초기화 시드</em>를 몇 개 돌렸는지, 시드별
 이동평균이 <em>사라지지 않고</em> 보고에 들어갔는지, “완전히 수렴하지
 않았다“는 사실을 숨기지 않는지를 본다. 이 항목은 “결과가 좋았는가“가
 아니라 “결과가 <em>정직한 절차</em>로 얻어졌는가“를 본다 — 16.1의 예시처럼
 “12만 스텝으로는 절반도 안 왔다“는 정직한 보고가, 부풀린 성공 스토리
-보다 훨씬 좋은 발표인 이유가 여기 있다.</li>
+보다 훨씬 좋은 발표인 이유가 여기 있다.</p>
+</li>
 </ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label> <sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">7</a></sup> <sup class="footnote-reference" id="fr-trpo-1"><a href="#footnote-trpo">8</a></sup> <sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">9</a></sup></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."><span class="img-wrapper"><img src="../../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."></span></label></p>
+<p><sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">7</a></sup> <sup class="footnote-reference" id="fr-trpo-1"><a href="#footnote-trpo">8</a></sup> <sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">9</a></sup></p>
 <ul>
 <li><strong>탐험-활용 균형</strong> — Ch02의 멀티암 밴딧에서 배운 탐험-활용 딜레마<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">10</a></sup>가
 <em>실제 학습 곡선</em>에서 어떻게 드러나는지 본다. 신경망 RL에서는 탐험이

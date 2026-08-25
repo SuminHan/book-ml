@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -399,7 +399,6 @@ conjugate gradient, line search까지 동원하는 무거운 최적화였다. PP
 <li>근사해도 <em>제약이 실제로</em> 만족되는지 확인하기 위해 <strong>line
 search</strong>(제안 방향으로 얼마나 가도 안전한지)를 추가로 돌린다.</li>
 </ol>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."><span class="img-wrapper"><img src="../../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."></span></label></p>
 <p>세 단계 모두 “정책 그래디언트” 자체와 무관한 <strong>최적화 장치</strong>다.
 PPO는 이 세 단계를 <strong>클리핑 한 줄</strong>로 대체했다 —</p>
 <p>\[\min\left(r_t A_t,\; \text{clip}(r_t, 1-\epsilon, 1+\epsilon) A_t\right)\]</p>
@@ -409,7 +408,6 @@ PPO는 이 세 단계를 <strong>클리핑 한 줄</strong>로 대체했다 —<
 2차 근사와 line search가 정확히 동작할 때만 성립하는데, PPO는 그
 보장을 <strong>포기</strong>하는 대신, “보장이 안 되더라도 실전에서 잘
 동작한다“는 경험적 증거로 승부수를 걸었다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p>이 선택이 정답이었다는 사실은, <strong>구현 비용의 차이</strong>가 곧바로
 <strong>알고리즘 채택의 차이</strong>로 이어졌기 때문이다. TRPO의 참고 구현은
 약 300~400줄(피셔-벡터 곱, conjugate gradient, line search까지
@@ -444,8 +442,6 @@ PPO는 이 세 단계를 <strong>클리핑 한 줄</strong>로 대체했다 —<
 II)<sup class="footnote-reference" id="fr-alphastar-1"><a href="#footnote-alphastar">7</a></sup>뿐 아니라, 사람 피드백에 맞게 언어모델을 조정하는 RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">8</a></sup> <sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">9</a></sup>의 핵심
 도구로도 쓰인다 — 연속 제어(로봇의 관절 힘 같은)와 이산 선택(다음
 토큰 고르기) 양쪽 모두에 그대로 적용될 만큼 범용적이다.</strong></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."><span class="img-wrapper"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."></span></label></p>
 <p>여기서 “범용적“이라는 말이 구체적으로 무엇을 뜻하는지 짚자. PPO의
 목적함수는 <strong>행동공간이 이산이든 연속이든</strong> 같은 형태다.</p>
 <ul>
@@ -511,7 +507,6 @@ M이 크면 “on-policy“에 가까워지고(데이터 활용도↑) 클리핑
 정책“과 “지금 업데이트하려는 정책“의 비율이 의미 있게
 (1 근처에) 유지되도록 하는 것.</li>
 </ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."><span class="img-wrapper"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."></span></label></p>
 <p>이 스택의 <strong>모든 숫자</strong>(N, M, ε, λ, γ, c_v, c_e, 학습률)가
 하이퍼파라미터다. 실전에서는 “PPO가 느리다/잘 못 배운다“는
 불만의 상당 부분이 <strong>이 숫자 조합</strong>에서 온다 — 알고리즘 자체가

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -212,7 +212,6 @@
 <p>실전에서는 둘을 섞어 쓰는 경우가 많다 — 예를 들어 행동 복제로 “그럴듯한
 초기 정책“을 빠르게 만든 뒤, 그 위에서 강화학습(PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">1</a></sup> 등)으로
 미세조정해 전문가의 한계를 넘어서게 하는 식이다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p><strong>모방학습은 “시행착오를 겪을 필요 없이, 이미 잘하는 존재를 보고 배운다“는
 지름길이고, 선호 기반 보상모델은 “보상함수를 직접 설계하기 어려울 때
 비교만으로 그 보상함수 자체를 학습한다“는 우회로다 — 둘 다 Chapter
@@ -302,7 +301,6 @@ RL에 넘긴다“는 말을 문자 그대로 구현하려면 <em>가치함수</
 아직 모르는” 가치함수 — 실제 BC+RL에서도 시연 데이터가 줄
 수 있는 것은 정확히 이 <em>근방의</em> 정보라는 점을 이 실험이
 그대로 모방한다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch12_3_bc_rl_comparison.svg" alt="5×5 격자월드 BC vs RL 비교. (a) 왼쪽: episode별 평균 보상(20-episode 이동평균) — 순수 BC는 전문가 10-스텝 수준에서 멈추고, 순수 RL은 ~273 episode에서 전문가를 추월해 8-스텝 최적에 수렴, BC+RL은 ~193 episode에서 추월하며 함정 9회로 가장 안전. (b) 오른쪽: 500 episode 동안 함정(위험칸) 진입 횟수 — 순수 BC 26, 순수 RL 30, BC+RL 9. “전문가 수준“의 벽을 넘는 속도와 탐험의 안전 비용을 한 그림에"><span class="img-wrapper"><img src="../../images/ch12_3_bc_rl_comparison.svg" alt="5×5 격자월드 BC vs RL 비교. (a) 왼쪽: episode별 평균 보상(20-episode 이동평균) — 순수 BC는 전문가 10-스텝 수준에서 멈추고, 순수 RL은 ~273 episode에서 전문가를 추월해 8-스텝 최적에 수렴, BC+RL은 ~193 episode에서 추월하며 함정 9회로 가장 안전. (b) 오른쪽: 500 episode 동안 함정(위험칸) 진입 횟수 — 순수 BC 26, 순수 RL 30, BC+RL 9. “전문가 수준“의 벽을 넘는 속도와 탐험의 안전 비용을 한 그림에"></span></label></p>
 <p>실행 결과(seed 0 고정):</p>
 <ul>
@@ -343,7 +341,6 @@ PPO로 미세조정” — 이 <strong>실전 표준</strong>이다. LLM의 RLHF
 는 결과가 <em>가능했던</em> 이유이기도 하다. 반면 Chapter 13의 로봇
 제어에서는 BC로 초기 안정화한(서 있는 자세를 잡은) 정책을 만든 뒤,
 보상모델로 미세조정하는 형태를 직접 본다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
 <h3 id="자주-하는-실수-시연이-있으니를-시연이-충분하다로-읽기"><a class="header" href="#자주-하는-실수-시연이-있으니를-시연이-충분하다로-읽기">자주 하는 실수: “시연이 있으니“를 “시연이 충분하다“로 읽기</a></h3>
 <p>12.1절의 복합 오차와 이번 실험의 (b) 그림을 연결하면, 가장
 흔한 실무 오류가 보인다 — <strong>“시연 데이터가 있으니 BC로 끝난다“고

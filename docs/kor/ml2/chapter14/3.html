@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -269,17 +269,19 @@ NaN·폭주 없이 자연스럽고, (2) 다리 로봇의 발이 바닥에 붙었
 중요한 이유는, Chapter 9~13의 <em>모든</em> 알고리즘이 결국 이 경험 데이터를
 <em>먹고</em> 작동하기 때문이다:</p>
 <ul>
-<li><strong>경험재현 버퍼</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">7</a></sup> (Chapter 9.3)는 버퍼가 차야 미니배치 샘플링을
-시작할 수 있다.</li>
-<li><strong>GAE</strong><sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">8</a></sup> (Chapter 11.2)는 에피소드 <em>분할</em>을 모아야 보너(bootstrapping)
-값을 추정한다.</li>
+<li>
+<p><strong>경험재현 버퍼</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">7</a></sup> (Chapter 9.3)는 버퍼가 차야 미니배치 샘플링을
+시작할 수 있다.</p>
+</li>
+<li>
+<p><strong>GAE</strong><sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">8</a></sup> (Chapter 11.2)는 에피소드 <em>분할</em>을 모아야 보너(bootstrapping)
+값을 추정한다.</p>
+</li>
+<li>
+<p><strong>PPO</strong>의 정책 그래디언트는 충분한 수의 (상태, 행동, 리턴) 트플<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">9</a></sup>
+위에서 그래디언트를 내린다.</p>
+</li>
 </ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label></p>
-<ul>
-<li><strong>PPO</strong>의 정책 그래디언트는 충분한 수의 (상태, 행동, 리턴) 트플<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">9</a></sup>
-위에서 그래디언트를 내린다.</li>
-</ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p>즉, <em>알고리즘이 필요로 하는 총 경험 수</em>가 정해지면, <strong>초당 스텝 수가
 그 학습의 실시간 길이를 결정한다.</strong> 이걸 숫자로 붙여보자.</p>
 <p>먼저, <em>책에서 실제로 돌린</em> 실행들의 총 스텝 수를 다시 본다:</p>
@@ -476,7 +478,6 @@ PyBullet을 여전히 별도 옵션으로 남겨둔 이유는, 이미 PyBullet
 환경이 갖춰진 프로젝트나 개인 환경에서는 그대로 유효한 선택지이기
 때문이다. 어떤 CPU 물리엔진을 쓰든 이번 학기에서 배운 알고리즘
 코드(DQN<sup class="footnote-reference" id="fr-dqn-2"><a href="#footnote-dqn">7</a></sup>, PPO 등)는 그대로 재사용된다는 점이 더 중요하다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><strong>Q. 표의 “속도” 기준은 정확히 무엇을 재는 건가요?</strong> “초당 몇
 번의 (상태, 행동, 보상) 경험을 모을 수 있는가“를 뜻한다 — Chapter
 9.3의 재현 버퍼나 Chapter 11.2의 GAE 계산 모두, 결국 이 경험 데이터가

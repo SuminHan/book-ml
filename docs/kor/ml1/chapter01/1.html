@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -198,14 +198,12 @@
 <tr><td>2012</td><td>AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">4</a></sup>이 ImageNet<sup class="footnote-reference" id="fr-imagenet-1"><a href="#footnote-imagenet">5</a></sup>에서 압승 — 딥러닝 시대의 시작 (이 챕터의 도입부)</td></tr>
 <tr><td>2013</td><td>word2vec<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">6</a></sup>, VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">7</a></sup> 등 표현학습·생성모델의 현대적 형태 등장 (Chapter 14, 15)</td></tr>
 <tr><td>2017</td><td>Transformer(“Attention Is All You Need”)<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">8</a></sup> 등장 (Chapter 12)</td></tr>
-<tr><td>2022</td><td>ChatGPT — 사전학습 + RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">9</a></sup>로 조정된 대규모 언어모델의 대중화 (Chapter 13)</td></tr>
+<tr><td>2022</td><td>ChatGPT — 사전학습 + RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">9</a></sup> <sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">10</a></sup>로 조정된 대규모 언어모델의 대중화 (Chapter 13)</td></tr>
 <tr><td>2025</td><td>GPT-4o·Gemini·Claude 등 멀티모달 대규모 언어모델이 스마트폰·워크스테이션에 내장</td></tr>
 </tbody>
 </table>
 </div>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch01_timeline_gaps.svg" alt="1943~2025 연표를 연도 축 위에 그린 그림 — 1969년 XOR 증명과 1986년 역전파 사이의 17년(첫 AI 겨울)이 가장 넓은 간격으로 보이고, 2012년 이후에는 5년·5년·3년 간격이 반복된다"><span class="img-wrapper"><img src="../../images/ch01_timeline_gaps.svg" alt="1943~2025 연표를 연도 축 위에 그린 그림 — 1969년 XOR 증명과 1986년 역전파 사이의 17년(첫 AI 겨울)이 가장 넓은 간격으로 보이고, 2012년 이후에는 5년·5년·3년 간격이 반복된다"></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)"></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조."><span class="img-wrapper"><img src="../../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조."></span></label></p>
 <p>표를 <strong>연도 축 위에</strong> 그려보면 “직선으로 발전한 역사가 아니다“라는 말이
 숫자로 보인다. 1943→1969의 26년, 1969→1986의 17년 같은 긴 침체기가
 역사의 상당 부분을 차지하고, 2012년 이후에만 5년 간격이 반복된다.
@@ -267,7 +265,6 @@ AlexNet의 승리는 “140만 장의 데이터“와 “2장 GPU“가 <strong>
 것이다. 이번 학기 내내 등장하는 모든 모델이 이 “두 축” 위에 서 있다는
 사실을 기억해두면, “우리 데이터가 작으니 신경망은 아직 이르다” 같은
 실무 판단이 왜 이렇게 흔하게 나오는지도 자연스럽게 이해된다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
 <p><strong>세 번째 교훈: 라벨의 형태가 모델의 형태를 결정한다.</strong> 2012년의
 패러다임 전환은 “사진 + 범주 라벨“이라는 <strong>지도학습</strong>의 가장 전형적인
 형태 위에서 일어났다. 정답이 없는 데이터만 있을 때(비지도학습, Chapter
@@ -281,16 +278,14 @@ AlexNet의 승리는 “140만 장의 데이터“와 “2장 GPU“가 <strong>
 트리 기반 모델)을 다룬다 — 지금도 정형(tabular) 데이터에서는 이 모델들이
 신경망보다 자주 이긴다. Chapter 8은 Block A를 마무리하는 팀 프로젝트와
 중간고사 준비다.</p>
-<p>Block A에서 다루는 고전 ML 방법론을 더 깊이 보려면: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">10</a></sup>.</p>
+<p>Block A에서 다루는 고전 ML 방법론을 더 깊이 보려면: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">11</a></sup>.</p>
 <p>중간고사 이후 <strong>Block B(Chapter 9~16</strong>)는 신경망으로 넘어간다. 역전파의
 원리를 손으로 유도한 뒤(Chapter 9) CNN(Chapter 10)까지 신경망의 기본기를
 다지고, 이어서 순서가 있는 데이터를 다루는 시퀀스 모델·Transformer·LLM까지
 현대 딥러닝의 핵심 계보를 한 줄로 훑는다(Chapter 11~13). 마지막으로
-비지도학습(PCA, 임베딩)과 잠재변수 기반 생성형 모델(EM/GMM에서 VAE·GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">11</a></sup>·
-Diffusion<sup class="footnote-reference" id="fr-diffusion-1"><a href="#footnote-diffusion">12</a></sup>까지)로 학기를 마무리한다(Chapter 14~15). Chapter 16은 두 번째
+비지도학습(PCA, 임베딩)과 잠재변수 기반 생성형 모델(EM/GMM에서 VAE·GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">12</a></sup>·
+Diffusion<sup class="footnote-reference" id="fr-diffusion-1"><a href="#footnote-diffusion">13</a></sup>까지)로 학기를 마무리한다(Chapter 14~15). Chapter 16은 두 번째
 팀 프로젝트 발표와 학기 총정리다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."><span class="img-wrapper"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."></span></label></p>
 <p>아래 표로 전체 16개 챕터를 한 줄씩 요약해서 다시 본다 — 매 장 시작 전에
 이 표를 다시 펼쳐 “지금 어디서 무엇을 배우고, 어디로 이어지는지“를
 확인하는 습관을 들이면, 개별 챕터의 내용이 더 잘 붙는다.</p>
@@ -306,14 +301,14 @@ Diffusion<sup class="footnote-reference" id="fr-diffusion-1"><a href="#footnote-
 <tr><td>4</td><td>거리 기반 모델과 클러스터링: kNN과 k-means</td><td>A</td></tr>
 <tr><td>5</td><td>SVM과 커널: 마진 최대화, 소프트 마진, 커널 트릭</td><td>A</td></tr>
 <tr><td>6</td><td>정규화와 모델 선택: L1/L2, 교차검증, train/val/test 분리</td><td>A</td></tr>
-<tr><td>7</td><td>트리 기반 모델: 결정트리, 랜덤 포레스트, GBDT와 SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">13</a></sup></td><td>A</td></tr>
+<tr><td>7</td><td>트리 기반 모델: 결정트리, 랜덤 포레스트, GBDT와 SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">14</a></sup></td><td>A</td></tr>
 <tr><td>8</td><td>Block A 캡스톤: 팀 프로젝트, Peer-Review, 중간고사 대비</td><td>A</td></tr>
 <tr><td>9</td><td>신경망 기초: 퍼셉트론의 한계, 순전파, 역전파, 정규화 기법</td><td>B</td></tr>
 <tr><td>10</td><td>CNN 기초와 응용: 합성곱, 풀링, 탐지·분할·전이학습</td><td>B</td></tr>
 <tr><td>11</td><td>시퀀스 모델: RNN, BPTT, LSTM/GRU</td><td>B</td></tr>
 <tr><td>12</td><td>어텐션과 트랜스포머: QKV, Self-Attention, Multi-Head</td><td>B</td></tr>
-<tr><td>13</td><td>LLM: 언어모델링, 프롬프팅, SFT·RLHF·DPO<sup class="footnote-reference" id="fr-dpo-1"><a href="#footnote-dpo">14</a></sup></td><td>B</td></tr>
-<tr><td>14</td><td>표현학습: PCA, word2vec, Node2Vec<sup class="footnote-reference" id="fr-node2vec-1"><a href="#footnote-node2vec">15</a></sup>, PageRank</td><td>B</td></tr>
+<tr><td>13</td><td>LLM: 언어모델링, 프롬프팅, SFT·RLHF·DPO<sup class="footnote-reference" id="fr-dpo-1"><a href="#footnote-dpo">15</a></sup></td><td>B</td></tr>
+<tr><td>14</td><td>표현학습: PCA, word2vec, Node2Vec<sup class="footnote-reference" id="fr-node2vec-1"><a href="#footnote-node2vec">16</a></sup>, PageRank</td><td>B</td></tr>
 <tr><td>15</td><td>잠재변수 생성모델: EM/GMM, VAE, GAN, Diffusion</td><td>B</td></tr>
 <tr><td>16</td><td>Block B 캡스톤: 팀 프로젝트, Peer-Review, ML1 총정리</td><td>B</td></tr>
 </tbody>
@@ -335,13 +330,13 @@ ML1과 ML2는 서로 독립된 과목으로 설계됐고, ML2가 이 주제를 �
 <tr><th>도구</th><th>이 학기에서 쓰이는 곳</th><th>언제 처음 등장</th></tr>
 </thead>
 <tbody>
-<tr><td>numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">16</a></sup> (N-dimensional array)</td><td>모든 실습의 기본. \(w^Tx\), 행렬곱, 경사하강법 반복</td><td>Chapter 2</td></tr>
+<tr><td>numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">17</a></sup> (N-dimensional array)</td><td>모든 실습의 기본. \(w^Tx\), 행렬곱, 경사하강법 반복</td><td>Chapter 2</td></tr>
 <tr><td>matplotlib (plotting)</td><td>손실 곡선, 결정경계, t-SNE/PCA 시각화</td><td>Chapter 2</td></tr>
 <tr><td>pandas (table data)</td><td>EDA, 결측치 처리, 그룹별 통계</td><td>Chapter 6 (1.3절 예습)</td></tr>
-<tr><td>scikit-learn<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">17</a></sup></td><td>분류·회귀·클러스터링 모델의 표준 인터페이스</td><td>Chapter 2</td></tr>
-<tr><td>PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">18</a></sup> (deep learning)</td><td>신경망·CNN·시퀀스 모델·VAE/GAN</td><td>Chapter 9</td></tr>
-<tr><td>Hugging Face Transformers<sup class="footnote-reference" id="fr-huggingface-1"><a href="#footnote-huggingface">19</a></sup></td><td>LLM 프롬프팅, 사전학습 모델 활용</td><td>Chapter 13</td></tr>
-<tr><td>gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">20</a></sup></td><td>(ML2에서) 강화학습 환경. ML1에서는 등장하지 않음</td><td>—</td></tr>
+<tr><td>scikit-learn<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">18</a></sup></td><td>분류·회귀·클러스터링 모델의 표준 인터페이스</td><td>Chapter 2</td></tr>
+<tr><td>PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">19</a></sup> (deep learning)</td><td>신경망·CNN·시퀀스 모델·VAE/GAN</td><td>Chapter 9</td></tr>
+<tr><td>Hugging Face Transformers<sup class="footnote-reference" id="fr-huggingface-1"><a href="#footnote-huggingface">20</a></sup></td><td>LLM 프롬프팅, 사전학습 모델 활용</td><td>Chapter 13</td></tr>
+<tr><td>gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">21</a></sup></td><td>(ML2에서) 강화학습 환경. ML1에서는 등장하지 않음</td><td>—</td></tr>
 </tbody>
 </table>
 </div>
@@ -438,12 +433,9 @@ CNN(LeNet, 1998)이 수학적으로 더 좋았기 때문이다.” — 이 주�
 안 되나요?</strong> 이론적으로는 신경망만 배워도 되지만, 권장하지 않는다 —
 Chapter 6의 정규화, Chapter 7의 트리 앙상블에서 배우는 “편향-분산
 트레이드오프”, “train/val/test 분리” 같은 개념은 신경망에도 그대로
-적용되고(Chapter 9의 드롭아웃<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">21</a></sup>, 배치정규화<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">22</a></sup>가 정확히 같은 원리다), 지금도
+적용되고(Chapter 9의 드롭아웃<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">22</a></sup>, 배치정규화<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">23</a></sup>가 정확히 같은 원리다), 지금도
 정형 데이터에서는 classical ML이 신경망을 이기는 경우가 흔해서 실무에서
 바로 쓸모가 있다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)."></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."><span class="img-wrapper"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."></span></label></p>
 <p><strong>Q. 수학이 약한데 따라갈 수 있나요?</strong> 1.3절에서 다룰 세 가지
 수학(내적, 연쇄법칙, 베이즈 정리)이 사실상 전부다 — 그 이상의 새로운
 수학 도구는 거의 등장하지 않고, 대신 그 세 가지를 점점 더 복잡한 상황에
@@ -499,7 +491,10 @@ numpy 실습에서도, “벡터 연산 뒤에 숨은 for 루프를 직접 눈�
 <p>Vaswani, A. et al. (2017). “Attention Is All You Need.” arXiv:1706.03762. <a href="#fr-transformer-1">↩</a></p>
 </li>
 <li id="footnote-rlhf">
-<p>Ouyang, L. et al. (2022). “Training language models to follow instructions with human feedback.” arXiv:2203.02155. <a href="#fr-rlhf-1">↩</a></p>
+<p>Christiano, P. et al. (2017). “Deep reinforcement learning from human preferences.” NeurIPS 2017. arXiv:1706.03741. <a href="#fr-rlhf-1">↩</a></p>
+</li>
+<li id="footnote-instructgpt">
+<p>Ouyang, L. et al. (2022). “Training language models to follow instructions with human feedback.” arXiv:2203.02155. <a href="#fr-instructgpt-1">↩</a></p>
 </li>
 <li id="footnote-cs229">
 <p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>

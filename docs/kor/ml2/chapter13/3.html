@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -234,7 +234,6 @@ def gaussian_log_prob(action, mu, sigma):
 <strong>비</strong></p>
 <p>\[r_t = \exp\big( \log \pi_\text{new}(a|s) - \log
 \pi_\text{old}(a|s) \big)\]</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p>만 보므로, 로그 밀도의 <em>차이</em>를 취하는 순간 상수 항
 \(-\tfrac{1}{2}\log(2\pi\sigma^2)\)가 서로 소거된다 — 로그 밀도가
 양수이든 음수이든 무관하다. “목적함수의 구조가 행동 파라미터화에
@@ -369,8 +368,7 @@ print(f"비례제어기 k=2.0:        {evaluate(lambda s: np.clip(-2.0 * s[8:10]
 코드는 한 줄도 안 바뀐다는 것이 정책기반 방법의 범용성을 다시 한번
 보여준다. PPO가 Reacher 한 스텝에서 어떤 순서로 돌아가는지 아래
 그림에 담았다:</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label> <sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">4</a></sup> <sup class="footnote-reference" id="fr-trpo-1"><a href="#footnote-trpo">5</a></sup> <sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">6</a></sup></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."><span class="img-wrapper"><img src="../../images/ref_trpo.png" alt="TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다."></span></label></p>
+<p><sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">4</a></sup> <sup class="footnote-reference" id="fr-trpo-1"><a href="#footnote-trpo">5</a></sup> <sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">6</a></sup></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_reacher_ppo_loop.svg" alt="Reacher-v5 + PPO 한 스텝의 흐름 — 10차원 상태(관절각 cos/sin, 목표, 각속도, 오차벡터)가 Actor(GaussianPolicy, 트렁크 64-64)로 들어가 mu(s)·log_std를 만들고, a ~ N(mu, sigma^2)에서 샘플한 토크를 clip(±1)해서 MuJoCo 물리 시뮬레이션(2관절 팔, dt=0.02s, 50스텝=1초)에 전달. 물리가 다음 상태 s’와 보상 r = -||fingertip−target|| - ||a||^2 를 만든다. Critic(ValueNet)은 같은 상태에서 V(s)를 추정하고 GAE+정규화 어드밴티지를 만들어 클립된 PPO 목적함수로 Actor를 갱신. Actor의 평균 mu(s)만 실물 로봇(시뮬레이션 없는 순수 s→a 함수)에 배포"><span class="img-wrapper"><img src="../../images/ch13_3_reacher_ppo_loop.svg" alt="Reacher-v5 + PPO 한 스텝의 흐름 — 10차원 상태(관절각 cos/sin, 목표, 각속도, 오차벡터)가 Actor(GaussianPolicy, 트렁크 64-64)로 들어가 mu(s)·log_std를 만들고, a ~ N(mu, sigma^2)에서 샘플한 토크를 clip(±1)해서 MuJoCo 물리 시뮬레이션(2관절 팔, dt=0.02s, 50스텝=1초)에 전달. 물리가 다음 상태 s’와 보상 r = -||fingertip−target|| - ||a||^2 를 만든다. Critic(ValueNet)은 같은 상태에서 V(s)를 추정하고 GAE+정규화 어드밴티지를 만들어 클립된 PPO 목적함수로 Actor를 갱신. Actor의 평균 mu(s)만 실물 로봇(시뮬레이션 없는 순수 s→a 함수)에 배포"></span></label></p>
 <p>먼저 짧은 실행부터 — 100번의 반복(반복당 200 스텝, 총 2만 스텝,
 시드 42, 스크래치패드에서 실행 검증):</p>
@@ -447,7 +445,6 @@ GPU 대량병렬 실험(OpenAI의 A1 사족보행 로봇 시연<sup class="footn
 없이</em> 만드는 데도 그만큼의 시간이 걸렸을 것이다. 이 책의
 14~16장도 같은 구조를 반복한다: <strong>알고리즘은 고정, 환경만
 바꾸는 것</strong>.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."><span class="img-wrapper"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."></span></label></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <p><strong>1. 학습 중의 노이즈 있는 에피소드 리턴을 정책의 성능으로
 판단하는 것.</strong> 이번 절의 두 곡선 현상(확률적 곡선은 악화,
@@ -536,7 +533,6 @@ PPO는 “환경 이름만 바뀐 같은 코드“이며, 손으로 만든 제�
 법칙이 지배하는 연속 행동공간“이라는 더 현실적인 무대로 옮기는 시험대다
 — 다음 장에서는 이 시뮬레이션을 더 정교한 물리엔진으로, 그리고 대규모
 GPU 가속 환경으로 확장한다.</strong></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p>이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">13</a></sup></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>

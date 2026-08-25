@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -184,9 +184,6 @@
 배우고(모방학습)<sup class="footnote-reference" id="fr-dagger-1"><a href="#footnote-dagger">3</a></sup> <sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">4</a></sup>, 실제 물리 시뮬레이션(MuJoCo<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">5</a></sup>, Isaac Sim<sup class="footnote-reference" id="fr-isaacsim-1"><a href="#footnote-isaacsim">6</a></sup>)과 트리
 탐색(MCTS)<sup class="footnote-reference" id="fr-mcts-1"><a href="#footnote-mcts">7</a></sup>까지 다뤘다. 이번 장은 Chapter 8의 짝이다 — 이 두 번째 절반의
 도구들을 로봇 시뮬레이션 환경에 직접 적용해보고, 학기 전체를 총정리한다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
 <p>왜 이 순서인가. 이전 장(“모델기반 RL과 몬테카를로 트리 탐색”)은
 “모델이 있을 때“의 도구 상자 마지막 조각, MCTS를 보여줬다 — AlphaGo<sup class="footnote-reference" id="fr-alphago-1"><a href="#footnote-alphago">8</a></sup>의
 무기였던 UCT<sup class="footnote-reference" id="fr-uct-1"><a href="#footnote-uct">9</a></sup>로 트리를 탐색하고, 정책·가치 네트워크가 탐색을
@@ -199,7 +196,6 @@
 다른 무대 — 연속 제어 + 신경망 — 에서 다시 집행한다. 세 절은 “프로젝트를
 실행해 발표한다(16.1) → 서로를 심사한다(16.2) → 학기 전체를 자기 것으로
 다진다(16.3)“라는 하나의 아크를 이룬다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_alphago.png" alt="정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1)."><span class="img-wrapper"><img src="../images/ref_alphago.png" alt="정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1)."></span></label></p>
 <p>이번 챕터의 학습 목표는 다음과 같다.</p>
 <ul>
 <li>연속제어 환경에서 4주 파이프라인(환경 고르기 → 구현 → 평가 → 발표)으로

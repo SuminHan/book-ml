@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-1ceed772.js";
+            window.path_to_searchindex_js = "../../searchindex-af49f730.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -202,7 +202,6 @@ SARSA<sup class="footnote-reference" id="fr-sarsa-1"><a href="#footnote-sarsa">3
 실제로 고를 확률</strong> \(b(a’_{t+1}|s_{t+1})\)로 가중하도록 보정하는
 <strong>off-policy TD(2) 방식</strong>을 제안해, 같은 분산 문제를 한 스텝 단위로
 다스린 사례다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><strong>왜 “확률의 비율“인가 — 기댓값 치환을 한 번만 보자.</strong> 평가하려는 값은
 \(V^\pi(s_0) = \mathbb{E}\<em>\pi[G_0]\)이다. \(b\)에서 샘플을 모으려면
 \(\pi\)에 대한 기댓값을 \(b\)에 대한 기댓값으로 바꿔야 한다 —
@@ -308,7 +307,6 @@ Q^\pi(2, \text{right}) = 0.900 &gt; Q^\pi(2, \text{left}) = 0.729\]</p>
 이 “중요도 가중치의 분산 폭증” 문제가 off-policy 학습 전반의
 근본적 난제이며, Chapter 11(PPO)의 클리핑된 확률비<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">4</a></sup>가 바로 이 문제를
 “\(\rho\)가 너무 크면 자른다“는 가장 단순한 다스림법이다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="분산이-크다가-실전에서-무엇을-의미하나"><a class="header" href="#분산이-크다가-실전에서-무엇을-의미하나">“분산이 크다“가 실전에서 무엇을 의미하나</a></h3>
 <p>수학식으로는 “분산 \(\sigma^2\)” 한 줄이지만, 실전에서는 이렇게
 느껴진다:</p>
@@ -364,7 +362,6 @@ on-policy 직관이 off-policy에서는 <strong>탐험이 많을수록 분산이
 데이터, 과거 버전의 정책이 모은 데이터“를 <strong>재사용</strong>할 수 있다는
 점이다 — Chapter 12(모방학습)에서 사람의 동작 데이터를 강화학습
 에 어떻게 쓸지 다룰 때, 이 off-policy 도구가 필수 전제가 된다<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">5</a></sup>.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 중요도 샘플링 비율 \(\rho\)의 분산이 왜 문제가 되나요?</strong>
 \(\rho\)는 여러 확률의 비율을 곱한 것이라, 궤적이 길어질수록
