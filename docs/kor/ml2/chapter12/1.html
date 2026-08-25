@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -324,7 +324,7 @@ def bc(s):
 어긋남은 한 스텝의 실수(\(\pi \neq \pi^E\)인 어떤 스텝)가
 경로를 시연 밖으로 빼내는 순간 시작된다 — 시연 밖에서는 \(L(s)\)
 를 단 한 번도 최소화한 적 없으므로, 실수는 <em>평균적으로</em> 더 커진다.
-이 문제를 기계학습 언어로는 <strong>공분포 시프트</strong>(covariate shift)라
+이 문제를 기계학습 언어로는 <strong>공분포 시프트</strong>(covariate shift)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">2</a></sup>라
 부른다 — 12.3절의 2011년 Ross et al. 논문이 “시연이 있는 문제라도
 긴 episode에선 BC만으론 부족하다“는 직감을 바로 이 정식화 위에서
 입증한 것이다.</p>
@@ -342,7 +342,7 @@ def bc(s):
 학습한다. 이 과정을 반복하면, 학습 데이터가 점점 “정책이 실제로 방문하는
 상태“들을 포함하게 되어 복합 오차가 줄어든다 — Chapter 6의 SARSA가
 “실제로 따르는 정책“의 가치를 배우는 것과 비슷한 정신이다: <strong>이론상
-이상적인 상황이 아니라, 실제로 마주칠 상황을 기준으로 학습한다.</strong> <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">2</a></sup></p>
+이상적인 상황이 아니라, 실제로 마주칠 상황을 기준으로 학습한다.</strong> <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">3</a></sup></p>
 <h3 id="dagger-알고리즘-정책이-직접-달리고-전문가가-답만-한다"><a class="header" href="#dagger-알고리즘-정책이-직접-달리고-전문가가-답만-한다">DAgger 알고리즘: “정책이 직접 달리고, 전문가가 답만 한다”</a></h3>
 <p>문제를 정식화했으니 해법의 구조가 보인다. 배포 오차
 \(\mathbb{E}_{s \sim d_\pi} L(s)\)를 줄이려면, 학습 데이터가
@@ -368,7 +368,7 @@ for rnd in range(rounds):
 전문가는 내비게이션만 해주는</strong> 구조 — 이 역할 분담이 DAgger의
 정체다.</p>
 <h3 id="dagger-손으로-돌려보기-2라운드-복귀"><a class="header" href="#dagger-손으로-돌려보기-2라운드-복귀">DAgger 손으로 돌려보기: 2라운드 복귀</a></h3>
-<p>위 장난감 환경에서 DAgger를 **시작 (1,3)**에서 돌려본다. 시연
+<p>위 장난감 환경에서 DAgger를 <strong>시작 (1,3</strong>)에서 돌려본다. 시연
 테이블 5개에서 시작(아직 (1,3) 라벨 없음), 매 라운드 최대 5스텝.</p>
 <div class="table-wrapper">
 <table>
@@ -414,7 +414,7 @@ for rnd in range(rounds):
 </table>
 </div>
 <p>\(p = 0.99\)를 써도 300스텝 episode에서 “한 번도 삐끗하지
-않는” 확률은 **4.9%**다. “완주 확률이 50%가 되는” episode 길이는
+않는” 확률은 <strong>4.9</strong>%다. “완주 확률이 50%가 되는” episode 길이는
 \(T = \log(0.5)/\log(p)\)로, \(p=0.99\)면 <strong>약 69스텝</strong>,
 \(p=0.995\)면 <strong>약 138스텝</strong>이다 — 1스텝 성공률을 0.5%p만
 올려도 완주 가능한 길이가 <em>두 배</em>가 된다. 12.3절에서는 이 표를
@@ -504,10 +504,11 @@ DAgger가 아니라 12.3절의 BC+RL 하이브리드(또는 12.2절의 선호
 <li><strong>전문가가 “답“이 아니라 “비교“만 줄 수 있다면</strong>: “이 상태에선
 이 행동“이 아니라 “이 두 시도 중 저쪽이 낫다“로만 라벨을 받을
 수 있는 상황(12.2절의 걸음걸이 비교 등)에서는 DAgger의 ③을
-Bradley-Terry 손실로 대체하는<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">3</a></sup> <strong>GAIL</strong>(Generative Adversarial
-Imitation Learning)<sup class="footnote-reference" id="fr-gail-1"><a href="#footnote-gail">4</a></sup> 계열 방법이 쓰인다 — 12.2절이 그 변주다.</li>
+Bradley-Terry 손실로 대체하는<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">4</a></sup> <strong>GAIL</strong>(Generative Adversarial
+Imitation Learning)<sup class="footnote-reference" id="fr-gail-1"><a href="#footnote-gail">5</a></sup> <sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">6</a></sup> 계열 방법이 쓰인다 — 12.2절이 그 변주다.</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)를 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)를 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."><span class="img-wrapper"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."></span></label></p>
 <h3 id="자주-하는-실수-시연이-부족해서를-시연-수량-부족으로-읽기"><a class="header" href="#자주-하는-실수-시연이-부족해서를-시연-수량-부족으로-읽기">자주 하는 실수: “시연이 부족해서“를 “시연 <em>수량</em> 부족“으로 읽기</a></h3>
 <p>위 (1,3) 예제를 두고 가장 흔한 반응은 “그럼 전문가가 다른 시작
 점에서 시연 500개를 더 보여주면 되잖아“다. <strong>안 된다.</strong>
@@ -590,7 +591,7 @@ DAgger의 반복 횟수 자체를 하이퍼파라미터로 신중히 정해야 �
 정리하죠?</strong> 사람이 주는 <em>것</em>이 다르면 알고리즘이 달라진다.
 (상태, <em>정답 행동</em>)를 주면 → DAgger(지도학습, 상한=전문가).
 (두 <em>시도</em> 중 <em>더 나은 쪽</em>)를 주면 → 선호 기반 보상모델(12.2절,
-PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">5</a></sup>로 <em>전문가를 넘을 수 있음</em>). <em>아무것도</em> 주지 않고 <em>보상함수</em>만
+PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">7</a></sup>로 <em>전문가를 넘을 수 있음</em>). <em>아무것도</em> 주지 않고 <em>보상함수</em>만
 주면 → 순수 RL(Ch.2~11). 실전 표준은 첫 번째 또는 두 번째로
 “그럴듯한 초기 정책“을 만들고, 그 위에서 세 번째(RL)로 한계를
 넘게 하는 하이브리드 — 12.3절의 결정 흐름도에서 이 셋이 하나의
@@ -616,6 +617,9 @@ PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">5</a></
 <li id="footnote-dagger">
 <p>Ross, A. W., Gordon, G. J., Bagnell, J. A. (2011). “A Reduction of Imitation Learning to Structured Output Classification.” ICML 2011. <a href="#fr-dagger-1">↩</a></p>
 </li>
+<li id="footnote-suttonbarto">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
 <li id="footnote-cs234">
 <p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 절의 주제(모방학습, 행동 복제, DAgger)를 같은 맥락에서 다루는 강의 자료. 이 주제를 더 깊이 보려면 참고. <a href="#fr-cs234-1">↩</a></p>
 </li>
@@ -624,6 +628,9 @@ PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">5</a></
 </li>
 <li id="footnote-gail">
 <p>Ho, J., Ermon, S. (2016). “Generative Adversarial Imitation Learning.” ICML 2016. arXiv:1606.03476. <a href="#fr-gail-1">↩</a></p>
+</li>
+<li id="footnote-gan">
+<p>Goodfellow, I. J. et al. (2014). “Generative Adversarial Networks.” arXiv:1406.2661. <a href="#fr-gan-1">↩</a></p>
 </li>
 <li id="footnote-ppo">
 <p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>

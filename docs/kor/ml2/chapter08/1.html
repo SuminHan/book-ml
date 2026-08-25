@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -203,8 +203,8 @@ SARSA, 또는 MC 제어와 n-step TD)를 같은 환경에 적용하고 학습 �
 SARSA를 비교했다면 Chapter 6.2~6.3의 on-policy/off-policy 차이로 두
 정책이 왜 다르게 학습됐는지 설명, (2) \(\varepsilon\)이나 \(\alpha\)를
 바꿔가며 실험했다면 Chapter 6.3의 수렴 조건과 연결지어 설명, (3)
-Dyna-Q를 썼다면 Chapter 7.3의 계획 스텝 수와 학습 속도의 관계를 직접
-측정해서 제시.</li>
+Dyna-Q<sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">1</a></sup>를 썼다면 Chapter 7.3의 계획 스텝 수와 학습
+속도의 관계를 직접 측정해서 제시.</li>
 </ul>
 <p>환경 고르는 실전 가이드: 아래 기준으로 후보에 점수를 매겨보면 팀 회의가
 쉬워진다. (1) <strong>상태-행동 공간의 크기</strong> — 상태가 너무 많으면(예:
@@ -230,9 +230,10 @@ CliffWalking처럼 학습 중 실수가 비례하지 않게 큰 벌(-100)을 부
 </tbody>
 </table>
 </div>
-<p>참고: Gymnasium 레지스트리의 이름은 버전에 따라 달라질 수 있다 —
+<p>참고: Gymnasium 레지스트리<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">3</a></sup>의 이름은 버전에 따라 달라질 수 있다 —
 최근 버전에서 <code>Taxi-v3</code>는 deprecated되어 <code>Taxi-v4</code>를 쓰게 된다.
-CliffWalking은 Chapter 6.3의 실습에서 봤듯이 <code>gym.make("CliffWalking-v1")</code>
+CliffWalking<sup class="footnote-reference" id="fr-suttonbarto-3"><a href="#footnote-suttonbarto">1</a></sup>은 Chapter 6.3의 실습에서 봤듯이
+<code>gym.make("CliffWalking-v1")</code>
 으로 바로 사용할 수 있다(4×12 격자, 시작=좌하단, 목표=우하단, 그
 사이를 절벽이 가로막는 구조).</p>
 <h3 id="비교-프로토콜-시드-여러-번-그리고-평가는-따로"><a class="header" href="#비교-프로토콜-시드-여러-번-그리고-평가는-따로">비교 프로토콜: 시드 여러 번, 그리고 평가는 따로</a></h3>
@@ -297,7 +298,7 @@ SARSA는 17스텝 안전 경로(−17)를 <strong>세 시드 모두</strong> 일
 실습 노트북은 스케줄 하나만 500 에피소드 동안 1.0 → 0.01 선형
 감쇠로 바꿔 <strong>같은 파라미터·같은 시드로</strong> 재실행했는데, greedy
 평가(SARSA −17 / −17 / −17, Q-learning −13 / −13 / −13)는 한 치도
-달라지지 않았다. 이것도 **부정적 결과(negative result)**이고,
+달라지지 않았다. 이것도 <strong>부정적 결과(negative result</strong>)이고,
 그것 자체가 정당한 결과다 — “이 환경·이 학습 예산에서 스케줄
 선택이 성능에 민감하지 않다“는 관찰도 보고서에 적어야 한다.
 스케줄 사용에 꼭 지킬 규칙은 (a) <strong>두 알고리즘 모두에게 동일한
@@ -307,7 +308,7 @@ SARSA는 17스텝 안전 경로(−17)를 <strong>세 시드 모두</strong> 일
 그 차이는 수식적 정당화(§“손으로 한 번”)의 일부가 되어야 한다.
 탐험/활용 트레이드오프와 \(\varepsilon\)-greedy 스케줄 설계의
 개념을 강의 형식으로 더 깊이 다루는 자료: David Silver의 UCL
-강화학습 강좌 (Lecture 9: Exploration and Exploitation)<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">3</a></sup>.</p>
+강화학습 강좌 (Lecture 9: Exploration and Exploitation)<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">4</a></sup>.</p>
 <pre><code class="language-python">def make_epsilon_schedule(n_episodes, eps_start=1.0, eps_end=0.01):
     def eps_fn(episode):  # 선형 감쇠
         return max(eps_end, eps_start + (eps_end - eps_start) * episode / n_episodes)
@@ -468,7 +469,12 @@ on/off-policy 차이(절벽 옆 최단 경로 vs 안전 경로)로 설명된다.
 받는다. Block B의 Chapter 16.1(신경망
 강화학습 캡스톤)도 동일한 구조를 쓰므로, 이 습관이 학기 말까지
 이어진다. 표 기반 강화학습 전체를 강의 형식으로 더 깊이 다루는
-자료: Stanford CS234 (Reinforcement Learning)<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">4</a></sup>.</p>
+자료: Stanford CS234 (Reinforcement Learning)<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">5</a></sup>.</p>
+<p>그리고 이 습관은 학기 말의 신경망 강화학습 프로젝트로 그대로 이어진다
+<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">6</a></sup> — 표 기반 환경에서 “시드 여러 번·평가 프로토콜 통일·부정적
+결과도 기록“한 팀이, Chapter 9~16의 딥 RL(예: DQN)에서는 그 절차의
+중요성을 더 크게 체감한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <h3 id="실습-미니-프로젝트를-한-흐름으로-코드로-돌려보기"><a class="header" href="#실습-미니-프로젝트를-한-흐름으로-코드로-돌려보기">실습: 미니 프로젝트를 한 흐름으로 코드로 돌려보기</a></h3>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter08_1_team_project.ipynb">실습 노트북</a>
 (제목 바로 위의 Colab 배지)에서 이 절의 전체 흐름을 한 번에 통과시켜
@@ -611,16 +617,22 @@ Chapter 6.2 실습처럼 여러 시드(seed)로 반복 실행한 평균(과 가�
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-suttonbarto">
-<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a> <a href="#fr-suttonbarto-2">↩2</a> <a href="#fr-suttonbarto-3">↩3</a></p>
 </li>
 <li id="footnote-gym">
 <p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-gymnasium">
+<p>Towers, M., Kwiatkowski, A., Terry, J., et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. (전신 OpenAI Gym: Brockman, G., Cheung, V., et al. (2016). “OpenAI Gym.” arXiv:1606.01540.) <a href="#fr-gymnasium-1">↩</a></p>
 </li>
 <li id="footnote-silvercourse">
 <p>Silver, D. (2015). “UCL Course on Reinforcement Learning,” Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0). <a href="#fr-silvercourse-1">↩</a></p>
 </li>
 <li id="footnote-cs234">
 <p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
+</li>
+<li id="footnote-dqn">
+<p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
 </li>
 </ol>
 

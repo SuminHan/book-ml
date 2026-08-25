@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -194,8 +194,8 @@
 <tbody>
 <tr><td>Gymnasium 기본 환경<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">1</a></sup></td><td>CPU</td><td>낮음~중간</td><td>느림</td><td>기본 실습</td></tr>
 <tr><td>PyBullet<sup class="footnote-reference" id="fr-pybullet-1"><a href="#footnote-pybullet">2</a></sup></td><td>CPU</td><td>중간</td><td>느림</td><td>로봇팔/사족보행 실습</td></tr>
-<tr><td>MuJoCo</td><td>CPU</td><td>높음</td><td>느림</td><td>정밀 제어 실습</td></tr>
-<tr><td>NVIDIA Isaac Sim</td><td>GPU</td><td>높음</td><td>매우 빠름(수천 배 병렬)</td><td>시연만(하드웨어 제약)</td></tr>
+<tr><td>MuJoCo<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">3</a></sup></td><td>CPU</td><td>높음</td><td>느림</td><td>정밀 제어 실습</td></tr>
+<tr><td>NVIDIA Isaac Sim<sup class="footnote-reference" id="fr-isaacgym-1"><a href="#footnote-isaacgym">4</a></sup></td><td>GPU</td><td>높음</td><td>매우 빠름(수천 배 병렬)</td><td>시연만(하드웨어 제약)</td></tr>
 </tbody>
 </table>
 </div>
@@ -213,9 +213,9 @@ MuJoCo, <strong>대량의 경험을 매우 빠르게 모아야 하는 대규모 
 재는지</em>를 하나씩 풀어서, 그리고 그 둘이 만나는 지점에서 도구를 고르는
 절차를 숫자까지 붙여 다룬다.</p>
 <h3 id="첫-번째-질문-얼마나-정밀해야-하는가--정밀도-축"><a class="header" href="#첫-번째-질문-얼마나-정밀해야-하는가--정밀도-축">첫 번째 질문: “얼마나 정밀해야 하는가?” — 정밀도 축</a></h3>
-<p>“정밀도“가 모호한 말이 되지 않도록, 14.1에서 본 **접촉(contact)**에서
+<p>“정밀도“가 모호한 말이 되지 않도록, 14.1에서 본 <strong>접촉(contact</strong>)에서
 시작한다. 14.1에서 확인했듯, 공이 바닥에 <em>닿는 순간</em>은 단순 미분방정식이
-아니라 **선형 보완 문제(LCP)**라는 특별한 최적화다. 두 물체가 겹쳐
+아니라 <strong>선형 보완 문제(LCP</strong>)라는 특별한 최적화다. 두 물체가 겹쳐
 들어가면 안 되면서(비침투), 겹치지 않을 때는 힘을 주지 않아도 된다
 (비음)는 조건이 <em>동시에</em> 성립해야 하기 때문이다. MuJoCo가 이 LCP를
 매 스텝 안정적으로 풀어내서 (1) 공이 부딪혀 튀다 멈추는 행위가
@@ -240,8 +240,8 @@ NaN·폭주 없이 자연스럽고, (2) 다리 로봇의 발이 바닥에 붙었
 <p><strong>왜 이 구분이 중요한가?</strong> “화면이 예쁘니까“라는 이유만으로 Isaac Sim을
 고르면, 실제로는 <em>물리 정밀도</em>를 필요로 하는 작업을 비싼 GPU 위에서
 돌리는 셈이 되기 쉽다. 반대로, 접촉력이 정확해야 하는 다리 로보를
-“CartPole도 되는데”<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">3</a></sup>라며 가장 단순한 환경에서 배우면, 13.1에서 배운
-**현실 격차(reality gap)**가 그 단순함에서부터 이미 박혀 있다 — 시뮬레이터
+“CartPole도 되는데”<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">5</a></sup>라며 가장 단순한 환경에서 배우면, 13.1에서 배운
+<strong>현실 격차(reality gap)</strong><sup class="footnote-reference" id="fr-domainrandomization-1"><a href="#footnote-domainrandomization">6</a></sup>가 그 단순함에서부터 이미 박혀 있다 — 시뮬레이터
 자체가 물리를 너무 약하게 근사하고 있기 때문이다.</p>
 <p>이렇게 정밀도 축을 <em>작업별로</em> 대입하면, 이번 학기에 나온 작업들의
 위치가 나온다:</p>
@@ -269,14 +269,14 @@ NaN·폭주 없이 자연스럽고, (2) 다리 로봇의 발이 바닥에 붙었
 중요한 이유는, Chapter 9~13의 <em>모든</em> 알고리즘이 결국 이 경험 데이터를
 <em>먹고</em> 작동하기 때문이다:</p>
 <ul>
-<li><strong>경험재현 버퍼</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup> (Chapter 9.3)는 버퍼가 차야 미니배치 샘플링을
+<li><strong>경험재현 버퍼</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">7</a></sup> (Chapter 9.3)는 버퍼가 차야 미니배치 샘플링을
 시작할 수 있다.</li>
-<li><strong>GAE</strong><sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">5</a></sup> (Chapter 11.2)는 에피소드 <em>분할</em>을 모아야 보너(bootstrapping)
+<li><strong>GAE</strong><sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">8</a></sup> (Chapter 11.2)는 에피소드 <em>분할</em>을 모아야 보너(bootstrapping)
 값을 추정한다.</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label></p>
 <ul>
-<li><strong>PPO</strong>의 정책 그래디언트는 충분한 수의 (상태, 행동, 리턴) 트플<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">6</a></sup>
+<li><strong>PPO</strong>의 정책 그래디언트는 충분한 수의 (상태, 행동, 리턴) 트플<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">9</a></sup>
 위에서 그래디언트를 내린다.</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
@@ -353,7 +353,7 @@ GPU 병렬은 *80초 조금 넘다(약 1.3분)*다. <strong>GPU 병렬의 “수
 (여기선 1억 스텝 이상, 환경 스텝만 수 시간)에서만 GPU 병렬이
 <em>필수</em>가 된다.</strong> 그 이하 규모에서는 CPU 정밀(MuJoCo)이 <em>더
 느리지만</em> 기다릴 만한 시간이므로, “정밀도 우선“이 그대로 합리적
-선택이다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">7</a></sup></p>
+선택이다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">10</a></sup></p>
 <blockquote>
 <p><strong>확인: “초당 스텝 수“와 “학습 효율“은 같은 것인가?</strong>
 아니다. 초당 스텝 수는 <em>경험을 모으는 속</em>도일 뿐, 그 경험이
@@ -393,7 +393,7 @@ RT 코어 필요 — 14.2 참고)
 <ul>
 <li><em>예</em> → <strong>Isaac Sim (GPU 병렬)</strong>.</li>
 <li><em>아니오</em> → GPU를 기다리거나, <strong>MuJoCo-XLA</strong>(정밀 물리를
-TPU/GPU로 자동 병렬화)<sup class="footnote-reference" id="fr-mujocoxla-1"><a href="#footnote-mujocoxla">8</a></sup>로, 또는 MuJoCo(CPU)로 <em>규모를 줄여</em>
+TPU/GPU로 자동 병렬화)<sup class="footnote-reference" id="fr-mujocoxla-1"><a href="#footnote-mujocoxla">11</a></sup>로, 또는 MuJoCo(CPU)로 <em>규모를 줄여</em>
 실행.</li>
 </ul>
 </li>
@@ -442,14 +442,14 @@ Ant보다 40배 빠르다“는 결론에 영향을 주는지 말하라. (힌트
 </ol>
 <h3 id="역사-도구를-고른-사람들"><a class="header" href="#역사-도구를-고른-사람들">역사: 도구를 고른 사람들</a></h3>
 <p>이 “정밀도 vs 속도“의 선택지는 새 것이 아니다. 14.1에서 봤듯
-<strong>MuJoCo</strong><sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">9</a></sup>는 2012년 Emanuel Todorov가 <em>“MuJoCo: A physics
+<strong>MuJoCo</strong><sup class="footnote-reference" id="fr-mujoco-2"><a href="#footnote-mujoco">3</a></sup>는 2012년 Emanuel Todorov가 <em>“MuJoCo: A physics
 engine for model-based control”</em> 논문과 함께 공개한 것인데, 처음부터
 “로봇을 재현“하는 것이 아니라 <strong>모델 기반 제어의 재현성과 속도</strong>를
 위해 설계됐다 — 접촉을 LCP로 푸는 것이 이 <em>최적화</em> 관점의
 자연스러운 결과다. 2021년 Todorov가 MuJoCo를 무료로 오픈소스화
 하면서 “CPU에서 정밀 로봇 물리“가 대중화됐다.</p>
 <p>그리고 <em>속도</em> 축을 극단으로 밀어붙인 것이 14.2의 <strong>Isaac Sim</strong>
-(NVIDIA, 2023 정식 출시)<sup class="footnote-reference" id="fr-isaacgym-1"><a href="#footnote-isaacgym">10</a></sup>이다 — “같은 물리 스텝을 GPU 위에서
+(NVIDIA, 2023 정식 출시)<sup class="footnote-reference" id="fr-isaacgym-2"><a href="#footnote-isaacgym">4</a></sup>이다 — “같은 물리 스텝을 GPU 위에서
 수천 개 복제본에 흩뿌려” CPU의 <em>순차</em> 한계를 <em>병렬</em>로 부수었다.
 한편 CPU 쪽도 멈추지 않았다: <strong>MuJoCo-XLA</strong>(2021~)는 MuJoCo의
 물리 계산을 TPU/GPU로 자동 병렬화해, Isaac Sim 같은 <em>전용</em>
@@ -459,8 +459,8 @@ engine for model-based control”</em> 논문과 함께 공개한 것인데, 처
 (정밀, CPU) → MuJoCo-XLA(정밀, GPU/TPU 자동 병렬) → Isaac Sim
 (정밀+센서, GPU 전용 병렬).</p>
 <p><strong>이 절의 교훈을 한 문장으로:</strong> 도구를 고르는 건 “어떤 알고리즘을
-쓸 것인가“가 아니라 **“이 작업이 정밀도·속도 두 축에서 어디에
-찍히느냐”**를 재는 일이다 — 그리고 그 두 축은 <em>독립</em>이라, 한 축이
+쓸 것인가“가 아니라 <strong>“이 작업이 정밀도·속도 두 축에서 어디에
+찍히느냐</strong>“를 재는 일이다 — 그리고 그 두 축은 <em>독립</em>이라, 한 축이
 빠르면/정밀하면 다른 축을 소홀히 해도 된다는 <em>허용</em>을 준다.
 반대로 두 축을 혼동하면(빨라서=좋다, 정밀해서=좋다) “잘못된
 물리를 빠르게” 또는 “필요 없는 정밀에 비싸게“라는 두 실수 중
@@ -475,7 +475,7 @@ engine for model-based control”</em> 논문과 함께 공개한 것인데, 처
 PyBullet을 여전히 별도 옵션으로 남겨둔 이유는, 이미 PyBullet
 환경이 갖춰진 프로젝트나 개인 환경에서는 그대로 유효한 선택지이기
 때문이다. 어떤 CPU 물리엔진을 쓰든 이번 학기에서 배운 알고리즘
-코드(DQN<sup class="footnote-reference" id="fr-dqn-2"><a href="#footnote-dqn">4</a></sup>, PPO 등)는 그대로 재사용된다는 점이 더 중요하다.</p>
+코드(DQN<sup class="footnote-reference" id="fr-dqn-2"><a href="#footnote-dqn">7</a></sup>, PPO 등)는 그대로 재사용된다는 점이 더 중요하다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><strong>Q. 표의 “속도” 기준은 정확히 무엇을 재는 건가요?</strong> “초당 몇
 번의 (상태, 행동, 보상) 경험을 모을 수 있는가“를 뜻한다 — Chapter
@@ -508,7 +508,7 @@ CPU로, 또는 (b) MuJoCo-XLA로 TPU/GPU 자동 병렬을, 또는 (c) GPU
 후의 높이가 어떻게 달라지는지 비교하라. 스텝 수를 50으로 늘리면 공이
 바닥(<code>plane</code>)에 닿아 멈추는지도 확인하라.</p>
 <p><strong>2. (개념 서술)</strong> GPU 가속 시뮬레이션이 “같은 계산을 여러 복제본에
-반복한다“는 점에서 ML1의 CNN<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">11</a></sup>이 “같은 필터를 여러 위치에 반복
+반복한다“는 점에서 ML1의 CNN<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">12</a></sup>이 “같은 필터를 여러 위치에 반복
 적용한다“는 것과 어떻게 비슷한지, 그리고 무엇이 다른지(공유하는
 것이 “파라미터“인지 “환경 복제본“인지) 두세 문장으로 비교하라.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
@@ -539,8 +539,17 @@ Q1(강한 접촉 핵심인가)의 <em>어느</em> 쪽에, (ii) 속도 축에서 
 <li id="footnote-pybullet">
 <p>Coumans, E., Bai, Y. (2018). “PyBullet, a GPU accelerated physics engine for robot learning.” IEEE/RAS IROS 2018. <a href="#fr-pybullet-1">↩</a></p>
 </li>
+<li id="footnote-mujoco">
+<p>Todorov, E. (2012). “MuJoCo: A physics and control engine for model-based control.” IROS 2012. <a href="#fr-mujoco-1">↩</a> <a href="#fr-mujoco-2">↩2</a></p>
+</li>
+<li id="footnote-isaacgym">
+<p>Makoviychuk, V., Wawrzyniak, L., Guo, Y., et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. <a href="#fr-isaacgym-1">↩</a> <a href="#fr-isaacgym-2">↩2</a></p>
+</li>
 <li id="footnote-gym">
 <p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-domainrandomization">
+<p>Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., Abbeel, P. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” IROS 2017. arXiv:1703.06907. — 시뮬레이션과 실물의 격차(현실 격차)를 줄이는 대표 기법인 도메인 랜덤화(domain randomization)의 원 논문: 시뮬레이션의 물리·외관 파라미터를 무작위화해 학습하면 실물에 잘 전이된다. <a href="#fr-domainrandomization-1">↩</a></p>
 </li>
 <li id="footnote-dqn">
 <p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a> <a href="#fr-dqn-2">↩2</a></p>
@@ -556,12 +565,6 @@ Q1(강한 접촉 핵심인가)의 <em>어느</em> 쪽에, (ii) 속도 축에서 
 </li>
 <li id="footnote-mujocoxla">
 <p>Todorov, E., Eghbali, R., Zhou, Y., et al. (2022). “MuJoCo-XLA: A High Performance Physics Simulation Environment for Robot Learning.” <a href="#fr-mujocoxla-1">↩</a></p>
-</li>
-<li id="footnote-mujoco">
-<p>Todorov, E. (2012). “MuJoCo: A physics and control engine for model-based control.” IROS 2012. <a href="#fr-mujoco-1">↩</a></p>
-</li>
-<li id="footnote-isaacgym">
-<p>Makoviychuk, V., Wawrzyniak, L., Guo, Y., et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. <a href="#fr-isaacgym-1">↩</a></p>
 </li>
 <li id="footnote-alexnet">
 <p>Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). “ImageNet Classification with Deep Convolutional Neural Networks.” NeurIPS 2012. <a href="#fr-alexnet-1">↩</a></p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -187,12 +187,12 @@
 <em>양</em>이 아니라 리뷰의 <em>질</em>이다: “4개 항목을 다 썼는가“가 아니라 “그
 안에서 던진 질문이 <strong>반박 가능한 질문</strong>인가“다(§“채점 기준” 참고).</p>
 <p>ML1 Chapter 8.2에서 이 구조를 처음 만들 때의 근거를 그대로 이어받는다.
-Popper의 반증주의 — <em>한 주장은 “그것이 틀렸음을 보여주는 관측이
+Popper의 반증주의<sup class="footnote-reference" id="fr-popper1934-1"><a href="#footnote-popper1934">1</a></sup> — <em>한 주장은 “그것이 틀렸음을 보여주는 관측이
 상상이 가능한가“로 판별된다</em> — 는 ML1에서는 “정확도 99.8%가 우연
 (정확도의 함정, ML1 Ch02.3)이거나 테스트셋 유출(ML1 Ch06.3)일
 가능성을 짚어내는 질문“으로 번역됐고, 이번 절에서는 <strong>강화학습
 프로젝트 특유의 “우연히 좋은 것처럼 보이는” 패턴</strong>을 짚어내는 질문으로
-번역된다. Amgen 재현 실험(2011)<sup class="footnote-reference" id="fr-begleyellis-1"><a href="#footnote-begleyellis">1</a></sup>에서 53편의 ‘landmark’ 논문 중 6편
+번역된다. Amgen 재현 실험(2011)<sup class="footnote-reference" id="fr-begleyellis-1"><a href="#footnote-begleyellis">2</a></sup>에서 53편의 ‘landmark’ 논문 중 6편
 밖에 재현되지 않았다는 교훈도 그대로 유효하다: <strong>좋은 결과는 스스로를
 증명하지 못하고, 결과가 남이 재현·반박할 수 있도록 만들어졌는지가
 기준이다.</strong> 강화학습에서는 이 위험이 더 높다 — 아래 §“강화학습
@@ -239,12 +239,12 @@ Popper의 반증주의 — <em>한 주장은 “그것이 틀렸음을 보여주
 구체적으로 무엇을 보는지 하나씩 풀어본다.</p>
 <ul>
 <li><strong>환경 설명</strong> — MDP 5요소(Ch03.1) 중 <em>상태·행동·보상</em>이 보고서에서
-추적 가능한지 본다. “CliffWalking을 썼다”<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">2</a></sup> 한 줄만 있고 <em>주 지표가
+추적 가능한지 본다. “CliffWalking을 썼다”<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">3</a></sup> 한 줄만 있고 <em>주 지표가
 무엇인지</em>(학습 도중 리턴? greedy 평가 리턴? 에피소드 길이?)가
 없으면, 뒤의 모든 숫자가 “무엇의 평균“인지 모른다. 8.1의 §“비교
 프로토콜“이 왜 <em>학습 도중 성과</em>와 <em>학습 후 평가 성과</em>를 나눠
 보고하게 하는지가 바로 이 항목의 핵심이다.</li>
-<li><strong>알고리즘 선택</strong> — “Q-learning<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">3</a></sup>과 SARSA를 골랐다“가 아니라,
+<li><strong>알고리즘 선택</strong> — “Q-learning<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>과 SARSA를 골랐다“가 아니라,
 <em>이 환경의 어떤 특성</em>(상태 공간 크기, 보상 구조, 확률적 전이)이
 그 비교를 정당화하는지 보는 것이다(§8.1의 환경 선택표). FrozenLake
 (16×4, 미끄럼)에서 n-step TD(Ch07.2)와 MC(Ch05.3)를 비교하는 것과,
@@ -386,7 +386,7 @@ Q-learning −45.3, 발표팀의 숫자 재현.</li>
 결과를 \(\varepsilon=0\)(탐욕적)으로 200 에피소드 재평가 →
 <strong>Q-learning −13 (13스텝) vs SARSA −17 (17스텝): 순위가
 뒤집힌다.</strong> 손계산으로 왜 Q-learning 쪽만 크게 망가지는지
-확인한다. 이 환경(Gymnasium CliffWalking-v1)<sup class="footnote-reference" id="fr-gymnasium-2"><a href="#footnote-gymnasium">2</a></sup>에서 절벽은
+확인한다. 이 환경(Gymnasium CliffWalking-v1)<sup class="footnote-reference" id="fr-gymnasium-2"><a href="#footnote-gymnasium">3</a></sup>에서 절벽은
 아래쪽(3행)의 열 1~10에 있고, 두 정책의 greedy 경로는:
 <ul>
 <li><strong>Q-learning (13스텝)</strong>: 시작(3행) → 2행 → <strong>절벽 바로
@@ -431,9 +431,9 @@ CliffWalking-v1, 위 설정)에서는 3시드 모두 −13/−13/−13,
 질문일 때 가장 날카롭다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch08_2_eval_epsilon_asymmetry.svg" alt="평가 ε의 비대칭 — CliffWalking에서 학습된 Q-learning(빨강, 절벽 바로 위 13스텝 경로)과 SARSA(파랑, 위쪽 17스텝 우회 경로)를 ε=0~0.3으로 200 에피소드 평가할 때의 평균 리턴. ε=0에서는 Q-learning이 앞선다(−13 vs −17)가, 탐색(ε&gt;0)이 조금만 섞이면 Q-learning의 리턴이 급격히 떨어져(ε=0.05 → −30, ε=0.1 → −45, ε=0.3 → −182) SARSA가 뒤집어 앞선다. SARSA의 우회 경로는 거의 안 흔들린다(−17 → −39) — “평가 때 ε을 켜둔 채” 비교하면 결론의 방향이 뒤집히는 구조"><span class="img-wrapper"><img src="../../images/ch08_2_eval_epsilon_asymmetry.svg" alt="평가 ε의 비대칭 — CliffWalking에서 학습된 Q-learning(빨강, 절벽 바로 위 13스텝 경로)과 SARSA(파랑, 위쪽 17스텝 우회 경로)를 ε=0~0.3으로 200 에피소드 평가할 때의 평균 리턴. ε=0에서는 Q-learning이 앞선다(−13 vs −17)가, 탐색(ε&gt;0)이 조금만 섞이면 Q-learning의 리턴이 급격히 떨어져(ε=0.05 → −30, ε=0.1 → −45, ε=0.3 → −182) SARSA가 뒤집어 앞선다. SARSA의 우회 경로는 거의 안 흔들린다(−17 → −39) — “평가 때 ε을 켜둔 채” 비교하면 결론의 방향이 뒤집히는 구조"></span></label></p>
 <h3 id="좋은-리뷰를-쓰는-과정-체크리스트--반박-가능한-질문"><a class="header" href="#좋은-리뷰를-쓰는-과정-체크리스트--반박-가능한-질문">좋은 리뷰를 쓰는 과정: 체크리스트 → 반박 가능한 질문</a></h3>
-<p>위 실습의 흐름을 일반화하면, 좋은 리뷰는 **발표를 듣고 → 체크리스트
+<p>위 실습의 흐름을 일반화하면, 좋은 리뷰는 <strong>발표를 듣고 → 체크리스트
 4항목에 적용 → 각 항목에서 <em>구체적 관찰</em>을 적고 → 그것이
-**이 학기 개념(장·절)<strong>에 뿌리를 박은 질문인지 검사 → 아니면
+이 학기 개념(장·절)에 뿌리를 박은 질문인지 검사 → 아니면
 다시 쓰기</strong>의 흐름이다. 이 과정의 RL 버전을 그림으로 정리하면
 아래처럼 된다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch08_2_rl_review_flow.svg" alt="리뷰 쓰는 과정 (RL 버전) — (1) 다른 팀 발표+보고서 읽고 주장 파악(알고리즘·숫자·결론) → (2) 체크리스트 4항목(환경 설명/알고리즘 선택/수식적 정당화/결과의 정직성) 적용 → (3) 각 항목에 질문 초안(답이 새로운 계산·실험이어야 함) → (4) ‘개념(장·절)을 근거로 들고, 답이 새 실험인가?’ 분기. 예 → 반박 가능한 질문 채택(초록); 아니오 → ‘학습 곡선이 잘 올라갔네’ 같은 감상평(빨강)으로 떨어지고, Ch4~7 개념을 근거로 다시 쓰기(점선으로 (3)로 회귀) → (5) 3단계 기준(1점/2점/3점)으로 자기 채점"><span class="img-wrapper"><img src="../../images/ch08_2_rl_review_flow.svg" alt="리뷰 쓰는 과정 (RL 버전) — (1) 다른 팀 발표+보고서 읽고 주장 파악(알고리즘·숫자·결론) → (2) 체크리스트 4항목(환경 설명/알고리즘 선택/수식적 정당화/결과의 정직성) 적용 → (3) 각 항목에 질문 초안(답이 새로운 계산·실험이어야 함) → (4) ‘개념(장·절)을 근거로 들고, 답이 새 실험인가?’ 분기. 예 → 반박 가능한 질문 채택(초록); 아니오 → ‘학습 곡선이 잘 올라갔네’ 같은 감상평(빨강)으로 떨어지고, Ch4~7 개념을 근거로 다시 쓰기(점선으로 (3)로 회귀) → (5) 3단계 기준(1점/2점/3점)으로 자기 채점"></span></label></p>
@@ -482,10 +482,10 @@ CliffWalking-v1, 위 설정)에서는 3시드 모두 −13/−13/−13,
 <p>이 실수가 특히 강화학습에서 <em>구조적으로</em> 더 위험한 이유는, 학습
 곡선의 “오르다/안 오르다“가 <strong>학습의 진전과 분리될 수 있기
 때문</strong>이다. Atari의 Montezuma’s Revenge 게임은 이 분리를 극적으로
-보여준 사례다 — Mnih et al. (2015)의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup> 에이전트는 이 게임에서
+보여준 사례다 — Mnih et al. (2015)의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">5</a></sup> 에이전트는 이 게임에서
 수백만 스텝을 학습해도 <em>점수</em>가 거의 0에 머물렀고, 그 평탄한
 점수 곡선은 오랫동안 “에이전트가 아무것도 배우지 못한다“는
-판단의 근거가 됐다. 2019년 모델 기반 방법 R2D2<sup class="footnote-reference" id="fr-r2d2-1"><a href="#footnote-r2d2">5</a></sup> (Kaiser,
+판단의 근거가 됐다. 2019년 모델 기반 방법 R2D2<sup class="footnote-reference" id="fr-r2d2-1"><a href="#footnote-r2d2">6</a></sup> (Kaiser,
 Babaeizadeh et al.)가 이 게임을 처음 풀어냈을 때, “점수 0“이
 문제의 <em>난이도</em>나 <em>방법의 한계</em>였다는 것이 확인된 것이다 —
 <strong>하나의 지표(점수)가 평탄했다는 사실만으로는 “배우지 못했다“를
@@ -525,7 +525,7 @@ Babaeizadeh et al.)가 이 게임을 처음 풀어냈을 때, “점수 0“이
 Block B의 Chapter 16.1(신경망 강화학습 캡스톤)도 동일한
 구조(발표 → peer-review)를 쓰므로, 이 셀프-리뷰 습관이
 학기 말까지 이어진다.
-더 깊이 다루는 자료: 스탠포드 CS234 강화학습 강좌<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">6</a></sup>.</p>
+더 깊이 다루는 자료: 스탠포드 CS234 강화학습 강좌<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">7</a></sup>.</p>
 <h3 id="확인-문제-리뷰어가-될-때-쓰는-판단력"><a class="header" href="#확인-문제-리뷰어가-될-때-쓰는-판단력">확인 문제: 리뷰어가 될 때 쓰는 판단력</a></h3>
 <p>각 문항은 <em>리뷰어가 될 때</em> 쓰는 판단력을 확인한다 — 먼저 스스로
 답해본 뒤 아래 답과 비교해보자.</p>
@@ -667,6 +667,9 @@ Ch06.3의 수렴 조건을 떠올리면, 절벽 위에서 한 번의 무작위
 3점 질문(5번)이 최소 충족 조건이다.</p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-popper1934">
+<p>Popper, K. (1934). <em>Logik der Forschung zur Wissenschaftstheorie</em> (독어 원서; 영어 번역판 <em>The Logic of Scientific Discovery</em>). — 반증주의(falsifiability)의 원전. <a href="#fr-popper1934-1">↩</a></p>
+</li>
 <li id="footnote-begleyellis">
 <p>Begley, C. G., Ellis, L. M. (2012). “Raise standards for preclinical cancer research.” Nature 483, 531–533. (53편의 고영향력 임상전(preclinical) 논문을 Amgen에서 재시험해 핵심 결과 6편만 재현됐음을 보고한 논문.) <a href="#fr-begleyellis-1">↩</a></p>
 </li>

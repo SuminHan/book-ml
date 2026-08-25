@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -379,7 +379,7 @@ top-k와의 차이이자 장점이다.</p>
 매번 다른 답이 나오는가“를 20회 샘플링으로 직접 확인한다.</p>
 <h3 id="프롬프트가-행동을-바꾼다는-것의-실제-의미"><a class="header" href="#프롬프트가-행동을-바꾼다는-것의-실제-의미">프롬프트가 “행동을 바꾼다“는 것의 실제 의미</a></h3>
 <p>프롬프팅이 “모델의 능력을 켜고 끄는 스위치“라는 느낌을 주는 것은,
-사실 13.3절에서 다룰 **SFT(Supervised Fine-Tuning)**가 미리 깔려
+사실 13.3절에서 다룰 <strong>SFT(Supervised Fine-Tuning</strong>)가 미리 깔려
 있어서다. 사전학습만 거친 원시 모델은 “지속해서 텍스트를 이어가는”
 모델에 가깝고, SFT에서 “사람의 지시를 <em>따르는</em> 형식“으로 다듬어진다.
 즉, “이 JSON 형식으로 답해줘”, “200자 이내로 요약해줘” 같은 요청이
@@ -399,7 +399,7 @@ top-k와의 차이이자 장점이다.</p>
 <em>포함</em>되기 때문일 뿐이다. (그래서 system message를 “지키지 않으면”
 이라는 표현이 애매해진다 — 모델에게는 그저 긴 컨텍스트의 앞부분일
 뿐이다.)</p>
-<p><strong>RAG(Retrieval-Augmented Generation)</strong><sup class="footnote-reference" id="fr-rag-1"><a href="#footnote-rag">9</a></sup>와 <strong>에이전트</strong>는 이 “프롬프트에
+<p><strong>RAG(Retrieval-Augmented Generation)</strong><sup class="footnote-reference" id="fr-rag-1"><a href="#footnote-rag">9</a></sup>와 <strong>에이전트</strong><sup class="footnote-reference" id="fr-react-1"><a href="#footnote-react">10</a></sup>는 이 “프롬프트에
 무엇을 넣느냐“의 문제를 한 단계 더 확장한 것이다(13.3절에서 상세히):
 RAG는 질문과 관련된 문서를 <em>검색해서</em> 프롬프트에 붙여 “이 문서에 기반해
 답하라“고 하고, 에이전트는 모델이 검색·계산기·코드 실행 같은 <em>도구</em>를
@@ -409,7 +409,7 @@ RAG는 질문과 관련된 문서를 <em>검색해서</em> 프롬프트에 붙�
 그 자체다.</p>
 <h3 id="환각hallucination"><a class="header" href="#환각hallucination">환각(Hallucination)</a></h3>
 <p>LLM은 사실이 아닌 그럴듯한 문장을 자신 있게 만들어내기도 한다(<strong>환각,
-hallucination</strong>)<sup class="footnote-reference" id="fr-hallucinationsurvey-1"><a href="#footnote-hallucinationsurvey">10</a></sup> — “다음 토큰으로 그럴듯한 것“을 예측하도록 학습됐을
+hallucination</strong>)<sup class="footnote-reference" id="fr-hallucinationsurvey-1"><a href="#footnote-hallucinationsurvey">11</a></sup> — “다음 토큰으로 그럴듯한 것“을 예측하도록 학습됐을
 뿐, 사실 여부를 검증하는 과정이 내장돼 있지 않기 때문이다.</p>
 <p>이것을 13.1절의 학습 목표와 연결하면 더 명확해진다. 사전학습의 손실은
 “실제 다음 토큰과 예측의 교차 엔트로피“이고, 이 손실을 최소화하는
@@ -435,7 +435,7 @@ B라고 말할 수 있다.</p>
 답하라“고 지시한다 — 모델이 <em>가진</em> 문맥 안에서 답을 만들어야 하므로
 지어낼 여지가 줄어든다.</li>
 <li><strong>“모르면 모른다고 해” 지시</strong>: 효과는 있으나 보장이 아니다.</li>
-<li><strong>Self-consistency</strong><sup class="footnote-reference" id="fr-selfconsistency-1"><a href="#footnote-selfconsistency">11</a></sup>: CoT를 <em>여러 번</em> 샘플링해서(\(T&gt;0\)로)
+<li><strong>Self-consistency</strong><sup class="footnote-reference" id="fr-selfconsistency-1"><a href="#footnote-selfconsistency">12</a></sup>: CoT를 <em>여러 번</em> 샘플링해서(\(T&gt;0\)로)
 나온
 최종 답들 중 <em>다수결</em>을 채택한다 — 한 번의 추론이 틀려도 여러 번 중
 다수가 맞으면 그 오차가 상쇄된다. CoT의 “중간 결과를 조건으로 쓴다“는
@@ -453,7 +453,7 @@ B라고 말할 수 있다.</p>
 혼란스러워한다. 형식은 <em>모두</em> 동일해야 한다.</li>
 <li><strong>“프롬프트가 길수록 좋다”</strong>: 컨텍스트 윈도우에는 한계가 있고
 (12.3절의 \(n^2\) 계산량), 지나치게 긴 프롬프트에서는 <em>중간</em> 부분에
-있는 정보의 영향이 오히려 줄어든다는 현상(“lost in the middle”)<sup class="footnote-reference" id="fr-lostmiddle-1"><a href="#footnote-lostmiddle">12</a></sup>이
+있는 정보의 영향이 오히려 줄어든다는 현상(“lost in the middle”)<sup class="footnote-reference" id="fr-lostmiddle-1"><a href="#footnote-lostmiddle">13</a></sup>이
 보고돼 있다. 핵심 지시문은 <em>앞</em>이나 <em>뒤</em>에 두는 것이 안전하다.</li>
 <li><strong>“temperature 0이면 환각이 사라진다”</strong>: temperature 0은 <em>결정적</em>
 (deterministic)을 의미할 뿐, <em>정확</em>을 의미하지는 않는다. 틀린
@@ -538,7 +538,7 @@ few-shot의 출력 대조(본문 코드 블록 재현)</li>
 (중간 결과를 <em>조건으로</em> 쓸 때 0.9 vs 조건 없이 0.5), 4,000회 반복:
 직접 ≈ \(0.5^3 = 0.125\), CoT ≈ \(0.9^3 = 0.729\)</li>
 </ol>
-<p>프롬프팅과 추론을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">13</a></sup></p>
+<p>프롬프팅과 추론을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">14</a></sup></p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-fewshot">
@@ -567,6 +567,9 @@ few-shot의 출력 대조(본문 코드 블록 재현)</li>
 </li>
 <li id="footnote-rag">
 <p>Lewis, P., Perez, E., Piktus, A., et al. (2020). “Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. <a href="#fr-rag-1">↩</a></p>
+</li>
+<li id="footnote-react">
+<p>Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., Cao, Y. (2022). “ReAct: Synergizing Reasoning and Acting in Language Models.” ICLR 2023. arXiv:2210.03629. — 추론(reasoning) 텍스트와 도구 호출(acting)을 대안적으로 생성하게 해서 LLM이 외부 도구를 스스로 쓰는 에이전트 방식을 정립한 원 논문. <a href="#fr-react-1">↩</a></p>
 </li>
 <li id="footnote-hallucinationsurvey">
 <p>Ji, Z., Lee, N., Frieske, R., Yu, T., Su, D., Xu, Y., Ishii, E., Bang, Y. J., Madotto, A., Fung, P. (2023). “Survey of Hallucination in Natural Language Generation.” ACM Computing Surveys 55(12). arXiv:2202.03629. — 환각의 측정·완화 기법과 LLM 환각까지 포괄하는 대표 서베이. <a href="#fr-hallucinationsurvey-1">↩</a></p>

@@ -69,8 +69,8 @@ word2vec[^word2vec], Node2Vec[^node2vec], PageRank는 모두 "단어·노드·�
   모델보다 사람에게 더 선호됨)에서 출발해, SFT(이상적인 답변 모방),
   RLHF (비교 데이터로 학습한 Bradley-Terry 보상모델 + PPO[^ppo] 강화학습),
   DPO (보상모델을 통하지 않고 선호 데이터로 정책을 직접 학습)를
-  순서대로 짚고, LoRA[^lora]/PEFT와 RAG[^rag]·에이전트까지 한 장에 모은 전체
-  지도를 제시한다[^peft].
+  순서대로 짚고, LoRA[^lora]/PEFT와 RAG[^rag]·에이전트[^react]까지 한 장에
+  모은 전체 지도를 제시한다[^peft].
 
 ![InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습.](../images/ref_instructgpt.png)
 
@@ -96,3 +96,4 @@ word2vec[^word2vec], Node2Vec[^node2vec], PageRank는 모두 "단어·노드·�
 [^peft]: Lialin, V., Deshpande, V., Yao, X., Rumshisky, A. (2023). "Scaling Down to Scale Up: A Guide to Parameter-Efficient Fine-Tuning." arXiv:2303.15647. (LoRA·prefix·adapter 등 PEFT 기법군을 정리한 참고자료)
 [^topp]: Holtzman, A., Buys, J., Du, L., Forbes, M., Choi, Y. (2019). "The Curious Case of Neural Text Degeneration." NAACL 2019. arXiv:1904.09751. (top-p, 즉 nucleus 샘플링을 제안한 논문)
 [^node2vec]: Grover, A., Leskovec, J. (2016). "node2vec: Scalable Feature Learning for Networks." KDD 2016. arXiv:1607.00653.
+[^react]: Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., Cao, Y. (2022). "ReAct: Synergizing Reasoning and Acting in Language Models." ICLR 2023. arXiv:2210.03629. — 추론(reasoning) 텍스트와 도구 호출(acting)을 대안적으로 생성하게 해서 LLM이 외부 도구를 스스로 쓰는 에이전트 방식을 정립한 원 논문.

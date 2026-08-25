@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -180,12 +180,12 @@
                     <main>
                         <h1 id="chapter-10-cnn-기초와-응용-cnn-basics--applications"><a class="header" href="#chapter-10-cnn-기초와-응용-cnn-basics--applications">Chapter 10. CNN 기초와 응용 (CNN Basics &amp; Applications)</a></h1>
 <p>1959년, 신경생리학자 데이비드 허블(David Hubel)과 토르스텐 비셀(Torsten
-Wiesel)은 고양이의 시각피질에 전극을 꽂고 다양한 시각 자극을 보여주는 실험을
+Wiesel)<sup class="footnote-reference" id="fr-hubelwiesel-1"><a href="#footnote-hubelwiesel">1</a></sup>은 고양이의 시각피질에 전극을 꽂고 다양한 시각 자극을 보여주는 실험을
 했다. 그 결과 특정 뉴런은 화면 <strong>전체</strong>가 아니라 아주 좁은 영역(수용장,
 receptive field)의 특정 방향 선분에만 반응한다는 것을 발견했다 — 뇌는 이미지를
 통째로 보는 게 아니라, 작은 지역별 패턴을 감지하는 뉴런들을 층층이 쌓아 점점
 더 복잡한 패턴(선 → 모서리 → 도형 → 사물)을 조합해낸다는 뜻이었다. 이 발견은
-1980년대 후쿠시마 쿠니히코의 네오코그니트론을 거쳐, 지금 쓰이는 <strong>합성곱
+1980년대 후쿠시마 쿠니히코의 네오코그니트론<sup class="footnote-reference" id="fr-neocognitron-1"><a href="#footnote-neocognitron">2</a></sup>을 거쳐, 지금 쓰이는 <strong>합성곱
 신경망</strong>(Convolutional Neural Network, CNN)의 직접적인 영감이 됐다. 이번
 장은 합성곱이라는 연산 자체(전반부)와, 그걸 실전에서 어떻게 재사용·확장하는지
 (후반부)를 한 장에서 함께 다룬다.</p>
@@ -208,15 +208,15 @@ CNN이 가중치를 <strong>공간</strong>(이미지 위 위치)에 걸쳐 재�
 파라미터 수와 FLOPs를 MLP와 비교해 “왜 합성곱이 효율적인가“를 숫자로
 설명한다.</li>
 <li>합성곱과 풀링이 “좁아지고 깊어지는” CNN 구조를 만들 때 각각 (패턴 감지
-vs. 수용장 확대·해상도 축소) 어떤 역할을 하는지 설명하고, LeNet에서
-ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">1</a></sup>
+vs. 수용장 확대·해상도 축소) 어떤 역할을 하는지 설명하고, LeNet<sup class="footnote-reference" id="fr-lenet-1"><a href="#footnote-lenet">3</a></sup>에서
+ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">4</a></sup>
 까지 구조가 어떻게 변했는지, 스킵 연결이 왜 깊은망을 가능하게 하는지
 서술한다.</li>
-<li>분류 모델 위에 탐지·분할 헤드(R-CNN, IoU/NMS, 1×1 합성곱<sup class="footnote-reference" id="fr-googlenet-1"><a href="#footnote-googlenet">2</a></sup>, U-Net)를 붙여
-새 문제를 정의하는 방식을 이해하고, 전이학습<sup class="footnote-reference" id="fr-transferlearning-1"><a href="#footnote-transferlearning">3</a></sup> (특징 추출 vs. 미세조정)이
+<li>분류 모델 위에 탐지·분할 헤드(R-CNN, IoU/NMS, 1×1 합성곱<sup class="footnote-reference" id="fr-googlenet-1"><a href="#footnote-googlenet">5</a></sup>, U-Net)를 붙여
+새 문제를 정의하는 방식을 이해하고, 전이학습<sup class="footnote-reference" id="fr-transferlearning-1"><a href="#footnote-transferlearning">6</a></sup> (특징 추출 vs. 미세조정)이
 언제·왜 유리한지 판단한다.</li>
 </ul>
-<p>이 장을 관통하는 하나의 실은 **“재사용”**이다. 합성곱은 같은 필터를 이미지의
+<p>이 장을 관통하는 하나의 실은 <strong>“재사용</strong>“이다. 합성곱은 같은 필터를 이미지의
 모든 위치에서 다시 쓰고(10.1), 풀링은 그 합성곱을 공간 해상도를 아끼며 깊이
 쌓게 하며(10.2), 탐지·분할·전이학습은 배운 앞쪽 층을 전혀 다른 문제에 그대로
 적용한다(10.3). 이 재사용의 감각 — “새로 배울 것을 최소화하고, 이미 배운 것을
@@ -234,24 +234,33 @@ ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet
 대비한다.</li>
 <li><a href="chapter10/2.html">10.2 풀링과 전형적인 CNN 구조</a> — 최대·평균·전역 평균
 풀링이 공간 크기를 줄이고 미세 이동에 둔감한 특징을 주며, 층을 쌓을수록
-수용장이 넓어지는 기제를 다룬다. LeNet-5 → AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">4</a></sup> →
-VGGNet<sup class="footnote-reference" id="fr-vggnet-1"><a href="#footnote-vggnet">5</a></sup>의 구조를 10.1의 공식으로 풀어본 뒤, 깊이를 쌓을 때
+수용장이 넓어지는 기제를 다룬다. LeNet-5 → AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">7</a></sup> →
+VGGNet<sup class="footnote-reference" id="fr-vggnet-1"><a href="#footnote-vggnet">8</a></sup>의 구조를 10.1의 공식으로 풀어본 뒤, 깊이를 쌓을 때
 다시 나타나는 그래디언트 소실(깊이 열화)을 스킵 연결(ResNet)과 배치
-정규화<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">6</a></sup>로 어떻게 해결하는지 PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">7</a></sup> 실습으로 확인한다.</li>
+정규화<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">9</a></sup>로 어떻게 해결하는지 PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">10</a></sup> 실습으로 확인한다.</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."><span class="img-wrapper"><img src="../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."><span class="img-wrapper"><img src="../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."></span></label></p>
 <ul>
 <li><a href="chapter10/3.html">10.3 분류를 넘어서: 탐지, 분할, 전이학습</a> — “클래스
-벡터 1개“를 내는 분류기를 넘어, 위치까지 붙은 객체 탐지(R-CNN<sup class="footnote-reference" id="fr-rcnn-1"><a href="#footnote-rcnn">8</a></sup> 3단계
+벡터 1개“를 내는 분류기를 넘어, 위치까지 붙은 객체 탐지(R-CNN<sup class="footnote-reference" id="fr-rcnn-1"><a href="#footnote-rcnn">11</a></sup> 3단계
 파이프라인, IoU·NMS)와 픽셀 단위 분할(1×1 합성곱
-헤드, U-Net<sup class="footnote-reference" id="fr-unet-1"><a href="#footnote-unet">9</a></sup> <sup class="footnote-reference" id="fr-fcn-1"><a href="#footnote-fcn">10</a></sup>)로 확장한다.
+헤드, U-Net<sup class="footnote-reference" id="fr-unet-1"><a href="#footnote-unet">12</a></sup> <sup class="footnote-reference" id="fr-fcn-1"><a href="#footnote-fcn">13</a></sup>)로 확장한다.
 마지막으로 사전학습된 CNN의 앞쪽 층을 재사용하는 전이학습(특징 추출 vs.
-미세조정)을 작은 실험으로 비교한다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">11</a></sup>.</li>
+미세조정)을 작은 실험으로 비교한다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">14</a></sup>.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-hubelwiesel">
+<p>Hubel, D. H., Wiesel, T. N. (1962). “Receptive Fields, Cells and Columns of the Cat’s Visual Cortex.” <em>Journal of Physiology</em> 160(1), 106–154. — 시각피질의 단순세포·복합세포가 위치를 가리지 않고 방향·모서리 패턴에 선택적으로 반응한다는 수용장(receptive field) 연구로, 합성곱의 “작은 필터를 온 이미지에 재사용한다“는 설계 원형의 생물학적 근거다. (참고: 허블과 비셀은 1981년 노벨상 수상 논문인 “Receptive Fields of Single Neurons in the Cat’s Striate Cortex”(<em>J. Physiol.</em> 1943)으로 이미 수용장을 기술해 두었고, 1962년 논문은 이 계층적 조직을 확장한 것이다.) <a href="#fr-hubelwiesel-1">↩</a></p>
+</li>
+<li id="footnote-neocognitron">
+<p>Fukushima, K. (1980). “Neocognitron: A Self-Organizing Neural Network Model for a Mechanism of Pattern Recognition Unaffected by Shift in Position.” <em>Biological Cybernetics</em> 36(4), 193–200. — 시각피질의 단순세포·복합세포 계층 구조를 모방한 CNN의 선구 모델. “합성곱층“이라는 용어 자체가 이 논문에서 처음 쓰였다. <a href="#fr-neocognitron-1">↩</a></p>
+</li>
+<li id="footnote-lenet">
+<p>LeCun, Y., Bottou, L., Bengio, Y., Haffner, P. (1998). “Gradient-Based Learning Applied to Document Recognition.” <em>Proceedings of the IEEE</em> 86(11), 2278–2324. — 학습 가능한 CNN(LeNet-5)을 실전에서 검증한 원 논문. <a href="#fr-lenet-1">↩</a></p>
+</li>
 <li id="footnote-resnet">
 <p>He, K., Zhang, X., et al. (2015). “Deep Residual Learning for Image Recognition.” arXiv:1512.03385. <a href="#fr-resnet-1">↩</a></p>
 </li>

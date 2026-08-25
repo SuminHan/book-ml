@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -184,7 +184,7 @@
 아무것도 새로 가르치지 않는다. 대신 앞으로 16개 챕터 내내 사용하게 될
 신경망 지식의 <strong>뼈대</strong>를 50분 안에 한 번만 더 정확히 짚는 것이다. ML1을
 들었다면 대부분 익숙할 내용이지만, “한 번 더“의 이유가 있다: 이번 학기에서는
-신경망이 **정책(policy)**이 된다 — 상태 \(s\)를 입력받아 행동 \(a\)를
+신경망이 <strong>정책(policy</strong>이 된다 — 상태 \(s\)를 입력받아 행동 \(a\)를
 내보내는 함수 \(\pi_\theta(a|s)\). 이 함수가 정확히 어떻게 동작하고,
 어떻게 학습되는지 모르면 Chapter 9(DQN)부터 Chapter 11(PPO)까지의 모든
 수식이 “마법“으로만 보인다. 그래서 이번 50분은 (1) 순전파가 정확히 뭘
@@ -295,8 +295,8 @@ PyTorch의 <code>nn.Module</code>과 <code>.backward()</code>로 이 계산을 �
 은닉 유닛 2개, 출력 1개, 은닉 활성 ReLU)의 단일 샘플 손계산이다.
 가중치를 의도적으로 단순하게 골라 정수 연산만으로 끝내자:</p>
 <ul>
-<li><strong>은닉층</strong>: \(W_1 = \begin{bmatrix} +2 \ -1 \end{bmatrix}\),
-\(b_1 = \begin{bmatrix} 0 \ 0 \end{bmatrix}\)</li>
+<li><strong>은닉층</strong>: \(W_1 = \begin{bmatrix} +2 \\ -1 \end{bmatrix}\),
+\(b_1 = \begin{bmatrix} 0 \\ 0 \end{bmatrix}\)</li>
 <li><strong>출력층</strong>: \(W_2 = \begin{bmatrix} 1 &amp; 1 \end{bmatrix}\),
 \(b_2 = 0\)</li>
 <li><strong>입력/정답</strong>: \(x = 1\), \(y = 3\)</li>
@@ -304,9 +304,9 @@ PyTorch의 <code>nn.Module</code>과 <code>.backward()</code>로 이 계산을 �
 </ul>
 <p><strong>순전파</strong> (입력 → 출력):</p>
 <p>\[
-z_1 = \begin{bmatrix} 2 \cdot 1 \ -1 \cdot 1 \end{bmatrix} =
-\begin{bmatrix} 2 \ -1 \end{bmatrix}, \quad
-a_1 = \text{ReLU}(z_1) = \begin{bmatrix} 2 \ 0 \end{bmatrix}
+z_1 = \begin{bmatrix} 2 \cdot 1 \\ -1 \cdot 1 \end{bmatrix} =
+\begin{bmatrix} 2 \\ -1 \end{bmatrix}, \quad
+a_1 = \text{ReLU}(z_1) = \begin{bmatrix} 2 \\ 0 \end{bmatrix}
 \]</p>
 <p>두 번째 은닉 유닛이 <strong>죽었다</strong>(ReLU(−1)=0). 이것이 중요하다 — 아래에서
 이 유닛의 그래디언트가 정확히 0이 되는 것을 보게 된다.</p>
@@ -326,24 +326,24 @@ J = (2-3)^2 = 1, \quad \text{오차 } \text{err} = \text{pred} - y = -1
 은닉층으로 내려보내고, ReLU 도함수로 걸러냄):</p>
 <p>\[
 \frac{\partial J}{\partial a_1} = 2\,\text{err}\cdot W_2^T
-= 2(-1)\begin{bmatrix}1\1\end{bmatrix}
-= \begin{bmatrix}-2\-2\end{bmatrix}
+= 2(-1)\begin{bmatrix}1\\1\end{bmatrix}
+= \begin{bmatrix}-2\\-2\end{bmatrix}
 \]</p>
 <p>\[
 \frac{\partial J}{\partial z_1} = \frac{\partial J}{\partial a_1}
 \odot \text{ReLU}’(z_1)
-= \begin{bmatrix}-2\-2\end{bmatrix} \odot \begin{bmatrix}1\0\end{bmatrix}
-= \begin{bmatrix}-2\0\end{bmatrix}
+= \begin{bmatrix}-2\\-2\end{bmatrix} \odot \begin{bmatrix}1\\0\end{bmatrix}
+= \begin{bmatrix}-2\\0\end{bmatrix}
 \]</p>
 <p>두 번째 유닛의 그래디언트가 <strong>정확히 0</strong>이다 — 이 유닛은 지금 이 순간
 “아무 책임도 없다“는 뜻이다. 죽은 유닛은 이번 업데이트에서 전혀 움직이지
 않는다. 이것이 ReLU의 <strong>희소 활성</strong>(sparse activation)의 단면이다.</p>
 <p>\[
 \frac{\partial J}{\partial W_1} = \frac{\partial J}{\partial z_1}\, x^T
-= \begin{bmatrix}-2\0\end{bmatrix}\cdot 1
-= \begin{bmatrix}-2\0\end{bmatrix}, \quad
+= \begin{bmatrix}-2\\0\end{bmatrix}\cdot 1
+= \begin{bmatrix}-2\\0\end{bmatrix}, \quad
 \frac{\partial J}{\partial b_1} = \frac{\partial J}{\partial z_1}
-= \begin{bmatrix}-2\0\end{bmatrix}
+= \begin{bmatrix}-2\\0\end{bmatrix}
 \]</p>
 <p>이 네 줄의 계산(\(\partial J/\partial W_2\), \(\partial J/\partial b_2\),
 \(\partial J/\partial W_1\), \(\partial J/\partial b_1\))이 <strong>역전파의
@@ -451,7 +451,7 @@ PyTorch는 <code>.backward()</code>를 반복 호출하면 그래디언트가 <s
 “비선형성이 왜 필요한가“를 보여주는 데는 부족하다. <strong>비선형 함수</strong>
 \(y = \sin(x)\)를 같은 2층 MLP로 근사해보면, 직선으로는 절대 불가능했던
 “곡선“이 어떻게 만들어지는지 직접 볼 수 있다.</p>
-<p>아래는 실습 노트북의 numpy MLP(은닉 32유닛, ReLU, SGD lr=0.1)로
+<p>아래는 실습 노트북의 numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">3</a></sup> MLP(은닉 32유닛, ReLU, SGD lr=0.1)로
 \(y=\sin(x)\), \(x \in [-2, 2]\), 512개 샘플, 800 에포크 학습을 한
 결과다:</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch01_2_sin_fitting.svg" alt="y=sin(x) 근사 — 왼쪽: 2층 MLP(은닉 32유닛, ReLU)가 800 에포크 학습 후 sin(x)를 근사한 결과(파란 원=데이터, 붉은 곡선=학습한 MLP). 오른쪽: 손실 곡선(MSE, 로그 스케일), 최종 손실 ≈ 0.0031"><span class="img-wrapper"><img src="../../images/ch01_2_sin_fitting.svg" alt="y=sin(x) 근사 — 왼쪽: 2층 MLP(은닉 32유닛, ReLU)가 800 에포크 학습 후 sin(x)를 근사한 결과(파란 원=데이터, 붉은 곡선=학습한 MLP). 오른쪽: 손실 곡선(MSE, 로그 스케일), 최종 손실 ≈ 0.0031"></span></label></p>
@@ -496,20 +496,20 @@ PyTorch는 <code>.backward()</code>를 반복 호출하면 그래디언트가 <s
 \(J=(\hat{y}-y)^2\) → 역전파 → \(W\) 업데이트. <strong>정답 \(y\)가
 미리 주어진다.</strong></p>
 <p><strong>강화학습(이번 학기)</strong>: 상태 \(s\) → 정책 \(\pi_\theta(s)\) →
-**보상 \(r\)**로 평가 → <strong>정책의 가치를 낮추는 방향</strong>으로 \(W\)
+<strong>보상 \(r\)로</strong> 평가 → <strong>정책의 가치를 낮추는 방향</strong>으로 \(W\)
 업데이트. <strong>정답 \(y\)가 없다</strong> — 대신 “이 행동이 얼마나 좋은가“를
 보상으로 간접적으로 평가한다.</p>
-<p>구체적으로, <strong>Q-학습의 신경망 버전(DQN, Chapter 9)</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">3</a></sup>에서:</p>
+<p>구체적으로, <strong>Q-학습의 신경망 버전(DQN, Chapter 9)</strong><sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup>에서:</p>
 <ul>
 <li><strong>모델</strong>: \(Q_\theta(s, a)\) — 상태-행동 쌍에 대한 “장래 누적
 보상 예측“을 내는 신경망</li>
 <li><strong>손실</strong>: \(J = \mathbb{E}\left[(r + \gamma \max_{a’} Q_{\theta^-}(s’, a’) -
-Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>의 “왼쪽“과
+Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">5</a></sup>의 “왼쪽“과
 “오른쪽“의 오차</li>
 <li><strong>학습</strong>: 동일한 <code>zero_grad()</code> → <code>backward()</code> → <code>step()</code> 세 줄</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
-<p><strong>정책 기반(REINFORCE, PPO, Chapter 10~11)</strong><sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">5</a></sup>에서는:</p>
+<p><strong>정책 기반(REINFORCE, PPO, Chapter 10~11)</strong><sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">6</a></sup>에서는:</p>
 <ul>
 <li><strong>모델</strong>: \(\pi_\theta(a|s)\) — 상태 \(s\)에서 각 행동의 확률을
 내는 신경망(출력층 소프트맥스)</li>
@@ -544,7 +544,7 @@ Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)<sup 
 폭주하거나 사라져 학습 자체가 시작되지 않는다(ML1 Chapter 9의
 “초기화의 중요성”). 이번 절의 <code>MLP(1, 16, 1)</code>에서 <code>hidden_dim=16</code>이
 “적당히” 큰 이유는, PyTorch의 <code>nn.Linear</code>가 <strong>Kaiming 초기화</strong>(입력
-차원에 반비례하는 균등 분포)<sup class="footnote-reference" id="fr-kaiming-1"><a href="#footnote-kaiming">6</a></sup>를 기본적으로 쓰기 때문이다. <code>hidden_dim</code>을
+차원에 반비례하는 균등 분포)<sup class="footnote-reference" id="fr-kaiming-1"><a href="#footnote-kaiming">7</a></sup>를 기본적으로 쓰기 때문이다. <code>hidden_dim</code>을
 1024로 늘리면 학습이 느려지거나 발산할 수 있다 — <strong>깊이는 표현력을
 주지만, 안정성은 초기화가 보장</strong>한다.</p>
 <p><strong>실수 2: <code>zero_grad()</code>를 빼먹기</strong> — PyTorch는 <code>.backward()</code>를 반복하면
@@ -567,7 +567,7 @@ Q_\theta(s, a))^2\right]\) — <strong>벨만 방정식</strong>(Chapter 4)<sup 
 직접 유도할 때, 그리고 Chapter 12(모방학습)에서 “왜 이 손실을 쓰나?“를
 질문할 때, 역전파의 <strong>구조</strong>(위 “연쇄법칙의 구조를 한 줄로” 섹션)가
 직접적으로 필요하게 된다. <strong>자동화가 알아서 하니까 원리를 모를 필요는
-없다</strong> — 하지만 <strong>디버깅과 설계</strong>를 하려면 원리가 필요하다. 이 주제를 더 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">7</a></sup></p>
+없다</strong> — 하지만 <strong>디버깅과 설계</strong>를 하려면 원리가 필요하다. 이 주제를 더 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">8</a></sup></p>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
 <p><strong>(a) (개념)</strong> 2층 신경망에서 은닉층의 활성 함수를 <strong>제거</strong>(항등 함수로
 교체)하면, 이 네트워크가 표현할 수 있는 함수의 집합은 어떻게
@@ -620,7 +620,7 @@ capacity)으로 정하는 <strong>하이퍼파라미터</strong>다.</p>
 문제는 <strong>모든</strong> 유닛이 동시에 죽으면(일반적으로 학습률이 너무 클 때)
 그려지는 경우다. 이번 학기에서는 기본 ReLU를 쓰되, “학습이 갑자기
 멈추면 유닛이 다 죽은 것은 아닌가“를 debug 체크리스트에 넣으라.
-(대안 활성: Leaky ReLU<sup class="footnote-reference" id="fr-rectifier-1"><a href="#footnote-rectifier">8</a></sup>, GELU<sup class="footnote-reference" id="fr-gelu-1"><a href="#footnote-gelu">9</a></sup> — ML1 Chapter 9에서 다룸)</p>
+(대안 활성: Leaky ReLU<sup class="footnote-reference" id="fr-rectifier-1"><a href="#footnote-rectifier">9</a></sup>, GELU<sup class="footnote-reference" id="fr-gelu-1"><a href="#footnote-gelu">10</a></sup> — ML1 Chapter 9에서 다룸)</p>
 <p><strong>Q. “이번 학기에서 역전파를 직접 쓸 일이 정말 없는가?”</strong>
 <code>.backward()</code>를 <strong>호출</strong>하는 것은 항상 PyTorch가 한다. 하지만
 <strong>손실함수를 정의</strong>하는 것은 항상 <strong>네가</strong> 한다. Chapter 10의
@@ -630,7 +630,7 @@ PPO에서 클리핑 목적함수(\(L^{CLIP}\))를 직접 쓰는 순간, “이 �
 “자동“이지만, <strong>손실의 방향</strong>을 설계하는 것은 자동화되지 않는다.
 이번 절에서 역전파의 구조를 이해해두는 것이, 바로 이 “손실 설계”
 능력의 기초다.</p>
-<p><strong>Q. “Adam이 뭔데, 그냥 경사하강(SGD)하면 안 되나?”</strong><sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">10</a></sup>
+<p><strong>Q. “Adam이 뭔데, 그냥 경사하강(SGD)하면 안 되나?”</strong><sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">11</a></sup>
 Adam은 <strong>적응적 학습률</strong>을 가진 경사하강의 변형이다. SGD는 모든
 파라미터에 같은 \(\eta\)를 쓰지만, Adam은 각 파라미터의 <strong>과거
 그래디언트의 평균과 분산</strong>을 추적해 “이 파라미터는 자주 큰 그래디언트를
@@ -646,7 +646,7 @@ SGD의 기본 원리를 배웠다).</p>
 이 모든 것이 <code>zero_grad()</code> → <code>backward()</code> → <code>step()</code> 세 줄로
 축약된다는 것 — 이 네 가지가 이번 학기 16개 챕터의 <strong>공통 언어</strong>다.
 다음 절(1.3)에서는 이 언어를 처음 사용할 <strong>무대</strong>, 즉 Gymnasium
-시뮬레이션 환경<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">11</a></sup>,를 세팅한다.</p>
+시뮬레이션 환경<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">12</a></sup>,를 세팅한다.</p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-cs230">
@@ -654,6 +654,9 @@ SGD의 기본 원리를 배웠다).</p>
 </li>
 <li id="footnote-pytorch">
 <p>Paszke, A. et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” arXiv:1912.01703. <a href="#fr-pytorch-1">↩</a></p>
+</li>
+<li id="footnote-numpy">
+<p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1">↩</a></p>
 </li>
 <li id="footnote-dqn">
 <p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>

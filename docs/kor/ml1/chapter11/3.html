@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -256,7 +256,7 @@ h_t = \tanh(\cdots + W_{hh}\, h_{t-1}) \qquad\Longrightarrow\qquad
 그래서 잔차 연결 20개를 쌓아도 그래디언트는 \(0.45^{20}\)이 아니라
 \((1 + 0.45)^{20} = 1.45^{20} \approx 3.7\times10^{2}\)처럼, 적어도
 <em>곱으로만 줄어드는</em> 것은 아니다(미분 경로가 1로 “단락“해 있다).
-곱셈은 매 단계마다 그래디언트를 **할인율 \(&lt;1\)**으로 곱하지만,
+곱셈은 매 단계마다 그래디언트를 <strong>할인율</strong> \(&lt;1\)으로 곱하지만,
 덧셈 스킵은 <strong>할인 없이 1 그대로</strong> 한 가닥을 통과시킨다.</p>
 <p>LSTM/GRU가 이끄는 “고속도로“는 바로 이 ResNet 스킵 연결의 시간 축
 버전이다. <strong>LSTM의 셀 상태 \(C_t\)는 매 시점 “전부 버리고 새로
@@ -313,7 +313,7 @@ C_t = \underbrace{f_t \cdot C_{t-1}}_{\text{기억 유지}} \;+\; \underbrace{i_
 \frac{\partial C_T}{\partial C_1} = \prod_{t=2}^{T} f_t
 \]</p>
 <p>가 남는다. <strong>RNN의 \(\prod \tanh’(z_t)\,w_{hh}\)에서 \(\tanh’\)(고정
-할인율, ≈0.45)의 자리에 *학습된 망각 게이트 \(f_t\)*가 들어온 것</strong>이다.
+할인율, ≈0.45)의 자리에 <em>학습된 망각 게이트</em> \(f_t\)가 들어온 것</strong>이다.
 차이 두 가지가 전부다:</p>
 <ol>
 <li><strong>곱해질 수 있는 게 0~1이 아니라 (학습으로) 1에 수렴할 수 있다.</strong>
@@ -415,14 +415,11 @@ LSTM이 비로소 “표준“이 됐고, 2014년 전역평균풀링<sup class="
 실측</strong>으로 확인된다.</li>
 <li><strong>흥미로운 반전: GRU(0.99)가 LSTM(0.86)보다 높다.</strong> 게이트가
 <em>많을수록</em> 좋은 것은 아니다. 이 과제는 데이터가 적고(512문장)
-구조가 단순해서, 파라미터가 더 많은 LSTM(≈4×)이 오히려 **과적합
-<ul>
-<li>seed 간 변동**이 크고(0.61~1.00), GRU(≈3×)가 더 안정적·정확하다.
+구조가 단순해서, 파라미터가 더 많은 LSTM(≈4×)이 오히려 <strong>과적합 -
+seed 간 변동</strong>이 크고(0.61~1.00), GRU(≈3×)가 더 안정적·정확하다.
 이것이 바로 아래 FAQ의 “게이트가 더 적은 GRU가 더 나은 경우가
 많다“의 <em>생생한 증거</em>이며, Chapter 6의 편향-분산 트레이드오프가
 시퀀스 모델에도 그대로 작동함을 보여준다.</li>
-</ul>
-</li>
 <li><strong>seed에 크게 흔들린다.</strong> LSTM의 seed 0(0.61)은 실패에 가깝다.
 장기 기억과 같은 “좁은 관“을 통과해야 하는 학습은 초기화에
 민감하고, <strong>단일 실행의 숫자가 아니라 여러 seed의 평균</strong>을 보고
@@ -506,7 +503,7 @@ GRU는 LSTM보다 파라미터가 적어(게이트 3개 대신 2개) 학습이 �
 이 점의 직접 증거다.</p>
 <p><strong>Q. 게이트 모델의 “셀 상태“와 기본 RNN의 “은닉 상태“는 같은
 것인가요?</strong> 아니다 — 이것이 LSTM의 구조적 핵심이다. 기본 RNN은
-**하나의 벡터 \(h_t\)**가 “지금의 출력에도 쓰이고 다음 시점의 입력에도
+<strong>하나의 벡터</strong> \(h_t\)가 “지금의 출력에도 쓰이고 다음 시점의 입력에도
 쓰이는” <strong>둘의 역할을 동시에</strong> 한다(출력 = 상태). LSTM은 이 둘을
 <strong>분리</strong>한다: <strong>셀 상태 \(C_t\)</strong>(장기 기억, 덧셈으로만 전달되어
 사실상 소실되지 않는 “저장소”)과 <strong>은닉 상태 \(h_t\)</strong>(지금 시점의

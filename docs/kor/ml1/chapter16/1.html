@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -188,7 +188,7 @@
 완결</strong>이었다. 이번 프로젝트(Chapter 9~15의 도구)가 검증해야 하는 것은
 또 다른 문장이다: <strong>“신경망과 그 이후의 도구가, 이 데이터에 정말 필요한
 것인가”</strong>. 이 두 문장은 모양은 같지만 무게가 다르다. 전자는 “도구가
-맞는가“를, 후자는 **“도구가 필요한가”**를 묻기 때문이다 — 후자는
+맞는가“를, 후자는 “<strong>도구가 필요한가</strong>“를 묻기 때문이다 — 후자는
 “아예 안 쓰는 것(GBDT<sup class="footnote-reference" id="fr-friedman-1"><a href="#footnote-friedman">1</a></sup>, Chapter 7)과 비교해서” 물어야 성립한다.</p>
 <p>이 차이는 실전에서도 그대로 나타난다. 산업 현장의 많은 팀은 이미지나
 텍스트 데이터를 처음 만났을 때 “신경망을 돌려보자“가 아니라
@@ -243,16 +243,16 @@ M1·M2는 팀 전체가 모여 함께 결정하는 것(데이터·문제·모델
 했던 것과 다르다. 이유는 아래 §“학습 곡선“에서 설명한다.</p>
 <h3 id="프로젝트-구조"><a class="header" href="#프로젝트-구조">프로젝트 구조</a></h3>
 <ul>
-<li><strong>데이터</strong>: Kaggle, UCI 외에 Hugging Face Datasets(huggingface.co/datasets)도
+<li><strong>데이터</strong>: Kaggle, UCI<sup class="footnote-reference" id="fr-ucirepo-1"><a href="#footnote-ucirepo">4</a></sup> 외에 Hugging Face Datasets(huggingface.co/datasets)도
 후보에 추가한다 — Chapter 11~13에서 배운 시퀀스/LLM 관련 프로젝트라면
 텍스트 데이터를 몇 줄로 불러올 수 있어 특히 편리하다.</li>
 <li><strong>적용</strong>: Chapter 9~15 중 최소 하나의 딥러닝 기법(CNN, RNN/Transformer,
-프롬프팅 응용, 또는 EM/VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">4</a></sup> 계열 생성모델)을 실제 데이터에 적용한다.</li>
+프롬프팅 응용, 또는 EM/VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">5</a></sup> 계열 생성모델)을 실제 데이터에 적용한다.</li>
 <li><strong>필수 요구사항 — 수식적 정당화 최소 1개</strong>: 예를 들어 (1) CNN
 구조를 골랐다면 Chapter 10.1의 파라미터 수/연산량 공식으로 설계를
 정당화, (2) 정규화 기법(dropout 등)을 썼다면 Chapter 9.3에서 그
 효과를 설명, (3) 생성모델 프로젝트라면 Chapter 15의 ELBO나 min-max
-목적함수<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">5</a></sup> 중 하나를 실제 구현에 연결.</li>
+목적함수<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">6</a></sup> 중 하나를 실제 구현에 연결.</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."><span class="img-wrapper"><img src="../../images/ref_gan.png" alt="Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."></span></label></p>
 <ul>
@@ -273,7 +273,7 @@ M1·M2는 팀 전체가 모여 함께 결정하는 것(데이터·문제·모델
 <strong>픽셀·음파·토큰</strong>인 원시 배열(이미지 32×32×3, 오디오 웨이브폼,
 문장)이라면 비정형 — 여기에 “손으로” 특징을 만들기는 어려우므로
 신경망이 특징 추출기 역할을 하는 것이다. (3) 애매한 경우(예: 이미
-워드임베딩<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">6</a></sup>으로 벡터화된 텍스트)라면, “원시 토큰으로 직접
+워드임베딩<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">7</a></sup>으로 벡터화된 텍스트)라면, “원시 토큰으로 직접
 모델링한다“는 선택을 해 Ch13 도구의 필요성을 스스로 만드는 것도
 합법이다 — 단, 그 선택의 이유를 M1에 적어야 한다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."></span></label></p>
@@ -286,12 +286,12 @@ M1·M2는 팀 전체가 모여 함께 결정하는 것(데이터·문제·모델
 <tr><th>데이터셋</th><th>크기</th><th>정형/비정형</th><th>문제 정의</th><th>주의할 함정</th></tr>
 </thead>
 <tbody>
-<tr><td><strong>sklearn digits</strong> (실습용)</td><td>1,797×64 (8×8 회색)</td><td>정형(이미지지만 이미 64-dim 벡터로 flattening됨)</td><td>숫자 이미지 → 0~9 분류</td><td>데이터가 작아(64차원) 신경망이 GBDT를 <strong>이기지 못하는 것이 정상</strong> — 이 점이 바로 §“왜 DL“의 교육 포인트</td></tr>
-<tr><td><strong>CIFAR-10</strong><sup class="footnote-reference" id="fr-cifar10-1"><a href="#footnote-cifar10">7</a></sup> (HF)</td><td>60,000×32×32×3</td><td>비정형(원시 픽셀)</td><td>10개 물체 이미지 분류</td><td>레이블 불균형 없음 — 정확도 OK. 데이터 증강(회전·뒤집기, Ch10) 없이는 train/val 격차 큼</td></tr>
+<tr><td><strong>sklearn digits</strong><sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">8</a></sup> (실습용)</td><td>1,797×64 (8×8 회색)</td><td>정형(이미지지만 이미 64-dim 벡터로 flattening됨)</td><td>숫자 이미지 → 0~9 분류</td><td>데이터가 작아(64차원) 신경망이 GBDT를 <strong>이기지 못하는 것이 정상</strong> — 이 점이 바로 §“왜 DL“의 교육 포인트</td></tr>
+<tr><td><strong>CIFAR-10</strong><sup class="footnote-reference" id="fr-cifar10-1"><a href="#footnote-cifar10">9</a></sup> (HF)</td><td>60,000×32×32×3</td><td>비정형(원시 픽셀)</td><td>10개 물체 이미지 분류</td><td>레이블 불균형 없음 — 정확도 OK. 데이터 증강(회전·뒤집기, Ch10) 없이는 train/val 격차 큼</td></tr>
 <tr><td><strong>CIFAR-100</strong> (HF)</td><td>60,000×32×32×3</td><td>비정형</td><td>100개 물체 분류</td><td>클래스 100개 — macro-F1 또는 top-1 정확도 + 베이스라인(무작위 1%) 명시</td></tr>
-<tr><td><strong>IMDb Movie Reviews</strong><sup class="footnote-reference" id="fr-imdb-1"><a href="#footnote-imdb">8</a></sup> (HF)</td><td>50,000 문장</td><td>비정형(텍스트)</td><td>긍정/부정 감지</td><td>문장 길이 불균형 — Ch11의 패딩/마스킹. BERT 토크나이저 vs 단순 토큰화 비교 가능</td></tr>
+<tr><td><strong>IMDb Movie Reviews</strong><sup class="footnote-reference" id="fr-imdb-1"><a href="#footnote-imdb">10</a></sup> (HF)</td><td>50,000 문장</td><td>비정형(텍스트)</td><td>긍정/부정 감지</td><td>문장 길이 불균형 — Ch11의 패딩/마스킹. BERT 토크나이저 vs 단순 토큰화 비교 가능</td></tr>
 <tr><td><strong>Kaggle Toxic Comments</strong></td><td>159,576×6(라벨)</td><td>비정형(텍스트)</td><td>6개 독성 라벨 다중 라벨 분류</td><td><strong>다중 라벨</strong>(한 문장이 여러 독성) — 시그모이드 출력 + 각 라벨별 F1. 클래스 불균형 라벨 있음 → 라벨별 PR-AUC</td></tr>
-<tr><td><strong>EMNIST</strong><sup class="footnote-reference" id="fr-emnist-1"><a href="#footnote-emnist">9</a></sup> (HF)</td><td>112,800×28×28</td><td>비정형(원시 픽셀)</td><td>글자 분류(10개 숫자 + 26개 알파벳 대소문자)</td><td>클래스 62개 — digits보다 어려우며, CNN이 “8×8로 flatten한 GBDT“보다 확실히 앞서는 규모(28×28=784-dim)</td></tr>
+<tr><td><strong>EMNIST</strong><sup class="footnote-reference" id="fr-emnist-1"><a href="#footnote-emnist">11</a></sup> (HF)</td><td>112,800×28×28</td><td>비정형(원시 픽셀)</td><td>글자 분류(10개 숫자 + 26개 알파벳 대소문자)</td><td>클래스 62개 — digits보다 어려우며, CNN이 “8×8로 flatten한 GBDT“보다 확실히 앞서는 규모(28×28=784-dim)</td></tr>
 </tbody>
 </table>
 </div>
@@ -334,7 +334,7 @@ outperform deep learning on typical tabular data?”)이 실증한
 결론이 바로 이것 — <strong>저차원의 정형 데이터에서는 GBDT가 신경망을
 이기고, 신경망의 우위는 (a) 차원이 높은 데이터(텍스트를 원시
 토큰으로 보면 10⁴~10⁵차원), (b) 데이터가 아주 큰 경우, (c)
-특징이 <em>공유되는</em> 국소 구조(이미지)일 때</strong> 나타난다<sup class="footnote-reference" id="fr-grinsztajn-1"><a href="#footnote-grinsztajn">10</a></sup>. digits는
+특징이 <em>공유되는</em> 국소 구조(이미지)일 때</strong> 나타난다<sup class="footnote-reference" id="fr-grinsztajn-1"><a href="#footnote-grinsztajn">12</a></sup>. digits는
 64차원(저차원)이므로 GBDT가 앞서는 쪽이 <em>예상</em>이다 — 그리고
 실습 노트북의 실험은 정확히 그렇게 나온다(64차원에서 GBDT
 0.944 ≻ CNN 0.939, 격차 0.006).</p>
@@ -381,11 +381,11 @@ outperform deep learning on typical tabular data?”)이 실증한
 16.2에서 peer-review가 이 주장을 <em>심사</em>하는 기준이기도 하다.</p>
 <p><strong>역사적 일화로 이 축을 붙잡자.</strong> 2011년까지 이미지 분류의 최선은
 “사람이 손으로 만든 특징(HOG, SIFT) + 선형 분류자/GBDT“였는데,
-2012년 AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">11</a></sup>
-(ImageNet<sup class="footnote-reference" id="fr-imagenet-1"><a href="#footnote-imagenet">12</a></sup>, 128만 이미지)가 오차율을 기존보다 <strong>절대 10%p 가까이
+2012년 AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">13</a></sup>
+(ImageNet<sup class="footnote-reference" id="fr-imagenet-1"><a href="#footnote-imagenet">14</a></sup>, 128만 이미지)가 오차율을 기존보다 <strong>절대 10%p 가까이
 줄여</strong> ImageNet 경쟁을 사실상 끝냈다. 이 전회의 본질은 “신경망이
 마법“이 아니라, <strong>① 데이터(ImageNet)가 갑자기 충분히 커지고 ②
-GPU가 학습을 가능하게 한</strong> 순간이었다<sup class="footnote-reference" id="fr-imagenet-2"><a href="#footnote-imagenet">12</a></sup> — 축 2(규모)가 축 1(비정형)을
+GPU가 학습을 가능하게 한</strong> 순간이었다<sup class="footnote-reference" id="fr-imagenet-2"><a href="#footnote-imagenet">14</a></sup> — 축 2(규모)가 축 1(비정형)을
 결정지운 대표 사례다. 반대로, “정형 표 데이터“에서는 2020년대에도
 GBDT가 최선에 가까운 것이 Grinsztajn et al. 2022의 결과다. 두 사례를
 나란히 두면, “왜 DL“의 답이 <strong>데이터의 구조와 규모</strong>에서 나와야
@@ -417,8 +417,8 @@ FC는 \(\text{in}\times\text{out}+\text{out}\))를 계산한다:</p>
 </tbody>
 </table>
 </div>
-<p>이 합계를 PyTorch로 <code>sum(p.numel() for p in model.parameters())</code>를
-돌려 **정확히 일치(35,914)**하는지 확인하는 것 — “10.1의 공식으로
+<p>이 합계를 PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">15</a></sup>로 <code>sum(p.numel() for p in model.parameters())</code>를
+돌려 <strong>정확히 일치(35,914</strong>)하는지 확인하는 것 — “10.1의 공식으로
 설계를 정당화“라는 요구사항의 뼈대가 라이브러리 없이도 성립하는
 것이다.</p>
 <p>그런데 이 숫자의 <em>의미</em>는 비교해야 보인다. 같은 8×8 입력을
@@ -469,8 +469,8 @@ GBDT와의 숫자 비교를 <strong>반드시</strong> 포함한다. 8.1처럼 �
 <h3 id="학습-곡선-block-b에서-x축이-에포크인-이유"><a class="header" href="#학습-곡선-block-b에서-x축이-에포크인-이유">학습 곡선: Block B에서 x축이 “에포크“인 이유</a></h3>
 <p>8.1의 학습 곡선은 <code>n_estimators</code>(트리 개수)를 x축으로 했다 —
 GBDT는 “모델을 <em>크게</em> 만드는” 파라미터가 트리 수이므로,
-x축이 곧 **용량(capacity)**였다. Block B의 신경망에서는
-**x축이 에포크(데이터를 반복해서 보는 횟수)**로 바뀐다. 이유는
+x축이 곧 <strong>용량(capacity</strong>)였다. Block B의 신경망에서는
+<strong>x축이 에포크(데이터를 반복해서 보는 횟수</strong>)로 바뀐다. 이유는
 신경망의 “용량“은 구조(층 수·너비)로 고정하고, <strong>학습량(에포크)을
 바꾸어</strong> train/val 곡선을 그리는 것이 표준이기 때문이다 —
 구조를 바꾸면 모델 자체가 달라지므로(GBDT의 트리 수만큼 “같은
@@ -501,7 +501,7 @@ DL“의 축 1).</li>
 전처리</strong> 명시(이미지는 0~1 스케일, 텍스트는 토크나이저/패딩),
 분할 비율 + stratify/패딩 여부.</li>
 <li><strong>모델 선택과 이유</strong> (1~2p): <strong>적용한 딥러닝 기법 ≥1개</strong>와
-**그 구조(층·크기)**를 Chapter 10.1 공식으로 정당화(§“손으로
+<strong>그 구조(층·크기</strong>)를 Chapter 10.1 공식으로 정당화(§“손으로
 한 번”), 그리고 <strong>왜 GBDT가 아니라</strong> 이 기법인가(축 2).</li>
 <li><strong>결과</strong> (1p): 최종 test 숫자(한 번), <strong>에포크 학습 곡선 1장</strong>,
 <strong>GBDT·무작위와의 비교 표</strong>.</li>
@@ -527,10 +527,10 @@ DL“의 축 1).</li>
 </table>
 </div>
 <p>“방법론 적절성“이 8.1의 “이 데이터에 맞는 <em>고전 ML 모델</em>“에서
-**“이 데이터에 딥러닝이 필요한가, 그리고 그 중 왜 <em>이</em> 기법인가”**로
+<strong>“이 데이터에 딥러닝이 필요한가, 그리고 그 중 왜 <em>이</em> 기법인가</strong>“로
 확장된 것이 차이다 — 이 항목이 25%를 차지하는 이유는, 이번
-프로젝트의 성공이 “신경망을 돌렸는가“가 아니라 **“신경망이
-<em>필요했는지</em>를 GBDT와 비교해 판정했는가”**이기 때문이다. 성능이
+프로젝트의 성공이 “신경망을 돌렸는가“가 아니라 <strong>“신경망이
+<em>필요했는지</em>를 GBDT와 비교해 판정했는가</strong>“이기 때문이다. 성능이
 GBDT보다 0.5%p 낮아도, “64차원 정형이므로 GBDT가 상한이고,
 그래서 나는 EMNIST(784차원)로 확대해 검증했다“는 논리까지 세우면
 “방법론 적절성“과 “반성“에서 높은 점수를 받는다.</p>
@@ -554,7 +554,7 @@ GBDT보다 0.5%p 낮아도, “64차원 정형이므로 GBDT가 상한이고,
 (§“두 층의 베이스라인”). “64차원 정형“과 “28×28 원시 픽셀“을
 구분하지 않고 “신경망이 형편없다“거나 “GBDT가 더 좋다“로
 단순 결론내는 것 — 차원/구조의 효과를 분리해서 논해야 한다.</li>
-<li><strong>데이터 증강 없이 “val 과적합“만 보고 dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">13</a></sup>만 올리기</strong>:
+<li><strong>데이터 증강 없이 “val 과적합“만 보고 dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">16</a></sup>만 올리기</strong>:
 Ch10.2의 과적합이 <em>데이터가 부족해서</em>인지, <em>모델이 너무 커서</em>인지
 먼저 구분해야 한다 — 증강(데이터 쪽)과 dropout/L2(모델 쪽)은
 다른 처방이다(Ch09.3).</li>
@@ -580,7 +580,7 @@ torch와 <strong>정확히 일치(35,914)</strong> 확인.</li>
 §“두 층“의 <em>“예상된 결과”</em> 확인.</li>
 <li><strong>8×8 → 28×28 확대 실험</strong> — <em>같은</em> digits를 784차원으로
 확대해서 다시 GBDT(0.944) vs CNN(0.961) — 64차원의 0.006
-열세가 **0.017로 역전(신경망 우위)**되는 것이 축 2(규모)의
+열세가 <strong>0.017로 역전(신경망 우위</strong>)되는 것이 축 2(규모)의
 증거.</li>
 <li><strong>해상도 vs 파라미터</strong> — flatten FC(\(S^2\))와 conv(상수)의
 파라미터 수 표를 코드 생성.</li>
@@ -664,7 +664,7 @@ test 성능이, 같은 데이터의 GBDT(Ch07.3)와 비교해서 <em>절대적�
 “기본 코스”(digits 8×8, EMNIST 28×28, CIFAR-32×32)는 Colab의
 <strong>무료 CPU/T4</strong>로도 4주 안에 충분합니다. 실습 노트북의 작은
 CNN(35,914 파라미터)은 CPU에서도 수 분이면 수렴합니다.
-대규모(ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">14</a></sup>, BERT<sup class="footnote-reference" id="fr-bert-1"><a href="#footnote-bert">15</a></sup> full fine-tune)가 필요하면 Hugging Face의
+대규모(ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">17</a></sup>, BERT<sup class="footnote-reference" id="fr-bert-1"><a href="#footnote-bert">18</a></sup> full fine-tune)가 필요하면 Hugging Face의
 <strong>pretrained</strong> 모델을 <em>transfer</em>해 마지막 층만 학습하는 방식을 쓰면
 된다 — 이 경우 수식적 정당화는 “왜 이 pretrained 구조를
 선택했는가”(Ch13의 사전학습)로 바꾸면 됩니다.</p>
@@ -688,6 +688,9 @@ CNN(35,914 파라미터)은 CPU에서도 수 분이면 수렴합니다.
 <li id="footnote-cs224n">
 <p>Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/ <a href="#fr-cs224n-1">↩</a></p>
 </li>
+<li id="footnote-ucirepo">
+<p>Dua, D., Graff, C. (2019). “UCI Machine Learning Repository.” Irvine, CA: University of California, Irvine, School of Computer Engineering. http://archive.ics.uci.edu <a href="#fr-ucirepo-1">↩</a></p>
+</li>
 <li id="footnote-vae">
 <p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114 — 변분 자기인코더(VAE)의 원 논문으로, “수식적 정당화” 요구사항이 언급하는 ELBO(하한)는 이 논문에서 유도된다. <a href="#fr-vae-1">↩</a></p>
 </li>
@@ -696,6 +699,9 @@ CNN(35,914 파라미터)은 CPU에서도 수 분이면 수렴합니다.
 </li>
 <li id="footnote-word2vec">
 <p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781 — CBOW·skip-gram으로 단어를 밀도 벡터(워드임베딩)로 표현하는 원 논문으로, 기준 (3)의 “이미 워드임베딩으로 벡터화된 텍스트” 사례가 이 계열의 산물이다. <a href="#fr-word2vec-1">↩</a></p>
+</li>
+<li id="footnote-scikitlearn">
+<p>Pedregosa, F. et al. (2012). “Scikit-learn: Machine Learning in Python.” arXiv:1201.0490. <a href="#fr-scikitlearn-1">↩</a></p>
 </li>
 <li id="footnote-cifar10">
 <p>Krizhevsky, A., Nair, V., Hinton, G. (2009). “CIFAR-10 and CIFAR-100 datasets.” Multiple Layers of Features from Tiny Images, Technical Report 306, University of Toronto. — 32×32 컬러 이미지 60,000장으로, 이 절의 “기본 코스” 3단계(CNN의 우위를 검증할 규모)로 쓰인다. <a href="#fr-cifar10-1">↩</a></p>
@@ -714,6 +720,9 @@ CNN(35,914 파라미터)은 CPU에서도 수 분이면 수렴합니다.
 </li>
 <li id="footnote-imagenet">
 <p>Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., Fei-Fei, L. (2009). “ImageNet: A Large-Scale Hierarchical Image Database.” CVPR 2009. — 1,400만 장의 이미지에 WordNet 기반 위계 라벨을 부여한 데이터셋으로, 2012년 AlexNet 전후의 딥러닝 붐을 가능하게 한 “데이터 축(축 1)“의 대표 사례. <a href="#fr-imagenet-1">↩</a> <a href="#fr-imagenet-2">↩2</a></p>
+</li>
+<li id="footnote-pytorch">
+<p>Paszke, A., Gross, S., Massa, F., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” arXiv:1912.01703. — PyTorch 프레임워크의 원 논문(시스템 페이퍼). <a href="#fr-pytorch-1">↩</a></p>
 </li>
 <li id="footnote-dropout">
 <p>Srivastava, N., Hinton, G. E., Krizhevsky, A., et al. (2014). “Dropout: A Simple Way to Prevent Neural Networks from Overfitting.” JMLR 15(2014) 1929-1958. <a href="#fr-dropout-1">↩</a></p>

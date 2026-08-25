@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -258,7 +258,7 @@ Key 차원“이라는 사실의 설계적 귀결이기도 하다 — \(d_k\)를
 직접 설계해보자. 헤드 A는 \(W_Q = W_K = W_V = I\)(12.2절의
 “자기 주입” 헤드 — 각 단어가 자기 자신에 높은 점수를 주는
 패턴), 헤드 B는 그것과 <strong>\(W_K\) 하나만</strong>
-\(\begin{pmatrix}0&amp;1\1&amp;0\end{pmatrix}\)(두 차원을 바꾸는
+\(\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}\)(두 차원을 바꾸는
 행렬)로 달라도, \(Q=K=V=X\)에서 \(K\)만 이 행렬을 거치면
 각 단어가 <em>다른</em> 단어의 Key와 더 잘 맞게 되어 “이웃 우선”
 헤드가 된다:</p>
@@ -269,7 +269,7 @@ Key 차원“이라는 사실의 설계적 귀결이기도 하다 — \(d_k\)를
 </thead>
 <tbody>
 <tr><td>A (자기)</td><td>\(I\)</td><td>(0.670, 0.330) / (0.330, 0.670)</td><td>각 단어가 <strong>자기 자신</strong>에 67%</td></tr>
-<tr><td>B (이웃)</td><td>\(\begin{pmatrix}0&amp;1\1&amp;0\end{pmatrix}\)</td><td>(0.330, 0.670) / (0.670, 0.330)</td><td>각 단어가 <strong>다른 단어</strong>에 67%</td></tr>
+<tr><td>B (이웃)</td><td>\(\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}\)</td><td>(0.330, 0.670) / (0.670, 0.330)</td><td>각 단어가 <strong>다른 단어</strong>에 67%</td></tr>
 </tbody>
 </table>
 </div>
@@ -301,7 +301,7 @@ h개 헤드의 정보가 다시 하나의 벡터로 <strong>재혼합</strong>�
 단어 2도 = \([1.0, 1.0]\) — <strong>두 단어의 출력이 정확히
 같아진다!</strong> 미러였던 두 관점이 합산되는 순간 “이 단어와 저
 단어가 다르다“는 정보가 <em>소거</em>된 것이다. 이어붙임은 각 헤드
-출력을 **서로 다른 차원(부분공간)**에 두어 이런 소거를 막고,
+출력을 <strong>서로 다른 차원(부분공간</strong>)에 두어 이런 소거를 막고,
 \(W_O\)가 “출력 차원 j는 i번째 헤드의 몇번째 성분을 얼마
 신뢰할지“를 결정하게 한다 — 즉 “관점의 조합“을 다음 층(피드
 포워드로)이 결정하도록 자유도를 남겨둔다. (실제 학습된
@@ -327,15 +327,15 @@ Q=K=V로 self-attention — 12.2절의 “자기 주입” 효과(자기
 <p><strong>역사: 헤드들이 정말로 “역할을 나눈다“는 것은 관측된 사실인가?</strong>
 네 — “인터프리테이빌리티”<sup class="footnote-reference" id="fr-bertinterpretability-1"><a href="#footnote-bertinterpretability">3</a></sup> 연구로 실제로 확인된 바 있다. 2018년
 Clark·Khandelwal·Levy·Manning의 “What does BERT look at?”<sup class="footnote-reference" id="fr-bertbert-1"><a href="#footnote-bertbert">4</a></sup>
-연구는 BERT의 어텐션 헤드를 하나씩 분석했는데, (1) <strong>바로 앞
+연구는 BERT<sup class="footnote-reference" id="fr-bert-1"><a href="#footnote-bert">5</a></sup>의 어텐션 헤드를 하나씩 분석했는데, (1) <strong>바로 앞
 단어만</strong> 보는 “위치 헤드”, (2) <strong>같은 품사</strong>의 단어끼리 집중하는
-헤드, (3) **문법적 통사(주어-구문)**를 추적하는 헤드가 각각
+헤드, (3) <strong>문법적 통사(주어-구문</strong>)를 추적하는 헤드가 각각
 분명히 존재함을 보였다 — 이번 절 도입부가 “경향이 관찰된다“고
 한 것이 바로 이런 관측들이다. 부수적 결과도 있다: 헤드의 50~60%
 를 <em>임의</em>로 제거해도 성능 저하가 매우 작다 — 역할 분화는 실제로
-있으면서도, 헤드끼리 **여분(여분, redundancy)**이 크다는 뜻.
+있으면서도, 헤드끼리 <strong>여분(여분, redundancy</strong>)이 크다는 뜻.
 (이 “여분” 때문에 추론 속도를 내기 위한 헤드 프루닝(head
-pruning)이 실무 기법으로 쓰인다<sup class="footnote-reference" id="fr-heads16-1"><a href="#footnote-heads16">5</a></sup>. 다만 주의: <em>어떤</em> 헤드가
+pruning)이 실무 기법으로 쓰인다<sup class="footnote-reference" id="fr-heads16-1"><a href="#footnote-heads16">6</a></sup>. 다만 주의: <em>어떤</em> 헤드가
 <em>어떤</em> 역할을 맡는가는 학습 run마다 달라 — “이런 종류의 역할이
 존재한다“가 안정적이지, “3번 헤드가 대명사 담당이다“는 아니다.)</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_bertbert.png" alt="BERT 어텐션 헤드의 역할 분화 (원 논문 Figure 5) — “What Does BERT Look At?“에서 분석한 헤드의 어텐션 분포: 특정 헤드들은 인접 토큰이나 품사가 같은 토큰, 통사 구조적으로 연결된 토큰(주어-동사, 대명사-선행사)에 집중하는 패턴이 관측된다."><span class="img-wrapper"><img src="../../images/ref_bertbert.png" alt="BERT 어텐션 헤드의 역할 분화 (원 논문 Figure 5) — “What Does BERT Look At?“에서 분석한 헤드의 어텐션 분포: 특정 헤드들은 인접 토큰이나 품사가 같은 토큰, 통사 구조적으로 연결된 토큰(주어-동사, 대명사-선행사)에 집중하는 패턴이 관측된다."></span></label></p>
@@ -347,7 +347,7 @@ BLEU가 약 1점 떨어진다(EN-DE 24.16 → 23.48, EN-FR 38.19 →
 것이다. 헤드당 차원(\(d_k = d_{model}/h\))이 너무 작아지면
 (예: \(d_{model}=512, h=32\)이면 \(d_k=16\)) 각 헤드의
 “관점 공간“이 역할을 담기엔 너무 얇아져 이득이 사라진다. 현재
-대형 LLM(GPT<sup class="footnote-reference" id="fr-gpt-1"><a href="#footnote-gpt">6</a></sup>, LLaMA<sup class="footnote-reference" id="fr-llama-1"><a href="#footnote-llama">7</a></sup> 등)은 헤드를 수십~100개 이상 쓰지만,
+대형 LLM(GPT<sup class="footnote-reference" id="fr-gpt-1"><a href="#footnote-gpt">7</a></sup>, LLaMA<sup class="footnote-reference" id="fr-llama-1"><a href="#footnote-llama">8</a></sup> 등)은 헤드를 수십~100개 이상 쓰지만,
 \(d_{model}\)이 4096~8192로 <em>비례</em>로 커진 덕분이며,
 <strong>헤드당 차원은 여전히 64~128 부근</strong> — 2017년 설계가 그대로
 살아 있는 값이다.</p>
@@ -469,7 +469,7 @@ PE를 넣자 같은 문장에서 “쫓는다“의 가중치 행이 (0.187, 0.0
 하는 일이다(실습 노트북 실험 4).</p>
 <h3 id="보너스-masked-attention--디코더는-왜-왼쪽만-보는가"><a class="header" href="#보너스-masked-attention--디코더는-왜-왼쪽만-보는가">보너스: Masked Attention — 디코더는 왜 “왼쪽만” 보는가</a></h3>
 <p>트랜스포머의 전체 구성에 필요한 조각이 하나 더 있다 — 어텐션
-점수 행렬에 **마스크(mask)**를 하는 것. 디코더가 \(t\)번째
+점수 행렬에 <strong>마스크(mask</strong>)를 하는 것. 디코더가 \(t\)번째
 단어를 <em>만드는</em> 순간, \((t+1)\)번째 이후(“미래”)의 정보를
 <em>보아서는 안 된다</em> — 실제 생성(추론) 시점엔 미래가 아직 존재
 하지 않으므로, 학습 때만 미래를 보고 훈련하면 <em>학습과 추론이
@@ -500,10 +500,10 @@ LLM의 자기회귀(autoregressive) 생성은 정확히 이 메커니즘 위에
 attention“이라 불리는 이유).</p>
 <h3 id="전체-트랜스포머-블록-지금까지의-조각을-조립하면"><a class="header" href="#전체-트랜스포머-블록-지금까지의-조각을-조립하면">전체 트랜스포머 블록: 지금까지의 조각을 조립하면</a></h3>
 <p>12.1~12.3의 조각(Q/K/V 투영, scaled dot-product, self/multi-head,
-PE, causal mask)을 조립하면, **트랜스포머 블록(transformer
-block)**이 완성된다:</p>
+PE, causal mask)을 조립하면, <strong>트랜스포머 블록(transformer
+block</strong>)이 완성된다:</p>
 <ol>
-<li><strong>multi-head self-attention</strong> (+ 잔차 연결, layer norm<sup class="footnote-reference" id="fr-layernorm-1"><a href="#footnote-layernorm">8</a></sup>)</li>
+<li><strong>multi-head self-attention</strong> (+ 잔차 연결, layer norm<sup class="footnote-reference" id="fr-layernorm-1"><a href="#footnote-layernorm">9</a></sup>)</li>
 <li><strong>position-wise feed-forward network</strong>: 각 위치의 벡터를 <em>독립적으로</em>
 2층 MLP(\(d_{model} \to 4\,d_{model} \to d_{model}\))에
 통과 (+ 잔차 연결, layer norm)</li>
@@ -512,7 +512,7 @@ block)**이 완성된다:</p>
 (masked self-attention + 인코더 출력에 대한 <em>cross</em>-attention을
 추가)을 6개 쌓는다. 두 가지 “왜?“를 짚자:</p>
 <ul>
-<li>**잔차 연결 \(y = x + F(x)\)은 10.2절의 ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">9</a></sup>**과 같은
+<li><strong>잔차 연결 \(y = x + F(x)\)은 10.2절의 ResNet[^resnet</strong>)과 같은
 구조다 — 여기서는 6~12층을 쌓아 그래디언트 경로가 길어지는
 상황에서 그 “단축로” 역할이 더 중요해진다(Chapter 11의
 소실 그래디언트 문제와 같은 맥락). layer norm은 ResNet의
@@ -527,9 +527,9 @@ self-attention은 <em>단어 <em>사이</em>의 정보를 섞는</em> 연산이�
 그 연산 자체는 <strong>선형</strong>이다(점수 \(QK^T\), 가중합
 \(AV\) 모두 선형 — Chapter 9.2의 “선형만으로는 접을 수
 없다” 기억하자). <em>섞은 결과</em>에 비선형 변환을 적용하는
-역할이 FFN의 몫이다. 즉 attention은 **“어떤 정보를, 어떤
-단어끼리, 얼마나 섞을지”**를, 그 뒤의 FFN은 **“섞인
-정보를 어떻게 <em>처리</em>할지”**를 담당한다 — 9장 이후
+역할이 FFN의 몫이다. 즉 attention은 <strong>“어떤 정보를, 어떤
+단어끼리, 얼마나 섞을지</strong>“를, 그 뒤의 FFN은 <strong>“섞인
+정보를 어떻게 <em>처리</em>할지</strong>“를 담당한다 — 9장 이후
 반복된 “선형 + 비선형” 논리의 또 다른 실체.</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch12_3_transformer_block.svg" alt="트랜스포머 인코더/디코더 블록 구조. 인코더 블록 = multi-head self-attention + position-wise FFN (각각에 Add&amp;Norm 잔차), 6회 쌓기. 디코더 블록 = masked self-attention + cross-attention(인코더 출력) + FFN, 6회 쌓기. 입력/출력 임베딩에 positional encoding이 더해지고, 디코더 출력은 linear + softmax로 토큰 확률 분포를 낸다"><span class="img-wrapper"><img src="../../images/ch12_3_transformer_block.svg" alt="트랜스포머 인코더/디코더 블록 구조. 인코더 블록 = multi-head self-attention + position-wise FFN (각각에 Add&amp;Norm 잔차), 6회 쌓기. 디코더 블록 = masked self-attention + cross-attention(인코더 출력) + FFN, 6회 쌓기. 입력/출력 임베딩에 positional encoding이 더해지고, 디코더 출력은 linear + softmax로 토큰 확률 분포를 낸다"></span></label></p>
@@ -561,7 +561,7 @@ self-attention은 <em>단어 <em>사이</em>의 정보를 섞는</em> 연산이�
 </tbody>
 </table>
 </div>
-<p>마지막 행이 앞 네 행의 **대가(trade-off)**다 — 병렬성과
+<p>마지막 행이 앞 네 행의 <strong>대가(trade-off</strong>)다 — 병렬성과
 경로 길이 이점을 <em>사면</em>, 그 대가로 (1) 제곱 계산량과 (2)
 “순서를 <em>스스로</em> 인코딩해야 하는” PE라는 명시적 장치 두 가지를
 받는다. RNN은 순서 정보를 <em>계산 구조 안에</em> 숨겼고(대가: 순차성</p>
@@ -591,8 +591,8 @@ d_k = d_v = 64\)일 때, (a) h개 헤드의 QKV 파라미터 총합
 <p><strong>3. (계산 — PE의 회전 성질)</strong> \(d_{model}=4\)의 1번 시계
 (\(\omega=1\))에 대해, \(PE(3)\)의 앞 2성분
 \((\sin 3, \cos 3) \approx (0.141, -0.990)\)에 회전행렬
-\(R(1) = \begin{pmatrix}\cos 1 &amp; \sin 1\ -\sin 1 &amp; \cos
-1\end{pmatrix} \approx \begin{pmatrix}0.540 &amp; 0.841\ -0.841 &amp;
+\(R(1) = \begin{pmatrix}\cos 1 &amp; \sin 1\\ -\sin 1 &amp; \cos
+1\end{pmatrix} \approx \begin{pmatrix}0.540 &amp; 0.841\\ -0.841 &amp;
 0.540\end{pmatrix}\)을 곱해 보라. 결과가 \(PE(4)\)의 앞
 2성분 \((\sin 4, \cos 4) \approx (-0.757, -0.654)\)와 일치
 하는지 확인하라. (이것이 \(PE_{(t+1)} = R(\omega)\,PE_{(t)}\)
@@ -615,7 +615,7 @@ RNN은 PE 같은 장치가 <em>불필요</em>했고 <em>왜</em> 어텐션에는
 길이(context length)에 어떤 제약을 주는지 다시 언급한다.</p>
 <p><strong>Q. Positional encoding은 왜 학습하지 않고 고정된 사인/코사인
 함수를 쓰나요?</strong> 학습 가능한 위치 임베딩을 쓰는 것도 가능하고 실제로
-쓰이지만(예: BERT<sup class="footnote-reference" id="fr-bert-1"><a href="#footnote-bert">14</a></sup>), 사인/코사인 기반 고정 인코딩은 학습 데이터에서 본
+쓰이지만(예: BERT<sup class="footnote-reference" id="fr-bert-2"><a href="#footnote-bert">5</a></sup>), 사인/코사인 기반 고정 인코딩은 학습 데이터에서 본
 적 없는 더 긴 문장에도 자연스럽게 확장된다는 장점이 있다 — 학습된
 위치 임베딩은 학습 때 본 최대 길이를 넘어서면 정의조차 안 되지만,
 수학 함수는 어떤 위치값에도 정의되기 때문이다.</p>
@@ -650,7 +650,7 @@ R^k PE_{(t)}\)) 덕분에 <em>상대</em> 거리 \(k\)가 <em>선형 도구</em>
 학습한 모델이 1000 길이를 보면, 512~1000 위치의 PE는 “정상
 숫자“이지만 <em>그 위치에서 어떻게 어텐션할지</em>는 학습 <em>부족</em>한
 영역이다 — 그래서 <em>실제</em> “장문 컨텍스트” LLM(LLaMA-2 4K, GPT-4
-128K 등)은 단순 PE 외삽이 <em>아니라</em> <em>추가 학습</em>(위치 보간<sup class="footnote-reference" id="fr-posinterpolation-1"><a href="#footnote-posinterpolation">15</a></sup>,
+128K 등)은 단순 PE 외삽이 <em>아니라</em> <em>추가 학습</em>(위치 보간<sup class="footnote-reference" id="fr-posinterpolation-1"><a href="#footnote-posinterpolation">14</a></sup>,
 컨텍스트 연장 미세조정 등)이 필요하다. “함수가 정의된다“와
 “동작이 학습된다“는 <em>서로 다른</em> 두 문장이다(Chapter 13에서
 다시).</p>
@@ -694,9 +694,9 @@ print(weights)  # 각 단어가 "자기 자신"에 더 높은 가중치를 줌
 이유를, “1번째 단어와 100번째 단어 사이의 경로 길이“라는 관점에서
 설명하라(Chapter 11의 BPTT와 비교).</p>
 <p><strong>3. (손유도, Tier C — 폴백 준비 대상)</strong> 단어 2개짜리 문장에 대해, 다음
-벡터가 주어졌다: \(Q = \begin{pmatrix}1 &amp; 0\ 0 &amp; 1\end{pmatrix}\),
-\(K = \begin{pmatrix}1 &amp; 1\ 1 &amp; 0\end{pmatrix}\), \(V =
-\begin{pmatrix}5 &amp; 0\ 0 &amp; 5\end{pmatrix}\)(\(d_k=2\)).</p>
+벡터가 주어졌다: \(Q = \begin{pmatrix}1 &amp; 0\\ 0 &amp; 1\end{pmatrix}\),
+\(K = \begin{pmatrix}1 &amp; 1\\ 1 &amp; 0\end{pmatrix}\), \(V =
+\begin{pmatrix}5 &amp; 0\\ 0 &amp; 5\end{pmatrix}\)(\(d_k=2\)).</p>
 <p>\(QK^T\)를 손으로 계산하고, \(\sqrt{d_k}\)로 나눈 뒤, 각 행에
 softmax를 적용해 어텐션 가중치 행렬을 구하고, 마지막으로 \(V\)와의
 가중합으로 최종 출력을 계산하라.</p>
@@ -775,6 +775,9 @@ Masked Attention“의 마스크를 이용해, (a) “softmax <em>이전</em>에
 <li id="footnote-bertbert">
 <p>Clark, K., Khandelwal, U., Levy, O., Manning, C. D. (2019). “What Does BERT Look At? An Analysis of BERT’s Attention.” BlackBoxNLP 2019. arXiv:1906.04341. <a href="#fr-bertbert-1">↩</a></p>
 </li>
+<li id="footnote-bert">
+<p>Devlin, J., Chang, M.-W., Lee, K., Toutanova, K. (2018). “BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.” arXiv:1810.04805. <a href="#fr-bert-1">↩</a> <a href="#fr-bert-2">↩2</a></p>
+</li>
 <li id="footnote-heads16">
 <p>Michel, P., Levy, O., Neubig, G. (2019). “Are Sixteen Heads Really Better than One?” ACL 2019. arXiv:1905.10650. <a href="#fr-heads16-1">↩</a></p>
 </li>
@@ -787,9 +790,6 @@ Masked Attention“의 마스크를 이용해, (a) “softmax <em>이전</em>에
 <li id="footnote-layernorm">
 <p>Ba, J. L., Kiros, J. R., Hinton, G. E. (2016). “Layer Normalization.” arXiv:1607.06450. <a href="#fr-layernorm-1">↩</a></p>
 </li>
-<li id="footnote-resnet">
-<p>He, K., Zhang, X., et al. (2015). “Deep Residual Learning for Image Recognition.” arXiv:1512.03385. <a href="#fr-resnet-1">↩</a></p>
-</li>
 <li id="footnote-batchnorm">
 <p>Ioffe, S., Szegedy, C. (2015). “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift.” arXiv:1502.03167. <a href="#fr-batchnorm-1">↩</a></p>
 </li>
@@ -801,9 +801,6 @@ Masked Attention“의 마스크를 이용해, (a) “softmax <em>이전</em>에
 </li>
 <li id="footnote-sparsetransformer">
 <p>Child, R., Gray, S., Radford, A., Sutskever, I. (2019). “Generating Long Sequences with Sparse Transformers.” arXiv:1904.10509. — O(n²) 어텐션 비용을 줄이기 위한 희소 어텐션(경량 희소 패턴, 로컬·글로벌 토큰)과 슬라이딩 윈도우 마스크를 제안한 논문. (같은 문제의 또 다른 대표적 접근: Longformer — Beltagy, I., Peters, M. E., Cohan, A. (2020). “Longformer: The Long-Document Transformer.” arXiv:2004.05150.) <a href="#fr-sparsetransformer-1">↩</a></p>
-</li>
-<li id="footnote-bert">
-<p>Devlin, J., Chang, M.-W., Lee, K., Toutanova, K. (2018). “BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.” arXiv:1810.04805. <a href="#fr-bert-1">↩</a></p>
 </li>
 <li id="footnote-posinterpolation">
 <p>Chen, S., Wong, S., Chen, L., Tian, Y. (2023). “Extending Context Window of Large Language Models via Positional Interpolation.” arXiv:2306.15595. <a href="#fr-posinterpolation-1">↩</a></p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -248,13 +248,14 @@ def gaussian_log_prob(action, mu, sigma):
 그 이유는 뒤의 “자주 하는 실수” 3번에서 열린다.</p>
 <h3 id="reacher-v5-상태-10차원-행동-2차원의-내면"><a class="header" href="#reacher-v5-상태-10차원-행동-2차원의-내면">Reacher-v5: “상태 10차원, 행동 2차원“의 내면</a></h3>
 <p>13.2절에서 Reacher의 공간 크기(상태 10, 행동 2)만 봤다면, 이번에는
-각 차원이 <em>무엇</em>인지 열어보자. <code>Reacher-v5</code>는 링크 길이가 <strong>0.1 m +
+각 차원이 <em>무엇</em>인지 열어보자. <code>Reacher-v5</code><sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">2</a></sup>는 링크 길이가
+<strong>0.1 m +
 0.11 m</strong>인 2관절 평면 로봇팔이다(팔 끝 fingertip는 팔꿈치 기준
 0.11 m 더 이어져, 완전히 쭉 펴면 <strong>0.21 m</strong>까지 닿는다). 과제는
 <strong>50스텝(실시간 1초, dt = 0.02 s)</strong> 안에 fingertip을 무작위로
 생성된 목표 지점에 붙이는 것이다:</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_reacher_task.svg" alt="Reacher-v5 상시도 — 원점에 고정된 어깨에서 0.1 m 링크(팔꿈치)와 0.11 m 링크(fingertip)가 뻗은 2관절 팔, 팔꿈치를 기준으로 -40도 접힌 자세. 빨강 별이 목표(반경 0.2 원 안의 무작위 지점), 녹색이 fingertip, 회색 화살표가 오차 벡터 fingertip−target. 하단 박스: 팔이 쭉 펴면 0.21 m라 목표(≤0.2 m)는 거의 항상 도달 가능하다는 13.1절 도달 가능 영역의 연결"><span class="img-wrapper"><img src="../../images/ch13_3_reacher_task.svg" alt="Reacher-v5 상시도 — 원점에 고정된 어깨에서 0.1 m 링크(팔꿈치)와 0.11 m 링크(fingertip)가 뻗은 2관절 팔, 팔꿈치를 기준으로 -40도 접힌 자세. 빨강 별이 목표(반경 0.2 원 안의 무작위 지점), 녹색이 fingertip, 회색 화살표가 오차 벡터 fingertip−target. 하단 박스: 팔이 쭉 펴면 0.21 m라 목표(≤0.2 m)는 거의 항상 도달 가능하다는 13.1절 도달 가능 영역의 연결"></span></label></p>
-<p>10차원 상태는 이렇게 놓여 있다(Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">2</a></sup> 소스 <code>reacher_v5.py</code>의
+<p>10차원 상태는 이렇게 놓여 있다(Gymnasium<sup class="footnote-reference" id="fr-gymnasium-2"><a href="#footnote-gymnasium">2</a></sup> 소스 <code>reacher_v5.py</code>의
 <code>_get_obs</code>):</p>
 <div class="table-wrapper">
 <table>
@@ -408,7 +409,7 @@ PPO 2만 스텝 후 — 확률적(샘플링 포함): -42.60 (학습 전) → -52
 제품이다.</strong> 학습 중에는 정책이 <em>다양한</em> 행동 집합을 샘플링해서
 정보 있는 데이터를 모아야 하므로, 엔트로피 보상이 의도적으로
 \(\sigma\)를 부풀리는 <em>것</em>이 맞다. 그러나 실물 로봇에 배포되는
-산출물은 **결정론적 신호 \(\mu(s)\)**다 — 로봇이 “σ=1인
+산출물은 <strong>결정론적 신호</strong> \(\mu(s)\)다 — 로봇이 “σ=1인
 정규분포에서 토크를 뽑아 클립한다“는 식으로 움직이는 일은
 없다. Chapter 2의 \(\varepsilon\)-greedy와 같은 구조를 다시
 보는 셈이다<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">7</a></sup>: 학습 중엔 \(\varepsilon &gt; 0\)로 탐색, 평가할 땐
@@ -526,7 +527,7 @@ CartPole처럼 <em>진짜</em> 종료(막대가 쓰러짐)가 있는 환경에�
 <p><strong>핵심 정리</strong>: 연속 정책은 각 행동 차원마다 가우시안의
 (μ, σ)를 출력하는 것, 로그 확률은 <em>밀도</em>의 로그(양수 가능)다.
 그 뒤의 모든 기계 — 로그미분 트릭, 클리핑, GAE — 는 그대로다.
-**배포 산출물은 결정론적 μ(s)**이고, 노이즈 있는 샘플은 학습의
+<strong>배포 산출물은 결정론적 μ(s)</strong>)이고, 노이즈 있는 샘플은 학습의
 <em>수단</em>이지 제품이 아니다 — 정책 평가는 μ로 한다. 로봇 과업에서
 PPO는 “환경 이름만 바뀐 같은 코드“이며, 손으로 만든 제어기는
 경쟁자가 아니라 <em>베이스라인</em>이다.</p>
@@ -571,7 +572,7 @@ Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
 <p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
 </li>
 <li id="footnote-gymnasium">
-<p>Towers, M. et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a></p>
+<p>Towers, M. et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a> <a href="#fr-gymnasium-2">↩2</a></p>
 </li>
 <li id="footnote-gae">
 <p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>

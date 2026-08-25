@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -225,7 +225,7 @@ def attention(Q, K, V, d_k):
 (V)들을 관련도만큼 섞은 결과“다. 3중 중첩 리스트 컴프리헨션이
 처음엔 눈에 거슬리겠지만, 각각 \(QK^T\) → \(\sqrt{d_k}\) 스케일 →
 softmax → \(V\) 가중합의 4단계를 그대로 번역한 것일 뿐이다(실전에서는
-이 4단계를 <code>numpy</code> 행렬 곱으로 한 줄씩 줄인다 — 실습 노트북에서
+이 4단계를 <code>numpy</code><sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">4</a></sup> 행렬 곱으로 한 줄씩 줄인다 — 실습 노트북에서
 확인).</p>
 <h3 id="softmax를-다시-볼-이유-차이를-증폭하는-함수"><a class="header" href="#softmax를-다시-볼-이유-차이를-증폭하는-함수">softmax를 다시 볼 이유: “차이“를 증폭하는 함수</a></h3>
 <p>어텐션의 핵심 연산이 softmax인데, 이 함수를 <strong>어텐션의 맥락</strong>에서
@@ -311,11 +311,11 @@ one-hot을 내뱉지만(실제로 \(\sigma(22) \approx 1 - 2.7 \times 10^{-10}\)
 실습 노트북에서 이 세 가지 스케일(1, \(\sqrt{d_k}\), \(d_k\))을
 같은 원점수에 적용해 가중치 분포를 나란히 비교한다.</p>
 <p><strong>“온도(temperature) 파라미터“로 본 스케일링.</strong> 위 논리를 더 일반적으로
-발표하면, 어텐션 원점수를 **온도 \(t\)**로 나눠
+발표하면, 어텐션 원점수를 <strong>온도</strong> \(t\)로 나눠
 \(\text{softmax}(s/t)\)로 적용하는 것이다. \(t\)가 크면 softmax의
 입력 차이가 작아져 가중치가 <strong>균등에 가까워지고</strong>(어디에도
-집중 못 함), \(t\)가 작으면 차이가 증폭되어 가중치가 **극단적
-(한 단어 독주)**이 된다. \(\sqrt{d_k}\) 스케일링은 “초기 무작위
+집중 못 함), \(t\)가 작으면 차이가 증폭되어 가중치가 <strong>극단적</strong>
+(한 단어 독주)이 된다. \(\sqrt{d_k}\) 스케일링은 “초기 무작위
 상태에서 원점수의 표준편차가 \(\sqrt{d_k}\)“라는 사실을 이용해
 <strong>\(t = \sqrt{d_k}\)라는 “정규” 온도</strong>를 선택한 것에 불과하다 —
 “무작위 내적은 표준편차 1인 값으로 환산하자“는 설계 원칙. 이
@@ -326,17 +326,17 @@ one-hot을 내뱉지만(실제로 \(\sigma(22) \approx 1 - 2.7 \times 10^{-10}\)
 <h3 id="실습-원점수가-2개뿐인-작은-예로-전체-흐름-손으로-따라가기"><a class="header" href="#실습-원점수가-2개뿐인-작은-예로-전체-흐름-손으로-따라가기">실습: 원점수가 2개뿐인 작은 예로 전체 흐름 손으로 따라가기</a></h3>
 <p>\(n=2, d_k=2\)인 아주 작은 예로, 4단계의 숫자가 실제로 어떻게 흐르는지
 한 번 손으로(또는 코드로) 따라가보자.</p>
-<p>\[Q = K = \begin{pmatrix} 1 &amp; 0 \ 0 &amp; 1 \end{pmatrix}, \qquad
-V = \begin{pmatrix} 10 &amp; 0 \ 0 &amp; 10 \end{pmatrix}\]</p>
+<p>\[Q = K = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{pmatrix}, \qquad
+V = \begin{pmatrix} 10 &amp; 0 \\ 0 &amp; 10 \end{pmatrix}\]</p>
 <p><strong>Step 1 — \(QK^T\).</strong> 행렬 곱을 직접 쓰면:</p>
-<p>\[QK^T = \begin{pmatrix} 1 &amp; 0 \ 0 &amp; 1 \end{pmatrix}
-\begin{pmatrix} 1 &amp; 0 \ 0 &amp; 1 \end{pmatrix}^T =
-\begin{pmatrix} 1 &amp; 0 \ 0 &amp; 1 \end{pmatrix}\]</p>
+<p>\[QK^T = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{pmatrix}
+\begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{pmatrix}^T =
+\begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{pmatrix}\]</p>
 <p>(Q가 항등행렬이므로 자기 자신의 전치를 곱해도 같은 결과. (1,1) 성분이
 \(1 \times 1 + 0 \times 0 = 1\), (1,2) 성분이 \(1 \times 0 + 0 \times 1
 = 0\), 대칭으로 나머지도 같다.)</p>
 <p><strong>Step 2 — \(\sqrt{d_k} = \sqrt{2} \approx 1.414\)로 나누기.</strong></p>
-<p>\[\frac{QK^T}{\sqrt{2}} = \begin{pmatrix} 0.707 &amp; 0 \ 0 &amp; 0.707
+<p>\[\frac{QK^T}{\sqrt{2}} = \begin{pmatrix} 0.707 &amp; 0 \\ 0 &amp; 0.707
 \end{pmatrix}\]</p>
 <p><strong>Step 3 — 첫 행 \([0.707, 0]\)에 softmax.</strong>
 \(e^{0.707} \approx 2.028\), \(e^{0} = 1\), 합 \(3.028\):</p>
@@ -357,8 +357,8 @@ p_2 = \frac{1}{3.028} \approx 0.330\]</p>
 <h3 id="어텐션-출력이-가중-평균인-것의-의미-항상-입력들의-볼록-내부에-있다"><a class="header" href="#어텐션-출력이-가중-평균인-것의-의미-항상-입력들의-볼록-내부에-있다">어텐션 출력이 “가중 평균“인 것의 의미: 항상 입력들의 볼록 내부에 있다</a></h3>
 <p>마지막 단계(가중합)가 <strong>가중치의 합이 1인 가중 평균</strong>이라는 사실은
 출력의 <em>범위</em>에 대해 강한 제약을 준다: 각 출력 \(o_i = \sum_j w_{ij}
-v_j\) (\(\sum_j w_{ij} = 1\), \(w_{ij} \ge 0\))는 **V의 원행들의
-볼록 결합(convex combination)**이므로, V의 원행들로 만드는
+v_j\) (\(\sum_j w_{ij} = 1\), \(w_{ij} \ge 0\))는 <strong>V의 원행들의
+볼록 결합</strong>(convex combination)이므로, V의 원행들로 만드는
 <strong>볼록 껍질(convex hull) 안에 항상 존재</strong>한다.</p>
 <p>앞 실습(네 단어 예시)의 숫자로 확인해보자. “동물“의 출력은
 \([2.898, 0.133, 0.010]\)인데, V의 원행(= E의 원행)들의 범위는
@@ -408,11 +408,11 @@ v_j\) (\(\sum_j w_{ij} = 1\), \(w_{ij} \ge 0\))는 **V의 원행들의
 “강아지가 고양이를 쫓는다“와 “고양이가 강아지를 쫓는다“가
 <em>같은</em> 어텐션 출력을 내는 것은, 이 순서 불변성의 <em>직접 결과</em>다.
 이 문제를 해결하는 <strong>positional encoding</strong>(각 단어의 임베딩에
-위치 정보를 더하는 고정된 사인/코사인 벡터<sup class="footnote-reference" id="fr-transformer-2"><a href="#footnote-transformer">1</a></sup> <sup class="footnote-reference" id="fr-posenc-1"><a href="#footnote-posenc">4</a></sup>)은 12.3절의 주제다 —
+위치 정보를 더하는 고정된 사인/코사인 벡터<sup class="footnote-reference" id="fr-transformer-2"><a href="#footnote-transformer">1</a></sup> <sup class="footnote-reference" id="fr-posenc-1"><a href="#footnote-posenc">5</a></sup>)은 12.3절의 주제다 —
 여기서는 “어텐션이 <em>순서를 모른다</em>“는 사실 자체를 기억해 두자.
 (왜 이 구분이 중요한지는 12.3절의 “자주 하는 실수” 섹션에서
 “positional encoding을 빼먹으면 어떨까“를 통해 다시 확인한다.
-이 주제를 더 깊이 다루는 자료: Stanford CS224N<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">5</a></sup>.)</p>
+이 주제를 더 깊이 다루는 자료: Stanford CS224N<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">6</a></sup>.)</p>
 <h3 id="실습-대명사-지시-관계를-어텐션-가중치로-시각화하기"><a class="header" href="#실습-대명사-지시-관계를-어텐션-가중치로-시각화하기">실습: 대명사 지시 관계를 어텐션 가중치로 시각화하기</a></h3>
 <p>이번 장 도입부의 “그 동물은 도로를 건너지 않았다, 그것은 지쳐 있었기
 때문이다” 문장을 아주 단순화해서, 네 단어 [동물, 도로, 건너지,
@@ -445,8 +445,8 @@ for w, row in zip(words, weights):
 softmax가 이 4.85 vs 0.52의 차이를 지수적으로 증폭(≈ \(e^{4.33}
 \approx 75\)배)해서 56% vs 0.7%의 가중치로 변환한 것이다. <strong>softmax
 이전 단계에서는 “동물“과 “도로“의 원점수 차이가 4.33</strong>이라는
-“절대적 크기“가 있고, **softmax 이후 단계에서는 “56배의 가중치
-비”**라는 “상대적 비율“이 있다 — 이 두 단계의 <em>스케일이 다른</em>
+“절대적 크기“가 있고, <strong>softmax 이후 단계에서는 “56배의 가중치
+비</strong>”라는 “상대적 비율”이 있다 — 이 두 단계의 <em>스케일이 다른</em>
 사실이, 앞 절에서 강조한 “softmax가 차이를 증폭한다“는 관찰의
 <em>구체적 수치</em>다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch12_2_attention_heatmap.svg" alt="네 단어 self-attention의 가중치 행렬(행 = Query 단어, 열 = Key 단어, 값 = 해당 가중치). “그것은” 행이 “동물” 열과 “그것은” 열에만 높은 값을, 나머지 행들은 대각선(자기 자신)에 집중된 모습. 대각선 위의 높은 값은 “각 단어는 기본적으로 자기 자신과 가장 관련 있다”(Q=K=V=self-attention의 자기 주입 효과)를, “그것은” 행의 “동물” 열 0.561은 대명사-선행사 관계를 보여줌."><span class="img-wrapper"><img src="../../images/ch12_2_attention_heatmap.svg" alt="네 단어 self-attention의 가중치 행렬(행 = Query 단어, 열 = Key 단어, 값 = 해당 가중치). “그것은” 행이 “동물” 열과 “그것은” 열에만 높은 값을, 나머지 행들은 대각선(자기 자신)에 집중된 모습. 대각선 위의 높은 값은 “각 단어는 기본적으로 자기 자신과 가장 관련 있다”(Q=K=V=self-attention의 자기 주입 효과)를, “그것은” 행의 “동물” 열 0.561은 대명사-선행사 관계를 보여줌."></span></label></p>
@@ -506,8 +506,8 @@ softmax가 이 4.85 vs 0.52의 차이를 지수적으로 증폭(≈ \(e^{4.33}
 <em>자신의</em> 작은 \(d_k, d_v\)를 가짐)의 직접적 전제 조건이 된다.</p>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
 <p><strong>1. (원점수 손 계산)</strong> \(n=3, d_k=2\)로,
-\(Q = \begin{pmatrix} 1 &amp; 0 \ 0 &amp; 1 \ 1 &amp; 1 \end{pmatrix}\),
-\(K = \begin{pmatrix} 1 &amp; 0 \ 1 &amp; 1 \ 0 &amp; 1 \end{pmatrix}\)
+\(Q = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \\ 1 &amp; 1 \end{pmatrix}\),
+\(K = \begin{pmatrix} 1 &amp; 0 \\ 1 &amp; 1 \\ 0 &amp; 1 \end{pmatrix}\)
 이다. \(QK^T\)를 구하고 (3,3) 성분과 (1,3) 성분을 지목한 뒤,
 \(\sqrt{2}\) 스케일링 후 3번째 행(\(Q\)의 세 번째 행이 모든 \(K\)에
 주는 원점수)을 softmax로 가중치로 변환하라. (힌트: \(Q\)의 3번째
@@ -553,7 +553,7 @@ V의 4개 원행들의 볼록 껍질 안에 있는지 확인하는 <em>단순한
 그렇지는 않다 — 학습된 모델의 어텐션 헤드를 실제로 들여다보면, 어떤
 헤드는 정확히 대명사-선행사 관계에 집중하지만, 다른 헤드는 그냥
 바로 이웃한 단어나 문장부호에 집중하는 등 사람이 보기에 “덜 해석
-가능한” 패턴을 학습하기도 한다<sup class="footnote-reference" id="fr-heads-1"><a href="#footnote-heads">6</a></sup> — 12.3절에서 배울 멀티헤드 구조가 바로
+가능한” 패턴을 학습하기도 한다<sup class="footnote-reference" id="fr-heads-1"><a href="#footnote-heads">7</a></sup> — 12.3절에서 배울 멀티헤드 구조가 바로
 이런 “서로 다른 역할을 가진 여러 헤드“를 병렬로 두는 이유다.</p>
 <p><strong>Q. softmax를 안 쓰고 그냥 내적값을 바로 가중치로 쓰면 안 되나요?</strong>
 내적값은 범위가 정해져 있지 않고(음수도 가능) 단어마다 스케일이 달라질
@@ -582,8 +582,8 @@ V의 4개 원행들의 볼록 껍질 안에 있는지 확인하는 <em>단순한
 (크로네커 델타 \(\delta_{ik}\)) — “내 확률 \(p_i\)가, <em>내</em> 원점수
 \(s_k\)를 <em>올리면</em> \(p_i(1 - p_k)\)만큼 <em>증가</em>하고, <em>다른</em>
 원점수 \(s_j (j \ne k)\)를 올리면 \(p_i p_j\)만큼 <em>감소</em>“한다.
-중요한 관찰: **\(p_i\)가 1에 가까우면(one-hot) \(1 - p_k
-\approx 1 - p_i \approx 0\)**이 되어 그 방향의 그래디언트가
+중요한 관찰: <strong>\(p_i\)가 1에 가까우면(one-hot)</strong> \(1 - p_k
+\approx 1 - p_i \approx 0\)이 되어 그 방향의 그래디언트가
 <em>사실상 0</em> — “이미 한 단어를 독점하면, 그 선택을 바꿀 학습
 신호가 거의 안 온다.” 이게 “softmax가 one-hot으로 붙으면
 <em>학습이 멈춘다</em>“는 앞 절 관찰의 <em>정확한 미분적</em> 근거다.
@@ -607,7 +607,7 @@ Cauchy-Schwarz 부등식 \(q_i \cdot q_j \le \|q_i\| \, \|q_j\|\)
 자신의</em> Value를 <em>기본적으로</em> 포함시켜, “이 단어의 <em>기존</em>
 정보가 <em>완전히</em> 사라지지 않고” <em>다른</em> 단어의 정보가
 <em>추가</em>되는 형태로 동작하게 해주는 것이, 학습 안정성에 <em>긍정적</em>
-이다. (이 “자기 주입 + 잔차” 조합이, 10.2절에서 본 ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">7</a></sup>의
+이다. (이 “자기 주입 + 잔차” 조합이, 10.2절에서 본 ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">8</a></sup>의
 \(y = F(x) + x\)와 <em>정신적으로</em> 닮아 있다 — “출력 = 입력의
 일부 + 새로운 정보” 패턴.)</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."><span class="img-wrapper"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."></span></label></p>
@@ -635,6 +635,9 @@ V 원행의 스케일이 <em>다르</em>면 출력 스케일도 <em>그</em> 스
 </li>
 <li id="footnote-luong">
 <p>Luong, M.-T., Pham, H., Manning, C. D. (2015). “Effective Approaches to Attention-based Neural Machine Translation.” ICLR 2016. arXiv:1508.04025. — additive/multiplicative/dot-product의 세 가지 어텐션 스코어링 방식을 제안한 논문으로, dot-product attention은 Transformer의 scaled dot-product attention의 직접적 전신이다. <a href="#fr-luong-1">↩</a></p>
+</li>
+<li id="footnote-numpy">
+<p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1">↩</a></p>
 </li>
 <li id="footnote-posenc">
 <p>Vaswani, A. et al. (2017)의 Transformer 원논문 Section 3.5 “Positional Encoding” — 어텐션이 순서에 불변이므로, sin/cos 함수의 다양한 주파수 합성으로 만든 고정 벡터를 각 단어의 임베딩에 더해 위치 정보를 주입하는 방식을 제안했다. <a href="#fr-posenc-1">↩</a></p>

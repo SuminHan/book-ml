@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -183,7 +183,7 @@
 <p>지난 절(9.1)에서 DQN의 손실함수는 지도학습의 회귀 손실과 <strong>형태가 똑같다</strong>는 것을
 보았지만, 핵심 차이는 하나였다 — <strong>“정답”(목표값)이 매 스텝 스스로 바뀌는 것</strong>.
 이 절은 그 문제를 본격적으로 해결하는 주전장이다. DQN을 가능하게 한 두 장치
-— **문제 1: 움직이는 목표 → 타겟 네트워크(이 절의 주제)**와 <strong>문제 2: 상관된
+— <strong>문제 1: 움직이는 목표 → 타겟 네트워크(이 절의 주제</strong>)와 <strong>문제 2: 상관된
 데이터 → 경험 재현(9.3절)</strong> — 중 첫 번째를 다룬다. 그리고 실습 실험을 통해
 “움직이는 목표“가 실제로 학습을 어떻게 변질시키는지를 숫자와 그래프로 확인하고,
 그 실험이 건져 올린 <strong>세 번째 문제(과대추정)의 실마리</strong>를 9.3절의
@@ -228,7 +228,7 @@ Q(s,a;\theta)\right)^2\right]\]</p>
 (미니배치 한 행에 대해, 예측은 스칼라로 단순화):</p>
 <p>\[\frac{\partial L}{\partial Q(s,a;\theta)} = 2\big(Q(s,a;\theta) -
 \underbrace{T}_{r + \gamma \max_{a’} Q(s’,a’;\theta^-),\ \theta\ \text{에 대해 상수}}\big)\]</p>
-<p>그래디언트가 정확히 **“갭을 줄이는 방향”**을 가리킨다 — 지도학습의
+<p>그래디언트가 정확히 <strong>“갭을 줄이는 방향</strong>“을 가리킨다 — 지도학습의
 회귀 손실 \((\hat{y} - y)^2\)과 동일한 형태다. (표 Q-learning과
 “한 스텝 갱신의 크기“가 어떻게 다른지 — 표는 목표 잔여의 \(\alpha\)
 배를 채우고, 신경망은 가중치를 \(lr\)만큼 옮긴다 — 은 9.1절의
@@ -364,8 +364,8 @@ def dqn_train(env, n_episodes, max_steps, batch_size=32, gamma=0.99,
 메모리도 배로 든다. <strong><code>capacity=10000</code></strong> — 재현 버퍼의 크기.
 일반적으로 클수록 좋다(9.3절에서 왜인지를 다룬다).</p>
 <p>이 루프의 한 줄 한 줄이 어느 장에서 왔는지 보면, DQN이 “새로운
-알고리즘“이 아니라 **Q-learning(Chapter 6) + 함수근사(9.1) + 두
-개의 안정화 장치(9.2·9.3)**의 조립체라는 것이 드러난다.</p>
+알고리즘“이 아니라 <strong>Q-learning(Chapter 6) + 함수근사(9.1) + 두
+개의 안정화 장치(9.2·9.3</strong>)의 조립체라는 것이 드러난다.</p>
 <h3 id="역사-오래된-목표는-dqn보다-오래된-아이디어"><a class="header" href="#역사-오래된-목표는-dqn보다-오래된-아이디어">역사: “오래된 목표“는 DQN보다 오래된 아이디어</a></h3>
 <p>“목표는 갱신 <em>직전</em>의 값으로 계산한다“는 규칙은 표 기반 TD
 업데이트부터 있었다. Chapter 6의 Q-learning 갱신:</p>
@@ -577,7 +577,7 @@ def compute_target(Q_net, next_states, r, done, gamma):
 <ul>
 <li>
 <p><strong><code>target_net = Q_net</code>로 “복사“하는 것.</strong> 이것은 두
-<em>이름</em>이 <strong>같은 객체</strong>를 가리키게 하는 **별칭(alias)**일 뿐,
+<em>이름</em>이 <strong>같은 객체</strong>를 가리키게 하는 <strong>별칭(alias</strong>)일 뿐,
 값의 복사가 아니다. \(\theta\)가 갱신되면 타겟은 <em>자동으로</em>
 같이 갱신되므로 — <strong>타겟 네트워크가 없는 것과 동일</strong>하다.
 <code>load_state_dict</code>는 값만 <em>별개의</em> 파라미터 객체로 복사한다.

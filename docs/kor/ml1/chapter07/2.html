@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -314,7 +314,7 @@ tree 4: test acc = 0.883
 <h3 id="검증-세트-없이도-일반화-성능을-가질-수-있다-oobout-of-bag"><a class="header" href="#검증-세트-없이도-일반화-성능을-가질-수-있다-oobout-of-bag">검증 세트 없이도 일반화 성능을 가질 수 있다: OOB(out-of-bag)</a></h3>
 <p>각 트리는 <strong>복원추출</strong>된 부트스트랩 샘플로 학습하는데, 복원추출은
 원본 샘플 중 약 37%를 자동으로 “한 번도 안 고른다”. 그 트리는 이 37%를
-<strong>보지 못한</strong>(out-of-bag, bag 밖의) 샘플이다. 이 트리들이 “그 트리가
+<strong>보지 못한</strong>(out-of-bag, bag 밖의)<sup class="footnote-reference" id="fr-oob-1"><a href="#footnote-oob">7</a></sup> 샘플이다. 이 트리들이 “그 트리가
 보지 못한” 샘플을 예측하게 하면, 학습을 마치자마자 <strong>새 데이터에 대한
 예측</strong>을 할 수 있다 — 별도 검증 세트를 떼어놓을 필요가 없다.</p>
 <pre><code class="language-python">rf = RandomForestClassifier(n_estimators=100, oob_score=True, random_state=0)
@@ -342,7 +342,7 @@ test score: 0.959
 <li>표준편차(오차막대)는 트리가 늘어날수록 <strong>줄어든다</strong> — “전문가“가
 많을수록 소수 의견에 흔들리지 않기 때문.</li>
 <li>여기서 정확도가 <strong>떨어지는 지점이 없다</strong> — 트리를 더 늘려도 과적합이
-오지 않는다(아래 GBDT<sup class="footnote-reference" id="fr-friedman2001-1"><a href="#footnote-friedman2001">7</a></sup> 비교 참조). 그래서 실전에서는 검증 성능이
+오지 않는다(아래 GBDT<sup class="footnote-reference" id="fr-friedman2001-1"><a href="#footnote-friedman2001">8</a></sup> 비교 참조). 그래서 실전에서는 검증 성능이
 “정체“되는 지점보다 여유를 두어(예: 100~300) 쓰는 편이 안전하다.</li>
 </ol>
 <h3 id="숲-전체가-어떤-특징을-보는가"><a class="header" href="#숲-전체가-어떤-특징을-보는가">숲 전체가 어떤 특징을 보는가</a></h3>
@@ -355,7 +355,7 @@ test score: 0.959
 (0.135), <code>mean concave points</code>(0.131) 순으로 중요하다. “worst(최악)”
 특징들이 상위권을 점한 것은, 실제 진단에서 “가장 나쁜 상태를 나타내는”
 특징이 가장 결정적이었음을 뜻한다. (단, 이 중요도는 <strong>상관관계에 편향</strong>될
-수 있다 — 7.3절의 SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">8</a></sup>이 이 한계를 보완하는 “예측 단위” 설명이다.)</p>
+수 있다 — 7.3절의 SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">9</a></sup>이 이 한계를 보완하는 “예측 단위” 설명이다.)</p>
 <h3 id="특징-무작위화의-효과-강한-특징이-루트를-독점하는가"><a class="header" href="#특징-무작위화의-효과-강한-특징이-루트를-독점하는가">특징 무작위화의 효과: “강한 특징“이 루트를 독점하는가</a></h3>
 <p>자주 묻는 질문 1번의 주장 — “강한 특징이 있으면 배깅만 쓴 트리들이
 모두 그 특징으로 루트를 나눠서 닮아간다” — 을 숫자로 확인하자. 배깅만
@@ -452,13 +452,16 @@ OOB 점수를 계산하고, 임계값을 튜닝할 때(Chapter 2.3) 쓰일 수 �
 <p>Bühlmann, P., Hüsler, J. (1997). “Bagging Predictors.” <em>The Annals of Statistics</em> 25(1), 47–68. — 배깅(bootstrap aggregating)의 원 논문. <a href="#fr-bagging-1">↩</a></p>
 </li>
 <li id="footnote-breiman2001">
-<p>Breiman, L. (2001). “Random Forests.” <em>Machine Learning</em> 45(1), 5–32. — 랜덤 포레스트의 원 논문. 배깅 + 특징 무작위화(각 분기에서 무작위 특징 하위집합)의 조합을 제안했다. <a href="#fr-breiman2001-1">↩</a></p>
+<p>Breiman, L. (2001). “Random Forests.” <em>Machine Learning</em> 45(1), 5–32. — 랜덤 포레스트의 원 논문. 배깅 + 특징 무작위화(각 분기에서 무작위 특징 하위집합)의 조합을 제안했다. <a href="#fr-breiman2001-1">↩</a> <a href="#fr-breiman2001-2">↩2</a></p>
 </li>
 <li id="footnote-scikitlearn">
 <p>Pedregosa, F. et al. (2012). “Scikit-learn: Machine Learning in Python.” arXiv:1201.0490. <a href="#fr-scikitlearn-1">↩</a></p>
 </li>
 <li id="footnote-breast_cancer">
 <p>scikit-learn <code>load_breast_cancer</code> 데이터셋 — 위스콘신 진단 유방암(Wisconsin Diagnostic Breast Cancer, WDBC)의 고전 데이터로, 유방 종양 세포 핵의 30개 수치 특징과 양성/악성 이분 라벨 569개. <a href="#fr-breast_cancer-1">↩</a></p>
+</li>
+<li id="footnote-oob">
+<p>OOB(out-of-bag) 검증은 랜덤 포레스트 원 논문(Breiman 2001, 위 <sup class="footnote-reference" id="fr-breiman2001-2"><a href="#footnote-breiman2001">4</a></sup>)에서 제시된 기법이다 — 각 부트스트랩 샘플에 포함되지 않은 약 37%의 샘플로 해당 트리의 일반화 성능을 학습 중 평가하는 방법이다. <a href="#fr-oob-1">↩</a></p>
 </li>
 <li id="footnote-friedman2001">
 <p>Friedman, J. H. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” <em>The Annals of Statistics</em> 29(5), 1189–1232. — GBDT(그라디언트 부스팅)의 원 논문. 이전 모델의 그라디언트(잔차)를 좇아 트리를 순차적으로 학습하는, 배깅 계열(랜덤 포레스트)과 다른 앙상블 방법이다. <a href="#fr-friedman2001-1">↩</a></p>

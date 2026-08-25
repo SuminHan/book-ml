@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -204,7 +204,7 @@
 선호하는 쪽(여기선 (a))의 확률을 끌어올리는 것이다. 13.1절의 언어
 모델 분포 \(P(x_1,\ldots,x_n)\)가 “그럴듯한 문장을 고르는 기준”
 이었다면, 정렬(alignment)은 그 기준을 “사람이 고를 문장” 쪽으로
-**재조정(reweighting)**하는 과정이다 — 새로운 능력(예: 수학 지식)을
+<strong>재조정(reweighting</strong>)하는 과정이다 — 새로운 능력(예: 수학 지식)을
 넣는 게 아니라, 이미 있는 능력의 <strong>선택 기준</strong>을 바꾼다는 점에
 주의하라.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_posttraining_pipeline.svg" alt="사전학습된 LM이 SFT(사람이 작성한 Q&amp;A 쌍)와 선호 데이터(두 답변 비교)를 거쳐 두 갈래로 나뉘는 그림. 한 갈래는 보상모델(Bradley-Terry) 학습 → RLHF(PPO) 경유, 다른 갈래는 DPO로 선호 데이터에서 정책 직접 학습 — 모두 “정렬된 모델“로 수렴. LoRA/PEFT(ΔW=BA)는 어느 단계든 적용 가능하고, RAG/에이전트는 추론 시점에 지식을 보완하는 별개의 경로"><span class="img-wrapper"><img src="../../images/ch13_3_posttraining_pipeline.svg" alt="사전학습된 LM이 SFT(사람이 작성한 Q&amp;A 쌍)와 선호 데이터(두 답변 비교)를 거쳐 두 갈래로 나뉘는 그림. 한 갈래는 보상모델(Bradley-Terry) 학습 → RLHF(PPO) 경유, 다른 갈래는 DPO로 선호 데이터에서 정책 직접 학습 — 모두 “정렬된 모델“로 수렴. LoRA/PEFT(ΔW=BA)는 어느 단계든 적용 가능하고, RAG/에이전트는 추론 시점에 지식을 보완하는 별개의 경로"></span></label></p>
@@ -250,7 +250,7 @@ Section 1에서 검증한다.)</p>
 아닌, “사람이 쓰지 않았을 것 같은” 더 나은 답변을 탐색하는 압력이
 없다. 학습 데이터에 없는 표현은 확률을 올릴 수 없고, 작성자가 쓴
 답변이 실제로 최선의 답변인지도 데이터가 말해준다. SFT는
-**모작(copy)**을 가르칠 뿐, **비판(비교)**을 가르치지 않는다.
+<strong>모작(copy</strong>)을 가르칠 뿐, <strong>비판(비교</strong>)을 가르치지 않는다.
 이 한계가 바로 다음 단계의 동기가 된다.</p>
 <h3 id="rlhf-작성-대신-비교로-보상모델을-학습한다"><a class="header" href="#rlhf-작성-대신-비교로-보상모델을-학습한다">RLHF: 작성 대신 비교로 보상모델을 학습한다</a></h3>
 <p><strong>RLHF</strong>(Reinforcement Learning from Human Feedback)<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">2</a></sup>는 다른 전략을
@@ -259,7 +259,6 @@ Section 1에서 검증한다.)</p>
 빠르다). 이 선호 데이터로 <strong>보상모델</strong>(Reward Model)을 학습시킨 뒤, 그
 보상모델의 점수를 최대화하도록 언어모델 자체를 조정한다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><strong>1단계 — 보상모델 학습</strong>: 같은 질문 \(x\)에 대해 모델이 만든 두 답변
 \(y_w\)(사람이 더 선호한 쪽, winner)와 \(y_l\)(덜 선호한 쪽,
 loser)이 있을 때, 보상모델 \(r_\phi(x,y)\)가 \(y_w\)에 더 높은
@@ -352,6 +351,7 @@ margin이 불변이므로 BT 손실도 불변이다 — 보상모델의 점수�
 신경망을 결합한 DQN(Deep Q-Network)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">3</a></sup> 등이 있다)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>으로 언어모델의 파라미터를 조정한다. 이때
 가장 널리 쓰이는 알고리즘이 <strong>PPO</strong>(Proximal Policy Optimization)<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">5</a></sup>다.
 자세한 유도는 ML2에서 다루지만, 여기서는 목적함수의 형태만 짚어본다:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p>\[J(\theta) = \mathbb{E}\left[r_\phi(x,y)\right] - \beta \, D_{KL}\big(\pi_\theta(\cdot|x) \,\|\, \pi_{\text{ref}}(\cdot|x)\big)\]</p>
 <p><strong>왜 “토큰 하나씩“이 강화학습인가.</strong> 답변 생성은 13.1절의 시퀀스
 모델링과 같지만, <strong>목표 함수의 관점</strong>에서는 전혀 다른 문제다.
@@ -362,7 +362,7 @@ SFT에서는 정답 토큰이 주어지므로 각 토큰의 손실을 <strong>�
 가르는 것(credit assignment)은 강화학습이 존재하는 이유다.
 13.2절의 chain-of-thought<sup class="footnote-reference" id="fr-cot-1"><a href="#footnote-cot">6</a></sup>와 대비해보자 — CoT는 “중간 결과를
 출력물에 써서” 다음 토큰 예측의 <strong>조건</strong>으로 쓴 것이고, RLHF는
-“출력 전체의 보상을** 출력 경로의 확률(로그-우도)에 비례해
+“출력 전체의 보상을 출력 경로의 확률(로그-우도)에 비례해
 분배“하는 <strong>역방향</strong> 문제다. 두 기법 모두 “중간 결과를 조건으로
 쓴다“는 구조를 활용하지만, CoT는 <em>추론 시점</em>에서 조건을
 직접 공급하는 반면 RLHF는 <em>학습 시점</em>에서 보상을
@@ -426,9 +426,9 @@ SFT에서는 정답 토큰이 주어지므로 각 토큰의 손실을 <strong>�
 계산·그려 확인한다.)</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_3_reward_hacking.svg" alt="KL 페널티 강도 β=0/1/10/100일 때 보상 해킹 장난감 문제의 최적 q와 진짜 가치 V(q). β=0에서는 q*=2.00까지 밀려나 V(2.00)=−8.00 (보상 해킹), β=100에서는 q*=0.52로 동결 (V=+0.23), 진짜 최대는 q=1/3 (V=+0.67)로 β가 커질수록 진짜 가치도 함께 높아지는 트레이드오프"><span class="img-wrapper"><img src="../../images/ch13_3_reward_hacking.svg" alt="KL 페널티 강도 β=0/1/10/100일 때 보상 해킹 장난감 문제의 최적 q와 진짜 가치 V(q). β=0에서는 q*=2.00까지 밀려나 V(2.00)=−8.00 (보상 해킹), β=100에서는 q*=0.52로 동결 (V=+0.23), 진짜 최대는 q=1/3 (V=+0.67)로 β가 커질수록 진짜 가치도 함께 높아지는 트레이드오프"></span></label></p>
 <p><strong>역사: PPO는 어디서 왔나.</strong> PPO는 원래 LLM 정렬을 위해 발명된
-알고리즘이 아니다. 2017년 OpenAI가 발표한 PPO는 **로봇 제어
-(인공신경망 정책 + 연속 행동)**에서 “정책 업데이트를 한 번에
-크게 하지 마라“는 안전 장치를 **클리핑(clipping)**이라는 단순한
+알고리즘이 아니다. 2017년 OpenAI가 발표한 PPO는 <strong>로봇 제어
+(인공신경망 정책 + 연속 행동</strong>)에서 “정책 업데이트를 한 번에
+크게 하지 마라“는 안전 장치를 <strong>클리핑(clipping</strong>)이라는 단순한
 수단으로 구현한 것이었다 — 업데이트 후의 정책이 이전 정책의
 \(\tfrac{\pi_\theta}{\pi_{\text{old}}} \in [1-\epsilon,
 1+\epsilon]\)(보통 \(\epsilon = 0.2\))을 벗어나면 그 영역에서
@@ -477,7 +477,7 @@ RLHF 목적함수 \(J(\theta) = \mathbb{E}[r] - \beta D_{KL}\)를
 <ul>
 <li>\beta \log Z(x)\]</li>
 </ul>
-<p>로 **역산(inversion)**된다 — “RLHF에서 최적 정책과 보상함수는
+<p>로 <strong>역산(inversion</strong>)된다 — “RLHF에서 최적 정책과 보상함수는
 서로의 변환“이라는 관계다. 이 \(r\)을 BT 손실에 대입하면,
 \(\beta \log Z(x)\)가 \(y_w\), \(y_l\) <strong>둘에 공통</strong>으로
 들어와 차이를 취하면서 <strong>소거</strong>된다 — 결과적으로 \(Z(x)\)를
@@ -539,7 +539,7 @@ Chapter 10.3의 “합성곱 층을 고정하고 분류층만 학습“하는 �
 저차원 보정치만 추가로 학습“한다는 점이 다르다.</p>
 <p><strong>“저차원“이 왜 충분한가 — SVD로 숫자를 보자.</strong> LoRA의 가설은
 “파인튜닝이 가지는 <strong>효과적 변화</strong> \(\Delta W\)가 본래
-\(W\)의 전체 차원보다 **낮은 계수(rank)**를 가진다“는 것이다.
+\(W\)의 전체 차원보다 <strong>낮은 계수(rank</strong>)를 가진다“는 것이다.
 \(W \in \mathbb{R}^{20 \times 20}\)에 rank-4인 \(\Delta W\)를
 SVD로 분해해, 계수를 4/3/1로 줄여 <strong>근사</strong>하는 상대 오차를
 계산하면:</p>
@@ -562,7 +562,7 @@ SVD로 분해해, 계수를 4/3/1로 줄여 <strong>근사</strong>하는 상대
 “진짜 rank“를 넘는 순간 <strong>정보 손실</strong>이 불가피하기 때문이다.
 실제 LLM(\(4096 \times 4096\) 한 층, 약 \(1.7 \times 10^7\)
 파라미터)에서 \(r = 8\)이면 LoRA 파라미터는
-\(2 \times 4096 \times 8 = 65{,}536\) — **전체의 0.39%**에
+\(2 \times 4096 \times 8 = 65{,}536\) — <strong>전체의 0.39</strong>%에
 불과하다. “파라미터 수를 수백 분의 1로 줄인다“는 말이
 숫자로 읽히는 순간이다. (실제 실행은 실습 노트북 Section 5.)</p>
 <p><strong>왜 “모든 층에” 작은 보정인가.</strong> Chapter 10.3의 전이학습은
@@ -624,7 +624,7 @@ SVD로 분해해, 계수를 4/3/1로 줄여 <strong>근사</strong>하는 상대
 </tbody>
 </table>
 </div>
-<p>**LoRA와 RAG/에이전트의 “계층”**도 구분하자. LoRA는 <strong>학습 단계</strong>
+<p><strong>LoRA와 RAG/에이전트의 “계층</strong>“도 구분하자. LoRA는 <strong>학습 단계</strong>
 의 효율화(어느 파인튜닝 단계든 적용 가능), RAG/에이전트는 <strong>추론
 단계</strong>의 지식 보완(학습 없이 컨텍스트에 넣음)이다 — 둘을 <strong>동시에</strong>
 쓰는 것이 실무 표준이다. “LoRA로 파인튜닝한 모델 + RAG로 최신

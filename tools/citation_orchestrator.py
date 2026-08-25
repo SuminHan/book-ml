@@ -139,11 +139,12 @@ def all_files():
 CITED_MARKER = "batch_logs cite-done marker"  # unused, status comes from log_info()
 
 
-def build_queue(retry_counts):
+def build_queue(retry_counts, done_ids):
     items = all_files()
     running = gpd.running_task_ids()
     return [it for it in items
-            if retry_counts.get(it["task_id"], 0) < MAX_ATTEMPTS
+            if it["task_id"] not in done_ids
+            and retry_counts.get(it["task_id"], 0) < MAX_ATTEMPTS
             and it["task_id"] not in running]
 
 
@@ -175,7 +176,7 @@ def run_task(it):
     return result
 
 
-def worker(q, retry_counts):
+def worker(q, retry_counts, done_ids):
     while True:
         item = q.get()
         if item is None:
@@ -186,6 +187,7 @@ def worker(q, retry_counts):
             with log_lock:
                 if result == "done":
                     retry_counts.pop(item["task_id"], None)
+                    done_ids.add(item["task_id"])  # never requeue a task that already succeeded
                 else:
                     retry_counts[item["task_id"]] = retry_counts.get(item["task_id"], 0) + 1
         except Exception as e:
@@ -193,15 +195,15 @@ def worker(q, retry_counts):
         q.task_done()
 
 
-def run_round(round_num, retry_counts):
-    tasks = build_queue(retry_counts)
+def run_round(round_num, retry_counts, done_ids):
+    tasks = build_queue(retry_counts, done_ids)
     if not tasks:
         return False
     print(f"[citation] round {round_num}: {len(tasks)} file(s) queued (concurrency={CONCURRENCY})", flush=True)
     q = Queue()
     for it in tasks:
         q.put(it)
-    threads = [threading.Thread(target=worker, args=(q, retry_counts), daemon=True) for _ in range(CONCURRENCY)]
+    threads = [threading.Thread(target=worker, args=(q, retry_counts, done_ids), daemon=True) for _ in range(CONCURRENCY)]
     for th in threads:
         th.start()
     q.join()
@@ -215,9 +217,14 @@ def run_round(round_num, retry_counts):
 
 def main():
     retry_counts = {}
+    done_ids = set()  # tasks that returned "done" -- fixes the old bug where a
+    # successful task's retry_count got popped back to 0 and looked eligible
+    # again next round, so the orchestrator just re-processed all 128 files
+    # forever instead of stopping. (Found this after it had been looping for
+    # ~24h since the previous day's resume.)
     round_num = 1
     while True:
-        progressed = run_round(round_num, retry_counts)
+        progressed = run_round(round_num, retry_counts, done_ids)
         if not progressed:
             print("[citation] all files done or stuck. Stopping.", flush=True)
             break

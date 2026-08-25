@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -181,12 +181,12 @@
                         <h1 id="73-gbdt와-shap"><a class="header" href="#73-gbdt와-shap">7.3 GBDT와 SHAP</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter07_3_gbdt_shap.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GBDT와 SHAP"></a></p>
 <p>7.2절의 랜덤 포레스트<sup class="footnote-reference" id="fr-randomforest-1"><a href="#footnote-randomforest">1</a></sup>가 “서로 독립적인 전문가 100명의 다수결“이었다면,
-<strong>GBDT</strong>는 전혀 다른 조직 방식의 전문가 그룹이다: <strong>선임이 실수를 남기면
+<strong>GBDT</strong><sup class="footnote-reference" id="fr-friedman2001-1"><a href="#footnote-friedman2001">2</a></sup>는 전혀 다른 조직 방식의 전문가 그룹이다: <strong>선임이 실수를 남기면
 다음 직원이 바로 그 실수를 고치는</strong> 순환 근무다. 이 절에서는 그 방식을
 정의하고, 7.2절 실습과 같은 데이터에서 정확도 비교를 해보고, GBDT가
 “더 강한 대신” 치르는 가격(과적합 취약성, early stopping)을 곡선으로
 본다. 후반부에서는 GBDT 같은 “수백 개의 트리가 얽힌 블랙박스“의 예측
-하나를 “각 특징이 얼마를 기여했는가“로 정확히 분해하는 도구, <strong>SHAP</strong><sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">2</a></sup>을
+하나를 “각 특징이 얼마를 기여했는가“로 정확히 분해하는 도구, <strong>SHAP</strong><sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">3</a></sup>을
 게임이론의 섀플리값(Shapley value)에서부터 실전 구현까지 다룬다.</p>
 <h3 id="트리를-더-강하게-gbdt"><a class="header" href="#트리를-더-강하게-gbdt">트리를 더 강하게: GBDT</a></h3>
 <p>랜덤 포레스트는 트리 여러 개를 <strong>독립적으로</strong> 만들고 다수결로 합쳤다.
@@ -213,13 +213,13 @@ F_{t-1}(x^{(i)})\)를 새로운 목표값으로 삼아, 그 잔차를 예측하�
 과적합하는 것을 막고 여러 트리가 조금씩 나눠서 학습하게 한다 — Chapter 2의
 경사하강법 학습률과 비슷한 역할이다. 실제로 “잔차를 향해 조금씩 이동한다“는 이
 과정은 함수 공간에서의 경사하강법으로 볼 수 있다(그래서 이름이 <strong>gradient</strong>
-boosting). XGBoost, LightGBM은 이 아이디어를 실무에서 쓸 수 있도록 극도로
+boosting). XGBoost<sup class="footnote-reference" id="fr-xgboost-1"><a href="#footnote-xgboost">4</a></sup>, LightGBM<sup class="footnote-reference" id="fr-lightgbm-1"><a href="#footnote-lightgbm">5</a></sup>은 이 아이디어를 실무에서 쓸 수 있도록 극도로
 최적화한 라이브러리이며, 지금도 정형(tabular) 데이터 대회(Kaggle 등)에서 가장
 자주 우승하는 축에 속한다.</p>
 <p>(실무 라이브러리들의 스텝 단위는 보통 “깊이 3~6짜리 작은 트리“인데, 아래
 1차원 실습처럼 스템(깊이 1)을 쓰기도 한다. 핵심은 “각 스텝이 잔차를 목표로
 작은 함수 하나를 추가한다“는 구조이며, 스텝의 크기는 하이퍼파라미터다.
-scikit-learn<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">3</a></sup>의 <code>GradientBoosting*</code> 계열은 이 단계별 예측을
+scikit-learn<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">6</a></sup>의 <code>GradientBoosting*</code> 계열은 이 단계별 예측을
 <code>staged_predict</code> 메서드로 돌려줄 수 있는데, 뒤의 “early stopping” 실습이
 그것을 써서 “몇 번째 트리에 멈추어야 하는지“를 직접 측정한다.)</p>
 <p>\(F_{t-1}\)이 이미 어느 정도 맞히고 있다면, 남은 오차(잔차)는 원래
@@ -281,36 +281,36 @@ GBDT는 “여러 트리의 <strong>연속 수정</strong>(correction)“이다 
 L\)와 <strong>구조가 완전히 같은</strong> 식이다. 차이점 하나만: 경사하강법은
 <strong>파라미터 공간</strong>에서 \(\theta\)를 옮기지만, GBDT는 <strong>함수 공간</strong>에서
 \(F\) 자체를 옮긴다. “함수를 파라미터로 가지는 모델을 경사하강으로
-학습한다“는 이 관점이 Friedman(2001)의 핵심 통찰이고, 이 관점 덕분에
+학습한다“는 이 관점이 Friedman(2001)<sup class="footnote-reference" id="fr-friedman2001-2"><a href="#footnote-friedman2001">2</a></sup>의 핵심 통찰이고, 이 관점 덕분에
 “잔차를 맞춰라“는 규칙이 제곱손실에만 국한되지 않는다 — 손실함수만
 미분가능하면, 그 손실의 기울기를 새로운 트리로 맞추면 된다(분류에서는
-이것을 로지스틱 손실의 기울기로 쓰면, 7.2절의 유방암<sup class="footnote-reference" id="fr-breast_cancer-1"><a href="#footnote-breast_cancer">4</a></sup> GBDT처럼
+이것을 로지스틱 손실의 기울기로 쓰면, 7.2절의 유방암<sup class="footnote-reference" id="fr-breast_cancer-1"><a href="#footnote-breast_cancer">7</a></sup> GBDT처럼
 <code>predict_proba</code>가 나오는 분류기가 만들어진다). “잔차를 쫓는 것“과
 “경사하강“은 회귀+제곱손실에서는 같은 말이니, 앞으로는 편의상 “잔차를
 쫓는다“고 말할 것이다.</p>
 <h3 id="역사-adaboost에서-xgboost까지"><a class="header" href="#역사-adaboost에서-xgboost까지">역사: AdaBoost에서 XGBoost까지</a></h3>
 <p>“모델을 순차적으로 추가한다“는 <strong>부스팅</strong>(boosting) 자체는 더 오래된
 아이디다. 1990년 Robert Schapire가 <strong>부스터</strong>(booster)라는 이름을 붙여
-소개했고, 1997년 Freund와 Schapire의 <strong>AdaBoost</strong>가 “틀린 샘플의 가중치를
+소개했고, 1997년 Freund와 Schapire의 <strong>AdaBoost</strong><sup class="footnote-reference" id="fr-adaboost-1"><a href="#footnote-adaboost">8</a></sup>가 “틀린 샘플의 가중치를
 올려서 다음 모델이 그쪽에 집중하게 하자“는 첫 실용 알고리즘을 만들었다.
 그러나 2001년 Jerome Friedman의 논문 “Greedy Function Approximation:
-A Gradient Boosting Machine”<sup class="footnote-reference" id="fr-friedman2001-1"><a href="#footnote-friedman2001">5</a></sup> 이전까지 부스팅은 “왜 이게 동작하는가“가
+A Gradient Boosting Machine”<sup class="footnote-reference" id="fr-friedman2001-3"><a href="#footnote-friedman2001">2</a></sup> 이전까지 부스팅은 “왜 이게 동작하는가“가
 분명하지 않은 경험적 트릭으로 취급되는 면이 있었다. Friedman이
 “부스팅은 함수 공간의 경사하강이다“라는 해석을 내놓으면서, 부스팅은
 “경사하강법의 일반화“라는 명확한 이론적 지위를 얻었고, 어떤 손실함수에
 든 적용할 수 있는 일반 공식으로 정리됐다 — 그 공식이 바로 앞 절의
 \(F_t = F_{t-1} - \eta g_t\)다.</p>
 <p>이론이 실무로 건너간 결정적 순간은 2016년 Tianqi Chen과 Carlos Guestrin의
-<strong>XGBoost</strong><sup class="footnote-reference" id="fr-xgboost-1"><a href="#footnote-xgboost">6</a></sup>다. Friedman의 공식에 <strong>이차 타원 전개</strong>(2차 미분까지 쓴
+<strong>XGBoost</strong><sup class="footnote-reference" id="fr-xgboost-2"><a href="#footnote-xgboost">4</a></sup>다. Friedman의 공식에 <strong>이차 타원 전개</strong>(2차 미분까지 쓴
 근사)와 <strong>정규화 항</strong>을 더하고, 분기 후보 탐색을 극도로 최적화한 XGBoost가
 2010년대 중후반 Kaggle 대회에서 정형 데이터 문제를 쓸어담으면서,
 “정형 데이터라면 먼저 GBDT를 돌려보라“가 업계의 기본 반사가 됐다.
-Microsoft의 <strong>LightGBM</strong>(2017)<sup class="footnote-reference" id="fr-lightgbm-1"><a href="#footnote-lightgbm">7</a></sup>은 거꾸로 “트리를 위에서 아래로 자란다“는
+Microsoft의 <strong>LightGBM</strong>(2017)<sup class="footnote-reference" id="fr-lightgbm-2"><a href="#footnote-lightgbm">5</a></sup>은 거꾸로 “트리를 위에서 아래로 자란다“는
 성장 전략과 큰 데이터에서 특징을 압축해서 보는 등으로 속도를 극대화했다.
 오늘날 scikit-learn의 <code>GradientBoosting*</code>도 Friedman의 원형을 그대로
-담고 있고, XGBoost/LightGBM/CatBoost<sup class="footnote-reference" id="fr-catboost-1"><a href="#footnote-catboost">8</a></sup>는 “더 빠르고, 더 튜닝이 편한
+담고 있고, XGBoost/LightGBM/CatBoost<sup class="footnote-reference" id="fr-catboost-1"><a href="#footnote-catboost">9</a></sup>는 “더 빠르고, 더 튜닝이 편한
 GBDT“의 세 주요 변주다. 이 절의 부스팅/트리 앙상블 주제를 더 깊이 보려면
-스탠포드 CS229 강의 노트의 boosting 관련 장도 참고할 만하다<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">9</a></sup>.</p>
+스탠포드 CS229 강의 노트의 boosting 관련 장도 참고할 만하다<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">10</a></sup>.</p>
 <h3 id="실습-sklearn-gbdt로-랜덤-포레스트와-비교하기"><a class="header" href="#실습-sklearn-gbdt로-랜덤-포레스트와-비교하기">실습: sklearn GBDT로 랜덤 포레스트와 비교하기</a></h3>
 <p>7.2절에서 쓴 유방암 데이터셋에 실제 GBDT를 돌려서, 랜덤 포레스트와
 성능을 직접 비교해보자:</p>
@@ -377,7 +377,7 @@ print(f"500단계까지 계속하면: train_MSE={train_mse[-1]:.3f}  test_MSE={t
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch07_gbdt_overfitting.svg" alt="500단계 GBDT의 train/test MSE 곡선 — train MSE는 계속 0.005까지 떨어지지만, test MSE는 10단계에서 최저(0.727)를 찍은 뒤 다시 올라 1.290까지 오른다. 회색 점선이 최저점 위치"><span class="img-wrapper"><img src="../../images/ch07_gbdt_overfitting.svg" alt="500단계 GBDT의 train/test MSE 곡선 — train MSE는 계속 0.005까지 떨어지지만, test MSE는 10단계에서 최저(0.727)를 찍은 뒤 다시 올라 1.290까지 오른다. 회색 점선이 최저점 위치"></span></label></p>
 <p>세 숫자가 전부 핵심이다. (1) <strong>train MSE는 0.005까지 계속 하락</strong>한다 —
 500개의 트리는 학습 데이터의 잡음 하나까지도 거의 완벽히 외워버렸다.
-(2) **test MSE는 10단계에서 최저(0.727)**를 찍고, (3) <strong>500단계까지
+(2) <strong>test MSE는 10단계에서 최저(0.727</strong>)를 찍고, (3) <strong>500단계까지
 계속하면 1.290까지 다시 오른다</strong> — 최저점 대비 <strong>약 두 배</strong>로 나빠진
 것이다. 즉 “더 오래 학습한 모델“이 정작 새 데이터에서는 <strong>최고점의
 절반 수준</strong>의 성능을 내버린 것이다.</p>
@@ -385,8 +385,8 @@ print(f"500단계까지 계속하면: train_MSE={train_mse[-1]:.3f}  test_MSE={t
 명확하다. 랜덤 포레스트의 101번째 트리는 학습 데이터 전체를 <strong>처음부터
 다시</strong> 보므로, 노이즈 샘플 하나에 흔들릴 수는 있지만 다른 트리의 노이즈
 오류를 “계속 따라잡아야” 할 의무는 없다 — 다수결이 노이즈를 희석한다.
-반면 GBDT의 101번째 트리는 앞 100개 트리의 **합이 아직 못 맞춘 것
-(= 학습 데이터의 노이즈 잔차)**을 <strong>의도적으로</strong> 목표로 삼는다. 트리가
+반면 GBDT의 101번째 트리는 앞 100개 트리의 <strong>합이 아직 못 맞춘 것
+(= 학습 데이터의 노이즈 잔차</strong>)을 <strong>의도적으로</strong> 목표로 삼는다. 트리가
 적당히 쌓이면, 잔차의 대부분이 이미 신호가 아니라 <strong>라벨링 노이즈</strong>가
 되는데, GBDT는 그 노이즈 잔차를 “다음 트리의 정당한 학습 목표“로
 받아들인다. “남의 실수를 고치는 직원이, 실수 중엔 실제로는 고칠
@@ -394,7 +394,7 @@ print(f"500단계까지 계속하면: train_MSE={train_mse[-1]:.3f}  test_MSE={t
 그래서 GBDT의 실무 규칙은 랜덤 포레스트와 다르다:</p>
 <ul>
 <li><code>n_estimators</code>는 랜덤 포레스트처럼 “많을수록(안정적으로) 좋다“가
-<strong>아니다</strong> — 검증 곡선의 **정점(최저 MSE)**을 찾아 거기서 멈추는
+<strong>아니다</strong> — 검증 곡선의 <strong>정점(최저 MSE</strong>)을 찾아 거기서 멈추는
 <strong>early stopping</strong>이 필수다(scikit-learn은 <code>validation_fraction</code>
 옵션으로 이 기능을 내장하고 있다).</li>
 <li><code>learning_rate</code>를 작게 하면(0.1 → 0.01) 각 스텝의 크기가 줄어 같은
@@ -486,7 +486,7 @@ GBDT의 경우, 각 트리의 분기 경로를 따라가면서 “특징 j가 �
 수 있어서, 랜덤 포레스트/GBDT에 한해서는 근사 없이도 정밀 섀플리값을
 구할 수 있다(<code>shap</code> 패키지의 <code>TreeExplainer</code>가 이것을 구현한다).
 신경망처럼 “경로“가 없는 모델에서는 퍼머테이션 또는 <strong>통합
-기대</strong>(KernelSHAP)<sup class="footnote-reference" id="fr-kernelshap-1"><a href="#footnote-kernelshap">10</a></sup> 같은 다른 근사가 쓰인다.</p>
+기대</strong>(KernelSHAP)<sup class="footnote-reference" id="fr-kernelshap-1"><a href="#footnote-kernelshap">11</a></sup> 같은 다른 근사가 쓰인다.</p>
 <h3 id="실습-실제-gbdt에-퍼머테이션-근사-shap"><a class="header" href="#실습-실제-gbdt에-퍼머테이션-근사-shap">실습: 실제 GBDT에 퍼머테이션 근사 SHAP</a></h3>
 <p>“특징 n개가 30개면 순서가 \(n!\)개“라는 문제를, 실제로 GBDT를
 학습하고 <strong>400개의 무작위 순서</strong>로 SHAP을 근사하는 실습으로
@@ -564,12 +564,12 @@ SHAP 값, 점의 색은 특징 값의 크기를 나타낸다:</p>
 “여기선 영향이 약하다” — <strong>부호 패턴(방향)</strong> — \(f_1\)은 특징값이
 클수록 \(\phi\)가 음의 방향으로 커지는(밀어내림) 경향, \(f_0\)은
 반대로 양의 방향 — 이 두 가지가 동시에 보인다. 이 summary 산점도는
-**“모델 전체”**의 특징 중요도+방향을 한 그림에 압축한 것으로,
+<strong>“모델 전체</strong>“의 특징 중요도+방향을 한 그림에 압축한 것으로,
 <code>feature_importances_</code>(7.1절의 지니 감소량)가 “특징의 <strong>사용 빈도</strong>“를
 보여주는 것과 달리, SHAP summary는 “특징의 <strong>예측에 대한 실제
 기여 방향과 크기</strong>“를 보여준다는 점에서 더 직접적이다.</p>
 <p>이 실습이 <code>shap</code> 패키지의 <code>shap.plots.waterfall</code> / <code>shap.plots.summary</code>
-가 하는 일을, 4개 특징의 작은 규모에서 numpy/scikit-learn만으로
+가 하는 일을, 4개 특징의 작은 규모에서 numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">12</a></sup>/scikit-learn만으로
 재현한 것이다. 실전(30개 특징, 유방암 데이터)에서는 <code>shap</code> 패키지의
 <code>TreeExplainer</code>를 쓰면 위에서 말한 “트리 구조를 이용한 정밀 계산“을
 자동으로 수행한다.</p>
@@ -626,7 +626,7 @@ SHAP 값이 \(+0.5\)로 반대 방향으로 기여할 수 있고, 이 둘을 비
 가산성(additivity) 성질이 보장하는 바다.</p>
 <p><strong>Q. GBDT의 <code>learning_rate</code>를 0.1에서 0.01로 바꾸면 뭐가 달라지나요?</strong>
 각 스텝의 크기가 1/10이 되므로, 같은 검증 성능에 도달하는 데
-약 10배 **더 많은 단계(트리)**가 필요하다. 이 변화가 좋은 이유:
+약 10배 <strong>더 많은 단계(트리</strong>)가 필요하다. 이 변화가 좋은 이유:
 (1) early stopping의 정점이 <strong>완만해져서</strong> 정확히 멈추는 단계가
 “10단계“처럼 극단적으로 일찍 오지 않는다, (2) 각 스텝이 작아
 <strong>한 트리의 과적합</strong>이 전체 모델에 미치는 영향이 줄어든다.
@@ -734,8 +734,17 @@ phi_B = (A-&gt;B에서 B의 기여 + B-&gt;A에서 B의 기여) / 2 = __________
 <li id="footnote-randomforest">
 <p>Breiman, L. (2001). “Random Forests.” Machine Learning 45(1), 5–32. DOI: 10.1023/A:1010933404324. — 랜덤 포레스트의 원 논문. <a href="#fr-randomforest-1">↩</a></p>
 </li>
+<li id="footnote-friedman2001">
+<p>Friedman, J. H. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” The Annals of Statistics 29(5), 1189–1232. — GBDT(그래디언트 부스팅)의 원 논문. <a href="#fr-friedman2001-1">↩</a> <a href="#fr-friedman2001-2">↩2</a> <a href="#fr-friedman2001-3">↩3</a></p>
+</li>
 <li id="footnote-shap">
 <p>Lundberg, S. M., Lee, S.-I. (2017). “A Unified Approach to Interpreting Model Predictions.” NeurIPS (NIPS) 2017. arXiv:1705.07874. <a href="#fr-shap-1">↩</a></p>
+</li>
+<li id="footnote-xgboost">
+<p>Chen, T., Guestrin, C. (2016). “XGBoost: A Scalable Tree Boosting System.” KDD 2016. arXiv:1603.02754. <a href="#fr-xgboost-1">↩</a> <a href="#fr-xgboost-2">↩2</a></p>
+</li>
+<li id="footnote-lightgbm">
+<p>Ke, G., Meng, Q., Finley, T., et al. (2017). “LightGBM: A Highly Efficient Gradient Boosting Decision Tree.” NeurIPS (NIPS) 2017. — LightGBM의 원 논문. <a href="#fr-lightgbm-1">↩</a> <a href="#fr-lightgbm-2">↩2</a></p>
 </li>
 <li id="footnote-scikitlearn">
 <p>Pedregosa, F. et al. (2012). “Scikit-learn: Machine Learning in Python.” arXiv:1201.0490. <a href="#fr-scikitlearn-1">↩</a></p>
@@ -743,14 +752,8 @@ phi_B = (A-&gt;B에서 B의 기여 + B-&gt;A에서 B의 기여) / 2 = __________
 <li id="footnote-breast_cancer">
 <p>scikit-learn <code>load_breast_cancer</code> 데이터셋 — 위스콘신 진단 유방암(Wisconsin Diagnostic Breast Cancer, WDBC)의 고전 데이터로, 유방 종양 세포 핵의 30개 수치 특징과 양성/악성 이분 라벨 569개. <a href="#fr-breast_cancer-1">↩</a></p>
 </li>
-<li id="footnote-friedman2001">
-<p>Friedman, J. H. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” The Annals of Statistics 29(5), 1189–1232. — GBDT(그래디언트 부스팅)의 원 논문. <a href="#fr-friedman2001-1">↩</a></p>
-</li>
-<li id="footnote-xgboost">
-<p>Chen, T., Guestrin, C. (2016). “XGBoost: A Scalable Tree Boosting System.” KDD 2016. arXiv:1603.02754. <a href="#fr-xgboost-1">↩</a></p>
-</li>
-<li id="footnote-lightgbm">
-<p>Ke, G., Meng, Q., Finley, T., et al. (2017). “LightGBM: A Highly Efficient Gradient Boosting Decision Tree.” NeurIPS (NIPS) 2017. — LightGBM의 원 논문. <a href="#fr-lightgbm-1">↩</a></p>
+<li id="footnote-adaboost">
+<p>Freund, Y., Schapire, R. E. (1995). “A Decision-Theoretic Generalization of On-line Learning and an Application to Boosting.” EuroCOLT 1995, 23–37. DOI: 10.1007/3-540-59119-2_166. — AdaBoost의 원 논문. <a href="#fr-adaboost-1">↩</a></p>
 </li>
 <li id="footnote-catboost">
 <p>Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., Gulin, A. (2018). “CatBoost: Unbiased Boosting with Categorical Features.” NeurIPS 2018. arXiv:1706.09516. <a href="#fr-catboost-1">↩</a></p>
@@ -760,6 +763,9 @@ phi_B = (A-&gt;B에서 B의 기여 + B-&gt;A에서 B의 기여) / 2 = __________
 </li>
 <li id="footnote-kernelshap">
 <p>Lundberg, S. M., Lee, S.-I. (2018). “From Local Explanations to Global Understanding with Explainable AI for Trees (SHAP).” ICML 2018 (PMLR 80). — KernelSHAP을 소개한 원 논문. <a href="#fr-kernelshap-1">↩</a></p>
+</li>
+<li id="footnote-numpy">
+<p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1">↩</a></p>
 </li>
 </ol>
 

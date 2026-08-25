@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -181,7 +181,7 @@
                         <h1 id="33-나이브베이즈-독립을-가정하고-차원의-저주를-피한다"><a class="header" href="#33-나이브베이즈-독립을-가정하고-차원의-저주를-피한다">3.3 나이브베이즈: 독립을 가정하고 차원의 저주를 피한다</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter03_3_naivebayes.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <h3 id="독립-가정으로-차원의-저주를-피하다"><a class="header" href="#독립-가정으로-차원의-저주를-피하다">독립 가정으로 차원의 저주를 피하다</a></h3>
-<p>GDA는 \(x\)가 저차원 연속값일 때는 잘 맞지만, 스팸 필터처럼 \(x\)가
+<p>GDA<sup class="footnote-reference" id="fr-gda-1"><a href="#footnote-gda">1</a></sup>는 \(x\)가 저차원 연속값일 때는 잘 맞지만, 스팸 필터처럼 \(x\)가
 “어휘 사전 크기(수만 개)만큼의 차원을 가진, 각 단어의 등장 여부” 같은
 고차원 데이터라면 공분산 행렬 \(\Sigma\)(어휘 크기 × 어휘 크기)를 추정하는
 것 자체가 감당이 안 된다. <strong>나이브베이즈</strong>(Naive Bayes)는 과감한 단순화로
@@ -254,7 +254,7 @@
 틀린다“는 점이 정확한 이해다.</p>
 <h3 id="간단한-역사-스펠링-수정기에서-스팸-필터까지"><a class="header" href="#간단한-역사-스펠링-수정기에서-스팸-필터까지">간단한 역사: 스펠링 수정기에서 스팸 필터까지</a></h3>
 <p>나이브베이즈가 “스팸 필터“로만 알려졌지만, 실용화 된 역사는 스팸보다
-한 세대 앞선다. 1980년대 후반~1990년대에 Peter Norvig<sup class="footnote-reference" id="fr-norvig-1"><a href="#footnote-norvig">1</a></sup>와 Peter
+한 세대 앞선다. 1980년대 후반~1990년대에 Peter Norvig<sup class="footnote-reference" id="fr-norvig-1"><a href="#footnote-norvig">2</a></sup>와 Peter
 Fellbaum 등 연구자들이 <strong>자동 스펠링 수정</strong>(spell correction)에
 나이브베이즈를 썼다 — “단어 하나가 틀려졌을 때, 원래 정답이 어떤
 단어였을 확률“을 \(P(\text{타자 오류}|\text{정답 단어}) P(\text{정답
@@ -263,7 +263,7 @@ Fellbaum 등 연구자들이 <strong>자동 스펠링 수정</strong>(spell corr
 등장 여부” 모델과 구조가 거의 동일하다(이 아이디어는 2.3절에서
 다룰 Viterbi 알고리즘의 전신이기도 하다).</p>
 <p>2002년, 이 책의 Chapter 3 도입부에서 소개한 폴 그레이엄(Paul Graham)이
-“A Plan for Spam”<sup class="footnote-reference" id="fr-planforspam-1"><a href="#footnote-planforspam">2</a></sup>에서 나이브베이즈 스팸 필터를 대중화했다. 그레이엄은
+“A Plan for Spam”<sup class="footnote-reference" id="fr-planforspam-1"><a href="#footnote-planforspam">3</a></sup>에서 나이브베이즈 스팸 필터를 대중화했다. 그레이엄은
 단순히 “나이브베이즈를 쓰자“는 것뿐 아니라, 스팸의 사전확률이 시간
 경과에 따라 변하는(1990년대엔 스팸이 30%였는데 2000년대엔 90%에
 다가갔다) 현실을 반영해 <strong>사전확률을 학습 데이터의 클래스 비율로
@@ -277,7 +277,7 @@ Fellbaum 등 연구자들이 <strong>자동 스펠링 수정</strong>(spell corr
 돌려보고, 그 정확도가 어느 정도인지부터 확인하라“는 실전 습관의
 출발점이다.</p>
 <h3 id="다항-vs-베르누이-독립-가정의-두-버전"><a class="header" href="#다항-vs-베르누이-독립-가정의-두-버전">다항 vs 베르누이: 독립 가정의 두 버전</a></h3>
-<p>위 코드는 각 단어가 **등장했는가(0/1)**만 세는 <strong>베르누이</strong>(Bernoulli)
+<p>위 코드는 각 단어가 <strong>등장했는가(0/1</strong>)만 세는 <strong>베르누이</strong>(Bernoulli)
 나이브베이즈다. 그런데 같은 독립 가정이라도 “단어가 몇 번 나왔는가”
 까지 세는 <strong>다항</strong>(Multinomial) 나이브베이즈가 있다:</p>
 <ul>
@@ -293,7 +293,7 @@ Fellbaum 등 연구자들이 <strong>자동 스펠링 수정</strong>(spell corr
 <p>둘 다 “클래스가 주어지면 단어들이 독립“이라는 같은 가정을 쓰지만,
 <strong>등장 여부(0/1) 모델</strong>이냐 <strong>등장 횟수(0,1,2,…) 모델</strong>이냐의
 차이일 뿐이다. 실전에서는 보통 다항이 더 잘 되는 경우가 많고
-(scikit-learn의 <code>MultinomialNB</code><sup class="footnote-reference" id="fr-scikit-learn-1"><a href="#footnote-scikit-learn">3</a></sup>), 이번 절 코드는 교육적으로 단순한
+(scikit-learn의 <code>MultinomialNB</code><sup class="footnote-reference" id="fr-scikit-learn-1"><a href="#footnote-scikit-learn">4</a></sup>), 이번 절 코드는 교육적으로 단순한
 베르누이 버전을 선택했다 — 둘 다 나이브베이즈의 “독립 가정 + 빈도
 추정” 구조를 공유하므로 핵심 논리는 동일하다.</p>
 <h3 id="실습-나이브베이즈-스팸-필터-구현"><a class="header" href="#실습-나이브베이즈-스팸-필터-구현">실습: 나이브베이즈 스팸 필터 구현</a></h3>
@@ -570,7 +570,7 @@ P(\text{회의}|\text{ham})\]</p>
 GDA가 특징 간 상관관계(공분산)까지 반영할 수 있어 더 유리할 수 있다 — “특징이
 많고 이산적인가, 적고 연속적인가“가 실전에서 둘 중 하나를 고르는 가장 빠른
 기준이다. 더 깊이 보려면: 스탠포드 CS229 노트의 생성적/판별적 분류
-섹션이 이 비교를 더 체계적으로 다룬다<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">4</a></sup>.</p>
+섹션이 이 비교를 더 체계적으로 다룬다<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">5</a></sup>.</p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 위 <code>train_naive_bayes</code>와 <code>classify</code>(핵심 줄은 빈칸으로 남겨져
@@ -671,10 +671,13 @@ P(x|y{=}0)P(y{=}0)} = \frac{1}{1 + e^{-z}} = \sigma(z)\]</p>
 <p><strong>정확성 확인 (정답)</strong>: \(\Sigma_0 \ne \Sigma_1\)이면 이차항
 \(\tfrac12 x^T (\Sigma_1^{-1} - \Sigma_0^{-1}) x\)가 사라지지 않고
 남아 \(z\)가 \(x\)의 <strong>이차식</strong>이 된다 — 결정 경계
-\(\{x : z = 0\}\)은 **원추곡선(타원·쌍곡선·파라볼라)**이
+\(\{x : z = 0\}\)은 <strong>원추곡선(타원·쌍곡선·파라볼라</strong>)이
 된다(이 QDA, Quadratic Discriminant Analysis).</p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-gda">
+<p>Ng, A. Y., Jordan, M. I. (2001). “On Discriminative vs. Generative Classifiers.” NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminant Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)과 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다. <a href="#fr-gda-1">↩</a></p>
+</li>
 <li id="footnote-norvig">
 <p>Norvig, P. (2007). “How to Write a Spelling Corrector.” https://norvig.com/spell-correct.html <a href="#fr-norvig-1">↩</a></p>
 </li>

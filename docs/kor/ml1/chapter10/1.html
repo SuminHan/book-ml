@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -218,7 +218,7 @@
 <p>\(i - j\)를 주목하라 — 커널이 입력과 곱해질 때 <strong>뒤집힌(flipped) 모습</strong>으로
 겹쳐진다. 그런데 위 <code>conv2d</code> 코드는 <code>image[i+di][j+dj] * kernel[di][dj]</code> —
 뒤집기 없이 그대로 곱한다. 신호처리 용어로 우리가 실제로 구현한 것은
-**상관(corrélation, correlation)**이고, “합성곱“이 아니다. 그런데도 딥러닝
+<strong>상관(corrélation, correlation</strong>)이고, “합성곱“이 아니다. 그런데도 딥러닝
 세계(PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">2</a></sup>·TensorFlow<sup class="footnote-reference" id="fr-tensorflow-1"><a href="#footnote-tensorflow">3</a></sup> 포함)는 이 연산을
 “convolution“이라고 부른다.</p>
 <p>왜 아무도 신경 쓰지 않는가? 세 가지 이유다. <strong>첫째, 필터의 값은 학습 대상
@@ -349,7 +349,7 @@ numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">5
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch10_1_padding_strides.svg" alt="같은 28×28 입력(흰 칸), 3×3 필터에 패딩 p와 스트라이드 s를 바꾸면 유효한 필터 시작 위치(틱)의 개수 — 즉 출력 크기 n_out — 가 어떻게 변하는지 1D로 그린 것. 위왼쪽 p=0,s=1 → 26개, 위오른쪽 p=1,s=1 → 28개(same padding), 아래왼쪽 p=0,s=2 → 13개, 아래오른쪽 p=1,s=2 → 14개. 회색 칸은 패딩"><span class="img-wrapper"><img src="../../images/ch10_1_padding_strides.svg" alt="같은 28×28 입력(흰 칸), 3×3 필터에 패딩 p와 스트라이드 s를 바꾸면 유효한 필터 시작 위치(틱)의 개수 — 즉 출력 크기 n_out — 가 어떻게 변하는지 1D로 그린 것. 위왼쪽 p=0,s=1 → 26개, 위오른쪽 p=1,s=1 → 28개(same padding), 아래왼쪽 p=0,s=2 → 13개, 아래오른쪽 p=1,s=2 → 14개. 회색 칸은 패딩"></span></label></p>
 <p>위 그림은 28×28, k=3을 1D로 줄여 네 가지 (p, s) 조합을 비교한 것이다. 회색
 칸이 패딩이고 흰 칸이 원래 입력이며, 각 틱(tick)은 유효한 필터 시작
-위치 하나씩이다 — **틱의 개수가 곧 \(n_{\text{out}}\)**이다. 네 경우의
+위치 하나씩이다 — <strong>틱의 개수가 곧</strong> \(n_{\text{out}}\)이다. 네 경우의
 숫자(26, 28, 13, 14)는 모두 공식
 \(\lfloor(28+2p-3)/s\rfloor+1\)으로 그대로 계산된다.</p>
 <h4 id="스트라이드-s2가-실제로-하는-일"><a class="header" href="#스트라이드-s2가-실제로-하는-일">스트라이드 s=2가 실제로 하는 일</a></h4>
@@ -420,8 +420,8 @@ numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">5
 최댓값은 conv 2다</strong>(165,888). FLOPs는 \(n_{\text{out}}^2\)에
 비례하는데, conv 2가 공간적으로 가장 크기(24×24) 때문이다 —
 conv 3은 채널이 2배지만 공간은 1/4(10×10)라 연산량은 오히려 적다.
-**파라미터는 “재고”(층당 고정 저장), FLOPs는 “유량”(출력 위치마다
-반복되는 계산)**이다 — 네트워크를 설계할 때 한쪽만 보고서는 안 된다.</li>
+<strong>파라미터는 “재고”(층당 고정 저장), FLOPs는 “유량”(출력 위치마다
+반복되는 계산</strong>)이다 — 네트워크를 설계할 때 한쪽만 보고서는 안 된다.</li>
 <li><strong>풀링은 파라미터가 0</strong>이고, 비용도 곱셈-덧셈이 아니라 <em>비교</em>(4개 중
 최댓값 찾기)다 — 보통 FLOPs 합계에서 무시할 만큼 작다(위 표에서는
 괄호로 따로 표기).</li>
@@ -533,7 +533,7 @@ MLP보다 이미지에서 항상 유리한 이유는 단순히 “파라미터�
 LeNet·AlexNet·VGG 시절에는 max pooling이 표준 다운샘플러였지만, ResNet
 이후 고해상도 네트워크에서는 <strong>stride-2 합성곱</strong>이 주류가 됐다 —
 다운샘플링 자체를 네트워크가 학습하게 하기 때문이다. 현대 네트워크는
-둘을 섞어 쓰는 경우가 많다.</p>
+둘을 섞어 쓰는 경우가 많다.<sup class="footnote-reference" id="fr-hrnet-1"><a href="#footnote-hrnet">11</a></sup></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."><span class="img-wrapper"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."></span></label></p>
 <p><strong>Q. FLOPs 공식에 bias의 “+1“이 없는데, 빠뜨린 것인가요?</strong> bias는
 출력 위치당 <strong>한 번만 더해지는</strong> 값이라, 그 비용은
@@ -551,7 +551,7 @@ LeNet·AlexNet·VGG 시절에는 max pooling이 표준 다운샘플러였지만,
 2p). <code>same</code>/<code>valid</code> 이름은 쓰지 않지만, p=(k−1)/2의 same padding
 트릭은 똑같이 동작한다. (참고: 26×26 입력에 또 p=0의 3×3을 쓰면 24×24 —
 짝수/홀수가 층을 지나며 바뀌지만, 이건 순수한 “크기 장부” 문제일 뿐
-오류가 아니다.)<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">11</a></sup></p>
+오류가 아니다.)<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">12</a></sup></p>
 <h3 id="확인-문제-숫자-네-개"><a class="header" href="#확인-문제-숫자-네-개">확인 문제: 숫자 네 개</a></h3>
 <ol>
 <li><strong>출력 크기.</strong> 56×56 입력, 3×3 필터, 패딩 1, 스트라이드 2일 때 출력
@@ -605,6 +605,9 @@ LeNet·AlexNet·VGG 시절에는 max pooling이 표준 다운샘플러였지만,
 </li>
 <li id="footnote-ingoresnet">
 <p>Szegedy, C., Liu, W., Jia, Y., Sermanet, P., Reed, S., Anguelov, D., Erhan, D., Vanhoucke, V., Rabinovich, A. (2014). “Going Deeper with Convolutions.” arXiv:1409.4842. — GoogLeNet의 원 논문. “inception” 모듈(여러 크기 필터의 병렬 조합)과 1×1 합성곱(채널 믹싱을 위한 경량 투영)을 이 논문에 의해 실전에 널리 퍼뜨렸다. <a href="#fr-ingoresnet-1">↩</a></p>
+</li>
+<li id="footnote-hrnet">
+<p>Wang, J., Sun, K., Cheng, T., et al. (2019). “Deep High-Resolution Representation Learning for Visual Recognition.” arXiv:1908.07919. — HRNet은 풀링로 내린 해상도를 다시 되살리는 구조 대신, 처음부터 끝까지 고해상도 특성을 유지하며 학습된다. 그래서 다운샘플링을 풀링이 아닌 스트라이드 합성곱으로 처리하는 것이 이 계열 고해상도 네트워크의 표준 관행이다. <a href="#fr-hrnet-1">↩</a></p>
 </li>
 <li id="footnote-cs230">
 <p>더 깊이 보려면: Stanford CS230: Deep Learning. https://cs230.stanford.edu/ — 이 절의 합성곱 출력 크기/패딩/스트라이드 “크기 장부“와 파라미터·FLOPs 계산은 CS230의 Convolutional Neural Networks 강의와 직접 겹친다. <a href="#fr-cs230-1">↩</a></p>

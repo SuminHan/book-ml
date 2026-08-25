@@ -30,8 +30,8 @@ LOGS_DIR = REPO / "tools" / "batch_logs"
 PROMPTS_DIR.mkdir(exist_ok=True)
 LOGS_DIR.mkdir(exist_ok=True)
 
-DONE_RE = re.compile(r'^DONE:\s*(.+)$', re.MULTILINE)
-FAILED_RE = re.compile(r'^FAILED:\s*(.+)$', re.MULTILINE)
+DONE_RE = re.compile(r'DONE:\s*(.+?)(?:\\n\\n|\.\.\.\[\d+chars\]|$)', re.MULTILINE)
+FAILED_RE = re.compile(r'FAILED:\s*(.+?)(?:\\n\\n|\.\.\.\[\d+chars\]|$)', re.MULTILINE)
 
 TEMPLATE = """너는 KSA Machine Learning 1/2 교재(book-ml 저장소, 현재 디렉토리)의 공동
 저자로서, 이번엔 **Colab 노트북의 matplotlib 그래프 캡션을 한글에서 영어로

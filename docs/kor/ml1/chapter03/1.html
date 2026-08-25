@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -198,14 +198,15 @@
 데이터 \(x\)를 어떻게 생성하는가“를 학습한다는 데서 온다 — 실제로 학습이
 끝난 \(P(x|y)\)에서 샘플을 뽑으면, 그 클래스의 “전형적인” 가짜 데이터를
 만들어낼 수도 있다(Chapter 15의 EM/GMM·생성형 모델과 같은 계열의
-아이디어다).</p>
+아이디어다)<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">1</a></sup>.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gan.png" alt="GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."><span class="img-wrapper"><img src="../../images/ref_gan.png" alt="GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다."></span></label></p>
 <p>이 “먼저 \(P(x|y)\)를 배우고 베이즈 정리로 뒤집는다“는 흐름을 1차원
 스팸 예(특징 \(x\) = 메일에 ’무료’가 얼마나 강한가)로 그림으로 본다. 각
 클래스의 가우시안 가능도를 사전확률(스팸 0.30)로 가중한 두 곡선을 겹치면,
-그 **교차점 \(x^*\!\approx\!1.27\)**이 곧 결정 경계가 된다(사전이
+그 <strong>교차점</strong> \(x^*\!\approx\!1.27\)이 곧 결정 경계가 된다(사전이
 0.5였다면 정중앙 1.0이었을, 스팸이 드물다 보니 그보다 오른쪽으로 밀린다) —
 오른쪽 초록 곡선은 이 교차 구조를 뒤집어서 얻은 사후확률
-\(P(\text{spam}|x)\)다. 3.2절 GDA는 바로 이 구조의 표준형이다:</p>
+\(P(\text{spam}|x)\)다. 3.2절 GDA<sup class="footnote-reference" id="fr-gda-1"><a href="#footnote-gda">2</a></sup>는 바로 이 구조의 표준형이다:</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch03_generative_vs_discriminative.svg" alt="1차원 생성적 모델의 전체 흐름 — 각 클래스(스팸/햄)의 가우시안 가능도 P(x|y)를 사전확률 0.30으로 가중해 겹쳤을 때 두 가중 곡선의 교차점 x*≈1.27이 결정 경계가 되고, 이 교차 구조를 베이즈 정리로 뒤집으면 사후확률 P(spam|x)가 나온다"><span class="img-wrapper"><img src="../../images/ch03_generative_vs_discriminative.svg" alt="1차원 생성적 모델의 전체 흐름 — 각 클래스(스팸/햄)의 가우시안 가능도 P(x|y)를 사전확률 0.30으로 가중해 겹쳤을 때 두 가중 곡선의 교차점 x*≈1.27이 결정 경계가 되고, 이 교차 구조를 베이즈 정리로 뒤집으면 사후확률 P(spam|x)가 나온다"></span></label></p>
 <h3 id="왜-베이즈-정리가-필요한가-확률을-뒤집는-계산"><a class="header" href="#왜-베이즈-정리가-필요한가-확률을-뒤집는-계산">왜 베이즈 “정리“가 필요한가: 확률을 뒤집는 계산</a></h3>
 <p>이 절의 모든 것이 이 한 줄에서 시작된다:</p>
@@ -228,7 +229,7 @@
 “’무료’가 등장한 메일이 스팸일 확률“이다. 학습 가능 방향(\(P(x|y)\))과
 필요 방향(\(P(y|x)\))이 반대인 문제를 “뒤집기 문제”(inversion
 problem)라고 하는데, 베이즈 정리가 바로 이 뒤집기를 가능하게 하는
-다리는 <strong>고유한 것</strong>이다 — 이 장의 GDA(3.2절)<sup class="footnote-reference" id="fr-gda-1"><a href="#footnote-gda">1</a></sup>와 나이브베이즈(3.3절)
+다리는 <strong>고유한 것</strong>이다 — 이 장의 GDA(3.2절)<sup class="footnote-reference" id="fr-gda-2"><a href="#footnote-gda">2</a></sup>와 나이브베이즈(3.3절)
 모두 이 다리를 건너는 모델이고, 3.2절 끝에서 GDA의 사후확률이
 로지스틱회귀의 시그모이드와 정확히 같은 형태가 된다는 사실도 결국
 “베이즈 정리로 뒤집었다“는 공통 구조에서 나온다.</p>
@@ -254,7 +255,7 @@ Bayes, 1701–1761)의 미발표 논문(사후에 1763년 발표)에서 나온 �
 likelihood): 어떤 클래스가든 ’무료’가 등장할 전체 확률. 모든 클래스에
 걸쳐 같으므로 <strong>분류 결정</strong>에서는 약수로 사라진다(3.3절 FAQ 참고).</li>
 </ul>
-<p>이 네 용어는 이번 절뿐 아니라 Chapter 15의 EM/GMM, VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">2</a></sup> (ELBO의 이름이
+<p>이 네 용어는 이번 절뿐 아니라 Chapter 15의 EM/GMM, VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">3</a></sup> (ELBO의 이름이
 Expected Lower Bound, “사후확률의 기대 하한“에서 온 것)까지 이어지는
 공통 어휘다 — 이제부터는 식을 볼 때마다 “어디가 사전이고, 어디가 가능도
 고, 어디가 사후인가“를 자동으로 짚을 수 있어야 한다.</p>
@@ -348,7 +349,7 @@ print(round(result, 4))  # 0.9904
 근처일 것 같지만, 실제로 계산해보면 전혀 다르다:</p>
 <p>\[P(\text{병}|\text{양성}) = \frac{0.99 \times 0.001}{0.99 \times 0.001 +
 0.01 \times 0.999} = \frac{0.00099}{0.01098} \approx 0.090\]</p>
-<p>검사가 양성으로 나와도 실제로 병에 걸렸을 확률은 **약 9%**밖에 안 된다 —
+<p>검사가 양성으로 나와도 실제로 병에 걸렸을 확률은 <strong>약 9</strong>%밖에 안 된다 —
 직관과 크게 어긋난다. 이유는 병에 걸린 사람 자체가 워낙 드물어서(1000명
 중 1명), 나머지 999명 중 1%(약 10명)가 잘못 양성 판정을 받는 것만으로도
 “진짜 양성 1명“보다 “가짜 양성 10명“이 훨씬 많아지기 때문이다. 스팸 예의
@@ -396,7 +397,7 @@ ratio)와 같은 개념이다. 새로운 암호문 조각(증거)이 들어올 �
 때문에 가정이 틀렸을 위험이 없어 보통 더 안정적이다. 3.2절에서 GDA와
 로지스틱회귀가 사실 같은 형태의 결정 경계로 수렴한다는 것을 직접
 확인한다. 분류 설정에서 생성적·판별적 모델의 비교를 더 깊이 보려면
-Stanford CS229(Machine Learning) 강의자료를 참고할 수 있다: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">3</a></sup></p>
+Stanford CS229(Machine Learning) 강의자료를 참고할 수 있다: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">4</a></sup></p>
 <p><strong>Q. \(P(x)\)를 왜 무시해도 되나요?</strong> 분류 문제에서는 이미 관찰된
 고정된 \(x\) 하나를 놓고 “이 \(x\)에 대해 \(y{=}0\)이 맞을 확률이
 높은가, \(y{=}1\)이 맞을 확률이 높은가“만 비교하면 된다. \(P(x)\)는
@@ -433,8 +434,11 @@ Stanford CS229(Machine Learning) 강의자료를 참고할 수 있다: <sup clas
 써라.</p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-gan">
+<p>Goodfellow, I. J. et al. (2014). “Generative Adversarial Networks.” arXiv:1406.2661. <a href="#fr-gan-1">↩</a></p>
+</li>
 <li id="footnote-gda">
-<p>Ng, A. Y., Jordan, M. I. (2001). “On Discriminative vs. Generative Classifiers.” NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminative Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)과 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다. <a href="#fr-gda-1">↩</a></p>
+<p>Ng, A. Y., Jordan, M. I. (2001). “On Discriminative vs. Generative Classifiers.” NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminative Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)과 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다. <a href="#fr-gda-1">↩</a> <a href="#fr-gda-2">↩2</a></p>
 </li>
 <li id="footnote-vae">
 <p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1">↩</a></p>

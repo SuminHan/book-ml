@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -316,7 +316,7 @@ def n_step_td(env_step, n, n_episodes, alpha, gamma, n_states, start_state):
 않지만, 방향(오른쪽이 왼쪽보다 가치가 높다)은 이미 잡혀 있는
 상태다.</p>
 <h3 id="online-관점-vs-forward-관점"><a class="header" href="#online-관점-vs-forward-관점">online 관점 vs forward 관점</a></h3>
-<p>위 코드를 <strong>online 관점</strong>(online view)이라고 한다 — 학습이
+<p>위 코드를 <strong>online 관점</strong>(online view)<sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">1</a></sup>이라고 한다 — 학습이
 <strong>진행되면서</strong> 목표를 만들어 갱신하는 방식. “지금 \(t\) 스텝을
 왔다“고 할 때, <em>지금까지 실제로 쌓인</em> \(R_t, \dots, R_{t+n-1}\)
 을 모아 \(G_t^{(n)}\)을 계산한다. 위 코드의 <code>tau = t - n + 1</code>
@@ -347,11 +347,11 @@ V(s_{t+2})\)로, <strong>같은 경험에서 다른 목표가 생긴다.</strong
 보상의 기댓값“의 <em>단일 샘플</em>이기 때문이다(어떤 \(n\)에서든
 이것은 성립한다). 그런데 학습 초반의 \(V\)는 참값과 다르다.
 목표값에 추정치 \(V(s_{t+n})\)가 <strong>일부</strong> 섞여 있다는 것 —
-이것이 **편향(bias)**의 출처다. \(n\)이 커질수록 목표값에서
+이것이 <strong>편향(bias</strong>)의 출처다. \(n\)이 커질수록 목표값에서
 추정치 비중이 줄고 실제 보상 비중이 커지므로, \(V\)가 부정확해도
 목표값이 참값에 더 가까워진다(편향 감소). 대신, 실제 보상의 합이
 길어질수록 각 스텝의 전이·보상 확률이라는 무작위성이 더 많이
-누적되어 목표값의 **분산(variance)**은 커진다 — MC가 “분산
+누적되어 목표값의 <strong>분산(variance</strong>)은 커진다 — MC가 “분산
 극대“인 이유와 정확히 같다.</p>
 <p>이 트레이드오프가 <strong>숫자로</strong> 어떻게 나타나는지 위 random walk에서
 확인해보자. 각 \(n \in \{1, 3, 5, 10, 50\}\)으로 10 에피소드
@@ -575,7 +575,7 @@ V(4) = +0.2539, V(5) = +0.5643\)임을 확인하라. (힌트:
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-suttonbarto">
-<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — MC/TD의 극단과 n-step TD·적격흔적으로 이어지는 편향-분산 스펙트럼이 이 표준 교과서(Chapter 5~7)의 주된 내용이다. <a href="#fr-suttonbarto-1">↩</a></p>
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — MC/TD의 극단과 n-step TD·적격흔적으로 이어지는 편향-분산 스펙트럼이 이 표준 교과서(Chapter 5~7)의 주된 내용이다. <a href="#fr-suttonbarto-1">↩</a> <a href="#fr-suttonbarto-2">↩2</a></p>
 </li>
 <li id="footnote-silvercourse">
 <p>Silver, D. (2015). “UCL Course on Reinforcement Learning.” https://www.davidsilver.uk/teaching/ — MC와 TD 학습의 스펙트럼(n-step TD 포함)을 이 절과 같은 맥락으로 다루는 강의 자료. <a href="#fr-silvercourse-1">↩</a></p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -351,7 +351,7 @@ def train_skipgram(corpus, window=2, dim=8, epochs=50, lr=0.05, neg_k=3):
 “softmax를 근사“하는 것이 아니라 softmax 대신 <strong>다른
 loss</strong>(이진 분류)를 사용하는 것</strong>이라는 점 — 원본 softmax
 손실의 <strong>계산 비용</strong>(매 스텝 \(O(V)\))을 피하기 위한
-**대체(loss substitution)**인 것이다.</p>
+<strong>대체(loss substitution</strong>)인 것이다.</p>
 <h3 id="손으로-한-번-중심고양이-주변귀엽다-쌍이-한-스텝에서-어떻게-갱신되는가"><a class="header" href="#손으로-한-번-중심고양이-주변귀엽다-쌍이-한-스텝에서-어떻게-갱신되는가">손으로 한 번: (중심=고양이, 주변=귀엽다) 쌍이 한 스텝에서 어떻게 갱신되는가</a></h3>
 <p>임베딩 차원 \(d = 2\), 학습률 \(\eta = 0.1\), <strong>네거티브 샘플
 \(k = 0\)</strong>(가짜 단어 없음, 가장 단순한 경우)로, 한 쌍
@@ -381,8 +381,8 @@ loss</strong>(이진 분류)를 사용하는 것</strong>이라는 점 — 원�
 \(k_{\text{neg}} = 4\)의 실제 훈련에서는, 이 “정답 1쌍” 업데이트에
 “가짜 4쌍” 업데이트(\(\text{err} = \sigma(z) - 0 = \sigma(z) &gt; 0\)라
 <strong>내적을 <em>낮추는</em></strong> 방향)가 동시에 더해진다 — “함께 나오는 쌍의
-내적을 올리고, 함께 안 나오는 쌍의 내적을 낮춘다“는 이 **상대적
-순위(rank)**를 만드는 것이 word2vec 전체의 학습 목표다.</p>
+내적을 올리고, 함께 안 나오는 쌍의 내적을 낮춘다“는 이 <strong>상대적
+순위(rank</strong>)를 만드는 것이 word2vec 전체의 학습 목표다.</p>
 <h3 id="실습-학습된-임베딩에서-코사인-유사도로-비슷한-단어-찾기"><a class="header" href="#실습-학습된-임베딩에서-코사인-유사도로-비슷한-단어-찾기">실습: 학습된 임베딩에서 코사인 유사도로 비슷한 단어 찾기</a></h3>
 <p>동물 관련 단어와 과일 관련 단어가 각각 비슷한 문맥에서 등장하는 작은
 말뭉치로 <code>train_skipgram</code>을 학습시킨 뒤, “고양이는“과 코사인 유사도가
@@ -433,7 +433,7 @@ sims = sorted(((w, cos_sim(emb[query], emb[w])) for w in emb if w != query),
 기대된 결과다(실전 word2vec의 후처리에서 임베딩을 <strong>단위벡터로
 정규화</strong>하는 것이 이 효과를 제거하는 표준 방법)<sup class="footnote-reference" id="fr-lin-mikolov-1"><a href="#footnote-lin-mikolov">4</a></sup>.</p>
 <h3 id="왕--남자--여자--여왕이-왜-성립하는가-벡터-공간의-기하학"><a class="header" href="#왕--남자--여자--여왕이-왜-성립하는가-벡터-공간의-기하학">“왕 − 남자 + 여자 = 여왕“이 왜 성립하는가: 벡터 공간의 기하학</a></h3>
-<p>가장 놀라운 성질인 **의미 유사도(semantic analogy)**를 한 번 더
+<p>가장 놀라운 성질인 <strong>의미 유사도(semantic analogy</strong>)를 한 번 더
 풀어보자. \(\text{vec}(\text{king}) - \text{vec}(\text{man}) +
 \text{vec}(\text{woman}) \approx \text{vec}(\text{queen})\)가
 “우연“이 아니라 <strong>학습 목표에서 거의 자연스럽게 나오는</strong> 결과임을
@@ -509,8 +509,8 @@ print(analogy)
 빈도가 높은 단어가 더 많이 업데이트되어 벡터가 더 길어지기
 때문이다(빈도 ∝ 노름의 경향). <strong>코사인 유사도</strong>는 노름을
 제거(단위벡터로 정규화)한 후의 <strong>각도</strong>만 측정하므로, “의미
-유사도“를 재기에는 적합하다. 그러나 **유사도 연산(
-\(\mathbf{a} - \mathbf{b} + \mathbf{c}\))**을 할 때는,
+유사도“를 재기에는 적합하다. 그러나 <strong>유사도 연산(
+\(\mathbf{a} - \mathbf{b} + \mathbf{c}\)</strong>)을 할 때는,
 <strong>노름 차이가 병렬 4각형의 “닫힘“에 영향을 준다</strong>는 점을
 기억해야 한다 — “왕 − 남자 + 여자“가 정확히 여왕에 닿으려면,
 “남자→왕“과 “여자→여왕“의 <strong>노름이 비슷</strong>해야 한다는

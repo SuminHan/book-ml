@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -206,8 +206,8 @@ Learning을 추천한다.<sup class="footnote-reference" id="fr-cs234-1"><a href
 <ul>
 <li>행동 복제를 “(상태, 행동) 시연 쌍을 라벨로 쓰는 지도학습 문제“로
 설명하고, 학습 분포와 배포 시 분포가 어긋나며 오차가 눈덩이치는
-<strong>복합 오차</strong>의 본질을 한 문장으로 짚을 수 있다.</li>
-<li>DAgger<sup class="footnote-reference" id="fr-dagger-1"><a href="#footnote-dagger">4</a></sup> 네 줄 — 에이전트가 자신의 정책으로 달리고, 전문가가 방문한
+<strong>복합 오차</strong><sup class="footnote-reference" id="fr-covshift-1"><a href="#footnote-covshift">4</a></sup>의 본질을 한 문장으로 짚을 수 있다.</li>
+<li>DAgger<sup class="footnote-reference" id="fr-dagger-1"><a href="#footnote-dagger">5</a></sup> 네 줄 — 에이전트가 자신의 정책으로 달리고, 전문가가 방문한
 상태에 라벨만 답하는 반복 — 을 장난감 환경에 적용해 보고, “시연을
 더 많이 모으는 것“이 그 실패를 해결하지 못하는 이유(수량이 아니라
 분포 문제)를 설명할 수 있다.</li>
@@ -230,9 +230,9 @@ Chapter 2의 로지스틱회귀 코드 한 줄도 바꾸지 않은 “시연 (�
 <li><a href="chapter12/2.html">12.2 선호 기반 보상모델과 실습</a> — “정답을 시연하는
 것“이 어렵고 “두 시도 중 나은 쪽을 고르는 것“이 쉬운 문제(자연스러운
 걸음걸이 등)에는, 비교 데이터만으로 Bradley-Terry 보상모델을 학습하고
-그 점수를 PPO의 보수로 쓴다 — LLM을 다듬는 RLHF<sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">5</a></sup>와 같은 구조다.
+그 점수를 PPO의 보수로 쓴다 — LLM을 다듬는 RLHF<sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">6</a></sup>와 같은 구조다.
 선호 쌍 300개로 숨겨진 보상함수의 방향(비율)을 복원하는 실습, 그리고
-이 대리 보상이 보상모델의 약점을 파고드는 보상 해킹 위험을 안고
+이 대리 보상이 보상모델의 약점을 파고드는 보상 해킹<sup class="footnote-reference" id="fr-rewardhacking-1"><a href="#footnote-rewardhacking">7</a></sup> 위험을 안고
 있다는 점도 확인한다.</li>
 <li><a href="chapter12/3.html">12.3 모방학습 vs 강화학습: 언제 무엇을 쓰는가</a> —
 “어느 쪽이 낫나요?“는 잘못된 질문 — 선택은 가진 자원(시연, 비교,
@@ -255,11 +255,17 @@ Chapter 2의 로지스틱회귀 코드 한 줄도 바꾸지 않은 “시연 (�
 <li id="footnote-rlhf">
 <p>Christiano, P. et al. (2017). “Deep reinforcement learning from human preferences.” NeurIPS 2017. arXiv:1706.03741. <a href="#fr-rlhf-1">↩</a></p>
 </li>
+<li id="footnote-covshift">
+<p>Sugiyama, M., Suzuki, T., Kanamori, T. (2012). “Metrics for Discriminative Domain Adaptation.” NeurIPS 2012. arXiv:1206.6323. (학습·배포 분포 불일치 — 코바리에이트 시프트 — 를 측정하는 지표의 원 논문) <a href="#fr-covshift-1">↩</a></p>
+</li>
 <li id="footnote-dagger">
 <p>Ross, S., Gordon, G. J., Bagnell, J. A. (2011). “A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning.” AISTATS 2011. arXiv:1011.0686. <a href="#fr-dagger-1">↩</a></p>
 </li>
 <li id="footnote-instructgpt">
 <p>Ouyang, L. et al. (2022). “Training language models to follow instructions with human feedback.” arXiv:2203.02155. <a href="#fr-instructgpt-1">↩</a></p>
+</li>
+<li id="footnote-rewardhacking">
+<p>Skalse, J., Howe, N. H. R., Krasheninnikov, D., Krueger, D. (2022). “Defining and Characterizing Reward Hacking.” arXiv:2209.13085. <a href="#fr-rewardhacking-1">↩</a></p>
 </li>
 </ol>
 

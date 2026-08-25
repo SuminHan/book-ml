@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -224,7 +224,9 @@ y = l_1 \sin\theta_1 + l_2 \sin(\theta_1+\theta_2)\]</p>
 (팔 끝 위치)를 향한 “좋은” 관절 궤적이 두 갈래</strong>(그 이상)라는 뜻이다.
 정책이 상태 전체(관절 각도 + 각속도)를 보게 하는 이유가 바로
 여기에 있다 — 목표 위치 <em>만</em> 보고 행동을 정하면, 어느 갈래로
-갈지 운에 맡기는 셈이 된다.</p>
+갈지 운에 맡기는 셈이 된다. 13.3절에서는 이 같은 “같은 목표를
+향한 여러 갈래의 행동“을 학습하는 PPO의 구조를 보게 된다:</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p>둘째, <strong>팔이 닿지 않는 곳이 있다</strong>. 코사인 값이 \([-1, 1]\)이려면
 \(|l_1 - l_2| \le d \le l_1 + l_2\)가 필요하므로, 도달 가능 영역
 (reachable workspace)은 반지름 \(l_1+l_2\)와 \(|l_1-l_2|\)인
@@ -233,7 +235,7 @@ y = l_1 \sin\theta_1 + l_2 \sin(\theta_1+\theta_2)\]</p>
 수 없다. \((1.0, 0.0)\)처럼 가장 먼 점은 두 해가 \((0^\circ,
 0^\circ)\) 하나로 <em>중첩</em>된다(팔이 완전히 쭉 펴진 자세) — “해가
 여러 개“가 아니라 “해가 하나“로 수렴하는 경계점이다. 이 “도달 가능
-영역” 개념은 13.3절 PPO 실습의 Reacher 과제가 왜 <em>목표 지점</em>을
+영역” 개념은 13.3절 PPO <sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">1</a></sup>실습의 Reacher 과제가 왜 <em>목표 지점</em>을
 무작위로 놓는 설계인지 이해하는 열쇠가 된다 — 너무 먼 목표를
 주시면 과제 자체가 불가능해진다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_1_fk_2link_arm.svg" alt="2관절 로봇팔의 정규구학/역기구학. 왼쪽: 마디 길이 0.5+0.5인 팔의 도달 가능 영역(반경 1 원판)과, 첫 마디 30도 고정에서 두 번째 마디를 0~120도로 돌렸을 때 팔 끝이 그리는 호, 그리고 팔 마디(0.866, 0.500)와 팔 끝(0.433, 0.750)의 예시 구성. 오른쪽: 목표 (0.5, 0.5)에 대한 역기구학의 두 해 — elbow-up (0도, +90도)와 elbow-down (90도, -90도) 자세가 같은 팔 끝 위치에 도달하는 모습"><span class="img-wrapper"><img src="../../images/ch13_1_fk_2link_arm.svg" alt="2관절 로봇팔의 정규구학/역기구학. 왼쪽: 마디 길이 0.5+0.5인 팔의 도달 가능 영역(반경 1 원판)과, 첫 마디 30도 고정에서 두 번째 마디를 0~120도로 돌렸을 때 팔 끝이 그리는 호, 그리고 팔 마디(0.866, 0.500)와 팔 끝(0.433, 0.750)의 예시 구성. 오른쪽: 목표 (0.5, 0.5)에 대한 역기구학의 두 해 — elbow-up (0도, +90도)와 elbow-down (90도, -90도) 자세가 같은 팔 끝 위치에 도달하는 모습"></span></label></p>
@@ -259,7 +261,7 @@ y = l_1 \sin\theta_1 + l_2 \sin(\theta_1+\theta_2)\]</p>
 균형이다(진자를 위로 세우는 과제가 어려운 이유). (2) \(u\)의
 계수 \(3/(ml^2)\)는 “같은 토크가 무거울수록(\(m\)↑),
 길수록(\(l\)↑) 작은 가속을 준다“는 관성의 법칙 그 자체다.</p>
-<p>이 식이 실제 코드가 되는 순간을 보자 — Gymnasium <sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">1</a></sup>의 <code>Pendulum-v1</code>
+<p>이 식이 실제 코드가 되는 순간을 보자 — Gymnasium <sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">2</a></sup>의 <code>Pendulum-v1</code>
 (13.2절 실습의 주인공)가 내부에서 정확히 이 식을 쓰고 있다:
 \(g = 10, m = l = 1\)로 대입하면
 \(\ddot\theta = 15\sin\theta + 3u\), 그리고 이를 <strong>오일러
@@ -333,7 +335,7 @@ RL이 PD를 이겨야 하는 곳은 “사람이 식을 세우기 어려운” �
 계수, 센서 잡음, 재질의 미세한 차이 등) — 시뮬레이션에서만 잘 작동하고
 실물에서는 실패하는 정책을 <strong>현실 격차</strong>(reality gap)라 부른다. 이
 격차를 줄이는 대표적인 방법이 <strong>도메인 무작위화</strong>(domain
-randomization) <sup class="footnote-reference" id="fr-domainrand-1"><a href="#footnote-domainrand">2</a></sup> — 시뮬레이션의 물리 파라미터(마찰,
+randomization) <sup class="footnote-reference" id="fr-domainrand-1"><a href="#footnote-domainrand">3</a></sup> — 시뮬레이션의 물리 파라미터(마찰,
 질량, 조명 등)를 매 학습 에피소드마다 무작위로 바꿔가며 학습시키는
 것이다. 정책이 하나의
 고정된 시뮬레이션 설정이 아니라 “다양한 물리 조건 전체“에 대해 잘
@@ -396,7 +398,7 @@ bias는 데이터로는 줄이지 못한다</strong> — 다만 “모델을 더
 상관하는 것이 sim-to-real의 존재 근거다. <strong>(3) 그러나 “대체로”
 라는 말이 문제다</strong> — \((k_p = 1, k_d = 0)\)는 시뮬레이션
 점수 \(-1355.3\)로 20개 중 11위(상위권)지만, 실물 점수
-\(-1422.3\)는 20개 중 **20위(꼴찌)**다. 시뮬레이션에서
+\(-1422.3\)는 20개 중 <strong>20위(꼴찌</strong>)다. 시뮬레이션에서
 “상위권“으로 보인 정책이 실물에서 <em>마지막</em>이라는 뜻이다.
 <strong>시뮬레이션 하나로 정책 하나를 골라 “완료“라고 선언하는
 순간, 그 순간부터 격차가 실수로 바뀐다.</strong></p>
@@ -457,17 +459,17 @@ fine-tuning을 <em>조합</em>하는 것이 표준이며, 이 절에서 배운 �
 <h3 id="역사적-일화-바나나를-뒤집은-손-mujoco의-10년"><a class="header" href="#역사적-일화-바나나를-뒤집은-손-mujoco의-10년">역사적 일화: 바나나를 뒤집은 손, MuJoCo의 10년</a></h3>
 <p>이 분야에서 “sim-to-real이 통하는가“는 2010년대 내내 열린
 질문이었고, 답은 두 차례의 시범으로 굳어졌다. 첫 번째는
-<strong>MuJoCo</strong><sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">3</a></sup>의 등장이다(2012년 개발 시작, 2015년 공개,
+<strong>MuJoCo</strong><sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">4</a></sup>의 등장이다(2012년 개발 시작, 2015년 공개,
 2018년 무료 오픈소스) — 특히 <em>접촉·마찰</em> 모델링이 정밀하고 빠르다는
 이유로, 2018년 이후 로봇 RL 논문에서 표준 물리 엔진이 됐다
-(13.2절 FAQ의 PyBullet vs MuJoCo 비교가 바로 이 맥락이다).
-두 번째는 <strong>OpenAI의 바나나 뒤집기</strong> <sup class="footnote-reference" id="fr-openairubik-1"><a href="#footnote-openairubik">4</a></sup> (2021) — 10개 손가락
+(13.2절 FAQ의 PyBullet<sup class="footnote-reference" id="fr-pybullet-1"><a href="#footnote-pybullet">5</a></sup> vs MuJoCo 비교가 바로 이 맥락이다).
+두 번째는 <strong>OpenAI의 바나나 뒤집기</strong> <sup class="footnote-reference" id="fr-openairubik-1"><a href="#footnote-openairubik">6</a></sup> (2021) — 10개 손가락
 짜리 근손(hand)이 시뮬레이션에서 수백만 에피소드를 학습하고,
 <em>실물</em> 바나나를 집어 뒤집는 시연이다. 결정적이었던 것은
 “시뮬레이션과 실물의 격차를 <em>도메인 무작위화</em>로 메웠다“는
 점 — 조명, 질감, 마찰을 무작위화한 뒤, 실물 데이터 <em>소량</em>
 만 fine-tune했다. 그 이후 보행 로봇(2020년 OpenAI의 A1
-로봇이 “10분 만에 새로운 걸음걸이 학습” 시연)과 2020년대
+로봇이 “10분 만에 새로운 걸음걸이 학습” 시연<sup class="footnote-reference" id="fr-massivelyparallelrl-1"><a href="#footnote-massivelyparallelrl">7</a></sup>)과 2020년대
 후반의 휴머노이드 RL 학습까지, “시뮬레이션에서 배우고 실물로
 옮긴다“는 파이프라인이 로봇 학습의 <em>기본 구조</em>가 됐다 —
 이번 장(13~15장)이 그 파이프라인의 기초를 쌓는 이유다.</p>
@@ -546,7 +548,7 @@ h = \tau\)가 “토크 ↔ 가속“을 계산한다. 시뮬레이션은
 (파라미터 측정)로 줄인다. 무작위화 범위는 정규화
 강도와 같은 트레이드오프 하이퍼파라미터이며,
 “시뮬레이션 최고점“은 “실물 최적“을 함의하지
-않는다. <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">5</a></sup></p>
+않는다. <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">8</a></sup></p>
 </blockquote>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
@@ -588,6 +590,9 @@ print(np.round(fk(np.deg2rad(30), np.deg2rad(60)), 3))  # (0.433, 0.75)
 범위를 쓰는가?)</p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-ppo">
+<p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
 <li id="footnote-gym">
 <p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. — 표준 RL 환경 라이브러리 OpenAI Gym의 원 논문. Gymnasium은 그 유지보수 계승 버전이며, <code>Pendulum-v1</code>은 그 대표적 연속 제어 환경이다. <a href="#fr-gym-1">↩</a></p>
 </li>
@@ -597,8 +602,14 @@ print(np.round(fk(np.deg2rad(30), np.deg2rad(60)), 3))  # (0.433, 0.75)
 <li id="footnote-mujoco">
 <p>Todorov, E., Erez, T., Tassa, Y. (2012). “MuJoCo: A physics engine for model-based control.” IROS 2012. DOI: 10.1109/IROS.2012.6386109. — 로봇 시뮬레이터 MuJoCo의 원 논문. 접촉·마찰 모델링이 정밀하고 빠르다는 특징으로 2018년 무료 오픈소스 공개 이후 로봇 RL 논문에서 사실상 표준 물리 엔진이 됐다. <a href="#fr-mujoco-1">↩</a></p>
 </li>
+<li id="footnote-pybullet">
+<p>Coumans, E., Bai, Y. (2018). “PyBullet, a GPU accelerated physics engine for robot learning.” IEEE/RAS IROS 2018. <a href="#fr-pybullet-1">↩</a></p>
+</li>
 <li id="footnote-openairubik">
 <p>Akkaya, I., et al. (2019). “Solving Rubik’s Cube with a Robot Hand.” arXiv:1910.07113. — OpenAI의 시뮬레이션 기반 근손(dexterous hand) 데모 계보: 시뮬레이션에서 도메인 무작위화로 학습하고 실물로 전이하는 파이프라인을 Rubik의 큐브 회전이라는 과제에 적용한 원 논문. 본문에서 말하는 바나나 뒤집기(2021)는 OpenAI 블로그(openai.com/research/robot-flips-banana) 시연이며, 이 큐브 데모와 함께 sim-to-real 파이프라인의 대표적 실물 시연이다. <a href="#fr-openairubik-1">↩</a></p>
+</li>
+<li id="footnote-massivelyparallelrl">
+<p>Rudin, N., Hoeller, D., Reist, P., Hutter, M. (2021). “Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning.” CoRL 2021. arXiv:2109.11978. <a href="#fr-massivelyparallelrl-1">↩</a></p>
 </li>
 <li id="footnote-cs234">
 <p>이 절의 주제(로봇 동역학, sim-to-real, 도메인 무작위화)를 더 깊이 다루는 자료: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>

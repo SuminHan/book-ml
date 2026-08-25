@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -217,7 +217,7 @@ family인가요?” 질문이 이 점을 다시 짚는다), 확률적 정책은
 뽑아 결정하고, 오른쪽(이번 장)은 “각 행동의 확률“을 낸 뒤
 <strong>샘플링</strong>한다. 오른쪽 경로의 핵심 질문 — “점수를 올리는 방향이
 아니라, <em>분포 자체</em>를 어떻게 고치겠는가?” — 가 바로 Policy
-Gradient Theorem이 답하는 것이다.</p>
+Gradient Theorem<sup class="footnote-reference" id="fr-williams92-1"><a href="#footnote-williams92">2</a></sup>이 답하는 것이다.</p>
 <h3 id="정책을-파라미터화하기"><a class="header" href="#정책을-파라미터화하기">정책을 파라미터화하기</a></h3>
 <p>이산 행동공간에서는 정책을 신경망 출력에 softmax를 적용해 확률분포로
 만든다:</p>
@@ -313,7 +313,7 @@ Chapter 11의 PPO도 이 항을 목적함수에 포함시키며(실제로 PPO의
 <p>즉, “엔트로피를 올리는 방향“도 \(\nabla_\theta \log \pi\)로
 표현된다는 뜻이다. 이번 절에서 엔트로피가 중요한 이유는 <em>도입</em>이
 아니라, <strong>그래디언트가 같은 구조</strong>라는 사실이다: REINFORCE
-(10.2절)·A2C(10.3절)<sup class="footnote-reference" id="fr-a3c-1"><a href="#footnote-a3c">2</a></sup>·PPO(Chapter 11)는 모두
+(10.2절)·A2C(10.3절)<sup class="footnote-reference" id="fr-a3c-1"><a href="#footnote-a3c">3</a></sup>·PPO(Chapter 11)는 모두
 \(G_t\) 대신 \(-\log \pi\)를 “가중치“로 쓰는 <em>같은</em> 업데이트
 식 — 이 절의 정리가 “리턴을 넘어선 보너스 항“까지 포괄한다는
 증거다.</p>
@@ -429,7 +429,7 @@ P(s_{t+1}|s_t, a_t)\)(<em>환경</em> — \(\theta\)와 무관)은 <strong>미�
 <p>\[\nabla_\theta J(\theta) = \mathbb{E}_\tau \big[ R(\tau)
 \sum_t \nabla_\theta \log \pi_\theta(a_t|s_t) \big]\]</p>
 <p>여기서 <em>한 가지</em> 더 정리 — \(R(\tau)\)를 시점별로
-**리턴 \(G_t\)**로 바꾼다. \(R(\tau) = \sum_t r_t\)이고,
+<strong>리턴</strong> \(G_t\)로 바꾼다. \(R(\tau) = \sum_t r_t\)이고,
 \(G_t = \sum_{t’ \ge t} \gamma^{t’-t} r_{t’}\)가
 “시점 \(t\) <em>부터</em>의 리턴“이므로, “각 \(\nabla_\theta
 \log \pi(a_t|s_t)\)가 <em>자기 시점부터</em>의 리턴 \(G_t\)를
@@ -824,8 +824,8 @@ c\)(\(c\)는 \(\mu\)와 <em>무관한</em> <em>상수</em>)를
 <em>오래됐다</em>. \(\nabla \log f = \nabla f / f\)라는
 <em>항등식</em>은 <em>미분</em> <em>공부</em>의 <em>첫</em> <em>달</em>에 <em>나오는</em>
 <em>기본</em> <em>공식</em>이고, <em>기댓값</em> <em>내의</em> <em>미분</em>을
-<em>샘플</em>로 <em>추정</em>하는 <em>기법</em>은 <em>통계학</em>에서 **
-<em>스코어</em> <em>함수</em> <em>추정치</em>**(score function
+<em>샘플</em>로 <em>추정</em>하는 <em>기법</em>은 <em>통계학</em>에서
+<strong>스코어 함수 추정치</strong>(score function
 estimator)라는 <em>이름</em>으로 <em>1900</em>년대 <em>초</em>부터
 <em>존재</em>했다. <em>스코어</em> <em>함수</em> \(\nabla_\theta \log
 f(x;\theta)\)는 <em>최대</em> <em>우도</em> <em>추정</em>(MLE)의
@@ -834,7 +834,7 @@ f(x;\theta)\)는 <em>최대</em> <em>우도</em> <em>추정</em>(MLE)의
 <em>작업</em> — 이며, <em>Policy</em> <em>Gradient</em> <em>Theorem</em>은
 <em>바로</em> <em>이</em> <em>스코어</em> <em>함수</em>를 <em>가중치</em>로
 <em>쓰는</em> <em>구조</em>다.</p>
-<p><em>Williams</em>(1992)가<sup class="footnote-reference" id="fr-williams92-1"><a href="#footnote-williams92">3</a></sup> <em>정책</em> <em>그래디언트</em> <em>방법</em>을
+<p><em>Williams</em>(1992)가<sup class="footnote-reference" id="fr-williams92-2"><a href="#footnote-williams92">2</a></sup> <em>정책</em> <em>그래디언트</em> <em>방법</em>을
 <em>정식</em> <em>논증</em>할 <em>때</em>, <em>동일</em> <em>알고리즘</em>을
 <em>통계학</em> <em>문헌</em>의 <em>스코어</em> <em>함수</em> <em>추정치</em>와
 <em>같은</em> <em>것</em>으로 <em>정확히</em> <em>식별</em>했다. <em>따라서</em>
@@ -882,8 +882,8 @@ f(x;\theta)\)는 <em>최대</em> <em>우도</em> <em>추정</em>(MLE)의
 <em>가변</em> <em>행동</em> <em>공간</em> <em>모델</em>에서 <em>policy</em>
 <em>gradient</em>를 <em>직접</em> <em>적용</em>하려면 <em>이</em>
 <em>조건</em>을 <em>다시</em> <em>확인</em>해야 <em>한다</em>.</p>
-<p>**3. <em>베이스라인</em>이 <em>행동</em> <em>\(a\)<em>에 <em>의존</em>
-<em>하는</em> <em>값</em>을 <em>쓰기</em>.</em></em> 10.2·10.3절에서
+<p><strong>3. <em>베이스라인</em>이 <em>행동</em> \(a\)에 <em>의존</em>
+<em>하는</em> <em>값</em>을 <em>쓰기</em>.</strong> 10.2·10.3절에서
 <em>证</em>
 명한 <em>바와</em> <em>같이</em>, <em>베이스라인</em> \(b\)가
 <em>행동</em> *\(a\)*에 <em>의존</em> <em>하면</em> <em>기댓값</em>
@@ -998,11 +998,11 @@ CartPole(이산 행동공간)에서 비교하며 이 차이를 직접 확인한�
 <li id="footnote-ppo">
 <p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
 </li>
+<li id="footnote-williams92">
+<p>Williams, R. J. (1992). “Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning.” Machine Learning 8(3), 229–262. — 스코어함수 추정치와 정책 그래디언트(REINFORCE 계열)를 동일하게 식별한 원 논문. <a href="#fr-williams92-1">↩</a> <a href="#fr-williams92-2">↩2</a></p>
+</li>
 <li id="footnote-a3c">
 <p>Mnih, V. et al. (2016). “Asynchronous Methods for Deep Reinforcement Learning.” arXiv:1602.01783. <a href="#fr-a3c-1">↩</a></p>
-</li>
-<li id="footnote-williams92">
-<p>Williams, R. J. (1992). “Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning.” Machine Learning 8(3), 229–262. — 스코어함수 추정치와 정책 그래디언트(REINFORCE 계열)를 동일하게 식별한 원 논문. <a href="#fr-williams92-1">↩</a></p>
 </li>
 <li id="footnote-suttonbarto">
 <p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -187,8 +187,8 @@
 \(h_t\)가 \(h_{t-1}\)에, \(h_{t-1}\)이 \(h_{t-2}\)에 의존하는
 <strong>사슬</strong>을 이루고 있기 때문에, Chapter 9의 “출력층에서 입력층으로” 거슬러
 올라가던 역전파를 <strong>시간 축을 따라</strong> 펼쳐서 적용해야 한다. 이 절은 그
-기법(BPTT)을 한 단계씩 유도하고, 숫자로 손으로 따라가본 뒤, numpy로
-문자 단위 언어모델<sup class="footnote-reference" id="fr-bahdanau2014-1"><a href="#footnote-bahdanau2014">1</a></sup>을 실제로 학습시켜 BPTT가 “다음 토큰 예측“을 어떻게
+기법(BPTT)을 한 단계씩 유도하고, 숫자로 손으로 따라가본 뒤, numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">1</a></sup>로
+문자 단위 언어모델<sup class="footnote-reference" id="fr-bahdanau2014-1"><a href="#footnote-bahdanau2014">2</a></sup>을 실제로 학습시켜 BPTT가 “다음 토큰 예측“을 어떻게
 구현하는지 끝까지 확인한다.</p>
 <h3 id="bptt-시간을-펼쳐서-역전파하기"><a class="header" href="#bptt-시간을-펼쳐서-역전파하기">BPTT: 시간을 펼쳐서 역전파하기</a></h3>
 <p>이 “요약을 계속 갱신한다“는 구조를 학습시키려면, 역전파를 시간 축을 따라
@@ -205,7 +205,7 @@ h_{t-1}} = \prod_{t=2}^T \text{diag}(\tanh’(z_t)) \, W_{hh}\]</p>
 시점 사이를 건너는 그래디언트가 \(W_{hh}\)를 \(T-1\)번 곱하는 곱적
 (product)이 된다</strong>는 것이다. \(W_{hh}\)의 고유값이 1보다 작으면 이 곱은
 지수적으로 0으로, 1보다 크면 지수적으로 ∞로 발산한다 — 11.3절에서
-“그래디언트 소실·폭발“이라는 이름으로 다시 만나는 바로 그 문제<sup class="footnote-reference" id="fr-pascanu2013-1"><a href="#footnote-pascanu2013">2</a></sup>다. 이번
+“그래디언트 소실·폭발“이라는 이름으로 다시 만나는 바로 그 문제<sup class="footnote-reference" id="fr-pascanu2013-1"><a href="#footnote-pascanu2013">3</a></sup>다. 이번
 절에서는 그 <em>양</em>보다 먼저, 이 곱적 구조를 <em>정확히</em> 따라가며 각 파라미터
 의 그래디언트가 어떻게 누적되는지 유도한다.</p>
 <h4 id="펼쳐진-계산-그래프-시점이-곧-층"><a class="header" href="#펼쳐진-계산-그래프-시점이-곧-층">펼쳐진 계산 그래프: 시점이 곧 “층”</a></h4>
@@ -286,8 +286,8 @@ p_k}\frac{\partial p_k}{\partial z_j}
 지점이다.</p>
 <p>두 가지를 꼭 새겨두자. <strong>첫째, <code>dh = Why.T @ dp + dh_next</code></strong> — 본 시점의
 오차(<code>Why.T @ dp</code>)에 <em>앞서(더 새로운) 시점에서 흘러온</em> 그래디언트
-(<code>dh_next</code>)를 더한다. 이것이 위에서 유도한 (A)+(B)다. **둘째,
-<code>dWhh += ...</code>는 <code>=</code>가 아니라 <code>+=</code>**이다. \(W_{hh}\)가 모든 시점에서
+(<code>dh_next</code>)를 더한다. 이것이 위에서 유도한 (A)+(B)다. <strong>둘째,
+<code>dWhh += ...</code>는 <code>=</code>가 아니라 <code>+=</code>이다</strong>. \(W_{hh}\)가 모든 시점에서
 공유되므로, 각 시점에서 계산된 기여를 <strong>같은 텐서에 계속 더해</strong>야
 한다. 이 <code>+=</code>를 <code>=</code>로 쓰면 가장 마지막 시점 기여만 남고 나머지가
 사라져 BPTT가 틀어진다 — 이번 절의 “자주 하는 실수“에서 다시 만난다.</p>
@@ -418,7 +418,7 @@ def forward(inputs, h0):
 <pre><code>생성된 문자열: "abcabcabcabc"
 </code></pre>
 <p>정확히 원본 패턴을 재현한다 — 이 작은 예제가 하는 일이 바로 Chapter 13
-의 LLM<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">3</a></sup>이 “다음 토큰을 예측한다“고 할 때 말하는 것의 가장 축소된
+의 LLM<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">4</a></sup>이 “다음 토큰을 예측한다“고 할 때 말하는 것의 가장 축소된
 형태다: 지금까지 본 시퀀스(은닉 상태에 요약된)를 바탕으로 다음 하나를
 맞히는 것을, 아주 긴 텍스트와 훨씬 큰 모델로 확장한 것이 LLM이다.
 <strong>“다음 문자를 맞추는 것“과 “언어모델“의 차이가 크기뿐 원리가
@@ -487,7 +487,7 @@ BPTT</strong>(truncated BPTT)를 쓴다. “창 길이“는 소실되는 신호
 12.09 → 0.045로 뚝 떨어지는 것은, 11개 시점의 오차가 한 번에
 모여서 시간을 거슬러 전달되기 때문인 것이다.</p>
 <p><strong>Q. 왜 이렇게 많은 에폭이 필요했나요?</strong> 이 예제는 일부러 아주 단순한
-구조(은닉 크기 8)와 기본 경사하강법(Adam<sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">4</a></sup>이 아니라)으로 손으로
+구조(은닉 크기 8)와 기본 경사하강법(Adam<sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">5</a></sup>이 아니라)으로 손으로
 따라가기 쉽게 만들었다 — 실전에서는 Adam 같은 더 정교한
 옵티마이저(Chapter 9의 SGD를 개선한 방법)와 더 큰 은닉 크기를 쓰면
 훨씬 적은 반복으로도 수렴한다. 중요한 것은 몇 에폭이 걸렸는가가
@@ -520,6 +520,9 @@ W_{hh}} = \begin{bmatrix}0.1000&amp;0.1587\\-0.0365&amp;-0.0579\end{bmatrix}\)
 </ol>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-numpy">
+<p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1">↩</a></p>
+</li>
 <li id="footnote-bahdanau2014">
 <p>Bahdanau, D., Cho, K., Bengio, Y. (2014). “Neural Machine Translation by Jointly Learning to Align and Translate.” arXiv:1409.0473 — attention(각 시점의 출력을 만들 때 이전 입력 전체를 가중합으로 되돌아보는 기법)를 도입한 논문. RNN 기반 언어모델·시퀀스 모델링의 한 갈래를 여는 대표 논문이며, 본 절의 문자 단위 RNN 언어모델과 같은 RNN 시퀀스 모델링 범주에 속한다. <a href="#fr-bahdanau2014-1">↩</a></p>
 </li>

@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -180,7 +180,7 @@
                     <main>
                         <h1 id="chapter-9-신경망-기초-역전파-학습-기법-neural-network-basics-backpropagation--training-techniques"><a class="header" href="#chapter-9-신경망-기초-역전파-학습-기법-neural-network-basics-backpropagation--training-techniques">Chapter 9. 신경망 기초, 역전파, 학습 기법 (Neural Network Basics, Backpropagation &amp; Training Techniques)</a></h1>
 <p>1969년, 마빈 민스키(Marvin Minsky)와 시모어 페퍼트(Seymour Papert)는 책
-<em>Perceptrons</em>에서 단층 퍼셉트론(single-layer perceptron)이 <strong>XOR</strong> 하나조차
+<em>Perceptrons</em><sup class="footnote-reference" id="fr-minskypapert-1"><a href="#footnote-minskypapert">1</a></sup>에서 단층 퍼셉트론(single-layer perceptron)이 <strong>XOR</strong> 하나조차
 풀 수 없다는 것을 수학적으로 증명했다. XOR은 “두 입력이 서로 다르면 1, 같으면
 0“이라는 아주 간단한 규칙이지만, 그 경계는 직선 하나로 그을 수 없다 — 지금까지
 배운 로지스틱회귀(직선 하나로 나누는 모델)로는 근본적으로 풀리지 않는
@@ -213,10 +213,10 @@
 <li><strong>그래디언트 소실·폭발을 진단하고, 그에 맞는 활성함수와 초기화를 고를
 수 있다</strong> — 층이 깊어질수록 연쇄법칙의 곱이 어떻게 지수적으로 작아지거나
 커지는지 설명하고, 문제(활성함수, 층 크기)에 맞는 선택(ReLU 계열,
-Xavier/He)을 정당화한다.<sup class="footnote-reference" id="fr-he-1"><a href="#footnote-he">1</a></sup> <sup class="footnote-reference" id="fr-xavier-1"><a href="#footnote-xavier">2</a></sup></li>
-<li><strong>정규화와 학습률 스케줄링을 목적에 맞게 적용할 수 있다</strong> — dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">3</a></sup>,
-BatchNorm<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">4</a></sup>, 가중치 감쇠를 과적합·불안정한 학습 상황에 맞게 쓰고, “초반에
-크게, 후반에 작게“라는 학습률 스케줄링(StepLR, 코사인, warmup)<sup class="footnote-reference" id="fr-sgdr-1"><a href="#footnote-sgdr">5</a></sup>의 원리와
+Xavier/He)을 정당화한다.<sup class="footnote-reference" id="fr-he-1"><a href="#footnote-he">2</a></sup> <sup class="footnote-reference" id="fr-xavier-1"><a href="#footnote-xavier">3</a></sup></li>
+<li><strong>정규화와 학습률 스케줄링을 목적에 맞게 적용할 수 있다</strong> — dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">4</a></sup>,
+BatchNorm<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">5</a></sup>, 가중치 감쇠를 과적합·불안정한 학습 상황에 맞게 쓰고, “초반에
+크게, 후반에 작게“라는 학습률 스케줄링(StepLR, 코사인, warmup)<sup class="footnote-reference" id="fr-sgdr-1"><a href="#footnote-sgdr">6</a></sup>의 원리와
 초기 학습률 고르는 실무 기준을 적용한다.</li>
 </ul>
 <p>세 절은 한 사슬로 이어진다: 9.1에서 역전파로 계산한 그래디언트는 “연쇄법칙의
@@ -228,26 +228,29 @@ BatchNorm<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-
 <li><a href="chapter09/1.html">9.1 퍼셉트론의 한계, 순전파, 역전파</a> — 퍼셉트론의
 역사와 XOR의 벽(민스키·페퍼트)에서 출발해, 순전파와 역전파 알고리즘
 (연쇄법칙의 재사용)을 다룬다. 2-2-1 신경망 손계산, 수치 미분 검증,
-로지스틱회귀 대비 numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">6</a></sup>로 XOR을 푸는 실험까지 — 은닉층 하나면 “직선으로
+로지스틱회귀 대비 numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">7</a></sup>로 XOR을 푸는 실험까지 — 은닉층 하나면 “직선으로
 갈리는 공간“이 실제로 생긴다는 것을 확인한다.</li>
 <li><a href="chapter09/2.html">9.2 그래디언트 소실·폭발, 활성함수, 초기화</a> —
 연쇄법칙의 곱 형태(층마다 σ’와 가중치를 계속 곱)로 층이 깊어질수록
 그래디언트가 지수적으로 사라지거나(0.25의 10승 ≈ 10⁻⁶) 폭발하는
-원인을 보이고, 활성함수(sigmoid/tanh/ReLU 등)<sup class="footnote-reference" id="fr-rectifier-1"><a href="#footnote-rectifier">7</a></sup> 비교와 활성값의 스케일을
+원인을 보이고, 활성함수(sigmoid/tanh/ReLU 등)<sup class="footnote-reference" id="fr-rectifier-1"><a href="#footnote-rectifier">8</a></sup> 비교와 활성값의 스케일을
 층마다 보존하는 Xavier/He 초기화를 다룬 뒤, “깊은 망의 그래디언트를
 살리는 세 라인 방어선“으로 정리한다.</li>
 <li><a href="chapter09/3.html">9.3 정규화 기법과 학습률 스케줄링</a> — 신경망 전용
 정규화(dropout, BatchNorm, 가중치 감쇠)가 각각 과적합과 학습 불안정을
 어떻게 다스리는지 살펴본 뒤, 학습률 스케줄링(StepLR, 코사인, warmup)의
 “왜” — 골짜기 바닥에서 큰 스텝은 진동하고 작은 스텝만으로는 못 도착하는
-이유 — 과 초기 학습률(α₀)을 고르는 실무 기준을 PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">8</a></sup> 실험과 함께
+이유 — 과 초기 학습률(α₀)을 고르는 실무 기준을 PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">9</a></sup> 실험과 함께
 다룬다.</li>
 </ul>
-<p>이 장의 정규화 도구(dropout·BatchNorm) 원 논문의 그림과, 이 절 전체를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">9</a></sup>.
+<p>이 장의 정규화 도구(dropout·BatchNorm) 원 논문의 그림과, 이 절 전체를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">10</a></sup>.
 <label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)."></span></label>
 <label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."><span class="img-wrapper"><img src="../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."></span></label></p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-minskypapert">
+<p>Minsky, M., Papert, S. (1969). “Perceptrons: An Introduction to Computational Geometry in Perceptual Analysis.” MIT Press. — 단층 퍼셉트론이 XOR(및 그 밖의 선형비분리 함수)를 표현할 수 없음을 수학적으로 증명한 원서로, 본문에서 언급한 1차 “AI 겨울“을 직접 촉발한 책이다. <a href="#fr-minskypapert-1">↩</a></p>
+</li>
 <li id="footnote-he">
 <p>He, K., Zhang, X., Ren, S., Sun, J. (2015). “Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.” arXiv:1502.01852. — ReLU 네트워크를 위한 가중치 초기화 분포(He 초기화)를 제안한 논문. <a href="#fr-he-1">↩</a></p>
 </li>

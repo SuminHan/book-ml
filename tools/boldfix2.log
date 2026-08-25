@@ -1,0 +1,29 @@
+[boldfix] round 1: 14 file(s) queued (concurrency=4)
+[boldfix] finished boldfix_kor_src_ml1_chapter12_1 result=done elapsed=496s :: 6건의 볼드 파싱 실패를 수정 — 닫는 `**` 앞이 `)`/`"`인 4건은 문장부호를 볼드 밖으로, `**\(W_Q, W_K\)**가`는 조사 `가`를 볼드 안으로 포함 — 재빌드 후 코드블록 밖 리터럴 `**` 0건 확인.
+[boldfix] finished boldfix_kor_src_ml1_chapter13_3 result=done elapsed=573s :: 6건의 깨진 볼드(리터럴 `**` 12개)를 닫는 `**` 앞에 붙은 문장부호를 볼드 범위 밖으로 한 글자씩 옮겨 수정했고, 재빌드 후 해당 HTML에 코드블록 밖 리터럴 `**`가 0개로 검증됨.
+[boldfix] finished boldfix_kor_src_ml1_chapter12_3 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml1_chapter16_1 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter04_1 result=done elapsed=461s :: `kor/src/ml2/chapter04/1.md`의 3개 볼드 범위(6개 리터럴 `**`)를 고쳤다 — 줄 69/113은 닫는 `**` 바로 앞의 문장부호(`"`/`)`)가 한글 조사와 붙어 CommonMark에서 강조가 안 닫혔으므로 부호를 볼드 범위 밖으로 옮겼고, 줄 525는 `\(\arg\max\)` 수식 끝 `)`와 조사가 붙어 같은 문제로 수식을 볼드 밖으로 빼서 강조를 "모든 칸의"로 좁혔다. 재빌드 후 코드블록 밖 리터럴 `**` 0건으로 확인하고, 3곳 모두 `<strong>`으로 정상 렌더링되는 것을 검증했다.
+[boldfix] finished boldfix_kor_src_ml1_chapter16_2 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter08_3 result=done elapsed=380s :: 1 case — in `kor/src/ml2/chapter08/3.md` (line 233), the closing `**` of the self-check sentence sat directly after the symbol `✗` so the bold never closed (2 literal `**` in the built HTML); I moved the closing `**` back to right after `면` (pulling `✗` outside the bold). Rebuild + re-scan confirms 0 literal `**` remain outside code blocks and the phrase now renders as `<strong>…</strong>`.
+[boldfix] finished boldfix_kor_src_ml2_chapter06_3 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter06_1 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter09_2 result=done elapsed=403s :: 4쌍의 볼드에서 닫는 `**` 바로 앞의 문장부호(`)`/`"`)를 볼드 범위 밖으로 이동시켜 8개의 리터럴 `**`를 모두 고쳤고, 재빌드 후 코드블록 밖 리터럴 `**` 0건 + 4쌍 모두 `<strong>` 렌더링으로 검증 완료.
+[boldfix] finished boldfix_kor_src_ml2_chapter09_1 result=done elapsed=714s :: Fixed 3 broken bold pairs in `kor/src/ml2/chapter09/1.md` (6 literal `**`) by relocating each closing `**` past the adjacent `%`/`"` particle so it closes properly (lines 99, 222, 315); a rebuild confirms 0 literal `**` remain outside code blocks and all three now render as `<strong>`.
+[boldfix] finished boldfix_kor_src_ml2_chapter09_3 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter10_1 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter12_2 result=failed elapsed=900s :: 타임아웃
+[boldfix] round 1 drained.
+[boldfix] round 2: 6 file(s) queued (concurrency=4)
+[boldfix] finished boldfix_kor_src_ml1_chapter16_2 result=done elapsed=330s :: 2 broken bolds fixed by moving the closing `**` before the trailing punctuation (line 42 `**이`→`**)이`, line 196 `**"라는`→`**"라는`); rebuild verified 0 literal `**` remaining outside code blocks in the HTML, both spans now render as `<strong>`.
+[boldfix] finished boldfix_kor_src_ml1_chapter16_1 result=done elapsed=603s :: 8 broken bold pairs (16 literal `**`) fixed in kor/src/ml1/chapter16/1.md by moving closing `**` before the trailing `)`/`"` (quotes moved outside the bold where the opener needed it too); re-verified with a fresh mdbook build — 0 literal `**` remain outside code blocks in docs/kor/ml1/chapter16/1.html.
+[boldfix] finished boldfix_kor_src_ml1_chapter12_3 result=done elapsed=609s :: 2 orphaned closing `**` fixed in the attention/FFN sentence (restored stripped opening `**` and moved closers before the closing quotes, `**"…섞을지**"를` form); re-built and verified 0 literal `**` outside code blocks in docs/kor/ml1/chapter12/3.html.
+[boldfix] finished boldfix_kor_src_ml2_chapter09_3 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter10_1 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter12_2 result=done elapsed=811s :: Fixed 1 broken bold in `kor/src/ml2/chapter12/2.md` — the literal `**` came from a mis-flanked inner `*` after `중요도)`, which I moved to after `만이` so both the inner `<em>` and the paragraph `<strong>` close properly; a rebuild confirms 0 literal `**` remain outside code blocks in the built HTML and the diff is a single-line change.
+[boldfix] round 2 drained.
+[boldfix] round 3: 2 file(s) queued (concurrency=4)
+[boldfix] finished boldfix_kor_src_ml2_chapter09_3 result=failed elapsed=900s :: 타임아웃
+[boldfix] finished boldfix_kor_src_ml2_chapter10_1 result=failed elapsed=900s :: 타임아웃
+[boldfix] round 3 drained.
+[boldfix] all files done or stuck. Stopping.

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
+            window.path_to_searchindex_js = "../../searchindex-98d9cb3b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -186,7 +186,7 @@
 구현하고, 시드 여러 번을 돌리고, 결과를 정직하게 보고하는 경험을 쌓았다는 뜻
 이다. Chapter 9~15가 이제 두 번째 절반의 도구를 전부 손에 쥐어준 상태다: 표 대신
 신경망(DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">1</a></sup>), 정책을 직접 학습(REINFORCE, PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">2</a></sup>), 시연·선호로부터 배우기
-(모방학습), 물리 시뮬레이션(MuJoCo<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">3</a></sup>, Isaac Sim), 트리 탐색(MCTS<sup class="footnote-reference" id="fr-mcts-1"><a href="#footnote-mcts">4</a></sup>).
+(모방학습), 물리 시뮬레이션(MuJoCo<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">3</a></sup>, Isaac Sim<sup class="footnote-reference" id="fr-isaacsim-1"><a href="#footnote-isaacsim">4</a></sup>), 트리 탐색(MCTS<sup class="footnote-reference" id="fr-mcts-1"><a href="#footnote-mcts">5</a></sup>).
 16.1은 <strong>Chapter 8과 쌍(pair)인 절</strong>이다 — Block A와 정확히 같은 절차
 (환경 고르기 → 구현 → 시드 프로토콜 → 수식적 정당화 → 정직한 발표)를
 완전히 다른 무대(연속제어 + 신경망)에서 다시 집행하는 것이다.</p>
@@ -210,13 +210,13 @@
 <p>왜 알고리즘 수는 “2개 이상“에서 “1개 이상“으로 줄어드는가? Block A에서는
 두 번째 알고리즘이 갱신 규칙 한 줄의 차이(6.3절)였는데, Block B에서는
 각 알고리즘이 별개의 신경망 학습 파이프라인이다 — DQN은 리플레이 버퍼와
-타깃 네트워크가, PPO는 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">5</a></sup>와 클리핑이, 모방학습은 시연 데이터셋이 따라온다.
+타깃 네트워크가, PPO는 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">6</a></sup>와 클리핑이, 모방학습은 시연 데이터셋이 따라온다.
 팀 단위 현실적 예산은 “한 파이프라인을 제대로 돌리고, 여유가 있으면 비교“다.
 <strong>변하지 않는 것이 핵심이다</strong> — 시드, 베이스라인, 평가 분리는 알고리즘과
 무관한 “강화학습 실험의 골격“이라 Block A와 동일하다.</p>
 <blockquote>
 <p><strong>역사: 왜 진자인가.</strong> Pendulum은 OpenAI 생태계의 오픈소스
-라이브러리(baselines → stable-baselines)<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">6</a></sup> 시대부터 연속 제어의 “hello
+라이브러리(baselines → stable-baselines)<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">7</a></sup> 시대부터 연속 제어의 “hello
 world“였다 — 라이브러리의 PPO 튜토리얼 표준 예제가 Pendulum이었고,
 11.2절의 PPO 논문(Schulman et al., 2017)<sup class="footnote-reference" id="fr-ppo-2"><a href="#footnote-ppo">2</a></sup>은 같은 계열의 클래식
 MuJoCo 연속 제어 과제(Swimmer, Hopper 등)에서 알고리즘을 검증했다.
@@ -230,7 +230,7 @@ Pendulum은 그 과제들 중 “가장 작은” 구성원이다 — 3차원 �
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="프로젝트-구조"><a class="header" href="#프로젝트-구조">프로젝트 구조</a></h3>
 <ul>
-<li><strong>환경</strong>: PyBullet 또는 Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">7</a></sup>의 연속제어 환경(Pendulum,
+<li><strong>환경</strong>: PyBullet<sup class="footnote-reference" id="fr-pybullet-1"><a href="#footnote-pybullet">8</a></sup> 또는 Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">9</a></sup>의 연속제어 환경(Pendulum,
 MuJoCo 기반 로봇 환경 등) 중 하나를 고른다.</li>
 <li><strong>적용</strong>: Chapter 9~15 중 최소 하나의 방법(DQN, PPO, 모방학습, 또는
 MCTS)으로 정책을 학습시킨다.</li>
@@ -238,7 +238,7 @@ MCTS)으로 정책을 학습시킨다.</li>
 썼다면 Chapter 11.3의 클리핑이 학습 안정성에 미친 영향을 클리핑
 있음/없음 비교로 제시, (2) 모방학습을 썼다면 Chapter 12.1의 복합
 오차가 실제로 관찰됐는지(전문가 데이터 분포 밖 상태에서 성능이
-떨어지는지) 확인, (3) 도메인 무작위화<sup class="footnote-reference" id="fr-domainrandomization-1"><a href="#footnote-domainrandomization">8</a></sup>를 적용했다면 Chapter 13.1의
+떨어지는지) 확인, (3) 도메인 무작위화<sup class="footnote-reference" id="fr-domainrandomization-1"><a href="#footnote-domainrandomization">10</a></sup>를 적용했다면 Chapter 13.1의
 현실 격차 논의와 연결지어 효과를 설명.</li>
 <li>Chapter 8과 마찬가지로, 학습 곡선(에피소드에 따른 누적 보상 변화)을
 반드시 제시한다 — 지도학습의 손실 곡선에 해당하는, 강화학습에서
@@ -451,7 +451,7 @@ Block B에서는 Pendulum 12만 스텝이 CPU에서 22초인 반면 MuJoCo
 이 알고리즘에 골랐는가</strong>(§“환경 고르는 실전 가이드“의 “무대”
 논리), 하이퍼파라미터(\(\gamma\), \(\lambda\),
 \(\epsilon_{\text{clip}}\), 보상 스케일링 등)와 선택
-근거(Ch10~13 개념)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">9</a></sup>.</li>
+근거(Ch10~13 개념)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">11</a></sup>.</li>
 <li><strong>실험 프로토콜</strong> (1p): 시드 목록, 학습 예산(반복 수 × 스텝 수),
 <strong>평가 프로토콜(결정적 \(a=\mu\), 에피소드 수, 모든 시드에
 동일) 명시</strong>, 하이퍼파라미터 선택 절차(어떤 곡선으로, 어떤
@@ -672,7 +672,7 @@ FAQ와 13~14절의 예산 원리로 진단했고 재확인 계획을 세웠다�
 \(\gamma\)/\(\lambda\), 평가 프로토콜)을 구분해야 한다 —
 (b)가 실질적 산출물이며, “라이브러리 기본값을 그대로 썼습니다“만
 으로는 방법론 적절성 점수의 근거가 되지 않는다.</p>
-<p>이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">10</a></sup></p>
+<p>이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">12</a></sup></p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-dqn">
@@ -684,6 +684,9 @@ FAQ와 13~14절의 예산 원리로 진단했고 재확인 계획을 세웠다�
 <li id="footnote-mujoco">
 <p>Todorov, E., Erez, T., Tassa, Y. (2012). “MuJoCo: A physics engine for model-based control.” IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2012). DOI: 10.1109/IROS.2012.6386109. <a href="#fr-mujoco-1">↩</a></p>
 </li>
+<li id="footnote-isaacsim">
+<p>Isaac Sim의 GPU 물리 시뮬레이션 코어(이전 세대 제품명 Isaac Gym)를 소개한 논문: Makoviychuk, V. et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. <a href="#fr-isaacsim-1">↩</a></p>
+</li>
 <li id="footnote-mcts">
 <p>Browne, C. B., Cowling, P. I., White, M., et al. (2012). “A Survey of Monte Carlo Tree Search Methods.” IEEE Transactions on Computational Intelligence and AI in Games 4(1), 1–43. MCTS 방법론을 체계적으로 정리한 대표적 서베이 — “Monte-Carlo Tree Search“라는 이름과 선택·확장·평가·역전파의 표준 4단계 체계가 이 무렵 확립되었다. <a href="#fr-mcts-1">↩</a></p>
 </li>
@@ -692,6 +695,9 @@ FAQ와 13~14절의 예산 원리로 진단했고 재확인 계획을 세웠다�
 </li>
 <li id="footnote-gym">
 <p>Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang, J., Zaremba, W. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+</li>
+<li id="footnote-pybullet">
+<p>Coumans, E., Bai, Y. (2018). “PyBullet, a GPU accelerated physics engine for robot learning.” IEEE/RAS IROS 2018. <a href="#fr-pybullet-1">↩</a></p>
 </li>
 <li id="footnote-gymnasium">
 <p>Towers, M., Kwiatkowski, A., Terry, J., Balis, J. U., et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032 (NeurIPS Datasets and Benchmarks 2025). 소프트웨어 공식 문서: https://gymnasium.farama.org/ <a href="#fr-gymnasium-1">↩</a></p>
