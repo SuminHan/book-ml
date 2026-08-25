@@ -73,7 +73,7 @@ B 캡스톤: 팀 프로젝트와 학기 총정리")에서는 MCTS를 포함해 �
   (self-play)과의 연결고리를 살펴본다.[^cs234]
 
 [^alphago]: Silver, D. et al. (2016). "Mastering the game of Go with deep neural networks and tree search." Nature 529, 484–489.
-[^alphazero]: Silver, D. et al. (2017). "Mastering the game of Go without human knowledge." Nature 550(7676), 354–359.
+[^alphazero]: Silver, D. et al. (2017). "Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm." arXiv:1712.01815.
 [^uct]: Kocsis, L., Szepesvári, C. (2006). "Bandit Based Monte-Carlo Planning." ECML 2006, pp. 282–293.
 [^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 장의 주제(모델기반 RL, 몬테카를로 트리 탐색)를 더 깊이 다루는 자료.
 [^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)
