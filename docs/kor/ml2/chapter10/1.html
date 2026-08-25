@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-19d50633.js";
+            window.path_to_searchindex_js = "../../searchindex-0be6374e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -373,7 +373,7 @@ Chapter 11의 PPO도 이 항을 목적함수에 포함시키며(실제로 PPO의
 <p>(이는 \(\nabla \log f = \nabla f / f\)라는 미분 공식에서 바로
 나온다.) 이 치환을 통해, 미분이 확률 <strong>밖으로</strong> 빠져나오는 대신 로그
 확률의 그래디언트로 바뀌면서, 다시 기댓값 형태로 정리할 수 있게 된다.
-최종 결과가 <strong>Policy Gradient Theorem</strong>이다:</p>
+최종 결과가 <strong>Policy Gradient Theorem</strong><sup class="footnote-reference" id="fr-suttonpg-1"><a href="#footnote-suttonpg">4</a></sup>이다:</p>
 <p>\[\nabla_\theta J(\theta) = \mathbb{E}_\tau\left[\sum_t \nabla_\theta \log
 \pi_\theta(a_t|s_t) \, G_t\right]\]</p>
 <p>\(G_t\)는 시점 \(t\)부터의 할인된 누적 보상(Chapter 3의 return)이다.
@@ -840,7 +840,7 @@ f(x;\theta)\)는 <em>최대</em> <em>우도</em> <em>추정</em>(MLE)의
 <em>아니라</em>, <em>고전</em> <em>통계</em> <em>기법</em>의 <em>RL</em>
 <em>적용</em>“이라고 <em>읽을</em> <em>수</em> <em>있다</em>. <em>반면</em>,
 <em>10.2</em> <em>절</em> <em>역사</em> <em>섹션</em>에서 <em>짚은</em> <em>바와</em>
-<em>같이</em>, <em>Sutton</em>의 <em>1984</em>년 <em>박사</em> <em>학위논문</em><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>에는
+<em>같이</em>, <em>Sutton</em>의 <em>1984</em>년 <em>박사</em> <em>학위논문</em><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">5</a></sup>에는
 <em>이미</em> <em>“행동의</em> <em>결과를</em> <em>보면서</em> <em>행동</em>
 <em>확률을</em> *조정한다”*는 <em>같은</em> <em>계열</em>의
 <em>알고리즘</em>이 <em>나왔다</em> — <em>수학적</em> <em>근거</em>
@@ -921,14 +921,14 @@ _파라미터화”_인 _이유_다: <em>정규</em> <em>분포는</em>
 <em>복잡한</em> <em>분포</em> <em>구조</em> <em>를</em> <em>가지는</em>
 <em>태스크에서</em> <em>표현력</em> <em>한계</em> <em>에</em> <em>부딪힌다</em>
 — <em>이</em> <em>한계</em> <em>를</em> <em>극복</em> <em>하기</em> <em>위해</em>
-<em>GAN</em><sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">5</a></sup> <em>기반</em> <em>정책</em> <em>또는</em> <em>미분</em> <em>가능</em>
-<em>정상</em> <em>흐름</em> <em>정책</em><sup class="footnote-reference" id="fr-normalizingflow-1"><a href="#footnote-normalizingflow">6</a></sup> <em>이</em> <em>연구</em> <em>되고</em>
+<em>GAN</em><sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">6</a></sup> <em>기반</em> <em>정책</em> <em>또는</em> <em>미분</em> <em>가능</em>
+<em>정상</em> <em>흐름</em> <em>정책</em><sup class="footnote-reference" id="fr-normalizingflow-1"><a href="#footnote-normalizingflow">7</a></sup> <em>이</em> <em>연구</em> <em>되고</em>
 <em>있다</em>.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 정책기반 방법이 Chapter 6·9의 가치기반 방법보다 항상 나은가요?</strong>
 아니다 — 연속 행동공간에서는 정책기반(또는 이번 장 이후의
 Actor-Critic·PPO)이 사실상 유일한 선택지지만, 이산 행동공간이 작고
-데이터가 충분하다면 Q-learning/DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">7</a></sup>이 더 안정적이고 데이터
+데이터가 충분하다면 Q-learning/DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">8</a></sup>이 더 안정적이고 데이터
 효율적인 경우가 많다.</p>
 <p>10.2절의 실습에서 REINFORCE와 Chapter 9의 DQN을
 CartPole(이산 행동공간)에서 비교하며 이 차이를 직접 확인한다.</p>
@@ -950,7 +950,7 @@ CartPole(이산 행동공간)에서 비교하며 이 차이를 직접 확인한�
 <em>대신</em> *\(a = \pi_\theta(s)\)*의 <em>미분</em>
 *\(\nabla_\theta a\)*가 <em>등장</em> <em>한다</em>. <em>이</em>
 <em>“결정적</em> <em>정책</em> *그래디언트”*는
-<em>Chapter</em> <em>13</em> <em>의</em> <em>DDPG</em><sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">8</a></sup>/<em>TD3</em><sup class="footnote-reference" id="fr-td3-1"><a href="#footnote-td3">9</a></sup>/<em>SAC</em><sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">10</a></sup>에서
+<em>Chapter</em> <em>13</em> <em>의</em> <em>DDPG</em><sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">9</a></sup>/<em>TD3</em><sup class="footnote-reference" id="fr-td3-1"><a href="#footnote-td3">10</a></sup>/<em>SAC</em><sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">11</a></sup>에서
 <em>다루며</em>, <em>Actor</em> <em>Critic</em> <em>구조</em>는
 <em>유사하지만</em> <em>미분</em> <em>구조</em>가 <em>다르다</em>.
 <em>확률적</em> <em>정책</em>(이번 <em>절</em>)과 <em>결정적</em>
@@ -988,7 +988,7 @@ CartPole(이산 행동공간)에서 비교하며 이 차이를 직접 확인한�
 (<em>Actor-Critic</em>), <em>Chapter</em> <em>11</em>에서는
 <em>클립</em> + <em>재사용</em>으로 <em>안정성</em>(<em>PPO</em>)을
 <em>추가</em>한다. 정책 그래디언트와 Actor-Critic을 더 깊이 다루는
-자료: Stanford CS234(Reinforcement Learning)<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">11</a></sup>.</p>
+자료: Stanford CS234(Reinforcement Learning)<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">12</a></sup>.</p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-ppo">
@@ -999,6 +999,9 @@ CartPole(이산 행동공간)에서 비교하며 이 차이를 직접 확인한�
 </li>
 <li id="footnote-a3c">
 <p>Mnih, V. et al. (2016). “Asynchronous Methods for Deep Reinforcement Learning.” arXiv:1602.01783. <a href="#fr-a3c-1">↩</a></p>
+</li>
+<li id="footnote-suttonpg">
+<p>Sutton, R. S., McAllester, D., Singh, S., Mansour, Y. (1999). “Policy Gradient Methods for Reinforcement Learning with Function Approximation.” NeurIPS 1999 (published 2000), 1057-1063. — Policy Gradient Theorem을 증명한 원 논문. <a href="#fr-suttonpg-1">↩</a></p>
 </li>
 <li id="footnote-suttonbarto">
 <p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
