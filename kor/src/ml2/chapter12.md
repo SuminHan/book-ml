@@ -18,8 +18,6 @@ Chapter 11에서 PPO[^ppo] — 보상함수를 코드로 쓸 수 있고, 에이�
 (모방학습과 RLHF)를 더 깊이 다루는 자료로 스탠포드 CS234: Reinforcement
 Learning을 추천한다.[^cs234]
 
-![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
-
 ## 세 절이 이어지는 방식
 
 세 절은 "시연에서 배운다 (12.1) → 비교에서 배운다 (12.2) → 어떤 쪽을
@@ -68,10 +66,6 @@ Learning을 추천한다.[^cs234]
   들어가는 이유, 순수 RL이 8스텝 최적을 찾되 학습 중 위험 행동을 30회
   하는 이유, 하이브리드 BC+RL이 초기 안전성(9회)과 추월 속도(193 vs
   273 episode)를 동시에 얻는 이유를 숫자로 확인한다.
-
-![Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다.](../images/ref_rlhf.png)
-
-![InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습.](../images/ref_instructgpt.png)
 
 [^ppo]: Schulman, J. et al. (2017). "Proximal Policy Optimization Algorithms." arXiv:1707.06347.
 [^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/

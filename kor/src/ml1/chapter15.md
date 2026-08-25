@@ -13,10 +13,6 @@
 그리고 완전히 다른 두 원리(적대적 학습, 점진적 노이즈 제거)로 같은 목표에
 도달하는 GAN·Diffusion까지, 생성형 모델의 네 가지 얼굴을 한 장에서 훑는다.
 
-![VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 𝐱, 잠재 변수 𝐳, 파라미터 𝜃 노드와 생성 모델 p_𝜃(𝐳), p_𝜃(𝐱|𝐳) 및 인식 모델 q_𝜙(𝐳|𝐱)의 구조.](../images/ref_vae.png)
-
-![두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1).](../images/ref_word2vec.png)
-
 이 질문은 Chapter 14 "표현학습"의 연장선이다. 거기서 우리는 "정보를 담는
 벡터로 데이터를 압축한다"는 직관을 배웠다 — PCA의 주성분, word2vec[^word2vec]의 단어
 벡터. 이번 장은 그 압축된 표현에 **확률**을 입힌다. 잠재변수 \\(z\\)는
@@ -70,8 +66,6 @@
   문제(DDPM[^ddpm]/DDIM[^ddim], VAE 잠재 공간을 쓰는 Stable Diffusion[^stablediffusion])다. 마지막으로
   네 원리를 잠재변수/학습 방법/안정성/생성 속도로 나란히 비교해 장을
   마무리한다.
-
-![Figure 1: GAN이 학습되면서 샘플 품질이 개선되는 과정을 MNIST로 보여준다 — 판별기 D와 생성기 G가 동시에 갱신되며 (a)에서 (d)로 갈수록 생성 샘플이 실제 데이터에 가까워진다.](../images/ref_gan.png)
 
 [^word2vec]: Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). "Efficient Estimation of Word Representations in Vector Space." arXiv:1301.3781.
 [^vae]: Kingma, D. P., Welling, M. (2013). "Auto-Encoding Variational Bayes." arXiv:1312.6114.

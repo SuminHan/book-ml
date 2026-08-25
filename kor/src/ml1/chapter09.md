@@ -68,8 +68,6 @@ Block A가 막 끝난 지금, 지난 6개 장에서 배운 회귀·생성·거�
   다룬다.
 
 이 장의 정규화 도구(dropout·BatchNorm) 원 논문의 그림과, 이 절 전체를 더 깊이 다루는 자료: [^cs230].
-![표준 신경망(a)과 드롭아웃을 적용한 '얇아진' 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1).](../images/ref_dropout.png)
-![Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다.](../images/ref_batchnorm.png)
 
 [^he]: He, K., Zhang, X., Ren, S., Sun, J. (2015). "Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification." arXiv:1502.01852. — ReLU 네트워크를 위한 가중치 초기화 분포(He 초기화)를 제안한 논문.
 [^xavier]: Glorot, X., Bengio, Y. (2010). "Understanding the Difficulty of Training Deep Feedforward Neural Networks." AISTATS 2010.

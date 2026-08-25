@@ -33,13 +33,9 @@ Isaac Sim[^isaacsim]")에서는 이 물리 엔진을 실전 로봇 연구 수준
 - Chapter 11의 PPO[^ppo]를 이산 행동에서 연속 행동(가우시안 정책[^gae])으로 확장해,
   Reacher 환경에서 목표를 추적하는 정책을 학습시킬 수 있다.
 
-![3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다.](../images/ref_gae.png) [^ddpg][^trpo][^sac]
+[^ddpg][^trpo][^sac]
 
 이 장의 주제(로봇 시뮬레이션·동역학, sim-to-real 격차, 연속 제어)를 더 깊이 다루는 자료: [^cs234]
-
-![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
-
-![TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다.](../images/ref_trpo.png)
 
 이번 주는 세 개의 수업 블록으로 진행된다:
 

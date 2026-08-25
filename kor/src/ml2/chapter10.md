@@ -10,8 +10,6 @@
 장부터 다룰 로봇 시뮬레이션(Chapter 13~14)이 바로 이런 연속 행동공간을
 쓰므로, 이 문제를 정면으로 풀어야 한다.
 
-![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
-
 Chapter 9까지의 답 — Q를 신경망으로 배우고 그 argmax에서 정책을 뽑는
 "가치기반" 경로 — 는 행동을 나열할 수 있는 공간에서는 훌륭했지만,
 연속 공간에서는 그 argmax 자체가 불가능해진다. 이번 장은 "각 행동에
@@ -22,8 +20,6 @@ Chapter 9까지의 답 — Q를 신경망으로 배우고 그 argmax에서 정�
 것이다. 그리고 이 장에서 세울 REINFORCE/Actor-Critic의 기초 위에
 Chapter 11에서는 정책이 한 업데이트 만에 무너지지 않게 막는 PPO[^ppo]를
 세운다.
-
-![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
 
 ## 학습 목표
 
@@ -41,10 +37,6 @@ Chapter 11에서는 정책이 한 업데이트 만에 무너지지 않게 막는
 - [10.1 정책 그래디언트 정리](chapter10/1.md) — Q를 거치지 않고 정책을 직접 파라미터화한다(이산 공간은 softmax, 연속 공간은 상태 조건부 정규분포). 로그미분 트릭으로 Policy Gradient Theorem에 도달하고, 탐색을 학습 목표에 넣는 엔트로피 보너스와 이 정리의 분산 문제[^gae]까지 짚는다.
 - [10.2 REINFORCE와 실습](chapter10/2.md) — 정리를 알고리즘으로 번역한 REINFORCE를 손으로 한 스텝 갱신하고 2행동 밴딧 실험[^silvercourse][^gymnasium]으로 "좋은 행동의 확률이 오른다"를 확인한 뒤, PyTorch 실습에서 CartPole을 학습시키고 "리턴을 정규화하지 않고 그대로 쓰는" 함정을 다룬다.
 - [10.3 Actor-Critic](chapter10/3.md) — 시드마다 다른 학습 곡선이라는 REINFORCE의 높은 분산 문제를 진단하고, 행동에 무관한 베이스라인(가치함수)을 빼도 그래디언트 기댓값은 안 바뀔 때 분산만 줄어든다는 성질을 숫자로 검증한다. 실습에서는 CartPole에서 REINFORCE와 A2C[^a3c]의 학습 곡선을 비교한다.
-
-![A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3).](../images/ref_a3c.png)
-
-![3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다.](../images/ref_gae.png)
 
 ## 세 블록이 이어지는 하나의 라인
 

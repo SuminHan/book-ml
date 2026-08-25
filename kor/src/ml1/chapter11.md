@@ -9,8 +9,6 @@ RNN(Recurrent Neural Network)이라 불리는 모델의 원형이다. 이 "기�
 과정에서 사라지는 그래디언트를 다루려면 게이트가 필요해지고(11.3), 결국
 "순차적 압축 자체의 한계"를 극복하러 Chapter 12의 어텐션[^transformer]으로 이어진다.
 
-![트랜스포머 전체 구조 -- 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1).](../images/ref_transformer.png)
-
 이 장은 Chapter 10의 "재사용" 위에서 자연스럽게 이어진다. CNN이 같은 필터를
 **공간**(이미지 위 위치)에 걸쳐 재사용했다면, RNN은 같은 가중치를 **시간**
 (시퀀스의 시점)에 걸쳐 재사용한다 — 둘 다 "입력이 크든 길든 파라미터 수는
@@ -35,8 +33,6 @@ RNN(Recurrent Neural Network)이라 불리는 모델의 원형이다. 이 "기�
   (소실), 크으면 발산(폭발)함을 숫자로 확인하고, LSTM/GRU가 "곱은
   조절 스위치, 덧셈은 통로"로 설계된 ResNet[^resnet] 스킵 연결의 시간 축 버전을
   원리 수준으로 서술한다.
-
-![Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))](../images/ref_resnet.png)
 
 - 실전 상황에서 기본 RNN → GRU[^gru2014] → LSTM → Attention[^attention] 사이에서 언제 무엇을
   고를지 판단하고, 게이트가 그래디언트 소실을 "완화"할 뿐 "해결"하지

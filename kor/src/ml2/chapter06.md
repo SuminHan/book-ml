@@ -49,8 +49,6 @@ n-step 부트스트래핑과 적격흔적(eligibility traces)을 다루고, 경�
 챕터 이후 DQN(Chapter 9)[^dqn]·액터-크리틱(Chapter 11)까지 이어지는
 on-policy/off-policy의 큰 축도 미리 놓기 쉬워진다.
 
-![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
-
 ## 이번 주 수업 블록
 
 이번 주는 세 개의 수업 블록으로 진행된다:

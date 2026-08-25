@@ -7,8 +7,6 @@
 좋은 성능을 냈다. 이 구조가 **트랜스포머**(Transformer)이며, 지금 우리가
 쓰는 거의 모든 대규모 언어모델(LLM)의 근간이다.[^transformer]
 
-![트랜스포머 전체 구조 -- 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1).](../images/ref_transformer.png)
-
 Chapter 11에서 우리는 RNN/LSTM이 순환 구조로 "기억을 이끈다"는 것을,
 그리고 그 기억이 두 가지 비용을 치른다는 것을 보았다: 병렬화가 안 되는
 순차 연산, 그리고 먼 과거의 정보가 흐려지는 그래디언트 소실. 어텐션은

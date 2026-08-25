@@ -10,8 +10,6 @@ Q-Network)[^dqn]이라 불린 이 결과는 2015년 Nature에 게재되며, 여�
 여기서 "배운 것을 한 번도 본 적 없는 상태에도 퍼뜨리는"
 함수근사[^suttonbarto]와 만나면서, 실용적인 규모로 첫발을 내딛는 순간이다.
 
-![DQN의 합성곱 신경망 구조 -- Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1).](../images/ref_dqn.png)
-
 **이전 챕터와의 연결.** Chapter 8의 캡스톤에서 밴딧부터 n-step까지
 표 기반 강화학습의 이론 전체를 Gymnasium[^gymnasium]의 작은 격자 환경에서 직접
 구현해 보았다. 그런데 그 모든 알고리즘은 "상태-행동 쌍을 표에

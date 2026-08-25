@@ -25,8 +25,6 @@ word2vec[^word2vec], Node2Vec[^node2vec], PageRank는 모두 "단어·노드·�
 질문의 변주이며, 이 장에서 자연스럽게 마주하게 될 임베딩과 같은
 뿌리에서 자라났다.
 
-![두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1).](../images/ref_word2vec.png)
-
 ## 학습 목표
 
 이 장을 마치면 다음을 할 수 있다:
@@ -45,8 +43,6 @@ word2vec[^word2vec], Node2Vec[^node2vec], PageRank는 모두 "단어·노드·�
   선호의 차이) 설명할 수 있다.
 
 ## 세 개의 수업 블록
-
-![트랜스포머 전체 구조 -- 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1).](../images/ref_transformer.png)
 
 이번 주는 세 개의 수업 블록으로 진행된다:
 
@@ -72,11 +68,7 @@ word2vec[^word2vec], Node2Vec[^node2vec], PageRank는 모두 "단어·노드·�
   순서대로 짚고, LoRA[^lora]/PEFT와 RAG[^rag]·에이전트[^react]까지 한 장에
   모은 전체 지도를 제시한다[^peft].
 
-![InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습.](../images/ref_instructgpt.png)
-
 ![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
-
-![Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다.](../images/ref_rlhf.png)
 
 이 장의 주제(언어모델 사전학습, 프롬프팅, 정렬)를 더 깊이 다루는 자료:
 [^cs224n]

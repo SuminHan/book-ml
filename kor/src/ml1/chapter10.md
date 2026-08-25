@@ -64,11 +64,6 @@ CNN이 가중치를 **공간**(이미지 위 위치)에 걸쳐 재사용한다�
   다시 나타나는 그래디언트 소실(깊이 열화)을 스킵 연결(ResNet)과 배치
   정규화[^batchnorm]로 어떻게 해결하는지 PyTorch[^pytorch] 실습으로 확인한다.
 
-![AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조.](../images/ref_alexnet.png)
-
-![Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x)).](../images/ref_resnet.png)
-
-![Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다.](../images/ref_batchnorm.png)
 - [10.3 분류를 넘어서: 탐지, 분할, 전이학습](chapter10/3.md) — "클래스
   벡터 1개"를 내는 분류기를 넘어, 위치까지 붙은 객체 탐지(R-CNN[^rcnn] 3단계
   파이프라인, IoU·NMS)와 픽셀 단위 분할(1×1 합성곱

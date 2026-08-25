@@ -11,8 +11,6 @@ on-policy) — 정책이 바뀌는 순간, 옛 데이터로 계산한 확률/그
 몇 번 더 재사용하면서도, 정책이 한 번에 너무 멀리 움직이지 못하게 막는
 실용적인 해법이다.
 
-![서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A>0), 오른쪽은 음수(A<0)인 경우. (원 논문 Figure 1)](../images/ref_ppo.png)
-
 이 장은 Chapter 10이 남긴 두 공백을 정확히 메우는 장이다. Chapter 10에서
 연속 행동공간을 위한 정책 그래디언트 기계(정책 그래디언트 정리,
 REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 "한 번 쓰고 버리는"
@@ -45,7 +43,7 @@ REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 "한 번 쓰고 �
   \\(\theta\_{\text{old}}\\) 갱신)을 따라갈 수 있고, 연속 제어
   환경(Pendulum)에서 PPO를 학습시킬 수 있다.
 
-![3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다.](../images/ref_gae.png) [^ddpg][^sac]
+[^ddpg][^sac]
 
 이번 주는 세 개의 수업 블록으로 진행된다:
 
@@ -75,8 +73,6 @@ REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 "한 번 쓰고 �
   표준이 됐는지 정리하고, "PPO를 돌린다"는 것이 실제로 어떤 코드
   묶음(경험 수집 → GAE → 정규화 → M 에폭 →
   \\(\theta\_{\text{old}}\\) 갱신)인지 전체 그림으로 마무리한다.[^cs234]
-
-![TRPO의 데이터 생성 절차 (원 논문 Figure 1) — 왼쪽은 시뮬레이션한 단일 트래젝터리의 모든 상태-행동 쌍을 목적 함수에 사용하는 single path 절차, 오른쪽은 줄기(trunk) 트래젝터리에 도달 상태의 일부에서 가지(branch) 롤아웃을 퍼지는 방식(공통 무작위 수)으로 분산 감소 효과를 얻는 vine 절차를 보여준다.](../images/ref_trpo.png)
 
 [^ppo]: Schulman, J. et al. (2017). "Proximal Policy Optimization Algorithms." arXiv:1707.06347.
 [^gae]: Schulman, J. et al. (2015). "High-Dimensional Continuous Control Using Generalized Advantage Estimation." arXiv:1506.02438.
