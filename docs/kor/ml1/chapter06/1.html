@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -257,7 +257,10 @@ scikit-learn<sup class="footnote-reference" id="fr-scikit-learn-1"><a href="#foo
 <p><strong>실습: 계수 경로(coefficient path) — 0은 점진적인 것이 아니라 도착지.</strong>
 “Lasso는 중요하지 않은 계수를 정확히 0으로 만든다“를 <em>경로 전체</em>로
 보려면, 작은 데이터 하나에서 \(\lambda\)를 0에서 서서히 키우며 계수를
-기록하면 된다. 실습 노트북 §3에서 만든 데이터: 30개 점에서
+기록하면 된다. (이 계수 경로를 실제로 계산하는 표준 알고리즘이
+<strong>LARS</strong>(Least Angle Regression)<sup class="footnote-reference" id="fr-lars-1"><a href="#footnote-lars">3</a></sup>다 — Lasso 해가 \(\lambda\)에
+대해 구간별로 선형이라는 성질을 이용해 모든 \(\lambda\)에서의 계수를
+한 번에 구한다.) 실습 노트북 §3에서 만든 데이터: 30개 점에서
 \(x_1\sim U(-1,1)\), \(y = 3x_1 + \text{잡음}(\sigma{=}1)\),
 \(x_2\sim N(0,1)\)(\(y\)와 무관한 순수 잡음 특징). \(\lambda=0\)
 (OLS)에서의 계수는 \(x_1\approx3.09\), \(x_2\approx0.15\)다.
@@ -447,7 +450,7 @@ Lasso는 <strong>진짜 계수 2를 정확히 가진 \(x_1\)을 0으로 만들�
 바뀔 때 예측이 흔들리는 정도}} + \underbrace{\sigma^2}_{\text{데이터의
 잡음}}\]</p>
 <p>(편향-분산 트레이드오프를 더 깊이 다루는 자료: Stanford CS229
-강의록<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">3</a></sup>.)</p>
+강의록<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">4</a></sup>.)</p>
 <p>\(\lambda\)가 이 분해에서 <em>어떤 방향</em>으로 모델을 움직이는지, 4.1절의
 수치 실험(\(f^*(x)=\sin(2\pi x)\), 잡음 \(\sigma=0.5\), 100점,
 300회 재추출)과 <em>완전히 같은 방식으로</em> 재측정한다. 이번엔 모델이
@@ -502,7 +505,7 @@ Lasso는 <strong>진짜 계수 2를 정확히 가진 \(x_1\)을 0으로 만들�
 경향이 있어 불안정할 수 있다(어떤 특징이 남을지가 데이터를 살짝만
 바꿔도 달라질 수 있다). Ridge는 상관된 특징들의 가중치를 서로 비슷하게
 나눠 갖는 경향이 있어 더 안정적이다. 실전에서는 둘을 섞은
-<strong>엘라스틱넷</strong>(Elastic Net, \(R(w) = \alpha\|w\|_1 +
+<strong>엘라스틱넷</strong><sup class="footnote-reference" id="fr-elasticnet-1"><a href="#footnote-elasticnet">5</a></sup> (Elastic Net, \(R(w) = \alpha\|w\|_1 +
 (1-\alpha)\|w\|_2^2\))도 널리 쓰인다.</p>
 <p><strong>Q. Lasso가 0으로 만든 특징이 <em>사실 중요했지만</em> 효과가 작아서
 떨어진 경우를, 어떻게 구별할 수 있나요?</strong> 구분할 <em>수 없는</em> 것이
@@ -600,8 +603,14 @@ soft-thresholding(\(|z_j|\le\lambda\)이면 0)으로 약한 특징을
 <li id="footnote-scikit-learn">
 <p>Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). “Scikit-learn: Machine Learning in Python.” <em>Journal of Machine Learning Research</em> 12, 2825–2830. arXiv:1201.0490. <a href="#fr-scikit-learn-1">↩</a></p>
 </li>
+<li id="footnote-lars">
+<p>Efron, B., Hastie, T., Johnstone, I., Tibshirani, R. (2004). “Least Angle Regression.” <em>Annals of Statistics</em> 32(2), 247–304. arXiv:math/0406456. <a href="#fr-lars-1">↩</a></p>
+</li>
 <li id="footnote-cs229">
 <p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-elasticnet">
+<p>Zou, H., Hastie, T. (2005). “Regularization and Variable Selection via the Elastic Net.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 67(2), 301–320. <a href="#fr-elasticnet-1">↩</a></p>
 </li>
 </ol>
 

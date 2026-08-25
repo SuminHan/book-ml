@@ -57,7 +57,7 @@ MDP였다. 이번 장은 한쪽으로는 Chapter 2가 남긴 문제를 엄밀한
   손계산과 코드로 검증한다. 반복 대입으로 재귀식을 푸는 절차가 다음 장의
   정책평가 알고리즘과 정확히 같은 것임을 예고한다. 이때 이 절의 방정식은
   **기대**(expectation) 버전이고, 다음 장의 방정식은 \\(\max\\)이 붙은
-  **최적** 버전임을 구분해둔다.
+  **최적** 버전임을 구분해둔다.[^silvercourse]
 
 **다음 챕터로.** Chapter 4 동적계획법은 이번 장의 MDP를 실제로 "풀기"
 시작한다. 이번 장에서 세운 목표 — "누적 보상을 최대화하는 행동을 고른다" —
@@ -70,3 +70,4 @@ MDP였다. 이번 장은 한쪽으로는 Chapter 2가 남긴 문제를 엄밀한
 [^suttonbarto]: Sutton, R. S., Barto, A. G. (2018). "Reinforcement Learning: An Introduction" (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html
 [^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
 [^dqn]: Mnih, V. et al. (2015). "Human-level control through deep reinforcement learning." Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.)
+[^silvercourse]: Silver, D. (2015). "UCL Course on Reinforcement Learning," Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0).

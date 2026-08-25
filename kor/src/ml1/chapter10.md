@@ -1,12 +1,12 @@
 # Chapter 10. CNN 기초와 응용 (CNN Basics & Applications)
 
 1959년, 신경생리학자 데이비드 허블(David Hubel)과 토르스텐 비셀(Torsten
-Wiesel)은 고양이의 시각피질에 전극을 꽂고 다양한 시각 자극을 보여주는 실험을
+Wiesel)[^hubelwiesel]은 고양이의 시각피질에 전극을 꽂고 다양한 시각 자극을 보여주는 실험을
 했다. 그 결과 특정 뉴런은 화면 **전체**가 아니라 아주 좁은 영역(수용장,
 receptive field)의 특정 방향 선분에만 반응한다는 것을 발견했다 — 뇌는 이미지를
 통째로 보는 게 아니라, 작은 지역별 패턴을 감지하는 뉴런들을 층층이 쌓아 점점
 더 복잡한 패턴(선 → 모서리 → 도형 → 사물)을 조합해낸다는 뜻이었다. 이 발견은
-1980년대 후쿠시마 쿠니히코의 네오코그니트론을 거쳐, 지금 쓰이는 **합성곱
+1980년대 후쿠시마 쿠니히코의 네오코그니트론[^neocognitron]을 거쳐, 지금 쓰이는 **합성곱
 신경망**(Convolutional Neural Network, CNN)의 직접적인 영감이 됐다. 이번
 장은 합성곱이라는 연산 자체(전반부)와, 그걸 실전에서 어떻게 재사용·확장하는지
 (후반부)를 한 장에서 함께 다룬다.
@@ -32,7 +32,7 @@ CNN이 가중치를 **공간**(이미지 위 위치)에 걸쳐 재사용한다�
   파라미터 수와 FLOPs를 MLP와 비교해 "왜 합성곱이 효율적인가"를 숫자로
   설명한다.
 - 합성곱과 풀링이 "좁아지고 깊어지는" CNN 구조를 만들 때 각각 (패턴 감지
-  vs. 수용장 확대·해상도 축소) 어떤 역할을 하는지 설명하고, LeNet에서
+  vs. 수용장 확대·해상도 축소) 어떤 역할을 하는지 설명하고, LeNet[^lenet]에서
   ResNet[^resnet]
   까지 구조가 어떻게 변했는지, 스킵 연결이 왜 깊은망을 가능하게 하는지
   서술한다.
@@ -62,7 +62,7 @@ CNN이 가중치를 **공간**(이미지 위 위치)에 걸쳐 재사용한다�
   수용장이 넓어지는 기제를 다룬다. LeNet-5 → AlexNet[^alexnet] →
   VGGNet[^vggnet]의 구조를 10.1의 공식으로 풀어본 뒤, 깊이를 쌓을 때
   다시 나타나는 그래디언트 소실(깊이 열화)을 스킵 연결(ResNet)과 배치
-  정규화[^batchnorm]로 어떻게 해결하는지 PyTorch 실습으로 확인한다.
+  정규화[^batchnorm]로 어떻게 해결하는지 PyTorch[^pytorch] 실습으로 확인한다.
 
 ![AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조.](../images/ref_alexnet.png)
 
@@ -86,3 +86,7 @@ CNN이 가중치를 **공간**(이미지 위 위치)에 걸쳐 재사용한다�
 [^fcn]: Long, J., Shelhamer, E., Darrell, T. (2014). "Fully Convolutional Networks for Semantic Segmentation." CVPR 2015. arXiv:1411.4038.
 [^googlenet]: Szegedy, C., Liu, W., Jia, Y., et al. (2014). "Going Deeper with Convolutions." arXiv:1409.4842 (CVPR 2015).
 [^transferlearning]: Pan, S. J., Yang, Q. (2010). "A Survey on Transfer Learning." IEEE Transactions on Knowledge and Data Engineering 22(10), 134–151. doi:10.1109/TKDE.2009.191.
+[^pytorch]: Paszke, A., Gross, S., Massa, F., et al. (2019). "PyTorch: An Imperative Style, High-Performance Deep Learning Library." arXiv:1912.01703. — PyTorch 프레임워크의 원 논문(시스템 페이퍼).
+[^hubelwiesel]: Hubel, D. H., Wiesel, T. N. (1962). "Receptive Fields, Cells and Columns of the Cat's Visual Cortex." *Journal of Physiology* 160(1), 106–154. — 시각피질의 단순세포·복합세포가 위치를 가리지 않고 방향·모서리 패턴에 선택적으로 반응한다는 수용장(receptive field) 연구로, 합성곱의 "작은 필터를 온 이미지에 재사용한다"는 설계 원형의 생물학적 근거다. (참고: 허블과 비셀은 1981년 노벨상 수상 논문인 "Receptive Fields of Single Neurons in the Cat's Striate Cortex"(*J. Physiol.* 1943)으로 이미 수용장을 기술해 두었고, 1962년 논문은 이 계층적 조직을 확장한 것이다.)
+[^neocognitron]: Fukushima, K. (1980). "Neocognitron: A Self-Organizing Neural Network Model for a Mechanism of Pattern Recognition Unaffected by Shift in Position." *Biological Cybernetics* 36(4), 193–200. — 시각피질의 단순세포·복합세포 계층 구조를 모방한 CNN의 선구 모델. "합성곱층"이라는 용어 자체가 이 논문에서 처음 쓰였다.
+[^lenet]: LeCun, Y., Bottou, L., Bengio, Y., Haffner, P. (1998). "Gradient-Based Learning Applied to Document Recognition." *Proceedings of the IEEE* 86(11), 2278–2324. — 학습 가능한 CNN(LeNet-5)을 실전에서 검증한 원 논문.

@@ -28,7 +28,7 @@ RNN(Recurrent Neural Network)이라 불리는 모델의 원형이다. 이 "기�
   시퀀스 길이에 무관한 이유를 설명하며, 같은 입력이 반복되면 은닉 상태가
   고정점으로 수렴하는 행동을 예측한다.
 - BPTT의 재귀 구조("본 시점의 출력 오차 + 다음 시점에서 흘러온
-  그래디언트"의 합)를 유도하고, numpy로 문자 단위 RNN 언어모델을 학습
+  그래디언트"의 합)를 유도하고, numpy[^numpy]로 문자 단위 RNN 언어모델을 학습
   시키며, 왜 그래디언트를 공유 가중치에 `+=`로 *누적*해야 하고 왜
   그래디언트 클리핑이 필수인지를 설명한다.
 - 그래디언트 곱적이 W_hh의 고유값이 1보다 작으면 지수적으로 0으로
@@ -38,7 +38,7 @@ RNN(Recurrent Neural Network)이라 불리는 모델의 원형이다. 이 "기�
 
 ![Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))](../images/ref_resnet.png)
 
-- 실전 상황에서 기본 RNN → GRU[^gru2014] → LSTM → Attention 사이에서 언제 무엇을
+- 실전 상황에서 기본 RNN → GRU[^gru2014] → LSTM → Attention[^attention] 사이에서 언제 무엇을
   고를지 판단하고, 게이트가 그래디언트 소실을 "완화"할 뿐 "해결"하지
   않는 이유를 설명한다.
 
@@ -79,3 +79,5 @@ LLM "다음 토큰 예측"의 가장 축소된 형태 — 차이가 크기일 �
 [^cs224n]: 더 깊이 보려면: Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/
 [^transformer]: Vaswani, A. et al. (2017). "Attention Is All You Need." arXiv:1706.03762.
 [^pascanu2013]: Pascanu, R., Gulcehre, C., et al. (2013). "How to Construct Deep Recurrent Neural Networks." arXiv:1312.6026.
+[^attention]: Bahdanau, D., Cho, K., Bengio, Y. (2014). "Neural Machine Translation by Jointly Learning to Align and Translate." ICLR 2015. arXiv:1409.0473.
+[^numpy]: Harris, C. R. et al. (2020). "Array programming with NumPy." Nature 585, 357 (2020); arXiv:2006.10256.

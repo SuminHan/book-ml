@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -470,12 +470,12 @@ P(x_t \mid x_1, \ldots, x_{t-1})\]</p>
 </thead>
 <tbody>
 <tr><td>데이터</td><td>인터넷 규모의 방대한 텍스트</td><td>특정 목적에 맞는 비교적 적은 데이터</td></tr>
-<tr><td>목표</td><td>다음 토큰 예측(비지도)</td><td>특정 작업(대화, 지시 따르기 등)에 맞춘 지도학습<sup class="footnote-reference" id="fr-gpt1-1"><a href="#footnote-gpt1">6</a></sup></td></tr>
+<tr><td>목표</td><td>다음 토큰 예측(비지도)</td><td>특정 작업(대화, 지시 따르기 등)에 맞춘 지도학습<sup class="footnote-reference" id="fr-gpt1-1"><a href="#footnote-gpt1">6</a></sup> <sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">7</a></sup> <sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">8</a></sup></td></tr>
 <tr><td>결과</td><td>폭넓지만 다듬어지지 않은 능력</td><td>목적에 맞게 다듬어진 행동</td></tr>
 </tbody>
 </table>
 </div>
-<p>![인터넷 규모 텍스트로 다음 토큰 예측을 학습하는 사전학습(수천 GPU, 수 주~수 달) → 기본 모델 → 질문-답변/선호 데이터로 SFT·RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">7</a></sup> <sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">8</a></sup> 파인튜닝(소규모 클러스터, 수 시간~수 주) → 지시를 따르는 모델의 2단계 파이프라인. 파인튜닝은 사전학습의 가중치를 재사용한다는 것이 핵심이다](../../images/ch13_1_pretrain_finetune_pipeline.svg)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch13_1_pretrain_finetune_pipeline.svg" alt="인터넷 규모 텍스트로 다음 토큰 예측을 학습하는 사전학습(수천 GPU, 수 주~수 달) → 기본 모델 → 질문-답변/선호 데이터로 SFT·RLHF 파인튜닝(소규모 클러스터, 수 시간~수 주) → 지시를 따르는 모델의 2단계 파이프라인. 파인튜닝은 사전학습의 가중치를 재사용한다는 것이 핵심이다"><span class="img-wrapper"><img src="../../images/ch13_1_pretrain_finetune_pipeline.svg" alt="인터넷 규모 텍스트로 다음 토큰 예측을 학습하는 사전학습(수천 GPU, 수 주~수 달) → 기본 모델 → 질문-답변/선호 데이터로 SFT·RLHF 파인튜닝(소규모 클러스터, 수 시간~수 주) → 지시를 따르는 모델의 2단계 파이프라인. 파인튜닝은 사전학습의 가중치를 재사용한다는 것이 핵심이다"></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)를 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)를 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."><span class="img-wrapper"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."></span></label></p>
 <p>사전학습은 계산 비용이 막대하지만(수천 개의 GPU로 몇 주~몇 달),

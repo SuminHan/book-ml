@@ -146,6 +146,8 @@ def running_task_ids():
 def _task_kind(task_id):
     if task_id.startswith("reflib_"):
         return "레퍼런스 라이브러리"
+    if task_id.startswith("capt_"):
+        return "노트북 캡션 영어 번역"
     if task_id.endswith("_cite"):
         return "각주/그림 삽입"
     if "_opener" in task_id:

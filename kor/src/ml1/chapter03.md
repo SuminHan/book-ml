@@ -27,7 +27,7 @@ Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한�
   등장)가 주어졌을 때 주어진 메일의 스팸 확률을 손으로 계산한다
 - 판별적 모델과 생성적 모델의 차이를 설명하고, "사전확률로 가중한 두
   가능도 곡선의 교차점"이 어떻게 결정 경계가 되는지 서술한다
-- GDA의 파라미터가 표본 평균·공분산으로 닫힌 형태로 추정됨(최대우도)을
+- GDA[^gda]의 파라미터가 표본 평균·공분산으로 닫힌 형태로 추정됨(최대우도)을
   확인하고, 결정 경계가 항상 직선이 되는 이유를 설명한다
 - 현실에서는 거의 틀린 나이브베이즈의 독립 가정이 왜 실전에서는 안전한지
   (파라미터 수가 차원에 대해 선형으로만 늘기 때문)와, 어디서 깨지는지
@@ -67,3 +67,4 @@ Chapter 2와는 근본적으로 다른 방향에서 분류 문제에 접근한�
 
 [^gspam]: Paul Graham (2002). "A Plan for Spam." http://www.paulgraham.com/spam.html -- 스팸 메일과 정상 메일에서 단어가 나타나는 빈도를 세고, 이를 베이즈 정리로 조합해 스팸일 확률을 계산하는 나이브베이즈 스팸 필터를 제안한 글.
 [^cs229]: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf
+[^gda]: Ng, A. Y., Jordan, M. I. (2001). "On Discriminative vs. Generative Classifiers." NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminative Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)와 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다.

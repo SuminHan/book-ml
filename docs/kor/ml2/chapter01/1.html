@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -248,15 +248,15 @@
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <ul>
 <li><strong>2017</strong> — <strong>AlphaGo</strong><sup class="footnote-reference" id="fr-alphago-1"><a href="#footnote-alphago">5</a></sup>가 바둑 9단(이세돌)을 4:1로 이긴다. 정책·가치
-네트워크 + **몬테카를로 트리 탐색(MCTS)**의 결합. Chapter 15.</li>
+네트워크 + <strong>몬테카를로 트리 탐색(MCTS)</strong><sup class="footnote-reference" id="fr-mcts-1"><a href="#footnote-mcts">6</a></sup>의 결합. Chapter 15.</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_alphago.png" alt="정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_alphago.png" alt="정책망·가치망 학습 파이프라인(왼쪽)과 두 신경망의 합성곱 구조(오른쪽) (원 논문 Figure 1)."></span></label></p>
 <ul>
-<li><strong>2020년대</strong> — <strong>MuJoCo</strong>(DeepMind가 인수한 정교한 물리엔진)<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">6</a></sup>와
-<strong>Isaac Sim</strong>(NVIDIA의 GPU 가속 시뮬레이션)이 로봇 RL의 “무대“를
+<li><strong>2020년대</strong> — <strong>MuJoCo</strong>(DeepMind가 인수한 정교한 물리엔진)<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">7</a></sup>와
+<strong>Isaac Sim</strong>(NVIDIA의 GPU 가속 시뮬레이션)<sup class="footnote-reference" id="fr-isaacsim-1"><a href="#footnote-isaacsim">8</a></sup>이 로봇 RL의 “무대“를
 대폭 확장한다. Chapter 13~14.</li>
-<li><strong>2022~</strong> — <strong>인간 피드백에 의한 강화학습(RLHF)</strong><sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">7</a></sup>이 대규모 언어모델
-(GPT-4<sup class="footnote-reference" id="fr-gpt4-1"><a href="#footnote-gpt4">8</a></sup>, LLaMA<sup class="footnote-reference" id="fr-llama-1"><a href="#footnote-llama">9</a></sup> 등)의 정렬(alignment) 기술로 부상한다. “사람의 선호를
+<li><strong>2022~</strong> — <strong>인간 피드백에 의한 강화학습(RLHF)</strong><sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">9</a></sup>이 대규모 언어모델
+(GPT-4<sup class="footnote-reference" id="fr-gpt4-1"><a href="#footnote-gpt4">10</a></sup>, LLaMA<sup class="footnote-reference" id="fr-llama-1"><a href="#footnote-llama">11</a></sup> 등)의 정렬(alignment) 기술로 부상한다. “사람의 선호를
 보상으로 쓴 강화학습“이라는, 이 학기의 Chapter 12가 같은 뼈대를
 따른다.</li>
 </ul>
@@ -276,7 +276,7 @@
 <tr><td>데이터</td><td>미리 주어짐, \((x,y)\) 쌍</td><td>에이전트가 행동하며 스스로 만들어냄</td></tr>
 <tr><td>신호</td><td>정답 \(y\)</td><td>보상(reward) — 얼마나 좋았는지의 점수</td></tr>
 <tr><td>시간</td><td>각 샘플이 독립적</td><td>지금 행동이 미래에 보게 될 상태에 영향을 줌</td></tr>
-<tr><td>새로운 딜레마</td><td>없음</td><td>탐험(exploration) vs 활용(exploitation)<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">10</a></sup></td></tr>
+<tr><td>새로운 딜레마</td><td>없음</td><td>탐험(exploration) vs 활용(exploitation)<sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">12</a></sup></td></tr>
 </tbody>
 </table>
 </div>
@@ -321,7 +321,7 @@ Chapter 9(DQN)의 탐색 전략에서, Chapter 11(PPO)의 엔트로피
 <p>지도학습의 라벨은 “외부에서 주어졌다”. 강화학습의 보상은 <em>내가
 설계</em>한다. 이 차이가 실무에서 결정적이다 — 보상을 잘못 설계하면
 에이전트는 <strong>보상 자체가 원하는 것이 아니라 보상을 회피하는 방법</strong>을
-배운다. 고전적인 예가 <strong>보상 해킹</strong>(reward hacking)<sup class="footnote-reference" id="fr-aiproc-1"><a href="#footnote-aiproc">11</a></sup>:</p>
+배운다. 고전적인 예가 <strong>보상 해킹</strong>(reward hacking)<sup class="footnote-reference" id="fr-aiproc-1"><a href="#footnote-aiproc">13</a></sup>:</p>
 <ul>
 <li>진흙탕을 지나는 로봇에 “진흙 밟기 −1” 보상을 주면, 로봇은 진흙을
 지나는 대신 <strong>진흙을 <em>보지 못하게</em></strong>(센서를 덮는 등) 하는 전략을
@@ -446,7 +446,7 @@ RL“만으로는 풀 수 없고, <strong>신경망 근사 + 정책기반 방법
 걸리고, (2) <strong>로봇이 고장 날 위험</strong>이 있고, (3) 안전 문제가
 발생한다. 로봇을 학습시키는 표준적인 해결책은 <strong>시뮬레이션</strong>이다.</p>
 <p>하지만 <strong>시뮬레이션에서 학습한 정책이 실제 로봇에서 통하는가</strong> —
-이 간극을 <strong>sim-to-real gap</strong><sup class="footnote-reference" id="fr-simtoreal-1"><a href="#footnote-simtoreal">12</a></sup>이라고 부른다. (13.1에서 다룬다.)
+이 간극을 <strong>sim-to-real gap</strong><sup class="footnote-reference" id="fr-simtoreal-1"><a href="#footnote-simtoreal">14</a></sup>이라고 부른다. (13.1에서 다룬다.)
 시뮬레이션이 “완벽한” 현실의 대체재는 아니지만, <em>싼</em> 현실의
 대체재이므로, “실제로 한 번도 로봇을 구동하지 않고, 시뮬레이션
 만으로 학습한 정책을 실제 로봇에 옮기는 것“이 최근 로봇
@@ -477,7 +477,7 @@ env.close()
 “−2~+2 토크 아무 값”. 이 차이는 <em>알고리즘 선택</em>까지 바꾼다
 (위에서 봤듯).</p>
 <h3 id="이번-학기의-실습-환경-gymnasium"><a class="header" href="#이번-학기의-실습-환경-gymnasium">이번 학기의 실습 환경: Gymnasium</a></h3>
-<p>실습은 <strong>Gymnasium</strong>(옛 OpenAI Gym의 후신)<sup class="footnote-reference" id="fr-gym-1"><a href="#footnote-gym">13</a></sup>이라는 표준
+<p>실습은 <strong>Gymnasium</strong>(옛 OpenAI Gym의 후신)<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">15</a></sup>이라는 표준
 라이브러리로 만든 환경 위에서 진행한다. 어떤 환경이든
 “현재 상태를 관측하고(<code>reset</code>), 행동을 하나 취하면(<code>step</code>) 다음
 상태·보상·종료 여부가 돌아온다“는 똑같은 인터페이스를 따른다.
@@ -535,7 +535,7 @@ env.close()
 (table) 기반으로 차근차근 쌓는 것이다.</p>
 <ul>
 <li><strong>Chapter 2~7</strong>의 순서는, 강화학습의 표준 교과서인 Sutton과
-Barto의 <em>Reinforcement Learning: An Introduction</em><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">14</a></sup>의
+Barto의 <em>Reinforcement Learning: An Introduction</em><sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">16</a></sup>의
 목차를 그대로 따른다. 이 순서가 “왜” 이 순서인가를 한 문장으로 말하면,
 <strong>더 단순한 문제에서 더 복잡한 문제로, 한 단계씩 도구를 추가한다</strong>:
 <ul>
@@ -610,7 +610,7 @@ Sim)까지. <em>이번 학기의 “무대“가 여기서 본격 등장한다.<
 <h2 id="ml1과의-연결-이-과목은-ml1의-다음이다"><a class="header" href="#ml1과의-연결-이-과목은-ml1의-다음이다">ML1과의 연결: 이 과목은 ML1의 “다음“이다</a></h2>
 <p>ML1을 듣지 않았어도 이 과목을 바로 시작할 수 있다 — 이번 학기가
 필요로 하는 신경망 지식은 <strong>순전파, 역전파, 그리고 경사하강법으로
-손실을 줄인다는 감각</strong> 정도이며, 바로 다음 절(1.2)에서 그 핵심만
+손실을 줄인다는 감각</strong> 정도이며<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">17</a></sup>, 바로 다음 절(1.2)에서 그 핵심만
 압축해서 다시 짚는다. (ML1을 먼저 들었다면 익숙한 내용이니
 빠르게 훑고 넘어가도 좋다.)</p>
 <p>ML1과 ML2를 “같은 연속물“로 본다면, 그 연결 고리를 한 문장으로
@@ -642,7 +642,7 @@ ML2는 “행동하며 데이터를 스스로 만들어내는 에이전트를 �
 질문에 “예“라고 답하는 <em>한 갈래 전체</em>를 파는 것이 목표다. 그리고
 ML1의 Ch. 13에서 “왜 GPT-4 같은 모델이 사람의 뜻에 맞게 말
 하는가“로 잠깐 만났던 <strong>정렬(alignment)</strong> 문제도, 그 <em>내면</em>이
-RLHF(Chapter 12)<sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">15</a></sup>라는 사실에서 다시 만난다 — “사람의 선호
+RLHF(Chapter 12)<sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">18</a></sup>라는 사실에서 다시 만난다 — “사람의 선호
 비교를 보상으로 써서 모델을 훈련하는 것“이 바로 그 핵심
 기법이다. 이 “ML1에서 한 줄로 지나간 개념이 ML2에서 한 장
 정도가 된다“는 감각이, ML1→ML2를 한 연속된 학문으로 읽게 하는
@@ -661,7 +661,7 @@ RLHF(Chapter 12)<sup class="footnote-reference" id="fr-instructgpt-1"><a href="#
 </ul>
 <p>이 “틀“을 머릿속에 먼저 걸어두면, Block B의 DQN·PPO·MCTS가
 <em>별개의 알고리즘</em>이 아니라, <em>같은 틀의 다른 적용</em>으로 읽힌다.</p>
-<p>이 주제(강화학습 전반)를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">16</a></sup></p>
+<p>이 주제(강화학습 전반)를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">19</a></sup></p>
 <h2 id="확인-문제-보상이-정답으로-바뀌면-어떻게-되는가"><a class="header" href="#확인-문제-보상이-정답으로-바뀌면-어떻게-되는가">확인 문제: “보상“이 “정답“으로 바뀌면 어떻게 되는가?</a></h2>
 <p>다음은 지도학습과 강화학습을 <em>같은 문제</em>로 다시 설정한 것이다.
 “이 문제를 지도학습으로 풀 수 있는가? 그럴 수 있다면, 왜 강화학습을
@@ -787,8 +787,14 @@ CartPole(이산 2행동)과 Pendulum(연속 행동)의 <em>행동 공간</em>이
 <li id="footnote-alphago">
 <p>Silver, D. et al. (2016). “Mastering the game of Go with deep neural networks and tree search.” Nature 529, 484–489. <a href="#fr-alphago-1">↩</a></p>
 </li>
+<li id="footnote-mcts">
+<p>Browne, C. B., Cowling, P. I., White, M., et al. (2012). “A Survey of Monte Carlo Tree Search Methods.” IEEE Transactions on Computational Intelligence and AI in Games 4(1), 1–43. MCTS 방법론을 체계적으로 정리한 대표적 서베이 — “Monte-Carlo Tree Search“라는 이름과 선택·확장·평가·역전파의 표준 4단계 체계가 이 무렵 확립되었다. <a href="#fr-mcts-1">↩</a></p>
+</li>
 <li id="footnote-mujoco">
 <p>Todorov, E., Erez, T., Tassa, Y. (2012). “MuJoCo: A physics engine for model-based control.” JMLR 13(2012) 797–823. <a href="#fr-mujoco-1">↩</a></p>
+</li>
+<li id="footnote-isaacsim">
+<p>Makoviychuk, V. et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. (Isaac Sim의 기반이 되는 GPU 병렬 물리 시뮬레이션의 원 논문) <a href="#fr-isaacsim-1">↩</a></p>
 </li>
 <li id="footnote-rlhf">
 <p>Christiano, P. et al. (2017). “Deep reinforcement learning from human preferences.” NeurIPS 2017. arXiv:1706.03741. <a href="#fr-rlhf-1">↩</a></p>
@@ -808,11 +814,14 @@ CartPole(이산 2행동)과 Pendulum(연속 행동)의 <em>행동 공간</em>이
 <li id="footnote-simtoreal">
 <p>Zhao, W., Peña Queralta, J., Westerlund, T. (2020). “Sim-to-Real Transfer in Deep Reinforcement Learning for Robotics: a Survey.” IEEE SSCI 2020. arXiv:2009.13303. <a href="#fr-simtoreal-1">↩</a></p>
 </li>
-<li id="footnote-gym">
-<p>Brockman, G. et al. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-gym-1">↩</a></p>
+<li id="footnote-gymnasium">
+<p>Towers, M. et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. (NeurIPS 2025 Datasets and Benchmarks) <a href="#fr-gymnasium-1">↩</a></p>
 </li>
 <li id="footnote-suttonbarto">
 <p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-cs230">
+<p>Stanford CS230: Deep Learning. https://cs230.stanford.edu/ <a href="#fr-cs230-1">↩</a></p>
 </li>
 <li id="footnote-instructgpt">
 <p>Ouyang, L. et al. (2022). “Training language models to follow instructions with human feedback.” arXiv:2203.02155. <a href="#fr-instructgpt-1">↩</a></p>

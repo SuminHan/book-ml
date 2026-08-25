@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -206,9 +206,9 @@ ML1의 14개 장은 이미 손에 있고, 할 일은 그걸 “세 가지 언어
 </div>
 <h3 id="ml1-총정리"><a class="header" href="#ml1-총정리">ML1 총정리</a></h3>
 <p>이번 학기는 선형/로지스틱회귀의 경사하강법에서 시작해, 생성적 분류(나이브
-베이즈/GDA), 거리·마진 기반 모델(kNN, SVM), 트리 앙상블(GBDT), 신경망(역전파,
+베이즈/GDA<sup class="footnote-reference" id="fr-gda-1"><a href="#footnote-gda">1</a></sup>), 거리·마진 기반 모델(kNN, SVM), 트리 앙상블(GBDT), 신경망(역전파,
 CNN), 시퀀스·어텐션·LLM, 비지도학습(PCA, 임베딩), 잠재변수 생성모델(EM/GMM,
-VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">1</a></sup>, GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">2</a></sup>, Diffusion<sup class="footnote-reference" id="fr-ddpm-1"><a href="#footnote-ddpm">3</a></sup>)까지 왔다.</p>
+VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">2</a></sup>, GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">3</a></sup>, Diffusion<sup class="footnote-reference" id="fr-ddpm-1"><a href="#footnote-ddpm">4</a></sup>)까지 왔다.</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -220,11 +220,11 @@ VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">1</a></
 <tr><td>Ch04</td><td>kNN/k-means</td><td>“가깝다“만으로 예측·군집화할 수 있는가, 그 한계는 무엇인가</td></tr>
 <tr><td>Ch05</td><td>SVM</td><td>확률이 아니라 마진으로 경계를 정할 수 있는가</td></tr>
 <tr><td>Ch06</td><td>정규화/모델선택</td><td>과적합을 손실함수로 어떻게 통제하는가</td></tr>
-<tr><td>Ch07</td><td>트리/랜덤포레스트/GBDT/SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">4</a></sup></td><td>데이터를 잘 나누는 질문을 어떻게 고르고, 그 예측을 어떻게 설명하는가</td></tr>
+<tr><td>Ch07</td><td>트리/랜덤포레스트/GBDT/SHAP<sup class="footnote-reference" id="fr-shap-1"><a href="#footnote-shap">5</a></sup></td><td>데이터를 잘 나누는 질문을 어떻게 고르고, 그 예측을 어떻게 설명하는가</td></tr>
 <tr><td>Ch09</td><td>신경망/역전파/학습기법</td><td>층을 어떻게 학습시키고, 깊은 신경망은 왜 학습이 어려운가</td></tr>
 <tr><td>Ch10</td><td>CNN 기초와 응용</td><td>이미지의 국소 구조를 어떻게 효율적으로 다루고 재사용하는가</td></tr>
 <tr><td>Ch11</td><td>시퀀스 모델</td><td>순서가 있는 데이터를 어떻게 기억하며 처리하는가</td></tr>
-<tr><td>Ch12</td><td>어텐션과 트랜스포머<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">5</a></sup></td><td>순차 처리 없이 모든 단어의 관계를 어떻게 한 번에 계산하는가</td></tr>
+<tr><td>Ch12</td><td>어텐션과 트랜스포머<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">6</a></sup></td><td>순차 처리 없이 모든 단어의 관계를 어떻게 한 번에 계산하는가</td></tr>
 <tr><td>Ch13</td><td>LLM: 사전학습/프롬프팅/정렬</td><td>다음 토큰 예측이 어떻게 폭넓은 능력이 되고, 그걸 사람 뜻에 맞게 어떻게 다듬는가</td></tr>
 <tr><td>Ch14</td><td>PCA/임베딩/PageRank</td><td>정답 없이 데이터·그래프의 구조를 어떻게 찾는가</td></tr>
 <tr><td>Ch15</td><td>EM/GMM/VAE/GAN/Diffusion</td><td>관측되지 않은 잠재변수로부터 어떻게 새 데이터를 만들어내는가</td></tr>
@@ -254,7 +254,7 @@ VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">1</a></
 <tr><td>① 모델을 정의</td><td>선형 \(w^Tx+b\), 결정 트리 (Ch02, 07)</td><td>겹친 층의 네트워크, GAN은 두 개의 네트워크 (Ch09, 15)</td></tr>
 <tr><td>② 손실</td><td>MSE, 교차엔트로피, 힌지 (Ch02, 05)</td><td>ELBO, min-max (Ch15.2, 15.3)</td></tr>
 <tr><td>③ θ 조정</td><td>경사하강·정규방정식 (Ch02), EM (Ch15.1)</td><td>역전파 (Ch09), 적대적 학습 (Ch15.3)</td></tr>
-<tr><td>④ 과적합 통제</td><td>\(\lambda\) 정규화, 교차검증 (Ch06)</td><td>dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">6</a></sup>, early stopping (Ch09.3)</td></tr>
+<tr><td>④ 과적합 통제</td><td>\(\lambda\) 정규화, 교차검증 (Ch06)</td><td>dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">7</a></sup>, early stopping (Ch09.3)</td></tr>
 </tbody>
 </table>
 </div>
@@ -281,7 +281,7 @@ VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">1</a></
 </table>
 </div>
 <p>“남의 프로젝트 리뷰“가 왜 <em>자기</em> 점수에 들어가는가. 8.2에서 이미 답을
-봤다 — 좋은 리뷰는 발표팀의 결과를 단단하게 만들고, 그 행위는 Amgen이<sup class="footnote-reference" id="fr-amgen-1"><a href="#footnote-amgen">7</a></sup>
+봤다 — 좋은 리뷰는 발표팀의 결과를 단단하게 만들고, 그 행위는 Amgen이<sup class="footnote-reference" id="fr-amgen-1"><a href="#footnote-amgen">8</a></sup>
 스스로 논문 53편을 재현해 본 것과 같은 과학적 행위다. 그러니 “리뷰를
 잘 쓴 사람“은 이 학기의 절차를 가장 깊게 이해한 사람이라는 뜻이고,
 채점이 그것을 반영하는 것이다.</p>
@@ -340,7 +340,7 @@ peer-review가 정상 작동한 모습이다.</p>
 <tbody>
 <tr><td>1점 (감상평)</td><td>“최신 모델을 적용하셨네요. 81%는 좋은 결과입니다.”</td></tr>
 <tr><td>2점 (일반 지적)</td><td>“정형 데이터에 Transformer를 쓴 근거가 약해 보입니다.”</td></tr>
-<tr><td>3점 (반박 가능한 질문)</td><td>“정형 데이터에서 GBDT<sup class="footnote-reference" id="fr-gbdt-1"><a href="#footnote-gbdt">8</a></sup> (Ch07.3)는 신경망과 동일하거나 높은 성능이 흔합니다 — 같은 데이터의 GBDT val F1은 얼마인가요(관찰 요구)? Transformer가 여기서 주는 <strong>구체적 구조적 장점</strong>(데이터 규모, 상호작용 패턴)이 무엇이고, 그 장점이 숫자 어디에 보입니까(개념)? 새 계산 없이 답할 수 없다면 ’딥러닝이 필요했다’는 결론이 성립하지 않습니다.”</td></tr>
+<tr><td>3점 (반박 가능한 질문)</td><td>“정형 데이터에서 GBDT<sup class="footnote-reference" id="fr-gbdt-1"><a href="#footnote-gbdt">9</a></sup> (Ch07.3)는 신경망과 동일하거나 높은 성능이 흔합니다 — 같은 데이터의 GBDT val F1은 얼마인가요(관찰 요구)? Transformer가 여기서 주는 <strong>구체적 구조적 장점</strong>(데이터 규모, 상호작용 패턴)이 무엇이고, 그 장점이 숫자 어디에 보입니까(개념)? 새 계산 없이 답할 수 없다면 ’딥러닝이 필요했다’는 결론이 성립하지 않습니다.”</td></tr>
 </tbody>
 </table>
 </div>
@@ -382,10 +382,10 @@ peer-review가 정상 작동한 모습이다.</p>
 한 번에 보지 않고 지역적으로 나눠서 본다“는 방향은 같다.</p>
 </blockquote>
 <p><strong>3.</strong> Chapter 9의 그래디언트 소실 문제가 Chapter 11(RNN)과 Chapter
-10(ResNet)<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">9</a></sup>에서 각각 어떤 해법으로 재등장하는가?</p>
+10(ResNet)<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">10</a></sup>에서 각각 어떤 해법으로 재등장하는가?</p>
 <blockquote>
 <p>답: ResNet은 스킵 연결(\(y=F(x)+x\))로 그래디언트가 “+1” 항을
-통해 그대로 전달될 경로를 만들고, LSTM/GRU(Chapter 11.3)<sup class="footnote-reference" id="fr-gru-1"><a href="#footnote-gru">10</a></sup>도 게이트를
+통해 그대로 전달될 경로를 만들고, LSTM/GRU(Chapter 11.3)<sup class="footnote-reference" id="fr-gru-1"><a href="#footnote-gru">11</a></sup>도 게이트를
 통해 정보가 곱셈 대신 덧셈으로 흐르는 경로를 만든다 — 서로 다른
 구조(이미지 vs 시퀀스)에서 같은 해법(곱셈 사슬에 덧셈 지름길을
 낸다)이 독립적으로 재발견된 것이다.</p>
@@ -439,7 +439,7 @@ val F1은 얼마인가요? 그 네트워크가 주는 구체적 구조적 장점
 </blockquote>
 <h3 id="실습-검증-절차를-한-흐름으로-끝까지"><a class="header" href="#실습-검증-절차를-한-흐름으로-끝까지">실습: 검증 절차를 한 흐름으로 끝까지</a></h3>
 <p>이 절의 실습 노트북(페이지 상단의 Colab 배지)은 기말 프로젝트의
-<strong>절차 전체</strong>를 breast_cancer(569건 × 30 특성)로 한 흐름에 실행한다 —
+<strong>절차 전체</strong>를 breast_cancer<sup class="footnote-reference" id="fr-breast_cancer-1"><a href="#footnote-breast_cancer">12</a></sup> (569건 × 30 특성)로 한 흐름에 실행한다 —
 새 개념이 아니라, 이 절의 채점·리뷰·총정리가 “감“이 아니라
 <strong>숫자</strong>에 뿌리박는지 확인하는 실험이다.</p>
 <ol>
@@ -479,7 +479,7 @@ F1 0.979.</li>
 ML2는 완전히 다른 질문에서 출발한다 — 정답 대신 <strong>보상</strong>만 주어지고,
 데이터가 미리 있는 게 아니라 에이전트가 스스로 행동하며 만들어지는
 <strong>강화학습</strong>의 세계다. 그리고 그 무대는 텍스트나 이미지가 아니라, 물리
-법칙이 지배하는 <strong>로봇 시뮬레이션 환경</strong>이다.<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">11</a></sup></p>
+법칙이 지배하는 <strong>로봇 시뮬레이션 환경</strong>이다.<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">13</a></sup></p>
 <p>ML1을 듣지 않고 ML2를 바로 듣기 시작해도 무방하다 — ML2 1주차가 이번
 학기에서 필요한 신경망 기초를 압축해서 다시 짚어준다. 다만 Chapter
 9(역전파)와 Chapter 6(정규화, 특히 교차검증)의 감각이 남아있다면 ML2를
@@ -499,14 +499,14 @@ ML2는 완전히 다른 질문에서 출발한다 — 정답 대신 <strong>보�
 <tr><th>ML2 장</th><th>내용</th><th>ML1에서의 대응</th></tr>
 </thead>
 <tbody>
-<tr><td>Ch01</td><td>코스 소개, 신경망 미니 리뷰, Gymnasium 세팅</td><td>Ch09(역전파)의 감각 확인</td></tr>
+<tr><td>Ch01</td><td>코스 소개, 신경망 미니 리뷰, Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1"><a href="#footnote-gymnasium">14</a></sup> 세팅</td><td>Ch09(역전파)의 감각 확인</td></tr>
 <tr><td>Ch02</td><td>멀티암 밴딧</td><td>“보상만“의 가장 간단한 문제 — 탐색/활용 트레이드오프</td></tr>
 <tr><td>Ch03</td><td>MDP 정식화</td><td>“데이터가 어떻게 만들어지는가”(Ch03) — 다만 데이터는 <strong>에이전트가 스스로</strong> 만든다</td></tr>
 <tr><td>Ch04~07</td><td>동적계획법, 몬테카를로, TD, 적격흔적</td><td>Ch15(EM)의 “추정” — 정답 없이 값 함수를 반복적으로 추정</td></tr>
 <tr><td>Ch08</td><td>Block A 캡스톤</td><td>이 장과 동일한 구조(발표+리뷰+총정리)</td></tr>
-<tr><td>Ch09~11</td><td>함수근사, DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">12</a></sup>, 정책기반, PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">13</a></sup></td><td>Ch09(역전파) + Ch06(과적합 통제)를 제어 문제에</td></tr>
-<tr><td>Ch12</td><td>모방학습, 인간 피드백(RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">14</a></sup>)</td><td>Ch03의 생성적 모델, Ch13의 정렬을 RL로</td></tr>
-<tr><td>Ch13~15</td><td>로봇 시뮬레이션, MuJoCo/Isaac<sup class="footnote-reference" id="fr-isaacgym-1"><a href="#footnote-isaacgym">15</a></sup>, 모델기반 RL</td><td>Ch10~11의 구조를 물리 무대 위로</td></tr>
+<tr><td>Ch09~11</td><td>함수근사, DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">15</a></sup>, 정책기반, PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">16</a></sup></td><td>Ch09(역전파) + Ch06(과적합 통제)를 제어 문제에</td></tr>
+<tr><td>Ch12</td><td>모방학습, 인간 피드백(RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">17</a></sup>)</td><td>Ch03의 생성적 모델, Ch13의 정렬을 RL로</td></tr>
+<tr><td>Ch13~15</td><td>로봇 시뮬레이션, MuJoCo/Isaac<sup class="footnote-reference" id="fr-isaacgym-1"><a href="#footnote-isaacgym">18</a></sup>, 모델기반 RL</td><td>Ch10~11의 구조를 물리 무대 위로</td></tr>
 <tr><td>Ch16</td><td>Block B 캡스톤과 학기 총정리</td><td>이 장과 동일한 구조</td></tr>
 </tbody>
 </table>
@@ -530,7 +530,7 @@ ML2는 완전히 다른 질문에서 출발한다 — 정답 대신 <strong>보�
 <p>그리고 개념지도의 4단계(① 모델 정의 → ② 손실 → ③ θ 조정 → ④ 통제)는
 ML2에서도 그대로 살아 있다 — 바뀌는 것은 ①의 “모델”(정책
 \(\pi(a|s)\))과 ④의 “데이터”(에이전트의 경험)뿐이다. <strong>같은
-구조, 다른 질문</strong> — 이것이 이번 학기가 ML2에 남기는 정확한 선물이다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">16</a></sup> <sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">17</a></sup></p>
+구조, 다른 질문</strong> — 이것이 이번 학기가 ML2에 남기는 정확한 선물이다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">19</a></sup> <sup class="footnote-reference" id="fr-silvercourse-1"><a href="#footnote-silvercourse">20</a></sup></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
@@ -560,6 +560,9 @@ Ch09~15(그리고 ML2 Ch01~15)의 개념으로 진단하는 보고서가 좋은
 갖고 있고, 무엇을 맞히고 싶은가.</strong></p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-gda">
+<p>Ng, A. Y., Jordan, M. I. (2001). “On Discriminative vs. Generative Classifiers.” NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminant Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)과 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다. <a href="#fr-gda-1">↩</a></p>
+</li>
 <li id="footnote-vae">
 <p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1">↩</a></p>
 </li>
@@ -590,8 +593,14 @@ Ch09~15(그리고 ML2 Ch01~15)의 개념으로 진단하는 보고서가 좋은
 <li id="footnote-gru">
 <p>Cho, K., van Merrienboer, B., Gulcehre, C., Bahdanau, D., Bougares, F., Schwenk, H., Bengio, Y. (2014). “Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation.” arXiv:1406.1078. <a href="#fr-gru-1">↩</a></p>
 </li>
+<li id="footnote-breast_cancer">
+<p>scikit-learn <code>load_breast_cancer</code> 데이터셋 — 위스콘신 진단 유방암(Wisconsin Diagnostic Breast Cancer, WDBC)의 고전 데이터로, 유방 종양 세포 핵의 30개 수치 특징과 양성/악성 이분 라벨 569개. <a href="#fr-breast_cancer-1">↩</a></p>
+</li>
 <li id="footnote-suttonbarto">
 <p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+</li>
+<li id="footnote-gymnasium">
+<p>Towers, M., Kwiatkowski, A., Terry, J., et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1">↩</a></p>
 </li>
 <li id="footnote-dqn">
 <p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>

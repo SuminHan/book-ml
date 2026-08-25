@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -408,7 +408,7 @@ Q-learning(off-policy)이 유리하다(Chapter 6.3).</p>
 <tr><td>11</td><td>MC와 TD(0)의 목표값을 각각 수식으로 쓰시오</td><td>Ch05/06</td></tr>
 <tr><td>12</td><td>“TD 오차가 0“이 “벨만방정식을 만족한다“와 같은 말인 이유는?</td><td>Ch06</td></tr>
 <tr><td>13</td><td>SARSA와 Q-learning의 차이를 한 문장으로</td><td>Ch06</td></tr>
-<tr><td>14</td><td>CliffWalking<sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">3</a></sup>에서 “더 짧은 경로“를 배운 알고리즘은? 학습중 리턴이 오히려 더 나쁜 이유는?</td><td>Ch06</td></tr>
+<tr><td>14</td><td>CliffWalking<sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">3</a></sup> <sup class="footnote-reference" id="fr-suttonbarto_cliff-1"><a href="#footnote-suttonbarto_cliff">4</a></sup>에서 “더 짧은 경로“를 배운 알고리즘은? 학습중 리턴이 오히려 더 나쁜 이유는?</td><td>Ch06</td></tr>
 <tr><td>15</td><td>n-step 리턴 \(G_t^{(n)}\)을 수식으로, 그리고 \(n=1\)과 \(n=\infty\)(유한 에피소드)는 무엇으로 퇴화하는가?</td><td>Ch07</td></tr>
 <tr><td>16</td><td>적격흔적의 감쇠율 \(\gamma\lambda\)에서 \(\lambda\)의 역할은?</td><td>Ch07</td></tr>
 <tr><td>17</td><td>Dyna-Q의 모델이 저장하는 것은? 계획 한 스텝의 비용(대가)은?</td><td>Ch07</td></tr>
@@ -540,7 +540,7 @@ Step 3: ||V_n - V*|| &lt;= gamma^n * ||________||
 패턴이 가장 가까운 연습이다.</p>
 <p><strong>Q. Block B(Chapter 9~16)를 준비하려면 지금 뭘 더 다져둬야
 하나요?</strong> Q-함수(Chapter 6)의 정의와 벨만 최적방정식(Chapter 4)을
-확실히 이해해두는 것이 가장 중요하다 — Chapter 9의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">4</a></sup>은
+확실히 이해해두는 것이 가장 중요하다 — Chapter 9의 DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">5</a></sup>은
 사실 “Q-learning의 Q-테이블을 신경망으로 바꾼 것“에 가깝고,
 나머지 개념(TD 오차, 경험재현, off-policy)은 이번 학기에서 이미
 다룬 것들의 재사용이다.</p>
@@ -563,7 +563,7 @@ Step 3: ||V_n - V*|| &lt;= gamma^n * ||________||
 on/off-policy 축(SARSA vs Q-learning), (4) MDP 박스 → 모든 박스
 (모든 알고리즘이 벨만방정식에 기대는가). 네 개를 한 문장씩 말할
 수 있으면 지도는 끝난 것이다. 이 여섯 장의 주제를 더 깊이 다루는
-자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">5</a></sup></p>
+자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">6</a></sup></p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-ucb2002">
@@ -575,11 +575,14 @@ on/off-policy 축(SARSA vs Q-learning), (4) MDP 박스 → 모든 박스
 <li id="footnote-suttonbarto">
 <p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 정책반복·가치반복의 축소 사상 수렴, Q-learning/SARSA의 TD 갱신과 수렴 조건은 이 표준 교과서의 Chapter 4~6에서 체계적으로 다뤄진다. <a href="#fr-suttonbarto-1">↩</a> <a href="#fr-suttonbarto-2">↩2</a></p>
 </li>
+<li id="footnote-suttonbarto_cliff">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press — Chapter 6.5의 CliffWalking 환경. 절벽(보상 −100)과 골목이 있는 4×12 격자에서, SARSA는 절벽을 따라 더 짧은 안전한 경로를 배우는 반면 Q-learning은 절벽 위를 지나는 11스텝의 “최적” 경로를 배운다는 예시로, on/off-policy 차이를 보여주는 표준 실험이다. <a href="#fr-suttonbarto_cliff-1">↩</a></p>
+</li>
 <li id="footnote-dqn">
 <p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
 </li>
 <li id="footnote-cs234">
-<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — MC/TD, 편향-분산 트레이드오프, 수렴 논증을 같은 맥락에서 다루는 강의 자료. 이 주제를 더 깊이 보려면 참고. <a href="#fr-cs234-1">↩</a></p>
+<p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
 </li>
 </ol>
 

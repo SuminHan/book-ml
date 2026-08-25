@@ -1,6 +1,6 @@
 # Chapter 8. Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone: Team Project & Review)
 
-Chapter 2~7에서 배운 회귀, 생성적 분류(나이브베이즈/GDA), 거리·마진 기반
+Chapter 2~7에서 배운 회귀, 생성적 분류(나이브베이즈/GDA[^gda]), 거리·마진 기반
 모델(kNN, SVM[^vapnik1995]), 정규화, 트리 앙상블(GBDT)[^gbdt][^cs229]은 각각 독립된 장의 문제처럼
 다뤘지만, 실전 데이터 앞에서는 "이 문제에 어떤 모델이 맞는가"를 스스로
 판단해야 한다. 이번 장은 새 개념을 배우는 대신, 지금까지 배운 것을 실제
@@ -72,3 +72,4 @@ Chapter 2~7에서 배운 회귀, 생성적 분류(나이브베이즈/GDA), 거�
 [^randomforest]: Breiman, L. (2001). "Random Forests." Machine Learning, 45(1), 5–32. — 랜덤포레스트의 원 논문.
 [^vapnik1995]: Vapnik, V. N. (1995). "The Nature of Statistical Learning Theory." Springer, New York. — SVM의 이론적 기반을 정리한 표준 단행본 (소프트 마진 SVM 원 논문인 Cortes & Vapnik (1995)과 같은 계열).
 [^ucirepo]: Dua, D., Graff, C. (2019). "UCI Machine Learning Repository." Irvine, CA: University of California, Irvine, School of Computer Engineering. http://archive.ics.uci.edu
+[^gda]: Ng, A. Y., Jordan, M. I. (2001). "On Discriminative vs. Generative Classifiers." NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminative Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)와 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다.

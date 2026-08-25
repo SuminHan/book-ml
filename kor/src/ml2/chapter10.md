@@ -39,7 +39,7 @@ Chapter 11에서는 정책이 한 업데이트 만에 무너지지 않게 막는
 이번 주는 세 개의 수업 블록으로 진행된다:
 
 - [10.1 정책 그래디언트 정리](chapter10/1.md) — Q를 거치지 않고 정책을 직접 파라미터화한다(이산 공간은 softmax, 연속 공간은 상태 조건부 정규분포). 로그미분 트릭으로 Policy Gradient Theorem에 도달하고, 탐색을 학습 목표에 넣는 엔트로피 보너스와 이 정리의 분산 문제[^gae]까지 짚는다.
-- [10.2 REINFORCE와 실습](chapter10/2.md) — 정리를 알고리즘으로 번역한 REINFORCE를 손으로 한 스텝 갱신하고 2행동 밴딧 실험[^silvercourse]으로 "좋은 행동의 확률이 오른다"를 확인한 뒤, PyTorch 실습에서 CartPole을 학습시키고 "리턴을 정규화하지 않고 그대로 쓰는" 함정을 다룬다.
+- [10.2 REINFORCE와 실습](chapter10/2.md) — 정리를 알고리즘으로 번역한 REINFORCE를 손으로 한 스텝 갱신하고 2행동 밴딧 실험[^silvercourse][^gymnasium]으로 "좋은 행동의 확률이 오른다"를 확인한 뒤, PyTorch 실습에서 CartPole을 학습시키고 "리턴을 정규화하지 않고 그대로 쓰는" 함정을 다룬다.
 - [10.3 Actor-Critic](chapter10/3.md) — 시드마다 다른 학습 곡선이라는 REINFORCE의 높은 분산 문제를 진단하고, 행동에 무관한 베이스라인(가치함수)을 빼도 그래디언트 기댓값은 안 바뀔 때 분산만 줄어든다는 성질을 숫자로 검증한다. 실습에서는 CartPole에서 REINFORCE와 A2C[^a3c]의 학습 곡선을 비교한다.
 
 ![A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3).](../images/ref_a3c.png)
@@ -59,3 +59,4 @@ Chapter 11에서는 정책이 한 업데이트 만에 무너지지 않게 막는
 [^pytorch]: Paszke, A. et al. (2019). "PyTorch: An Imperative Style, High-Performance Deep Learning Library." NeurIPS 2019. arXiv:1912.01703.
 [^silvercourse]: Silver, D. (2015). "UCL Course on Reinforcement Learning," Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0).
 [^gae]: Schulman, J. et al. (2015). "High-Dimensional Continuous Control Using Generalized Advantage Estimation." arXiv:1506.02438. (어드밴티지 함수 추정·그 분산 trade-off를 정립한 논문. 어드밴티지(이익) 추정 개념을 다룬 Chapter 11에서 PPO와 함께 직접 사용된다.)
+[^gymnasium]: Towers, M. et al. (2024). "Gymnasium: A Standard Interface for Reinforcement Learning Environments." arXiv:2407.17032.

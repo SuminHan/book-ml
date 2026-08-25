@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -219,7 +219,7 @@ boosting). XGBoost, LightGBM은 이 아이디어를 실무에서 쓸 수 있도�
 <p>(실무 라이브러리들의 스텝 단위는 보통 “깊이 3~6짜리 작은 트리“인데, 아래
 1차원 실습처럼 스템(깊이 1)을 쓰기도 한다. 핵심은 “각 스텝이 잔차를 목표로
 작은 함수 하나를 추가한다“는 구조이며, 스텝의 크기는 하이퍼파라미터다.
-scikit-learn의 <code>GradientBoosting*</code> 계열은 이 단계별 예측을
+scikit-learn<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">3</a></sup>의 <code>GradientBoosting*</code> 계열은 이 단계별 예측을
 <code>staged_predict</code> 메서드로 돌려줄 수 있는데, 뒤의 “early stopping” 실습이
 그것을 써서 “몇 번째 트리에 멈추어야 하는지“를 직접 측정한다.)</p>
 <p>\(F_{t-1}\)이 이미 어느 정도 맞히고 있다면, 남은 오차(잔차)는 원래
@@ -284,7 +284,7 @@ L\)와 <strong>구조가 완전히 같은</strong> 식이다. 차이점 하나�
 학습한다“는 이 관점이 Friedman(2001)의 핵심 통찰이고, 이 관점 덕분에
 “잔차를 맞춰라“는 규칙이 제곱손실에만 국한되지 않는다 — 손실함수만
 미분가능하면, 그 손실의 기울기를 새로운 트리로 맞추면 된다(분류에서는
-이것을 로지스틱 손실의 기울기로 쓰면, 7.2절의 유방암 GBDT처럼
+이것을 로지스틱 손실의 기울기로 쓰면, 7.2절의 유방암<sup class="footnote-reference" id="fr-breast_cancer-1"><a href="#footnote-breast_cancer">4</a></sup> GBDT처럼
 <code>predict_proba</code>가 나오는 분류기가 만들어진다). “잔차를 쫓는 것“과
 “경사하강“은 회귀+제곱손실에서는 같은 말이니, 앞으로는 편의상 “잔차를
 쫓는다“고 말할 것이다.</p>
@@ -294,23 +294,23 @@ L\)와 <strong>구조가 완전히 같은</strong> 식이다. 차이점 하나�
 소개했고, 1997년 Freund와 Schapire의 <strong>AdaBoost</strong>가 “틀린 샘플의 가중치를
 올려서 다음 모델이 그쪽에 집중하게 하자“는 첫 실용 알고리즘을 만들었다.
 그러나 2001년 Jerome Friedman의 논문 “Greedy Function Approximation:
-A Gradient Boosting Machine”<sup class="footnote-reference" id="fr-friedman2001-1"><a href="#footnote-friedman2001">3</a></sup> 이전까지 부스팅은 “왜 이게 동작하는가“가
+A Gradient Boosting Machine”<sup class="footnote-reference" id="fr-friedman2001-1"><a href="#footnote-friedman2001">5</a></sup> 이전까지 부스팅은 “왜 이게 동작하는가“가
 분명하지 않은 경험적 트릭으로 취급되는 면이 있었다. Friedman이
 “부스팅은 함수 공간의 경사하강이다“라는 해석을 내놓으면서, 부스팅은
 “경사하강법의 일반화“라는 명확한 이론적 지위를 얻었고, 어떤 손실함수에
 든 적용할 수 있는 일반 공식으로 정리됐다 — 그 공식이 바로 앞 절의
 \(F_t = F_{t-1} - \eta g_t\)다.</p>
 <p>이론이 실무로 건너간 결정적 순간은 2016년 Tianqi Chen과 Carlos Guestrin의
-<strong>XGBoost</strong><sup class="footnote-reference" id="fr-xgboost-1"><a href="#footnote-xgboost">4</a></sup>다. Friedman의 공식에 <strong>이차 타원 전개</strong>(2차 미분까지 쓴
+<strong>XGBoost</strong><sup class="footnote-reference" id="fr-xgboost-1"><a href="#footnote-xgboost">6</a></sup>다. Friedman의 공식에 <strong>이차 타원 전개</strong>(2차 미분까지 쓴
 근사)와 <strong>정규화 항</strong>을 더하고, 분기 후보 탐색을 극도로 최적화한 XGBoost가
 2010년대 중후반 Kaggle 대회에서 정형 데이터 문제를 쓸어담으면서,
 “정형 데이터라면 먼저 GBDT를 돌려보라“가 업계의 기본 반사가 됐다.
-Microsoft의 <strong>LightGBM</strong>(2017)은 거꾸로 “트리를 위에서 아래로 자란다“는
+Microsoft의 <strong>LightGBM</strong>(2017)<sup class="footnote-reference" id="fr-lightgbm-1"><a href="#footnote-lightgbm">7</a></sup>은 거꾸로 “트리를 위에서 아래로 자란다“는
 성장 전략과 큰 데이터에서 특징을 압축해서 보는 등으로 속도를 극대화했다.
 오늘날 scikit-learn의 <code>GradientBoosting*</code>도 Friedman의 원형을 그대로
-담고 있고, XGBoost/LightGBM/CatBoost<sup class="footnote-reference" id="fr-catboost-1"><a href="#footnote-catboost">5</a></sup>는 “더 빠르고, 더 튜닝이 편한
+담고 있고, XGBoost/LightGBM/CatBoost<sup class="footnote-reference" id="fr-catboost-1"><a href="#footnote-catboost">8</a></sup>는 “더 빠르고, 더 튜닝이 편한
 GBDT“의 세 주요 변주다. 이 절의 부스팅/트리 앙상블 주제를 더 깊이 보려면
-스탠포드 CS229 강의 노트의 boosting 관련 장도 참고할 만하다<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">6</a></sup>.</p>
+스탠포드 CS229 강의 노트의 boosting 관련 장도 참고할 만하다<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">9</a></sup>.</p>
 <h3 id="실습-sklearn-gbdt로-랜덤-포레스트와-비교하기"><a class="header" href="#실습-sklearn-gbdt로-랜덤-포레스트와-비교하기">실습: sklearn GBDT로 랜덤 포레스트와 비교하기</a></h3>
 <p>7.2절에서 쓴 유방암 데이터셋에 실제 GBDT를 돌려서, 랜덤 포레스트와
 성능을 직접 비교해보자:</p>
@@ -486,7 +486,7 @@ GBDT의 경우, 각 트리의 분기 경로를 따라가면서 “특징 j가 �
 수 있어서, 랜덤 포레스트/GBDT에 한해서는 근사 없이도 정밀 섀플리값을
 구할 수 있다(<code>shap</code> 패키지의 <code>TreeExplainer</code>가 이것을 구현한다).
 신경망처럼 “경로“가 없는 모델에서는 퍼머테이션 또는 <strong>통합
-기대</strong>(KernelSHAP) 같은 다른 근사가 쓰인다.</p>
+기대</strong>(KernelSHAP)<sup class="footnote-reference" id="fr-kernelshap-1"><a href="#footnote-kernelshap">10</a></sup> 같은 다른 근사가 쓰인다.</p>
 <h3 id="실습-실제-gbdt에-퍼머테이션-근사-shap"><a class="header" href="#실습-실제-gbdt에-퍼머테이션-근사-shap">실습: 실제 GBDT에 퍼머테이션 근사 SHAP</a></h3>
 <p>“특징 n개가 30개면 순서가 \(n!\)개“라는 문제를, 실제로 GBDT를
 학습하고 <strong>400개의 무작위 순서</strong>로 SHAP을 근사하는 실습으로
@@ -737,17 +737,29 @@ phi_B = (A-&gt;B에서 B의 기여 + B-&gt;A에서 B의 기여) / 2 = __________
 <li id="footnote-shap">
 <p>Lundberg, S. M., Lee, S.-I. (2017). “A Unified Approach to Interpreting Model Predictions.” NeurIPS (NIPS) 2017. arXiv:1705.07874. <a href="#fr-shap-1">↩</a></p>
 </li>
+<li id="footnote-scikitlearn">
+<p>Pedregosa, F. et al. (2012). “Scikit-learn: Machine Learning in Python.” arXiv:1201.0490. <a href="#fr-scikitlearn-1">↩</a></p>
+</li>
+<li id="footnote-breast_cancer">
+<p>scikit-learn <code>load_breast_cancer</code> 데이터셋 — 위스콘신 진단 유방암(Wisconsin Diagnostic Breast Cancer, WDBC)의 고전 데이터로, 유방 종양 세포 핵의 30개 수치 특징과 양성/악성 이분 라벨 569개. <a href="#fr-breast_cancer-1">↩</a></p>
+</li>
 <li id="footnote-friedman2001">
 <p>Friedman, J. H. (2001). “Greedy Function Approximation: A Gradient Boosting Machine.” The Annals of Statistics 29(5), 1189–1232. — GBDT(그래디언트 부스팅)의 원 논문. <a href="#fr-friedman2001-1">↩</a></p>
 </li>
 <li id="footnote-xgboost">
 <p>Chen, T., Guestrin, C. (2016). “XGBoost: A Scalable Tree Boosting System.” KDD 2016. arXiv:1603.02754. <a href="#fr-xgboost-1">↩</a></p>
 </li>
+<li id="footnote-lightgbm">
+<p>Ke, G., Meng, Q., Finley, T., et al. (2017). “LightGBM: A Highly Efficient Gradient Boosting Decision Tree.” NeurIPS (NIPS) 2017. — LightGBM의 원 논문. <a href="#fr-lightgbm-1">↩</a></p>
+</li>
 <li id="footnote-catboost">
 <p>Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., Gulin, A. (2018). “CatBoost: Unbiased Boosting with Categorical Features.” NeurIPS 2018. arXiv:1706.09516. <a href="#fr-catboost-1">↩</a></p>
 </li>
 <li id="footnote-cs229">
 <p>더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — 이 절의 부스팅/그래디언트 부스팅은 CS229 강의 노트의 ensemble methods / decision trees 단원과 겹친다. <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-kernelshap">
+<p>Lundberg, S. M., Lee, S.-I. (2018). “From Local Explanations to Global Understanding with Explainable AI for Trees (SHAP).” ICML 2018 (PMLR 80). — KernelSHAP을 소개한 원 논문. <a href="#fr-kernelshap-1">↩</a></p>
 </li>
 </ol>
 

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -189,7 +189,7 @@ Estimation, 2016)<sup class="footnote-reference" id="fr-gae-1"><a href="#footnot
 TRPO를 사실상 완전히 밀어내버렸는지 — 즉 “표준이 된 이유“를 정리한다.
 마지막으로 “PPO를 돌린다“는 말이 실제로는 어떤 코드 묶음을 의미하는지
 실전 스택 전체를 훑어본 뒤, 이번 장(Chapter 11)을 닫는다.</p>
-<p>![3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG<sup class="footnote-reference" id="fr-ddpg-1"><a href="#footnote-ddpg">4</a></sup>/TRPO<sup class="footnote-reference" id="fr-trpo-2"><a href="#footnote-trpo">3</a></sup>/SAC<sup class="footnote-reference" id="fr-sac-1"><a href="#footnote-sac">5</a></sup> 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다.](../../images/ref_gae.png)</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."><span class="img-wrapper"><img src="../../images/ref_gae.png" alt="3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다."></span></label></p>
 <h3 id="gae-어드밴티지를-더-안정적으로-추정하기"><a class="header" href="#gae-어드밴티지를-더-안정적으로-추정하기">GAE: 어드밴티지를 더 안정적으로 추정하기</a></h3>
 <p>Chapter 10.3의 어드밴티지 \(A_t = G_t - V(s_t)\)는 실제 리턴 \(G_t\)를
 그대로 쓰므로 여전히 분산이 크다. <strong>GAE</strong>(Generalized Advantage
@@ -440,11 +440,12 @@ PPO는 이 세 단계를 <strong>클리핑 한 줄</strong>로 대체했다 —<
 <strong>구현 단순성</strong>이라는 이득은 컸다. 이것이 “표준이 된 이유“의
 첫 번째 축이다.</p>
 <p><strong>이 실용성 덕분에 PPO는 지금 가장 널리 쓰이는 정책기반 알고리즘이
-됐다: 로봇 보행 제어, OpenAI Five(Dota 2)<sup class="footnote-reference" id="fr-openaifive-1"><a href="#footnote-openaifive">6</a></sup>, AlphaStar(스타크래프트
-II)<sup class="footnote-reference" id="fr-alphastar-1"><a href="#footnote-alphastar">7</a></sup>뿐 아니라, 사람 피드백에 맞게 언어모델을 조정하는 RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">8</a></sup>의 핵심
+됐다: 로봇 보행 제어, OpenAI Five(Dota 2)<sup class="footnote-reference" id="fr-openaifive-1"><a href="#footnote-openaifive">4</a></sup>, AlphaStar(스타크래프트
+II)<sup class="footnote-reference" id="fr-alphastar-1"><a href="#footnote-alphastar">5</a></sup>뿐 아니라, 사람 피드백에 맞게 언어모델을 조정하는 RLHF<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">6</a></sup> <sup class="footnote-reference" id="fr-instructgpt-1"><a href="#footnote-instructgpt">7</a></sup>의 핵심
 도구로도 쓰인다 — 연속 제어(로봇의 관절 힘 같은)와 이산 선택(다음
 토큰 고르기) 양쪽 모두에 그대로 적용될 만큼 범용적이다.</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."><span class="img-wrapper"><img src="../../images/ref_instructgpt.png" alt="InstructGPT 3단계 학습 파이프라인 (원 논문 Figure 2) — (1) 지도 미세조정(SFT), (2) 보상 모델(RM) 학습, (3) 이 보상 모델을 이용한 근접 정책 최적화(PPO) 강화학습."></span></label></p>
 <p>여기서 “범용적“이라는 말이 구체적으로 무엇을 뜻하는지 짚자. PPO의
 목적함수는 <strong>행동공간이 이산이든 연속이든</strong> 같은 형태다.</p>
 <ul>
@@ -455,7 +456,7 @@ II)<sup class="footnote-reference" id="fr-alphastar-1"><a href="#footnote-alphas
 <li><strong>연속</strong>(Pendulum, 로봇 관절): \(\pi\)가 <strong>가우시안</strong>
 \(\mathcal{N}(\mu_\theta(s), \sigma_\theta^2 I)\),
 \(\log\pi(a|s)\)가 정규분포의 로그우도, 행동은
-<code>dist.sample()</code>(11.2절의 <code>GaussianPolicy</code>).</li>
+<code>dist.sample()</code>(11.2절의 <code>GaussianPolicy</code><sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">8</a></sup>).</li>
 </ul>
 <p>목적함수 \(\mathbb{E}[L^{CLIP}]\)와 GAE, 엔트로피 항의 <em>수학적
 형식</em>은 같다 — 변하는 건 “\(\log\pi\)를 어떤 분포에서
@@ -656,13 +657,7 @@ on-policy. 클리핑은 그때 <code>r_t = 1</code>이라 <em>발동하지 않�
 <p>Schulman, J. et al. (2015). “High-Dimensional Continuous Control Using Generalized Advantage Estimation.” arXiv:1506.02438. <a href="#fr-gae-1">↩</a></p>
 </li>
 <li id="footnote-trpo">
-<p>Schulman, J. et al. (2015). “Trust Region Policy Optimization.” ICML 2015. arXiv:1502.05477. <a href="#fr-trpo-1">↩</a> <a href="#fr-trpo-2">↩2</a></p>
-</li>
-<li id="footnote-ddpg">
-<p>Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., Silver, D., Wierstra, D. (2015). “Continuous control with deep reinforcement learning.” arXiv:1509.02971. <a href="#fr-ddpg-1">↩</a></p>
-</li>
-<li id="footnote-sac">
-<p>Haarnoja, T., Zhou, A., Abbeel, P., Levine, S. (2018). “Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor.” ICML 2018. arXiv:1801.01290. <a href="#fr-sac-1">↩</a></p>
+<p>Schulman, J. et al. (2015). “Trust Region Policy Optimization.” ICML 2015. arXiv:1502.05477. <a href="#fr-trpo-1">↩</a></p>
 </li>
 <li id="footnote-openaifive">
 <p>OpenAI (Berner, C. et al.) (2019). “Dota 2 with Large Scale Deep Reinforcement Learning.” arXiv:1912.06680. <a href="#fr-openaifive-1">↩</a></p>
@@ -672,6 +667,12 @@ on-policy. 클리핑은 그때 <code>r_t = 1</code>이라 <em>발동하지 않�
 </li>
 <li id="footnote-rlhf">
 <p>Christiano, P. et al. (2017). “Deep reinforcement learning from human preferences.” NeurIPS 2017. arXiv:1706.03741. <a href="#fr-rlhf-1">↩</a></p>
+</li>
+<li id="footnote-instructgpt">
+<p>Ouyang, L. et al. (2022). “Training language models to follow instructions with human feedback.” arXiv:2203.02155. <a href="#fr-instructgpt-1">↩</a></p>
+</li>
+<li id="footnote-pytorch">
+<p>Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” NeurIPS 2019. arXiv:1912.01703. <a href="#fr-pytorch-1">↩</a></p>
 </li>
 <li id="footnote-a3c">
 <p>Mnih, V. et al. (2016). “Asynchronous Methods for Deep Reinforcement Learning.” arXiv:1602.01783. <a href="#fr-a3c-1">↩</a></p>

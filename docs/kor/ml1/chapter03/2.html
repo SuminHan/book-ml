@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -303,14 +303,14 @@ b = -\tfrac{1}{2}(\mu_1{-}\mu_0)^T\Sigma^{-1}(\mu_1{+}\mu_0) +
 <h3 id="로지스틱회귀와-만나는-지점"><a class="header" href="#로지스틱회귀와-만나는-지점">로지스틱회귀와 만나는 지점</a></h3>
 <p><strong>놀라운 사실</strong>: 이렇게 구한 \(P(y=1|x)\)를 베이즈 정리로 전개하면, 정확히
 Chapter 2의 로지스틱회귀와 <strong>같은 시그모이드 형태</strong> \(P(y=1|x) =
-\sigma(w^Tx+b)\)가 나온다(유도는 이번 장 연습문제 2번). 즉 GDA는 “로지스틱
+\sigma(w^Tx+b)\)가 나온다(유도는 이번 장 연습문제 2번)<sup class="footnote-reference" id="fr-gda-1"><a href="#footnote-gda">1</a></sup>. 즉 GDA는 “로지스틱
 회귀와 같은 결정 경계(직선)에 도달하는 또 다른 길“이다 — 다만 가는
 경로(데이터가 정규분포를 따른다고 먼저 가정하는가, 아니면 결정 경계를
 바로 학습하는가)가 다르다. 데이터가 실제로 가우시안에 가깝다면 GDA가 더
 적은 데이터로도 잘 맞고, 그 가정이 틀렸다면 판별적 모델(로지스틱회귀)이
 더 안정적인 경향이 있다 — “모델을 데이터에 맞출 것인가, 데이터가 모델을
 따른다고 가정할 것인가“라는, 생성적 모델과 판별적 모델의 근본적인
-트레이드오프다<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup>. 이 주장도 아래 “실현” 절에서 수치로 바로 확인한다 —
+트레이드오프다<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">2</a></sup>. 이 주장도 아래 “실현” 절에서 수치로 바로 확인한다 —
 2차원 가우시안 데이터에서 GDA의 닫힌 형태가 내놓는 \(w, b\)와,
 로지스틱회귀를 경사하강으로 적합해 얻은 \(w, b\)는 거의 같은 방향을
 향한다.</p>
@@ -318,7 +318,7 @@ Chapter 2의 로지스틱회귀와 <strong>같은 시그모이드 형태</strong
 <p>GDA가 기계학습 시대에 처음 등장한 모델은 아니다. 1936년, <strong>로널드
 피셔</strong>(Ronald Fisher — 분산분석(ANOVA)과 최대우도추정 방법을 세운
 통계학자)는 “분류 문제에서 다중 측정의 이용”(The Use of Multiple
-Measurements in Taxonomic Problems)이라는 논문을 발표했다<sup class="footnote-reference" id="fr-fisher1936-1"><a href="#footnote-fisher1936">2</a></sup>. 문제는
+Measurements in Taxonomic Problems)이라는 논문을 발표했다<sup class="footnote-reference" id="fr-fisher1936-1"><a href="#footnote-fisher1936">3</a></sup>. 문제는
 아이리스(iris) 꽃의 종을, 꽃술·꽃잎(세팔·페탈)의 길이·너비 같은 <strong>여러
 측정값</strong>으로 분류하는 것이었다. 피셔의 아이디어: 각 꽃을 단일 숫자
 \(z = w^Tx\)로 “꾄” 다음, <strong>두 종의 중심 간 거리</strong>를 <strong>각 종 내부의
@@ -335,7 +335,7 @@ Measurements in Taxonomic Problems)이라는 논문을 발표했다<sup class="f
 작지만 설득력 있는 증거다. 이 모델은 오늘날 <strong>피셔 선형 판별</strong>
 (Fisher’s Linear Discriminant, LDA)으로 불리며, 이진 분류 + 공유
 공분산의 경우 “피셔 LDA“와 “GDA“는 이름만 다른 <strong>同一个(同一個, “동일한 하나”)</strong> 모델이다.</p>
-<h3 id="실현-numpy로-gda-구현하기3"><a class="header" href="#실현-numpy로-gda-구현하기3">실현: numpy로 GDA 구현하기<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">3</a></sup></a></h3>
+<h3 id="실현-numpy로-gda-구현하기4"><a class="header" href="#실현-numpy로-gda-구현하기4">실현: numpy로 GDA 구현하기<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">4</a></sup></a></h3>
 <p>이 절의 수식을 그대로 코드로 옮기자. <code>fit_gda</code>는 최대우도추정(위의
 닫힌 형태)을, <code>gda_scores</code>는 로그 우도비 \(z(x) = w^Tx + b\)를 계산
 한다:</p>
@@ -374,7 +374,7 @@ print("w =", np.round(w, 3), " b =", round(b, 3))
 아래 <a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter03_2_gda.ipynb">실습 노트북</a>에서
 이 직선을 데이터 위에 겹쳐 그린다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch03_2_gda_boundary.svg" alt="2차원 GDA — MLE로 추정한 두 클래스의 가우시안과, 결정 경계인 직선(검은 점선). 기울기는 공분산의 “퍼진 방향“에 맞춰 보정된 w가 결정한다"><span class="img-wrapper"><img src="../../images/ch03_2_gda_boundary.svg" alt="2차원 GDA — MLE로 추정한 두 클래스의 가우시안과, 결정 경계인 직선(검은 점선). 기울기는 공분산의 “퍼진 방향“에 맞춰 보정된 w가 결정한다"></span></label></p>
-<h3 id="실습-sklearn-lda로-gda-확인하기4"><a class="header" href="#실습-sklearn-lda로-gda-확인하기4">실습: sklearn LDA로 GDA 확인하기<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">4</a></sup></a></h3>
+<h3 id="실습-sklearn-lda로-gda-확인하기5"><a class="header" href="#실습-sklearn-lda로-gda-확인하기5">실습: sklearn LDA로 GDA 확인하기<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">5</a></sup></a></h3>
 <p>scikit-learn의 <code>LinearDiscriminantAnalysis</code>(LDA)가 정확히 “공분산을
 공유하는” GDA에 해당한다. 위 손 계산과 같은 데이터로 확인해보자:</p>
 <pre><code class="language-python">import numpy as np
@@ -471,6 +471,9 @@ numpy GDA와 sklearn LDA를 2차원 데이터에서 동시에 돌려보면, 두 
 직접 지원한다.</p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-gda">
+<p>Ng, A. Y., Jordan, M. I. (2001). “On Discriminative vs. Generative Classifiers.” NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminative Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)과 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다. <a href="#fr-gda-1">↩</a></p>
+</li>
 <li id="footnote-cs229">
 <p>이 주제를 더 깊이 다루는 자료: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
 </li>

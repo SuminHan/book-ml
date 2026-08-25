@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -197,7 +197,11 @@
 \(b\)가 우연히 선택해서 얻은 궤적은, 그 희소함(비율 \(\rho\)가
 작음)만큼 가중치를 낮춰서 반영한다. 이 아이디어는 Chapter 9(DQN)의
 경험재현 버퍼(과거 정책들이 모은 데이터를 재사용)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">2</a></sup>와, Chapter 11(PPO)의
-확률비(probability ratio)에서 형태를 바꿔 다시 등장한다.</p>
+확률비(probability ratio)에서 형태를 바꿔 다시 등장한다. Chapter 6의
+SARSA<sup class="footnote-reference" id="fr-sarsa-1"><a href="#footnote-sarsa">3</a></sup>에서는 각 스텝의 TD 오류가 다음 행동을 <strong>새 행동 정책이
+실제로 고를 확률</strong> \(b(a’_{t+1}|s_{t+1})\)로 가중하도록 보정하는
+<strong>off-policy TD(2) 방식</strong>을 제안해, 같은 분산 문제를 한 스텝 단위로
+다스린 사례다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><strong>왜 “확률의 비율“인가 — 기댓값 치환을 한 번만 보자.</strong> 평가하려는 값은
 \(V^\pi(s_0) = \mathbb{E}\<em>\pi[G_0]\)이다. \(b\)에서 샘플을 모으려면
@@ -302,7 +306,7 @@ Q^\pi(2, \text{right}) = 0.900 &gt; Q^\pi(2, \text{left}) = 0.729\]</p>
 **에피소드가 조금만 길어져도 “수학적으로는 가능하지만 실제로는
 불가능”**이 되는 것이다.
 이 “중요도 가중치의 분산 폭증” 문제가 off-policy 학습 전반의
-근본적 난제이며, Chapter 11(PPO)의 클리핑된 확률비<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">3</a></sup>가 바로 이 문제를
+근본적 난제이며, Chapter 11(PPO)의 클리핑된 확률비<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">4</a></sup>가 바로 이 문제를
 “\(\rho\)가 너무 크면 자른다“는 가장 단순한 다스림법이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <h3 id="분산이-크다가-실전에서-무엇을-의미하나"><a class="header" href="#분산이-크다가-실전에서-무엇을-의미하나">“분산이 크다“가 실전에서 무엇을 의미하나</a></h3>
@@ -359,7 +363,7 @@ on-policy 직관이 off-policy에서는 <strong>탐험이 많을수록 분산이
 <p>off-policy의 진짜 가치는 “사람의 시연 데이터, 시뮬레이터에서 모은
 데이터, 과거 버전의 정책이 모은 데이터“를 <strong>재사용</strong>할 수 있다는
 점이다 — Chapter 12(모방학습)에서 사람의 동작 데이터를 강화학습
-에 어떻게 쓸지 다룰 때, 이 off-policy 도구가 필수 전제가 된다<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">4</a></sup>.</p>
+에 어떻게 쓸지 다룰 때, 이 off-policy 도구가 필수 전제가 된다<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">5</a></sup>.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_rlhf.png" alt="RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../../images/ref_rlhf.png" alt="RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. 중요도 샘플링 비율 \(\rho\)의 분산이 왜 문제가 되나요?</strong>
@@ -402,7 +406,7 @@ Chapter 11에서 왜 이 절충이 작동하는지(학습의 안정성)을 더 �
 <p>MC는 모델이 필요 없다는 강력한 장점이 있지만, <strong>에피소드가 끝나야만</strong>
 학습할 수 있다는 근본적인 제약이 있다 — 리턴 \(G_t\) 자체가 에피소드
 끝까지의 보상을 다 더한 값이기 때문이다. 게임이 아주 길거나 끝나지 않는
-과업(continuing task)이라면 MC는 아예 쓸 수 없다<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">5</a></sup>.</p>
+과업(continuing task)이라면 MC는 아예 쓸 수 없다<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">6</a></sup>.</p>
 <p><strong>왜 continuing task에서 MC가 아예 쓰이지 않는가.</strong> ending이 없으면
 “에피소드 끝까지의 보상 합“이라는 \(G_t\) 자체가 정의되지 않는다.
 대신 “H 스텝까지의 절단 리턴”
@@ -417,10 +421,10 @@ R_{t+H-1}\)으로 대체할 수 있지만, <strong>H를 몇으로 잡을지</str
 Chapter 6의 시간차 학습은 “에피소드가 끝나기를 기다리지 않고, 한
 스텝만 보고도 즉시 갱신한다“는 완전히 다른 절충안으로 이 문제를
 푼다.</p>
-<p><strong>몬테카를로<sup class="footnote-reference" id="fr-montecarlo-1"><a href="#footnote-montecarlo">6</a></sup>는 “모델을 몰라도, 충분히 많이 시도해보면 평균이 진실에
+<p><strong>몬테카를로<sup class="footnote-reference" id="fr-montecarlo-1"><a href="#footnote-montecarlo">7</a></sup>는 “모델을 몰라도, 충분히 많이 시도해보면 평균이 진실에
 수렴한다“는 통계학의 가장 기본적인 원리를 강화학습에 그대로 옮긴
 것이다 — 다만 그 대가로, 결과를 알기 위해 항상 게임이 끝날 때까지
-기다려야 한다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">7</a></sup></strong></p>
+기다려야 한다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">8</a></sup></strong></p>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
 <ol>
 <li>5칸 회랑에서 \(b\)가 “왼쪽 70%, 오른쪽 30%”(비대칭)이고
@@ -626,6 +630,9 @@ for s in range(5):
 </li>
 <li id="footnote-dqn">
 <p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>
+</li>
+<li id="footnote-sarsa">
+<p>Sutton, R. S. (1991). “Integrated architectures for learning, planning, and reacting based on approximating dynamic programming.” ICML 1991, 256–261. — SARSA의 원 논문. 같은 논문에서 제안된 off-policy TD(2)는 “다음 행동을 고를 확률“로 TD 오류를 가중하는 off-policy 보정법으로, 본 절의 중요도 보정 사상이 TD 학습에 적용된 사례이며, Chapter 6에서 다룬다. <a href="#fr-sarsa-1">↩</a></p>
 </li>
 <li id="footnote-ppo">
 <p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>

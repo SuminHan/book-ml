@@ -5,9 +5,29 @@ Usage: python3 cq_run_once.py <prompt_file> <log_file> [timeout_seconds]
 Streams claude's --output-format stream-json events and writes a compact,
 human-readable, line-flushed log so `tail -f` shows live progress (tool
 calls, tool results, final answer, cost/turn summary).
+
+Two hardening fixes over the original version (both were real ways this
+could hang past its timeout instead of terminating):
+
+1. The read loop used to be a blocking `proc.stdout.readline()` -- if
+   claude went completely silent (no more stream-json events, e.g. stuck
+   inside a long Bash tool call), the loop never got back to the top to
+   re-check the deadline, so the timeout never fired. Now every read is
+   gated by `select.select(..., timeout=1s)` so the loop always revisits
+   the deadline check at least once a second no matter what claude is
+   doing.
+2. `proc.kill()` only signals the immediate `claude` child; anything
+   *claude* itself spawned (e.g. a `jupyter nbconvert --execute` from a
+   Bash tool call) is in the same process group and doesn't get killed
+   with it -- it's reparented to init and keeps running as an orphan
+   forever. The child is now started with `start_new_session=True` (its
+   own process group) and killed via `os.killpg(...)` so the whole tree
+   dies together.
 """
 import json
 import os
+import select
+import signal
 import subprocess
 import sys
 import time
@@ -17,6 +37,25 @@ def trunc(s, n=220):
     s = str(s)
     s = s.replace("\n", "\\n")
     return s if len(s) <= n else s[:n] + f"...[{len(s)}chars]"
+
+
+def _handle_line(line, lf):
+    """Format+write one line of claude's stream-json output to the log.
+    Returns the parsed `result` event dict if this line was one, else None."""
+    if line.startswith("{"):
+        try:
+            d = json.loads(line)
+        except json.JSONDecodeError:
+            lf.write(f"[RAW] {trunc(line)}\n")
+            return None
+        out = fmt_event(d)
+        if out:
+            lf.write(out + "\n")
+        if d.get("type") == "result":
+            return d
+        return None
+    lf.write(f"[STDERR/OTHER] {trunc(line)}\n")
+    return None
 
 
 def fmt_event(d):
@@ -91,39 +130,58 @@ def main():
     proc = subprocess.Popen(
         cmd, cwd="/home/smhan/book-ml", env=env,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1,
+        start_new_session=True,  # own process group -> kill_tree() can reap everything it spawns
     )
+
+    def kill_tree(p):
+        # SIGKILL the whole process group (p itself + anything it spawned,
+        # e.g. a Bash-tool child that's still running). ProcessLookupError
+        # means it's already gone -- fine, that's the goal anyway.
+        try:
+            os.killpg(os.getpgid(p.pid), signal.SIGKILL)
+        except ProcessLookupError:
+            pass
 
     rc = None
     result_line = None
     try:
         while True:
-            if timeout and (time.time() - t0) > timeout:
-                proc.kill()
-                lf.write(f"\n=== TIMEOUT after {timeout}s, killed ===\n")
+            elapsed = time.time() - t0
+            if timeout and elapsed > timeout:
+                kill_tree(proc)
+                lf.write(f"\n=== TIMEOUT after {timeout}s, killed (process group) ===\n")
                 rc = -1
                 break
-            line = proc.stdout.readline()
-            if line == "" and proc.poll() is not None:
+            if proc.poll() is not None:
+                # process exited; drain whatever's left in the pipe without blocking
+                for line in proc.stdout:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    res = _handle_line(line, lf)
+                    if res:
+                        result_line = res
                 rc = proc.returncode
                 break
+            # Never block on readline() longer than 1s (or the remaining
+            # budget if shorter) -- this is what makes the timeout check
+            # above actually get revisited even if claude goes completely
+            # silent (e.g. stuck inside a long-running Bash tool call).
+            wait = min(1.0, timeout - elapsed) if timeout else 1.0
+            ready, _, _ = select.select([proc.stdout], [], [], max(wait, 0))
+            if not ready:
+                continue
+            line = proc.stdout.readline()
+            if line == "":
+                continue  # EOF race with poll(); loop will catch the exit above
             line = line.strip()
             if not line:
                 continue
-            if line.startswith("{"):
-                try:
-                    d = json.loads(line)
-                except json.JSONDecodeError:
-                    lf.write(f"[RAW] {trunc(line)}\n")
-                    continue
-                out = fmt_event(d)
-                if out:
-                    lf.write(out + "\n")
-                if d.get("type") == "result":
-                    result_line = d
-            else:
-                lf.write(f"[STDERR/OTHER] {trunc(line)}\n")
+            res = _handle_line(line, lf)
+            if res:
+                result_line = res
     except KeyboardInterrupt:
-        proc.kill()
+        kill_tree(proc)
         rc = -2
 
     dt = time.time() - t0

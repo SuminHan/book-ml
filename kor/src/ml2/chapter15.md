@@ -49,7 +49,7 @@ B 캡스톤: 팀 프로젝트와 학기 총정리")에서는 MCTS를 포함해 �
 
 하나의 큰 그림을 먼저 놓는다. 모델이 있으면(또는 주어지면) 시행착오
 횟수를 크게 줄일 수 있다는 이점이 있지만, 동시에 모델의 오차가 학습
-결과에 그대로 전이되는 리스크도 생긴다. MCTS는 이 딜레마에 대해 "전체
+결과에 그대로 전이되는 리스크도 생긴다. MCTS[^mcts]는 이 딜레마에 대해 "전체
 상태 공간을 계산하는 대신, 지금 필요한 갈림길만 깊게 계산한다"는
 절충을 보여주는 표준 사례다 — 이 "부분 계획"의 아이디어가 이번 장의
 세 절을 관통하는 주제다.
@@ -88,3 +88,4 @@ B 캡스톤: 팀 프로젝트와 학기 총정리")에서는 MCTS를 포함해 �
 [^mujoco]: Todorov, E., Erez, T., Tassa, Y. (2012). "MuJoCo: A physics engine for model-based control." IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2012). DOI: 10.1109/IROS.2012.6386109.
 [^isaacsim]: Makoviychuk, V. et al. (2021). "Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning." arXiv:2108.10470. (Isaac Sim의 기반이 되는 GPU 병렬 물리 시뮬레이션의 원 논문)
 [^ucb]: Auer, P., Cesa-Bianchi, N., Fischer, P. (2002). "Finite-time Analysis of the Multiarmed Bandit Problem." Machine Learning 47(2/3), 235–256. — UCB1 알고리즘과 로그 후회 경계의 원 논문.
+[^mcts]: Browne, C. B., Cowling, P. I., White, M., et al. (2012). "A Survey of Monte Carlo Tree Search Methods." IEEE Transactions on Computational Intelligence and AI in Games 4(1), 1–43. MCTS 방법론을 체계적으로 정리한 대표적 서베이 — "Monte-Carlo Tree Search"라는 이름과 선택·확장·평가·역전파의 표준 4단계 체계가 이 무렵 확립되었다.

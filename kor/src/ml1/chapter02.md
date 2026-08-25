@@ -23,7 +23,7 @@ squares)이라는 이름으로, 지금도 스프레드시트의 추세선부터 
 뼈대 — **모델, 비용함수, 최적화 알고리즘** — 은 학기 내내 이름만 바꿔 반복되므로,
 여기서 확실히 잡아두는 것이 중요하다.
 
-그리고 다음 장("생성 모델 관점의 분류: 나이브베이즈와 GDA")은 분류 문제에
+그리고 다음 장("생성 모델 관점의 분류: 나이브베이즈와 GDA")[^gda]은 분류 문제에
 근본적으로 다른 방향에서 접근한다 — "데이터에서 클래스의 확률을 직접 추정하는"
 이 장의 판별(discriminative) 방식 대신, "데이터가 어떻게 만들어졌는지"를 먼저
 모델링하고 베이즈 정리로 뒤집어 확률을 구하는 생성(generative) 방식이다.
@@ -54,7 +54,8 @@ squares)이라는 이름으로, 지금도 스프레드시트의 추세선부터 
   최적화(경사하강법)"라는 뼈대를 세운 뒤 장난감 데이터로 직접 돌려본다 —
   비용이 왜 볼록한지, 학습률이 너무 크면 발산하고 너무 작으면 왜 느려지는지
   숫자로 확인하고, 실데이터(diabetes 데이터셋)에서 학습 곡선을 그려
-  검증하는 실험과 가우스와 사라진 소행성 세레스의 이야기로 마무리한다.
+  검증하는 실험[^diabetesdata]과 가우스와 사라진 소행성 세레스의 이야기로
+  마무리한다.
 - [2.2 정규방정식과 "같은 모델, 다른 출력"이라는 다리](chapter02/2.md) —
   미분을 0으로 놓아 닫힌 형태 해인 정규방정식을 유도하고, 같은 장난감 문제를
   한 번의 행렬 연산으로 풀어 2000스텝 경사하강법과 "같은 도착지"를 확인한다.
@@ -73,3 +74,5 @@ squares)이라는 이름으로, 지금도 스프레드시트의 추세선부터 
   순서대로 다룬다.
 
 [^cs229]: 더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — 이 장의 선형회귀·최소제곱(경사하강법 포함)과 로지스틱회귀(시그모이드·교차 엔트로피·경사하강법)는 CS229 강의 노트의 Linear Regression / Logistic Regression 단원과 직접 겹친다.
+[^gda]: Ng, A. Y., Jordan, M. I. (2001). "On Discriminative vs. Generative Classifiers." NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminant Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)과 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다.
+[^diabetesdata]: Efron, B., Hastie, T., Johnstone, I., Tibshirani, R. (2004). "Least Angle Regression." Annals of Statistics 32(2), 407–499. 실습 예제에서 쓰는 scikit-learn `load_diabetes` 데이터셋(442명, 10개 특징)의 원천 — 이 논문의 데이터를 사용했고, scikit-learn 공식 문서도 데이터셋 출처로 이 논문을 명시하고 있다.

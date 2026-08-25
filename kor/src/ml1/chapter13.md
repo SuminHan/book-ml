@@ -20,10 +20,12 @@ Chapter 12의 트랜스포머를 "구조"로가 아니라 **동작하는 도구*
 "다음 토큰의 확률분포"를 계산하는 실제 엔진이 된다. 반면 다음 장
 (Chapter 14, 표현학습)에서는 이 장의 반대편 끝, 즉 LLM이 의미를
 고차원 벡터에 어떻게 압축하는지를 정면에서 다룬다 — PCA,
-word2vec[^word2vec], Node2Vec, PageRank는 모두 "단어·노드·데이터를
+word2vec[^word2vec], Node2Vec[^node2vec], PageRank는 모두 "단어·노드·데이터를
 벡터로 표현한다"는
 질문의 변주이며, 이 장에서 자연스럽게 마주하게 될 임베딩과 같은
 뿌리에서 자라났다.
+
+![두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1).](../images/ref_word2vec.png)
 
 ## 학습 목표
 
@@ -37,7 +39,7 @@ word2vec[^word2vec], Node2Vec, PageRank는 모두 "단어·노드·데이터를
   다른지 짚을 수 있다.
 - zero-shot, few-shot, chain-of-thought[^cot] 프롬프팅이 "프롬프트에 얼마나
   보여줄 것인가"의 스펙트럼 위 어디에 놓이는지 비교할 수 있고,
-  temperature·top-k·top-p로 생성 행동을 조절할 수 있다.
+  temperature·top-k·top-p[^topp]로 생성 행동을 조절할 수 있다.
 - SFT, RLHF[^rlhf], DPO[^dpo] 세 경로를 그림으로 구분할 수 있고, "그럴듯한
   텍스트"가 "사람이 원하는 답변"과 왜 다른지(데이터 분포와 인간
   선호의 차이) 설명할 수 있다.
@@ -92,3 +94,5 @@ word2vec[^word2vec], Node2Vec, PageRank는 모두 "단어·노드·데이터를
 [^gpt3]: Brown, T. B., Mann, B., Ryder, N., et al. (2020). "Language Models are Few-Shot Learners." NeurIPS 2020. arXiv:2005.14165.
 [^rag]: Lewis, P., Perez, E., Piktus, A., et al. (2020). "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks." NeurIPS 2020. arXiv:2005.11401.
 [^peft]: Lialin, V., Deshpande, V., Yao, X., Rumshisky, A. (2023). "Scaling Down to Scale Up: A Guide to Parameter-Efficient Fine-Tuning." arXiv:2303.15647. (LoRA·prefix·adapter 등 PEFT 기법군을 정리한 참고자료)
+[^topp]: Holtzman, A., Buys, J., Du, L., Forbes, M., Choi, Y. (2019). "The Curious Case of Neural Text Degeneration." NAACL 2019. arXiv:1904.09751. (top-p, 즉 nucleus 샘플링을 제안한 논문)
+[^node2vec]: Grover, A., Leskovec, J. (2016). "node2vec: Scalable Feature Learning for Networks." KDD 2016. arXiv:1607.00653.

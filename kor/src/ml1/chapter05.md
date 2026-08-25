@@ -1,12 +1,12 @@
 # Chapter 5. SVM과 커널 (Support Vector Machines & Kernels)
 
-1990년대, 벨 연구소의 블라디미르 바프닉(Vladimir Vapnik)과 코린나
+1990년대, 벨 연구소의 블라디미르 바프닉(Vladimir Vapnik)[^vapnik1995]과 코린나
 코르테스(Corinna Cortes)는 지금까지와는 완전히 다른 질문을 던졌다.
-로지스틱회귀는 "확률을 얼마나 잘 맞히는가"를 손실로 삼고, GDA/나이브베이즈는
+로지스틱회귀는 "확률을 얼마나 잘 맞히는가"를 손실로 삼고, GDA[^gda]/나이브베이즈는
 "데이터가 어떻게 생성됐는가"를 모델링했다. 바프닉과 코르테스는 확률도
 생성 과정도 아예 신경 쓰지 않고, 순수하게 **기하학**만 물었다: "두 클래스를
 가르는 무수히 많은 경계선 중, 어떤 경계선이 새 데이터에 가장 안전한가?"
-이 질문의 답이 **서포트 벡터 머신**(Support Vector Machine, SVM)이다 —
+이 질문의 답이 **서포트 벡터 머신**(Support Vector Machine, SVM)[^cortespapnikas95]이다 —
 2010년대 딥러닝이 대세가 되기 전까지, 손글씨 인식부터 텍스트 분류까지
 가장 널리 쓰인 분류기였다.
 
@@ -68,3 +68,6 @@ L1/L2 페널티와 교차검증이라는 일반 틀로 확장한다.
 명확하게 볼 수 있다. 이 주제를 더 다루는 자료: [^cs229]
 
 [^cs229]: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf
+[^vapnik1995]: Vapnik, V. N. (1995). "The Nature of Statistical Learning Theory." Springer, New York. — SVM의 이론적 기반을 정리한 표준 단행본 (소프트 마진 SVM 원 논문인 Cortes & Vapnik (1995)과 같은 계열).
+[^cortespapnikas95]: Cortes, C., Vapnik, V. (1995). "Support-Vector Networks." Machine Learning 20(3), 273–297. SVM(라그랑주 쌍대 문제와 커널 방법을 포함한)의 원 논문.
+[^gda]: Ng, A. Y., Jordan, M. I. (2001). "On Discriminative vs. Generative Classifiers." NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminative Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)과 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다.

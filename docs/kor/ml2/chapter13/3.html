@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -438,13 +438,15 @@ Hopper, Ant, HalfCheetah, …)을 훈련시켜 그 표를 내는데, 이것이
 연속제어 시대의 벤치마크 표가 됐다. “물리엔진 + PPO” 조합은 심층 RL
 의 제어 능력을 처음 <em>검증 가능한</em> 형태로 만들었다 — 그전까지
 “RL로 로봇을 제어한다“는 주장은 대부분 손으로 만든 예외였다.
-그리고 바로 이 “알고리즘은 환경에서 분리된다“는 구조가, 2020~2021년
-GPU 대량병렬 실험(OpenAI의 A1 사족보행 로봇 시연, “하나의 GPU로
-수천 개 환경“을 돌린 Isaac Gym<sup class="footnote-reference" id="fr-isaacgym-1"><a href="#footnote-isaacgym">9</a></sup> 시대)을 가능하게 했다 — 알고리즘이
+그리고 “데이터를 병렬로 모은다“의 방향은 더 이르다 — 비동기적 방법 A3C<sup class="footnote-reference" id="fr-a3c-1"><a href="#footnote-a3c">9</a></sup>가 “수많은 워커 프로세스가 트래젝터리를 병렬로 수집해 공유 정책망을 갱신한다“를 심층 강화학습의 표준 레시피로 만든 것이다.
+바로 이 “알고리즘은 환경에서 분리된다“는 구조가, 2020~2021년
+GPU 대량병렬 실험(OpenAI의 A1 사족보행 로봇 시연<sup class="footnote-reference" id="fr-massivelyparallelrl-1"><a href="#footnote-massivelyparallelrl">10</a></sup>, “하나의 GPU로
+수천 개 환경“을 돌린 Isaac Gym<sup class="footnote-reference" id="fr-isaacgym-1"><a href="#footnote-isaacgym">11</a></sup> 시대)을 가능하게 했다 — 알고리즘이
 환경과 이렇게 깔끔하게 분리되지 않았다면, 그런 시스템을 <em>쓸 수
 없이</em> 만드는 데도 그만큼의 시간이 걸렸을 것이다. 이 책의
 14~16장도 같은 구조를 반복한다: <strong>알고리즘은 고정, 환경만
 바꾸는 것</strong>.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."><span class="img-wrapper"><img src="../../images/ref_a3c.png" alt="A3C를 포함한 여러 비동기 RL 방법들의 Atari 게임별 학습 곡선 비교 (원 논문 Figure 3)."></span></label></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <p><strong>1. 학습 중의 노이즈 있는 에피소드 리턴을 정책의 성능으로
 판단하는 것.</strong> 이번 절의 두 곡선 현상(확률적 곡선은 악화,
@@ -529,12 +531,12 @@ CartPole처럼 <em>진짜</em> 종료(막대가 쓰러짐)가 있는 환경에�
 PPO는 “환경 이름만 바뀐 같은 코드“이며, 손으로 만든 제어기는
 경쟁자가 아니라 <em>베이스라인</em>이다.</p>
 </blockquote>
-<p><strong>로봇 시뮬레이션은 지금까지 배운 알고리즘(DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">10</a></sup>, PPO)을 “실제 물리
+<p><strong>로봇 시뮬레이션은 지금까지 배운 알고리즘(DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">12</a></sup>, PPO)을 “실제 물리
 법칙이 지배하는 연속 행동공간“이라는 더 현실적인 무대로 옮기는 시험대다
 — 다음 장에서는 이 시뮬레이션을 더 정교한 물리엔진으로, 그리고 대규모
 GPU 가속 환경으로 확장한다.</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
-<p>이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">11</a></sup></p>
+<p>이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">13</a></sup></p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (실습)</strong> 위 베이스라인 코드를 그대로 실행한 뒤, 비례 이득
@@ -554,7 +556,7 @@ def gaussian_log_prob(action, mu, sigma):
 print(round(gaussian_log_prob(0.0, 0.0, 1.0), 4))   # 표준정규분포 x=0에서의 로그밀도, 약 -0.9189
 print(round(gaussian_log_prob(2.0, 0.0, 1.0), 4))   # 평균에서 멀수록 로그확률이 더 작아짐(더 음수)
 </code></pre>
-<p><strong>3. (개념 서술)</strong> 도메인 무작위화(domain randomization)<sup class="footnote-reference" id="fr-domainrandomization-1"><a href="#footnote-domainrandomization">12</a></sup>가 왜 ML1
+<p><strong>3. (개념 서술)</strong> 도메인 무작위화(domain randomization)<sup class="footnote-reference" id="fr-domainrandomization-1"><a href="#footnote-domainrandomization">14</a></sup>가 왜 ML1
 Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
 있는지, “모델이 특정 조건 하나에 과적합하는 것을 막는다“는 관점에서
 두세 문장으로 설명하라.</p>
@@ -588,6 +590,12 @@ Chapter 6의 정규화(regularization)와 비슷한 역할을 한다고 볼 수
 </li>
 <li id="footnote-mujoco">
 <p>Todorov, E., Erez, T., Tassa, Y. (2012). “MuJoCo: A Physics Engine for Model-Based Control.” 2012 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). <a href="#fr-mujoco-1">↩</a></p>
+</li>
+<li id="footnote-a3c">
+<p>Mnih, V. et al. (2016). “Asynchronous Methods for Deep Reinforcement Learning.” arXiv:1602.01783. <a href="#fr-a3c-1">↩</a></p>
+</li>
+<li id="footnote-massivelyparallelrl">
+<p>Rudin, N., Hoeller, D., Reist, P., Hutter, M. (2021). “Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning.” CoRL 2021. arXiv:2109.11978. <a href="#fr-massivelyparallelrl-1">↩</a></p>
 </li>
 <li id="footnote-isaacgym">
 <p>Makoviychuk, V. et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. <a href="#fr-isaacgym-1">↩</a></p>

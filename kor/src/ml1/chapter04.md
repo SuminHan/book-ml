@@ -23,7 +23,7 @@
 넘어가는 다리가 여기서 놓인다. kNN의 결정경계는 점 하나하나의 "이웃 순위"에
 따라 결정되는 *국소적* 경계(보로노이 다이어그램)다. Chapter 5는 반대로
 "무수히 많은 경계선 중 어떤 것이 새 데이터에 가장 *안전*한가"라는 *전역적·기하학적*
-질문을 던지며, 그 답으로 마진 최대화(SVM)와 커널 트릭을 소개한다.
+질문을 던지며, 그 답으로 마진 최대화(SVM)[^cortespapnikas95]와 커널 트릭을 소개한다.
 
 좀 더 크게 보면, 이번 장은 지금까지의 "파라미터를 맞춰 모형을 만든다"
 (Chapter 1~3의 선형·로지스틱·생성 모델)에서 한 걸음 나아가, *파라미터 없이
@@ -73,3 +73,4 @@
 
 [^cs229]: 더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes (k-최근접이웃과 k-means를 핵심 주제로 다룸). https://cs229.stanford.edu/main_notes.pdf
 [^kmeanspp]: Arthur, D., Vassilvitskii, S. (2007). "k-means++: The advantages of careful seeding." Proceedings of the 18th Annual ACM-SIAM Symposium on Discrete Algorithms (SODA 2007).
+[^cortespapnikas95]: Cortes, C., Vapnik, V. (1995). "Support-Vector Networks." Machine Learning 20(3), 273–297. — SVM(라그랑주 쌍대 문제와 커널 방법을 포함한)의 원 논문.

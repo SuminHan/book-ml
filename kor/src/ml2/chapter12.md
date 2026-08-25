@@ -33,7 +33,7 @@ Learning을 추천한다.[^cs234]
 
 - 행동 복제를 "(상태, 행동) 시연 쌍을 라벨로 쓰는 지도학습 문제"로
   설명하고, 학습 분포와 배포 시 분포가 어긋나며 오차가 눈덩이치는
-  **복합 오차**의 본질을 한 문장으로 짚을 수 있다.
+  **복합 오차**[^covshift]의 본질을 한 문장으로 짚을 수 있다.
 - DAgger[^dagger] 네 줄 — 에이전트가 자신의 정책으로 달리고, 전문가가 방문한
   상태에 라벨만 답하는 반복 — 을 장난감 환경에 적용해 보고, "시연을
   더 많이 모으는 것"이 그 실패를 해결하지 못하는 이유(수량이 아니라
@@ -59,7 +59,7 @@ Learning을 추천한다.[^cs234]
   걸음걸이 등)에는, 비교 데이터만으로 Bradley-Terry 보상모델을 학습하고
   그 점수를 PPO의 보수로 쓴다 — LLM을 다듬는 RLHF[^instructgpt]와 같은 구조다.
   선호 쌍 300개로 숨겨진 보상함수의 방향(비율)을 복원하는 실습, 그리고
-  이 대리 보상이 보상모델의 약점을 파고드는 보상 해킹 위험을 안고
+  이 대리 보상이 보상모델의 약점을 파고드는 보상 해킹[^rewardhacking] 위험을 안고
   있다는 점도 확인한다.
 - [12.3 모방학습 vs 강화학습: 언제 무엇을 쓰는가](chapter12/3.md) —
   "어느 쪽이 낫나요?"는 잘못된 질문 — 선택은 가진 자원(시연, 비교,
@@ -78,3 +78,5 @@ Learning을 추천한다.[^cs234]
 [^rlhf]: Christiano, P. et al. (2017). "Deep reinforcement learning from human preferences." NeurIPS 2017. arXiv:1706.03741.
 [^dagger]: Ross, S., Gordon, G. J., Bagnell, J. A. (2011). "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning." AISTATS 2011. arXiv:1011.0686.
 [^instructgpt]: Ouyang, L. et al. (2022). "Training language models to follow instructions with human feedback." arXiv:2203.02155.
+[^covshift]: Sugiyama, M., Suzuki, T., Kanamori, T. (2012). "Metrics for Discriminative Domain Adaptation." NeurIPS 2012. arXiv:1206.6323. (학습·배포 분포 불일치 — 코바리에이트 시프트 — 를 측정하는 지표의 원 논문)
+[^rewardhacking]: Skalse, J., Howe, N. H. R., Krasheninnikov, D., Krueger, D. (2022). "Defining and Characterizing Reward Hacking." arXiv:2209.13085.

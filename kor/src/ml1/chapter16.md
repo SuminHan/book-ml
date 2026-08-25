@@ -1,13 +1,15 @@
 # Chapter 16. Block B 캡스톤: 팀 프로젝트와 ML1 총정리 (Block B Capstone & ML1 Review)
 
-Chapter 9~15는 신경망 기초에서 시작해 CNN, 시퀀스 모델, Transformer[^transformer], LLM,
+Chapter 9~15는 신경망 기초에서 시작해 CNN[^alexnet], 시퀀스 모델, Transformer[^transformer], LLM[^gpt3],
 그리고 잠재변수 생성모델까지 현대 딥러닝의 핵심 계보를 훑었다. 이번 장은
 Chapter 8의 짝이다 — 새 개념 대신, 이 두 번째 절반의 도구들을 실제 데이터에
 적용해보고 학기를 총정리하는 자리다.
 
 ![트랜스포머 전체 구조 -- 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1).](../images/ref_transformer.png)
 
-**이 순서가 왜 여기인가.** Chapter 15에서 EM/GMM에서 출발해 VAE[^vae], GAN[^gan],
+![AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조.](../images/ref_alexnet.png)
+
+**이 순서가 왜 여기인가.** Chapter 15에서 EM/GMM[^gmm]에서 출발해 VAE[^vae], GAN[^gan],
 Diffusion[^ddpm]까지 — 관측되지 않은 잠재변수로 데이터를 만들어내는 생성모델의
 네 가지 얼굴까지 손을 잡았다. Block B의 도구상자는 이제 채워진 셈이다.
 Block A(Chapter 2~7)가 Chapter 8에서 "정형 데이터를 다루는 고전 ML의
@@ -79,3 +81,6 @@ Block A(Chapter 2~7)가 Chapter 8에서 "정형 데이터를 다루는 고전 ML
 [^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/
 [^ddpm]: Ho, J., Jain, A., Abbeel, P. (2020). "Denoising Diffusion Probabilistic Models." arXiv:2006.11239.
 [^gbdt]: Friedman, J. H. (2001). "Greedy Function Approximation: A Gradient Boosting Machine." Annals of Statistics 29(5), 1189–1232.
+[^alexnet]: Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). "ImageNet Classification with Deep Convolutional Neural Networks." NeurIPS 2012.
+[^gpt3]: Brown, T. B., Mann, B., Ryder, N., et al. (2020). "Language Models are Few-Shot Learners." NeurIPS 2020. arXiv:2005.14165.
+[^gmm]: McLachlan, G. J., Krishnan, T. (2008). "The EM Algorithm and Extensions." 2nd ed. Wiley.

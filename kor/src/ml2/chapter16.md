@@ -2,7 +2,7 @@
 
 Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN)[^dqn], 정책을
 직접 학습하고(REINFORCE, PPO)[^ppo], 사람의 시연·선호로부터
-배우고(모방학습)[^rlhf], 실제 물리 시뮬레이션(MuJoCo[^mujoco], Isaac Sim[^isaacsim])과 트리
+배우고(모방학습)[^dagger][^rlhf], 실제 물리 시뮬레이션(MuJoCo[^mujoco], Isaac Sim[^isaacsim])과 트리
 탐색(MCTS)[^mcts]까지 다뤘다. 이번 장은 Chapter 8의 짝이다 — 이 두 번째 절반의
 도구들을 로봇 시뮬레이션 환경에 직접 적용해보고, 학기 전체를 총정리한다.
 
@@ -40,12 +40,13 @@ Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN)[^dq
   "반박 가능한 질문"을 쓴 peer-review를 작성할 수 있다.
 - 학기 전체를 "모델 정의 → 틀린 정도를 수치화 → 개선" 3단계 구조로
   정리하고, 20문항 자가진단으로 준비도를 재며, 학기 이후로 이어질 방향
-  (오프라인 RL, 범용 로봇 정책, sim-to-real)을 자기 언어로 말할 수 있다.
+  (오프라인 RL[^offlinerl], 범용 로봇 정책[^rt2], sim-to-real[^domainrandomization])을
+  자기 언어로 말할 수 있다.
 
 이번 주는 세 개의 수업 블록으로 진행된다:
 
 - [16.1 팀 프로젝트: 발표](chapter16/1.md)
-  연속제어 환경(Pendulum, MuJoCo 기반 로봇 등)을 고르고 Chapter 9~15
+  연속제어 환경(Pendulum, MuJoCo 기반 로봇 등)[^gymnasium]을 고르고 Chapter 9~15
   중 방법(DQN / PPO / 모방학습 / MCTS)으로 정책을 학습시키는, 8.1절의
   쌍(pair)에 해당하는 절이다. 무작위 정책의 베이스라인 리턴을 먼저
   재고(예: Pendulum −1274), 시드 3개 이상으로 실행한 뒤, 탐험이 섞인
@@ -80,3 +81,8 @@ Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN)[^dq
 [^mujoco]: Todorov, E., Eret, T., Tassa, Y. (2012). "MuJoCo: A physics engine for model-based control." IROS 2012, 5026–5033.
 [^isaacsim]: Gao, S., Pagnucco, M., Bednarz, T., Song, Y. (2026). "NVIDIA Isaac Sim: Enabling Scalable, GPU-Accelerated Simulation for Robotics." arXiv:2606.03551.
 [^mcts]: Browne, C. B., Cowling, P. I., White, M., et al. (2012). "A Survey of Monte Carlo Tree Search Methods." IEEE Transactions on Computational Intelligence and AI in Games 4(1), 1–43. MCTS 방법론을 체계적으로 정리한 대표적 서베이 — "Monte-Carlo Tree Search"라는 이름과 선택·확장·평가·역전파의 표준 4단계 체계가 이 무렵 확립되었다.
+[^dagger]: Ross, A., Gordon, G. J., Bagnell, J. A. (2011). "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning." ICML 2011. arXiv:1011.0686. 모방학습(imitation learning) 방법 DAgger의 원 논문 — 데모 데이터에 대한 단순 모방의 분포 오프셋(distribution shift) 문제를 다루는 표준 참고문헌이다.
+[^offlinerl]: Levine, S., Kumar, A., Tucker, G., Fu, J. (2020). "Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems." arXiv:2005.01643. 오프라인 RL 분야를 체계적으로 정리한 표준 튜토리얼.
+[^gymnasium]: Towers, M. et al. (2024). "Gymnasium: A Standard Interface for Reinforcement Learning Environments." arXiv:2407.17032.
+[^domainrandomization]: Tobin, J. et al. (2017). "Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World." arXiv:1703.06907.
+[^rt2]: Brohan, A. et al. (2023). "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control." CoRL 2023. arXiv:2307.15818. 범용 로봇 정책(generalist robot policy) 학습을 대표하는 논문 — 대규모 웹 지식으로 학습한 비전-언어 모델을 행동 생성으로 확장해 로봇 제어에 전이시킨 VLA 모델.

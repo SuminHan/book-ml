@@ -63,7 +63,7 @@ REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 "한 번 쓰고 �
   이 만들어내는 목적함수의 모양을 손으로 확인한다. \\(A\_t > 0\\)이면
   \\(r\_t > 1+\epsilon\\) 이후, \\(A\_t < 0\\)이면 \\(r\_t < 1-\epsilon\\)
   이후 "추가 이득"이 0이 되는 min의 비대칭을 그림과 함께 짚는다.
-  이어서 Pendulum 환경(행동: -2~+2Nm 톱의 하나)의 연속 행동공간에서
+  이어서 Pendulum 환경[^gym] (행동: -2~+2Nm 톱의 하나)의 연속 행동공간에서
   PPO를 통째로 구현해본다 — 가우시안 정책, 그리고 정책 손실 + 가치
   손실 − 엔트로피 보너스로 이루어진 전체 목적함수까지.
 - [11.3 GAE와 PPO가 표준이 된 이유](chapter11/3.md) — PPO를 실전용으로
@@ -84,3 +84,4 @@ REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 "한 번 쓰고 �
 [^cs234]: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 장의 주제(신뢰 영역/근접 정책 최적화, PPO, GAE)를 더 깊이 다루는 자료.
 [^ddpg]: Lillicrap, T. P., Hunt, J. J., Pritzel, A., et al. (2015). "Continuous Control with Deep Reinforcement Learning." arXiv:1509.02971.
 [^sac]: Haarnoja, T., Zhou, A., Abbeel, P., Levine, S. (2018). "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor." arXiv:1801.01290.
+[^gym]: Brockman, G. et al. (2016). "OpenAI Gym." arXiv:1606.01540 — Pendulum 등 이 장에서 쓰는 표준 연속 제어 환경을 제공한다.

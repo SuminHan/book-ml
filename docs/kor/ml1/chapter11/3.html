@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -364,18 +364,18 @@ C_t = \underbrace{f_t \cdot C_{t-1}}_{\text{기억 유지}} \;+\; \underbrace{i_
 <strong>셉 훙하이저</strong>(Sepp Hochreiter, 박사과정)와 <strong>유르겐 슈미트허버</strong>(Jürgen
 Schmidhuber)가 발표한 <strong>LSTM</strong><sup class="footnote-reference" id="fr-lstm-1"><a href="#footnote-lstm">4</a></sup> 논문이 바로 “곱 대신 덧셈으로 기억을
 전달하자“는 해결책을 <strong>이미</strong> 내놨다. 그 직후인 1999년 훙하이저의
-박사논문과 2000년대 초 음성인식 연구들에서 LSTM이 기본 RNN을
+박사논문<sup class="footnote-reference" id="fr-lstmthesis-1"><a href="#footnote-lstmthesis">5</a></sup>과 2000년대 초 음성인식 연구들에서 LSTM이 기본 RNN을
 압도하는 것이 확인됐는데도, <strong>2010년대 중반까지 LSTM은
 “지나치게 복잡한 비주류 기법“으로 방치</strong>되었다.</p>
 <p>그 이유는 9.2절에서 말한 것과 같은 <em>생태</em> 문제였다. 2010년 이전에는
-GPU 메모리, 고효율 프레임워크, He/Xavier 초기화<sup class="footnote-reference" id="fr-heinit-1"><a href="#footnote-heinit">5</a></sup> <sup class="footnote-reference" id="fr-xavier-1"><a href="#footnote-xavier">6</a></sup>, Adam<sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">7</a></sup> 옵티마이저,
-Dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">8</a></sup> 등이 <strong>없었기</strong>에, “게이트까지 붙인” LSTM은 훈련 자체가
+GPU 메모리, 고효율 프레임워크, He/Xavier 초기화<sup class="footnote-reference" id="fr-heinit-1"><a href="#footnote-heinit">6</a></sup> <sup class="footnote-reference" id="fr-xavier-1"><a href="#footnote-xavier">7</a></sup>, Adam<sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">8</a></sup> 옵티마이저,
+Dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">9</a></sup> 등이 <strong>없었기</strong>에, “게이트까지 붙인” LSTM은 훈련 자체가
 어려웠고, 소실을 잘 극복한 모델일수록 <em>파라미터가 많아</em> 과적합해서
 “왜 기본 RNN보다 나을까?“를 보여주는 실험이 설계되기 어려웠다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)"><span class="img-wrapper"><img src="../../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)"></span></label></p>
 <p><strong>2013~2014년 GPU+프레임워크+초기화/옵티마이저가 한데 모여야</strong>
-LSTM이 비로소 “표준“이 됐고, 2014년 전역평균풀링<sup class="footnote-reference" id="fr-gap-1"><a href="#footnote-gap">9</a></sup>과 함께 CNN-시퀀스
-하이브리드, 번역<sup class="footnote-reference" id="fr-seq2seq-1"><a href="#footnote-seq2seq">10</a></sup>, 음성 인식에서 두각을 보였다. 교훈은 Chapter 9의
+LSTM이 비로소 “표준“이 됐고, 2014년 전역평균풀링<sup class="footnote-reference" id="fr-gap-1"><a href="#footnote-gap">10</a></sup>과 함께 CNN-시퀀스
+하이브리드, 번역<sup class="footnote-reference" id="fr-seq2seq-1"><a href="#footnote-seq2seq">11</a></sup>, 음성 인식에서 두각을 보였다. 교훈은 Chapter 9의
 “깊은 망은 세 라인(활성함수·초기화·최적화)이 함께 풀려야 했다“와
 동일하다: <strong>좋은 아이디어(LSTM)와 그것을 쓸 수 있는 생태계는
 동시에 와야 한다.</strong></p>
@@ -445,7 +445,7 @@ LSTM/GRU가 기본 RNN보다 긴 시퀀스에 강한가“의 답은 항상 이 
 <p>게이트를 추가해도 RNN은 여전히 <strong>순차적으로</strong> 한 시점씩 처리해야 한다 —
 100번째 단어를 처리하려면 1번째부터 99번째까지 순서대로 다 거쳐야 한다.
 이 순차성 때문에 병렬화가 어렵고, 아주 긴 시퀀스에서는 여전히 먼 과거
-정보가 흐려진다. Chapter 12에서 배울 Attention/Transformer<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">11</a></sup>는 이 순차성
+정보가 흐려진다. Chapter 12에서 배울 Attention/Transformer<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">12</a></sup>는 이 순차성
 자체를 없애는 완전히 다른 접근이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_transformer.png" alt="트랜스포머 전체 구조 – 인코더(왼쪽)와 디코더(오른쪽)의 Multi-Head Attention + Feed Forward 스택 (원 논문 Figure 1)."></span></label></p>
 <p><strong>RNN은 “순서가 있는 데이터를 다루려면 과거를 기억하는 상태가 필요하다“는
@@ -465,7 +465,7 @@ LSTM/GRU가 기본 RNN보다 긴 시퀀스에 강한가“의 답은 항상 이 
 망각 게이트는 1(전부 유지)에 수렴해야 한다. 이 수렴이 안 되면
 (게이트가 0.5 근처에서 떠돌면) 모델은 “기억을 못 한다“는 증상을
 보인다. 이 현상을 <em>게이트의 초기화</em>와 <em>초기 망각 게이트 바이어스</em>로
-조절하는 것이 실전 LSTM 구현의 잘 알려진 트릭이다<sup class="footnote-reference" id="fr-lstmfgbias-1"><a href="#footnote-lstmfgbias">12</a></sup> (수식은 다루지
+조절하는 것이 실전 LSTM 구현의 잘 알려진 트릭이다<sup class="footnote-reference" id="fr-lstmfgbias-1"><a href="#footnote-lstmfgbias">13</a></sup> (수식은 다루지
 않지만, “게이트가 1 근처로 <em>초기화</em>되어 있어야 기억을 <em>살릴
 기회</em>가 있다“는 직감만은 기억할 것).</li>
 <li><strong>과적합 감시.</strong> 3~4배의 파라미터는 작은 데이터에서 과적합으로
@@ -473,7 +473,7 @@ LSTM/GRU가 기본 RNN보다 긴 시퀀스에 강한가“의 답은 항상 이 
 크기를 줄이거나(GRU→RNN으로 한 칸) dropout/early stopping을 더
 쓰는 쪽이 게이트를 더 붙이는 것보다 먼저 시도해야 한다.</li>
 </ul>
-<p>LSTM/GRU 시퀀스 모델링을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">13</a></sup></p>
+<p>LSTM/GRU 시퀀스 모델링을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">14</a></sup></p>
 <h3 id="자주-하는-실수-소실을-완화했다고-긴-시퀀스를-무조건-rnn으로"><a class="header" href="#자주-하는-실수-소실을-완화했다고-긴-시퀀스를-무조건-rnn으로">자주 하는 실수: “소실을 완화했다“고 긴 시퀀스를 무조건 RNN으로</a></h3>
 <p>게이트가 소실을 <em>느리게</em> 한다고 해서, <strong>아무 길이든</strong> LSTM/GRU가
 “기억한다“고 믿는 것은 실수다. 두 가지 함정이 있다.</p>
@@ -574,6 +574,9 @@ LSTM의 망각 게이트를 학습 없이 상수 1로 고정하면 성능이 어
 </li>
 <li id="footnote-lstm">
 <p>Hochreiter, S., Schmidhuber, J. (1997). “Long Short-Term Memory.” Neural Computation 9(8), 1735–1780. <a href="#fr-lstm-1">↩</a> <a href="#fr-lstm-2">↩2</a></p>
+</li>
+<li id="footnote-lstmthesis">
+<p>Hochreiter, S. (1999). “Untersuchungen zu dynamischen neuronalen Netzen.” 박사논문, Technische Universität München — LSTM 논문(1997)의 기초가 된 박사과정 연구로, 본문에서 언급한 “LSTM이 기본 RNN을 압도“한다는 초기 확인의 출처다. <a href="#fr-lstmthesis-1">↩</a></p>
 </li>
 <li id="footnote-heinit">
 <p>He, K., Zhang, X., Ren, S., Sun, J. (2015). “Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.” ICCV 2015. arXiv:1502.01852. <a href="#fr-heinit-1">↩</a></p>

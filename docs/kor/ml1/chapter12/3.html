@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -325,8 +325,8 @@ Q=K=V로 self-attention — 12.2절의 “자기 주입” 효과(자기
 해당하는 패턴이 실제로 공존한다는 것이 아래에서 보듯 관측
 사실이다.</p>
 <p><strong>역사: 헤드들이 정말로 “역할을 나눈다“는 것은 관측된 사실인가?</strong>
-네 — “인터프리테이빌리티” 연구로 실제로 확인된 바 있다. 2018년
-Clark·Khandelwal·Levy·Manning의 “What does BERT look at?”<sup class="footnote-reference" id="fr-bertbert-1"><a href="#footnote-bertbert">3</a></sup>
+네 — “인터프리테이빌리티”<sup class="footnote-reference" id="fr-bertinterpretability-1"><a href="#footnote-bertinterpretability">3</a></sup> 연구로 실제로 확인된 바 있다. 2018년
+Clark·Khandelwal·Levy·Manning의 “What does BERT look at?”<sup class="footnote-reference" id="fr-bertbert-1"><a href="#footnote-bertbert">4</a></sup>
 연구는 BERT의 어텐션 헤드를 하나씩 분석했는데, (1) <strong>바로 앞
 단어만</strong> 보는 “위치 헤드”, (2) <strong>같은 품사</strong>의 단어끼리 집중하는
 헤드, (3) **문법적 통사(주어-구문)**를 추적하는 헤드가 각각
@@ -335,7 +335,7 @@ Clark·Khandelwal·Levy·Manning의 “What does BERT look at?”<sup class="foo
 를 <em>임의</em>로 제거해도 성능 저하가 매우 작다 — 역할 분화는 실제로
 있으면서도, 헤드끼리 **여분(여분, redundancy)**이 크다는 뜻.
 (이 “여분” 때문에 추론 속도를 내기 위한 헤드 프루닝(head
-pruning)이 실무 기법으로 쓰인다<sup class="footnote-reference" id="fr-heads16-1"><a href="#footnote-heads16">4</a></sup>. 다만 주의: <em>어떤</em> 헤드가
+pruning)이 실무 기법으로 쓰인다<sup class="footnote-reference" id="fr-heads16-1"><a href="#footnote-heads16">5</a></sup>. 다만 주의: <em>어떤</em> 헤드가
 <em>어떤</em> 역할을 맡는가는 학습 run마다 달라 — “이런 종류의 역할이
 존재한다“가 안정적이지, “3번 헤드가 대명사 담당이다“는 아니다.)</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_bertbert.png" alt="BERT 어텐션 헤드의 역할 분화 (원 논문 Figure 5) — “What Does BERT Look At?“에서 분석한 헤드의 어텐션 분포: 특정 헤드들은 인접 토큰이나 품사가 같은 토큰, 통사 구조적으로 연결된 토큰(주어-동사, 대명사-선행사)에 집중하는 패턴이 관측된다."><span class="img-wrapper"><img src="../../images/ref_bertbert.png" alt="BERT 어텐션 헤드의 역할 분화 (원 논문 Figure 5) — “What Does BERT Look At?“에서 분석한 헤드의 어텐션 분포: 특정 헤드들은 인접 토큰이나 품사가 같은 토큰, 통사 구조적으로 연결된 토큰(주어-동사, 대명사-선행사)에 집중하는 패턴이 관측된다."></span></label></p>
@@ -347,7 +347,7 @@ BLEU가 약 1점 떨어진다(EN-DE 24.16 → 23.48, EN-FR 38.19 →
 것이다. 헤드당 차원(\(d_k = d_{model}/h\))이 너무 작아지면
 (예: \(d_{model}=512, h=32\)이면 \(d_k=16\)) 각 헤드의
 “관점 공간“이 역할을 담기엔 너무 얇아져 이득이 사라진다. 현재
-대형 LLM(GPT<sup class="footnote-reference" id="fr-gpt-1"><a href="#footnote-gpt">5</a></sup>, LLaMA<sup class="footnote-reference" id="fr-llama-1"><a href="#footnote-llama">6</a></sup> 등)은 헤드를 수십~100개 이상 쓰지만,
+대형 LLM(GPT<sup class="footnote-reference" id="fr-gpt-1"><a href="#footnote-gpt">6</a></sup>, LLaMA<sup class="footnote-reference" id="fr-llama-1"><a href="#footnote-llama">7</a></sup> 등)은 헤드를 수십~100개 이상 쓰지만,
 \(d_{model}\)이 4096~8192로 <em>비례</em>로 커진 덕분이며,
 <strong>헤드당 차원은 여전히 64~128 부근</strong> — 2017년 설계가 그대로
 살아 있는 값이다.</p>
@@ -503,7 +503,7 @@ attention“이라 불리는 이유).</p>
 PE, causal mask)을 조립하면, **트랜스포머 블록(transformer
 block)**이 완성된다:</p>
 <ol>
-<li><strong>multi-head self-attention</strong> (+ 잔차 연결, layer norm<sup class="footnote-reference" id="fr-layernorm-1"><a href="#footnote-layernorm">7</a></sup>)</li>
+<li><strong>multi-head self-attention</strong> (+ 잔차 연결, layer norm<sup class="footnote-reference" id="fr-layernorm-1"><a href="#footnote-layernorm">8</a></sup>)</li>
 <li><strong>position-wise feed-forward network</strong>: 각 위치의 벡터를 <em>독립적으로</em>
 2층 MLP(\(d_{model} \to 4\,d_{model} \to d_{model}\))에
 통과 (+ 잔차 연결, layer norm)</li>
@@ -512,11 +512,11 @@ block)**이 완성된다:</p>
 (masked self-attention + 인코더 출력에 대한 <em>cross</em>-attention을
 추가)을 6개 쌓는다. 두 가지 “왜?“를 짚자:</p>
 <ul>
-<li>**잔차 연결 \(y = x + F(x)\)은 10.2절의 ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">8</a></sup>**과 같은
+<li>**잔차 연결 \(y = x + F(x)\)은 10.2절의 ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">9</a></sup>**과 같은
 구조다 — 여기서는 6~12층을 쌓아 그래디언트 경로가 길어지는
 상황에서 그 “단축로” 역할이 더 중요해진다(Chapter 11의
 소실 그래디언트 문제와 같은 맥락). layer norm은 ResNet의
-batch norm<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">9</a></sup>과 비슷한 “층마다 스케일을 정규화”
+batch norm<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">10</a></sup>과 비슷한 “층마다 스케일을 정규화”
 역할(Chapter 6.2의 정규화 논리 참조).</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."><span class="img-wrapper"><img src="../../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."></span></label>
@@ -538,7 +538,7 @@ self-attention은 <em>단어 <em>사이</em>의 정보를 섞는</em> 연산이�
 합계 약 39만)보다 <strong>FFN</strong>이 차지한다(512→2048→512 =
 \(2 \times 512 \times 2048 \approx 210\)만). “트랜스포머의
 지식이 어디에 있는지“를 찾는 연구(예: FFN을 “키-값 메모리“로
-본 해석들<sup class="footnote-reference" id="fr-geva2020-1"><a href="#footnote-geva2020">10</a></sup>)에서, 사실상의 대부분이 FFN의 가중치에 담겨 있다는
+본 해석들<sup class="footnote-reference" id="fr-geva2020-1"><a href="#footnote-geva2020">11</a></sup>)에서, 사실상의 대부분이 FFN의 가중치에 담겨 있다는
 관찰이 이 비율과 맞닿아 있다.</p>
 <h3 id="rnn-대비-이점"><a class="header" href="#rnn-대비-이점">RNN 대비 이점</a></h3>
 <p>Self-attention은 모든 단어 쌍을 <strong>한 번에</strong> 병렬로 계산한다 — 순차적으로
@@ -572,7 +572,7 @@ self-attention은 <em>단어 <em>사이</em>의 정보를 섞는</em> 연산이�
 <p><strong>“모든 단어를 한 번에 보고, 서로의 관련성을 직접 계산한다“는 이 아이디어
 하나가 지난 몇 년간 딥러닝을 가장 크게 바꾼 변화다.</strong> 더 깊이 보고
 싶다면 이 주제를 NLP 관점에서 계속 다루는 스탠포드 CS224N 강의도
-참고할 만하다<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">11</a></sup>.</p>
+참고할 만하다<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">12</a></sup>.</p>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
 <p><strong>1. (계산 — 파라미터 동일성)</strong> \(d_{model} = 512, h = 8,
 d_k = d_v = 64\)일 때, (a) h개 헤드의 QKV 파라미터 총합
@@ -610,12 +610,12 @@ RNN은 PE 같은 장치가 <em>불필요</em>했고 <em>왜</em> 어텐션에는
 되나요?</strong> 문장이 1,000단어면 \(1000^2=100\text{만}\) 쌍, 10,000단어면
 \(1\text{억}\) 쌍을 계산해야 한다 — 길이가 10배 늘면 계산량은 100배
 늘어난다. 이 때문에 아주 긴 문서(책 한 권 분량)를 다루는 LLM은 이
-제곱 비용을 줄이는 다양한 근사 기법(희소 어텐션, 슬라이딩 윈도우 등)을
+제곱 비용을 줄이는 다양한 근사 기법(희소 어텐션<sup class="footnote-reference" id="fr-sparsetransformer-1"><a href="#footnote-sparsetransformer">13</a></sup>, 슬라이딩 윈도우 등)을
 함께 쓴다 — Chapter 13에서 LLM을 다룰 때 이 한계가 실전 문맥
 길이(context length)에 어떤 제약을 주는지 다시 언급한다.</p>
 <p><strong>Q. Positional encoding은 왜 학습하지 않고 고정된 사인/코사인
 함수를 쓰나요?</strong> 학습 가능한 위치 임베딩을 쓰는 것도 가능하고 실제로
-쓰이지만(예: BERT<sup class="footnote-reference" id="fr-bert-1"><a href="#footnote-bert">12</a></sup>), 사인/코사인 기반 고정 인코딩은 학습 데이터에서 본
+쓰이지만(예: BERT<sup class="footnote-reference" id="fr-bert-1"><a href="#footnote-bert">14</a></sup>), 사인/코사인 기반 고정 인코딩은 학습 데이터에서 본
 적 없는 더 긴 문장에도 자연스럽게 확장된다는 장점이 있다 — 학습된
 위치 임베딩은 학습 때 본 최대 길이를 넘어서면 정의조차 안 되지만,
 수학 함수는 어떤 위치값에도 정의되기 때문이다.</p>
@@ -650,7 +650,7 @@ R^k PE_{(t)}\)) 덕분에 <em>상대</em> 거리 \(k\)가 <em>선형 도구</em>
 학습한 모델이 1000 길이를 보면, 512~1000 위치의 PE는 “정상
 숫자“이지만 <em>그 위치에서 어떻게 어텐션할지</em>는 학습 <em>부족</em>한
 영역이다 — 그래서 <em>실제</em> “장문 컨텍스트” LLM(LLaMA-2 4K, GPT-4
-128K 등)은 단순 PE 외삽이 <em>아니라</em> <em>추가 학습</em>(위치 보간<sup class="footnote-reference" id="fr-posinterpolation-1"><a href="#footnote-posinterpolation">13</a></sup>,
+128K 등)은 단순 PE 외삽이 <em>아니라</em> <em>추가 학습</em>(위치 보간<sup class="footnote-reference" id="fr-posinterpolation-1"><a href="#footnote-posinterpolation">15</a></sup>,
 컨텍스트 연장 미세조정 등)이 필요하다. “함수가 정의된다“와
 “동작이 학습된다“는 <em>서로 다른</em> 두 문장이다(Chapter 13에서
 다시).</p>
@@ -769,6 +769,9 @@ Masked Attention“의 마스크를 이용해, (a) “softmax <em>이전</em>에
 <li id="footnote-breiman2001">
 <p>Breiman, L. (2001). “Random Forests.” <em>Machine Learning</em> 45(1), 5–32. — 랜덤 포레스트의 원 논문. 배깅 + 특징 무작위화(각 분기에서 무작위 특징 하위집합)의 조합을 제안했다. <a href="#fr-breiman2001-1">↩</a></p>
 </li>
+<li id="footnote-bertinterpretability">
+<p>Tenney, I., Kim, P., Smith, N. A. (2019). “What do you learn from context? Probing for sentence structure in BERT.” ICLR 2019. arXiv:1905.05846. — “인터프리테이빌리티(해석 가능성)” 관점에서의 문장 통사 구조 탐지(probing) 연구로, BERT를 포함해 여러 어텐션 모델이 문법적 구조를 학습한다는 증거를 제시했다. <a href="#fr-bertinterpretability-1">↩</a></p>
+</li>
 <li id="footnote-bertbert">
 <p>Clark, K., Khandelwal, U., Levy, O., Manning, C. D. (2019). “What Does BERT Look At? An Analysis of BERT’s Attention.” BlackBoxNLP 2019. arXiv:1906.04341. <a href="#fr-bertbert-1">↩</a></p>
 </li>
@@ -795,6 +798,9 @@ Masked Attention“의 마스크를 이용해, (a) “softmax <em>이전</em>에
 </li>
 <li id="footnote-cs224n">
 <p>Stanford CS224N: Natural Language Processing with Deep Learning. https://web.stanford.edu/class/cs224n/ <a href="#fr-cs224n-1">↩</a></p>
+</li>
+<li id="footnote-sparsetransformer">
+<p>Child, R., Gray, S., Radford, A., Sutskever, I. (2019). “Generating Long Sequences with Sparse Transformers.” arXiv:1904.10509. — O(n²) 어텐션 비용을 줄이기 위한 희소 어텐션(경량 희소 패턴, 로컬·글로벌 토큰)과 슬라이딩 윈도우 마스크를 제안한 논문. (같은 문제의 또 다른 대표적 접근: Longformer — Beltagy, I., Peters, M. E., Cohan, A. (2020). “Longformer: The Long-Document Transformer.” arXiv:2004.05150.) <a href="#fr-sparsetransformer-1">↩</a></p>
 </li>
 <li id="footnote-bert">
 <p>Devlin, J., Chang, M.-W., Lee, K., Toutanova, K. (2018). “BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.” arXiv:1810.04805. <a href="#fr-bert-1">↩</a></p>

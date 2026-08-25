@@ -19,7 +19,7 @@ Chapter 13에서 쓴 Gymnasium[^gym]의 기본 환경들은 물리를 간단한 
 짚었다. 이번 장은 그 전제에서 **알고리즘은 그대로 두고, 시뮬레이터 자체를
 실전 연구 수준으로 올리는** 장이다 — 같은 `env.step()` 위에 물리엔진만
 바꾸면 된다는 사실까지 직접 확인한다. 한편 다음 장("모델기반 RL과
-몬테카를로 트리 탐색[^cs234]")은 그 물리 모델이 주어지지 않는 문제 — 모델이
+몬테카를로 트리 탐색[^mcts][^cs234]")은 그 물리 모델이 주어지지 않는 문제 — 모델이
 *학습될 대상*이 되는 경우 — 로 넘어간다. 시뮬레이터가 주는 경험인지,
 배운 모델이 주는 경험인지에 따라 "경험을 모으는 방식"이 어떻게 달라지는지
 생각하려면, 이번 장의 시뮬레이션 경험이 어떤 계산인지부터 짚어둬야
@@ -39,7 +39,7 @@ Chapter 13에서 쓴 Gymnasium[^gym]의 기본 환경들은 물리를 간단한 
   호출하는" 배치 구조임을 ML1 Chapter 10.1의 CNN과 비교해 설명하고,
   numpy로 1,000개 진자를 동시에 시뮬레이션해 그 구조를 실증할 수 있다.
 - "얼마나 정밀해야 하는가(정밀도 축)"와 "얼마나 많은 경험이 필요한가
-  (속도 축)"라는 두 질문에 실측 steps/s를 대입해, Gymnasium·PyBullet·
+  (속도 축)"라는 두 질문에 실측 steps/s를 대입해, Gymnasium·PyBullet[^pybullet]·
   MuJoCo·Isaac Sim 중 도구를 고르는 30초 결정 절차를 스스로 적용할 수
   있다.
 
@@ -57,7 +57,7 @@ Chapter 13에서 쓴 Gymnasium[^gym]의 기본 환경들은 물리를 간단한 
   Isaac Sim은 RTX 4080급 GPU가 필요해 이번 학기 실습에서는 시연 영상으로만
   다루지만, "그 빠름이 수학적으로 어디서 오는지"는 CPU 위에서 직접 재본다:
   CPU가 "하나씩"만 도는 이유(시간 방향 의존성)를 숫자로 확인하고,
-  1,000개 진자의 상태를 하나의 numpy 배열에 담아 동시에 스텝시키며
+  1,000개 진자의 상태를 하나의 numpy[^numpy] 배열에 담아 동시에 스텝시키며
   (RK4) 약 76배의 차이를 실측해 "커널 한 번" 구조와 아몰달의 법칙으로
   이어 붙인다.
 - [14.3 어떤 도구를 언제 쓰는가](chapter14/3.md)
@@ -77,3 +77,8 @@ Chapter 13에서 쓴 Gymnasium[^gym]의 기본 환경들은 물리를 간단한 
 
 [^isaacgym]: Makoviychuk, V., Wawrzyniak, L., Guo, Y., Lu, M., Storey, K., Macklin, M., Hoeller, D., Rudin, N., Allshire, A., Handa, A., State, G. (2021). "Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning." arXiv:2108.10470. (Isaac Sim의 기반이 되는 GPU 병렬 물리 시뮬레이션의 원 논문)
 [^mujoco]: Todorov, E., Erez, T., Tassa, Y. (2012). "MuJoCo: A physics engine for model-based control." IROS 2012 (IEEE/RSJ International Conference on Intelligent Robots and Systems), pp. 5026-5033.
+
+[^numpy]: Harris, C. R. et al. (2020). "Array programming with NumPy." Nature 585, 357 (2020); arXiv:2006.10256.
+
+[^pybullet]: Coumans, E., Bai, Y. (2018). "PyBullet, a GPU accelerated physics engine for robot learning." IEEE/RAS IROS 2018.
+[^mcts]: Browne, C. B., Cowling, P. I., White, M., et al. (2012). "A Survey of Monte Carlo Tree Search Methods." IEEE Transactions on Computational Intelligence and AI in Games 4(1), 1–43. MCTS 방법론을 체계적으로 정리한 대표적 서베이 — "Monte-Carlo Tree Search"라는 이름과 선택·확장·평가·역전파의 표준 4단계 체계가 이 무렵 확립되었다.

@@ -1,7 +1,7 @@
 # Chapter 9. 신경망 기초, 역전파, 학습 기법 (Neural Network Basics, Backpropagation & Training Techniques)
 
 1969년, 마빈 민스키(Marvin Minsky)와 시모어 페퍼트(Seymour Papert)는 책
-*Perceptrons*에서 단층 퍼셉트론(single-layer perceptron)이 **XOR** 하나조차
+*Perceptrons*[^minskypapert]에서 단층 퍼셉트론(single-layer perceptron)이 **XOR** 하나조차
 풀 수 없다는 것을 수학적으로 증명했다. XOR은 "두 입력이 서로 다르면 1, 같으면
 0"이라는 아주 간단한 규칙이지만, 그 경계는 직선 하나로 그을 수 없다 — 지금까지
 배운 로지스틱회귀(직선 하나로 나누는 모델)로는 근본적으로 풀리지 않는
@@ -52,12 +52,12 @@ Block A가 막 끝난 지금, 지난 6개 장에서 배운 회귀·생성·거�
 - [9.1 퍼셉트론의 한계, 순전파, 역전파](chapter09/1.md) — 퍼셉트론의
   역사와 XOR의 벽(민스키·페퍼트)에서 출발해, 순전파와 역전파 알고리즘
   (연쇄법칙의 재사용)을 다룬다. 2-2-1 신경망 손계산, 수치 미분 검증,
-  로지스틱회귀 대비 numpy로 XOR을 푸는 실험까지 — 은닉층 하나면 "직선으로
+  로지스틱회귀 대비 numpy[^numpy]로 XOR을 푸는 실험까지 — 은닉층 하나면 "직선으로
   갈리는 공간"이 실제로 생긴다는 것을 확인한다.
 - [9.2 그래디언트 소실·폭발, 활성함수, 초기화](chapter09/2.md) —
   연쇄법칙의 곱 형태(층마다 σ'와 가중치를 계속 곱)로 층이 깊어질수록
   그래디언트가 지수적으로 사라지거나(0.25의 10승 ≈ 10⁻⁶) 폭발하는
-  원인을 보이고, 활성함수(sigmoid/tanh/ReLU 등) 비교와 활성값의 스케일을
+  원인을 보이고, 활성함수(sigmoid/tanh/ReLU 등)[^rectifier] 비교와 활성값의 스케일을
   층마다 보존하는 Xavier/He 초기화를 다룬 뒤, "깊은 망의 그래디언트를
   살리는 세 라인 방어선"으로 정리한다.
 - [9.3 정규화 기법과 학습률 스케줄링](chapter09/3.md) — 신경망 전용
@@ -78,3 +78,6 @@ Block A가 막 끝난 지금, 지난 6개 장에서 배운 회귀·생성·거�
 [^cs230]: 더 깊이 보려면: Stanford CS230: Deep Learning. https://cs230.stanford.edu/ — 이 절의 활성함수·초기화(Xavier/He), dropout, BatchNorm, 학습률 스케줄링 단원과 직접 겹친다.
 [^sgdr]: Loshchilov, I., Hutter, F. (2016). "SGDR: Stochastic Gradient Descent with Warm Restarts." arXiv:1608.03983. — 코사인 어닐링(코사인) + 웜 리스타트(warmup) 기반의 학습률 스케줄링을 제안한 원 논문.
 [^pytorch]: Paszke, A., Gross, S., Massa, F., et al. (2019). "PyTorch: An Imperative Style, High-Performance Deep Learning Library." arXiv:1912.01703. — 9.3의 학습률 스케줄링 실험(및 9.1의 `.backward()` 자동 미분)이 전제로 하는 프레임워크의 원 논문.
+[^numpy]: Harris, C. R. et al. (2020). "Array programming with NumPy." Nature 585, 357 (2020); arXiv:2006.10256.
+[^rectifier]: Maas, A. L., Hannun, A. Y., Ng, A. Y. (2013). "Rectifier Nonlinearities Improve Neural Network Acoustic Models." Interspeech 2013 (ICML 워크숍: Machine Learning and Speech Processing). — 음성 인식 신경망에 rectifier(ReLU) 비선형성을 도입한 원 논문으로, Leaky ReLU·PReLU 등 ReLU 계열 변형의 직접적 선구작이다.
+[^minskypapert]: Minsky, M., Papert, S. (1969). "Perceptrons: An Introduction to Computational Geometry in Perceptual Analysis." MIT Press. — 단층 퍼셉트론이 XOR(및 그 밖의 선형비분리 함수)를 표현할 수 없음을 수학적으로 증명한 원서로, 본문에서 언급한 1차 "AI 겨울"을 직접 촉발한 책이다.

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -357,7 +357,7 @@ k-means는 보통 한두 번의 반복만으로 빠르게 수렴한다.</p>
 것이다 — 표준적인 대응은 서로 다른 무작위 초기화로 여러 번(예: 10회) 돌려서
 그중 클러스터 내 분산(within-cluster variance)이 가장 작은 결과를 채택하는
 것이다(<code>sklearn.cluster.KMeans</code>의 기본 <code>n_init</code> 파라미터가 정확히 이 역할을
-한다). 또는 무작위 초기화 대신 **k-means++**처럼 서로 멀리 떨어진 점들을
+한다)<sup class="footnote-reference" id="fr-sklearn-1"><a href="#footnote-sklearn">2</a></sup>. 또는 무작위 초기화 대신 **k-means++**처럼 서로 멀리 떨어진 점들을
 우선적으로 초기 중심점으로 고르는 똑똑한 초기화 방법을 쓰면, 나쁜 지역
 최적해에 빠질 확률 자체를 크게 줄일 수 있다.</p>
 <p>이 실수가 실제로 얼마나 자주, 얼마나 큰 차이를 만드는지 앞에서 만든
@@ -405,7 +405,7 @@ k-means는 보통 한두 번의 반복만으로 빠르게 수렴한다.</p>
 중심점은 오른쪽 덩어리의 점들이 상대적으로 더 높은 확률로
 추첨되므로, 같은 덩어리에 두 중심점이 몰리는 상황을 구조적으로
 막는다. 왜 거리를 <strong>제곱</strong>해서 쓰느냐는 물음에는 Arthur와
-Vassilvitskii(2006)의 k-means++ 논문<sup class="footnote-reference" id="fr-kmeanspp-1"><a href="#footnote-kmeanspp">2</a></sup>이 답을 준다: \(D(x)^2\)에
+Vassilvitskii(2006)의 k-means++ 논문<sup class="footnote-reference" id="fr-kmeanspp-1"><a href="#footnote-kmeanspp">3</a></sup>이 답을 준다: \(D(x)^2\)에
 비례한 이 선택을 쓸 때, k-means가 수렴시킨 최종 분할의 SSE가 <strong>기댓값
 기준</strong>으로 최적 분할 SSE의 \(O(\log k)\)배 이내(원论文的 bound는
 \(8\ln k + 7\)배)에 머문다는 <strong>증명 가능한 근사 보장</strong>이 성립한다 —
@@ -552,6 +552,9 @@ SSE가 훨씬 크게 나오는 것을 직접 확인해보라:</p>
 <ol class="footnote-definition">
 <li id="footnote-cs229">
 <p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-sklearn">
+<p>Pedregosa, F., Varoquaux, G., Gramfort, A., et al. (2011). “Scikit-learn: Machine Learning in Python.” Journal of Machine Learning Research 12(2011) 2825–2830. arXiv:1201.0490. — 위 <code>KMeans</code>의 <code>n_init</code>·<code>init="k-means++"</code> 등 API를 제공하는 scikit-learn 라이브러리의 원 논문. <a href="#fr-sklearn-1">↩</a></p>
 </li>
 <li id="footnote-kmeanspp">
 <p>Arthur, D., Vassilvitskii, S. (2006). “k-means++: The Advantages of Careful Seeding.” SIAM Journal on Computing 38(1), 215–230. k-means++의 \(D(x)^2\)-비례 선택에 대한 \(O(\log k)\) 근사 보증을 증명한 원 논문. <a href="#fr-kmeanspp-1">↩</a></p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -438,9 +438,9 @@ model-based control”*이라는 논문과 함께 공개했다. 이름은
 제어</em>(시스템 모델을 알고 그 모델을 최적 제어에 넣는 방식)의
 <em>재현성</em>과 <em>속도</em>를 위해 설계됐다 — 접촉을 LCP로 푸는 것도
 이 최적화 관점의 자연스러운 결과다. 2021년 Todorov가 MuJoCo를
-무료로 오픈소스화하면서, GPU 병렬 시뮬레이터(14.2의 Isaac Sim)<sup class="footnote-reference" id="fr-isaacgym-1"><a href="#footnote-isaacgym">8</a></sup>가
+무료로 오픈소스화하면서, GPU 병렬 시뮬레이터(14.2의 Isaac Sim)[^isaacsim,^isaacgym]가
 없어도 CPU에서 정밀 로봇 물리를 돌릴 수 있게 돼, OpenAI의
-<code>gym</code><sup class="footnote-reference" id="fr-openaigym-1"><a href="#footnote-openaigym">9</a></sup>에서 DeepMind의 로봇 연구까지 사실상 표준 물리엔진이 됐다.
+<code>gym</code><sup class="footnote-reference" id="fr-openaigym-1"><a href="#footnote-openaigym">8</a></sup>에서 DeepMind의 로봇 연구까지 사실상 표준 물리엔진이 됐다.
 이번 절에서 직접 XML로 모델을 정의하고 <code>ctrl</code>에 값을 넣는 경험은,
 이 “모델 기반“의 “모델“을 <em>손으로</em> 만져보는 것이다.</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
@@ -460,7 +460,7 @@ model-based control”*이라는 논문과 함께 공개했다. 이름은
 <em>그대로</em> 돌려도 되나요?</strong> <code>reset()</code>/<code>step()</code>이 같은 시그니처를
 지키면, PPO 코드는 <code>env</code> 인자로 <code>MuJoCoPendulum()</code>을 받기만 하면
 됩니다. 다만 두 가지 <em>실전</em> 차이(아래 “확인 문제” 3번과 연결)가
-있습니다. (1) 보상/저장의 스케일이 다르다 — PPO의 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">10</a></sup>·어드밴티지
+있습니다. (1) 보상/저장의 스케일이 다르다 — PPO의 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">9</a></sup>·어드밴티지
 정규화는 보상의 범위에 민감하므로, 이 진자의 “-각도²” 보상이
 CartPole의 “+1/스텝“보다 절대값이 크면 정규화 파라미터를 다시
 맞춰야 한다. (2) Gymnasium 환경은 <code>env.reset(seed=...)</code>로 <em>결정적</em>
@@ -490,9 +490,6 @@ CartPole의 “+1/스텝“보다 절대값이 크면 정규화 파라미터를 
 </li>
 <li id="footnote-cs234">
 <p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>
-</li>
-<li id="footnote-isaacgym">
-<p>Makoviychuk, V., Wawrzyniak, L., Guo, Y., et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. <a href="#fr-isaacgym-1">↩</a></p>
 </li>
 <li id="footnote-openaigym">
 <p>Brockman, G. et al. (2016). “OpenAI Gym.” arXiv:1606.01540. <a href="#fr-openaigym-1">↩</a></p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -273,9 +273,10 @@ M1·M2는 팀 전체가 모여 함께 결정하는 것(데이터·문제·모델
 <strong>픽셀·음파·토큰</strong>인 원시 배열(이미지 32×32×3, 오디오 웨이브폼,
 문장)이라면 비정형 — 여기에 “손으로” 특징을 만들기는 어려우므로
 신경망이 특징 추출기 역할을 하는 것이다. (3) 애매한 경우(예: 이미
-워드임베딩으로 벡터화된 텍스트)라면, “원시 토큰으로 직접
+워드임베딩<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">6</a></sup>으로 벡터화된 텍스트)라면, “원시 토큰으로 직접
 모델링한다“는 선택을 해 Ch13 도구의 필요성을 스스로 만드는 것도
 합법이다 — 단, 그 선택의 이유를 M1에 적어야 한다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../../images/ref_word2vec.png" alt="두 개의 새로운 모델 아키텍처 — CBOW는 컨텍스트 단어로부터 현재 단어를, Skip-gram은 현재 단어로부터 주변 단어를 예측 (원 논문 Figure 1)."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 x, 잠재 변수 z, 파라미터 θ 노드와 생성 모델 p_θ(z), p_θ(x|z) 및 인식 모델 q_φ(z|x)의 구조."><span class="img-wrapper"><img src="../../images/ref_vae.png" alt="VAE의 방향적 그래프 모델 (원 논문 Figure 1) — 데이터 x, 잠재 변수 z, 파라미터 θ 노드와 생성 모델 p_θ(z), p_θ(x|z) 및 인식 모델 q_φ(z|x)의 구조."></span></label></p>
 <p>같은 기준으로 실제 후보 데이터셋을 미리 살펴보면, “이 데이터는
 정형인가, 비정형인가, 그리고 함정은 무엇인가“가 한 줄로 정리된다:</p>
@@ -286,11 +287,11 @@ M1·M2는 팀 전체가 모여 함께 결정하는 것(데이터·문제·모델
 </thead>
 <tbody>
 <tr><td><strong>sklearn digits</strong> (실습용)</td><td>1,797×64 (8×8 회색)</td><td>정형(이미지지만 이미 64-dim 벡터로 flattening됨)</td><td>숫자 이미지 → 0~9 분류</td><td>데이터가 작아(64차원) 신경망이 GBDT를 <strong>이기지 못하는 것이 정상</strong> — 이 점이 바로 §“왜 DL“의 교육 포인트</td></tr>
-<tr><td><strong>CIFAR-10</strong><sup class="footnote-reference" id="fr-cifar10-1"><a href="#footnote-cifar10">6</a></sup> (HF)</td><td>60,000×32×32×3</td><td>비정형(원시 픽셀)</td><td>10개 물체 이미지 분류</td><td>레이블 불균형 없음 — 정확도 OK. 데이터 증강(회전·뒤집기, Ch10) 없이는 train/val 격차 큼</td></tr>
+<tr><td><strong>CIFAR-10</strong><sup class="footnote-reference" id="fr-cifar10-1"><a href="#footnote-cifar10">7</a></sup> (HF)</td><td>60,000×32×32×3</td><td>비정형(원시 픽셀)</td><td>10개 물체 이미지 분류</td><td>레이블 불균형 없음 — 정확도 OK. 데이터 증강(회전·뒤집기, Ch10) 없이는 train/val 격차 큼</td></tr>
 <tr><td><strong>CIFAR-100</strong> (HF)</td><td>60,000×32×32×3</td><td>비정형</td><td>100개 물체 분류</td><td>클래스 100개 — macro-F1 또는 top-1 정확도 + 베이스라인(무작위 1%) 명시</td></tr>
-<tr><td><strong>IMDb Movie Reviews</strong><sup class="footnote-reference" id="fr-imdb-1"><a href="#footnote-imdb">7</a></sup> (HF)</td><td>50,000 문장</td><td>비정형(텍스트)</td><td>긍정/부정 감지</td><td>문장 길이 불균형 — Ch11의 패딩/마스킹. BERT 토크나이저 vs 단순 토큰화 비교 가능</td></tr>
+<tr><td><strong>IMDb Movie Reviews</strong><sup class="footnote-reference" id="fr-imdb-1"><a href="#footnote-imdb">8</a></sup> (HF)</td><td>50,000 문장</td><td>비정형(텍스트)</td><td>긍정/부정 감지</td><td>문장 길이 불균형 — Ch11의 패딩/마스킹. BERT 토크나이저 vs 단순 토큰화 비교 가능</td></tr>
 <tr><td><strong>Kaggle Toxic Comments</strong></td><td>159,576×6(라벨)</td><td>비정형(텍스트)</td><td>6개 독성 라벨 다중 라벨 분류</td><td><strong>다중 라벨</strong>(한 문장이 여러 독성) — 시그모이드 출력 + 각 라벨별 F1. 클래스 불균형 라벨 있음 → 라벨별 PR-AUC</td></tr>
-<tr><td><strong>EMNIST</strong><sup class="footnote-reference" id="fr-emnist-1"><a href="#footnote-emnist">8</a></sup> (HF)</td><td>112,800×28×28</td><td>비정형(원시 픽셀)</td><td>글자 분류(10개 숫자 + 26개 알파벳 대소문자)</td><td>클래스 62개 — digits보다 어려우며, CNN이 “8×8로 flatten한 GBDT“보다 확실히 앞서는 규모(28×28=784-dim)</td></tr>
+<tr><td><strong>EMNIST</strong><sup class="footnote-reference" id="fr-emnist-1"><a href="#footnote-emnist">9</a></sup> (HF)</td><td>112,800×28×28</td><td>비정형(원시 픽셀)</td><td>글자 분류(10개 숫자 + 26개 알파벳 대소문자)</td><td>클래스 62개 — digits보다 어려우며, CNN이 “8×8로 flatten한 GBDT“보다 확실히 앞서는 규모(28×28=784-dim)</td></tr>
 </tbody>
 </table>
 </div>
@@ -333,7 +334,7 @@ outperform deep learning on typical tabular data?”)이 실증한
 결론이 바로 이것 — <strong>저차원의 정형 데이터에서는 GBDT가 신경망을
 이기고, 신경망의 우위는 (a) 차원이 높은 데이터(텍스트를 원시
 토큰으로 보면 10⁴~10⁵차원), (b) 데이터가 아주 큰 경우, (c)
-특징이 <em>공유되는</em> 국소 구조(이미지)일 때</strong> 나타난다<sup class="footnote-reference" id="fr-grinsztajn-1"><a href="#footnote-grinsztajn">9</a></sup>. digits는
+특징이 <em>공유되는</em> 국소 구조(이미지)일 때</strong> 나타난다<sup class="footnote-reference" id="fr-grinsztajn-1"><a href="#footnote-grinsztajn">10</a></sup>. digits는
 64차원(저차원)이므로 GBDT가 앞서는 쪽이 <em>예상</em>이다 — 그리고
 실습 노트북의 실험은 정확히 그렇게 나온다(64차원에서 GBDT
 0.944 ≻ CNN 0.939, 격차 0.006).</p>
@@ -380,11 +381,11 @@ outperform deep learning on typical tabular data?”)이 실증한
 16.2에서 peer-review가 이 주장을 <em>심사</em>하는 기준이기도 하다.</p>
 <p><strong>역사적 일화로 이 축을 붙잡자.</strong> 2011년까지 이미지 분류의 최선은
 “사람이 손으로 만든 특징(HOG, SIFT) + 선형 분류자/GBDT“였는데,
-2012년 AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">10</a></sup>
-(ImageNet<sup class="footnote-reference" id="fr-imagenet-1"><a href="#footnote-imagenet">11</a></sup>, 128만 이미지)가 오차율을 기존보다 <strong>절대 10%p 가까이
+2012년 AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">11</a></sup>
+(ImageNet<sup class="footnote-reference" id="fr-imagenet-1"><a href="#footnote-imagenet">12</a></sup>, 128만 이미지)가 오차율을 기존보다 <strong>절대 10%p 가까이
 줄여</strong> ImageNet 경쟁을 사실상 끝냈다. 이 전회의 본질은 “신경망이
 마법“이 아니라, <strong>① 데이터(ImageNet)가 갑자기 충분히 커지고 ②
-GPU가 학습을 가능하게 한</strong> 순간이었다<sup class="footnote-reference" id="fr-imagenet-2"><a href="#footnote-imagenet">11</a></sup> — 축 2(규모)가 축 1(비정형)을
+GPU가 학습을 가능하게 한</strong> 순간이었다<sup class="footnote-reference" id="fr-imagenet-2"><a href="#footnote-imagenet">12</a></sup> — 축 2(규모)가 축 1(비정형)을
 결정지운 대표 사례다. 반대로, “정형 표 데이터“에서는 2020년대에도
 GBDT가 최선에 가까운 것이 Grinsztajn et al. 2022의 결과다. 두 사례를
 나란히 두면, “왜 DL“의 답이 <strong>데이터의 구조와 규모</strong>에서 나와야
@@ -553,7 +554,7 @@ GBDT보다 0.5%p 낮아도, “64차원 정형이므로 GBDT가 상한이고,
 (§“두 층의 베이스라인”). “64차원 정형“과 “28×28 원시 픽셀“을
 구분하지 않고 “신경망이 형편없다“거나 “GBDT가 더 좋다“로
 단순 결론내는 것 — 차원/구조의 효과를 분리해서 논해야 한다.</li>
-<li><strong>데이터 증강 없이 “val 과적합“만 보고 dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">12</a></sup>만 올리기</strong>:
+<li><strong>데이터 증강 없이 “val 과적합“만 보고 dropout<sup class="footnote-reference" id="fr-dropout-1"><a href="#footnote-dropout">13</a></sup>만 올리기</strong>:
 Ch10.2의 과적합이 <em>데이터가 부족해서</em>인지, <em>모델이 너무 커서</em>인지
 먼저 구분해야 한다 — 증강(데이터 쪽)과 dropout/L2(모델 쪽)은
 다른 처방이다(Ch09.3).</li>
@@ -663,7 +664,7 @@ test 성능이, 같은 데이터의 GBDT(Ch07.3)와 비교해서 <em>절대적�
 “기본 코스”(digits 8×8, EMNIST 28×28, CIFAR-32×32)는 Colab의
 <strong>무료 CPU/T4</strong>로도 4주 안에 충분합니다. 실습 노트북의 작은
 CNN(35,914 파라미터)은 CPU에서도 수 분이면 수렴합니다.
-대규모(ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">13</a></sup>, BERT<sup class="footnote-reference" id="fr-bert-1"><a href="#footnote-bert">14</a></sup> full fine-tune)가 필요하면 Hugging Face의
+대규모(ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">14</a></sup>, BERT<sup class="footnote-reference" id="fr-bert-1"><a href="#footnote-bert">15</a></sup> full fine-tune)가 필요하면 Hugging Face의
 <strong>pretrained</strong> 모델을 <em>transfer</em>해 마지막 층만 학습하는 방식을 쓰면
 된다 — 이 경우 수식적 정당화는 “왜 이 pretrained 구조를
 선택했는가”(Ch13의 사전학습)로 바꾸면 됩니다.</p>
@@ -692,6 +693,9 @@ CNN(35,914 파라미터)은 CPU에서도 수 분이면 수렴합니다.
 </li>
 <li id="footnote-gan">
 <p>Goodfellow, I. J. et al. (2014). “Generative Adversarial Networks.” arXiv:1406.2661. <a href="#fr-gan-1">↩</a></p>
+</li>
+<li id="footnote-word2vec">
+<p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781 — CBOW·skip-gram으로 단어를 밀도 벡터(워드임베딩)로 표현하는 원 논문으로, 기준 (3)의 “이미 워드임베딩으로 벡터화된 텍스트” 사례가 이 계열의 산물이다. <a href="#fr-word2vec-1">↩</a></p>
 </li>
 <li id="footnote-cifar10">
 <p>Krizhevsky, A., Nair, V., Hinton, G. (2009). “CIFAR-10 and CIFAR-100 datasets.” Multiple Layers of Features from Tiny Images, Technical Report 306, University of Toronto. — 32×32 컬러 이미지 60,000장으로, 이 절의 “기본 코스” 3단계(CNN의 우위를 검증할 규모)로 쓰인다. <a href="#fr-cifar10-1">↩</a></p>

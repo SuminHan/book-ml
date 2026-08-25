@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -185,8 +185,8 @@
 작업의 작은 일부에 불과하다. 실제 데이터 프로젝트는 보통 다음 순환을 따른다:</p>
 <ol>
 <li><strong>수집</strong>(Collection): 어디서 데이터를 구할 것인가 — 이번 학기 팀
-프로젝트(Chapter 8, 16)에서는 Kaggle<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup>, UCI Machine Learning Repository,
-Hugging Face Datasets 같은 공개 저장소를 주로 쓰게 된다. 실무에서는
+프로젝트(Chapter 8, 16)에서는 Kaggle<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup>, UCI Machine Learning Repository<sup class="footnote-reference" id="fr-ucirepo-1"><a href="#footnote-ucirepo">2</a></sup>,
+Hugging Face Datasets<sup class="footnote-reference" id="fr-huggingface-1"><a href="#footnote-huggingface">3</a></sup> 같은 공개 저장소를 주로 쓰게 된다. 실무에서는
 여기에 “이 데이터를 이 목적으로 써도 되는가”(라이선스, 개인정보) 확인도
 포함된다 — 캐글 대회 데이터라도 상업적 재사용이 금지된 경우가 흔하다.</li>
 <li><strong>정제</strong>(Cleaning): 결측치(missing value), 중복, 이상치(outlier)를
@@ -197,7 +197,7 @@ Hugging Face Datasets 같은 공개 저장소를 주로 쓰게 된다. 실무에
 만들기 전에, 데이터의 분포·상관관계·클래스 비율을 눈으로 확인한다.
 이 단계에서 발견한 사실이 종종 4단계에서 어떤 모델을 고를지까지
 결정한다 — 예를 들어 클래스 비율이 99:1로 심하게 불균형하다면, 정확도
-대신 다른 평가지표(Chapter 2.3의 PR-AUC)를 처음부터 염두에 둬야 한다.</li>
+대신 다른 평가지표(Chapter 2.3의 PR-AUC)<sup class="footnote-reference" id="fr-fawcett-roc-1"><a href="#footnote-fawcett-roc">4</a></sup>를 처음부터 염두에 둬야 한다.</li>
 <li><strong>모델링</strong>(Modeling): 1.2절에서 정식화한 문제에 맞는 가설 \(h\)를
 고르고 학습시킨다 — 이번 학기 대부분의 장이 이 단계를 다룬다.</li>
 <li><strong>평가</strong>(Evaluation): 학습에 쓰지 않은 데이터로 성능을 검증한다
@@ -233,7 +233,7 @@ Hugging Face Datasets 같은 공개 저장소를 주로 쓰게 된다. 실무에
 <h3 id="유명한-사고-모델이-아니라-데이터가-틀려-있던-경우"><a class="header" href="#유명한-사고-모델이-아니라-데이터가-틀려-있던-경우">유명한 사고: 모델이 아니라 데이터가 “틀려” 있던 경우</a></h3>
 <p>머신러닝 역사에서 데이터 품질의 중요성을 보여주는 가장 유명한 사례 중 하나를
 알아두자. 1992년, SRI 국제 AI 센터의 워프터(Wolpert)와 키블러(Kibler)는
-“Do We Know the Data We’re Using?”<sup class="footnote-reference" id="fr-wolpert92-1"><a href="#footnote-wolpert92">2</a></sup>라는 제목의 논문을 썼다. 내용은 이렇다 —
+“Do We Know the Data We’re Using?”<sup class="footnote-reference" id="fr-wolpert92-1"><a href="#footnote-wolpert92">5</a></sup>라는 제목의 논문을 썼다. 내용은 이렇다 —
 당시 표준 벤치마크 데이터셋으로 쓰이던 UCI Machine Learning Repository의
 “Aha!” 데이터셋을 들여다봤더니, <strong>동일한 특징 벡터의 행이 서로 정답 라벨이
 달라진 채 두 개 이상 들어 있는 경우가 100건</strong> 있었다. 같은 입력에 서로
@@ -290,8 +290,8 @@ Hugging Face Datasets 같은 공개 저장소를 주로 쓰게 된다. 실무에
 염두에 둬야 한다.</li>
 </ol>
 <p>실제로 이 네 질문이 얼마나 유용한지, 한 번도 공개된 데이터를 예로 들면
-분명하다. Kaggle의 “House Prices”(2015~2016년 캐글 대회용 부동산 데이터,
-1,460행 × 81개 특징)는 처음 받아서 <code>describe()</code>만 찍어도 목표 변수
+분명하다. Kaggle의 “House Prices”(2015~2016년 캐글 대회용 부동산
+데이터, 1,460행 × 81개 특징)<sup class="footnote-reference" id="fr-kagglehp-1"><a href="#footnote-kagglehp">6</a></sup>는 처음 받아서 <code>describe()</code>만 찍어도 목표 변수
 <code>SalePrice</code>의 분포가 오른쪽으로 심하게 치우켜 있으며 최댓값이 99퍼센타일
 보다 수 배 크다는 것을 즉시 보여준다 — “평균을 잘 맞히는 모델“을 만들 때
 그 극단값 몇 개가 훈련을 얼마나 끌어당기는지, Chapter 6의 정규화 이야기를
@@ -299,7 +299,7 @@ Hugging Face Datasets 같은 공개 저장소를 주로 쓰게 된다. 실무에
 <h3 id="실습-pandas로-첫-eda-해보기"><a class="header" href="#실습-pandas로-첫-eda-해보기">실습: pandas로 첫 EDA 해보기</a></h3>
 <p>이번 학기 코드 예제는 이해를 돕기 위해 순수 Python이나 numpy로 개념을 손으로
 짜보는 경우가 많지만(이 절 하단 참고), 실전 데이터 탐색 단계에서는 <code>pandas</code>가
-사실상 표준 도구다<sup class="footnote-reference" id="fr-pandas-1"><a href="#footnote-pandas">3</a></sup>. 아주 작은 예시로 EDA의 감을 잡아보자:</p>
+사실상 표준 도구다<sup class="footnote-reference" id="fr-pandas-1"><a href="#footnote-pandas">7</a></sup>. 아주 작은 예시로 EDA의 감을 잡아보자:</p>
 <pre><code class="language-python">import pandas as pd
 
 data = {
@@ -489,7 +489,7 @@ degree 24: train R2=1.0000  test R2=-63495.2701
 잘 배웠다는 증거가 아니라, 외웠을 가능성을 알리는 신호</strong>일 수 있으며,
 모델이 좋은지 나쁜지를 결정하는 것은 언제나 <strong>보지 않은 데이터의
 점수</strong>다. Chapter 6에서 이 주제를 엄밀하게 다룬다. 이 주제를 더 다루는 자료:
-<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">4</a></sup></p>
+<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">8</a></sup></p>
 <h3 id="수학과-python-사전지식-리뷰"><a class="header" href="#수학과-python-사전지식-리뷰">수학과 Python 사전지식 리뷰</a></h3>
 <p>이번 학기는 다음 세 영역의 수학을 계속 재사용한다 — 낯선 표기가 나올 때마다
 여기로 돌아와 확인할 것:</p>
@@ -527,7 +527,7 @@ print(X @ w)   # 행렬-벡터 곱: [-0.5, -0.5]
 <p><code>X @ w</code>(행렬곱)는 앞으로 매 장에 나오는 \(w^Tx\) 형태의 계산을 한 줄로
 표현해준다 — for 루프로 직접 짜는 것보다 빠르고 읽기 쉽다. 다만 이 책의
 연습문제 코드는 <strong>개념이 잘 드러나도록 순수 Python(리스트와 for 루프)으로
-스텁을 짠 경우가 많다</strong> — 실전에서는 numpy/PyTorch<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">5</a></sup> <sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">6</a></sup>로 훨씬 빠르게 같은
+스텁을 짠 경우가 많다</strong> — 실전에서는 numpy/PyTorch<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">9</a></sup> <sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">10</a></sup>로 훨씬 빠르게 같은
 계산을 하지만, 처음 배울 때는 벡터 연산 뒤에 숨은 for 루프를 직접 눈으로
 보는 쪽이 이해에 더 도움이 된다는 판단에서다.</p>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
@@ -605,8 +605,20 @@ Chapter 9 이후에 필요한 도구는 <strong>연쇄법칙</strong> 하나다.
 <li id="footnote-cs229">
 <p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
 </li>
+<li id="footnote-ucirepo">
+<p>University of California, Irvine Machine Learning Repository. https://archive.ics.uci.edu/ — 위 “Aha!” 데이터셋을 포함한 여러 공개 데이터셋의 출처. <a href="#fr-ucirepo-1">↩</a></p>
+</li>
+<li id="footnote-huggingface">
+<p>Wolf, T., Debut, L., Sanh, V., et al. (2019). “HuggingFace’s Transformers: State-of-the-art Natural Language Processing.” arXiv:1910.03771. <a href="#fr-huggingface-1">↩</a></p>
+</li>
+<li id="footnote-fawcett-roc">
+<p>Fawcett, T. (2006). “An introduction to ROC analysis.” Pattern Recognition Letters 27(8). DOI: 10.1016/j.patrec.2005.10.010. <a href="#fr-fawcett-roc-1">↩</a></p>
+</li>
 <li id="footnote-wolpert92">
 <p>Wolpert, D. H., Kibler, D. (1992). “Do We Know the Data We’re Using?” Machine Learning 8(4), 273–280. <a href="#fr-wolpert92-1">↩</a></p>
+</li>
+<li id="footnote-kagglehp">
+<p>Kaggle Competition: “House Prices — Advanced Regression Techniques” (2015~2016). https://www.kaggle.com/c/house-prices-advanced-regression-techniques — 공개 주택 가격 데이터(1,460행 × 81개 특징)의 출처. <a href="#fr-kagglehp-1">↩</a></p>
 </li>
 <li id="footnote-pandas">
 <p>McKinney, W. (2010). “Data Structures for Statistical Computing in Python.” Proceedings of the 9th Python in Science Conference (SciPy 2010). <a href="#fr-pandas-1">↩</a></p>

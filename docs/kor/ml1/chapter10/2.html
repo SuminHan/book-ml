@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -485,7 +485,7 @@ y = \gamma \hat{x} + \beta\]</p>
 <em>러닝된</em> 통계로 대체해야 한다.)</p>
 <h3 id="실습-pytorch로-작은-cnn을-만들어-패턴-분류하기"><a class="header" href="#실습-pytorch로-작은-cnn을-만들어-패턴-분류하기">실습: PyTorch로 작은 CNN을 만들어 패턴 분류하기</a></h3>
 <p>세로줄과 가로줄 이미지(16×16, 잡음 섞임)를 구분하는 아주 작은 CNN을
-직접 학습시켜보자:</p>
+직접 학습시켜보자<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">11</a></sup>:</p>
 <pre><code class="language-python">import torch, torch.nn as nn
 
 class SmallCNN(nn.Module):
@@ -506,6 +506,7 @@ opt = torch.optim.Adam(model.parameters(), lr=0.01)
 lossfn = nn.CrossEntropyLoss()
 # 학습 루프: opt.zero_grad() -&gt; loss = lossfn(model(X), y) -&gt; loss.backward() -&gt; opt.step()
 </code></pre>
+<p><sup class="footnote-reference" id="fr-adam-1"><a href="#footnote-adam">12</a></sup></p>
 <p>이 모델의 구조를 10.1절의 표 방식으로 정리하면:</p>
 <div class="table-wrapper">
 <table>
@@ -591,7 +592,7 @@ validation만 떨어지는 현상인데, 여기서는 training <em>자체</em>�
 (경사하강)가 깊게 내려가지 못해서“라는 증거다. 이 실험이
 “깊이 열화 = 최적화 문제“라는 진단을 가능하게 했고, 스킵 연결
 (최적화 경로 개선)이 해답이 된 것이다. 이 주제를 더 다루는 자료:
-<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">11</a></sup></p>
+<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">13</a></sup></p>
 <hr>
 <h2 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h2>
 <ol>
@@ -648,6 +649,12 @@ validation만 떨어지는 현상인데, 여기서는 training <em>자체</em>�
 </li>
 <li id="footnote-batchnorm">
 <p>Ioffe, S., Szegedy, C. (2015). “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift.” arXiv:1502.03167. <a href="#fr-batchnorm-1">↩</a></p>
+</li>
+<li id="footnote-pytorch">
+<p>Paszke, A., Gross, S., Massa, F., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” NeurIPS 2019. arXiv:1912.01703. <a href="#fr-pytorch-1">↩</a></p>
+</li>
+<li id="footnote-adam">
+<p>Kingma, D. P., Ba, J. (2014). “Adam: A Method for Stochastic Optimization.” ICLR 2015. arXiv:1412.6980. <a href="#fr-adam-1">↩</a></p>
 </li>
 <li id="footnote-cs230">
 <p>Stanford CS230: Deep Learning. https://cs230.stanford.edu/ <a href="#fr-cs230-1">↩</a></p>

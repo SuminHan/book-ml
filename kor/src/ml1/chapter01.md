@@ -1,6 +1,6 @@
 # Chapter 1. 머신러닝 첫걸음
 
-2012년, ImageNet 대회에서 AlexNet[^alexnet]이라는 신경망이 등장하기 전까지, 컴퓨터에게 "이
+2012년, ImageNet[^imagenet] 대회에서 AlexNet[^alexnet]이라는 신경망이 등장하기 전까지, 컴퓨터에게 "이
 사진에 고양이가 있는가"를 알려주는 방법은 사람이 직접 특징을 설계하는 것이었다 —
 가장자리 검출기, 색 히스토그램, 특정 모양의 필터를 손으로 조합해서 "고양이스러움"을
 수치로 정의하려 했다. AlexNet은 그런 손설계 없이, 수백만 장의 사진과 정답 라벨만
@@ -68,3 +68,4 @@
 
 [^alexnet]: Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). "ImageNet Classification with Deep Convolutional Neural Networks." NeurIPS 2012.
 [^cs229]: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf
+[^imagenet]: Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., Fei-Fei, L. (2009). "ImageNet: A Large-Scale Hierarchical Image Database." CVPR 2009.

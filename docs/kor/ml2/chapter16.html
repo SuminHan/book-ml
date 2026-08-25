@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -181,15 +181,15 @@
                         <h1 id="chapter-16-block-b-캡스톤-팀-프로젝트와-학기-총정리-block-b-capstone--semester-review"><a class="header" href="#chapter-16-block-b-캡스톤-팀-프로젝트와-학기-총정리-block-b-capstone--semester-review">Chapter 16. Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone &amp; Semester Review)</a></h1>
 <p>Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">1</a></sup>, 정책을
 직접 학습하고(REINFORCE, PPO)<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">2</a></sup>, 사람의 시연·선호로부터
-배우고(모방학습)<sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">3</a></sup>, 실제 물리 시뮬레이션(MuJoCo<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">4</a></sup>, Isaac Sim<sup class="footnote-reference" id="fr-isaacsim-1"><a href="#footnote-isaacsim">5</a></sup>)과 트리
-탐색(MCTS)<sup class="footnote-reference" id="fr-mcts-1"><a href="#footnote-mcts">6</a></sup>까지 다뤘다. 이번 장은 Chapter 8의 짝이다 — 이 두 번째 절반의
+배우고(모방학습)<sup class="footnote-reference" id="fr-dagger-1"><a href="#footnote-dagger">3</a></sup> <sup class="footnote-reference" id="fr-rlhf-1"><a href="#footnote-rlhf">4</a></sup>, 실제 물리 시뮬레이션(MuJoCo<sup class="footnote-reference" id="fr-mujoco-1"><a href="#footnote-mujoco">5</a></sup>, Isaac Sim<sup class="footnote-reference" id="fr-isaacsim-1"><a href="#footnote-isaacsim">6</a></sup>)과 트리
+탐색(MCTS)<sup class="footnote-reference" id="fr-mcts-1"><a href="#footnote-mcts">7</a></sup>까지 다뤘다. 이번 장은 Chapter 8의 짝이다 — 이 두 번째 절반의
 도구들을 로봇 시뮬레이션 환경에 직접 적용해보고, 학기 전체를 총정리한다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"><span class="img-wrapper"><img src="../images/ref_ppo.png" alt="서로게이트 함수 L_CLIP의 한 항(단일 timestep)을 확률비 r의 함수로 그린 그래프 — 왼쪽은 이익이 양수(A&gt;0), 오른쪽은 음수(A&lt;0)인 경우. (원 논문 Figure 1)"></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."><span class="img-wrapper"><img src="../images/ref_rlhf.png" alt="Figure 1: RLHF 접근법의 구조를 보여주는 개략도 — 보상 예측기(reward predictor)가 트래젝터리 세그먼트의 인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을 이용해 정책(policy)을 강화학습으로 학습하는 전체 파이프라인을 보여준다."></span></label></p>
 <p>왜 이 순서인가. 이전 장(“모델기반 RL과 몬테카를로 트리 탐색”)은
-“모델이 있을 때“의 도구 상자 마지막 조각, MCTS를 보여줬다 — AlphaGo<sup class="footnote-reference" id="fr-alphago-1"><a href="#footnote-alphago">7</a></sup>의
-무기였던 UCT<sup class="footnote-reference" id="fr-uct-1"><a href="#footnote-uct">8</a></sup>로 트리를 탐색하고, 정책·가치 네트워크가 탐색을
+“모델이 있을 때“의 도구 상자 마지막 조각, MCTS를 보여줬다 — AlphaGo<sup class="footnote-reference" id="fr-alphago-1"><a href="#footnote-alphago">8</a></sup>의
+무기였던 UCT<sup class="footnote-reference" id="fr-uct-1"><a href="#footnote-uct">9</a></sup>로 트리를 탐색하고, 정책·가치 네트워크가 탐색을
 어떻게 돕는지
 짚은 장이다. Chapter 15가 이 두 번째 절반에서 새 도구를 추가한 마지막 장
 인 셈이므로, 이 장부터는 배울 개념이 남지 않는다. 대신 이 책은 손에 든
@@ -213,7 +213,7 @@
 “반박 가능한 질문“을 쓴 peer-review를 작성할 수 있다.</li>
 <li>학기 전체를 “모델 정의 → 틀린 정도를 수치화 → 개선” 3단계 구조로
 정리하고, 20문항 자가진단으로 준비도를 재며, 학기 이후로 이어질 방향
-(오프라인 RL, 범용 로봇 정책, sim-to-real)을 자기 언어로 말할 수 있다.</li>
+(오프라인 RL<sup class="footnote-reference" id="fr-offlinerl-1"><a href="#footnote-offlinerl">10</a></sup>, 범용 로봇 정책, sim-to-real)을 자기 언어로 말할 수 있다.</li>
 </ul>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
@@ -242,7 +242,7 @@
 경로(동적계획법, 몬테카를로, SARSA, Q-learning)로 풀어 “같은
 방정식, 다른 형태“를 숫자로 확인한다. 그 뒤 ML2 개념 지도, 20문항
 복습 자가진단, 학기 이후에 가져갈 세 가지와 최신 동향(오프라인 RL,
-범용 로봇 정책, sim-to-real)으로 이 학기를 마무리한다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">9</a></sup></li>
+범용 로봇 정책, sim-to-real)으로 이 학기를 마무리한다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">11</a></sup></li>
 </ul>
 <hr>
 <ol class="footnote-definition">
@@ -251,6 +251,9 @@
 </li>
 <li id="footnote-ppo">
 <p>Schulman, J. et al. (2017). “Proximal Policy Optimization Algorithms.” arXiv:1707.06347. <a href="#fr-ppo-1">↩</a></p>
+</li>
+<li id="footnote-dagger">
+<p>Ross, A., Gordon, G. J., Bagnell, J. A. (2011). “A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning.” ICML 2011. arXiv:1011.0686. 모방학습(imitation learning) 방법 DAgger의 원 논문 — 데모 데이터에 대한 단순 모방의 분포 오프셋(distribution shift) 문제를 다루는 표준 참고문헌이다. <a href="#fr-dagger-1">↩</a></p>
 </li>
 <li id="footnote-rlhf">
 <p>Christiano, P. et al. (2017). “Deep reinforcement learning from human preferences.” NeurIPS 2017. arXiv:1706.03741. <a href="#fr-rlhf-1">↩</a></p>
@@ -269,6 +272,9 @@
 </li>
 <li id="footnote-uct">
 <p>Kocsis, L., Szepesvári, C. (2006). “Bandit based Monte-Carlo Planning.” ECML 2006, LNAI 4212, 282–293. — UCT(Upper Confidence bounds applied to Trees)의 원 논문. <a href="#fr-uct-1">↩</a></p>
+</li>
+<li id="footnote-offlinerl">
+<p>Levine, S., Kumar, A., Tucker, G., Fu, J. (2020). “Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems.” arXiv:2005.01643. 오프라인 RL 분야를 체계적으로 정리한 표준 튜토리얼. <a href="#fr-offlinerl-1">↩</a></p>
 </li>
 <li id="footnote-cs234">
 <p>이 장의 주제(연속제어 RL, 팀 프로젝트 실습, 시드·베이스라인·평가 분리 프로토콜)를 더 깊이 다루는 자료: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1">↩</a></p>

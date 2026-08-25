@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -188,7 +188,7 @@
 고양이“라는 사실을 전혀 활용하지 못한다. 픽셀 하나 위치만 옮겨도 완전히 다른
 입력으로 취급된다.</p>
 <h3 id="합성곱-작은-필터를-온-이미지에-재사용"><a class="header" href="#합성곱-작은-필터를-온-이미지에-재사용">합성곱: 작은 필터를 온 이미지에 재사용</a></h3>
-<p>CNN의 핵심 아이디어는 허블과 비셀이 발견한 것과 같다: 이미지 <strong>전체</strong>를 한
+<p>CNN의 핵심 아이디어는 허블과 비셀<sup class="footnote-reference" id="fr-hubelwiesel-1"><a href="#footnote-hubelwiesel">1</a></sup>이 발견한 것과 같다: 이미지 <strong>전체</strong>를 한
 번에 보는 대신, 작은 필터(예: 3×3)를 이미지 전체에 걸쳐 <strong>똑같이 재사용</strong>하면서
 슬라이드시킨다. \(k \times k\) 필터(커널, kernel)를 입력 위에서 슬라이드시키며,
 각 위치에서 필터와 겹치는 영역의 원소별 곱의 합을 계산한다:</p>
@@ -219,7 +219,7 @@
 겹쳐진다. 그런데 위 <code>conv2d</code> 코드는 <code>image[i+di][j+dj] * kernel[di][dj]</code> —
 뒤집기 없이 그대로 곱한다. 신호처리 용어로 우리가 실제로 구현한 것은
 **상관(corrélation, correlation)**이고, “합성곱“이 아니다. 그런데도 딥러닝
-세계(PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">1</a></sup>·TensorFlow<sup class="footnote-reference" id="fr-tensorflow-1"><a href="#footnote-tensorflow">2</a></sup> 포함)는 이 연산을
+세계(PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">2</a></sup>·TensorFlow<sup class="footnote-reference" id="fr-tensorflow-1"><a href="#footnote-tensorflow">3</a></sup> 포함)는 이 연산을
 “convolution“이라고 부른다.</p>
 <p>왜 아무도 신경 쓰지 않는가? 세 가지 이유다. <strong>첫째, 필터의 값은 학습 대상
 파라미터</strong>이기 때문이다. “정답 필터“가 따로 있는 게 아니라 네트워크가 스스로
@@ -230,7 +230,7 @@
 는 그런 경우가 사실상 없다. <strong>셋째, 이름의 기원</strong>이다 — 합성곱 정의로부터
 “시스템 출력이 임펄스 응답의 뒤집힌 버전과 입력의 합성곱“이라는 표현이 나오는
 것은 선형 시불변(LTI) 시스템 이론(스피커를 통과한 기타 소리를 예로 들자)에서
-왔고, 후쿠시마의 네오코그니트론(1980)<sup class="footnote-reference" id="fr-neocognitron-1"><a href="#footnote-neocognitron">3</a></sup> 이래 이 분야의 이름이 그대로 이어져
+왔고, 후쿠시마의 네오코그니트론(1980)<sup class="footnote-reference" id="fr-neocognitron-1"><a href="#footnote-neocognitron">4</a></sup> 이래 이 분야의 이름이 그대로 이어져
 온 것이다. <strong>코드와 수식에서는 “각 위치의 원소별 곱의 합“을 그냥
 “합성곱“이라고 쓰면 된다 — 이 분야 전체가 그렇게 쓰고 있다.</strong></p>
 <h3 id="손으로-한-번-33-필터가-55-이미지를-스캐닝하면"><a class="header" href="#손으로-한-번-33-필터가-55-이미지를-스캐닝하면">손으로 한 번: 3×3 필터가 5×5 이미지를 스캐닝하면</a></h3>
@@ -277,7 +277,7 @@
 \end{aligned}
 \]</p>
 <p>나머지 위치도 같은 방식으로 계산하면(9개 위치 전부 — 실습 노트북 §1에서
-numpy로 그대로 실행해본다):</p>
+numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">5</a></sup>로 그대로 실행해본다):</p>
 <p>출력 \(3\times3\):</p>
 <div class="table-wrapper">
 <table>
@@ -355,7 +355,7 @@ numpy로 그대로 실행해본다):</p>
 <h4 id="스트라이드-s2가-실제로-하는-일"><a class="header" href="#스트라이드-s2가-실제로-하는-일">스트라이드 s=2가 실제로 하는 일</a></h4>
 <p>\(s=2\)는 1D에서 길이를 반으로, 2D에서는 <strong>가로와 세로 둘 다</strong> 반으로
 줄인다 — 즉 공간 <strong>면적</strong>은 1/4로 줄어든다. 예: 224×224에 k=3, p=1, s=2
-이면 \(n_{\text{out}} = \lfloor(224+2-3)/2\rfloor+1 = 112\) — AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">4</a></sup>의
+이면 \(n_{\text{out}} = \lfloor(224+2-3)/2\rfloor+1 = 112\) — AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">6</a></sup>의
 첫 합성곱 층이 정확히 이 설정(224→112)으로 다운샘플링한다. 10.2절에서
 2×2 풀링도 면적을 1/4로 줄여준다는 것을 보게 되는데, 그러면 둘 중 무엇을
 쓰느냐는 질문이 자연스럽게 생긴다 — 이 절 FAQ에서 비교한다.</p>
@@ -392,7 +392,7 @@ numpy로 그대로 실행해본다):</p>
 파라미터 수와 연산량이 똑같이 정비례로 늘어난다</strong>는 뜻이다. 실제 CNN은
 이런 합성곱 층을 수십~수백 개 쌓으므로, 전체 연산량은 모델 설계 시
 파라미터 수 못지않게 중요하게 따지는 지표다.</p>
-<h4 id="손계산-표-미니-lenet-세-층의-비용5"><a class="header" href="#손계산-표-미니-lenet-세-층의-비용5">손계산 표: 미니 LeNet 세 층의 비용<sup class="footnote-reference" id="fr-lenet-1"><a href="#footnote-lenet">5</a></sup></a></h4>
+<h4 id="손계산-표-미니-lenet-세-층의-비용7"><a class="header" href="#손계산-표-미니-lenet-세-층의-비용7">손계산 표: 미니 LeNet 세 층의 비용<sup class="footnote-reference" id="fr-lenet-1"><a href="#footnote-lenet">7</a></sup></a></h4>
 <p>“비용의 대부분이 어느 층에서 오는가“에 대한 감각을 만들기 위해, 28×28
 흑백 이미지를 세 합성곱 층과 한 풀링으로 줄여가는 작은 네트워크를 층별로
 계산해보자(실습 노트북 §3에서 numpy로 그대로 재계산한다):</p>
@@ -466,8 +466,8 @@ conv 3은 채널이 2배지만 공간은 1/4(10×10)라 연산량은 오히려 �
 때문이다. <strong>연산량을 비교할 때는 “파라미터 몇 배“가 아니라 공식으로
 직접 계산</strong>해야 한다는 뜻이다. (1×1 합성곱 — 위 B — 은 공간 크기를
 그대로 둔 채 채널만 선형 결합하는 연산이라, “경량으로 채널을 섞는다“는
-용도로 VGG<sup class="footnote-reference" id="fr-vgg-1"><a href="#footnote-vgg">6</a></sup>와 ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">7</a></sup>의 중간층에서 실전에서 많이 쓰인다. 10.2에서 구조
-속에서 다시 만난다.<sup class="footnote-reference" id="fr-ingoresnet-1"><a href="#footnote-ingoresnet">8</a></sup>)</p>
+용도로 VGG<sup class="footnote-reference" id="fr-vgg-1"><a href="#footnote-vgg">8</a></sup>와 ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet">9</a></sup>의 중간층에서 실전에서 많이 쓰인다. 10.2에서 구조
+속에서 다시 만난다.<sup class="footnote-reference" id="fr-ingoresnet-1"><a href="#footnote-ingoresnet">10</a></sup>)</p>
 <h3 id="실습"><a class="header" href="#실습">실습</a></h3>
 <p>앞의 표들을 코드 한 페이지로 묶어둔다(패딩/스트라이드 그림까지 포함한
 완전 버전은 실습 노트북 §2·§3에서 실행한다):</p>
@@ -551,7 +551,7 @@ LeNet·AlexNet·VGG 시절에는 max pooling이 표준 다운샘플러였지만,
 2p). <code>same</code>/<code>valid</code> 이름은 쓰지 않지만, p=(k−1)/2의 same padding
 트릭은 똑같이 동작한다. (참고: 26×26 입력에 또 p=0의 3×3을 쓰면 24×24 —
 짝수/홀수가 층을 지나며 바뀌지만, 이건 순수한 “크기 장부” 문제일 뿐
-오류가 아니다.)<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">9</a></sup></p>
+오류가 아니다.)<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">11</a></sup></p>
 <h3 id="확인-문제-숫자-네-개"><a class="header" href="#확인-문제-숫자-네-개">확인 문제: 숫자 네 개</a></h3>
 <ol>
 <li><strong>출력 크기.</strong> 56×56 입력, 3×3 필터, 패딩 1, 스트라이드 2일 때 출력
@@ -576,6 +576,9 @@ LeNet·AlexNet·VGG 시절에는 max pooling이 표준 다운샘플러였지만,
 </ol>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-hubelwiesel">
+<p>Hubel, D. H., Wiesel, T. N. (1962). “Receptive Fields, Cells and Columns of the Cat’s Visual Cortex.” <em>Journal of Physiology</em> 160(1), 106–154. — 시각피질의 단순세포·복합세포가 위치를 가리지 않고 방향·모서리 패턴에 선택적으로 반응한다는 수용장(receptive field) 연구로, 합성곱의 “작은 필터를 온 이미지에 재사용한다“는 설계 원형의 생물학적 근거다. (참고: 허블과 비셀은 1981년 노벨상 수상 논문인 “Receptive Fields of Single Neurons in the Cat’s Striate Cortex”(<em>J. Physiol.</em> 1943)으로 이미 수용장을 기술해 두었고, 1962년 논문은 이 계층적 조직을 확장한 것이다.) <a href="#fr-hubelwiesel-1">↩</a></p>
+</li>
 <li id="footnote-pytorch">
 <p>Paszke, A., Gross, S., Massa, F., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” arXiv:1912.01703. — PyTorch 프레임워크의 원 논문(시스템 페이퍼). <a href="#fr-pytorch-1">↩</a></p>
 </li>
@@ -584,6 +587,9 @@ LeNet·AlexNet·VGG 시절에는 max pooling이 표준 다운샘플러였지만,
 </li>
 <li id="footnote-neocognitron">
 <p>Fukushima, K. (1980). “Neocognitron: A Self-Organizing Neural Network Model for a Mechanism of Pattern Recognition Unaffected by Shift in Position.” <em>Biological Cybernetics</em> 36(4), 193–200. — 시각피질의 단순세포·복합세포 계층 구조를 모방한 CNN의 선구 모델. “합성곱층“이라는 용어 자체가 이 논문에서 처음 쓰였다. <a href="#fr-neocognitron-1">↩</a></p>
+</li>
+<li id="footnote-numpy">
+<p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1">↩</a></p>
 </li>
 <li id="footnote-alexnet">
 <p>Krizhevsky, A., Sutskever, I., Hinton, G. E. (2012). “ImageNet Classification with Deep Convolutional Neural Networks.” NeurIPS 2012. <a href="#fr-alexnet-1">↩</a></p>

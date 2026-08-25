@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -237,18 +237,18 @@ ResNet<sup class="footnote-reference" id="fr-resnet-1"><a href="#footnote-resnet
 수용장이 넓어지는 기제를 다룬다. LeNet-5 → AlexNet<sup class="footnote-reference" id="fr-alexnet-1"><a href="#footnote-alexnet">4</a></sup> →
 VGGNet<sup class="footnote-reference" id="fr-vggnet-1"><a href="#footnote-vggnet">5</a></sup>의 구조를 10.1의 공식으로 풀어본 뒤, 깊이를 쌓을 때
 다시 나타나는 그래디언트 소실(깊이 열화)을 스킵 연결(ResNet)과 배치
-정규화<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">6</a></sup>로 어떻게 해결하는지 PyTorch 실습으로 확인한다.</li>
+정규화<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">6</a></sup>로 어떻게 해결하는지 PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">7</a></sup> 실습으로 확인한다.</li>
 </ul>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."><span class="img-wrapper"><img src="../images/ref_alexnet.png" alt="AlexNet 아키텍처 (원 논문 Figure 2) — 8개 층(5개 합성곱 + 3개 완전연결), 두 GPU로 분할된 병렬 구조."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."><span class="img-wrapper"><img src="../images/ref_resnet.png" alt="Residual building block (원 논문 Figure 2) — shortcut identity mapping과 residual mapping F(x)의 결합 구조 (F(x)+H(x))."></span></label></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."><span class="img-wrapper"><img src="../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."></span></label></p>
 <ul>
 <li><a href="chapter10/3.html">10.3 분류를 넘어서: 탐지, 분할, 전이학습</a> — “클래스
-벡터 1개“를 내는 분류기를 넘어, 위치까지 붙은 객체 탐지(R-CNN<sup class="footnote-reference" id="fr-rcnn-1"><a href="#footnote-rcnn">7</a></sup> 3단계
+벡터 1개“를 내는 분류기를 넘어, 위치까지 붙은 객체 탐지(R-CNN<sup class="footnote-reference" id="fr-rcnn-1"><a href="#footnote-rcnn">8</a></sup> 3단계
 파이프라인, IoU·NMS)와 픽셀 단위 분할(1×1 합성곱
-헤드, U-Net<sup class="footnote-reference" id="fr-unet-1"><a href="#footnote-unet">8</a></sup> <sup class="footnote-reference" id="fr-fcn-1"><a href="#footnote-fcn">9</a></sup>)로 확장한다.
+헤드, U-Net<sup class="footnote-reference" id="fr-unet-1"><a href="#footnote-unet">9</a></sup> <sup class="footnote-reference" id="fr-fcn-1"><a href="#footnote-fcn">10</a></sup>)로 확장한다.
 마지막으로 사전학습된 CNN의 앞쪽 층을 재사용하는 전이학습(특징 추출 vs.
-미세조정)을 작은 실험으로 비교한다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">10</a></sup>.</li>
+미세조정)을 작은 실험으로 비교한다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">11</a></sup>.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">
@@ -269,6 +269,9 @@ VGGNet<sup class="footnote-reference" id="fr-vggnet-1"><a href="#footnote-vggnet
 </li>
 <li id="footnote-batchnorm">
 <p>Ioffe, S., Szegedy, C. (2015). “Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift.” arXiv:1502.03167. <a href="#fr-batchnorm-1">↩</a></p>
+</li>
+<li id="footnote-pytorch">
+<p>Paszke, A., Gross, S., Massa, F., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” arXiv:1912.01703. — PyTorch 프레임워크의 원 논문(시스템 페이퍼). <a href="#fr-pytorch-1">↩</a></p>
 </li>
 <li id="footnote-rcnn">
 <p>Girshick, R., Donahue, J., Darrell, T., Malik, J. (2014). “Rich feature hierarchies for accurate object detection and semantic segmentation.” CVPR 2014. arXiv:1311.2524. <a href="#fr-rcnn-1">↩</a></p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -421,7 +421,7 @@ episode 250: 500
 시드“가 중요한 이유다(아래 절). 신경망으로 근사한
 강화학습은 지도학습보다 학습 곡선이 훨씬 들쭉날쭉하다
 (함수근사·부트스트래핑·off-policy가 동시에 얽히면 학습이
-불안정해지기 쉽다는 것이 알려져 있고, 타겟 네트워크·경험재현은
+불안정해지기 쉽다는 것이 알려져 있고<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>, 타겟 네트워크·경험재현은
 정확히 그 불안정성을 완화하려는 장치다 — 다만 이 곡선이 보여주는
 진면목은, 이 두 장치가 불안정성을 <strong>완화“는” 하지만 “완전히
 제거“는 하지 못한다</strong>는 사실이다). 실전에서는
@@ -522,20 +522,20 @@ Chapter 8.1의 팀 프로젝트 FAQ에서 다룬 “한 실험으로 결론을
 <h3 id="역사-경험을-다시-쓴다는-아이디어의-뿌리"><a class="header" href="#역사-경험을-다시-쓴다는-아이디어의-뿌리">역사: “경험을 다시 쓴다“는 아이디어의 뿌리</a></h3>
 <p>경험 재현은 DQN이 처음 발명한 것이 아니다. “과거 경험을 다시 쓴다“는
 정신은 1990년대 표 기반 문헌에서 이미 몇 갈래로 자라 있었다.
-<strong>Dyna</strong>(Sutton 1991, Chapter 7.3)<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-suttonbarto">4</a></sup>는 “실제 환경에서 모은 경험“과
+<strong>Dyna</strong>(Sutton 1991, Chapter 7.3)<sup class="footnote-reference" id="fr-suttonbarto-2"><a href="#footnote-suttonbarto">4</a></sup>는 “실제 환경에서 모은 경험“과
 “모델로 시뮬레이션한 경험“을 <strong>같은 학습 스트림에 섞어</strong> TD
 갱신에 쓴다 — “여러 출처의 경험을 하나로 합쳐 재사용한다“는
 정신이 경험 재현의 가장 가까운 원형이다. <strong>Q(\(\lambda\))</strong>
 (Chapter 7.2)는 <strong>적격 이력</strong>(eligibility trace)으로 “직전에
 경험한 상태-행동“의 <strong>잔상을</strong> 갱신에 반영해, 한 경험을 <strong>여러
-스텝에 걸쳐</strong> 재사용한다. <strong>배치(오프라인) 강화학습</strong> 역시
+스텝에 걸쳐</strong> 재사용한다. <strong>배치(오프라인) 강화학습</strong><sup class="footnote-reference" id="fr-offlinerl-1"><a href="#footnote-offlinerl">5</a></sup> 역시
 모은 데이터를 <strong>여러 에포크</strong> 반복해 쓴다. DQN의 경험 재현은
 이 뿌리 위에 **“신경망 + 대규모 버퍼(\(10^4\sim10^6\)) +
 버퍼에서 무작위 재샘플링”**을 태워, Atari의 <strong>수백만
 프레임</strong>에서 상관 문제를 <strong>단순한 무작위 추출</strong> 한 줄로 해결한
 점에서 <strong>규모의 승리</strong>다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."><span class="img-wrapper"><img src="../../images/ref_dqn.png" alt="DQN의 합성곱 신경망 구조 – Atari 화면을 입력받아 조이스틱 행동별 Q값을 출력한다 (원 논문 Extended Data Figure 1)."></span></label></p>
-<p>Atari DQN(Mnih et al., 2013/2015)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">5</a></sup>에서 경험 재현 버퍼는
+<p>Atari DQN(Mnih et al., 2013/2015)<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">6</a></sup>에서 경험 재현 버퍼는
 <strong>\(10^6\)</strong> 프레임 크기, <strong>\(32\)</strong> 프레임 배치, <strong>4스텝
 마다 1회</strong> 학습을 썼다 — “4스텝마다“는 “매 프레임마다 학습“보다
 <strong>상관</strong>(4프레임은 거의 같은 화면)을 <strong>더 강하게</strong> 끊으려는
@@ -597,8 +597,8 @@ push하면 버퍼의 최종 내용과 “지금까지 밀려난 항목들의
 (Chapter 6.3), “누가 경험을 모았는지“와 무관하게 목표 정책의 가치를
 학습할 수 있기 때문이다.</p>
 <p><strong>Q. DQN 이후에는 어떻게 발전했나요?</strong> Double DQN(타겟값 계산에서
-“행동 선택“과 “그 행동의 평가“를 분리해 과대추정 편향을 줄임)<sup class="footnote-reference" id="fr-doubledqn-1"><a href="#footnote-doubledqn">6</a></sup>,
-Dueling DQN(상태 가치와 행동 이점을 분리해서 학습)<sup class="footnote-reference" id="fr-duelingdqn-1"><a href="#footnote-duelingdqn">7</a></sup>, 우선순위 경험
+“행동 선택“과 “그 행동의 평가“를 분리해 과대추정 편향을 줄임)<sup class="footnote-reference" id="fr-doubledqn-1"><a href="#footnote-doubledqn">7</a></sup>,
+Dueling DQN(상태 가치와 행동 이점을 분리해서 학습)<sup class="footnote-reference" id="fr-duelingdqn-1"><a href="#footnote-duelingdqn">8</a></sup>, 우선순위 경험
 재현(중요한 경험을 더 자주 샘플링) 등 다양한 개선이 이어졌다 — 전부
 이번 장에서 배운 기본 DQN 구조에 부분적인 수정을 더한 것들이다.
 Chapter 10~11에서 배울 정책기반 방법들은 아예 다른 접근(Q값을
@@ -623,7 +623,7 @@ Chapter 10~11에서 배울 정책기반 방법들은 아예 다른 접근(Q값�
 위 “버퍼 크기“에서 “너무 크면“의 위험과 같은 뿌리다.
 “재사용“의 이득과 “낡은/잘못된 경험의 과대강조” 위험이
 절충되는 지점이 바로 <code>capacity</code>라는 하이퍼파라미터다. 이 절의 주제(경험
-재현과 off-policy 학습)를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">8</a></sup>.</p>
+재현과 off-policy 학습)를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">9</a></sup>.</p>
 <hr>
 <h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
 <p><strong>1. (코딩)</strong> 다음과 같은 <code>ReplayBuffer</code> 클래스와
@@ -696,7 +696,10 @@ Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
 <p>Kingma, D. P., Ba, J. (2015). “Adam: A Method for Stochastic Optimization.” ICLR 2015. arXiv:1412.6980. <a href="#fr-adam-1">↩</a></p>
 </li>
 <li id="footnote-suttonbarto">
-<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a></p>
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1">↩</a> <a href="#fr-suttonbarto-2">↩2</a></p>
+</li>
+<li id="footnote-offlinerl">
+<p>Levine, S., Kumar, A., Tucker, G., Fu, J. (2020). “Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems.” arXiv:2005.01643. <a href="#fr-offlinerl-1">↩</a></p>
 </li>
 <li id="footnote-dqn">
 <p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1">↩</a></p>

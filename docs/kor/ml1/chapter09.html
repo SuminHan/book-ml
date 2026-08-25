@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-700b68c6.js"></script>
@@ -228,22 +228,22 @@ BatchNorm<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-
 <li><a href="chapter09/1.html">9.1 퍼셉트론의 한계, 순전파, 역전파</a> — 퍼셉트론의
 역사와 XOR의 벽(민스키·페퍼트)에서 출발해, 순전파와 역전파 알고리즘
 (연쇄법칙의 재사용)을 다룬다. 2-2-1 신경망 손계산, 수치 미분 검증,
-로지스틱회귀 대비 numpy로 XOR을 푸는 실험까지 — 은닉층 하나면 “직선으로
+로지스틱회귀 대비 numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">6</a></sup>로 XOR을 푸는 실험까지 — 은닉층 하나면 “직선으로
 갈리는 공간“이 실제로 생긴다는 것을 확인한다.</li>
 <li><a href="chapter09/2.html">9.2 그래디언트 소실·폭발, 활성함수, 초기화</a> —
 연쇄법칙의 곱 형태(층마다 σ’와 가중치를 계속 곱)로 층이 깊어질수록
 그래디언트가 지수적으로 사라지거나(0.25의 10승 ≈ 10⁻⁶) 폭발하는
-원인을 보이고, 활성함수(sigmoid/tanh/ReLU 등) 비교와 활성값의 스케일을
+원인을 보이고, 활성함수(sigmoid/tanh/ReLU 등)<sup class="footnote-reference" id="fr-rectifier-1"><a href="#footnote-rectifier">7</a></sup> 비교와 활성값의 스케일을
 층마다 보존하는 Xavier/He 초기화를 다룬 뒤, “깊은 망의 그래디언트를
 살리는 세 라인 방어선“으로 정리한다.</li>
 <li><a href="chapter09/3.html">9.3 정규화 기법과 학습률 스케줄링</a> — 신경망 전용
 정규화(dropout, BatchNorm, 가중치 감쇠)가 각각 과적합과 학습 불안정을
 어떻게 다스리는지 살펴본 뒤, 학습률 스케줄링(StepLR, 코사인, warmup)의
 “왜” — 골짜기 바닥에서 큰 스텝은 진동하고 작은 스텝만으로는 못 도착하는
-이유 — 과 초기 학습률(α₀)을 고르는 실무 기준을 PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">6</a></sup> 실험과 함께
+이유 — 과 초기 학습률(α₀)을 고르는 실무 기준을 PyTorch<sup class="footnote-reference" id="fr-pytorch-1"><a href="#footnote-pytorch">8</a></sup> 실험과 함께
 다룬다.</li>
 </ul>
-<p>이 장의 정규화 도구(dropout·BatchNorm) 원 논문의 그림과, 이 절 전체를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">7</a></sup>.
+<p>이 장의 정규화 도구(dropout·BatchNorm) 원 논문의 그림과, 이 절 전체를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">9</a></sup>.
 <label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)."><span class="img-wrapper"><img src="../images/ref_dropout.png" alt="표준 신경망(a)과 드롭아웃을 적용한 ‘얇아진’ 신경망(b) — 훈련 중 랜덤하게 제거되는 유닛이 십자표시로 표시됨 (원 논문 Figure 1)."></span></label>
 <label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."><span class="img-wrapper"><img src="../images/ref_batchnorm.png" alt="Batch Normalization 유무에 따른 MNIST 네트워크 학습 수렴 속도 (원 논문 Figure 1) — BN이 테스트 정확도 상승을 크게 가속화하고, 더 큰 학습률을 사용할 수 있게 하여 적은 학습 스텝으로 고 정확도에 도달하게 함을 보여준다."></span></label></p>
 <hr>
@@ -262,6 +262,12 @@ BatchNorm<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-
 </li>
 <li id="footnote-sgdr">
 <p>Loshchilov, I., Hutter, F. (2016). “SGDR: Stochastic Gradient Descent with Warm Restarts.” arXiv:1608.03983. — 코사인 어닐링(코사인) + 웜 리스타트(warmup) 기반의 학습률 스케줄링을 제안한 원 논문. <a href="#fr-sgdr-1">↩</a></p>
+</li>
+<li id="footnote-numpy">
+<p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1">↩</a></p>
+</li>
+<li id="footnote-rectifier">
+<p>Maas, A. L., Hannun, A. Y., Ng, A. Y. (2013). “Rectifier Nonlinearities Improve Neural Network Acoustic Models.” Interspeech 2013 (ICML 워크숍: Machine Learning and Speech Processing). — 음성 인식 신경망에 rectifier(ReLU) 비선형성을 도입한 원 논문으로, Leaky ReLU·PReLU 등 ReLU 계열 변형의 직접적 선구작이다. <a href="#fr-rectifier-1">↩</a></p>
 </li>
 <li id="footnote-pytorch">
 <p>Paszke, A., Gross, S., Massa, F., et al. (2019). “PyTorch: An Imperative Style, High-Performance Deep Learning Library.” arXiv:1912.01703. — 9.3의 학습률 스케줄링 실험(및 9.1의 <code>.backward()</code> 자동 미분)이 전제로 하는 프레임워크의 원 논문. <a href="#fr-pytorch-1">↩</a></p>

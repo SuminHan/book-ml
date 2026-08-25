@@ -8,7 +8,7 @@
 거절됐는가"는 루트에서 리프까지의 질문들을 그대로 읽으면 되니 쉽다 — 그런데
 트리 수백 개를 조합한 **GBDT**라면, 정확도는 훨씬 높아지지만 "왜"에 답하기는
 훨씬 어려워진다. 이번 장은 트리 하나(결정 트리)에서 시작해 트리 여러 개를
-합치는 두 가지 전략(랜덤 포레스트, GBDT)까지, 그리고 그 대가로 잃은
+합치는 두 가지 전략(랜덤 포레스트[^randomforest], GBDT)까지, 그리고 그 대가로 잃은
 설명가능성을 되찾는 방법(SHAP)까지[^shap] 다룬다.
 
 이 장의 순서 자체가 "트리들을 어떻게 합치는가"의 모양으로 설계됐다: 먼저
@@ -68,3 +68,4 @@
 [^cs229]: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf
 [^ecoa]: 미국 연방법 Equal Credit Opportunity Act (ECOA, 1974년 제정; 15 U.S.C. § 1691 et seq.) — 금융기관이 신용거래 신청에 대해 불리한 처분을 내리면 그 구체적 사유를 신청자에게 통지해야 한다는 규정(15 U.S.C. § 1691(d)(3)).
 [^gbdt]: Friedman, J. H. (2001). "Greedy Function Approximation: A Gradient Boosting Machine." Annals of Statistics 29(5), 1189–1232.
+[^randomforest]: Breiman, L. (2001). "Random Forests." *Machine Learning* 45(1), 5–32. — 랜덤 포레스트의 원 논문. 배깅과 특징 무작위화(각 분기에서 무작위 특징 하위집합만 고려)의 조합을 제안했다.

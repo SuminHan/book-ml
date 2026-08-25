@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -445,7 +445,7 @@ al.)</strong><sup class="footnote-reference" id="fr-wgan-1"><a href="#footnote-w
 “노이즈를 아주 조금만 제거하는” 훨씬 쉬운 문제이므로, 전체적으로 훨씬
 안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \(T\)번의 반복이
 필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
-이미지 생성 모델들(Stable Diffusion 등)이 이 원리를 쓴다.</p>
+이미지 생성 모델들(Stable Diffusion<sup class="footnote-reference" id="fr-stablediffusion-1"><a href="#footnote-stablediffusion">9</a></sup> 등)이 이 원리를 쓴다.</p>
 <p><strong>왜 정방향 과정은 “학습 대상이 아닌가”</strong>: 정방향 과정은
 <strong>고정된, 알려진</strong> 절차 — \(x_t = \sqrt{1-\beta_t}\,x_{t-1} +
 \sqrt{\beta_t}\,\epsilon_t\)(\(\epsilon_t \sim
@@ -470,7 +470,7 @@ min-max 게임도 아니고, 우도의 적분 근사도 아닌, <strong>가장
 보통의 단일 회귀 최적화</strong>다. “안정적으로 학습된다“의
 정체가 바로 이것이다. (수학적으로 이 \(\epsilon\) 예측은
 \(\nabla_x \log p_t(x)\), 즉 데이터 분포의 <strong>스코어
-함수</strong>를 추정하는 것과 동치임을 Song &amp; Ermon (2019)<sup class="footnote-reference" id="fr-songermon19-1"><a href="#footnote-songermon19">9</a></sup>가
+함수</strong>를 추정하는 것과 동치임을 Song &amp; Ermon (2019)<sup class="footnote-reference" id="fr-songermon19-1"><a href="#footnote-songermon19">10</a></sup>가
 보였다 — “노이즈를 잘 예측할 수 있는” 것은 곧 “데이터가
 어디에 빽빽한지 그 기울기를 아는” 것과 같은 셈이다.)</p>
 <p>역방향 단계(DDPM)는 한 줄로:</p>
@@ -487,16 +487,16 @@ z \sim \mathcal{N}(0, I)\]</p>
 절차의 일부다.</p>
 <p><strong>역사적 맥락</strong>: Diffusion의 “정방향/역방향” 아이디어 자체는
 2015년 Sohl-Dickstein 외의 논문(Deep Unsupervised Learning
-using Nonequilibrium Thermodynamics)<sup class="footnote-reference" id="fr-sohldickstein15-1"><a href="#footnote-sohldickstein15">10</a></sup>에서 처음
+using Nonequilibrium Thermodynamics)<sup class="footnote-reference" id="fr-sohldickstein15-1"><a href="#footnote-sohldickstein15">11</a></sup>에서 처음
 딥러닝에
 제안됐다 — 하지만 당시에는 학습이 너무 느려 실용화되지
-못했다. 2020년 <strong>DDPM</strong><sup class="footnote-reference" id="fr-ddpm-1"><a href="#footnote-ddpm">11</a></sup> (Ho, Jain &amp; Abbeel, “Denoising
+못했다. 2020년 <strong>DDPM</strong><sup class="footnote-reference" id="fr-ddpm-1"><a href="#footnote-ddpm">12</a></sup> (Ho, Jain &amp; Abbeel, “Denoising
 Diffusion Probabilistic Models”)이 (i) 노이즈 예측
 매개변수화 \(\epsilon_\theta\), (ii) 단순한 MSE 손실,
 (iii) 실용적 스케줄을 조합해 <strong>실제로 쓸 만한</strong> 알고리즘으로
-만들었고, 같은 해 <strong>DDIM</strong>(Song et al.)<sup class="footnote-reference" id="fr-ddim-1"><a href="#footnote-ddim">12</a></sup>이 역방향 과정을
+만들었고, 같은 해 <strong>DDIM</strong>(Song et al.)<sup class="footnote-reference" id="fr-ddim-1"><a href="#footnote-ddim">13</a></sup>이 역방향 과정을
 <strong>거의 결정적으로</strong> 만들어서 \(T\)를 1000에서 약 50
-단계로 줄였다. 2022년 <strong>Stable Diffusion</strong>(Stability AI)<sup class="footnote-reference" id="fr-stablediffusion-1"><a href="#footnote-stablediffusion">13</a></sup>은
+단계로 줄였다. 2022년 <strong>Stable Diffusion</strong>(Stability AI)<sup class="footnote-reference" id="fr-stablediffusion-2"><a href="#footnote-stablediffusion">9</a></sup>은
 여기에 15.2절의 <strong>VAE</strong>를 조합했다 — 이미지를 VAE 인코더로
 8× 압축한 <strong>잠재 공간</strong>에서 Diffusion을 돌리는 구조로,
 계산량이 1/8²으로 줄었다. 15.2에서 “VAE의 매끄러운 잠재
@@ -621,8 +621,8 @@ VAE의 핵심 아이디어(잠재 공간을 매끄럽게 만든다)는 여러 �
 <p><strong>Q. Diffusion은 정말 \(T\)번의 단계를 다 돌리나요?</strong>
 원래 DDPM은 \(T = 1000\)인데, <strong>DDIM</strong>(2020)이 역방향
 과정을 거의 <strong>결정적</strong>으로 만들어 약 50단계로 줄였고,
-이후 <strong>증류</strong>(distillation) 계열 기법(LCM,
-progressive distillation 등)으로 <strong>10단계 이하</strong>까지도
+이후 <strong>증류</strong>(distillation) 계열 기법(LCM<sup class="footnote-reference" id="fr-lcm-1"><a href="#footnote-lcm">15</a></sup>,
+progressive distillation<sup class="footnote-reference" id="fr-progdistill-1"><a href="#footnote-progdistill">16</a></sup> 등)으로 <strong>10단계 이하</strong>까지도
 가능해졌다 — 대가는 “완전한 DDPM에 비하면 품질이 조금
 떨어진다“는 점. “GAN보다 느리다“는 GAN 기준에서
 <strong>상대적</strong>이고, 50단계 × 0.1초 ≈ 5초의 이미지 생성은
@@ -632,8 +632,8 @@ progressive distillation 등)으로 <strong>10단계 이하</strong>까지도
 <p><strong>Q. GAN은 ELBO 같은 “높을수록 좋은 단일 숫자“가 없는데,
 어떻게 학습 품질을 평가하나요?</strong> GAN 계열은 단일 “우도”
 숫자가 없어서 <strong>샘플 기반</strong> 지표가 따로 발전했다 —
-대표적으로 <strong>FID</strong>(Fréchet Inception Distance)<sup class="footnote-reference" id="fr-fid-1"><a href="#footnote-fid">15</a></sup>:
-실제 이미지와 생성 이미지를 InceptionNet<sup class="footnote-reference" id="fr-inceptionv3-1"><a href="#footnote-inceptionv3">16</a></sup> 같은 <strong>특징
+대표적으로 <strong>FID</strong>(Fréchet Inception Distance)<sup class="footnote-reference" id="fr-fid-1"><a href="#footnote-fid">17</a></sup>:
+실제 이미지와 생성 이미지를 InceptionNet<sup class="footnote-reference" id="fr-inceptionv3-1"><a href="#footnote-inceptionv3">18</a></sup> 같은 <strong>특징
 추출기</strong>로 변환한 뒤, 두 특징 분포의 평균·공분산
 (가우시안으로 근사) 사이의 거리를 계산한다. FID가
 <strong>작을수록</strong> 생성 분포가 실제 분포와 가깝다. VAE/GMM
@@ -731,6 +731,9 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 <li id="footnote-biggan">
 <p>Brock, A., Donahue, J., Simonyan, K. (2019). “Large Scale GAN Training for High Fidelity Natural Image Synthesis.” ICLR 2019. arXiv:1809.11096. <a href="#fr-biggan-1">↩</a></p>
 </li>
+<li id="footnote-stablediffusion">
+<p>Rombach, R., Blattmann, A., Lorenz, D., Esser, P., Ommer, B. (2022). “High-Resolution Image Synthesis with Latent Diffusion Models.” CVPR 2022. arXiv:2112.10752. <a href="#fr-stablediffusion-1">↩</a> <a href="#fr-stablediffusion-2">↩2</a></p>
+</li>
 <li id="footnote-songermon19">
 <p>Song, Y., Ermon, S. (2019). “Generative Modeling by Estimating Gradients of the Data Distribution.” NeurIPS 2019. arXiv:1907.05600. <a href="#fr-songermon19-1">↩</a></p>
 </li>
@@ -743,11 +746,14 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 <li id="footnote-ddim">
 <p>Song, J., Meng, C., Ermon, S. (2020). “Denoising Diffusion Implicit Models.” arXiv:2010.02502. <a href="#fr-ddim-1">↩</a></p>
 </li>
-<li id="footnote-stablediffusion">
-<p>Rombach, R., Blattmann, A., Lorenz, D., Esser, P., Ommer, B. (2022). “High-Resolution Image Synthesis with Latent Diffusion Models.” CVPR 2022. arXiv:2112.10752. <a href="#fr-stablediffusion-1">↩</a></p>
-</li>
 <li id="footnote-dalle2">
 <p>Ramesh, A., Dhariwal, P., Nichol, A., Chu, C., Chen, M. (2022). “Hierarchical Text-Conditional Image Generation with CLIP Latents.” arXiv:2204.06125. (DALL·E 2) <a href="#fr-dalle2-1">↩</a></p>
+</li>
+<li id="footnote-lcm">
+<p>Luo, S., Tan, Y., Huang, L., Li, J., Zhao, H. (2023). “Latent Consistency Models: Synthesizing High-Resolution Images with Few-Step Inference.” arXiv:2310.04378. <a href="#fr-lcm-1">↩</a></p>
+</li>
+<li id="footnote-progdistill">
+<p>Salimans, T., Ho, J. (2022). “Progressive Distillation for Fast Sampling of Diffusion Models.” ICLR 2022. arXiv:2202.00512. <a href="#fr-progdistill-1">↩</a></p>
 </li>
 <li id="footnote-fid">
 <p>Heusel, M., Ramsauer, H., Unterthiner, T., Nessler, B., Hochreiter, S. (2017). “GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium.” NeurIPS 2017. arXiv:1706.08500. (FID — Fréchet Inception Distance — 지표를 제안한 논문.) <a href="#fr-fid-1">↩</a></p>

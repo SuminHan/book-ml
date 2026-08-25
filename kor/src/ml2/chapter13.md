@@ -23,7 +23,7 @@ Isaac Sim[^isaacsim]")에서는 이 물리 엔진을 실전 로봇 연구 수준
 - 로봇공학의 3대 기둥 — 상태공간(관절 각도·각속도), 운동학(정규/역기구학),
   동역학(미분방정식) — 을 제 언어로 설명할 수 있고, "시뮬레이션의 한
   스텝"이 수학적으로 무엇을 의미하는지(미분방정식의 시간 적분) 말할 수 있다.
-- 시뮬레이션과 실물 사이의 격차(sim-to-real gap)가 왜 생기는지(무작위
+- 시뮬레이션과 실물 사이의 격차(sim-to-real gap)[^sim2real]가 왜 생기는지(무작위
   노이즈가 아니라 시스템틱한 편차) 설명하고, 도메인 무작위화[^domainrand]와
   시스템 ID가
   그 격차를 줄이려는 서로 다른 시도임을 짚을 수 있다.
@@ -33,7 +33,7 @@ Isaac Sim[^isaacsim]")에서는 이 물리 엔진을 실전 로봇 연구 수준
 - Chapter 11의 PPO[^ppo]를 이산 행동에서 연속 행동(가우시안 정책[^gae])으로 확장해,
   Reacher 환경에서 목표를 추적하는 정책을 학습시킬 수 있다.
 
-![3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG[^ddpg]/TRPO[^trpo]/SAC[^sac] 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다.](../images/ref_gae.png)
+![3D 워커 환경 학습 곡선 (원 논문 Figure 1) — PPO+GAE(ours, 청색)가 DDPG/TRPO/SAC 대비 더 적은 반복 횟수로 높은 보상을 달성함을 보여준다.](../images/ref_gae.png) [^ddpg][^trpo][^sac]
 
 이 장의 주제(로봇 시뮬레이션·동역학, sim-to-real 격차, 연속 제어)를 더 깊이 다루는 자료: [^cs234]
 
@@ -73,3 +73,4 @@ Isaac Sim[^isaacsim]")에서는 이 물리 엔진을 실전 로봇 연구 수준
 [^trpo]: Schulman, J. et al. (2015). "Trust Region Policy Optimization." ICML 2015. arXiv:1502.05477.
 [^ddpg]: Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., Silver, D., Wierstra, D. (2015). "Continuous control with deep reinforcement learning." arXiv:1509.02971.
 [^sac]: Haarnoja, T., Zhou, A., Abbeel, P., Levine, S. (2018). "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor." ICML 2018. arXiv:1801.01290.
+[^sim2real]: Zhao, W., Queralta, J. P., Westerlund, T. (2020). "Sim-to-Real Transfer in Deep Reinforcement Learning for Robotics: a Survey." arXiv:2009.13303.

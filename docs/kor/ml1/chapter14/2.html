@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-27557e92.js";
+            window.path_to_searchindex_js = "../../searchindex-0bdc358b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -431,7 +431,7 @@ sims = sorted(((w, cos_sim(emb[query], emb[w])) for w in emb if w != query),
 다를 수 있다는 사실 자체는 “각 단어의 빈도가 다르므로, 빈도가 높은
 단어가 훈련에서 더 많이 업데이트되어 벡터가 더 길어진다“는
 기대된 결과다(실전 word2vec의 후처리에서 임베딩을 <strong>단위벡터로
-정규화</strong>하는 것이 이 효과를 제거하는 표준 방법).</p>
+정규화</strong>하는 것이 이 효과를 제거하는 표준 방법)<sup class="footnote-reference" id="fr-lin-mikolov-1"><a href="#footnote-lin-mikolov">4</a></sup>.</p>
 <h3 id="왕--남자--여자--여왕이-왜-성립하는가-벡터-공간의-기하학"><a class="header" href="#왕--남자--여자--여왕이-왜-성립하는가-벡터-공간의-기하학">“왕 − 남자 + 여자 = 여왕“이 왜 성립하는가: 벡터 공간의 기하학</a></h3>
 <p>가장 놀라운 성질인 **의미 유사도(semantic analogy)**를 한 번 더
 풀어보자. \(\text{vec}(\text{king}) - \text{vec}(\text{man}) +
@@ -459,7 +459,7 @@ sims = sorted(((w, cos_sim(emb[query], emb[w])) for w in emb if w != query),
 두 벡터의 <strong>노름</strong> 차이가 커져 병렬 4각형이 완전히 닫히지
 않는다 — “왕 − 남자 + 여자“가 여왕 <em>부근</em>은 가지만 정확히
 여왕에 닿지는 않는다. (실제 king/queen 예가 잘 되는 것은,
-Google News 60억 단어 말뭉치에서 “왕/여왕“의 빈도비가 극단적이지
+Google News 60억 단어 말뭉치<sup class="footnote-reference" id="fr-word2vec-phrase-2"><a href="#footnote-word2vec-phrase">2</a></sup>에서 “왕/여왕“의 빈도비가 극단적이지
 않기 때문.)</p>
 <p>위 실습의 작은 말뭉치에서도 이 <strong>유사도 구조</strong>가 실제로 동작하는지
 확인해보자. “고양이“의 벡터에서 “귀엽다“의 방향을 빼고, “맛있다“의
@@ -599,7 +599,7 @@ window)만큼 수행되므로, 고빈도 단어 중심의 CBOW(중심을
 뿌리는 같다(둘 다 “문맥으로 단어를 예측하는 과정에서 임베딩이
 부산물로 나온다”) — 하지만 word2vec은 임베딩 자체가 최종 목표이고
 문맥 창(window)도 고정된 크기인 반면, LLM의 토큰 임베딩은 훨씬 큰
-모델(Transformer<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">4</a></sup> 전체)의 첫 층일 뿐이고 그 뒤로 Chapter 12의
+모델(Transformer<sup class="footnote-reference" id="fr-transformer-1"><a href="#footnote-transformer">5</a></sup> 전체)의 첫 층일 뿐이고 그 뒤로 Chapter 12의
 어텐션을 거치며 문맥에 따라 계속 재해석된다 — LLM에서는 같은 단어도
 문장에 따라 최종적으로 다른 벡터로 처리된다는 점이 정적인 word2vec
 임베딩과의 핵심 차이다.</p>
@@ -622,17 +622,20 @@ PCA는 “분산 최대“라는 <strong>데이터 내적</strong> 기준(라벨
 있는데, 정규화하면 이 정보도 함께 사라진다. 실전에서는 정규화
 전/후 두 버전을 모두 만들어보고, 어떤 <strong>용도</strong>(similar-word
 search vs. analogy)에 쓸지에 맞춰 선택하는 것이
-정답이다. 이 주제를 더 깊이 다루는 자료: Stanford CS224N<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">5</a></sup>.</p>
+정답이다. 이 주제를 더 깊이 다루는 자료: Stanford CS224N<sup class="footnote-reference" id="fr-cs224n-1"><a href="#footnote-cs224n">6</a></sup>.</p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-word2vec">
 <p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781. <a href="#fr-word2vec-1">↩</a> <a href="#fr-word2vec-2">↩2</a> <a href="#fr-word2vec-3">↩3</a></p>
 </li>
 <li id="footnote-word2vec-phrase">
-<p>Mikolov, T., Sutskever, I., Chen, K., Corrado, G., Dean, J. (2013). “Distributed Representations of Words and Phrases and their Compositionality.” arXiv:1310.4546. <a href="#fr-word2vec-phrase-1">↩</a></p>
+<p>Mikolov, T., Sutskever, I., Chen, K., Corrado, G., Dean, J. (2013). “Distributed Representations of Words and Phrases and their Compositionality.” arXiv:1310.4546. <a href="#fr-word2vec-phrase-1">↩</a> <a href="#fr-word2vec-phrase-2">↩2</a></p>
 </li>
 <li id="footnote-bengio-nlm">
 <p>Bengio, Y., Ducharme, R., Vincent, P., Jauvin, C. (2003). “A Neural Probabilistic Language Model.” Journal of Machine Learning Research 3, 1137–1155. arXiv:0303.0937. <a href="#fr-bengio-nlm-1">↩</a></p>
+</li>
+<li id="footnote-lin-mikolov">
+<p>Lin, Y., Mikolov, T. (2015). “Conceptual Neighborhoods in Unsupervised Learning of Word Embeddings.” Proceedings of ACL 2015. (단어 벡터의 노름이 단어 빈도와 상관관계를 갖고, 단위벡터로 정규화하면 유사도(analogy) 연산의 성능이 개선된다는 분석을 보여준 논문.) <a href="#fr-lin-mikolov-1">↩</a></p>
 </li>
 <li id="footnote-transformer">
 <p>Vaswani, A. et al. (2017). “Attention Is All You Need.” arXiv:1706.03762. <a href="#fr-transformer-1">↩</a></p>
