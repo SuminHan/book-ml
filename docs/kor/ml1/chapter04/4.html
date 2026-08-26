@@ -1,0 +1,712 @@
+<!DOCTYPE HTML>
+<html lang="ko" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>GMM과 EM 알고리즘 - Machine Learning 1/2 (한국어)</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="KSA Machine Learning 1/2 교재 — 한국어판">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom-0efac0c1.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../searchindex-b71af2bb.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc-40bab1e1.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Machine Learning 1/2 (한국어)</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/SuminHan/book-ml" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="44-gmm과-em-알고리즘"><a class="header" href="#44-gmm과-em-알고리즘">4.4 GMM과 EM 알고리즘</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter04_4_gmm_em.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<p>[STUB: cq 확인 필요 — 원래 15.1(잠재변수 생성모델 챕터)에 있던 내용을
+4장(거리 기반 모델과 클러스터링) 끝으로 옮겨왔다. <strong>사용자 요청 반영
+필수</strong>: 이 절에 **LDA(잠재 디리클레 할당, Latent Dirichlet
+Allocation)**도 GMM/EM과 같은 “EM으로 푸는 고전 확률모델“로 추가할
+것 — 문서-토픽 모델이라는 점에서 GMM(포인트-클러스터)과 대비해서
+설명하면 좋음. 절 제목도 필요하면 “GMM, EM 알고리즘, 그리고 LDA”
+식으로 확장 검토. 15장(VAE/GAN/Diffusion) 오프너에서 “이 절이 그
+확률적 잠재변수 모델의 원형“이라고 다시 짚어주는 다리 문단이 있으니
+호응 확인할 것.]</p>
+<h3 id="닭이-먼저냐-달걀이-먼저냐-잠재변수-문제"><a class="header" href="#닭이-먼저냐-달걀이-먼저냐-잠재변수-문제">닭이 먼저냐 달걀이 먼저냐: 잠재변수 문제</a></h3>
+<p>4.3절의 k-means는 각 점을 <strong>딱 하나의</strong> 클러스터에 배정했다(하드
+할당, hard assignment). 그런데 실제 데이터는 클러스터 경계가 모호한
+경우가 많다 — 어떤 점은 클러스터 A에 60%, B에 40% 정도 속한다고 보는 게
+더 자연스러울 수 있다. <strong>가우시안 혼합모델</strong><sup class="footnote-reference" id="fr-gmm-1"><a href="#footnote-gmm">1</a></sup> (Gaussian Mixture Model,
+GMM)은 각 클러스터를 정규분포로 표현하고(Chapter 3의 GDA<sup class="footnote-reference" id="fr-gda-1"><a href="#footnote-gda">2</a></sup>와 같은 가정),
+각 점이 어느 클러스터에서 나왔는지를 <strong>확률</strong>로 표현한다.</p>
+<p>문제는 이렇다 — 각 점이 어느 클러스터에서 나왔는지를 나타내는 변수
+\(z\)는 데이터에 <strong>관측되지 않는다</strong>(잠재변수, latent variable):</p>
+<ul>
+<li>만약 각 점의 \(z\)(진짜 클러스터)를 <strong>안다면</strong>, 각 클러스터의 평균과
+분산을 구하는 건 쉽다(Chapter 3의 GDA와 똑같이, 그 클러스터에 속한
+점들의 평균·분산을 계산하면 된다).</li>
+<li>만약 각 클러스터의 평균과 분산을 <strong>안다면</strong>, 각 점이 어느 클러스터에
+속할 확률(\(z\)의 사후확률)을 구하는 것도 쉽다(베이즈 정리).</li>
+</ul>
+<p>문제는 <strong>둘 다 모른다</strong>는 것이다 — 닭이 먼저냐 달걀이 먼저냐의 순환이다.
+EM은 이 순환을 반복으로 풀어낸다: 하나를 (아무 값으로) 고정하고 다른
+하나를 구하고, 그걸로 다시 처음 것을 고치고, 이걸 값이 더 이상 바뀌지
+않을 때까지 반복한다.</p>
+<h3 id="유명한-사례-절차의-이름이-그대로-알고리즘-이름이-된-논문"><a class="header" href="#유명한-사례-절차의-이름이-그대로-알고리즘-이름이-된-논문">유명한 사례: 절차의 이름이 그대로 알고리즘 이름이 된 논문</a></h3>
+<p>1977년, 통계학자 아서 뎀스터(Arthur Dempster), 낸 레어드(Nan Laird),
+도널드 루빈(Donald Rubin)<sup class="footnote-reference" id="fr-em1977-1"><a href="#footnote-em1977">3</a></sup>이 잡지 <em>JRSS-B</em>에 발표한 “Maximum Likelihood
+from Incomplete Data via the EM Algorithm“은 통계학에서 가장 많이
+인용된 논문 중 하나로 꼽힌다. 그런데 놀랍게도 이 논문의 ’발명품’은
+“전혀 새로운 수학“이 아니었다. E-step이 쓰는 계산(현재 파라미터에서의
+사후확률)도, M-step의 갱신 공식도 그 전부터 이미 알려져 있었다.
+세 사람이 한 일은 <strong>통합</strong>이었다 — 혼합모델(mixture model), 결측값
+(missing data), HMM, 양자화 문제처럼 겉보기엔 별개의 여러 통계 문제가
+사실 전부 같은 구조, “관측 안 된 변수가 있으면 M-step이 쉽고, 파라미터가
+주어지면 E-step이 쉽다“를 공유하며, 이 둘을 번갈아 돌리면 <strong>우도가
+절대 줄지 않으니 반드시 수렴한다</strong>는 보장을 공유한다는 것을 보였다.</p>
+<p>“EM“이라는 이름 자체가 E-step과 M-step이라는 <strong>두 절차의 앞글자</strong>
+그대로인 것이 이 논문의 성격을 보여준다. 기계학습 역사에서 “동시에
+독립적으로 두 번 발견“된 알고리즘(k-means, 4.3절의 로이드·매퀸 이야기)
+이 있는 반면, EM은 그 반대 방향의 통합 사례다 — 여러 알고리즘이 사실
+하나였음을 보인 사건이다. 다음 장(Chapter 15)의 주제인 “관측되지 않은
+구조가 데이터를 만든다“는 질문은, 정확히 이 논문에서 하나의 알고리즘
+으로 정리되기 시작했다고 해도 과언이 아니다.</p>
+<h3 id="gmm의-생성-과정-라벨을-뽑고-그-라벨의-분포에서-점을-뽑는다"><a class="header" href="#gmm의-생성-과정-라벨을-뽑고-그-라벨의-분포에서-점을-뽑는다">GMM의 생성 과정: 라벨을 뽑고, 그 라벨의 분포에서 점을 뽑는다</a></h3>
+<p>GMM을 “데이터가 만들어지는 과정“으로 기술하면 매우 단순하다:</p>
+<ol>
+<li><strong>라벨 뽑기</strong>: \(K\)개의 면을 가진 주사위(카테고리분포)를 굴려
+\(z_i \in \{1, \dots, K\}\)를 뽑는다. 각 면의 확률은 \(\pi_k\).</li>
+<li><strong>점 뽑기</strong>: 뽑힌 클러스터 \(z_i = k\)의 정규분포
+\(\mathcal{N}(\mu_k, \Sigma_k)\)에서 점 \(x_i\)를 샘플링한다.</li>
+</ol>
+<p>(여기서부터는 1차원 예제를 위해 \(\Sigma_k\)가 그냥 스칼라
+\(\sigma_k^2\)로 쓰인다.) 모델의 모수는 세 종류 — 클러스터별 평균
+\(\mu_k\), 분산 \(\sigma_k^2\), 혼합비율 \(\pi_k\)(\(\sum_k \pi_k = 1\)).
+이 모델이 정의하는 한 점의 likelihood는 라벨에 대한 합이다:</p>
+<p>\[p(x) = \sum_{k=1}^{K} \pi_k \, \mathcal{N}(x; \mu_k, \sigma_k^2)\]</p>
+<p><strong>왜 이것이 MLE로 풀기 어려운가</strong>: Chapter 3의 GDA나 나예브 베이즈는
+“라벨이 주어지면” 파라미터별 likelihood가 곱의 합으로 깔끔하게
+풀렸고, 그래서 닫힌 형태의 MLE 공식이 있었다. GMM은 라벨 \(z\)가
+<strong>관측되지 않아</strong> likelihood가 \(\prod_i \big(\sum_k \pi_k
+\mathcal{N}(x_i; \mu_k, \sigma_k^2)\big)\) — <strong>곱의 합</strong>이 된다. 합이
+곱 안에 끼어 있으면 미분을 0으로 놓고 풀 수 있는 구조가 아니다.
+“만약 \(z\)가 알렸다면“은 Chapter 3의 GDA와 똑같이 닫힌 형태로 풀린다 —
+EM은 이 “만약“을 반복적으로 실행하는 알고리즘이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch15_gmm_latent_var.svg" alt="GMM의 잠재변수 다이어그램 — 마름모(π_k, μ_k, σ²_k)는 모수, 빈 원 z_k는 관측되지 않는 잠재변수(어느 클러스터인지), 채워진 원 x_i는 관측 데이터. π_k가 z_k를, z_k와 (μ_k, σ²_k)가 x_i를 만든다"><span class="img-wrapper"><img src="../../images/ch15_gmm_latent_var.svg" alt="GMM의 잠재변수 다이어그램 — 마름모(π_k, μ_k, σ²_k)는 모수, 빈 원 z_k는 관측되지 않는 잠재변수(어느 클러스터인지), 채워진 원 x_i는 관측 데이터. π_k가 z_k를, z_k와 (μ_k, σ²_k)가 x_i를 만든다"></span></label></p>
+<h3 id="em-알고리즘4-e-step과-m-step"><a class="header" href="#em-알고리즘4-e-step과-m-step">EM 알고리즘<sup class="footnote-reference" id="fr-dempster1977-1"><a href="#footnote-dempster1977">4</a></sup>: E-step과 M-step</a></h3>
+<p><strong>E-step (Expectation)</strong>: 현재 각 클러스터의 파라미터(평균 \(\mu_k\),
+분산 \(\sigma_k^2\), 클러스터 비율 \(\pi_k\))가 주어졌다고 가정하고,
+각 데이터 점 \(x_i\)가 클러스터 \(k\)에 속할 사후확률(<strong>책임값</strong>,
+responsibility) \(\gamma_{ik}\)을 베이즈 정리로 계산한다:</p>
+<p>\[\gamma_{ik} = P(z_i{=}k \mid x_i) = \frac{\pi_k \, \mathcal{N}(x_i;
+\mu_k,\sigma_k^2)}{\sum_{j} \pi_j \, \mathcal{N}(x_i;\mu_j,\sigma_j^2)}\]</p>
+<p><strong>M-step (Maximization)</strong>: 방금 구한 책임값을 “가중치“로 삼아, 각
+클러스터의 파라미터를 다시 추정한다 — 클러스터 \(k\)에 대한 책임값이
+클수록 그 점이 \(\mu_k, \sigma_k^2\) 추정에 더 크게 기여한다:</p>
+<p>\[\mu_k = \frac{\sum_i \gamma_{ik} x_i}{\sum_i \gamma_{ik}}, \qquad
+\sigma_k^2 = \frac{\sum_i \gamma_{ik}(x_i-\mu_k)^2}{\sum_i \gamma_{ik}},
+\qquad \pi_k = \frac{\sum_i \gamma_{ik}}{m}\]</p>
+<pre><code class="language-python">import math
+
+def gaussian_pdf(x, mu, sigma):
+    return (1 / (sigma * math.sqrt(2 * math.pi))) * math.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
+
+def em_step(data, means, sigmas, weights):
+    K, n = len(means), len(data)
+    # E-step: 책임값(responsibility) 계산
+    resp = []
+    for x in data:
+        probs = [weights[k] * gaussian_pdf(x, means[k], sigmas[k]) for k in range(K)]
+        total = sum(probs)
+        resp.append([p / total for p in probs])
+    # M-step: 책임값으로 가중평균한 파라미터 재추정
+    Nk = [sum(resp[i][k] for i in range(n)) for k in range(K)]
+    new_means = [sum(resp[i][k] * data[i] for i in range(n)) / Nk[k] for k in range(K)]
+    new_sigmas = [math.sqrt(sum(resp[i][k] * (data[i] - new_means[k]) ** 2
+                                  for i in range(n)) / Nk[k]) for k in range(K)]
+    new_weights = [Nk[k] / n for k in range(K)]
+    return new_means, new_sigmas, new_weights
+</code></pre>
+<p>M-step의 공식을 한 번 더 천천히 보자. 이것은 <strong>정말</strong> 새로운 수식이
+아니다 — “라벨이 전부 \(k\)인 점들의 평균·분산·비율”(Chapter 3의
+닫힌 형태 MLE)에서, 각 점의 “소속 여부”(0 또는 1)를 <strong>책임값
+\(\gamma_{ik}\)(0과 1 사이의 실수)로 바꾼 것</strong>뿐이다. E-step이
+“하드 라벨 대신 소프트 라벨을 채워넣는” 단계이고, M-step은
+“소프트 라벨이 주어졌을 때의 닫힌 형태 MLE“인 셈이다 — EM의 전부가
+이 한 문장이다.</p>
+<h3 id="왜-우도가-항상-증가하는가-옌센-부등식-1줄"><a class="header" href="#왜-우도가-항상-증가하는가-옌센-부등식-1줄">왜 우도가 항상 증가하는가: 옌센 부등식 1줄</a></h3>
+<p>“E-step → M-step을 반복하면 수렴한다“는 말을 그대로 믿지 말자 —
+<em>왜</em> 우도가 매 반복마다 절대 줄지 않는지, 4줄이면 보인다. 핵심은
+<strong>ELBO</strong>(Evidence Lower BOund)라는 이름으로 다음 장(Chapter 15.1절)에서
+다시 만난다. 하나의 점 \(x\)에 대해, \(\gamma\)를 \(z\) 위의
+아무 확률분포라고 놓고:</p>
+<p>\[p(x) = \sum_{k} p(x, z{=}k) = \sum_{k} \gamma_k \frac{p(x, z{=}k)}{\gamma_k}
+= \mathbb{E}_{z \sim \gamma}\!\left[\frac{p(x, z)}{\gamma(z)}\right]\]</p>
+<p>\(\log\)는 <strong>오목함수</strong>(concave)이므로 옌센 부등식
+(\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 적용하면:</p>
+<p>\[\log p(x) \ge \mathbb{E}_{z \sim \gamma}[\log p(x, z)] - \mathbb{E}_{z \sim \gamma}[\log \gamma(z)] \;\; \stackrel{\text{def}}{=} \; \mathcal{F}(\theta, \gamma)\]</p>
+<p>우변 \(\mathcal{F}(\theta, \gamma)\)가 우도의 <strong>하한</strong>이다(등호가
+성립하는 조건 — \(\frac{p(x,z)}{\gamma(z)}\)가 \(z\)에 대해 상수,
+즉 \(\gamma\)가 진짜 사후확률 \(p(z|x)\)인 경우 — 을 기억해두라,
+바로 이 조건이 EM의 설계 원리다). 이제 EM의 두 단계를 이 하한으로
+읽으면:</p>
+<ul>
+<li><strong>E-step</strong>: \(\gamma\)를 <em>현재 파라미터 \(\theta_{\text{old}}\)에서의
+진짜 사후확률</em>로 잡는다 → 등호가 성립해서
+\(\mathcal{F}(\theta_{\text{old}}, \gamma) = \log p(x; \theta_{\text{old}})\).
+(하한이 <strong>뚫리지 않는 정도로 꽉 조인</strong> 상태.)</li>
+<li><strong>M-step</strong>: \(\gamma\)를 고정하고 \(\theta\)를 \(\mathcal{F}\)를
+최대화하도록 갱신한다 →
+\(\mathcal{F}(\theta_{\text{new}}, \gamma) \ge
+\mathcal{F}(\theta_{\text{old}}, \gamma)\).</li>
+</ul>
+<p>두 걸을 합치면 \(\log p(x; \theta_{\text{new}}) \ge
+\mathcal{F}(\theta_{\text{new}}, \gamma) \ge
+\mathcal{F}(\theta_{\text{old}}, \gamma) =
+\log p(x; \theta_{\text{old}})\) — <strong>우도가 매 반복마다
+절대 줄지 않는다</strong>. 다음 장 15.1절의 VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">5</a></sup>는 “E-step의 사후확률을 정확히
+계산할 수 없을 때(연속 무한한 잠재변수) 이 하한을 신경망
+\(q_\phi(z|x)\)로 근사해서 역전파로 올린다“는 알고리즘이므로,
+EM과 VAE는 <em>같은 부등식의 두 실행 전략</em>이다.</p>
+<p>이 보장이 6개 데이터의 실행에서 실제로 작동하는지 확인해보자
+(\(m=6\), 데이터 \([1.0, 1.5, 0.8, 9.2, 10.1, 9.8]\), 초기값
+\(\mu=[2, 8], \sigma=[1, 1], \pi=[0.5, 0.5]\)):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>반복</th><th>log-likelihood</th></tr>
+</thead>
+<tbody>
+<tr><td>0 (초기값)</td><td>\(-15.56\)</td></tr>
+<tr><td>1</td><td>\(-6.05\)</td></tr>
+<tr><td>2 (수렴)</td><td>\(-6.05\)</td></tr>
+</tbody>
+</table>
+</div>
+<p>1회차에 이미 \(-15.56\)에서 \(-6.05\)까지 뛰고, 2회차에서 더 이상
+변하지 않아 멈춘다. 단조증가는 성립하지만, 도달한 점이 <strong>전역
+최적해</strong>라는 보장은 이 논증 어디에도 없다 — 하한이 “어디까지”
+오르는지는 말해주지 않는 것이다.</p>
+<h3 id="실습-2차원-데이터에서-전체-gmm"><a class="header" href="#실습-2차원-데이터에서-전체-gmm">실습: 2차원 데이터에서 전체 GMM</a></h3>
+<p>1차원에서는 \(\mu_k, \sigma_k^2\)가 각각 스칼라였지만, \(d\)차원
+데이터에서는 \(\mu_k \in \mathbb{R}^d\), \(\Sigma_k \in \mathbb{R}^{d \times d}\)
+(공분산 <strong>행렬</strong>)가 된다. E-step은 그대로(밀도를 행렬 형태로 바꾸면
+되고), M-step은 가중 공분산을 추가할 뿐이다:</p>
+<p>\[\mu_k = \frac{\sum_i \gamma_{ik} x_i}{\sum_i \gamma_{ik}},
+\qquad \Sigma_k = \frac{\sum_i \gamma_{ik}(x_i - \mu_k)(x_i - \mu_k)^{\mathsf{T}}}{\sum_i \gamma_{ik}}\]</p>
+<p>이 \(\Sigma_k\)가 GMM이 k-means보다 표현력이 많은 <strong>정체</strong>다. k-means의
+클러스터 표현은 “위치”(\(\mu_k\)) 하나뿐이어서, 경계가 항상 직선
+(보로노이 셀, 4.3절의 구조적 한계)이 되고 모든 덩어리가 “동일한
+크기의 원“으로 취급됐다. GMM의 \(\Sigma_k\)는 (i) <strong>크기</strong>를, (ii)
+<strong>타원형 모양</strong>(방향별 분산이 다름)을, (iii) <strong>기울어진(대각 성분이
+있는) 형상</strong>을 모두 표현할 수 있다. 두 클러스터 사이의 결정 경계도
+“두 정규분포의 밀도비가 1인 곡선“이 돼서 직선이 아니라 <strong>타원호</strong>가
+된다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch15_gmm_contour.svg" alt="3개 블롭(각 50점)에 K=3 GMM을 EM으로 학습한 결과 — 점의 색은 책임값(어느 클러스터에 얼마나 속하는지), 등고선(x축 고정 시)은 피츠한 GMM의 likelihood. 왼쪽 클러스터는 길쭉한 타원으로, 위쪽 클러스터는 원에 가까운 형태로 잡힌다"><span class="img-wrapper"><img src="../../images/ch15_gmm_contour.svg" alt="3개 블롭(각 50점)에 K=3 GMM을 EM으로 학습한 결과 — 점의 색은 책임값(어느 클러스터에 얼마나 속하는지), 등고선(x축 고정 시)은 피츠한 GMM의 likelihood. 왼쪽 클러스터는 길쭉한 타원으로, 위쪽 클러스터는 원에 가까운 형태로 잡힌다"></span></label></p>
+<p>(위 그림은 수반 노트북의 4절에서 생성된다.) 3개의 타원형 덩어리
+(각 50점)에 \(K=3\) GMM을 EM으로 학습시키면, 세 \(\mu_k\)가 각각의
+덩어리 중심으로 수렴하고 \(\Sigma_k\)가 덩어리마다 다른 “형상“을
+잡는다. 책임값으로 점을 색칠하면, 덩어리 <strong>경계 안쪽</strong>의 점들이
+두 클러스터 색을 섞어서 보이는 것이 k-means(점 하나에 딱 하나의 색)
+와의 가장 눈에 띄는 차이다.</p>
+<h3 id="손으로-한-번-em-한-라운드를-직접-따라가기"><a class="header" href="#손으로-한-번-em-한-라운드를-직접-따라가기">손으로 한 번: EM 한 라운드를 직접 따라가기</a></h3>
+<p>작은 데이터로 E-step과 M-step을 손으로 전부 계산해보자. 점 세 개
+\(x_1 = 0, x_2 = 3, x_3 = 8\), \(K=2\), 초기값 \(\mu_1 = 1,
+\mu_2 = 5, \sigma_1 = \sigma_2 = 1, \pi_1 = \pi_2 = 0.5\).</p>
+<p><strong>E-step</strong> — 각 점의 두 정규밀도와 책임값:</p>
+<ul>
+<li>\(x_1 = 0\): \(\mathcal{N}(0; 1, 1) = 0.2420\),
+\(\mathcal{N}(0; 5, 1) \approx 0.00001\) →
+\(\gamma_{1} = (1.00000,\; 0.00001) \approx (1, 0)\)</li>
+<li>\(x_2 = 3\): \(\mathcal{N}(3; 1, 1) = \mathcal{N}(3; 5, 1) = 0.0540\)
+(3은 1과 5의 <strong>정중앙</strong>이라 두 밀도가 정확히 같음) →
+\(\gamma_{2} = (0.5, 0.5)\)</li>
+<li>\(x_3 = 8\): \(\mathcal{N}(8; 1, 1) \approx 0.00000\),
+\(\mathcal{N}(8; 5, 1) = 0.00443\) →
+\(\gamma_{3} = (0.00000,\; 1.00000) \approx (0, 1)\)</li>
+</ul>
+<p>정중앙에 있는 \(x_2 = 3\)이 정확히 <strong>반반</strong>으로 나눠지는 것이
+soft assignment의 정수(精髓)다 — k-means에서는 이 점이 임의로 한쪽
+에만 배정됐을 텐데, GMM은 “정말 확신이 없다“는 사실을 책임값에
+그대로 남긴다.</p>
+<p><strong>M-step</strong> — \(N_1 = 1 + 0.5 + 0 = 1.5\), \(N_2 = 1.5\)로:</p>
+<p>\[\mu_1 = \frac{1 \cdot 0 + 0.5 \cdot 3 + 0 \cdot 8}{1.5} = 1.0,
+\qquad
+\mu_2 = \frac{0 + 0.5 \cdot 3 + 1 \cdot 8}{1.5} = 6.33\]</p>
+<p>\[\sigma_1^2 = \frac{1 \cdot (0-1.0)^2 + 0.5 \cdot (3-1.0)^2}{1.5}
+= 2.0 \;\; (\sigma_1 = 1.41), \qquad
+\sigma_2^2 = \frac{0.5 \cdot (3-6.33)^2 + 1 \cdot (8-6.33)^2}{1.5}
+= 5.56 \;\; (\sigma_2 = 2.36)\]</p>
+<p>\(\pi = (0.5, 0.5)\)는 그대로(\(N_1 = N_2\)). 두 가지가 눈에 들어온다:
+(i) \(x_3 = 8\)을 <strong>전부</strong> 받아든 클러스터 2는 \(\mu_2\)가 5에서
+6.33으로 <strong>뛴다</strong> — 책임값 1.0은 “이 점은 완전히 내 클러스터의 것“을
+뜻한다. (ii) 양쪽 분산이 커졌다 — 반씩만 배정된 정중앙 점 \(x_2 = 3\)
+이 두 클러스터의 “분산” 추정에 모두 기여하기 때문이다(책임값
+0.5를 곱한 거리가 각 \(\Sigma\)에 포함되는 것). 이 한 라운드로
+log-likelihood가 \(-11.14 \to -7.40\)으로 증가하는 것을 직접
+계산해서 확인할 수 있다(확인 문제 4).</p>
+<h3 id="k를-고르는-법-bic"><a class="header" href="#k를-고르는-법-bic">\(K\)를 고르는 법: BIC</a></h3>
+<p>“데이터가 몇 개의 덩어리인가” — \(K\) 선택 문제다. <strong>주의</strong>:
+likelihood로 \(K\)를 골라서는 안 된다. 클러스터가 하나 더 늘면
+모델이 더 유연해져서 likelihood는 <strong>항상</strong> 좋아진다(극단적으로
+\(K = m\), 각 점마다 분산 0의 가우시안을 하나씩 놓으면 likelihood가
+완벽해진다). “최소의 SSE로 \(k\)를 고르면 \(k = n\)이 된다“는
+4.3절의 엘보우 섹션과 정확히 같은 함정이다.</p>
+<p>대신 쓰는 것이 <strong>BIC</strong>(Bayesian Information Criterion):</p>
+<p>\[\text{BIC} = -2 \log \mathcal{L}(\hat{\theta}) + p \log m\]</p>
+<p>\(\mathcal{L}(\hat{\theta})\)는 수렴한 GMM의 likelihood, \(p\)는
+자유 모수 개수, \(m\)은 점의 개수다. “likelihood를 크게 올리는
+것“과 “파라미터 개수 \(\times \log m\) 벌점을 주는 것“의 트레이드오프
+로, \(m\)이 크면 클수록 <strong>과적합된</strong> 모델(파라미터가 많은 모델)을
+더 강하게 벌한다. asymptotically, 진짜 \(K\)를 쓰면 그 BIC가
+\(m \to \infty\)에서 확률 1로 가장 작아진다는 성질(일관성)이 있다.</p>
+<p>같은 3-블롭 2차원 데이터(150점)에 \(K = 1\)에서 \(4\)까지
+EM을 돌려보면(노트북 5절):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>\(K\)</th><th>log-likelihood</th><th>BIC</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>\(-749.1\)</td><td>1513.2</td></tr>
+<tr><td>2</td><td>\(-630.6\)</td><td>1296.2</td></tr>
+<tr><td>3</td><td>\(-410.1\)</td><td><strong>875.4</strong></td></tr>
+<tr><td>4</td><td>\(-410.1\)</td><td>895.4</td></tr>
+</tbody>
+</table>
+</div>
+<p>최소는 정확히 \(K = 3\)이다. \(K=3 \to 4\)를 보면 핵심 현상이
+보인다 — log-likelihood는 <strong>동일</strong>하다(\(-410.1\)). 네 번째
+클러스터를 추가해도 피팅이 나아지지 않는다는 뜻인데(기존 덩어리를
+쪼개는 것뿐), BIC 벌점(\(p\)가 11에서 15로 늘어)이 판을 뒤집는다.
+4.3절의 엘보우가 “감소폭이 꺾이는 지점“을 <strong>눈</strong>으로 찾았다면, BIC는
+같은 결정을 하나의 <strong>숫자</strong>로 내리는 원리 있는 버전이다.
+EM과 혼합모델을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">6</a></sup>.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"><span class="img-wrapper"><img src="../../images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"></span></label></p>
+<h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
+<p><strong>실수 1 — EM을 한 번만 돌려 믿기 (k-means의 실수보다 더 위험하다).</strong>
+k-means의 “나쁜 초기화 → 나쁜 지역최적해”(4.3절)는 GMM에도
+그대로 있지만, GMM은 <strong>분산까지 자유</strong>라서 실패의 모양이 k-means와
+다르다. 수반 노트북에서 확인한 실패 사례: 무작위 초기화 30회 중
+여러 건이 세 중심이 <strong>모두 데이터의 중심 (2.98, 2.04)에 겹쳐서</strong>
+수렴하는 퇴화된 해에 빠진다 — 한 클러스터의 분산이 아주 작아져서
+“가장 빽빽한 부분을 K개의 작은 가우시안으로 쪼갠다“는 분할이
+지역적으로는 우도 최대가 되기 때문이다(log-likelihood \(-749\) vs
+진짜 구조의 \(-410\) — 2.7배나 나쁘다). k-means가 60회 중 22회가
+실패했던 것과 같은 구조의 문제인데, GMM은 “분산이 붕괴해 한두 점을
+혼자 차지한다“는 추가 경로까지 열려 있다. 대응책은 k-means와
+동일 — 여러 초기화(<code>n_init</code>) + BIC 같은 기준이 아니라 <strong>최종
+우도로</strong> 결과를 비교(최소 우도… 아니다, <strong>최대</strong> 우도를 가진
+결과를 채택).</p>
+<p><strong>실수 2 — “likelihood가 가장 큰 \(K\)를 고른다”.</strong> \(K=m\)가
+항상 이긴다(위 BIC 섹션). BIC/AIC/교차검증을 써야 한다.</p>
+<p><strong>실수 3 — 책임값 0.4를 “오류“로 읽기.</strong> 클러스터가 겹치는 영역의
+점에서 \(\gamma = (0.4, 0.6)\)가 나온 것은 모델이 <strong>불확실성을
+바르게 보고한 것</strong>이지, 학습이 안 된 것이 아니다. k-means로 같은
+영역의 점을 색칠하면 임의로 한쪽 색이 붙어 “확실히 속한다“는
+거짓된 인상을 준다 — soft assignment가 주는 불확실성 정보는
+(예: 경계점만 따로 골라 인간이 재분류하는) 후속 작업에 실제로
+유용하다.</p>
+<h3 id="실습-수반-노트북이-검증하는-것들"><a class="header" href="#실습-수반-노트북이-검증하는-것들">실습: 수반 노트북이 검증하는 것들</a></h3>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter04_4_gmm_em.ipynb">노트북</a>
+은 numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">7</a></sup>/matplotlib만으로 본문의 코드를 그대로 실행한다: (1) 책의
+<code>em_step</code>을 6개 데이터에 돌려 수렴 과정을 추적(1차원), (2) 3개
+블롭 2차원 데이터에서 2D GMM을 EM으로 학습하고 <strong>등고선 +
+책임값 기반 색칠</strong>로 시각화, (3) 무작위 초기화 30회 돌려 <strong>지역
+최적해/분산 붕괴 실패 사례</strong>를 실제로 만든 뒤 좋은 초기화와
+log-likelihood로 비교, (4) \(K=1\sim4\)의 <strong>BIC 곡선</strong>을 그려
+\(K\) 선택 확인. (본문에 적힌 특정 숫자 — 실패 횟수, BIC 값 등 —
+는 재현을 목표로 하지 않으며, 같은 “현상“이 실제로 일어나는지
+확인하는 것이다.)</p>
+<h3 id="확인-문제-1차원에서-em-한-라운드를-직접-계산하기"><a class="header" href="#확인-문제-1차원에서-em-한-라운드를-직접-계산하기">확인 문제: 1차원에서 EM 한 라운드를 직접 계산하기</a></h3>
+<p>점 세 개 \(x_1 = 0, x_2 = 3, x_3 = 8\), \(K = 2\), 초기값
+\(\mu_1 = 1, \mu_2 = 5, \sigma_1 = \sigma_2 = 1,
+\pi_1 = \pi_2 = 0.5\)를 쓴다(“손으로 한 번” 섹션과 같은 설정).</p>
+<p><strong>단계 1 (E-step)</strong>: 각 점에 대해 \(\gamma_i = (\gamma_{i1},
+\gamma_{i2})\)를 계산하라. (힌트: \(\sigma = 1\)이라 정규밀도
+\(\mathcal{N}(x; \mu, 1) = \frac{1}{\sqrt{2\pi}}
+e^{-(x-\mu)^2/2}\)를 직접 쓰면 \(\sqrt{2\pi} \approx 2.507\)만
+공통 인자로 들어와, <strong>밀도끼비</strong>만 보면 지수부만 비교하면
+된다.)</p>
+<p><strong>단계 2 (M-step)</strong>: 단계 1의 \(\gamma\)로 새
+\(\mu_1, \mu_2, \sigma_1, \sigma_2, \pi_1, \pi_2\)를 계산하라.</p>
+<p><strong>단계 3 (수렴 판정)</strong>: 새 파라미터로 likelihood
+\(\log \prod_i \sum_k \pi_k \mathcal{N}(x_i; \mu_k, \sigma_k^2)\)를
+계산하고, 초기 파라미터의 likelihood와 비교해서 “증가했는가“를
+확인하라(옌센 부등식 섹션의 보장이 작은 예시에서도 성립하는지).</p>
+<p>정답(확인용): 단계 1 — \(\gamma_1 \approx (1, 0)\),
+\(\gamma_2 = (0.5, 0.5)\)(정중앙이라 정확히 반반),
+\(\gamma_3 \approx (0, 1)\). 단계 2 — \(\mu_1 = 1.0\),
+\(\mu_2 = 6.33\), \(\sigma_1 = 1.41\), \(\sigma_2 = 2.36\),
+\(\pi = (0.5, 0.5)\). 단계 3 — log-likelihood가
+\(-11.14 \to -7.40\)으로 증가(보장 확인).</p>
+<h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
+<p><strong>Q. EM이 항상 전역 최적해로 수렴하나요?</strong> 아니다 — E-step과 M-step을
+반복할 때마다 우도(likelihood)가 절대 감소하지 않는다는 것은 보장되지만
+(그래서 언젠가는 수렴한다), Chapter 4.3의 k-means와 마찬가지로 초기
+파라미터에 따라 <strong>지역 최적해</strong>에 갇힐 수 있다. 실전에서는 여러 번
+서로 다른 초기화로 EM을 돌려 가장 좋은 결과를 채택하는 방법을 흔히
+쓴다 — k-means의 “여러 번 초기화해서 최선을 고른다“는 전략과
+정확히 같은 대응책이다.</p>
+<p><strong>Q. GMM은 k-means보다 항상 더 좋은 선택인가요?</strong> 항상 그렇지는
+않다 — GMM은 각 클러스터가 정규분포를 따른다고 가정하고(Chapter
+3.2의 GDA와 같은 가정), 부드러운(soft) 할당을 계산하느라 k-means보다
+계산 비용이 더 든다. 클러스터가 실제로 겹쳐 있거나 모양이 서로 다를
+가능성이 있다면 GMM이 유리하고, 클러스터가 뚜렷이 분리돼 있고
+속도가 중요하다면 k-means로 충분한 경우가 많다.</p>
+<p><strong>Q. GMM의 E-step이 “정확한” 사후확률을 계산한다면, VAE는 왜
+신경망으로 근사하나요?</strong> GMM의 잠재변수 \(z\)는 <strong>이산</strong>이고
+가능치가 \(K\)개(예: 3개)뿐이라, 사후확률을 K개 항의 합으로
+<strong>정확히</strong> 계산할 수 있다 — 그래서 EM의 E-step이 닫힌 형태로
+풀린다. VAE(다음 장 15.1절)의 잠재변수는 <strong>연속</strong> 벡터라 가능한 \(z\)가
+무한하고, 사후확률의 적분이 계산 불가능해진다(intractable).
+“계산 안 되는 E-step“을 신경망 \(q_\phi(z|x)\)로 대충 근사하고,
+M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
+정확히 이 필요에서 나온 “EM의 약한 근사 버전“이다.</p>
+<p><strong>Q. EM은 얼마나 빨리 수렴하나요?</strong> 일반적으로 <strong>선형(linear)
+수렴</strong>이다 — 수렴점 가까울수록 매 반복마다 오차가 “고정된 비율“로
+줄어들어, 마지막 몇 자리 정밀도는 의외로 오래 걸린다. 실전에서는
+“파라미터 변화가 \(\epsilon\) 미만“이나 “likelihood 변화가
+\(\epsilon\) 미만” 같은 수렴 기준을 둔다. 또 차원이 높으면
+공분산 행렬 \(\Sigma_k\)가 특이(singular, 역행렬이 없는) 행렬에
+<strong>가깝게</strong> 수렴하기 쉬워서, 실전 라이브러리(<code>sklearn.mixture.GaussianMixture</code>
+등)<sup class="footnote-reference" id="fr-sklearn-1"><a href="#footnote-sklearn">8</a></sup>는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
+공분산을 쓰거나 (iii) \(\Sigma_k + \epsilon I\) 같은
+정규화를 넣는 옵션을 제공한다.</p>
+<p><strong>Q. GMM은 “생성 모델“이라면서 어떻게 데이터를 <em>만들어</em>냅니까?</strong>
+학습이 끝나면 모델은 <strong>완전한</strong> 데이터 생성 절차 \(p(z) \to p(x|z)\)를
+가지고 있다 — 새 점을 만들려면 (1) 주사위 \(\pi\)로 \(z\)를 뽑고,
+(2) 그 \(z = k\)의 \(\mathcal{N}(\mu_k, \Sigma_k)\)에서 \(x\)를
+샘플링하면 된다. 이 “생성” 능력이 다음 장(Chapter 15)
+(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">9</a></sup>이 노이즈에서)의
+“데이터 생성“과 정확히 같은 질문의 가장 단순한 버전이다 —
+연습문제 1이 바로 이 함수를 작성하게 한다.</p>
+<hr>
+<h2 id="연습문제"><a class="header" href="#연습문제">연습문제</a></h2>
+<p><strong>1. (코딩)</strong> 학습된 GMM에서 새 데이터를 샘플링하는 함수
+<code>sample_from_gmm(means, sigmas, weights, n, rng)</code>을 작성하라
+(\(1\)차원 기준, <code>numpy.random.RandomState</code> 사용). 먼저
+<code>rng.choice(K, size=n, p=weights)</code>로 라벨 배열을 뽑고, 라벨별로
+<code>rng.normal(means[k], sigmas[k])</code>을 적용하면 된다.</p>
+<pre><code class="language-python">def sample_from_gmm(means, sigmas, weights, n, rng):
+    # ADD ADDITIONAL CODE HERE!!
+    return samples  # 길이 n의 1차원 numpy 배열
+
+# 확인용: 6개 데이터 예제에서 EM 수렴 결과
+#   means ≈ [1.1, 9.7], sigmas ≈ [0.29, 0.37], weights = [0.5, 0.5]
+# 를 쓰면, 10000개 샘플링했을 때 샘플 평균 ≈ 5.4,
+# "1 근처(±1.5)" 비율과 "9.7 근처(±1.5)" 비율은 각각 ≈ 0.5
+# (양쪽이 대략 절반씩 — 혼합비율이 0.5/0.5이므로)
+</code></pre>
+<p><strong>2. (개념 서술)</strong> GMM의 M-step 공식
+\(\mu_k = \frac{\sum_i \gamma_{ik} x_i}{\sum_i \gamma_{ik}}\)에서,
+\(\gamma_{ik}\)가 0 또는 1인 하드 라벨(정수)이면 이 공식은
+“클러스터 \(k\)에 속한 점들의 <strong>산술 평균</strong>“이 됨을 보이고,
+소프트 \(\gamma\)일 때는 “책임값 가중 평균“이 됨을 설명하라.
+그런데 E-step의 \(\gamma\)는 “아직 정답이 아닌” 파라미터에서의
+사후확률인데, 왜 M-step의 공식은 여전히 “닫힌 형태“로
+남는가(힌트: \(z\)가 <em>주어졌을 때</em>의 likelihood는
+\(z\)에 대해 곱으로 분리되기 때문 — \(\gamma\)는 그 곱에
+<strong>가중치</strong>로만 들어간다).</p>
+<p><strong>3. (손유도, Tier B — 힌트 제공)</strong> M-step의 \(\mu_k\) 공식을
+직접 유도하라. 라벨이 주어졌을 때(\(z_i = k\)인 점의 집합
+\(\mathcal{D}_k\)) 클러스터 \(k\)의 log-likelihood
+\(\ell(\mu_k) = \sum_{i \in \mathcal{D}_k}
+\log \mathcal{N}(x_i; \mu_k, \sigma_k^2)\)를 \(\mu_k\)로
+미분해서 0으로 놓아라.</p>
+<p><strong>힌트</strong>: \(\frac{\partial}{\partial \mu}
+\log \mathcal{N}(x; \mu, \sigma^2) =
+\frac{x - \mu}{\sigma^2}\)이다(지수부의 \(-\frac{(x-\mu)^2}{2\sigma^2}\)
+만 미분하면 된다). 이 결과가 4.3절의 “평균은 SSE를 최소화한다“는
+수학(\(\nabla_c \sum_j \|x_j - c\|^2 = -2\sum_j(x_j - c)\)이 0인
+점)과 정확히 같은 구조임을 확인하고, “가중치 \(\gamma_{ik}\)를
+곱해도 같은 구조가 유지되는지“를 한 문장으로 설명하라.</p>
+<p><strong>4. (손계산)</strong> “확인 문제“와 동일한 설정(\(x = 0, 3, 8\),
+\(\mu = [1, 5], \sigma = [1, 1], \pi = [0.5, 0.5]\))에서
+(a) 세 점의 \(\gamma\)를 계산하고, (b) M-step 한 라운드의
+모든 파라미터(\(\mu, \sigma, \pi\))를 계산하고, (c) 초기
+파라미터와 새 파라미터의 log-likelihood를 각각 계산해서
+“증가했는가“를 확인하라.</p>
+<p><strong>5. (손유도, Tier C — 폴백 준비 대상)</strong> 다음 장 15.1절 ELBO
+부등식의 <strong>EM 버전</strong>을 유도하라: \(\log p(x) = \log \sum_z
+p(x, z)\)에서 시작해, \(\gamma\)를 \(z\) 위의 아무 분포로 놓고
+\(\sum_z = \sum_z \gamma(z) \frac{p(x,z)}{\gamma(z)}\)로
+직접(직접) 쓰고, 옌센 부등식을 적용해서
+\(\log p(x) \ge \mathbb{E}_{\gamma}[\log p(x, z)] -
+\mathbb{E}_{\gamma}[\log \gamma(z)]\)를 얻어라.</p>
+<p><strong>빈칸채움형 폴백 버전</strong> (자유 유도가 어려운 경우):</p>
+<pre><code>Step 1:  log p(x) = log sum_z[ gamma(z) * (p(x,z) / ____________) ]
+                                (아무 분포 gamma에 대해 성립)
+                        = log E_gamma[ p(x,z) / gamma(z) ]
+
+Step 2:  옌센 부등식(log가 오목함수) 적용:
+  log E_gamma[ p(x,z)/gamma(z) ]  __  E_gamma[ log(______________) ]
+                                  (등호/부등호 중 하나를 채워라)
+
+Step 3:  log(a/b) = log a - log b로 분해하면:
+  = E_gamma[ log p(x,z) ] - ________________
+
+결론:  log p(x) &gt;= E_gamma[log p(x,z)] - E_gamma[log gamma(z)]
+
+등호 성립 조건: p(x,z)/gamma(z)가 z에 대해 상수,
+                즉 gamma(z) = p(z|x)일 때 (진짜 사후확률)
+</code></pre>
+<p><strong>정확성 확인</strong>: EM의 E-step이 “gamma를 진짜 사후확률로
+고른다“는 동작이, 이 부등식의 <em>등호 성립 조건</em>과 정확히
+일치함을 한 문장으로 설명하라 — 그리고 이 사실(등호가
+<em>매</em> E-step에서 성립한다)이 “우도가 매 반복마다 절대
+줄지 않는다“는 보증을 어떻게 만들어내는지 한 문장으로
+설명하라.</p>
+<p><strong>EM은 “모르면 채우고, 채운 걸로 다시 추정한다“는 두 줄짜리 절차인데,
+1977년 논문의 성취는 그 두 줄이 <em>증명 가능하게</em> 우도를 올린다는 것
+을 보여준 것이다 — 다음 장 15.1절의 VAE는 E-step을 정확히 계산할 수
+없는(연속 잠재변수) 세계에서 이 같은 하한을 신경망으로 근사해서
+역전파로 올리는, 같은 수학의 다른 실행 전략이다.</strong></p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-gmm">
+<p>McLachlan, G. J., Krishnan, T. (2008). “The EM Algorithm and Extensions.” 2nd ed. Wiley. <a href="#fr-gmm-1">↩</a></p>
+</li>
+<li id="footnote-gda">
+<p>Ng, A. Y., Jordan, M. I. (2001). “On Discriminative vs. Generative Classifiers.” NIPS 14 (Advances in Neural Information Processing Systems). — GDA(Generalized Discriminative Analysis)를 제안한 원 논문: 판별 모델(로지스틱회귀)과 생성 모델(나이브베이즈)의 결정 경계를 비교하고, 올바른 파라미터화 시 GDA의 사후확률이 로지스틱회귀의 시그모이드와 정확히 같은 형태가 됨을 보인다. <a href="#fr-gda-1">↩</a></p>
+</li>
+<li id="footnote-em1977">
+<p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society, Series B (Methodological), 39(1), 1-38. https://doi.org/10.1111/j.2517-6161.1977.tb01682.x <a href="#fr-em1977-1">↩</a></p>
+</li>
+<li id="footnote-dempster1977">
+<p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society: Series B 39(1), 1–22. — EM 알고리즘을 일반적인 형태로 정식화한 원 논문. <a href="#fr-dempster1977-1">↩</a></p>
+</li>
+<li id="footnote-vae">
+<p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1">↩</a></p>
+</li>
+<li id="footnote-cs229">
+<p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-numpy">
+<p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1">↩</a></p>
+</li>
+<li id="footnote-sklearn">
+<p>Pedregosa, F. et al. (2011). “Scikit-learn: Machine Learning in Python.” JMLR 12(2011) 2825-2830. arXiv:1201.0490. <a href="#fr-sklearn-1">↩</a></p>
+</li>
+<li id="footnote-gan">
+<p>Goodfellow, I. J. et al. (2014). “Generative Adversarial Networks.” arXiv:1406.2661. <a href="#fr-gan-1">↩</a></p>
+</li>
+</ol>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../ml1/chapter04/3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../../ml1/chapter05.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../ml1/chapter04/3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../../ml1/chapter05.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
+
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/lang-switch-b0b9b5f3.js"></script>
+        <script src="../../theme/mathjax-v3-f54fc4b8.js"></script>
+        <script src="../../theme/image-captions-e6cdeb6e.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

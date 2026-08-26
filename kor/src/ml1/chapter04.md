@@ -1,4 +1,8 @@
-# Chapter 4. 거리 기반 모델과 클러스터링: kNN과 k-means (Distance-Based Models & Clustering)
+# Chapter 4. 거리 기반 모델과 클러스터링: kNN, k-means, GMM/EM (Distance-Based Models & Clustering)
+
+[STUB: cq 확인 필요 — 4.4(GMM/EM/LDA) 추가에 맞춰 오프너 훅/학습
+목표/절 요약을 보강할 것. 아래는 최소 반영(4.4 항목 추가, "15장 GMM"
+언급을 "4.4"로 정정)만 해둔 상태.]
 
 "당신은 가장 가까운 다섯 친구의 평균이다"라는 말이 있다. 이 문장을 그대로
 알고리즘으로 옮기면 **k-최근접이웃**(k-Nearest Neighbors, kNN)[^cs229]이 된다: 새로운
@@ -29,8 +33,8 @@
 (Chapter 1~3의 선형·로지스틱·생성 모델)에서 한 걸음 나아가, *파라미터 없이
 점과 점을 비교*하는 비모수(nonparametric) 방법과, 이 책에서 처음 등장하는
 비지도(unsupervised) 학습을 동시에 소개하는 **전환점**이다. "거리를 어떻게
-재는가"라는 공통 언어를 여기서 익혀두면, 이후 SVM의 마진(5장)이나 GMM(15장)
-같은 기하학적 모델로 넘어갈 때 자연스러워진다.
+재는가"라는 공통 언어를 여기서 익혀두면, 이후 SVM의 마진(5장)이나 이 장
+끝(4.4)의 GMM 같은 기하학적 모델로 넘어갈 때 자연스러워진다.
 
 ## 학습 목표
 
@@ -47,9 +51,10 @@
   시켜 수렴하는 최적화 문제임을 두 단계의 수학으로 보여줄 수 있다.
 - 초기화에 따라 다른 지역최적해에 빠지는 문제를 **k-means++**[^kmeanspp]와 `n_init`
   반복으로 완화하고, k-means가 경계를 *볼록(직선)*으로만 그리는 구조적 한계와
-  15장 GMM으로의 연결을 짚을 수 있다.
+  4.4절 GMM으로의 연결을 짚을 수 있다.
+- [STUB] GMM/EM/LDA 관련 학습 목표 추가.
 
-이번 주는 세 개의 수업 블록으로 진행된다:
+이번 주는 네 개의 수업 블록으로 진행된다:
 
 - [4.1 kNN: 알고리즘, 거리함수, 편향-분산 트레이드오프](chapter04/1.md) —
   kNN이 "저장만 하고, 예측 때 거리를 재는" 게으른 방법임을 알고리즘과 계산
@@ -70,6 +75,11 @@
   수렴하는지는 초기화에 달린(비볼록) 문제임을 수학으로 보여주고, \\(k\\)
   선택(엘보우), k-means++ 초기화, 그리고 "경계가 항상 직선(볼록)"이라는
   구조적 한계와 로이드(1957)·매퀸(1967)의 동시 발견 이야기를 다룬다.
+- [4.4 GMM과 EM 알고리즘](chapter04/4.md) — k-means의 하드 할당을
+  "이 점이 각 클러스터에 속할 확률"이라는 소프트 할당으로 일반화한
+  가우시안 혼합모델(GMM)과, 그걸 학습시키는 EM 알고리즘을 다룬다.
+  LDA(잠재 디리클레 할당)도 같은 EM 계열의 고전 확률모델로 함께
+  짚는다. [STUB: 요약 문단 보강 필요]
 
 [^cs229]: 더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes (k-최근접이웃과 k-means를 핵심 주제로 다룸). https://cs229.stanford.edu/main_notes.pdf
 [^kmeanspp]: Arthur, D., Vassilvitskii, S. (2007). "k-means++: The advantages of careful seeding." Proceedings of the 18th Annual ACM-SIAM Symposium on Discrete Algorithms (SODA 2007).
