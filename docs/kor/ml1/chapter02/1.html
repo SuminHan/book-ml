@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-852913a8.js";
+            window.path_to_searchindex_js = "../../searchindex-f1c8bfb1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-27b50e49.js"></script>
@@ -179,12 +179,12 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="21-선형회귀-모델-비용함수-경사하강법"><a class="header" href="#21-선형회귀-모델-비용함수-경사하강법">2.1 선형회귀: 모델, 비용함수, 경사하강법</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter02_1_linear_regression_gd.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: Linear Regression GD"></a></p>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter021linearregressiongd.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: Linear Regression GD"></a></p>
 <p>이 절에서는 이 학기의 <strong>첫 완전한 알고리즘</strong> — 선형회귀(linear regression)와, 최적화의 기본
 동력인 <strong>경사하강법</strong>(gradient descent)을 만난다. 알고리즘의 뼈대는 항상 같은 세 부류로
 나뉘고, 이 틀은 학기 내내 이름만 바꿔 반복된다:</p>
 <ol>
-<li><strong>모델</strong> — 입력을 출력으로 매핑하는 함수의 <em>형태</em></li>
+<li><strong>모델</strong> — 입력을 출력으로 매핑하는 함수의 형태</li>
 <li><strong>비용함수</strong>(loss function) — 모델이 “얼마나 틀렸는지“를 숫자로 재는 재</li>
 <li><strong>최적화 알고리즘</strong> — 모델의 파라미터를 그 숫자가 줄어드는 방향으로 바꾸는 방법</li>
 </ol>
@@ -263,12 +263,12 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 <p>업데이트 수식에 두 개의 디테일이 숨어 있는데, 둘 다 “그냥 그렇게 쓰는 거다“로
 넘어가면 코드를 쓸 때 실제로 부딪히는 함정이 된다.</p>
 <p><strong>(1) 모든 \(w_j\)를 “동시에” 업데이트해야 하는 이유.</strong> \(w_0\)를 먼저
-업데이트한 뒤, 같은 스텝에서 \(w_1\)를 업데이트할 때 <em>새</em> \(w_0\)를 써서
+업데이트한 뒤, 같은 스텝에서 \(w_1\)를 업데이트할 때 새 \(w_0\)를 써서
 그래디언트를 계산하면, “이동 전“과 “이동 후“에 계산된 그래디언트가 섞인 값으로
 이동하는 셈이다 — 업데이트 방향이 더 이상 현재점에서의 \(\nabla J\)가 아니다.
 볼록함수에서 “현재점의 경사 반대 방향으로 가면 확실히 내려간다“는 보장(아래 “학습률과
 수렴 경계“에서 볼 수 있는)이 무너지는 것이다. 아래 순수 Python 코드에서
-<code>grad[j]</code>를 전부 계산한 <em>다음</em>에 <code>w[j] -= ...</code>로 반영하는 <strong>두 단계 구조</strong>가 바로
+<code>grad[j]</code>를 전부 계산한 다음에 <code>w[j] -= ...</code>로 반영하는 <strong>두 단계 구조</strong>가 바로
 이 동시 업데이트를 구현한 것이다.</p>
 <p><strong>(2) \(\partial J / \partial w_j\)가 그 합이 되는 이유.</strong> 각 데이터점 \(i\)는
 오차의 제곱 \((h_w(x^{(i)}) - y^{(i)})^2\)을 \(J\)에 기여한다. 제곱의 미분에
@@ -301,7 +301,7 @@ y^{(i)}\right) x_j^{(i)}\]</p>
     return w
 </code></pre>
 <h4 id="학습률과-수렴-경계-경사하강법이-언제-발산하는가"><a class="header" href="#학습률과-수렴-경계-경사하강법이-언제-발산하는가">학습률과 수렴 경계: 경사하강법이 언제 발산하는가</a></h4>
-<p>본 절 말미의 “자주 하는 실수“는 학습률이 너무 크면 발산한다는 것을 <em>실험으로</em>
+<p>본 절 말미의 “자주 하는 실수“는 학습률이 너무 크면 발산한다는 것을 실험으로
 보여주지만, 선형회귀에서는 사실 <strong>수렴과 발산의 경계값을 정확히 계산</strong>할 수
 있다. 이유는 \(J\)가 이차함수라서, 업데이트 \(w \leftarrow w - \alpha \nabla J\)
 가 매 스텝마다 “현재점과 최솟값 \(w^*\)의 오차“에 고정 행렬을 곱하는 선형
@@ -331,14 +331,14 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 직감이 틀린 것이다. 안전한 범위는 데이터 — 정확히 말해 \(X^TX/m\)의 고유값 — 가
 전부 결정하고, 이것이 2.2절의 특징 스케일링이 “경사하강법의 걸음 수를 바꾸는
 핵심 전처리“인 이유의 정량적 근거다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch02_gradient_descent_1d.svg" alt="비용 J(w₁)의 1차원 단면 포물선 위에 세 학습률(α=0.1, 0.01, 0.001)의 경사하강법 경로 — 같은 출발점에서 α=0.1이 가장 빠르게, α=0.001은 300스텝이 지나도 거의 움직이지 못한 채"><span class="img-wrapper"><img src="../../images/ch02_gradient_descent_1d.svg" alt="비용 J(w₁)의 1차원 단면 포물선 위에 세 학습률(α=0.1, 0.01, 0.001)의 경사하강법 경로 — 같은 출발점에서 α=0.1이 가장 빠르게, α=0.001은 300스텝이 지나도 거의 움직이지 못한 채"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch02gradientdescent_1d.svg" alt="비용 J(w₁)의 1차원 단면 포물선 위에 세 학습률(α=0.1, 0.01, 0.001)의 경사하강법 경로 — 같은 출발점에서 α=0.1이 가장 빠르게, α=0.001은 300스텝이 지나도 거의 움직이지 못한 채"><span class="img-wrapper"><img src="../../images/ch02gradientdescent_1d.svg" alt="비용 J(w₁)의 1차원 단면 포물선 위에 세 학습률(α=0.1, 0.01, 0.001)의 경사하강법 경로 — 같은 출발점에서 α=0.1이 가장 빠르게, α=0.001은 300스텝이 지나도 거의 움직이지 못한 채"></span></label></p>
 <p><strong>1D 단면: 걸음 크기가 속도를 정한다.</strong> 비용의 1차원 단면(위 그림, 노트북 §5)
 위에서 세 학습률의 경로를 겹쳐본다. 세 곡선은 같은 포물선 위의 같은 점에서
 출발한다. \(\alpha = 0.1\)이 가장 빠르게 바닥에 닿고, \(\alpha = 0.01\)은
 약 10배 느리다. \(\alpha = 0.001\)은 300스텝이 지나도 바닥에서 꽤 먼
 채로 거의 움직이지 못했다. 1D 그림은 “속도“를 보여준다 — <strong>학습률은 “가는
 방향“이 아니라 “걸음 수“를 정하는 하이퍼파라미터</strong>다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch02_cost_landscape_2d.svg" alt="2차원 비용 지형 J(w₀, w₁)의 등고선과 (0,0)에서 출발한 경사하강법 경로 — 등고선이 늘어진 타원이므로(조건수 κ≈46) 경로가 직선이 아니라 짧은 축 방향으로 진동(zigzag)하며 내려간다"><span class="img-wrapper"><img src="../../images/ch02_cost_landscape_2d.svg" alt="2차원 비용 지형 J(w₀, w₁)의 등고선과 (0,0)에서 출발한 경사하강법 경로 — 등고선이 늘어진 타원이므로(조건수 κ≈46) 경로가 직선이 아니라 짧은 축 방향으로 진동(zigzag)하며 내려간다"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch02costlandscape_2d.svg" alt="2차원 비용 지형 J(w₀, w₁)의 등고선과 (0,0)에서 출발한 경사하강법 경로 — 등고선이 늘어진 타원이므로(조건수 κ≈46) 경로가 직선이 아니라 짧은 축 방향으로 진동(zigzag)하며 내려간다"><span class="img-wrapper"><img src="../../images/ch02costlandscape_2d.svg" alt="2차원 비용 지형 J(w₀, w₁)의 등고선과 (0,0)에서 출발한 경사하강법 경로 — 등고선이 늘어진 타원이므로(조건수 κ≈46) 경로가 직선이 아니라 짧은 축 방향으로 진동(zigzag)하며 내려간다"></span></label></p>
 <p><strong>2D 지형: 경로는 왜 일직선이 아닌가.</strong> 2차원 \(J(w)\) 지형(위 그림,
 노트북 §6)은 “형상“을 보여준다. 등고선이 <strong>늘어진 타원</strong>인 이유는 앞선
 고유값 비율(≈46)이 바로 그 타원의 축 비율이기 때문이다. 경사하강법은 매 스텝
@@ -492,7 +492,7 @@ RMSE로 잴 때: \(58.7 \to 56.3 \to 53.9 \to 53.5\). 데이터가 작을수록
 “관측“으로 남긴다.</p>
 </li>
 </ol>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch02_diabetes_learning_curve.svg" alt="실데이터(diabetes, 442명×10특징, 표준화)에서 세 학습률의 비용 곡선(좌)과 데이터 크기 n에 따른 최종 RMSE의 학습 곡선(우) — n=442 전체 데이터 학습 결과는 정규방정식 해 RMSE 53.5와 일치"><span class="img-wrapper"><img src="../../images/ch02_diabetes_learning_curve.svg" alt="실데이터(diabetes, 442명×10특징, 표준화)에서 세 학습률의 비용 곡선(좌)과 데이터 크기 n에 따른 최종 RMSE의 학습 곡선(우) — n=442 전체 데이터 학습 결과는 정규방정식 해 RMSE 53.5와 일치"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch02diabeteslearning_curve.svg" alt="실데이터(diabetes, 442명×10특징, 표준화)에서 세 학습률의 비용 곡선(좌)과 데이터 크기 n에 따른 최종 RMSE의 학습 곡선(우) — n=442 전체 데이터 학습 결과는 정규방정식 해 RMSE 53.5와 일치"><span class="img-wrapper"><img src="../../images/ch02diabeteslearning_curve.svg" alt="실데이터(diabetes, 442명×10특징, 표준화)에서 세 학습률의 비용 곡선(좌)과 데이터 크기 n에 따른 최종 RMSE의 학습 곡선(우) — n=442 전체 데이터 학습 결과는 정규방정식 해 RMSE 53.5와 일치"></span></label></p>
 <p><strong>결과의 핵심 한 줄</strong>: 전체 442명으로 학습한 경사하강법의 최종 RMSE 53.5는,
 같은 데이터의 <strong>정규방정식(닫힌 형태) 해의 RMSE와 일치</strong>한다 — 2.2절에서
 “경사하강법과 정규방정식은 같은 목적지“라고 할 때의 말이, 장난감 3점을

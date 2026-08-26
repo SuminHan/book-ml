@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-852913a8.js";
+            window.path_to_searchindex_js = "../../searchindex-f1c8bfb1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-27b50e49.js"></script>
@@ -179,7 +179,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="142-nvidia-isaac-sim과-gpu-가속의-원리"><a class="header" href="#142-nvidia-isaac-sim과-gpu-가속의-원리">14.2 NVIDIA Isaac Sim과 GPU 가속의 원리</a></h1>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter14_2_gpu_batch_sim.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GPU 병렬 시뮬레이션"></a></p>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter142gpubatchsim.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GPU 병렬 시뮬레이션"></a></p>
 <h3 id="nvidia-isaac-sim-gpu로-수천-개를-동시에"><a class="header" href="#nvidia-isaac-sim-gpu로-수천-개를-동시에">NVIDIA Isaac Sim: GPU로 수천 개를 동시에</a></h3>
 <p><strong>Isaac Sim</strong><sup class="footnote-reference" id="fr-isaacsim-1"><a href="#footnote-isaacsim">1</a></sup>은 NVIDIA의 Omniverse 플랫폼 위에 만들어진 로봇
 시뮬레이션 환경으로, 물리 계산 자체를 GPU에서 병렬로 수행한다 — 같은
@@ -193,7 +193,7 @@ GPU 위에서 동시에 시뮬레이션해서 학습에 필요한 경험을 극�
 바로 이 H100/H200 계열이라, Isaac Sim을 실습에 쓸 수 없다 — 이번
 장에서는 원리와 시연 영상으로만 다룬다.</p>
 <p><strong>그렇다면 오늘 50분은 무엇을 할까?</strong> Isaac Sim 자체를 못 돌리지만,
-Isaac Sim이 “빠르다“고 말할 때 <em>그 빠름이 수학적으로 어디서 오는지</em>는
+Isaac Sim이 “빠르다“고 말할 때 그 빠름이 수학적으로 어디서 오는지는
 CPU 위에서, numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">2</a></sup> 한 줄로, 직접 재볼 수 있다. 이 절의 흐름은:
 (1) CPU가 환경 스텝을 “하나씩“만 돌릴 수 있는 이유를 숫자로 확인하고,
 (2) Isaac Sim이 그 한계를 어떻게 우회하는지(모든 상태를 한 배열에
@@ -201,7 +201,7 @@ CPU 위에서, numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#fo
 진자를 1,000개 복제해서 numpy로 직접 시뮬레이션하고 실험한다.</p>
 <h3 id="먼저-숫자로-cpu가-하나씩만-도는-이유"><a class="header" href="#먼저-숫자로-cpu가-하나씩만-도는-이유">먼저 숫자로: CPU가 “하나씩“만 도는 이유</a></h3>
 <p>14.3절에서 벤치마크할 예정이지만, 이번 절의 논리가 “몇 배 빨라지는가”
-에 대한 <em>계산</em>이므로 그 숫자를 여기서 먼저 쓴다. 이 책의 실습 머신
+에 대한 계산이므로 그 숫자를 여기서 먼저 쓴다. 이 책의 실습 머신
 (학교 서버 CPU, 2026-08 실측, 워밍업 200스텝 제외):</p>
 <div class="table-wrapper">
 <table>
@@ -216,32 +216,32 @@ CPU 위에서, numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#fo
 </table>
 </div>
 <p>세 가지가 눈에 들어온다. 첫째, <strong>같은 CPU에서도 환경에 따라 약 40배
-차이</strong>가 난다 — “CPU“라는 틀이 속도를 정하는 게 아니라, <em>어떤 물리를
-계산하느냐</em>가 정한다(14.1의 LCP 접촉이 매 스텝 푸는 계산이 그
-차이의 정체다). 둘째, CartPole이 24만 스텝/초라는 <em>거의 믿기지 않는</em>
+차이</strong>가 난다 — “CPU“라는 틀이 속도를 정하는 게 아니라, 어떤 물리를
+계산하느냐가 정한다(14.1의 LCP 접촉이 매 스텝 푸는 계산이 그
+차이의 정체다). 둘째, CartPole이 24만 스텝/초라는 거의 믿기지 않는
 숫자에도, 총 10억 스텝이면 \(10^9 / 2.4\times10^5 \approx 4{,}100\)
-초 ≈ <strong>약 1.2시간</strong>이다 — 하지만 <em>정밀 물리</em>를 계산해야 하는 Ant
+초 ≈ <strong>약 1.2시간</strong>이다 — 하지만 정밀 물리를 계산해야 하는 Ant
 (5,900 steps/s)는 같은 10억 스텝에 \(10^9 / 5.9\times10^3
 \approx 1.7\times10^5\) 초 ≈ <strong>약 2일</strong>이 걸린다. 셋째 — 이 절의
 핵심 질문 — <strong>왜 이 속도를 2배, 100배, 수천 배로 늘리는 게 이렇게
 어려운가?</strong></p>
-<p>답은 CPU의 구조 자체에 있다. 현대 CPU는 8~64개의 <em>코어</em>를 가진다.
-코어가 16개면, <em>독립적인</em> 작업 16개까진 동시에 돌릴 수 있다. 그런데
-“환경 하나를 스텝시키기“는 독립 작업이 <em>아니다</em> — 한 환경의
+<p>답은 CPU의 구조 자체에 있다. 현대 CPU는 8~64개의 코어를 가진다.
+코어가 16개면, 독립적인 작업 16개까진 동시에 돌릴 수 있다. 그런데
+“환경 하나를 스텝시키기“는 독립 작업이 아니다 — 한 환경의
 \(t\)스텝은 같은 환경의 \(t-1\)스텝 결과가 나와야만 계산이
 시작된다. <strong>시간 방향에는 의존성이 있다.</strong> 이 의존성을 깨는 방법은
 “같은 환경의 시간을 잘게 나누는 것“이 아니라, <strong>서로 다른 환경
 (=다른 초깃값을 가진 복제본)을 코어마다 하나씩 맡기는 것</strong>이다.
-16코어 CPU로 Ant 16개를 병렬 돌리면 Ant 16개의 환경 스텝을 <em>동시에</em>
+16코어 CPU로 Ant 16개를 병렬 돌리면 Ant 16개의 환경 스텝을 동시에
 계산할 수 있다 — 이것이 “CPU 병렬“의 전부다.</p>
 <p><strong>그 “전부“가 문제다.</strong> 16코어 × 5,900 steps/s ≈ <strong>약 9.4만
 steps/s</strong>가 CPU 병렬의 실질적 상한선이다(코어당 메모리 대역폭,
 스레드 간 동기화 오버헤드를 감안하면 실제로는 그보다 낮다).
-그러면 Ant 10억 스텝이 <em>2일</em>에서 <em>약 12시간</em>으로 줄어드는 것뿐 —
+그러면 Ant 10억 스텝이 2일에서 약 12시간으로 줄어드는 것뿐 —
 “이틀을 기다리자“에서 “하루를 포기하자“로 나아갈 뿐이다. 수천 개
-복제본이 필요한 <em>대규모 보행</em> 연구(14.3: 10억+ 스텝)에서는 이
-상한선이 <em>결정적</em>이다. 바로 이 벽을 부수러 온 것이 GPU이고, 그
-벽을 실제로 부수고 <em>그대로 시뮬레이터로 상품화한</em> 것이 Isaac
+복제본이 필요한 대규모 보행 연구(14.3: 10억+ 스텝)에서는 이
+상한선이 결정적이다. 바로 이 벽을 부수러 온 것이 GPU이고, 그
+벽을 실제로 부수고 그대로 시뮬레이터로 상품화한 것이 Isaac
 Sim이다.</p>
 <h3 id="gpu-가속-시뮬레이션의-원리"><a class="header" href="#gpu-가속-시뮬레이션의-원리">GPU 가속 시뮬레이션의 원리</a></h3>
 <p>CPU 기반 시뮬레이션(MuJoCo, Gymnasium 기본 환경)은 한 번에 환경 하나를
@@ -253,21 +253,21 @@ CNN의 아이디어와 비슷한 방식으로 — 이번엔 “같은 물리 스
 계산한다. 그 결과 초당 모을 수 있는 (상태, 행동, 보상) 경험의 양이
 CPU 대비 수십~수백 배까지 늘어날 수 있다 — Chapter 9의 경험재현
 버퍼가 순식간에 채워지는 셈이다.</p>
-<p>“GPU 코어에 흩뿌린다“는 말이 추상적으로 들리면, <em>데이터가 GPU 위에서
-어떻게 배치되는지</em>를 한 장의 그림으로 확인하자.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch14_2_batch_step_v2.svg" alt="CPU는 환경 스텝을 하나씩 순서대로(C1→C2→C3→…) 돌리는 반면, GPU는 4096개 환경의 상태를 한 개의 연속 텐서 배열에 나란히 담아 ’물리 스텝 커널 1회 호출’로 4096개 환경의 다음 상태를 동시에 계산한다. 공유되는 것은 코드(물리 법칙), 달라지는 것은 상태(초기조건) — CNN이 필터를 모든 위치와 공유하는 것과 같은 구조(ML1 10.1)."><span class="img-wrapper"><img src="../../images/ch14_2_batch_step_v2.svg" alt="CPU는 환경 스텝을 하나씩 순서대로(C1→C2→C3→…) 돌리는 반면, GPU는 4096개 환경의 상태를 한 개의 연속 텐서 배열에 나란히 담아 ’물리 스텝 커널 1회 호출’로 4096개 환경의 다음 상태를 동시에 계산한다. 공유되는 것은 코드(물리 법칙), 달라지는 것은 상태(초기조건) — CNN이 필터를 모든 위치와 공유하는 것과 같은 구조(ML1 10.1)."></span></label></p>
+<p>“GPU 코어에 흩뿌린다“는 말이 추상적으로 들리면, 데이터가 GPU 위에서
+어떻게 배치되는지를 한 장의 그림으로 확인하자.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch142batchstepv2.svg" alt="CPU는 환경 스텝을 하나씩 순서대로(C1→C2→C3→…) 돌리는 반면, GPU는 4096개 환경의 상태를 한 개의 연속 텐서 배열에 나란히 담아 ’물리 스텝 커널 1회 호출’로 4096개 환경의 다음 상태를 동시에 계산한다. 공유되는 것은 코드(물리 법칙), 달라지는 것은 상태(초기조건) — CNN이 필터를 모든 위치와 공유하는 것과 같은 구조(ML1 10.1)."><span class="img-wrapper"><img src="../../images/ch142batchstepv2.svg" alt="CPU는 환경 스텝을 하나씩 순서대로(C1→C2→C3→…) 돌리는 반면, GPU는 4096개 환경의 상태를 한 개의 연속 텐서 배열에 나란히 담아 ’물리 스텝 커널 1회 호출’로 4096개 환경의 다음 상태를 동시에 계산한다. 공유되는 것은 코드(물리 법칙), 달라지는 것은 상태(초기조건) — CNN이 필터를 모든 위치와 공유하는 것과 같은 구조(ML1 10.1)."></span></label></p>
 <p>그림의 핵심은 <code>ARR</code> 노드, 즉 “<strong>모든 환경의 상태를 한 개의 연속
 배열(텐서)에 나란히 담는다</strong>“는 문장이다. GPU가 빠른 이유는 “코어가
 많아서“가 아니라, <strong>코어 개수와 데이터가 나란히 배열된 길이가
-<em>일치</em>하기 때문</strong>이다. NVIDIA GPU는 수천~수만 개의 가벼운 코어
-(CUDA 코어)<sup class="footnote-reference" id="fr-cuda-1"><a href="#footnote-cuda">5</a></sup>를 가졌는데, 이 코어들은 <em>모두 같은 연산</em>을 <em>나란히
-놓인 데이터 요소마다</em> 수행하도록 설계됐다. 그래서 “4,096개 환경의
+일치하기 때문</strong>이다. NVIDIA GPU는 수천~수만 개의 가벼운 코어
+(CUDA 코어)<sup class="footnote-reference" id="fr-cuda-1"><a href="#footnote-cuda">5</a></sup>를 가졌는데, 이 코어들은 모두 같은 연산을 나란히
+놓인 데이터 요소마다 수행하도록 설계됐다. 그래서 “4,096개 환경의
 상태“를 하나의 큰 텐서(4096 × 상태차원)로 모으면, 물리 스텝을
 계산하는 <strong>커널(kernel) 함수를 한 번만</strong> 호출하면 수천 개의 코어가
-각자 <em>자신의 환경</em>의 물리 스텝을 동시에 처리한다 — 함수를 4,096번
+각자 자신의 환경의 물리 스텝을 동시에 처리한다 — 함수를 4,096번
 호출하는 게 아니라, <strong>한 번의 함수 호출 안의 연산이 수천 개로
 나뉜다</strong>는 점이 CPU 순차 호출과의 근본적 차이다.</p>
-<p>여기서 ML1 10.1의 CNN과 <em>정확히</em> 무엇이 같고 무엇이 다른지 비교하면
+<p>여기서 ML1 10.1의 CNN과 정확히 무엇이 같고 무엇이 다른지 비교하면
 “병렬“의 구조가 선명해진다:</p>
 <div class="table-wrapper">
 <table>
@@ -276,15 +276,15 @@ CPU 대비 수십~수백 배까지 늘어날 수 있다 — Chapter 9의 경험�
 </thead>
 <tbody>
 <tr><td>반복되는 단위</td><td>같은 <strong>필터</strong>(파라미터)를 위치마다 적용</td><td>같은 <strong>물리 스텝</strong>(코드)을 복제본마다 적용</td></tr>
-<tr><td>공유되는 것</td><td><em>파라미터</em> (무게)</td><td><em>프로그램</em> (물리 법칙, 코드)</td></tr>
-<tr><td>달라지는 것</td><td><em>입력 픽셀</em> (위치마다 다름)</td><td><em>상태</em> (초기조건이 다른 복제본)</td></tr>
+<tr><td>공유되는 것</td><td>파라미터 (무게)</td><td>프로그램 (물리 법칙, 코드)</td></tr>
+<tr><td>달라지는 것</td><td>입력 픽셀 (위치마다 다름)</td><td>상태 (초기조건이 다른 복제본)</td></tr>
 <tr><td>병렬의 방향</td><td>공간(픽셀 위치)</td><td>시간 대신 <strong>환경</strong>(독립 실행 실체)</td></tr>
 </tbody>
 </table>
 </div>
 <p>공통의 뼈대는 “한 번 작성된 연산을, 나란히 놓인 서로 다른 데이터
-요소에 <em>동시에</em> 적용한다“는 것이다. 차이도 정확히 짚자: CNN은 <em>한
-입력 안에서</em> 공간적으로 병렬이고, Isaac Sim은 <em>한 물리 법칙 안에</em>
+요소에 동시에 적용한다“는 것이다. 차이도 정확히 짚자: CNN은 한
+입력 안에서 공간적으로 병렬이고, Isaac Sim은 한 물리 법칙 안에
 환경 단위로 병렬이다. <strong>그래서 CNN이 배운 “가중치“가 필터 자체인
 반면, Isaac Sim에서 복제되는 것은 “초깃값“이다</strong> — 수천 개의
 진자가 같은 물리 법칙(같은 코드)를 따르되, \(\theta_0\)만 다르다.
@@ -292,34 +292,34 @@ CPU 대비 수십~수백 배까지 늘어날 수 있다 — Chapter 9의 경험�
 <h3 id="커널-한-번-isaac-sim와-같은-gpu-물리엔진의-한-스텝이-지나면"><a class="header" href="#커널-한-번-isaac-sim와-같은-gpu-물리엔진의-한-스텝이-지나면">커널 한 번: Isaac Sim(와 같은 GPU 물리엔진)의 한 스텝이 지나면</a></h3>
 <p>“커널 한 번 호출“이 실제로 무엇을 계산하는지, Isaac Sim 계열 GPU
 물리엔진(Warp 기반, MuJoCo-XLA<sup class="footnote-reference" id="fr-mujocoxla-1"><a href="#footnote-mujocoxla">6</a></sup>의 CUDA 경로와 같은 원리)의 한
-스텝 순서를 간결히 쓴다. <em>이 순서</em>가 CPU 버전(MuJoCo의
+스텝 순서를 간결히 쓴다. 이 순서가 CPU 버전(MuJoCo의
 <code>mj_step</code>)과 구조적으로 다른 지점이 어디인지가 핵심이다.</p>
 <ol>
 <li><strong>행동 배치</strong> — 4,096개 환경, 각자의 행동 \(a_i\)를 텐서
 \(A \in \mathbb{R}^{4096 \times d_a}\)로 수집. (CPU 버전에서는
-“환경 i에 <code>ctrl</code> 하나“지만, GPU 버전에서는 <em>배열 전체</em>가 함수
+“환경 i에 <code>ctrl</code> 하나“지만, GPU 버전에서는 배열 전체가 함수
 인자가 된다.)</li>
 <li><strong>역학 커널</strong> — 모든 복제본의 미분방정식(관성, 중력, PD/모터
-법칙)을 <em>한 번의</em> 커널 호출로 계산. 이 부분이 CUDA 코어가
+법칙)을 한 번의 커널 호출로 계산. 이 부분이 CUDA 코어가
 수천 개 나뉘어 동시에 도는 곳이다.</li>
 <li><strong>접촉 커널</strong> — 복제본마다 “무엇이 무엇과 닿는가“를 동시에
-검사. 4,096개 진자가 각각 바닥에 닿았는지 같은 질문을 <em>동시에</em>
+검사. 4,096개 진자가 각각 바닥에 닿았는지 같은 질문을 동시에
 묻는 것이다.</li>
 <li><strong>통합(integration)</strong> — 2~3의 결과를 모든 복제본에 동시에 적용해
 다음 상태 \(q_{t+1}\)을 산출.</li>
 </ol>
-<p>이 4단계를 CPU로 순차하면 4,096 × (4단계)만큼의 <em>연속된</em> 호출이
-되지만, GPU에서는 4단계 × <em>1회</em>의 호출이다. <strong>호출 횟수(순차성)가
+<p>이 4단계를 CPU로 순차하면 4,096 × (4단계)만큼의 연속된 호출이
+되지만, GPU에서는 4단계 × 1회의 호출이다. <strong>호출 횟수(순차성)가
 “4,096 × 4“에서 “4“로 줄어드는 것</strong>이 “수천 배“의 정수적
-기원이다 — 코어가 4,096개이든 16,384개이든, <em>호출 한 번 안의
-연산이 데이터 길이만큼 나뉜다</em>는 구조가 동일하다.</p>
+기원이다 — 코어가 4,096개이든 16,384개이든, 호출 한 번 안의
+연산이 데이터 길이만큼 나뉜다는 구조가 동일하다.</p>
 <p><strong>왜 “커널 한 번“이 이렇게 큰 차이인가 — 오버헤드 문제.</strong> CPU에서
 함수를 호출하고 결과를 받아오는 데 드는 시간(호출 오버헤드, 캐시
-미스, 브랜치 예측 실패)은 <em>호출 한 번</em>마다 일어난다. 4,096번 호출
-하면 4,096번 그 오버헤드를 치른다. GPU에서는 커널 <em>발기</em> 오버헤드는
-일단만 치르고, 그 안에서 수천 개 코어가 <em>동일한</em> 명령을 <em>나란히
-놓인</em> 데이터에 동시에 수행(SIMT, single-instruction multiple-thread)
-한다 — 오버헤드가 데이터 길이와 무관하게 <em>상수</em>로 묶여 버리는 셈이다.
+미스, 브랜치 예측 실패)은 호출 한 번마다 일어난다. 4,096번 호출
+하면 4,096번 그 오버헤드를 치른다. GPU에서는 커널 발기 오버헤드는
+일단만 치르고, 그 안에서 수천 개 코어가 동일한 명령을 나란히
+놓인 데이터에 동시에 수행(SIMT, single-instruction multiple-thread)
+한다 — 오버헤드가 데이터 길이와 무관하게 상수로 묶여 버리는 셈이다.
 이것을 <strong>아몰달의 법칙(Amdahl’s Law</strong>)과 연결하면, GPU 병렬의
 “몇 배까지 빠라질 수 있는가“의 이론적 상한이 왜 존재하는지
 볼 수 있다(아래 “확인” 참고).</p>
@@ -330,12 +330,12 @@ CPU 대비 수십~수백 배까지 늘어날 수 있다 — Chapter 9의 경험�
 모두 2차원 배열 <code>theta[N]</code>, <code>thetadot[N]</code>에 넣고, <strong>한 번의 numpy
 연산으로 전체 배열을 동시에 업데이트</strong>한다는 것이다. numpy가
 배열 전체에 같은 연산을 벡터화해 한 번에 수행하는 것이, GPU 커널이
-수천 개 데이터에 같은 연산을 동시에 수행하는 것의 <em>CPU 위의 미니판</em>이다
-(CPU의 SIMD + BLAS가 이걸 처리하긴 하지만, <em>구조</em>는 같다).</p>
+수천 개 데이터에 같은 연산을 동시에 수행하는 것의 CPU 위의 미니판이다
+(CPU의 SIMD + BLAS가 이걸 처리하긴 하지만, 구조는 같다).</p>
 <p>14.1의 진자(\(\ddot\theta = -(g/\ell)\sin\theta - b\dot\theta
 +\tau/I\), 여기서 \(\ell=0.5\,\text{m}\), \(I=1/12\,\text{kg·m}^2\)
 급, \(b=0.1\) 감쇠)의 물리 스텝을 RK4(4차 Runge–Kutta)로
-\(\Delta t = 0.002\)s 한 스텝 전진시키는 함수를 <em>배열 전체</em>에 적용
+\(\Delta t = 0.002\)s 한 스텝 전진시키는 함수를 배열 전체에 적용
 하면, <code>theta</code>가 (N,) 형태이므로 <strong>한 줄의 numpy 연산이 N개 진자의
 물리를 “동시에” 계산</strong>한다:</p>
 <pre><code class="language-python">def step_batch(theta, thetadot, torque, dt=0.002, b=0.1, L=0.5, m=1.0):
@@ -352,61 +352,61 @@ CPU 대비 수십~수백 배까지 늘어날 수 있다 — Chapter 9의 경험�
     return theta, thetadot
 </code></pre>
 <p>여기서 <strong><code>torque</code>가 (N,) 배열</strong>이면, <code>f</code> 안의 <code>np.sin(th)</code>, <code>b*thd</code>
-등 <em>모든</em> 연산이 N개 요소에 동시에 적용된다 — 이것이 “커널 한 번“의
+등 모든 연산이 N개 요소에 동시에 적용된다 — 이것이 “커널 한 번“의
 CPU 미니판이다. 이제 이 <code>step_batch</code>를 <code>for i in range(N): step(theta[i])</code>
-(CPU 순차)과 대조하면, “배치“가 정말로 <em>구조적으로</em> 다른지 시간을
+(CPU 순차)과 대조하면, “배치“가 정말로 구조적으로 다른지 시간을
 재볼 수 있다.</p>
 <p><strong>노트북에서 실측한 결과</strong> (N=1,000, 2,000스텝 = 4s 시뮬레이션,
 같은 머신):</p>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th>실행 방식</th><th>벽 시간 (wall time)</th><th>초당 <em>환경</em>스텝 수</th></tr>
+<tr><th>실행 방식</th><th>벽 시간 (wall time)</th><th>초당 환경스텝 수</th></tr>
 </thead>
 <tbody>
-<tr><td>CPU 순차 (진자를 <em>하나씩</em>, Python 루프)</td><td>약 8.4 s</td><td>약 239,000</td></tr>
+<tr><td>CPU 순차 (진자를 하나씩, Python 루프)</td><td>약 8.4 s</td><td>약 239,000</td></tr>
 <tr><td><strong>배치 (numpy 벡터화, 1,000개 동시)</strong></td><td><strong>약 0.11 s</strong></td><td><strong>약 18,150,000</strong></td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>약 76배</strong> 차이가 난다 — 그리고 이 숫자의 <em>성분</em>을 뜯어보라.
+<p><strong>약 76배</strong> 차이가 난다 — 그리고 이 숫자의 성분을 뜯어보라.
 “CPU 순차” 쪽의 239,000 steps/s는 <strong>14.1의 MuJoCo 진자(약 246,000)
-와 정확히 같은 수준</strong>이다: 진자 <em>하나</em>를 스텝시키는 비용은, Python
+와 정확히 같은 수준</strong>이다: 진자 하나를 스텝시키는 비용은, Python
 스칼라로 RK4를 쓰든 C로 짜인 MuJoCo를 쓰든, 물리 자체에 따라
-정해진다. 76배는 <em>물리 계산</em>이 빨라진 게 아니라, <strong>(a) Python이
+정해진다. 76배는 물리 계산이 빨라진 게 아니라, <strong>(a) Python이
 매 진자마다 함수를 호출하고 인덱싱하던 오버헤드가 사라지고</strong>(numpy가
 C 레벨에서 벡터 연산), <strong>(b) 하나의 배열 연산 안의 연산이 1,000개
-진자만큼 나뉜 것</strong>이다. <em>물리 계산 자체</em>는 같은 CPU에서 그대로
+진자만큼 나뉜 것</strong>이다. 물리 계산 자체는 같은 CPU에서 그대로
 한다. <strong>진짜 GPU 병렬</strong>은 여기서 한 단계 더 나간다: numpy가 CPU의
-8~16개 SIMD 레지스터로 처리하는 <em>같은</em> 배열 연산을, GPU의 <em>수천
-개</em> 코어가 <em>한 번에</em> 수행한다. 즉, “배치“가 <em>데이터 구조의
-필요조건</em>(없으면 GPU 병렬 자체를 <em>할 수 없다</em>)이라면, GPU가 <em>그
-배치 구조를 실제로 수천 코어로 동시에 실행하는 장치</em>다. 이 구분을
+8~16개 SIMD 레지스터로 처리하는 같은 배열 연산을, GPU의 수천
+개 코어가 한 번에 수행한다. 즉, “배치“가 데이터 구조의
+필요조건(없으면 GPU 병렬 자체를 할 수 없다)이라면, GPU가 그
+배치 구조를 실제로 수천 코어로 동시에 실행하는 장치다. 이 구분을
 “자주 하는 실수“에서 다시 짚는다.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch14_2_batch_fan.svg" alt="1,000개 진자를 θ₀ ∈ [-2.5, 2.5]에서 무작위 시작해 PD 토크로 2,000스텝(=4s 시뮬레이션) 굴린 결과. 상단: 궤적들(회색=20개 중 일부, 파랑=처음 5개) — 모든 궤적이 감쇠 진동하며 θ=0으로 수렴하는 동시에, 출발점마다 다른 위상/진폭이 궤적의 모양으로 남는다. 하단: θ₀의 초기 분포(파랑)와 4s 후의 분포(빨강) — 분포가 0 중심으로 수렴."><span class="img-wrapper"><img src="../../images/ch14_2_batch_fan.svg" alt="1,000개 진자를 θ₀ ∈ [-2.5, 2.5]에서 무작위 시작해 PD 토크로 2,000스텝(=4s 시뮬레이션) 굴린 결과. 상단: 궤적들(회색=20개 중 일부, 파랑=처음 5개) — 모든 궤적이 감쇠 진동하며 θ=0으로 수렴하는 동시에, 출발점마다 다른 위상/진폭이 궤적의 모양으로 남는다. 하단: θ₀의 초기 분포(파랑)와 4s 후의 분포(빨강) — 분포가 0 중심으로 수렴."></span></label></p>
-<p>그림을 보면 <em>모든</em> 궤적이 같은 물리 법칙(같은 코드)을 따르되,
-<em>어디서 출발했는지</em>가 궤적의 <em>모양</em>으로 남는다 — 하단 분포가
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch142batch_fan.svg" alt="1,000개 진자를 θ₀ ∈ [-2.5, 2.5]에서 무작위 시작해 PD 토크로 2,000스텝(=4s 시뮬레이션) 굴린 결과. 상단: 궤적들(회색=20개 중 일부, 파랑=처음 5개) — 모든 궤적이 감쇠 진동하며 θ=0으로 수렴하는 동시에, 출발점마다 다른 위상/진폭이 궤적의 모양으로 남는다. 하단: θ₀의 초기 분포(파랑)와 4s 후의 분포(빨강) — 분포가 0 중심으로 수렴."><span class="img-wrapper"><img src="../../images/ch142batch_fan.svg" alt="1,000개 진자를 θ₀ ∈ [-2.5, 2.5]에서 무작위 시작해 PD 토크로 2,000스텝(=4s 시뮬레이션) 굴린 결과. 상단: 궤적들(회색=20개 중 일부, 파랑=처음 5개) — 모든 궤적이 감쇠 진동하며 θ=0으로 수렴하는 동시에, 출발점마다 다른 위상/진폭이 궤적의 모양으로 남는다. 하단: θ₀의 초기 분포(파랑)와 4s 후의 분포(빨강) — 분포가 0 중심으로 수렴."></span></label></p>
+<p>그림을 보면 모든 궤적이 같은 물리 법칙(같은 코드)을 따르되,
+어디서 출발했는지가 궤적의 모양으로 남는다 — 하단 분포가
 \(\theta_0 \in [-2.5, 2.5]\)의 균등분포에서 4초 뒤 0 중심으로
-수렴하는 것이 <em>수치적</em> 증거다. 이것이 바로 “공유하는 것은
-코드(물리 법칙), 달라지는 것은 상태(초기조건)“의 <em>시각적 증거</em>다.
-CNN에서 같은 필터가 <em>다른 위치의 다른 픽셀</em>을 볼 때 결과가
-위치마다 다르지만 <em>패턴</em>은 공유되는 것과 정확히 같은 구조다.</p>
+수렴하는 것이 수치적 증거다. 이것이 바로 “공유하는 것은
+코드(물리 법칙), 달라지는 것은 상태(초기조건)“의 시각적 증거다.
+CNN에서 같은 필터가 다른 위치의 다른 픽셀을 볼 때 결과가
+위치마다 다르지만 패턴은 공유되는 것과 정확히 같은 구조다.</p>
 <p><strong>“1,000개 진자를 동시에 돌리면, 경험률이 1,000배가 되는가?”</strong>
 이 질문은 이 절의 가장 중요한 개념적 분기점이다. 답은 “<strong>환경
-스텝 기준으로는 <em>예</em>, 정책 업데이트 기준으로는 <em>아니오</em></strong>“다.
-(1) <em>환경 스텝</em>: 4s 시뮬레이션에 걸리는 <em>벽 시간</em>이 CPU 순차 1개
+스텝 기준으로는 예, 정책 업데이트 기준으로는 <em>아니오</em></strong>“다.
+(1) 환경 스텝: 4s 시뮬레이션에 걸리는 벽 시간이 CPU 순차 1개
 진자에서 약 0.008 s × 1,000 = 8 s(순차 1,000개)인데, 배치로
 약 0.11 s → <strong>환경 스텝을 모으는 속도는 약 76배</strong>(위 실측 표)
 늘어난다. 이것이
 Chapter 9의 경험재현 버퍼가 “순식간에 채워지는” 이유다.
-(2) <em>정책 업데이트</em>: 1,000개 진자의 궤적이 <em>동시에</em> 모였다고 해서,
-그 1,000개 <em>트랙</em>을 정책 그래디언트에 <em>한 번에</em> 쓸 수는 <em>없다</em> —
-Chapter 11.2의 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">7</a></sup> 미니배치는 <em>연속된</em> (상태, 행동, 리턴) <em>트플</em>을
-요구하며, 1,000개 <em>독립</em> 트랙을 하나의 미니배치로 묶는 것은
-<em>가능하지만</em> <em>의미가 다르다</em> (각 트랙의 리턴이 <em>자신의</em> 초깃값
+(2) 정책 업데이트: 1,000개 진자의 궤적이 동시에 모였다고 해서,
+그 1,000개 트랙을 정책 그래디언트에 한 번에 쓸 수는 없다 —
+Chapter 11.2의 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footnote-ppo">7</a></sup> 미니배치는 연속된 (상태, 행동, 리턴) 튜플을
+요구하며, 1,000개 독립 트랙을 하나의 미니배치로 묶는 것은
+가능하지만 의미가 다르다 (각 트랙의 리턴이 자신의 초깃값
 분포에서 오므로, 한 미니배치 안의 트랙 간 분산이 커진다 — Chapter
-11.2의 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">8</a></sup> 보너가 이를 일부 처리한다). 즉, <strong>GPU 병렬은 “경험을
-<em>모으는</em> 속도“를 키우고, “경험을 <em>쓰는</em> 효율“은 별개 축</strong>이다
+11.2의 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">8</a></sup>가 이를 일부 처리한다). 즉, <strong>GPU 병렬은 “경험을
+모으는 속도“를 키우고, “경험을 쓰는 효율“은 별개 축</strong>이다
 — 14.3의 “확인“에서 정확히 이 둘을 독립 축으로 정리한다.</p>
 <h3 id="자주-하는-실수-코어가-많으니까-자동으로-빨라진다고-생각하는-것"><a class="header" href="#자주-하는-실수-코어가-많으니까-자동으로-빨라진다고-생각하는-것">자주 하는 실수: “코어가 많으니까 자동으로 빨라진다“고 생각하는 것</a></h3>
 <p>GPU 병렬의 가장 흔한 오류를, “왜 틀린가“까지 붙여 정리한다:</p>
@@ -416,107 +416,107 @@ Chapter 11.2의 PPO<sup class="footnote-reference" id="fr-ppo-1"><a href="#footn
 <tr><th>실수</th><th>왜 틀린가</th></tr>
 </thead>
 <tbody>
-<tr><td><strong>“GPU 코어가 16,384개니까, 16,384배 빠진다”</strong></td><td>Amdahl: <em>순차 부분</em>(동기화, VRAM ↔ host 복사, 정책 업데이트)이 병렬화되면 <em>상수</em>로 묶인다. 환경 스텝만 볼 때 이론적 상한은 코어 수지만, <em>전체</em> 파이프라인(경험 수집 → 미니배치 → 업데이트)의 속도는 <em>최속이 아닌</em> 병렬화 불가 부분이 정한다. 실제 Isaac Sim 벤치마크도 “환경 스텝 ×수천“이지 “×16,384“가 아니다</td></tr>
-<tr><td><strong>“배치(텐서)로 모으는 것 = GPU 병렬”</strong></td><td>배치는 <em>데이터 구조</em>의 필요조건이지, <em>충분</em> 조건이 아니다. numpy가 CPU에서 벡터화해도 <em>코어는 8~16개</em>다. GPU가 그 <em>같은</em> 배치를 <em>수천 코어</em>로 동시에 실행해야 진짜 GPU 병렬이다. “배치로 썼으니까 빠르다“는 <em>CPU에서의</em> 76배(numpy 벡터화 + 오버헤드 제거)와 <em>GPU에서의</em> 수천 배를 혼동하는 것</td></tr>
-<tr><td><strong>“1,000개 환경이 동시에 돌면, PPO 미니배치도 1,000개가 된다”</strong></td><td>미니배치는 <em>연속된 트랙</em>의 (s,a,G) 트플을 묶는 것. 1,000개 <em>독립</em> 트랙을 <em>하나의</em> 미니배치로 묶으면 <em>분산이 커지고</em> GAE 보너의 편향-분산 tradeoff가 달라진다. 실무에서는 <em>경험 수집을 1,000배</em> 빨리하고, <em>미니배치 크기</em>는 <em>알고리즘이 요구하는</em> 크기로 유지한다 (수집을 빨리 → <em>같은</em> 미니배치 크기로 <em>더 자주</em> 업데이트)</td></tr>
-<tr><td><strong>“GPU가 빠르니까, CartPole 실습도 GPU로”</strong></td><td>CartPole 24만 steps/s × 책의 12만 스텝 = 0.5초. GPU로 옮겨도 <em>최소</em> 오버헤드(데이터 복사, 동기화) 때문에 오히려 <em>느려질</em> 수 있다. GPU 병렬의 값은 <em>총 스텝 수가 CPU에서 수 시간~날 단위</em>가 될 때(1억+, 14.3)만 드러난다 — <em>규모 미만의 작업에 GPU는 과잉</em>이다</td></tr>
+<tr><td><strong>“GPU 코어가 16,384개니까, 16,384배 빠진다”</strong></td><td>Amdahl: 순차 부분(동기화, VRAM ↔ host 복사, 정책 업데이트)이 병렬화되면 상수로 묶인다. 환경 스텝만 볼 때 이론적 상한은 코어 수지만, 전체 파이프라인(경험 수집 → 미니배치 → 업데이트)의 속도는 최속이 아닌 병렬화 불가 부분이 정한다. 실제 Isaac Sim 벤치마크도 “환경 스텝 ×수천“이지 “×16,384“가 아니다</td></tr>
+<tr><td><strong>“배치(텐서)로 모으는 것 = GPU 병렬”</strong></td><td>배치는 데이터 구조의 필요조건이지, 충분 조건이 아니다. numpy가 CPU에서 벡터화해도 코어는 8~16개다. GPU가 그 같은 배치를 수천 코어로 동시에 실행해야 진짜 GPU 병렬이다. “배치로 썼으니까 빠르다“는 CPU에서의 76배(numpy 벡터화 + 오버헤드 제거)와 GPU에서의 수천 배를 혼동하는 것</td></tr>
+<tr><td><strong>“1,000개 환경이 동시에 돌면, PPO 미니배치도 1,000개가 된다”</strong></td><td>미니배치는 연속된 트랙의 (s,a,G) 튜플을 묶는 것. 1,000개 독립 트랙을 하나의 미니배치로 묶으면 분산이 커지고 GAE의 편향-분산 tradeoff가 달라진다. 실무에서는 경험 수집을 1,000배 빨리하고, 미니배치 크기는 알고리즘이 요구하는 크기로 유지한다 (수집을 빨리 → 같은 미니배치 크기로 더 자주 업데이트)</td></tr>
+<tr><td><strong>“GPU가 빠르니까, CartPole 실습도 GPU로”</strong></td><td>CartPole 24만 steps/s × 책의 12만 스텝 = 0.5초. GPU로 옮겨도 최소 오버헤드(데이터 복사, 동기화) 때문에 오히려 느려질 수 있다. GPU 병렬의 값은 총 스텝 수가 CPU에서 수 시간~날 단위가 될 때(1억+, 14.3)만 드러난다 — 규모 미만의 작업에 GPU는 과잉이다</td></tr>
 </tbody>
 </table>
 </div>
 <p>공통 원리: <strong>GPU 병렬은 “코어 수 × 데이터 길이“가 아니라 “병렬화
-<em>가능</em>한 부분 × 코어 수“로 결정된다.</strong> “순차 부분“이 작을수록(환경
-스텝이 대부분이고, 동기화가 스텝 경계마다 <em>한 번</em>이면) 이 곱에 가까워
+가능한 부분 × 코어 수“로 결정된다.</strong> “순차 부분“이 작을수록(환경
+스텝이 대부분이고, 동기화가 스텝 경계마다 한 번이면) 이 곱에 가까워
 지지만, “순차 부분“이 크면(정책 업데이트가 환경 스텝과 1:1이면)
 Amdahl 상한이 훨씬 낮아진다.</p>
 <blockquote>
 <p><strong>확인: Amdahl의 법칙이 GPU 시뮬레이션에 어떻게 적용되는가?</strong>
-파이프라인을 (a) 환경 스텝(병렬화 <em>가능</em>, 비율 \(p\))과
-(b) 정책 업데이트 + 동기화(병렬화 <em>불가</em>, 비율 \(1-p\))로
-나눌 때, \(N\)코어 병렬화 후의 <em>전체</em> 가속은
+파이프라인을 (a) 환경 스텝(병렬화 가능, 비율 \(p\))과
+(b) 정책 업데이트 + 동기화(병렬화 불가, 비율 \(1-p\))로
+나눌 때, \(N\)코어 병렬화 후의 전체 가속은
 \[ \frac{1}{(1-p) + p/N} \]
 이다. \(N \to \infty\)해도 가속은 \(\frac{1}{1-p}\)에
-<em>수렴</em>한다 — <em>순차 부분이 10%</em>(\(p=0.9\))면, 코어가 <em>무한</em>이어도
-<em>최대 10배</em>에 그친다. \(p=0.99\)면 100배, \(p=0.999\)면 1,000배.
+수렴한다 — 순차 부분이 10%(\(p=0.9\))면, 코어가 무한이어도
+최대 10배에 그친다. \(p=0.99\)면 100배, \(p=0.999\)면 1,000배.
 Isaac Sim이 “환경 스텝 ×수천“을 달성하려면, \(p\)가 0.999
-<em>이상</em>이어야 한다 — 실제로 Isaac Sim은 <em>환경 스텝을 VRAM 안</em>에서
-<em>순환</em>시켜(호스트 → VRAM 왕복 <em>최소화</em>)와, *정책 업데이트를
-<em>환경 스텝 사이</em>에 삽입(overlap)*함으로써 \(1-p\)를 극도로
-작게 만드는 것이 <em>엔지니어링의 핵심</em>이다. “코어 수만 많으면
-된다“가 아니라, <em>순차 부분을 어떻게 줄이는가</em>가 GPU 시뮬레이터
-설계의 <em>진짜</em> 문제다.</p>
+이상이어야 한다 — 실제로 Isaac Sim은 환경 스텝을 VRAM 안에서
+순환시켜(호스트 → VRAM 왕복 최소화)와, 정책 업데이트를
+환경 스텝 사이에 삽입(overlap)함으로써 \(1-p\)를 극도로
+작게 만드는 것이 엔지니어링의 핵심이다. “코어 수만 많으면
+된다“가 아니라, 순차 부분을 어떻게 줄이는가가 GPU 시뮬레이터
+설계의 진짜 문제다.</p>
 </blockquote>
 <h3 id="확인-문제"><a class="header" href="#확인-문제">확인 문제</a></h3>
 <ol>
 <li>
 <p>(계산) 위 “커널 한 번“의 4단계(행동 배치, 역학, 접촉, 통합)를
-CPU에서 <em>순차</em>로 돌릴 때, 4,096개 환경 스텝 <em>1회</em>에 걸리는
-<em>호출 횟수</em>는 몇 번인가? GPU <em>커널 1회</em> 호출은 같은 계산을
-<em>몇 번</em>의 호출로 하는가? 이 “호출 횟수“의 차이가 “수천 배“의
-<em>정수적</em> 기원임을 한 문장으로 설명하라. (힌트: “호출 1회 안의
+CPU에서 순차로 돌릴 때, 4,096개 환경 스텝 1회에 걸리는
+호출 횟수는 몇 번인가? GPU 커널 1회 호출은 같은 계산을
+몇 번의 호출로 하는가? 이 “호출 횟수“의 차이가 “수천 배“의
+정수적 기원임을 한 문장으로 설명하라. (힌트: “호출 1회 안의
 연산이 데이터 길이만큼 나뉜다“는 구조)</p>
 </li>
 <li>
 <p>(개념) “공유하는 것은 코드(물리 법칙), 달라지는 것은
-상태(초기조건)“를 CNN의 “공유하는 것은 <em>파라미터</em>(필터),
-달라지는 것은 <em>입력 픽셀</em>“과 대응시켜, <em>왜</em> 이 두 구조가
-“병렬“이라는 점에서 <em>같은 뼈대</em>인지 한 문장으로 설명하라.
+상태(초기조건)“를 CNN의 “공유하는 것은 파라미터(필터),
+달라지는 것은 입력 픽셀“과 대응시켜, 왜 이 두 구조가
+“병렬“이라는 점에서 같은 뼈대인지 한 문장으로 설명하라.
 (힌트: “한 번 작성된 연산을, 나란히 놓인 서로 다른 데이터
-요소에 <em>동시에</em> 적용한다”)</p>
+요소에 동시에 적용한다”)</p>
 </li>
 <li>
 <p>(계산 + Amdahl) 환경 스텝이 파이프라인의 99%(\(p=0.99\)),
 정책 업데이트 + 동기화가 1%인 시뮬레이터에서, 1,000코어
-병렬화 후의 <em>전체</em> 가속 배수를 Amdahl 공식으로 구해라.
-\(N \to \infty\) 한계의 <em>이론적 상한</em>도 같이 구하라.
+병렬화 후의 전체 가속 배수를 Amdahl 공식으로 구해라.
+\(N \to \infty\) 한계의 이론적 상한도 같이 구하라.
 (힌트: \(1/((1-p)+p/N)\), \(p=0.99, N=1000\))</p>
 </li>
 <li>
 <p>(코드 읽기) <code>step_batch</code>에서 <code>torque</code>를 (N,) 배열이 아니라
-<em>스칼라</em>(모든 진자에 같은 토크)로 줄이면, (a) “배치” 구조는
-여전히 유지되는가? (b) 1,000개 궤적이 <em>모두</em> 같은 궤적이
-되는가, <em>아니면</em> 서로 다른 궤적이 되는가? (힌트: <code>theta</code>의
-<em>초깃값</em>이 서로 다르면, 같은 토크를 받아도 궤적이 <em>다르다</em> —
-이것이 “공유하는 것은 코드, 달라지는 것은 <em>상태</em>“의 증거)</p>
+스칼라(모든 진자에 같은 토크)로 줄이면, (a) “배치” 구조는
+여전히 유지되는가? (b) 1,000개 궤적이 모두 같은 궤적이
+되는가, 아니면 서로 다른 궤적이 되는가? (힌트: <code>theta</code>의
+초깃값이 서로 다르면, 같은 토크를 받아도 궤적이 다르다 —
+이것이 “공유하는 것은 코드, 달라지는 것은 상태“의 증거)</p>
 </li>
 <li>
 <p>(실습) 노트북의 <code>step_batch</code>에서 <code>N=1,000</code>을 <code>N=10,000</code>으로
 늘려 벽 시간을 재라. (a) “배치” 실행의 초당 스텝 수가
-<em>비례적으로</em> 줄어드는가(=N이 10배면 스텝 수가 10배 줄어)?
-(b) CPU <em>순차</em> 실행의 초당 스텝 수는 N과 무관한가?
-(힌트: <em>배치</em>는 N이 커질수록 <em>1회 연산 안의</em> 연산이 커지므로
-초당 스텝 수(N개 환경 기준)는 <em>변하지 않지만</em>, <em>총</em> 스텝 수는
-N배가 된다. <em>순차</em>는 N이 커질수록 <em>총</em> 시간이 N배로 늘어난다)</p>
+비례적으로 줄어드는가(=N이 10배면 스텝 수가 10배 줄어)?
+(b) CPU 순차 실행의 초당 스텝 수는 N과 무관한가?
+(힌트: 배치는 N이 커질수록 1회 연산 안의 연산이 커지므로
+초당 스텝 수(N개 환경 기준)는 변하지 않지만, 총 스텝 수는
+N배가 된다. 순차는 N이 커질수록 총 시간이 N배로 늘어난다)</p>
 </li>
 </ol>
 <h3 id="역사-gpu로-수천-개를--cuda에서-isaac-sim까지"><a class="header" href="#역사-gpu로-수천-개를--cuda에서-isaac-sim까지">역사: “GPU로 수천 개를” — CUDA에서 Isaac Sim까지</a></h3>
-<p>Isaac Sim의 “GPU로 수천 개를 동시에“라는 아이디어는 <em>새것</em>이 아니다.
+<p>Isaac Sim의 “GPU로 수천 개를 동시에“라는 아이디어는 새것이 아니다.
 그 뿌리는 2007년 NVIDIA가 공개한 <strong>CUDA</strong>(Compute Unified Device
-Architecture)<sup class="footnote-reference" id="fr-cuda-2"><a href="#footnote-cuda">5</a></sup>에 있다 — CUDA가 <em>개발자</em>에게 “GPU 코어에 데이터를
+Architecture)<sup class="footnote-reference" id="fr-cuda-2"><a href="#footnote-cuda">5</a></sup>에 있다 — CUDA가 개발자에게 “GPU 코어에 데이터를
 나란히 놓고, 커널을 한 번 호출하면 수천 개 코어가 동시에 수행한다“는
-<em>프로그래밍 모델</em>을 제공하기 전까지, GPU는 <em>렌더링</em> 전용이었다.
-CUDA가 “데이터 나란히 + 커널 1회“라는 <em>구조</em>를 개발자에게 열었고,
-<em>로봇 물리</em>를 그 구조에 <em>맞춰 재설계</em>한 것이
-<strong>MuJoCo-XLA</strong><sup class="footnote-reference" id="fr-mujocoxla-2"><a href="#footnote-mujocoxla">6</a></sup> (2021, Todorov 등 — 14.1의 MuJoCo를 TPU/GPU로 <em>자동</em>
-병렬화)와, <em>전용</em> 시뮬레이터로 <em>상품화</em>한 <strong>Isaac Sim</strong>(NVIDIA,
+프로그래밍 모델을 제공하기 전까지, GPU는 렌더링 전용이었다.
+CUDA가 “데이터 나란히 + 커널 1회“라는 구조를 개발자에게 열었고,
+로봇 물리를 그 구조에 맞춰 재설계한 것이
+<strong>MuJoCo-XLA</strong><sup class="footnote-reference" id="fr-mujocoxla-2"><a href="#footnote-mujocoxla">6</a></sup> (2021, Todorov 등 — 14.1의 MuJoCo를 TPU/GPU로 자동
+병렬화)와, 전용 시뮬레이터로 상품화한 <strong>Isaac Sim</strong>(NVIDIA,
 2023 정식 출시)<sup class="footnote-reference" id="fr-isaacsim-2"><a href="#footnote-isaacsim">1</a></sup>이다.</p>
-<p>이 흐름의 <em>논리</em>를 한 줄로: <strong>CUDA(2007)가 “GPU에 데이터를 나란히
-놓고 커널 한 번“이라는 <em>프로그래밍 모델</em>을 열었다 → MuJoCo-XLA(2021)가
-<em>정밀 물리</em>(LCP 접촉, 14.1)를 그 모델에 <em>자동</em>으로 옮겼다 → Isaac
-Sim(2023)이 <em>로봇 시뮬레이터 전체</em>(물리 + 렌더링 + 센서)를 그 모델
-위로 <em>상품화</em>했다.</strong> 세 단계 모두 “공유하는 것은 코드, 달라지는
-것은 상태“라는 <em>같은</em> 뼈대 위에, <em>순차 부분</em>을 줄이고 <em>배치 크기</em>를
-크게 하는 <em>엔지니어링</em>의 진화다. 이 주제(대규모 GPU 병렬 강화학습)를
+<p>이 흐름의 논리를 한 줄로: <strong>CUDA(2007)가 “GPU에 데이터를 나란히
+놓고 커널 한 번“이라는 프로그래밍 모델을 열었다 → MuJoCo-XLA(2021)가
+정밀 물리(LCP 접촉, 14.1)를 그 모델에 자동으로 옮겼다 → Isaac
+Sim(2023)이 로봇 시뮬레이터 전체(물리 + 렌더링 + 센서)를 그 모델
+위로 상품화했다.</strong> 세 단계 모두 “공유하는 것은 코드, 달라지는
+것은 상태“라는 같은 뼈대 위에, 순차 부분을 줄이고 배치 크기를
+크게 하는 엔지니어링의 진화다. 이 주제(대규모 GPU 병렬 강화학습)를
 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">9</a></sup></p>
 <p><strong>Isaac Sim이 “RT 코어가 필요하다“는 제약의 이유</strong>도 이 역사와
-직결된다. Isaac Sim은 <em>물리</em>만 GPU로 돌리는 게 아니라, <em>렌더링</em>
-(카메라 센서 시뮬레이션)까지 GPU에서 돌린다 — 렌더링은 <em>광선
-추적</em>(ray tracing)을 쓸 때 <em>실시간</em>으로 가능하려면, GPU의 <em>RT
-코어</em>(ray tracing 하드웨어)가 필요하다. A100/H100류 <em>데이터센터</em>
-GPU는 <em>학습</em>용이므로 RT 코어가 <em>없다</em> — 그래서 “학교 GPU(H100)로
-Isaac Sim을 못 돌린다“는 제약은 <em>렌더링</em> 축(시각적 리얼리즘)에서
-온다. <strong>물리<em>만</em>이라면 MuJoCo-XLA로 H100에서도 <em>돌릴 수 있다</em> —
-“GPU가 없어서 못 한다“가 아니라, “<em>렌더링</em>을 하려면 <em>이</em> GPU가
-아니다“라는 <em>정확한</em> 이유다.</strong> (14.3의 Q3가 바로 이 지점을
+직결된다. Isaac Sim은 물리만 GPU로 돌리는 게 아니라, 렌더링
+(카메라 센서 시뮬레이션)까지 GPU에서 돌린다 — 렌더링은 광선
+추적(ray tracing)을 쓸 때 실시간으로 가능하려면, GPU의 RT
+코어(ray tracing 하드웨어)가 필요하다. A100/H100류 데이터센터
+GPU는 학습용이므로 RT 코어가 없다 — 그래서 “학교 GPU(H100)로
+Isaac Sim을 못 돌린다“는 제약은 렌더링 축(시각적 리얼리즘)에서
+온다. <strong>물리만이라면 MuJoCo-XLA로 H100에서도 돌릴 수 있다 —
+“GPU가 없어서 못 한다“가 아니라, “렌더링을 하려면 이 GPU가
+아니다“라는 정확한 이유다.</strong> (14.3의 Q3가 바로 이 지점을
 다룬다.)</p>
 <h3 id="자주-묻는-질문"><a class="header" href="#자주-묻는-질문">자주 묻는 질문</a></h3>
 <p><strong>Q. GPU 가속 시뮬레이션에서도 Chapter 9~11의 알고리즘(DQN<sup class="footnote-reference" id="fr-dqn-1"><a href="#footnote-dqn">10</a></sup>, PPO)을
@@ -535,24 +535,24 @@ Isaac Sim을 못 돌린다“는 제약은 <em>렌더링</em> 축(시각적 리�
 GPU 환경이 생기면 그대로 Isaac Sim으로 옮겨서 규모만 키우면 된다 —
 Chapter 13.3에서 확인했듯 “환경만 바뀌고 알고리즘 코드는 그대로“라는
 원칙이 여기에도 적용된다.</p>
-<p><strong>Q. “커널 한 번“의 “한 번“은 <em>진짜</em> 한 번인가 — 4,096개 환경을
-<em>순차</em>로 돌리는 게 아니라 <em>진짜</em> 동시에?</strong> <em>구조적</em>으로는 “한 번“이다
-— <em>호출</em>은 한 번이고, 그 <em>안</em>에서 수천 개 코어가 <em>동시에</em> 수행한다.
-<em>물리적</em>으로는, GPU의 <em>SM</em>(Streaming Multiprocessor)이 <em>워프</em>(32개
-스레드) 단위로 <em>스케줄링</em>하므로, 4,096개 환경이 <em>완벽히</em> 동시에
-끝나는 건 아니다 — <em>대부분</em>이 동시에, <em>일부</em>는 <em>다음</em> 워프
-스케줄링에서 끝난다. 하지만 <em>호출 오버헤드</em>가 <em>일단</em>만 치러지므로,
-<em>순차 4,096회 호출</em>에 비해 <em>총</em> 시간은 <em>수천 분의 1</em>로 줄어든다 —
-“완벽한 동시성“이 아니라, *“호출 오버헤드를 상수로 묶는다”*는
+<p><strong>Q. “커널 한 번“의 “한 번“은 진짜 한 번인가 — 4,096개 환경을
+순차로 돌리는 게 아니라 진짜 동시에?</strong> 구조적으로는 “한 번“이다
+— 호출은 한 번이고, 그 안에서 수천 개 코어가 동시에 수행한다.
+물리적으로는, GPU의 SM(Streaming Multiprocessor)이 워프(32개
+스레드) 단위로 스케줄링하므로, 4,096개 환경이 완벽히 동시에
+끝나는 건 아니다 — 대부분이 동시에, 일부는 다음 워프
+스케줄링에서 끝난다. 하지만 호출 오버헤드가 일단만 치러지므로,
+순차 4,096회 호출에 비해 총 시간은 수천 분의 1로 줄어든다 —
+“완벽한 동시성“이 아니라, “호출 오버헤드를 상수로 묶는다“는
 것이 핵심이다.</p>
-<p><strong>Q. MuJoCo-XLA(14.3에서 나온 대안)와 Isaac Sim은 <em>정확히</em> 무엇이
-다른가?</strong> 둘 다 “정밀 물리를 GPU/TPU로 병렬화“하지만, <em>범위</em>가
-달라. <strong>MuJoCo-XLA</strong>: MuJoCo의 <em>물리만</em>(LCP 접촉 포함, 14.1)을
-XLA/CUDA로 <em>자동</em> 병렬화 — <em>렌더링 없음</em>, <em>CPU MuJoCo와 <em>완전히</em>
-같은 물리</em>. <strong>Isaac Sim</strong>: <em>물리 + 렌더링 + 센서</em>를 <em>전용</em> GPU
-시뮬레이터로 <em>상품화</em> — <em>렌더링</em>(RT 코어 필요)이 <em>추가</em>되고, <em>물리</em>
-엔진도 MuJoCo가 <em>아님</em>(NVIDIA Warp 기반). “정밀 물리만 GPU로“면
-MuJoCo-XLA, “물리 + <em>카메라로 판단하는</em> 정책“이면 Isaac Sim —
+<p><strong>Q. MuJoCo-XLA(14.3에서 나온 대안)와 Isaac Sim은 정확히 무엇이
+다른가?</strong> 둘 다 “정밀 물리를 GPU/TPU로 병렬화“하지만, 범위가
+달라. <strong>MuJoCo-XLA</strong>: MuJoCo의 물리만(LCP 접촉 포함, 14.1)을
+XLA/CUDA로 자동 병렬화 — 렌더링 없음, CPU MuJoCo와 완전히
+같은 물리. <strong>Isaac Sim</strong>: 물리 + 렌더링 + 센서를 전용 GPU
+시뮬레이터로 상품화 — 렌더링(RT 코어 필요)이 추가되고, 물리
+엔진도 MuJoCo가 아님(NVIDIA Warp 기반). “정밀 물리만 GPU로“면
+MuJoCo-XLA, “물리 + 카메라로 판단하는 정책“이면 Isaac Sim —
 14.3의 Q1/Q3가 바로 이 구분을 결정 절차에 넣는다.</p>
 <hr>
 <ol class="footnote-definition">
