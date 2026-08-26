@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
+            window.path_to_searchindex_js = "../../searchindex-c599718f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -402,16 +402,13 @@ training과 validation이 <em>같이</em> 나빠졌다).</p>
     return [F(x)[i] + x[i] for i in range(len(x))]  # F(x) + x
 </code></pre>
 <p><strong>왜 이게 그래디언트를 살리는가</strong>(직관): \(y=F(x)+x\)를 \(x\)로
-미분하면 \(\frac{\partial y}{\partial x} = \frac{\partial F}{\partial x}</p>
-<ul>
-<li>1\)이다. Chapter 9의 \(\prod_l \sigma’(z_l) \cdot W_l\) 곱셈 사슬에서
+미분하면 \(\frac{\partial y}{\partial x} = \frac{\partial F}{\partial x} + 1\)이다. Chapter 9의 \(\prod_l \sigma’(z_l) \cdot W_l\) 곱셈 사슬에서
 \(\frac{\partial F}{\partial x}\)가 아무리 작아져도(그래디언트 소실),
 더해진 <strong>“+1” 항 덕분에 그래디언트가 최소한 1은 유지된 채로 그대로
 전달될 길이 남는다</strong> — 입력을 “건너뛰어” 뒤쪽 층으로 그대로 흘려보내는
 지름길이 있는 셈이다. 이 아이디어 덕분에 100층이 넘는 CNN도 안정적으로
 학습할 수 있게 됐고, Chapter 12에서 배울 Transformer 구조에도 (다른
-형태로) 그대로 쓰인다.</li>
-</ul>
+형태로) 그대로 쓰인다.</p>
 <p><strong>“최소한 1“이 정말로 성립하는가</strong> — 수학적으로 검증해볼 수 있다.
 \(L\)개의 잔차 블록을 쌓았을 때, 마지막 출력 \(x_L\)에 대한 첫
 블록 입력 \(x_0\)의 그래디언트는 연쇄법칙으로:</p>

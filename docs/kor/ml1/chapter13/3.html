@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
+            window.path_to_searchindex_js = "../../searchindex-c599718f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -375,11 +375,8 @@ SFT에서는 정답 토큰이 주어지므로 각 토큰의 손실을 <strong>�
 (\(\pi = \pi_{\text{ref}}\)) KL은 정확히 \(0\)이고
 (동일 분포는 이탈이 없으므로), A에 확률을 몰아붙인 극단적
 정책 \(\pi = (0.95, 0.05)\)의 KL은</p>
-<p>\[D_{KL}(\pi\|_{\text{ref}}) = 0.95 \cdot \log(0.95/0.5)</p>
-<ul>
-<li>0.05 \cdot \log(0.05/0.5) \approx 0.610 - 0.115
-\approx 0.495\]</li>
-</ul>
+<p>\[D_{KL}(\pi\|_{\text{ref}}) = 0.95 \cdot \log(0.95/0.5) + 0.05 \cdot \log(0.05/0.5) \approx 0.610 - 0.115
+\approx 0.495\]</p>
 <p>— 기준에서 <strong>약 0.5</strong>만큼 벗어남을 나타낸다. \(\beta = 1\)이면
 이 이탈에 0.5의 <strong>벌</strong>이 붙는 셈이다. KL이 0(동일)에서 0.5(극단적
 편향)으로 커지는 모습이, “기준 모델의 말투에서 얼마나 벗어났는가“를
@@ -472,10 +469,7 @@ RLHF 목적함수 \(J(\theta) = \mathbb{E}[r] - \beta D_{KL}\)를
 <p>라는 <strong>닫힌 형태</strong>(closed form)로 표현된다는 것을 보일 수
 있다(\(Z(x)\)는 질문 \(x\)에 대한 노멀라이제이션
 상수). 다시 말해, <strong>보상함수 \(r\) 자체가</strong></p>
-<p>\[r(x,y) = \beta \log \frac{\pi^*(y|x)}{\pi_{\text{ref}}(y|x)}</p>
-<ul>
-<li>\beta \log Z(x)\]</li>
-</ul>
+<p>\[r(x,y) = \beta \log \frac{\pi^*(y|x)}{\pi_{\text{ref}}(y|x)} + \beta \log Z(x)\]</p>
 <p>로 <strong>역산(inversion</strong>)된다 — “RLHF에서 최적 정책과 보상함수는
 서로의 변환“이라는 관계다. 이 \(r\)을 BT 손실에 대입하면,
 \(\beta \log Z(x)\)가 \(y_w\), \(y_l\) <strong>둘에 공통</strong>으로

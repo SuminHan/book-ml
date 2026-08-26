@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
+            window.path_to_searchindex_js = "../../searchindex-c599718f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -343,13 +343,7 @@ A_{t+1}^{\text{GAE}}\) — “지금의 TD 오차 + 할인된 미래 GAE“다.
 를 <strong>학습 가능한</strong> 파라미터로 두었는데, 그럼 무엇이 <code>log_std</code>를
 줄여(탐험을 줄여) 갈까? 답은 PPO 목적함수의 세 번째 항,
 <strong>엔트로피 보너스</strong>다:</p>
-<p>\[L^{PPO}(\theta) = \mathbb{E}_t\left[L^{CLIP}_t(\theta)\right]</p>
-<ul>
-<li>c_v\,\mathbb{E}_t\left[(V_\theta(s_t) - R_t)^2\right]</li>
-</ul>
-<ul>
-<li>c_e\,\mathbb{E}_t\left[\underbrace{H\left[\pi_\theta(\cdot|s_t)\right]}_{\text{엔트로피 보너스}}\right]\]</li>
-</ul>
+<p>\[L^{PPO}(\theta) = \mathbb{E}_t\left[L^{CLIP}_t(\theta)\right] - c_v\,\mathbb{E}_t\left[(V_\theta(s_t) - R_t)^2\right] + c_e\,\mathbb{E}_t\left[\underbrace{H\left[\pi_\theta(\cdot|s_t)\right]}_{\text{엔트로피 보너스}}\right]\]</p>
 <ul>
 <li>\(L^{CLIP}\): 11.2절의 클리핑 항(정책 = actor).</li>
 <li>두 번째 항: critic의 TD/리턴 손실 — \(V\)를 어드밴티지 계산에

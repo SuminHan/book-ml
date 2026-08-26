@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
+            window.path_to_searchindex_js = "../../searchindex-c599718f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -491,23 +491,12 @@ GBDT의 경우, 각 트리의 분기 경로를 따라가면서 “특징 j가 �
 <p>“특징 n개가 30개면 순서가 \(n!\)개“라는 문제를, 실제로 GBDT를
 학습하고 <strong>400개의 무작위 순서</strong>로 SHAP을 근사하는 실습으로
 확인해보자. 어떤 특징이 실제로 중요한지 <strong>알고 만든</strong> 4개 특징
-합성 데이터를 쓰는데, 신호 \(z = 0.9 f_0 - 0.8 f_1 + 0.5\sin(f_2)</p>
+합성 데이터를 쓰는데, 신호 \(z = 0.9 f_0 - 0.8 f_1 + 0.5\sin(f_2) - 0.3 f_3 + \text{잡음}\)이 양수면 클래스 1이다. 즉:</p>
 <ul>
-<li>
-<p>0.3 f_3 + \text{잡음}\)이 양수면 클래스 1이다. 즉:</p>
-</li>
-<li>
-<p>\(f_0\): <strong>강한 양의</strong> 신호 (계수 +0.9)</p>
-</li>
-<li>
-<p>\(f_1\): <strong>강한 음의</strong> 신호 (계수 -0.8)</p>
-</li>
-<li>
-<p>\(f_2\): <strong>중간, 비선형</strong> 신호 (\(0.5\sin\))</p>
-</li>
-<li>
-<p>\(f_3\): <strong>약한 음의</strong> 신호 (계수 -0.3)</p>
-</li>
+<li>\(f_0\): <strong>강한 양의</strong> 신호 (계수 +0.9)</li>
+<li>\(f_1\): <strong>강한 음의</strong> 신호 (계수 -0.8)</li>
+<li>\(f_2\): <strong>중간, 비선형</strong> 신호 (\(0.5\sin\))</li>
+<li>\(f_3\): <strong>약한 음의</strong> 신호 (계수 -0.3)</li>
 </ul>
 <p>이 데이터를 GBDT(80트리, depth 2)로 학습하고, 예측 확률이 0.3~0.7
 사이인 “가운데쯤“인 점 하나(모든 \(\phi_j\)가 0으로 수렴하는 포화점

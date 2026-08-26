@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
+            window.path_to_searchindex_js = "../../searchindex-c599718f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -290,17 +290,8 @@ clip 안 한 쪽(원래 곡선)이 더 작아서 그대로 채택된다. “나�
 구조(Chapter 10.3)이기 때문에, 위에 소개한 \(L^{CLIP}\)은 전체
 목적함수의 <strong>정책(Actor) 부분</strong>만이다. 실제 미니배치 갱신에서는 세
 항이 합쳐진다:</p>
-<p>\[L(\theta) = \underbrace{\mathbb{E}_t\left[\min\left(r_t(\theta) A_t,
-\text{clip}(r_t, 1-\epsilon, 1+\epsilon) A_t\right)\right]}_{\text{정책
-손실(위 }L^{CLIP}\text{), 최대화}}</p>
-<ul>
-<li>\underbrace{c_v \, \mathbb{E}_t\left[\left(V_\theta(s_t) -
-\hat{R}_t\right)^2\right]}_{\text{Critic 손실(최소화)}}</li>
-</ul>
-<ul>
-<li>\underbrace{c_e \, \mathbb{E}_t\left[\mathcal{H}(\pi_\theta(\cdot|s_t))\right]}_{\text{엔트로피 보너스(탐험 유지)}}\]</li>
-</ul>
-<p>여기서 \(V_\theta\)는 10.3절의 Critic(가치함수 추정 신경망),
+<p>\[L(\theta) = \underbrace{\mathbb{E}_t\left[\min\left(r_t(\theta) A_t, \text{clip}(r_t, 1-\epsilon, 1+\epsilon) A_t\right)\right]}_{\text{정책 손실(위 }L^{CLIP}\text{), 최대화}} - \underbrace{c_v \, \mathbb{E}_t\left[\left(V_\theta(s_t) - \hat{R}_t\right)^2\right]}_{\text{Critic 손실(최소화)}} + \underbrace{c_e \, \mathbb{E}_t\left[\mathcal{H}(\pi_\theta(\cdot|s_t))\right]}_{\text{엔트로피 보너스(탐험 유지)}}\]
+여기서 \(V_\theta\)는 10.3절의 Critic(가치함수 추정 신경망),
 \(\hat{R}_t\)는 Critic을 업데이트할 때 쓰이는 목표값(실습에서는
 GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">3</a></sup>로 계산한 어드밴티지에 \(V\)를 더한 리턴 추정),
 \(\mathcal{H}\)는 정책 분포의 엔트로피다. 세 번째 항은 Chapter
@@ -355,16 +346,7 @@ GAE<sup class="footnote-reference" id="fr-gae-1"><a href="#footnote-gae">3</a></
 \(\mathcal{N}(\mu_\theta(s),\, \sigma_\theta^2)\)의
 가능도(density</strong>)다. 이 분포의 로그가능도를 미분해보면(실습 노트북
 3부에서 유도 확인):</p>
-<p>\[\log \pi_\theta(a|s) = -\frac{1}{2}\left(\frac{a-\mu_\theta(s)}
-{\sigma_\theta}\right)^2 - \log\sigma_\theta + \text{const}
-\;\;\Rightarrow\;\;
-\nabla_\theta \log \pi_\theta(a|s)
-= \underbrace{\frac{a-\mu_\theta(s)}{\sigma_\theta^2}
-\, \nabla_\theta \mu_\theta(s)}_{\mu\ \text{항}}</p>
-<ul>
-<li>\underbrace{\frac{(a-\mu_\theta(s))^2-\sigma_\theta^2}{\sigma_\theta^3}
-\, \nabla_\theta \sigma_\theta}_{\sigma\ \text{항}}\]</li>
-</ul>
+<p>\[\log \pi_\theta(a|s) = -\frac{1}{2}\left(\frac{a-\mu_\theta(s)} {\sigma_\theta}\right)^2 - \log\sigma_\theta + \text{const} \;\;\Rightarrow\;\; \nabla_\theta \log \pi_\theta(a|s) = \underbrace{\frac{a-\mu_\theta(s)}{\sigma_\theta^2} \, \nabla_\theta \mu_\theta(s)}_{\mu\ \text{항}} + \underbrace{\frac{(a-\mu_\theta(s))^2-\sigma_\theta^2}{\sigma_\theta^3} \, \nabla_\theta \sigma_\theta}_{\sigma\ \text{항}}\]</p>
 <p>(정규분포의 로그가능도에는 \(-\log\sigma\) 정규화 항이 있어
 \(\sigma\) 미분식에 \(-1/\sigma\)가 더해진다 — 이 항을 빼먹으면
 \(\sigma\) 미분식이 틀어진다.)</p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
+            window.path_to_searchindex_js = "../../searchindex-c599718f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -273,10 +273,7 @@ for t in reversed(range(T)):
 p_k}\frac{\partial p_k}{\partial z_j}
 = \sum_k \left(-\frac{y_k}{p_k}\right) p_k(\delta_{kj}-p_j)
 = \sum_k -y_k(\delta_{kj}-p_j)\]</p>
-<p>\[= -\underbrace{\sum_k y_k\delta_{kj}}_{=\,y_j}</p>
-<ul>
-<li>p_j\underbrace{\sum_k y_k}_{=\,1} = -y_j + p_j\]</li>
-</ul>
+<p>\[= -\underbrace{\sum_k y_k\delta_{kj}}_{=\,y_j} + p_j\underbrace{\sum_k y_k}_{=\,1} = -y_j + p_j\]</p>
 <p>즉 \(\frac{\partial L}{\partial z_j} = p_j - y_j = p_j -
 \mathbb{1}[j=k]\) — softmax의 \(p_k\)가 크로스엔트로피의
 \(1/p_k\)와 <strong>상쇄</strong>되기 때문에 남은 게 예측·정답의 차이뿐이다.</p>
@@ -304,12 +301,9 @@ W_{hy}=\begin{bmatrix}0.6 &amp; -0.4\\0.1 &amp; 0.5\\-0.2 &amp; 0.3\end{bmatrix}
 = \begin{bmatrix}0.2913\\0.4621\end{bmatrix}\]</p>
 <p>(여기서 \(e_a=[1,0,0]^{\top}\). \(\tanh(0.3)\approx0.2913\),
 \(\tanh(0.5)\approx0.4621\).) 시점 2(입력 <code>b</code> = \([0,1,0]\)):</p>
-<p>\[z_2 = W_{xh}e_b + W_{hh}h_1 = \begin{bmatrix}-0.2\\0.1\end{bmatrix}</p>
-<ul>
-<li>\begin{bmatrix}0.4&amp;0.2\\-0.3&amp;0.5\end{bmatrix}\begin{bmatrix}0.2913\\0.4621\end{bmatrix}
+<p>\[z_2 = W_{xh}e_b + W_{hh}h_1 = \begin{bmatrix}-0.2\\0.1\end{bmatrix} + \begin{bmatrix}0.4&amp;0.2\\-0.3&amp;0.5\end{bmatrix}\begin{bmatrix}0.2913\\0.4621\end{bmatrix}
 = \begin{bmatrix}0.0089\\0.2437\end{bmatrix}, \quad
-h_2 = \tanh(z_2) = \begin{bmatrix}0.0089\\0.2390\end{bmatrix}\]</li>
-</ul>
+h_2 = \tanh(z_2) = \begin{bmatrix}0.0089\\0.2390\end{bmatrix}\]</p>
 <p>이제 각 시점의 출력 분포(softmax):</p>
 <p>\[p_1 = \text{softmax}(W_{hy}h_1) = \begin{bmatrix}0.2937\\0.3848\\0.3215\end{bmatrix},
 \qquad

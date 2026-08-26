@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
+            window.path_to_searchindex_js = "../../searchindex-c599718f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -463,10 +463,7 @@ Google News 60억 단어 말뭉치<sup class="footnote-reference" id="fr-word2ve
 않기 때문.)</p>
 <p>위 실습의 작은 말뭉치에서도 이 <strong>유사도 구조</strong>가 실제로 동작하는지
 확인해보자. “고양이“의 벡터에서 “귀엽다“의 방향을 빼고, “맛있다“의
-방향을 더한 벡터 \(\mathbf{v}_{\text{고양이}} - \mathbf{v}_{\text{귀엽다}}</p>
-<ul>
-<li>\mathbf{v}_{\text{맛있다}}\)와 가장 비슷한 단어를 찾아본다:</li>
-</ul>
+방향을 더한 벡터 \(\mathbf{v}_{\text{고양이}} - \mathbf{v}_{\text{귀엽다}} + \mathbf{v}_{\text{맛있다}}\)와 가장 비슷한 단어를 찾아본다:</p>
 <pre><code class="language-python">target = [a - b + c for a, b, c in zip(emb["고양이는"], emb["귀엽다"], emb["맛있다"])]
 analogy = sorted(((w, cos_sim(target, emb[w])) for w in emb
                   if w not in {"고양이는", "귀엽다", "맛있다"}),

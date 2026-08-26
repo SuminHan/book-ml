@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-4983072f.js";
+            window.path_to_searchindex_js = "searchindex-c599718f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-700b68c6.js"></script>
@@ -4044,19 +4044,11 @@ P(x|y{=}0)P(y{=}0)} = \frac{1}{1 + e^{-z}} = \sigma(z)\]</p>
 전개하면 \(\log P(x|y{=}k) = -\tfrac12 (x - \mu_k)^T \Sigma^{-1} (x -
 \mu_k) + c\)(\(c\)는 \(k\)에 무관한 상수). 이걸 \(z\)에 대입하면 상수
 \(c\)가 분자·분모에서 상쇄된다:</p>
-<p>\[z = -\frac12 (x-\mu_1)^T \Sigma^{-1} (x-\mu_1)</p>
-<ul>
-<li>\frac12 (x-\mu_0)^T \Sigma^{-1} (x-\mu_0)</li>
-<li>\log \frac{\phi}{1-\phi}\]</li>
-</ul>
+<p>\[z = -\frac12 (x-\mu_1)^T \Sigma^{-1} (x-\mu_1) + \frac12 (x-\mu_0)^T \Sigma^{-1} (x-\mu_0) + \log \frac{\phi}{1-\phi}\]</p>
 <p><strong>단계 3</strong>: 이차항 \(\tfrac12 x^T \Sigma^{-1} x\)가 두 항에 똑같이
 나와 <strong>상쇄</strong>되고 남는 것은</p>
-<p>\[z = x^T \Sigma^{-1}(\mu_1 - \mu_0)</p>
-<ul>
-<li>\left[-\frac12 \mu_1^T \Sigma^{-1} \mu_1</li>
-<li>\frac12 \mu_0^T \Sigma^{-1} \mu_0 + \log \frac{\phi}{1-\phi}\right]
-= w^T x + b\]</li>
-</ul>
+<p>\[z = x^T \Sigma^{-1}(\mu_1 - \mu_0) + \left[-\frac12 \mu_1^T \Sigma^{-1} \mu_1 + \frac12 \mu_0^T \Sigma^{-1} \mu_0 + \log \frac{\phi}{1-\phi}\right]
+= w^T x + b\]</p>
 <p>따라서 \(w = \Sigma^{-1}(\mu_1 - \mu_0)\),
 \(b = -\tfrac12 \mu_1^T \Sigma^{-1} \mu_1 + \tfrac12 \mu_0^T \Sigma^{-1}
 \mu_0 + \log \tfrac{\phi}{1-\phi}\). \(z\)는 \(x\)의 <strong>일차식</strong>이므로
@@ -9574,23 +9566,12 @@ GBDT의 경우, 각 트리의 분기 경로를 따라가면서 “특징 j가 �
 <p>“특징 n개가 30개면 순서가 \(n!\)개“라는 문제를, 실제로 GBDT를
 학습하고 <strong>400개의 무작위 순서</strong>로 SHAP을 근사하는 실습으로
 확인해보자. 어떤 특징이 실제로 중요한지 <strong>알고 만든</strong> 4개 특징
-합성 데이터를 쓰는데, 신호 \(z = 0.9 f_0 - 0.8 f_1 + 0.5\sin(f_2)</p>
+합성 데이터를 쓰는데, 신호 \(z = 0.9 f_0 - 0.8 f_1 + 0.5\sin(f_2) - 0.3 f_3 + \text{잡음}\)이 양수면 클래스 1이다. 즉:</p>
 <ul>
-<li>
-<p>0.3 f_3 + \text{잡음}\)이 양수면 클래스 1이다. 즉:</p>
-</li>
-<li>
-<p>\(f_0\): <strong>강한 양의</strong> 신호 (계수 +0.9)</p>
-</li>
-<li>
-<p>\(f_1\): <strong>강한 음의</strong> 신호 (계수 -0.8)</p>
-</li>
-<li>
-<p>\(f_2\): <strong>중간, 비선형</strong> 신호 (\(0.5\sin\))</p>
-</li>
-<li>
-<p>\(f_3\): <strong>약한 음의</strong> 신호 (계수 -0.3)</p>
-</li>
+<li>\(f_0\): <strong>강한 양의</strong> 신호 (계수 +0.9)</li>
+<li>\(f_1\): <strong>강한 음의</strong> 신호 (계수 -0.8)</li>
+<li>\(f_2\): <strong>중간, 비선형</strong> 신호 (\(0.5\sin\))</li>
+<li>\(f_3\): <strong>약한 음의</strong> 신호 (계수 -0.3)</li>
 </ul>
 <p>이 데이터를 GBDT(80트리, depth 2)로 학습하고, 예측 확률이 0.3~0.7
 사이인 “가운데쯤“인 점 하나(모든 \(\phi_j\)가 0으로 수렴하는 포화점
@@ -13500,16 +13481,13 @@ training과 validation이 <em>같이</em> 나빠졌다).</p>
     return [F(x)[i] + x[i] for i in range(len(x))]  # F(x) + x
 </code></pre>
 <p><strong>왜 이게 그래디언트를 살리는가</strong>(직관): \(y=F(x)+x\)를 \(x\)로
-미분하면 \(\frac{\partial y}{\partial x} = \frac{\partial F}{\partial x}</p>
-<ul>
-<li>1\)이다. Chapter 9의 \(\prod_l \sigma’(z_l) \cdot W_l\) 곱셈 사슬에서
+미분하면 \(\frac{\partial y}{\partial x} = \frac{\partial F}{\partial x} + 1\)이다. Chapter 9의 \(\prod_l \sigma’(z_l) \cdot W_l\) 곱셈 사슬에서
 \(\frac{\partial F}{\partial x}\)가 아무리 작아져도(그래디언트 소실),
 더해진 <strong>“+1” 항 덕분에 그래디언트가 최소한 1은 유지된 채로 그대로
 전달될 길이 남는다</strong> — 입력을 “건너뛰어” 뒤쪽 층으로 그대로 흘려보내는
 지름길이 있는 셈이다. 이 아이디어 덕분에 100층이 넘는 CNN도 안정적으로
 학습할 수 있게 됐고, Chapter 12에서 배울 Transformer 구조에도 (다른
-형태로) 그대로 쓰인다.</li>
-</ul>
+형태로) 그대로 쓰인다.</p>
 <p><strong>“최소한 1“이 정말로 성립하는가</strong> — 수학적으로 검증해볼 수 있다.
 \(L\)개의 잔차 블록을 쌓았을 때, 마지막 출력 \(x_L\)에 대한 첫
 블록 입력 \(x_0\)의 그래디언트는 연쇄법칙으로:</p>
@@ -14868,10 +14846,7 @@ for t in reversed(range(T)):
 p_k}\frac{\partial p_k}{\partial z_j}
 = \sum_k \left(-\frac{y_k}{p_k}\right) p_k(\delta_{kj}-p_j)
 = \sum_k -y_k(\delta_{kj}-p_j)\]</p>
-<p>\[= -\underbrace{\sum_k y_k\delta_{kj}}_{=\,y_j}</p>
-<ul>
-<li>p_j\underbrace{\sum_k y_k}_{=\,1} = -y_j + p_j\]</li>
-</ul>
+<p>\[= -\underbrace{\sum_k y_k\delta_{kj}}_{=\,y_j} + p_j\underbrace{\sum_k y_k}_{=\,1} = -y_j + p_j\]</p>
 <p>즉 \(\frac{\partial L}{\partial z_j} = p_j - y_j = p_j -
 \mathbb{1}[j=k]\) — softmax의 \(p_k\)가 크로스엔트로피의
 \(1/p_k\)와 <strong>상쇄</strong>되기 때문에 남은 게 예측·정답의 차이뿐이다.</p>
@@ -14899,12 +14874,9 @@ W_{hy}=\begin{bmatrix}0.6 &amp; -0.4\\0.1 &amp; 0.5\\-0.2 &amp; 0.3\end{bmatrix}
 = \begin{bmatrix}0.2913\\0.4621\end{bmatrix}\]</p>
 <p>(여기서 \(e_a=[1,0,0]^{\top}\). \(\tanh(0.3)\approx0.2913\),
 \(\tanh(0.5)\approx0.4621\).) 시점 2(입력 <code>b</code> = \([0,1,0]\)):</p>
-<p>\[z_2 = W_{xh}e_b + W_{hh}h_1 = \begin{bmatrix}-0.2\\0.1\end{bmatrix}</p>
-<ul>
-<li>\begin{bmatrix}0.4&amp;0.2\\-0.3&amp;0.5\end{bmatrix}\begin{bmatrix}0.2913\\0.4621\end{bmatrix}
+<p>\[z_2 = W_{xh}e_b + W_{hh}h_1 = \begin{bmatrix}-0.2\\0.1\end{bmatrix} + \begin{bmatrix}0.4&amp;0.2\\-0.3&amp;0.5\end{bmatrix}\begin{bmatrix}0.2913\\0.4621\end{bmatrix}
 = \begin{bmatrix}0.0089\\0.2437\end{bmatrix}, \quad
-h_2 = \tanh(z_2) = \begin{bmatrix}0.0089\\0.2390\end{bmatrix}\]</li>
-</ul>
+h_2 = \tanh(z_2) = \begin{bmatrix}0.0089\\0.2390\end{bmatrix}\]</p>
 <p>이제 각 시점의 출력 분포(softmax):</p>
 <p>\[p_1 = \text{softmax}(W_{hy}h_1) = \begin{bmatrix}0.2937\\0.3848\\0.3215\end{bmatrix},
 \qquad
@@ -18283,11 +18255,8 @@ SFT에서는 정답 토큰이 주어지므로 각 토큰의 손실을 <strong>�
 (\(\pi = \pi_{\text{ref}}\)) KL은 정확히 \(0\)이고
 (동일 분포는 이탈이 없으므로), A에 확률을 몰아붙인 극단적
 정책 \(\pi = (0.95, 0.05)\)의 KL은</p>
-<p>\[D_{KL}(\pi\|_{\text{ref}}) = 0.95 \cdot \log(0.95/0.5)</p>
-<ul>
-<li>0.05 \cdot \log(0.05/0.5) \approx 0.610 - 0.115
-\approx 0.495\]</li>
-</ul>
+<p>\[D_{KL}(\pi\|_{\text{ref}}) = 0.95 \cdot \log(0.95/0.5) + 0.05 \cdot \log(0.05/0.5) \approx 0.610 - 0.115
+\approx 0.495\]</p>
 <p>— 기준에서 <strong>약 0.5</strong>만큼 벗어남을 나타낸다. \(\beta = 1\)이면
 이 이탈에 0.5의 <strong>벌</strong>이 붙는 셈이다. KL이 0(동일)에서 0.5(극단적
 편향)으로 커지는 모습이, “기준 모델의 말투에서 얼마나 벗어났는가“를
@@ -18380,10 +18349,7 @@ RLHF 목적함수 \(J(\theta) = \mathbb{E}[r] - \beta D_{KL}\)를
 <p>라는 <strong>닫힌 형태</strong>(closed form)로 표현된다는 것을 보일 수
 있다(\(Z(x)\)는 질문 \(x\)에 대한 노멀라이제이션
 상수). 다시 말해, <strong>보상함수 \(r\) 자체가</strong></p>
-<p>\[r(x,y) = \beta \log \frac{\pi^*(y|x)}{\pi_{\text{ref}}(y|x)}</p>
-<ul>
-<li>\beta \log Z(x)\]</li>
-</ul>
+<p>\[r(x,y) = \beta \log \frac{\pi^*(y|x)}{\pi_{\text{ref}}(y|x)} + \beta \log Z(x)\]</p>
 <p>로 <strong>역산(inversion</strong>)된다 — “RLHF에서 최적 정책과 보상함수는
 서로의 변환“이라는 관계다. 이 \(r\)을 BT 손실에 대입하면,
 \(\beta \log Z(x)\)가 \(y_w\), \(y_l\) <strong>둘에 공통</strong>으로
@@ -19606,10 +19572,7 @@ Google News 60억 단어 말뭉치<sup class="footnote-reference" id="fr-word2ve
 않기 때문.)</p>
 <p>위 실습의 작은 말뭉치에서도 이 <strong>유사도 구조</strong>가 실제로 동작하는지
 확인해보자. “고양이“의 벡터에서 “귀엽다“의 방향을 빼고, “맛있다“의
-방향을 더한 벡터 \(\mathbf{v}_{\text{고양이}} - \mathbf{v}_{\text{귀엽다}}</p>
-<ul>
-<li>\mathbf{v}_{\text{맛있다}}\)와 가장 비슷한 단어를 찾아본다:</li>
-</ul>
+방향을 더한 벡터 \(\mathbf{v}_{\text{고양이}} - \mathbf{v}_{\text{귀엽다}} + \mathbf{v}_{\text{맛있다}}\)와 가장 비슷한 단어를 찾아본다:</p>
 <pre><code class="language-python">target = [a - b + c for a, b, c in zip(emb["고양이는"], emb["귀엽다"], emb["맛있다"])]
 analogy = sorted(((w, cos_sim(target, emb[w])) for w in emb
                   if w not in {"고양이는", "귀엽다", "맛있다"}),
@@ -20507,10 +20470,7 @@ def em_step(data, means, sigmas, weights):
 = \mathbb{E}_{z \sim \gamma}\!\left[\frac{p(x, z)}{\gamma(z)}\right]\]</p>
 <p>\(\log\)는 <strong>오목함수</strong>(concave)이므로 옌센 부등식
 (\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 적용하면:</p>
-<p>\[\log p(x) \ge \mathbb{E}_{z \sim \gamma}[\log p(x, z)]</p>
-<ul>
-<li>\mathbb{E}_{z \sim \gamma}[\log \gamma(z)] \;\; \stackrel{\text{def}}{=} \; \mathcal{F}(\theta, \gamma)\]</li>
-</ul>
+<p>\[\log p(x) \ge \mathbb{E}_{z \sim \gamma}[\log p(x, z)] - \mathbb{E}_{z \sim \gamma}[\log \gamma(z)] \;\; \stackrel{\text{def}}{=} \; \mathcal{F}(\theta, \gamma)\]</p>
 <p>우변 \(\mathcal{F}(\theta, \gamma)\)가 우도의 <strong>하한</strong>이다(등호가
 성립하는 조건 — \(\frac{p(x,z)}{\gamma(z)}\)가 \(z\)에 대해 상수,
 즉 \(\gamma\)가 진짜 사후확률 \(p(z|x)\)인 경우 — 을 기억해두라,
@@ -20959,12 +20919,7 @@ D_{KL}\big(q_\phi(z|x) \,\|\, p(z)\big)\]</p>
 <p>여기서 \(\log\)가 오목함수이므로 <strong>옌센 부등식</strong>
 (\(\log \mathbb{E}[X] \ge \mathbb{E}[\log X]\), Chapter 2.3의
 교차 엔트로피 부등식과 같은 근원)을 적용하면:</p>
-<p>\[\log p(x) \ge \mathbb{E}_q\left[\log \frac{p(x,z)}{q(z)}\right]
-= \mathbb{E}_q[\log p(x|z)] + \mathbb{E}_q[\log p(z)] -
-\mathbb{E}_q[\log q(z)] = \underbrace{\mathbb{E}_q[\log p(x|z)]}_{\text{복원 항}}</p>
-<ul>
-<li>\underbrace{D_{KL}(q \| p)}_{\text{정규화 항}}\]</li>
-</ul>
+<p>\[\log p(x) \ge \mathbb{E}_q\left[\log \frac{p(x,z)}{q(z)}\right] = \mathbb{E}_q[\log p(x|z)] + \mathbb{E}_q[\log p(z)] - \mathbb{E}_q[\log q(z)] = \underbrace{\mathbb{E}_q[\log p(x|z)]}_{\text{복원 항}} - \underbrace{D_{KL}(q \| p)}_{\text{정규화 항}}\]</p>
 <p>마지막 등호에서 \(\mathbb{E}_q[\log p(z)] - \mathbb{E}_q[\log q(z)] =
 -D_{KL}(q\|p)\)임을 썼다(\(D_{KL}(q\|p) = \mathbb{E}_q[\log
 q(z)/p(z)]\)의 정의). <strong>옌센 부등식 한 번이 전부</strong>다 — 부등식의
@@ -24026,7 +23981,7 @@ RLHF(Chapter 12)<sup class="footnote-reference" id="fr-instructgpt-1-5"><a href=
 가르쳤다면, ML2는 <em>어떤 문제를, 어떤 형태로 학습하는가</em>라는
 <em>틀</em>을 가르친다. 이 “틀“이 바로 <strong>강화학습</strong>이다 —</p>
 <ul>
-<li>지도학습의 “정답 \(y\)“이 <strong>보상 \(R\</strong>)으로 바뀐다.</li>
+<li>지도학습의 “정답 \(y\)“이 **보상 \(R\)**으로 바뀐다.</li>
 <li>비지도학습의 “구조“가 <strong>에피소드</strong>(행동-보상의 시퀀스)로
 바뀐다.</li>
 <li>“경사하강법“은 <em>그대로</em> 사용되지만, 이제 그 경사는
@@ -26156,12 +26111,9 @@ Chapter 6이 오는 날 낯설지 않게 된다.</p>
 각 스텝의 보상은 \(R(s^*, a) = q^*(a)\)가 매번 반복되므로:</p>
 <p>\[V^\pi(s^*) = q^*(a) + \gamma\, q^*(a) + \gamma^2 q^*(a) + \cdots
 = \frac{q^*(a)}{1 - \gamma}\]</p>
-<p>이게 바로 <strong>1-상태 MDP의 벨만방정식</strong> \(V^\pi(s^*) = R(s^*, \pi(s^*))</p>
-<ul>
-<li>\gamma \sum_{s’} P(s’|s^*, \pi(s^*)) V^\pi(s’)\)을, 전이 확률이
+<p>이게 바로 <strong>1-상태 MDP의 벨만방정식</strong> \(V^\pi(s^*) = R(s^*, \pi(s^*)) + \gamma \sum_{s’} P(s’|s^*, \pi(s^*)) V^\pi(s’)\)을, 전이 확률이
 \(P(s^*|s^*, a)=1\)뿐이고 다음 상태도 \(s^*\)뿐이므로 줄인 형태다.
-합이 기하급수여서 닫힌해가 바로 \(q^*(a)/(1-\gamma)\)로 나온 것이다.</li>
-</ul>
+합이 기하급수여서 닫힌해가 바로 \(q^*(a)/(1-\gamma)\)로 나온 것이다.</p>
 <p><strong>γ가 0이면:</strong> \(V^\pi(s^*) = q^*(a)\) — “이 스텝의 보상만
 고려하라“는 극단이고, 밴딧의 “이번 당김에서 평균 보상이 얼마인가”
 (= \(q^*(a)\))와 정확히 일치한다. <strong>γ가 1에 가까울수록</strong>
@@ -31020,10 +30972,7 @@ TD(0)는 이 둘의 장점을 한 식 안에 합친다 — 모델은 쓰지 않�
 진행한 뒤, 관찰한 보상 \(r\)과 도착한 상태 \(s’\)의 가치 추정
 \(V(s’)\)를 합치면 “사후적으로” 더 그럴듯한 평가
 \(r + \gamma V(s’)\)가 생긴다. 두 것의 차이</p>
-<p>\[\delta = \underbrace{r + \gamma V(s’)}_{\text{사후 평가}}</p>
-<ul>
-<li>\underbrace{V(s)}_{\text{사전 예측}}\]</li>
-</ul>
+<p>\[\delta = \underbrace{r + \gamma V(s’)}_{\text{사후 평가}} - \underbrace{V(s)}_{\text{사전 예측}}\]</p>
 <p>가 바로 예측 오차(prediction error)다. \(\delta &gt; 0\)이면
 “예상보다 좋았다” → 추정치를 올리고, \(\delta &lt; 0\)이면
 “예상보다 나빴다” → 내리는 것이다. 손계산의 첫 에피소드에서
@@ -38572,17 +38521,8 @@ clip 안 한 쪽(원래 곡선)이 더 작아서 그대로 채택된다. “나�
 구조(Chapter 10.3)이기 때문에, 위에 소개한 \(L^{CLIP}\)은 전체
 목적함수의 <strong>정책(Actor) 부분</strong>만이다. 실제 미니배치 갱신에서는 세
 항이 합쳐진다:</p>
-<p>\[L(\theta) = \underbrace{\mathbb{E}_t\left[\min\left(r_t(\theta) A_t,
-\text{clip}(r_t, 1-\epsilon, 1+\epsilon) A_t\right)\right]}_{\text{정책
-손실(위 }L^{CLIP}\text{), 최대화}}</p>
-<ul>
-<li>\underbrace{c_v \, \mathbb{E}_t\left[\left(V_\theta(s_t) -
-\hat{R}_t\right)^2\right]}_{\text{Critic 손실(최소화)}}</li>
-</ul>
-<ul>
-<li>\underbrace{c_e \, \mathbb{E}_t\left[\mathcal{H}(\pi_\theta(\cdot|s_t))\right]}_{\text{엔트로피 보너스(탐험 유지)}}\]</li>
-</ul>
-<p>여기서 \(V_\theta\)는 10.3절의 Critic(가치함수 추정 신경망),
+<p>\[L(\theta) = \underbrace{\mathbb{E}_t\left[\min\left(r_t(\theta) A_t, \text{clip}(r_t, 1-\epsilon, 1+\epsilon) A_t\right)\right]}_{\text{정책 손실(위 }L^{CLIP}\text{), 최대화}} - \underbrace{c_v \, \mathbb{E}_t\left[\left(V_\theta(s_t) - \hat{R}_t\right)^2\right]}_{\text{Critic 손실(최소화)}} + \underbrace{c_e \, \mathbb{E}_t\left[\mathcal{H}(\pi_\theta(\cdot|s_t))\right]}_{\text{엔트로피 보너스(탐험 유지)}}\]
+여기서 \(V_\theta\)는 10.3절의 Critic(가치함수 추정 신경망),
 \(\hat{R}_t\)는 Critic을 업데이트할 때 쓰이는 목표값(실습에서는
 GAE<sup class="footnote-reference" id="fr-gae-1-5"><a href="#footnote-gae-5">3</a></sup>로 계산한 어드밴티지에 \(V\)를 더한 리턴 추정),
 \(\mathcal{H}\)는 정책 분포의 엔트로피다. 세 번째 항은 Chapter
@@ -38637,16 +38577,7 @@ GAE<sup class="footnote-reference" id="fr-gae-1-5"><a href="#footnote-gae-5">3</
 \(\mathcal{N}(\mu_\theta(s),\, \sigma_\theta^2)\)의
 가능도(density</strong>)다. 이 분포의 로그가능도를 미분해보면(실습 노트북
 3부에서 유도 확인):</p>
-<p>\[\log \pi_\theta(a|s) = -\frac{1}{2}\left(\frac{a-\mu_\theta(s)}
-{\sigma_\theta}\right)^2 - \log\sigma_\theta + \text{const}
-\;\;\Rightarrow\;\;
-\nabla_\theta \log \pi_\theta(a|s)
-= \underbrace{\frac{a-\mu_\theta(s)}{\sigma_\theta^2}
-\, \nabla_\theta \mu_\theta(s)}_{\mu\ \text{항}}</p>
-<ul>
-<li>\underbrace{\frac{(a-\mu_\theta(s))^2-\sigma_\theta^2}{\sigma_\theta^3}
-\, \nabla_\theta \sigma_\theta}_{\sigma\ \text{항}}\]</li>
-</ul>
+<p>\[\log \pi_\theta(a|s) = -\frac{1}{2}\left(\frac{a-\mu_\theta(s)} {\sigma_\theta}\right)^2 - \log\sigma_\theta + \text{const} \;\;\Rightarrow\;\; \nabla_\theta \log \pi_\theta(a|s) = \underbrace{\frac{a-\mu_\theta(s)}{\sigma_\theta^2} \, \nabla_\theta \mu_\theta(s)}_{\mu\ \text{항}} + \underbrace{\frac{(a-\mu_\theta(s))^2-\sigma_\theta^2}{\sigma_\theta^3} \, \nabla_\theta \sigma_\theta}_{\sigma\ \text{항}}\]</p>
 <p>(정규분포의 로그가능도에는 \(-\log\sigma\) 정규화 항이 있어
 \(\sigma\) 미분식에 \(-1/\sigma\)가 더해진다 — 이 항을 빼먹으면
 \(\sigma\) 미분식이 틀어진다.)</p>
@@ -39023,13 +38954,7 @@ A_{t+1}^{\text{GAE}}\) — “지금의 TD 오차 + 할인된 미래 GAE“다.
 를 <strong>학습 가능한</strong> 파라미터로 두었는데, 그럼 무엇이 <code>log_std</code>를
 줄여(탐험을 줄여) 갈까? 답은 PPO 목적함수의 세 번째 항,
 <strong>엔트로피 보너스</strong>다:</p>
-<p>\[L^{PPO}(\theta) = \mathbb{E}_t\left[L^{CLIP}_t(\theta)\right]</p>
-<ul>
-<li>c_v\,\mathbb{E}_t\left[(V_\theta(s_t) - R_t)^2\right]</li>
-</ul>
-<ul>
-<li>c_e\,\mathbb{E}_t\left[\underbrace{H\left[\pi_\theta(\cdot|s_t)\right]}_{\text{엔트로피 보너스}}\right]\]</li>
-</ul>
+<p>\[L^{PPO}(\theta) = \mathbb{E}_t\left[L^{CLIP}_t(\theta)\right] - c_v\,\mathbb{E}_t\left[(V_\theta(s_t) - R_t)^2\right] + c_e\,\mathbb{E}_t\left[\underbrace{H\left[\pi_\theta(\cdot|s_t)\right]}_{\text{엔트로피 보너스}}\right]\]</p>
 <ul>
 <li>\(L^{CLIP}\): 11.2절의 클리핑 항(정책 = actor).</li>
 <li>두 번째 항: critic의 TD/리턴 손실 — \(V\)를 어드밴티지 계산에
