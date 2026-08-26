@@ -9,7 +9,12 @@ def check(path):
         pass
     n_open_inline = html.count('\\(')
     n_close_inline = html.count('\\)')
-    n_open_block = html.count('\\[')
+    # LaTeX "\[Npt]" row-spacing inside cases/array environments (e.g. "\\[6pt]")
+    # is valid LaTeX (a bare "]" with no preceding backslash), not a block-math
+    # delimiter pair -- exclude its "\[" from the open count so it doesn't
+    # produce a false-positive mismatch (it never contributes a "\]" close).
+    spacing_directives = len(re.findall(r'\\\[\d+(?:pt|em|ex|mm|cm|in)\]', html))
+    n_open_block = html.count('\\[') - spacing_directives
     n_close_block = html.count('\\]')
     if n_open_inline != n_close_inline:
         issues.append(f"inline delimiter mismatch: \\( ={n_open_inline} \\)={n_close_inline}")
