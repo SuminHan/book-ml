@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0be6374e.js";
+            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -183,6 +183,7 @@
 <h3 id="퍼셉트론-ai의-시작이었고-ai의-실망이기도-했던-모델"><a class="header" href="#퍼셉트론-ai의-시작이었고-ai의-실망이기도-했던-모델">퍼셉트론: “AI의 시작“이었고 “AI의 실망“이기도 했던 모델</a></h3>
 <p>1958년 프랭크 로젠블라트(Frank Rosenblatt)가 코넬 대학에서 <strong>퍼셉트론</strong>(perceptron)<sup class="footnote-reference" id="fr-perceptron-1"><a href="#footnote-perceptron">1</a></sup>을 발표했을 때, 대중매체는 “컴퓨터가 배운다”, “컴퓨터가 본다”, 심지어 “우주 탐사에 쓰일 1세대 로봇“이라고 보도했다. 로젠블라트는 코넬의 계산기 연구소(Cornell Aeronautical Laboratory)에 재직 중이었고, 퍼셉트론은 실제로 (당시 기준으로) 비행기 조종사의 얼굴을 인식하는 실험까지 했다. 모델은 Chapter 2의 로지스틱회귀와 거의 같다 — 시그모이드 대신 <strong>스텝함수</strong> \(\text{sgn}(z)\)를 쓴 것만 차이:</p>
 <p>\[\hat{y} = \text{sgn}\left(\sum_{j=1}^{d} w_j x_j + b\right) = \text{sgn}(w^Tx + b)\]</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch09_1_sgn_vs_sigmoid.svg" alt="sgn(z) vs sigma(z) — 퍼셉트론의 스텝함수(파랑, z=0에서 -1→1로 불연속 도약)와 로지스틱회귀의 시그모이드(주황 점선, 0에서 1로 매끄럽게 전이)를 겹쳐 그린 그래프. z=0에서 sgn(0)=1(채워진 점)로 정의하고, -1 branch는 z=0을 포함하지 않는다(빈 원)."><span class="img-wrapper"><img src="../../images/ch09_1_sgn_vs_sigmoid.svg" alt="sgn(z) vs sigma(z) — 퍼셉트론의 스텝함수(파랑, z=0에서 -1→1로 불연속 도약)와 로지스틱회귀의 시그모이드(주황 점선, 0에서 1로 매끄럽게 전이)를 겹쳐 그린 그래프. z=0에서 sgn(0)=1(채워진 점)로 정의하고, -1 branch는 z=0을 포함하지 않는다(빈 원)."></span></label></p>
 <p>학습법도 Chapter 2.1의 경사하강법의 선조인 <strong>퍼셉트론 학습 규칙</strong> — 틀린 예제에 대해 가중치를 오차 방향으로만 갱신:</p>
 <p>\[\text{틀렸을 때: } w \leftarrow w + yx, \quad \text{맞았을 때: } w \leftarrow w\]</p>
 <p>(이 규칙은 선형분리 가능한 데이터에서 반드시 수렴한다는 <strong>퍼셉트론 수렴 정리</strong><sup class="footnote-reference" id="fr-perceptron-2"><a href="#footnote-perceptron">1</a></sup>가 있다 — Chapter 2.1의 그래디언트 업데이트 \(w \leftarrow w + \alpha \cdot (y-\hat{y})\, x\)와 비교하면, 로지스틱회귀의 업데이트가 “오차 크기에 비례하는 연속형“이고 퍼셉트론 규칙은 그것을 0/1로 끊어버린 이산형이라고 볼 수 있다.) 당시 언론의 흥분은 이해가 된다: <strong>학습하는 기계</strong>를 만들어낸 것이기 때문이다. 그런데 이 흥분은 11년 만에 냉탕으로 떨어진다.</p>

@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0be6374e.js";
+            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -241,7 +241,7 @@ from Incomplete Data via the EM Algorithm“은 통계학에서 가장 많이
 “만약 \(z\)가 알렸다면“은 Chapter 3의 GDA와 똑같이 닫힌 형태로 풀린다 —
 EM은 이 “만약“을 반복적으로 실행하는 알고리즘이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch15_gmm_latent_var.svg" alt="GMM의 잠재변수 다이어그램 — 마름모(π_k, μ_k, σ²_k)는 모수, 빈 원 z_k는 관측되지 않는 잠재변수(어느 클러스터인지), 채워진 원 x_i는 관측 데이터. π_k가 z_k를, z_k와 (μ_k, σ²_k)가 x_i를 만든다"><span class="img-wrapper"><img src="../../images/ch15_gmm_latent_var.svg" alt="GMM의 잠재변수 다이어그램 — 마름모(π_k, μ_k, σ²_k)는 모수, 빈 원 z_k는 관측되지 않는 잠재변수(어느 클러스터인지), 채워진 원 x_i는 관측 데이터. π_k가 z_k를, z_k와 (μ_k, σ²_k)가 x_i를 만든다"></span></label></p>
-<h3 id="em-알고리즘-e-step과-m-step"><a class="header" href="#em-알고리즘-e-step과-m-step">EM 알고리즘: E-step과 M-step</a></h3>
+<h3 id="em-알고리즘4-e-step과-m-step"><a class="header" href="#em-알고리즘4-e-step과-m-step">EM 알고리즘<sup class="footnote-reference" id="fr-dempster1977-1"><a href="#footnote-dempster1977">4</a></sup>: E-step과 M-step</a></h3>
 <p><strong>E-step (Expectation)</strong>: 현재 각 클러스터의 파라미터(평균 \(\mu_k\),
 분산 \(\sigma_k^2\), 클러스터 비율 \(\pi_k\))가 주어졌다고 가정하고,
 각 데이터 점 \(x_i\)가 클러스터 \(k\)에 속할 사후확률(<strong>책임값</strong>,
@@ -315,7 +315,7 @@ def em_step(data, means, sigmas, weights):
 \mathcal{F}(\theta_{\text{new}}, \gamma) \ge
 \mathcal{F}(\theta_{\text{old}}, \gamma) =
 \log p(x; \theta_{\text{old}})\) — <strong>우도가 매 반복마다
-절대 줄지 않는다</strong>. 15.2절의 VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">4</a></sup>는 “E-step의 사후확률을 정확히
+절대 줄지 않는다</strong>. 15.2절의 VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">5</a></sup>는 “E-step의 사후확률을 정확히
 계산할 수 없을 때(연속 무한한 잠재변수) 이 하한을 신경망
 \(q_\phi(z|x)\)로 근사해서 역전파로 올린다“는 알고리즘이므로,
 EM과 VAE는 <em>같은 부등식의 두 실행 전략</em>이다.</p>
@@ -432,7 +432,7 @@ EM을 돌려보면(노트북 5절):</p>
 쪼개는 것뿐), BIC 벌점(\(p\)가 11에서 15로 늘어)이 판을 뒤집는다.
 4.3절의 엘보우가 “감소폭이 꺾이는 지점“을 <strong>눈</strong>으로 찾았다면, BIC는
 같은 결정을 하나의 <strong>숫자</strong>로 내리는 원리 있는 버전이다.
-EM과 혼합모델을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">5</a></sup>.</p>
+EM과 혼합모델을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">6</a></sup>.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"><span class="img-wrapper"><img src="../../images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"></span></label></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <p><strong>실수 1 — EM을 한 번만 돌려 믿기 (k-means의 실수보다 더 위험하다).</strong>
@@ -460,7 +460,7 @@ k-means의 “나쁜 초기화 → 나쁜 지역최적해”(4.3절)는 GMM에�
 유용하다.</p>
 <h3 id="실습-수반-노트북이-검증하는-것들"><a class="header" href="#실습-수반-노트북이-검증하는-것들">실습: 수반 노트북이 검증하는 것들</a></h3>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_1_em_gmm.ipynb">노트북</a>
-은 numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">6</a></sup>/matplotlib만으로 본문의 코드를 그대로 실행한다: (1) 책의
+은 numpy<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">7</a></sup>/matplotlib만으로 본문의 코드를 그대로 실행한다: (1) 책의
 <code>em_step</code>을 6개 데이터에 돌려 수렴 과정을 추적(1차원), (2) 3개
 블롭 2차원 데이터에서 2D GMM을 EM으로 학습하고 <strong>등고선 +
 책임값 기반 색칠</strong>로 시각화, (3) 무작위 초기화 30회 돌려 <strong>지역
@@ -521,7 +521,7 @@ M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
 \(\epsilon\) 미만” 같은 수렴 기준을 둔다. 또 차원이 높으면
 공분산 행렬 \(\Sigma_k\)가 특이(singular, 역행렬이 없는) 행렬에
 <strong>가깝게</strong> 수렴하기 쉬워서, 실전 라이브러리(<code>sklearn.mixture.GaussianMixture</code>
-등)<sup class="footnote-reference" id="fr-sklearn-1"><a href="#footnote-sklearn">7</a></sup>는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
+등)<sup class="footnote-reference" id="fr-sklearn-1"><a href="#footnote-sklearn">8</a></sup>는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
 공분산을 쓰거나 (iii) \(\Sigma_k + \epsilon I\) 같은
 정규화를 넣는 옵션을 제공한다.</p>
 <p><strong>Q. GMM은 “생성 모델“이라면서 어떻게 데이터를 <em>만들어</em>냅니까?</strong>
@@ -529,7 +529,7 @@ M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
 가지고 있다 — 새 점을 만들려면 (1) 주사위 \(\pi\)로 \(z\)를 뽑고,
 (2) 그 \(z = k\)의 \(\mathcal{N}(\mu_k, \Sigma_k)\)에서 \(x\)를
 샘플링하면 된다. 이 “생성” 능력이 Chapter 15의 나머지 절
-(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">8</a></sup>이 노이즈에서)의
+(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">9</a></sup>이 노이즈에서)의
 “데이터 생성“과 정확히 같은 질문의 가장 단순한 버전이다 —
 연습문제 1이 바로 이 함수를 작성하게 한다.</p>
 <hr>
@@ -623,6 +623,9 @@ Step 3:  log(a/b) = log a - log b로 분해하면:
 </li>
 <li id="footnote-em1977">
 <p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society, Series B (Methodological), 39(1), 1-38. https://doi.org/10.1111/j.2517-6161.1977.tb01682.x <a href="#fr-em1977-1">↩</a></p>
+</li>
+<li id="footnote-dempster1977">
+<p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society: Series B 39(1), 1–22. — EM 알고리즘을 일반적인 형태로 정식화한 원 논문. <a href="#fr-dempster1977-1">↩</a></p>
 </li>
 <li id="footnote-vae">
 <p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1">↩</a></p>

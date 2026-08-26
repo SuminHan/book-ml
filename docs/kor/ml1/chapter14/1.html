@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-0be6374e.js";
+            window.path_to_searchindex_js = "../../searchindex-4983072f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-700b68c6.js"></script>
@@ -191,7 +191,7 @@
 \(k\)를 고르는 법(팔꿈치 방법)도 Chapter 4.3과 동일하다.</p>
 <h3 id="왜-차원을-줄이고-싶은가"><a class="header" href="#왜-차원을-줄이고-싶은가">왜 차원을 줄이고 싶은가</a></h3>
 <p>Chapter 4.2에서 배운 차원의 저주를 떠올려보자 — 특징이 너무 많으면 “가까움“이라는
-개념 자체가 무너진다. PCA<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup>는 원본 데이터의 분산(정보)을 최대한 보존하면서,
+개념 자체가 무너진다. PCA<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup> <sup class="footnote-reference" id="fr-hotelling1933-1"><a href="#footnote-hotelling1933">2</a></sup>는 원본 데이터의 분산(정보)을 최대한 보존하면서,
 서로 상관관계가 높아 사실상 중복인 특징들을 몇 개의 새로운 축(주성분)으로
 압축한다.</p>
 <p>차원을 줄이는 데는 세 가지 실용적인 이유가 겹친다. 첫째, <strong>차원의 저주</strong>
@@ -372,11 +372,11 @@ X2d = Xc @ eigvecs[:, :2]  # 상위 2개 주성분에 투영
 거의 완벽히 갈라져 있음을 확인할 수 있다 — 4차원에서 2차원으로 떨어뜨렸을
 때도 “종류 구분“에 필요한 구조가 거의 사라지지 않는다는 뜻이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch14_iris_pca.svg" alt="붓꽃 데이터의 PCA 결과 세 가지 관점. (a) 원본 특징 공간(꽃받침 길이 × 꽃잎 길이)에 PC1 방향(검은 화살표)을 그린 것, (b) PCA로 압축한 2차원 공간 — PC1이 분산의 92.5%, PC2가 5.3%를 설명하며 세 종류가 뚜렷이 분리됨, (c) 각 주성분이 설명하는 분산 비율 막대 — 상위 2개가 97.8%"><span class="img-wrapper"><img src="../../images/ch14_iris_pca.svg" alt="붓꽃 데이터의 PCA 결과 세 가지 관점. (a) 원본 특징 공간(꽃받침 길이 × 꽃잎 길이)에 PC1 방향(검은 화살표)을 그린 것, (b) PCA로 압축한 2차원 공간 — PC1이 분산의 92.5%, PC2가 5.3%를 설명하며 세 종류가 뚜렷이 분리됨, (c) 각 주성분이 설명하는 분산 비율 막대 — 상위 2개가 97.8%"></span></label></p>
-<p>이 결과를 <code>sklearn</code>의 <code>PCA</code> 클래스<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">2</a></sup>로 다시 한번 확인하면 동일한 고유값이
+<p>이 결과를 <code>sklearn</code>의 <code>PCA</code> 클래스<sup class="footnote-reference" id="fr-scikitlearn-1"><a href="#footnote-scikitlearn">3</a></sup>로 다시 한번 확인하면 동일한 고유값이
 나온다. 다만 <code>sklearn.decomposition.PCA</code>는 <code>fit</code> 시 내부적으로
 <strong>중심화</strong>를 해주고, <code>components_</code>에 주성분(고유벡터)을,
 <code>explained_variance_ratio_</code>에 설명 분산 비율을, <code>fit_transform</code> 결과에
-압축된 좌표를 돌려준다 — 위 numpy 코드<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">3</a></sup>가 하는 것과 정확히 같은 일을
+압축된 좌표를 돌려준다 — 위 numpy 코드<sup class="footnote-reference" id="fr-numpy-1"><a href="#footnote-numpy">4</a></sup>가 하는 것과 정확히 같은 일을
 한다.</p>
 <pre><code class="language-python">from sklearn.decomposition import PCA
 pca = PCA(n_components=2)
@@ -503,8 +503,8 @@ factor, ‘g</strong>’)이 있다“고 해석했다. 이건 사실상 <strong
 수 있다. 새로운 얼굴을 그 고유얼굴들에 투영해서 얻은 <strong>계수 벡터</strong>가
 곧 그 얼굴의 압축된 표현(임베딩)이고, 계수 벡터 간 거리로 유사도를
 잴 수 있다. 이것이 “이미지를 사람이 볼 수 있는 축으로 줄이는” 임베딩
-의 초기 형태다 — Chapter 14.2의 word2vec<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">4</a></sup>이 단어를, 14.3의
-Node2Vec<sup class="footnote-reference" id="fr-node2vec-1"><a href="#footnote-node2vec">5</a></sup>이
+의 초기 형태다 — Chapter 14.2의 word2vec<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">5</a></sup>이 단어를, 14.3의
+Node2Vec<sup class="footnote-reference" id="fr-node2vec-1"><a href="#footnote-node2vec">6</a></sup>이
 그래프 노드를 벡터로 만들 때, “데이터 자체에서 구조를 찾아 저차원
 벡터를 만든다“는 동일한 정신을 공유한다.</p>
 <p><strong>“분산이 큰 방향을 찾아라“는 120년 전의 단순한 질문에, 얼굴 인식·단어
@@ -611,6 +611,9 @@ print(Z)  # 각 점이 PC1(45도 대각선)에 투영된 값 — [-2.12, -2.12, 
 <ol class="footnote-definition">
 <li id="footnote-cs229">
 <p>더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — 이 절의 차원축소(PCA·공분산 행렬의 고유분해)는 CS229의 Unsupervised Learning / Dimensionality Reduction 강의와 직접 겉친다. <a href="#fr-cs229-1">↩</a></p>
+</li>
+<li id="footnote-hotelling1933">
+<p>Hotelling, H. (1933). “Analysis of a Complex of Statistical Variables into Principal Components.” Journal of Educational Psychology 24(6), 417-441. — 주성분분석(PCA)이라는 이름과 현재 형태의 정식화를 제시한 원 논문. <a href="#fr-hotelling1933-1">↩</a></p>
 </li>
 <li id="footnote-scikitlearn">
 <p>Pedregosa, F. et al. (2011). “Scikit-learn: Machine Learning in Python.” JMLR 12(2011), arXiv:1201.0490. <a href="#fr-scikitlearn-1">↩</a></p>

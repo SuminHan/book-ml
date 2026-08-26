@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0be6374e.js";
+            window.path_to_searchindex_js = "searchindex-4983072f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-700b68c6.js"></script>
@@ -1841,7 +1841,7 @@ y^{(i)}\right) x_j^{(i)}\]</p>
 <p><strong>(1) 모든 \(w_j\)를 “동시에” 업데이트해야 하는 이유.</strong> \(w_0\)를 먼저
 업데이트한 뒤, 같은 스텝에서 \(w_1\)를 업데이트할 때 <em>새</em> \(w_0\)를 써서
 그래디언트를 계산하면, “이동 전“과 “이동 후“에 계산된 그래디언트가 섞인 값으로
-이동하는 셈이다 — 업데이트 방향이 더 이상 현재점에서의 \(\n아abla J\)가 아니다.
+이동하는 셈이다 — 업데이트 방향이 더 이상 현재점에서의 \(\nabla J\)가 아니다.
 볼록함수에서 “현재점의 경사 반대 방향으로 가면 확실히 내려간다“는 보장(아래 “학습률과
 수렴 경계“에서 볼 수 있는)이 무너지는 것이다. 아래 순수 Python 코드에서
 <code>grad[j]</code>를 전부 계산한 <em>다음</em>에 <code>w[j] -= ...</code>로 반영하는 <strong>두 단계 구조</strong>가 바로
@@ -5197,10 +5197,10 @@ Vassilvitskii(2006)의 k-means++ 논문<sup class="footnote-reference" id="fr-km
 <h3 id="유명한-사례-같은-알고리즘을-두-번-발견한-사람들"><a class="header" href="#유명한-사례-같은-알고리즘을-두-번-발견한-사람들">유명한 사례: 같은 알고리즘을 두 번 발견한 사람들</a></h3>
 <p>앞에서 간단히 언급했지만, k-means의 기원 이야기는 기계학습 역사에서
 “동시 독립 발견(simultaneous discovery)“의 대표 사례로 꼽힌다.
-스튜어트 로이드는 1957년 벨 연구소에서 PCM(상용 전화 신호를 디지털로
+스튜어트 로이드는<sup class="footnote-reference" id="fr-lloyd1957-1"><a href="#footnote-lloyd1957">4</a></sup> 1957년 벨 연구소에서 PCM(상용 전화 신호를 디지털로
 변환하는 방식)의 양자화 문제를 연구하며 이 반복 알고리즘을 이미
 발명해 두었고, 논문으로 정식 발표하기 전에 내부 보고서로만 머물러
-있었다. 10년 뒤, 스탠퍼드의 제임스 매퀸이 클러스터링 문제에서
+있었다. 10년 뒤, 스탠퍼드의 제임스 매퀸이<sup class="footnote-reference" id="fr-macqueen1967-1"><a href="#footnote-macqueen1967">5</a></sup> 클러스터링 문제에서
 <strong>독립적으로</strong> 같은 알고리즘을 다시 발명하고 “k-means“라는 이름과
 함께 발표했다 — 로이드의 원래 결과가 훨씬 먼저였다는 사실이 알려지기
 까지 꽤 시간이 걸렸다. 두 발견은 문제(신호 양자화 vs 데이터
@@ -5299,6 +5299,12 @@ SSE가 훨씬 크게 나오는 것을 직접 확인해보라:</p>
 </li>
 <li id="footnote-kmeanspp-1">
 <p>Arthur, D., Vassilvitskii, S. (2006). “k-means++: The Advantages of Careful Seeding.” SIAM Journal on Computing 38(1), 215–230. k-means++의 \(D(x)^2\)-비례 선택에 대한 \(O(\log k)\) 근사 보증을 증명한 원 논문. <a href="#fr-kmeanspp-1-1">↩</a></p>
+</li>
+<li id="footnote-lloyd1957">
+<p>Lloyd, S. P. (1957/1982). “Least Squares Quantization in PCM.” Bell Telephone Laboratories Technical Report (1957); published in IEEE Transactions on Information Theory 28(2), 129–137 (1982). <a href="#fr-lloyd1957-1">↩</a></p>
+</li>
+<li id="footnote-macqueen1967">
+<p>MacQueen, J. (1967). “Some Methods for Classification and Analysis of Multivariate Observations.” Proceedings of the 5th Berkeley Symposium on Mathematical Statistics and Probability 1, 281–297. <a href="#fr-macqueen1967-1">↩</a></p>
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -11310,6 +11316,7 @@ BatchNorm<sup class="footnote-reference" id="fr-batchnorm-1-1"><a href="#footnot
 <h3 id="퍼셉트론-ai의-시작이었고-ai의-실망이기도-했던-모델"><a class="header" href="#퍼셉트론-ai의-시작이었고-ai의-실망이기도-했던-모델">퍼셉트론: “AI의 시작“이었고 “AI의 실망“이기도 했던 모델</a></h3>
 <p>1958년 프랭크 로젠블라트(Frank Rosenblatt)가 코넬 대학에서 <strong>퍼셉트론</strong>(perceptron)<sup class="footnote-reference" id="fr-perceptron-1"><a href="#footnote-perceptron">1</a></sup>을 발표했을 때, 대중매체는 “컴퓨터가 배운다”, “컴퓨터가 본다”, 심지어 “우주 탐사에 쓰일 1세대 로봇“이라고 보도했다. 로젠블라트는 코넬의 계산기 연구소(Cornell Aeronautical Laboratory)에 재직 중이었고, 퍼셉트론은 실제로 (당시 기준으로) 비행기 조종사의 얼굴을 인식하는 실험까지 했다. 모델은 Chapter 2의 로지스틱회귀와 거의 같다 — 시그모이드 대신 <strong>스텝함수</strong> \(\text{sgn}(z)\)를 쓴 것만 차이:</p>
 <p>\[\hat{y} = \text{sgn}\left(\sum_{j=1}^{d} w_j x_j + b\right) = \text{sgn}(w^Tx + b)\]</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch09_1_sgn_vs_sigmoid.svg" alt="sgn(z) vs sigma(z) — 퍼셉트론의 스텝함수(파랑, z=0에서 -1→1로 불연속 도약)와 로지스틱회귀의 시그모이드(주황 점선, 0에서 1로 매끄럽게 전이)를 겹쳐 그린 그래프. z=0에서 sgn(0)=1(채워진 점)로 정의하고, -1 branch는 z=0을 포함하지 않는다(빈 원)."><span class="img-wrapper"><img src="images/ch09_1_sgn_vs_sigmoid.svg" alt="sgn(z) vs sigma(z) — 퍼셉트론의 스텝함수(파랑, z=0에서 -1→1로 불연속 도약)와 로지스틱회귀의 시그모이드(주황 점선, 0에서 1로 매끄럽게 전이)를 겹쳐 그린 그래프. z=0에서 sgn(0)=1(채워진 점)로 정의하고, -1 branch는 z=0을 포함하지 않는다(빈 원)."></span></label></p>
 <p>학습법도 Chapter 2.1의 경사하강법의 선조인 <strong>퍼셉트론 학습 규칙</strong> — 틀린 예제에 대해 가중치를 오차 방향으로만 갱신:</p>
 <p>\[\text{틀렸을 때: } w \leftarrow w + yx, \quad \text{맞았을 때: } w \leftarrow w\]</p>
 <p>(이 규칙은 선형분리 가능한 데이터에서 반드시 수렴한다는 <strong>퍼셉트론 수렴 정리</strong><sup class="footnote-reference" id="fr-perceptron-2"><a href="#footnote-perceptron">1</a></sup>가 있다 — Chapter 2.1의 그래디언트 업데이트 \(w \leftarrow w + \alpha \cdot (y-\hat{y})\, x\)와 비교하면, 로지스틱회귀의 업데이트가 “오차 크기에 비례하는 연속형“이고 퍼셉트론 규칙은 그것을 0/1로 끊어버린 이산형이라고 볼 수 있다.) 당시 언론의 흥분은 이해가 된다: <strong>학습하는 기계</strong>를 만들어낸 것이기 때문이다. 그런데 이 흥분은 11년 만에 냉탕으로 떨어진다.</p>
@@ -18876,7 +18883,7 @@ word2vec까지의 흐름을 지나 skip-gram의 구조와 네거티브 샘플링
 \(k\)를 고르는 법(팔꿈치 방법)도 Chapter 4.3과 동일하다.</p>
 <h3 id="왜-차원을-줄이고-싶은가"><a class="header" href="#왜-차원을-줄이고-싶은가">왜 차원을 줄이고 싶은가</a></h3>
 <p>Chapter 4.2에서 배운 차원의 저주를 떠올려보자 — 특징이 너무 많으면 “가까움“이라는
-개념 자체가 무너진다. PCA<sup class="footnote-reference" id="fr-cs229-1-33"><a href="#footnote-cs229-33">1</a></sup>는 원본 데이터의 분산(정보)을 최대한 보존하면서,
+개념 자체가 무너진다. PCA<sup class="footnote-reference" id="fr-cs229-1-33"><a href="#footnote-cs229-33">1</a></sup> <sup class="footnote-reference" id="fr-hotelling1933-1"><a href="#footnote-hotelling1933">2</a></sup>는 원본 데이터의 분산(정보)을 최대한 보존하면서,
 서로 상관관계가 높아 사실상 중복인 특징들을 몇 개의 새로운 축(주성분)으로
 압축한다.</p>
 <p>차원을 줄이는 데는 세 가지 실용적인 이유가 겹친다. 첫째, <strong>차원의 저주</strong>
@@ -19057,11 +19064,11 @@ X2d = Xc @ eigvecs[:, :2]  # 상위 2개 주성분에 투영
 거의 완벽히 갈라져 있음을 확인할 수 있다 — 4차원에서 2차원으로 떨어뜨렸을
 때도 “종류 구분“에 필요한 구조가 거의 사라지지 않는다는 뜻이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch14_iris_pca.svg" alt="붓꽃 데이터의 PCA 결과 세 가지 관점. (a) 원본 특징 공간(꽃받침 길이 × 꽃잎 길이)에 PC1 방향(검은 화살표)을 그린 것, (b) PCA로 압축한 2차원 공간 — PC1이 분산의 92.5%, PC2가 5.3%를 설명하며 세 종류가 뚜렷이 분리됨, (c) 각 주성분이 설명하는 분산 비율 막대 — 상위 2개가 97.8%"><span class="img-wrapper"><img src="images/ch14_iris_pca.svg" alt="붓꽃 데이터의 PCA 결과 세 가지 관점. (a) 원본 특징 공간(꽃받침 길이 × 꽃잎 길이)에 PC1 방향(검은 화살표)을 그린 것, (b) PCA로 압축한 2차원 공간 — PC1이 분산의 92.5%, PC2가 5.3%를 설명하며 세 종류가 뚜렷이 분리됨, (c) 각 주성분이 설명하는 분산 비율 막대 — 상위 2개가 97.8%"></span></label></p>
-<p>이 결과를 <code>sklearn</code>의 <code>PCA</code> 클래스<sup class="footnote-reference" id="fr-scikitlearn-1-11"><a href="#footnote-scikitlearn-11">2</a></sup>로 다시 한번 확인하면 동일한 고유값이
+<p>이 결과를 <code>sklearn</code>의 <code>PCA</code> 클래스<sup class="footnote-reference" id="fr-scikitlearn-1-11"><a href="#footnote-scikitlearn-11">3</a></sup>로 다시 한번 확인하면 동일한 고유값이
 나온다. 다만 <code>sklearn.decomposition.PCA</code>는 <code>fit</code> 시 내부적으로
 <strong>중심화</strong>를 해주고, <code>components_</code>에 주성분(고유벡터)을,
 <code>explained_variance_ratio_</code>에 설명 분산 비율을, <code>fit_transform</code> 결과에
-압축된 좌표를 돌려준다 — 위 numpy 코드<sup class="footnote-reference" id="fr-numpy-1-12"><a href="#footnote-numpy-12">3</a></sup>가 하는 것과 정확히 같은 일을
+압축된 좌표를 돌려준다 — 위 numpy 코드<sup class="footnote-reference" id="fr-numpy-1-12"><a href="#footnote-numpy-12">4</a></sup>가 하는 것과 정확히 같은 일을
 한다.</p>
 <pre><code class="language-python">from sklearn.decomposition import PCA
 pca = PCA(n_components=2)
@@ -19188,8 +19195,8 @@ factor, ‘g</strong>’)이 있다“고 해석했다. 이건 사실상 <strong
 수 있다. 새로운 얼굴을 그 고유얼굴들에 투영해서 얻은 <strong>계수 벡터</strong>가
 곧 그 얼굴의 압축된 표현(임베딩)이고, 계수 벡터 간 거리로 유사도를
 잴 수 있다. 이것이 “이미지를 사람이 볼 수 있는 축으로 줄이는” 임베딩
-의 초기 형태다 — Chapter 14.2의 word2vec<sup class="footnote-reference" id="fr-word2vec-1-5"><a href="#footnote-word2vec-5">4</a></sup>이 단어를, 14.3의
-Node2Vec<sup class="footnote-reference" id="fr-node2vec-1-3"><a href="#footnote-node2vec-3">5</a></sup>이
+의 초기 형태다 — Chapter 14.2의 word2vec<sup class="footnote-reference" id="fr-word2vec-1-5"><a href="#footnote-word2vec-5">5</a></sup>이 단어를, 14.3의
+Node2Vec<sup class="footnote-reference" id="fr-node2vec-1-3"><a href="#footnote-node2vec-3">6</a></sup>이
 그래프 노드를 벡터로 만들 때, “데이터 자체에서 구조를 찾아 저차원
 벡터를 만든다“는 동일한 정신을 공유한다.</p>
 <p><strong>“분산이 큰 방향을 찾아라“는 120년 전의 단순한 질문에, 얼굴 인식·단어
@@ -19296,6 +19303,9 @@ print(Z)  # 각 점이 PC1(45도 대각선)에 투영된 값 — [-2.12, -2.12, 
 <ol class="footnote-definition">
 <li id="footnote-cs229-33">
 <p>더 깊이 보려면: Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf — 이 절의 차원축소(PCA·공분산 행렬의 고유분해)는 CS229의 Unsupervised Learning / Dimensionality Reduction 강의와 직접 겉친다. <a href="#fr-cs229-1-33">↩</a></p>
+</li>
+<li id="footnote-hotelling1933">
+<p>Hotelling, H. (1933). “Analysis of a Complex of Statistical Variables into Principal Components.” Journal of Educational Psychology 24(6), 417-441. — 주성분분석(PCA)이라는 이름과 현재 형태의 정식화를 제시한 원 논문. <a href="#fr-hotelling1933-1">↩</a></p>
 </li>
 <li id="footnote-scikitlearn-11">
 <p>Pedregosa, F. et al. (2011). “Scikit-learn: Machine Learning in Python.” JMLR 12(2011), arXiv:1201.0490. <a href="#fr-scikitlearn-1-11">↩</a></p>
@@ -20446,7 +20456,7 @@ from Incomplete Data via the EM Algorithm“은 통계학에서 가장 많이
 “만약 \(z\)가 알렸다면“은 Chapter 3의 GDA와 똑같이 닫힌 형태로 풀린다 —
 EM은 이 “만약“을 반복적으로 실행하는 알고리즘이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch15_gmm_latent_var.svg" alt="GMM의 잠재변수 다이어그램 — 마름모(π_k, μ_k, σ²_k)는 모수, 빈 원 z_k는 관측되지 않는 잠재변수(어느 클러스터인지), 채워진 원 x_i는 관측 데이터. π_k가 z_k를, z_k와 (μ_k, σ²_k)가 x_i를 만든다"><span class="img-wrapper"><img src="images/ch15_gmm_latent_var.svg" alt="GMM의 잠재변수 다이어그램 — 마름모(π_k, μ_k, σ²_k)는 모수, 빈 원 z_k는 관측되지 않는 잠재변수(어느 클러스터인지), 채워진 원 x_i는 관측 데이터. π_k가 z_k를, z_k와 (μ_k, σ²_k)가 x_i를 만든다"></span></label></p>
-<h3 id="em-알고리즘-e-step과-m-step"><a class="header" href="#em-알고리즘-e-step과-m-step">EM 알고리즘: E-step과 M-step</a></h3>
+<h3 id="em-알고리즘4-e-step과-m-step"><a class="header" href="#em-알고리즘4-e-step과-m-step">EM 알고리즘<sup class="footnote-reference" id="fr-dempster1977-1"><a href="#footnote-dempster1977">4</a></sup>: E-step과 M-step</a></h3>
 <p><strong>E-step (Expectation)</strong>: 현재 각 클러스터의 파라미터(평균 \(\mu_k\),
 분산 \(\sigma_k^2\), 클러스터 비율 \(\pi_k\))가 주어졌다고 가정하고,
 각 데이터 점 \(x_i\)가 클러스터 \(k\)에 속할 사후확률(<strong>책임값</strong>,
@@ -20520,7 +20530,7 @@ def em_step(data, means, sigmas, weights):
 \mathcal{F}(\theta_{\text{new}}, \gamma) \ge
 \mathcal{F}(\theta_{\text{old}}, \gamma) =
 \log p(x; \theta_{\text{old}})\) — <strong>우도가 매 반복마다
-절대 줄지 않는다</strong>. 15.2절의 VAE<sup class="footnote-reference" id="fr-vae-1-4"><a href="#footnote-vae-4">4</a></sup>는 “E-step의 사후확률을 정확히
+절대 줄지 않는다</strong>. 15.2절의 VAE<sup class="footnote-reference" id="fr-vae-1-4"><a href="#footnote-vae-4">5</a></sup>는 “E-step의 사후확률을 정확히
 계산할 수 없을 때(연속 무한한 잠재변수) 이 하한을 신경망
 \(q_\phi(z|x)\)로 근사해서 역전파로 올린다“는 알고리즘이므로,
 EM과 VAE는 <em>같은 부등식의 두 실행 전략</em>이다.</p>
@@ -20637,7 +20647,7 @@ EM을 돌려보면(노트북 5절):</p>
 쪼개는 것뿐), BIC 벌점(\(p\)가 11에서 15로 늘어)이 판을 뒤집는다.
 4.3절의 엘보우가 “감소폭이 꺾이는 지점“을 <strong>눈</strong>으로 찾았다면, BIC는
 같은 결정을 하나의 <strong>숫자</strong>로 내리는 원리 있는 버전이다.
-EM과 혼합모델을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs229-1-34"><a href="#footnote-cs229-34">5</a></sup>.</p>
+EM과 혼합모델을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs229-1-34"><a href="#footnote-cs229-34">6</a></sup>.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"><span class="img-wrapper"><img src="images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"></span></label></p>
 <h3 id="자주-하는-실수-4"><a class="header" href="#자주-하는-실수-4">자주 하는 실수</a></h3>
 <p><strong>실수 1 — EM을 한 번만 돌려 믿기 (k-means의 실수보다 더 위험하다).</strong>
@@ -20665,7 +20675,7 @@ k-means의 “나쁜 초기화 → 나쁜 지역최적해”(4.3절)는 GMM에�
 유용하다.</p>
 <h3 id="실습-수반-노트북이-검증하는-것들"><a class="header" href="#실습-수반-노트북이-검증하는-것들">실습: 수반 노트북이 검증하는 것들</a></h3>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_1_em_gmm.ipynb">노트북</a>
-은 numpy<sup class="footnote-reference" id="fr-numpy-1-13"><a href="#footnote-numpy-13">6</a></sup>/matplotlib만으로 본문의 코드를 그대로 실행한다: (1) 책의
+은 numpy<sup class="footnote-reference" id="fr-numpy-1-13"><a href="#footnote-numpy-13">7</a></sup>/matplotlib만으로 본문의 코드를 그대로 실행한다: (1) 책의
 <code>em_step</code>을 6개 데이터에 돌려 수렴 과정을 추적(1차원), (2) 3개
 블롭 2차원 데이터에서 2D GMM을 EM으로 학습하고 <strong>등고선 +
 책임값 기반 색칠</strong>로 시각화, (3) 무작위 초기화 30회 돌려 <strong>지역
@@ -20726,7 +20736,7 @@ M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
 \(\epsilon\) 미만” 같은 수렴 기준을 둔다. 또 차원이 높으면
 공분산 행렬 \(\Sigma_k\)가 특이(singular, 역행렬이 없는) 행렬에
 <strong>가깝게</strong> 수렴하기 쉬워서, 실전 라이브러리(<code>sklearn.mixture.GaussianMixture</code>
-등)<sup class="footnote-reference" id="fr-sklearn-1-6"><a href="#footnote-sklearn-6">7</a></sup>는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
+등)<sup class="footnote-reference" id="fr-sklearn-1-6"><a href="#footnote-sklearn-6">8</a></sup>는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
 공분산을 쓰거나 (iii) \(\Sigma_k + \epsilon I\) 같은
 정규화를 넣는 옵션을 제공한다.</p>
 <p><strong>Q. GMM은 “생성 모델“이라면서 어떻게 데이터를 <em>만들어</em>냅니까?</strong>
@@ -20734,7 +20744,7 @@ M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
 가지고 있다 — 새 점을 만들려면 (1) 주사위 \(\pi\)로 \(z\)를 뽑고,
 (2) 그 \(z = k\)의 \(\mathcal{N}(\mu_k, \Sigma_k)\)에서 \(x\)를
 샘플링하면 된다. 이 “생성” 능력이 Chapter 15의 나머지 절
-(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN<sup class="footnote-reference" id="fr-gan-1-4"><a href="#footnote-gan-4">8</a></sup>이 노이즈에서)의
+(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN<sup class="footnote-reference" id="fr-gan-1-4"><a href="#footnote-gan-4">9</a></sup>이 노이즈에서)의
 “데이터 생성“과 정확히 같은 질문의 가장 단순한 버전이다 —
 연습문제 1이 바로 이 함수를 작성하게 한다.</p>
 <hr>
@@ -20828,6 +20838,9 @@ Step 3:  log(a/b) = log a - log b로 분해하면:
 </li>
 <li id="footnote-em1977-1">
 <p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society, Series B (Methodological), 39(1), 1-38. https://doi.org/10.1111/j.2517-6161.1977.tb01682.x <a href="#fr-em1977-1-1">↩</a></p>
+</li>
+<li id="footnote-dempster1977">
+<p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society: Series B 39(1), 1–22. — EM 알고리즘을 일반적인 형태로 정식화한 원 논문. <a href="#fr-dempster1977-1">↩</a></p>
 </li>
 <li id="footnote-vae-4">
 <p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1-4">↩</a></p>
