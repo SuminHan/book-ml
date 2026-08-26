@@ -145,6 +145,8 @@ def _normalize_task_id(raw_id):
     if raw_id == "restructure_ml2_ch15_worldmodel":
         # one-off task covering two files at once
         return ["ml2_ch15_4", "ml2_ch15_opener"]
+    if raw_id == "restructure_ml2_ch14_av_sim":
+        return ["ml2_ch14_4", "ml2_ch14_opener"]
     m = _RESTRUCTURE_ID_RE.match(raw_id)
     if not m:
         return []
@@ -238,16 +240,42 @@ def _search_done_failed(text):
     return None, None
 
 
-def log_info(task_id):
-    """Returns (terminal_status_or_None, summary_text_or_None).
+def _restructure_log_stems(task_id):
+    """Inverse of _normalize_task_id(): given a canonical {book}_ch{ch}_{sec
+    or 'opener'} task_id, name the restructure_expand_orchestrator.py (or
+    standalone one-off) log stem(s) that actually cover it -- checked
+    *before* the legacy `{task_id}.log` stem in log_info(), because a
+    chapter that got repurposed by this session's restructuring (13/14/15
+    LLM->graph-learning move, new ML2 14.4/15.4) can have a stale legacy
+    log left over from before the rename, describing the *old* topic at
+    that path. Returns [] if task_id doesn't look like a restructured slot."""
+    special = {
+        "ml2_ch15_4": ["restructure_ml2_ch15_worldmodel"],
+        "ml2_ch15_opener": ["restructure_ml2_ch15_worldmodel"],
+        "ml2_ch14_4": ["restructure_ml2_ch14_av_sim"],
+        "ml2_ch14_opener": ["restructure_ml2_ch14_av_sim"],
+    }
+    if task_id in special:
+        return special[task_id]
+    m = re.match(r'^(ml\d)_ch(\d+)_(opener|\d+)$', task_id)
+    if not m:
+        return []
+    book, ch, sec = m.groups()
+    stem = f"restructure_kor_src_{book}_chapter{ch}"
+    return [stem] if sec == "opener" else [f"{stem}_{sec}"]
+
+
+def _log_info_for_stem(stem):
+    """Returns (terminal_status_or_None, summary_text_or_None, timeout_hit).
 
     The DONE/FAILED marker can end up in either file: the main .log (if
     fmt_event's per-line truncation didn't cut it off) or only in the
     .wrapper.log's raw final `result` JSON (untruncated, but only written
     there) -- so check both, preferring whichever actually has it."""
-    log = BATCH_LOGS / f"{task_id}.log"
-    wrapper = BATCH_LOGS / f"{task_id}.wrapper.log"
+    log = BATCH_LOGS / f"{stem}.log"
+    wrapper = BATCH_LOGS / f"{stem}.wrapper.log"
 
+    timeout_hit = False
     if log.exists():
         # subprocess output occasionally has a stray invalid byte (e.g. a
         # multi-byte UTF-8 sequence chopped in half by a mid-write kill) --
@@ -256,13 +284,8 @@ def log_info(task_id):
         log_text = log.read_text(encoding="utf-8", errors="replace")
         status, summary = _search_done_failed(log_text)
         if status:
-            return status, summary
-        if "=== TIMEOUT" in log_text:
-            timeout_hit = True
-        else:
-            timeout_hit = False
-    else:
-        timeout_hit = False
+            return status, summary, False
+        timeout_hit = "=== TIMEOUT" in log_text
 
     if wrapper.exists():
         for line in wrapper.read_text(encoding="utf-8", errors="replace").splitlines():
@@ -277,9 +300,36 @@ def log_info(task_id):
             if isinstance(result_text, str):
                 status, summary = _search_done_failed(result_text.replace("\n", "\\n"))
                 if status:
-                    return status, summary
+                    return status, summary, False
 
-    if timeout_hit:
+    return None, None, timeout_hit
+
+
+def log_info(task_id):
+    """Returns (terminal_status_or_None, summary_text_or_None). If this
+    slot was touched by the restructuring effort (a restructure_* log
+    exists for it at all), trust *only* that -- never fall through to the
+    legacy `{task_id}.log` stem, even if the restructure attempt itself
+    only got as far as a timeout. Falling through would otherwise surface
+    a stale legacy DONE summary describing the *old* topic that used to
+    live at this chapter/section slot before the restructuring moved
+    content around (e.g. old chapter 13 was LLMs; legacy `ml1_ch13_1.log`
+    still has a real DONE for that, which has nothing to do with the new
+    13.1 "Random Walk" content now at that path)."""
+    restructure_stems = _restructure_log_stems(task_id)
+    touched_by_restructure = any(
+        (BATCH_LOGS / f"{stem}.log").exists() or (BATCH_LOGS / f"{stem}.wrapper.log").exists()
+        for stem in restructure_stems
+    )
+    stems = restructure_stems if touched_by_restructure else [task_id]
+
+    any_timeout = False
+    for stem in stems:
+        status, summary, timeout_hit = _log_info_for_stem(stem)
+        if status:
+            return status, summary
+        any_timeout = any_timeout or timeout_hit
+    if any_timeout:
         return "failed", "타임아웃"
     return None, None
 

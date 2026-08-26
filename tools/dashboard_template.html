@@ -538,10 +538,19 @@ function renderBookCard(bookKey, items, granularity) {
       + (openerItems.length ? ` · 개요 ${openerDone}/${openerItems.length}` : "")),
   ));
 
+  // Row count adapts to whatever the data actually has -- some chapters
+  // now run to .4 (or beyond), so don't hardcode ".1/.2/.3": take the max
+  // section number seen across this book's items (floor of 3 so chapters
+  // that are still a normal 3-section week don't shrink the grid).
+  const maxSec = granularity === "section"
+    ? Math.max(3, ...statItems.map(i => parseInt(i.section, 10) || 0))
+    : 0;
+  const secNums = Array.from({ length: maxSec }, (_, i) => String(i + 1));
+
   const gridArea = el("div", { class: "grid-area" });
   const gridInner = el("div", { class: "grid-inner" });
   const rowLabels = granularity === "section"
-    ? el("div", { class: "row-labels" }, el("span", { class: "opener-row" }, "개요"), el("span", {}, ".1"), el("span", {}, ".2"), el("span", {}, ".3"))
+    ? el("div", { class: "row-labels" }, el("span", { class: "opener-row" }, "개요"), ...secNums.map(n => el("span", {}, `.${n}`)))
     : el("div", { class: "row-labels" }, el("span", {}, ""));
   gridInner.append(rowLabels);
 
@@ -552,7 +561,7 @@ function renderBookCard(bookKey, items, granularity) {
     if (granularity === "section") {
       const bySec = {};
       for (const it of byChapter[cnum]) bySec[it.section] = it;
-      for (const snum of ["0", "1", "2", "3"]) {
+      for (const snum of ["0", ...secNums]) {
         const it = bySec[snum];
         const cellEl = it ? cellFor(it) : el("div", { class: "cell", style: "visibility:hidden" });
         if (snum === "0") cellEl.classList.add("opener-row");
