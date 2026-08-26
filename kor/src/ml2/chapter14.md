@@ -40,8 +40,13 @@ Chapter 13에서 쓴 Gymnasium[^gym]의 기본 환경들은 물리를 간단한 
   (속도 축)"라는 두 질문에 실측 steps/s를 대입해, Gymnasium·PyBullet[^pybullet]·
   MuJoCo·Isaac Sim 중 도구를 고르는 30초 결정 절차를 스스로 적용할 수
   있다.
+- (지도) 자율주행 스택의 Onboard(실차 Perception→Planner)와
+  Offboard(시뮬레이션 평가·재학습) 루프가 policy iteration/Dyna 구조와
+  같은 모양인 이유를 짚고, diffusion 기반 시나리오 생성(SceneDiffuser)
+  이 Offboard 루프의 "현실적인 시나리오"를 어떻게 채우는지 개념
+  수준으로 설명할 수 있다.
 
-이번 주는 세 개의 수업 블록으로 진행된다:
+이번 주는 네 개의 수업 블록으로 진행된다:
 
 - [14.1 MuJoCo와 정책 학습 실습](chapter14/1.md)
   XML로 진자(hinge 관절 + motor 액추에이터)를 직접 정의하고, 무작위
@@ -64,6 +69,14 @@ Chapter 13에서 쓴 Gymnasium[^gym]의 기본 환경들은 물리를 간단한 
   축임을 구분한다. 초당 스텝 수를 실측해 "총 스텝 수 ÷ 초당 스텝 수 =
   실 시간"으로 계산하며, "CartPole 벤치마크로 'CPU면 충분'이라 결론내는
   것" 같은 자주 하는 실수를 포함해 30초 결정 절차까지 만든다.
+- [14.4 산업 사례: 자율주행 시뮬레이션](chapter14/4.md)
+  지금까지 배운 "시뮬레이터를 실전 연구 수준으로 쓴다"는 주제를 산업
+  규모로 확장한다. Waymo의 자율주행 스택을 예로, 실차에서 실시간으로
+  도는 Onboard(Perception→Planner) 루프와 그 Planner를 대량의 시뮬레이션
+  에피소드로 검증·재학습하는 Offboard(Simulation) 루프가 어떻게
+  강화학습의 policy iteration 구조와 닮았는지 짚고, 그 Offboard 루프를
+  현실적인 주행 시나리오로 채우는 도구로 diffusion 기반 시나리오 생성
+  (Waymo SceneDiffuser)을 소개한다.
 
 [^ppo]: Schulman, J. et al. (2017). "Proximal Policy Optimization Algorithms." arXiv:1707.06347.
 

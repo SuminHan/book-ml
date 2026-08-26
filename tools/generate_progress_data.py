@@ -130,6 +130,28 @@ def built_html_content(book, chapter, section):
     return inline_local_images(m.group(1).strip(), html_path.parent)
 
 
+_RESTRUCTURE_ID_RE = re.compile(r'^restructure_kor_src_(ml\d)_chapter(\d+)(?:_(\d+))?$')
+
+
+def _normalize_task_id(raw_id):
+    """restructure_expand_orchestrator.py names tasks after their file path
+    (restructure_kor_src_ml1_chapter13_1) rather than the {book}_ch{ch}_{sec}
+    convention every other orchestrator uses -- without this, a section
+    being actively rewritten by that orchestrator never matches `task_id in
+    running` below and its grid cell never turns "in progress" (found via a
+    live screenshot: the cell just kept showing its old status while cq was
+    mid-edit). Returns the equivalent {book}_ch{ch}_{sec-or-opener} id, or
+    None if raw_id doesn't match that pattern."""
+    if raw_id == "restructure_ml2_ch15_worldmodel":
+        # one-off task covering two files at once
+        return ["ml2_ch15_4", "ml2_ch15_opener"]
+    m = _RESTRUCTURE_ID_RE.match(raw_id)
+    if not m:
+        return []
+    book, ch, sec = m.group(1), m.group(2), m.group(3)
+    return [f"{book}_ch{ch}_{sec}" if sec else f"{book}_ch{ch}_opener"]
+
+
 def running_task_ids():
     try:
         out = subprocess.run(["pgrep", "-af", "cq_run_once.py"],
@@ -139,7 +161,9 @@ def running_task_ids():
     ids = set()
     for line in out.splitlines():
         for m in re.finditer(r'batch_(?:prompts|logs)/([\w]+)\.(?:txt|log)', line):
-            ids.add(m.group(1))
+            raw_id = m.group(1)
+            ids.add(raw_id)
+            ids.update(_normalize_task_id(raw_id))
     return ids
 
 
@@ -148,6 +172,10 @@ def _task_kind(task_id):
         return "레퍼런스 라이브러리"
     if task_id.startswith("capt_"):
         return "노트북 캡션 영어 번역"
+    if task_id.startswith("boldfix_"):
+        return "볼드/수식 렌더링 버그 수정"
+    if task_id.startswith("restructure_"):
+        return "커리큘럼 구조개편 (13/14/15/4장)"
     if task_id.endswith("_cite"):
         return "각주/그림 삽입"
     if "_opener" in task_id:

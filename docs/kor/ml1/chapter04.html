@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-b71af2bb.js";
+            window.path_to_searchindex_js = "../searchindex-ebf8b0bd.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-40bab1e1.js"></script>
+        <script src="../toc-27b50e49.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,9 +179,6 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="chapter-4-거리-기반-모델과-클러스터링-knn-k-means-gmmem-distance-based-models--clustering"><a class="header" href="#chapter-4-거리-기반-모델과-클러스터링-knn-k-means-gmmem-distance-based-models--clustering">Chapter 4. 거리 기반 모델과 클러스터링: kNN, k-means, GMM/EM (Distance-Based Models &amp; Clustering)</a></h1>
-<p>[STUB: cq 확인 필요 — 4.4(GMM/EM/LDA) 추가에 맞춰 오프너 훅/학습
-목표/절 요약을 보강할 것. 아래는 최소 반영(4.4 항목 추가, “15장 GMM”
-언급을 “4.4“로 정정)만 해둔 상태.]</p>
 <p>“당신은 가장 가까운 다섯 친구의 평균이다“라는 말이 있다. 이 문장을 그대로
 알고리즘으로 옮기면 <strong>k-최근접이웃</strong>(k-Nearest Neighbors, kNN)<sup class="footnote-reference" id="fr-cs229-1"><a href="#footnote-cs229">1</a></sup>이 된다: 새로운
 데이터를 분류하고 싶으면, 학습도 모델도 필요 없이 그냥 “가장 가까운 \(k\)개의
@@ -194,6 +191,13 @@
 점은 한 덩어리“라는 거리 정보만으로 데이터의 구조를 쪼개는 것이다. 둘 다
 <strong>거리를 재는 데서 출발</strong>한다는 공통점이, 이 두 알고리즘을 한 장에 묶는
 이유다.</p>
+<p>그리고 이번 장의 세 번째 주인공은 <strong>GMM</strong>(가우시안 혼합모델)과 그것을
+학습시키는 <strong>EM 알고리즘</strong>이다. 4.3절의 k-means가 각 점을 <em>딱 하나의</em>
+클러스터에 배정했다면(하드 할당), GMM은 “이 점은 A에 60%, B에 40%
+속한다“는 <strong>확률</strong>로 표현한다(소프트 할당). 그런데 그걸 학습시키려면
+“각 점이 어디서 나왔는지(라벨)“와 “각 클러스터의 파라미터“를 <em>둘 다</em>
+모르는 순환에 부딪히고 — EM은 이 순환을 “하나를 채우고, 그걸로 다른
+하나를 추정하고, 반복한다“는 두 줄짜리 절차로 풀어내는 것이다.</p>
 <p>이 장은 Chapter 3(생성 모델)과 이어진다. Chapter 3의 나이브베이즈는 “특징들이
 서로 독립“이라는 강한 가정을 세워 차원의 저주를 <em>피해</em>내는 모델이었다. 이번
 장에서는 거리를 직접 재는 모델이 차원의 저주를 <em>정면으로</em> 맞게 되는 모습을
@@ -225,7 +229,16 @@
 <li>초기화에 따라 다른 지역최적해에 빠지는 문제를 <strong>k-means++</strong><sup class="footnote-reference" id="fr-kmeanspp-1"><a href="#footnote-kmeanspp">3</a></sup>와 <code>n_init</code>
 반복으로 완화하고, k-means가 경계를 *볼록(직선)*으로만 그리는 구조적 한계와
 4.4절 GMM으로의 연결을 짚을 수 있다.</li>
-<li>[STUB] GMM/EM/LDA 관련 학습 목표 추가.</li>
+<li>k-means의 하드 할당을 <strong>소프트 할당</strong>(각 점의 클러스터 소속 <em>확률</em>)으로
+일반화한 GMM이 왜 MLE로 바로 풀리지 않는지(라벨이 관측되지 않아 우도가
+<em>곱의 합</em>이 되기 때문) 설명하고, EM의 E-step/M-step 한 라운드를 손으로
+계산할 수 있다.</li>
+<li>EM이 매 반복마다 <strong>우도를 절대 감소시키지 않는다</strong>는 보장을 옌센 부등식으로
+4줄 안에 재증명하고, 15장의 VAE가 “계산 불가능한 E-step을 신경망으로 근사한
+EM“임을 ELBO라는 <em>같은</em> 하한으로 연결할 수 있다.</li>
+<li>\(K\)를 likelihood로 고르면 \(K=m\)이 이기는 함정을 짚고 <strong>BIC</strong>로 고르는
+원리를 설명하며, 같은 EM 계열 고전 확률모델인 <strong>LDA</strong>(잠재 디리클레 할당)가
+GMM의 “점→클러스터“를 “단어→토픽“으로 바꾼 것인지 대비할 수 있다.</li>
 </ul>
 <p>이번 주는 네 개의 수업 블록으로 진행된다:</p>
 <ul>
@@ -251,8 +264,17 @@ kNN이 “저장만 하고, 예측 때 거리를 재는” 게으른 방법임�
 <li><a href="chapter04/4.html">4.4 GMM과 EM 알고리즘</a> — k-means의 하드 할당을
 “이 점이 각 클러스터에 속할 확률“이라는 소프트 할당으로 일반화한
 가우시안 혼합모델(GMM)과, 그걸 학습시키는 EM 알고리즘을 다룬다.
-LDA(잠재 디리클레 할당)도 같은 EM 계열의 고전 확률모델로 함께
-짚는다. [STUB: 요약 문단 보강 필요]</li>
+라벨과 파라미터를 “둘 다 모른다“는 순환(잠재변수 문제)을 EM이
+E-step(책임값 계산) → M-step(가중 평균 갱신)으로 풀어가는 과정을
+\(x = 0, 3, 8\) 세 점으로 한 라운드를 손계산하고, 옌센 부등식
+4줄로 “우도가 절대 줄지 않는다“는 보증을 증명한다. 공분산 행렬
+\(\Sigma_k\)가 k-means에 없는 타원형·기울어진 클러스터를
+표현하는지 등고선 시각화로 확인한 뒤, likelihood가 클러스터 하나
+늘면 항상 좋아지는 \(K\) 선택 함정과 BIC, 그리고 무작위 초기화
+실험에서 세 중심이 한 점에 겹치는 “분산 붕괴” 퇴화 해를 짚는다.
+LDA(잠재 디리클레 할당)도 같은 EM 계열의 고전 확률모델로,
+GMM의 “점 → 클러스터“를 “단어 → 토픽“으로 옮긴 문서-토픽 모델로서
+함께 짚는다.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">

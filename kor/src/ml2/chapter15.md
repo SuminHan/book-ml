@@ -48,7 +48,7 @@ B 캡스톤: 팀 프로젝트와 학기 총정리")에서는 MCTS를 포함해 �
 절충을 보여주는 표준 사례다 — 이 "부분 계획"의 아이디어가 이번 장의
 세 절을 관통하는 주제다.
 
-이번 주는 세 개의 수업 블록으로 진행된다:
+이번 주는 네 개의 수업 블록으로 진행된다:
 
 - [15.1 모델기반 RL 개관: Dyna-Q 재조명과 "공짜 모델"](chapter15/1.md)
   Dyna-Q를 복습해 "known/learned 모델 × 학습/계획"의 두 축으로
@@ -71,6 +71,18 @@ B 캡스톤: 팀 프로젝트와 학기 총정리")에서는 MCTS를 포함해 �
   결과만 보상 구조에 따라 완전히 달라지는 세 가지 학습 동역학을
   관찰하고, 내쉬 균형과 MCTS·미니맥스·자기 자신과의 대국
   (self-play)과의 연결고리를 살펴본다.[^cs234]
+- world model 계열(Ha & Schmidhuber의 World Models, Hafner 등의
+  Dreamer)이 "learned model"을 신경망 규모로 밀어붙여, 학습된 모델
+  **안에서 상상한 경험만으로** 정책을 학습시키는 원리를 설명하고, 왜
+  이것이 실제 환경 상호작용이 비싼 문제에서 데이터 효율성을 크게
+  높이는지 말할 수 있다.
+- [15.4 World Models: 학습된 모델로 상상하며 계획하기](chapter15/4.md)
+  15.1절의 "learned model" 축을 신경망 스케일로 밀어붙인 world model
+  계열(Ha & Schmidhuber, Dreamer)을 개념과 대표 논문 위주로 소개한다
+  — 환경 자체를 신경망으로 배운 뒤, 그 학습된 모델 "안에서 상상하며"
+  정책을 훈련시키는 아이디어. CartPole로 다이내믹스 모델을 학습시켜
+  "상상 속에서만" 정책을 굴려 보고 실제 환경과 결과가 얼마나
+  일치하는지 실습한다.
 
 [^alphago]: Silver, D. et al. (2016). "Mastering the game of Go with deep neural networks and tree search." Nature 529, 484–489.
 [^alphazero]: Silver, D. et al. (2017). "Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm." arXiv:1712.01815.

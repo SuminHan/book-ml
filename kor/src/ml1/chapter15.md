@@ -3,10 +3,6 @@
 [![Open In Colab: VAE](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_vae_elbo.ipynb)
 [![Open In Colab: GAN](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_gan.ipynb)
 
-[STUB: cq가 확장할 자리 — 아래는 핵심 뼈대(15.1 EM/GMM 문단을 4.4로
-옮긴 자리에 짧은 다리 문단으로 교체, 15.3→15.2 리넘버링 반영, GAN은
-그대로 유지, Diffusion에 Waymo SceneDiffuser 실전 사례 추가).]
-
 4.4절에서 본 **EM**(Expectation-Maximization) 알고리즘은 "관측 안 된
 잠재변수가 데이터를 어떻게 만들어내는가"라는 질문에 대한 가장 고전적인
 답이었다 — 이 장은 그 질문을 신경망으로 확장한다. VAE[^vae]는 EM과
@@ -29,6 +25,8 @@
 고를 때 안정성·생성 속도·품질의 기준으로 선택하고 정당화할 수 있는
 도구 상자가 된다.[^cs230]
 
+## 학습 목표
+
 이 챕터를 마치면 다음을 할 수 있다:
 
 - 계산 불가능한 우도를 대체하는 계산 가능한 하한 ELBO를 복원 항과 KL
@@ -41,6 +39,18 @@
   생성 속도의 세 축으로 비교하고, Stable Diffusion이 VAE의 압축된 잠재
   공간에서 Diffusion을 돌리는 구조임을, 그리고 이미지 생성 밖의 응용
   (자율주행 시뮬레이션 등)까지 설명할 수 있다.
+
+이 장을 관통하는 하나의 실은 **같은 질문, 다른 계산**이다. 세 원리는
+모두 "보이지 않는 구조(잠재변수 또는 노이즈)가 데이터 \\(x\\)를 어떻게
+만들어내는가"라는 같은 질문을 던지지만, 답을 구하는 계산은 서로
+다르다. 15.1은 계산 불가능한 우도(적분)를 계산 가능한 하한 ELBO로
+바꿔 그 하한을 최대화하고, 15.2의 GAN은 우도를 내려놓고 두 네트워크의
+경쟁 게임의 균형으로 대신 찾고, Diffusion은 노이즈 제거라는 큰 문제를
+단계별 노이즈 예측 회귀 문제 \\(T\\)개로 쪼개서 푼다. 4.4절
+EM/GMM이 이산 잠재변수로 이 질문을 정확히 풀었던 첫 예시라면, 이 장은
+그 답이 세 갈래로 갈라지는 지점이다 — 그리고 세 갈래가 서로 다른
+대가를 치르는 방식이, 장 후반의 "안정성·생성 속도·품질" 비교의
+모든 근거가 된다.
 
 이번 주는 두 개의 수업 블록으로 진행된다:
 

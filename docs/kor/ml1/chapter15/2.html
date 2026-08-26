@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-b71af2bb.js";
+            window.path_to_searchindex_js = "../../searchindex-ebf8b0bd.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-40bab1e1.js"></script>
+        <script src="../../toc-27b50e49.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,22 +179,19 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="152-gan-diffusion-그리고-세-원리-비교"><a class="header" href="#152-gan-diffusion-그리고-세-원리-비교">15.2 GAN, Diffusion, 그리고 세 원리 비교</a></h1>
-<p>[STUB: cq 확인 필요 — 이 절 안에 “네 원리(EM/GMM·VAE·GAN·Diffusion)
-비교” 표/문단이 있으면 EM/GMM을 빼고 “세 원리(VAE·GAN·Diffusion)“로
-줄일 것. Diffusion 부분에 Waymo SceneDiffuser<sup class="footnote-reference" id="fr-scenediffuser-1"><a href="#footnote-scenediffuser">1</a></sup> 실전
-사례(자율주행 시뮬레이션 시나리오 생성) 짧게 추가.]</p>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_3_gan_diffusion.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GAN &amp; Diffusion"></a></p>
-<p>앞의 두 절은 같은 질문(“관측되지 않은 구조가 데이터를 만들어내는가”)을
-두 가지 방식으로 풀었다 — GMM은 EM 알고리즘으로 정확히 풀었고, VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">2</a></sup>는
-풀리지 않는 ELBO를 신경망으로 근사했다. 이번 절은 그 다음, <strong>우도
-기반과 확연히 다른</strong> 나머지 두 방식을 만난다. GAN은 두 신경망의
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_2_gan_diffusion.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GAN &amp; Diffusion"></a></p>
+<p>15.1절의 VAE<sup class="footnote-reference" id="fr-vae-1"><a href="#footnote-vae">1</a></sup>는 4.4절의 GMM/EM이 던진 질문(“관측되지 않은
+구조가 데이터를 만들어내는가”)을 신경망으로 근사했다 — 풀리지
+않는 E-step을 인코더로 대체하고, 우도의 하한(ELBO)을 역전파로
+최대화하는, <strong>우도 기반</strong>의 마지막 방식이다. 이번 절은 그 다음,
+<strong>우도 기반과 확연히 다른</strong> 두 방식을 만난다. GAN은 두 신경망의
 <strong>경쟁 게임</strong>으로 학습하고, Diffusion은 노이즈를 <strong>한 단계씩 되돌리는
-회귀 문제</strong>로 학습한다. 네 방식이 나란히 놓이면 Chapter 15 전체의
-그림이 완성된다(생성 모델 전반을 더 깊이 보려면
-<sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">3</a></sup>도 참고하라).</p>
+회귀 문제</strong>로 학습한다. 세 방식(VAE·GAN·Diffusion)이 나란히
+놓이면 Chapter 15 전체의 그림이 완성된다(생성 모델 전반을 더 깊이
+보려면 <sup class="footnote-reference" id="fr-cs230-1"><a href="#footnote-cs230">2</a></sup>도 참고하라).</p>
 <h3 id="gan-생성자와-판별자의-min-max-게임"><a class="header" href="#gan-생성자와-판별자의-min-max-게임">GAN: 생성자와 판별자의 min-max 게임</a></h3>
 <p>2014년, 당시 몬트리올 대학교 얀 르쿤과 요슈아 벵기오 연구소에서
-박사과정을 밟던 이언 굿펠로우(Ian Goodfellow)는 GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">4</a></sup> 아이디어
+박사과정을 밟던 이언 굿펠로우(Ian Goodfellow)는 GAN<sup class="footnote-reference" id="fr-gan-1"><a href="#footnote-gan">3</a></sup> 아이디어
 하나를 떠올렸다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신,
 <strong>두 개의 신경망이 서로 경쟁하게 만들면 어떨까?</strong> 하나는 가짜를 만드는
 위조범(생성자, Generator), 다른 하나는 진짜와 가짜를 구별하는
@@ -268,7 +265,7 @@ D_{KL}(p \| m) + \tfrac{1}{2} D_{KL}(q \| m)\)이고
 \(D\)를 최적화(장난감에서는 닫힌 형태 \(D^*\)라 바로
 점프), (2) \(D^*\)를 고정하고 \(G\)의 파라미터 \(s\)를
 그라디언트 스텝으로 한 스텝 갱신 — 하는 <strong>교대 반복</strong>이다.
-15.1절 EM의 뼈대(E-step: 파라미터 고정 → 잠재변수 채우기 /
+4.4절 EM의 뼈대(E-step: 파라미터 고정 → 잠재변수 채우기 /
 M-step: 잠재변수 고정 → 파라미터 갱신)과 같은 <strong>좌표별
 최적화</strong>(coordinate optimization) 구조가, “잠재변수“를 “한
 네트워크“로 바뀐 형태로 그대로 나타난다.</p>
@@ -342,7 +339,7 @@ GAN의 “나쁜 소식들”(등락, 발산, 모드 붕괴)이 아직은 안 �
 <code>D.step()</code> 이후에 갱신된 \(D\)를 거쳐야 생성자 파라미터까지
 흐르기 때문이다 — 9장의 역전파가 “연산 그래프를 따라 거슬러
 올라가는 것“임을 떠올리면 당연하다.)</p>
-<p>여기서 EM과의 차이를 한 번 더 명확히 하자. EM은 E-step이 <strong>정확한
+<p>여기서 4.4절 EM과의 차이를 한 번 더 명확히 하자. EM은 E-step이 <strong>정확한
 사후확률</strong>을 채워넣었기 때문에 “우도가 단조증가한다“가
 <strong>증명 가능</strong>했다. GAN의 (1)은 \(D\)를 완전하게 최적화하지도,
 (2)가 \(G\)를 완전하게 최적화하지도 못하는 <strong>근사적인</strong> 게임
@@ -362,7 +359,7 @@ Chapter 9의 “그라디언트 소실“과 정확히 같은 구조다.</li>
 강해지면 다시 무너진다.</li>
 <li><strong>두 네트워크의 “학습 속도 밸런스</strong>“가 중요하다 — 한쪽이
 너무 빨리 수렴하면 다른 쪽의 학습 신호가 사라진다. 실전에서는
-\(D\)에 배터치 정규화(batch norm)<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">5</a></sup>를 쓰거나(9장의
+\(D\)에 배터치 정규화(batch norm)<sup class="footnote-reference" id="fr-batchnorm-1"><a href="#footnote-batchnorm">4</a></sup>를 쓰거나(9장의
 배터치 정규화와 같은 기법), \(G\)에 학습률을 작게 맞추거나,
 그래디언트 페널티(아래 WGAN-GP)를 붙이는 등 여러 대응이
 개발됐다.</li>
@@ -392,12 +389,12 @@ collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적�
 균형“이지만, 실제 학습이 풀고 있는 <strong>근사적인</strong> 게임에서는
 “일부 모드를 덮고 D를 속이는” 분포도 국소적으로 균형처럼
 작용할 수 있는 상태가 될 수 있다.</p>
-<p>반대로 VAE(15.2절)에서는 KL 항 \(D_{KL}(q_\phi(z|x) \| p(z))\)
+<p>반대로 15.1절의 VAE에서는 KL 항 \(D_{KL}(q_\phi(z|x) \| p(z))\)
 이 “인코더의 출력 분포가 표준정규분포에 가깝게 유지된다“를
 <strong>목적함수 안에 명시적으로</strong> 요구한다 — 잠재 공간 전체가 쓰이게
 되는 구조적 압력이 있어서, “잠재 공간의 일부만 쓰는” 퇴화는
 ELBO를 직접적으로 낮추는 행위다. GAN에는 이 대응 항이
-없다 — 이것이 15.3의 GAN 섹션에서 VAE와 비교할 때의 <strong>핵심
+없다 — 이것이 이 절의 VAE/GAN 비교에서 반복되는 <strong>핵심
 구조적 차이</strong>다.</p>
 <h3 id="2014년-이후의-gan-계열-안정화가-3년의-주제였다"><a class="header" href="#2014년-이후의-gan-계열-안정화가-3년의-주제였다">2014년 이후의 GAN 계열: “안정화“가 3년의 주제였다</a></h3>
 <p>기본 GAN의 불안정성을 고치려는 시도가 GAN 연구의 줄기를 이뤘다 —
@@ -405,7 +402,7 @@ ELBO를 직접적으로 낮추는 행위다. GAN에는 이 대응 항이
 한 줄씩):</p>
 <ul>
 <li><strong>WGAN / WGAN-GP (2017, Arjovsky et al. / Gulrajani et
-al.)</strong><sup class="footnote-reference" id="fr-wgan-1"><a href="#footnote-wgan">6</a></sup>: 기본 GAN의 “D가 G를 완전히 이기면 G의 그래디언트가
+al.)</strong><sup class="footnote-reference" id="fr-wgan-1"><a href="#footnote-wgan">5</a></sup>: 기본 GAN의 “D가 G를 완전히 이기면 G의 그래디언트가
 사라진다“는 문제를 정조준한다. 게임의 값을 두 분포의
 <strong>워터스톤 거리</strong>(Wasserstein-1, 두 분포를 “이동시켜
 일치시키는 최소 비용 — 어스무버 거리)으로 바꾼 뒤, \(D\)를
@@ -415,18 +412,18 @@ al.)</strong><sup class="footnote-reference" id="fr-wgan-1"><a href="#footnote-w
 거리와 일치해 \(G\)가 <strong>분포가 어디로 옮겨가야 하는지
 방향 신호</strong>를 계속 받는다. 그래디언트가 “0“으로 죽지
 않으므로 학습이 훨씬 안정적으로, 모드 붕괴도 줄어든다.</li>
-<li><strong>pix2pix (2016), CycleGAN (2017)</strong><sup class="footnote-reference" id="fr-pix2pix-1"><a href="#footnote-pix2pix">7</a></sup>: “이미지 → 이미지”
+<li><strong>pix2pix (2016), CycleGAN (2017)</strong><sup class="footnote-reference" id="fr-pix2pix-1"><a href="#footnote-pix2pix">6</a></sup>: “이미지 → 이미지”
 변환으로 확장. CycleGAN은 <strong>레이블된</strong> 데이터 없이도(말의
 사진만, 기린의 사진만) 두 분포 사이의 대응을 학습해서
 “말 → 기린” 같은 스타일 변환을 만들어 — GAN이 “단순히
 비슷한 이미지를 만드는 것“을 넘어, <strong>구조를 보존하며
 변환</strong>하는 도구로 확장했음을 보여준 대표 사례다.</li>
-<li><strong>StyleGAN (2018–2019)</strong><sup class="footnote-reference" id="fr-stylegan-1"><a href="#footnote-stylegan">8</a></sup>: 초고해상도 합성 인간 얼굴 생성.
+<li><strong>StyleGAN (2018–2019)</strong><sup class="footnote-reference" id="fr-stylegan-1"><a href="#footnote-stylegan">7</a></sup>: 초고해상도 합성 인간 얼굴 생성.
 잠재 벡터를 “스타일 수준별로” 나눠 조작하면 “얼굴 표정만
 바꾸고 얼굴 형태는 그대로” 같은 <strong>제어된</strong> 생성이 가능
-해졌다. (이 방향이 16장의 “생성 모델의 응용“에서 다시
-나온다.)</li>
-<li><strong>BigGAN (2019)</strong><sup class="footnote-reference" id="fr-biggan-1"><a href="#footnote-biggan">9</a></sup>: 데이터셋(예: ImageNet) 전체에 걸친
+해졌다. (팀 프로젝트에서 생성 모델 프로젝트를 고를 때
+16장에서 다시 만난다.)</li>
+<li><strong>BigGAN (2019)</strong><sup class="footnote-reference" id="fr-biggan-1"><a href="#footnote-biggan">8</a></sup>: 데이터셋(예: ImageNet) 전체에 걸친
 대규모 조건부 생성 — “이 클래스의 이미지를 만들어라“를
 1024×1024 해상도로.</li>
 </ul>
@@ -447,7 +444,7 @@ al.)</strong><sup class="footnote-reference" id="fr-wgan-1"><a href="#footnote-w
 “노이즈를 아주 조금만 제거하는” 훨씬 쉬운 문제이므로, 전체적으로 훨씬
 안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \(T\)번의 반복이
 필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
-이미지 생성 모델들(Stable Diffusion<sup class="footnote-reference" id="fr-stablediffusion-1"><a href="#footnote-stablediffusion">10</a></sup> 등)이 이 원리를 쓴다.</p>
+이미지 생성 모델들(Stable Diffusion<sup class="footnote-reference" id="fr-stablediffusion-1"><a href="#footnote-stablediffusion">9</a></sup> 등)이 이 원리를 쓴다.</p>
 <p><strong>왜 정방향 과정은 “학습 대상이 아닌가”</strong>: 정방향 과정은
 <strong>고정된, 알려진</strong> 절차 — \(x_t = \sqrt{1-\beta_t}\,x_{t-1} +
 \sqrt{\beta_t}\,\epsilon_t\)(\(\epsilon_t \sim
@@ -472,7 +469,7 @@ min-max 게임도 아니고, 우도의 적분 근사도 아닌, <strong>가장
 보통의 단일 회귀 최적화</strong>다. “안정적으로 학습된다“의
 정체가 바로 이것이다. (수학적으로 이 \(\epsilon\) 예측은
 \(\nabla_x \log p_t(x)\), 즉 데이터 분포의 <strong>스코어
-함수</strong>를 추정하는 것과 동치임을 Song &amp; Ermon (2019)<sup class="footnote-reference" id="fr-songermon19-1"><a href="#footnote-songermon19">11</a></sup>가
+함수</strong>를 추정하는 것과 동치임을 Song &amp; Ermon (2019)<sup class="footnote-reference" id="fr-songermon19-1"><a href="#footnote-songermon19">10</a></sup>가
 보였다 — “노이즈를 잘 예측할 수 있는” 것은 곧 “데이터가
 어디에 빽빽한지 그 기울기를 아는” 것과 같은 셈이다.)</p>
 <p>역방향 단계(DDPM)는 한 줄로:</p>
@@ -489,25 +486,25 @@ z \sim \mathcal{N}(0, I)\]</p>
 절차의 일부다.</p>
 <p><strong>역사적 맥락</strong>: Diffusion의 “정방향/역방향” 아이디어 자체는
 2015년 Sohl-Dickstein 외의 논문(Deep Unsupervised Learning
-using Nonequilibrium Thermodynamics)<sup class="footnote-reference" id="fr-sohldickstein15-1"><a href="#footnote-sohldickstein15">12</a></sup>에서 처음
+using Nonequilibrium Thermodynamics)<sup class="footnote-reference" id="fr-sohldickstein15-1"><a href="#footnote-sohldickstein15">11</a></sup>에서 처음
 딥러닝에
 제안됐다 — 하지만 당시에는 학습이 너무 느려 실용화되지
-못했다. 2020년 <strong>DDPM</strong><sup class="footnote-reference" id="fr-ddpm-1"><a href="#footnote-ddpm">13</a></sup> (Ho, Jain &amp; Abbeel, “Denoising
+못했다. 2020년 <strong>DDPM</strong><sup class="footnote-reference" id="fr-ddpm-1"><a href="#footnote-ddpm">12</a></sup> (Ho, Jain &amp; Abbeel, “Denoising
 Diffusion Probabilistic Models”)이 (i) 노이즈 예측
 매개변수화 \(\epsilon_\theta\), (ii) 단순한 MSE 손실,
 (iii) 실용적 스케줄을 조합해 <strong>실제로 쓸 만한</strong> 알고리즘으로
-만들었고, 같은 해 <strong>DDIM</strong>(Song et al.)<sup class="footnote-reference" id="fr-ddim-1"><a href="#footnote-ddim">14</a></sup>이 역방향 과정을
+만들었고, 같은 해 <strong>DDIM</strong>(Song et al.)<sup class="footnote-reference" id="fr-ddim-1"><a href="#footnote-ddim">13</a></sup>이 역방향 과정을
 <strong>거의 결정적으로</strong> 만들어서 \(T\)를 1000에서 약 50
-단계로 줄였다. 2022년 <strong>Stable Diffusion</strong>(Stability AI)<sup class="footnote-reference" id="fr-stablediffusion-2"><a href="#footnote-stablediffusion">10</a></sup>은
-여기에 15.2절의 <strong>VAE</strong>를 조합했다 — 이미지를 VAE 인코더로
+단계로 줄였다. 2022년 <strong>Stable Diffusion</strong>(Stability AI)<sup class="footnote-reference" id="fr-stablediffusion-2"><a href="#footnote-stablediffusion">9</a></sup>은
+여기에 15.1절의 <strong>VAE</strong>를 조합했다 — 이미지를 VAE 인코더로
 8× 압축한 <strong>잠재 공간</strong>에서 Diffusion을 돌리는 구조로,
-계산량이 1/8²으로 줄었다. 15.2에서 “VAE의 매끄러운 잠재
+계산량이 1/8²으로 줄었다. 15.1에서 “VAE의 매끄러운 잠재
 공간“이 왜 중요한지 배웠는데, 그것이 곧 Diffusion을 <strong>안정
-있게</strong> 학습·추론할 수 있게 하는 전제 조건이었다 — 네 원리가
+있게</strong> 학습·추론할 수 있게 하는 전제 조건이었다 — 세 원리가
 각자 독립적으로 끝나는 것이 아니라 <strong>서로 연결</strong>되어 실전
-시스템으로 합쳐진다는 점이, 이번 장을 “네 개를 나란히” 보는
+시스템으로 합쳐진다는 점이, 이번 장을 “세 개를 나란히” 보는
 이유다.
-(같은 해 DALL·E 2<sup class="footnote-reference" id="fr-dalle2-1"><a href="#footnote-dalle2">15</a></sup>, Midjourney, 2024년 Sora 같은 영상
+(같은 해 DALL·E 2<sup class="footnote-reference" id="fr-dalle2-1"><a href="#footnote-dalle2">14</a></sup>, Midjourney, 2024년 Sora 같은 영상
 생성까지, 이미지 생성의 주류가 Diffusion으로 이동했다.)</p>
 <p><strong>GAN vs Diffusion — “학습할 것“을 한 줄로 비교하면</strong>:</p>
 <div class="table-wrapper">
@@ -522,25 +519,48 @@ Diffusion Probabilistic Models”)이 (i) 노이즈 예측
 </tbody>
 </table>
 </div>
-<h3 id="네-원리-비교"><a class="header" href="#네-원리-비교">네 원리 비교</a></h3>
+<p><strong>이미지 밖으로: Waymo SceneDiffuser<sup class="footnote-reference" id="fr-scenediffuser-1"><a href="#footnote-scenediffuser">15</a></sup>.</strong>
+Diffusion의 “노이즈를 점진적으로 되돌린다“는 원리는 픽셀
+공간에 머물지 않는다. 2024년 Waymo는 자율주행 개발을 위한
+시뮬레이션 도구 <strong>SceneDiffuser</strong>를 내놓았는데, 자연어
+지시(“자신의 차가 저속 차량을 따라가는 장면” 같은)로부터
+<strong>3차원 교통 장면의 초기 배치</strong>(차량·보행객의 위치, 진행
+방향, 크기를 포함)를 생성하고, 그 장면을 <strong>앞으로 전개될
+미래(롤아웃</strong>)까지 시뮬레이션한다. 핵심은 “장면 수준
+(scene-level)의 Diffusion 사전분포” — 장면 전체의 상태가
+시간에 따라 어떻게 흘러갈지를 하나의 <strong>스페이오-템포럴
+(spatio-temporal, 공간-시간 차원)</strong> Diffusion 모델로
+예측하는 것인데, roadgraph·교통 신호 같은 제약 조건으로
+노이즈 제거를 유도하는 <strong>조건부 생성</strong>이라는 점에서
+Stable Diffusion의 “텍스트 → 이미지“와 정확히 같은
+패턴이다. 즉 Stable Diffusion이 <strong>이미지 하나</strong>의 잠재
+공간에서 노이즈를 되돌렸다면, SceneDiffuser는 <strong>시간을
+축으로 한 장면 전체</strong>에서 되돌리는 셈이다. (이 덕분에
+자율주행 시스템을 테스트할 <strong>상상 속 시나리오</strong>를 대량으로
+만들어낼 수 있게 됐는데 — “생성 모델이 안전 검증 도구로
+쓰인다“는 점을 보여주는 대표 사례다. 추론에 필요한
+모델 호출 횟수도 16배 줄였다고 보고했다.)</p>
+<h3 id="세-원리-비교"><a class="header" href="#세-원리-비교">세 원리 비교</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th></th><th>EM/GMM</th><th>VAE (우도 기반)</th><th>GAN (적대적)</th><th>Diffusion (스코어 기반)</th></tr>
+<tr><th></th><th>VAE (우도 기반)</th><th>GAN (적대적)</th><th>Diffusion (스코어 기반)</th></tr>
 </thead>
 <tbody>
-<tr><td>잠재변수</td><td>이산(클러스터 번호)</td><td>연속 벡터</td><td>없음(노이즈를 직접 변환)</td><td>연속(노이즈 단계)</td></tr>
-<tr><td>학습 방법</td><td>E-step/M-step 반복</td><td>ELBO 최대화(역전파)</td><td>min-max 게임의 균형</td><td>각 단계 노이즈 예측 오차 최소화</td></tr>
-<tr><td>학습 안정성</td><td>안정적</td><td>비교적 안정적</td><td>불안정하기 쉬움</td><td>안정적</td></tr>
-<tr><td>생성 속도</td><td>—</td><td>빠름(한 번에)</td><td>빠름(한 번에)</td><td>느림(반복 필요)</td></tr>
+<tr><td>잠재변수</td><td>연속 벡터</td><td>없음(노이즈를 직접 변환)</td><td>연속(노이즈 단계)</td></tr>
+<tr><td>학습 방법</td><td>ELBO 최대화(역전파)</td><td>min-max 게임의 균형</td><td>각 단계 노이즈 예측 오차 최소화</td></tr>
+<tr><td>학습 안정성</td><td>비교적 안정적</td><td>불안정하기 쉬움</td><td>안정적</td></tr>
+<tr><td>생성 속도</td><td>빠름(한 번에)</td><td>빠름(한 번에)</td><td>느림(반복 필요)</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>잠재변수 행을 다시 읽으면</strong> “관측 안 된 구조“가 네 방식에서
-무엇이었는지 보인다. EM/GMM의 \(z\)는 <strong>이산 라벨</strong>(어느
-클러스터인가) — 가능치가 \(K\)개라 E-step이 닫힌 형태로
-<strong>정확히</strong> 계산된다. VAE의 \(z\)는 <strong>연속 벡터</strong> — 가능치가
-무한해서 E-step을 신경망으로 <strong>근사</strong>해야 한다(15.2절). GAN의
+<p><strong>잠재변수 행을 다시 읽으면</strong> “관측 안 된 구조“가 세 방식에서
+무엇이었는지 보인다. (참고로 4.4절의 GMM도 같은 질문의
+<strong>이산 잠재변수</strong> 버전이다 — \(z\)가 클러스터 번호라
+E-step이 닫힌 형태로 <strong>정확히</strong> 계산되므로, “정밀하지만
+이산“으로 여기 추가하지 않았다.) VAE의 \(z\)는 <strong>연속
+벡터</strong> — 가능치가 무한해서 E-step을 신경망으로 <strong>근사</strong>해야
+한다(15.1절). GAN의
 \(z\)는 <strong>분포가 아니라 그냥 랜덤 입력</strong> — “데이터를 설명하는
 잠재변수“의 역할을 하지 않고, 생성자가 입력으로 받는
 <strong>다양성의 원천</strong>일 뿐이다(\(z\)의 분포를 학습하지도,
@@ -549,21 +569,23 @@ Diffusion Probabilistic Models”)이 (i) 노이즈 예측
 이산적으로 \(T\)개인, “점진적으로 오염된 데이터” 그
 자체다.</p>
 <p><strong>학습 방법 행을 다시 읽으면</strong> “안정성“의 원인이 보인다.
-EM은 닫힌 형태의 좌표별 최적화라 <strong>증명 가능하게</strong> 안정하고,
 VAE는 ELBO(단일 목적함수)를 역전파로 최대화하는 <strong>보통의</strong>
 최적화라 안정하고, Diffusion은 MSE 회귀라 <strong>가장</strong> 보통의
-최적화라 안정하다. GAN만 <strong>두 개의 최적화 알고리즘이 서로
-의 목표함수를 바꾸어놓는</strong> 게임이라 — 단조증가도, 볼록성도,
-“수렴했다는 것” 자체의 정의로도 — 안정성의 근거가
-<strong>없다</strong>.</p>
+최적화라 안정하다(대조적으로 4.4절 EM은 닫힌 형태의
+좌표별 최적화라 <strong>증명 가능하게</strong> 안정했다). GAN만 <strong>두
+개의 최적화 알고리즘이 서로의 목표함수를 바꾸어놓는</strong> 게임이라
+— 단조증가도, 볼록성도, “수렴했다는 것” 자체의 정의로도 —
+안정성의 근거가 <strong>없다</strong>.</p>
 <p><strong>생성 속도 행</strong>은 “안정성의 대가“를 읽는 열이다. 가장
 안정한 Diffusion은 생성에 \(T\)회 반복이 필요하고(DDIM으로
 줄여도 수십 회), 가장 빠른 GAN/VAE는 <strong>한 번의</strong> 순전파로
-생성한다. Chapter 15 전체를 관통하는 트레이드오프 —
+생성한다. 이 트레이드오프는 이번 장을 관통한다 —
 “데이터를 설명할 수 있다(안정성, 평가 가능)“와 “빨리
-만들 수 있다(속도)” — 는 여기에서 가장 극적으로 나타난다.</p>
+만들 수 있다(속도)” — 그리고 위에서 본 Stable Diffusion과
+SceneDiffuser가 보여주는 것처럼, 실전 시스템은 이 세 원리를
+<strong>하나씩 고르는 것이 아니라 조합</strong>해서 쓴다.</p>
 <p><strong>하나의 원리만 배우고 끝냈다면 “생성형 모델 = 이런 것“이라고 좁게
-오해했을 것이다 — 네 원리를 나란히 보고 나서야, “관측되지 않은 구조가
+오해했을 것이다 — 세 원리를 나란히 보고 나서야, “관측되지 않은 구조가
 데이터를 만들어낸다“는 하나의 질문이 얼마나 다양한 방식으로 풀릴 수
 있는지가 보인다.</strong></p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
@@ -689,7 +711,7 @@ GAN(적대적)의 생성 품질·학습 안정성 트레이드오프를 두세 �
 실제로는 \(\pi\)가 약분되어 사라진다는 것도 확인하라.</p>
 <p><strong>5. (손유도, Tier C — 폴백 준비 대상)</strong> \(\log p_\theta(x) = \log
 \int p_\theta(x,z)\,dz\)에서 시작해서, 옌센 부등식(\(\log
-\mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 이용해 15.4절의 ELBO 부등식을
+\mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 이용해 15.1절의 ELBO 부등식을
 유도하라.</p>
 <p><strong>빈칸채움형 폴백 버전</strong> (자유 유도가 어려운 경우):</p>
 <pre><code>Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
@@ -709,9 +731,6 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 문장으로 설명하라(옌센 부등식이 언제 등식이 되는지: \(X\)가 상수일 때).</p>
 <hr>
 <ol class="footnote-definition">
-<li id="footnote-scenediffuser">
-<p>Jiang, C. M. et al. (2024). “SceneDiffuser: Efficient and Controllable Driving Simulation Initialization and Rollout.” NeurIPS 2024. <a href="#fr-scenediffuser-1">↩</a></p>
-</li>
 <li id="footnote-vae">
 <p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1">↩</a></p>
 </li>
@@ -753,6 +772,9 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 </li>
 <li id="footnote-dalle2">
 <p>Ramesh, A., Dhariwal, P., Nichol, A., Chu, C., Chen, M. (2022). “Hierarchical Text-Conditional Image Generation with CLIP Latents.” arXiv:2204.06125. (DALL·E 2) <a href="#fr-dalle2-1">↩</a></p>
+</li>
+<li id="footnote-scenediffuser">
+<p>Jiang, C. M., Bai, Y., Cornman, A., et al. (2024). “SceneDiffuser: Efficient and Controllable Driving Simulation Initialization and Rollout.” NeurIPS 2024. arXiv:2412.12129. <a href="#fr-scenediffuser-1">↩</a></p>
 </li>
 <li id="footnote-lcm">
 <p>Luo, S., Tan, Y., Huang, L., Li, J., Zhao, H. (2023). “Latent Consistency Models: Synthesizing High-Resolution Images with Few-Step Inference.” arXiv:2310.04378. <a href="#fr-lcm-1">↩</a></p>

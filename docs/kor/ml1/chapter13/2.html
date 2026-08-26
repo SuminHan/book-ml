@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-b71af2bb.js";
+            window.path_to_searchindex_js = "../../searchindex-ebf8b0bd.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-40bab1e1.js"></script>
+        <script src="../../toc-27b50e49.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -180,17 +180,41 @@
                     <main>
                         <h1 id="132-node2vec"><a class="header" href="#132-node2vec">13.2 Node2Vec</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter13_2_node2vec.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: Node2Vec 실습"></a></p>
-<p>[STUB: cq가 확장할 자리 — 13.1에서 이미 정상분포·무작위걷기 기초를 다뤘다는 전제로 도입부를 다듬을 것. <strong>사용자 요청 반영 필수</strong>: “Node2Vec 알고리즘은 사실 random walk로 생성한 경로들에 word2vec의 skip-gram을 그대로 학습시킨 것“이라는 메커니즘을 이 절 도입부에서 명시적으로 강조. word2vec(14.2)이 “작은 신경망“으로 소개됐던 것과 달리, 이 절의 random walk 아이디어 자체는 신경망 없이도 성립하는 더 일반적인 버전이라는 연결고리도 짚을 것.]</p>
-<h3 id="node2vec-같은-아이디어를-그래프로"><a class="header" href="#node2vec-같은-아이디어를-그래프로">Node2Vec: 같은 아이디어를 그래프로</a></h3>
-<p><strong>Node2Vec</strong><sup class="footnote-reference" id="fr-node2vec-1"><a href="#footnote-node2vec">1</a></sup>은 word2vec<sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">2</a></sup>의 skip-gram을 그대로 재사용하되, “문장” 대신
-그래프 위의 <strong>무작위 걷기</strong>(random walk)로 만든 노드 시퀀스를 입력으로
-쓴다 — 한 노드에서 출발해 무작위로 이웃을 따라가며 만든 경로가 곧
-“문장“이고, 그 경로 위의 노드들이 “단어“다. “비슷한 이웃 구조를 가진
-노드는 비슷한 벡터를 갖게 된다“는 것도, word2vec의 “비슷한 문맥에
-나오는 단어는 비슷한 벡터를 갖는다“는 원리를 그래프에 그대로 물려준
-결과다.</p>
+<h3 id="node2vec-같은-아이디어를-그래프로--걷기에-skip-gram을-그대로"><a class="header" href="#node2vec-같은-아이디어를-그래프로--걷기에-skip-gram을-그대로">Node2Vec: 같은 아이디어를 그래프로 — 걷기에 skip-gram을 그대로</a></h3>
+<p>13.1절까지 확립한 것을 한 줄로 되새기자. 그래프 위의 <strong>무작위
+걷기</strong>(random walk)는 마르코프 체인이고, 그 걷기 안의 인접 노드들은
+서로를 “함께 나타남“으로 잇는다. 이제 그 “함께 나타남의 순서”, 곧
+걷기 시퀀스를 14.2절 word2vec의 skip-gram 학습에 <strong>그대로</strong> 넣으면
+된다.</p>
+<p><strong>Node2Vec</strong><sup class="footnote-reference" id="fr-node2vec-1"><a href="#footnote-node2vec">1</a></sup> 알고리즘은 사실, random walk로 생성한
+경로들에 <strong>word2vec</strong><sup class="footnote-reference" id="fr-word2vec-1"><a href="#footnote-word2vec">2</a></sup>의 skip-gram을 <strong>그대로 학습시킨
+것</strong>이다. word2vec에서 쓰던 세 요소를 그래프 버전으로 치환하면
+이렇다:</p>
+<ul>
+<li><strong>문장</strong> — 한 노드에서 출발해 이웃을 무작위로 따라가며 만든 <strong>걷기
+경로</strong>(노드 시퀀스)</li>
+<li><strong>단어</strong> — 그 경로 위에 순서대로 나오는 <strong>노드</strong></li>
+<li><strong>학습</strong> — 14.2절의 <code>train_skipgram</code>을 한 줄도 고치지 않고 그대로
+돌린다(토큰이 단어 대신 노드 번호일 뿐)</li>
+</ul>
+<p>“비슷한 문맥에 나오는 단어는 비슷한 벡터를 갖는다“는 word2vec의
+원리가, “비슷한 이웃 구조를 가진 노드는 비슷한 벡터를 갖게 된다“는
+문장으로 바뀐 것뿐이다. 학습이 끝나면 14.2절과 똑같이 <strong>은닉층
+가중치 행이 각 노드의 임베딩 벡터</strong>가 된다.</p>
+<p>이 치환에는 14.2절을 떠올리면 보이는 연결고리가 하나 있다. 14.2절에서
+word2vec은 “작은 <strong>신경망</strong>을 학습시킨다“고 소개됐다 — one-hot
+입력층·임베딩 차원의 은닉층·어휘 크기 출력층을 갖고, 이진
+교차엔트로피를 최소화하다 부산물로 임베딩이 나오는 구조였다. 그런데
+Node2Vec의 핵심 재료, “걷기로 시퀀스를 만들고 그 위에서 함께-나타남
+을 학습한다“는 이 아이디어 자체는 <strong>신경망 없이도 성립</strong>한다. 걷기
+시퀀스를 “문장 목록“으로 여는 순간, 그 위에 어떤 학습자를 얹을지는
+별개의 선택이 된다 — skip-gram을 쓰든, 더 단순한 “함께 나타난 횟수”
+카운트 기반의 선형 분해(14.2절의 LSI 같은)를 쓰든, “걷기 시퀀스로
+함께-나타남을 만든다“는 틀 자체는 신경망을 전제로 하지 않는 <strong>더
+일반적인 버전</strong>이다. Node2Vec은 그 일반적인 틀 위에 14.2절의
+skip-gram이라는 하나의 실용적 학습자를 골랐을 뿐이다.</p>
 <h3 id="node2vec의-진짜-기여-두-계수-p와-q"><a class="header" href="#node2vec의-진짜-기여-두-계수-p와-q">Node2Vec의 진짜 기여: 두 계수 p와 q</a></h3>
-<p>위 코드의 일괄적 무작위 걷기는, 원본 Node2Vec 논문(Grover &amp;
+<p>13.1절 코드의 일괄적 무작위 걷기는, 원본 Node2Vec 논문(Grover &amp;
 Leskovec, 2016)의 가장 단순한 특수한 경우다 — 이 논문의 실제 기여는
 걷기에 <strong>\(p\)</strong>(return)와 <strong>\(q\)</strong>(in-out)라는 두 계수를 붙여
 “이웃 탐색의 스타일“을 조절하는 것이었다.</p>
@@ -291,7 +315,7 @@ node 2의 상위 3개 유사 노드(12, 19, 17)가 <strong>모두 감독 파벌<
 <h3 id="자주-하는-실수-무방향-엣지를-방향-그대로-넣고-돌리기"><a class="header" href="#자주-하는-실수-무방향-엣지를-방향-그대로-넣고-돌리기">자주 하는 실수: 무방향 엣지를 방향 그대로 넣고 돌리기</a></h3>
 <p>카라테 그래프는 <strong>무방향</strong>이고, PageRank는 <strong>방향</strong> 그래프 위에서
 정의된다 — 표준 기법은 “친분 관계 1개“를 <strong>양방향 링크 2개</strong>로
-바꿔주는 것(아래 <code>directed_edges</code> 줄이 그것을 한다). 이 대칭화를
+바꿔주는 것(13.3절의 <code>directed_edges</code> 줄이 그것을 한다). 이 대칭화를
 누락하고 <code>KARATE_EDGES</code>를 그대로 넣으면, 결과는 <strong>각 엣지가 어떤
 방향으로 기록되었는가에 따라</strong> — 즉 임의적인 저장 순서에 따라 — 달라진다.
 실제로 돌려보면:</p>

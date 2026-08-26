@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-b71af2bb.js";
+            window.path_to_searchindex_js = "../searchindex-ebf8b0bd.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-40bab1e1.js"></script>
+        <script src="../toc-27b50e49.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -224,7 +224,7 @@ Dyna-Q<sup class="footnote-reference" id="fr-suttonbarto-1"><a href="#footnote-s
 상태 공간을 계산하는 대신, 지금 필요한 갈림길만 깊게 계산한다“는
 절충을 보여주는 표준 사례다 — 이 “부분 계획“의 아이디어가 이번 장의
 세 절을 관통하는 주제다.</p>
-<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<p>이번 주는 네 개의 수업 블록으로 진행된다:</p>
 <ul>
 <li><a href="chapter15/1.html">15.1 모델기반 RL 개관: Dyna-Q 재조명과 “공짜 모델”</a>
 Dyna-Q를 복습해 “known/learned 모델 × 학습/계획“의 두 축으로
@@ -247,6 +247,18 @@ MCTS의 네 단계 반복과 UCT 선택 규칙을 배우고, 직접 구현해 �
 결과만 보상 구조에 따라 완전히 달라지는 세 가지 학습 동역학을
 관찰하고, 내쉬 균형과 MCTS·미니맥스·자기 자신과의 대국
 (self-play)과의 연결고리를 살펴본다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">11</a></sup></li>
+<li>world model 계열(Ha &amp; Schmidhuber의 World Models, Hafner 등의
+Dreamer)이 “learned model“을 신경망 규모로 밀어붙여, 학습된 모델
+<strong>안에서 상상한 경험만으로</strong> 정책을 학습시키는 원리를 설명하고, 왜
+이것이 실제 환경 상호작용이 비싼 문제에서 데이터 효율성을 크게
+높이는지 말할 수 있다.</li>
+<li><a href="chapter15/4.html">15.4 World Models: 학습된 모델로 상상하며 계획하기</a>
+15.1절의 “learned model” 축을 신경망 스케일로 밀어붙인 world model
+계열(Ha &amp; Schmidhuber, Dreamer)을 개념과 대표 논문 위주로 소개한다
+— 환경 자체를 신경망으로 배운 뒤, 그 학습된 모델 “안에서 상상하며”
+정책을 훈련시키는 아이디어. CartPole로 다이내믹스 모델을 학습시켜
+“상상 속에서만” 정책을 굴려 보고 실제 환경과 결과가 얼마나
+일치하는지 실습한다.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">
@@ -289,7 +301,7 @@ MCTS의 네 단계 반복과 UCT 선택 규칙을 배우고, 직접 구현해 �
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml2/chapter14/3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml2/chapter14/4.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -303,7 +315,7 @@ MCTS의 네 단계 반복과 UCT 선택 규칙을 배우고, 직접 구현해 �
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml2/chapter14/3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml2/chapter14/4.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 

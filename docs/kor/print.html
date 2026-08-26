@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b71af2bb.js";
+            window.path_to_searchindex_js = "searchindex-ebf8b0bd.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-40bab1e1.js"></script>
+        <script src="toc-27b50e49.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -4083,9 +4083,6 @@ P(x|y{=}0)P(y{=}0)} = \frac{1}{1 + e^{-z}} = \sigma(z)\]</p>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-4-거리-기반-모델과-클러스터링-knn-k-means-gmmem-distance-based-models--clustering"><a class="header" href="#chapter-4-거리-기반-모델과-클러스터링-knn-k-means-gmmem-distance-based-models--clustering">Chapter 4. 거리 기반 모델과 클러스터링: kNN, k-means, GMM/EM (Distance-Based Models &amp; Clustering)</a></h1>
-<p>[STUB: cq 확인 필요 — 4.4(GMM/EM/LDA) 추가에 맞춰 오프너 훅/학습
-목표/절 요약을 보강할 것. 아래는 최소 반영(4.4 항목 추가, “15장 GMM”
-언급을 “4.4“로 정정)만 해둔 상태.]</p>
 <p>“당신은 가장 가까운 다섯 친구의 평균이다“라는 말이 있다. 이 문장을 그대로
 알고리즘으로 옮기면 <strong>k-최근접이웃</strong>(k-Nearest Neighbors, kNN)<sup class="footnote-reference" id="fr-cs229-1-12"><a href="#footnote-cs229-12">1</a></sup>이 된다: 새로운
 데이터를 분류하고 싶으면, 학습도 모델도 필요 없이 그냥 “가장 가까운 \(k\)개의
@@ -4098,6 +4095,13 @@ P(x|y{=}0)P(y{=}0)} = \frac{1}{1 + e^{-z}} = \sigma(z)\]</p>
 점은 한 덩어리“라는 거리 정보만으로 데이터의 구조를 쪼개는 것이다. 둘 다
 <strong>거리를 재는 데서 출발</strong>한다는 공통점이, 이 두 알고리즘을 한 장에 묶는
 이유다.</p>
+<p>그리고 이번 장의 세 번째 주인공은 <strong>GMM</strong>(가우시안 혼합모델)과 그것을
+학습시키는 <strong>EM 알고리즘</strong>이다. 4.3절의 k-means가 각 점을 <em>딱 하나의</em>
+클러스터에 배정했다면(하드 할당), GMM은 “이 점은 A에 60%, B에 40%
+속한다“는 <strong>확률</strong>로 표현한다(소프트 할당). 그런데 그걸 학습시키려면
+“각 점이 어디서 나왔는지(라벨)“와 “각 클러스터의 파라미터“를 <em>둘 다</em>
+모르는 순환에 부딪히고 — EM은 이 순환을 “하나를 채우고, 그걸로 다른
+하나를 추정하고, 반복한다“는 두 줄짜리 절차로 풀어내는 것이다.</p>
 <p>이 장은 Chapter 3(생성 모델)과 이어진다. Chapter 3의 나이브베이즈는 “특징들이
 서로 독립“이라는 강한 가정을 세워 차원의 저주를 <em>피해</em>내는 모델이었다. 이번
 장에서는 거리를 직접 재는 모델이 차원의 저주를 <em>정면으로</em> 맞게 되는 모습을
@@ -4129,7 +4133,16 @@ P(x|y{=}0)P(y{=}0)} = \frac{1}{1 + e^{-z}} = \sigma(z)\]</p>
 <li>초기화에 따라 다른 지역최적해에 빠지는 문제를 <strong>k-means++</strong><sup class="footnote-reference" id="fr-kmeanspp-1"><a href="#footnote-kmeanspp">3</a></sup>와 <code>n_init</code>
 반복으로 완화하고, k-means가 경계를 *볼록(직선)*으로만 그리는 구조적 한계와
 4.4절 GMM으로의 연결을 짚을 수 있다.</li>
-<li>[STUB] GMM/EM/LDA 관련 학습 목표 추가.</li>
+<li>k-means의 하드 할당을 <strong>소프트 할당</strong>(각 점의 클러스터 소속 <em>확률</em>)으로
+일반화한 GMM이 왜 MLE로 바로 풀리지 않는지(라벨이 관측되지 않아 우도가
+<em>곱의 합</em>이 되기 때문) 설명하고, EM의 E-step/M-step 한 라운드를 손으로
+계산할 수 있다.</li>
+<li>EM이 매 반복마다 <strong>우도를 절대 감소시키지 않는다</strong>는 보장을 옌센 부등식으로
+4줄 안에 재증명하고, 15장의 VAE가 “계산 불가능한 E-step을 신경망으로 근사한
+EM“임을 ELBO라는 <em>같은</em> 하한으로 연결할 수 있다.</li>
+<li>\(K\)를 likelihood로 고르면 \(K=m\)이 이기는 함정을 짚고 <strong>BIC</strong>로 고르는
+원리를 설명하며, 같은 EM 계열 고전 확률모델인 <strong>LDA</strong>(잠재 디리클레 할당)가
+GMM의 “점→클러스터“를 “단어→토픽“으로 바꾼 것인지 대비할 수 있다.</li>
 </ul>
 <p>이번 주는 네 개의 수업 블록으로 진행된다:</p>
 <ul>
@@ -4152,11 +4165,20 @@ kNN이 “저장만 하고, 예측 때 거리를 재는” 게으른 방법임�
 수렴하는지는 초기화에 달린(비볼록) 문제임을 수학으로 보여주고, \(k\)
 선택(엘보우), k-means++ 초기화, 그리고 “경계가 항상 직선(볼록)“이라는
 구조적 한계와 로이드(1957)·매퀸(1967)의 동시 발견 이야기를 다룬다.</li>
-<li><a href="#44-gmm과-em-알고리즘">4.4 GMM과 EM 알고리즘</a> — k-means의 하드 할당을
+<li><a href="#44-gmm-em-알고리즘-그리고-lda">4.4 GMM과 EM 알고리즘</a> — k-means의 하드 할당을
 “이 점이 각 클러스터에 속할 확률“이라는 소프트 할당으로 일반화한
 가우시안 혼합모델(GMM)과, 그걸 학습시키는 EM 알고리즘을 다룬다.
-LDA(잠재 디리클레 할당)도 같은 EM 계열의 고전 확률모델로 함께
-짚는다. [STUB: 요약 문단 보강 필요]</li>
+라벨과 파라미터를 “둘 다 모른다“는 순환(잠재변수 문제)을 EM이
+E-step(책임값 계산) → M-step(가중 평균 갱신)으로 풀어가는 과정을
+\(x = 0, 3, 8\) 세 점으로 한 라운드를 손계산하고, 옌센 부등식
+4줄로 “우도가 절대 줄지 않는다“는 보증을 증명한다. 공분산 행렬
+\(\Sigma_k\)가 k-means에 없는 타원형·기울어진 클러스터를
+표현하는지 등고선 시각화로 확인한 뒤, likelihood가 클러스터 하나
+늘면 항상 좋아지는 \(K\) 선택 함정과 BIC, 그리고 무작위 초기화
+실험에서 세 중심이 한 점에 겹치는 “분산 붕괴” 퇴화 해를 짚는다.
+LDA(잠재 디리클레 할당)도 같은 EM 계열의 고전 확률모델로,
+GMM의 “점 → 클러스터“를 “단어 → 토픽“으로 옮긴 문서-토픽 모델로서
+함께 짚는다.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">
@@ -5310,17 +5332,8 @@ SSE가 훨씬 크게 나오는 것을 직접 확인해보라:</p>
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="44-gmm과-em-알고리즘"><a class="header" href="#44-gmm과-em-알고리즘">4.4 GMM과 EM 알고리즘</a></h1>
+<h1 id="44-gmm-em-알고리즘-그리고-lda"><a class="header" href="#44-gmm-em-알고리즘-그리고-lda">4.4 GMM, EM 알고리즘, 그리고 LDA</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter04_4_gmm_em.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
-<p>[STUB: cq 확인 필요 — 원래 15.1(잠재변수 생성모델 챕터)에 있던 내용을
-4장(거리 기반 모델과 클러스터링) 끝으로 옮겨왔다. <strong>사용자 요청 반영
-필수</strong>: 이 절에 **LDA(잠재 디리클레 할당, Latent Dirichlet
-Allocation)**도 GMM/EM과 같은 “EM으로 푸는 고전 확률모델“로 추가할
-것 — 문서-토픽 모델이라는 점에서 GMM(포인트-클러스터)과 대비해서
-설명하면 좋음. 절 제목도 필요하면 “GMM, EM 알고리즘, 그리고 LDA”
-식으로 확장 검토. 15장(VAE/GAN/Diffusion) 오프너에서 “이 절이 그
-확률적 잠재변수 모델의 원형“이라고 다시 짚어주는 다리 문단이 있으니
-호응 확인할 것.]</p>
 <h3 id="닭이-먼저냐-달걀이-먼저냐-잠재변수-문제"><a class="header" href="#닭이-먼저냐-달걀이-먼저냐-잠재변수-문제">닭이 먼저냐 달걀이 먼저냐: 잠재변수 문제</a></h3>
 <p>4.3절의 k-means는 각 점을 <strong>딱 하나의</strong> 클러스터에 배정했다(하드
 할당, hard assignment). 그런데 실제 데이터는 클러스터 경계가 모호한
@@ -5572,6 +5585,98 @@ EM을 돌려보면(노트북 5절):</p>
 같은 결정을 하나의 <strong>숫자</strong>로 내리는 원리 있는 버전이다.
 EM과 혼합모델을 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs229-1-16"><a href="#footnote-cs229-16">6</a></sup>.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"><span class="img-wrapper"><img src="images/ch15_gmm_bic.svg" alt="BIC 곡선 — 3-블롭 데이터에 K=1~4 GMM을 EM으로 학습한 뒤 계산한 BIC. K=3에서 최소, K=4는 likelihood가 같아도 벌점으로 뒤집힌다"></span></label></p>
+<h3 id="같은-em-다른-데이터-lda잠재-디리클레-할당"><a class="header" href="#같은-em-다른-데이터-lda잠재-디리클레-할당">같은 EM, 다른 데이터: LDA(잠재 디리클레 할당)</a></h3>
+<p>GMM을 생성 과정의 관점에서 다시 보면, “데이터가 <strong>어디서</strong> 만들어졌는가“를
+모델링한 것이다 — 각 점 (x_i)의 생성 클러스터(어느 덩어리)를
+나타내는 잠재변수 (z_i)가 한 줄기뿐이다. 그런데 데이터가 점으로
+만들어지는 것은 아니다. 문서(뉴스 기사, 논문, 리뷰)의 경우 “이 문서가
+<strong>어떤 주제로</strong> 만들어졌는가“를 물으면, 잠재변수는 한 줄기가 아니라
+<strong>K개 주제의 혼합 비율</strong> (\theta_d)((\theta_{dk})는 문서
+(d)가 주제 (k)를 쓰는 비중, (\sum_k \theta_{dk} = 1))가
+된다. 이 질문을 같은 EM의 틀로 푸는 것이 <strong>LDA</strong>(Latent Dirichlet
+Allocation, 잠재 디리클레 할당)<sup class="footnote-reference" id="fr-lda-1"><a href="#footnote-lda">7</a></sup>다 — 2003년, 다비드 블레이(David
+Blei), 앤드류 응(Andrew Ng), 마이클 조던(Michael Jordan)의 논문이다.
+이름의 ’Dirichlet’은 아래에서 나오는 사전분포의 이름이고,
+’Allocation’은 ’할당’을 뜻한다 — 문서가 토픽에 할당되고, 토픽이 단어에
+할당된다는 생성 과정을 가리킨다.</p>
+<p><strong>생성 과정</strong>은 GMM과 골격이 그대로 같다 — “주사위를 굴리고, 그
+주사위 결과의 분포에서 샘플링한다“는 두 단계다:</p>
+<ol>
+<li><strong>토픽 혼합 뽑기</strong>: 문서 (d)의 토픽 혼합 비율 (\theta_d)를
+디리클레 사전분포 (\text{Dir}(\alpha))에서 뽑는다
+((K)개 주제에 대한 확률벡터 — GMM의 혼합비율 (\pi)에
+대응).</li>
+<li><strong>단어 뽑기</strong>: 문서의 각 단어 위치 (n)마다, (i) 주사위
+(\text{Categorical}(\theta_d))로 토픽 (z_{dn})를 뽑고,
+(ii) 그 토픽의 단어 분포 (\phi_{z_{dn}})에서 단어
+(w_{dn})를 뽑는다.</li>
+</ol>
+<p>여기서 (\phi_k)는 “주제 (k)의 단어 프로필“이다 — ‘정치’
+토픽이라면 “선거·정책·대통령” 같은 단어가, ‘경제’ 토픽이라면
+“금리·물가·주식” 같은 단어가 높은 확률을 갖는 어휘 크기만큼의
+확률벡터. (\phi_k) 자체도 디리클레 사전분포
+(\text{Dir}(\beta))에서 뽑힌다. 두 사전분포의 파라미터
+(\alpha, \beta)는 “문서가 주제를 어떻게 섞는지”, “토픽이 단어를
+어떻게 섞는지“에 대한 <strong>사전적 믿음</strong>을 담은 하이퍼파라미터이며,
+통상 균일한 작은 값(예: (\alpha = 50/K,\ \beta = 0.01))을 쓴다.
+디리클레 분포는 단순히 “확률벡터 위의 분포“가 아니라 <strong>다항분포의
+켤레(conjugate) 분포</strong>라 E-step과 M-step이 전부 닫힌 형태로 유지된다
+— 이 “켤레성의 선물“은 GMM의 정규-감마 구조가 해준 것과 정확히 같은
+역할이다.</p>
+<p><strong>E-step과 M-step</strong>은 “책임값이 무엇으로 바뀌는가“만 다를 뿐이다:</p>
+<ul>
+<li><strong>E-step</strong>: 문서 각 단어 위치의 토픽 사후확률
+(\gamma_{dnk} = P(z_{dn} = k \mid w_d, \theta, \phi))를
+계산한다. GMM의 (\gamma_{ik})가 “점 (i)가 클러스터
+(k)일 확률“이라면, (\gamma_{dnk})는 “문서 (d)의
+(n)번째 <strong>단어</strong>가 토픽 (k)에서 왔을 확률“이다 — 관측
+데이터가 점 대신 <strong>단어</strong>가 된 것뿐이다.</li>
+<li><strong>M-step</strong>: 책임값으로 두 파라미터를 갱신한다 —
+(\theta_{dk} \propto \sum_n \gamma_{dnk})(이 문서가
+토픽 (k)를 쓰는 비중), (\phi_{kw} \propto
+\sum_{d,n : w_{dn} = w} \gamma_{dnk})(토픽 (k)에서
+단어 (w)가 나온 누적 책임). GMM M-step의 “책임값 가중 평균“과
+동일한 구조다.</li>
+</ul>
+<p>이 반복은 엄밀히 말해 “완전한 EM“이 아니다 — E-step이 각 단어
+위치의 토픽을 <strong>독립</strong>으로 근사하는 변분 추론(variation
+inference, mean-field 근사)이라, 정석 명칭은 변분 EM(VEM)이다.
+“계산 안 되는 E-step을 근사한다“는 수법은 Chapter 15.1절의
+VAE<sup class="footnote-reference" id="fr-vae-2"><a href="#footnote-vae-2">5</a></sup>가 신경망으로 하는 것의 <strong>가장 고전적인 예시</strong>다 — VAE가
+신경망으로 근사하는 것을, LDA는 “위치별 독립“이라는 더 단순한
+가정으로 근사한 셈이다.</p>
+<p><strong>GMM(포인트-클러스터)과의 대비</strong>를 한 표로 보자:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>GMM</th><th>LDA</th></tr>
+</thead>
+<tbody>
+<tr><td>관측 데이터</td><td>점 (x_i \in \mathbb{R}^d)</td><td>문서의 단어 (w_{dn})(이산)</td></tr>
+<tr><td>잠재변수</td><td>클러스터 라벨 (z_i)(1개/점)</td><td>토픽 (z_{dn})(1개/단어) + 혼합 (\theta_d)(1개/문서)</td></tr>
+<tr><td>“덩어리“의 모양</td><td>정규분포 (\mathcal{N}(\mu_k, \Sigma_k))</td><td>단어 분포 (\phi_k)(디리클레 사전 위)</td></tr>
+<tr><td>“클러스터“의 의미</td><td>특징공간에서 가까이 모인 점</td><td>자주 함께 나타나는 단어 패턴(토픽)</td></tr>
+<tr><td>M-step 갱신</td><td>(\mu_k, \Sigma_k, \pi_k)</td><td>(\theta_d, \phi_k)</td></tr>
+</tbody>
+</table>
+</div>
+<p>“클러스터“가 특징공간에서의 <strong>기하학적 근접성</strong>(GMM)이 아니라
+<strong>단어 공출현의 통계적 패턴</strong>(LDA)으로 바뀐 것 — 이것이 같은 EM의
+두 가지 얼굴을 가질 수 있는 이유다. (K) 선택 문제도 그대로
+이어진다(토픽 수를 고르는 것도 BIC 계열의 트레이드오프 — 다만
+우도를 닫힌 형태로 계산할 수 없어 변분 하한을 기준으로 삼는다).
+실전에서는 LDA 계열 토픽모델로 뉴스 분류·의견 분석·문서 자동
+요약을 만들고, 14.3절의 문서 임베딩·RAG 시스템에서 “어떤 문서가
+관련 있는가“를 판정하는 보조 도구로 쓰이기도 한다.</p>
+<p><strong>자주 묻는 질문 — “LDA“라는 이름이 이 책에서 두 번 등장하는 것
+아니냐?</strong> 맞다 — Chapter 3.2에서 GDA와 같은 모델로 나온 <strong>피셔
+선형 판별(Fisher’s Linear Discriminant)도 LDA</strong>다 — 서로 다른
+문제를 푸는 별개의 모델이 나중에 약자를 공유하게 된 것이다.
+토픽모델의 LDA는 2001년 NIPS에서 발표된 Blei, Ng, Jordan의 논문
+(원형은 그 NIPS 2001 버전이고, 이 책에서는 확장된 JMLR 2003
+버전을 인용한다)에서 붙은 이름이다. 이 절에서 LDA라 하면 전부 “잠재 디리클레
+할당“을 뜻하며, 차원축소/분류의 LDA는 3.2절의 문맥에서만
+등장한다.</p>
 <h3 id="자주-하는-실수"><a class="header" href="#자주-하는-실수">자주 하는 실수</a></h3>
 <p><strong>실수 1 — EM을 한 번만 돌려 믿기 (k-means의 실수보다 더 위험하다).</strong>
 k-means의 “나쁜 초기화 → 나쁜 지역최적해”(4.3절)는 GMM에도
@@ -5598,7 +5703,7 @@ k-means의 “나쁜 초기화 → 나쁜 지역최적해”(4.3절)는 GMM에�
 유용하다.</p>
 <h3 id="실습-수반-노트북이-검증하는-것들"><a class="header" href="#실습-수반-노트북이-검증하는-것들">실습: 수반 노트북이 검증하는 것들</a></h3>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter04_4_gmm_em.ipynb">노트북</a>
-은 numpy<sup class="footnote-reference" id="fr-numpy-1-6"><a href="#footnote-numpy-6">7</a></sup>/matplotlib만으로 본문의 코드를 그대로 실행한다: (1) 책의
+은 numpy<sup class="footnote-reference" id="fr-numpy-1-6"><a href="#footnote-numpy-6">8</a></sup>/matplotlib만으로 본문의 코드를 그대로 실행한다: (1) 책의
 <code>em_step</code>을 6개 데이터에 돌려 수렴 과정을 추적(1차원), (2) 3개
 블롭 2차원 데이터에서 2D GMM을 EM으로 학습하고 <strong>등고선 +
 책임값 기반 색칠</strong>로 시각화, (3) 무작위 초기화 30회 돌려 <strong>지역
@@ -5659,7 +5764,7 @@ M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
 \(\epsilon\) 미만” 같은 수렴 기준을 둔다. 또 차원이 높으면
 공분산 행렬 \(\Sigma_k\)가 특이(singular, 역행렬이 없는) 행렬에
 <strong>가깝게</strong> 수렴하기 쉬워서, 실전 라이브러리(<code>sklearn.mixture.GaussianMixture</code>
-등)<sup class="footnote-reference" id="fr-sklearn-1-2"><a href="#footnote-sklearn-2">8</a></sup>는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
+등)<sup class="footnote-reference" id="fr-sklearn-1-2"><a href="#footnote-sklearn-2">9</a></sup>는 (i) 대각 공분산만 허용하거나 (ii) 모든 클러스터에 같은
 공분산을 쓰거나 (iii) \(\Sigma_k + \epsilon I\) 같은
 정규화를 넣는 옵션을 제공한다.</p>
 <p><strong>Q. GMM은 “생성 모델“이라면서 어떻게 데이터를 <em>만들어</em>냅니까?</strong>
@@ -5667,7 +5772,7 @@ M-step도 닫힌 형태가 아니라 역전파로 근사하는 것 — VAE는
 가지고 있다 — 새 점을 만들려면 (1) 주사위 \(\pi\)로 \(z\)를 뽑고,
 (2) 그 \(z = k\)의 \(\mathcal{N}(\mu_k, \Sigma_k)\)에서 \(x\)를
 샘플링하면 된다. 이 “생성” 능력이 다음 장(Chapter 15)
-(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN<sup class="footnote-reference" id="fr-gan-1-2"><a href="#footnote-gan-2">9</a></sup>이 노이즈에서)의
+(VAE가 \(z \sim \mathcal{N}(0, I)\)에서, GAN<sup class="footnote-reference" id="fr-gan-1-2"><a href="#footnote-gan-2">10</a></sup>이 노이즈에서)의
 “데이터 생성“과 정확히 같은 질문의 가장 단순한 버전이다 —
 연습문제 1이 바로 이 함수를 작성하게 한다.</p>
 <hr>
@@ -5766,10 +5871,13 @@ Step 3:  log(a/b) = log a - log b로 분해하면:
 <p>Dempster, A. P., Laird, N. M., Rubin, D. B. (1977). “Maximum Likelihood from Incomplete Data via the EM Algorithm.” Journal of the Royal Statistical Society: Series B 39(1), 1–22. — EM 알고리즘을 일반적인 형태로 정식화한 원 논문. <a href="#fr-dempster1977-1">↩</a></p>
 </li>
 <li id="footnote-vae-2">
-<p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1-2">↩</a></p>
+<p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1-2">↩</a> <a href="#fr-vae-2">↩2</a></p>
 </li>
 <li id="footnote-cs229-16">
 <p>Stanford CS229: Machine Learning, Lecture Notes. https://cs229.stanford.edu/main_notes.pdf <a href="#fr-cs229-1-16">↩</a></p>
+</li>
+<li id="footnote-lda">
+<p>Blei, D. M., Ng, A. Y., Jordan, M. I. (2003). “Latent Dirichlet Allocation.” Journal of Machine Learning Research 3(Jan), 993–1022. https://jmlr.org/papers/v3/blei03a.html — 문서를 “토픽의 혼합“으로 표현하고 변분 EM으로 학습하는 토픽 모델의 원 논문(원형은 NIPS 2001, 601–608). <a href="#fr-lda-1">↩</a></p>
 </li>
 <li id="footnote-numpy-6">
 <p>Harris, C. R. et al. (2020). “Array programming with NumPy.” Nature 585, 357 (2020); arXiv:2006.10256. <a href="#fr-numpy-1-6">↩</a></p>
@@ -17509,9 +17617,6 @@ Masked Attention“의 마스크를 이용해, (a) “softmax <em>이전</em>에
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-13-그래프-표현학습-graph-representation-learning"><a class="header" href="#chapter-13-그래프-표현학습-graph-representation-learning">Chapter 13. 그래프 표현학습 (Graph Representation Learning)</a></h1>
-<p>[STUB: cq가 확장할 자리 — 아래는 핵심 뼈대. 500~800단어로 확장하고,
-10장(CNN) 오프너처럼 “훅 → 이 장이 이전/다음 장과 어떻게 이어지는가 →
-학습 목표 → 절별 요약” 구조를 갖출 것.]</p>
 <p>2021년, 딥마인드의 <strong>AlphaFold</strong><sup class="footnote-reference" id="fr-alphafold-1"><a href="#footnote-alphafold">1</a></sup>는 단백질의 아미노산 서열만
 보고 3차원 구조를 원자 단위 정확도로 예측해, 50년 가까이 풀리지 않던
 생물학의 난제를 사실상 해결했다. AlphaFold가 이 문제를 푸는 핵심 관점
@@ -17521,11 +17626,23 @@ residue)이 노드이고, 공간적으로 가까운 잔기 쌍 사이의 관계�
 전체 3차원 구조가 따라 나온다.</p>
 <p>이 장의 질문은 AlphaFold 자체(어텐션 기반의 Evoformer 구조)를 유도하는
 게 아니라, 더 근본적인 것이다: <strong>그래프로 표현된 데이터를, 신경망이나
-통계 모델이 다룰 수 있는 벡터로 어떻게 바꾸는가?</strong> 14.2절에서 배운
+통계 모델이 다룰 수 있는 벡터로 어떻게 바꾸는가?</strong> 14.2절에서 다룰
 word2vec의 스킵그램(“문맥 안에서 함께 나타나는 단어는 비슷한 벡터를
 갖는다”)을 그대로 그래프에 재사용할 수 있다는 것이 이 장의 핵심 실이다
 — “문장” 대신 그래프 위의 <strong>무작위 걷기</strong>(random walk)가 그 역할을
 한다.</p>
+<p><strong>이 장이 어디에서 오고 어디로 가나.</strong> 이 장은 12장의 트랜스포머
+바로 다음에 오지만, 직접 이어지는 앞 장은 11~12장이 아니라 <strong>14장
+(표현학습, PCA와 word2vec)</strong> 쪽이다 — 이번 재편성으로 그래프가 한
+자리 앞(13장)으로 올랐기 때문이다. 14장에서 “함께 자주 나타나는
+것은 가까운 벡터로 모인다“는 원형을 텍스트 위에서 배울 예정이고,
+이 장은 그 원형의 적용 대상을 <strong>텍스트가 아닌 그래프</strong>로 바꾼
+버전을 먼저 보여준다 — 두 장은 서로의 “이전 장“이 되는 순환
+구조인데, 이 장의 각 절에서는 14장에서 다룰 word2vec의 스킵그램을
+필요한 자리에서 스스로 짚어 둔다. 뒤로 보면,
+이 장에서 쌓아온 “그래프 위에서 값을 반복해서 갱신한다“는 감각은 15장
+(잠재변수 생성모델)의 확률 모델과, ML2의 벨만 방정식(반복
+대입으로 고정점 수렴)으로 자연스럽게 이어진다.</p>
 <h2 id="학습-목표-6"><a class="header" href="#학습-목표-6">학습 목표</a></h2>
 <p>이 장을 마치면 다음을 할 수 있다.</p>
 <ul>
@@ -17539,16 +17656,37 @@ word2vec의 스킵그램(“문맥 안에서 함께 나타나는 단어는 비�
 <li>Node2Vec/PageRank의 아이디어가 단백질 구조·기능 분류, 금융 사기
 탐지, 교통 예측 같은 실전 문제로 어떻게 확장되는지 사례로 파악한다.</li>
 </ul>
+<p>이 장을 관통하는 하나의 실은 <strong>같은 무작위 걷기, 다른 질문</strong>이다.
+13.1은 걷기 자체가 마르코프 체인임을 확인하고 “영원히 돌아다닌 뒤 각
+노드에 머무는 비율”(정상분포)을 유도하고, 13.2는 그 걷기가 만들어내는
+<strong>노드 시퀀스</strong>에 임베딩 학습을 얹고(Node2Vec), 13.3은 걷기로부터
+<strong>정상분포</strong>를 물음으로써 중요도 점수(PageRank)를 얻는다 — 같은
+재료로 벡터와 스칼라, 두 가지 다른 표현을 만드는 것이다. 13.4는 이
+틀이 단백질·금융·교통 같은 실제 도메인으로 어떻게 확장되는지 지도
+삼아 짚는다. 네 수업도 이 흐름을 따른다: <strong>걷기 하나</strong> → <strong>걷기로
+학습</strong> → <strong>걷기에 다른 질문</strong> → <strong>걷기를 실전에</strong>.</p>
 <p>이번 주는 네 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="#131-random-walk-기초">13.1 Random Walk 기초</a> — 그래프 위 무작위 걷기와
-그 정상분포.</li>
-<li><a href="#132-node2vec">13.2 Node2Vec</a> — 무작위 걷기로 만든 경로 = “문장”,
-word2vec의 skip-gram을 그대로 재사용.</li>
-<li><a href="#133-pagerank">13.3 PageRank</a> — 같은 무작위 걷기, 다른 질문(“각
-노드에 머무는 확률은?”).</li>
-<li><a href="#134-그래프-학습의-확장">13.4 그래프 학습의 확장</a> — AlphaFold/DeepFRI(단백질),
-IBM AML World(금융 사기), STGCN(교통 예측) 실전 사례.</li>
+<li><a href="#131-random-walk-기초">13.1 Random Walk 기초</a> — 그래프 위의 무작위 걷기가
+마르코프 체인이라는 직관에서 출발해, 카라테 클럽 그래프에서 코드로
+걷기 말뭉치를 만들고, 노드에 머무는 장기 비율이 그 노드의
+도(degree)에 비례한다는 정상분포를 유도한다. 이 “머무는 비율“이
+바로 PageRank로 이어지리라고 예고한다.</li>
+<li><a href="#132-node2vec">13.2 Node2Vec</a> — 무작위 걷기로 만든 경로 =
+“문장”, 경로 위의 노드 = “단어“로, word2vec의 skip-gram을 그대로
+학습시킨 것이 곧 Node2Vec 알고리즘임을 확인한다. 탐색 스타일을
+조절하는 두 계수 \(p\)·\(q\)(BFS형 vs DFS형)가 임베딩의
+파벌 분리 품질을 얼마나 바꾸는지 작은 실험으로 본다.</li>
+<li><a href="#133-pagerank">13.3 PageRank</a> — 같은 무작위 걷기에 다른 질문을
+던진다(“영원히 돌아다닌 뒤 각 노드에 머무는 확률은?”). 댐핑
+팩터와 순간이동을 붙인 PageRank 방정식을 거듭제곱법으로 풀고,
+4개 노드 예제로 손계산한 뒤, 무방향 그래프 대칭화 누락·“PageRank
+= 도“로 읽는 것 같은 흔히 하는 실수를 짚는다.</li>
+<li><a href="#134-그래프-학습의-확장">13.4 그래프 학습의 확장</a> — 두 아이디어(무작위
+걷기 임베딩과 정상분포)를 실제 문제로 옮기는 지도식 수업: 단백질
+“구조 → 기능” 파이프라인(AlphaFold → DeepFRI), 거래 그래프 위의
+자금세탁 탐지(IBM AML World), 도로망+시계열의 스페이오템포럴
+그래프 교통 예측(STGCN) 세 사례를 다룬다.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">
@@ -17560,7 +17698,50 @@ structure prediction with AlphaFold.” Nature 596, 583–589. <a href="#fr-alph
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="131-random-walk-기초"><a class="header" href="#131-random-walk-기초">13.1 Random Walk 기초</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter13_1_random_walk.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: Random Walk 실습"></a></p>
-<p>[STUB: cq가 확장할 자리 — 아래는 14.3에서 옮겨온 기존 내용(정상분포 유도 포함). 이 절의 앞부분에 “그래프 위 무작위 걷기 = 마르코프 체인“이라는 좀 더 일반적인 정의/직관을 새로 추가하고, 13.2/13.3에서 “같은 무작위 걷기, 다른 질문“으로 이어지도록 예고 문단을 붙일 것.]</p>
+<h3 id="그래프-위-무작위-걷기--마르코프-체인"><a class="header" href="#그래프-위-무작위-걷기--마르코프-체인">그래프 위 무작위 걷기 = 마르코프 체인</a></h3>
+<p>“노드를 단어로, 걷기를 문장으로 대입한다“는 비유로 바로 넘어가기 전에,
+무작위 걷기가 <strong>수학적으로 무엇인지</strong> 일반적 수준에서 한 번 정의해
+두자 — 이 절의 나머지 부분과 13.2·13.3절 전체가 이 작은 객체 위에서
+전개되기 때문이다.</p>
+<p>무작위 걷기는 <strong>마르코프 체인</strong>(Markov chain)이다. 노드 집합
+\(\{0,\dots,N-1\}\)으로 이루어진 그래프 위에서 “지금 서 있는 노드“를
+상태(state)로 보고, 매 단계에서 <strong>지금 있는 노드의 이웃 중 하나를 골라
+이동</strong>하는 확률과정을 말한다. 상태 \(i\)에서 상태 \(j\)로 건너가는
+확률(전이확률, transition probability)은</p>
+<p>\[P(i \to j) = \frac{1}{\text{deg}(i)} \quad ((i,j) \in \mathcal{E}\text{ 인 경우}), \qquad P(i \to j) = 0 \quad (\text{그 외})\]</p>
+<p>이다. 이웃을 “동등한 확률로 골라” 이동하는 <strong>일괄적</strong>(uniform)
+무작위 걷기는 정확히 이 형태를 갖는다. 13.2절의 Node2Vec은 이
+전이확률에 \(p, q\) 두 계수를 붙여 <strong>편향</strong>(bias)시키는 변형이고,
+13.3절의 PageRank는 이 전이확률에 “순간이동“을 섞은 변형이다 —
+“같은 마르코프 체인” 위에 파라미터만 바꾸는 것이다.</p>
+<p>마르코프 체인의 핵심 성질은 <strong>무자기성</strong>(memorylessness)이다 —
+다음 상태를 결정하는 것은 “지금 어디에 있는지“뿐이지, 그전에 어떤
+경로를 거쳐 왔는지는 아니다:</p>
+<p>\[P(x_{t+1} \mid x_t, x_{t-1}, \dots, x_0) = P(x_t \to x_{t+1})\]</p>
+<p>이 한 줄이 무작위 걷기가 “단순한 반복“으로 분석될 수 있는(그래서
+수십억 노드의 웹에도 거듭제곱법 한 줄로 돌릴 수 있는) 이유다. 카라테
+클럽에서 node 16이 node 5를 거쳐 왔는지 node 6을 거쳐 왔는지
+기억하지 않고, 오직 “지금 node 16에 서 있고, 내 이웃은 5와 6이다“만
+아는 것이 바로 이 성질이다.</p>
+<p>이 전이확률 행렬 \(P\)를 “각 노드에 서 있을 확률“인 상태 분포
+\(\pi\)에 계속 곱하면(\(\pi_{t+1} = \pi_t P\)), 분포는 결국 멈추는
+<strong>정상분포</strong>(stationary distribution) \(\pi^<em>\)에 도달한다
+(\(\pi^</em> P = \pi^<em>\)). “영원히 돌아다닌 뒤 각 노드에 머무는 비율“이
+바로 이 \(\pi^</em>\)다 — 아래에서 도(degree)에 비례함을 직접 유도한다.</p>
+<p><strong>이제 이 절과 다음 두 절의 관계를 한 줄로 정리할 수 있다 — 같은
+무작위 걷기(같은 마르코프 체인)에 서로 다른 질문을 던진다.</strong></p>
+<ul>
+<li><strong>13.2 Node2Vec</strong>은 “이 걷기가 만들어내는 <strong>노드의 순서(시퀀스</strong>)는
+어떤 구조를 담고 있는가?“를 묻는다 — 그 시퀀스를 “문장” 취급해
+word2vec의 skip-gram을 학습시키면 노드 임베딩이 나온다.</li>
+<li><strong>13.3 PageRank</strong>는 “이 걷기를 영원히 돌리면 <strong>각 노드에 머무는
+확률</strong> \(\pi^*\)은 얼마인가?“를 묻는다 — 그 정상분포 자체를 노드의
+“중요도“로 읽는다.</li>
+</ul>
+<p>같은 재료(그래프, 무작위 걷기)에서 출발하되, 하나는 <strong>시퀀스</strong>를
+뽑아내고 하나는 <strong>정상분포</strong>를 뽑아내는 것. 아래에서는 그 재료
+본신(무작위 걷기의 생성 방식과, 그것이 도에 의존해 비균등하게 노드를
+방문한다는 사실)부터 세워둔다.</p>
 <h3 id="왜-무작위-걷기가-문장을-대신하는-자연스러운-선택인가"><a class="header" href="#왜-무작위-걷기가-문장을-대신하는-자연스러운-선택인가">왜 “무작위 걷기“가 “문장“을 대신하는 자연스러운 선택인가</a></h3>
 <p>word2vec에서 “문장“이 가진 본질은 단순하다 — <strong>어떤 것들이 어떤 순서로
 함께 나타나는지</strong>를 담고 있다. 그래프 노드의 “함께 나타남“은 무엇인가?
@@ -17659,17 +17840,41 @@ def build_walks(edges, n_nodes, walks_per_node=10, walk_length=8):
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="132-node2vec"><a class="header" href="#132-node2vec">13.2 Node2Vec</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter13_2_node2vec.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: Node2Vec 실습"></a></p>
-<p>[STUB: cq가 확장할 자리 — 13.1에서 이미 정상분포·무작위걷기 기초를 다뤘다는 전제로 도입부를 다듬을 것. <strong>사용자 요청 반영 필수</strong>: “Node2Vec 알고리즘은 사실 random walk로 생성한 경로들에 word2vec의 skip-gram을 그대로 학습시킨 것“이라는 메커니즘을 이 절 도입부에서 명시적으로 강조. word2vec(14.2)이 “작은 신경망“으로 소개됐던 것과 달리, 이 절의 random walk 아이디어 자체는 신경망 없이도 성립하는 더 일반적인 버전이라는 연결고리도 짚을 것.]</p>
-<h3 id="node2vec-같은-아이디어를-그래프로"><a class="header" href="#node2vec-같은-아이디어를-그래프로">Node2Vec: 같은 아이디어를 그래프로</a></h3>
-<p><strong>Node2Vec</strong><sup class="footnote-reference" id="fr-node2vec-1-1"><a href="#footnote-node2vec-2">1</a></sup>은 word2vec<sup class="footnote-reference" id="fr-word2vec-1-2"><a href="#footnote-word2vec-3">2</a></sup>의 skip-gram을 그대로 재사용하되, “문장” 대신
-그래프 위의 <strong>무작위 걷기</strong>(random walk)로 만든 노드 시퀀스를 입력으로
-쓴다 — 한 노드에서 출발해 무작위로 이웃을 따라가며 만든 경로가 곧
-“문장“이고, 그 경로 위의 노드들이 “단어“다. “비슷한 이웃 구조를 가진
-노드는 비슷한 벡터를 갖게 된다“는 것도, word2vec의 “비슷한 문맥에
-나오는 단어는 비슷한 벡터를 갖는다“는 원리를 그래프에 그대로 물려준
-결과다.</p>
+<h3 id="node2vec-같은-아이디어를-그래프로--걷기에-skip-gram을-그대로"><a class="header" href="#node2vec-같은-아이디어를-그래프로--걷기에-skip-gram을-그대로">Node2Vec: 같은 아이디어를 그래프로 — 걷기에 skip-gram을 그대로</a></h3>
+<p>13.1절까지 확립한 것을 한 줄로 되새기자. 그래프 위의 <strong>무작위
+걷기</strong>(random walk)는 마르코프 체인이고, 그 걷기 안의 인접 노드들은
+서로를 “함께 나타남“으로 잇는다. 이제 그 “함께 나타남의 순서”, 곧
+걷기 시퀀스를 14.2절 word2vec의 skip-gram 학습에 <strong>그대로</strong> 넣으면
+된다.</p>
+<p><strong>Node2Vec</strong><sup class="footnote-reference" id="fr-node2vec-1-1"><a href="#footnote-node2vec-2">1</a></sup> 알고리즘은 사실, random walk로 생성한
+경로들에 <strong>word2vec</strong><sup class="footnote-reference" id="fr-word2vec-1-2"><a href="#footnote-word2vec-3">2</a></sup>의 skip-gram을 <strong>그대로 학습시킨
+것</strong>이다. word2vec에서 쓰던 세 요소를 그래프 버전으로 치환하면
+이렇다:</p>
+<ul>
+<li><strong>문장</strong> — 한 노드에서 출발해 이웃을 무작위로 따라가며 만든 <strong>걷기
+경로</strong>(노드 시퀀스)</li>
+<li><strong>단어</strong> — 그 경로 위에 순서대로 나오는 <strong>노드</strong></li>
+<li><strong>학습</strong> — 14.2절의 <code>train_skipgram</code>을 한 줄도 고치지 않고 그대로
+돌린다(토큰이 단어 대신 노드 번호일 뿐)</li>
+</ul>
+<p>“비슷한 문맥에 나오는 단어는 비슷한 벡터를 갖는다“는 word2vec의
+원리가, “비슷한 이웃 구조를 가진 노드는 비슷한 벡터를 갖게 된다“는
+문장으로 바뀐 것뿐이다. 학습이 끝나면 14.2절과 똑같이 <strong>은닉층
+가중치 행이 각 노드의 임베딩 벡터</strong>가 된다.</p>
+<p>이 치환에는 14.2절을 떠올리면 보이는 연결고리가 하나 있다. 14.2절에서
+word2vec은 “작은 <strong>신경망</strong>을 학습시킨다“고 소개됐다 — one-hot
+입력층·임베딩 차원의 은닉층·어휘 크기 출력층을 갖고, 이진
+교차엔트로피를 최소화하다 부산물로 임베딩이 나오는 구조였다. 그런데
+Node2Vec의 핵심 재료, “걷기로 시퀀스를 만들고 그 위에서 함께-나타남
+을 학습한다“는 이 아이디어 자체는 <strong>신경망 없이도 성립</strong>한다. 걷기
+시퀀스를 “문장 목록“으로 여는 순간, 그 위에 어떤 학습자를 얹을지는
+별개의 선택이 된다 — skip-gram을 쓰든, 더 단순한 “함께 나타난 횟수”
+카운트 기반의 선형 분해(14.2절의 LSI 같은)를 쓰든, “걷기 시퀀스로
+함께-나타남을 만든다“는 틀 자체는 신경망을 전제로 하지 않는 <strong>더
+일반적인 버전</strong>이다. Node2Vec은 그 일반적인 틀 위에 14.2절의
+skip-gram이라는 하나의 실용적 학습자를 골랐을 뿐이다.</p>
 <h3 id="node2vec의-진짜-기여-두-계수-p와-q"><a class="header" href="#node2vec의-진짜-기여-두-계수-p와-q">Node2Vec의 진짜 기여: 두 계수 p와 q</a></h3>
-<p>위 코드의 일괄적 무작위 걷기는, 원본 Node2Vec 논문(Grover &amp;
+<p>13.1절 코드의 일괄적 무작위 걷기는, 원본 Node2Vec 논문(Grover &amp;
 Leskovec, 2016)의 가장 단순한 특수한 경우다 — 이 논문의 실제 기여는
 걷기에 <strong>\(p\)</strong>(return)와 <strong>\(q\)</strong>(in-out)라는 두 계수를 붙여
 “이웃 탐색의 스타일“을 조절하는 것이었다.</p>
@@ -17770,7 +17975,7 @@ node 2의 상위 3개 유사 노드(12, 19, 17)가 <strong>모두 감독 파벌<
 <h3 id="자주-하는-실수-무방향-엣지를-방향-그대로-넣고-돌리기"><a class="header" href="#자주-하는-실수-무방향-엣지를-방향-그대로-넣고-돌리기">자주 하는 실수: 무방향 엣지를 방향 그대로 넣고 돌리기</a></h3>
 <p>카라테 그래프는 <strong>무방향</strong>이고, PageRank는 <strong>방향</strong> 그래프 위에서
 정의된다 — 표준 기법은 “친분 관계 1개“를 <strong>양방향 링크 2개</strong>로
-바꿔주는 것(아래 <code>directed_edges</code> 줄이 그것을 한다). 이 대칭화를
+바꿔주는 것(13.3절의 <code>directed_edges</code> 줄이 그것을 한다). 이 대칭화를
 누락하고 <code>KARATE_EDGES</code>를 그대로 넣으면, 결과는 <strong>각 엣지가 어떤
 방향으로 기록되었는가에 따라</strong> — 즉 임의적인 저장 순서에 따라 — 달라진다.
 실제로 돌려보면:</p>
@@ -17799,14 +18004,22 @@ node 2의 상위 3개 유사 노드(12, 19, 17)가 <strong>모두 감독 파벌<
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="133-pagerank"><a class="header" href="#133-pagerank">13.3 PageRank</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter13_3_pagerank.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: PageRank 실습"></a></p>
-<p>[STUB: cq가 확장할 자리 — 도입부에서 “13.1의 같은 무작위 걷기를 다른 질문에 쓴다“는 연결을 명시. 아래 확인문제/FAQ는 Node2Vec·PageRank가 섞여 있던 원본에서 그대로 가져온 것 — PageRank에 안 맞는 문항은 13.2로 옮기거나 정리할 것.]</p>
+<p>13.1절은 무작위 걷기를 “노드가 이웃을 얼마나 자주 만나는지“를 담는
+말뭉치로, 13.2절은 그 말뭉치에 skip-gram을 학습시켜 노드 임베딩을
+만들었다. 이 절은 걷기 <strong>말뭉치</strong>가 아니라 13.1의 마지막 주석
+(“영원히 돌아다닌 뒤 각 노드에 머무는 비율”)이 던진 질문에 정식으로
+답하는 쪽이다 — 그 답, 즉 <strong>무작위 걷기의 정상분포 그 자체</strong>를 노드
+하나당 스칼라 “중요도” 점수로 쓰는 것이 <strong>PageRank</strong><sup class="footnote-reference" id="fr-brinpage-1-1"><a href="#footnote-brinpage-2">1</a></sup>다.
+<strong>같은 무작위 걷기(재료)를 13.2와 이 절이 모두 쓰지만, 묻는 질문이
+달라서</strong> 나온 결과물도 임베딩 벡터와 스칼라 점수로 갈라진 것이다.</p>
 <h3 id="같은-무작위-걷기-다른-질문-pagerank"><a class="header" href="#같은-무작위-걷기-다른-질문-pagerank">같은 무작위 걷기, 다른 질문: PageRank</a></h3>
-<p>Node2Vec은 무작위 걷기가 만들어내는 “노드의 순서(시퀀스)“를 이용했다.
+<p>Node2Vec<sup class="footnote-reference" id="fr-node2vec-1-2"><a href="#footnote-node2vec-3">2</a></sup>은 무작위 걷기가 만들어내는 “노드의 순서(시퀀스)“를 이용했다.
 같은 무작위 걷기 자체를 완전히 다른 질문에 쓸 수도 있다: <strong>이 그래프
 위를 무작위로 영원히 돌아다닌다면, 각 노드에 머물러 있을 확률은 각각
 얼마나 될까?</strong> 이 질문에 대한 답이 곧 그 노드의 “중요도“라는 것이,
 1998년 래리 페이지(Larry Page)와 세르게이 브린(Sergey Brin)이 구글을
-세울 때 쓴 <strong>PageRank</strong> 알고리즘의 핵심 아이디어다 — 많은 페이지가
+세울 때 쓴 <strong>PageRank</strong><sup class="footnote-reference" id="fr-brinpage-2"><a href="#footnote-brinpage-2">1</a></sup> 알고리즘의 핵심 아이디어다 —
+많은 페이지가
 링크하는 페이지일수록, 또 중요한 페이지가 링크하는 페이지일수록,
 무작위로 링크를 따라다니는 서퍼(random surfer)가 그 페이지에 더 자주
 머문다.</p>
@@ -17854,7 +18067,8 @@ scores = pagerank(directed_edges, 34)
 print(sorted(scores.items(), key=lambda kv: -kv[1])[:3])
 # node 33, node 0이 가장 높다 -- 실제 두 "허브" 노드(관장, 감독)과 정확히 일치
 </code></pre>
-<p>카라테 그래프(대칭화, \(d=0.85\), 100회 반복)에서 실제로 돌려보면
+<p>카라테 클럽 그래프<sup class="footnote-reference" id="fr-zachary-1-1"><a href="#footnote-zachary-2">3</a></sup>(대칭화, \(d=0.85\), 100회 반복)에서
+실제로 돌려보면
 상위 3개는:</p>
 <div class="table-wrapper">
 <table>
@@ -17869,11 +18083,14 @@ print(sorted(scores.items(), key=lambda kv: -kv[1])[:3])
 </table>
 </div>
 <p>전체 점수의 합은 정확히 1이며, 최소값은 teleport 하한
-\((1-d)/34 \approx 0.0044\)다. 두 파벌 리더가 정확히 상위 2개에
-앉는다 — 라벨을 하나도 안 본 “중요도 순위“가 역사적 사실(누가 어떤
-파벌이었는지)과 거의 정확히 겹치는 것이다. node 33(도 17)이 node
-0(도 16)보다 앞서는 것은, “무작위 걷기가 더 자주 방문한다“는 도의
-우위가 점수에 거의 그대로 드러난 모습이다.</p>
+\((1-d)/34 \approx 0.0044\)보다도 조금 높은 0.0096(node 11, 도 1)이다
+— teleport 하한은 “아무도 가리키지 않는 노드“가 받는 이론적 최저치
+이지, 실제 그래프에서는 모든 노드가 누군가에게(직·간접으로)
+“가시게” 되니 그보다 위로 받쳐진 것이다. 두 파벌 리더가 정확히
+상위 2개에 앉는다 — 라벨을 하나도 안 본 “중요도 순위“가 역사적
+사실(누가 어떤 파벌이었는지)과 거의 정확히 겹치는 것이다. node
+33(도 17)이 node 0(도 16)보다 앞서는 것은, “무작위 걷기가 더 자주
+방문한다“는 도의 우위가 점수에 거의 그대로 드러난 모습이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch14_3_pagerank_karate.svg" alt="카라테 클럽 34개 노드의 PageRank(d=0.85, 대칭화)를 점수 높은 순으로 정렬해 막대로 그린 것. 파란색은 감독파, 주황색은 관장파. 상위권(노드 33, 0, 32)은 모두 두 허브 노드와 그 연결고리이며, 아래로 갈수록 점수가 teleport 하한에 수렴함"><span class="img-wrapper"><img src="images/ch14_3_pagerank_karate.svg" alt="카라테 클럽 34개 노드의 PageRank(d=0.85, 대칭화)를 점수 높은 순으로 정렬해 막대로 그린 것. 파란색은 감독파, 주황색은 관장파. 상위권(노드 33, 0, 32)은 모두 두 허브 노드와 그 연결고리이며, 아래로 갈수록 점수가 teleport 하한에 수렴함"></span></label></p>
 <h3 id="손으로-한-번-노드-4개-순환-하나-외딴-끝-하나"><a class="header" href="#손으로-한-번-노드-4개-순환-하나-외딴-끝-하나">손으로 한 번: 노드 4개, 순환 하나, 외딴 끝 하나</a></h3>
 <p>PageRank를 4개 노드의 최소 예제로 손 계산해보자(\(d = 0.5\)).
@@ -17908,14 +18125,14 @@ PR(C) = 0.125 + 0.5\,PR(B)\]</p>
 <strong>PageRank는 “엣지가 몇 개인가“가 아니라 “누가, 얼마나 중요한 위치에서
 나를 가리키는가“의 문제</strong>라는 것이 이 작은 예제의 핵심이다.
 둘째, “새 값 = teleport 항 + 옛 값들의 가중 평균“이라는 방정식의
-형태 — 이 형태가 반복법의 수렴을 보장하는 구조이며, 다음 절에서
-본다는 정리와 정확히 연결된다.</p>
+형태 — 이 형태가 반복법의 수렴을 보장하는 구조이며, 바로 뒤에
+온다.</p>
 <p>이 거듭제곱법이 왜 수렴하는지는, <strong>ML2 Chapter 4</strong>에서 벨만
 최적방정식의 해가 유일하게 존재함을 보일 때 쓸 <strong>바나흐 고정점
 정리</strong>(Banach fixed point theorem)와 정확히 같은 논리다 — “어떤
 변환을 값이 안 바뀔 때까지 반복해서 적용하면 결국 고정점(fixed
 point)에 도달한다“는 같은 수학이, 여기서는 “그래프 위 확률분포“에,
-강화학습에서는 “상태의 가치함수“에 적용된다.<sup class="footnote-reference" id="fr-cs234-1-1"><a href="#footnote-cs234-3">1</a></sup></p>
+강화학습에서는 “상태의 가치함수“에 적용된다.<sup class="footnote-reference" id="fr-cs234-1-1"><a href="#footnote-cs234-3">4</a></sup></p>
 <p>수렴이 얼마나 빠른지: 매 반복의 변화량(전체 노드 중 최대
 \(|\Delta PR|\))은 <strong>지수적으로</strong> 줄어든다. 카라테 클럽에서는
 \(d=0.85\)일 때 대략 45회 반복이면 \(10^{-9}\) 이내로 수렴했고,
@@ -17941,11 +18158,15 @@ point)에 도달한다“는 같은 수학이, 여기서는 “그래프 위 확
     return pr
 </code></pre>
 <p>함께 짚어둘 두 번째 세부 사항은 <strong>dangling node</strong>(나가야 할 링크가
-하나도 없는 노드)다. 코드에서 <code>max(1, len(outgoing[i]))</code>는 분모가 0이
-되는 것을 막아주지만, 출도가 0인 노드의 점수는 그 식의 합에서
-<strong>어디로도 전달되지 않는다</strong> — 결과적으로 전체 PR의 합이 1이
-<strong>아니고</strong> (1보다 작게) 될 수 있다. 카라테 그래프에는 그런 노드가
-없어 합 = 1(위에서 확인)이지만, 웹처럼 “링크가 하나도 없는 죽은
+하나도 없는 노드)다. (max(1, \cdot))가 막는 것은 출도가 0인
+<strong>전달자</strong>가 분모 0으로 만들지 않는 것이지, 그 노드 <strong>자신</strong>이
+받는 teleport분 ((1-d)/N)을 없애는 것이 아니다 — 그래서
+“dangling 노드가 있으면 전체 PR의 합이 1이 안 된다“는 주장은
+<strong>잘못</strong>이다. (확인 문제의 2-노드 예제 (A \to B)만 있는
+그래프에서도 확인했다 — B가 dangling이건 말건 합은 정확히 1이다.)
+출도가 0인 노드의 점수가 우변의 합에서 <strong>어디로도 전달되지
+않는다</strong>는 사실은 변함없다 — 카라테 그래프에는 그런 노드가 없어
+합 = 1이 정확히 나왔지만, 웹처럼 “링크가 하나도 없는 죽은
 페이지“가 흔히 있는 그래프에서는 dangling 노드의 점수를 <strong>모든
 노드에 균등하게 재분배</strong>해 주는 보정이 표준이다. 댐핑 팩터와
 같은 계열의 공학 — “확률이 새는 구멍을 하나하나 막아주는”
@@ -18004,7 +18225,8 @@ dangling node가 됨) 다시 계산해라. \(PR(A) = 0.25\)(들어오는
 순간 서퍼가 영원히 갇히거나, 그래프가 여러 개의 분리된 조각으로
 나뉘어 있으면 어느 조각에서 시작했는지에 따라 결과가 달라지는(즉
 유일한 정상분포로 수렴하지 않는) 문제가 생긴다. \(d&lt;1\)의 순간이동
-확률이 이런 병적인 경우에도 항상 유일한 해로 수렴하도록 보장해준다.</p>
+확률은 확률분포가 “조각 사이를 계속 넘나들게” 만들어, 이런
+병적인 경우에도 항상 유일한 해로 수렴하도록 보장해준다.</p>
 <p><strong>Q. 걷기 개수(walks_per_node)와 걷기 길이를 어떻게 정하나요?</strong>
 엄격한 공식은 없지만, 표준적인 가이든라인이 있다: 원본 논문의
 설정 — 노드당 10개 걷기, 걷기 길이 40, 임베딩 차원 128 — 을
@@ -18069,6 +18291,15 @@ v^T\Sigma v - \lambda(v^Tv - 1)\)로 바꾼 뒤, \(v\)로 미분해서 0으로
 예측이 맞는지 확인하라.</p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-brinpage-2">
+<p>Brin, S., Page, L. (1998). “The Anatomy of a Large-Scale Hypertextual Web Search Engine.” 7th International World Wide Web Conference (WWW7), Brisbane, Australia. (후에 Computer Networks 30(1-7), 107–117로 재인쇄.) <a href="#fr-brinpage-1-1">↩</a> <a href="#fr-brinpage-2">↩2</a></p>
+</li>
+<li id="footnote-node2vec-3">
+<p>Grover, A., Leskovec, J. (2016). “node2vec: Scalable Feature Learning for Networks.” KDD 2016. arXiv:1607.00653. <a href="#fr-node2vec-1-2">↩</a></p>
+</li>
+<li id="footnote-zachary-2">
+<p>Zachary, W. W. (1977). “An Information Flow Model for Social Network Structural Analysis.” Journal of Anthropological Research 33(4), 195–213. <a href="#fr-zachary-1-1">↩</a></p>
+</li>
 <li id="footnote-cs234-3">
 <p>더 깊이 보려면: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 절의 무작위 걷기(마코프 체인)와 PageRank 거듭제곱법의 고정점 수렴은 CS234의 MDP·가치 반복(value iteration)·벨만 방정식과 직접 겹치며, 본문에서 안내하는 ML2 Chapter 4의 주제이기도 하다. <a href="#fr-cs234-1-1">↩</a></p>
 </li>
@@ -18076,9 +18307,6 @@ v^T\Sigma v - \lambda(v^Tv - 1)\)로 바꾼 뒤, \(v\)로 미분해서 0으로
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="134-그래프-학습의-확장"><a class="header" href="#134-그래프-학습의-확장">13.4 그래프 학습의 확장</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter13_4_graph_extensions.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: 그래프 학습의 확장"></a></p>
-<p>[STUB: cq가 확장할 자리 — 아래 3개 사례를 각각 200~400단어씩,
-“지도(맵)” 역할의 절로(깊은 유도·긴 코드 없이) 정리할 것. 노트북은
-가벼운 합성 데이터 데모 수준으로.]</p>
 <p>이 장에서 배운 무작위 걷기 기반 그래프 임베딩(Node2Vec)과 정상분포
 (PageRank)이라는 두 아이디어는, 오프너에서 본 AlphaFold 이상으로 훨씬
 넓은 문제에 적용된다. 세 가지 실전 방향을 지도 삼아 짚어본다.</p>
@@ -18090,6 +18318,31 @@ v^T\Sigma v - \lambda(v^Tv - 1)\)로 바꾼 뒤, \(v\)로 미분해서 0으로
 graph)를 그래프 신경망(GCN)에 넣어, 그 단백질이 어떤 생물학적 기능을
 갖는지 분류한다 — “구조 예측(AlphaFold) → 구조 기반 기능 분류
 (DeepFRI)“라는 자연스러운 파이프라인이다.</p>
+<p>이 파이프라인에서 이 장의 각 도구는 어디에 쓰이는가. 구조를 3차원
+좌표로 돌려받는 순간, “공간적으로 가까운 잔기 쌍“을 엣지로 묶으면
+<strong>접촉 그래프</strong>가 만들어진다 — 카라테 클럽의 친분 엣지를 “친하다“로
+바꾼 것 같은, <strong>도메인 지식이 만든 그래프</strong>다. 그래프 신경망 계열
+모델은 이 그래프에 13장 전체를 관통한 “이웃과 값을
+합치면서 반복한다“는 연산 — <strong>그래프 컨볼루션</strong>(graph
+convolution)을 — 적용한다. 각 잔기(노드)의 벡터 표현을 이웃 잔기의
+정보와 섞어 몇 라운드 갱신하면, “이 잔기는 구조적으로 어떤 위치에
+있는가“가 인접성만큼 벡터에 스며들게 된다. DeepFRI는 이렇게 쌓인
+노드 표현을 받아 수십만 개의 기능 라벨(GO term) 중 해당 단백질을
+설명하는 것을 골라내는 분류 문제로 만든다.</p>
+<p><strong>“왜?“를 한 번 짚어보자.</strong> 왜 서열을 바로 분류하는 대신 구조
+그래프를 거치는가? — 동일한 기능을 가진 단백질은 서열이 많이
+달라도 <strong>3차원 형태(구조)는 비슷하게 유지</strong>되는 경우가 흔하기
+때문이다. 구조 그래프는 “서열과 무관한 기능의 공통 요인“을 더
+직접적으로 담는 표현이라, 같은 구조에 다른 서열의 단백질(유사
+동종단백질) 기능을 추론할 때 서열 기반 모델보다 유리하다 —
+AlphaFold의 구조 예측이 생물학 난제를 풀기만 한 게 아니라,
+<strong>그래프 기반 추론의 입력을 대량으로 공급하는 인프라</strong>가 된
+이유다.</p>
+<p><strong>노트북</strong>
+의 Part 1에서는 작은 합성 접촉 그래프(20개 노드)를 만들고,
+“접촉 수(도)를 특징으로 한” 매우 간단한 분류기를 돌린다 —
+이것은 DeepFRI의 GCN을 직접 학습하는 것이 아니라, <strong>“그래프
+구조 특징 → 기능 분류” 파이프라인의 뼈대</strong>를 느끼는 데모다.</p>
 <h3 id="b-금융-거래-그래프에서-자금세탁-탐지"><a class="header" href="#b-금융-거래-그래프에서-자금세탁-탐지">(b) 금융: 거래 그래프에서 자금세탁 탐지</a></h3>
 <p><strong>IBM AML World</strong>는 계좌를 노드, 거래를 엣지로 하는 대규모 합성 거래
 그래프 데이터셋이다. 자금세탁은 흔히 “여러 계좌를 거쳐 돈의 출처를
@@ -18098,6 +18351,35 @@ graph)를 그래프 신경망(GCN)에 넣어, 그 단백질이 어떤 생물학�
 하는가) 전체를 봐야 드러난다 — Node2Vec 같은 그래프 임베딩이나 그래프
 신경망으로 “의심스러운 부분그래프“를 탐지하는 방향의 대표적 실전
 응용이다.</p>
+<p><strong>“왜?“를 한 번 짚어보자.</strong> AML World가 합성 데이터셋인 것의
+의미는 “답이 알려진 거래 그래프“를 만들어서 탐지 모델의 성능을
+측정할 수 있게 한다는 점이다 — 실제 금융 데이터는 프라이버시
+때문에 쉽게 공개될 수 없으니, 구조와 노이즈 수준만 조절해서
+“탐지 가능한 패턴“을 심어놓은 합성 데이터셋이 연구용으로 나온
+것이다. 레이어링 패턴의 특징은 <strong>불법 자금의 흐름이 1~2홒이
+아니라 3~4홒 이상으로 뻗어</strong> 있다는 것이다 — “계좌 A가 B로,
+B가 C로, C가 해외로” 이동하는 동안 각 구간은 정상 거래와
+구분하기 어렵다. 그래서 “한 계좌의 거래액이 갑자기 커졌다”
+같은 <strong>1홒(인접) 특징</strong>으로는 탐지가 실패하고, <strong>그래프
+표현학습이 필요한</strong> 영역이 된다.</p>
+<p>이 장의 두 도구를 거래 그래프에 어떻게 쓰는가. <strong>노드
+임베딩</strong>(Node2Vec 계열)은 계좌를 “거래 네트워크에서 어떤
+위치에 있는가“로 벡터화한다 — 동일한 패턴으로 세탁에 쓰인
+계좌들이 임베딩 공간에서 같은 군집에 모이면, 그 군집 자체가
+“의심 패턴“의 시그니처가 된다. <strong>중요도 점수(PageRank 계열)</strong>
+는 “다른 계좌들이 가장 많이 거쳐가는 통로“에 높은 점수를
+부여한다 — 자금세탁의 <strong>중계 계좌</strong>(여러 출처를 여러
+목적지로 합치고 흩어주는 허브)는 정확히 그런 구조적 허브에
+해당한다. 두 신호(임베딩 공간의 위치 + 중요도 점수)를
+결합하면, “무슨 특징인지 아직 이름이 붙지 않았지만”
+구조적으로 수상한 계좌를 선별하는 데 쓸 수 있다 —
+규칙 기반 탐지(“거래액 &gt; 1억이면 신고”)가 놓치는
+<strong>패턴 전체가 정상인 개별 구간</strong>까지 커버하게 되는 것이다.</p>
+<p><strong>노트북</strong>
+의 Part 2에서는 작은 합성 거래 그래프(20개 계좌, 정상
+클러스터 + 의도적으로 심은 레이어링 경로)를 만들고,
+PageRank로 “중계 허브“를 찾아보며, 1홒 특징만으로는 왜
+발견 못 하는지 보여준다.</p>
 <h3 id="c-교통-도로망-위의-시계열-spatio-temporal-그래프"><a class="header" href="#c-교통-도로망-위의-시계열-spatio-temporal-그래프">(c) 교통: 도로망 위의 시계열, spatio-temporal 그래프</a></h3>
 <p>지금까지는 그래프 구조 자체가 고정이었다(카라테 클럽의 친분 관계는
 안 바뀐다). 그런데 교통 예측처럼 <strong>그래프 위에 시계열이 얹히는</strong>
@@ -18105,10 +18387,59 @@ graph)를 그래프 신경망(GCN)에 넣어, 그 단백질이 어떤 생물학�
 시간에 따라 변한다. <strong>STGCN</strong><sup class="footnote-reference" id="fr-stgcn-1"><a href="#footnote-stgcn">3</a></sup>(Spatio-Temporal Graph
 Convolutional Network)은 그래프 컨볼루션(공간 방향: “이웃 도로의
 정보를 합친다”)과 시계열 모델(시간 방향: “과거 몇 스텝을 본다”)을
-결합해 이 문제를 푼다. (참고: 비슷한 계열의 <strong>DCRNN</strong>도 있는데,
-그 논문이 말하는 “diffusion convolution“은 15장에서 배울 생성모델의
-diffusion과는 다른 개념이니 혼동하지 말 것 — 여기서는 그래프 위의
-확산 과정(무작위 걷기와 비슷한 발상)을 가리키는 말이다.)</p>
+결합해 이 문제를 푼다. (참고: 비슷한 계열의 <strong>DCRNN</strong><sup class="footnote-reference" id="fr-dcrnn-1"><a href="#footnote-dcrnn">4</a></sup>도
+있는데, 그 논문이 말하는 “diffusion convolution“은 15장에서 배울
+생성모델의 diffusion과는 다른 개념이니 혼동하지 말 것 — 여기서는
+그래프 위의 확산 과정(무작위 걷기와 비슷한 발상)을 가리키는 말
+이다.)</p>
+<p><strong>“왜?“를 한 번 짚어보자.</strong> 도로망은 그 자체가 그래프다 — 교차로가
+노드이고 도로가 엣지다. 그런데
+단순 “이웃의 교통량을 합친다“는 공간 방향만으로는 <strong>시간에
+따른 변화</strong>(출근·퇴근 시간대의 파도, 신호에 따른 국소 정체)를
+담을 수 없다. 반대로 “이 도로의 과거 교통량만 본다“는 시간
+방향만으로는 <strong>다른 도로의 영향</strong>(인접 구간의 정체가 이 구간으로
+전파)을 놓친다. 그래서 STGCN은 <strong>두 방향을 순환적으로 결합</strong>
+한다 — 한 단계에서 (1) 공간 방향으로 이웃 도로의 정보를
+합치고, (2) 시간 방향으로 과거 몇 단계의 자기 자신을 본다 —
+이것을 반복하면 “인접 도로의 과거 흐름이 이 도로의 미래 흐름
+에 어떤 영향을 미치는가“를 학습하게 된다. 이 “공간×시간 순환”
+구조는 13장 전체의 “반복해서 값을 갱신한다“는 패턴의 자연스러운
+확장(노드 반복 → 노드+시간 반복)이다.</p>
+<p><strong>노트북</strong>
+의 Part 3에서는 작은 합성 도로망(4×4 격자, 교차로=노드)에서
+인공적인 “출근 파도” 시계열을 만들어, (a) 1홉 이웃 평균만
+보는 모델, (b) 3홉 이웃 평균 + 과거 3단계 자기 평균을 보는
+모델을 비교하며, <strong>이웃 범위를 넓히고 과거를 함께 보면</strong>
+오차가 줄어드는 것을 보여준다.</p>
+<h3 id="세-사례를-한-장으로-어디에-무엇이-놓이는가"><a class="header" href="#세-사례를-한-장으로-어디에-무엇이-놓이는가">세 사례를 한 장으로: 어디에 무엇이 놓이는가</a></h3>
+<p>세 사례를 나란히 놓고 보면, 13장이 만든 <strong>재료가 그대로 실전에
+옮겨진다</strong>는 것이 보이기 시작한다.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>사례</th><th>그래프(재료)</th><th>이 장의 도구</th><th>질문</th></tr>
+</thead>
+<tbody>
+<tr><td>(a) 단백질</td><td>잔기 접촉 그래프</td><td>그래프 컨볼루션(GNN)</td><td>“이 구조는 어떤 기능을 하는가?”</td></tr>
+<tr><td>(b) 금융</td><td>거래 그래프</td><td>노드 임베딩 + 중요도 점수</td><td>“어떤 계좌가 구조적으로 수상한가?”</td></tr>
+<tr><td>(c) 교통</td><td>도로망 + 시계열</td><td>공간×시간 반복 갱신</td><td>“앞으로 N분 후의 교통량은?”</td></tr>
+</tbody>
+</table>
+</div>
+<p>세 케이스 모두, 이 장의 “재료“인 <strong>그래프 자체</strong>가 도메인 지식에서
+직접 만들어지는(접촉 그래프, 거래 그래프, 도로망) 형태이고, 이 장의
+“연산“인 <strong>반복해서 이웃과 값을 합친다</strong>는 것이 각 도구의 핵심에
+들어 있다. 다만, 도메인이 달라질수록 <strong>그래프를 어떻게 만드는가</strong>
+(어떤 것을 노드로, 어떤 것을 엣지로 하는가)의 선택이 모델의 성능을
+결정한다 — 그래프 학습에서 “프로그래밍“보다 “모델링“이 더 중요한
+이유가 여기에 있다.</p>
+<p><strong>다음으로 가는 길</strong>: (c)의 “시계열을 그래프 위에 얹는다“는 생각은
+ML2의 강화학습으로 자연스럽게 이어진다 — MDP는 “상태를 노드로,
+행동을 전환으로 놓은 그래프“와 같은 구조를 갖고, Q-함수/가치함수
+는 그 위에서 “반복해서 값을 갱신한다“는 연산을 수행한다(ML2
+Chapter 4의 벨만 방정식). 13장의 “그래프 위에서 값을 갱신하는
+감각“이, ML2의 “상태-행동 그래프 위에서 가치를 갱신하는 감각“으로
+이어지는 것이다.</p>
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-alphafold-1">
@@ -18116,26 +18447,24 @@ diffusion과는 다른 개념이니 혼동하지 말 것 — 여기서는 그래
 structure prediction with AlphaFold.” Nature 596, 583–589. <a href="#fr-alphafold-1-1">↩</a></p>
 </li>
 <li id="footnote-deepfri">
-<p>Gligorijević, V. et al. (2021). “Structure-based protein
-function prediction using graph convolutional networks.” Nature
-Communications 12, 3168. [실행 시 재검증 필요 — arXiv/S2 API 접속
-실패로 기억에 의존해 적었음] <a href="#fr-deepfri-1">↩</a></p>
+<p>Gligorijević, V., Renfrew, P. D., Kosciolek, T., et al.
+(2021). “Structure-based protein function prediction using graph
+convolutional networks.” Nature Communications 12, 3168.
+doi:10.1038/s41467-021-23303-9. <a href="#fr-deepfri-1">↩</a></p>
 </li>
 <li id="footnote-stgcn">
 <p>Yu, B., Yin, H., Zhu, Z. (2018). “Spatio-Temporal Graph
 Convolutional Networks: A Deep Learning Framework for Traffic
-Forecasting.” IJCAI 2018. <a href="#fr-stgcn-1">↩</a></p>
+Forecasting.” IJCAI 2018, 3634–3640. <a href="#fr-stgcn-1">↩</a></p>
+</li>
+<li id="footnote-dcrnn">
+<p>Li, Y., Yu, R., Shahabi, C., Liu, Y. (2018). “Diffusion
+Convolutional Recurrent Neural Network: Data-Driven Traffic
+Forecasting.” ICLR 2018. arXiv:1707.01926. <a href="#fr-dcrnn-1">↩</a></p>
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-14-표현학습-pca-word2vec-임베딩의-활용-representation-learning"><a class="header" href="#chapter-14-표현학습-pca-word2vec-임베딩의-활용-representation-learning">Chapter 14. 표현학습: PCA, word2vec, 임베딩의 활용 (Representation Learning)</a></h1>
-<p>[STUB: cq가 확장할 자리 — 아래는 핵심 뼈대(기존 오프너에서 Node2Vec/
-PageRank 관련 문단만 들어냄). 14.1/14.2 문단은 원래 내용 재사용,
-14.3 문단만 새로 씀. <strong>주의</strong>: 13장(그래프 표현학습)이 이 장보다
-먼저 나오는데 13.2(Node2Vec)가 이 장 14.2(word2vec)의 skip-gram을
-전제로 설명하게 되어 있다 — 순서상 앞뒤가 안 맞는다. cq 확장 시
-(a) 13.2에서 skip-gram을 자기완결적으로 짧게 재설명하거나, (b) 이
-문제를 사용자에게 다시 확인할 것.]</p>
 <p>1901년, 통계학자 칼 피어슨(Karl Pearson)은 흥미로운 질문을 던졌다: 여러 변수를
 측정한 데이터가 있을 때, 정보를 최대한 보존하면서 변수의 개수를 줄일 수 있는
 “가장 좋은 직선(또는 평면)“은 무엇인가? 그의 답 — 데이터가 가장 많이 퍼져 있는
@@ -18158,7 +18487,12 @@ PageRank 관련 문단만 들어냄). 14.1/14.2 문단은 원래 내용 재사�
 군집화·유사 검색·추론을 모두 같은 방식으로 할 수 있다.</p>
 <p><strong>이 장이 어디에서 오고 어디로 가나.</strong> 13장(그래프 표현학습)에서 이미
 “임베딩을 만드는 아이디어“를 그래프 위에서 한 번 봤다 — 이 장의 word2vec은
-그 아이디어의 원형(텍스트 버전)이다. 12장에서 배운 Transformer의 입력층
+그 아이디어의 원형(텍스트 버전)이다. 순서가 뒤죽박죽인 것처럼 보일 수 있다:
+13장의 Node2Vec가 이 장 14.2절의 skip-gram을 전제로 설명하기 때문이다. 그래서
+13.2절은 skip-gram이 “중심 단어 하나로 주변 단어를 예측하는 작은 신경망“임을
+그 자리에서 한 번 짚어 자기완결적으로 읽히도록 했다 — 14.2절에서는 그
+“작은 신경망“의 실제 구조(입력·은닉·출력층의 크기와 loss)를 처음부터 다시
+완전히 풀이한다. 12장에서 배운 Transformer의 입력층
 자체가 학습된 임베딩 테이블이라는 것, 그리고 RAG처럼 임베딩 유사도로
 문서를 검색하는 실전 응용이 이 장의 후반부(14.3)다. 다음 장(Chapter 15,
 잠재변수 생성모델)은 이 장을 뒤집어본다: 이 장이 관측 데이터 속에 숨은
@@ -18188,7 +18522,9 @@ word2vec까지의 흐름을 지나 skip-gram의 구조와 네거티브 샘플링
 들여다본다.</li>
 <li><a href="#143-임베딩을-실전에-쓰기-transformer-임베딩과-rag">14.3 임베딩을 실전에 쓰기: Transformer 임베딩과 RAG</a> —
 Transformer의 입력층이 학습된 임베딩 테이블이라는 것, 그리고 RAG가
-임베딩 유사도 검색으로 동작하는 원리를 다룬다.</li>
+임베딩 유사도 검색으로 동작하는 원리를 다룬다. 코사인 유사도를 손으로
+계산해 작은 문서 집합에서 “가장 가까운 문서“를 찾아보는 미니 RAG 데모를
+실습한다.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">
@@ -18538,7 +18874,7 @@ factor, ‘g</strong>’)이 있다“고 해석했다. 이건 사실상 <strong
 곧 그 얼굴의 압축된 표현(임베딩)이고, 계수 벡터 간 거리로 유사도를
 잴 수 있다. 이것이 “이미지를 사람이 볼 수 있는 축으로 줄이는” 임베딩
 의 초기 형태다 — Chapter 14.2의 word2vec<sup class="footnote-reference" id="fr-word2vec-1-4"><a href="#footnote-word2vec-6">5</a></sup>이 단어를, 14.3의
-Node2Vec<sup class="footnote-reference" id="fr-node2vec-1-2"><a href="#footnote-node2vec-4">6</a></sup>이
+Node2Vec<sup class="footnote-reference" id="fr-node2vec-1-3"><a href="#footnote-node2vec-4">6</a></sup>이
 그래프 노드를 벡터로 만들 때, “데이터 자체에서 구조를 찾아 저차원
 벡터를 만든다“는 동일한 정신을 공유한다.</p>
 <p><strong>“분산이 큰 방향을 찾아라“는 120년 전의 단순한 질문에, 얼굴 인식·단어
@@ -18659,7 +18995,7 @@ print(Z)  # 각 점이 PC1(45도 대각선)에 투영된 값 — [-2.12, -2.12, 
 <p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781. <a href="#fr-word2vec-1-4">↩</a></p>
 </li>
 <li id="footnote-node2vec-4">
-<p>Grover, A., Leskovec, J. (2016). “node2vec: Scalable Feature Learning for Networks.” arXiv:1607.00653. <a href="#fr-node2vec-1-2">↩</a></p>
+<p>Grover, A., Leskovec, J. (2016). “node2vec: Scalable Feature Learning for Networks.” arXiv:1607.00653. <a href="#fr-node2vec-1-3">↩</a></p>
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -19128,8 +19464,6 @@ search vs. analogy)에 쓸지에 맞춰 선택하는 것이
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="143-임베딩을-실전에-쓰기-transformer-임베딩과-rag"><a class="header" href="#143-임베딩을-실전에-쓰기-transformer-임베딩과-rag">14.3 임베딩을 실전에 쓰기: Transformer 임베딩과 RAG</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter14_3_embeddings_rag.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: Transformer 임베딩과 RAG"></a></p>
-<p>[STUB: cq가 확장할 자리 — 2500~4000단어로 확장, 손으로 계산하는 예제와
-실습 코드(작은 문서 집합에서 코사인 유사도로 검색하는 미니 RAG 데모) 포함.]</p>
 <h3 id="transformer의-첫-층도-사실-word2vec과-같은-아이디어다"><a class="header" href="#transformer의-첫-층도-사실-word2vec과-같은-아이디어다">Transformer의 첫 층도 사실 word2vec과 같은 아이디어다</a></h3>
 <p>12장에서 어텐션을 배울 때, 각 단어는 이미 “임베딩 벡터“로 주어져
 있다고 가정하고 시작했다. 그 임베딩이 어디서 오는지는 미뤄뒀는데,
@@ -19160,19 +19494,185 @@ retrieval)이라 부르고, 전통적인 키워드 매칭(예: TF-IDF, BM25)과
 검색은 “의미가 비슷한가“를 벡터 공간에서 잰다 — 그래서 질문에 없는
 단어로 쓰인 문서도 찾아낼 수 있다(“자동차 연비“로 검색했는데 “차량
 1km당 연료 소비량“이라는 문서가 걸리는 식).</p>
+<p>RAG의 <strong>검색(retrieval) 단계</strong>를 제안한 원 논문이 Lewis et al. 2020<sup class="footnote-reference" id="fr-rag-1"><a href="#footnote-rag">1</a></sup>이다.
+다만 그 논문은 검색 단계를 (당시엔 BM25 같은) 희소 인덱스로 했고, 그 뒤의
+<strong>생성(generation) 단계</strong>까지 함께 연결했다 — “임베딩 → 유사도 검색“이
+RAG의 검색단계를 이루는 구조는 이 논문부터다. 아래에서는 이 검색 단계를
+14.2의 단어 벡터와 <strong>동일한</strong> 코사인 유사도 연산으로, 손으로 → 코드로
+한 번씩 풀이한다.</p>
+<h3 id="손으로-한-번-2d-밀집-검색-예제"><a class="header" href="#손으로-한-번-2d-밀집-검색-예제">손으로 한 번: 2D 밀집 검색 예제</a></h3>
+<p>코드를 쓰기 전에, 밀집 검색의 핵심 연산을 먼저 손으로 해보자. 차원을
+768에서 2로 낮춰 종이 위에서 계산할 수 있게 만든다(실제로 이 벡터들은
+배우기에서 나오지만, 여기선 “주어져 있다“고 치고 연산만 따른다).</p>
+<p>문서가 3개인 작은 문서를 가진다고 하고, 사용자가 “자동차 연비“라고
+질문을 쳤다고 하자. 질문과 각 문서를 2차원 벡터로 임베딩한 결과가
+다음이라고 하자:</p>
+<p>\[\mathbf{q} = (4, 1), \qquad
+\mathbf{d}_1 = (3, 2), \qquad
+\mathbf{d}_2 = (2, 3), \qquad
+\mathbf{d}_3 = (1, 3)\]</p>
+<p>세 문서의 내용은 다음과 같다:</p>
+<ul>
+<li>\(\mathbf{d}_1\): “차량의 연료 소비량은 1km당 소모 연료로 측정한다”</li>
+<li>\(\mathbf{d}_2\): “자동차 보험을 고르는 법”</li>
+<li>\(\mathbf{d}_3\): “양자 컴퓨터는 정보를 어떻게 처리하는가”</li>
+</ul>
+<p>질문 “자동차 연비“와 문서 1 “차량의 연료 소비량…“은 <strong>단어를
+하나도 공유하지 않는다</strong>(자동차/차량, 연비/연료 소비량) — 바로
+키워드 매칭이 못 찾는 경우다. 하지만 임베딩 공간에서는 두 벡터의
+<strong>방향</strong>이 가깝기에, 코사인 유사도가 이것을 잡는다.</p>
+<p><strong>1단계 — 내적.</strong> 질문과 각 문서:</p>
+<p>\[\mathbf{q} \cdot \mathbf{d}_1 = 4 \times 3 + 1 \times 2 = 14, \qquad
+\mathbf{q} \cdot \mathbf{d}_2 = 4 \times 2 + 1 \times 3 = 11, \qquad
+\mathbf{q} \cdot \mathbf{d}_3 = 4 \times 1 + 1 \times 3 = 7\]</p>
+<p><strong>2단계 — 노름.</strong></p>
+<p>\[\|\mathbf{q}\| = \sqrt{4^2 + 1^2} = \sqrt{17} \approx 4.12, \qquad
+\|\mathbf{d}_1\| = \|\mathbf{d}_2\| = \sqrt{3^2 + 2^2} = \sqrt{13} \approx 3.61, \qquad
+\|\mathbf{d}_3\| = \sqrt{1^2 + 3^2} = \sqrt{10} \approx 3.16\]</p>
+<p><strong>3단계 — 코사인 유사도.</strong> 내적을 노름의 곱으로 나눈다:</p>
+<p>\[\cos(\mathbf{q}, \mathbf{d}_1) = \frac{14}{\sqrt{17}\sqrt{13}}
+= \frac{14}{\sqrt{221}} \approx \mathbf{0.942}\]</p>
+<p>\[\cos(\mathbf{q}, \mathbf{d}_2) = \frac{11}{\sqrt{221}}
+\approx \mathbf{0.740}, \qquad
+\cos(\mathbf{q}, \mathbf{d}_3) = \frac{7}{\sqrt{17}\sqrt{10}}
+= \frac{7}{\sqrt{170}} \approx \mathbf{0.537}\]</p>
+<p><strong>순위:</strong> \(\mathbf{d}_1\)(0.942) &gt; \(\mathbf{d}_2\)(0.740) &gt;
+\(\mathbf{d}_3\)(0.537).</p>
+<p>1위는 단어를 하나도 공유하지 않는 문서 1 “차량의 연료 소비량…“이다.
+반면 “자동차“라는 <strong>단어가 포함된</strong> 문서 2는 2위에 그친다. 키워드
+매칭이라면 문서 2(“자동차“가 들어 있음)만 걸리고 문서 1은 아예
+놓쳤을 것이다 — “같은 단어가 있는가“와 “의미가 비슷한가“의 차이는
+바로 여기 있다. 이 연산은 14.2에서 단어 벡터의 유사도를 잴 때
+한 것과 <strong>정확히 같다</strong> — 대상이 “단어“에서 “문서“로 바뀐 것뿐이다.</p>
+<p>차원이 2라는 것만 빼면 768차원에서도 계산은 동일하다 — 768개 성분에
+대해 내적과 노름을 계산할 뿐이다. “두 벡터의 각도가 작을수록
+의미가 비슷하다“는 원리는 2차원과 768차원에서 같다.</p>
+<h3 id="실습-작은-문서-집합에서-코사인-유사도로-검색하는-미니-rag"><a class="header" href="#실습-작은-문서-집합에서-코사인-유사도로-검색하는-미니-rag">실습: 작은 문서 집합에서 코사인 유사도로 검색하는 미니 RAG</a></h3>
+<p>손 계산 예제를 이제 코드로 옮긴다. 14.2의 <code>train_skipgram</code>과
+<code>cos_sim</code>을 그대로 쓰고, 문서 안 단어 벡터를 <strong>평균</strong>해서 “문서
+벡터“를 만드는 <code>mean_vec</code> 하나를 새로 추가한다. 에너지·동물·컴퓨팅
+주제의 5개 문서 집합으로 만든다:</p>
+<pre><code class="language-python"># (train_skipgram, cos_sim 은 14.2와 동일)
+
+# 문서 벡터 = 존재하는 단어 벡터의 평균
+def mean_vec(words, emb):
+    dim = len(next(iter(emb.values())))
+    present = [w for w in words if w in emb]
+    if not present:
+        return None
+    v = [0.0] * dim
+    for w in present:
+        for k in range(dim):
+            v[k] += emb[w][k]
+    return [x / len(present) for x in v]
+
+tok = lambda s: s.replace(". ", " ").split()
+
+corpus_docs = {
+    "D1 전기차": "전기차는 배터리로 움직인다. 전기차 충전은 연료 대신 전기를 쓴다. 배터리 용량이 클수록 전기차 주행거리가 늘어난다.",
+    "D2 태양광": "태양광 발전은 햇빛으로 전기를 만든다. 태양광 패널은 에너지를 공급한다. 화석 연료 대신 태양광이 환경에 좋다.",
+    "D3 양자": "양자 컴퓨터는 큐비트로 정보를 처리한다. 큐비트는 중첩 상태에 있을 수 있다. 양자 알고리즘은 슈퍼포지션을 활용한다.",
+    "D4 고양이": "고양이는 애묘인이 좋아하는 동물이다. 고양이는 털을 손질한다. 강아지도 반려동물로 인기지만 고양이는 독립적이다.",
+    "D5 배터리": "배터리와 태양광 발전은 에너지 저장과 생산을 함께 한다. 전기차 충전은 배터리 기술에 의존한다.",
+}
+flat = []
+for _n, t in corpus_docs.items():
+    flat += tok(t)
+print("토큰 수:", len(flat), " 고유어 수:", len(set(flat)))
+
+random.seed(42)
+emb = train_skipgram(flat, window=2, dim=8, epochs=400, lr=0.1, neg_k=3)
+docvecs = {n: mean_vec(tok(t), emb) for n, t in corpus_docs.items()}
+</code></pre>
+<p>이제 두 개의 질문으로 “검색“을 해보자:</p>
+<pre><code class="language-python">for q in ["양자 컴퓨터", "고양이는 손질한다"]:
+    qv = mean_vec(tok(q), emb)
+    sims = sorted(((n, cos_sim(qv, dv)) for n, dv in docvecs.items()),
+                  key=lambda kv: -kv[1])
+    print("\n질문:", q)
+    for n, s in sims:
+        print(f"  {n}: {s:+.3f}")
+</code></pre>
+<p>출력(<code>random.seed(42)</code>로 재현 가능):</p>
+<pre><code>토큰 수: 70  고유어 수: 57
+
+질문: 양자 컴퓨터
+  D3 양자: +0.793
+  D2 태양광: +0.454
+  D4 고양이: +0.408
+  D1 전기차: +0.354
+  D5 배터리: +0.244
+
+질문: 고양이는 손질한다
+  D4 고양이: +0.951
+  D5 배터리: +0.558
+  D3 양자: +0.555
+  D2 태양광: +0.481
+  D1 전기차: +0.329
+</code></pre>
+<p>“양자 컴퓨터” 질문에서 승자는 D3 양자(0.793)이고, 나머지는 전부
+0.46 아래다 — 1위와 2위 사이에 0.34라는 <strong>깨끗한 간격</strong>이 열린다.
+“고양이는 손질한다“에서는 D4 고양이(0.951)가 압도적이다. 이 “1위가
+선명하게 분리된다“는 모습이, 이 문서가 정답이라는 신호를 검색 단계
+에서 줬다는 뜻이다 — RAG는 이 상위 1~k개를 프롬프트에 붙여줄 것이다.</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch14_3_doc_2d.svg" alt="5개 문서 임베딩(8차원)을 SVD 상위 2 좌표로 투영한 2차원 산점도. 에너지 관련 문서(D1 EV=전기차, D2 solar=태양광, D5 battery=배터리)가 한쪽, 비에너지 문서(D3 quantum=양자, D4 cat=고양이)가 반대쪽에 모여, “주제가 비슷한 문서가 임베딩 공간에서 가깝다“는 밀집 검색의 전제가 작은 스케일에서도 확인됨"><span class="img-wrapper"><img src="images/ch14_3_doc_2d.svg" alt="5개 문서 임베딩(8차원)을 SVD 상위 2 좌표로 투영한 2차원 산점도. 에너지 관련 문서(D1 EV=전기차, D2 solar=태양광, D5 battery=배터리)가 한쪽, 비에너지 문서(D3 quantum=양자, D4 cat=고양이)가 반대쪽에 모여, “주제가 비슷한 문서가 임베딩 공간에서 가깝다“는 밀집 검색의 전제가 작은 스케일에서도 확인됨"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="images/ch14_3_rag_search.svg" alt="질문 “양자 컴퓨터“와 5개 문서의 코사인 유사도를 막대로 그린 것. 1위 D3 quantum(+0.793)이 2위(+0.454)보다 0.34 높게 떨어져, 이 문서가 정답이라는 신호를 검색 단계에서 줌"><span class="img-wrapper"><img src="images/ch14_3_rag_search.svg" alt="질문 “양자 컴퓨터“와 5개 문서의 코사인 유사도를 막대로 그린 것. 1위 D3 quantum(+0.793)이 2위(+0.454)보다 0.34 높게 떨어져, 이 문서가 정답이라는 신호를 검색 단계에서 줌"></span></label></p>
+<p>여기서 두 가지를 짚자.</p>
+<p>첫째, <code>mean_vec</code>가 <strong>문서의 단어 순서를 버린다</strong>. “양자 컴퓨터“와
+“컴퓨터 양자“는 같은 문서 벡터가 된다. 이건 의도된 단순화다 —
+의미 유사도 검색은 대개 “어떤 단어가 들어 있는가“를 보고, 단어
+순서는 잘 보지 않는다(14.2의 bag-of-words 한계와 같은 이야기다).
+단어 순서까지 살리려면 12장의 어텐션을 문서 단위로 돌리는
+<strong>문서 임베딩 모델</strong>을 써야 하고, 그것이 실전 RAG가 하는 일이다.</p>
+<p>둘째, 이 데모는 RAG의 <strong>검색 단계</strong>만 구현한다. 검색된 문서를
+받아 “이 문서에 기반해 답하라“고 하는 <strong>생성 단계</strong>는 LLM의 일이니
+Chapter 17에서 다룬다. 이 절에서 완성한 것은 “질문 벡터와 문서
+벡터의 코사인 유사도로 상위 문서를 골라내는” 그 파이프라인 전체다 —
+실전과 구조는 같고, (a) 임베딩을 <code>train_skipgram</code> 대신 전문
+임베딩 모델로, (b) 문서를 문장 단위로 잘라(chunking) 벡터화하고,
+(c) 수십억 문서에 대해 빠르게 최상을 찾게 벡터 DB(FAISS, HNSW 등)를
+두는 것만 다르고, <strong>원리는 지금 만든 이 20줄과 같다.</strong></p>
+<h3 id="자주-하는-실수-내적과-코사인-유사도를-같은-것으로-쓰기"><a class="header" href="#자주-하는-실수-내적과-코사인-유사도를-같은-것으로-쓰기">자주 하는 실수: “내적“과 “코사인 유사도“를 같은 것으로 쓰기</a></h3>
+<p>실습에서 <code>cos_sim</code>을 썼지만, “내적만 하면 되지 않나” 하고
+\(\mathbf{q} \cdot \mathbf{d}\)로만 순위를 매기는 실수가 많다.
+둘은 <strong>벡터의 길이가 다르면</strong> 순서가 달라진다 — 14.2에서 “단어
+벡터의 노름은 빈도와 비례한다“고 본 것과 같은 구조다.</p>
+<p>위 손 계산 예제로 바로 확인해보자. 내적만 보면 \(\mathbf{d}_1\)=14,
+\(\mathbf{d}_2\)=11, \(\mathbf{d}_3\)=7로, 마침 이번엔
+순위가 코사인 결과와 같다. 하지만 문서 2의 벡터를 \((4, 6)\)으로
+바꿔보자(= 같은 “방향“을 2배로 키운 것, 문서가 두 배로 길어진 것과
+같다):</p>
+<ul>
+<li>내적: \(\mathbf{q} \cdot \mathbf{d}_2 = 4 \times 4 + 1 \times 6 =
+22\) — 이제 문서 2(22)가 문서 1(14)을 <strong>넘어서</strong> 1위가 된다.</li>
+<li>코사인: \(\cos(\mathbf{q}, \mathbf{d}_2) = \frac{22}{\sqrt{17}\sqrt{52}}
+= \frac{22}{\sqrt{884}} \approx 0.740\) — 여전히 0.740으로 2위다.</li>
+</ul>
+<p><strong>벡터의 “크기“를 2배로 키워도 코사인 유사도는 변하지 않는다</strong>(분모의
+노름도 2배가 되어 상쇄된다). 코사인은 <strong>각도(방향)만</strong> 보고, 내적은
+<strong>각도 × 크기</strong>를 보므로, “문서가 길면 내적이 커진다“는 길이 편향이
+들어간다. 그래서 의미 유사도 검색에서는 코사인(또는 벡터를 단위벡터로
+정규화한 뒤의 내적)을 쓰는 것이다 — 14.2의 “비슷한 단어 찾기는
+코사인“이라는 원칙의 문서 버전이다.</p>
 <h3 id="확인-문제-15"><a class="header" href="#확인-문제-15">확인 문제</a></h3>
-<p>[STUB]</p>
+<p><strong>1. (코사인 유사도 손 계산)</strong> 위 2D 예제에 문서를 하나 더 추가한다. \(\mathbf{d}_4 = (1, 2)\)가 “자동차 연비는 기름값에 비례한다“라고 하자. \(\cos(\mathbf{q}, \mathbf{d}_4)\)를 구하고, 네 문서의 최종 순위를 매겨라. (힌트: 내적 \(\mathbf{q}\cdot\mathbf{d}_4 = 4\times 1 + 1\times 2 = 6\), \(|\mathbf{d}_4| = \sqrt{5}\). 답: \(\frac{6}{\sqrt{17 \cdot 5}} = \frac{6}{\sqrt{85}} \approx 0.651\), 순위는 \(\mathbf{d}_1 &gt; \mathbf{d}_2 &gt; \mathbf{d}_4 &gt; \mathbf{d}_3\).)</p>
+<p><strong>2. (내적 vs 코사인)</strong> “자주 하는 실수“에서 문서 2의 벡터를 \((2,3)\)에서 \((4,6)\)으로 바꿨을 때, 내적 순위는 \(\mathbf{d}_2 &gt; \mathbf{d}_1 &gt; \mathbf{d}_3\)로 바뀌지만 코사인 순위는 변하지 않는다. \((4,6)=2(2,3)\)이라는 사실을 이용해, (a) 내적이 11에서 22로 두 배가 되는 이유를, (b) 코사인은 그대로 0.740인 이유를 한 문장씩 설명하라. (힌트: \((4,6)\)이 \((2,3)\)의 2배이므로 내적과 노름이 모두 정확히 2배가 되는데, 코사인의 분모(노름의 곱)도 2배가 되어 상쇄된다.)</p>
+<p><strong>3. (코드 검증)</strong> 실습 코드에서 질문을 “고양이는 애묘인이 좋아하는“으로 바꿔 실행하라. 1위가 여전히 <code>D4</code> 고양이인 것을 확인한 뒤(1위 D4=0.925, 2위 D3=0.654), “양자 컴퓨터” 질문 때의 1~2위 간격(0.793 − 0.454 = 0.339)과 비교해서 이 질문의 간격(0.271)이 더 작다. 간격이 좁아진다는 것이 검색의 <strong>확신도</strong>(confidence)에 어떤 의미를 주는지, 그리고 간격이 좁을 때 실무에서는 무엇을 할 수 있는지(top-k를 늘리거나 임계값 아래 문서를 버리기 등) 두세 문장으로 서술하라.</p>
 <h3 id="자주-묻는-질문-40"><a class="header" href="#자주-묻는-질문-40">자주 묻는 질문</a></h3>
-<p>[STUB]</p>
+<p><strong>Q. 문서 벡터를 왜 단어 벡터의 평균으로 만드는가요?</strong> 14.2의 bag-of-words와 같은 이유로, 문서를 “들어 있는 단어들의 집합“으로 보기 위함이다. 이렇게 하면 “양자 컴퓨터“와 “컴퓨터 양자“가 같은 벡터가 되고(단어 순서 무시), 문서 길이에 관계없이 하나의 벡터가 나온다. 단점을 안다: 단어 <strong>순서</strong>와 <strong>문법</strong> 정보는 버려진다. 단어 순서까지 살리려면 12장의 어텐션을 문서 전체에 돌리는 <strong>문서 임베딩 모델</strong>(실전 RAG가 쓰는 전문 임베딩 모델)을 써야 한다.</p>
+<p><strong>Q. 이 데모가 RAG 전체인가요?</strong> 아니다. 이 데모는 RAG의 <strong>검색</strong> 단계만 구현한 것이다. 검색된 문서를 받아 “이 문서에 기반해 답하라“고 하는 <strong>생성</strong>단계는 LLM의 일이므로 Chapter 17에서 다룬다. 또한 실제 시스템은 (a) 임베딩을 <code>train_skipgram</code> 대신 전문 모델로, (b) 문서를 문장 단위로 잘라(chunking) 벡터화하고, (c) 수십억 문서에서 빠르게 최상을 찾게 벡터 DB(FAISS, HNSW 등)를 두는 것만 다르고, <strong>원리는 이 20줄과 같다.</strong></p>
+<p><strong>Q. 왜 차원을 8로, 문서도 5개로 이렇게 작게 하나요?</strong> 노트북에서 실행하고 구조를 명확히 보이려는 의도다. 실제 RAG는 전문 임베딩 모델의 384~1536차원 벡터를 쓰며, 그 모델은 “질문 ↔ 관련 문서” 쌍으로 학습된 것이므로 훨씬 정교한 임베딩을 만든다. 하지만 “질문도 벡터, 문서도 벡터, 코사인 유사도로 상위 k개 검색“이라는 파이프라인 구조는 이 작은 데모와 동일하다 — 차원과 모델 규모만 다를 뿐이다.</p>
 <hr>
-<ol class="footnote-definition"></ol>
+<ol class="footnote-definition">
+<li id="footnote-rag">
+<p>Lewis, P. et al. (2020). “Retrieval-Augmented Generation for
+Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. <a href="#fr-rag-1">↩</a></p>
+</li>
+</ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-15-잠재변수-생성모델-vae에서-gan-diffusion까지-latent-variable-generative-models"><a class="header" href="#chapter-15-잠재변수-생성모델-vae에서-gan-diffusion까지-latent-variable-generative-models">Chapter 15. 잠재변수 생성모델: VAE에서 GAN, Diffusion까지 (Latent-Variable Generative Models)</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_vae_elbo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: VAE"></a>
 <a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_gan.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GAN"></a></p>
-<p>[STUB: cq가 확장할 자리 — 아래는 핵심 뼈대(15.1 EM/GMM 문단을 4.4로
-옮긴 자리에 짧은 다리 문단으로 교체, 15.3→15.2 리넘버링 반영, GAN은
-그대로 유지, Diffusion에 Waymo SceneDiffuser 실전 사례 추가).]</p>
 <p>4.4절에서 본 <strong>EM</strong>(Expectation-Maximization) 알고리즘은 “관측 안 된
 잠재변수가 데이터를 어떻게 만들어내는가“라는 질문에 대한 가장 고전적인
 답이었다 — 이 장은 그 질문을 신경망으로 확장한다. VAE<sup class="footnote-reference" id="fr-vae-1-4"><a href="#footnote-vae-4">1</a></sup>는 EM과
@@ -19193,6 +19693,7 @@ retrieval)이라 부르고, 전통적인 키워드 매칭(예: TF-IDF, BM25)과
 캡스톤: 팀 프로젝트와 ML1 총정리”(Chapter 16)에서 팀 프로젝트의 모델을
 고를 때 안정성·생성 속도·품질의 기준으로 선택하고 정당화할 수 있는
 도구 상자가 된다.<sup class="footnote-reference" id="fr-cs230-1-10"><a href="#footnote-cs230-10">3</a></sup></p>
+<h2 id="학습-목표-7"><a class="header" href="#학습-목표-7">학습 목표</a></h2>
 <p>이 챕터를 마치면 다음을 할 수 있다:</p>
 <ul>
 <li>계산 불가능한 우도를 대체하는 계산 가능한 하한 ELBO를 복원 항과 KL
@@ -19206,10 +19707,21 @@ retrieval)이라 부르고, 전통적인 키워드 매칭(예: TF-IDF, BM25)과
 공간에서 Diffusion을 돌리는 구조임을, 그리고 이미지 생성 밖의 응용
 (자율주행 시뮬레이션 등)까지 설명할 수 있다.</li>
 </ul>
+<p>이 장을 관통하는 하나의 실은 <strong>같은 질문, 다른 계산</strong>이다. 세 원리는
+모두 “보이지 않는 구조(잠재변수 또는 노이즈)가 데이터 \(x\)를 어떻게
+만들어내는가“라는 같은 질문을 던지지만, 답을 구하는 계산은 서로
+다르다. 15.1은 계산 불가능한 우도(적분)를 계산 가능한 하한 ELBO로
+바꿔 그 하한을 최대화하고, 15.2의 GAN은 우도를 내려놓고 두 네트워크의
+경쟁 게임의 균형으로 대신 찾고, Diffusion은 노이즈 제거라는 큰 문제를
+단계별 노이즈 예측 회귀 문제 \(T\)개로 쪼개서 푼다. 4.4절
+EM/GMM이 이산 잠재변수로 이 질문을 정확히 풀었던 첫 예시라면, 이 장은
+그 답이 세 갈래로 갈라지는 지점이다 — 그리고 세 갈래가 서로 다른
+대가를 치르는 방식이, 장 후반의 “안정성·생성 속도·품질” 비교의
+모든 근거가 된다.</p>
 <p>이번 주는 두 개의 수업 블록으로 진행된다:</p>
 <ul>
 <li><a href="#151-vae-elbo와-실습">15.1 VAE: ELBO와 실습</a> — 잠재변수를 연속 벡터로,
-계산 불가능한 E-step을 신경망으로 대체한 VAE<sup class="footnote-reference" id="fr-vae-2"><a href="#footnote-vae-4">1</a></sup>를 배운다. 옌센 부등식 한
+계산 불가능한 E-step을 신경망으로 대체한 VAE<sup class="footnote-reference" id="fr-vae-2-1"><a href="#footnote-vae-4">1</a></sup>를 배운다. 옌센 부등식 한
 번으로 ELBO를 유도하고 복원 항·KL 정규화 항의 의미를 확인한 뒤, 두
 봉우리 데이터로 작은 VAE를 실제로 학습해 표준정규분포에서 \(z\)를 뽑아
 디코더만 통과시키는 생성 모드까지 확인한다(리파라미터화 트릭, β-VAE<sup class="footnote-reference" id="fr-beta_vae-1"><a href="#footnote-beta_vae">4</a></sup>,
@@ -19226,7 +19738,7 @@ Waymo SceneDiffuser<sup class="footnote-reference" id="fr-scenediffuser-1"><a hr
 <hr>
 <ol class="footnote-definition">
 <li id="footnote-vae-4">
-<p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1-4">↩</a> <a href="#fr-vae-2">↩2</a></p>
+<p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1-4">↩</a> <a href="#fr-vae-2-1">↩2</a></p>
 </li>
 <li id="footnote-word2vec-8">
 <p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781. <a href="#fr-word2vec-1-6">↩</a></p>
@@ -19678,22 +20190,19 @@ M-step도 “잠재변수별 파라미터를 가중평균으로 추정“하는 
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="152-gan-diffusion-그리고-세-원리-비교"><a class="header" href="#152-gan-diffusion-그리고-세-원리-비교">15.2 GAN, Diffusion, 그리고 세 원리 비교</a></h1>
-<p>[STUB: cq 확인 필요 — 이 절 안에 “네 원리(EM/GMM·VAE·GAN·Diffusion)
-비교” 표/문단이 있으면 EM/GMM을 빼고 “세 원리(VAE·GAN·Diffusion)“로
-줄일 것. Diffusion 부분에 Waymo SceneDiffuser<sup class="footnote-reference" id="fr-scenediffuser-1-1"><a href="#footnote-scenediffuser-1">1</a></sup> 실전
-사례(자율주행 시뮬레이션 시나리오 생성) 짧게 추가.]</p>
-<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_3_gan_diffusion.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GAN &amp; Diffusion"></a></p>
-<p>앞의 두 절은 같은 질문(“관측되지 않은 구조가 데이터를 만들어내는가”)을
-두 가지 방식으로 풀었다 — GMM은 EM 알고리즘으로 정확히 풀었고, VAE<sup class="footnote-reference" id="fr-vae-1-6"><a href="#footnote-vae-6">2</a></sup>는
-풀리지 않는 ELBO를 신경망으로 근사했다. 이번 절은 그 다음, <strong>우도
-기반과 확연히 다른</strong> 나머지 두 방식을 만난다. GAN은 두 신경망의
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter15_2_gan_diffusion.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: GAN &amp; Diffusion"></a></p>
+<p>15.1절의 VAE<sup class="footnote-reference" id="fr-vae-1-6"><a href="#footnote-vae-6">1</a></sup>는 4.4절의 GMM/EM이 던진 질문(“관측되지 않은
+구조가 데이터를 만들어내는가”)을 신경망으로 근사했다 — 풀리지
+않는 E-step을 인코더로 대체하고, 우도의 하한(ELBO)을 역전파로
+최대화하는, <strong>우도 기반</strong>의 마지막 방식이다. 이번 절은 그 다음,
+<strong>우도 기반과 확연히 다른</strong> 두 방식을 만난다. GAN은 두 신경망의
 <strong>경쟁 게임</strong>으로 학습하고, Diffusion은 노이즈를 <strong>한 단계씩 되돌리는
-회귀 문제</strong>로 학습한다. 네 방식이 나란히 놓이면 Chapter 15 전체의
-그림이 완성된다(생성 모델 전반을 더 깊이 보려면
-<sup class="footnote-reference" id="fr-cs230-1-12"><a href="#footnote-cs230-12">3</a></sup>도 참고하라).</p>
+회귀 문제</strong>로 학습한다. 세 방식(VAE·GAN·Diffusion)이 나란히
+놓이면 Chapter 15 전체의 그림이 완성된다(생성 모델 전반을 더 깊이
+보려면 <sup class="footnote-reference" id="fr-cs230-1-12"><a href="#footnote-cs230-12">2</a></sup>도 참고하라).</p>
 <h3 id="gan-생성자와-판별자의-min-max-게임"><a class="header" href="#gan-생성자와-판별자의-min-max-게임">GAN: 생성자와 판별자의 min-max 게임</a></h3>
 <p>2014년, 당시 몬트리올 대학교 얀 르쿤과 요슈아 벵기오 연구소에서
-박사과정을 밟던 이언 굿펠로우(Ian Goodfellow)는 GAN<sup class="footnote-reference" id="fr-gan-1-6"><a href="#footnote-gan-6">4</a></sup> 아이디어
+박사과정을 밟던 이언 굿펠로우(Ian Goodfellow)는 GAN<sup class="footnote-reference" id="fr-gan-1-6"><a href="#footnote-gan-6">3</a></sup> 아이디어
 하나를 떠올렸다: 진짜 같은 가짜 이미지를 만드는 모델을 학습시키는 대신,
 <strong>두 개의 신경망이 서로 경쟁하게 만들면 어떨까?</strong> 하나는 가짜를 만드는
 위조범(생성자, Generator), 다른 하나는 진짜와 가짜를 구별하는
@@ -19767,7 +20276,7 @@ D_{KL}(p \| m) + \tfrac{1}{2} D_{KL}(q \| m)\)이고
 \(D\)를 최적화(장난감에서는 닫힌 형태 \(D^*\)라 바로
 점프), (2) \(D^*\)를 고정하고 \(G\)의 파라미터 \(s\)를
 그라디언트 스텝으로 한 스텝 갱신 — 하는 <strong>교대 반복</strong>이다.
-15.1절 EM의 뼈대(E-step: 파라미터 고정 → 잠재변수 채우기 /
+4.4절 EM의 뼈대(E-step: 파라미터 고정 → 잠재변수 채우기 /
 M-step: 잠재변수 고정 → 파라미터 갱신)과 같은 <strong>좌표별
 최적화</strong>(coordinate optimization) 구조가, “잠재변수“를 “한
 네트워크“로 바뀐 형태로 그대로 나타난다.</p>
@@ -19841,7 +20350,7 @@ GAN의 “나쁜 소식들”(등락, 발산, 모드 붕괴)이 아직은 안 �
 <code>D.step()</code> 이후에 갱신된 \(D\)를 거쳐야 생성자 파라미터까지
 흐르기 때문이다 — 9장의 역전파가 “연산 그래프를 따라 거슬러
 올라가는 것“임을 떠올리면 당연하다.)</p>
-<p>여기서 EM과의 차이를 한 번 더 명확히 하자. EM은 E-step이 <strong>정확한
+<p>여기서 4.4절 EM과의 차이를 한 번 더 명확히 하자. EM은 E-step이 <strong>정확한
 사후확률</strong>을 채워넣었기 때문에 “우도가 단조증가한다“가
 <strong>증명 가능</strong>했다. GAN의 (1)은 \(D\)를 완전하게 최적화하지도,
 (2)가 \(G\)를 완전하게 최적화하지도 못하는 <strong>근사적인</strong> 게임
@@ -19861,7 +20370,7 @@ Chapter 9의 “그라디언트 소실“과 정확히 같은 구조다.</li>
 강해지면 다시 무너진다.</li>
 <li><strong>두 네트워크의 “학습 속도 밸런스</strong>“가 중요하다 — 한쪽이
 너무 빨리 수렴하면 다른 쪽의 학습 신호가 사라진다. 실전에서는
-\(D\)에 배터치 정규화(batch norm)<sup class="footnote-reference" id="fr-batchnorm-1-8"><a href="#footnote-batchnorm-8">5</a></sup>를 쓰거나(9장의
+\(D\)에 배터치 정규화(batch norm)<sup class="footnote-reference" id="fr-batchnorm-1-8"><a href="#footnote-batchnorm-8">4</a></sup>를 쓰거나(9장의
 배터치 정규화와 같은 기법), \(G\)에 학습률을 작게 맞추거나,
 그래디언트 페널티(아래 WGAN-GP)를 붙이는 등 여러 대응이
 개발됐다.</li>
@@ -19891,12 +20400,12 @@ collapse</strong>)이 대표적인 문제다. VAE가 이론적으로 안정적�
 균형“이지만, 실제 학습이 풀고 있는 <strong>근사적인</strong> 게임에서는
 “일부 모드를 덮고 D를 속이는” 분포도 국소적으로 균형처럼
 작용할 수 있는 상태가 될 수 있다.</p>
-<p>반대로 VAE(15.2절)에서는 KL 항 \(D_{KL}(q_\phi(z|x) \| p(z))\)
+<p>반대로 15.1절의 VAE에서는 KL 항 \(D_{KL}(q_\phi(z|x) \| p(z))\)
 이 “인코더의 출력 분포가 표준정규분포에 가깝게 유지된다“를
 <strong>목적함수 안에 명시적으로</strong> 요구한다 — 잠재 공간 전체가 쓰이게
 되는 구조적 압력이 있어서, “잠재 공간의 일부만 쓰는” 퇴화는
 ELBO를 직접적으로 낮추는 행위다. GAN에는 이 대응 항이
-없다 — 이것이 15.3의 GAN 섹션에서 VAE와 비교할 때의 <strong>핵심
+없다 — 이것이 이 절의 VAE/GAN 비교에서 반복되는 <strong>핵심
 구조적 차이</strong>다.</p>
 <h3 id="2014년-이후의-gan-계열-안정화가-3년의-주제였다"><a class="header" href="#2014년-이후의-gan-계열-안정화가-3년의-주제였다">2014년 이후의 GAN 계열: “안정화“가 3년의 주제였다</a></h3>
 <p>기본 GAN의 불안정성을 고치려는 시도가 GAN 연구의 줄기를 이뤘다 —
@@ -19904,7 +20413,7 @@ ELBO를 직접적으로 낮추는 행위다. GAN에는 이 대응 항이
 한 줄씩):</p>
 <ul>
 <li><strong>WGAN / WGAN-GP (2017, Arjovsky et al. / Gulrajani et
-al.)</strong><sup class="footnote-reference" id="fr-wgan-1-1"><a href="#footnote-wgan-1">6</a></sup>: 기본 GAN의 “D가 G를 완전히 이기면 G의 그래디언트가
+al.)</strong><sup class="footnote-reference" id="fr-wgan-1-1"><a href="#footnote-wgan-1">5</a></sup>: 기본 GAN의 “D가 G를 완전히 이기면 G의 그래디언트가
 사라진다“는 문제를 정조준한다. 게임의 값을 두 분포의
 <strong>워터스톤 거리</strong>(Wasserstein-1, 두 분포를 “이동시켜
 일치시키는 최소 비용 — 어스무버 거리)으로 바꾼 뒤, \(D\)를
@@ -19914,18 +20423,18 @@ al.)</strong><sup class="footnote-reference" id="fr-wgan-1-1"><a href="#footnote
 거리와 일치해 \(G\)가 <strong>분포가 어디로 옮겨가야 하는지
 방향 신호</strong>를 계속 받는다. 그래디언트가 “0“으로 죽지
 않으므로 학습이 훨씬 안정적으로, 모드 붕괴도 줄어든다.</li>
-<li><strong>pix2pix (2016), CycleGAN (2017)</strong><sup class="footnote-reference" id="fr-pix2pix-1"><a href="#footnote-pix2pix">7</a></sup>: “이미지 → 이미지”
+<li><strong>pix2pix (2016), CycleGAN (2017)</strong><sup class="footnote-reference" id="fr-pix2pix-1"><a href="#footnote-pix2pix">6</a></sup>: “이미지 → 이미지”
 변환으로 확장. CycleGAN은 <strong>레이블된</strong> 데이터 없이도(말의
 사진만, 기린의 사진만) 두 분포 사이의 대응을 학습해서
 “말 → 기린” 같은 스타일 변환을 만들어 — GAN이 “단순히
 비슷한 이미지를 만드는 것“을 넘어, <strong>구조를 보존하며
 변환</strong>하는 도구로 확장했음을 보여준 대표 사례다.</li>
-<li><strong>StyleGAN (2018–2019)</strong><sup class="footnote-reference" id="fr-stylegan-1-1"><a href="#footnote-stylegan-1">8</a></sup>: 초고해상도 합성 인간 얼굴 생성.
+<li><strong>StyleGAN (2018–2019)</strong><sup class="footnote-reference" id="fr-stylegan-1-1"><a href="#footnote-stylegan-1">7</a></sup>: 초고해상도 합성 인간 얼굴 생성.
 잠재 벡터를 “스타일 수준별로” 나눠 조작하면 “얼굴 표정만
 바꾸고 얼굴 형태는 그대로” 같은 <strong>제어된</strong> 생성이 가능
-해졌다. (이 방향이 16장의 “생성 모델의 응용“에서 다시
-나온다.)</li>
-<li><strong>BigGAN (2019)</strong><sup class="footnote-reference" id="fr-biggan-1"><a href="#footnote-biggan">9</a></sup>: 데이터셋(예: ImageNet) 전체에 걸친
+해졌다. (팀 프로젝트에서 생성 모델 프로젝트를 고를 때
+16장에서 다시 만난다.)</li>
+<li><strong>BigGAN (2019)</strong><sup class="footnote-reference" id="fr-biggan-1"><a href="#footnote-biggan">8</a></sup>: 데이터셋(예: ImageNet) 전체에 걸친
 대규모 조건부 생성 — “이 클래스의 이미지를 만들어라“를
 1024×1024 해상도로.</li>
 </ul>
@@ -19946,7 +20455,7 @@ al.)</strong><sup class="footnote-reference" id="fr-wgan-1-1"><a href="#footnote
 “노이즈를 아주 조금만 제거하는” 훨씬 쉬운 문제이므로, 전체적으로 훨씬
 안정적으로 학습된다. 대신 이미지 하나를 생성하는 데 \(T\)번의 반복이
 필요해 GAN보다 생성 속도가 느리다는 대가가 있다. 지금 가장 널리 쓰이는
-이미지 생성 모델들(Stable Diffusion<sup class="footnote-reference" id="fr-stablediffusion-1-1"><a href="#footnote-stablediffusion-1">10</a></sup> 등)이 이 원리를 쓴다.</p>
+이미지 생성 모델들(Stable Diffusion<sup class="footnote-reference" id="fr-stablediffusion-1-1"><a href="#footnote-stablediffusion-1">9</a></sup> 등)이 이 원리를 쓴다.</p>
 <p><strong>왜 정방향 과정은 “학습 대상이 아닌가”</strong>: 정방향 과정은
 <strong>고정된, 알려진</strong> 절차 — \(x_t = \sqrt{1-\beta_t}\,x_{t-1} +
 \sqrt{\beta_t}\,\epsilon_t\)(\(\epsilon_t \sim
@@ -19971,7 +20480,7 @@ min-max 게임도 아니고, 우도의 적분 근사도 아닌, <strong>가장
 보통의 단일 회귀 최적화</strong>다. “안정적으로 학습된다“의
 정체가 바로 이것이다. (수학적으로 이 \(\epsilon\) 예측은
 \(\nabla_x \log p_t(x)\), 즉 데이터 분포의 <strong>스코어
-함수</strong>를 추정하는 것과 동치임을 Song &amp; Ermon (2019)<sup class="footnote-reference" id="fr-songermon19-1"><a href="#footnote-songermon19">11</a></sup>가
+함수</strong>를 추정하는 것과 동치임을 Song &amp; Ermon (2019)<sup class="footnote-reference" id="fr-songermon19-1"><a href="#footnote-songermon19">10</a></sup>가
 보였다 — “노이즈를 잘 예측할 수 있는” 것은 곧 “데이터가
 어디에 빽빽한지 그 기울기를 아는” 것과 같은 셈이다.)</p>
 <p>역방향 단계(DDPM)는 한 줄로:</p>
@@ -19988,25 +20497,25 @@ z \sim \mathcal{N}(0, I)\]</p>
 절차의 일부다.</p>
 <p><strong>역사적 맥락</strong>: Diffusion의 “정방향/역방향” 아이디어 자체는
 2015년 Sohl-Dickstein 외의 논문(Deep Unsupervised Learning
-using Nonequilibrium Thermodynamics)<sup class="footnote-reference" id="fr-sohldickstein15-1"><a href="#footnote-sohldickstein15">12</a></sup>에서 처음
+using Nonequilibrium Thermodynamics)<sup class="footnote-reference" id="fr-sohldickstein15-1"><a href="#footnote-sohldickstein15">11</a></sup>에서 처음
 딥러닝에
 제안됐다 — 하지만 당시에는 학습이 너무 느려 실용화되지
-못했다. 2020년 <strong>DDPM</strong><sup class="footnote-reference" id="fr-ddpm-1-2"><a href="#footnote-ddpm-2">13</a></sup> (Ho, Jain &amp; Abbeel, “Denoising
+못했다. 2020년 <strong>DDPM</strong><sup class="footnote-reference" id="fr-ddpm-1-2"><a href="#footnote-ddpm-2">12</a></sup> (Ho, Jain &amp; Abbeel, “Denoising
 Diffusion Probabilistic Models”)이 (i) 노이즈 예측
 매개변수화 \(\epsilon_\theta\), (ii) 단순한 MSE 손실,
 (iii) 실용적 스케줄을 조합해 <strong>실제로 쓸 만한</strong> 알고리즘으로
-만들었고, 같은 해 <strong>DDIM</strong>(Song et al.)<sup class="footnote-reference" id="fr-ddim-1-1"><a href="#footnote-ddim-1">14</a></sup>이 역방향 과정을
+만들었고, 같은 해 <strong>DDIM</strong>(Song et al.)<sup class="footnote-reference" id="fr-ddim-1-1"><a href="#footnote-ddim-1">13</a></sup>이 역방향 과정을
 <strong>거의 결정적으로</strong> 만들어서 \(T\)를 1000에서 약 50
-단계로 줄였다. 2022년 <strong>Stable Diffusion</strong>(Stability AI)<sup class="footnote-reference" id="fr-stablediffusion-2"><a href="#footnote-stablediffusion-1">10</a></sup>은
-여기에 15.2절의 <strong>VAE</strong>를 조합했다 — 이미지를 VAE 인코더로
+단계로 줄였다. 2022년 <strong>Stable Diffusion</strong>(Stability AI)<sup class="footnote-reference" id="fr-stablediffusion-2"><a href="#footnote-stablediffusion-1">9</a></sup>은
+여기에 15.1절의 <strong>VAE</strong>를 조합했다 — 이미지를 VAE 인코더로
 8× 압축한 <strong>잠재 공간</strong>에서 Diffusion을 돌리는 구조로,
-계산량이 1/8²으로 줄었다. 15.2에서 “VAE의 매끄러운 잠재
+계산량이 1/8²으로 줄었다. 15.1에서 “VAE의 매끄러운 잠재
 공간“이 왜 중요한지 배웠는데, 그것이 곧 Diffusion을 <strong>안정
-있게</strong> 학습·추론할 수 있게 하는 전제 조건이었다 — 네 원리가
+있게</strong> 학습·추론할 수 있게 하는 전제 조건이었다 — 세 원리가
 각자 독립적으로 끝나는 것이 아니라 <strong>서로 연결</strong>되어 실전
-시스템으로 합쳐진다는 점이, 이번 장을 “네 개를 나란히” 보는
+시스템으로 합쳐진다는 점이, 이번 장을 “세 개를 나란히” 보는
 이유다.
-(같은 해 DALL·E 2<sup class="footnote-reference" id="fr-dalle2-1"><a href="#footnote-dalle2">15</a></sup>, Midjourney, 2024년 Sora 같은 영상
+(같은 해 DALL·E 2<sup class="footnote-reference" id="fr-dalle2-1"><a href="#footnote-dalle2">14</a></sup>, Midjourney, 2024년 Sora 같은 영상
 생성까지, 이미지 생성의 주류가 Diffusion으로 이동했다.)</p>
 <p><strong>GAN vs Diffusion — “학습할 것“을 한 줄로 비교하면</strong>:</p>
 <div class="table-wrapper">
@@ -20021,25 +20530,48 @@ Diffusion Probabilistic Models”)이 (i) 노이즈 예측
 </tbody>
 </table>
 </div>
-<h3 id="네-원리-비교"><a class="header" href="#네-원리-비교">네 원리 비교</a></h3>
+<p><strong>이미지 밖으로: Waymo SceneDiffuser<sup class="footnote-reference" id="fr-scenediffuser-1-1"><a href="#footnote-scenediffuser-1">15</a></sup>.</strong>
+Diffusion의 “노이즈를 점진적으로 되돌린다“는 원리는 픽셀
+공간에 머물지 않는다. 2024년 Waymo는 자율주행 개발을 위한
+시뮬레이션 도구 <strong>SceneDiffuser</strong>를 내놓았는데, 자연어
+지시(“자신의 차가 저속 차량을 따라가는 장면” 같은)로부터
+<strong>3차원 교통 장면의 초기 배치</strong>(차량·보행객의 위치, 진행
+방향, 크기를 포함)를 생성하고, 그 장면을 <strong>앞으로 전개될
+미래(롤아웃</strong>)까지 시뮬레이션한다. 핵심은 “장면 수준
+(scene-level)의 Diffusion 사전분포” — 장면 전체의 상태가
+시간에 따라 어떻게 흘러갈지를 하나의 <strong>스페이오-템포럴
+(spatio-temporal, 공간-시간 차원)</strong> Diffusion 모델로
+예측하는 것인데, roadgraph·교통 신호 같은 제약 조건으로
+노이즈 제거를 유도하는 <strong>조건부 생성</strong>이라는 점에서
+Stable Diffusion의 “텍스트 → 이미지“와 정확히 같은
+패턴이다. 즉 Stable Diffusion이 <strong>이미지 하나</strong>의 잠재
+공간에서 노이즈를 되돌렸다면, SceneDiffuser는 <strong>시간을
+축으로 한 장면 전체</strong>에서 되돌리는 셈이다. (이 덕분에
+자율주행 시스템을 테스트할 <strong>상상 속 시나리오</strong>를 대량으로
+만들어낼 수 있게 됐는데 — “생성 모델이 안전 검증 도구로
+쓰인다“는 점을 보여주는 대표 사례다. 추론에 필요한
+모델 호출 횟수도 16배 줄였다고 보고했다.)</p>
+<h3 id="세-원리-비교"><a class="header" href="#세-원리-비교">세 원리 비교</a></h3>
 <div class="table-wrapper">
 <table>
 <thead>
-<tr><th></th><th>EM/GMM</th><th>VAE (우도 기반)</th><th>GAN (적대적)</th><th>Diffusion (스코어 기반)</th></tr>
+<tr><th></th><th>VAE (우도 기반)</th><th>GAN (적대적)</th><th>Diffusion (스코어 기반)</th></tr>
 </thead>
 <tbody>
-<tr><td>잠재변수</td><td>이산(클러스터 번호)</td><td>연속 벡터</td><td>없음(노이즈를 직접 변환)</td><td>연속(노이즈 단계)</td></tr>
-<tr><td>학습 방법</td><td>E-step/M-step 반복</td><td>ELBO 최대화(역전파)</td><td>min-max 게임의 균형</td><td>각 단계 노이즈 예측 오차 최소화</td></tr>
-<tr><td>학습 안정성</td><td>안정적</td><td>비교적 안정적</td><td>불안정하기 쉬움</td><td>안정적</td></tr>
-<tr><td>생성 속도</td><td>—</td><td>빠름(한 번에)</td><td>빠름(한 번에)</td><td>느림(반복 필요)</td></tr>
+<tr><td>잠재변수</td><td>연속 벡터</td><td>없음(노이즈를 직접 변환)</td><td>연속(노이즈 단계)</td></tr>
+<tr><td>학습 방법</td><td>ELBO 최대화(역전파)</td><td>min-max 게임의 균형</td><td>각 단계 노이즈 예측 오차 최소화</td></tr>
+<tr><td>학습 안정성</td><td>비교적 안정적</td><td>불안정하기 쉬움</td><td>안정적</td></tr>
+<tr><td>생성 속도</td><td>빠름(한 번에)</td><td>빠름(한 번에)</td><td>느림(반복 필요)</td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>잠재변수 행을 다시 읽으면</strong> “관측 안 된 구조“가 네 방식에서
-무엇이었는지 보인다. EM/GMM의 \(z\)는 <strong>이산 라벨</strong>(어느
-클러스터인가) — 가능치가 \(K\)개라 E-step이 닫힌 형태로
-<strong>정확히</strong> 계산된다. VAE의 \(z\)는 <strong>연속 벡터</strong> — 가능치가
-무한해서 E-step을 신경망으로 <strong>근사</strong>해야 한다(15.2절). GAN의
+<p><strong>잠재변수 행을 다시 읽으면</strong> “관측 안 된 구조“가 세 방식에서
+무엇이었는지 보인다. (참고로 4.4절의 GMM도 같은 질문의
+<strong>이산 잠재변수</strong> 버전이다 — \(z\)가 클러스터 번호라
+E-step이 닫힌 형태로 <strong>정확히</strong> 계산되므로, “정밀하지만
+이산“으로 여기 추가하지 않았다.) VAE의 \(z\)는 <strong>연속
+벡터</strong> — 가능치가 무한해서 E-step을 신경망으로 <strong>근사</strong>해야
+한다(15.1절). GAN의
 \(z\)는 <strong>분포가 아니라 그냥 랜덤 입력</strong> — “데이터를 설명하는
 잠재변수“의 역할을 하지 않고, 생성자가 입력으로 받는
 <strong>다양성의 원천</strong>일 뿐이다(\(z\)의 분포를 학습하지도,
@@ -20048,21 +20580,23 @@ Diffusion Probabilistic Models”)이 (i) 노이즈 예측
 이산적으로 \(T\)개인, “점진적으로 오염된 데이터” 그
 자체다.</p>
 <p><strong>학습 방법 행을 다시 읽으면</strong> “안정성“의 원인이 보인다.
-EM은 닫힌 형태의 좌표별 최적화라 <strong>증명 가능하게</strong> 안정하고,
 VAE는 ELBO(단일 목적함수)를 역전파로 최대화하는 <strong>보통의</strong>
 최적화라 안정하고, Diffusion은 MSE 회귀라 <strong>가장</strong> 보통의
-최적화라 안정하다. GAN만 <strong>두 개의 최적화 알고리즘이 서로
-의 목표함수를 바꾸어놓는</strong> 게임이라 — 단조증가도, 볼록성도,
-“수렴했다는 것” 자체의 정의로도 — 안정성의 근거가
-<strong>없다</strong>.</p>
+최적화라 안정하다(대조적으로 4.4절 EM은 닫힌 형태의
+좌표별 최적화라 <strong>증명 가능하게</strong> 안정했다). GAN만 <strong>두
+개의 최적화 알고리즘이 서로의 목표함수를 바꾸어놓는</strong> 게임이라
+— 단조증가도, 볼록성도, “수렴했다는 것” 자체의 정의로도 —
+안정성의 근거가 <strong>없다</strong>.</p>
 <p><strong>생성 속도 행</strong>은 “안정성의 대가“를 읽는 열이다. 가장
 안정한 Diffusion은 생성에 \(T\)회 반복이 필요하고(DDIM으로
 줄여도 수십 회), 가장 빠른 GAN/VAE는 <strong>한 번의</strong> 순전파로
-생성한다. Chapter 15 전체를 관통하는 트레이드오프 —
+생성한다. 이 트레이드오프는 이번 장을 관통한다 —
 “데이터를 설명할 수 있다(안정성, 평가 가능)“와 “빨리
-만들 수 있다(속도)” — 는 여기에서 가장 극적으로 나타난다.</p>
+만들 수 있다(속도)” — 그리고 위에서 본 Stable Diffusion과
+SceneDiffuser가 보여주는 것처럼, 실전 시스템은 이 세 원리를
+<strong>하나씩 고르는 것이 아니라 조합</strong>해서 쓴다.</p>
 <p><strong>하나의 원리만 배우고 끝냈다면 “생성형 모델 = 이런 것“이라고 좁게
-오해했을 것이다 — 네 원리를 나란히 보고 나서야, “관측되지 않은 구조가
+오해했을 것이다 — 세 원리를 나란히 보고 나서야, “관측되지 않은 구조가
 데이터를 만들어낸다“는 하나의 질문이 얼마나 다양한 방식으로 풀릴 수
 있는지가 보인다.</strong></p>
 <h3 id="자주-하는-실수-5"><a class="header" href="#자주-하는-실수-5">자주 하는 실수</a></h3>
@@ -20188,7 +20722,7 @@ GAN(적대적)의 생성 품질·학습 안정성 트레이드오프를 두세 �
 실제로는 \(\pi\)가 약분되어 사라진다는 것도 확인하라.</p>
 <p><strong>5. (손유도, Tier C — 폴백 준비 대상)</strong> \(\log p_\theta(x) = \log
 \int p_\theta(x,z)\,dz\)에서 시작해서, 옌센 부등식(\(\log
-\mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 이용해 15.4절의 ELBO 부등식을
+\mathbb{E}[X] \ge \mathbb{E}[\log X]\))을 이용해 15.1절의 ELBO 부등식을
 유도하라.</p>
 <p><strong>빈칸채움형 폴백 버전</strong> (자유 유도가 어려운 경우):</p>
 <pre><code>Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
@@ -20208,9 +20742,6 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 문장으로 설명하라(옌센 부등식이 언제 등식이 되는지: \(X\)가 상수일 때).</p>
 <hr>
 <ol class="footnote-definition">
-<li id="footnote-scenediffuser-1">
-<p>Jiang, C. M. et al. (2024). “SceneDiffuser: Efficient and Controllable Driving Simulation Initialization and Rollout.” NeurIPS 2024. <a href="#fr-scenediffuser-1-1">↩</a></p>
-</li>
 <li id="footnote-vae-6">
 <p>Kingma, D. P., Welling, M. (2013). “Auto-Encoding Variational Bayes.” arXiv:1312.6114. <a href="#fr-vae-1-6">↩</a></p>
 </li>
@@ -20253,6 +20784,9 @@ Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
 <li id="footnote-dalle2">
 <p>Ramesh, A., Dhariwal, P., Nichol, A., Chu, C., Chen, M. (2022). “Hierarchical Text-Conditional Image Generation with CLIP Latents.” arXiv:2204.06125. (DALL·E 2) <a href="#fr-dalle2-1">↩</a></p>
 </li>
+<li id="footnote-scenediffuser-1">
+<p>Jiang, C. M., Bai, Y., Cornman, A., et al. (2024). “SceneDiffuser: Efficient and Controllable Driving Simulation Initialization and Rollout.” NeurIPS 2024. arXiv:2412.12129. <a href="#fr-scenediffuser-1-1">↩</a></p>
+</li>
 <li id="footnote-lcm">
 <p>Luo, S., Tan, Y., Huang, L., Li, J., Zhao, H. (2023). “Latent Consistency Models: Synthesizing High-Resolution Images with Few-Step Inference.” arXiv:2310.04378. <a href="#fr-lcm-1">↩</a></p>
 </li>
@@ -20284,7 +20818,7 @@ Block A(Chapter 2~7)가 Chapter 8에서 “정형 데이터를 다루는 고전 
 정답 <code>y</code>가 있는 세계에서 벗어난다 — 정답 대신 <strong>보상</strong>만 주어지고 에이전트가
 스스로 데이터를 만들어가는 강화학습·로봇의 세계다<sup class="footnote-reference" id="fr-cs234-1-2"><a href="#footnote-cs234-4">9</a></sup>. 이번 장은 그 다리를
 건너기 전에, 이 학기 전체를 하나의 절차로 닫는 마지막 점검이다.</p>
-<h2 id="학습-목표-7"><a class="header" href="#학습-목표-7">학습 목표</a></h2>
+<h2 id="학습-목표-8"><a class="header" href="#학습-목표-8">학습 목표</a></h2>
 <p>이번 장을 마치면, 다음을 할 수 있다:</p>
 <ul>
 <li>Block B 팀 프로젝트의 4주 파이프라인(문제 정의 → 3분할·전처리·신경망 →
@@ -21840,10 +22374,6 @@ Ch09~15(그리고 ML2 Ch01~15)의 개념으로 진단하는 보고서가 좋은
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-17-부록-llm-사전학습-프롬프팅-정렬-llm-pretraining-prompting--alignment"><a class="header" href="#chapter-17-부록-llm-사전학습-프롬프팅-정렬-llm-pretraining-prompting--alignment">Chapter 17 (부록). LLM: 사전학습, 프롬프팅, 정렬 (LLM: Pretraining, Prompting &amp; Alignment)</a></h1>
-<p>[STUB: cq 확인 필요 — 이 장은 core 16개 챕터 밖의 <strong>부록</strong>으로 재배치됨
-(원래 13장). “다음 장(Chapter 14)” 언급을 걷어내고, “12장 이후 core
-커리큘럼(13~16장)을 다 마친 뒤 읽는 심화/응용 부록“이라는 위치를
-명확히 하는 문단으로 이 도입부의 후반 절반을 다시 쓸 것.]</p>
 <p>의대생은 처음부터 특정 질병 하나만 배우지 않는다 — 먼저 해부학, 생리학,
 약리학 같은 방대한 기초를 몇 년에 걸쳐 익힌 뒤에야, 특정 전공(예:
 심장내과)을 짧은 기간 집중적으로 훈련받는다. 대규모 언어모델(LLM)이
@@ -21860,14 +22390,17 @@ Chapter 12의 트랜스포머를 “구조“로가 아니라 <strong>동작하�
 <p>이 장의 출발점은 Chapter 12에서 배운 어텐션과 트랜스포머<sup class="footnote-reference" id="fr-transformer-1-15"><a href="#footnote-transformer-15">2</a></sup>다. 자아
 어텐션과 위치 인코딩이 당시에는 “시퀀스를 잘 표현하는 장치“였다면,
 이제 미래 토큰을 보지 못하게 마스킹한 decoder-only 트랜스포머는
-“다음 토큰의 확률분포“를 계산하는 실제 엔진이 된다. 반면 다음 장
-(Chapter 14, 표현학습)에서는 이 장의 반대편 끝, 즉 LLM이 의미를
-고차원 벡터에 어떻게 압축하는지를 정면에서 다룬다 — PCA,
-word2vec<sup class="footnote-reference" id="fr-word2vec-1-8"><a href="#footnote-word2vec-10">3</a></sup>, Node2Vec<sup class="footnote-reference" id="fr-node2vec-1-3"><a href="#footnote-node2vec-5">4</a></sup>, PageRank는 모두 “단어·노드·데이터를
-벡터로 표현한다“는
-질문의 변주이며, 이 장에서 자연스럽게 마주하게 될 임베딩과 같은
-뿌리에서 자라났다.</p>
-<h2 id="학습-목표-8"><a class="header" href="#학습-목표-8">학습 목표</a></h2>
+“다음 토큰의 확률분포“를 계산하는 실제 엔진이 된다.</p>
+<p>다만 한 가지 위치를 분명히 해 두자. 이 장은 1~16장 핵심 커리큘럼
+이후에 읽는 <strong>심화·응용 부록</strong>이다 — 즉, Chapter 14(표현학습)에서
+word2vec<sup class="footnote-reference" id="fr-word2vec-1-8"><a href="#footnote-word2vec-10">3</a></sup>·Node2Vec<sup class="footnote-reference" id="fr-node2vec-1-4"><a href="#footnote-node2vec-5">4</a></sup>·PageRank가 “단어·노드·데이터를 벡터로
+표현한다“는 질문을 정면에서 다뤘고, Chapter 13(그래프 표현학습)에서
+그 아이디어를 실제 그래프 학습까지 밀어붙인 <em>뒤</em>에, 그 도구들로 이미
+구축된 “대형 모델“을 학습하고 다루고 다듬는 방법을 한 장에 모은
+자리다. 앞서 Chapter 14에서 만난 임베딩은 이 장에서 다시 등장한다 —
+LLM이 문맥마다 다른 의미를 고차원 벡터로 압축하는 그 임베딩과 같은
+뿌리에서 자라났기 때문이다.</p>
+<h2 id="학습-목표-9"><a class="header" href="#학습-목표-9">학습 목표</a></h2>
 <p>이 장을 마치면 다음을 할 수 있다:</p>
 <ul>
 <li>다음 토큰 예측을 “사실상 문장 전체 분포를 학습하는 일“과 동일시할
@@ -21886,26 +22419,26 @@ temperature·top-k·top-p<sup class="footnote-reference" id="fr-topp-1"><a href=
 <h2 id="세-개의-수업-블록"><a class="header" href="#세-개의-수업-블록">세 개의 수업 블록</a></h2>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
 <ul>
-<li><a href="#131-random-walk-기초">13.1 언어모델링: 다음 토큰 예측과 사전학습·파인튜닝</a>
+<li><a href="#171-언어모델링-다음-토큰-예측과-사전학습파인튜닝">17.1 언어모델링: 다음 토큰 예측과 사전학습·파인튜닝</a>
 언어모델을 “다음 토큰을 예측하는 함수“로 정의하고, 확률의 사슬
 분해가 이 정의를 가능하게 하는 이유를 본다. 손으로 다음 토큰 분포를
 직접 세어 보고, BPE 토큰화와 softmax·온도·교차 엔트로피 손실·
 퍼플렉시티를 작은 예제로 확인한 뒤, n-gram<sup class="footnote-reference" id="fr-gpt3-2"><a href="#footnote-gpt3-1">1</a></sup>에서 신경망까지의 역사를
 거쳐 “인터넷 텍스트로 사전학습하고 목적별로 파인튜닝한다“는 현대
 LLM의 학습 도식으로 마무리한다.</li>
-<li><a href="#132-node2vec">13.2 프롬프팅</a>
+<li><a href="#172-프롬프팅">17.2 프롬프팅</a>
 가중치를 전혀 건드리지 않고 입력(지시문·예시)만으로 모델을 다루는
 방법론이다. zero-shot → few-shot → chain-of-thought의 스펙트럼을
 살펴본 뒤, 왜 “예시 몇 개“가 새 작업을 가르치는지, CoT가 추론을
 실제로 개선하는 메커니즘, temperature·top-k·top-p로 출력의
 “확신도“를 조절하는 방법, 그리고 환각(hallucination)이 생기는
 원인까지 함께 다룬다.</li>
-<li><a href="#133-pagerank">13.3 포스트트레이닝: SFT, RLHF, DPO</a>
+<li><a href="#173-포스트트레이닝-sft-rlhf-dpo">17.3 포스트트레이닝: SFT, RLHF, DPO</a>
 InstructGPT<sup class="footnote-reference" id="fr-instructgpt-1-1"><a href="#footnote-instructgpt-1">10</a></sup>의 관찰(작지만 정렬된 모델이 거대한 사전학습
 모델보다 사람에게 더 선호됨)에서 출발해, SFT(이상적인 답변 모방),
 RLHF (비교 데이터로 학습한 Bradley-Terry 보상모델 + PPO<sup class="footnote-reference" id="fr-ppo-1-1"><a href="#footnote-ppo-1">11</a></sup> 강화학습),
 DPO (보상모델을 통하지 않고 선호 데이터로 정책을 직접 학습)를
-순서대로 짚고, LoRA<sup class="footnote-reference" id="fr-lora-1"><a href="#footnote-lora">12</a></sup>/PEFT와 RAG<sup class="footnote-reference" id="fr-rag-1"><a href="#footnote-rag-1">13</a></sup>·에이전트<sup class="footnote-reference" id="fr-react-1"><a href="#footnote-react">14</a></sup>까지 한 장에
+순서대로 짚고, LoRA<sup class="footnote-reference" id="fr-lora-1"><a href="#footnote-lora">12</a></sup>/PEFT와 RAG<sup class="footnote-reference" id="fr-rag-1-1"><a href="#footnote-rag-1">13</a></sup>·에이전트<sup class="footnote-reference" id="fr-react-1"><a href="#footnote-react">14</a></sup>까지 한 장에
 모은 전체 지도를 제시한다<sup class="footnote-reference" id="fr-peft-1"><a href="#footnote-peft">15</a></sup>.</li>
 </ul>
 <p>이 장의 주제(언어모델 사전학습, 프롬프팅, 정렬)를 더 깊이 다루는 자료:
@@ -21922,7 +22455,7 @@ DPO (보상모델을 통하지 않고 선호 데이터로 정책을 직접 학�
 <p>Mikolov, T., Chen, K., Corrado, G., Dean, J. (2013). “Efficient Estimation of Word Representations in Vector Space.” arXiv:1301.3781. <a href="#fr-word2vec-1-8">↩</a></p>
 </li>
 <li id="footnote-node2vec-5">
-<p>Grover, A., Leskovec, J. (2016). “node2vec: Scalable Feature Learning for Networks.” KDD 2016. arXiv:1607.00653. <a href="#fr-node2vec-1-3">↩</a></p>
+<p>Grover, A., Leskovec, J. (2016). “node2vec: Scalable Feature Learning for Networks.” KDD 2016. arXiv:1607.00653. <a href="#fr-node2vec-1-4">↩</a></p>
 </li>
 <li id="footnote-bpe">
 <p>Sennrich, R., Haddow, B., Birch, A. (2016). “Neural Machine Translation of Rare Words with Subword Units.” ACL 2016. arXiv:1508.07909. <a href="#fr-bpe-1">↩</a></p>
@@ -21949,7 +22482,7 @@ DPO (보상모델을 통하지 않고 선호 데이터로 정책을 직접 학�
 <p>Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., Chen, W. (2021). “LoRA: Low-Rank Adaptation of Large Language Models.” ICLR 2022. arXiv:2106.09685. <a href="#fr-lora-1">↩</a></p>
 </li>
 <li id="footnote-rag-1">
-<p>Lewis, P., Perez, E., Piktus, A., et al. (2020). “Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. <a href="#fr-rag-1">↩</a></p>
+<p>Lewis, P., Perez, E., Piktus, A., et al. (2020). “Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. <a href="#fr-rag-1-1">↩</a></p>
 </li>
 <li id="footnote-react">
 <p>Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., Cao, Y. (2022). “ReAct: Synergizing Reasoning and Acting in Language Models.” ICLR 2023. arXiv:2210.03629. — 추론(reasoning) 텍스트와 도구 호출(acting)을 대안적으로 생성하게 해서 LLM이 외부 도구를 스스로 쓰는 에이전트 방식을 정립한 원 논문. <a href="#fr-react-1">↩</a></p>
@@ -22689,7 +23222,7 @@ top-k와의 차이이자 장점이다.</p>
 <em>포함</em>되기 때문일 뿐이다. (그래서 system message를 “지키지 않으면”
 이라는 표현이 애매해진다 — 모델에게는 그저 긴 컨텍스트의 앞부분일
 뿐이다.)</p>
-<p><strong>RAG(Retrieval-Augmented Generation)</strong><sup class="footnote-reference" id="fr-rag-1-1"><a href="#footnote-rag-2">9</a></sup>와 <strong>에이전트</strong><sup class="footnote-reference" id="fr-react-1-1"><a href="#footnote-react-1">10</a></sup>는 이 “프롬프트에
+<p><strong>RAG(Retrieval-Augmented Generation)</strong><sup class="footnote-reference" id="fr-rag-1-2"><a href="#footnote-rag-2">9</a></sup>와 <strong>에이전트</strong><sup class="footnote-reference" id="fr-react-1-1"><a href="#footnote-react-1">10</a></sup>는 이 “프롬프트에
 무엇을 넣느냐“의 문제를 한 단계 더 확장한 것이다(17.3절에서 상세히):
 RAG는 질문과 관련된 문서를 <em>검색해서</em> 프롬프트에 붙여 “이 문서에 기반해
 답하라“고 하고, 에이전트는 모델이 검색·계산기·코드 실행 같은 <em>도구</em>를
@@ -22856,7 +23389,7 @@ few-shot의 출력 대조(본문 코드 블록 재현)</li>
 <p>Holtzman, A., Buys, J., Du, L., Forbes, M., Choi, Y. (2019). “The Curious Case of Neural Text Degeneration.” ICLR 2020. arXiv:1904.09751. — top-p(핵 샘플링) 샘플링 전략을 제안한 원 논문. <a href="#fr-nucleus-1">↩</a></p>
 </li>
 <li id="footnote-rag-2">
-<p>Lewis, P., Perez, E., Piktus, A., et al. (2020). “Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. <a href="#fr-rag-1-1">↩</a></p>
+<p>Lewis, P., Perez, E., Piktus, A., et al. (2020). “Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. <a href="#fr-rag-1-2">↩</a></p>
 </li>
 <li id="footnote-react-1">
 <p>Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., Cao, Y. (2022). “ReAct: Synergizing Reasoning and Acting in Language Models.” ICLR 2023. arXiv:2210.03629. — 추론(reasoning) 텍스트와 도구 호출(acting)을 대안적으로 생성하게 해서 LLM이 외부 도구를 스스로 쓰는 에이전트 방식을 정립한 원 논문. <a href="#fr-react-1-1">↩</a></p>
@@ -23268,7 +23801,7 @@ SVD로 분해해, 계수를 4/3/1로 줄여 <strong>근사</strong>하는 상대
 어텐션만? FFN도? Embedding도?)를 하이퍼파라미터로
 조절하는데, 이 선택 자체가 “어느 층의 <strong>어떤 방향</strong>을
 바꾸고 싶은가“의 <strong>가설</strong>을 반영한다.</p>
-<p><strong>에이전트와 RAG</strong>(Retrieval-Augmented Generation)<sup class="footnote-reference" id="fr-rag-1-2"><a href="#footnote-rag-3">11</a></sup>: 프롬프팅만으로는
+<p><strong>에이전트와 RAG</strong>(Retrieval-Augmented Generation)<sup class="footnote-reference" id="fr-rag-1-3"><a href="#footnote-rag-3">11</a></sup>: 프롬프팅만으로는
 모델이 모르는 최신 정보나 외부 문서를 답할 수 없다. RAG는 질문과 관련된
 문서를 먼저 검색해 프롬프트에 함께 넣어주고, 에이전트(agent)는 여기서
 한 걸음 더 나아가 모델이 검색·계산기·코드 실행 같은 <strong>도구를 스스로
@@ -23538,7 +24071,7 @@ r_\phi(x,y_w)}\)를 구하라.</p>
 <p>Hu, E. J. et al. (2021). “LoRA: Low-Rank Adaptation of Large Language Models.” ICLR 2022. arXiv:2106.09685. — 원 가중치를 고정하고 저랭크 보정 \(\Delta W = BA\)만 학습하는 LoRA의 원 논문. <a href="#fr-lora-1-2">↩</a></p>
 </li>
 <li id="footnote-rag-3">
-<p>Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Küttler, H., Lewis, M., Yih, W., Rocktäschel, T., Riedel, S., Kiela, D. (2020). “Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. — 검색된 문서를 컨텍스트에 넣어 생성의 지식을 보완하는 RAG의 원 논문. <a href="#fr-rag-1-2">↩</a></p>
+<p>Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Küttler, H., Lewis, M., Yih, W., Rocktäschel, T., Riedel, S., Kiela, D. (2020). “Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.” NeurIPS 2020. arXiv:2005.11401. — 검색된 문서를 컨텍스트에 넣어 생성의 지식을 보완하는 RAG의 원 논문. <a href="#fr-rag-1-3">↩</a></p>
 </li>
 <li id="footnote-react-2">
 <p>Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., Cao, Y. (2022). “ReAct: Synergizing Reasoning and Acting in Language Models.” ICLR 2023. arXiv:2210.03629. — 추론(reasoning) 텍스트와 도구 호출(acting)을 대안적으로 생성하게 해서 LLM이 외부 도구를 스스로 쓰는 에이전트 방식을 정립한 원 논문. <a href="#fr-react-1-2">↩</a></p>
@@ -23578,7 +24111,7 @@ Learning, RL)이다. 그리고 이번 학기는 그 강화학습을, 화면 속 
 어휘와 Gymnasium 실습 환경을 먼저 장착해두면 2장에서
 \(\varepsilon\)-greedy와 UCB<sup class="footnote-reference" id="fr-ucb-1"><a href="#footnote-ucb">2</a></sup>로 그 딜레마를 처음 풀 때 마찰 없이 들어갈 수
 있다.</p>
-<h2 id="학습-목표-9"><a class="header" href="#학습-목표-9">학습 목표</a></h2>
+<h2 id="학습-목표-10"><a class="header" href="#학습-목표-10">학습 목표</a></h2>
 <p>이 챕터를 마치면 다음과 같은 일이 가능해진다:</p>
 <ul>
 <li>지도학습과 강화학습을 “데이터를 누가 만드느냐”, “신호가 정답 \(y\)인가
@@ -24151,7 +24684,7 @@ RLHF(Chapter 12)<sup class="footnote-reference" id="fr-instructgpt-1-5"><a href=
 가르쳤다면, ML2는 <em>어떤 문제를, 어떤 형태로 학습하는가</em>라는
 <em>틀</em>을 가르친다. 이 “틀“이 바로 <strong>강화학습</strong>이다 —</p>
 <ul>
-<li>지도학습의 “정답 \(y\)“이 **보상 \(R\)**으로 바뀐다.</li>
+<li>지도학습의 “정답 \(y\)“이 <strong>보상</strong>(\(R\))으로 바뀐다.</li>
 <li>비지도학습의 “구조“가 <strong>에피소드</strong>(행동-보상의 시퀀스)로
 바뀐다.</li>
 <li>“경사하강법“은 <em>그대로</em> 사용되지만, 이제 그 경사는
@@ -29526,7 +30059,7 @@ theorem)는 이런 축소 사상이 항상 <strong>유일한 고정점</strong>�
 표로 저장하는 것 자체가 불가능하다. Chapter 9(DQN)<sup class="footnote-reference" id="fr-dqn-1-13"><a href="#footnote-dqn-13">3</a></sup>에서 배울, 표 대신
 신경망으로 근사하는 방법이 필요해지는 이유가 바로 여기서 나온다. (이
 거듭제곱법이 왜 수렴하는지는, 그래프 위에서 무작위 걷기의 정상분포를
-구하는 Chapter 13.3의 PageRank<sup class="footnote-reference" id="fr-brinpage-1-1"><a href="#footnote-brinpage-3">4</a></sup> 알고리즘과 정확히 같은 수학이다.)</p>
+구하는 Chapter 13.3의 PageRank<sup class="footnote-reference" id="fr-brinpage-1-2"><a href="#footnote-brinpage-3">4</a></sup> 알고리즘과 정확히 같은 수학이다.)</p>
 <h3 id="모델-기반이라는-전제"><a class="header" href="#모델-기반이라는-전제">모델 기반이라는 전제</a></h3>
 <p>이번 장의 모든 알고리즘은 전이확률 \(P(s’|s,a)\)를 <strong>정확히 알고
 있다는</strong> 전제 위에 서 있다 — 체스라면 “이 수를 두면 상대는 어떻게
@@ -29611,7 +30144,7 @@ Step 3: n번 반복하면 ||V_n - V*|| &lt;= gamma^n * ||______________||
 <p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1-13">↩</a></p>
 </li>
 <li id="footnote-brinpage-3">
-<p>Brin, S., Page, L. (1998). “The Anatomy of a Large-Scale Hypertextual Web Search Engine.” 7th International World Wide Web Conference (WWW7), Brisbane, Australia. (후에 Computer Networks 30(1-7), 107–117로 재인쇄.) <a href="#fr-brinpage-1-1">↩</a></p>
+<p>Brin, S., Page, L. (1998). “The Anatomy of a Large-Scale Hypertextual Web Search Engine.” 7th International World Wide Web Conference (WWW7), Brisbane, Australia. (후에 Computer Networks 30(1-7), 107–117로 재인쇄.) <a href="#fr-brinpage-1-2">↩</a></p>
 </li>
 <li id="footnote-cs234-21">
 <p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1-19">↩</a></p>
@@ -30936,7 +31469,7 @@ for s in range(5):
 다이얼 위의 양 끝일 뿐이다. Chapter 7에서는 이 다이얼의 모든 지점을 아우르는
 n-step 부트스트래핑과 적격흔적(eligibility traces)을 다루고, 경험뿐 아니라
 학습된 모델까지 함께 쓰는 계획(planning, Dyna-Q)으로 나아간다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1-24"><a href="#footnote-cs234-26">2</a></sup></p>
-<h2 id="학습-목표-10"><a class="header" href="#학습-목표-10">학습 목표</a></h2>
+<h2 id="학습-목표-11"><a class="header" href="#학습-목표-11">학습 목표</a></h2>
 <ul>
 <li>이 챕터를 마치면, TD(0) 갱신식과 TD 오차를 이해하고 7-state random
 walk에서 손으로 한 에피소드를 따라가며, MC(불편하지만 분산 큼)와
@@ -32182,7 +32715,7 @@ Q(s,a)]\)가 참값 \(Q^*(s,a)\)로 수렴하기 위해 필요한 조건을 다�
 Block A 캡스톤에서는 이 세 개를 Gymnasium<sup class="footnote-reference" id="fr-gymnasium-1-10"><a href="#footnote-gymnasium-10">2</a></sup>의 표 기반 환경에서 직접
 구현·비교하며 팀 프로젝트로 정리하고, 이후 Chapter 9의 DQN<sup class="footnote-reference" id="fr-dqn-1-19"><a href="#footnote-dqn-19">3</a></sup>에서는
 n-step 리턴이 실전 알고리즘의 기본 옵션으로 다시 만난다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1-28"><a href="#footnote-cs234-30">4</a></sup></p>
-<h2 id="학습-목표-11"><a class="header" href="#학습-목표-11">학습 목표</a></h2>
+<h2 id="학습-목표-12"><a class="header" href="#학습-목표-12">학습 목표</a></h2>
 <ul>
 <li>이 챕터를 마치면, n-step 리턴 \(G_t^{(n)}\)을 정의하고, \(n=1\)이
 정확히 TD(0)이고 에피소드 길이 이상이면 자동으로 MC가 되는 것을 코드로
@@ -34838,7 +35371,7 @@ Q-Network)<sup class="footnote-reference" id="fr-dqn-1-27"><a href="#footnote-dq
 Chapter 10에서는 이 문제를 정면으로 마주하며, Q-함수를 우회하고
 정책을 직접 학습하는 <strong>정책기반 강화학습</strong>(policy-based RL)으로
 건너든다. 이 주제를 더 깊이 다루는 자료: <sup class="footnote-reference" id="fr-cs234-1-36"><a href="#footnote-cs234-38">4</a></sup></p>
-<h2 id="학습-목표-12"><a class="header" href="#학습-목표-12">학습 목표</a></h2>
+<h2 id="학습-목표-13"><a class="header" href="#학습-목표-13">학습 목표</a></h2>
 <ul>
 <li>이 챕터를 마치면, Atari 화면이 만들 수 있는 상태(\(\approx
 10^{16{,}993}\)개)가 표로는 원리적으로도 저장 불가능하다는 사실을
@@ -36468,7 +37001,7 @@ Q(s,a;\theta))^2\)에서 \(\theta\)가 목표값 항 \(Q(s’,a’;\theta)\)와
 것이다. 그리고 이 장에서 세울 REINFORCE/Actor-Critic의 기초 위에
 Chapter 11에서는 정책이 한 업데이트 만에 무너지지 않게 막는 PPO<sup class="footnote-reference" id="fr-ppo-1-12"><a href="#footnote-ppo-12">2</a></sup>를
 세운다.</p>
-<h2 id="학습-목표-13"><a class="header" href="#학습-목표-13">학습 목표</a></h2>
+<h2 id="학습-목표-14"><a class="header" href="#학습-목표-14">학습 목표</a></h2>
 <p>이 챕터를 마치면 다음을 할 수 있다.</p>
 <ul>
 <li>DQN형 가치기반 방법이 연속 행동공간에서 바로 쓸 수 없는 이유를 설명하고, “확률분포에서 행동을 샘플링하는” 확률적 정책이 답인 이유를 설명할 수 있다.</li>
@@ -38186,7 +38719,7 @@ REINFORCE, Actor-Critic)를 세웠지만, 모은 데이터는 “한 번 쓰고 
 방법으로 방향을 돌린다 — Chapter 2~11의 보상 최적화 알고리즘 중 가장
 강한 것인 PPO가, Chapter 12에서 “왜 보상 최적화만으론 안 되는가“를
 비교하기 위한 기준점이 된다.</p>
-<h2 id="학습-목표-14"><a class="header" href="#학습-목표-14">학습 목표</a></h2>
+<h2 id="학습-목표-15"><a class="header" href="#학습-목표-15">학습 목표</a></h2>
 <ul>
 <li>이 챕터를 마치면 “신뢰 영역“의 뜻(한 번의 업데이트에서 정책이 움직일
 수 있는 크기를 KL 발산으로 잰 “믿을 수 있는 범위“로 제한하는 것)을
@@ -42041,8 +42574,13 @@ numpy로 1,000개 진자를 동시에 시뮬레이션해 그 구조를 실증할
 (속도 축)“라는 두 질문에 실측 steps/s를 대입해, Gymnasium·PyBullet<sup class="footnote-reference" id="fr-pybullet-1-2"><a href="#footnote-pybullet-2">8</a></sup>·
 MuJoCo·Isaac Sim 중 도구를 고르는 30초 결정 절차를 스스로 적용할 수
 있다.</li>
+<li>(지도) 자율주행 스택의 Onboard(실차 Perception→Planner)와
+Offboard(시뮬레이션 평가·재학습) 루프가 policy iteration/Dyna 구조와
+같은 모양인 이유를 짚고, diffusion 기반 시나리오 생성(SceneDiffuser)
+이 Offboard 루프의 “현실적인 시나리오“를 어떻게 채우는지 개념
+수준으로 설명할 수 있다.</li>
 </ul>
-<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<p>이번 주는 네 개의 수업 블록으로 진행된다:</p>
 <ul>
 <li><a href="#141-mujoco와-정책-학습-실습">14.1 MuJoCo와 정책 학습 실습</a>
 XML로 진자(hinge 관절 + motor 액추에이터)를 직접 정의하고, 무작위
@@ -42065,6 +42603,14 @@ Gymnasium·PyBullet·MuJoCo·Isaac Sim 네 도구를 정밀도와 속도 두 축
 축임을 구분한다. 초당 스텝 수를 실측해 “총 스텝 수 ÷ 초당 스텝 수 =
 실 시간“으로 계산하며, “CartPole 벤치마크로 ’CPU면 충분’이라 결론내는
 것” 같은 자주 하는 실수를 포함해 30초 결정 절차까지 만든다.</li>
+<li><a href="#144-산업-사례-자율주행-시뮬레이션-waymo의-onboardoffboard-루프">14.4 산업 사례: 자율주행 시뮬레이션</a>
+지금까지 배운 “시뮬레이터를 실전 연구 수준으로 쓴다“는 주제를 산업
+규모로 확장한다. Waymo의 자율주행 스택을 예로, 실차에서 실시간으로
+도는 Onboard(Perception→Planner) 루프와 그 Planner를 대량의 시뮬레이션
+에피소드로 검증·재학습하는 Offboard(Simulation) 루프가 어떻게
+강화학습의 policy iteration 구조와 닮았는지 짚고, 그 Offboard 루프를
+현실적인 주행 시나리오로 채우는 도구로 diffusion 기반 시나리오 생성
+(Waymo SceneDiffuser)을 소개한다.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">
@@ -43224,6 +43770,155 @@ Q1(강한 접촉 핵심인가)의 <em>어느</em> 쪽에, (ii) 속도 축에서 
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="144-산업-사례-자율주행-시뮬레이션-waymo의-onboardoffboard-루프"><a class="header" href="#144-산업-사례-자율주행-시뮬레이션-waymo의-onboardoffboard-루프">14.4 산업 사례: 자율주행 시뮬레이션 (Waymo의 Onboard/Offboard 루프)</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter14_4_av_simulation.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<p>14.1에서는 MuJoCo XML로 로봇을 직접 정의해 “환경이 바뀌어도 알고리즘은
+바뀌지 않는다“를 확인했고, 14.2에서는 Isaac Sim GPU 병렬의 “수천 배”
+가 빠름이 수학적으로 어디서 오는지 보였다. 14.3에서는 정밀도와
+속도라는 두 축으로 도구를 고르는 기준을 세웠다. 이번 절은 그 주제 —
+“시뮬레이터를 실전 연구 수준으로 쓴다” — 를 산업 규모, 즉 자율주행
+시뮬레이션 스택으로 확장한다. <strong>Waymo의</strong> 자율주행 스택 구조를 예로
+(1) 실차를 굴리는 Onboard와 Offboard 두 루프를, (2) 이 구조가
+강화학습의 policy iteration/Dyna와 같은 모양인 이유를, (3) Offboard
+루프를 현실적인 시나리오로 채우는 diffusion 기반 시나리오 생성 도구
+<strong>SceneDiffuser</strong><sup class="footnote-reference" id="fr-scenediffuser2-1"><a href="#footnote-scenediffuser2">1</a></sup>를 짚는다. ML1 13.4와 15.4처럼 “지도”
+수준 — 깊은 유도 없이 개념과 대표 논문을 잇는 가벼운 절이다.</p>
+<h3 id="왜-실차는-두-개의-루프로-나뉘는가"><a class="header" href="#왜-실차는-두-개의-루프로-나뉘는가">왜 실차는 두 개의 루프로 나뉘는가</a></h3>
+<p>이번 학기 실습의 로봇(Reacher, 사족보행)은 “시행착오로” 배울 수 있었다
+— 시뮬레이터 안의 스텝은 싸고 실패는 무료였기 때문이다. 실차는 그럴
+수 없다. 실차의 한 스텝은 물리적 시간으로 수백 밀리초이고, “실패하는
+실험“은 무료도 안전하지도 않다. 그래서 자율주행 스택은 두 루프로
+나뉜다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>루프</th><th>실행 위치</th><th>하는 일</th><th>제약</th></tr>
+</thead>
+<tbody>
+<tr><td>Onboard</td><td>실차 안, 실시간</td><td>센서 → Perception → Planner: 매 순간 주변을 인식해 즉시 경로/제어를 정한다</td><td>수십 밀리초 안에 결정해야 하고, 차를 멈춰놓고 “생각“할 수 없다</td></tr>
+<tr><td>Offboard</td><td>데이터센터, 사후</td><td>같은 Planner를 시뮬레이터에서 대량의 주행 시나리오(에피소드)로 돌려 평가하고 재학습한다</td><td>느리도록 돌릴 수 있지만, 평가가 믿을 만하려면 “현실적으로” 만들어야 한다</td></tr>
+</tbody>
+</table>
+</div>
+<p>Onboard 루프는 실차 안에서 매 순간 도는 실시간 경로다: <strong>Perception</strong>
+(인지 — 주변 차량·보행자·신호등 인식)이 지도(정밀지도, HD map)를
+참조하며 결과를 <strong>Planner</strong>에 넘기고, Planner는 그 순간의 궤적과 제어
+(가감속/조향)를 낸다. Offboard 루프는 그 Planner를 차에서 꺼내
+시뮬레이터에서 <em>대량의</em> 시나리오로 다시 굴리는 경로다 — 안전(충돌/
+근접), 승차감, 주행 진행률 같은 지수로 평가한 뒤, 그 결과를 정책
+재학습과 시나리오 선택에 반영한다. 이 구조의 다이어그램에서
+Perception↔지도, Planner↔Simulation을 잇는 화살표가 두 개인데,
+Perception이 본 것으로 지도를 갱신하고 Simulation의 평가로 Planner를
+향상시킨다는 뜻이다. 두 루프는 “향상시킬 대상인 Planner” 한 점에서
+만난다.</p>
+<p>이 지점이 Chapter 13의 “시뮬레이터 안에서 먼저 익히고, 이후에 실물로
+옮긴다“는 전제가 실차 규모에서 만나는 곳이다. Chapter 13에서는
+현실 격차(reality gap)와 도메인 무작위화<sup class="footnote-reference" id="fr-domainrandomization-1-3"><a href="#footnote-domainrandomization-3">2</a></sup>를 작은
+로봇의 맥락에서 다뤘다. 자율주행에서 이 격차는 <em>전문의 핵심 문제</em>가
+된다 — “실물“이 함부로 실험할 수 없는 도로이기 때문에, Offboard
+시뮬레이션은 이 책의 이전 어떤 예시보다 “실물에 닮아 있어야”
+평가의 의미가 있다.</p>
+<h3 id="어디서-강화학습의-모양이-보이는가"><a class="header" href="#어디서-강화학습의-모양이-보이는가">어디서 강화학습의 모양이 보이는가</a></h3>
+<p>Planner가 상태를 보고 행동을 정하는 구조는 MDP의 모양 그대로다 —</p>
+<ul>
+<li><strong>상태</strong> — Perception의 결과: 주변 물체의 위치·속도·궤적과
+자신의 주행 상태</li>
+<li><strong>행동</strong> — Planner가 정한 궤적/제어</li>
+<li><strong>환경의 다이내믹스</strong> — 다른 에이전트(차량, 보행자)가 자신의 행동에
+어떻게 반응하는가</li>
+<li><strong>평가(보상)</strong> — 안전·승차감·진행률 같은 에피소드 지표</li>
+</ul>
+<p>그리고 “Offboard 시뮬레이션에서 롤아웃 → 평가 → Planner 갱신“의
+순서는 정확히 policy iteration<sup class="footnote-reference" id="fr-suttonbarto-1-48"><a href="#footnote-suttonbarto-48">3</a></sup>의 모양이다 — 시뮬레이터가
+7.3절의 Dyna 구조에서 “환경 모델“의 역할을 맡는 것이다. 14.3의
+“총 스텝 수 ÷ 초당 스텝 수 = 실 시간” 계산은 차 규모에서도
+동일하다. 다만 “실 환경” 한 스텝(실차)이 학습에 쓰기에 너무 비싸고
+위험하다는 점 때문에, 학습·평가 경험의 거의 전부를 시뮬레이터가
+만들어 준다.</p>
+<p>한 가지 차이만은 정확히 짚어두자. 로봇 문제에서 “모델“은 시뮬레이터
+자체(사람이 쓴 물리식)였다면, 주행에서는 <em>다른 에이전트의</em> 다이내믹스
+는 어떤 시뮬레이터에도 주어져 있지 않다 — 보행자의 행동에는 “물리식”
+이 없다. 그래서 주행의 “모델“은 시뮬레이터 물리만이 아니라
+<em>시나리오의 분포</em> 그 자체다 — 다른 에이전트가 어디에 있고 어떻게
+움직이는지는 데이터로부터 배운다. 15.4절(World Models)의
+“known model → learned model → 상상” 구분이 여기서 다시 쓰인다 —
+learned model이 대신하는 부분이 바로 “현실적인 교통 상황 생성”
+부분이다.</p>
+<h3 id="scenediffuser-diffusion으로-시나리오를-생성한다"><a class="header" href="#scenediffuser-diffusion으로-시나리오를-생성한다">SceneDiffuser: diffusion으로 시나리오를 생성한다</a></h3>
+<p>그러니 Offboard 루프의 병목은 “시나리오를 어떻게 만들 것인가“다.
+로그 리플레이(실제 기록한 장면을 다시 돌리는 것)는 커버리지 문제가
+있다 — “지금까지 실제로 일어났던 것“뿐이라, 정확히 테스트하고 싶은
+희귀 상황(주차 차량 사이에서 보행자가 갑자기 튀어나오는 경우)이
+부족하다. 완전 무작위 생성은 반대 문제다 — 무엇이든 만들 수 있지만,
+실제로는 일어나지 않는 비현실적인 교통(한 차선에 10대가 겹치는
+경우)까지 만들어내 평가가 믿을 만하지 않다. <strong>SceneDiffuser</strong>
+<sup class="footnote-reference" id="fr-scenediffuser2-2"><a href="#footnote-scenediffuser2">1</a></sup>(Waymo, 2024)는 이 틈을 메우는 도구다 — 주행 데이터에서
+“주변 에이전트의 위치와 궤적“의 결합 분포를 배운 <strong>diffusion
+모델</strong>로, 다양하면서도 현실적이고 조절 가능한 장면 초기화
+(initialization)와 롤아웃을 생성한다.</p>
+<p>이것은 ML1 Chapter 15.2에서 이미지 생성으로 배운 diffusion과 같은
+원리다 — 다만 대상이 다를 뿐. 이미지는 픽셀 벡터이고, 주행 장면은
+에이전트 위치/궤적 벡터다. 둘 다 “분포로 볼 수 있는 고차원 데이터“고,
+정방향 과정이 가우시안 노이즈를 데이터에 점진적으로 섞고, 역방향
+과정이 그 노이즈를 점진적으로 예측·제거하는 네트워크
+\(\varepsilon_\theta\)를 학습한다. 추론할 때는 순 노이즈에서 출발해
+한 단계씩 되돌리다 보면, 배운 분포의 샘플 하나 — 여기서는 “현실적인
+주변 상황” — 가 “복원“된다. 다른 점은 대상이 픽셀이 아니라
+<em>구조화된 궤적</em>이라는 것 — 네트워크는 “그림“이 아니라 <em>일관되고,
+움직이고, 서로 충돌하지 않는</em> 에이전트 배치를 내야 한다. diffusion이
+여기서 유리한 이유도 바로 이것: 다중 에이전트 상호작용의 <em>결합</em>
+분포를 배우기 때문에, 각 에이전트를 독립 무작위로 배치하는 것과
+달리 “차선이 같은 차량들의 추종“이나 “보행자의 동시 이동” 같은
+상관 관계를 잡아낸다. 게다가 자신의 상태와 지도로 <em>조건화</em>하면
+“그 교차로, 그 속도에서의 시나리오“를 골라 샘플링할 수 있다 —
+“조절 가능한 시뮬레이션 초기화와 롤아웃“이라는 논문 제목의
+의미다. diffusion 모델이 물리 시뮬레이터의 “현실적인 시작점“을
+공급하는 생성적 선验(prior)으로 쓰이는 것, 이것이 이 도구의 역할이다.
+이후 시나리오 생성을 도시 규모로 확장하는 연구<sup class="footnote-reference" id="fr-scenediffuserpp-1"><a href="#footnote-scenediffuserpp">4</a></sup>도
+“generative world model“이라는 이름으로 이어지는데, 15.4절의
+World Models와 같은 흐름이다.</p>
+<h3 id="이-절의-교훈을-한-문장으로"><a class="header" href="#이-절의-교훈을-한-문장으로">이 절의 교훈을 한 문장으로</a></h3>
+<p><strong>실차의 Onboard 루프는 “정책을 돌리는 것“이고, Offboard 루프는
+“환경 모델 안에서 정책을 평가하고 바꾸는 것“이다</strong> — 자율주행의
+두 루프 구조는 Chapter 7.3에서 본 policy iteration/Dyna의 산업
+규모 버전이고, “환경 모델”(시나리오)을 채우는 핵심 기술은
+“현실적인 교통이란 무엇인가“를 배운 생성모델이다. 이 장의 “알고리즘
+은 그대로, 시뮬레이터만 바꾼다“는 주제도 차 규모에서 변하지 않는다
+— 변하는 건 “모델이 얼마나 현실적이어야 하는가“의 스케일이고,
+그것이 바로 시나리오 <em>재생</em>이 아니라 시나리오 <em>생성</em>이 활발한
+연구 분야가 된 이유다.</p>
+<h3 id="확인-문제-50"><a class="header" href="#확인-문제-50">확인 문제</a></h3>
+<ol>
+<li>(개념) Onboard 루프 — Perception→Planner→제어 — 는 MDP의 모양을
+한다. 상태/행동/다이내믹스/평가 네 요소 중 “환경의 다이내믹스“와
+“평가“가 실차에서는 각각 무엇에, Offboard 시뮬레이션에서는
+각각 무엇에 해당하는지 각 한 줄씩 쓰라.</li>
+<li>(개념) “Offboard 루프에 시나리오를 채운다“에서 완전 무작위
+샘플링이 diffusion 같은 생성모델을 대신할 수 없는 이유를 두세
+문장으로 설명하라. (힌트: 각 에이전트를 “독립적으로” 배치하면
+무엇이 망가지는가? “로그 리플레이“로는 무엇이 부족한가?)</li>
+<li>(연결) 15.4절의 World Model은 <em>학습된 스텝 다이내믹스 모델</em>
+(다음 상태 예측)로 경험을 만든다. 자율주행의 Offboard는
+<em>물리 시뮬레이터 + 학습된 장면 분포</em>로 경험을 만든다. 두 “학습된
+모델“이 각각 무엇을 대신하는지와, 둘의 공통점이 어디인지
+1~2문장으로 비교하라.</li>
+</ol>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-scenediffuser2">
+<p>Jiang, C. M. et al. (2024). “SceneDiffuser: Efficient and Controllable Driving Simulation Initialization and Rollout.” NeurIPS 2024. <a href="#fr-scenediffuser2-1">↩</a> <a href="#fr-scenediffuser2-2">↩2</a></p>
+</li>
+<li id="footnote-domainrandomization-3">
+<p>Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., Abbeel, P. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” IROS 2017. arXiv:1703.06907. <a href="#fr-domainrandomization-1-3">↩</a></p>
+</li>
+<li id="footnote-suttonbarto-48">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-48">↩</a></p>
+</li>
+<li id="footnote-scenediffuserpp">
+<p>Tan, S. et al. (2025). “SceneDiffuser++: City-Scale Traffic Simulation via a Generative World Model.” CVPR 2025. arXiv:2506.21976. <a href="#fr-scenediffuserpp-1">↩</a></p>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-15-모델기반-rl과-몬테카를로-트리-탐색-model-based-rl--monte-carlo-tree-search"><a class="header" href="#chapter-15-모델기반-rl과-몬테카를로-트리-탐색-model-based-rl--monte-carlo-tree-search">Chapter 15. 모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL &amp; Monte Carlo Tree Search)</a></h1>
 <p>2016년, 딥마인드의 <strong>AlphaGo</strong><sup class="footnote-reference" id="fr-alphago-1-4"><a href="#footnote-alphago-4">1</a></sup>는 세계 최정상급 프로 바둑기사 이세돌을
 꺾어 큰 화제를 모았다. 바둑판의 경우의 수는 우주의 원자 수보다 많다고
@@ -43249,7 +43944,7 @@ B 캡스톤: 팀 프로젝트와 학기 총정리”)에서는 MCTS를 포함해
 <ul>
 <li>모델기반 RL을 “모델이 어디에서 오느냐”(known model/learned model)와
 “모델을 무엇에 쓰느냐”(학습/계획)라는 두 축으로 정리하고, 가치반복·
-Dyna-Q<sup class="footnote-reference" id="fr-suttonbarto-1-48"><a href="#footnote-suttonbarto-48">8</a></sup>·MCTS·모델 예측 제어(MPC)가 각각 그 표의 어디에 앉는지 설명할
+Dyna-Q<sup class="footnote-reference" id="fr-suttonbarto-1-49"><a href="#footnote-suttonbarto-49">8</a></sup>·MCTS·모델 예측 제어(MPC)가 각각 그 표의 어디에 앉는지 설명할
 수 있다.</li>
 <li>MCTS의 네 단계(선택·확장·시뮬레이션·역전파)가 한 번의 시뮬레이션에서
 각각 무슨 일을 하는지 단계별로 설명하고, 님 게임에서 MCTS를 직접
@@ -43270,7 +43965,7 @@ Dyna-Q<sup class="footnote-reference" id="fr-suttonbarto-1-48"><a href="#footnot
 상태 공간을 계산하는 대신, 지금 필요한 갈림길만 깊게 계산한다“는
 절충을 보여주는 표준 사례다 — 이 “부분 계획“의 아이디어가 이번 장의
 세 절을 관통하는 주제다.</p>
-<p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
+<p>이번 주는 네 개의 수업 블록으로 진행된다:</p>
 <ul>
 <li><a href="#151-모델기반-rl-개관-dyna-q-재조명과-공짜-모델">15.1 모델기반 RL 개관: Dyna-Q 재조명과 “공짜 모델”</a>
 Dyna-Q를 복습해 “known/learned 모델 × 학습/계획“의 두 축으로
@@ -43293,6 +43988,18 @@ MCTS의 네 단계 반복과 UCT 선택 규칙을 배우고, 직접 구현해 �
 결과만 보상 구조에 따라 완전히 달라지는 세 가지 학습 동역학을
 관찰하고, 내쉬 균형과 MCTS·미니맥스·자기 자신과의 대국
 (self-play)과의 연결고리를 살펴본다.<sup class="footnote-reference" id="fr-cs234-1-60"><a href="#footnote-cs234-62">11</a></sup></li>
+<li>world model 계열(Ha &amp; Schmidhuber의 World Models, Hafner 등의
+Dreamer)이 “learned model“을 신경망 규모로 밀어붙여, 학습된 모델
+<strong>안에서 상상한 경험만으로</strong> 정책을 학습시키는 원리를 설명하고, 왜
+이것이 실제 환경 상호작용이 비싼 문제에서 데이터 효율성을 크게
+높이는지 말할 수 있다.</li>
+<li><a href="#154-world-models-학습된-모델로-상상하며-계획하기">15.4 World Models: 학습된 모델로 상상하며 계획하기</a>
+15.1절의 “learned model” 축을 신경망 스케일로 밀어붙인 world model
+계열(Ha &amp; Schmidhuber, Dreamer)을 개념과 대표 논문 위주로 소개한다
+— 환경 자체를 신경망으로 배운 뒤, 그 학습된 모델 “안에서 상상하며”
+정책을 훈련시키는 아이디어. CartPole로 다이내믹스 모델을 학습시켜
+“상상 속에서만” 정책을 굴려 보고 실제 환경과 결과가 얼마나
+일치하는지 실습한다.</li>
 </ul>
 <hr>
 <ol class="footnote-definition">
@@ -43317,8 +44024,8 @@ MCTS의 네 단계 반복과 UCT 선택 규칙을 배우고, 직접 구현해 �
 <li id="footnote-isaacsim-4">
 <p>Makoviychuk, V. et al. (2021). “Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.” arXiv:2108.10470. (Isaac Sim의 기반이 되는 GPU 병렬 물리 시뮬레이션의 원 논문) <a href="#fr-isaacsim-1-4">↩</a></p>
 </li>
-<li id="footnote-suttonbarto-48">
-<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 이 장의 주제(모델로 계획하는 모델기반 RL, Dyna 계열 접근)는 이 표준 교과서의 “Model-Based RL” 장(모델 기반 강화학습)에 대응한다. <a href="#fr-suttonbarto-1-48">↩</a></p>
+<li id="footnote-suttonbarto-49">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html — 이 장의 주제(모델로 계획하는 모델기반 RL, Dyna 계열 접근)는 이 표준 교과서의 “Model-Based RL” 장(모델 기반 강화학습)에 대응한다. <a href="#fr-suttonbarto-1-49">↩</a></p>
 </li>
 <li id="footnote-ucb-3">
 <p>Auer, P., Cesa-Bianchi, N., Fischer, P. (2002). “Finite-time Analysis of the Multiarmed Bandit Problem.” Machine Learning 47(2/3), 235–256. — UCB1 알고리즘과 로그 후회 경계의 원 논문. <a href="#fr-ucb-1-3">↩</a></p>
@@ -43334,7 +44041,7 @@ MCTS의 네 단계 반복과 UCT 선택 규칙을 배우고, 직접 구현해 �
 <h1 id="151-모델기반-rl-개관-dyna-q-재조명과-공짜-모델"><a class="header" href="#151-모델기반-rl-개관-dyna-q-재조명과-공짜-모델">15.1 모델기반 RL 개관: Dyna-Q 재조명과 “공짜 모델”</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter15_1_model_based_dyna.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: 모델기반 RL"></a></p>
 <h3 id="dyna-q-복습-학습된-모델로-가상-경험-만들기"><a class="header" href="#dyna-q-복습-학습된-모델로-가상-경험-만들기">Dyna-Q 복습: 학습된 모델로 가상 경험 만들기</a></h3>
-<p>Chapter 7.3의 Dyna-Q<sup class="footnote-reference" id="fr-suttonbarto-1-49"><a href="#footnote-suttonbarto-49">1</a></sup>는 세 가지를 동시에 했다: (1) 실제 환경과 상호작용해
+<p>Chapter 7.3의 Dyna-Q<sup class="footnote-reference" id="fr-suttonbarto-1-50"><a href="#footnote-suttonbarto-50">1</a></sup>는 세 가지를 동시에 했다: (1) 실제 환경과 상호작용해
 경험을 쌓고, (2) 그 경험으로 간단한 모델 \(\hat{P}(s’|s,a)\),
 \(\hat{R}(s,a)\)을 학습하고, (3) 그 모델로 <strong>가상의 추가 경험</strong>을
 만들어 Q값을 더 많이 갱신했다. <strong>모델기반 강화학습</strong>(Model-Based RL)은
@@ -43585,7 +44292,7 @@ model ↔ 계획으로 값 개선)와 AlphaZero의 루프(신경망 ↔ MCTS
 흘릴 뻔한 것이다. “모델을 안다“는 것이 계획의 <strong>재료</strong>를
 준비해준다면, 학습은 계획의 <strong>방향</strong>을 준비해 준다 — 두 가지는
 서로를 대체하지 않는다.</p>
-<h3 id="확인-문제-50"><a class="header" href="#확인-문제-50">확인 문제</a></h3>
+<h3 id="확인-문제-51"><a class="header" href="#확인-문제-51">확인 문제</a></h3>
 <ol>
 <li>
 <p><strong>체인 전파</strong>: 3상태 손계산 예제의 체인을
@@ -43643,7 +44350,8 @@ Q-learning)도 400 에피소드 후 greedy 정책이 모든 25개 상태에서
 인간-기계 상호작용에서는 모델이 데이터로부터 <strong>배워</strong>야 한다(또는
 배우지 못한다). “공짜 모델“은 예외적인 특권이지 일반이지 않다 —
 2010년대 이후의 모델기반 RL 연구(world model 계열<sup class="footnote-reference" id="fr-worldmodels-1"><a href="#footnote-worldmodels">9</a></sup> 등)는 learned
-model의 일반적 케이스를 다루는 것이 주된 목표다.</p>
+model의 일반적 케이스를 다루는 것이 주된 목표다 — 15.4절에서 이 계열을
+좀 더 자세히 본다.</p>
 <p><strong>Q. 이 절의 known model 경우와, Chapter 9 DQN<sup class="footnote-reference" id="fr-dqn-1-43"><a href="#footnote-dqn-43">10</a></sup>의 경험
 재사용(experience replay)은 관계가 있나요?</strong> 둘 다 “손에 있는
 정보를 더 많이 쓰자“는 기술이지만 재사용의 원천이 다르다. 경험
@@ -43672,8 +44380,8 @@ model의 일반적 케이스를 다루는 것이 주된 목표다.</p>
 MCTS — 을 이론과 실습으로 직접 다룬다.</strong></p>
 <hr>
 <ol class="footnote-definition">
-<li id="footnote-suttonbarto-49">
-<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-49">↩</a></p>
+<li id="footnote-suttonbarto-50">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-50">↩</a></p>
 </li>
 <li id="footnote-mcts-4">
 <p>Browne, C. B., Cowling, P. I., White, M., et al. (2012). “A Survey of Monte Carlo Tree Search Methods.” IEEE Transactions on Computational Intelligence and AI in Games 4(1), 1–43. MCTS 방법론을 체계적으로 정리한 대표적 서베이 — “Monte-Carlo Tree Search“라는 이름과 선택·확장·평가·역전파의 표준 4단계 체계가 이 무렵 확립되었다. <a href="#fr-mcts-1-4">↩</a></p>
@@ -44147,7 +44855,7 @@ PUCT + self-play 루프가 이세돌 승부를 만들어냈다. 이 절의
 위한 예제다 — 실전에서 MCTS를 쓰는 이유는 바둑처럼 완전탐색이
 아예 불가능한 문제이기 때문이다.</p>
 <p><strong>Q. MCTS는 지도학습이나 강화학습 알고리즘인가요?</strong> 엄밀히는 둘 다
-아니다 — <strong>계획(planning)</strong><sup class="footnote-reference" id="fr-suttonbarto-1-50"><a href="#footnote-suttonbarto-50">7</a></sup> 알고리즘이다. Chapter 4의 가치반복처럼
+아니다 — <strong>계획(planning)</strong><sup class="footnote-reference" id="fr-suttonbarto-1-51"><a href="#footnote-suttonbarto-51">7</a></sup> 알고리즘이다. Chapter 4의 가치반복처럼
 모델(규칙)이 있다는 전제하에 “지금 무엇을 할지“를 계산하는 방법이지,
 Chapter 9~11처럼 파라미터를 경사하강으로 갱신해 정책을 학습하는
 알고리즘이 아니다. AlphaZero가 강력한 이유는 정확히 이 계획
@@ -44220,8 +44928,8 @@ UCT 값을 계산하고 어떤 수가 선택되는지 판정하라. (힌트:
 <li id="footnote-cs234-64">
 <p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1-62">↩</a></p>
 </li>
-<li id="footnote-suttonbarto-50">
-<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2 ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-50">↩</a></p>
+<li id="footnote-suttonbarto-51">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2 ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-51">↩</a></p>
 </li>
 <li id="footnote-silvercourse-29">
 <p>Silver, D. (2015). “UCL Course on Reinforcement Learning,” Advanced Topics (COMPM050/COMPGI13) — 10개 강의 슬라이드(PDF) 및 영상 강의가 공개되어 있다. https://www.davidsilver.uk/teaching/ (본 장과 가장 직접적으로 겹치는 Lecture 9: Exploration and Exploitation — 47쪽, ε-greedy·멀티암 밴딧·컨텍스트 밴딧: https://davidstarsilver.wordpress.com/wp-content/uploads/2025/04/lecture-9-exploration-and-exploitation.pdf, CC-BY-NC 4.0). <a href="#fr-silvercourse-1-29">↩</a></p>
@@ -44600,7 +45308,7 @@ min-max 문제를 경사하강으로 푸는 것이므로, 순차 경사하강
 성능에 도달할 수 있다. 마지막으로, 에이전트가 하나가 아닌
 순간 — 협력이든 경쟁이든 — 문제의 성질이 근본적으로
 달라진다는 것도 함께 기억해두자. <sup class="footnote-reference" id="fr-cs234-1-63"><a href="#footnote-cs234-65">9</a></sup></p>
-<h3 id="확인-문제-51"><a class="header" href="#확인-문제-51">확인 문제</a></h3>
+<h3 id="확인-문제-52"><a class="header" href="#확인-문제-52">확인 문제</a></h3>
 <ol>
 <li>
 <p>(계산) 죄수의 딜레마 표에서 <strong>네 셀 각각</strong>에 대해 “상대의
@@ -44695,6 +45403,66 @@ Chapter 5의 몬테카를로와 가장 직접적으로 대응하는 단계는 �
 </li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="154-world-models-학습된-모델로-상상하며-계획하기"><a class="header" href="#154-world-models-학습된-모델로-상상하며-계획하기">15.4 World Models: 학습된 모델로 상상하며 계획하기</a></h1>
+<p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml2/chapter15_4_world_models.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: World Models 개념 데모"></a></p>
+<h3 id="known-model에서-learned-model로-그리고-상상으로"><a class="header" href="#known-model에서-learned-model로-그리고-상상으로">known model에서 learned model로, 그리고 “상상“으로</a></h3>
+<p>15.1절에서 모델기반 RL을 known model(체스·바둑처럼 규칙이 완전히
+주어진 경우)과 learned model(모델 자체를 데이터로 배워야 하는 대부분의
+실전 경우)로 나눴다. <strong>World Model</strong>은 이 “learned model“을 극단까지
+밀어붙인 아이디어다 — 환경의 다이내믹스(\(s_{t+1} = f(s_t, a_t)\))
+자체를 신경망으로 통째로 학습한 뒤, 그 신경망 <strong>안에서</strong> 에이전트를
+훈련시킨다. 진짜 환경과의 상호작용은 학습된 모델을 만들 때만 쓰고,
+정책을 다듬는 대부분의 학습은 그 모델이 “상상“하는 가짜 경험
+(imagined rollout) 위에서 일어난다 — 실제 환경 스텝보다 신경망
+순전파가 훨씬 싸기 때문에, 같은 계산 예산으로 훨씬 많은 “경험“을
+만들어낼 수 있다.</p>
+<h3 id="대표-연구-두-갈래"><a class="header" href="#대표-연구-두-갈래">대표 연구 두 갈래</a></h3>
+<p><strong>World Models</strong><sup class="footnote-reference" id="fr-worldmodels-1-1"><a href="#footnote-worldmodels-1">1</a></sup>(Ha &amp; Schmidhuber, 2018)는 이 아이디어를
+분명하게 보여준 초기 작업이다. (1) VAE(15.1절, ML1 Chapter 15와 같은
+개념)로 화면 이미지를 압축된 잠재 벡터 \(z\)로 만들고, (2) RNN(MDN-RNN)
+으로 그 잠재 공간 위에서 “다음 \(z\)가 어떻게 될지“를 예측하는
+다이내믹스 모델을 학습한 뒤, (3) 이 압축된 잠재 공간 <strong>안에서만</strong>
+컨트롤러(정책)를 학습시킨다 — 진짜 게임 화면은 한 번도 다시 보지
+않고도 정책이 완성된다.</p>
+<p><strong>Dreamer</strong><sup class="footnote-reference" id="fr-dreamer-1"><a href="#footnote-dreamer">2</a></sup>(Hafner et al., 2020) 계열은 이 아이디어를 현대
+딥러닝 스케일로 발전시켰다 — 잠재 공간에서의 상상된 궤적을 통째로
+역전파해서 정책과 가치함수를 동시에 학습하고(actor-critic을 상상
+공간에서), 실제 로봇 제어 같은 연속 행동 공간·고차원 관측(카메라
+이미지)에서도 데이터 효율적으로 동작함을 보였다.</p>
+<h3 id="왜-이게-중요한가-데이터-효율성"><a class="header" href="#왜-이게-중요한가-데이터-효율성">왜 이게 중요한가: 데이터 효율성</a></h3>
+<p>model-free 방법(DQN, PPO)은 좋은 정책을 얻기까지 수백만~수억 스텝의
+실제 환경 상호작용이 필요할 수 있다. 로봇처럼 “실제 스텝“이 비싸거나
+위험한 환경에서는 이게 큰 걸림돌이다. World Model 계열은 “환경과는
+적게 상호작용하고, 그 대신 학습된 모델 안에서 많이 상상한다“는
+전략으로 이 문제를 정면으로 공략한다 — 14장에서 본 시뮬레이터
+(MuJoCo, Isaac Sim)가 “물리 법칙을 사람이 정확히 코딩해서 준” 모델
+이라면, World Model은 “그 모델 자체도 데이터로부터 배우자“는 한 걸음
+더 나아간 발상이다.</p>
+<h3 id="실습-cartpole을-상상-속에서만-조종해-보기"><a class="header" href="#실습-cartpole을-상상-속에서만-조종해-보기">실습: CartPole을 “상상 속에서만” 조종해 보기</a></h3>
+<p>이 절의 노트북은 위 아이디어를 CartPole로 아주 작게 재현한다. 무작위
+행동으로 모은 \((s_t, a_t, s_{t+1})\) 9,297개로 작은 MLP
+다이내믹스 모델을 80 epoch 학습시키면, 1스텝 예측 오차가 각도 기준
+\(\theta\) RMSE \(0.067\)rad(0 epoch)에서 \(0.0013\)rad(79
+epoch)까지 줄어든다 — 그다음부터는 실제 환경(<code>env.step</code>)을 한 번도
+부르지 않고, 이 모델 <strong>안에서만</strong> 정책을 굴려 본다(“상상 롤아웃”,
+<code>imagine</code>). 네 가지 정책(고정 행동 둘, 손으로 짠 선형 제어, 부호를
+뒤집은 고장난 제어)을 상상 속과 실제 환경에서 각각 굴려 비교하면
+생존 스텝 수가 8, 10, 100, 8로 <strong>네 자리 모두 정확히 일치</strong>한다 —
+학습된 모델이 실제 환경의 동역학을 충분히 잘 복제했다는 뜻이다.
+동시에 스텝을 계속 이어 붙이면 1스텝 오차가 쌓여(오차의 지수적 증폭)
+20스텝쯤부터 상상 궤적과 실제 궤적의 각도가 서서히 벌어지는 것도
+확인할 수 있다 — World Model이 “완벽한 시뮬레이터“가 아니라 유한한
+정확도의 근사라는 한계를 숫자로 직접 보는 지점이다.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-worldmodels-1">
+<p>Ha, D., Schmidhuber, J. (2018). “World Models.” arXiv:1803.10122. <a href="#fr-worldmodels-1-1">↩</a></p>
+</li>
+<li id="footnote-dreamer">
+<p>Hafner, D., Lillicrap, T., Ba, J., Norouzi, M. (2020). “Dream to Control: Learning Behaviors by Latent Imagination.” ICLR 2020. arXiv:1912.01603. <a href="#fr-dreamer-1">↩</a></p>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chapter-16-block-b-캡스톤-팀-프로젝트와-학기-총정리-block-b-capstone--semester-review"><a class="header" href="#chapter-16-block-b-캡스톤-팀-프로젝트와-학기-총정리-block-b-capstone--semester-review">Chapter 16. Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone &amp; Semester Review)</a></h1>
 <p>Chapter 9~15는 표 기반 강화학습을 신경망으로 확장하고(DQN)<sup class="footnote-reference" id="fr-dqn-1-44"><a href="#footnote-dqn-44">1</a></sup>, 정책을
 직접 학습하고(REINFORCE, PPO)<sup class="footnote-reference" id="fr-ppo-1-33"><a href="#footnote-ppo-33">2</a></sup>, 사람의 시연·선호로부터
@@ -44726,7 +45494,7 @@ Chapter 5의 몬테카를로와 가장 직접적으로 대응하는 단계는 �
 “반박 가능한 질문“을 쓴 peer-review를 작성할 수 있다.</li>
 <li>학기 전체를 “모델 정의 → 틀린 정도를 수치화 → 개선” 3단계 구조로
 정리하고, 20문항 자가진단으로 준비도를 재며, 학기 이후로 이어질 방향
-(오프라인 RL<sup class="footnote-reference" id="fr-offlinerl-1-1"><a href="#footnote-offlinerl-1">10</a></sup>, 범용 로봇 정책<sup class="footnote-reference" id="fr-rt2-1"><a href="#footnote-rt2">11</a></sup>, sim-to-real<sup class="footnote-reference" id="fr-domainrandomization-1-3"><a href="#footnote-domainrandomization-3">12</a></sup>)을
+(오프라인 RL<sup class="footnote-reference" id="fr-offlinerl-1-1"><a href="#footnote-offlinerl-1">10</a></sup>, 범용 로봇 정책<sup class="footnote-reference" id="fr-rt2-1"><a href="#footnote-rt2">11</a></sup>, sim-to-real<sup class="footnote-reference" id="fr-domainrandomization-1-4"><a href="#footnote-domainrandomization-4">12</a></sup>)을
 자기 언어로 말할 수 있다.</li>
 </ul>
 <p>이번 주는 세 개의 수업 블록으로 진행된다:</p>
@@ -44793,8 +45561,8 @@ Chapter 5의 몬테카를로와 가장 직접적으로 대응하는 단계는 �
 <li id="footnote-rt2">
 <p>Brohan, A. et al. (2023). “RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control.” CoRL 2023. arXiv:2307.15818. 범용 로봇 정책(generalist robot policy) 학습을 대표하는 논문 — 대규모 웹 지식으로 학습한 비전-언어 모델을 행동 생성으로 확장해 로봇 제어에 전이시킨 VLA 모델. <a href="#fr-rt2-1">↩</a></p>
 </li>
-<li id="footnote-domainrandomization-3">
-<p>Tobin, J. et al. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” arXiv:1703.06907. <a href="#fr-domainrandomization-1-3">↩</a></p>
+<li id="footnote-domainrandomization-4">
+<p>Tobin, J. et al. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” arXiv:1703.06907. <a href="#fr-domainrandomization-1-4">↩</a></p>
 </li>
 <li id="footnote-gymnasium-22">
 <p>Towers, M. et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032. <a href="#fr-gymnasium-1-22">↩</a></p>
@@ -44862,7 +45630,7 @@ MCTS)으로 정책을 학습시킨다.</li>
 썼다면 Chapter 11.3의 클리핑이 학습 안정성에 미친 영향을 클리핑
 있음/없음 비교로 제시, (2) 모방학습을 썼다면 Chapter 12.1의 복합
 오차가 실제로 관찰됐는지(전문가 데이터 분포 밖 상태에서 성능이
-떨어지는지) 확인, (3) 도메인 무작위화<sup class="footnote-reference" id="fr-domainrandomization-1-4"><a href="#footnote-domainrandomization-4">10</a></sup>를 적용했다면 Chapter 13.1의
+떨어지는지) 확인, (3) 도메인 무작위화<sup class="footnote-reference" id="fr-domainrandomization-1-5"><a href="#footnote-domainrandomization-5">10</a></sup>를 적용했다면 Chapter 13.1의
 현실 격차 논의와 연결지어 효과를 설명.</li>
 <li>Chapter 8과 마찬가지로, 학습 곡선(에피소드에 따른 누적 보상 변화)을
 반드시 제시한다 — 지도학습의 손실 곡선에 해당하는, 강화학습에서
@@ -45074,7 +45842,7 @@ Block B에서는 Pendulum 12만 스텝이 CPU에서 22초인 반면 MuJoCo
 이 알고리즘에 골랐는가</strong>(§“환경 고르는 실전 가이드“의 “무대”
 논리), 하이퍼파라미터(\(\gamma\), \(\lambda\),
 \(\epsilon_{\text{clip}}\), 보상 스케일링 등)와 선택
-근거(Ch10~13 개념)<sup class="footnote-reference" id="fr-suttonbarto-1-51"><a href="#footnote-suttonbarto-51">11</a></sup>.</li>
+근거(Ch10~13 개념)<sup class="footnote-reference" id="fr-suttonbarto-1-52"><a href="#footnote-suttonbarto-52">11</a></sup>.</li>
 <li><strong>실험 프로토콜</strong> (1p): 시드 목록, 학습 예산(반복 수 × 스텝 수),
 <strong>평가 프로토콜(결정적 \(a=\mu\), 에피소드 수, 모든 시드에
 동일) 명시</strong>, 하이퍼파라미터 선택 절차(어떤 곡선으로, 어떤
@@ -45325,11 +46093,11 @@ FAQ와 13~14절의 예산 원리로 진단했고 재확인 계획을 세웠다�
 <li id="footnote-gymnasium-23">
 <p>Towers, M., Kwiatkowski, A., Terry, J., Balis, J. U., et al. (2024). “Gymnasium: A Standard Interface for Reinforcement Learning Environments.” arXiv:2407.17032 (NeurIPS Datasets and Benchmarks 2025). 소프트웨어 공식 문서: https://gymnasium.farama.org/ <a href="#fr-gymnasium-1-23">↩</a></p>
 </li>
-<li id="footnote-domainrandomization-4">
-<p>Tobin, J. et al. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” IROS 2017. arXiv:1703.06907. <a href="#fr-domainrandomization-1-4">↩</a></p>
+<li id="footnote-domainrandomization-5">
+<p>Tobin, J. et al. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” IROS 2017. arXiv:1703.06907. <a href="#fr-domainrandomization-1-5">↩</a></p>
 </li>
-<li id="footnote-suttonbarto-51">
-<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-51">↩</a></p>
+<li id="footnote-suttonbarto-52">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-52">↩</a></p>
 </li>
 <li id="footnote-cs234-67">
 <p>Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ <a href="#fr-cs234-1-65">↩</a></p>
@@ -45946,7 +46714,7 @@ V^*(S) = \frac{1.89}{0.73} \approx 2.589\]</p>
 \(V(S) \approx 2.594\) — 참값과 0.2% 차이. MC는 <strong>편향이 없다</strong>
 (실제 실현된 리턴의 기댓값이 정확히 \(V^\pi\)이기 때문에) —
 “충분히 많이 돌리면“이라는 약속은, 이 예에서는 정말로 지켜진다.</p>
-<p><strong>경로 ③ (모델 프리, Ch6 on-policy): SARSA<sup class="footnote-reference" id="fr-suttonbarto-1-52"><a href="#footnote-suttonbarto-52">1</a></sup>.</strong> TD 오차로 갱신하되,
+<p><strong>경로 ③ (모델 프리, Ch6 on-policy): SARSA<sup class="footnote-reference" id="fr-suttonbarto-1-53"><a href="#footnote-suttonbarto-53">1</a></sup>.</strong> TD 오차로 갱신하되,
 다음 행동 \(a’\)도 *실제 행동 정책(ε-greedy)*이 고른 것을 쓴다.
 여기서 이번 학기의 핵심 드라마가 시작된다: <strong>SARSA는 최적값이
 아니라 “탐험하는 행동 정책의 값“을 배운다.</strong> \(\varepsilon = 0.3\)를
@@ -46248,7 +47016,7 @@ LLM 후학습)를 마주했을 때 “이것은 어떤 에이전트·어떤 보�
 사전학습 아이디어를 로봇 제어에 적용한 것에 가깝다: 방대한 로봇
 시연·상호작용 데이터로 먼저 폭넓게 학습시킨 뒤, 특정 작업에 맞게
 다듬는다.</li>
-<li><strong>Sim-to-Real의 발전</strong>: Chapter 13.1에서 본 도메인 무작위화<sup class="footnote-reference" id="fr-domainrandomization-1-5"><a href="#footnote-domainrandomization-5">16</a></sup>를 넘어,
+<li><strong>Sim-to-Real의 발전</strong>: Chapter 13.1에서 본 도메인 무작위화<sup class="footnote-reference" id="fr-domainrandomization-1-6"><a href="#footnote-domainrandomization-6">16</a></sup>를 넘어,
 시뮬레이션과 실제 환경의 차이 자체를 학습으로 메우려는 연구가
 계속되고 있다 — Chapter 14에서 본 GPU 가속 시뮬레이션(Isaac Sim
 등)이 “훨씬 많은 다양한 시뮬레이션 조건을 빠르게 경험시킨다“는
@@ -46301,8 +47069,8 @@ FAQ의 “이 학기 범위를 넘는다” 목록(TRPO의 수학, DAgger의
 질문을 던질 수 있을 것이다.<sup class="footnote-reference" id="fr-cs234-1-67"><a href="#footnote-cs234-69">19</a></sup></strong></p>
 <hr>
 <ol class="footnote-definition">
-<li id="footnote-suttonbarto-52">
-<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-52">↩</a></p>
+<li id="footnote-suttonbarto-53">
+<p>Sutton, R. S., Barto, A. G. (2018). “Reinforcement Learning: An Introduction” (2nd ed.). MIT Press. 저자 공식 무료 공개: http://incompleteideas.net/book/the-book-2nd.html <a href="#fr-suttonbarto-1-53">↩</a></p>
 </li>
 <li id="footnote-dqn-47">
 <p>Mnih, V. et al. (2015). “Human-level control through deep reinforcement learning.” Nature 518, 529–533. (Earlier preprint: Mnih, V. et al. (2013). arXiv:1312.5602.) <a href="#fr-dqn-1-47">↩</a></p>
@@ -46346,8 +47114,8 @@ FAQ의 “이 학기 범위를 넘는다” 목록(TRPO의 수학, DAgger의
 <li id="footnote-openvla">
 <p>Kim, M. J. et al. (2024). “OpenVLA: An Open-Source Vision-Language-Action Model.” arXiv:2406.09246. <a href="#fr-openvla-1">↩</a></p>
 </li>
-<li id="footnote-domainrandomization-5">
-<p>Tobin, J. et al. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” IROS 2017. arXiv:1703.06907. <a href="#fr-domainrandomization-1-5">↩</a></p>
+<li id="footnote-domainrandomization-6">
+<p>Tobin, J. et al. (2017). “Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World.” IROS 2017. arXiv:1703.06907. <a href="#fr-domainrandomization-1-6">↩</a></p>
 </li>
 <li id="footnote-trpo-9">
 <p>Schulman, J. et al. (2015). “Trust Region Policy Optimization.” ICML 2015. arXiv:1502.05477. <a href="#fr-trpo-1-9">↩</a></p>

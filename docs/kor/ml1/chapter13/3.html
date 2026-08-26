@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-b71af2bb.js";
+            window.path_to_searchindex_js = "../../searchindex-ebf8b0bd.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-40bab1e1.js"></script>
+        <script src="../../toc-27b50e49.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -180,14 +180,22 @@
                     <main>
                         <h1 id="133-pagerank"><a class="header" href="#133-pagerank">13.3 PageRank</a></h1>
 <p><a href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/ml1/chapter13_3_pagerank.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab: PageRank 실습"></a></p>
-<p>[STUB: cq가 확장할 자리 — 도입부에서 “13.1의 같은 무작위 걷기를 다른 질문에 쓴다“는 연결을 명시. 아래 확인문제/FAQ는 Node2Vec·PageRank가 섞여 있던 원본에서 그대로 가져온 것 — PageRank에 안 맞는 문항은 13.2로 옮기거나 정리할 것.]</p>
+<p>13.1절은 무작위 걷기를 “노드가 이웃을 얼마나 자주 만나는지“를 담는
+말뭉치로, 13.2절은 그 말뭉치에 skip-gram을 학습시켜 노드 임베딩을
+만들었다. 이 절은 걷기 <strong>말뭉치</strong>가 아니라 13.1의 마지막 주석
+(“영원히 돌아다닌 뒤 각 노드에 머무는 비율”)이 던진 질문에 정식으로
+답하는 쪽이다 — 그 답, 즉 <strong>무작위 걷기의 정상분포 그 자체</strong>를 노드
+하나당 스칼라 “중요도” 점수로 쓰는 것이 <strong>PageRank</strong><sup class="footnote-reference" id="fr-brinpage-1"><a href="#footnote-brinpage">1</a></sup>다.
+<strong>같은 무작위 걷기(재료)를 13.2와 이 절이 모두 쓰지만, 묻는 질문이
+달라서</strong> 나온 결과물도 임베딩 벡터와 스칼라 점수로 갈라진 것이다.</p>
 <h3 id="같은-무작위-걷기-다른-질문-pagerank"><a class="header" href="#같은-무작위-걷기-다른-질문-pagerank">같은 무작위 걷기, 다른 질문: PageRank</a></h3>
-<p>Node2Vec은 무작위 걷기가 만들어내는 “노드의 순서(시퀀스)“를 이용했다.
+<p>Node2Vec<sup class="footnote-reference" id="fr-node2vec-1"><a href="#footnote-node2vec">2</a></sup>은 무작위 걷기가 만들어내는 “노드의 순서(시퀀스)“를 이용했다.
 같은 무작위 걷기 자체를 완전히 다른 질문에 쓸 수도 있다: <strong>이 그래프
 위를 무작위로 영원히 돌아다닌다면, 각 노드에 머물러 있을 확률은 각각
 얼마나 될까?</strong> 이 질문에 대한 답이 곧 그 노드의 “중요도“라는 것이,
 1998년 래리 페이지(Larry Page)와 세르게이 브린(Sergey Brin)이 구글을
-세울 때 쓴 <strong>PageRank</strong> 알고리즘의 핵심 아이디어다 — 많은 페이지가
+세울 때 쓴 <strong>PageRank</strong><sup class="footnote-reference" id="fr-brinpage-2"><a href="#footnote-brinpage">1</a></sup> 알고리즘의 핵심 아이디어다 —
+많은 페이지가
 링크하는 페이지일수록, 또 중요한 페이지가 링크하는 페이지일수록,
 무작위로 링크를 따라다니는 서퍼(random surfer)가 그 페이지에 더 자주
 머문다.</p>
@@ -235,7 +243,8 @@ scores = pagerank(directed_edges, 34)
 print(sorted(scores.items(), key=lambda kv: -kv[1])[:3])
 # node 33, node 0이 가장 높다 -- 실제 두 "허브" 노드(관장, 감독)과 정확히 일치
 </code></pre>
-<p>카라테 그래프(대칭화, \(d=0.85\), 100회 반복)에서 실제로 돌려보면
+<p>카라테 클럽 그래프<sup class="footnote-reference" id="fr-zachary-1"><a href="#footnote-zachary">3</a></sup>(대칭화, \(d=0.85\), 100회 반복)에서
+실제로 돌려보면
 상위 3개는:</p>
 <div class="table-wrapper">
 <table>
@@ -250,11 +259,14 @@ print(sorted(scores.items(), key=lambda kv: -kv[1])[:3])
 </table>
 </div>
 <p>전체 점수의 합은 정확히 1이며, 최소값은 teleport 하한
-\((1-d)/34 \approx 0.0044\)다. 두 파벌 리더가 정확히 상위 2개에
-앉는다 — 라벨을 하나도 안 본 “중요도 순위“가 역사적 사실(누가 어떤
-파벌이었는지)과 거의 정확히 겹치는 것이다. node 33(도 17)이 node
-0(도 16)보다 앞서는 것은, “무작위 걷기가 더 자주 방문한다“는 도의
-우위가 점수에 거의 그대로 드러난 모습이다.</p>
+\((1-d)/34 \approx 0.0044\)보다도 조금 높은 0.0096(node 11, 도 1)이다
+— teleport 하한은 “아무도 가리키지 않는 노드“가 받는 이론적 최저치
+이지, 실제 그래프에서는 모든 노드가 누군가에게(직·간접으로)
+“가시게” 되니 그보다 위로 받쳐진 것이다. 두 파벌 리더가 정확히
+상위 2개에 앉는다 — 라벨을 하나도 안 본 “중요도 순위“가 역사적
+사실(누가 어떤 파벌이었는지)과 거의 정확히 겹치는 것이다. node
+33(도 17)이 node 0(도 16)보다 앞서는 것은, “무작위 걷기가 더 자주
+방문한다“는 도의 우위가 점수에 거의 그대로 드러난 모습이다.</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="../../images/ch14_3_pagerank_karate.svg" alt="카라테 클럽 34개 노드의 PageRank(d=0.85, 대칭화)를 점수 높은 순으로 정렬해 막대로 그린 것. 파란색은 감독파, 주황색은 관장파. 상위권(노드 33, 0, 32)은 모두 두 허브 노드와 그 연결고리이며, 아래로 갈수록 점수가 teleport 하한에 수렴함"><span class="img-wrapper"><img src="../../images/ch14_3_pagerank_karate.svg" alt="카라테 클럽 34개 노드의 PageRank(d=0.85, 대칭화)를 점수 높은 순으로 정렬해 막대로 그린 것. 파란색은 감독파, 주황색은 관장파. 상위권(노드 33, 0, 32)은 모두 두 허브 노드와 그 연결고리이며, 아래로 갈수록 점수가 teleport 하한에 수렴함"></span></label></p>
 <h3 id="손으로-한-번-노드-4개-순환-하나-외딴-끝-하나"><a class="header" href="#손으로-한-번-노드-4개-순환-하나-외딴-끝-하나">손으로 한 번: 노드 4개, 순환 하나, 외딴 끝 하나</a></h3>
 <p>PageRank를 4개 노드의 최소 예제로 손 계산해보자(\(d = 0.5\)).
@@ -289,14 +301,14 @@ PR(C) = 0.125 + 0.5\,PR(B)\]</p>
 <strong>PageRank는 “엣지가 몇 개인가“가 아니라 “누가, 얼마나 중요한 위치에서
 나를 가리키는가“의 문제</strong>라는 것이 이 작은 예제의 핵심이다.
 둘째, “새 값 = teleport 항 + 옛 값들의 가중 평균“이라는 방정식의
-형태 — 이 형태가 반복법의 수렴을 보장하는 구조이며, 다음 절에서
-본다는 정리와 정확히 연결된다.</p>
+형태 — 이 형태가 반복법의 수렴을 보장하는 구조이며, 바로 뒤에
+온다.</p>
 <p>이 거듭제곱법이 왜 수렴하는지는, <strong>ML2 Chapter 4</strong>에서 벨만
 최적방정식의 해가 유일하게 존재함을 보일 때 쓸 <strong>바나흐 고정점
 정리</strong>(Banach fixed point theorem)와 정확히 같은 논리다 — “어떤
 변환을 값이 안 바뀔 때까지 반복해서 적용하면 결국 고정점(fixed
 point)에 도달한다“는 같은 수학이, 여기서는 “그래프 위 확률분포“에,
-강화학습에서는 “상태의 가치함수“에 적용된다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">1</a></sup></p>
+강화학습에서는 “상태의 가치함수“에 적용된다.<sup class="footnote-reference" id="fr-cs234-1"><a href="#footnote-cs234">4</a></sup></p>
 <p>수렴이 얼마나 빠른지: 매 반복의 변화량(전체 노드 중 최대
 \(|\Delta PR|\))은 <strong>지수적으로</strong> 줄어든다. 카라테 클럽에서는
 \(d=0.85\)일 때 대략 45회 반복이면 \(10^{-9}\) 이내로 수렴했고,
@@ -322,11 +334,15 @@ point)에 도달한다“는 같은 수학이, 여기서는 “그래프 위 확
     return pr
 </code></pre>
 <p>함께 짚어둘 두 번째 세부 사항은 <strong>dangling node</strong>(나가야 할 링크가
-하나도 없는 노드)다. 코드에서 <code>max(1, len(outgoing[i]))</code>는 분모가 0이
-되는 것을 막아주지만, 출도가 0인 노드의 점수는 그 식의 합에서
-<strong>어디로도 전달되지 않는다</strong> — 결과적으로 전체 PR의 합이 1이
-<strong>아니고</strong> (1보다 작게) 될 수 있다. 카라테 그래프에는 그런 노드가
-없어 합 = 1(위에서 확인)이지만, 웹처럼 “링크가 하나도 없는 죽은
+하나도 없는 노드)다. (max(1, \cdot))가 막는 것은 출도가 0인
+<strong>전달자</strong>가 분모 0으로 만들지 않는 것이지, 그 노드 <strong>자신</strong>이
+받는 teleport분 ((1-d)/N)을 없애는 것이 아니다 — 그래서
+“dangling 노드가 있으면 전체 PR의 합이 1이 안 된다“는 주장은
+<strong>잘못</strong>이다. (확인 문제의 2-노드 예제 (A \to B)만 있는
+그래프에서도 확인했다 — B가 dangling이건 말건 합은 정확히 1이다.)
+출도가 0인 노드의 점수가 우변의 합에서 <strong>어디로도 전달되지
+않는다</strong>는 사실은 변함없다 — 카라테 그래프에는 그런 노드가 없어
+합 = 1이 정확히 나왔지만, 웹처럼 “링크가 하나도 없는 죽은
 페이지“가 흔히 있는 그래프에서는 dangling 노드의 점수를 <strong>모든
 노드에 균등하게 재분배</strong>해 주는 보정이 표준이다. 댐핑 팩터와
 같은 계열의 공학 — “확률이 새는 구멍을 하나하나 막아주는”
@@ -385,7 +401,8 @@ dangling node가 됨) 다시 계산해라. \(PR(A) = 0.25\)(들어오는
 순간 서퍼가 영원히 갇히거나, 그래프가 여러 개의 분리된 조각으로
 나뉘어 있으면 어느 조각에서 시작했는지에 따라 결과가 달라지는(즉
 유일한 정상분포로 수렴하지 않는) 문제가 생긴다. \(d&lt;1\)의 순간이동
-확률이 이런 병적인 경우에도 항상 유일한 해로 수렴하도록 보장해준다.</p>
+확률은 확률분포가 “조각 사이를 계속 넘나들게” 만들어, 이런
+병적인 경우에도 항상 유일한 해로 수렴하도록 보장해준다.</p>
 <p><strong>Q. 걷기 개수(walks_per_node)와 걷기 길이를 어떻게 정하나요?</strong>
 엄격한 공식은 없지만, 표준적인 가이든라인이 있다: 원본 논문의
 설정 — 노드당 10개 걷기, 걷기 길이 40, 임베딩 차원 128 — 을
@@ -450,6 +467,15 @@ v^T\Sigma v - \lambda(v^Tv - 1)\)로 바꾼 뒤, \(v\)로 미분해서 0으로
 예측이 맞는지 확인하라.</p>
 <hr>
 <ol class="footnote-definition">
+<li id="footnote-brinpage">
+<p>Brin, S., Page, L. (1998). “The Anatomy of a Large-Scale Hypertextual Web Search Engine.” 7th International World Wide Web Conference (WWW7), Brisbane, Australia. (후에 Computer Networks 30(1-7), 107–117로 재인쇄.) <a href="#fr-brinpage-1">↩</a> <a href="#fr-brinpage-2">↩2</a></p>
+</li>
+<li id="footnote-node2vec">
+<p>Grover, A., Leskovec, J. (2016). “node2vec: Scalable Feature Learning for Networks.” KDD 2016. arXiv:1607.00653. <a href="#fr-node2vec-1">↩</a></p>
+</li>
+<li id="footnote-zachary">
+<p>Zachary, W. W. (1977). “An Information Flow Model for Social Network Structural Analysis.” Journal of Anthropological Research 33(4), 195–213. <a href="#fr-zachary-1">↩</a></p>
+</li>
 <li id="footnote-cs234">
 <p>더 깊이 보려면: Stanford CS234: Reinforcement Learning. https://web.stanford.edu/class/cs234/ — 이 절의 무작위 걷기(마코프 체인)와 PageRank 거듭제곱법의 고정점 수렴은 CS234의 MDP·가치 반복(value iteration)·벨만 방정식과 직접 겹치며, 본문에서 안내하는 ML2 Chapter 4의 주제이기도 하다. <a href="#fr-cs234-1">↩</a></p>
 </li>
