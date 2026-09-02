@@ -25,11 +25,34 @@ perl -0777 -i -pe '
   # 3b. "\end{frame>"  /  "\end{frame]"  ->  "\end{frame}"   (closing-brace typo)
   s/\\end\{frame[>\]\)]/\\end{frame}/g;
 
+  # 3c. math operators (\tanh ...) left bare in Korean body text -> plain word.
+  #     A bare \tanh in text makes TeX enter math and never leave (fatal).
+  #     Only fires when followed by a Hangul char or closing punctuation, so
+  #     genuine "\tanh(z)" / "$\tanh z$" in math are untouched.
+  s/(?<![\$\\])\\(tanh|sigmoid|softmax|relu|argmax|argmin|logit)(?=\s*[가-힣)\x{201d}"'"'"'\]])/$1/g;
+
   # 3d. "$\texttt{ ... }$"  ->  "\texttt{ ... }"   (\texttt is text-mode; wrapping
   #     it in $ breaks).  If the inner text has no $ island, also de-math a bare
   #     \times / \cdot to "*".  Valid "\texttt{a $\times$ b}" is left untouched.
   s#\$(\\texttt\{([^{}]*)\})\$# my($f,$in)=($1,$2); if($in!~/\$/){$in=~s/\\(times|cdot)/*/g; "\\texttt{$in}"} else {$f} #ge;
 ' "$F"
+
+# 3e. \verb on a \begin{frame} line = \verb in the frametitle = fatal
+#     ("moving argument" -> "TeX capacity exceeded").  Swap every one for \texttt.
+perl -i -pe '
+  s/\\verb(\S)(.*?)\1/\\texttt{$2}/g if /^\s*\\begin\{frame\}/;
+' "$F"
+
+# 3f. frame whose body uses \verb or lstlisting but isn't [fragile] -> make it.
+python3 - "$F" <<'PYEOF'
+import sys,re
+p=sys.argv[1]; t=open(p,encoding='utf-8').read()
+def fix(m):
+    head,body=m.group(1),m.group(2)
+    return (head+'[fragile]'+body) if re.search(r'\\verb|\\begin\{lstlisting\}',body) else m.group(0)
+t=re.sub(r'(\\begin\{frame\})(?!\[)(\{.*?\\end\{frame\})', fix, t, flags=re.S)
+open(p,'w',encoding='utf-8').write(t)
+PYEOF
 
 # 4. frame with brace balance +/-1  (cq forgets a "{\footnotesize" closer, or
 #    writes ".}}" one brace too many).  +1 -> add "}" ; -1 -> drop last "}".

@@ -230,7 +230,7 @@ def rnn_forward(inputs, h0, Wxh, Whh, b_h):
   \begin{itemize}
     \item 스칼라 RNN, $w_{xh}=0.1$, $w_{hh}=0.9$, $b_h=0$,
       입력 $[2, 3, 1, 4]$
-    \item pre-activation $z_t$(\,\tanh 전\,)를 따라가면:
+    \item pre-activation $z_t$(\,tanh 전\,)를 따라가면:
   \end{itemize}
   \[ z_1 = 0.200, \qquad z_2 = 0.480, \qquad z_3 = 0.532,
      \qquad z_4 = 0.879 \]
@@ -329,7 +329,7 @@ def rnn_forward(inputs, h0, Wxh, Whh, b_h):
       정지한다'' --- RNN의 \textbf{동적(dynamics)}을 이해하는
       출발점
     \item 수렴 \textbf{속도}는 고정점 근처의 ``\textbf{증폭 인자}''로
-      결정: $\frac{d h_t}{d h_{t-1}} = 0.8 \cdot \tanh'(z_t)$
+      결정: $\frac{d h_t}{d h_{t-1}} = 0.8 \cdot tanh'(z_t)$
     \item $h^\ast \approx 0.82$에서 $\tanh'(z^\ast) = 1 - (h^\ast)^2
       \approx 0.325$ $\Rightarrow$ 증폭 인자 $0.8 \times 0.325
       \approx 0.26$ --- 각 단계마다 차이가 약 4분의 1로 줄어듦
@@ -566,7 +566,7 @@ for x in [2.0, 3.0, 1.0, 4.0]:
   \vskip0.5em
   \[ \frac{\partial h_T}{\partial h_1} = \prod_{t=2}^{T}
      \frac{\partial h_t}{\partial h_{t-1}}
-     = \prod_{t=2}^{T} \operatorname{diag}\big(\tanh'(z_t)\big)\; W_{hh} \]
+     = \prod_{t=2}^{T} \operatorname{diag}\big(tanh'(z_t)\big)\; W_{hh} \]
   \vskip0.3em
   {\footnotesize $z_t = W_{xh}x_t + W_{hh}h_{t-1} + b_h$,
   $\tanh'(z_t) = 1 - h_t^2$.}
@@ -794,7 +794,7 @@ for t in reversed(range(T)):
   유도에서 $\frac{\partial L}{\partial h_t}$가 시점을 거슬러 내려올
   때마다 매번 $W_{hh}^\top$과 $(1 - h^2)$ (즉 $\tanh'$)를 곱받는다.
   \begin{itemize}
-    \item 이 곱이 $T$번 반복 $\Rightarrow$ $\prod_t \tanh'(z_t)\, W_{hh}$
+    \item 이 곱이 $T$번 반복 $\Rightarrow$ $\prod_t tanh'(z_t)\, W_{hh}$
     \item $\tanh' \in (0, 1]$(최대 1, 대부분 그 이하)이고 $W_{hh}$
       크기도 보통 1 근처
     $\Rightarrow$ 시퀀스가 길어질수록 \textbf{지수적으로 0으로
@@ -931,12 +931,12 @@ def forward(inputs, h0):
   \end{block}
 \end{frame}
 
-\begin{frame}{자주 하는 실수: 그래디언트 클리핑을 빼먹는 것}
+\begin{frame}[fragile]{자주 하는 실수: 그래디언트 클리핑을 빼먹는 것}
   학습 코드에 \verb|np.clip(dP, -5, 5)|로 그래디언트를 일정 범위로
   \textbf{잘라내는(clipping)} 단계가 있다 --- 이걸 빼먹으면?
   \begin{itemize}
     \item 그래디언트는 시점을 거슬러 내려올 때마다
-      $W_{hh}^\top \tanh'$를 계속 곱함
+      $W_{hh}^\top tanh'$를 계속 곱함
     \item 학습 초반 가중치가 아직 ``좋지 않은'' 상태일 때 이 곱적이
       1보다 커질 수 있음 $\Rightarrow$ 그래디언트가
       \textbf{지수적으로 커져} 손실이 갑자기 \textbf{튀거나
@@ -957,7 +957,7 @@ def forward(inputs, h0):
   첫 단계.}
 \end{frame}
 
-\begin{frame}{자주 하는 실수: \verb|+=|을 \verb|=|로 쓰는 것}
+\begin{frame}[fragile]{자주 하는 실수: \texttt{+=}을 \texttt{=}로 쓰는 것}
   \begin{itemize}
     \item \textbf{더 흔한} 실수: BPTT 루프에서 \verb|dWhh += ...|를
       \verb|dWhh = ...|로 쓰는 것
@@ -1015,7 +1015,7 @@ def forward(inputs, h0):
   \end{block}
 \end{frame}
 
-\begin{frame}{FAQ: 에폭이 많은 이유, $W_{hh}$ 미분}
+\begin{frame}[fragile]{FAQ: 에폭이 많은 이유, $W_{hh}$ 미분}
   \begin{block}{Q. 왜 이렇게 많은 에폭이 필요했나요?}
     일부러 아주 단순한 구조(은닉 8)와 \textbf{기본 경사하강법}
     (Adam이 아니라)으로 \textbf{손으로 따라가기 쉽게} 만들었기
@@ -1041,7 +1041,7 @@ def forward(inputs, h0):
   \end{block}
 \end{frame}
 
-\begin{frame}{확인 문제: 숫자 세 개}
+\begin{frame}[fragile]{확인 문제: 숫자 세 개}
   \begin{enumerate}
     \item \kb{초기 손실} --- 어휘 3문자의 이 언어모델에서, 무작위
       초기화($\approx$ 균등 분포)의 초기 손실을 ``시점 수 $\times$
@@ -1092,7 +1092,7 @@ def forward(inputs, h0):
 \end{frame}
 
 \begin{frame}{``소실''이 지수함수라는 것: 표로}
-  $\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^{T} \tanh'(z_t)\, w_{hh}$
+  $\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^{T} tanh'(z_t)\, w_{hh}$
   (스칼라 단순화)를 $T$를 크게 올려가며 계산:
   \vskip0.4em
   \scriptsize
@@ -1115,7 +1115,7 @@ def forward(inputs, h0):
   \end{tabular}
 \end{frame}
 
-\begin{frame}{세 열을 읽으면 RNN 학습의 ``운명''}
+\begin{frame}[fragile]{세 열을 읽으면 RNN 학습의 ``운명''}
   \begin{itemize}
     \item \kb{첫째 열 (승수 0.45 $< 1$)}: 전형적 \textbf{소실}.
       $T=50$이면 $10^{-17}$으로, \texttt{float32}의 표현 하한
@@ -1295,7 +1295,7 @@ def forward(inputs, h0):
   \[ \frac{\partial C_T}{\partial C_1} = \prod_{t=2}^{T} f_t \]
   \vskip0.4em
   \begin{itemize}
-    \item \kb{RNN의 $\prod \tanh'(z_t)\, w_{hh}$에서 $\tanh'$
+    \item \kb{RNN의 $\prod tanh'(z_t)\, w_{hh}$에서 $\tanh'$
       (고정 할인율, $\approx 0.45$)의 자리에 \textbf{학습된
       망각 게이트 $f_t$}가 들어온 것}
   \end{itemize}
@@ -1611,7 +1611,7 @@ def forward(inputs, h0):
 \end{frame}
 
 % ===== wrap-up =====
-\begin{frame}{11주차 정리}
+\begin{frame}[fragile]{11주차 정리}
   \begin{enumerate}
     \item \kb{11.1 --- 은닉 상태는 ``감쇠하는 요약''} --- 같은 세
       행렬($W_{xh}, W_{hh}, W_{hy}$)을 $T$번 순서대로 돌려
@@ -1624,7 +1624,7 @@ def forward(inputs, h0):
       ``다음 토큰 예측''의 \textbf{가장 축소된 형태}(12.09
       $\to$ 0.00086, 14,000배).
     \item \kb{11.3 --- 곱은 지수, 덧셈은 통로} --- 그래디언트
-      곱적 $\prod \tanh'\, w_{hh}$가 고유값 1을 기준으로
+      곱적 $\prod tanh'\, w_{hh}$가 고유값 1을 기준으로
       지수 소실·폭발; LSTM/GRU는 \textbf{곱(게이트)=조절,
       덧셈(셀 스킵)=통로}로 소실을 \textbf{완화} --- 단,
       \textbf{순차성이라는 근본 한계는 남고}, 이것이 Ch.\,12
