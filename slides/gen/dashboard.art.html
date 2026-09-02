@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KSA 슬라이드 생성 현황</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#f7f5f0; --surface:#ffffff; --surface-2:#f2efe7;
+    --ink:#1e1b33; --ink-dim:#6a6580; --line:#e4e0d4;
+    --accent:#2E3192; --accent-soft:#e7e7f5;
+    --gold:#a9976b; --track:#e6e2d6;
+    --ok:#1f7a43; --warn:#b26a12; --bad:#b3261e; --muted:#8a8698;
+    --shadow:0 1px 2px rgba(30,27,51,.06),0 8px 24px -12px rgba(30,27,51,.18);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#141225; --surface:#1d1a30; --surface-2:#242138;
+      --ink:#e9e7f2; --ink-dim:#9d99b4; --line:#2f2b45;
+      --accent:#8f92e6; --accent-soft:#26264a;
+      --gold:#c9b78a; --track:#2c2942;
+      --ok:#4ec27d; --warn:#e0a24c; --bad:#ef6f66; --muted:#7d798f;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#141225; --surface:#1d1a30; --surface-2:#242138;
+    --ink:#e9e7f2; --ink-dim:#9d99b4; --line:#2f2b45;
+    --accent:#8f92e6; --accent-soft:#26264a;
+    --gold:#c9b78a; --track:#2c2942;
+    --ok:#4ec27d; --warn:#e0a24c; --bad:#ef6f66; --muted:#7d798f;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+    font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Noto Sans KR",sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1080px;margin:0 auto;padding:44px 24px 72px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--gold);margin:0 0 10px}
+  h1{font-size:26px;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
+  .snap{color:var(--ink-dim);font-size:13px;margin-top:6px;
+    font-family:"IBM Plex Mono",monospace}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:22px 22px 20px;margin:28px 0}
+  .headline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .ratio{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:30px;
+    color:var(--accent);font-variant-numeric:tabular-nums}
+  .ratio small{font-size:15px;color:var(--ink-dim);font-weight:500}
+  .meta{margin-left:auto;font-size:13px;color:var(--ink-dim);
+    font-family:"IBM Plex Mono",monospace;text-align:right}
+  .seg{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--track);
+    margin:16px 0 4px}
+  .seg>span{display:block}
+  .stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .stat{display:flex;align-items:center;gap:7px;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:13px}
+  .stat b{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+    font-size:15px}
+  .stat span:last-child{color:var(--ink-dim)}
+  .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+
+  h2{font-size:14px;font-weight:600;margin:34px 0 10px;display:flex;
+    align-items:baseline;gap:10px}
+  h2 .c{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-dim);
+    font-weight:500}
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;
+    background:var(--surface);box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;font-size:13px;min-width:640px}
+  thead th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-dim);font-weight:500;text-align:left;
+    padding:11px 12px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+  tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  .mono{font-family:"IBM Plex Mono",monospace;color:var(--ink-dim);
+    font-variant-numeric:tabular-nums}
+  .num{font-family:"IBM Plex Mono",monospace;text-align:right;
+    font-variant-numeric:tabular-nums;white-space:nowrap}
+  .dim{color:var(--ink-dim)}
+  .title{max-width:340px}
+  .note{max-width:230px;color:var(--warn);font-size:12px;line-height:1.4}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;
+    font-size:12px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+  .pill .pd{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .pill-ok{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent);
+    border-color:color-mix(in srgb,var(--ok) 30%,transparent)}
+  .pill-accent{color:var(--accent);background:var(--accent-soft);
+    border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+  .pill-warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent);
+    border-color:color-mix(in srgb,var(--warn) 30%,transparent)}
+  .pill-bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent);
+    border-color:color-mix(in srgb,var(--bad) 30%,transparent)}
+  .pill-muted{color:var(--muted);background:color-mix(in srgb,var(--muted) 12%,transparent);
+    border-color:color-mix(in srgb,var(--muted) 26%,transparent)}
+  footer{margin-top:40px;font-size:12px;color:var(--ink-dim);line-height:1.7}
+  footer code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);
+    padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">KSA · Machine Learning 1 &amp; 2</p>
+  <h1>강의 슬라이드 자동 생성 현황</h1>
+  <p class="snap">스냅샷 · 2026년 09월 02일 16:02 &nbsp;|&nbsp; 로컬 Qwen3.8-27B(cq) 파이프라인</p>
+
+  <div class="panel">
+    <div class="headline">
+      <span class="ratio">4<small> / 33 주차</small></span>
+      <span class="ratio" style="font-size:18px">12%</span>
+      <span class="meta">평균 소요 39분 41초<br>남은 예상 1151분 3초</span>
+    </div>
+    <div class="seg"><span style="flex:4;background:var(--ok)"></span><span style="flex:1;background:var(--accent)"></span><span style="flex:28;background:var(--track)"></span></div>
+    <div class="stats"><div class="stat"><span class="dot" style="background:var(--ok)"></span><b>4</b><span>완료</span></div><div class="stat"><span class="dot" style="background:var(--accent)"></span><b>1</b><span>생성 중</span></div><div class="stat"><span class="dot" style="background:var(--warn)"></span><b>0</b><span>검토 필요</span></div><div class="stat"><span class="dot" style="background:var(--bad)"></span><b>0</b><span>실패</span></div><div class="stat"><span class="dot" style="background:var(--muted)"></span><b>28</b><span>대기</span></div></div>
+  </div>
+
+  <h2>Machine Learning 1 <span class="c">— 4/17 · 회귀·SVM·트리·CNN·트랜스포머·생성모델</span></h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>주</th><th>제목</th><th>차시</th><th>상태</th><th>프레임</th><th>쪽</th><th>시도</th><th>소요</th><th>비고</th></tr></thead>
+    <tbody><tr>
+  <td class="mono">01</td>
+  <td class="title">Chapter 1. 머신러닝 첫걸음</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-ok"><span class="pd"></span>완료</span></td>
+  <td class="num">69</td>
+  <td class="num">72</td>
+  <td class="num">1</td>
+  <td class="num dim">52분 32초</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">02</td>
+  <td class="title">Chapter 2. 회귀 모델: 선형회귀와 로지스틱회귀 (Regression Models: Linear &amp; Logistic)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-ok"><span class="pd"></span>완료</span></td>
+  <td class="num">93</td>
+  <td class="num">96</td>
+  <td class="num">1</td>
+  <td class="num dim">16분 31초</td>
+  <td class="note">파이프라인 버그(그림경로·\* ·리스트뒤 \\) 수정 후 재컴파일 0오류</td>
+</tr><tr>
+  <td class="mono">03</td>
+  <td class="title">Chapter 3. 생성 모델 관점의 분류: 나이브베이즈와 GDA (Generative Classifiers: Naive Bayes &amp; GDA)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-ok"><span class="pd"></span>완료</span></td>
+  <td class="num">62</td>
+  <td class="num">65</td>
+  <td class="num">1</td>
+  <td class="num dim">19분 31초</td>
+  <td class="note">경미한 tex오류 2건(자동보정 후 잔여) — 마감 검토 시 확인</td>
+</tr><tr>
+  <td class="mono">04</td>
+  <td class="title">Chapter 4. 거리 기반 모델과 클러스터링: kNN, k-means, GMM/EM (Distance-Based Models &amp; Clustering)</td>
+  <td class="num">4</td>
+  <td><span class="pill pill-accent"><span class="pd"></span>생성 중</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">1</td>
+  <td class="num dim">37분 48초</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">05</td>
+  <td class="title">Chapter 5. SVM과 커널 (Support Vector Machines &amp; Kernels)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-ok"><span class="pd"></span>완료</span></td>
+  <td class="num">70</td>
+  <td class="num">73</td>
+  <td class="num">1</td>
+  <td class="num dim">70분 12초</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">06</td>
+  <td class="title">Chapter 6. 정규화와 모델 선택 (Regularization &amp; Model Selection)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">07</td>
+  <td class="title">Chapter 7. 트리 기반 모델: 결정트리에서 GBDT까지 (Tree-Based Models: Decision Trees to GBDT)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">08</td>
+  <td class="title">Chapter 8. Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone: Team Project &amp; Review)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">09</td>
+  <td class="title">Chapter 9. 신경망 기초, 역전파, 학습 기법 (Neural Network Basics, Backpropagation &amp; Training Techniques)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">10</td>
+  <td class="title">Chapter 10. CNN 기초와 응용 (CNN Basics &amp; Applications)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">11</td>
+  <td class="title">Chapter 11. 시퀀스 모델 (Sequence Models)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">12</td>
+  <td class="title">Chapter 12. 어텐션과 트랜스포머 (Attention &amp; Transformer)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">13</td>
+  <td class="title">Chapter 13. 그래프 표현학습 (Graph Representation Learning)</td>
+  <td class="num">4</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">14</td>
+  <td class="title">Chapter 14. 표현학습: PCA, word2vec, 임베딩의 활용 (Representation Learning)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">15</td>
+  <td class="title">Chapter 15. 잠재변수 생성모델: VAE에서 GAN, Diffusion까지 (Latent-Variable Generative Models)</td>
+  <td class="num">2</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">16</td>
+  <td class="title">Chapter 16. Block B 캡스톤: 팀 프로젝트와 ML1 총정리 (Block B Capstone &amp; ML1 Review)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">17</td>
+  <td class="title">Chapter 17 (부록). LLM: 사전학습, 프롬프팅, 정렬 (LLM: Pretraining, Prompting &amp; Alignment)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr></tbody>
+  </table></div>
+
+  <h2>Machine Learning 2 <span class="c">— 0/16 · 밴딧·MDP·DP·MC·TD·정책경사·PPO·MCTS</span></h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>주</th><th>제목</th><th>차시</th><th>상태</th><th>프레임</th><th>쪽</th><th>시도</th><th>소요</th><th>비고</th></tr></thead>
+    <tbody><tr>
+  <td class="mono">01</td>
+  <td class="title">Chapter 1. 코스 소개와 신경망 미니 리뷰 (Course Introduction &amp; Neural Network Mini-Review)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">02</td>
+  <td class="title">Chapter 2. 멀티암 밴딧 (Multi-Armed Bandits)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">03</td>
+  <td class="title">Chapter 3. MDP 정식화 (Markov Decision Processes)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">04</td>
+  <td class="title">Chapter 4. 동적계획법 (Dynamic Programming)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">05</td>
+  <td class="title">Chapter 5. 몬테카를로 방법 (Monte Carlo Methods)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">06</td>
+  <td class="title">Chapter 6. 시간차 학습 (Temporal-Difference Learning)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">07</td>
+  <td class="title">Chapter 7. n-step 부트스트래핑, 적격흔적, 그리고 계획 (n-Step Bootstrapping, Eligibility Traces &amp; Planning)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">08</td>
+  <td class="title">Chapter 8. Block A 캡스톤: 팀 프로젝트와 총정리 (Block A Capstone: Team Project &amp; Review)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">09</td>
+  <td class="title">Chapter 9. 함수근사와 DQN (Function Approximation &amp; Deep Q-Networks)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">10</td>
+  <td class="title">Chapter 10. 정책기반 강화학습 (Policy-Based Reinforcement Learning)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">11</td>
+  <td class="title">Chapter 11. 고급 정책 최적화: PPO (Proximal Policy Optimization)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">12</td>
+  <td class="title">Chapter 12. 모방학습과 인간 피드백 (Imitation Learning &amp; Learning from Human Feedback)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">13</td>
+  <td class="title">Chapter 13. 로봇 시뮬레이션과 제어 기초 (Robot Simulation &amp; Control Basics)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">14</td>
+  <td class="title">Chapter 14. 고급 시뮬레이션: MuJoCo와 Isaac Sim (Advanced Simulation: MuJoCo &amp; Isaac Sim)</td>
+  <td class="num">4</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">15</td>
+  <td class="title">Chapter 15. 모델기반 RL과 몬테카를로 트리 탐색 (Model-Based RL &amp; Monte Carlo Tree Search)</td>
+  <td class="num">4</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr><tr>
+  <td class="mono">16</td>
+  <td class="title">Chapter 16. Block B 캡스톤: 팀 프로젝트와 학기 총정리 (Block B Capstone &amp; Semester Review)</td>
+  <td class="num">3</td>
+  <td><span class="pill pill-muted"><span class="pd"></span>대기</span></td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num">·</td>
+  <td class="num dim">—</td>
+  <td class="note"></td>
+</tr></tbody>
+  </table></div>
+
+  <footer>
+    한 주차 = 한 챕터 = 3차시(3시간). 목표 분량 주차당 50–66 프레임(4차시 챕터 65–85).<br>
+    파이프라인: <code>cq</code>가 교재 <code>kor/src/{ml1,ml2}/*.md</code> → <code>.tex</code> 작성 →
+    스케줄러가 그림 변환 + <code>xelatex</code> ×2 + 쪽수·오류 검사 → 상태 갱신.<br>
+    <b>완료</b> = PDF ≥ 28쪽 &amp; LaTeX 오류 0. <b>검토 필요</b> = 쪽수 부족하거나 오류 있음.
+    이 페이지는 스냅샷이며 진행에 따라 다시 게시된다.
+  </footer>
+</div>
+</body>
+</html>

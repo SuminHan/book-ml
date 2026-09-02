@@ -1,0 +1,354 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\input{../theme/ksa-theme.tex}
+
+\title{머신러닝 첫걸음}
+\subtitle{역사 · 로드맵 · 문제 정식화 · 파이프라인}
+\author{Machine Learning 1 \,\textperiodcentered\, 1주차}
+\institute{한국과학영재학교 (KSA)}
+\date{Chapter 1}
+
+\begin{document}
+
+% ===== title =====
+\begin{frame}[plain,noframenumbering]
+  \titlepage
+\end{frame}
+
+% ===== roadmap of this week =====
+\begin{frame}{이번 주의 세 블록}
+  \begin{itemize}
+    \item \kb{1.1 아주 짧은 역사와 로드맵} — 1943$\sim$2025 연표 위에서 두 번의
+      ``AI 겨울''과 AlexNet의 등장을 짚고, 이 학기의 순서를 지도로 본다.
+    \item \kb{1.2 문제 정식화와 세 갈래 분류} — 알고리즘보다 먼저
+      입력 $x$ · 출력 $y$ · 가설 $h$ 로 문제를 정의하고,
+      지도 / 비지도 / 강화 를 가른다.
+    \item \kb{1.3 파이프라인과 사전지식} — 수집 $\to$ 정제 $\to$ EDA $\to$
+      모델링 $\to$ 평가 를 끝까지 돌리고, 세 가지 수학 도구를 손으로 점검한다.
+  \end{itemize}
+  \vskip1em
+  \begin{block}{이 챕터가 담아가야 할 두 가지}
+    \textbf{공통 언어}(표기 $x,y,h$)와 \textbf{손의 감각}(데이터 파이프라인 +
+    반복되는 세 수학 도구). 이 둘이 있으면 다음 장의 ``직선''은 새 주제가
+    아니라 이 틀의 첫 실체로 읽힌다.
+  \end{block}
+\end{frame}
+
+\section{1.1 아주 짧은 역사와 이번 학기 로드맵}
+
+\begin{frame}{이 두 과목이 다루는 질문}
+  2012년 ImageNet 대회에서 \kb{AlexNet} 이 등장하기 전까지, 컴퓨터에게
+  ``이 사진에 고양이가 있는가''를 알려주는 방법은 \textbf{사람이 직접 특징을
+  설계}하는 것이었다 --- 가장자리 검출기, 색 히스토그램, 손으로 조합한 필터.
+  \vskip0.8em
+  AlexNet은 그런 손설계 없이, 수백만 장의 사진과 정답 라벨만 보고
+  \textbf{스스로 무엇을 봐야 하는지 학습}해서 기존 방법을 압도했다.
+  \vskip1em
+  \begin{center}
+  \kq{정답이 있는 데이터로부터, 규칙을 사람이 짜는 대신\\
+      기계가 데이터에서 직접 찾아내게 하려면 어떻게 해야 하는가?}
+  \end{center}
+\end{frame}
+
+\begin{frame}{퍼셉트론에서 LLM까지 --- 직선이 아니었다}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        연도 & 사건 \\
+        \midrule
+        1943 & 맥컬록-피츠 뉴런 모형 \\
+        1950s & 퍼셉트론 (단층 신경망) \\
+        1969 & XOR 한계 증명 $\to$ \textbf{첫 겨울} \\
+        1986 & 역전파 재발견 (Ch.\,9) \\
+        1998 & LeNet, 손글씨 인식 (Ch.\,10) \\
+        2012 & \textbf{AlexNet} $\to$ 딥러닝 시대 \\
+        2013 & word2vec · VAE (Ch.\,14--15) \\
+        2017 & Transformer (Ch.\,12) \\
+        2022 & ChatGPT (사전학습 + RLHF) \\
+        2025 & 멀티모달 LLM 상용화 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_timeline_gaps.png}
+      \vskip0.4em
+      {\footnotesize 1943$\to$1969의 26년, 1969$\to$1986의 17년.
+      \textbf{긴 침체기}가 역사의 상당 부분을 차지하고,
+      5년 간격은 2012년 이후에만 반복된다.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{세 번의 결정적 순간}
+  \begin{itemize}
+    \item \kb{1969 — 첫 겨울의 시작.} 민스키·페퍼트가 단층 퍼셉트론은
+      XOR조차 표현 불가능함을 \textbf{증명}. ``알고리즘이 부족하다''가 아니라
+      ``이 구조로는 원리적으로 불가능''이라는 강한 주장.
+    \item \kb{1986 — 역전파가 겨울을 끝내다.} 러멜하트·힌튼·윌리엄스.
+      여러 층을 경사하강법으로 실제 학습 가능 --- 1969년의 한계(XOR)를 푸는 방법.
+      등장하는 \textbf{연쇄법칙}은 1.3절에서 손계산할 바로 그 도구.
+    \item \kb{2012 — 딥러닝 시대의 개막.} AlexNet은 새 수학이 아니었다.
+      결정적 차이는 \textbf{GPU 병렬 연산}과 \textbf{ImageNet 대규모 라벨 데이터}.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{반복되는 패턴}
+    대부분의 ``돌파구''는 새 수학이 아니라, 이미 있던 아이디어(경사하강법,
+    연쇄법칙, 확률론)를 \textbf{더 큰 데이터 · 더 많은 계산} 위에서 다시 조합한 것.
+  \end{block}
+\end{frame}
+
+\begin{frame}{왜 2012년이었을까 --- 두 축}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{첫 번째 축: 계산}
+      \begin{itemize}
+        \item AlexNet: GTX\,580 두 장으로 약 5$\sim$11일 학습.
+        \item 같은 모델을 당시 CPU로는 ``학기가 끝나기 전에 끝나지 않는다''.
+        \item \textbf{무어의 법칙}: 고정된 학습 시간 예산 안에 훨씬 큰 모델을
+          돌릴 수 있게 됨.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{두 번째 축: 데이터}
+      \begin{itemize}
+        \item ImageNet: 140만 장 · 1000 클래스 (2009 공개).
+        \item 라벨 대부분을 \textbf{일반인이 직접} 매김
+          (인터넷 · 크라우드소싱).
+        \item 어느 한 축만 있었어도 그 해의 결과는 달라졌다.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.8em
+  \kq{세 번째 교훈: 라벨의 형태가 모델의 형태를 결정한다.}
+  ``사진 + 범주 라벨''이라는 지도학습의 전형 위에서 일어난 전환.
+\end{frame}
+
+\begin{frame}{이번 학기 로드맵 --- 8주 $\times$ 2 블록}
+  \scriptsize
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{\color{ksablue}Block A (Ch.\,2--7): 고전 ML} \\ 신경망 없이도 강력. 지금도 정형 데이터에서 자주 이긴다.
+      \begin{tabular}{@{}cl@{}}
+        \toprule
+        2 & 회귀: 선형 · 로지스틱, 경사하강법 \\
+        3 & 생성 분류: 나이브베이즈 · GDA \\
+        4 & 거리 기반 · 클러스터링: kNN, k-means, GMM/EM \\
+        5 & SVM 과 커널 \\
+        6 & 정규화와 모델 선택 \\
+        7 & 트리: 결정트리 · 랜덤포레스트 · GBDT/SHAP \\
+        8 & Block A 캡스톤 + 중간고사 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{\color{ksablue}Block B (Ch.\,9--16): 신경망} \\ 역전파를 손유도한 뒤 현대 딥러닝의 핵심 계보.
+      \begin{tabular}{@{}cl@{}}
+        \toprule
+        9 & 신경망 기초: 순전파 · 역전파 \\
+        10 & CNN: 합성곱 · 탐지 · 분할 \\
+        11 & 시퀀스: RNN · LSTM/GRU \\
+        12 & 어텐션과 트랜스포머 \\
+        13 & 그래프 표현학습: Node2Vec · PageRank \\
+        14 & 표현학습: PCA · word2vec · RAG \\
+        15 & 생성모델: VAE · GAN · Diffusion \\
+        16 & Block B 캡스톤 + ML1 총정리 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  {\footnotesize \kb{강화학습 · 로봇 시뮬레이션은 ML1에서 다루지 않는다} ---
+  ML2가 처음부터 끝까지 전담 (부록 Ch.\,17: LLM).}
+\end{frame}
+
+\begin{frame}{이번 학기 내내 손이 갈 도구}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    도구 & 쓰이는 곳 & 첫 등장 \\
+    \midrule
+    numpy & $w^\top x$, 행렬곱, 경사하강법 반복 & Ch.\,2 \\
+    matplotlib & 손실 곡선, 결정경계, PCA 시각화 & Ch.\,2 \\
+    pandas & EDA, 결측치 처리, 그룹별 통계 & Ch.\,1.3 \\
+    scikit-learn & 분류 · 회귀 · 클러스터링 표준 인터페이스 & Ch.\,2 \\
+    PyTorch & 신경망 · CNN · 시퀀스 · VAE/GAN & Ch.\,9 \\
+    Hugging Face & LLM 프롬프팅, 사전학습 모델 활용 & Ch.\,17 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  ``새로 외울 것''이 아니라 ``필요할 때 10초 만에 꺼내 쓸 것''.
+  전반부의 성패는 \textbf{도구가 손에 익었는가}가 가른다.
+\end{frame}
+
+\section{1.2 머신러닝 문제 정식화와 세 갈래 분류}
+
+\begin{frame}{문제를 푸는 게 아니라, 먼저 ``정의''부터}
+  알고리즘을 고르기 전에 문제 자체를 세 가지로 정의한다:
+  \begin{enumerate}
+    \item \kb{입력 $x$} --- 무엇을 특징으로? (예: 평수, 방 개수, 연식)
+    \item \kb{출력 $y$} --- 무엇을 맞히나? 연속값(회귀)인가 범주(분류)인가?
+    \item \kb{가설 $h$} --- 입력$\to$출력 함수를 어떤 형태로 근사하나?
+      (직선? 트리? 신경망?)
+  \end{enumerate}
+  \vskip0.8em
+  \begin{block}{학습(training)의 정의}
+    데이터 $(x^{(1)},y^{(1)}),\dots,(x^{(m)},y^{(m)})$ 에 대해
+    $h(x^{(i)})$ 가 $y^{(i)}$ 에 최대한 가깝도록 $h$ 의 파라미터를 조정.
+    \\ $m$ = 샘플 수, \; $x^{(i)}$ = $i$번째 샘플의 특징 벡터.
+  \end{block}
+\end{frame}
+
+\begin{frame}{같은 틀, 다른 손실 --- 그리고 일반화}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \textbf{집값 예측}: $x$=평수·방·위치, \; $y$=거래가(\textbf{연속}) $\Rightarrow$ 회귀 \\[0.6em]
+      \textbf{스팸 필터}: $x$=제목의 `무료'·발신자·느낌표 수, \;
+      $y$=스팸(1)/정상(0) (\textbf{범주}) $\Rightarrow$ 분류 \\[0.8em]
+      $x,y$ 의 형태가 다르니 \textbf{손실함수도 달라야} 한다.
+      \\[0.6em]
+      학습은 ``데이터를 외우는 것''이 아니라
+      \textbf{본 적 없는 데이터에 일반화되는 규칙}을 찾는 것.
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_overfitting.png}
+      \\[0.3em]{\footnotesize degree 1 vs degree 24 --- 오른쪽은 훈련점 사이
+      잡음까지 외워 테스트에서 흔들린다.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{세 갈래 분류 --- 무엇을 데이터로 갖고 있는가}
+  알고리즘 이름이 아니라 \textbf{데이터의 형태 · 학습 신호}로 갈린다.
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+     & 데이터 형태 & 목표 & 이번 학기 예시 \\
+    \midrule
+    지도학습 & $(x,y)$ 쌍 & 새 $x$의 $y$ 예측 & 회귀·분류, kNN, SVM, 트리, 신경망 \\
+    비지도학습 & $x$ 만 & 숨은 구조 발견 & k-means, PCA, EM/GMM \\
+    강화학습 & 상태·행동·보상 & 누적 보상 최대화 정책 & ML1에서 다루지 않음 (ML2) \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{block}{한 줄로 구분하는 두 질문}
+    \begin{enumerate}
+      \item ``$y$(정답 라벨)이 있는가?'' \; 있다 $\to$ \textbf{지도}. 없다 $\to$ 2번.
+      \item ``보상이라는 신호라도 있는가?'' \; 있다 $\to$ \textbf{강화}. 없다 $\to$ \textbf{비지도}.
+    \end{enumerate}
+  \end{block}
+\end{frame}
+
+\section{1.3 데이터사이언스 파이프라인과 사전지식 리뷰}
+
+\begin{frame}{모델은 파이프라인의 한 조각일 뿐}
+  \begin{enumerate}
+    \item \kb{수집} --- 어디서? (Kaggle, UCI, HF Datasets) + 라이선스·개인정보 확인
+    \item \kb{정제} --- 결측치 · 중복 · 이상치 처리 (현실 데이터는 거의 항상 지저분)
+    \item \kb{EDA} --- 분포 · 상관 · 클래스 비율을 \textbf{눈으로} 확인
+    \item \kb{모델링} --- 정식화한 문제에 맞는 $h$ 선택 · 학습
+    \item \kb{평가} --- 학습에 안 쓴 데이터로 검증. 나쁘면 종종 1$\sim$3단계로 되돌아감
+  \end{enumerate}
+  \vskip0.8em
+  \begin{block}{왜 이 순서인가}
+    앞 단계의 결함은 뒤에서 아무리 좋은 모델을 써도 \textbf{수리되지 않는다}.
+    파이프라인은 위$\to$아래로 흐르되, \textbf{결함도 위$\to$아래로 증폭}된다.
+  \end{block}
+\end{frame}
+
+\begin{frame}{더티 데이터의 세 가지 표준 모양}
+  \begin{enumerate}
+    \item \kb{결측치} --- 빈 값, 혹은 0 / $-1$ / $-999$ 같은 \textbf{센티넬 값}.
+      센티넬은 ``비어 보이지 않아'' 가장 위험 $\to$ \texttt{describe()} 의
+      최솟값 · 분포 확인.
+    \item \kb{중복} --- 완전 중복은 \texttt{duplicated()} 로 잡히지만,
+      부분 중복은 ``어떤 열 조합을 동일 사례로 볼지'' 사람이 먼저 결정
+      (예: 부동산 = 지번+거래일).
+    \item \kb{이상치} --- 범위는 합리적이나 분포에서 극단적으로 벗어난 값.
+      버릴지 남길지는 \textbf{도메인 지식}으로만 판단.
+  \end{enumerate}
+  \vskip0.6em
+  {\footnotesize 1992년 Wolpert \& Kibler, ``Do We Know the Data We're Using?''
+  --- 같은 특징에 라벨이 모순되는 행 100건. \kq{성능이 이상할 때 첫 의심은
+  ``모델이 약해서''가 아니라 ``데이터에 문제가 있어서''.}}
+\end{frame}
+
+\begin{frame}[fragile]{EDA: 모델을 돌리기 전에 데이터와 ``대화''하기}
+  네 가지 질문 --- 모두 \textbf{모델이 아니라 데이터}에 묻는다:
+  스케일 차이 / 목표와의 연관 / 목표 분포의 꼬리 / 클래스 균형.
+\begin{lstlisting}
+import pandas as pd
+df = pd.DataFrame({
+    "size_sqm":     [59, 84, 112, 46, 132, 78],
+    "rooms":        [2, 3, 4, 1, 4, 3],
+    "year_built":   [2015, 2008, 1998, 2020, 1995, 2011],
+    "price_million":[320, 410, 505, 250, 560, 390],
+})
+print(df.describe())                                  # 스케일 한눈에
+print(df.corr(numeric_only=True)["price_million"])    # 목표와의 연관
+print(df.isna().sum())                                # 열별 결측 개수
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize EDA에 쓰는 10분이, 잘못된 가정 위에 쌓은 모델을 디버깅하는
+  몇 시간을 아낀다.}
+\end{frame}
+
+\begin{frame}{데이터 나누기 --- 순서가 중요한 이유}
+  EDA가 끝나면 모델링 전 \textbf{첫 실제 결정}: 훈련 셋 / 테스트 셋 분리.
+  \vskip1em
+  \begin{block}{실무 원칙 (데이터 누수 방지)}
+    데이터에 대한 통계를 쓰는 모든 조작은 \\[0.3em]
+    \hspace{1em}\kb{훈련 셋에서 fit(계산)} $\;\to\;$ \kb{테스트 셋에 apply(적용)} \\[0.3em]
+    순서로. 결코 ``전체에서 fit $\to$ 훈련 셋에 apply'' 하지 않는다.
+  \end{block}
+  \vskip0.8em
+  예: 결측치를 평균으로 채울 때 \textbf{전체 평균}을 쓰면 테스트 셋 정보가
+  훈련에 새어든다 --- 훈련 때만 비현실적으로 정확하고 실전에서 무너지는,
+  디버깅이 거의 불가능한 모델이 된다. (엄밀한 이유는 Ch.\,6.)
+\end{frame}
+
+\begin{frame}{반복되는 세 가지 수학 도구}
+  \begin{columns}[T]
+    \begin{column}{0.33\textwidth}
+      \kb{내적 $w^\top x$}
+      \\[0.4em]{\footnotesize 선형모델의 점수, 유사도, 투영. Ch.\,2의
+      $w^\top x + b$ 부터 어텐션의 $q^\top k$ 까지.}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \kb{연쇄법칙}
+      \\[0.4em]{\footnotesize 합성함수의 미분.
+      경사하강법의 그래디언트, Ch.\,9 역전파의 뼈대.}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \kb{베이즈 정리}
+      \\[0.4em]{\footnotesize $P(y\mid x)\propto P(x\mid y)P(y)$.
+      Ch.\,3 생성 분류, 그리고 불확실성 추론 전반.}
+    \end{column}
+  \end{columns}
+  \vskip1.2em
+  1.3절 실습에서는 이 셋을 \textbf{작은 숫자로 손계산}하며 점검한다 ---
+  다음 장의 ``직선''이 낯선 수학이 아니라 이 챕터의 연장선으로 읽히도록.
+\end{frame}
+
+% ===== wrap-up =====
+\begin{frame}{1주차 정리}
+  \begin{enumerate}
+    \item \kb{역사는 직선이 아니었다} --- 두 번의 겨울, 그리고 ``새 수학이
+      아니라 데이터+계산의 재조합''이라는 반복 패턴.
+    \item \kb{알고리즘보다 정의가 먼저} --- $x,y,h$ 로 문제를 세우고,
+      ``라벨 있나? 보상 있나?'' 두 질문으로 세 갈래를 가른다.
+    \item \kb{모델링은 5단계 중 하나} --- 정제 · EDA · 올바른 train/test
+      분리가 없으면 좋은 모델도 못 구한다.
+  \end{enumerate}
+  \vskip1em
+  \begin{block}{다음 주 --- Chapter 2. 회귀 모델}
+    19세기 수학자가 잡음 섞인 점들 사이를 ``모두를 가장 잘 맞히는'' 한 줄로
+    통과시키는 문제. 오늘 세운 ``손실함수를 정의하고 최소화한다''는 틀과
+    내적 · 그래디언트 감각이 있으면, 그건 새 주제가 아니라 오늘의 연장선이다.
+  \end{block}
+\end{frame}
+
+\end{document}

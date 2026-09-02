@@ -1,0 +1,99 @@
+% ==========================================================================
+%  KSA lecture-slide theme  =  stock beamer "Boadilla"  +  KSA colour theme
+%  brand colours sampled from the official KSA symbol mark:
+%    Deep Prussian Blue  #2E3192   (지성 - intellect)
+%    Golden Gray         #D6CBB1   (감성 - sensibility)
+%  Engine: XeLaTeX.  Usage:
+%    \documentclass[aspectratio=169,11pt]{beamer}
+%    \input{../theme/ksa-theme.tex}
+% ==========================================================================
+
+\usepackage{fontspec}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\graphicspath{{figs/}{../figs/}}
+\usepackage{booktabs}
+\usepackage{listings}
+
+% ---- fonts (no ctex/xeCJK on this box -> fontspec drives CJK directly) -----
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Noto Sans CJK KR}
+\setsansfont{Noto Sans CJK KR}
+\setmonofont{Noto Sans Mono CJK KR}[Scale=0.92]
+
+% ---- base theme: stock Boadilla ------------------------------------------
+\usetheme{Boadilla}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+
+% ---- KSA colour theme (recolour the stock theme) --------------------------
+\definecolor{ksablue}{HTML}{2E3192}
+\definecolor{ksabluedk}{HTML}{20226A}
+\definecolor{ksagold}{HTML}{D6CBB1}
+\definecolor{ksagolddk}{HTML}{A9976B}
+\definecolor{ksared}{HTML}{C0392B}
+\definecolor{ksagray}{HTML}{5B5B5B}
+
+\setbeamercolor{structure}{fg=ksablue}
+\setbeamercolor{alerted text}{fg=ksared}
+
+\setbeamercolor{palette primary}{fg=white,           bg=ksablue}
+\setbeamercolor{palette secondary}{fg=white,         bg=ksablue!85!black}
+\setbeamercolor{palette tertiary}{fg=white,          bg=ksabluedk}
+\setbeamercolor{titlelike}{fg=ksablue}
+\setbeamercolor{frametitle}{fg=ksablue,bg=}
+\setbeamercolor{title}{fg=ksablue}
+\setbeamercolor{author}{fg=ksagray}
+\setbeamercolor{institute}{fg=ksagray}
+\setbeamercolor{block title}{fg=white,bg=ksablue}
+\setbeamercolor{block body}{fg=black!85,bg=ksablue!6}
+\setbeamercolor{item}{fg=ksablue}
+\setbeamercolor{section in toc}{fg=black!85}
+
+\setbeamerfont{frametitle}{series=\bfseries}
+\setbeamerfont{title}{series=\bfseries}
+
+% ---- footline:  KSA mark | "Made by ..." | n / N   (matches reference) ----
+\newcommand{\ksacredit}{Made by Sumin Han \,\textperiodcentered\, suminhan@ksa.hs.kr}
+\setbeamertemplate{footline}{%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.18\paperwidth,ht=2.6ex,dp=1.5ex,leftskip=1.1em]{}%
+      \raisebox{-0.35ex}{\includegraphics[height=2.0ex]{ksa-logo.png}}%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.64\paperwidth,ht=2.6ex,dp=1.5ex,center]{}%
+      {\scriptsize\color{ksagray}\ksacredit}%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.18\paperwidth,ht=2.6ex,dp=1.5ex,rightskip=1.1em]{}%
+      \hfill{\scriptsize\color{ksablue}\insertframenumber\,/\,\inserttotalframenumber}%
+    \end{beamercolorbox}%
+  }%
+  \vskip2pt
+}
+
+% ---- section divider: stock \sectionpage, KSA-coloured -------------------
+\setbeamertemplate{section page}{%
+  \begingroup\centering
+    {\color{ksagolddk}\rule{0.16\paperwidth}{1pt}}\par\vskip1.0em
+    {\usebeamerfont{title}\color{ksablue}\insertsectionhead\par}\vskip1.0em
+    {\color{ksagolddk}\rule{0.16\paperwidth}{1pt}}\par
+  \endgroup
+}
+\AtBeginSection[]{\begin{frame}[plain,noframenumbering]\vfill\sectionpage\vfill\end{frame}}
+
+% ---- code listings ------------------------------------------------------------
+\lstdefinestyle{ksa}{%
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{ksablue}\bfseries,
+  commentstyle=\color{ksagray}\itshape,
+  stringstyle=\color{ksagolddk},
+  numberstyle=\tiny\color{ksagray},
+  backgroundcolor=\color{ksablue!6},
+  frame=leftline, framerule=1.4pt, rulecolor=\color{ksablue},
+  xleftmargin=1em, aboveskip=0.8em, belowskip=0.4em,
+  showstringspaces=false, breaklines=true, language=Python,
+}
+\lstset{style=ksa}
+
+% ---- handy macros -----------------------------------------------------------
+\newcommand{\kb}[1]{\textbf{\color{ksablue}#1}}   % blue keyword
+\newcommand{\kq}[1]{\textbf{\color{ksared}#1}}    % red key-question

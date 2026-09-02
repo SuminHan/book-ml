@@ -1,5 +1,10 @@
 # book-ml
 
+> ### 📽️ 강의 슬라이드 (한국어, 자동 생성 중)
+> **[슬라이드 목록 →](https://smhanlab.com/book-ml/slides/)** · [저장소 폴더](slides/kor/) · [생성 현황 대시보드](https://claude.ai/code/artifact/fafdc419-1d8a-4e44-bfb8-0f76ae23e3f2)
+>
+> 한 주차 = 한 챕터 = 3차시(3시간) 분량 beamer 덱. `slides/` 참고.
+
 KSA Machine Learning 1/2 교재. **한국어판과 영문판이 완전히 분리된 두 개의
 mdBook**으로 빌드된다(하나의 책 안에 4개 파트를 넣던 예전 구조 대신 —
 사이드바/목차가 언어별로 따로 보이게 하려고 분리함).
