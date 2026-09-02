@@ -24,6 +24,11 @@ perl -0777 -i -pe '
 
   # 3b. "\end{frame>"  /  "\end{frame]"  ->  "\end{frame}"   (closing-brace typo)
   s/\\end\{frame[>\]\)]/\\end{frame}/g;
+
+  # 3d. "$\texttt{ ... }$"  ->  "\texttt{ ... }"   (\texttt is text-mode; wrapping
+  #     it in $ breaks).  If the inner text has no $ island, also de-math a bare
+  #     \times / \cdot to "*".  Valid "\texttt{a $\times$ b}" is left untouched.
+  s#\$(\\texttt\{([^{}]*)\})\$# my($f,$in)=($1,$2); if($in!~/\$/){$in=~s/\\(times|cdot)/*/g; "\\texttt{$in}"} else {$f} #ge;
 ' "$F"
 
 # 4. frame with brace balance +/-1  (cq forgets a "{\footnotesize" closer, or

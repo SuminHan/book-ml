@@ -117,7 +117,7 @@ def conv2d(image, kernel):
   신호처리의 정의로, 두 수열 $f$, $k$의 합성곱은
   \[ (f * k)(i) = \sum_j k(j)\, f(i - j) \]
   $i-j$에 주목: 커널이 \textbf{뒤집힌(flipped) 모습}으로 겹쳐진다.
-  그런데 우리 코드($\texttt{image[i+di][j+dj]\times kernel[di][dj]}$)는
+  그런데 우리 코드(\texttt{image[i+di][j+dj]* kernel[di][dj]})는
   뒤집기 없이 그대로 곱한다 --- 신호처리 용어로 이것은
   \kb{상관(correlation)} 이고 ``합성곱''이 아니다.
   \vskip0.4em
@@ -235,7 +235,7 @@ def conv2d(image, kernel):
   \end{itemize}
   \vskip0.3em
   \kq{``패딩은 왜 2p인가'' --- 이 공식에서 가장 많이 범하는 실수.}
-  코드 $\texttt{padding=1}$ 은 \textbf{한 변당} 1픽셀,
+  코드 \texttt{padding=1} 은 \textbf{한 변당} 1픽셀,
   총 늘어나는 길이는 $2p$ 다.
 \end{frame}
 
@@ -259,8 +259,8 @@ def conv2d(image, kernel):
       수직·수평 방향은 \textbf{독립적} --- 사각형 입력이면
       출력도 사각형.
       \vskip0.6em
-      \kb{명명}: $\texttt{padding="valid"}$ = 패딩 없음
-      (필터가 다 들어가는 위치만), $\texttt{padding="same"}$ =
+      \kb{명명}: \texttt{padding="valid"} = 패딩 없음
+      (필터가 다 들어가는 위치만), \texttt{padding="same"} =
       $k$ 가 홀수일 때 $p=(k-1)/2$ 로 $n_{\text{out}}=n$.
     \end{column}
     \begin{column}{0.54\textwidth}
@@ -559,9 +559,9 @@ print(conv_cost(12, 3, 8, 16))   # (10, 1168, 115200)
   \begin{block}{Q. PyTorch에서 28$\times$28 입력의 3$\times$3 conv
   출력이 정말 26$\times$26인가?}
     \small
-    맞다 --- $\texttt{nn.Conv2d(1, 4, 3)}$(기본 padding=0, stride=1)의
-    출력은 26$\times$26, $\texttt{nn.Conv2d(1, 4, 3, padding=1)}$ 는
-    28$\times$28. PyTorch의 $\texttt{padding}$ 인자는 이 절 공식의
+    맞다 --- \texttt{nn.Conv2d(1, 4, 3)}(기본 padding=0, stride=1)의
+    출력은 26$\times$26, \texttt{nn.Conv2d(1, 4, 3, padding=1)} 는
+    28$\times$28. PyTorch의 \texttt{padding} 인자는 이 절 공식의
     \textbf{한 변당 패딩 수 $p$} 그대로(총 $2p$). $p=(k-1)/2$ 의
     same-padding 트릭도 똑같이 동작.
     {\footnotesize (참고: 26$\times$26 에 또 p=0의 3$\times$3을 쓰면
@@ -675,7 +675,7 @@ print(conv_cost(12, 3, 8, 16))   # (10, 1168, 115200)
 \end{frame}
 
 \begin{frame}[fragile]{실습: 4$\times$4 특징지도를 최대풀링으로}
-  10.1절의 $\texttt{conv2d}$ 코드와 같은 스타일로 최대풀링 직접 구현:
+  10.1절의 \texttt{conv2d} 코드와 같은 스타일로 최대풀링 직접 구현:
   \begin{columns}[T]
     \begin{column}{0.60\textwidth}
 \begin{lstlisting}
@@ -1069,7 +1069,7 @@ def residual_block(x, F):
   대체해야 함.)}
 \end{frame}
 
-\begin{frame}[fragile]{실습: PyTorch $\texttt{SmallCNN}$ + 파라미터 장부}
+\begin{frame}[fragile]{실습: PyTorch \texttt{SmallCNN} + 파라미터 장부}
   세로줄 vs 가로줄(16$\times$16, 잡음 섞임)을 구분하는 아주
   작은 CNN:
   \begin{columns}[T]
@@ -1170,7 +1170,7 @@ class SmallCNN(nn.Module):
       지목. 이 항이 스킵 없는 $\prod_l A_l$ 에 존재하지 않는
       ``바닥''임을 한 문장으로.
     \item \kb{구조 비교.} LeNet-5($\approx 6.2$만, FC 11,014)와
-      $\texttt{SmallCNN}$(1,762)의 파라미터 분포(합성곱 vs FC
+      \texttt{SmallCNN}(1,762)의 파라미터 분포(합성곱 vs FC
       비율)를 비교하고, 10.3의 전이학습이 ``앞쪽 합성곱은
       고정, 마지막 분류층만 재학습''하는 설계가 \textbf{왜
       자연스러운지} LeNet-5 구조(C5가 공간 1$\times$1·채널 120)를
@@ -1479,7 +1479,7 @@ class SmallCNN(nn.Module):
 \end{frame}
 
 \begin{frame}{같은 작업에서 세 팔(arm) 비교}
-  10.2의 $\texttt{SmallCNN}$(세로줄/가로줄 분류) 위에서 ---
+  10.2의 \texttt{SmallCNN}(세로줄/가로줄 분류) 위에서 ---
   동일 아키텍처·동일 데이터(300 학습/200 검증)·동일 30 에폭,
   \textbf{다만 어느 층이 갱신되는가}만 바꿈:
   \small
@@ -1488,7 +1488,7 @@ class SmallCNN(nn.Module):
     팔 & 갱신되는 층 & 갱신 파라미터 (전체 1,762 중) \\
     \midrule
     A. 스크래치(scratch) & 전체 & 1,762 \\
-    B. 특징 추출(frozen) & 마지막 분류층($\texttt{fc}$)만
+    B. 특징 추출(frozen) & 마지막 분류층(\texttt{fc})만
         & \textbf{514} \\
     C. 미세조정(fine-tuning) & 전체 (낮은 학습률 0.001) & 1,762 \\
     \bottomrule
@@ -1510,7 +1510,7 @@ class SmallCNN(nn.Module):
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{세 팔의 코드: 동결은 $\texttt{requires\_grad}$로}
+\begin{frame}[fragile]{세 팔의 코드: 동결은 \texttt{requires\_grad}로}
   \begin{columns}[T]
     \begin{column}{0.58\textwidth}
 \begin{lstlisting}
@@ -1535,13 +1535,13 @@ opt = torch.optim.Adam(
         \item \textbf{30 에폭 후 검증
           정확도 90\%} 도달
         \item 학습 전후로
-          $\texttt{conv1}$ 가중치를
+          \texttt{conv1} 가중치를
           직접 비교하면
           \textbf{완전히 동일} ---
-          $\texttt{requires\_grad=False}$ 로
+          \texttt{requires\_grad=False} 로
           고정한 층은 역전파 대상에서
           \textbf{아예 제외}되어,
-          $\texttt{.backward()}$ 를
+          \texttt{.backward()} 를
           아무리 호출해도
           가중치가 \textbf{단 한 번도}
           갱신되지 않음
@@ -1554,8 +1554,8 @@ opt = torch.optim.Adam(
   실전 전이학습은 \textbf{다른(보통 훨씬 큰) 작업}에서 배운
   가중치를 가져온다: (1) \textbf{큰} 데이터셋(4,000장,
   period 3 줄무늬 --- ``ImageNet''의 위장)에서
-  $\texttt{SmallCNN}$ 학습(100\%) $\to$
-  (2) 합성곱 가중치를 $\texttt{copy\_}$ 로 복사, 합성곱
+  \texttt{SmallCNN} 학습(100\%) $\to$
+  (2) 합성곱 가중치를 \texttt{copy\_} 로 복사, 합성곱
   \textbf{동결}하고 \textbf{작은} 데이터셋(300장, period 4 ---
   ``새 문제'')의 \textbf{헤드만} 20 에폭 학습 $\to$
   \textbf{검증 정확도 100\%}.
