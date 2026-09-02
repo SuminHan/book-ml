@@ -22,13 +22,15 @@ perl -0777 -i -pe '
   # 3. "\vskip1em\\"  ->  "\vskip1em"
   s/(\\vskip[0-9.]+ ?e?m[ \t]*)\\\\/$1/g;
 
+  # 3b. "\end{frame>"  /  "\end{frame]"  ->  "\end{frame}"   (closing-brace typo)
+  s/\\end\{frame[>\]\)]/\\end{frame}/g;
 ' "$F"
 
-# 4. frame missing exactly one closing brace (cq forgets a "{\footnotesize"
-#    closer before \end{frame}) -> add one "}" just before \end{frame}.
-#    Only the +1 case; anything else is left for the review pass.
+# 4. frame with brace balance +/-1  (cq forgets a "{\footnotesize" closer, or
+#    writes ".}}" one brace too many).  +1 -> add "}" ; -1 -> drop last "}".
+#    Any larger imbalance is left for the review pass.
 perl -0777 -i -pe '
-  s#(\\begin\{frame\}.*?)(\n[ \t]*\\end\{frame\})# my($b,$t)=($1,$2); my $o=()=$b=~/(?<!\\)\{/g; my $c=()=$b=~/(?<!\\)\}/g; ($o-$c==1)?$b.chr(125).$t:$b.$t #ges;
+  s#(\\begin\{frame\}.*?)(\n[ \t]*\\end\{frame\})# my($b,$t)=($1,$2); my $o=()=$b=~/(?<!\\)\{/g; my $c=()=$b=~/(?<!\\)\}/g; my $d=$o-$c; ($d==1)?$b.chr(125).$t : ($d==-1 && $b=~s/(?<!\\)\}(\s*)$/$1/)?$b.$t : $b.$t #ges;
 ' "$F"
 
 echo "fix_tex: patched $(basename "$F")"
