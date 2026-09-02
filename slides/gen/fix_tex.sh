@@ -21,6 +21,14 @@ perl -0777 -i -pe '
 
   # 3. "\vskip1em\\"  ->  "\vskip1em"
   s/(\\vskip[0-9.]+ ?e?m[ \t]*)\\\\/$1/g;
+
+' "$F"
+
+# 4. frame missing exactly one closing brace (cq forgets a "{\footnotesize"
+#    closer before \end{frame}) -> add one "}" just before \end{frame}.
+#    Only the +1 case; anything else is left for the review pass.
+perl -0777 -i -pe '
+  s#(\\begin\{frame\}.*?)(\n[ \t]*\\end\{frame\})# my($b,$t)=($1,$2); my $o=()=$b=~/(?<!\\)\{/g; my $c=()=$b=~/(?<!\\)\}/g; ($o-$c==1)?$b.chr(125).$t:$b.$t #ges;
 ' "$F"
 
 echo "fix_tex: patched $(basename "$F")"
