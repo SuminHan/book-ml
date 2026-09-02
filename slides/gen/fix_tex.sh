@@ -44,13 +44,45 @@ perl -i -pe '
 ' "$F"
 
 # 3f. frame whose body uses \verb or lstlisting but isn't [fragile] -> make it.
+# 3g. tabular colspec narrower than its rows (cq wrote "ll" for a 3-col table)
+#     -> widen the colspec with extra "l"s.  Widening never breaks a table.
 python3 - "$F" <<'PYEOF'
 import sys,re
 p=sys.argv[1]; t=open(p,encoding='utf-8').read()
-def fix(m):
+
+def frag(m):
     head,body=m.group(1),m.group(2)
     return (head+'[fragile]'+body) if re.search(r'\\verb|\\begin\{lstlisting\}',body) else m.group(0)
-t=re.sub(r'(\\begin\{frame\})(?!\[)(\{.*?\\end\{frame\})', fix, t, flags=re.S)
+t=re.sub(r'(\\begin\{frame\})(?!\[)(\{.*?\\end\{frame\})', frag, t, flags=re.S)
+
+def ncols(spec):
+    s=re.sub(r'@\{[^}]*\}','',spec); s=re.sub(r'[|>{}<]','',s)
+    s=re.sub(r'p\s*\{[^}]*\}','p',s); s=re.sub(r'\*\{(\d+)\}\{([lcrp])\}',
+             lambda mm:mm.group(2)*int(mm.group(1)),s)
+    return len(re.findall(r'[lcrp]',s))
+
+def widen(m):
+    spec,body=m.group(1),m.group(2)
+    have=ncols(spec)
+    if have==0: return m.group(0)
+    # bail on anything that makes cell-counting unreliable
+    if '\\multicolumn' in body or '\\&' in body or '\\multirow' in body:
+        return m.group(0)
+    counts=[]
+    for row in re.split(r'\\\\', body):
+        if '&' not in row: continue
+        if re.search(r'\\(top|mid|bottom)rule|\\hline|\\cmidrule', row): continue
+        r=re.sub(r'\\[a-zA-Z]+\{[^{}]*\}', '', row)   # drop \cmd{...}
+        r=re.sub(r'\$[^$]*\$', '', r)                 # drop $...$
+        counts.append(r.count('&')+1)
+    # only act when every data row agrees and it exceeds the spec by >=1
+    if counts and len(set(counts))==1 and counts[0]>have:
+        add='l'*(counts[0]-have)
+        spec=(re.sub(r'@\{\}\s*$', add+'@{}', spec)
+              if spec.rstrip().endswith('@{}') else spec+add)
+    return '\\begin{tabular}{'+spec+'}'+body+'\\end{tabular}'
+t=re.sub(r'\\begin\{tabular\}\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}(.*?)\\end\{tabular\}',
+         widen, t, flags=re.S)
 open(p,'w',encoding='utf-8').write(t)
 PYEOF
 
