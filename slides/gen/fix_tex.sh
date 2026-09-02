@@ -16,6 +16,7 @@ perl -0777 -i -pe '
   s/\$\\\\([a-zA-Z])/\$\\$1/g;
   s/\\\\([a-zA-Z]+)\$/\\$1\$/g;
 
+
   # 2. stray "\\" right after a list / block end  ->  "no line here to end"
   s/\\end\{(itemize|enumerate|block|columns)\}([ \t]*\r?\n?[ \t]*)\\\\[ \t]*/\\end{$1}\n\\vskip0.4em\n/g;
 
@@ -30,6 +31,11 @@ perl -0777 -i -pe '
   #     Only fires when followed by a Hangul char or closing punctuation, so
   #     genuine "\tanh(z)" / "$\tanh z$" in math are untouched.
   s/(?<![\$\\])\\(tanh|sigmoid|softmax|relu|argmax|argmin|logit)(?=\s*[가-힣)\x{201d}"'"'"'\]])/$1/g;
+
+  # 3c2. bare "_" / "#" / "%" / "&" inside \texttt{...} (non-verbatim) -> escaped.
+  #      cq writes \texttt{env.action_space} with a raw underscore -> Missing $.
+  1 while s/(\\texttt\{[^{}]*?)(?<![\\_])_(?![_])/${1}\\_/;
+  1 while s/(\\texttt\{[^{}]*?)(?<!\\)([#%&])/${1}\\$2/;
 
   # 3d. "$\texttt{ ... }$"  ->  "\texttt{ ... }"   (\texttt is text-mode; wrapping
   #     it in $ breaks).  If the inner text has no $ island, also de-math a bare
