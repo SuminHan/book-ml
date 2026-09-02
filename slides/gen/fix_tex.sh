@@ -7,7 +7,7 @@ set -u
 F="$1"
 [ -f "$F" ] || { echo "fix_tex: no such file $F"; exit 1; }
 
-perl -0777 -i -pe '
+perl -CSD -Mutf8 -0777 -i -pe '
   # 1. "\*" star notation cq uses for optimal values (w^\*  \pi^\*  V^\* ...)
   s/\^\\\*/^{*}/g;
   s/(?<!\\)\\\*/*/g;
@@ -16,6 +16,11 @@ perl -0777 -i -pe '
   s/\$\\\\([a-zA-Z])/\$\\$1/g;
   s/\\\\([a-zA-Z]+)\$/\\$1\$/g;
 
+  # 1c. math connector glued to a Hangul char = text-mode error, fatal.
+  #     "$G_t$\cdot할인율" -> "$G_t$$\cdot$할인율".  Requires a literal Hangul
+  #     neighbour so real math ("$a \cdot b$", "\cdot \text{..}") is untouched.
+  s/\\(cdot|times|div|Rightarrow|rightarrow|leftrightarrow|to|mapsto|leq|geq|approx|sim|cup|cap|equiv)(?=\s*[\x{AC00}-\x{D7A3}])/\$\\$1\$/g;
+  s/(?<=[\x{AC00}-\x{D7A3}])(\s*)\\(cdot|times|div|Rightarrow|rightarrow|leftrightarrow|to|mapsto|leq|geq|approx|sim|cup|cap|equiv)(?![a-zA-Z])/$1\$\\$2\$/g;
 
   # 2. stray "\\" right after a list / block end  ->  "no line here to end"
   s/\\end\{(itemize|enumerate|block|columns)\}([ \t]*\r?\n?[ \t]*)\\\\[ \t]*/\\end{$1}\n\\vskip0.4em\n/g;
@@ -45,7 +50,7 @@ perl -0777 -i -pe '
 
 # 3e. \verb on a \begin{frame} line = \verb in the frametitle = fatal
 #     ("moving argument" -> "TeX capacity exceeded").  Swap every one for \texttt.
-perl -i -pe '
+perl -CSD -Mutf8 -i -pe '
   s/\\verb(\S)(.*?)\1/\\texttt{$2}/g if /^\s*\\begin\{frame\}/;
 ' "$F"
 
@@ -60,6 +65,36 @@ def frag(m):
     head,body=m.group(1),m.group(2)
     return (head+'[fragile]'+body) if re.search(r'\\verb|\\begin\{lstlisting\}',body) else m.group(0)
 t=re.sub(r'(\\begin\{frame\})(?!\[)(\{.*?\\end\{frame\})', frag, t, flags=re.S)
+
+# 3h. \textbf{ / \kb{ / ... that is never closed before a structural token
+#     (cq forgets the "}", a stray "}" much later "balances" it, and the
+#     mangled argument silently eats every following frame).
+FMT=('textbf','textit','emph','textsc','kb','kq')
+STOP=re.compile(r'\\end\{(block|itemize|enumerate|frame|columns|column)\}'
+                r'|\\begin\{(tabular|itemize|enumerate|block)\}'
+                r'|\\\[|\\item(?![a-zA-Z])|\\vskip|\\bigskip|\\medskip')
+def close_runaway_fmt(t):
+    op=re.compile(r'\\(?:'+ '|'.join(FMT) +r')\{')
+    out=[]; i=0; n=len(t)
+    while True:
+        m=op.search(t,i)
+        if not m: out.append(t[i:]); break
+        out.append(t[i:m.end()])          # emit up to and incl. "\textbf{"
+        j=m.end(); depth=1
+        while j<n and depth>0:
+            c=t[j]
+            if c=='\\':
+                if STOP.match(t,j):        # structural token while still open
+                    out.append(t[m.end():j] + '}'*depth)   # content + missing }s
+                    break
+                j+=2; continue
+            depth += (c=='{') - (c=='}')
+            j+=1
+        else:
+            out.append(t[m.end():j])       # closed normally (or EOF)
+        i=j
+    return ''.join(out)
+t=close_runaway_fmt(t)
 
 def ncols(spec):
     s=re.sub(r'@\{[^}]*\}','',spec); s=re.sub(r'[|>{}<]','',s)
