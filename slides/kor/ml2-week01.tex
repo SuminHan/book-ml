@@ -1,0 +1,1473 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\input{../theme/ksa-theme.tex}
+
+\title{코스 소개와 신경망 미니 리뷰}
+\subtitle{강화학습이란 무엇인가 · 신경망 뼈대 · Gymnasium 실습 환경}
+\author{Machine Learning 2 \,\textperiodcentered\, 1주차}
+\institute{한국과학영재학교 (KSA)}
+\date{Chapter 1}
+
+\begin{document}
+
+% ===== title =====
+\begin{frame}[plain,noframenumbering]\titlepage\end{frame}
+
+% ===== roadmap of this week =====
+\begin{frame}{이번 주차 개요}
+  \begin{itemize}
+    \item \kb{1.1 강화학습이란 무엇인가} — 세 갈래의 세 번째를 파고든다.
+      지도학습과의 4개 차이를 짚고, 1951년 쥐 실험부터 DQN$\cdot$PPO$\cdot$AlphaGo
+      로드맵을 Ch.\,2$\sim$16으로 전개한다.
+    \item \kb{1.2 신경망 미니 리뷰} — 활성 함수 없는 2층은 선형 변환 하나,
+      XOR과 1-2-1 역전파 손계산, PyTorch 세 줄 루프로 ``열쇠''를 확인한다.
+    \item \kb{1.3 실습 환경 세팅: Gymnasium} — \texttt{reset}/\texttt{step} 계약,
+      CartPole의 공간, \texttt{terminated}/\texttt{truncated}, 200시드 무작위
+      정책의 베이스라인(평균 24.1스텝)을 수치로 잡아둔다.
+  \end{itemize}
+  \vskip1em
+  \begin{block}{이 챕터를 마치면}
+    세 축(데이터를 누가 만드느냐 $\cdot$ 신호가 $y$인가 보상인가 $\cdot$
+    행동이 미래를 바꾸는가)으로 지도 vs 강화를 구분하고,
+    ``새로움은 학습 알고리즘이 아니라 손실함수의 정의에 있다''를 설명하며,
+    CartPole 무작위 정책의 평균 생존 스텝을 시드 고정으로 재현할 수 있다.
+  \end{block}
+\end{frame}
+
+\section{1.1 강화학습이란 무엇인가, 그리고 이번 학기 로드맵}
+
+\begin{frame}{데이터의 세 갈래 --- 세 번째를 한 학기 파고든다}
+  ML1 1.2에서 머신러닝을 \textbf{데이터의 형태로} 세 갈래로 나누었다:
+  \begin{itemize}
+    \item \kb{지도학습} — 정답 $y$가 붙은 데이터로 예측을 배운다.
+    \item \kb{비지도학습} — 구조만 있는 데이터에서 패턴을 찾는다.
+    \item \kb{강화학습} — 정답도, 라벨도 없다.
+      \textbf{스스로 행동하고, 나중에 돌아오는 보상만 보고} 좋은 행동을
+      찾아낸다.
+  \end{itemize}
+  \vskip0.6em
+  체스나 바둑처럼 ``이 수가 정답이다''를 알려주는 사람이 없다 ---
+  게임이 끝나야 ``이겼다/졌다'' 신호 하나만 돌아온다.
+\end{frame}
+
+\begin{frame}{이번 과목의 정체성}
+  \begin{block}{한 줄씩}
+    \kb{강화학습} = 행동하고, 보상만 보고 배우는 학습. \\[0.6em]
+    \kb{이번 학기의 무대} = \textbf{물리 법칙이 지배하는 로봇 시뮬레이션}.
+  \end{block}
+  \vskip1em
+  ``학습을 배우는 학습''이라는 큰 그림을 먼저 머릿속에 걸어두면,
+  Block B의 DQN$\cdot$PPO$\cdot$MCTS가 별개의 알고리즘이 아니라
+  \textbf{같은 틀의 다른 적용}으로 읽힌다.
+  \begin{itemize}
+    \item 지도의 정답 $y$가 \kb{보상} $R$으로 바뀐다.
+    \item 비지도의 ``구조''가 \kb{에피소드}(행동-보상 시퀀스)로 바뀐다.
+    \item 경사하강법은 \textbf{그대로} --- 다만 경사가
+      \textit{에이전트의 경험}에서 온다.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{한 학기를 1분짜리 예고편으로}
+  이번 학기 전체 흐름을 한 줄로 압축하면:
+  \vskip0.8em
+  \begin{block}{한 줄 예고편}
+    멀티암 밴딧에서 출발해 \textbf{MDP} $\to$ \textbf{동적계획법} $\to$
+    \textbf{몬테카를로} $\to$ \textbf{시간차 학습}까지
+    \textbf{``표 기반''} RL을 완성한 뒤,
+    \textbf{신경망}(DQN, 정책기반)으로 확장하고,
+    \textbf{로봇 시뮬레이션}에서 실전 적용한다.
+  \end{block}
+  \vskip0.8em
+  이 한 줄이 이번 학기의 \textbf{목차}이자 \textbf{로드맵}이다.
+  \begin{itemize}
+    \item (1) RL이 지도학습과 \textit{정확히} 무엇이 다른지
+    \item (2) 왜 하필 로봇 시뮬레이션인지
+    \item (3) 이 한 줄이 Ch.\,2$\sim$16까지 어떻게 풀리는지
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{강화학습의 역사 (1): 이 과목 자체가 반세기의 이야기}
+  \small
+  \begin{tabular}{@{}lp{0.62\textwidth}@{}}
+    \toprule
+    연도 & 사건 \\
+    \midrule
+    1951 & 윌리엄스(Francis Williams): 훈련된 쥐를 모방하는
+             \kb{강화 신호} 기반 신경망 학습 시스템 특허 ---
+             ``동물이 보상 신호로 행동을 고치듯 기계도'' 최초 공식 제안 \\
+    1958 & 로젠블랫(Rosenblatt)의 \kb{퍼셉트론} 발표,
+             시연을 ``강화''해 행동을 고치는 개념 정립 \\
+    1961 & MIT \kb{칼리브라(Kalibra)} --- 로봇팔을 사람의 시연으로 학습,
+             실수 시 신호로 교정. \textit{로봇이 이번 학기의 무대인 계보} \\
+    1988 & 서턴(Sutton): \kb{TD(시간차) 학습} 정식화
+             (Ch.\,6의 핵심 알고리즘 출발) \\
+    1992 & \kb{Q-learning} (Watkins) --- 표 기반 RL의 표준 도구 세트 완성 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{강화학습의 역사 (2): 딥러닝 시대의 결합}
+  \small
+  \begin{tabular}{@{}lp{0.62\textwidth}@{}}
+    \toprule
+    연도 & 사건 \\
+    \midrule
+    2013/15 & \kb{DQN} (Mnih et al., 2015, Nature): Atari 2600에서
+               \textbf{사람 수준 이상}. 표 대신 \textbf{신경망}으로 가치를
+               근사 --- ``딥강화학습''의 장 (Ch.\,9) \\
+    2015$\sim$17 & \kb{TRPO}(2015) $\to$ \kb{PPO}(Schulman et al., 2017):
+               정책기반 방법의 실무 표준 (Ch.\,10$\sim$11) \\
+    2016 & \kb{AlphaGo} (Silver et al., 2016, Nature): 이세돌 9단 4:1 승.
+               정책$\cdot$가치 네트워크 + MCTS 결합 (Ch.\,15) \\
+    2020s & \kb{MuJoCo} (물리엔진) + \kb{Isaac Sim} (NVIDIA GPU 가속):
+               로봇 RL의 무대 확장 (Ch.\,13$\sim$14) \\
+    2022$\sim$ & \kb{RLHF} (Christiano et al., 2017):
+               LLM 정렬 기술로 부상. ``사람의 선호를 보상으로''
+               (Ch.\,12) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  외우라는 게 아니다 --- ``아, 이 알고리즘 이름이 거기서 왔구나''라는
+  감각만 있으면 충분하다.
+\end{frame}
+
+\begin{frame}{첫 핵심 질문: 지도학습과 정확히 무엇이 다른가}
+  \kq{강화학습은 지도학습과 정확히 무엇이 다른가?}
+  \vskip0.8em
+  \small
+  \begin{tabular}{@{}p{0.16\textwidth}p{0.36\textwidth}p{0.42\textwidth}@{}}
+    \toprule
+     & \textbf{지도학습} & \textbf{강화학습} \\
+    \midrule
+    데이터 & 미리 주어짐, $(x,y)$ 쌍 & 에이전트가 \textbf{행동하며}
+             스스로 만들어냄 \\
+    신호 & 정답 $y$ & \kb{보상(reward)} --- 얼마나 좋았는지의 점수 \\
+    시간 & 각 샘플이 독립적 & \textbf{지금 행동이} 미래에 보게 될
+             상태에 영향을 줌 \\
+    새 딜레마 & 없음 & \kb{탐험(exploration)} vs \kb{활용(exploitation)} \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  가장 중요한 차이: \textbf{데이터가 미리 주어지지 않는다}.
+  이 표의 \textbf{각 행이 이번 학기의 한 장(들)을 예고}한다.
+\end{frame}
+
+\begin{frame}{표의 각 행이 한 장을 예고한다 (1)}
+  \begin{itemize}
+    \item \kb{``데이터를 스스로 만들어낸다''} --- 에이전트가
+      \textbf{경험}을 생산. 시작에서 종료까지의 상태-보상-행동 일련을
+      \kb{에피소드}(episode)라 부른다.
+      \;\Rightarrow\; \textbf{Ch.\,3}에서 MDP 정식화로 발전.
+    \item \kb{``보상(reward)''} --- 한 스텝의 점수.
+      에이전트가 실제로 최대화하는 대상은 \kb{할인된 리턴(return)}
+      \[G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots\]
+      \;\Rightarrow\; \textbf{Ch.\,3}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{표의 각 행이 한 장을 예고한다 (2)}
+  \begin{itemize}
+    \item \kb{``지금 행동이 미래를 바꾼다''} ---
+      \kb{마르코프 결정과정(MDP)}이 등장하는 이유.
+      ``현재 상태가 미래의 전부''(마르코프 성질) +
+      ``행동이 전이를 바꾼다''(결정적 구조). \;\Rightarrow\; Ch.\,3.
+    \item \kb{``탐험 vs 활용''} --- 형태를 바꿔가며 \textbf{학기 내내} 등장:
+      \begin{itemize}
+        \item Ch.\,2(밴딧): 가장 순수한 형태
+        \item Ch.\,6(TD): $\varepsilon$-greedy
+        \item Ch.\,9(DQN): 탐색 전략
+        \item Ch.\,11(PPO): 엔트로피 보너스
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{왜 ``보상''만으로는 부족할까: 지연 강화}
+  지도학습의 라벨은 \textit{그 사진 바로 옆}에 붙어 있다.
+  강화학습에서는 보상이 \textbf{늦게} 온다.
+  \begin{itemize}
+    \item 바둑에서 \textbf{50수 전}에 둔 수가 50수 뒤의 승패로
+      드러난다.
+    \item 로봇이 걷다가 \textbf{100스텝 뒤}에 넘어졌을 때,
+      ``어느 스텝의 행동이 원인인가''를 \textbf{에이전트가 스스로}
+      추론해야 한다.
+  \end{itemize}
+  \vskip0.6em
+  이 \textbf{신호가 시간적으로 벌어져 있다}는 사실이 RL을 구분하는
+  \textit{두 번째} 핵심 축. 이를 푸는 도구:
+  \begin{block}{시간차(TD) 학습}
+    ``지금의 추정치를, \textbf{한 스텝 미래의 추정치 + 즉시 보상}으로
+    보정한다'' --- 1988년 서턴이 정식화. \;\Rightarrow\; \textbf{Ch.\,6}의 주제.
+  \end{block}
+\end{frame}
+
+\begin{frame}{``보상을 잘 설계하는 것'' 자체가 공학}
+  지도학습의 라벨은 \textbf{외부에서 주어졌다} --- RL의 보상은
+  \textbf{내가 설계}한다. 보상을 잘못 설계하면 에이전트는
+  \kq{보상이 원하는 것이 아니라 \textbf{보상을 회피하는 방법}을 배운다}.
+  \vskip0.6em
+  \kb{보상 해킹(reward hacking)}의 고전 두 사례:
+  \begin{itemize}
+    \item 진흙탕 로봇, ``진흙 밟기 $-1$'' $\to$ 진흙을 \textbf{지나는 대신
+      보지 못하게}(센서 덮기) 하는 전략.
+    \item Atari \textit{Enduro}: ``점수를 안 잃는 것''을 보상 $\to$
+      \textbf{차를 도로 가장자리에 붙여 멈추기}. (``이기는 법''은 아니지만
+      보상은 더 이상 안 잃는다.)
+  \end{itemize}
+  \vskip0.4em
+  \textbf{보상 설계 = 목적을 정밀하게 언어화하는 작업}.
+  Ch.\,13$\sim$14에서 재등장 --- 실제 로봇 보상(속도$\cdot$토크$\cdot$자세)의
+  각 계수가 성과의 80\%를 결정한다.
+\end{frame}
+
+\begin{frame}{확인 문제: 이 시나리오는 어떤 학습인가?}
+  (i) 지도/비지도/강화 중 무엇인가, (ii) 하위 유형(회귀/분류)은?
+  \small
+  \begin{itemize}
+    \item \textbf{(a)} 배송회사: 지난 10만 건의 기록(거리$\cdot$무게$\cdot$날씨)과
+      실제 소요 시간으로 ``다음 달 배송 소요 시간'' 예측.
+    \item \textbf{(b)} 게임사: 신규 플레이어 1000명의 행동 로그로
+      ``다음 주에도 계속 할 것인가'' 예측.
+    \item \textbf{(c)} 자판기 제조사: ``어떤 가격$\cdot$조합을 보여주면
+      구매가 늘지''를 A/B 테스트로, \textbf{매출 변화를 보상}으로 삼아
+      다음 조합을 스스로 학습.
+    \item \textbf{(d)} 10만 개 고객 리뷰에서, ``긍정/부정'' 라벨이
+      \textbf{없는데도} 주제군('배송'/'품질'/'가격')으로 뭉치는지 찾기.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{확인 문제 답}
+  \small
+  \begin{tabular}{@{}lp{0.74\textwidth}@{}}
+    \toprule
+    사례 & 답 \\
+    \midrule
+    (a) & \textbf{지도학습 $\cdot$ 회귀} --- 정답(소요 시간)이 붙어 있고
+          예측 대상이 \textbf{연속값} \\
+    (b) & \textbf{지도학습 $\cdot$ 분류} --- ``계속/중단''이 범주 라벨,
+          예측이 \textbf{이산} \\
+    (c) & \textbf{강화학습} --- 정답이 미리 안 주고, 가격$\cdot$조합을
+          \textit{행동}으로 고르며 \textit{나중에} 돌아오는 매출 변화가
+          보상. \textbf{탐험 vs 활용}이 그대로 적용 \\
+    (d) & \textbf{비지도학습 $\cdot$ 군집} --- 라벨이 없고 구조만 있음 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \kq{(c)가 이번 과목의 정수다} --- ``보상이 나중에 온다'',
+  ``행동이 미래를 바꾼다'', ``탐험과 활용이 충돌한다''
+  세 특징이 모두 담겨 있다.
+\end{frame}
+
+\begin{frame}{핵심 구성요소: 에이전트와 환경}
+  MDP 정식화(Ch.\,3) 전에, RL의 \textbf{두 배우자}를 직관적으로:
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \item \kb{환경}은 \textit{외부 세계}. 로봇이면 물리 엔진,
+          게임이면 규칙, 공장이면 생산 라인.
+        \item 에이전트는 환경을 \textbf{직접 제어하지 못하고},
+          \textbf{관측(observation)}만 받고
+          \textbf{행동(action)}만 보낸다.
+        \item \kb{에이전트}는 \textit{학습하는 쪽}.
+          \textbf{정책(policy)} $\pi(a|s)$ --- ``상태 $s$에서
+          각 행동 $a$를 고를 확률'' --- 을 점점 개선.
+          \textbf{좋은 정책을 만드는 것}이 곧 RL의 목적.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_agent_env_loop.png}
+      \vskip0.4em
+      {\footnotesize \kb{RL 루프}: 관측 $\to$ 행동 $\to$ 보상 $\to$
+      (다음) 관측. 1.3에서 \texttt{reset}/\texttt{step}이 이 루프를
+      코드로 구현.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{``보상''이 아니라 ``리턴''인가}
+  한 스텝의 보상 $R_t$만 최대화하면:
+  \begin{itemize}
+    \item ``지금 $+1$ 받고 다음에 $-100$ 맞는'' 행동이
+    \item ``지금 $+0.9$ 받고 다음에 $0$인'' 행동보다
+    낫게 \textbf{보인다}.
+  \end{itemize}
+  \vskip0.6em
+  그래서 에이전트가 최대화하는 대상은
+  \kb{할인된 보상 합 = 리턴}
+  \[G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k}\]
+  \begin{block}{할인율 $\gamma \in [0,1)$}
+    ``지금의 1이 10스텝 뒤의 1보다 \textbf{비싸다}'' ---
+    금융의 \textbf{시간가치}와 같은 직관을 공식화. (Ch.\,3)
+  \end{block}
+  \vskip0.4em
+  \kq{자주 하는 실수: ``보상''과 ``리턴''을 같은 것으로}
+  생각하기. 보상 $R_t$는 \textit{한 스텝}의 점수, 리턴은
+  \textit{할인된 미래 합}. 지금 보상 큰 행동을 고르는 것은
+  \textbf{탐욕적(greedy)}이지 \textbf{최적}이 아니다.
+\end{frame}
+
+\begin{frame}{왜 하필 로봇인가: ``표''로는 안 되는 이유}
+  표 기반 Q-테이블은 \textbf{상태를 행, 행동을 열}로 놓는다.
+  \vskip0.4em
+  \kb{CartPole}의 상태: $(x_{\text{cart}},\,\dot{x}_{\text{cart}},\,
+  \theta_{\text{pole}},\,\dot{\theta}_{\text{pole}})$ ---
+  \textbf{4차원 연속 벡터}.
+  \begin{itemize}
+    \item ``$\cdots 0.011$ rad/s''인지 ``$\cdots 0.010$ rad/s''인지에 따라
+      행이 \textit{별개}.
+    \item 0.01 단위 그라데이션만 잡아도 차원당 $10^4$개,
+      4차원이면 \textbf{$10^{16}$개의 행} ---
+      \kb{차원의 저주}(curse of dimensionality)의 구체적 예.
+  \end{itemize}
+  \vskip0.4em
+  로봇의 \textit{행동}도 연속이다 --- ``관절에 정확히 $+3.7$Nm''은
+  이산 목록(열)에 없다. 연속값은 \textbf{무한히 많아서} 열 자체가
+  존재하지 않는다.
+\end{frame}
+
+\begin{frame}{연속 $\to$ 두 가지 확장}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{상태가 연속이면} $\to$
+      \begin{itemize}
+        \item \textbf{함수근사}(신경망)로 $Q$를 표현.
+        \item \textbf{Ch.\,9, DQN}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{행동이 연속이면} $\to$
+      \begin{itemize}
+        \item $\max_a Q(s,a)$ 계산 자체가 불가능.
+        \item \textbf{정책 $\pi(a|s)$를 직접 학습}.
+        \item \textbf{Ch.\,10$\sim$11, REINFORCE / PPO}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip1em
+  이 두 확장 --- \textit{상태를 신경망으로, 행동을 정책으로} ---
+  가 바로 ``딥강화학습''과 ``정책기반 RL''.
+  \begin{block}{왜 로봇인가}
+    \textbf{연속 상태 + 연속 행동 + 물리 법칙}의 결합.
+    표 기반만으로는 풀 수 없고, 신경망 근사 + 정책기반 + 물리 엔진이
+    \textbf{모두} 필요한 문제.
+  \end{block}
+\end{frame}
+
+\begin{frame}{시뮬레이션: 싼 현실}
+  실제 로봇에서 10,000회 시행착오 = \textbf{느리고},
+  \textbf{고장 날 위험}, \textbf{안전 문제}.
+  표준적 해결책: \kb{시뮬레이션}.
+  \begin{itemize}
+    \item \textbf{시뮬레이션 $\neq$ 현실} --- 시뮬에서 학습한 정책이
+      실제 로봇에서 통하는가의 간극 = \kb{sim-to-real gap} (13.1).
+    \item 시뮬레이션은 ``완벽한'' 현실의 대체재가 아니라
+      \textbf{``싼'' 현실}의 대체재.
+    \item ``로봇을 한 번도 구동하지 않고 \textbf{시뮬레이션만으로}
+      학습한 정책을
+      실제 로봇에 옮기는 것''이 최근 로봇 연구의 핵심 주제.
+  \end{itemize}
+  \vskip0.4em
+  \textbf{실습으로 연결} --- CartPole(이산 2행동) vs
+  Pendulum(연속 토크 $-2\sim+2$): 환경 비교만으로
+  ``이산 vs 연속'' 차이가 보이고, \textbf{알고리즘 선택까지} 바뀐다.
+  (1.3절에서 코드로 확인)
+\end{frame}
+
+\begin{frame}{이번 학기의 실습 환경: Gymnasium}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item \kb{Gymnasium} --- 옛 OpenAI Gym(Brockman et al., 2016)의
+          후신. \textbf{표준} 인터페이스 라이브러리.
+        \item 어떤 환경이든: 현재 상태를 관측(\texttt{reset})하고,
+          행동을 하나 취하면(\texttt{step})
+          \textbf{다음 상태$\cdot$보상$\cdot$종료 여부}가 돌아온다.
+        \item 인터페이스가 통일되므로 Ch.\,2$\sim$11의 어떤 알고리즘이든
+          \textbf{환경만 바꿔 끼우면} 재사용.
+        \item Ch.\,13$\sim$14의 MuJoCo$\cdot$Isaac Sim 로봇 환경도
+          이 \texttt{reset}/\texttt{step} 패턴을 그대로 따름.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_gym.png}
+      \vskip0.4em
+      {\footnotesize Gym에 포함된 환경들 (CarRacing, Go, AirRaid,
+      LunarLander, MountainCar, Walker2d, Doom, Reacher) --- 원 논문
+      Figure 1.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{reset}/\texttt{step}으로 직접 보고}
+\begin{lstlisting}
+import gymnasium as gym
+
+# (1) CartPole: 막대 균형. 4차원 연속 상태, 2개 이산 행동
+env = gym.make("CartPole-v1")
+obs, _ = env.reset(seed=0)
+print("CartPole 초기 상태:", obs)
+print("  상태 공간:", env.observation_space)
+print("  행동 공간:", env.action_space)
+env.close()
+
+# (2) Pendulum: 막대를 위로 균형. 3차원 연속 상태, *연속* 행동
+env = gym.make("Pendulum-v1")
+obs, _ = env.reset(seed=0)
+print("Pendulum 초기 상태:", obs)
+print("  상태 공간:", env.observation_space)
+print("  행동 공간:", env.action_space)   # 연속: Box(-2, +2)
+env.close()
+\end{lstlisting}
+  {\footnotesize 지금은 \texttt{env.action_space.sample()}로
+  \textbf{완전 무작위}로 행동 --- Ch.\,2$\sim$11을 거치며 이 한 줄이
+  ``알고리즘이 고른 행동''으로 똑똑해지는 것을 본다.}
+\end{frame}
+
+\begin{frame}{이번 학기 로드맵}
+  각 장의 목표와 핵심 산출물. ``한 장의 A4''로 붙여놓고
+  ``지금 여기 있다''를 확인하는 용도.
+  \scriptsize
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{\color{ksablue}Block A (Ch.\,2--8): ``표 기반''의 완성} \\
+      신경망 없이, RL의 이론적 뼈대를 표(table) 기반으로.
+      \begin{tabular}{@{}cl@{}}
+        \toprule
+        2 & 멀티암 밴딧: $\varepsilon$-greedy, UCB \\
+        3 & MDP 정식화: 상태$\cdot$전이$\cdot$보상$\cdot$\mbox{할인율} \\
+        4 & 동적계획법: 정책 반복, 값 반복 \\
+        5 & 몬테카를로: 에피소드로 값 추정 \\
+        6 & 시간차 학습: TD(0), Q-learning --- \textbf{표 기반의 완성} \\
+        7 & n-step/적격흔적: 편향-분산 조절 \\
+        8 & Block A 캡스톤 + 중간고사 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{\color{ksablue}Block B (Ch.\,9--16): 신경망 + 로봇} \\
+      \begin{tabular}{@{}cl@{}}
+        \toprule
+        9 & DQN: 신경망으로 $Q$ 근사 (Atari 표준) \\
+        10 & REINFORCE: $\max_a Q$ 없이 정책 직접 학습 \\
+        11 & PPO: \textbf{필수 알고리즘} (클래핑, KL 제어) \\
+        12 & 모방학습 \& RLHF: 시연$\cdot$선호로부터 \\
+        13 & 로봇 시뮬레이션: Sim-to-Real, 보상 설계 \\
+        14 & MuJoCo \& Isaac Sim: GPU 가속 물리 \\
+        15 & 모델기반 RL \& MCTS (AlphaGo 핵심) \\
+        16 & Block B 캡스톤 + 학기 총정리 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
+  {\footnotesize Ch.\,2$\sim$7의 순서는 Sutton-Barto 교과서 목차 그대로 ---
+  \textbf{더 단순한 문제에서, 한 단계씩 도구를 추가}한다.}
+\end{frame}
+
+\begin{frame}{로드맵을 한 장의 흐름도로}
+  Block A는 ``표 기반'' 도구들을 \textbf{순서대로 쌓고},
+  Block B는 그 도구를 \textbf{신경망}과 \textbf{로봇}으로 확장.
+  \vskip0.6em
+  \begin{center}
+    \includegraphics[width=0.92\linewidth]{ch01_rl_roadmap.png}
+  \end{center}
+  \vskip0.4em
+  {\footnotesize Block A(Ch.\,2$\sim$7): 밴딧 $\to$ MDP $\to$ DP $\to$ MC
+  $\to$ TD $\to$ n-step/적격흔적. Block B(Ch.\,9$\sim$15): DQN$\cdot$정책기반
+  $\to$ 모방학습/RLHF $\to$ 로봇 시뮬레이션(MuJoCo$\cdot$Isaac Sim)
+  $\to$ 모델기반 RL/MCTS. 중간에 캡스톤(Ch.\,8, 16).}
+\end{frame}
+
+\begin{frame}{``표 기반의 완성''이 왜 중요한가}
+  Block A를 ``지루한 기초''로 넘기면 Block B에서 \textit{왜} 그 기법이
+  그렇게 생겼는지 이해 못 한다.
+  \textbf{신경망 RL은 표 기반 RL의 ``더 큰 버전''이지, 별도 영역이 아니다.}
+  \vskip0.6em
+  \begin{itemize}
+    \item DQN의 \kb{경험 재사용(experience replay)} = MC의 ``에피소드를
+      모아서 평균''의 \textit{신경망 버전}.
+    \item DQN의 \kb{타깃 네트워크} = ``자기 예측을 정답으로 삼으면 불안정해
+      진다''는 TD의 근본 문제(Ch.\,6)를 \textit{신경망 버전}에서 해결.
+    \item PPO의 \kb{클래핑(clipping)} = ``한 번에 정책을 너무 많이 바꾸면
+      발산''하는 \textit{실무 버전}.
+  \end{itemize}
+  \vskip0.4em
+  \kb{블록 B의 모든 기법}은 기존 도구의 \textbf{자연스러운 확장}으로
+  읽힌다.
+\end{frame}
+
+\begin{frame}{ML1과의 연결: 이 과목은 ML1의 ``다음''}
+  \begin{block}{한 문장}
+    ML1은 \textbf{``주어진 데이터를 어떻게 모델로 변환하는가''}를,
+    ML2는 \textbf{``행동하며 데이터를 스스로 만들어내는 에이전트를 어떻게
+    학습시키는가''}를 다룬다.
+  \end{block}
+  \small
+  \begin{tabular}{@{}p{0.3\textwidth}p{0.64\textwidth}@{}}
+    \toprule
+    ML1 개념 & ML2에서 \\
+    \midrule
+    ``$y$가 있나? 보상이 있나?'' (1.2) & 이 과목의 \textit{입구} ---
+      ``보상이 있다''는 갈래가 곧 RL의 정의 (Ch.\,2$\sim$) \\
+    신경망 + 역전파 (Ch.\,9) & DQN의 Q-네트워크, REINFORCE/PPO의 정책
+      네트워크 --- \textit{그대로} 사용 \\
+    손실함수 + 경사하강법 (Ch.\,2, 9) & DQN의 TD 손실, PPO의 정책 손실 ---
+      \textit{같은} 프레임워크 \\
+    과적합$\cdot$정규화 (Ch.\,6) & DQN 경험재사용$\cdot$타깃네트워크,
+      PPO 클래핑이 이 역할 \\
+    LLM 정렬 (Ch.\,13) & \kb{RLHF} (Ch.\,12) --- 같은 기술의
+      ``사람 선호를 보상으로'' 쪽에서 재회 \\
+    \bottomrule
+  \end{tabular}
+  {\footnotesize ``ML1에서 한 줄로 지나간 개념이 ML2에서 한 장이 된다''
+  --- 이 감각이 ML1$\to$ML2를 하나의 연속 학문으로 만든다.}
+\end{frame}
+
+\begin{frame}{확인 문제 + 자주 묻는 질문}
+  \small
+  \kb{확인 문제: ``보상''이 ``정답''으로 바뀌면?}
+  \begin{itemize}
+    \item (a) 성공/실패 \textbf{라벨이 붙은} 영상 10,000개로 패턴 학습
+      $\to$ \textbf{지도학습}(시연 데이터) = \kb{모방학습} (Ch.\,12).
+    \item (b) 시연 \textbf{100개뿐}이고 나머지는 스스로 행동하며 만들면
+      $\to$ \textbf{강화학습}, 희박 보상 ``성공 시 $+1$'',
+      탐험 vs 활용 딜레마가 \textit{여기서} 등장.
+    \item 경계: \textbf{시연이 충분하면 모방, 부족하면 강화}.
+  \end{itemize}
+  \vskip0.4em
+  \kb{자주 묻는 질문}
+  \begin{itemize}
+    \item ``RL은 지도학습의 특수한 경우?'' $\to$ 아니다.
+      \textbf{데이터를 누가 만드냐}가 본질적 차이.
+    \item ``보상이 희박하면 불가능?'' $\to$ 불가능하진 않으나
+      \textit{훨씬} 어려움. 도구: TD(Ch.\,6) $\cdot$ 적격흔적(Ch.\,7)
+      $\cdot$ MCTS(Ch.\,15) $\cdot$ \textbf{보상 성형}(Ch.\,13$\sim$14).
+    \item ``실제 로봇을 다루나?'' $\to$ 아니다, \textbf{시뮬레이션}.
+      시뮬만으로도 충분한 이유: 실제 로봇 학습은 위험$\cdot$비쌈$\cdot$느리고,
+      sim-to-real이 표준 방법이 되었기 때문.
+    \item ``모델 안다 vs 모른다?'' $\to$ ML1의 생성적 vs 판별적 접근과
+      같은 ``중간 모델을 세울 것인가'' 질문. RL에서는
+      \kb{모델기반}(Ch.\,15) vs \kb{모델프리}(Ch.\,2$\sim$11).
+    \item ``왜 PPO가 필수?'' $\to$ REINFORCE는 실무에 불안정(한 번에
+      너무 많이 바꾸면 발산). PPO는 \textbf{클래핑 + KL 제어}로 잡아준
+      실무 표준.
+  \end{itemize}
+\end{frame}
+
+\section{1.2 신경망 미니 리뷰}
+
+\begin{frame}{``열쇠 정리'' 시간}
+  강화학습을 \textbf{새로} 가르치는 게 아니다 --- 앞으로 16개 챕터 내내
+  쓸 \textbf{신경망 뼈대}를 한 번 더 정확히 짚는 시간.
+  \vskip0.6em
+  이번 학기에서 신경망은 \kb{정책(policy)}이 된다:
+  상태 $s$를 입력받아 행동 $a$를 내보내는
+  $\pi_\theta(a|s)$. 이 함수가 어떻게 동작하고 학습되는지 모르면
+  Ch.\,9(DQN)부터 Ch.\,11(PPO)의 모든 수식이 ``마법''으로만 보인다.
+  \vskip0.6em
+  \begin{block}{50분 안에 남기는 네 가지}
+    (1) 순전파가 정확히 뭘 하는지, (2) 층을 쌓으면 표현력이 기하급수적으로
+    폭발하는 이유, (3) 역전파가 숫자 수준에서 실제로 무엇인지,
+    (4) 이 모든 것이 RL에서 어떤 역할을 하는지.
+  \end{block}
+\end{frame}
+
+\begin{frame}{순전파: 4개의 식이 전부}
+  \[\quad z_1 = W_1 x + b_1, \quad a_1 = \sigma(z_1), \quad
+  z_2 = W_2^T a_1 + b_2, \quad a_2 = \sigma(z_2)\]
+  \begin{itemize}
+    \item $W_1$ --- 1층(은닉층) 가중치: 각 유닛이 입력의 어떤 조합을
+      ``보느냐''.
+    \item $b_1$ --- \kb{활성 임계값}을 이동시키는 편향.
+    \item $z_1$ --- 활성화 전의 ``선형 신호''.
+    \item $\sigma$ --- \kb{활성 함수}: $a_1$이 이 신호를
+      \textbf{비선형}으로 왜곡해 내보낸다.
+    \item $W_2^T a_1 + b_2$ --- 은닉 신호를 가중 합쳐 최종 예측.
+  \end{itemize}
+  \vskip0.4em
+  이 4개의 식이 신경망의 \textbf{전부}다 --- 나머지(프레임워크$\cdot$GPU$\cdot$
+  대규모 데이터)는 이 4줄을 빠르고 안정적으로 계산하는 기술에 불과.
+\end{frame}
+
+\begin{frame}{학습의 정의}
+  \begin{block}{학습(training)}
+    예측이 얼마나 틀렸는지를 \kb{손실함수 $J$}로 수치화하고,
+    $J$를 \textbf{줄이는 방향}(그래디언트의 반대 방향)으로
+    파라미터 $W_1, W_2, b_1, b_2$를 조금씩 옮기는 과정.
+  \end{block}
+  \vskip1em
+  이번 학기에서는 PyTorch의 \texttt{nn.Module}과 \texttt{.backward()}로
+  이 계산을 \textbf{자동}으로 처리 --- 손으로 유도하는 연습은
+  (ML1을 들었다면) 끝냈다고 가정.
+  \vskip0.6em
+  \kq{그럼에도 ``왜 활성 함수 $\sigma$가 있는가?''}
+  이 절에서 가장 중요한 ``왜''.
+\end{frame}
+
+\begin{frame}{활성 함수가 없으면: 두 층이 하나의 선형 변환으로}
+  $\sigma$를 빼고 (활성 함수 없는) 2층만 쓰면, 두 층은
+  \textbf{하나의 선형 변환으로 완전히 축소}된다:
+  \[a_2 = W_2^T(W_1 x + b_1) + b_2 = (W_2^T W_1)\,x
+  + (W_2^T b_1 + b_2) \equiv Wx + b\]
+  \begin{itemize}
+    \item 두 층이 하나의 층으로 \textbf{합쳐져 버린다}.
+    \item 아무리 층을 쌓아도 \textbf{직선}(회귀) 또는
+      \textbf{평행사변형의 경계}(분류)밖에 그릴 수 없다.
+    \item 활성 함수가 없으면 층의 ``깊이''라는 개념 자체가 존재하지
+      \textbf{않는다}.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize 이 등식($W_2^T W_1 \equiv W$)을 코드로 직접 확인하는
+  것은 1.2 실습 노트북.}
+\end{frame}
+
+\begin{frame}{비선형 활성이 있는 층을 쌓으면}
+  \begin{itemize}
+    \item 은닉 유닛 \textbf{하나}가 ``$x$가 이 방향에 있는가''를 확인하는
+      한 개의 \kb{선형 경계}(hyperplane)를 만든다.
+    \item 16개 유닛 $\to$ \textbf{16개의 서로 다른 경계}.
+    \item 경계들이 $x$ 공간을 \textbf{여러 조각}(각각 다른 선형 영역)으로
+      쪼개고, 마지막 선형 층이 각 조각 안에서
+      \textbf{각각 다른 기울기}의 직선을 이어붙인다.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{깊이가 곧 표현력의 지수}
+    층이 하나 더 쌓일 때마다 이 ``조각 쪼개기''가
+    \textbf{기하급수적으로} 세진다.
+  \end{block}
+\end{frame}
+
+\begin{frame}{XOR: 직선으로는 안 된다}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      두 입력 $x_1, x_2 \in \{0,1\}$, \textbf{둘이 다를 때만} $y=1$:
+      \small
+      \begin{center}
+      \begin{tabular}{@{}ccc@{}}
+        \toprule
+        $x_1$ & $x_2$ & 정답 $y$ \\
+        \midrule
+        0 & 0 & 0 \\
+        0 & 1 & 1 \\
+        1 & 0 & 1 \\
+        1 & 1 & 0 \\
+        \bottomrule
+      \end{tabular}
+      \end{center}
+      \begin{itemize}
+        \item 정답 1인 점 $(0,1),(1,0)$은 ``한 대각선'',
+          0인 점 $(0,0),(1,1)$은 ``다른 대각선''.
+        \item 한 개의 직선으로 분리하는 경로 \textbf{존재하지 않음}.
+        \item XOR은 \kb{선형 분리 불가능}.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_2_xor_boundary.png}
+      \vskip0.4em
+      {\footnotesize 4-유닛 ReLU 신경망을 역전파로 학습해 얻은 XOR 결정
+      경계 --- 여러 선형 경계가 만나 한 직선으로는 불가능했던 분리.
+      (파란 점 = 1, 붉은 $\times$ = 0)}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{2층 신경망으로 XOR 풀기 + 역사}
+  \begin{itemize}
+    \item 은닉 각 유닛이 $z = \max(0, w_1x_1 + w_2x_2 + b)$ ---
+      \textbf{한 개의 직선 경계}.
+    \item 방향이 다른 두 유닛(``$x_1{+}x_2$ 큰 쪽''과
+      ``$x_1{-}x_2$ 큰 쪽'')의 \textbf{두 직선}이 2차원을
+      \textbf{4개 영역}으로 쪼갠다.
+    \item 출력층이 각 영역에 다른 가중치를 두어 \textbf{파란 두 점에만
+      높은 값}. (실제 학습엔 \textbf{4개 이상}의 유닛 필요 ---
+      2유닛은 잘 알려진 로컬 미니멈에 빠지기 쉽다.)
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{역사적 맥락}
+    XOR은 1969년 민스키$\cdot$파핏의 저서 \textit{Perceptrons}에서
+    ``단층 퍼셉트론으로 풀 수 없는 가장 간단한 문제''로 지적되며
+    \textbf{신경망 연구 10년 정지}의 결정적 원인.
+    1986년 \textbf{역전파}(Rumelhart-Hinton-Williams)로 해소 ---
+    2층 이상은 XOR을 풀고, 그 그래디언트를 계산하는 방법이 있다.
+  \end{block}
+\end{frame}
+
+\begin{frame}{왜 ReLU인가(기본 활성 함수)}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{시그모이드} $\sigma(z) = 1/(1+e^{-z})$
+      \begin{itemize}
+        \item 비선형이고 XOR은 풀 수 있다.
+        \item $z$가 아주 크거나 작으면 도함수 $\approx 0$
+          $\to$ 층이 깊어질수록 그래디언트가 지수급으로 작아지는
+          \kb{사라지는 그래디언트}(ML1 Ch.\,9).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{ReLU} $\max(0, z)$
+      \begin{itemize}
+        \item $z>0$에서 도함수가 \textbf{정확히 1} ---
+          사라지는 그래디언트가 훨씬 완화.
+        \item \textbf{이번 학기 실습의 기본 활성 함수}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip1em
+  {\footnotesize 단면 예: 1-2-1 손계산(다음)에서 $z=-1$인 유닛은
+  ReLU 도함수 0으로 ``죽어'' 이번 업데이트에서 전혀 움직이지 않는다 ---
+  \textbf{희소 활성(sparse activation)}.}
+\end{frame}
+
+\begin{frame}{역전파는 왜 필요한가}
+  그래디언트를 구하는 방법 = \kb{역전파(backpropagation)} ---
+  \textbf{연쇄법칙}을 \textbf{출력에서 입력 방향으로} 거꾸로 적용해,
+  각 파라미터가 최종 손실에 얼마나 책임이 있는지 계산.
+  \begin{itemize}
+    \item 층이 하나면 미분을 손으로 바로 계산 가능.
+    \item 층을 여러 개 쌓으면 한 파라미터의 변화가 최종 손실에
+      도달하기까지 \textbf{경로가 길어진다}.
+    \item 역전파 = 이 긴 경로를 ``출력의 오차를 \textbf{한 층씩 거슬러
+      올려보내며}'' 정확하고 효율적으로 계산하는 절차.
+  \end{itemize}
+  \vskip0.4em
+  \kq{그래도 한 번은 숫자로.}
+  ``오차를 거슬러 올려보낸다''가 실제로 무슨 뜻인지,
+  1-2-1 신경망(입력 1, 은닉 2, 출력 1, ReLU)으로 손계산.
+  가중치를 단순하게 골라 \textbf{정수 연산}만으로 끝낸다.
+\end{frame}
+
+\begin{frame}{1-2-1 손계산: 설정과 순전파}
+  \begin{itemize}
+    \item 은닉층: $W_1 = \begin{bmatrix} +2 \\ -1 \end{bmatrix}$,
+      $b_1 = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$
+      \hfill 출력층: $W_2 = \begin{bmatrix} 1 & 1 \end{bmatrix}$,
+      $b_2 = 0$
+    \item 입력/정답: $x = 1$, $y = 3$ \hfill
+      손실: $J = (\text{pred} - y)^2$
+  \end{itemize}
+  \vskip0.4em
+  \textbf{순전파}:
+  \[z_1 = \begin{bmatrix} 2\cdot 1 \\ -1\cdot 1 \end{bmatrix}
+  = \begin{bmatrix} 2 \\ -1 \end{bmatrix}, \qquad
+  a_1 = \mathrm{ReLU}(z_1) = \begin{bmatrix} 2 \\ 0 \end{bmatrix}\]
+  \[
+  \text{pred} = W_2 a_1 + b_2 = 1\cdot 2 + 1\cdot 0 = 2, \qquad
+  J = (2-3)^2 = 1, \qquad \text{err} = \text{pred} - y = -1
+  \]
+  \vskip0.4em
+  두 번째 은닉 유닛이 \textbf{죽었다}($\mathrm{ReLU}(-1) = 0$) ---
+  이 유닛의 그래디언트가 \textbf{정확히 0}이 되는 것을 곧 본다.
+\end{frame}
+
+\begin{frame}{1-2-1 손계산: 역전파 (출력층)}
+  \textbf{출력층 그래디언트}(연쇄법칙, 가장 단순한 층부터):
+  \[\frac{\partial J}{\partial W_2} = 2\,\mathrm{err}\cdot a_1^T
+  = 2(-1)\begin{bmatrix} 2 & 0 \end{bmatrix}
+  = \begin{bmatrix} -4 & 0 \end{bmatrix}, \qquad
+  \frac{\partial J}{\partial b_2} = 2\,\mathrm{err} = -2
+  \]
+  \vskip0.8em
+  \textbf{은닉층 그래디언트} --- 출력층의 ``오차 신호''
+  $2\,\mathrm{err}\cdot W_2$를 내려보내고 ReLU 도함수로 걸러냄:
+  \[\frac{\partial J}{\partial a_1} = 2\,\mathrm{err}\cdot W_2^T
+  = 2(-1)\begin{bmatrix} 1 \\ 1 \end{bmatrix}
+  = \begin{bmatrix} -2 \\ -2 \end{bmatrix}\]
+  \[\frac{\partial J}{\partial z_1} =
+  \frac{\partial J}{\partial a_1} \odot \mathrm{ReLU}'(z_1)
+  = \begin{bmatrix} -2 \\ -2 \end{bmatrix}
+  \odot \begin{bmatrix} 1 \\ 0 \end{bmatrix}
+  = \begin{bmatrix} -2 \\ 0 \end{bmatrix}\]
+\end{frame}
+
+\begin{frame}{1-2-1 손계산: 역전파 (끝) + 흐름도}
+  \[\frac{\partial J}{\partial W_1} =
+  \frac{\partial J}{\partial z_1}\, x^T
+  = \begin{bmatrix} -2 \\ 0 \end{bmatrix}\cdot 1
+  = \begin{bmatrix} -2 \\ 0 \end{bmatrix}, \qquad
+  \frac{\partial J}{\partial b_1} =
+  \frac{\partial J}{\partial z_1} = \begin{bmatrix} -2 \\ 0 \end{bmatrix}
+  \]
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item 두 번째 유닛의 그래디언트가 \textbf{정확히 0} ---
+          ``아무 책임도 없다''. 죽은 유닛은 이번 업데이트에서
+          \textbf{전혀 움직이지 않는다} (희소 활성).
+        \item 이 네 줄($W_2, b_2, W_1, b_1$)이 \textbf{역전파의 전부}.
+          PyTorch의 \texttt{.backward()}가 내부에서 자동으로 하는 것이
+          \textbf{정확히 이것} --- 층이 100개여도 같은 4줄(각 층마다
+          반복).
+        \item 각 단계를 코드로 재현하면
+          \texttt{.backward()}가 채운
+          \texttt{model.net[i].weight.grad}가 손계산과 \textbf{정확히
+          일치} --- ``역전파가 내가 생각한 것과 같다''는 신뢰의 근거.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_2_mlp_backprop.png}
+      \vskip0.4em
+      {\footnotesize 1-2-1 역전파 흐름도 --- 순전파(실선)와 역전파(붉은
+      점선)가 위 수치와 대응. 죽은 유닛은 그래디언트 0.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{연쇄법칙의 구조를 한 줄로}
+  \[\frac{\partial J}{\partial W_1}
+  = \left(\frac{\partial J}{\partial a_1}\right)
+  \odot \mathrm{ReLU}'(z_1)\cdot x^T\]
+  \begin{block}{세 인자의 곱}
+    ``출력층에서 내려온 \textbf{오차}'' $\times$
+    ``이 유닛의 \textbf{활성 도함수}'' $\times$ \textbf{입력}
+    --- 이 세 인자의 곱이 \textbf{모든 신경망의 모든 층}의 그래디언트를
+    만든다.
+  \end{block}
+  \vskip0.8em
+  층이 깊어질수록 이 곱이 계속 \textbf{쌓이고} --- 이것이 역전파가
+  ``오차를 한 층씩 거슬러 올려보낸다''는 말의 정확함이다.
+\end{frame}
+
+\begin{frame}{유한차분으로 그래디언트를 확인: 단위 테스트}
+  \kb{단일 가중치}의 가장 작은 예제:
+  \texttt{pred} $= w\,x_1 + w_2\,x_2 + b$,
+  $w = 0.3$(배울 파라미터), $w_2 = -0.7$, $b = 0.2$ 고정.
+  데이터 $x_1 = 0.4$, $x_2 = 0.9$, $y = 1.0$,
+  $J = (\text{pred} - y)^2$.
+  \small
+  \begin{tabular}{@{}lp{0.68\textwidth}@{}}
+    \toprule
+    & 계산 \\
+    \midrule
+    손계산 &
+      $\text{pred} = 0.3(0.4) + (-0.7)(0.9) + 0.2 = -0.31$; \;
+      $J = (-1.31)^2 = 1.7161$ \\[0.3em]
+     & $\dfrac{\partial J}{\partial w}
+       = 2(\text{pred} - y)\,x_1 = 2(-1.31)(0.4) = \mathbf{-1.048}$ \\
+    유한차분 & $w$를 $\pm 0.001$: $J(0.301) = 1.715052$,
+      $J(0.299) = 1.717148$ \\[0.3em]
+     & 중심차분: $(J(0.301) - J(0.299))/0.002 =
+      \mathbf{-1.048}$ --- \textbf{정확히 일치} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  해석적 미분 vs 유한차분의 일치 확인이 ``역전파가 맞는가?''의 가장
+  간단한 \kb{단위 테스트} = ML1에서 배운 \textbf{그래디언트 체크}.
+  역전파 코드를 직접 쓰는 순간(Ch.\,10 정책 그래디언트),
+  ``내 미분이 맞나?''에 대한 \textbf{유일한 객관적 검증}.
+\end{frame}
+
+\begin{frame}[fragile]{실습: PyTorch로 $y = 2x + 1$ 배우기}
+\begin{lstlisting}
+import torch
+import torch.nn as nn
+
+class MLP(nn.Module):
+    def __init__(self, in_dim, hidden_dim, out_dim):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(in_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, out_dim),
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+torch.manual_seed(0)
+model = MLP(1, 16, 1)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+loss_fn = nn.MSELoss()
+
+X = torch.rand(64, 1) * 4 - 2
+y = 2 * X + 1
+
+for epoch in range(200):
+    pred = model(X)
+    loss = loss_fn(pred, y)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+print("최종 손실:", round(loss.item(), 4))
+print("x=1일 때 예측:", round(model(torch.tensor([[1.0]])).item(), 3),
+      "(정답: 3.0)")
+\end{lstlisting}
+  {\footnotesize 시드 0: 초기 예측 $\approx 0.23$ (아직 아무것도 모름)
+  $\to$ 50에포크 $\approx 0.17$ (기울기 대략) $\to$ 100에포크
+  $\approx 0.02$ $\to$ 200에포크 \textbf{손실 0.0028, 예측 3.017}.
+  처음 엉뚱한 값을 내놓다가 에포크가 쌓일수록 정답에 수렴 ---
+  \textbf{신경망 학습의 표준적 모습}.}
+\end{frame}
+
+\begin{frame}{세 줄 루프: \texttt{zero\_grad()} $\to$ \texttt{backward()}
+$\to$ \texttt{step()}}
+  \begin{enumerate}
+    \item \texttt{optimizer.zero\_grad()} --- 이전 에포크의 그래디언트를
+      \textbf{초기화}. PyTorch는 \texttt{.backward()} 반복 시 그래디언트가
+      \kb{축적(accumulate)} $\to$ 매 업데이트 전에 \textbf{반드시} 0으로
+      비워야. 빠뜨리면 그래디언트가 계속 쌓여 \textbf{학습이 발산}.
+    \item \texttt{loss.backward()} --- \textbf{역전파} 실행.
+      손계산한 4줄의 그래디언트를 모든 파라미터에 자동 계산해
+      \texttt{.grad}에 채움.
+    \item \texttt{optimizer.step()} ---
+      $\theta \leftarrow \theta - \eta\, \nabla J$ 실행.
+      Adam은 모멘텀 + 적응적 학습률로 보정.
+  \end{enumerate}
+  \vskip0.6em
+  \begin{block}{이번 학기 내내 반복되는 리듬}
+    이 세 줄이 Ch.\,9(DQN), Ch.\,10$\sim$11(정책 신경망)에서
+    \textbf{똑같이} 반복된다.
+  \end{block}
+\end{frame}
+
+\begin{frame}{비선형성이 실제로 필요한 순간: $y = \sin(x)$}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      $y = 2x{+}1$은 \textbf{직선} --- 선형 모델 하나로도 풀린다.
+      \textbf{비선형} $y = \sin(x)$를 같은 2층 MLP로 근사:
+      (numpy MLP, 은닉 32유닛, ReLU, SGD lr=0.1, $x \in [-2,2]$,
+      512샘플, 800 에포크)
+      \begin{itemize}
+        \item \textbf{32개의 직선 조각}이 이어붙여 곡선이 된다 ---
+          $\sin(x)$ 곡률을 따라 ``계단식 근사''.
+        \item 손실: $1.44 \to 0.017 \to 0.008 \to 0.003$
+          (1/100/400/800 에포크) --- \textbf{지수적 감소}, 신경망
+          학습의 전형적 패턴.
+        \item 직선으로 \textit{불가능}했던 근사가 비선형 2층으로
+          \textit{가능} --- ``비선형성의 힘''.
+      \end{itemize}
+      {\footnotesize 주의: 32유닛 계단식 근사는 극값
+      ($x = \pm\pi/2$)과 양 끝($x = \pm 2$)에서 오차가 가장 크다 ---
+      곡률이 센 곳. 유닛을 늘리면 매끄러워진다.}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_2_sin_fitting.png}
+      \vskip0.4em
+      {\footnotesize 왼쪽: 800에포크 학습 후 근사(파란 원 = 데이터,
+      붉은 곡선 = MLP). 오른쪽: 손실 곡선(MSE, 로그 스케일),
+      최종 $\approx 0.0031$.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{신경망 학습의 세 가지 ``왜''를 정리}
+  \small
+  \begin{tabular}{@{}p{0.34\textwidth}p{0.6\textwidth}@{}}
+    \toprule
+    질문 & 답 \\
+    \midrule
+    왜 비선형 활성이 필요한가? & 없으면 여러 층이 하나의 선형 변환으로
+      축소 $\to$ \textbf{깊이 무의미} \\
+    왜 2층 이상인가? & 1층 = 선형 분리만 $\to$ XOR 불가.
+      2층 = 선형 경계의 조합 $\to$ 임의의 결정 경계 근사 \\
+    왜 역전파인가? & 층이 깊을수록 손으로 미분 불가 $\to$
+      연쇄법칙을 출력에서 입력으로 \textbf{자동} 적용 \\
+    왜 ReLU인가(기본)? & 시그모이드의 사라지는 그래디언트 완화,
+      $z>0$에서 도함수 $= 1$으로 \textbf{계산 저렴} \\
+    왜 \texttt{zero\_grad()}를 매번? & PyTorch 그래디언트 축적
+      $\to$ 빠뜨리면 \textbf{발산} \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{이 뼈대가 강화학습에서 어떻게 쓰이는가}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{Q-학습의 신경망 버전 (DQN, Ch.\,9)}
+      \begin{itemize}
+        \item \textbf{모델}: $Q_\theta(s, a)$ --- 상태-행동 쌍의
+          ``장래 누적 보상 예측''
+        \item \textbf{손실}:
+          $J = \mathbb{E}\left[(r + \gamma \max_{a'} Q_{\theta^-}(s', a')
+          - Q_\theta(s, a))^2\right]$ ---
+          \kb{벨만 방정식}(Ch.\,4)의 ``왼쪽''과 ``오른쪽''의 오차
+        \item \textbf{학습}: 동일한 세 줄
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{정책 기반 (REINFORCE, PPO, Ch.\,10$\sim$11)}
+      \begin{itemize}
+        \item \textbf{모델}: $\pi_\theta(a|s)$ --- 각 행동의 확률
+          (출력층 소프트맥스)
+        \item \textbf{손실}:
+          $-\sum_t \log \pi_\theta(a_t|s_t)\cdot G_t$ ---
+          ``보상이 큰 행동의 확률을 올린다'' (정책 그래디언트 정리)
+        \item \textbf{학습}: 여전히 동일한 세 줄
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{핵심 인사이트: 새로움은 손실함수의 정의에}
+  \kb{지도학습}: $x$ $\to$ $\hat{y}$ $\to$ $J = (\hat{y} - y)^2$
+  $\to$ 역전파 $\to$ $W$ 업데이트. \textbf{정답 $y$가 미리 주어진다.} \\[0.4em]
+  \kb{강화학습}: $s$ $\to$ $\pi_\theta(s)$ $\to$ \textbf{보상 $r$으로
+  평가} $\to$ \kb{정책의 가치를 낮추는 방향}으로 $W$ 업데이트.
+  \textbf{정답 $y$가 없다} --- ``이 행동이 얼마나 좋은가''를 보상으로
+  \textit{간접} 평가.
+  \small
+  \begin{tabular}{@{}p{0.18\textwidth}p{0.26\textwidth}p{0.27\textwidth}p{0.26\textwidth}@{}}
+    \toprule
+     & 지도학습(ML1) & DQN(Ch.\,9) & REINFORCE/PPO(Ch.\,10-11) \\
+    \midrule
+    모델 출력 & $\hat{y}$ (라벨 예측) & $Q(s,a)$ (가치 예측)
+      & $\pi(a|s)$ (행동 확률) \\
+    손실 정의 & $(\hat{y}-y)^2$ 또는 교차엔트로피 & 벨만 오차의 MSE
+      & 정책 로그-가능성 $\times$ 보상 \\
+    ``정답'' 출처 & 데이터셋 라벨 & 보상 + 다음 상태 Q값 & 보상(누적) \\
+    학습 루프 & 3줄 동일 & 3줄 동일 & 3줄 동일 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{block}{이번 학기를 통과하는 가장 중요한 열쇠}
+    RL의 ``새로움''은 \textbf{학습 알고리즘이 아니라 손실함수의 정의}.
+    기계(\texttt{zero\_grad() $\to$ backward() $\to$ step()})는 그대로고,
+    \textbf{그 기계에 무엇을 ``정답''으로 넣을 것인가}가 지도/강화를
+    가른다.
+  \end{block}
+\end{frame}
+
+\begin{frame}{자주 하는 실수 (1): 초기화와 \texttt{zero\_grad()}}
+  \begin{itemize}
+    \item \kb{실수 1: ``층을 더 쌓으면 무엇이든 잘 배운다''} --- 아니다.
+      초기화가 잘못되면(가중치가 너무 크거나 작으면) 신호가 층을 거치며
+      \textbf{폭주하거나 사라져} 학습이 시작조차 안 됨.
+      \texttt{MLP(1, 16, 1)}의 16이 ``적당히'' 큰 이유: PyTorch
+      \texttt{nn.Linear}의 \kb{Kaiming 초기화}(입력 차원에 반비례 균등
+      분포, He et al., 2015). 1024로 늘리면 느려지거나 발산.
+      \textbf{깊이는 표현력을 주지만, 안정성은 초기화가 보장}.
+    \item \kb{실수 2: \texttt{zero\_grad()}를 빼먹기} ---
+      \texttt{.backward()} 반복 시 그래디언트 \textbf{축적}.
+      빠뜨리면 ``에포크 1 + 에포크 2의 그래디언트''로 업데이트 $\to$
+      발산/비수렴 ``이상한 현상''의 \textbf{가장 흔한 원인}.
+      \textbf{매 업데이트 전에 \texttt{zero\_grad()}}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{자주 하는 실수 (2): NaN과 ``자동화니까 원리 몰라도 된다''}
+  \begin{itemize}
+    \item \kb{실수 3: 손실이 NaN인 것 무시하기} --- 한 번 \texttt{nan}이
+      되면 모든 예측이 \texttt{nan}이고 학습은 \textbf{영원히 멈춤}.
+      원인: (a) 학습률이 너무 커서 업데이트가 손실함수의 오목한 영역을
+      벗어나 \textbf{발산}, (b) $\log(0)$, $0/0$ 같은 \textbf{수치적
+      특이점}. \texttt{y=2x{+}1} 예제에서 \texttt{lr=1.0}으로 바꾸면
+      50에포크도 안 돼 \texttt{nan}.
+      \textbf{직전 에포크의 손실이 ``갑자기 튀었는가''}부터 봐라 ---
+      대개 학습률 문제.
+    \item \kb{실수 4: ``역전파가 자동으로 되니까 원리를 몰라도 된다''} ---
+      ``마법''인 줄 알면 ``왜 학습이 안 되지?''를 debug할 수 없다.
+      Ch.\,10에서 정책 그래디언트를 직접 유도할 때, Ch.\,12에서
+      ``왜 이 손실을 쓰나?''를 물을 때 역전파의 \textbf{구조}가
+      직접 필요하다.
+      \textbf{디버깅과 설계를 하려면 원리가 필요하다.}
+  \end{itemize}
+\end{frame}
+
+\section{1.3 실습 환경 세팅: Gymnasium}
+
+\begin{frame}{왜 표준 인터페이스가 중요한가}
+  이번 학기 실습은 \kb{Gymnasium}(Towers et al., 2024) ---
+  옛 OpenAI Gym의 후신 --- 위에서 진행한다.
+  \begin{itemize}
+    \item 어떤 환경이든 ``현재 상태를 관측(\texttt{reset}),
+      행동을 하나 취하면(\texttt{step}) \textbf{다음 상태$\cdot$보상$\cdot$
+      종료 여부}가 돌아온다''는 \textbf{같은 인터페이스}.
+    \item 2016년 Gym(Brockman et al., 2016) 이전: 각 연구자가 각자
+      시뮬레이터를 각자 감쌌고, 재현하려면 ``이 사람의 환경 API를
+      읽는 것''부터.
+    \item Gym은 \textbf{``모든 환경이 동일한 두 함수
+      (\texttt{reset}/\texttt{step})를 제공해야 한다''는 규칙 하나}로
+      수천 개의 환경을 하나의 코드베이스 위에서 비교 가능하게.
+    \item 이름 그대로 \textit{gym(체육관)} --- ``에이전트를 훈련시키러
+      들어가는 곳''. 이후 \textbf{Gymnasium 포크}가 사실상 표준.
+      이번 책의 코드는 \textbf{Gymnasium 1.x} 기준.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{표준 계약: \texttt{reset}과 \texttt{step}}
+\begin{lstlisting}
+obs, info = env.reset(seed=42)
+# ... 정책이 obs를 보고 행동 a를 정한다 ...
+obs_next, reward, terminated, truncated, info = env.step(a)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{reset} --- 에피소드(한 번의 게임$\cdot$시도) 시작,
+      \textbf{초기 상태} \texttt{obs}를 돌려준다.
+    \item \texttt{step} --- 한 행동을 받아 \textbf{다섯 개}를 돌려준다:
+      다음 관측 \texttt{obs\_next}, 한 스텝의 \textbf{보상}
+      \texttt{reward}, 종료 신호 두 가지 \texttt{terminated}/
+      \texttt{truncated}(아래에서 구분), 부가 정보 \texttt{info}.
+  \end{itemize}
+  \vskip0.4em
+  이 계약이 1.1절의 강화학습 정의를 코드로 옮긴 것:
+  \[s_{t+1} = f(s_t, a_t), \qquad \text{보상 } r_{t+1} \text{ 을 함께
+  받는다}\]
+  $f$ = 환경의 \kb{전이(transition)}. $f$를 \textbf{정확히 안다면}
+  모델 기반, \textbf{모르면} 모델 프리 --- Ch.\,5$\sim$7이 다루는
+  것은 후자.
+\end{frame}
+
+\begin{frame}[fragile]{환경 만들기: \texttt{gym.make}}
+\begin{lstlisting}
+import gymnasium as gym
+
+env = gym.make("CartPole-v1")   # 막대를 쓰러뜨리지 않고 균형 잡기
+obs, info = env.reset(seed=0)   # 에피소드 시작 -> 초기 관측
+print(type(env), "| 이름:", env.spec.id)
+env.close()
+\end{lstlisting}
+  \begin{itemize}
+    \item 환경은 \textbf{이름 문자열 하나}로 ---
+      \texttt{EnvSpec}에 등록돼 있는 대로 인스턴스화.
+    \item \texttt{-v1}, \texttt{-v2} 서명: 같은 게임이라도 물리
+      파라미터$\cdot$종료 조건이 다른 \textbf{버전} 구분.
+    \item \texttt{make}와 \texttt{reset} \textbf{분리}:
+      \texttt{make}는 환경 \textit{객체}만 만들고 실제 시뮬레이션은
+      \texttt{reset}이 \textbf{시작}.
+      \vskip0.3em
+      같은 환경 객체를 \textbf{여러 에피소드$\cdot$여러 시드}에 걸쳐
+      다시 쓰는 것이 이 구조의 핵심.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{CartPole이란 무엇인가}
+  강화학습의 \kb{``hello world''}.
+  \begin{itemize}
+    \item 수평 레일 위를 미는 \textbf{카트} + 그 위에
+      \textbf{균형}으로 서야 하는 \textbf{막대(pole)}.
+    \item 카트를 \textbf{좌(0)$\cdot$우(1)로만} 미는 것이 허용.
+    \item 목표: 막대가 \textbf{12도($\pm 0.2094$ rad)} 이상 기울어지지
+      않게 최대한 오래 버티기.
+    \item 물리적으로는 \kb{역행자 매달린 진자(inverted pendulum)} ---
+      평형이 \textbf{불안정}. 아무것도 안 하면 필연적으로 쓰러진다.
+    \item 조금 기울어지는 순간 관성이 기울어짐을 \textbf{증폭} $\to$
+      ``한 번 밀어주고 끝''이 아니라 \textbf{매 스텝 대응} 필요.
+      $\Rightarrow$ \textbf{무작위 에이전트는 못 푼다} --- 다음 장의
+      탐험/활용 논의로 자연스럽게 연결.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{종료 조건 세 가지, 종료 플래그는 두 종류}
+  \small
+  \begin{tabular}{@{}p{0.09\textwidth}p{0.55\textwidth}p{0.28\textwidth}@{}}
+    \toprule
+    조건 & 내용 & 플래그 \\
+    \midrule
+    1 & 막대 각도 $|\theta|$가 $0.2094$ rad(약 12도)
+      \textbf{초과} $\to$ \textbf{진짜 실패} & \texttt{terminated} \\
+    2 & 카트가 레일 끝($|x| > 2.4$ m) \textbf{벗어남} $\to$
+      환경이 \textbf{진짜 실패}로 처리 & \texttt{terminated} \\
+    3 & \textbf{500 스텝} 채움(막대는 아직 서 있다) $\to$
+      \textbf{시간 한도} & \texttt{truncated} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  즉 \textbf{조건 1$\cdot$2는 모두 \texttt{terminated}},
+  \texttt{truncated}는 \textbf{시간 한도(조건 3)뿐}이 세운다.
+  \vskip0.6em
+  \kb{보상}: \textbf{살아 있는 한 스텝마다 $+1$} --- ``버틴 스텝 수''가
+  곧 에피소드 리턴. 막대각도$\cdot$중앙에서 멀어짐 같은 \textbf{중간 신호를
+  주지 않고} ``아직 살아 있는가''에만 상 $\to$ 에이전트가 ``어떻게
+  버틸 것인가''를 \textbf{스스로 발견}해야 --- 교육용으로 좋은 이유.
+  (``각도 0에 가까울수록 $+\alpha$'' 같은 \textbf{보상 성형}은 보상이
+  \textit{정말} 희박할 때(Ch.\,13$\sim$14 로봇)의 별도 주제.)
+\end{frame}
+
+\begin{frame}[fragile]{관찰 공간과 행동 공간: \texttt{Box}와 \texttt{Discrete}}
+\begin{lstlisting}
+env = gym.make("CartPole-v1")
+obs, _ = env.reset(seed=0)
+print("관측 공간 :", env.observation_space)
+print("행동 공간 :", env.action_space)
+print("초기 관측 :", obs)
+\end{lstlisting}
+  {\scriptsize\texttt{관측 공간 : Box([-4.8 -inf -0.41887903 -inf],
+  [4.8 inf 0.41887903 inf], (4,), float32)} \\[0.2em]
+  {\scriptsize\texttt{행동 공간 : Discrete(2)} \quad
+  \texttt{초기 관측 : [ 0.0137 -0.023  -0.0459 -0.0483]}}
+  \vskip0.2em
+  \begin{itemize}
+    \item \textbf{관측은 4차원} $[x,\,\dot{x},\,\theta,\,\dot{\theta}]$
+      (카트 위치$\cdot$속도, 막대 각도$\cdot$각속도). \texttt{Box}로 각
+      성분의 상$\cdot$하한($\texttt{low}/\texttt{high}$)을 표현.
+      $x \in [-4.8, 4.8]$, $\theta \in [-0.419, 0.419]$,
+      속도$\cdot$각속도는 $\pm\infty$.
+    \item \textbf{행동}은 \texttt{Discrete(2)} --- \textbf{이산} 두 개
+      (0: 왼쪽, 1: 오른쪽). \texttt{action\_space.n == 2}로 확인.
+  \end{itemize}}
+\end{frame}
+
+\begin{frame}{왜 관측이 4개인가: 위치 + 속도 = 상태}
+  \begin{itemize}
+    \item \textbf{위치만} 주면(막대가 지금 5도 기울어 있다고만),
+      ``아직 기울어지고 있는 중인가, 기울어짐이 \textbf{멈췄는가}''를
+      알 수 없어 다음 행동을 결정 못 한다.
+    \item \textbf{속도까지} 주어야 상태가 \textbf{완전히 기술}된다.
+    \item ``\textbf{위치 + 속도}'' 짝이 물리 시스템 관측의 기본 단위.
+      이 쌍이 \kb{상태(state)}를 이룬다는 사실은 Ch.\,4에서 MDP의
+      $s_t$를 정의할 때 다시 만난다.
+  \end{itemize}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{CartPole} --- \texttt{Discrete(2)}:
+      행동이 \textbf{이산}으로 2개.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{Pendulum} --- \texttt{Box(-2.0, 2.0, (1,), float32)}:
+      ``얼마의 토크($-2\sim+2$)를 줄지''를 실수 하나로 ---
+      \textbf{연속}.
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  이산/연속이 행동 공간의 \textbf{형태}를 정하며, 이 차이가 이후
+  \textbf{어떤 Q함수$\cdot$정책을 표현할지}를 결정
+  (Ch.\,9$\sim$11: DQN은 이산 행동을, 정책기반은 연속 행동을
+  자연스럽게).
+\end{frame}
+
+\begin{frame}[fragile]{실습: CartPole에서 무작위 정책 실행}
+\begin{lstlisting}
+import gymnasium as gym
+
+env = gym.make("CartPole-v1")  # 막대를 쓰러뜨리지 않고 균형 잡기
+obs, info = env.reset(seed=0)
+print("초기 상태(카트 위치, 속도, 막대 각도, 각속도):", obs)
+
+for _ in range(3):
+    action = env.action_space.sample()  # 지금은 무작위 정책
+    obs, reward, terminated, truncated, info = env.step(action)
+    print("행동:", action, "-> 다음 상태:", obs, "보상:", reward)
+
+env.close()
+\end{lstlisting}
+  {\footnotesize 지금은 \texttt{env.action_space.sample()}로
+  \textbf{완전 무작위}로 행동 --- Ch.\,2$\sim$11을 거치며 이 한 줄이
+  ``알고리즘이 고른 행동''으로 \textbf{점점 똑똑해}지는 것을 본다.
+  이 CartPole은 표 기반 알고리즘을 \textbf{시각적으로} 이해하는 데,
+  그리고 Ch.\,9의 DQN에서 \textbf{다시} 등장한다.}
+\end{frame}
+
+\begin{frame}{에피소드가 끝나면: \texttt{terminated}와
+\texttt{truncated}를 구분}
+  둘 다 ``이 에피소드는 여기까지''지만 \textbf{끝난 이유가 다르다}.
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{\texttt{terminated} = True}
+      \begin{itemize}
+        \item \textbf{환경 자체}가 ``게임이 끝났다''고 선언.
+        \item CartPole: 막대 12도 초과, 카트 레일 이탈.
+        \item 터미널 상태 --- 그 뒤의 미래 가치
+          $V(s_{t+1}) = 0$ (게임이 끝났으니까).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{\texttt{truncated} = True}
+      \begin{itemize}
+        \item 환경이 끝나지 않았으나 \textbf{사람이 정한 한도}(최대
+          스텝 수) 도달로 \textbf{강제} 종료. CartPole: 500 스텝.
+        \item 게임은 \textbf{계속됐을 것이다} --- 다음 상태의 가치는
+          그대로 $V(s_{t+1})$을 써야.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{왜 나누는가}
+    \textbf{가치함수를 재귀적으로 업데이트}할 때(Ch.\,5$\sim$7 MC/TD)
+    이 둘이 다르다. 에피소드 종료 판단은
+    $\texttt{done} = \texttt{terminated} \text{ or }
+    \texttt{truncated}$로 하되, \textbf{가치 업데이트}에서는
+    \texttt{terminated}만 ``미래 가치 0'' 신호로 쓰는 것이 정석.
+    구분하지 않으면 \textbf{500스텝째에 Q값을 0으로 잘라} 학습이
+    부정확해진다.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{시드(seed)와 재현성}
+  RL은 \textbf{확률적}이다 --- 초기 상태의 무작위성, 행동 샘플링의
+  무작위성, 전이의 확률성. ``같은 코드를 돌렸는데 결과가 다르다''는
+  \textbf{버그가 아니라 정상}.
+\begin{lstlisting}
+import numpy as np
+env = gym.make("CartPole-v1")
+obs1, _ = env.reset(seed=42)
+obs2, _ = env.reset(seed=42)
+print("같은 시드 -> 같은 초기 관측:", np.allclose(obs1, obs2))  # True
+
+env.action_space.seed(7); a1 = env.action_space.sample()
+env.action_space.seed(7); a2 = env.action_space.sample()
+print("같은 시드 -> 같은 행동:", a1 == a2)  # True
+\end{lstlisting}
+  \begin{itemize}
+    \item \textbf{다른 시드} $\to$ \textbf{다른} 무작위 설정 ---
+      ``여러 시드로 평가해서 평균 내자''의 실전 관행의 이유.
+    \item \texttt{action\_space.sample()}의 시드와
+      \texttt{reset}의 시드는 \textbf{독립}된 무작위 스트림 ---
+      초기 상태를 고정해도 \textbf{행동은 고정되지 않는다}(반대도).
+      \textbf{둘 다} 고정해야 완전히 결정적 재현.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{자주 하는 실수 4가지}
+  \begin{enumerate}
+    \item \kb{\texttt{gym.make}에서 바로 \texttt{step}을 부른다} ---
+      \texttt{make}는 환경만 만들고 초기화는 안 함. 반드시
+      \texttt{reset}이 먼저. \texttt{reset} 없이 \texttt{step}이면
+      \texttt{ResetNeeded: Cannot call env.step() before calling
+      env.reset()} 오류.
+    \item \kb{\texttt{done}을 하나로만 취급한다} --- 종료 판단에
+      \texttt{terminated or truncated}는 맞되, \textbf{가치 업데이트}
+      시 둘을 구분하지 않으면 500스텝째(터미널이 \textit{아닌})를
+      0으로 잘라 학습이 부정확.
+    \item \kb{보상을 누적하지 않는다} --- \texttt{step}은
+      \textbf{한 스텝}의 보상만 줌. 에피소드 리턴은
+      \texttt{total += reward}로 \textbf{매 스텝 누적}해야.
+    \item \kb{\texttt{env.close()}를 깜빡한다} --- 작은 환경에선
+      대수롭지 않으나 시뮬레이터 환경(Ch.\,13$\sim$14)은 메모리를
+      계속 점유 $\to$ \texttt{try/finally}나 \texttt{with} 블록으로
+      정리하는 습관.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{확인 문제}
+  \begin{enumerate}
+    \item \texttt{env.observation\_space.shape}와
+      \texttt{env.action\_space.n}을 출력하면 CartPole의 관측 차원과
+      행동 개수는 몇인가? (힌트: 관측은 \textbf{위치+속도 4개},
+      행동은 \textbf{이산 2개}.)
+    \item \texttt{terminated}와 \texttt{truncated}는 항상
+      \textbf{배타적}(둘 중 하나만 참)인가?
+      (힌트: CartPole \textit{자체}는 한 스텝에 하나의 플래그만 세운다.
+      그런데 막대가 \textbf{500번째 스텝에서} 쓰러진다면?
+      \texttt{gym.make}가 자동으로 덧붙이는 \textbf{\texttt{TimeLimit}
+      래퍼}가 \texttt{truncated}를 어떻게 세우는지를 생각하라.)
+    \item CartPole 보상이 ``매 스텝 $+1$''인 것은 \textbf{보상 성형}
+      관점에서 어떤 성질인가? (힌트: 성형이 \textit{없는} 보상 vs
+      \textit{있는} 보상의 차이 --- 1.1절의 ``보상 = 얼마나 좋았는지의
+      점수''와 연결.)
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]{무작위 정책의 ``베이스라인''을 수치로 잡다}
+  ``무작위로 행동하면 얼마나 버티는가''를 \textbf{숫자로} 알아두면,
+  이후 ``배운 정책''의 성적을 대조할 \textbf{기준점}이 생긴다.
+  200개 시드의 무작위 에피소드:
+\begin{lstlisting}
+import numpy as np
+env = gym.make("CartPole-v1")
+lengths = []
+for seed in range(200):
+    s, _ = env.reset(seed=seed)
+    env.action_space.seed(seed)   # 행동 무작위성도 고정 -> 완전히 재현 가능
+    total, n = 0.0, 0
+    while True:
+        a = env.action_space.sample()
+        s, r, term, trunc, _ = env.step(a)
+        total += r; n += 1
+        if term or trunc: break
+    lengths.append(n)
+lengths = np.array(lengths)
+print(f"무작위 정책 (200 에피소드): 평균 {lengths.mean():.1f} 스텝, "
+      f"최소 {lengths.min()}, 최대 {lengths.max()}")
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{결과: 평균 24.1 스텝}
+  {\footnotesize \texttt{무작위 정책 (200 에피소드): 평균 24.1 스텝,
+  최소 9, 최대 100}}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \item 무작위여도 평균 \textbf{24스텝}은 버틴다 ---
+          초기 $|\theta| \approx 0.05$ rad가 작고, 좌/우를 반반씩
+          미니까 \textbf{운 좋게} 짧은 구간을 버팀.
+        \item 500스텝 채우기(= 균형 완벽)는 \textbf{절대} 불가 ---
+          200개 중 \textbf{0개}.
+        \item \textbf{이 ``24.1''이 정렬 기준}: Ch.\,2의
+          $\varepsilon$-greedy가 24를 크게 넘어서고, Ch.\,9의 DQN이
+          \textbf{500에 근접}하는 과정을 \textbf{같은 숫자로}
+          따라가며 ``배우기''가 실제로 일어나는 것을 확인.
+        \item 시드 42: 24스텝 만에 쓰러짐 --- 카트 위치 $x(t)$는
+          거의 제자리, 막대 $\theta(t)$는 20스텝경부터 급격히 벌어져
+          $-0.2094$ rad(약 $-12^\circ$)를 넘고 \texttt{terminated}.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_cartpole_random_trajectory.png}
+      \vskip0.4em
+      {\footnotesize 무작위 정책 24스텝 에피소드의 관측 변화 ---
+      왼쪽: 카트 위치 $x(t)$, 오른쪽: 막대 각도 $\theta(t)$.
+      $\pm 0.2094$ rad(약 $\pm 12$도)를 넘으면 \texttt{terminated}.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{자주 묻는 질문}
+  \small
+  \begin{itemize}
+    \item \textbf{\texttt{reset}이 (obs, info)를 돌려주는데 \texttt{info}는?}
+      Gymnasium 1.x는 \textbf{2-튜플}. \texttt{info}는 초기 관측과
+      함께 오는 부가 정보(샘플링 방식 등) --- 교육 환경에서는
+      \textbf{빈 dict} $\{\}$. \texttt{obs}만 필요하면
+      \texttt{obs, \_ = env.reset(seed=...)}로 \texttt{\_}를 붙여
+      무시하는 것이 관례.
+    \item \textbf{Gymnasium 1.x의 계약}: \texttt{step}은
+      \textbf{5-튜플}(\texttt{obs, reward, terminated, truncated,
+      info}), \texttt{reset}은 \textbf{2-튜플}.
+      구버전 \texttt{gym}은 \texttt{step}이 4-튜플(\texttt{done} 하나) ---
+      인터넷 예제에서 \texttt{done}만 나오는 4-튜플을 만나면,
+      이번 책에서는 \texttt{terminated}/\texttt{truncated}로
+      \textbf{나누어} 받는다는 점만 기억.
+    \item \textbf{\texttt{action\_space.sample()}의 무작위성은 어떻게
+      고정?} \texttt{action\_space}의 무작위 발생기는 \textbf{상태를
+      유지} --- 같은 시드를 주면 한 에피소드 내 \textbf{전체 행동
+      시퀀스}가 재현. 단 \texttt{reset(seed=...)}으로 \textbf{자동
+      고정되지 않아서} \texttt{action\_space.seed(7)}를 \textbf{별도로}
+      부른다. 완전한 재현에는 \textbf{두 시드 모두} 고정.
+    \item \textbf{로컬에 설치가 안 되면?} 이 책의 모든 노트북은
+      \textbf{Google Colab}에서 바로 실행(Colab 배지). Colab은 CPU만
+      주지만 CartPole$\cdot$Pendulum 같은 \textbf{가벼운} 환경엔
+      충분. Ch.\,13$\sim$14의 무거운 시뮬레이터는 Colab GPU 런타임.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{1.3절의 한 줄}
+    \texttt{reset}/\texttt{step} 두 함수가 ``지금 상태를 보고, 하나를
+    행동하면 다음 상태$\cdot$보상$\cdot$종료 여부가 돌아온다''는
+    \textbf{유일한 계약}. 이 계약이 1.1절의 ``관측 $\to$ 행동 $\to$
+    보상 $\to$ 다음 관측'' RL 정의를 \textbf{코드로 만든 것}이다.
+  \end{block}
+\end{frame}
+
+% ===== wrap-up =====
+\begin{frame}{이번 주차 정리}
+  \begin{enumerate}
+    \item \kb{1.1 RL의 정체성} --- 데이터(에이전트가 만든다) $\cdot$
+      신호(정답 $y$가 아니라 보상) $\cdot$ 시간(행동이 미래를 바꾼다)
+      $\cdot$ 새 딜레마(탐험 vs 활용). \textbf{리턴}
+      $G_t = \sum \gamma^k R_{t+k}$가 최대화 대상이고,
+      로봇 시뮬레이션은 연속 상태$\cdot$행동 + 물리 법칙이라
+      \textbf{표 기반만으로는 안 된다}.
+    \item \kb{1.2 신경망 뼈대} --- 활성 함수 없이는 2층이 선형 하나
+      (XOR로 검증), 역전파 = ``오차를 한 층씩 거슬러 올려보낸다''
+      (1-2-1 손계산). \textbf{새로움은 학습 알고리즘이 아니라
+      손실함수의 정의} --- \texttt{zero\_grad() $\to$ backward()
+      $\to$ step()} 세 줄은 지도/강화 \textbf{그대로}.
+    \item \kb{1.3 Gymnasium} --- \texttt{reset}/\texttt{step} 계약,
+      \texttt{terminated}(진짜 종료) vs \texttt{truncated}(시간
+      한도), 시드 두 개를 모두 고정하는 재현성.
+      \textbf{무작위 정책 베이스라인 = 평균 24.1스텝} --- 이후
+      모든 알고리즘의 ``성공''을 잴 기준.
+  \end{enumerate}
+  \vskip1em
+  \begin{block}{다음 주차 --- Chapter 2. 멀티암 밴딧}
+    상태도, 전이도 없는 \textbf{가장 단순한} RL 문제에서
+    ``탐험 vs 활용'' 딜레마를 \textbf{순수한} 형태로 만난다.
+    $\varepsilon$-greedy와 UCB로 처음 풀어보며 --- CartPole의
+    24.1스텝을 넘는 것이 첫 번째 관문이다.
+  \end{block}
+\end{frame}
+
+\end{document}
