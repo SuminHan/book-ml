@@ -63,7 +63,9 @@ p=sys.argv[1]; t=open(p,encoding='utf-8').read()
 
 def frag(m):
     head,body=m.group(1),m.group(2)
-    return (head+'[fragile]'+body) if re.search(r'\\verb|\\begin\{lstlisting\}',body) else m.group(0)
+    return (head+'[fragile]'+body) if re.search(
+        r'\\verb[^a-zA-Z]|\\begin\{(lstlisting|verbatim|Verbatim|semiverbatim|minted)\}',
+        body) else m.group(0)
 t=re.sub(r'(\\begin\{frame\})(?!\[)(\{.*?\\end\{frame\})', frag, t, flags=re.S)
 
 # 3h. \textbf{ / \kb{ / ... that is never closed before a structural token
