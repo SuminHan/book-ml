@@ -12,6 +12,10 @@ perl -0777 -i -pe '
   s/\^\\\*/^{*}/g;
   s/(?<!\\)\\\*/*/g;
 
+  # 1b. doubled backslash on a command right after / before a "$"  ($\\to$ -> $\to$)
+  s/\$\\\\([a-zA-Z])/\$\\$1/g;
+  s/\\\\([a-zA-Z]+)\$/\\$1\$/g;
+
   # 2. stray "\\" right after a list / block end  ->  "no line here to end"
   s/\\end\{(itemize|enumerate|block|columns)\}([ \t]*\r?\n?[ \t]*)\\\\[ \t]*/\\end{$1}\n\\vskip0.4em\n/g;
 
