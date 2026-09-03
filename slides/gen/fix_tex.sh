@@ -109,8 +109,20 @@ def esc_percent(t):
         # escape only an in-text "%" (has a non-space, non-backslash char before
         # it on the line); a line-initial "%" is a real comment -> leave it.
         parts[i]=re.sub(r'(?<=[^\s\\\n])(?<!\\)%', r'\\%', parts[i])
+        # bare "#" in prose is also fatal (macro-parameter char).  Skip \verb,
+        # \newcommand/\def bodies (cq decks define none), and tabular "*{n}{..}".
+        parts[i]=re.sub(r'(?<![\\{])#(?!\d)', r'\\#', parts[i])
     return ''.join(parts)
 t=esc_percent(t)
+
+# 3g2. tabular colspec has "p" / "m" / "b" with no {width} -> use "l"
+def fix_colspec(m):
+    spec=m.group(1)
+    # a column-type "p" must be followed by "{width}".  If a "p" is instead
+    # followed by @ | } or another column letter, it's a typo for "l".
+    spec=re.sub(r'p(?=\s*[@|}lcr])', 'l', spec)
+    return '\\begin{tabular}{'+spec+'}'
+t=re.sub(r'\\begin\{tabular\}\{((?:[^{}]|\{[^{}]*\})*)\}', fix_colspec, t)
 
 def ncols(spec):
     s=re.sub(r'@\{[^}]*\}','',spec); s=re.sub(r'[|>{}<]','',s)
