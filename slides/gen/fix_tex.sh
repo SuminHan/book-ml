@@ -98,6 +98,20 @@ def close_runaway_fmt(t):
     return ''.join(out)
 t=close_runaway_fmt(t)
 
+# 3i. bare "%" in body text is a LaTeX comment -> eats the rest of the line
+#     (incl. closing braces) -> runaway.  cq means the percent sign: escape it.
+#     Verbatim-ish blocks (real % comments / Python %) are left alone.
+def esc_percent(t):
+    parts=re.split(r'(\\begin\{(?:lstlisting|verbatim|Verbatim|semiverbatim)\}.*?'
+                   r'\\end\{(?:lstlisting|verbatim|Verbatim|semiverbatim)\})',
+                   t, flags=re.S)
+    for i in range(0, len(parts), 2):          # even indices = outside verbatim
+        # escape only an in-text "%" (has a non-space, non-backslash char before
+        # it on the line); a line-initial "%" is a real comment -> leave it.
+        parts[i]=re.sub(r'(?<=[^\s\\\n])(?<!\\)%', r'\\%', parts[i])
+    return ''.join(parts)
+t=esc_percent(t)
+
 def ncols(spec):
     s=re.sub(r'@\{[^}]*\}','',spec); s=re.sub(r'[|>{}<]','',s)
     s=re.sub(r'p\s*\{[^}]*\}','p',s); s=re.sub(r'\*\{(\d+)\}\{([lcrp])\}',
