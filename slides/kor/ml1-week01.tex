@@ -5,38 +5,94 @@
 \subtitle{역사와 로드맵 \,\textperiodcentered\, 문제 정식화와 세 갈래 분류 \,\textperiodcentered\, 파이프라인과 사전지식 리뷰}
 \author{Machine Learning 1 \,\textperiodcentered\, 1주차}
 \institute{한국과학영재학교 (KSA)}
-\date{Chapter 1}
+\date{Week 1}
 
 \begin{document}
-\begin{frame}[plain,noframenumbering]\titlepage\end{frame}
+\begin{frame}[plain]\titlepage\end{frame}
+
+\renewcommand{\ksacredit}{}
 
 % ===== 이번 주차 개요 =====
-\begin{frame}{이번 주차 개요}
+\begin{frame}{목차}
   \small
-  이 챕터를 마치면:
   \begin{itemize}
-    \item 1943$\sim$2025 연표 위에서 1969년과 2012년을 가로지른 \textbf{두 ``AI
-      겨울''}의 원인을 각 한 문장으로 설명.
-    \item 문제를 입력 $x$ · 출력 $y$ · 가설 $h$ 로 \kb{정식화}하고,
-      ``라벨이 있는가? 보상이 있는가?'' 두 질문만으로 \kb{세 갈래} 분류.
-    \item 회귀 vs 분류를 \textbf{``같은 모델, 다른 출력''}(항등 링크 vs
-      시그모이드)으로 설명하고, \textbf{``손실함수 $J$ 를 정의하고
-      최소화한다''}는 뼈대를 이름으로 부름.
-    \item 수집 $\to$ 정제 $\to$ EDA $\to$ 모델링 $\to$ 평가 파이프라인을
-      끝까지 돌리고, 결측치·중복·이상치와 \textbf{데이터 누수}를 잡는 순서를
-      지킴.
+    \item \textbf{고전 ML과 신경망의 역사}: 회귀(1805)$\cdot$SVM(1995)의
+      고전 ML 계보와, 퍼셉트론(1950s)에서 LLM(2022$\sim$)까지의
+      연표, 1969년과 2012년을 가른 \textbf{두 번의 ``AI 겨울''}, 그리고
+      ``왜 하필 2012년이었나''를 \kb{계산}과 \kb{데이터} 두 축으로.
+    \item \textbf{이번 학기 로드맵}: Block A(고전 ML)와 Block B(신경망 $\to$
+      생성모델)의 16개 장이 어떻게 이어지는지, 학기 내내 반복해서 쓸 도구들(numpy $\sim$ PyTorch).
+    \item \textbf{문제 정식화}: 알고리즘보다 먼저 문제를 입력 $x$ ·
+      출력 $y$ · 가설 $h$ 로 정의하기, 학습 데이터 표기($m$, 위첨자 $(i)$),
+      ``정답 라벨은 사람이 정한다''는 라벨의 책임.
+    \item \textbf{세 갈래 분류}: 손에 쥔 데이터로 \kb{지도 / 비지도 / 강화}를
+      가르는 기준, 지도학습 내부의 판별적 vs 생성적, 그리고
+      \textbf{회귀 vs 분류 --- ``같은 모델, 다른 출력''}(항등 링크 vs
+      시그모이드).
+    \item \textbf{데이터 파이프라인과 세 가지 수학}: 수집 $\to$ 정제 $\to$
+      EDA $\to$ 모델링 $\to$ 평가의 흐름과 \textbf{데이터 누수}, 그리고 학기
+      전체를 관통하는 \kb{내적 · 연쇄법칙 · 베이즈 정리}.
   \end{itemize}
-  \vskip0.6em
-  \begin{block}{세 차시 한 줄}
-    \kb{1.1} 역사·로드맵 \quad \kb{1.2} 문제 정의와 세 갈래
-    \quad \kb{1.3} 데이터 파이프라인 + 세 가지 수학
-  \end{block}
 \end{frame}
 
 % =================================================================
-\section{1.1 아주 짧은 역사와 이번 학기 로드맵}
+\section{1.1 고전 ML과 신경망의 역사, 이번 학기 로드맵}
 
-\begin{frame}{이 두 과목이 다루는 질문}
+\begin{frame}[plain]
+  \centering
+  \includegraphics[width=0.65\linewidth]{neuron_history.jpg}
+  \vskip0.5em
+  {\small
+    좌: Ramon y Cajal의 신경 해부도 (1890s) \\[0.15em]
+    우: McCulloch \& Pitts의 로직 회로도 --- 기본 신경원 단위로 AND, OR, NOT 등 모든 로직 구현 (1943)
+  }
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \begin{columns}[c]
+    \begin{column}{0.38\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{lecun.jpg}\\[0.4em]
+      {\small Yann LeCun --- 2018 Turing Laureate}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{mnist_demo.jpg}\\[0.4em]
+      {\small LeNet(CNN) --- MNIST Demo (1998)}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \includegraphics[width=0.92\linewidth]{lenet5_architecture.pdf}
+  \vskip0.3em
+  {\small LeNet-5 Architecture (LeCun et al., 1998)}
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \includegraphics[width=0.92\linewidth]{w01_p2.jpg}
+  \vskip0.3em
+  {\small ImageNet (CVPR, 2009) \\[0.2em] ILSVRC Challenge (2010$\sim$, 1000 categories)}
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \includegraphics[width=0.92\linewidth]{w01_p3.png}
+  \vskip0.3em
+  {\small AlexNet (2012, Krizhevsky, Sutskever \& Hinton, University of Toronto)}
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \includegraphics[width=0.70\linewidth]{alexnet_authors.jpg}
+  \vskip0.4em
+  {\footnotesize Krizhevsky: ImageNet 우승 \textbullet\ Sutskever: OpenAI, ChatGPT \textbullet\ Hinton: 2024 Nobel Prize}
+\end{frame}
+
+\begin{frame}{이 과목이 다루는 질문}
   2012년 ImageNet 대회에서 \kb{AlexNet} 이 등장하기 전까지, ``이 사진에
   고양이가 있는가''를 알려주는 방법은 \textbf{사람이 직접 특징을 설계}하는
   것이었다 --- 가장자리 검출기, 색 히스토그램, 특정 모양의 필터를 손으로
@@ -47,12 +103,12 @@
   이겼다.
   \vskip1em
   \begin{center}
-  \kq{정답이 있는 데이터로부터, 규칙을 사람이 짜는 대신\\
-      기계가 데이터에서 직접 찾아내게 하려면 어떻게 해야 하는가?}
+  \kq{규칙을 사람이 짜는 대신, 정답이 있는 데이터로부터\\
+      기계가 직접 규칙을 찾아내게 하려면 어떻게 해야 할까?}
   \end{center}
 \end{frame}
 
-\begin{frame}{아주 짧은 역사 --- 퍼셉트론에서 LLM까지}
+\begin{frame}{고전 ML과 신경망 --- 두 갈래의 역사}
   \small
   \begin{itemize}
     \item 이번 학기에 배울 아이디어들이 \textbf{언제, 어떤 순서로} 등장했는지
@@ -60,23 +116,46 @@
     \item 흥미로운 점: 역사가 직선으로 발전한 게 아니라
       \kb{침체기(``AI 겨울'')를 두 번이나 거쳤다}는 것.
   \end{itemize}
-  \vskip0.6em
-  \begin{tabular}{@{}ll@{}}
-    \toprule
-    연도 & 사건 \\
-    \midrule
-    1943 & 맥컬록-피터즈 신경원 모형 --- ``수학적으로 학습 가능한 뉴런''의 시작 \\
-    1950s & 퍼셉트론(단층 신경망) 등장 \\
-    1969 & 민스키·페퍼트(1969)의 XOR 한계 증명 $\to$ \textbf{첫 AI 겨울} (Ch.\,9) \\
-    1986 & 역전파(Rumelhart·Hinton·Williams, 1986) 재발견 $\to$ 다층 학습 가능 \\
-    1998 & LeCun의 CNN(LeNet), 손글씨 숫자 인식 성공 (Ch.\,10) \\
-    2012 & AlexNet, ImageNet 압승 --- \textbf{딥러닝 시대의 시작} \\
-    2013 & word2vec · VAE --- 표현학습·생성모델의 현대적 형태 (Ch.\,14, 15) \\
-    2017 & Transformer(``Attention Is All You Need'') (Ch.\,12) \\
-    2022 & ChatGPT --- 사전학습 + RLHF로 조정된 대규모 언어모델의 대중화 \\
-    2025 & GPT-4o·Gemini·Claude 등 멀티모달 LLM이 스마트폰·워크스테이션에 내장 \\
-    \bottomrule
-  \end{tabular}
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering{\footnotesize\textbf{고전 ML (통계적 학습) --- Ch.\,2$\sim$7}}\\[0.2em]
+      \scriptsize
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        연도 & 사건 \\
+        \midrule
+        1805 & 최소제곱법(르장드르$\cdot$가우스) --- 회귀의 기원 (Ch.\,2) \\
+        1936 & 피셔의 선형판별분석(LDA) (Ch.\,3) \\
+        1951 & 최근접이웃 규칙(Fix\&Hodges) $\to$ kNN (Ch.\,4) \\
+        1986 & 결정트리 ID3(Quinlan) (Ch.\,7) \\
+        1995 & SVM(Cortes \& Vapnik) (Ch.\,5) \\
+        2001 & 랜덤포레스트(Breiman) (Ch.\,7) \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering{\footnotesize\textbf{신경망 (퍼셉트론$\to$LLM) --- Ch.\,9$\sim$17}}\\[0.2em]
+      \scriptsize
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        연도 & 사건 \\
+        \midrule
+        1943 & 맥컬록-피터즈 신경원 모형 \\
+        1950s & 퍼셉트론(단층 신경망) 등장 \\
+        1969 & XOR 한계 증명 $\to$ \textbf{첫 AI 겨울} (Ch.\,9) \\
+        1986 & 역전파 재발견 $\to$ 다층 학습 가능 \\
+        1998 & LeCun의 CNN(LeNet) (Ch.\,10) \\
+        2012 & AlexNet --- \textbf{딥러닝 시대의 시작} \\
+        2013 & word2vec$\cdot$VAE (Ch.\,14, 15) \\
+        2016 & AlphaGo(이세돌) --- 강화학습의 상징적 승리 \\
+        2017 & Transformer (Ch.\,12) \\
+        2022 & ChatGPT(사전학습+RLHF) \\
+        2025 & 멀티모달 LLM 대중화 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{연표를 ``연도 축'' 위에 그리면}
@@ -155,6 +234,13 @@
       시도해보다'' 강력하다 --- 동시에 역전파는 바로 그 한계를 정확히
       풀어낸 해법이었다.
   \end{itemize}
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \includegraphics[width=0.75\linewidth]{transformer_diagram.jpg}
+  \vskip0.3em
+  {\small Transformer 아키텍처 (Vaswani et al., ``Attention Is All You Need,'' 2017)}
 \end{frame}
 
 \begin{frame}{반복되는 패턴 --- 돌파구의 정체}
@@ -269,22 +355,11 @@
   어디로 이어지는지''를 확인하는 습관. (부록 Ch.\,17: LLM)}
 \end{frame}
 
-\begin{frame}{ML1과 ML2의 관계}
-  \begin{itemize}
-    \item \kb{강화학습과 로봇 시뮬레이션은 이번 학기(ML1)에서는 전혀
-      다루지 않는다}.
-    \item ML1과 ML2는 \textbf{서로 독립된 과목}으로 설계. ML2가 이 주제를
-      처음부터 끝까지 전담.
-    \item \textbf{ML1을 먼저 듣지 않아도 ML2를 바로 들을 수 있다} ---
-      ML2 1주차에 필요한 신경망 기초를 압축해서 다시 짚어주기 때문.
-  \end{itemize}
-  \vskip0.6em
-  \begin{block}{Block B의 내용 한 줄}
-    역전파의 원리를 \textbf{손으로 유도}(Ch.\,9)한 뒤 CNN(Ch.\,10)까지
-    기본기를 다지고, 시퀀스 모델$\to$Transformer$\to$LLM 계보(Ch.\,11$\sim$13)를
-    훑은 뒤, 비지도학습(PCA·임베딩)과 VAE·GAN·Diffusion까지 생성모델로
-    마무리(Ch.\,14$\sim$15).
-  \end{block}
+\begin{frame}{Block B의 내용 한 줄}
+  역전파의 원리를 \textbf{손으로 유도}(Ch.\,9)한 뒤 CNN(Ch.\,10)까지
+  기본기를 다지고, 시퀀스 모델$\to$Transformer$\to$LLM 계보(Ch.\,11$\sim$13)를
+  훑은 뒤, 비지도학습(PCA·임베딩)과 VAE·GAN·Diffusion까지 생성모델로
+  마무리(Ch.\,14$\sim$15).
 \end{frame}
 
 \begin{frame}{이번 학기 쓸 도구들 (수학 + 코드)}
@@ -299,7 +374,6 @@
     scikit-learn & 분류·회귀·클러스터링 모델의 표준 인터페이스 & Ch.\,2 \\
     PyTorch & 신경망·CNN·시퀀스 모델·VAE/GAN & Ch.\,9 \\
     Hugging Face & LLM 프롬프팅, 사전학습 모델 활용 & Ch.\,17 \\
-    gymnasium & (ML2에서) 강화학습 환경 --- \textbf{ML1에서는 등장하지 않음} & --- \\
     \bottomrule
   \end{tabular}
   \vskip1em
@@ -659,6 +733,11 @@
   \vskip0.6em
   {\footnotesize 강조: 기준은 ``얼마나 어려운 문제인가''가 아니라
   \textbf{``손에 쥔 데이터에 무엇이 적혀 있는가''}.}
+\end{frame}
+
+\begin{frame}[plain]
+  \centering
+  \includegraphics[height=0.92\textheight]{ml_types_mindmap.png}
 \end{frame}
 
 \begin{frame}{지도학습 내부: 판별적 vs 생성적}
