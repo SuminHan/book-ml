@@ -1,0 +1,22 @@
+\begin{frame}{1-2-1 손계산: 설정과 순전파}
+  \begin{itemize}
+    \item 은닉층: $W_1 = \begin{bmatrix} +2 \\ -1 \end{bmatrix}$,
+      $b_1 = \begin{bmatrix} 0 \\ 0 \end{bmatrix}$
+      \hfill 출력층: $W_2 = \begin{bmatrix} 1 & 1 \end{bmatrix}$,
+      $b_2 = 0$
+    \item 입력/정답: $x = 1$, $y = 3$ \hfill
+      손실: $J = (\text{pred} - y)^2$
+  \end{itemize}
+  \vskip0.4em
+  \textbf{순전파}:
+  \[z_1 = \begin{bmatrix} 2\cdot 1 \\ -1\cdot 1 \end{bmatrix}
+  = \begin{bmatrix} 2 \\ -1 \end{bmatrix}, \qquad
+  a_1 = \mathrm{ReLU}(z_1) = \begin{bmatrix} 2 \\ 0 \end{bmatrix}\]
+  \[
+  \text{pred} = W_2 a_1 + b_2 = 1\cdot 2 + 1\cdot 0 = 2, \qquad
+  J = (2-3)^2 = 1, \qquad \text{err} = \text{pred} - y = -1
+  \]
+  \vskip0.4em
+  두 번째 은닉 유닛이 \textbf{죽음}($\mathrm{ReLU}(-1) = 0$) ---
+  이 유닛의 그래디언트가 \textbf{정확히 0}이 되는 것을 곧 확인.
+\end{frame}

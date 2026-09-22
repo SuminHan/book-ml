@@ -1,0 +1,24 @@
+\begin{frame}{ReLU 계열 변형 (2013년경부터)}
+  \small
+  죽는 뉴런을 ``완전 사망''이 아닌 ``숨을 쉰다''로 만든 것:
+  \vskip0.4em
+  \begin{tabular}{@{}p{1.7cm}p{3.6cm}p{8.2cm}@{}}
+    \toprule
+    함수 & 정의 & 한 줄 설명 \\
+    \midrule
+    Leaky ReLU & $\max(0.01z,\, z)$ & 음수 미분 0.01 — 죽지 않고 ``숨 쉰다'' \\
+    ELU & $\min(0,\; \alpha(e^z - 1))$ & 음수 구간 $-\alpha$로 완만 — 미분 0이
+      아님 \\
+    Softplus & $\log(1 + e^z)$ & ReLU의 \textbf{매끄러운} 근사 —
+      $\text{softplus}' = \sigma$ \\
+    Swish (SiLU) & $z \cdot \sigma(z)$ & $z<0$에서 작은 음수 허용 — ReLU보다
+      부드럽고, 깊은 망에서 손실 더 낮음 (2017) \\
+    GELU & $z \cdot \Phi(z)$ & ``$z$가 얼마나 양수적인가''의 확률로 가중 —
+      \textbf{트랜스포머(GPT/BERT)의 표준 은닉층 활성함수} (Week 12) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  {\footnotesize GELU 기억해 두면: Week 12에서 ``왜 GELU인가''는 바로
+  이번 절의 논리(미분이 1 근처 유지 + 부드러움 $\to$ 최적화 안정) 위에
+  얹혀 있다.}
+\end{frame}

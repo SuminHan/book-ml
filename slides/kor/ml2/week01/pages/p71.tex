@@ -1,0 +1,21 @@
+\begin{frame}[fragile]{실습: CartPole에서 무작위 정책 실행}
+\begin{lstlisting}
+import gymnasium as gym
+
+env = gym.make("CartPole-v1")  # 막대를 쓰러뜨리지 않고 균형 잡기
+obs, info = env.reset(seed=0)
+print("초기 상태(카트 위치, 속도, 막대 각도, 각속도):", obs)
+
+for _ in range(3):
+    action = env.action_space.sample()  # 지금은 무작위 정책
+    obs, reward, terminated, truncated, info = env.step(action)
+    print("행동:", action, "-> 다음 상태:", obs, "보상:", reward)
+
+env.close()
+\end{lstlisting}
+  {\footnotesize 지금은 \texttt{env.action\_space.sample()}로
+  \textbf{완전 무작위}로 행동 --- 2$\sim$11주차을 거치며 이 한 줄이
+  ``알고리즘이 고른 행동''으로 \textbf{점점 똑똑해}지는 것을 확인.
+  이 CartPole은 표 기반 알고리즘을 \textbf{시각적으로} 이해하는 데,
+  그리고 9주차의 DQN에서 \textbf{다시} 등장.}
+\end{frame}

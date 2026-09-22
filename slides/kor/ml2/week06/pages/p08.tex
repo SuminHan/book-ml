@@ -1,0 +1,24 @@
+\begin{frame}{TD vs MC: 편향과 분산}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+     & 몬테카를로 & 시간차 학습(TD) \\
+    \midrule
+    목표값 & 실제 리턴 $G_t$(끝까지) & $r+\gamma V(s')$(한 스텝+추정치) \\
+    갱신 시점 & 에피소드 종료 후 & 매 스텝 즉시 \\
+    편향/분산 & 편향 없음(불편), \textbf{분산 큼}
+               & 편향 있음(추정치 사용), \textbf{분산 작음} \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item MC의 $G_t$는 실제로 관찰된 보상의 합이라 편향이 없으나,
+      에피소드 하나가 \textbf{긴 시퀀스의 모든 확률성}을 통째로 담고 있어
+      분산이 크다.
+    \item TD의 목표값은 $V(s')$이 \textbf{아직 부정확한 추정치}라 편향이
+      있으나, 한 스텝의 무작위성만 반영해 분산이 훨씬 작다.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize Week 4.1의 편향-분산 트레이드오프가 여기서도 다른 형태로
+  다시 등장한다.}
+\end{frame}

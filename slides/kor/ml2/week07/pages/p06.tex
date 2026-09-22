@@ -1,0 +1,43 @@
+\begin{frame}{환경: 7개 상태 random walk}
+  \begin{itemize}
+    \item 상태 $0$과 $6$: \textbf{터미널}, $1\sim5$: 이동 상태.
+    \item 매 스텝 50:50 좌우 이동(무작위 정책).
+    \item 왼쪽 끝 $-1$, 오른쪽 끝 $+1$ 보상. $\gamma = 0.9$,
+      상태 $3$에서 시작.
+    \item 학습 목표: 이 환경의 \textbf{참값} $V^\pi(s)$와 비교해
+      $n$별 추정 품질을 측정.
+  \end{itemize}
+  \vskip0.8em
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        상태 & 참값 $V^\pi$ \\
+        \midrule
+        0 & 0 (터미널) \\
+        1 & $-0.5643$ \\
+        2 & $-0.2539$ \\
+        3 & 0 (시작, 대칭 중심) \\
+        4 & $+0.2539$ \\
+        5 & $+0.5643$ \\
+        6 & 0 (터미널) \\
+        \bottomrule
+      \end{tabular}
+      {\footnotesize 좌우 미러링(대칭성)으로
+      $V(3)=0$, $V(2)=-V(4)$, $V(1)=-V(5)$.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{참값의 모양}
+        7-state random walk에서 $n=3$으로 10 에피소드
+        ($\alpha=0.1$, seed 고정) 학습하면, 참값의 모양을
+        대략 따라가며 \textbf{오른쪽 끝(+1 목표)에 가까울수록
+        가치가 매끄럽게 단조 증가}(상태 1 $\approx -0.48$
+        에서 오른쪽으로, 상태 5 $\approx +0.37$까지).
+        \vskip0.3em
+        에피소드가 10개뿐이라 참값까지 다 도달하진 않지만,
+        \textbf{방향(오른쪽 > 왼쪽)은 이미 잡혀} 있는 상태.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}

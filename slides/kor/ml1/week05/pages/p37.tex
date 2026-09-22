@@ -1,0 +1,24 @@
+\begin{frame}{라벨 노이즈 결과: 과적합의 교과서적 신호}
+  \small
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    모델 & train & test & $b/\|w\|$ \\
+    \midrule
+    SVC $C=0.01$ & 0.865 & \textbf{0.968} & $-1.88$ \\
+    SVC $C=0.1$  & 0.995 & 0.877 & $-3.13$ \\
+    SVC $C=1.0$  & 0.995 & 0.870 & $-3.22$ \\
+    SVC $C=10$   & 0.995 & 0.875 & $-3.17$ \\
+    SVC $C=100$  & 1.000 & 0.877 & $-3.13$ \\
+    로지스틱회귀 & 0.995 & 0.873 & $-3.17$ \\
+    \bottomrule
+  \end{tabular}
+  \normalsize\vskip0.5em
+  \begin{itemize}
+    \item \textbf{가장 중요한 숫자}: $C=0.01$의 test $0.968$ —
+      train은 0.865로 ``최악''인데 \textbf{test는 가장 높다}.
+    \item $C\ge0.1$: train 0.995$\sim$1.000(라벨 오류까지 거의 다
+      맞힘)인데 test는 0.87$\sim$0.88로 \textbf{떨어진다}.
+    \item 이 패턴(\textbf{train$\uparrow$ test$\downarrow$}) =
+      과적합의 교과서적 신호, $C$가 그 \textbf{조절 밸브}.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,24 @@
+\begin{frame}{$\sqrt{d_k}$로 나누는 이유: 분산의 정수학}
+  \textbf{``내적값이 차원이 커질수록 커진다''는 정확히 무엇을
+  뜻하는가?}
+  \begin{itemize}
+    \item $q = (q_1, \dots, q_{d_k})$, $k = (k_1, \dots, k_{d_k})$
+      가 서로 독립이고 각 성분이 \textbf{평균 0·분산 1}의 분포에서
+      나온 벡터라고 하자.
+    \item 내적 $\sum_{t=1}^{d_k} q_t k_t$ 는 \textbf{독립한 0평균
+      곱 $d_k$개의 합}.
+    \item 각 항 $q_t k_t$ 의 분산은 1 (독립 0평균·분산 1 변수 두
+      개의 곱)이고, 독립 변수의 합은 \textbf{분산이 더해진다}.
+  \end{itemize}
+  \[
+  \mathbb{E}[q \cdot k] = 0, \qquad
+  \text{Var}[q \cdot k] = d_k
+  \quad \Longrightarrow \quad
+  \text{표준편차} = \sqrt{d_k}
+  \]
+  \vskip0.3em
+  즉 \textbf{스케일링하지 않은 내적은 $\sqrt{d_k}$ 스케일로
+  ``자라난다''} — 차원 64이면 표준편차 약 8, 차원 512이면 약 23.
+  원점수가 $\pm 20 \sim 30$ 스케일로 벌어지면, softmax는 one-hot에
+  붙어버린다.
+\end{frame}

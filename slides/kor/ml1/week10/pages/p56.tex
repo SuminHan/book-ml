@@ -1,0 +1,39 @@
+\begin{frame}[fragile]{세 팔의 코드: 동결은 \texttt{requires\_grad}로}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+\begin{lstlisting}
+model = SmallCNN()
+for p in model.conv1.parameters():
+    p.requires_grad = False
+for p in model.conv2.parameters():
+    p.requires_grad = False
+
+# requires_grad=True인 파라미터만
+# 옵티마이저에 전달 -- fc 층만 학습됨
+opt = torch.optim.Adam(
+    filter(lambda p: p.requires_grad,
+           model.parameters()), lr=0.01)
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{itemize}
+        \item 전체 1,762개 중 실제로
+          \textbf{학습되는} 파라미터는
+          \textbf{514개뿐}
+        \item \textbf{30 에폭 후 검증
+          정확도 90\%} 도달
+        \item 학습 전후로
+          \texttt{conv1} 가중치를
+          직접 비교하면
+          \textbf{완전히 동일} ---
+          \texttt{requires\_grad=False} 로
+          고정한 층은 역전파 대상에서
+          \textbf{아예 제외}되어,
+          \texttt{.backward()} 를
+          아무리 호출해도
+          가중치가 \textbf{단 한 번도}
+          갱신되지 않음
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,26 @@
+\begin{frame}{평균 풀링과 전역 평균 풀링}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{평균 풀링(average pooling)} ---
+      같은 영역의 \textbf{평균}을 남긴다.
+      \begin{itemize}
+        \item 최대풀링이 ``이 지역의 \textbf{최대 반응}이 얼마나
+          컸는가''를 묻는다면, 평균풀링은 ``\textbf{평균 반응}''
+        \item 질감(texture) 같은 \textbf{분포 정보}를 더 잘 유지
+      \end{itemize}
+      그러나 실전에서는 \textbf{최대풀링이 압도적으로} 널리 쓰인다 ---
+      소수 강한 반응이 ``이 특징이 있다''는 \textbf{증거}이므로.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{전역 평균 풀링(global average pooling, GAP)} ---
+      \textbf{극단}: 채널 전체($h\times w$ 모든 위치)의 평균을
+      \textbf{하나만} 남겨 공간 차원을 \textbf{아예 없앰}.
+      \begin{itemize}
+        \item ``16$\times$16 특징지도를 펼쳐 256개 숫자''가 아니라
+          ``이 채널의 \textbf{평균 반응 1개}''
+        \item 마지막 \textbf{완전연결층의 파라미터를 대폭 줄이는}
+          용도 (아래 VGG16에서)
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

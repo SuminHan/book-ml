@@ -1,0 +1,16 @@
+\begin{frame}{자주 하는 실수}
+  \small
+  \begin{itemize}
+    \item \kq{\texttt{target\_net = Q\_net}으로 ``복사''.} 별칭(alias)일 뿐
+      값 복사가 아님 --- $\theta$가 갱신되면 타겟도 \textbf{자동으로}
+      갱신되므로 = 타겟 네트워크가 없는 것과 동일.
+      \texttt{load\_state\_dict}는 값을 \textbf{별개} 파라미터로 복사.
+      (확인: \texttt{target\_net is Q\_net}이 \texttt{False}여야 함.)
+    \item \kq{타겟 네트워크를 옵티마이저에 포함.}
+      \texttt{Adam(Q\_net.parameters() + target\_net.parameters())}이면
+      타겟이 \textbf{조용히 학습}됨 $\Rightarrow$ ``목표 고정'' 전제가 무너짐.
+    \item \kq{\texttt{torch.no\_grad()} 빼먹기.} 계산도 두 배(메모리),
+      ``목표도 함께 당겨지는'' 경로가 생김.
+  \end{itemize}
+  \normalsize
+\end{frame}

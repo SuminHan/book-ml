@@ -1,0 +1,26 @@
+\begin{frame}{자주 묻는 질문 (4): 왜 그래디언트가 같은 형태인가}
+  \textbf{Q. 교차 엔트로피의 그래디언트가 선형회귀와 같은 형태
+  $(h-y)\cdot \boldsymbol{x}$ 인 이유는?}
+  \vskip0.6em
+  \begin{center}
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    (1) & $\frac{\partial J}{\partial h} = -\frac{y}{h} + \frac{1-y}{1-h}$ \\
+    (2) & $\frac{\partial h}{\partial z} = \sigma(z)(1-\sigma(z)) =
+      h(1-h)$ \\
+    (3) & 세 조각을 곱하면 $h(1-h)$ 가 \textbf{통째로 약분}되어
+      $(h-y)$ 만 남음 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vskip0.6em
+  \begin{block}{해석}
+    \kb{``시그모이드의 미분이 정확히 시그모이드의 출입구''}라서,
+    손실함수의 ``벌''과 시그모이드의 ``압축''이 \textbf{상쇄}되는
+    것.
+    \\ 이 약분이 없으면 로지스틱회귀의 경사하강법은 선형회귀와
+    \textbf{다른 코드}가 되어야 하는데, 실제로는 \textbf{코드
+    구조가 완전히 동일} --- 이 절의 ``같은 패턴'' 강조의 이유.
+  \end{block}
+\end{frame}

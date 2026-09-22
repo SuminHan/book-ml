@@ -1,0 +1,21 @@
+\section{13.2 로봇 환경 탐색 실습}
+\begin{frame}[fragile]{실습: Pendulum-v1 + 손으로 만든 PD 제어기}
+  Gymnasium의 로봇류 환경. CartPole·Pendulum도 사실 \emph{가장 작은}
+  형태의 관절 제어 문제. Pendulum-v1: 상태 $(\cos\theta, \sin\theta, \dot\theta)$,
+  \kb{연속} 행동공간 $\text{Box}(-2.0, 2.0)$ (토크).
+\begin{lstlisting}
+obs, info = env.reset(seed=0)
+total_reward = 0.0
+for _ in range(50):
+    cos_th, sin_th, thdot = obs
+    theta = np.arctan2(sin_th, cos_th)
+    # 손으로 설계한 PD(비례-미분) 제어기
+    action = np.clip(-2.0 * theta - 0.5 * thdot, -2.0, 2.0)
+    obs, reward, terminated, truncated, info = env.step([action])
+    total_reward += reward
+print("PD 제어기의 50스텝 누적 보상:", round(total_reward, 2))
+\end{lstlisting}
+  {\footnotesize 이 PD 제어기는 강화학습이 \emph{전혀} 아니다 --- 사람이 직접
+  설계한 규칙. 그런데도 무작위보다 낫다. 그러나 ``나은가''를 판정하려면
+  \textbf{평가 프로토콜}이 먼저다.}
+\end{frame}

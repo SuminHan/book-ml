@@ -1,0 +1,35 @@
+\begin{frame}{2차원 GMM: 공분산 행렬 $\Sigma_k$}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      1차원에선 $\mu_k, \sigma_k^2$가 스칼라였지만 $d$차원에선
+      $\mu_k \in \mathbb{R}^d$, $\Sigma_k \in \mathbb{R}^{d \times
+      d}$(\kb{공분산 행렬}). E-step은 \textbf{그대로}, M-step은
+      \textbf{가중 공분산}만 추가:
+      \[
+      \Sigma_k = \frac{\sum_i \gamma_{ik}(x_i - \mu_k)(x_i - \mu_k)^{\mathsf{T}}}
+                     {\sum_i \gamma_{ik}}
+      \]
+      이 $\Sigma_k$가 \textbf{GMM이 k-means보다 표현력이 많은
+      정체} --- k-means는 \textbf{위치}($\mu_k$) 하나뿐(경계
+      \textbf{항상 직선}, ``동일한 크기의 원'')인데, $\Sigma_k$는
+      (i) \textbf{크기}, (ii) \textbf{타원형 모양}, (iii)
+      \textbf{기울어진(비대각) 형상}을 \textbf{모두} 표현. 결정경계
+      도 ``두 정규분포의 \textbf{밀도비가 1인 곡선}'' $\Rightarrow$
+      직선이 아닌 \textbf{타원호}.
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch15_gmm_contour.png}
+      \vskip0.4em
+      {\footnotesize 3개 블롭(각 50점)에 $K=3$ GMM을 EM으로
+      학습. 점 색=\textbf{책임값}, 등고선=likelihood. 왼쪽은
+      \textbf{길쭉한 타원}, 위쪽은 \textbf{원}.}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{block}{k-means와의 가장 눈에 띄는 차이}
+    덩어리 \textbf{경계 안쪽}의 점들이 \textbf{두 클러스터 색을
+    섞어서} 보임 --- k-means(점 하나에 딱 하나의 색)와 달리
+    \textbf{불확실성을 그대로} 보여준다.
+  \end{block}
+\end{frame}

@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{A2C 코드 (2/2): 두 손실함수, 두 갱신}
+\begin{lstlisting}
+    # --- 1) Actor 갱신: REINFORCE에서 G_t -> A_t = G_t - V(s_t)만 바꿈 ---
+    G, rets = 0.0, []
+    for r in reversed(rewards):
+        G = r + gamma * G
+        rets.insert(0, G)
+    rets = torch.tensor(rets)
+    vs    = torch.stack([net(st)[1] for st in states])  # V(s_t)
+    adv   = rets - vs.detach()          # A_t (상수로 취급!)
+    actor_loss = -sum(lp * ad for lp, ad in zip(log_probs, adv))
+    opt.zero_grad(); actor_loss.backward(); opt.step()
+
+    # --- 2) Critic 갱신: Week 6의 TD(0) 값 학습 그대로 ---
+    with torch.no_grad():
+        vnext = torch.stack([net(ns)[1] for ns in nexts])
+    critic_loss = nn.functional.mse_loss(
+        vs, torch.tensor(rewards) + gamma * vnext)
+    opt.zero_grad(); critic_loss.backward(); opt.step()
+    return sum(rewards)
+\end{lstlisting}
+\end{frame}

@@ -1,0 +1,20 @@
+\section{13.3 연속제어환경에 PPO 적용하기}
+\begin{frame}[fragile]{PPO를 연속 행동으로 확장: 가우시안 정책}
+  Week 11의 PPO는 이산 행동(softmax)뿐 아니라 \textbf{연속 행동}에도
+  자연스럽게 확장된다 --- 신경망이 각 행동 차원마다 정규분포의 평균과
+  표준편차를 출력하도록 하면 된다:
+  \[
+    \pi_\theta(a \mid s) = \mathcal{N}(a;\; \mu_\theta(s),\; \sigma_\theta(s)^2)
+  \]
+\begin{lstlisting}
+import math
+def gaussian_log_prob(action, mu, sigma):
+    # 연속 행동의 로그 확률 -- softmax 대신 정규분포를 쓴다는 점만 다름
+    return -0.5 * math.log(2 * math.pi * sigma**2) \
+           - (action - mu)**2 / (2 * sigma**2)
+\end{lstlisting}
+  {\footnotesize 로그 확률 $\log \pi_\theta(a \mid s)$ 는 정규밀도에서 바로
+  계산. Week 10.1의 로그미분 트릭과 Week 11.2의 클리핑 목적함수는 이산/연속
+  여부와 무관하게 형태가 \textbf{그대로 유지} --- ``행동을 어떻게
+  파라미터화하는가''만 바뀔 뿐 그 뒤의 최적화 기계는 동일.}
+\end{frame}

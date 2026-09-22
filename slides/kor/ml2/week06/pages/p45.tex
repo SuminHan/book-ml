@@ -1,0 +1,24 @@
+\section{6.3 Q-learning과 SARSA·Q-learning 경로 비교}
+\begin{frame}{위치: TD(0)는 두 갈래로 갈라진다}
+  \begin{itemize}
+    \item 6.1: TD(0)는 ``한 스텝만 보고, 다음 상태의 \textbf{추정치}로
+      부트스트랩''. 6.2: 그 갱신을 $Q(s,a)$에 적용한 \kb{SARSA}.
+    \item 의문: SARSA 갱신식에서 다음 행동의 Q값을
+      \textbf{어떤} 행동의 Q값으로 썼는가?
+      \[
+      Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma Q(s',a') -
+      Q(s,a)\right]
+      \]
+      여기서 $a'$는 \textbf{실제로 고른} 다음 행동.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{갈림길}
+    이 ``실제로 고른 것''을 그대로 쓴다는 선택이 지금 6.3절의 갈림.
+    \kb{Q-learning}은 이 한 칸만 다르게 채운다 ---
+    실제로 무엇을 골랐든 상관없이, \textbf{다음 상태에서 최선의 행동}을
+    가정하고 그 Q값을 목표로.
+    이 한 줄의 차이($Q(s',a')$ vs $\max_{a'}Q(s',a')$)가 두 알고리즘을
+    근본적으로 갈라놓으며, ``실제 행동하는 정책의 가치''를 배우느냐
+    vs ``이상적인 최적 정책의 가치''를 배우느냐의 문제로 이어진다.
+  \end{block}
+\end{frame}

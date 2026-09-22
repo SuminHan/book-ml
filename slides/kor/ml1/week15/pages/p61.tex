@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{연습문제 5: ELBO 유도 빈칸 폴백}
+  \textbf{자유 유도가 어려운 경우} — 빈칸을 채워라:
+\begin{lstlisting}
+Step 1: log p(x) = log integral[ q(z|x) * (p(x,z) / q(z|x)) dz ]
+                  = log E_q[ ______________ ]
+
+Step 2: 옌센 부등식(log가 오목함수) 적용:
+  log E_q[ p(x,z)/q(z|x) ] >= E_q[ log(______________) ]
+
+Step 3: p(x,z) = p(x|z) * p(z)로 분해하면:
+  = E_q[ log p(x|z) ] + E_q[ ______________ ]
+
+Step 4: E_q[ log p(z) - log q(z|x) ] = -D_KL(q(z|x) || p(z))
+
+결론: log p(x) >= E_q[log p(x|z)] - D_KL(q(z|x) || p(z))   [ELBO]
+\end{lstlisting}
+  \vskip0.4em
+  \begin{block}{정확성 확인}
+    Step 2에서 \textbf{부등호가 등호가 아니라 부등식}인 이유를 한
+    문장으로 — (옌센 부등식이 \textbf{언제 등식}이 되는지:
+    $X$가 \textbf{상수}일 때).
+  \end{block}
+\end{frame}

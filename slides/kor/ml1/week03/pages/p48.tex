@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{다항 버전: 8+8 학습, 4통 테스트}
+  \begin{lstlisting}
+import math
+
+def train_multinomial_nb(emails, labels):
+    vocab = sorted(set(w for e in emails for w in e))
+    counts, nwords, ndocs = {0: {}, 1: {}}, {0: 0, 1: 0}, {0: 0, 1: 0}
+    for e, l in zip(emails, labels):
+        ndocs[l] += 1
+        for w in e:                       # 이번엔 등장 횟수까지 센다
+            counts[l][w] = counts[l].get(w, 0) + 1
+            nwords[l] += 1
+    return {"vocab": vocab, "counts": counts,
+            "nwords": nwords, "ndocs": ndocs, "n_total": len(labels)}
+
+def multinomial_log_probs(email, model):
+    out = {}
+    for l in (0, 1):
+        lp = math.log(model["ndocs"][l] / model["n_total"])
+        for w in email:
+            p = (model["counts"][l].get(w, 0) + 1) / \
+                (model["nwords"][l] + len(model["vocab"]))   # 라플라스
+            lp += math.log(p)
+        out[l] = lp
+    return out
+  \end{lstlisting}
+\end{frame}

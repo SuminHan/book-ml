@@ -1,0 +1,22 @@
+\begin{frame}{손으로 한 번: 두 분기 후보 비교}
+  샘플 6개: $x = [1,2,3,4,5,6]$, 라벨 $[A,A,A,B,B,B]$.
+  부모 노드는 반반이므로 $G_{\text{parent}} = 1 - 0.5^2 - 0.5^2 = 0.5$.
+  \vskip0.8em
+  \small
+  \begin{tabular}{@{}llcc@{}}
+    \toprule
+    분기 후보 & 왼쪽 / 오른쪽 & 가중평균 불순도 & Gain \\
+    \midrule
+    $x \le 3$ & 3A / 3B (모두 순수, $G=0$) & $0$ & \textbf{0.5} \\
+    $x \le 1$ & $[A]$ / $[A,A,B,B,B]$ ($G_R = 1-0.4^2-0.6^2 = 0.48$)
+      & $\approx 0.4$ & $0.1$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item \kq{같은 데이터인데, 어디를 자르느냐에 따라 정보이득이
+      5배(0.5 vs 0.1) 차이난다} — 후보 1이 훨씬 ``좋은 질문''
+    \item 엔트로피 기준도 같은 결론: 부모 $H = 1$(비트),
+      후보 1: $1.0$, 후보 2: $\approx 0.191$
+  \end{itemize}
+\end{frame}

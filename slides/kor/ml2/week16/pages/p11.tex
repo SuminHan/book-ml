@@ -1,0 +1,20 @@
+\begin{frame}{비교 프로토콜: 연속제어 버전 3개 항목}
+  8.1절 프로토콜(시드 $\geq 3$, 학습 중/학습 후 분리, 시드별 표)을 연속제어로
+  번역 — 1·3은 그대로, \textbf{두 번째가 번역된다}.
+  \vskip0.6em
+  \begin{enumerate}
+    \item \textbf{학습 시드 $\geq 3$개} — 시드를 바꾸는 것은 ``실험을 다시
+      하는'' 것이 아니라 \textbf{``우연인지 재검사하는''} 것. PPO는
+      초기화·샘플링·데이터 분할의 무작위성이 겹쳐 같은 코드도 시드만 바꿔도
+      곡선 모양이 달라짐 (11.2: 큰 그림은 시드마다 안정적이나 마지막
+      10에피소드 평균은 $\pm100\sim200$ 흔들림).
+    \item \textbf{학습 도중 성과 vs 학습 후 평가} — $\varepsilon=0$의
+      ``번역 문제'' (다음 프레임).
+    \item \textbf{알고리즘/시드별 숫자를 표로 제시}.
+  \end{enumerate}
+  \vskip0.4em
+  {\footnotesize 표 기반 $\varepsilon$-greedy에는 깔끔한 핸들이 있었음:
+  평가 때 $\varepsilon=0$으로 하면 ``순수 탐욕적''. 연속 정책
+  $a\sim\mathcal{N}(\mu_\theta(s),\,\sigma_\theta^2)$에는
+  $\varepsilon$이라는 핸들이 \textbf{없다}.}
+\end{frame}

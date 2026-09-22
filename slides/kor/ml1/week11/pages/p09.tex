@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{코드: 한 걸음($rnn\_step$)과 전체($rnn\_forward$)}
+\begin{lstlisting}
+def rnn_step(x_t, h_prev, Wxh, Whh, b_h):
+    z = [sum(Wxh[i][j]*x_t[j] for j in range(len(x_t))) +
+         sum(Whh[i][j]*h_prev[j] for j in range(len(h_prev))) + b_h[i]
+         for i in range(len(h_prev))]
+    return [tanh(v) for v in z]
+
+def rnn_forward(inputs, h0, Wxh, Whh, b_h):
+    h = h0
+    hidden_states = []
+    for x_t in inputs:
+        h = rnn_step(x_t, h, Wxh, Whh, b_h)
+        hidden_states.append(h)
+    return hidden_states
+\end{lstlisting}
+  \begin{itemize}
+    \item 한 줄로 요약: \textbf{``같은 $rnn\_step$을 $T$번 순서대로
+      반복하는 것''}
+    \item 이 \textbf{순차성}($t=1$이 끝나야 $t=2$를 시작)이 RNN의
+      장점(파라미터 효율)이자 동시에 단점(\textbf{병렬화 불가} ---
+      11.3절)
+  \end{itemize}
+\end{frame}

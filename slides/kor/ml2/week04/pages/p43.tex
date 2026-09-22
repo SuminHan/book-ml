@@ -1,0 +1,32 @@
+\begin{frame}[fragile]{실습: 정책반복 vs 가치반복, 같은 고정점}
+\begin{lstlisting}
+V_vi, policy_vi = value_iteration(P, R, n_actions, gamma)
+# V      = [-3.439, -2.710, -1.900, -1.000, 0.000]  # 정책반복과 동일
+# policy = [1, 1, 1, 1, 0]                          # 정책반복과 동일
+# 반복 횟수: 5
+\end{lstlisting}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch04_3_value_iteration_horizon.png}
+      \vskip0.3em
+      {\footnotesize (좌) 지평선을 한 칸씩 넓혀가는 과정,
+      (우) 오차 로그 곡선 --- 실측 오차(파란 점선)가 바나흐
+      상한 $\gamma^k$(검정) \textbf{아래}를 따라감.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item 두 알고리즘 모두 \textbf{정확히 같은} $V^{*}$ 와
+          최적 정책 --- \textbf{같은 고정점}(벨만 최적방정식)
+          을 찾아가기 때문(해 유일, 아래 증명).
+        \item ``수렴까지 \textbf{계산의 성격}''이 다름:
+          정책반복은 바깥 반복 2번(내부 평가 sweep 총 10) vs
+          가치반복은 단일 루프 5번.
+        \item \textbf{일반적으로}: 정책반복은 바깥 반복은 적지만
+          각 반복(평가)이 \textbf{무거울 수} 있고, 가치반복은
+          \textbf{가볍지만} 반복 횟수가 더 필요할 수 있음.
+          어느 쪽이 총 계산량이 적은지는 \textbf{문제마다 다름}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,19 @@
+\begin{frame}{손실함수: 평균제곱오차로는 안 되는 이유}
+  \begin{itemize}
+    \item 시그모이드에 평균제곱오차를 그대로 적용하면 $J(\boldsymbol{w})$ 가
+      $\boldsymbol{w}$ 에 대해 \kb{볼록하지 않아(non-convex)}, 경사하강법이
+      \textbf{지역 최솟값에 갇힐 위험}이 있다.
+    \item 대신 \kb{교차 엔트로피}(cross-entropy) 손실을 쓴다 ---
+      이 이름은 \textbf{1948년 클로드 섀넌(Claude Shannon)의
+      정보이론}(information theory)에서 왔다.
+  \end{itemize}
+  \vskip0.8em
+  \textbf{섀넌의 정보량}: 확률 $p$ 로 일어나는 사건이 실제로
+  일어났다는 소식의 ``놀라움''을 $-\log_2 p$ (단위: 비트)로 정의 ---
+  \begin{itemize}
+    \item 자주 일어나는 사건 ($p \approx 1$): ``해가 동쪽에서 떴다'' ---
+      정보량 $\approx 0$.
+    \item 거의 안 일어나는 사건 ($p \approx 0$): ``복권에 당첨됐다'' ---
+      정보량 \textbf{크다}.
+  \end{itemize}
+\end{frame}

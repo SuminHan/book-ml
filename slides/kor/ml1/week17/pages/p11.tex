@@ -1,0 +1,23 @@
+\begin{frame}{온도(Temperature): 확신도를 조절하는 손}
+  \begin{itemize}
+    \item softmax에 \kb{온도} $T > 0$을 넣으면:
+      \[P(x_t = j) = \frac{e^{z_j/T}}{\sum_{k} e^{z_k/T}}\]
+      (원점수를 $T$로 나눠준 뒤 softmax)
+    \item $T < 1$: 차이 \textbf{늘}어 $\to$ 분포 \textbf{점근
+      (peaky)}, 확신 강해짐. $T > 1$: 차이 \textbf{줄}어 $\to$
+      \textbf{평탄(flatter)}, 더 무작위. $T \to \infty$: 등확률.
+    \item $z = (4,1,0,-3)$ 예로: $T=0.5 \approx$ (0.997, 0.003,
+      0.000, 0.000) 거의 최고 토큰만 / $T=2.0 \approx$ (0.720,
+      0.161, 0.098, 0.022) 확신 완화 / $T=10.0 \approx$ (0.344,
+      0.255, 0.231, 0.171) 거의 무작위.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{실전 LLM 채팅봇의 \texttt{temperature} 파라미터}
+    ``창의적인 글'' $\to$ $T > 1$(확률을 넓혀 덜 예상적인 토큰도) /
+    ``사실·코드'' $\to$ $T \to 0$(가장 확신 있는 토큰만).
+    \textbf{동일한 softmax 분포를, ``토큰을 고를
+    방법''에 따라 확신도를 조절}하는 것 --- 17.2절 샘플링
+    전략과 17.3절 포스트트레이닝(고온 샘플링으로 다양한
+    후보를 만들어 비교)의 기초.
+  \end{block}
+\end{frame}

@@ -1,0 +1,31 @@
+\begin{frame}{학습이 없는 학습 알고리즘}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{선형/로지스틱 회귀}
+      \begin{itemize}\small
+        \item 데이터를 보고 파라미터 $w$를 최적화하는
+          \kb{학습 단계}가 있음
+        \item 학습이 끝나면 $w$만 있으면
+          원본 데이터 불필요
+      \end{itemize}
+      \vskip0.6em
+      \textbf{kNN}
+      \begin{itemize}\small
+        \item ``학습''은 데이터를 \textbf{그냥 저장}해 두는 것뿐
+        \item 모든 계산은 \textbf{예측 시점}에: 새 점이 들어오면
+          그때서야 모든 점까지 거리를 재고 가까운 점 찾기
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{장점 --- 언제나 최신}
+        데이터스트림처럼 분포가 예측 직전까지 바뀌어도,
+        저장된 점이 곧 모델이라 \textbf{최신 데이터}로 예측.
+        선형회귀는 ``낡은 $w$''를 계속 쓴다.
+      \end{block}
+      \begin{alertblock}{단점 --- 예측이 $m$배 비쌈}
+        예측 1번마다 $m$번의 거리 계산 $\to$ $O(m \cdot d)$.
+        선형회귀는 $w^\top x$ 한 번($O(d)$)으로 끝남.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}

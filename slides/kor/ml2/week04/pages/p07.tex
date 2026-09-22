@@ -1,0 +1,24 @@
+\begin{frame}{실습 (2/3): 방법 2 --- 반복적 대입(sweep)}
+  같은 값을 \textbf{직접 풀지 않고} 반복법으로. $V$ 를 0으로
+  시작해 0$\to$1$\to$2 순서로 \textbf{in-place} 한 스텝씩 갱신:
+  \small
+  \begin{tabular}{@{}rrrrl@{}}
+    \toprule
+    sweep & $V(0)$ & $V(1)$ & $V(2)$ & 최대 변화 $\Delta$ \\
+    \midrule
+    1 & 1.0000 & 2.2700 & 0.9000 & 2.2700 \\
+    2 & 3.0430 & 3.3886 & 2.7387 & 2.0430 \\
+    3 & 4.0497 & 4.8188 & 3.6448 & 1.4302 \\
+    5 & 6.1635 & 6.6902 & 5.5471 & 0.9530 \\
+    7 & 7.6514 & 8.0469 & 6.8862 & 0.6565 \\
+    $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & ($\approx \times 0.9$씩) \\
+    \textbf{88} & \textbf{11.3498} & \textbf{11.4998} & \textbf{10.2148} & $< 10^{-6}$ $\to$ 종료 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{block}{확인할 것}
+    \textbf{88회} sweep을 거치고 나서야 $\Delta < 10^{-6}$ ---
+    방법 1과 \textbf{같은 값}$(11.3498, 11.4998, 10.2148)$.
+    두 방법은 ``\kb{같은 고정점을 찾는 다른 길}''이다.
+  \end{block}
+\end{frame}

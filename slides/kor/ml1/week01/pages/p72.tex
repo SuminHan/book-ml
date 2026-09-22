@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{실습: 파이프라인을 처음부터 끝까지 (1/2) --- 정제}
+  120채의 집, 평수 40$\sim$140㎡, 진짜 가격은
+  \texttt{1.5 $\times$ 평수 + 20 + 잡음}(백만 원). 정제가 실제로 할
+  일을 확인하려 두 가지 ``더티함''을 의도적으로 섞어 넣음 ---
+  \textbf{3개 완전 중복 행}, \textbf{센티넬 $-999$ 가 1행}.
+  \begin{lstlisting}
+import numpy as np
+import pandas as pd
+
+# 1) 수집: 지저분한 데이터셋 시뮬레이션
+rng = np.random.default_rng(0)
+size = rng.uniform(40, 140, 120)
+price = 1.5 * size + 20 + rng.normal(0, 8, 120)
+
+for i in [5, 6, 7]:                                  # 3행 완전 중복
+    size = np.append(size, size[i])
+    price = np.append(price, price[i])
+price[11] = -999.0                                   # 1행 센서 센티넬
+df = pd.DataFrame({"size_sqm": size, "price_million": price})
+
+# 2) 정제(행 수준): 중복 제거 — 통계량이 관여하지 않아 나누기 전에 안전
+print("rows before cleaning:", len(df))
+print("min price:", df["price_million"].min())        # -999가 보인다!
+print("duplicate rows:", df.duplicated().sum())
+df = df.drop_duplicates().reset_index(drop=True)
+\end{lstlisting}
+\end{frame}

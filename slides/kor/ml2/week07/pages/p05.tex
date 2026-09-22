@@ -1,0 +1,21 @@
+\begin{frame}{세 방법 한눈에 --- 그리고 ``갱신 시차''}
+  \small
+  \begin{tabular}{@{}lllll@{}}
+    \toprule
+     & $n$ & 실제 보상 & 추정치(부트스트래핑) & 갱신 \\
+    \midrule
+    TD(0) & 1 & $R_t$ 1개 & $V(s_{t+1})$ & 매 스텝 즉시 \\
+    n-step TD & $n$ & $R_t,\dots,R_{t+n-1}$ $n$개 & $V(s_{t+n})$ & 첫 갱신 $n-1$ 스텝 지연 \\
+    MC & $\infty$ & 끝까지 전부 & 없음 & 에피소드 종료 시 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{block}{기다려야 하는 시간(학습의 시차)}
+    $G_t^{(n)}$을 계산하려면 $t$에서 $t+n-1$까지의 보상이 \textbf{다 모여야}
+    하므로, $t$번 상태의 \textbf{첫} 갱신은 최소 $n-1$ 스텝 뒤에야
+    가능. $n$이 클수록 시차 $\uparrow$.
+    \vskip0.3em
+    이 시차가 갱신 \textbf{횟수}에는 영향을 주지 않는다(반직관적 ---
+    FAQ에서 확인, 실습에서 직접 세어보자).
+  \end{block}
+\end{frame}

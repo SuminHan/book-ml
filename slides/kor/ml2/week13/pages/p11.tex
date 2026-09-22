@@ -1,0 +1,24 @@
+\begin{frame}{PD 제어: 줄 + 댐퍼, 그리고 $k_p > 5$ 조건}
+  동역학이 ``힘 $\to$ 운동'' 규칙을 주면, 남은 문제는 ``어떤 힘 $u$ 를 줄
+  것인가'' --- 바로 정책 $\pi(a \mid s)$. 사람이 직접 설계하는 가장 유명한
+  정책이 \kb{PD(Proportional-Derivative) 제어기}:
+  \[
+    u = -k_p\,(\theta - \theta^\star) - k_d\,\dot\theta
+  \]
+  \begin{itemize}
+    \item \textbf{비례 항} $-k_p \Delta\theta$ = 벗어날수록 세게 당기는 줄(스프링).
+    \item \textbf{미분 항} $-k_d \dot\theta$ = 움직임을 말려 붙이는 댐퍼.
+  \end{itemize}
+  \vskip0.5em
+  \small
+  진자(위쪽 $\theta^\star = 0$ 세우기)에 대입하면
+  $\ddot\theta = (15 - 3k_p)\theta - 3k_d\dot\theta + \cdots$ 로 선형화.
+  \textbf{균형이 잡히려면 $3k_p > 15$, 즉 $k_p > 5$} --- 중력의 ``역줄''
+  (위에서 밀어내는 $15\theta$ 항)보다 제어기의 줄이 더 강해야.
+  \begin{itemize}
+    \item 실습 그리드: $k_p = 8$ 인 PD가 진자를 \textbf{세운 채} 유지,
+      $k_p = 4$ 는 그냥 \textbf{흔드는 데} 그침 (13.2절에서 실험적으로 확인).
+    \item 13.2절 코드 \texttt{action = -2.0 * theta - 0.5 * thdot} 도 같은
+      형태의 PD (그 예는 50스텝 보상을 보느라 ``세우는'' 성능까지 평가 안 함).
+  \end{itemize}
+\end{frame}

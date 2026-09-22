@@ -1,0 +1,25 @@
+\begin{frame}{$p^T$ 문제: ``전문가를 못 넘는다''를 긴 episode로}
+  \begin{itemize}
+    \item ``모방학습은 전문가 수준이 상한'' — \textbf{긴 episode}
+      관점에서 다시 쓰면 전혀 다른 이야기.
+    \item BC를 잘 학습시켜도 배포 단계에서 매 스텝 ``전문가가
+      하듯'' 올바른 행동 확률 $p<1$ — 시연에 없던 미세 차이,
+      센서 노이즈, 작은 교란.
+    \item 매 스텝 독립이라면:
+      \[P(\text{오점 없는 episode})=p^T\]
+  \end{itemize}
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    episode 길이 $T$ & 50 & 100 & 200 & 300 \\
+    \midrule
+    $p=0.980$ & 0.364 & 0.133 & 0.018 & 0.002 \\
+    $p=0.990$ & 0.605 & 0.366 & 0.134 & 0.049 \\
+    $p=0.995$ & 0.778 & 0.606 & 0.367 & 0.222 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \kq{$p=0.99$라도 $T=300$에서 ``한 번도 삐끗 안 함''은 \textbf{4.9\%}.
+  ``매 스텝 잘한다''가 ``긴 episode를 완주한다''를 보장하지 못함.}
+\end{frame}

@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{자주 하는 실수: 그래디언트 클리핑을 빼먹는 것}
+  학습 코드에 \verb|np.clip(dP, -5, 5)|로 그래디언트를 일정 범위로
+  \textbf{잘라내는(clipping)} 단계가 있다 --- 이걸 빼먹으면?
+  \begin{itemize}
+    \item 그래디언트는 시점을 거슬러 내려올 때마다
+      $W_{hh}^\top tanh'$를 계속 곱함
+    \item 학습 초반 가중치가 아직 ``좋지 않은'' 상태일 때 이 곱적이
+      1보다 커질 수 있음 $\Rightarrow$ 그래디언트가
+      \textbf{지수적으로 커져} 손실이 갑자기 \textbf{튀거나
+      NaN}이 됨
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{이 예제의 정량적 실측}
+    학습률 2.0, 클리핑 \textbf{끄고} 500 에폭: 세 가중치 행렬의
+    절대값 최댓값 합 $\approx$ \textbf{47만} (467,172).\\
+    같은 설정으로 클리핑(상한 5) \textbf{켜면}: $\approx$ \textbf{83}
+    에 멈춤 --- \textbf{약 5,600배 차이}.
+  \end{block}
+  \vskip0.4em
+  {\footnotesize Week 2.1의 학습률 발산과 원인은 다르다(학습률이
+  아니라 \textbf{시퀀스 길이에 걸친 곱셈}이 원인) --- 증상은 똑같다.
+  손실이 갑자기 NaN이 되면 \textbf{그래디언트 폭발부터 의심}하고,
+  클리핑이나 더 작은 학습률을 먼저 시도 --- RNN 계열 디버깅의
+  첫 단계.}
+\end{frame}

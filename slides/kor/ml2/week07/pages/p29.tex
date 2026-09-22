@@ -1,0 +1,22 @@
+\begin{frame}{$\lambda$가 $n$을 어떻게 ``대체''하는가}
+  \begin{itemize}
+    \item n-step TD의 목표값 $G_t^{(n)}$: \textbf{단 하나의} n-step
+      리턴(정확히 $n$ 스텝만 보고 나머지는 추정치).
+    \item 적격흔적: 흔적 감쇠율 $\gamma\lambda$ 덕분에 $t$ 스텝 전에
+      방문한 상태의 흔적은 대략 $(\gamma\lambda)^t$로 감소.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{TD($\lambda$)의 목표 = 한 줄}
+    \[
+    \text{TD}(\lambda)\text{의 목표} \;\approx\;
+    \text{``모든 $n$-step 목표의 가중평균, }
+    n\text{에 대한 가중치} \propto \lambda^{\,n-1}\text{''}
+    \]
+  \end{block}
+  \begin{itemize}
+    \item $\lambda$ \textbf{작으면} 가중치가 빠르게 $\lambda^{n-1}$로
+      죽어 실질적으로 짧은 $n$(TD(0) 쪽)만 사용.
+    \item $\lambda$ \textbf{크면} 긴 $n$에도 충분한 가중치 $\Rightarrow$
+      MC 쪽으로 이동.
+  \end{itemize}
+\end{frame}

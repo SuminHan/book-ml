@@ -1,0 +1,21 @@
+\begin{frame}{왜 ``더하기''인가 — 그리고 왜 고정된 함수인가}
+  \begin{enumerate}
+    \item \textbf{임베딩에 \emph{더하면}} 총 차원이 $d_{model}$
+      \textbf{그대로}라, 12.1절 이후의 \textbf{모든 행렬
+      크기}($W_Q, W_K, W_V$ 의 크기)와 \textbf{파라미터 예산이
+      \emph{변하지 않는다}}. (붙여 넣는 concatenate도 변형으로
+      가능하지만 \textbf{차원이 두 배가 되는 비용}이 있다.)
+    \item \textbf{학습하지 않고 고정 함수를 쓰는 이유}:
+      \begin{itemize}
+        \item \textbf{학습된 위치 임베딩}: ``학습 때 본 최대
+          위치''가 \textbf{정의의 경계}.
+        \item $\sin(t/10000^i)$: \textbf{\emph{아무} $t$ 에도
+          \emph{정의}된다}.
+      \end{itemize}
+  \end{enumerate}
+  \vskip0.4em
+  원논문(Vaswani et al., 2017)은 \textbf{학습된 위치 임베딩도
+  \emph{실제} 시도}해 봤고, 결과 차이는 거의 없었으나
+  ``\textbf{더 긴 문장 외삽(extrapolation)} 가능성''을 이유로
+  사인/코사인 버전을 택했다고 \emph{명시}.
+\end{frame}

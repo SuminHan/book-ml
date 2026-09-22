@@ -1,0 +1,26 @@
+\begin{frame}{자주 하는 실수 (1/2)}
+  \begin{itemize}
+    \item \kb{$\max$을 \texttt{Q[s\_next][a\_next]}로 써서 ``Q-learning''
+      이라고 생각한다.}
+      $\max_{a'}Q(s',a')$의 $\max$은 \textbf{다음 상태 $s'$의 모든
+      행동 $a'$에 대한 최대}이지, 실제로 고른 $a'$의 값이 아니다.
+      실제로 고른 $a'$의 값을 쓰면 그것이 SARSA다.
+      \vskip0.3em
+      코드로: \texttt{target = r + gamma*max(Q[ns])} (Q-learning)
+      vs \texttt{target = r + gamma*Q[ns][na]} (SARSA) ---
+      \textbf{\texttt{max()}의 유무}가 두 알고리즘을 가르는 전부.
+      \texttt{na}를 \texttt{max} 안에 잘못 넣거나 빼먹으면 둘 다 아닌
+      ``어중간한 경로''(절벽도 안 피하고, 최단 길로도 안 감)를 만든다.
+  \end{itemize}
+  \vskip0.5em
+  \begin{itemize}
+    \item \kb{터미널 상태에서 $\max$을 계산한다.}
+      목표(종료) 상태에서는 다음 상태가 없으므로 $\max_{a'}Q(s',a')$는
+      \textbf{0}이어야.
+      \texttt{max(Q[goal])}를 0이 아닌 값으로 쓰면 ``한 번 더''
+      갱신되어 \textbf{리턴에 실제로 존재하지 않는 미래 보상까지 더하는}
+      오차. 항상
+      \texttt{max\_next\_q = max(Q[ns]) if not done else 0.0} 처럼
+      \texttt{done} 플래그로 0을 강제.
+  \end{itemize}
+\end{frame}

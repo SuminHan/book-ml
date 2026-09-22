@@ -1,0 +1,15 @@
+\begin{frame}[fragile]{과대적합: 24차 다항식}
+  그 반대 --- ``\textbf{외운} 모델''은 어떤 모습일까? 훈련 행 앞
+  25개에 고차 다항식을 맞춰봄:
+  \begin{lstlisting}
+Xs, ys = Xtr[:25], ytr[:25]
+mu, sd = Xs.mean(), Xs.std()        # 표준화 (Week 4.1 스케일 문제)
+for deg in [1, 24]:
+    V = np.vander((Xs - mu) / sd, N=deg + 1)  # 설계 행렬 [1, x, x^2, ...]
+    coef, *_ = np.linalg.lstsq(V, ys, rcond=None)
+    Vt = np.vander((Xte - mu) / sd, N=deg + 1)
+    print(f"degree {deg}: train R2={r2(ys, V @ coef):.4f}  test R2={r2(yte, Vt @ coef):.4f}")
+\end{lstlisting}
+  {\footnotesize \texttt{degree 1:  train R2=0.8820  test R2=0.9368}
+  \qquad \texttt{degree 24: train R2=1.0000  test R2=-63495.2701}}
+\end{frame}

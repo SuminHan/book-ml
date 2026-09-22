@@ -1,0 +1,18 @@
+\begin{frame}{세 자잘한(그러나 치명적인) 지점 ①: 선택의 정지 조건}
+  \begin{itemize}
+    \item ``\textbf{아직 다 확장되지 않은 리프}까지'' ---
+      \texttt{while} 조건이
+      \texttt{len(node.children) == len(nim\_moves(state))}인 이유:
+      자식이 \textbf{일부만} 있는(부분 확장) 노드에서 UCT로 계속
+      내려가면 안 된다
+    \item 아직 한 번도 열어보지 않은 자식이 남아 있으면,
+      \textbf{우선 그걸 열어야}(확장의 ``모든 수를 최소 한 번''
+      보장) 트리의 통계가 \textbf{공정}해진다
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{이 조건을 \texttt{while node.children:}으로
+  잘못 쓰면}
+    모든 방문이 \textbf{첫 번째로 열린 자식 하나}에 집중되는
+    버그가 나온다 --- 아래 ``버그 투어''에서 실증.
+  \end{block}
+\end{frame}

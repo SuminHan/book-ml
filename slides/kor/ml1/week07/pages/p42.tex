@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{핵심 루프: 잔차를 목표로 트리 하나씩}
+\begin{lstlisting}
+def gbdt_fit(X, y, n_trees, learning_rate):
+    trees = []
+    predictions = [0.0] * len(y)  # F_0(x) = 0
+    for t in range(n_trees):
+        residuals = [y[i] - predictions[i] for i in range(len(y))]
+        tree = fit_single_tree(X, residuals)  # 잔차를 목표로 트리 하나
+        trees.append(tree)
+        for i in range(len(y)):
+            predictions[i] += learning_rate * tree.predict(X[i])
+    return trees
+\end{lstlisting}
+  \vskip0.5em
+  \begin{itemize}
+    \item 실무 라이브러리의 스텝 단위는 보통 \textbf{깊이 3$\sim$6짜리
+      작은 트리}(아래 1차원 실습은 스템/깊이 1) — 핵심은 ``각 스텝이
+      \textbf{잔차를 목표로 작은 함수 하나}를 추가한다''는 구조, 스텝의
+      크기는 하이퍼파라미터
+    \item $F_{t-1}$이 어느 정도 맞히고 있다면 남은 잔차(오차)는 원래 $y$보다
+      \textbf{작다} — 그 작은 오차를 새 트리가 다시 줄이면
+      $F_t = F_{t-1} + \eta f_t$의 오차는 \textbf{한 단계 더 작아짐}
+    \item 계속 추가하면 학습 데이터 오차는 이론상 계속 줄지만, 실전은
+      \textbf{검증 성능이 나빠지기 시작하는 시점}(과적합)에서
+      \textbf{early stopping}(Week 6 검증 데이터 원칙과 동일)
+  \end{itemize}
+\end{frame}

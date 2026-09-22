@@ -1,0 +1,13 @@
+\begin{frame}{자주 하는 실수 (2/2)}
+  \begin{itemize}
+    \item \textbf{보상 합 상한 확인 안 하기.} 끝 \textbf{근처}에서는
+      남은 보상이 $n$개보다 적음(예: $n=3$인데 2스텝 남음).
+      \texttt{min(tau + n, len(rewards))}로 안 걸면 인덱스 에러 또는
+      ``없는 보상''을 0으로 처리. 추정치 항도 \texttt{tau + n < T}
+      없으면 종료 후 $V$ 더하기 / 없는 인덱스 참조.
+    \item \textbf{``$n$ > 에피소드 길이면 갱신 안 된다''는 오해.}
+      갱신은 모든 이동 상태마다 정확히 1번(꼬리 갱신으로 절단
+      목표값 처리). $n$이 바꾸는 것은 횟수가 \textbf{아니라} 시차와
+      목표값 구성.
+  \end{itemize}
+\end{frame}

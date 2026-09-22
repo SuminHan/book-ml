@@ -1,0 +1,27 @@
+\begin{frame}{자주 하는 실수: GBDT의 \texttt{n\_estimators}를 RF처럼 ``크게''}
+  RF는 $n$ 1$\to$200까지 늘려도 정확도가 \textbf{떨어지는 지점 없음}
+  $\to$ ``100$\sim$300으로 여유 있게'' 잡으면 됐지만,
+  \textbf{GBDT에는 이 규칙이 적용되지 않음}.
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}llp{5.6em}p{5.6em}@{}}
+    \toprule
+     & 랜덤 포레스트 & GBDT \\
+    \midrule
+    트리의 관계 & \textbf{독립적}(다수결) & \textbf{순차적}(잔차 추격) \\
+    트리를 늘리면 & 정확도 $\uparrow$(수확체감), 분산 $\downarrow$
+      & 정확도 $\uparrow$ $\to$ \textbf{정점} $\to$ 정확도 $\downarrow$ \\
+    \texttt{n\_estimators} & ``많을수록 안정'' — 100$\sim$300 권장
+      & \textbf{early stopping으로} 결정 (검증 곡선 최저점) \\
+    \texttt{learning\_rate} & 해당 없음 & 0.01$\sim$0.1, 작을수록
+      정밀한 early stopping \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \textbf{실무 GBDT 워크플로}: (1) \texttt{learning\_rate=0.01$\sim$0.1}로
+  시작 $\to$ (2) \texttt{n\_estimators}를 충분히 크게(예: 1000) 두고
+  \texttt{staged\_predict}로 \textbf{매 단계 검증 MSE 추적}(또는
+  \texttt{validation\_fraction}) $\to$ (3) \textbf{검증 MSE 최저점에서
+  멈춤}. \kq{``더 오래 학습하면 더 좋다''는 직감은 GBDT에서
+  \textbf{틀린 직감}.}
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}{규모를 단계별로: 총 스텝 수 $\div$ 초당 스텝 수}
+  \kb{환경 스텝만}의 실 시간(오른쪽은 14.2의 ``수천 개 복제본
+  동시 스텝''을 \textbf{경험률 2,000배}로 단순화한 GPU 병렬):
+  \small
+  \begin{tabular}{@{}p{3.8cm}p{4.2cm}p{4.6cm}@{}}
+    \toprule
+    총 스텝 수 & 단일 CPU (Ant) & GPU 병렬 $\times$2,000 \\
+    \midrule
+    책의 PPO (약 12만) & 약 \textbf{20 초} & (CPU면 충분) \\
+    사족보행 (1,000만) & 약 \textbf{27 분} & 약 0.8 초 \\
+    대규모 보행 (1억) & 약 \textbf{4.5 시간} & 약 8 초 \\
+    초대규모 (10억) & 약 \textbf{2 일} & 약 1.3 분 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  {\footnotesize ``GPU $\times$2,000''는 \textbf{환경 스텝}의
+  병렬화일 뿐 --- 정책 네트워크의 순전파·그래디언트 계산은
+  \textbf{별도} (바로 아래 ``확인'').
+  }
+\end{frame}

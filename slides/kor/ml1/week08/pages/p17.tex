@@ -1,0 +1,26 @@
+\begin{frame}{``살짝 훔쳐보기''가 얼마나 성능을 부풀리는가}
+  각 후보의 test 성능을 (진짜 성능 + 잡음
+  $\mathcal{N}(0,\sigma^2)$)으로 모델링하면, 후보 $m$개 중
+  \textbf{최고 점}을 고르는 것은 $m$번 잡음 뽑기의 max ---
+  항상 낙관 쪽으로 치우친다.
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    후보 수 $m$ & $\mathbb{E}[\max]$ (부풀림) \\
+    \midrule
+    1 (test 안 쓰고 val로만 고른 경우) & $\approx 0$ \\
+    5 (모델 5개만 test로 비교) & $\approx 0.023$ \\
+    50 (5개 모델 $\times$ 하이퍼파라미터 10개) & $\approx 0.045$ \\
+    100 & $\approx 0.050$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{block}{읽는 법}
+    ``5개 모델을 test로 돌려보고 제일 좋은 것을 골랐다''는
+    행위는 F1 0.97의 결과에 \textbf{실제로 0.947일 수 있다}는
+    불확실성을 안고 있다. 후보가 \textbf{모델 수 $\times$
+    하이퍼파라미터 수}의 곱으로 커지는 것이 이 편향이
+    4.5\%p가 되는 이유.
+  \end{block}
+\end{frame}

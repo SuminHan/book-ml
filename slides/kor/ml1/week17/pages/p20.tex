@@ -1,0 +1,25 @@
+\begin{frame}{자주 하는 실수 (17.1)}
+  \begin{itemize}
+    \item \textbf{``다음 토큰 예측''을 ``다음 \textbf{단어}
+      예측''으로만 읽기} ---
+      \begin{enumerate}
+        \item BPE의 \textbf{조각 단위}(``서울의'' 예처럼 한
+          토큰이 단어의 일부일 수 있음)를 놓치고,
+        \item \textbf{문맥이 앞의 모든 토큰} 전체(직전
+          단어가 아님)라는 것을 잊는다.
+      \end{enumerate}
+    \item (a) ``단어를 모르니 OOV 문제가 있다''는 오해 —
+      \textbf{BPE가 이미 원천 해결}. (b) ``직전 단어만 보고
+      예측한다''는 오해 — 자기-어텐션이 \textbf{문장
+      전체}를 조건부로 봄(Week 12).
+    \item \textbf{PPL과 작업 성능을 혼동} --- PPL은
+      ``확신 있게 예측하는가''를 잰 \textbf{사전학습 단계의
+      내부 지표}. 17.2절 \kb{환각}(hallucination)은 \textbf{PPL이
+      낮아도} 발생할 수 있다.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{두 구분이 ``왜'' BPE와 Transformer를 쓰는지의 핵심}
+    \kq{토큰 $\neq$ 단어, 문맥 = 앞의 모든 토큰. \quad
+    PPL = 언어의 그럴듯함, 벤치마크 = 작업의 정확성.}
+  \end{block}
+\end{frame}

@@ -1,0 +1,30 @@
+\begin{frame}{summary 산점도: 모델 전체의 중요도 + 방향}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch07_shap_summary.png}
+      \vskip0.3em
+      {\footnotesize 전체 test 120개 점의 $\phi_j$ 분포. x축 = 특징 값,
+      y축 = SHAP 값, 색 = 특징 값 크기.}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{itemize}
+        \item \kb{흩어짐 = 중요도}: $f_0, f_1$은 $\phi$가 크게 흩어짐
+          ($\pm 0.4$ 이상) — ``예측을 크게 움직임'', $f_3$은 좁은
+          범위($\pm 0.1$ 이하) — ``여기선 영향 약함''
+        \item \kb{부호 패턴 = 방향}: $f_1$은 특징값 클수록 음의 방향
+          (밀어내림), $f_0$은 양의 방향 — 두 가지가 \textbf{동시에} 보임
+        \item \texttt{feature\_importances\_}(지니 감소, ``특징의
+          \textbf{사용 빈도}'')와 달리, SHAP summary는 \textbf{``예측에
+          대한 실제 기여의 방향과 크기''}를 보여준다는 점에서
+          \textbf{더 직접적}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  {\footnotesize 이 실습은 \texttt{shap} 패키지의
+  \texttt{plots.waterfall}/\texttt{plots.summary}가 하는 일을
+  4개 특징의 작은 규모에서 numpy/scikit-learn만으로 재현한 것. 실전
+  (30개 특징)에서는 \texttt{TreeExplainer}가 ``트리 구조를 이용한 정밀
+  계산''을 자동 수행.}
+\end{frame}

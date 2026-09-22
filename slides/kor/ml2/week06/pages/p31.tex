@@ -1,0 +1,31 @@
+\begin{frame}[fragile]{SARSA 실습 코드}
+\begin{lstlisting}
+import gymnasium as gym
+
+env = gym.make("CliffWalking-v1")
+n_states, n_actions = env.observation_space.n, env.action_space.n
+
+def sarsa_train_gym(env, n_episodes, alpha, gamma, epsilon):
+    Q = [[0.0]*n_actions for _ in range(n_states)]
+    for ep in range(n_episodes):
+        s, _ = env.reset(seed=ep)
+        a = epsilon_greedy(Q, s, epsilon, n_actions)
+        for _ in range(500):
+            ns, r, term, trunc, _ = env.step(a)
+            na = epsilon_greedy(Q, ns, epsilon, n_actions)
+            Q[s][a] += alpha*(r + gamma*Q[ns][na] - Q[s][a])
+            s, a = ns, na
+            if term or trunc:
+                break
+    return Q
+\end{lstlisting}
+  \vskip0.4em
+  \textbf{결과} (500에피소드, $\alpha=0.5$, $\gamma=1.0$,
+  $\varepsilon=0.1$, 시드 42):
+  \begin{itemize}
+    \item 마지막 100에피소드 \textbf{평균 리턴} $\approx -31$ 수준.
+    \item 학습 끝난 Q표로 \textbf{탐욕적}($\varepsilon=0$) 롤아웃하면
+      \textbf{17스텝} --- 절벽을 피하는 안전 경로.
+    \item (6.3절에서 Q-learning과 나란히 비교)
+  \end{itemize}
+\end{frame}

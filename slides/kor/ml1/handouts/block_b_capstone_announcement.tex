@@ -1,0 +1,176 @@
+\documentclass[12pt]{article}
+
+\usepackage{problem_set_style}
+\usepackage{kotex}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+
+\begin{document}
+\heading{16}{2027. X. XX (예정)}{}{Spring 2027}{Block B 캡스톤 팀 프로젝트 공고 (샘플)}
+
+\section*{1. 프로젝트 개요}
+Chapter 9$\sim$15에서 배운 딥러닝 기법(신경망 기초·역전파, CNN,
+시퀀스 모델, 어텐션·트랜스포머, 그래프 표현학습, 표현학습, 잠재변수
+생성모델)을 실제 데이터에 적용하는 4주짜리 팀 프로젝트이다. Block A
+(8주차)의 절차를 \textbf{딥러닝 무대}에서 다시 수행하며, 이번에는
+``왜 고전 머신러닝이 아니라 딥러닝인가''를 직접 증명해야 한다.
+
+\vspace{4pt}
+\noindent 4주 파이프라인: \textbf{데이터 선정 $\to$ 구현 $\to$
+검증 $\to$ 발표}.
+
+\section*{2. 필수 요구사항}
+\begin{itemize}
+\item \textbf{데이터}: Kaggle, UCI, Hugging Face Datasets 중에서
+  선택 (이미지·텍스트·시퀀스 등 비정형 데이터도 가능).
+\item \textbf{적용 알고리즘}: Chapter 9$\sim$15 중 \textbf{최소
+  하나의 딥러닝 기법}(CNN, RNN/Transformer, 프롬프팅 응용, 또는
+  EM/VAE 계열 생성모델)을 실제 데이터에 적용한다.
+\item \textbf{수식적 정당화 최소 1개}: (1) CNN 구조라면 파라미터
+  수/연산량 공식으로 설계를 정당화, (2) 정규화(dropout 등)를
+  썼다면 그 효과를 설명, (3) 생성모델이라면 ELBO나 min-max
+  목적함수를 실제 구현과 연결.
+\item \textbf{GBDT 비교 (필수)}: 같은 데이터에 GBDT(또는 랜덤
+  포레스트)를 \textbf{베이스라인}으로 돌려, 신경망이 이보다
+  나은지 확인한다. 이것이 발표에서 ``왜 딥러닝인가''를 답하는
+  근거의 출발점이 된다.
+\item \textbf{검증 원칙}: train/validation/test 3분할을 Block A와
+  동일하게 준수하고, \textbf{테스트 성능은 딱 한 번}만 확인한다.
+\end{itemize}
+
+\newpage
+\section*{3. 정형/비정형 판정 가이드}
+Block A의 5개 데이터 선정 기준(행의 물리적 단위, 레이아웃 함정,
+시계열, 클래스 비율, 크기)은 그대로 적용되며, Block B에서는 다음
+기준이 추가된다: \textbf{``원시 특징''이 이미 정형으로 추출되어
+있는가?}
+\begin{center}
+\small
+\begin{tabular}{@{}p{3.0cm}p{5.2cm}p{5.5cm}@{}}
+\toprule
+경우 & 예 & 판정 \\
+\midrule
+수치·범주 열로만 구성된 표 & 매출표, 센서 로그 & \textbf{정형}
+--- GBDT와 비교해야 한다 \\
+픽셀·음파·토큰인 원시 배열 & 이미지, 오디오, 문장 &
+\textbf{비정형} --- 손으로 특징을 만들기 어려우니 신경망이 특징
+추출기 역할을 한다 \\
+애매한 경우 & 이미 임베딩으로 벡터화된 텍스트 & 원시 토큰으로
+직접 모델링하는 선택도 가능 --- 그 이유를 M1에 적어야 한다 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{4. 일정 및 마일스톤 (M1$\sim$M4)}
+\begin{center}
+\small
+\begin{tabular}{@{}p{7.4cm}p{5.4cm}@{}}
+\toprule
+\textbf{주 / 해야 할 일} & \textbf{마일스톤(제출)} \\
+\midrule
+\textbf{1주}: 데이터 후보 2$\sim$3개 조사, 정형/비정형 판정, 팀
+회의, 문제 정의 문서(행·라벨·지표·베이스라인·``왜 딥러닝인가''
+초안) & \textbf{M1} 문제 정의 + 데이터 선택 + ``왜 딥러닝인가''
+1페이지 \\
+\textbf{2주}: 3분할 스캐폴드, train으로만 fit한 전처리, 1개
+신경망 엔드투엔드 확인, \textbf{GBDT 베이스라인} 측정 &
+\textbf{M2} 중간 코드 리뷰(코드 + 베이스라인 숫자 각 1줄) \\
+\textbf{3주}: 나머지 기법 적용, validation/교차검증으로 튜닝,
+\textbf{test 최종 측정(한 번만)}, 학습 곡선 도출 & \textbf{M3}
+학습 곡선 1장 + 최종 test 숫자 + GBDT 비교 \\
+\textbf{4주}: 수식적 정당화, 보고서·슬라이드 완성, 발표
+(5$\sim$7분, 마지막에 ``왜 딥러닝인가''), 다른 팀 2개에 대한
+peer-review 작성 & \textbf{M4} 보고서 + 발표 + 리뷰 2건 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+M3의 학습 곡선은 \textbf{에포크} 단위(Block A의 트리 개수와는
+다른 축)이다. 최종 숫자만으로는 에포크 수를 어떻게 정했는지
+검증할 수 없다 --- validation 곡선이 실제로 쓰였는지가 그림에서
+드러나야 한다.
+
+\newpage
+\section*{5. 보고서 구조}
+Block A의 6절 구조를 그대로 쓰되, 2절과 5절이 Block B용으로
+바뀐다.
+\begin{enumerate}
+\item \textbf{문제 정의} (0.5p): 행의 단위, 라벨, 주 지표,
+  \textbf{두 층의 베이스라인}(무작위·GBDT), \textbf{정형/비정형
+  판정과 그 근거}.
+\item \textbf{데이터와 전처리} (1p): 원본 통계, train으로만 fit한
+  전처리 명시(이미지 스케일링, 텍스트 토크나이저/패딩 등), 분할
+  비율.
+\item \textbf{모델 선택과 이유} (1$\sim$2p): 적용한 딥러닝 기법
+  1개 이상과 그 구조(층·크기)를 파라미터 수 공식으로 정당화, 왜
+  GBDT가 아니라 이 기법인가.
+\item \textbf{결과} (1p): 최종 test 숫자(한 번), 에포크 학습 곡선
+  1장, GBDT·무작위와의 비교표.
+\item \textbf{수식적 정당화} (1p, \textbf{필수 1개}): 파라미터
+  수/정규화 효과/ELBO 중 하나.
+\item \textbf{잘 안 된 부분과 원인 진단} (0.5p, \textbf{필수}):
+  학습이 안 된/과적합된 부분을 배운 개념으로 진단.
+\end{enumerate}
+
+\section*{6. 채점 기준 (Rubric)}
+\begin{center}
+\small
+\begin{tabular}{@{}lcp{6.8cm}@{}}
+\toprule
+항목 & 비중 & 좋은 답 \\
+\midrule
+문제 정의와 데이터 & 15\% & 행·라벨·지표·\textbf{두 층 베이스라인}이
+명확하고, \textbf{정형/비정형 판정}이 데이터 특성에 근거함 \\
+방법론 적절성 & 25\% & \textbf{GBDT와 비교해서} 왜 이 딥러닝
+기법인지의 근거가 차원·구조·가중치 공유 등의 개념으로 설명됨 \\
+\textbf{검증의 정직성} & \textbf{25\%} & 3분할·train-fit·test
+한 번·베이스라인·\textbf{에포크 학습 곡선}·validation 튜닝이
+보고서에서 추적 가능 \\
+수식적 정당화 & 20\% & 배운 공식(파라미터 수, 정규화, ELBO 중
+1개 이상)으로 ``왜''를 설명했고, 관측한 숫자와 일치 \\
+결과의 정직성과 반성 & 15\% & GBDT보다 못한 부분·학습이 안 된
+부분을 숨기지 않고 배운 개념으로 진단 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+\section*{7. 발표와 Peer-Review}
+\begin{itemize}
+\item \textbf{발표}: 팀당 5$\sim$7분. 마지막에 \textbf{``왜 고전
+  머신러닝이 아니라 딥러닝인가''}에 구체적 근거로 답해야 한다.
+\item \textbf{Peer-Review}: 발표를 들은 팀은 다른 두 팀에 대해
+  작성 리뷰를 각 1통씩 제출한다. 각 리뷰는 아래 5항목
+  체크리스트와, 반박 가능한 질문을 1개 이상 포함해야 한다.
+\end{itemize}
+
+\vspace{4pt}
+\noindent\textbf{Peer-Review 체크리스트 (5항목 --- Block A의 4항목
++ 1)}
+\begin{center}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+항목 & 확인할 것 \\
+\midrule
+문제 정의 & 무엇을 예측/분류하려 했는지 명확한가 \\
+방법론 적절성 & 데이터 특성(비정형·불균형·시퀀스)에 맞는
+아키텍처를 골랐는가 \\
+수식적 정당화 & 요구사항(최소 1개)을 충족하고 실제로 타당한가 \\
+결과의 정직성 & 잘 안 된 부분을 숨기지 않고 원인을 분석했는가 \\
+\textbf{``왜 딥러닝인가''} & 필수 질문에 구체적 근거로 답했는가 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{8. 팀 구성 및 제출 방식}
+\begin{itemize}
+\item \textbf{팀 구성}: 팀당 인원 및 팀 편성 방식은 추후 공지.
+\item \textbf{제출물}: 보고서(PDF), 코드(저장소 링크 또는 압축
+  파일), 발표 슬라이드, peer-review 2건.
+\item \textbf{제출 방법 및 마감}: 추후 공지 (LMS/과제 제출 시스템
+  및 마감 일시는 별도 안내 예정).
+\end{itemize}
+
+\end{document}

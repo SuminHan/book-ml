@@ -1,0 +1,22 @@
+\begin{frame}{확인 문제 6.1}
+  \small
+  \begin{enumerate}
+    \item \textbf{참}인 것을 모두 고르라: (a) Ridge에서 $\lambda\to0$이면 해는
+      OLS로 수렴. (b) Lasso에서 $\lambda\to\infty$이면 bias 제외 모든 계수
+      정확히 0. (c) Lasso는 항상 $y$와 상관 큰 특징만 남김.
+      (d) L1/L2의 ``적당한'' $\lambda$는 train loss가 가장 작은 곳에서 고른다.
+      \newline\newline
+      {\footnotesize 힌트: (c)는 등가 특징 예, (d)는 6.2 서두 ``train loss만
+      보면 항상 $\lambda=0$''}
+    \item \textbf{soft-thresholding 손계산.} $f(w)=\frac12(2-w)^2+\lambda|w|$에서
+      $\lambda=0.5$와 3일 때 최적 해를 $\mathcal{T}_\lambda(z)$($z=2$)로 구하고,
+      ``왜 0이 되고/안 되는지'' $|z|\le\lambda$ 조건으로 설명.
+    \item \textbf{서브그래디언트.} $|w|$의 $w_0>0, w_0<0, w_0=0$에서
+      서브그래디언트($1, -1, [-1,1]$)를 구하고, $f(w)=\frac12(z-w)^2+\lambda|w|$에
+      대해 $w^{*}=0 \iff |z|\le\lambda$를 증명한 뒤 $|z|>\lambda$일 때
+      $w^{*}=\text{sign}(z)(|z|-\lambda)$ 확인(soft-thresholding의 \emph{증명}).
+    \item \textbf{개념.} 등가 특징 예에서 Lasso가 $x_1$ 대신 $x_{2c}$를
+      남긴 이유를 L1 페널티 관점에서 설명(힌트: 같은 예측 만드는
+      $(w_1,w_{2c})$ 중 어느 쪽이 $|w_1|+|w_{2c}|$가 작나).
+  \end{enumerate}
+\end{frame}

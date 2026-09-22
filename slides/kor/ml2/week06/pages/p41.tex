@@ -1,0 +1,19 @@
+\begin{frame}[fragile]{확인 문제 3: 코드 진단}
+  아래 SARSA 루프의 문제를 찾아, 그것이 \textbf{어떤 잘못된 학습
+  데이터}를 만들어내는지 설명하라:
+\begin{lstlisting}
+for _ in range(500):
+    ns, r, term, trunc, _ = env.step(a)
+    na = epsilon_greedy(Q, ns, epsilon, n_actions)
+    Q[s][a] += alpha*(r + gamma*Q[ns][na] - Q[s][a])
+    s = ns            # ← 무엇을 빼먹었는가?
+    if term or trunc:
+        break
+\end{lstlisting}
+  \vskip0.6em
+  \begin{itemize}
+    \item \textbf{힌트}: 갱신식에는 $na$가 쓰이지만, 루프 상태는
+      \texttt{s = ns}만 갱신된다. 다음 \texttt{env.step(a)}에서 실행되는
+      \texttt{a}는 어느 상태의 행동인가?
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,23 @@
+\begin{frame}{``소실''이 지수함수라는 것: 표로}
+  $\frac{\partial h_T}{\partial h_1} = \prod_{t=2}^{T} tanh'(z_t)\, w_{hh}$
+  (스칼라 단순화)를 $T$를 크게 올려가며 계산:
+  \vskip0.4em
+  \scriptsize
+  \begin{tabular}{@{}l|ccc@{}}
+    \toprule
+    시퀀스 길이 $T$ & $\tanh'=0.5,\; w_{hh}=0.9$ (승수 0.45) &
+      $w_{hh}=1.5$, 포화 $\tanh'=0.5$ (승수 0.75) &
+      $w_{hh}=1.5$, 미포화 $\tanh' \approx 1$ (승수 1.5) \\
+    \midrule
+    5 & $0.45^{4} \approx 4.1 \times 10^{-2}$ & $0.75^{4}
+      \approx 3.2 \times 10^{-1}$ & $1.5^{4} \approx 5.1$ \\
+    10 & $0.45^{9} \approx 7.6 \times 10^{-4}$ & $0.75^{9}
+      \approx 7.5 \times 10^{-2}$ & $1.5^{9} \approx 38$ \\
+    20 & $0.45^{19} \approx 2.6 \times 10^{-7}$ & $0.75^{19}
+      \approx 4.2 \times 10^{-3}$ & $1.5^{19} \approx 2.2 \times
+      10^{3}$ \\
+    50 & $0.45^{49} \approx 1.0 \times 10^{-17}$ & --- & --- \\
+    100 & $0.45^{99} \approx 4.7 \times 10^{-35}$ & --- & --- \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

@@ -1,0 +1,26 @@
+\begin{frame}{생성 파라미터: temperature, top-k, top-p}
+  \begin{itemize}
+    \item 17.1: 각 단계 출력이 어휘 전체에 대한
+      \textbf{확률분포}(logits에 softmax). 그 분포에서
+      실제로 어떤 토큰을 \textbf{고를 것인가}를 정하는
+      것이 \kb{생성 파라미터}.
+    \item \kb{Greedy(탐욕법)}: 매 단계 \textbf{확률 최고}
+      토큰($\arg\max$). 결정적이고 빠르지만, ``현재
+      최고''만 보면 장기적으로 \textbf{반복}에 빠지기
+      쉬움.
+    \item \kb{Temperature $T$}: logits를 $T$로 나눈 뒤 분포:
+      \[P(x_t = i \mid x_{<t}) = \frac{e^{z_i / T}}{\sum_j e^{z_j / T}}\]
+      $T<1$: \textbf{가파라짐}(최상위 독점) / $T>1$:
+      \textbf{평탄해짐}(후순위에도 실질적 확률).
+      $T \to 0$은 greedy, $T \to \infty$는 균등분포.
+    \item \kb{top-k}(Fan et al., 2018): 확률 \textbf{상위
+      $k$개} 토큰에서만 샘플링(나머지 확률 0). $k=1$이면
+      greedy와 같음.
+    \item \kb{top-p, nucleus sampling}(Holtzman et al.,
+      2019): 누적 확률이 $p$에 도달하는 \textbf{최소} 토큰
+      집합 안에서 샘플링. 분포가 \textbf{가파르면} 집합이
+      \textbf{작아지고}, \textbf{평평하면} \textbf{커짐} —
+      \textbf{상황에 맞춰 ``선택지 폭''을 자동 조절}
+      (top-k와의 차이이자 장점).
+  \end{itemize}
+\end{frame}

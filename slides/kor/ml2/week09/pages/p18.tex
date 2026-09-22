@@ -1,0 +1,17 @@
+\begin{frame}{Atari에서 폭발한 이유 $+$ 자주 하는 실수 ①②}
+  {\footnotesize Atari: 상태 공간은 $10^{16{,}993}$이지만
+  \textbf{게임 규칙}이라는 구조 덕분에 중요한 상태는 ``공이 라켓 근처인가,
+  벽에 부딪히기 직전인가'' 같은 몇십 가지 패턴으로 압축된다 ---
+  일반화가 이 패턴을 잡아내는 기계다.}
+  \vskip0.5em
+  \begin{itemize}
+    \item \kq{실수 ①: DQN의 $lr$과 표 Q-learning의 $\alpha$를 같은 스케일로
+      비교.} 표의 $\alpha = 0.1$은 \textbf{값 단위}(목표에 10\% 접근),
+      Adam($lr$=1e-3)은 \textbf{가중치 단위}(0.001 이동). ``0.1로 올려보자''는
+      거의 항상 발산·폭주 $\to$ ``목표 접근 속도''를 \textbf{측정}해서 맞춘다.
+    \item \kq{실수 ②: 출력 1개로 $Q(s,a)$ 출력.} 입력에 행동을 넣으면
+      $\max_{a'}$ 계산에 $\vert\mathcal{A}\vert$번 순전파 필요.
+      Atari($\vert\mathcal{A}\vert = 18$)이면 \textbf{18배} 계산 차이
+      $\to$ \textbf{출력 수 = 행동 수}가 표준 구조의 이유.
+  \end{itemize}
+\end{frame}

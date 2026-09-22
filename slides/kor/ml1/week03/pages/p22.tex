@@ -1,0 +1,19 @@
+\begin{frame}{파라미터 추정: MLE가 왜 단순해지는가}
+  \kb{최대우도추정}(MLE) --- 데이터를 ``가장 그럴듯하게'' 설명하는
+  파라미터. 데이터 독립이면:
+  \[ \ell = \sum_{i:\,y_i=0}\log P(x_i|y{=}0)
+     + \sum_{i:\,y_i=1}\log P(x_i|y_i{=}1)
+     + \sum_i\big[y_i\log\phi + (1-y_i)\log(1-\phi)\big] \]
+  \vskip0.3em
+  각 파라미터로 \textbf{편미분 $\to$ 0}을 풀면, 해가 놀랍도록 단순한
+  \textbf{샘플 통계량}으로 나옴:
+  \begin{itemize}
+    \item $\hat\phi$ = 학습 데이터 중 $y{=}1$ 의 \textbf{비율}
+      (사전확률 추정).
+    \item $\hat\mu_0,\hat\mu_1$ = 클래스별 \kb{샘플 평균}.
+    \item $\hat\Sigma$ = 두 클래스의 \textbf{클래스 평균 기준 편차를
+      함께 모아}(pooling) 제곱평균:
+    \[ \hat\Sigma = \frac{1}{N}\sum_{i=1}^{N}
+       (x_i-\hat\mu_{y_i})(x_i-\hat\mu_{y_i})^\top \]
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,18 @@
+\begin{frame}{자주 하는 실수 (2/2)}
+  \begin{itemize}
+    \item \textbf{둘째, 단일 실행(단일 시드)으로 최적 지점 정하기.}
+      위 ``단 한 번의 실행은 믿지 마라''가 그대로 실수. 하이퍼파라미터
+      실험은 필연적으로 \textbf{여러 시드·반복으로 평균}내야 U자 바닥이
+      안정적으로 보임. 하나의 실행은 \textbf{운}.
+    \item \textbf{셋째, 흔적 갱신 순서를 뒤집기.} 순서는
+      \textbf{``$\gamma\lambda$로 감쇠 $\to$ 현재 상태 $+1$ $\to$
+      모든 $s$에 $V \mathrel{+}= \alpha\delta e$''}.
+      ``$+1$''을 갱신 \textbf{이후}에 하면, 그 스텝 TD 오차가 현재
+      상태 자신에 적용될 때 흔적이 1이 아닌 \textbf{감쇠된 값}이 되어
+      $\lambda=0$이 TD(0)와 정확히 같아지지 않음.
+      \textbf{건성 체크(sanity check)}:
+      \texttt{lambda=0}이 \texttt{n=1}과 RMS가 \textbf{완전히 일치}
+      하는지($\alpha=0.2$ 단일 실행에서 0.3696 = 0.3696).
+      순서가 바르면 이 일치성이 깨짐.
+  \end{itemize}
+\end{frame}

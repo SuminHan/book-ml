@@ -1,0 +1,32 @@
+\frametitle{실습: 중요도 샘플링 직접 구현}
+\begin{lstlisting}
+GAMMA = 0.9
+
+def sample_episode(rng, start=2, n_max=200):
+    """행동 정책 b(50-50)로 한 에피소드 샘플링."""
+    s, ep = start, []
+    for _ in range(n_max):
+        a = 0 if rng.random() < 0.5 else 1
+        ns, r, done = step(s, a)
+        ep.append((s, a, r)); s = ns
+        if done: break
+    return ep
+
+def estimate(rng, n_episodes, start=2):
+    """세 가지 추정치: (1) 그냥 평균 (2) 중요도 가중 평균."""
+    naive, isw = [], []
+    for _ in range(n_episodes):
+        ep = sample_episode(rng, start)
+        G = 0.0
+        for t in reversed(range(len(ep))):
+            G = ep[t][2] + GAMMA * G
+        naive.append(G)                          # 편향됨: V^b(start)
+        all_right = all(a == 1 for _, a, _ in ep)
+        L = len(ep)
+        rho = (2.0 ** L) if all_right else 0.0   # b=50-50, pi=right
+        isw.append(rho * G)                      # 편향 없음: V^pi
+    return np.mean(naive), np.std(naive), np.mean(isw), np.std(isw)
+\end{lstlisting}
+  {\footnotesize 같은 데이터, 다른 가중치 $\Rightarrow$
+  \textbf{다른 정책의 가치를 추정} --- 중요도 샘플링의
+  본질.}

@@ -1,0 +1,23 @@
+\begin{frame}{왜 로그를 더하는가: 언더플로우 방지}
+  \begin{itemize}
+    \item 단어가 수천 개면 $P(x_j|y)$ 를 수천 번 곱하면
+      \textbf{극도로 작은 수} $\to$ 부동소수점 정밀도로 구분 불가
+      (\kb{underflow}).
+    \item Week 2 교차 엔트로피가 확률 곱 대신 로그 합을 쓴 것과
+      \textbf{정확히 같은 이유}:
+      \[ \log\prod_j P(x_j|y) = \sum_j \log P(x_j|y) \]
+    \item \textbf{숫자로}: float64는 $\approx10^{-308}$ 이하가
+      \textbf{정확히 0.0}으로 떨어짐.
+      어휘 $V{=}2000$에서 단어당 0.98이면
+      $0.98^{2000}\approx2.8\times10^{-18}$ --- 아직 살아있음.
+      $V{=}200{,}000$이면 $0.98^{200000}=\textbf{0.0}$ ---
+      \textbf{양 클래스 가능도 모두 0.0}, 비교 불가.
+    \item \textbf{로그 공간}에서는 $200{,}000\times\log 0.98
+      \approx -4041$로 \textbf{유한}, 스팸 $-4041$ vs 정상 $-4364$
+      같은 비교가 평범하게 동작.
+    \item ``정확한 확률값''($\approx10^{-1755}$)은 분류에 쓰이지도
+      않는 \textbf{의미 없는 값} --- \textbf{두 로그 점수의 차이}만
+      의미. 실제 구현은 확률 곱을 \textbf{한 번도 만들지 않고}
+      처음부터 로그만 쌓음.
+  \end{itemize}
+\end{frame}

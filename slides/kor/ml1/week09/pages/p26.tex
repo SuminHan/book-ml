@@ -1,0 +1,25 @@
+\begin{frame}{실습: 10층 시그모이드에서 실제로 사라지는 그래디언트}
+  \begin{columns}[T]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch09_2_grad_vanishing.png}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}\small
+        \item 폭 10 시그모이드 층 10개, $W \sim \mathcal{N}(0,1)$
+        \item 출력층 3.16 $\to$ 입력층 0.0057, \textbf{약 550배 감소}
+        \item $0.25^{10} \approx 9.5\times10^{-7}$은 활성 미분 \textbf{만}
+          곱한 극단 하한 — 가중치 곱($\|W\| \approx \sqrt{10}$)이
+          일부 보상해 550배로 관측
+        \item 실제 평균 $\sigma'(z)$는 0.13$\sim$0.19 — $z$가
+          $\pm 2 \sim 6$까지 벌어진 \textbf{포화} 뉴런이 많기 때문
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  {\small 시그모이드 미분이 ``0.25 이하''인 것 자체보다,
+  \textbf{실제 데이터 위에서 포화로 평균이 0.2를 훨씬 하회}하는 것이
+  더 치명적 — 입력 근처 층은 사실상 그래디언트를 못 받아 학습이
+  멈춘 것과 다름없음. 20층이면 float32 정밀도($\approx 10^{-8}$)
+  이내로 \textbf{그래디언트 자체가 0으로 반올림}된다.}
+\end{frame}

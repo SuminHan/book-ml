@@ -1,0 +1,24 @@
+\begin{frame}{그림에서 배우는 세 가지 ①②}
+  \begin{itemize}
+    \item \kq{① 움직이는 목표는 ``떨림''이 아니라 ``값을 잘못된 곳에 세운다''.}
+      (A)는 발산하지도 폭주하지도 않는다 --- 손실은 꾸준히 떨어지고
+      Q값은 \textbf{약 6.0이라는 \textbf{잘못된} 값}에 안정. 참값보다 27\% 높음.
+      발산보다 더 위험: 로그는 전부 정상인데, 에이전트가
+      ``잘 learned된'' \textbf{거짓 믿음}에 따라 행동.
+  \end{itemize}
+  \vskip0.4em
+  \begin{itemize}
+    \item \kq{② 왜 (A)는 과대추정인가 --- $\max$의 구조적 편향.}
+      목표 $\max_{a'} Q(s',a')$는 추정치들 중 \textbf{최대치를 고르는} 연산.
+      오차가 섞이면 $\max$는 오차가 크게 튀어 오른 쪽으로 기울어진다.
+      \[
+      \mathbb{E}\left[\max(Q_A, Q_B)\right] = 5.0 + \frac{1}{6}
+      \approx 5.167 \qquad (\text{참 Q가 둘 다 } 5.0)
+      \]
+      (선택 편향 $\approx +0.17$.) 이 편향은 Q-learning 갱신에
+      \textbf{내장}되어 있고, 부트스트래핑이 스텝마다 재반영하며 증폭.
+      타겟 네트워크는 편향을 없애지 못하지만 \textbf{자기 증폭 루프를 차단}
+      --- 편향의 \textbf{근원}을 겨냥한 것이 \kb{Double DQN}(9.3 예고:
+      ``행동은 온라인이 고르고, 평가는 타겟이 한다'').
+  \end{itemize}
+\end{frame}

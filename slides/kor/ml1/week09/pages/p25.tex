@@ -1,0 +1,27 @@
+\begin{frame}{$L$개 층의 곱 형태 + 손으로 체감}
+  \[
+  \frac{\partial L}{\partial W_1} \propto \prod_{l=2}^{L}
+  \sigma'(z_l) \cdot W_l
+  \]
+  \small
+  \begin{itemize}
+    \item 각 $\sigma'(z_l) < 1$ (시그모이드) $\Rightarrow$ 지수적으로 0 $\to$
+      \kb{소실} \;|\; 각 항이 $>1$ (가중치 큼) $\Rightarrow$ 지수 증가 $\to$
+      \kb{폭발}
+  \end{itemize}
+  \vskip0.3em
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    상황 & 값 & 의미 \\
+    \midrule
+    $\sigma' = 0.2$ 3개 층 & $0.2^3 = 0.008$ & 그래디언트의 0.8\%만 1층에 도달 \\
+    $\sigma' = 0.2$ 10개 층 & $\approx 1.0 \times 10^{-7}$ & 사실상 0 \\
+    $\sigma' = 0.2$ 20개 층 & $\approx 1.05 \times 10^{-14}$ & float32 이내 $\to$ 반올림 0 \\
+    승수 평균 2, 20개 층 & $2^{20} \approx 10^6$ & 백만 배 부풀림, 발산 (NaN 전조) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  {\footnotesize $\sigma'(z) = 0.2$는 $z \approx \pm 1.1$ — 시그모이드
+  곡선이 ``비포화''인 전형 지점. 20층만 거치면 가중치가 발산하고
+  학습 중 NaN이 된다.}
+\end{frame}

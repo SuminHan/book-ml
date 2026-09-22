@@ -1,0 +1,23 @@
+\begin{frame}{손으로 한 스텝 (2/2): 나쁜 경우 $G_t = -1$}
+  같은 초기 $\theta=[1,0]$, 이번엔 $G_t=-1$, \textbf{행동 1} 샘플링:
+  \[
+  \nabla_\theta \log\pi_\theta(1|1) = \big[-0.7311,\; (1-0.2689)\big]
+  = [-0.7311,\; 0.7311]
+  \]
+  \[
+  \theta \leftarrow [1,0] + 0.1 \times (-1) \times [-0.7311,\; 0.7311]
+  = [1.0731,\; -0.0731]
+  \]
+  새 정책: $p_0' \approx \mathbf{0.7588}$, $p_1' \approx 0.2412$.
+  \begin{itemize}
+    \item $G_t=-1$(나쁜 결과)가 행동 1에 부여 $\to$
+      ``나쁜 결과를 낸 행동 1의 확률을 내리자''.
+    \item $p_1$: $0.2689 \to 0.2412$로 내려가는 \textbf{대신},
+      합 1 제약 때문에 $p_0$ 가 \textbf{자동으로} 올라감.
+  \end{itemize}
+  \vskip0.4em
+  \kq{``나쁜 행동을 내리면 좋은 행동은 자동으로 올라간다''
+  --- 이것이 one-vs-rest 구조의 \textbf{본질}.}
+  {\footnotesize 10.2절 ``손으로 한 번 갱신하기'' 블록이 같은 계산
+  ($\alpha=0.1$, $G=\pm 3$)을 더 크게 보여준다.}
+\end{frame}

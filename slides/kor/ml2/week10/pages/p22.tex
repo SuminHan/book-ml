@@ -1,0 +1,28 @@
+\begin{frame}{자주 하는 실수 (10.1)}
+  \kb{1. $\nabla\log\pi$ 와 $\nabla\pi$ 혼용}
+  \begin{itemize}
+    \item 항등식 $\nabla_\theta\pi = \pi\,\nabla_\theta\log\pi$ 로
+      \textbf{전환 가능}하나 \textbf{동일하지 않음}:
+      절대 변화율 vs 상대 변화율.
+    \item 실습에서 \texttt{log\_prob} 대신 \texttt{prob} 를 직접
+      미분하면 \textbf{분산이 급격히 증가} --- $\pi$ 가 작은 행동에서
+      $\nabla\pi$ 도 작아져 \textbf{신호가 희미}해짐.
+  \end{itemize}
+  \vskip0.4em
+  \kb{2. 기댓값 내 미분 교환 조건 무시}
+  \begin{itemize}
+    \item $\nabla_\theta$ 와 $\mathbb{E}$ 교환이 안전하려면:
+      정책 파라미터화 \textbf{매끄럽고}, 궤적 공간의 \textbf{측도가
+      $\theta$ 에 무관}해야 함.
+    \item 조건이 깨지면(예: $\theta$ 에 의존하는 가변 크기의 유한 합
+      행동 공간) \textbf{정리 자체가 성립하지 않음}.
+  \end{itemize}
+  \vskip0.4em
+  \kb{3. 베이스라인이 행동 $a$ 에 의존하는 값 사용}
+  \begin{itemize}
+    \item $b$ 가 $a$ 에 의존하면 $\mathbb{E}[\nabla_\theta\log\pi \cdot b]=0$
+      이 \textbf{깨져 편향} 발생 (``한 적이 많으면 더 크게 빼자''의
+      $b(a,s)$ 가 예).
+    \item \textbf{베이스라인은 상태 $s$ 에만 의존해야 한다}.
+  \end{itemize}
+\end{frame}

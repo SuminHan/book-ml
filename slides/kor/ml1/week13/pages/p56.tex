@@ -1,0 +1,22 @@
+\begin{frame}{확인 문제: 2-노드 그래프}
+  2-노드 방향 그래프 $A \leftrightarrow B$ ($A \to B$, $B \to A$)에
+  $d = 0.5$, $N = 2$ 로 PageRank를 손으로 계산.
+  \vskip0.5em
+  \begin{enumerate}
+    \item \textbf{단계 1} --- 방정식 두 개:
+      $PR(A) = 0.25 + 0.5\,PR(B)$, \;
+      $PR(B) = 0.25 + 0.5\,PR(A)$
+    \item \textbf{단계 2} --- 대칭성: $PR(A) = PR(B)$ 로 놓으면
+      $PR(A) = 0.25 + 0.5\,PR(A)$, 즉
+      $PR(A) = PR(B) = 0.5$ --- \textbf{$d$의 값과 무관하게}
+      각 0.5. (코드로 확인)
+    \item \textbf{단계 3 (핵심)} --- $B \to A$ 엣지를 지우면 (B는
+      \textbf{dangling node}가 됨):
+      $PR(A) = 0.25$, \;
+      $PR(B) = 0.25 + 0.5 \times 0.25 = 0.375$
+      --- 합이 $0.25 + 0.375 = \textbf{0.625}$ 로, \textbf{1이 아니다}.
+      \kq{왜 그런지, 그리고 본문의 어떤 \textbf{공학 보정}을
+      추가하면 합이 1로 돌아올지 이름으로 답하라.}
+      (힌트: ``자주 하는 실수'' 섹션의 두 번째 세부 사항)
+  \end{enumerate}
+\end{frame}

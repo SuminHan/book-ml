@@ -1,0 +1,21 @@
+\begin{frame}{자주 묻는 질문: 모드 붕괴 · VAE/GAN/Diffusion}
+  \begin{block}{모드 붕괴는 왜 생기나요?}
+    생성자는 판별자를 속이기만 하면 손실이 줄어듦 — 어떤 \textbf{한
+    종류}의 가짜가 판별자를 아주 잘 속인다는 것을 발견하면, 굳이
+    다른 다양한 가짜를 만들 이유가 없음. 판별자가 그 ``치팅''을
+    알아채고 대응하기 전까지, 생성자는 그 \textbf{좁은 영역에만
+    몰릴} 유인. \; 근본 원인: VAE의 ELBO처럼 ``\textbf{다양성을
+    명시적으로 요구하는 항}''이 GAN 기본 목적함수에는 \textbf{없음}.
+  \end{block}
+  \vskip0.4em
+  \begin{block}{Diffusion이 주류인데 VAE·GAN은 이제 안 쓰나요?}
+    이미지 생성 분야에서는 Diffusion이 최근 주류가 됐지만,
+    \textbf{VAE의 핵심 아이디어}(잠재 공간을 매끄럽게 만든다)는
+    여러 최신 시스템에서 Diffusion과 \textbf{결합}되어 사용
+    (예: 픽셀 공간이 아니라 \textbf{VAE로 압축한 잠재 공간}에서
+    Diffusion을 돌리는 구조 — Stable Diffusion이 정확히 이 방식).
+    \; GAN도 \textbf{실시간성}이 중요한(반복 없이 한 번에 생성해야
+    하는) 응용에서는 여전히 사용 — ``하나가 다른 셋을 완전히
+    대체했다''기보다, \textbf{각자 강점이 있는 도구로 함께}.
+  \end{block}
+\end{frame}

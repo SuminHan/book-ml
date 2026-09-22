@@ -1,0 +1,26 @@
+\begin{frame}{FAQ (1/2): $\gamma$ 설정}
+  \begin{itemize}
+    \item \textbf{Q. $\gamma$ 는 보통 얼마로 설정하나요?}
+      \begin{itemize}
+        \item 0.9$\sim$0.99 사이가 흔.
+        \item CartPole처럼 \textbf{에피소드가 몇백 스텝 이내}로
+          짧은 문제는 0.95$\sim$0.99, \textbf{아주 긴 호흡}
+          (수천 스텝 이상)은 0.99$\sim$0.999처럼 1에 더 가까운
+          값을 써서 먼 미래의 보상도 무시되지 않게.
+        \item 실전 하이퍼파라미터 튜닝에서는 $\gamma$ 를
+          \textbf{학습률만큼이나} 중요한 변수로 취급 --- 같은
+          알고리즘을 같은 환경에 돌려도 $\gamma = 0.9$ 와
+          $\gamma = 0.99$ 의 \textbf{최종 정책}이 다를 수
+          있기 때문.
+      \end{itemize}
+    \item \textbf{Q. 유한 에피소드 문제에서도 할인율이 꼭
+      필요한가요?}
+      \begin{itemize}
+        \item 유한한 에피소드라면 $\gamma = 1$ 이어도 리턴이
+          \textbf{발산하지는 않는다}(합이 유한 개 항).
+        \item 다만 $\gamma < 1$ 을 쓰면 ``당장의 보상을 더
+          중시한다''는 \textbf{실용적 효과} + 학습 알고리즘의
+          \textbf{분산을 줄여 안정성을 높이는} 부수 효과.
+      \end{itemize}
+  \end{itemize}
+\end{frame}

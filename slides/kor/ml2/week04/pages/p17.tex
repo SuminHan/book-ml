@@ -1,0 +1,19 @@
+\begin{frame}{자주 하는 실수 (1/2)}
+  \begin{itemize}
+    \item \kb{$V^\pi$ 와 $V^{*}$ 를 섞어 쓴다.} ``정책평가에서
+      $V^{*}$ 를 계산한다''는 말은 무의미 --- 정책평가는
+      \textbf{주어진} $\pi$ 의 $V^\pi$ \textbf{만} 계산할 뿐,
+      ``최적인가''를 \textbf{판단하지 않는다}. 상첨자($\pi$ vs
+      $*$)를 \textbf{항상} 확인할 습관.
+    \item \kb{`delta`를 sweep \textbf{밖}에서 초기화한다.} `delta`
+      는 \textbf{매 sweep 시작}에 0으로. sweep 앞에서 한 번만
+      만들고 누적하면 ``첫 sweep의 큰 변화''가 이후 모든 sweep
+      의 `delta`를 덮어써 \textbf{수렴 판정 안 되고 무한 루프}.
+    \item \kb{터미널을 보상 0으로만 ``처리''한다.} 목표 칸에서
+      \textbf{어디로 전이하는지}($P$ 에 self-loop, 보상 0)를
+      명시하지 않으면 ``0 다음에 또 0의 무한 루프''로 계산 ---
+      \textbf{우연히} 0이 나와도 \textbf{이유가 다름}. 1.3절
+      \texttt{terminated}/\texttt{truncated} 구분과 같은 정신:
+      \textbf{종료 조건을 코드에 명시적으로} 드러내라.
+  \end{itemize}
+\end{frame}

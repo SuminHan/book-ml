@@ -1,0 +1,25 @@
+\begin{frame}{엔트로피 보너스: $\log\sigma$ 를 잡아당기는 브레이크}
+  \kq{왜 엔트로피 보너스를 넣으면 탐험이 유지되는가?}
+  \vskip0.5em
+  \begin{itemize}
+    \item 엔트로피 = 분포가 얼마나 퍼져 있는지의 척도 — Week 2
+      UCB와 같은 ``탐험 유인''의 연속.
+    \item \kb{정규분포 정책에서는 엔트로피가 $\log\sigma$ 에
+      비례} — 이 항은 \textbf{표준편차를 줄이는 경향을 계속 반대
+      방향으로 잡아당기는 항}.
+    \item 정책이 ``이 토크가 정답이야''라고 확신을 가지는 속도를
+      조절하는 \kb{브레이크} — 너무 빨리 \textbf{단정적으로} 하나에
+      수렴해서(탐험이 끝나버려서) 로컬 최적에 끼는 걸 늦춘다.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{역사: PPO-1과 PPO-2}
+    PPO 논문(Schulman, Moritz et al., 2017)에는 알고리즘이
+    \textbf{둘} 들어 있다. \kb{PPO-1}: 경사 ascent 스텝 자체를
+    ``KL 제약 이해를 확인하며'' 잘게 쪼개는 방식 (TRPO line
+    search의 단순형). \kb{PPO-2}: 클리핑만 한 버전 — 논문 공개 후
+    ``더 단순하고 실전에서 거의 차이가 없거나 오히려 낫다''는
+    말이 빠르게 퍼져 \textbf{클리핑 버전(PPO-2)이 표준}.
+    ML 역사에서 드문 경우: ``더 단순한'' 두 번째 버전이
+    커뮤니티에 의해 선택됨.
+  \end{block}
+\end{frame}

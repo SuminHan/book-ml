@@ -1,0 +1,37 @@
+\section{9.3 정규화 기법과 학습률 스케줄링}
+\begin{frame}{과적합과 신경망 전용 정규화}
+  \begin{itemize}
+    \item \kb{과적합}: 학습 데이터는 완벽히 맞히는데 새 데이터에서 성능
+      저하 — Week 4.1 편향-분산 관점에서, 파라미터가 매우 많은 신경망은
+      \textbf{극단적으로 유연(분산 큼)}해 특히 취약
+    \item Week 6의 L1/L2 정규화는 그대로 쓸 수 있으나, 신경망은
+      \textbf{구조 자체를 이용}한 정규화도 함께 사용:
+  \end{itemize}
+  \vskip0.3em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{Dropout}
+      \begin{itemize}
+        \item 학습 시 매 스텝마다 일부 뉴런을 확률 $p$로
+          \textbf{무작위로 꺼버림}
+        \item 뉴런 간 \textbf{공적응(co-adapt)}을 억제 — 특정
+          뉴런에만 의존하는 대신 \textbf{견고한(robust)} 특징 학습
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{Batch Normalization (BN)}
+      \begin{itemize}
+        \item 각 층의 입력을 \textbf{미니배치} 단위로 평균 0,
+          분산 1로 정규화, 이후 학습 가능한 $\gamma, \beta$를
+          다시 곱·추가
+        \item \kb{internal covariate shift} 감소 $\to$ 학습이
+          \textbf{더 빠르고 안정적}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  {\footnotesize ``정규화(regularization)''라는 말은 릿지 회귀
+  (Tikhonov, 1963)에서 왔고, 2010년대 dropout·BN 등장 이후
+  ``손실을 바꾸는 L1/L2'' + ``\textbf{계산 구조 자체를 바꾸는}
+  구조적 정규화''라는 새 축이 생김.}
+\end{frame}

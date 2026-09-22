@@ -1,0 +1,29 @@
+\begin{frame}{He 초기화: ReLU가 버리는 ½을 2배로}
+  \small
+  \begin{itemize}
+    \item ReLU는 입력의 절반($z<0$)을 0으로 버림 $\Rightarrow$
+      2차 모멘트가 \textbf{정확히 절반}:
+      $\mathbb{E}[\text{ReLU}(z)^2] = \tfrac{1}{2}\,\mathbb{E}[z^2]$
+    \item 이 ½을 보상 $\Rightarrow$ 가중치 분산 \textbf{2배}:
+      $\sigma_w = \sqrt{2/n_{l-1}}$ = \kb{He (Kaiming He 등, 2015,
+      ResNet 논문) 초기화}
+  \end{itemize}
+  \vskip0.4em
+  \kb{측정} (실습 노트, fan-in 100, 한 층 통과 후 $\mathbb{E}[a^2]$ 승수):
+  \vskip0.3em
+  \begin{tabular}{@{}lcl@{}}
+    \toprule
+    조합 & 승수 & 해석 \\
+    \midrule
+    ReLU + Xavier & 0.499 & 매 층 정확히 ½ $\to$ 10층 후
+      $0.5^{10} \approx 10^{-3}$ (소실) \\
+    ReLU + He & 0.998 & ½ $\times$ 2 = 1, \textbf{보존} (안정) \\
+    tanh + Xavier & 0.393 & 선형 근사(1)보다 작음 — 포화로 추가 압축 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  {\footnotesize ``2''라는 숫자가 정확히 ReLU가 버리는 ½을 보상한다는
+  것을 \textbf{정확한 수치}로 확인. tanh+Xavier가 0.39인 것은 포화
+  압축 — 실무에서 tanh도 Xavier를 쓰는 건 1:1 보존이 1차 근사이고,
+  미세한 스케일 드리프트는 9.3 BatchNorm이 흡수.}
+\end{frame}

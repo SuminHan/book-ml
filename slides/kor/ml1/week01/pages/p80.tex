@@ -1,0 +1,22 @@
+\begin{frame}{확인 문제: 파이프라인 원칙을 실제 상황에서 (a)(b)}
+  \small
+  \begin{itemize}
+    \item \textbf{(a)} 이탈 라벨이 붙은 10,000행에서 EDA 결과
+      ``이탈''이 \textbf{2\%뿐}. 이 사실이 파이프라인의 어느
+      단계에 무엇을 바꾸는가?
+    \item \textbf{답}: \kb{EDA의 발견이 평가 단계(지표 선택)를
+      바꿈} --- 정확도는 ``전부 비이탈''로 예측해도 98\%라 이 문제
+     에선 무의미에 가까움. \textbf{PR-AUC}(Week 2.3) 같은 불균형
+      클래스 지표를 처음부터 염두에 두고, 이후 단계(클래스
+      가중, 샘플링 전략)를 계획.
+  \end{itemize}
+  \vskip0.4em
+  \begin{itemize}
+    \item \textbf{(b)} 1,000행에서 \texttt{age} 결측이 훈련부 10개,
+      테스트부 3개. 평균으로 채운다 --- \textbf{어느 부분}의 평균을
+      계산해야 하는가?
+    \item \textbf{답}: \kb{훈련 부분} --- ``훈련에서 fit, 테스트에
+      apply'' 원칙. 전체 평균을 쓰면 테스트 정보가 훈련에 살짝
+      새는 형태.
+  \end{itemize}
+\end{frame}

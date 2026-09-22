@@ -1,0 +1,38 @@
+\begin{frame}[fragile]{실습: 파이프라인 (2/2) --- 나누기·채움·모델링}
+  \begin{lstlisting}
+# 3) 통계량 기반 정제(채움) *이전*에 데이터를 나눈다
+perm = rng.permutation(len(df))
+cut = int(0.75 * len(df))
+df_tr = df.iloc[perm[:cut]].copy()
+df_te = df.iloc[perm[cut:]].copy()
+
+# 4) 채움: 훈련 행에서만 중앙값 계산, 그 통계량을 테스트에 적용
+med = df_tr.loc[df_tr["price_million"] >= 0, "price_million"].median()
+for d in (df_tr, df_te):
+    d.loc[d["price_million"] < 0, "price_million"] = med
+
+# 5) 모델링: 선형회귀 (정상방정식, Week 2에서 유도)
+def linreg(X, y):
+    Xb = np.column_stack([X, np.ones_like(X)])
+    w = np.linalg.solve(Xb.T @ Xb, Xb.T @ y)
+    return w[0], w[1]
+
+slope, intercept = linreg(df_tr["size_sqm"].values,
+                          df_tr["price_million"].values)
+\end{lstlisting}
+  \vskip0.1em
+  {\footnotesize 결과: 123행 $\to$ 중복 3행 제거 $\to$ 120행, 75/25로
+  train 90 / test 30, train median 152.6,
+  \textbf{learned slope=1.400, intercept=29.471} (true: 1.5, 20).
+  기울기 1.400 $\approx$ 진짜 1.5 --- 0.1의 차이는 랜덤 잡음,
+  ``모델이 못 배운 것''이 아니라 \textbf{데이터 자체의 불확실성}.
+  절편 29.5는 진짜 20에서 더 크게 벗어남 --- 표본 90개 수준에서
+  \textbf{절편은 기울기보다 잡음에 더 민감} (엄밀한 평가는 Week 6).}
+  \vskip0.1em
+  \begin{block}{눈에 띄는 순서 하나}
+    채움(중앙값 imputation)은 데이터를 \emph{나눈 \textbf{이후}}에,
+    중앙값은 \emph{\textbf{훈련 행만}으로} 계산해서(152.6) 테스트
+    행에 그대로 \textbf{적용}했다. 전체 중앙값으로 채운 뒤 나누는
+    순서였다면 바로 위 ``데이터 누수''의 형태가 된다.
+  \end{block}
+\end{frame}

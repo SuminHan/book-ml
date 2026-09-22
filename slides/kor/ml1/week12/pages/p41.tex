@@ -1,0 +1,22 @@
+% ===== SECTION 12.3 =====
+\section{12.3 멀티헤드 어텐션과 포지셔널 인코딩}
+\begin{frame}{Multi-Head Attention: 관점을 병렬로}
+  Q, K, V를 한 세트만 쓰는 대신, \textbf{여러 세트(``헤드'', head)}를
+  병렬로 두고 각각 \textbf{다른 관점}의 관련성을 학습하게 한다
+  (Vaswani et al., 2017):
+  \begin{itemize}
+    \item 한 헤드는 \textbf{문법적 관계}(주어-동사)에, 다른 헤드는
+      \textbf{의미적 관계}(동의어)에 집중하는 식으로 역할이 나뉘는
+      경향이 관찰된다.
+    \item 여러 헤드의 결과를 \textbf{이어붙인(concatenate)} 뒤
+      다시 한 번 \textbf{선형변환}해서 최종 출력을 만든다.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{Week 7.2 랜덤 포레스트(Breiman, 2001)와 같은 직관}
+    ``서로 다른 트리 여러 개의 다수결''로 단일 트리보다 안정적인
+    예측을 얻었던 것과 비슷. 다만 RF의 트리들은 \textbf{무작위성}만으로
+    다양해지는 반면, 멀티헤드의 각 헤드는 \textbf{역전파}를 통해
+    ``서로 다른 역할을 맡는 것이 전체 손실을 줄이는 데 유리하다''는
+    방향으로 \textbf{스스로 분화}한다는 차이가 있다.
+  \end{block}
+\end{frame}

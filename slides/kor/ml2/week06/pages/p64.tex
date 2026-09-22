@@ -1,0 +1,27 @@
+% ===== wrap-up =====
+\begin{frame}{이번 주차 정리}
+  \begin{enumerate}
+    \item \kb{TD(0)는 DP와 MC의 정가운데} --- 모델 없이, 한 스텝 보상 +
+      \textbf{다음 상태 추정치}로 매 스��� 즉시 갱신(부트스트래핑).
+      MC(불편, 분산 큼) vs TD(편향, 분산 작음)의 트레이드오프는
+      ``갱신 한 번의 목표값 흔들림''의 차이.
+    \item \kb{SARSA = on-policy} --- 실제로 \textbf{고른} 다음 행동 $a'$를
+      목표에 써, \textbf{행동 정책 $b$ 자체의} $Q^b$를 학습.
+      CliffWalking에서는 탐험 위험이 $\varepsilon$-greedy 가치에
+      가격으로 들어와 \textbf{절벽을 피하는 17스텝} 안전 경로를 배움.
+    \item \kb{Q-learning = off-policy} --- $a'$를 $\max_{a'}$로 바꾼
+      한 줄이 on/off-policy를 가르는 \textbf{전부}.
+      ``이상적인 최선만 고를 텐데''라는 낙관적 부트스트래핑으로
+      \textbf{절벽 옆 13스텝} 최단 경로를 배움.
+      학습 도중 리턴($-31$ vs $-53$)은 \textbf{다른 질문}의
+      결과이지 품질이 아님.
+  \end{enumerate}
+  \vskip0.8em
+  \begin{block}{다음 주 --- Week 7. n-step TD와 적격흔적}
+    TD(0)는 한 스텝만, MC는 끝까지 --- ``몇 스텝을 실제로 볼 것인가''
+    라는 하나의 다이얼 위의 양 끝. Week 7은 이 다이얼의 모든 지점을
+    아우르는 \kb{n-step 부트스트래핑}과 \kb{적격흔적}(eligibility
+    traces)을 다루고, 경험뿐 아니라 \textbf{학습된 모델}까지 함께
+    쓰는 계획(planning, Dyna-Q)으로 나아간다.
+  \end{block}
+\end{frame}

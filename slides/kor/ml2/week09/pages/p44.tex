@@ -1,0 +1,25 @@
+\begin{frame}{손으로 한 번: 버퍼가 차고, 샘플이 섞이는 것}
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    push 순서 & 버퍼 내용 (왼쪽 = 가장 오래됨) \\
+    \midrule
+    \texttt{e1} & $[\texttt{e1}]$ \\
+    \texttt{e2} & $[\texttt{e1}, \texttt{e2}]$ \\
+    \texttt{e3} & $[\texttt{e1}, \texttt{e2}, \texttt{e3}]$ \\
+    \texttt{e4} & $[\texttt{e1}, \texttt{e2}, \texttt{e3}, \texttt{e4}]$ \\
+    \texttt{e5} & $[\texttt{e2}, \texttt{e3}, \texttt{e4}, \texttt{e5}]$
+      $\leftarrow$ \texttt{e1} 밀려남 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.5em
+  \begin{itemize}
+    \item \texttt{e2..e5}를 복원추출 12번(시드 42):
+      \texttt{e2}$\times$7, \texttt{e3}$\times$3, \texttt{e4}$\times$1,
+      \texttt{e5}$\times$1 --- \textbf{각 경험의 빈도가 무작위}로 분포.
+    \item 결정적인 점: ``어제 모은'' \texttt{e2}와 ``방금 모은'' \texttt{e5}가
+      \textbf{같은 배치에 섞일 수 있다} --- 이 \textbf{시간적 간격}이
+      상관 제거의 핵심.
+  \end{itemize}
+\end{frame}

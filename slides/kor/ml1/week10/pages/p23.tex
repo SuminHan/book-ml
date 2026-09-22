@@ -1,0 +1,20 @@
+\begin{frame}{확인 문제 (10.1): 숫자 네 개}
+  \small
+  \begin{enumerate}
+    \item \kb{출력 크기.} 56$\times$56, k=3, p=1, s=2 $\to$
+      $\lfloor(56+2-3)/2\rfloor+1 = \mathbf{28}$.
+      (224$\to$112 다운샘플링의 2배 크기 버전.)
+    \item \kb{파라미터·FLOPs.} 28$\times$28 ($C_{\text{in}}{=}16$),
+      5$\times$5, $C_{\text{out}}{=}32$, p=0, s=1:
+      (a) $n_{\text{out}}=24$,
+      (b) $(25\times16+1)\times32 = \mathbf{12{,}832}$,
+      (c) $24^2\times32\times(25\times16) = \mathbf{7{,}372{,}800}$
+    \item \kb{MLP 비교.} 앞 네트워크(1,504 / 305,424)와
+      같은 체적 FC(784$\to$1,600) --- FLOPs 비율은 ``4배 안팎''인데
+      \textbf{파라미터 비율은 훨씬 큰 이유}를 한 문장으로
+    \item \kb{실수 찾기.} ``28$\times$28, k=3, p=1, \textbf{s=2} $\to$
+      $(28-3+1)/2 + 2 = 15$'' --- 정답은 \textbf{14}.
+      패딩은 스트라이드로 나누기 \textbf{전}에 입력에 더해져야 한다:
+      $\lfloor(28+2-3)/2\rfloor+1 = 14$
+  \end{enumerate}
+\end{frame}

@@ -1,0 +1,36 @@
+\begin{frame}[fragile]{실습: Gymnasium에서 $\mathcal{S}, \mathcal{A}$ 확인}
+  이론의 다섯 요소를 실제 환경의 API와 대응시킨다.
+  \texttt{FrozenLake-v1}(얼음 위를 미끄러지지 않게 건너는 문제)과
+  \texttt{CartPole-v1} 을 만들고, 각각의 $\mathcal{S}$ 와
+  $\mathcal{A}$ 를 출력:
+  \begin{lstlisting}
+import gymnasium as gym
+
+# --- FrozenLake: 이산 상태·행동 공간 ---
+fl = gym.make("FrozenLake-v1", is_slippery=True)
+obs, info = fl.reset(seed=0)
+print("FrozenLake S:", fl.observation_space)   # Discrete(16)
+print("FrozenLake A:", fl.action_space)         # Discrete(4)
+print("초기 상태:", obs, "(4x4 격자 16칸 중 하나)")
+fl.close()
+
+print()
+
+# --- CartPole: 연속 상태, 이산 행동 ---
+cp = gym.make("CartPole-v1")
+obs, info = cp.reset(seed=0)
+print("CartPole S:", cp.observation_space)    # Box(4,)
+print("CartPole A:", cp.action_space)          # Discrete(2)
+print("초기 상태:", obs, "[x, x_dot, theta, theta_dot]")
+cp.close()
+  \end{lstlisting}
+  \vskip0.2em
+  {\footnotesize FrozenLake: \textbf{16개 이산 상태}(4$\times$4 격자
+  칸), \textbf{4개 이산 행동}(상/하/좌/우) --- $\mathcal{S},
+  \mathcal{A}$ 모두 유한이므로 $P$ 를 16$\times$4 크기의 표로 쓸 수
+  있다. CartPole: \textbf{연속 상태}($\mathbb{R}^4$ 의 제한된
+  범위), \textbf{2개 이산 행동} --- $P$ 를 표로 쓸 수 없고,
+  \texttt{step()} 함수의 내부 물리 시뮬레이션(이산 시간 적분)으로만
+  정의된다. 이 차이가 Week 4--6(표 기반)과 Week 9--11(신경망
+  기반)의 분리를 \textbf{환경 수준에서} 보여준다.}
+\end{frame}

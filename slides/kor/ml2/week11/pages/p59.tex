@@ -1,0 +1,30 @@
+\begin{frame}{스택의 각 단계 ``왜 이렇게''}
+  \small
+  \begin{itemize}
+    \item \kb{① $N$ 스텝}: 너무 크면 수집 \textit{중에도} 초기·
+      말기 정책이 달라져 $r_t$ 가 클리핑 범위를 벗어나는 스텝
+      증가; 너무 작으면 GAE의 ``긴 지평선'' 이득 감소.
+      실전 $N=2048,\,4096$ 일반적.
+    \item \kb{③ GAE($\lambda=0.95$)}: 10.3절의
+      $A_t=G_t-V(s_t)$ ($=\lambda1$, MC)를 \textbf{대신} —
+      ``거의 MC인데, 가장 먼 꼬리는 약간 얕게 본다''.
+    \item \kb{④ 정규화}: 학습률을 보상 스케일에 무관하게 —
+      \textbf{미니배치 단위}여야 함. 전체 $N$ 스텝 단위로 하면
+      미니배치마다 스케일이 달라져(일부 미니배치의 $A$ 가 0에
+      가까워져) 그 업데이트가 거의 사라짐.
+    \item \kb{⑤ $M$ epochs}: on-policy(REINFORCE)는 데이터 1회.
+      PPO는 클리핑 덕분에 ``데이터가 약간 오래돼도'' 안전하게
+      재사용 — $M$ 번(보통 4$\sim$10). $M$ 이 크면 on-policy에
+      가깝고(데이터 활용도$\uparrow$) 클리핑 더 자주 발동.
+      \textbf{$M=1$ 이면 사실상 A2C/A3C(10.3절)}와 같음.
+    \item \kb{⑥ $\theta_{\mathrm{old}}$ 갱신}: 다음 반복에서
+      $r_t$ 의 분모가 \textit{이번 반복 끝}의 정책이 되도록 —
+      비율이 의미 있게 (1 근처에) 유지.
+  \end{itemize}
+  {\footnotesize 이 스택의 \textbf{모든 숫자}($N,\ M,\ \epsilon,\
+  \lambda,\ \gamma,\ c_v,\ c_e$, 학습률)가 하이퍼파라미터 —
+  ``PPO가 느리다/잘 못 배운다''는 불만의 상당 부분이
+  \textit{알고리즘이 아니라 이 숫자 조합}에서 옴.
+  $\epsilon$ 과 $\lambda$ 는 독립적이지만 \textbf{함께}
+  학습 안정성에 영향.}
+\end{frame}

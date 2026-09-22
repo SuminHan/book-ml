@@ -1,0 +1,18 @@
+\begin{frame}[fragile]{실습: diabetes 3분할 파이프라인 전체}
+  \small
+\begin{lstlisting}
+X, y = load_diabetes().data, load_diabetes().target  # 442건, 10개 특징
+# 1) 2단계 3분할: 40%를 (val+test)로, 그 40%를 절반씩
+Xtr, Xtemp, ytr, ytemp = train_test_split(X, y, test_size=0.4, random_state=0)
+Xva, Xte, yva, yte = train_test_split(Xtemp, ytemp, test_size=0.5, random_state=0)
+# 2) val RMSE로만 lambda 고르기 (선택 편향은 val에서만)
+lams = [0.1, 1.0, 10.0, 100.0, 1000.0]
+val_rmse = {lam: np.sqrt(mean_squared_error(
+    yva, Ridge(alpha=lam).fit(Xtr, ytr).predict(Xva))) for lam in lams}
+best = min(val_rmse, key=val_rmse.get)
+# 3) 그 lambda로 train만 fit, test RMSE 한 번만
+final = np.sqrt(mean_squared_error(
+    yte, Ridge(alpha=best).fit(Xtr, ytr).predict(Xte)))
+\end{lstlisting}
+  (4) 대조로 (잘못) test로 $\lambda$를 고르면 어떤 차이가 나는지 본다.
+\end{frame}

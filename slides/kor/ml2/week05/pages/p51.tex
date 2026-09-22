@@ -1,0 +1,23 @@
+\begin{frame}{on-policy vs off-policy: 트레이드오프}
+  \scriptsize
+  \begin{tabular}{@{}p{0.24\linewidth}p{0.33\linewidth}p{0.33\linewidth}@{}}
+    \toprule
+     & \textbf{On-policy} (예: $\varepsilon$-greedy MC) & \textbf{Off-policy} (예: 중요도 샘플링) \\
+    \midrule
+    데이터 수집 정책 & 학습하는 정책 \textbf{자체} & 임의의 다른 정책 ($b \neq \pi$) \\
+    편향 & 없음 (평가 대상과 동일) & 보정 전에는 있음, 보정 후에는 없음 \\
+    분산 & \textbf{낮음} & \textbf{높음} ($\rho$ 폭증) \\
+    데이터 효율 & 낮음 (탐험 비용) & 높음 (기존 데이터 재사용 가능) \\
+    구현 난이도 & 간단 & $\rho$ 계산 + 분산 다스림 필요 \\
+    실용 예 & 5.2절 블랙잭 MC 제어 & Week 9 DQN 경험재현, Week 11 PPO \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{block}{off-policy 의 진짜 가치}
+    ``사람의 시연 데이터, 시뮬레이터에서 모은 데이터, 과거
+    버전의 정책이 모은 데이터''를 \textbf{재사용}할 수
+    있다는 점 --- Week 12(모방학습)에서 사람의 동작 데이터를
+    강화학습에 어떻게 쓸지 다룰 때 이 off-policy 도구가
+    \textbf{필수 전제}.
+  \end{block}
+\end{frame}

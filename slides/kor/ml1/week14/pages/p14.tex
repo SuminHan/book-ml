@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{실습: 붓꽃 데이터를 2차원으로}
+  iris: 꽃받침·꽃잎의 길이·너비 4개 특징, 150 샘플.
+\begin{lstlisting}
+import numpy as np
+
+Xc = X - X.mean(axis=0)  # 중심화
+cov = (Xc.T @ Xc) / len(Xc)
+eigvals, eigvecs = np.linalg.eigh(cov)
+order = np.argsort(eigvals)[::-1]
+eigvals, eigvecs = eigvals[order], eigvecs[:, order]
+
+print("고유값(각 축의 분산):", eigvals)
+print("설명 분산 비율:", eigvals / eigvals.sum())
+
+X2d = Xc @ eigvecs[:, :2]  # 상위 2개 주성분에 투영
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize \texttt{eigh}: 대칭 행렬의 고유분해(단위 고유벡터 보장).
+  결과: 고유값 $[4.200,\,0.241,\,0.078,\,0.024]$,
+  설명 비율 $[0.925,\,0.053,\,0.017,\,0.005]$ ---
+  \textbf{상위 2개만으로 전체 분산의 97.8\%}를 보존,
+  나머지 2차원을 통째로 버려도 손실 2.2\%뿐.}
+\end{frame}

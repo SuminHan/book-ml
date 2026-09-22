@@ -1,0 +1,20 @@
+\begin{frame}{1차원 장난감: 파라미터가 딱 1개인 GAN}
+  ``내쉬 균형''이 추상적으로 들리면, \textbf{파라미터가 딱 1개인}
+  장난감 GAN으로 균형을 직접 계산.
+  \begin{itemize}
+    \item 데이터 $x \sim \mathcal{N}(0,1)$, 생성자 분포
+      $p_G = \mathcal{N}(0, s^2)$
+    \item \textbf{표준편차 $s$ 하나로} 가짜 분포의 ``너비''만 바꿀 수
+      있는 생성자
+    \item 평균은 0으로 고정 — 데이터와 가짜가 모두 0에 대칭이라
+      평균 0이 당연히 최고. 게임이 ``너비 맞추기''라는 \textbf{한 가지
+      문제}로 깔끔하게 축소
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{판별자는 로지스틱회귀}
+    $D$는 $x$ 위의 로지스틱회귀(Week 2.3). $G$를 고정하고 $D$를
+    \textbf{완전히} 최적화하면(미니배치가 아니라 전체 데이터에서
+    MLE로) 해는 \textbf{닫힌 형태}:
+    \[D^*(x) = \frac{p_{\text{data}}(x)}{p_{\text{data}}(x) + p_G(x)}\]
+  \end{block}
+\end{frame}

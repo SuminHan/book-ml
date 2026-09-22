@@ -1,0 +1,20 @@
+\begin{frame}{이 코드의 핵심 줄: \texttt{if margin < 1}}
+  \begin{itemize}
+    \item \texttt{if margin < 1} — 마진을 \textbf{만족한} 점
+      ($f\ge1$)은 \texttt{grad\_w}, \texttt{grad\_b}에 \textbf{아무것도}
+      더하지 않는다(힌지 손실의 비활성화 성질).
+    \item $C \times \text{grad}$: $\frac12\|w\|^2$ 항(그래디언트 $w$)과
+      힌지 항을 병합. $C$가 이 곱셈에 들어가므로
+      \textbf{$C$가 클수록 힌지 위반에 대한 그래디언트가 상대적으로
+      커진다} — ``이상치를 더 강하게 싫어한다''는 것을 옵티마이저가
+      숫자로 느낌.
+  \end{itemize}
+  \vskip0.5em
+  \begin{itemize}
+    \item 5.1절 대칭 데이터에 적용하면 $w\approx(0.17,0.17)$, $b=0$ —
+      정확해 $(1/6,1/6)$ 근처에서 힌지 손실의 ``꺾임'' 때문에
+      약간 진동.
+    \item 이상치가 들어간 데이터에 적용하면 $C$에 따라 $w, b$가
+      달라지는 것을 직접 확인할 수 있다.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,28 @@
+\begin{frame}{핵심 인사이트: 새로움은 손실함수의 정의에}
+  \kb{지도학습}: $x$ $\to$ $\hat{y}$ $\to$ $J = (\hat{y} - y)^2$
+  $\to$ 역전파 $\to$ $W$ 업데이트. \textbf{정답 $y$가 미리 주어짐.} \\[0.4em]
+  \kb{강화학습}: $s$ $\to$ $\pi_\theta(s)$ $\to$ \textbf{보상 $r$으로
+  평가} $\to$ \kb{정책의 가치를 낮추는 방향}으로 $W$ 업데이트.
+  \textbf{정답 $y$가 없음} --- ``이 행동이 얼마나 좋은가''를 보상으로
+  \textit{간접} 평가.
+  \small
+  \begin{tabular}{@{}p{0.18\textwidth}p{0.26\textwidth}p{0.27\textwidth}p{0.26\textwidth}@{}}
+    \toprule
+     & 지도학습 & DQN(9주차) & REINFORCE/PPO(10$\sim$11주차) \\
+    \midrule
+    모델 출력 & $\hat{y}$ (라벨 예측) & $Q(s,a)$ (가치 예측)
+      & $\pi(a|s)$ (행동 확률) \\
+    손실 정의 & $(\hat{y}-y)^2$ 또는 교차엔트로피 & 벨만 오차의 MSE
+      & 정책 로그-가능성 $\times$ 보상 \\
+    ``정답'' 출처 & 데이터셋 라벨 & 보상 + 다음 상태 Q값 & 보상(누적) \\
+    학습 루프 & 3줄 동일 & 3줄 동일 & 3줄 동일 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{block}{이번 학기를 통과하는 가장 중요한 열쇠}
+    RL의 ``새로움''은 \textbf{학습 알고리즘이 아니라 손실함수의 정의}.
+    기계(\texttt{zero\_grad() $\to$ backward() $\to$ step()})는 그대로고,
+    \textbf{그 기계에 무엇을 ``정답''으로 넣을 것인가}가 지도/강화를
+    가름.
+  \end{block}
+\end{frame}

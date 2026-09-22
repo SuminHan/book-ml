@@ -1,0 +1,19 @@
+\begin{frame}[fragile]{ε-greedy 구현}
+\begin{lstlisting}
+import random
+
+def epsilon_greedy_bandit(true_means, epsilon, steps):
+    k = len(true_means)
+    Q = [0.0] * k
+    N = [0] * k
+    for t in range(steps):
+        if random.random() < epsilon:
+            a = random.randrange(k)          # 탐험
+        else:
+            a = max(range(k), key=lambda i: Q[i])  # 활용
+        r = random.gauss(true_means[a], 1.0)  # 잡음 섞인 보상
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+    return Q
+\end{lstlisting}
+\end{frame}

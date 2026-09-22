@@ -1,0 +1,28 @@
+\begin{frame}{역사: ``허용하는 마진''의 아이디어}
+  \begin{itemize}
+    \item 소프트 마진의 수학적 형식(여유 변수 + $C$ 트레이드오프)은
+      Cortès \& Vapnik (1995) \textit{``Support-Vector Networks''}에서
+      완성.
+    \item ``순수 기하학'' 이미지보다 \textbf{조금 더 실용적} —
+      하드 마진은 ``완벽한 분리''를 가정하지만 실전 데이터는 항상
+      노이즈가 있으므로, \textbf{실용적으로 쓸 수 있는 SVM은
+      사실상 소프트 마진 버전뿐}.
+    \item scikit-learn의 \texttt{SVC}는 하드 마진을 \textbf{지원하지
+      않음}(항상 $C$를 받음) — ``하드 마진''이 필요한 상황도
+      $C = 10^9$ 정도의 큰 값으로 대체.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{$1/C$가 정규화 세기와 정확히 대응}
+    목적함수를 데이터 수 $m$ 기준으로 쓰면
+    \[
+    \frac{1}{2m}\|w\|^2 + \lambda\sum \xi
+    \qquad (\lambda = 1/(mC))
+    \]
+    6장의 L2 정규화 $\frac{\lambda}{2}\|w\|^2 + \text{손실}$과
+    \textbf{구조적으로 동일한 형태}.
+    \vskip0.3em
+    ``SVM의 $C$ 튜닝''과 ``로지스틱회귀의 정규화 세기 $\lambda$ 튜닝''은
+    \textbf{같은 종류}의 하이퍼파라미터 튜닝 — $C$가 작을수록
+    모델이 더 단순(편향$\uparrow$ 분산$\downarrow$).
+  \end{block}
+\end{frame}

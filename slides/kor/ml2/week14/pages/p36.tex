@@ -1,0 +1,24 @@
+\begin{frame}{확인: Amdahl의 법칙}
+  파이프라인을 (a) 환경 스텝(병렬화 가능, 비율 $p$)과 (b)
+  정책 업데이트 + 동기화(병렬화 불가, 비율 $1-p$)로 나눌 때,
+  $N$코어 병렬화 후의 전체 가속은
+  \[
+    \frac{1}{(1-p) + p/N}
+  \]
+  \begin{itemize}
+    \item $N \to \infty$ 해도 가속은 $\dfrac{1}{1-p}$에 수렴
+      --- \textbf{순차 부분이 10\%}($p=0.9$)면, 코어가 무한이어도
+      \textbf{최대 10배}에 그침
+    \item $p=0.99$ $\Rightarrow$ 100배, $p=0.999$ $\Rightarrow$
+      1,000배
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{Isaac Sim의 엔지니어링}
+    ``환경 스텝 $\times$수천''을 달성하려면 $p$가 \textbf{0.999
+    이상}. 실제로: 환경 스텝을 \textbf{VRAM 안에서 순환}(호스트
+    $\to$ VRAM 왕복 최소화) + 정책 업데이트를 환경 스텝 사이에
+    \textbf{삽입(overlap)} $\Rightarrow$ $1-p$를 극도로 작게.
+    ``코어 수만 많으면 된다''가 아니라, \textbf{순차 부분을 어떻게
+    줄이느냐}가 GPU 시뮬레이터 설계의 진짜 문제.
+  \end{block}
+\end{frame}

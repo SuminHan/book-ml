@@ -1,0 +1,27 @@
+\begin{frame}{왜 안전 경로인가 — 메커니즘 1: 탐험 위험이 가격에}
+  \kb{$\varepsilon$-greedy 정책의 ``가치''에 탐험 위험이 이미
+  가격으로 포함되어 있다.}
+  SARSA는 $Q^b$(행동 정책 $b$의 Q함수)를 학습 --- 절벽 옆 칸에서
+  ``오른쪽''의 기대값은 그 다음 칸에서 $\varepsilon$-greedy가 실제로
+  무엇을 고를지를 \textbf{기대값으로} 반영해야 한다.
+  절벽 바로 위에서는 그 기대에 ``무작위로 \texttt{down}을 고르고
+  추락한다''는 시나리오가 $\varepsilon \times \tfrac14$ 만큼 섞인다.
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    근사 계산(4행동, $\varepsilon{=}0.1$, $\gamma{=}1$, 추락 후 리턴 무시) & 값 \\
+    \midrule
+    한 스텝에서 추락할 확률 & $0.1 \times \tfrac14 = 0.025$ \\
+    짧은 길 13스텝 중 절벽 바로 위 칸 & 10스텝 ($(2,1)\sim(2,10)$) \\
+    한 에피소드에서 최소 1번 추락할 확률
+      & $1-(1-0.025)^{10} \approx 0.22$ \\
+    짧은 길의 $\varepsilon$-greedy 기대 리턴
+      & $\approx 13(-1) + 0.22(-100) \approx \mathbf{-35}$ \\
+    안전한 길 & $\approx 17(-1) \approx \mathbf{-17}$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \textbf{같은 짧은 길}을 걸어도, 탐험이 섞인 정책으로 걸으면 $-35$로,
+  안전 길로 걸으면 $-17$로 안는다.
+\end{frame}

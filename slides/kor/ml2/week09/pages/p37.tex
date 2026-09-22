@@ -1,0 +1,26 @@
+\begin{frame}{그림에서 배우는 세 가지 ③ + 소프트 업데이트의 ``느림''}
+  \begin{itemize}
+    \item \kq{③ (B)의 TD 손실이 0이 안 되고, 오히려 (A)보다 높다}(1.32 vs 0.46).
+      낡은 목표 = 현재 관점에서 목표가 항상 약간 어긋남 $\Rightarrow$
+      학습 후에도 TD 오차 \textbf{잔여}가 남는다.
+      \kq{낮은 TD 손실 $\ne$ 올바른 Q} --- 손실은 ``자기 목표와의 일관성''이지
+      ``참값과의 거리''가 아니다. 손실만으로 비교했다면 \textbf{잘못된 쪽}을
+      골랐을 것이다. 판정 기준은 항상 \textbf{평가 리턴}.
+  \end{itemize}
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}cccc@{}}
+    \toprule
+    $\tau$ & 효과적 지연 $1/\tau$ & 반감기 & 200스텝 후 남은 갭 \\
+    \midrule
+    0.005 & 200 스텝 & 약 138 스텝 & 0.367 \\
+    0.01 & 100 스텝 & 약 69 스텝 & 0.135 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.3em
+  {\footnotesize 소프트 업데이트: $g_{t+1} = (1-\tau)g_t$.
+  \textbf{소프트 $\tau = 0.005$ $\approx$ 하드 $C = 200$}.
+  이점은 \textbf{연속성} --- 하드처럼 목표가 $C$스텝마다 급격히 점프하지 않고
+  손실면이 매끄럽게 변함(비용: 매 스텝 목표용 순전파 1회).}
+\end{frame}

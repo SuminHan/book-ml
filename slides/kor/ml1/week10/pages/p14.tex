@@ -1,0 +1,25 @@
+\begin{frame}{손계산 표: 미니 LeNet 세 층의 비용}
+  28$\times$28 흑백을 세 합성곱 층 + 한 풀링으로 줄여가는 작은 네트워크:
+  \small
+  \begin{tabular}{@{}llrll@{}}
+    \toprule
+    층 & 연산 & 출력 크기 & 파라미터 & FLOPs \\
+    \midrule
+    입력 & 28$\times$28$\times$1 & — & — & — \\
+    conv 1 & k=3, $C_{\text{out}}{=}4$, p=0, s=1 & 26$\times$26$\times$4
+             & 40 & 24,336 \\
+    conv 2 & k=3, $C_{\text{in}}{=}4$, $C_{\text{out}}{=}8$, p=0, s=1
+             & 24$\times$24$\times$8 & 296 & 165,888 \\
+    pool & 2$\times$2 max pooling (s=2) & 12$\times$12$\times$8
+             & 0 & (비교 연산 864회) \\
+    conv 3 & k=3, $C_{\text{in}}{=}8$, $C_{\text{out}}{=}16$, p=0, s=1
+             & 10$\times$10$\times$16 & 1,168 & 115,200 \\
+    \textbf{합계} & & 10$\times$10$\times$16 & \textbf{1,504}
+             & \textbf{305,424} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  {\footnotesize conv 2 FLOPs 직접: $n_{\text{out}}=24$, $24^2=576$ 위치
+  $\times 8$ 필터 $\times 9\times4=36$ MAC $= 576\times8\times36
+  = 165{,}888$. 실습 노트북 §3에서 numpy로 그대로 재계산.}
+\end{frame}

@@ -1,0 +1,22 @@
+\begin{frame}{역사적 일화: PPO-Clip vs PPO-Penalty}
+  \begin{itemize}
+    \item PPO 논문(2017)은 실제로 TRPO를 ``더 단순하게'' 하고
+      싶다는 시도에서 출발 — 같은 연구팀(OpenAI, Schulman 외)이
+      먼저 TRPO(2015)로 ``신뢰 영역'' 개념을 세웠고, 다음
+      질문: ``KL 제약을 풀어내는 그 무거운 최적화 없이,
+      \textbf{클링(=클리핑)만으로} 비슷한 안정성을 얻을 수
+      있는가?''
+    \item 논문에서는 클리핑(PPO-Clip) 외에도 \kb{KL
+      페널티} 방식(PPO-Penalty: KL이 크면 목적함수에 벌을
+      부과)을 함께 제안.
+    \item PPO-Penalty는 KL 벌의 계수를 \textbf{학습 중 동적으로
+      조정}해야 함 (너무 크면 탐험 부족, 너무 작으면 클리핑
+      없이 폭주) — \kb{PPO-Clip 쪽이 훨씬 실용적}이라 실전에서
+      사실상 표준이 됨.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{``PPO = 클리핑''이라는 현재 통념의 기원}
+    이 선택의 결과 — ``보장을 근사로'' 바꾼 것이 이긴 드문
+    경우.
+  \end{block}
+\end{frame}

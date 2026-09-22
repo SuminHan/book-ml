@@ -1,0 +1,28 @@
+\begin{frame}{DPO: 보상모델도 RL 루프도 없이}
+  \begin{itemize}
+    \item \kb{DPO}(Direct Preference Optimization,
+      Rafailov et al., 2023): RLHF는 (1) 보상모델을
+      \textbf{따로 학습}하고 (2) 그 보상모델로
+      \textbf{강화학습을 돌리는} 2단계 — 복잡하고 불안정할
+      수 있음.
+    \item DPO가 수학적으로 보이는 것: RLHF 목적함수의
+      \textbf{최적 정책}이 보상함수를 $\pi_\theta$와
+      $\pi_{\text{ref}}$의 \textbf{비율}로 직접 표현할
+      수 있음을.
+    \item 그 관계를 보상모델 손실에 대입 $\to$
+      \textbf{보상모델도 강화학습 루프도 없이, 선호
+      데이터에서 정책을 곧바로 학습}하는 손실:
+      \[\mathcal{L}_{\text{DPO}} = -\log \sigma\left(\beta
+      \log \frac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)}
+      - \beta \log \frac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\right)\]
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{핵심}
+    형태를 보면 여전히 위의 보상모델 손실과
+    \textbf{똑같은 로지스틱 손실} — 다만 ``보상''의 역할을
+    $\beta \log(\pi_\theta/\pi_{\text{ref}})$(정책이 기준
+    모델보다 그 답변을 얼마나 더 선호하게 됐는가)가
+    대신한다. \textbf{RLHF의 2단계 과정 전체를, 지도학습
+    손실 하나로 대체.}
+  \end{block}
+\end{frame}

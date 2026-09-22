@@ -1,0 +1,28 @@
+\begin{frame}[fragile]{수정된 정책 반복: $k$ sweep만 평가 후 개선}
+  \textbf{정책평가를 끝까지 수렴시키지 않고 $k$ sweep만} 돌린
+  뒤 \textbf{바로 개선}(modified policy iteration):
+\begin{lstlisting}
+def modified_policy_iteration(P, R, n_actions, gamma, k):
+    """k = 내부 정책평가 sweep 수. k=1이면 가치 반복과 동일."""
+    policy = [0] * n_states   # "왼쪽"에서 시작
+    V = [0.0] * n_states
+    while True:
+        for _ in range(k):                   # 평가: k sweep만
+            for s in range(n_states):
+                a = policy[s]
+                V[s] = R[s][a] + gamma * sum(p * V[ns] for p, ns in P[s][a])
+        stable = True
+        for s in range(n_states):            # 개선: argmax
+            best_a = max(range(n_actions),
+                         key=lambda a: R[s][a] + gamma * sum(p * V[ns] for p, ns in P[s][a]))
+            if best_a != policy[s]:
+                policy[s] = best_a
+                stable = False
+        if stable:
+            return V, policy
+\end{lstlisting}
+  \vskip0.2em
+  실행(모두 ``왼쪽'' 출발, 정책 변화 여부로 멈춤): $k = 1, 2, 3,
+  5$ 모두 \textbf{바깥 반복 5}, 최종 $V = [-3.439, -2.710,
+  -1.900, -1.000, 0]$ \textbf{동일} (총 sweep = $5k$).
+\end{frame}

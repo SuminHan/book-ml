@@ -1,0 +1,32 @@
+\begin{frame}{확인 문제 1~2}
+  \textbf{1.} breast\_cancer(569$\times$30)에 MLP로 test 0.95,
+  ``로지스틱회귀(0.94)보다 높으니 MLP가 더 좋은 모델이다'' —
+  Ch06.3 선택 편향과 Ch07.3 GBDT 비교를 근거로 \textbf{반박 가능한
+  질문 하나}.
+  \vskip0.3em
+  \small
+  \begin{block}{답}
+    ``GBDT(Ch07.3)를 \textbf{같은 val 분할}에서 \textbf{F1}로
+    비교했나요? 0.95 vs 0.94의 1\%p 차이는 Ch06.3 선택 편향
+    부풀림(후보 $m$개 중 max, $m\approx30$일 때 $\approx0.04$)
+    보다 \textbf{작거나 같은 크기}일 수 있습니다 — 이 차이가
+    결론을 뒷받침할 만큼 큰 근거인지 val F1과 함께 \textbf{
+    정량적으로} 보여주세요.''
+  \end{block}
+  \vskip0.3em
+  \textbf{2.} ``CNN을 100에폭 학습했다'' — val 정확도가
+  \textbf{에폭 40에서 정점(0.93)}에 도달한 뒤 \textbf{0.92}
+  까지 내려옴. ``100에폭'' 결론의 \textbf{한계}와 \textbf{
+  질문}?
+  \vskip0.3em
+  \begin{block}{답}
+    val 곡선이 에폭 40에서 \textbf{꺾였으므로}, 100에폭 중 60개
+    는 \textit{val을 떨어뜨린} 과적합 구간(Ch09.3 신호). ``100
+    에폭'' 주장이 성립하려면 ``왜 val이 더 나빠졌는지''를 Ch09.3
+    개념(정규화·dropout 부족? 학습률?)으로 \textbf{설명}해야
+    함. 질문: ``val 정점(40) 이후 60개 에폭이 val을 0.93$\to$
+    0.92로 \textit{내려}보냈는데, 이 하락을 진단해줄 수 있나요?
+    에폭 40에서 멈췄다면 0.93이었을 텐데, 왜 0.92를 발표 수치로
+    쓰셨나요?''
+  \end{block}
+\end{frame}

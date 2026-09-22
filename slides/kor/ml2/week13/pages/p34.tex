@@ -1,0 +1,18 @@
+\begin{frame}[fragile]{무작위 정책을 돌려보며 ``분위기''를 잡기}
+\begin{lstlisting}
+for name in ["Reacher-v5", "Ant-v5"]:
+    env = gym.make(name)
+    obs, info = env.reset(seed=0)
+    total_reward = 0.0
+    for _ in range(100):
+        a = env.action_space.sample()  # 아직 학습 전이므로 무작위
+        obs, r, term, trunc, info = env.step(a)
+        total_reward += r
+        if term or trunc:
+            break
+    print(f"  무작위 정책 100스텝 누적 보상: {total_reward:.2f}")
+    env.close()
+\end{lstlisting}
+  {\footnotesize 단일 시드 실행 결과: Reacher $-41.60$, Ant $-4.07$ (100스텝
+  누적).}
+\end{frame}

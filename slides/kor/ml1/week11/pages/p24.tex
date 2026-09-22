@@ -1,0 +1,27 @@
+% ============================================================
+\section{11.2 BPTT와 numpy RNN 언어모델 실습}
+\begin{frame}{BPTT: 시간을 펼쳐서 역전파하기}
+  ``요약을 계속 갱신한다''는 구조를 \textbf{배우게} 만들려면
+  순전파만으로는 부족하다.
+  \begin{itemize}
+    \item 손실을 줄이려면 각 가중치에 대한 \textbf{그래디언트}를
+      구해야
+    \item $h_t$가 $h_{t-1}$에, $h_{t-1}$이 $h_{t-2}$에 의존하는
+      \textbf{사슬}을 이룸
+    $\Rightarrow$ Week 9의 ``출력층 $\to$ 입력층'' 역전파를
+    \textbf{시간 축을 따라 펼쳐} 적용
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{BPTT(Backpropagation Through Time)}
+    시퀀스 길이 $T$만큼 신경망을 \textbf{펼쳐서(unroll)} 각 시점을
+    독립된 층처럼 취급한 뒤 Week 9의 역전파를 \textbf{그대로}
+    적용.
+  \end{block}
+  \vskip0.5em
+  \[ \frac{\partial h_T}{\partial h_1} = \prod_{t=2}^{T}
+     \frac{\partial h_t}{\partial h_{t-1}}
+     = \prod_{t=2}^{T} \operatorname{diag}\big(tanh'(z_t)\big)\; W_{hh} \]
+  \vskip0.3em
+  {\footnotesize $z_t = W_{xh}x_t + W_{hh}h_{t-1} + b_h$,
+  $\tanh'(z_t) = 1 - h_t^2$.}
+\end{frame}

@@ -1,0 +1,25 @@
+\begin{frame}{자주 하는 실수 2: ``IG $> 0$''이면 무조건 나누기}
+  \begin{itemize}
+    \item 함정: 리프에 5개 샘플(4A, 1B)이 있는데 ``그 1개 B를 떼어내자''
+      $\to$ IG는 양수(0.32 $\to$ 0)
+    \item 하지만 \textbf{샘플 1개짜리 리프}를 만든 것은 그 1개 샘플의
+      \textbf{라벨링 노이즈를 그대로 외운 것}
+    \item 새 데이터에서 그 위치의 ``진짜'' 클래스가 A라면 틀린다
+  \end{itemize}
+  \vskip0.8em
+  \begin{itemize}
+    \item 막는 것: \texttt{min\_samples\_leaf}(리프 최소 샘플 수),
+      \texttt{min\_samples\_split}(분기 최소 샘플 수)
+    \item \texttt{max\_depth}는 트리의 \textbf{높이}를,
+      \texttt{min\_samples\_*}는 \textbf{리프의 크기}를 막는다
+    \item \texttt{max\_depth}만으로도 상당한 효과; \textbf{클래스 불균형}
+      (99:1)이나 \textbf{고차원}(특징 수백 개)이면
+      \texttt{min\_samples\_leaf}까지 함께
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{수정된 규칙}
+    ``IG가 양수이면 나눠도 된다''가 아니라, ``IG가 \textbf{충분히} 양수
+    \textbf{이고} 나눈 리프가 \textbf{충분히 크고}''일 때만 나누는 것 —
+    CART 탐욕스러운 분기의 현실적 한계.
+  \end{block}
+\end{frame}

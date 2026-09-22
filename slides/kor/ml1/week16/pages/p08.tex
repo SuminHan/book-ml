@@ -1,0 +1,35 @@
+\begin{frame}{후보 데이터셋 한 장}
+  \scriptsize
+  \setlength{\tabcolsep}{0.2cm}
+  \begin{tabular}{@{}p{2.0cm}p{2.3cm}p{1.8cm}p{2.9cm}p{4.5cm}@{}}
+    \toprule
+    데이터셋 & 크기 & 정형/비정형 & 문제 정의 & 주의할 함정 \\
+    \midrule
+    \textbf{sklearn digits} (실습용) & 1,797$\times$64 (8$\times$8) &
+      정형(64-dim flatten) & 숫자 $\to$ 0~9 분류 & 작아 \textbf{신경
+      망이 GBDT 못 이기는 것이 정상} — §``왜 DL''의 교육 포인트 \\
+    \textbf{CIFAR-10} (HF) & 60,000$\times$32$\times$32$\times$3 &
+      비정형(원시 픽셀) & 10개 물체 분류 & 레이블 불균형 없음.
+      \textbf{증강}(회전·뒤집기, Ch10) 없이는 격차 큼 \\
+    \textbf{CIFAR-100} (HF) & 60,000$\times$32$\times$32$\times$3 &
+      비정형 & 100개 물체 분류 & 클래스 100개 — macro-F1 또는 top-1 +
+      베이스라인(무작위 1\%) 명시 \\
+    \textbf{IMDb} (HF) & 50,000 문장 & 비정형(텍스트) & 긍정/부정 감지 &
+      문장 길이 불균형 — Ch11 패딩/마스킹. BERT vs 단순 토큰화 비교 \\
+    \textbf{Toxic Comments} (Kaggle) & 159,576$\times$6(라벨) &
+      비정형(텍스트) & 6개 독성 \textbf{다중} 라벨 분류 & 시그모이드
+      출력 + 라벨별 F1, 불균형 $\to$ 라벨별 PR-AUC \\
+    \textbf{EMNIST} (HF) & 112,800$\times$28$\times$28 &
+      비정형(원시 픽셀) & 글자 분류(62클래스) & 784-dim 규모에서 CNN이
+      ``8$\times$8 flatten GBDT''보다 확실히 앞섬 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{block}{기본 코스: 2단계}
+    \kb{sklearn digits $\to$ EMNIST} — digits에서 ``정형(64-dim)으
+    로는 GBDT와 대등하거나 못 이긴다''를 \textbf{스스로 눈으로
+    확인}한 뒤, 같은 문제를 28$\times$28(784-dim)으로 확대하면
+    CNN의 우위가 드러남. ``왜 DL'' 질문에 \textbf{숫자로} 답하는
+    가장 깔끔한 경로.
+  \end{block}
+\end{frame}

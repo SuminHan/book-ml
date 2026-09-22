@@ -1,0 +1,27 @@
+\begin{frame}{어디서 강화학습의 모양이 보이는가}
+  Planner가 \textbf{상태를 보고 행동을 정하는} 구조는
+  \kb{MDP의 모양} 그대로:
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    MDP 요소 & 자율주행에서 \\
+    \midrule
+    \kb{상태} & Perception의 결과: 주변 물체의 위치·속도·궤적 +
+      자신의 주행 상태 \\
+    \kb{행동} & Planner가 정한 \textbf{궤적/제어} \\
+    \kb{환경의 다이내믹스} & 다른 에이전트(차량, 보행자)가
+      자신의 행동에 \textbf{어떻게 반응}하는가 \\
+    \kb{평가(보상)} & 안전·승차감·진행률 같은 \textbf{에피소드
+      지표} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.7em
+  \begin{block}{policy iteration의 모양}
+    ``\textbf{Offboard 시뮬레이션에서 롤아웃 $\to$ 평가
+    $\to$ Planner 갱신}''의 순서는 정확히 \kb{policy
+    iteration}의 모양 --- 시뮬레이터가 7.3절의 \kb{Dyna}
+    구조에서 \textbf{``환경 모델''}의 역할을 담당.
+    14.3의 ``총 스텝 수 $\div$ 초당 스텝 수 = 실 시간'' 계산도
+    차 규모에서 \textbf{동일}.
+  \end{block}
+\end{frame}

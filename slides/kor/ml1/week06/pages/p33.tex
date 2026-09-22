@@ -1,0 +1,25 @@
+\begin{frame}{손으로 한 번: 4-fold 분할 직접 나눠보기}
+  \small
+  샘플 12개(인덱스 0$\sim$11)를 $k=4$로 나누면 \texttt{fold\_size}=12//4=3.
+  각 \texttt{fold\_idx}에 대해 \texttt{start}=\texttt{fold\_idx$\times$3},
+  \texttt{end}=\texttt{start+3}(마지막 fold만 $n$까지):
+  \vskip0.3em
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \texttt{fold\_idx} & 검증용(val) & 학습용(train) \\
+    \midrule
+    0 & 0, 1, 2 & 3, 4, \dots, 11 \\
+    1 & 3, 4, 5 & 0, 1, 2, 6, 7, \dots, 11 \\
+    2 & 6, 7, 8 & 0, 1, \dots, 5, 9, 10, 11 \\
+    3 & 9, 10, 11 & 0, 1, \dots, 8 \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.5em\normalsize
+  \begin{itemize}
+    \item 4번을 전부 돌리면 인덱스 0$\sim$11 \textbf{각각이 정확히 한 번씩}
+      검증용으로, 나머지 세 번은 학습용으로 — ``전체를 한 번씩은 검증에도
+      써본다''는 설명이 실제로 이런 인덱스 분할로 구현됨.
+    \item \texttt{cross\_validate\_lambda}는 이 과정을 각 $\lambda$ 후보마다
+      반복, $k$번의 검증 오차를 평균 내 그 $\lambda$를 평가.
+  \end{itemize}
+\end{frame}

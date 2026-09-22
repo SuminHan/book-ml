@@ -1,0 +1,16 @@
+\begin{frame}{Bradley-Terry 모델: 선호 확률을 시그모이드로}
+  \begin{itemize}
+    \item 같은 상황 $x$에서 두 궤적 $y_w$(더 선호), $y_l$(덜 선호).
+    \item 보상모델 $r_\phi(x,y)$가 $y_w$에 더 높은 점수를 주도록 학습.
+    \item \kb{브래들리-테리 모델}: 선호 확률을 시그모이드로 모델링:
+      \[P(y_w\succ y_l\mid x)=\sigma\big(r_\phi(x,y_w)-r_\phi(x,y_l)\big)\]
+    \item 이 확률을 최대화하는 손실은 다시 \textbf{로지스틱회귀와 같은
+      교차엔트로피 형태}:
+      \[-\log\sigma(r_w - r_l)\]
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{단계 2}
+    학습된 $r_\phi$의 점수를 PPO(Week 9$\sim$11)의 \textbf{보상으로
+    그대로} 써 정책을 학습.
+  \end{block}
+\end{frame}

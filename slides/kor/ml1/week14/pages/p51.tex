@@ -1,0 +1,27 @@
+\begin{frame}{확인 문제 (2/2) + 자주 묻는 질문}
+  \small
+  \begin{itemize}
+    \item \kb{3. (CBOW vs Skip-gram)} 100만 어휘·10억 토큰 뉴스
+      말뭉치에서 \textbf{희귀한 인명·지명}(수십 번씩만 등장)의
+      임베딩 품질이 최우선이라면?
+      \par {\footnotesize \textbf{Skip-gram} --- 희귀 단어 1개가 중심
+      역할을 할 때, 그 주변을 \textbf{하나씩} 예측하는 훈련이 $2w$개
+      (앞뒤 window)만큼 수행되므로, 고빈도 중심의 CBOW보다 희귀 단어에
+      \textbf{상대적으로 더 많은} 학습 신호가 도달.}
+  \end{itemize}
+  \vskip0.5em
+  \begin{itemize}
+    \item \kb{Q. \texttt{dim}은 어떻게?} 14.1 PCA와 같은
+      트레이드오프 --- 작으면 미묘한 차이(편향)를 못 담고, 크면
+      데이터가 늘고 과적합(분산). \; 실전은 \textbf{100$\sim$300차원}.
+    \item \kb{Q. LLM 토큰 임베딩과 같은 건가?} 뿌리는 같으나
+      word2vec은 임베딩 \textbf{자신이 목표}이고 window 고정; LLM은
+      임베딩이 Transformer의 \textbf{첫 층일 뿐} --- 어텐션을 거치며
+      \textbf{문맥에 따라 계속 재해석}됨 (같은 단어도 문장에 따라
+      다른 벡터).
+    \item \kb{Q. ``의미를 담고 있다'' vs PCA의 ``분산을 담고
+      있다''?} 압축의 \textbf{기준}이 다름 --- PCA: \textbf{데이터
+      내적}(분산 최대, 라벨 무시, 선형), word2vec: \textbf{예측
+      성능}. \; 둘 다 비지도이나 ``무엇을 보존하는가''의 정의가 다름.
+  \end{itemize}
+\end{frame}

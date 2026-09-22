@@ -1,0 +1,29 @@
+\begin{frame}{두 질문을 실제 시나리오에 (정답)}
+  \small
+  \begin{tabular}{@{}p{0.36\textwidth}ccc@{}}
+    \toprule
+    시나리오 & Q1: $y$ 가? & Q2: 보상이? & 갈래 \\
+    \midrule
+    지난 분기 매출로 다음 분기 매출 예측 & 있음(매출 숫자) & 없음 &
+      지도·\textbf{회귀} \\
+    \midrule
+    고객 구매 기록만으로 ``비슷한 취향'' 그룹 발견 & 없음 & 없음 &
+      \textbf{비지도} \\
+    \midrule
+    드론이 충돌 없이 목표지에 도착하도록 경로 학습 & 없음 & 있음(도착/
+      충돌 신호) & \textbf{강화} \\
+    \midrule
+    X-ray 사진으로 폐렴 유무 판별 & 있음(의사 진단) & 없음 &
+      지도·\textbf{분류} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{block}{왜 두 단계인가}
+    $y$ 가 있으면 강화학습의 구조(상태·행동·보상)가 존재할 여지가
+    \textbf{아예 없다} $\Rightarrow$ 질문 1이 먼저.
+    2를 먼저 던지면 $y$ 가 있는 데이터에서 보상을 \textbf{억지로}
+    만들 위험 --- ``매출이 올랐으니 보상 +1''의 순간,
+    \textbf{보상 설계(reward shaping)}의 가장 흔한 함정(행동$\to$결과
+    인과가 모호).
+  \end{block}
+\end{frame}

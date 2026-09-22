@@ -1,0 +1,18 @@
+\begin{frame}{LSTM/GRU: 게이트로 소실을 완화 --- 원리 한 줄}
+  \kb{LSTM}(Long Short-Term Memory)과 \kb{GRU}(Gated Recurrent
+  Unit)는 ``게이트'' 장치를 추가해, 은닉 상태를 매 시점
+  \textbf{완전히 새로 계산}하는 대신 \textbf{선택적으로 유지하거나
+  갱신}한다.
+  \vskip0.6em
+  \begin{block}{핵심 트릭}
+    정보가 지나가는 경로에 \textbf{곱셈 대신 덧셈}이 섞이도록
+    설계 --- Week 10.2에서 본 \textbf{ResNet의 스킵 연결
+    ($y = F(x) + x$)과 정확히 같은 원리}.
+    \\ 덧셈은 그래디언트를 \textbf{그대로 통과}시키므로(미분이 1),
+    곱셈만 반복될 때보다 \textbf{소실이 훨씬 덜}하다.
+  \end{block}
+  \vskip0.6em
+  {\footnotesize 자세한 게이트 수식은 이번 학기에서는 다루지
+  않으나, ``왜 LSTM/GRU가 기본 RNN보다 긴 시퀀스에 강한가''의
+  답은 항상 이 \textbf{원리}로 귀결된다.}
+\end{frame}

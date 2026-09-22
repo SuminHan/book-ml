@@ -1,0 +1,41 @@
+\begin{frame}{힌지 손실 vs 교차 엔트로피: ``기여가 사라지는'' 차이}
+  $y=+1$인 점이 기능적 마진 $f$일 때, $w$ 그래디언트에 기여하는
+  계수($y\,x$의 크기를 1로):
+  \small
+  \begin{tabular}{@{}ccc@{}}
+    \toprule
+    $f$ & 힌지 기여 & 교차엔트로피 기여 \\
+    \midrule
+    $-2.0$ & 3.0000 & 0.8808 \\
+    $-1.0$ & 2.0000 & 0.7311 \\
+    $-0.5$ & 1.5000 & 0.6225 \\
+    $0.0$  & 1.0000 & 0.5000 \\
+    $0.5$  & 0.5000 & 0.3775 \\
+    $1.0$  & \textbf{0.0000} & 0.2689 \\
+    $2.0$  & \textbf{0.0000} & 0.1192 \\
+    $3.0$  & \textbf{0.0000} & 0.0474 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize\vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{힌지}
+      \begin{itemize}
+        \item $f\ge1$에서 \textbf{정확히 0} — 그 점을 아예 무시
+        \item ``서포트 벡터만 경계를 결정''
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{교차 엔트로피}
+      \begin{itemize}
+        \item 0으로 \textbf{수렴만} ( $f=3$에서도 0.047)
+        \item ``모든 점이 손실에 계속 기여''
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  실무적 함의: 이상치가 많으면 로지스틱회귀는 이상치가 아무리
+  멀어도 (아주 작은 기울기로라도) 경계에 영향; SVM은 이상치가
+  서포트 벡터가 안 되는 한(마진 바깥) \textbf{완전히 무시} —
+  ``이상치 견고성''에서 \textbf{서로 다른 트레이드오프}.
+\end{frame}

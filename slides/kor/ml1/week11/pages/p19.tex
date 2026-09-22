@@ -1,0 +1,29 @@
+\begin{frame}[fragile]{실습: 숫자 하나씩 코드로}
+  3단계 손계산 · 고정점 · 누적합 예제를 하나의 코드로:
+\begin{lstlisting}
+import math
+
+def rnn_step(x, h, wxh, whh, b=0.0):
+    return math.tanh(wxh * x + whh * h + b)
+
+# 3단계 손계산 (w_xh=0.5, w_hh=0.8, x=1, h0=0)
+h = 0.0
+for _ in range(3):
+    h = rnn_step(1.0, h, 0.5, 0.8)
+    print(f"h = {h:.4f}")       # 0.4621 / 0.7012 / 0.7860
+
+# 고정점 반복 대입: h = tanh(0.5 + 0.8h)
+h = 0.0
+for _ in range(100):
+    h = rnn_step(1.0, h, 0.5, 0.8)
+print(f"고정점 h* ~ {h:.4f}")   # 0.8196
+
+# 누적합 예제 (w_xh=0.1, w_hh=0.9), 입력 [2,3,1,4]
+h = 0.0
+for x in [2.0, 3.0, 1.0, 4.0]:
+    h = rnn_step(x, h, 0.1, 0.9)
+    print(f"h = {h:.4f}")       # 0.1974 / 0.4444 / 0.4621 / 0.6728
+\end{lstlisting}
+  {\footnotesize 완전 버전(수렴 곡선 + unroll 다이어그램 포함)은
+  실습 노트북에서 실행.}
+\end{frame}

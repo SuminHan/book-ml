@@ -1,0 +1,21 @@
+\begin{frame}{연속 공간의 확률비 — 가우시안 로그가능도 미분}
+  이산(softmax)에서는 $\pi_\theta(a\mid s)$ 가 단일 확률 값,
+  연속에서는 행동 $a$ 가 연속 변수이므로 $\pi_\theta(a\mid s)$ 는
+  \textbf{정규분포 $\mathcal{N}(\mu_\theta(s),\sigma_\theta^2)$ 의
+  가능성(density)}.
+  \small
+  \[
+  \log\pi_\theta(a\mid s) = -\frac{1}{2}\Big(\frac{a-\mu_\theta(s)}
+  {\sigma_\theta}\Big)^{\!2} - \log\sigma_\theta + \mathrm{const}
+  \]
+  \[
+  \nabla_\theta\log\pi_\theta(a\mid s)
+  = \underbrace{\frac{a-\mu_\theta(s)}{\sigma_\theta^2}\,
+  \nabla_\theta\mu_\theta(s)}_{\mu\ \mathrm{항}}
+  + \underbrace{\frac{(a-\mu_\theta(s))^2-\sigma_\theta^2}
+  {\sigma_\theta^3}\,\nabla_\theta\sigma_\theta}_{\sigma\ \mathrm{항}}
+  \]
+  {\footnotesize 정규분포 로그가능도의 $-\log\sigma$ 정규화 항이
+  없으면 $\sigma$ 미분식에 $-1/\sigma$ 가 빠져 \textbf{틀어진다} —
+  빼먹기 쉬운 부분.}
+\end{frame}

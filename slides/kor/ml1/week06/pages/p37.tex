@@ -1,0 +1,25 @@
+\begin{frame}{편향이 실제로 얼마인지: 숫자로}
+  ($m=10$, 특징 1개, $\lambda\in\{0,1,10\}$)
+  \small
+  \begin{tabular}{@{}p{4.4cm}rl@{}}
+    \toprule
+    추정 방법 & 추정 MSE & 선택이 평가에 닿는가 \\
+    \midrule
+    노이즈 플로어(참고선) & 0.956 & --- \\
+    (a) 단일 7/3 분할 & 1.477 & 평가 3개에는 안 닿음 \\
+    (b) LOOCV 곡선의 min & \textbf{1.514} & \textbf{당함} — 곡선 전체가 10개로 그림 \\
+    (c) nested LOOCV & 1.588 & 안 닿음(선택은 전부 내층 9개) \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.5em\normalsize
+  \kq{핵심은 (b) vs (c): (c)가 (b)보다 \textbf{0.07} 높게 — 이 갭이
+  ``곡선 최소점을 최종 성능으로 보고한'' 것에 배어 있던 낙관적 편향.}
+  \vskip0.3em
+  \begin{itemize}
+    \item (c)의 내부 선택: 10번 중 9번 $\lambda=1.0$, 1번 $\lambda=0.0$ —
+      선택이 \emph{데이터에 따라서} 흔들리는 것 자체가 §1SE 규칙의 경고.
+    \item $m=10$·후보 3개라 갭이 작지만 구조는 6.3과 동일 — 후보 100개,
+      $\sigma=1$이면 $\mathbb{E}[\max]\approx2.5$까지 부풀어
+      \textbf{후보 수·흔들림이 커질수록 갭도 함께 커진다}.
+  \end{itemize}
+\end{frame}

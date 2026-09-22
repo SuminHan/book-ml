@@ -1,0 +1,27 @@
+\begin{frame}{배치 정규화: 스킵 연결의 ``공범''}
+  ResNet 논문은 스킵 연결과 함께 \kb{배치 정규화(batch
+  normalization)}(Ioffe \& Szegedy, 2015)를 결합해 깊은 CNN의
+  학습 안정성을 크게 높였다. 합성곱 층 \textbf{사이에} 넣는 층으로,
+  각 \textbf{미니배치의 활성값 분포}를 평균 0·분산 1로 표준화한
+  뒤, 학습 가능한 $\gamma$(스케일)·$\beta$(오프셋)로 다시
+  곱해/더해 ``표준화가 너무 강하지 않게'' 조절:
+  \[ \hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},
+     \qquad y = \gamma \hat{x} + \beta \]
+  \begin{itemize}
+    \item $\mu_B, \sigma_B^2$ = 해당 \textbf{미니배치 전체}
+      활성값의 평균·분산, $\epsilon$ = 0 나눗셈 방지
+      (예: $10^{-5}$)
+    \item Week 9.2의 \textbf{초기화 문제를 \textbf{층마다}}
+      해결: 100층을 쌓아도 활성값 분산이 층마다 달라지는
+      (폭발/소실) 것을 \textbf{학습 중에도} 0·1로 되돌려,
+      \textbf{초기화 값에 덜 민감하게} 깊게 쌓을 수 있게
+  \end{itemize}
+  \vskip0.4em
+  ``깊게 쌓기''에 필요한 두 조건 --- 그래디언트가 살아서
+  전달되고(스킵), 활성값이 적정 스케일로 유지되고(BN) --- 를
+  \textbf{각각 독립적으로} 해결.
+  {\footnotesize (10.3에서 BN 통계 처리가 전이학습의
+  실전 함정이 되는 것 --- $\mu_B, \sigma_B$ 가 \textbf{학습 시}
+  미니배치 기준이라 추론 시에는 \textbf{러닝된} 통계로
+  대체해야 함.)}
+\end{frame}

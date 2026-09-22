@@ -1,0 +1,49 @@
+\begin{frame}{DPO의 3단계 논리: 왜 $\pi_{\text{ref}}$의 비율인가}
+  \begin{itemize}
+    \item RLHF 목적함수 $J(\theta) = \mathbb{E}[r] -
+      \beta D_{KL}$을 $\pi_\theta$에 대해 최적화하면
+      (토큰 위치마다 독립 $\to$ 인수분해), 최적 정책은
+      \[\pi^*(y|x) = \frac{1}{Z(x)} \,
+      \pi_{\text{ref}}(y|x) \, e^{r(x,y)/\beta}\]
+      --- \textbf{닫힌 형태}(closed form). $Z(x)$ =
+      질문 $x$에 대한 노멀라이제이션 상수.
+    \item 다시 말해 \textbf{보상함수 $r$ 자체가}
+      \[r(x,y) = \beta \log \frac{\pi^*(y|x)}{\pi_{\text{ref}}(y|x)}
+      + \beta \log Z(x)\]
+      로 \textbf{역산(inversion)} — ``최적 정책과
+      보상함수는 서로의 변환''.
+    \item 이 $r$을 BT 손실에 대입하면, $\beta \log Z(x)$가
+      $y_w, y_l$ \textbf{둘에 공통}으로 들어와 차이를
+      취할 때 \textbf{소거} — $Z(x)$를 계산할
+      \textbf{필요 없이}, $\pi_\theta$와 $\pi_{\text{ref}}$의
+      \textbf{비율}만으로 BT 손실이 쓰여진다.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize 이 소거가 DPO의 핵심 한 줄: ``보상함수를
+  \textbf{분리}해서 학습(RLHF)''과 ``보상함수를 정책
+  자체에 \textbf{내장}시켜 학습(DPO)''은 같은 BT 손실을
+  최적화하지만, 전자는 \textbf{보상모델}이라는 별도
+  파라미터를 두고, 후자는 \textbf{정책 파라미터}가 보상의
+  역할을 \textbf{겸임}.}
+
+  \vskip0.4em
+    \begin{itemize}
+    \item DPO 유도에서 \textbf{보상함수가 정책의
+      로그-비율로 표현}된다는 것은, ``RLHF에서 최적화된
+      정책 = DPO에서 최적화된 정책''이 \textbf{같은 BT
+      손실을 최적화}한다는 것에 불과 — \textbf{동일한
+      데이터, 동일한 하이퍼파라미터, 동일한 손실 곡선}.
+    \item 실전에서의 DPO 우월성: (i) \textbf{강화학습
+      루프의 불안정성}(정책-보상모델 co-adaptation, 보상
+      해킹) 회피, (ii) \textbf{1번의 학습 루프}로 끝남.
+    \item DPO에 없는 것: (iii) \textbf{RLHF의 보상모델을
+      별도로 재사용}할 수 있는 유연성 — 같은 보상모델로
+      다른 작업의 \textbf{평가 기준}으로 활용.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{정확한 그림}
+    ``DPO가 항상 낫다''가 아니라 —
+    \kq{RLHF의 2단계를 1단계로 압축하되, 그 2단계의
+    부가 가치를 포기하는 trade-off}.
+  \end{block}
+\end{frame}

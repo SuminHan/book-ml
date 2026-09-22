@@ -1,0 +1,21 @@
+\begin{frame}{off-policy라서 가능한 일: ``낡은'' 경험의 재사용}
+  \begin{itemize}
+    \item 버퍼의 경험은 \textbf{행동 정책} $\mu$(그 당시의 $\varepsilon$-greedy)로
+      모았다 --- 학습이 진행되면 정책은 바뀌므로, 버퍼의 절반 이상은
+      ``지금은 더 이상 그렇게 행동하지 않을'' 정책의 산물.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{왜 DQN은 이 낡은 경험을 \textbf{그대로} 써도 되는가}
+    Q-learning은 \textbf{off-policy}(Week 6.3) ---
+    ``데이터를 \textbf{누가}(어떤 정책으로) 모았는지''와 무관하게,
+    \textbf{목표 정책}(greedy)의 Q값을 학습. 갱신식은 $\mu$에
+    의존하지 않는다.
+  \end{block}
+  \begin{itemize}
+    \item 반대로 \textbf{on-policy}(SARSA, Actor-Critic 상당수)는
+      ``\textbf{지금 정책 자체}의 가치''를 배워야 $\Rightarrow$
+      과거 정책의 경험을 그대로 쓰면 이론적 보장이 \textbf{깨진다}.
+  \end{itemize}
+  \kq{한 줄 요약: 경험 재현은 off-policy의 ``누가 모았든 재사용'' 자유를,
+  ``데이터 효율 $+$ 상관 제거'' 두 이득으로 교환하는 장치다.}
+\end{frame}

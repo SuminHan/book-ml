@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{환경 만들기: \texttt{gym.make}}
+\begin{lstlisting}
+import gymnasium as gym
+
+env = gym.make("CartPole-v1")   # 막대를 쓰러뜨리지 않고 균형 잡기
+obs, info = env.reset(seed=0)   # 에피소드 시작 -> 초기 관측
+print(type(env), "| 이름:", env.spec.id)
+env.close()
+\end{lstlisting}
+  \begin{itemize}
+    \item 환경은 \textbf{이름 문자열 하나}로 ---
+      \texttt{EnvSpec}에 등록돼 있는 대로 인스턴스화.
+    \item \texttt{-v1}, \texttt{-v2} 서명: 같은 게임이라도 물리
+      파라미터$\cdot$종료 조건이 다른 \textbf{버전} 구분.
+    \item \texttt{make}와 \texttt{reset} \textbf{분리}:
+      \texttt{make}는 환경 \textit{객체}만 만들고 실제 시뮬레이션은
+      \texttt{reset}이 \textbf{시작}.
+      \vskip0.3em
+      같은 환경 객체를 \textbf{여러 에피소드$\cdot$여러 시드}에 걸쳐
+      다시 쓰는 것이 이 구조의 핵심.
+  \end{itemize}
+\end{frame}

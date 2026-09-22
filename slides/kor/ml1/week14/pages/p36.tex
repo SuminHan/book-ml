@@ -1,0 +1,22 @@
+\begin{frame}{네거티브 샘플링: softmax를 피하는 트릭}
+  \begin{itemize}
+    \item 위 loss를 그대로 쓰면, 각 쌍마다 \textbf{어휘 전체 $V$개}
+      확률을 전부 계산해야 한다(softmax의 분모).
+    \item $V = 10^{6}$이면 매 스텝 100만개의 시그모이드 ---
+      수십억 쌍이 모이면 \textbf{불가능}.
+    \item \kb{네거티브 샘플링}: 정답 $t$ 하나를 맞히는 대신,
+      \textbf{무작위 $k$개의 ``가짜 단어''} $t'_{1},\dots,t'_{k}$
+      (이 $k$를 $k_{\text{neg}}$, 코드에선 \texttt{neg\_k})도 함께
+      ``아니다''로 학습.
+    \item 즉, 하나의 쌍에 대해 $1 + k_{\text{neg}}$개의 \textbf{이진
+      분류}를 동시에 --- 1개만 label=1(정말 옆에 나온 단어), 나머지
+      label=0(가짜).
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{효과}
+    ``어휘 전체 비교'' softmax ($O(V)$) $\to$ ``정답 1개 + 가짜
+    $k_{\text{neg}}$개 비교'' 이진 분류 ($O(k_{\text{neg}})$).
+    \; $k_{\text{neg}} = 5$ 정도면 충분 (원 논문: $V \approx 10^{7}$일
+    때 5, $V \approx 10^{5}$ 이하면 2$\sim$5).
+  \end{block}
+\end{frame}

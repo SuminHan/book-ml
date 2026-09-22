@@ -1,0 +1,26 @@
+% ===== SECTION 12.2 =====
+\section{12.2 스케일드 닷-프로덕트 어텐션과 셀프-어텐션}
+\begin{frame}{트랜스포머 원논문의 핵심 연산}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_transformer.png}
+      \vskip0.3em
+      {\footnotesize 트랜스포머 전체 구조 — 인코더(왼쪽)와 디코더
+      (오른쪽)의 Multi-Head Attention + Feed Forward 스택
+      (Vaswani et al., 2017, Figure 1).}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \kb{Scaled dot-product attention}은 Transformer 원논문의
+      핵심 연산. 한 단어의 Query가 모든 단어의 Key와 얼마나
+      ``관련 있는가''를 내적(dot product)으로 잰다 (Bahdanau et
+      al., 2014; Luong et al., 2015):
+      \[
+      \text{Attention}(Q, K, V) =
+      \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+      \]
+      \vskip0.4em
+      $d_k$ = Key 벡터의 \textbf{차원} (12.2 말미 실수 섹션 참고).
+    \end{column}
+  \end{columns}
+\end{frame}

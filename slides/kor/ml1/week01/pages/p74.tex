@@ -1,0 +1,28 @@
+\begin{frame}[fragile]{평가: R², 그리고 ``잘 외운'' 모델}
+  90행 훈련 모델로 30행 테스트를 평가:
+  \begin{lstlisting}
+def r2(y, p):
+    return 1 - ((y - p) ** 2).sum() / ((y - y.mean()) ** 2).sum()
+
+def mae(y, p):
+    return np.abs(y - p).mean()
+
+Xtr, ytr = df_tr["size_sqm"].values, df_tr["price_million"].values
+Xte, yte = df_te["size_sqm"].values, df_te["price_million"].values
+print(f"train R2={r2(ytr, slope*Xtr+intercept):.4f}")
+print(f"test  R2={r2(yte, slope*Xte+intercept):.4f}")
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize \texttt{train R2=0.9406 MAE=7.13} \quad
+  \texttt{test R2=0.9561 MAE=7.58} \; (평균 713만 원 오차, 평균
+  가격의 약 2\%).}
+  \vskip0.3em
+  \begin{itemize}
+    \item \kb{R²(결정계수)}: ``목표 변수의 변동 중 모델이 몇 \%\,
+      설명하는가''. 1.0 = 완벽, \textbf{0 = ``모두 평균을 예측하는
+      모델''과 같은 수준}.
+    \item 주목: \textbf{train과 test의 R²가 거의 같다(0.94 vs 0.96)}
+      --- ``일반적인 규칙''을 배운 것이지 ``90행만 외운'' 것이
+      아님을 보여주는 \textbf{좋은 신호}.
+  \end{itemize}
+\end{frame}

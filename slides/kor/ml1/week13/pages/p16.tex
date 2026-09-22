@@ -1,0 +1,18 @@
+\begin{frame}{걷기 $\to$ 말뭉치 $\to$ skip-gram $\to$ 임베딩}
+  \begin{enumerate}
+    \item \kb{걷기} --- \texttt{build\_walks} 로 34개 노드 $\times$
+      노드당 10개 걷기(길이 8) 생성.
+    \item \kb{말뭉치} --- 이어붙인다: \texttt{corpus = sum(walks, [])}.
+    \item \kb{학습} --- 14.2절의 \texttt{train\_skipgram}에
+      \textbf{그대로} 넣으면 \textbf{34개 노드 각각의 임베딩 벡터}가
+      나온다.
+    \item \kb{시각화} --- 14.1절의 \textbf{PCA}로 2차원까지 압축해
+      그리면, 실제로 두 파벌이 공간적으로 갈라진다.
+  \end{enumerate}
+  \vskip0.5em
+  \begin{block}{같은 아이디어의 두 얼굴}
+    word2vec과 Node2Vec은 서로 다른 데이터(텍스트 vs. 그래프)에
+    적용됐을 뿐, ``\textbf{함께 자주 나타나는 것들은 비슷한 벡터를
+    갖도록 학습한다}''는 \textbf{같은 아이디어의 두 얼굴}.
+  \end{block}
+\end{frame}

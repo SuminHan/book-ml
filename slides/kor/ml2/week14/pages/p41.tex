@@ -1,0 +1,35 @@
+\begin{frame}{``경험률이 1,000배가 되는가?''}
+  이 절의 \textbf{가장 중요한 개념적 분기점}.
+  답: \kb{환경 스텝 기준으로는 예, 정책 업데이트 기준으로는 아니오}.
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{(1) 환경 스텝}
+      \begin{itemize}
+        \item 4s 시뮬레이션의 벽 시간: CPU 순차 1개 진자
+          약 0.008s $\times$ 1,000 = 8s(순차 1,000개)
+          $\to$ 배치 \textbf{약 0.11s}
+        \item 경험 \textbf{수집 속도} 약 \textbf{76배}
+          (위 실측) $\Rightarrow$ Week 9 경험재현 버퍼가
+          ``순식간에 채워지는'' 이유
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{(2) 정책 업데이트}
+      \begin{itemize}
+        \item 1,000개 궤적이 동시에 모였다고, 그 1,000개 트랙을
+          정책 그래디언트에 \textbf{한 번에 쓸 수는 없다}
+        \item Week 11.2 PPO 미니배치는 \textbf{연속된} (상태,
+          행동, 리턴) 튜플을 요구 --- 1,000개 독립 트랙을 하나로
+          묶으면 각 트랙 리턴이 자기 초깃값 분포에서 와서
+          \textbf{분산이 커짐} (GAE가 일부 처리)
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  \begin{block}{결론}
+    GPU 병렬은 \textbf{``경험을 모으는 속도''}를 키우고,
+    \textbf{``경험을 쓰는 효율''은 별개 축}. 14.3에서 정확히
+    이 둘을 독립 축으로 정리한다.
+  \end{block}
+\end{frame}

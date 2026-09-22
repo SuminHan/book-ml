@@ -1,0 +1,36 @@
+\begin{frame}{자주 하는 실수 (1/2): ``관측''과 ``상태''를 혼동}
+  실습 코드에서 \textbf{가장 흔한 에러}: \texttt{obs}(환경이
+  돌려주는 관측)를 $\mathcal{S}$ 의 원소인 \textbf{상태}로 그대로
+  쓰고 마는 것. 두 개는 같은 환경에서 \textbf{같은 길이}를 가진
+  벡터일 수 있지만, \kb{역할이 다르다}.
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{관측(observation)}
+      \begin{itemize}
+        \item 에이전트가 \textbf{볼 수 있는} 것.
+        \item 마르코프 성질을 \textbf{보장하지 않는다} ---
+          Partially Observed MDP에서는 $o_t \neq s_t$ 다.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{상태(state)}
+      \begin{itemize}
+        \item 에이전트가 \textbf{알아야 하고, 알고리즘이 실제로
+          사용하는} 완전한 정보.
+        \item 마르코프 성질이 \textbf{성립해야} 한다.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{itemize}
+    \item 이번 학기의 Gymnasium 환경(CartPole, FrozenLake,
+      Pendulum)은 \textbf{완전관측}이라 $obs$ 를 $s$ 로 써도 된다.
+    \item \textbf{부분관측} 환경에서는 \texttt{obs} 를 $s$ 로 쓰면
+      마르코프 성질이 깨져 \textbf{학습이 수렴하지 않거나, 수렴해도
+      잘못된 값}으로 수렴한다.
+    \item ``왜 내 에이전트가 수렴하지 않는가''를 debug할 때
+      \textbf{가장 먼저} 확인할 것: 현재 \texttt{obs} 가 마르코프
+      성질을 만족하는가?
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,23 @@
+\begin{frame}{환각을 줄이는 실무 수단}
+  \begin{itemize}
+    \item \textbf{낮은 temperature} --- ``그럴듯하지만 드문''
+      분기에서 벗어나게. (단, $T=0$이 환각을 \textbf{없애는}
+      것은 아님 — 결정적일 뿐, 정확한 것은 아님.)
+    \item \textbf{RAG} --- 답의 근거가 될 문서를 프롬프트에
+      직접 넣고 ``이 문서에 기반해 답하라''. 모델이
+      \textbf{가진} 문맥 안에서 답을 만들어야 하므로
+      지어낼 여지 감소.
+    \item \textbf{``모르면 모른다고 해'' 지시} --- 효과는
+      있으나 \textbf{보장은 아님}.
+    \item \textbf{Self-consistency}(Wang et al., 2022) ---
+      CoT를 \textbf{여러 번} 샘플링($T>0$)해서 나온 최종
+      답들 중 \textbf{다수결} 채택. 한 번의 추론이 틀려도
+      다수가 맞으면 오차 상쇄.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize ``중간 결과를 조건으로 쓴다''(CoT)와
+  ``여러 경로를 탐색한다''(sampling)를 \textbf{조합}한 기법.
+  환각을 \textbf{구조적으로} 줄이려면 근거 공급(RAG)·
+  다수결(self-consistency)·\textbf{외부 검증}을 프롬프트
+  바깥에서 덧붙이는 것이 훨씬 효과적.}
+\end{frame}

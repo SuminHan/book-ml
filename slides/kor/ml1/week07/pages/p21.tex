@@ -1,0 +1,23 @@
+\begin{frame}{자주 하는 실수 1: \texttt{max\_depth}를 제한 없이 두기}
+  \small
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+     & \texttt{max\_depth=None} & \texttt{max\_depth=3} \\
+    \midrule
+    train & \textbf{1.000} & 0.967 \\
+    test & 0.912 & \textbf{0.947} \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item 깊이 제한이 없는 트리는 학습 데이터를 \textbf{완벽히}(100\%)
+      외웠지만, 새 데이터에서는 오히려 \textbf{더 나쁨}(91.2\% vs 94.7\%)
+    \item ``학습 데이터를 더 정확히 맞히는 트리가 더 좋은 트리''라는 직관이
+      여기서 \textbf{완전히} 틀린다 — Week 4.1 편향-분산 트레이드오프가
+      트리에서 그대로 재현
+    \item 깊이 제한이 없으면 분산이 극단적으로 커지고(노이즈 하나까지
+      다 기억), 적당한 제한은 약간의 편향을 감수해 \textbf{분산을 크게 줄임}
+    \item \kq{정지 조건은 선택 사항이 아니라, 반드시 검증셋으로 튜닝해야
+      하는 \textbf{필수} 하이퍼파라미터}
+  \end{itemize}
+\end{frame}

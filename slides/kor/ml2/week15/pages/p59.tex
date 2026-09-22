@@ -1,0 +1,28 @@
+\begin{frame}{실습 2: 조율 게임 — 균형을 ``고르는'' 문제}
+  교차로에서 두 차가 동시에 다다름: \textbf{둘 다 좌회전(L)}
+  또는 \textbf{둘 다 우회전(R)}이면 안전하게 지나감 (2,2),
+  방향이 다르면 \textbf{충돌} (0,0):
+  \[
+  R = \begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}
+  \quad \text{(행=에이전트1, 열=에이전트2, L=0, R=1)}
+  \]
+  \vskip0.5em
+  죄수의 딜레마와 다른 점:
+  \begin{itemize}
+    \item \textbf{① 지배전략이 없다} --- ``무조건 L''도
+      ``무조건 R''도 아님, 상대와 \textbf{맞추는 것}이 중요
+    \item \textbf{② 내쉬 균형이 \textbf{둘}} --- (L,L)도
+      (R,R)도 내쉬 균형(한쪽만 바꾸면 2에서 0으로) ---
+      ``정답''이 둘이고 둘 다 ``합법''
+  \end{itemize}
+  \vskip0.5em
+  동일한 \texttt{self\_play}를 그대로 돌려보면(게임만
+  COORD로 교체):
+  \begin{itemize}
+    \item 마지막 1,000경기 중 \textbf{97.8\%가 같은 방향}
+      선택, 그중 에이전트 1이 L을 고른 비율 \textbf{98.6\%}
+      --- 이 실행에서는 \textbf{(L,L) 균형으로 잠금(lock-in)}
+    \item \textbf{시드를 바꾸면 (R,R)에 잠기는 실행도}
+      나온다는 것
+  \end{itemize}
+\end{frame}

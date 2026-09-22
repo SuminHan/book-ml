@@ -1,0 +1,34 @@
+\begin{frame}{$\lambda$ 학습 곡선 비교 — ``모양''이 달라짐}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch11_3_ppo_lambda_cartpole.png}
+      {\footnotesize CartPole, $\lambda=0.0/0.95/1.0$ PPO 학습
+      곡선 비교 (시드 0, 150$\times$512 스텝).}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      {\small
+      이번 단일 실행에서 세 $\lambda$ 가 각각 다른
+      \textit{모양}으로 학습:
+      \begin{itemize}
+        \item $\lambda=0.0$: 가장 \textbf{빠르게 시작}
+          (처음20 = 55.7)하지만 100 반복 이후 100$\sim$140 대
+         에서 \textbf{정체}(최고 270) — ``지금의 TD 오차''만
+          믿는 편향이 방향을 자주 틀리게 하는 흔적.
+        \item $\lambda=1.0$: 시작은 느렸지만 \textbf{후반에
+          가장 멀리}(마지막20 = 169.1), 평가 20개 에피소드
+          \textbf{모두 500}(만점).
+        \item $\lambda=0.95$: 어느 지표에서도 단연 우월하지
+          않지만, \textbf{어디 하나 치명적 결함도 없음}.
+      \end{itemize}
+      }
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  {\small \kb{중요}: 단일 시드 실험이므로 ``$\lambda=0.95$ 가
+  항상 이긴다''(또는 ``1.0이 이긴다'')는 \textbf{보장은
+  없다} — 7.2절의 교훈처럼 여러 시드로 평균해야 한다. 이번
+  실습은 ``$\lambda$ 에 따라 학습의 \textit{모양}이 달라지는
+  절충의 존재''를 보는 것이지, 어느 $\lambda$ 가 \textit{최적}
+  인지를 증명하는 것이 아니다.}
+\end{frame}

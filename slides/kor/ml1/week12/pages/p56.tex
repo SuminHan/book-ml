@@ -1,0 +1,26 @@
+\begin{frame}{보너스: Masked Attention — 디코더는 왜
+  ``왼쪽만'' 보는가}
+  트랜스포머 전체 구성에 필요한 조각이 하나 더 — 어텐션 점수
+  행렬에 \textbf{마스크(mask)}를 하는 것:
+  \begin{itemize}
+    \item 디코더가 $t$번째 단어를 \emph{만드는} 순간, $(t+1)$번째
+      이후(\textbf{``미래''})의 정보를 \emph{보아서는 안 된다}.
+    \item 실제 생성(추론) 시점엔 \textbf{미래가 아직 존재하지
+      않으므로}, 학습 때만 미래를 보고 훈련하면
+      \textbf{학습과 추론이 불일치}한다 (Week 6.1 과적합 문제와
+      같은 종류).
+    \item \textbf{해법}: softmax \emph{이전}의 원점수 행렬에서,
+      \textbf{상삼각(``미래'' 위치)에 $-\infty$} (실제로는
+      $-10^9$)를 \emph{더함} — $e^{-10^9} \approx 0$ 이므로
+      softmax 후 해당 위치의 가중치가 \textbf{정확히 0}.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{causal(인과) 마스크의 효과}
+    \textbf{학습은 \emph{모든 위치를 병렬로} 계산하되 각 위치가
+    \emph{왼쪽만} 보는 것이 가능}해진다 — \textbf{``학습의
+    병렬성''과 ``생성의 순차성''을 하나의 마스크가 통일}.
+    Week 17 LLM의 \textbf{자기회귀(autoregressive) 생성}은
+    정확히 이 메커니즘 위에 있다(디코더의 self-attention이
+    ``masked/causal attention''이라 불리는 이유).
+  \end{block}
+\end{frame}

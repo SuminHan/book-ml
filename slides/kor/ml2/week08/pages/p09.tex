@@ -1,0 +1,23 @@
+\begin{frame}{실측: CliffWalking, 시드 0/1/2 (고정 $\varepsilon=0.1$)}
+  \small
+  {\footnotesize $\alpha=0.5$, $\gamma=1.0$, $\varepsilon=0.1$ 고정, 500 에피소드}
+  \vskip0.4em
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    시드 & SARSA 학습중 & SARSA greedy & Q-learning 학습중 & Q-learning greedy \\
+    \midrule
+    0 & $-31.5$ & $-17$ (17스텝) & $-49.6$ & $-13$ (13스텝) \\
+    1 & $-25.6$ & $-17$ (17스텝) & $-51.2$ & $-13$ (13스텝) \\
+    2 & $-23.6$ & $-17$ (17스텝) & $-48.6$ & $-13$ (13스텝) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item (1) \textbf{학습 도중}: SARSA($-24\sim-32$)가 Q-learning(약 $-50$)보다
+      \textbf{오히려 낫다} --- 6.3절 그대로, Q-learning이 배우는 ``절벽 바로
+      옆 최단 경로''는 탐험 중 무작위 한 번이 $-100$으로 이어지는 경로.
+    \item (2) \textbf{학습 후}: Q-learning 13스텝 최단($-13$), SARSA 17스텝
+      안전($-17$) --- \textbf{세 시드 모두} 일관. 차이는 우연이 아니라
+      on/off-policy \textbf{설계 차이}, 시드별 표는 그 재현을 보여준다.
+  \end{itemize}
+\end{frame}

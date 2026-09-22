@@ -1,0 +1,29 @@
+\begin{frame}{버퍼 크기: 클수록 좋은 것도, 작은 게 좋은 것도 아니다}
+  \begin{itemize}
+    \item \texttt{capacity}는 \textbf{메모리와 다양성}의 절충.
+  \end{itemize}
+  \vskip0.3em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{너무 작으면}(예: 100)
+      \begin{itemize}
+        \item 버퍼가 금방 ``돌아'' 새 경험이 오래된 것을
+          \textbf{연속으로} 밀어냄.
+        \item 버퍼 안에는 최근 $\approx$ capacity 스텝만 $\Rightarrow$
+          혼합시간에 비하면 여전히 \textbf{상관 강함}.
+          첫 이득이 반쯤 사라짐.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{너무 크면}(예: 1,000,000)
+      \begin{itemize}
+        \item 메모리 상승.
+        \item 버퍼가 \textbf{학습 초반의 무작위 정책} 경험으로 가득 차
+          그 초기 분포가 지배 $\Rightarrow$ 학습이 \textbf{느려질} 수 있음.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  {\footnotesize 실전: $10^4 \sim 10^6$. CartPole은 $10^4$, Atari는 $10^6$ 이상.
+  9.2의 \texttt{update\_freq}와 같은 종류 --- \textbf{하이퍼파라미터}.}
+\end{frame}

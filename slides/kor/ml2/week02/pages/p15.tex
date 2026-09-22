@@ -1,0 +1,37 @@
+\begin{frame}{자주 하는 실수: $\varepsilon=0$ (순수 탐욕) 그대로 쓰기}
+  진짜 평균 $[2.0, 1.0]$ (A가 최선), $random.seed(11)$, 200스텝:
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{$\varepsilon = 0$ (순수 탐욕)}:
+      \begin{center}
+        \scriptsize\texttt{Q = [-0.113, 0.894]}\\
+        \scriptsize\texttt{N = [1, 199]}
+      \end{center}
+      팔 A를 \textbf{딱 한 번}만 시도 $\to$ 이후 199번 내내
+      B만 당김. ``확신''해버린 뒤로는 재시도 불가.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{$\varepsilon = 0.1$ (탐험 10\%)}:
+      \begin{center}
+        \scriptsize\texttt{Q = [1.974, 0.739]}\\
+        \scriptsize\texttt{N = [183, 17]}
+      \end{center}
+      진짜 최선인 A를 183번 시도 $\to$ 추정치(1.974)가
+      진짜 평균(2.0)에 근접.
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{block}{핵심}
+    $\varepsilon=0$ 은 이론상 ``효율적 활용만''처럼 보이나,
+    실전에서는 \textbf{단 한 번의 나쁜 운으로 최적해를 영원히
+    놓칠 수 있는} 가장 위험한 선택.
+  \end{block}
+  \vskip0.3em
+  {\footnotesize \textbf{연관 실수 ``첫 스텝의 숨겨진 임의성''}:
+  $t=1$ 에는 모든 $Q(a)=0$ (완전 동점)이라 \texttt{max(...)} 가
+  \textbf{첫 팔}(인덱스 0) 반환 --- $\varepsilon=0$ 이면 첫 당김이
+  알고리즘이 정해버리는 숨겨진 편향. $\varepsilon>0$ 이면 나머지
+  팔이 계속 재시험되어 무해; $\varepsilon=0$ 이면 이 첫 운이
+  \textbf{결정적} 결과(= 위 seed=11 예).}
+\end{frame}

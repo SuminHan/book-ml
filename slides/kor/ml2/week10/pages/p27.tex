@@ -1,0 +1,38 @@
+\begin{frame}{코드가 실제로 하는 일: 두 개의 루프와 one-vs-rest}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{루프 1 (뒤에서부터): 리턴 $G_t$ 계산}
+      \begin{itemize}
+        \item 마지막 스텝에서 시작해
+          $G_t = r_t + \gamma G_{t+1}$ 로 \textbf{거꾸로 누적}.
+        \item Week 3의 리턴 정의, 그대로.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{루프 2 (앞에서부터): 스텝별 갱신}
+      \begin{itemize}
+        \item (a) 현재 $\pi_\theta$ 로 $p_0, p_1$ 계산.
+        \item (b) 실제로 고른 $a_t$ 의
+          $\log\pi_\theta(a_t|s_t)$ 그래디언트 계산.
+        \item (c) 그걸 $G_t$ 로 \textbf{곱해} $\theta$ 조금
+          옮김 ($+=$ --- 경사 \textbf{상승}).
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{block}{softmax 그래디언트의 모양 --- one-vs-rest}
+    \[
+    \frac{\partial \log\pi_\theta(0|s)}{\partial\theta}
+    = \big[(1-p_0)s,\; -p_1 s\big],
+    \qquad
+    \frac{\partial \log\pi_\theta(1|s)}{\partial\theta}
+    = \big[-p_0 s,\; (1-p_1)s\big]
+    \]
+    고른 행동 $(1-p_a)$, 나머지는 $-p_a$. 이유 = \textbf{확률합
+    항상 1} --- 한 확률을 올리면 다른 것이 \textbf{반드시} 내려가므로,
+    ``고른 행동을 올리는'' 갱신은 ``고르지 않은 것을 내리는''
+    갱신이 \textbf{동시에} 됨.
+  \end{block}
+  {\footnotesize 두 루프 순서가 REINFORCE가 \textbf{에피소드 완료}를
+  기다리는 이유: 전체 $G_t$ 를 다 구해야 각 스텝의 가중치가 정해짐.}
+\end{frame}

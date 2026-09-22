@@ -1,0 +1,35 @@
+\begin{frame}[fragile]{GAE 코드: 뒤에서부터 한 번만 스캔}
+  무한합을 그대로 쓰면 각 $t$ 마다 $O(T)$ 합 $\to$ $O(T^2)$.
+  재귀를 쓰면 \textbf{뒤에서 앞에서 한 번만} 스캔:
+  \begin{lstlisting}
+def compute_gae(rewards, values, gamma=0.99, lam=0.95, last_value=0.0):
+    T = len(rewards)
+    gae, advantages = 0.0, [0.0] * T
+    for t in reversed(range(T)):
+        next_non_terminal = 1.0 if t < T - 1 else 0.0   # 터미널이면 0
+        delta = rewards[t] + gamma * values[t+1] * next_non_terminal \
+                - values[t]                              # δ_t
+        gae = delta + gamma * lam * next_non_terminal * gae   # 재귀
+        advantages[t] = gae
+    return advantages
+  \end{lstlisting}
+  \vskip0.2em
+  \small
+  \[
+  A_t^{\mathrm{GAE}}
+  = \delta_t + \gamma\lambda\, A_{t+1}^{\mathrm{GAE}}
+  \]
+  ``지금의 TD 오차 + 할인된 미래 GAE'' —
+  \texttt{gae = delta + gamma * lam * gae} 한 줄이 바로 이
+  재귀식. \kb{\texttt{next\_non\_terminal}}: 터미널 상태 도달 시
+  ``마지막 값'' 0 처리 (그 뒤에 ``계속될 에피소드''가 없음).
+  \texttt{last\_value=0.0} = \textbf{에피소드가 끝난 뒤}의 값;
+  에피소드가 끝나지 않고 스텝 버퍼가 가득 찼다면 현재 정책으로
+  $V(s_T)$ 계산 (실습 5절 \texttt{collect} 가 이 둘을 구분).
+  \begin{block}{GAE로 계산한 $A_t$ 는 미니배치 단위로 정규화}
+    $\big((A-\mathrm{mean})/(\mathrm{std}+10^{-8})\big)$ 한 뒤
+    클리핑 목적함수에 씀 (11.2절 \texttt{ppo\_clip\_loss}).
+    역할은 10.2절 리턴 정규화와 동일 — 정규화하면
+    \kb{학습률이 보상 스케일에 무관하게} 작동.
+  \end{block}
+\end{frame}

@@ -1,0 +1,26 @@
+\begin{frame}{최악의 출발: ``왼쪽''에서 시작하면 한 칸씩 전파}
+  ``왼쪽'' 정책(벽에 붙어 무한 루프 $\to$ $V = -10$)에서 시작:
+  \small
+  \begin{tabular}{@{}llrl@{}}
+    \toprule
+    outer & 정책 & sweep & $V$ \\
+    \midrule
+    1 & $[L, L, L, L, \cdot] \to [L, L, L, R, \cdot]$ & 133 & $[-10, -10, -10, -10, 0]$ \\
+    2 & $[L, L, L, R, \cdot] \to [L, L, R, R, \cdot]$ & 133 & $[-10, -10, -10, -1, 0]$ \\
+    3 & $[L, L, R, R, \cdot] \to [L, R, R, R, \cdot]$ & 133 & $[-10, -10, -1.9, -1, 0]$ \\
+    4 & $[L, R, R, R, \cdot] \to [R, R, R, R, \cdot]$ & 133 & $[-10, -2.71, -1.9, -1, 0]$ \\
+    5 & $[R, R, R, R, \cdot] \to$ (변화 없음) & 5 & $[-3.44, -2.71, -1.9, -1, 0]$ \\
+    \bottomrule
+  \end{tabular}
+  ($L$ = left, $R$ = right, $\cdot$ = 목표. \textbf{총
+  $133 \times 4 + 5 = 537$ sweep}.)
+  \vskip0.5em
+  \begin{block}{왜 \textbf{칸 3}이 가장 먼저 바뀌는가?}
+    outer 1에서 $V^{\text{left}}$ 가 모두 $-10$ 인 상태에서
+    $Q(3, \text{left}) = -10$ 인데 $Q(3, \text{right}) = -1 +
+    0.9 \times 0 = -1$ --- \textbf{목표($V = 0$)가 바로 옆}인
+    칸 3에서만 right가 압도적으로 낫다. 칸 0$\sim$2는 $Q(s,
+    \text{right}) = -10$ 으로 left와 \textbf{동점} $\to$ `max`가
+    기존 left를 \textbf{그대로 둔다}.
+  \end{block}
+\end{frame}

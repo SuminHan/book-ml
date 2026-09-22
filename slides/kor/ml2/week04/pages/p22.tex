@@ -1,0 +1,26 @@
+\section{4.2 정책 반복과 GridWorld 실습}
+\begin{frame}{정책 반복: 두 단계가 서로를 먹여 살린다}
+  \kb{정책 반복} (Policy Iteration, Sutton·Barto)은 최적해를
+  향해 두 단계를 번갈아 반복한다:
+  \begin{enumerate}
+    \item \kb{정책평가}: 현재 $\pi$ 의 $V^\pi$ 를 계산(4.1절).
+    \item \kb{정책개선}: 각 상태에서 $V^\pi$ 기준으로 더 나은
+      행동이 있으면 바꾼다:
+      \[
+      \pi'(s) = \arg\max_a \left[R(s,a) + \gamma \sum_{s'}
+      P(s'|s,a)\, V^\pi(s')\right]
+      \]
+  \end{enumerate}
+  \begin{block}{멈춤 신호}
+    정책이 \textbf{더 이상 안 바뀔 때까지} 반복하면 최적
+    정책에 도달. ``개선이 아무것도 바꾸지 않았다''는 순간이
+    멈춤 신호.
+  \end{block}
+  \vskip0.3em
+  \begin{center}
+  \includegraphics[width=0.5\linewidth]{ch04_2_policy_iteration_loop.png}
+  \end{center}
+  {\footnotesize 평가가 개선행동(각 행 argmax)을 산출하고, 개선이
+  다음 평가의 대상(새 정책)을 산출. 두 단계가 \textbf{서로의
+  출력을 입력}으로 먹는 구조.}
+\end{frame}

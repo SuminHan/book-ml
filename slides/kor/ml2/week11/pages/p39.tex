@@ -1,0 +1,21 @@
+\begin{frame}{자주 하는 실수 — $\theta_{\mathrm{old}}$ 를 갱신
+스텝마다 다시 계산하기}
+  \begin{itemize}
+    \item (2)$(\sim)$(3) 구간에서 ``데이터를 모았을 때의 정책''
+      이 아니라 \textbf{``지금 이 갱신 스텝의 정책''}으로 $r_t$
+      의 분모를 계산하면,
+    \item $r_t$ 가 \textbf{항상 1 근처}(갱신 전의 현재 정책 대비
+      갱신 후의 현재 정책)로 압박되어 \textbf{클리핑이 거의
+      발동하지 않는다} —
+    \item 결과적으로 PPO가 \kb{``클리핑 없는 REINFORCE''로
+      전락}.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{11.1절의 핵심을 기억하자}
+    $r_t$ 는 \textbf{옛 정책}(데이터 수집 시점)과 \textbf{새
+    정책}(갱신 시점)의 비이며, 분모의 ``옛''은
+    \kb{데이터 수집 시점}이지 \textit{갱신 직전}이 아니다.
+    실습 코드의 \texttt{logp\_old}를 (1) 구간에서 저장해두는
+    이유가 바로 이것.
+  \end{block}
+\end{frame}

@@ -1,0 +1,29 @@
+\begin{frame}{FAQ (3/3): ``할인 두 번''과 오프바이원}
+  \begin{itemize}
+    \item \textbf{Q. ``할인된 리턴''을 코드로 계산할 때,
+      \texttt{discount *= gamma}를 \texttt{step()} \textbf{이후에}
+      해야 하는 이유는?}
+      \begin{itemize}
+        \item $G_0 = R_0 + \gamma R_1 + \gamma^2 R_2 + \cdots$ 의
+          정의에서, $R_k$ 의 계수는 $\gamma^k$.
+        \item \texttt{step()} \textbf{직후}에 받는 \texttt{reward}는
+          \textbf{이번 스텝의} $R_t$ 이므로, 그 \textbf{당시}의
+          \texttt{discount}(= $\gamma^t$)를 곱한 뒤, \textbf{다음}
+          스텝을 위해 \texttt{discount *= gamma}를 해야 한다.
+        \item 순서를 바꾸면 $R_t$ 에 $\gamma^{t+1}$ 이 걸려
+          \textbf{모든 보상이 한 스텝 더 할인} --- ``할인을 두
+          번'' 실수와는 다른, \kb{오프바이원(off-by-one)} 버그.
+      \end{itemize}
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{3.2절 한 줄 요약}
+    리턴 $G_t$ 는 ``한 스텝의 보상이 아니라, 앞으로 받을 보상의
+    \textbf{할인된 합}''이고, 할인율 $\gamma$ 는 그 합을
+    \textbf{수렴시키는 수학 장치}이면서 동시에, \textbf{어떤
+    보상을 중시하는지}를 정하는 \textbf{목표 변수}다.
+    \vskip0.2em
+    {\small 같은 환경에서도 $\gamma$ 를 바꾸면 ``최적인 행동''이
+    바뀔 수 있다(예 2)는 점이, 할인율을 ``단순 정규화 상수''가
+    아니라 \textbf{설계 결정}으로 봐야 하는 이유다.}
+  \end{block}
+\end{frame}

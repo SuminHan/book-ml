@@ -1,0 +1,20 @@
+\begin{frame}{자주 묻는 질문 (2): ε=0.1 마법 수? decay?}
+  \begin{block}{Q: $\varepsilon=0.1$ 이 ``마법 수''인가?}
+    \textbf{아니다.} 최대는 \textbf{문제마다 다른 위치}.
+    $k$가 커질수록(수천 개 광고 배너) 무작위 팔이
+    \textbf{나쁜 팔에 떨어질 확률} $(k-1)/k$ 로 높아져
+    $\varepsilon=0.1$ 탐험이 거의 전부 낭비.
+    $k$ 큰 문제 $\to$ \textbf{UCB}처럼 불확실성에 비례해
+    조절하는 전략 유리.
+  \end{block}
+  \vskip0.5em
+  \begin{block}{Q: decay는 구체적으로 어떻게?}
+    \begin{itemize}
+      \item $\varepsilon_t = \varepsilon_0 / t$ --- 매우 공격적 감쇠.
+      \item $\varepsilon_t = \max(\varepsilon_{\min},\,
+        \varepsilon_0 / \sqrt{t})$ --- 느린 감쇠 + 하한.
+        $\varepsilon_{\min}>0$ 은 비정상 환경 대비.
+    \end{itemize}
+    핵심: $\varepsilon$ 을 \textbf{``학습의 진행도''에 비례해} 줄임.
+  \end{block}
+\end{frame}

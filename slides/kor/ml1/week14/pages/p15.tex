@@ -1,0 +1,32 @@
+\begin{frame}{왜 2차원으로 충분한가}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \begin{itemize}
+        \item 4개 원본 특징(꽃받침 길이·너비, 꽃잎 길이·너비)은
+          \textbf{서로 상당히 상관}되어 있다 --- 예: 꽃잎이 길면
+          보통 넓기도 하다.
+        \item 사실상 ``독립적인 정보''는 2~3차원어치밖에 없으므로
+          PCA가 이 \textbf{숨겨진 중복}을 정확히 찾아 제거한다.
+        \item \textbf{sklearn 확인} (fragment: \texttt{PCA(n\_components=2)}):
+          \texttt{fit} 시 자동 \textbf{중심화},
+          \texttt{components\_}에 고유벡터,
+          \texttt{explained\_variance\_ratio\_} $=[0.9246,\; 0.0531]$ ---
+          numpy 계산과 동일.
+      \end{itemize}
+      {\footnotesize 두 구현(numpy \texttt{eigh} vs sklearn)이 같은
+      결과를 내는 것 = PCA가 라이브러리 마법이 아니라 \textbf{공분산
+      행렬의 고유분해}라는 명확한 선형대수 연산.}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch14_iris_pca.png}
+      \vskip0.3em
+      {\footnotesize (a) 원본 공간 + PC1 방향, (b) 2차원 압축 공간
+      (PC1 92.5\%, PC2 5.3\%), (c) 설명 분산 비율 --- 상위 2개가 97.8\%.}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  {\footnotesize 가운데 패널에서 세 종류(색상)가 2차원에서도 거의
+  완벽히 분리 --- 4차원 $\to$ 2차원으로 떨어뜨려도 ``종류 구분'' 구조가
+  거의 사라지지 않는다.}
+\end{frame}

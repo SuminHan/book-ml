@@ -1,0 +1,20 @@
+\begin{frame}{프롬프트의 구조: system / user / few-shot}
+  \begin{itemize}
+    \item \kb{System message}(역할): ``너는 \ldots 전문가다.
+      항상 JSON으로 답한다.'' --- 대화 전체에 걸친 기본
+      전제.
+    \item \kb{User message}(질문): 이번 요청 자체.
+    \item \kb{Few-shot 예시}(선택): 질문 앞에 붙는 입출력
+      쌍.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{마법이 아니라 다음 토큰 예측}
+    이 구조 자체는 Week 12의 ``입력 시퀀스''일 뿐 — 모델은
+    system/user를 \textbf{구분해서} 처리하는 것이 아니라,
+    \textbf{모든 토큰을 같은 다음 토큰 예측 조건으로}
+    취급. ``역할''이 작동하는 것도 그 텍스트가
+    \textbf{조건에 포함}되기 때문. (그래서 system message를
+    ``지키지 않으면''이라는 표현이 애매 — 모델에게는 그저
+    긴 컨텍스트의 앞부분.)
+  \end{block}
+\end{frame}

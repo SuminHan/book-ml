@@ -1,0 +1,27 @@
+\begin{frame}{2개 특징 예제: 순서 두 가지의 한계기여 평균}
+  특징이 2개($A, B$)뿐이면 가능한 추가 순서는 \textbf{두 가지}:
+  $A \to B$와 $B \to A$.
+  \[ \phi_A = \tfrac{1}{2}\left[ \big(f(\{A\}) - f(\{\})\big)
+     + \big(f(\{A,B\}) - f(\{B\})\big) \right] \]
+  \begin{itemize}
+    \item 특징이 많아지면 순서 수는 $n!$로 \textbf{폭발} $\to$ 실제 SHAP은
+      \textbf{샘플링으로 근사}
+    \item 장난감 모델($f(\{\})=10, f(\{A\})=16, f(\{B\})=13,
+      f(\{A,B\})=20$)에 대입:
+    \[ \phi_A = \tfrac{1}{2}\big[(16-10) + (20-13)\big]
+         = \tfrac{1}{2}[6+7] = 6.5 \qquad
+       \phi_B = \tfrac{1}{2}\big[(13-10) + (20-16)\big]
+         = \tfrac{1}{2}[3+4] = 3.5 \]
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{검산 + 교차항}
+    $\phi_0 + \phi_A + \phi_B = 10 + 6.5 + 3.5 = 20 = f(\{A,B\})$ —
+    \textbf{정확히} 맞음.
+    $\phi_A = 6.5$는 단순히 $f(\{A\})-f(\{\}) = 6$이 \textbf{아님} —
+    ``A 혼자 합류(6)''와 ``B가 이미 있는데 A 합류(7)''의 \textbf{평균}.
+    1의 차이는 B가 이미 기여한 부분이 A를 ``흡수''한 \textbf{교차항
+    (synergy)}을 두 플레이어에 \textbf{공정하게} 나눈 것 — 이 분배가
+    섀플리값을 단순 ``순서별 차이''에서 \textbf{공정한 분배 규칙}으로
+    만들어주는 핵심.
+  \end{block}
+\end{frame}

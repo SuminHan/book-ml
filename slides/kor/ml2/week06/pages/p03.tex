@@ -1,0 +1,26 @@
+\section{6.1 TD(0): 한 스텝만 보고 갱신한다, TD vs MC}
+\begin{frame}{위치: TD(0)는 DP와 MC의 정가운데}
+  \begin{itemize}
+    \item Week 5 MC의 장점은 ``모델 불필요''였지만, 대가는
+      \textbf{에피소드 끝까지의 기다림}이었다.
+    \item \kb{시간차 학습}(TD)은 그 기다림 자체를 없앤다 --- 한 스텝만
+      진행하고, ``지금 추정치''와 ``방금 관찰한 보상 + 다음 상태 추정치''의
+      차이만큼 \textbf{즉시} 갱신.
+    \item 모델도 필요 없고, 끝날 때까지 기다릴 필요도 없다 --- 강화학습에서
+      가장 널리 쓰이는 절충안.
+  \end{itemize}
+  \vskip0.8em
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+     & 목표값 & 대가 \\
+    \midrule
+    DP & 기댓값 \textbf{정확히} 계산 & 모델 $P,R$ 필요 \\
+    MC & 에피소드 끝의 \textbf{실제 리턴} 평균 & 끝까지 기다림 \\
+    TD(0) & 한 스텝 보상 + \textbf{다음 상태 추정치} & 매 스텝 즉시 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  ``정확한 기댓값''(DP)과 ``완전한 샘플''(MC) 사이에서,
+  \textbf{덜 정확하지만 훨씬 빨리 도착하는 추정치}를 중간 목표로 쓰는 것.
+\end{frame}

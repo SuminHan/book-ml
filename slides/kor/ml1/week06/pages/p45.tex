@@ -1,0 +1,21 @@
+\begin{frame}{정보 흐름 다이어그램}
+  \begin{center}
+    \includegraphics[width=0.52\linewidth]{ch06_3_info_flow.png}
+  \end{center}
+  {\footnotesize 허용된 흐름(실선)은 train에서 시작해 val을 거쳐 최종 모델로
+  흐르고, \textbf{테스트(빨간 점선)에서 나가는 모든 화살표는 금지}.}
+  \vskip0.4em
+  \begin{itemize}
+    \item \kb{train $\to$ val / test}: 전처리 통계량(평균·표준편차, PCA 축)을
+      \emph{train으로만 fit}하고 val·test에는 \emph{apply} — 허용되는 유일한
+      교차.
+    \item \kb{train $\to$ 모델}: $w$를 fit. \quad
+      \kb{val $\to$ 모델}: 하이퍼파라미터를 고르는 방향.
+    \item \kb{test $\to$ (val / train / 모델)}: \textbf{모두 금지} — 전부
+      ``테스트를 살짝 훔쳐보았다''는 뜻.
+  \end{itemize}
+  \vskip0.2em
+  {\footnotesize 이 다이어그램이 이 절의 \textbf{지도}. 다음 세 절(선택
+  편향, 시계열, 그룹 분할)은 이 지도의 \emph{빨간 점선을 밟아봤을 때}
+  실제 숫자가 어떻게 변하는지를 보여준다.}
+\end{frame}

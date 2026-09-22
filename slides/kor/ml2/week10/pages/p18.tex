@@ -1,0 +1,22 @@
+\begin{frame}{정리의 ``약점'': 기댓값은 정확하지만 분산이 크다}
+  \begin{itemize}
+    \item 기댓값은 정확하나, 단일 샘플 $\hat g(\tau)$ 의 분산이
+      \textbf{크다} --- $G_t$ 가 \textbf{에피소드 전체} 보상 누적
+      이라 \textbf{운}(초기 상태의 불운, 중간 선택의 불운)에 크게 의존.
+    \item 같은 $\theta$ 로 두 에피소드: 행운으로 오래 버튼 쪽은
+      $G_t$ 크게 양수, 불운으로 일찍 끝난 쪽은 작음(또는 음수).
+      평균은 참 값에 가깝지만 \textbf{단일} 샘플은 멀리.
+    \item \kb{몬테카를로 추정}이 바로 가능한 이유도 기대 형태:
+      참 그래디언트 $\mathbb{E}_\tau[\cdot]$, 단일 샘플 $\hat g$,
+      N 샘플 $\hat g_N = \frac1N \sum_i \hat g(\tau_i)$
+      $\xrightarrow{N\to\infty}$ 참 그래디언트(대수법칙).
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{10.2절에서 숫자로 확인될 것}
+    REINFORCE CartPole 300 에피소드: 처음 20 에피소드 평균 14.1
+    $\to$ 마지막 20 에피소드 평균 99.5. 시드 세 번을 바꾸면
+    \textbf{곡선 모양이 다름} --- 어떤 시드는 194 에피소드만에
+    250 돌파, 다른 시드는 300까지 150 안팎.
+    \textbf{같은 알고리즘, 같은 환경, 다른 곡선}.
+  \end{block}
+\end{frame}

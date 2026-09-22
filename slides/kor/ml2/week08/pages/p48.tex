@@ -1,0 +1,27 @@
+\begin{frame}{유도 템플릿 ②: 후보+검증 (candidate \& verify) — 뼈대·해}
+  \begin{itemize}
+    \item \kb{뼈대}: (1) 최적값의 \textbf{후보} 추측, (2) 그 후보가
+      성립한다고 \emph{가정하고} 방정식 풀기, (3) 각 상태에서 후보
+      행동이 \emph{정말로} 다른 행동보다 나은지 \textbf{검증}.
+    \item 벨만 \textbf{최적}방정식 $Q^*(s,a)=R+\gamma \max_{a'}Q^*(s',a')$
+      의 $\max$는 ``argmax인 행동을 모르면 펼칠 수 없는'' 함수
+      $\to$ \textbf{검증이 선택이 아니라 필수}.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{작은 예제 (강의에서 안 써본 \emph{새} MDP, $\gamma=0.9$)}
+    상태 S, G, T. S: ``run''은 0.7 확률로 G, 0.3 확률로 S로 미끄러짐
+    (보상 0); ``rest''는 S에 남음(보상 $-1$). G: ``collect''로 T(보상
+    $+3$). T=터미널.
+    \begin{itemize}
+      \item \textbf{Step 1 (후보)}: $+3$의 유일한 길 = G에서 collect
+        $\to$ $Q^*(G,\text{collect})=3$. S에서 rest는 매 스텝 $-1$
+        $\to$ 후보: \textbf{run@S, collect@G}.
+      \item \textbf{Step 2 (해)}: run@S 가정 하에
+        $V^*(S)=0.9\big(0.7\,V^*(G)+0.3\,V^*(S)\big)=1.89+0.27\,V^*(S)$
+        --- 자기 자신으로 돌아오는 확률 $0.9\times 0.3=0.27$ 때문에
+        \[
+          V^*(S)=\frac{1.89}{1-0.27}=\frac{189}{73}\approx 2.589
+        \]
+    \end{itemize}
+  \end{block}
+\end{frame}

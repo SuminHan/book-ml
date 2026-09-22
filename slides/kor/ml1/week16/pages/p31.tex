@@ -1,0 +1,36 @@
+\begin{frame}{에폭과 교정: Block B의 두 시간 축}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{(2) 학습의 시간 차원 — 에폭}
+      \begin{itemize}
+        \item 고전 ML은 \texttt{fit()} \textbf{한 번}으로 끝나지만,
+          신경망은 에폭을 돌리는 \textbf{과정}이 모델의 일부
+        \item 8.1 M3(하이퍼파라미터는 \textbf{val 곡선}으로만)가
+          신경망에서는 \textbf{에폭 수를 정하는 것}까지 포함
+        \item ``에폭 300을 돌렸다''는 \textbf{전제}(val 곡선이 300
+          부근에서 포화)를 만족할 때만 성립
+        \item \kb{질문 예}: ``에폭 300인데 val 곡선은 언제 정점?
+          정점 이후 100개 에폭이 val에서 무엇을 바꿨나요?'' —
+          답하려면 \textbf{학습 곡선(M3)}을 다시 꺼내 봐야 함
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{(3) 확률의 신뢰도 — 교정(calibration)}
+      \begin{itemize}
+        \item ``정확도 95\%''를 넘겨도 ``\textbf{0.99 확률}로 예측한
+          건 중 \textbf{99\%가 정말 맞았는가}''는 \textbf{별개}의
+          질문
+        \item 교차엔트로피가 낮아도 확률 \textbf{스케일 전체가 왜곡}
+          된 모델(0.99를 말해도 실제로 0.87)은 ``\textbf{위험도 기반
+          결정}''(의료, 사기)에서 정확도 결정과 \textbf{완전히
+          다른} 결정
+        \item Block A(로지스틱회귀)는 교정이 \textit{구조적으로}
+          좋아 잘 안 나왔지만, \textbf{신경망+드롭아웃}은 \textbf{
+          드롭아웃 ON 상태에서 확률을 뽑으면 교정이 악화}(Guo et
+          al., 2017)
+        \item ``\textbf{드롭아웃 off로 확률을 뽑았나요?}'' = 합
+          리적인 3점 질문
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

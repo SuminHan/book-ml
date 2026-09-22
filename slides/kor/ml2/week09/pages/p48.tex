@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{두 장치가 한 루프에서 만나는 자리: train\_step}
+\begin{lstlisting}
+# CartPole 기준 (state_dim=4, n_actions=2)
+Q_net = QNetwork(4, 2)
+target_net = QNetwork(4, 2)
+target_net.load_state_dict(Q_net.state_dict())  # 처음엔 동일
+optimizer = torch.optim.Adam(Q_net.parameters(), lr=1e-3)
+buffer = ReplayBuffer(capacity=10000)
+
+def train_step(batch_size, gamma):
+    batch = buffer.sample(batch_size)        # 9.3의 재현
+    states = torch.tensor([b[0] for b in batch], dtype=torch.float32)
+    actions = torch.tensor([b[1] for b in batch])
+    rewards = torch.tensor([b[2] for b in batch], dtype=torch.float32)
+    next_states = torch.tensor([b[3] for b in batch], dtype=torch.float32)
+    dones = torch.tensor([b[4] for b in batch], dtype=torch.float32)
+    loss = dqn_loss(Q_net, target_net, states, actions, rewards,
+                    next_states, dones, gamma)   # 9.2의 타겟 네트워크
+    optimizer.zero_grad()
+    loss.backward()                # 9.1의 역전파
+    optimizer.step()
+    return loss.item()
+\end{lstlisting}
+\end{frame}

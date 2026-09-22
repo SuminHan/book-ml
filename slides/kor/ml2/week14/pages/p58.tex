@@ -1,0 +1,24 @@
+\begin{frame}{표 읽는 법: ``CPU니까 느리다''가 아니다}
+  \begin{block}{같은 CPU에서 40배}
+    가장 단순한 환경(CartPole, 물리 근사)이 가장 정밀한 로봇
+    시뮬레이션(Ant, MuJoCo)보다 \textbf{약 40배 빠름}.
+    ``CPU니까 느리다''가 아니라, \textbf{정밀한 물리를 계산하는
+    \textit{비용}이 CPU를 40배 느리게 만든다} --- 14.1에서 LCP
+    접촉을 매 스텝 푸는 데 드는 계산이 이 차이의 정체.
+  \end{block}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch14_3_engine_speed.png}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      {\footnotesize 초당 스텝 수 비교(로그 스케일). CartPole
+      $\approx$247,000 steps/s, Ant $\approx$6,200 steps/s.
+      100만 스텝에 걸리는 시간: CartPole $\approx$ \textbf{4초},
+      Ant $\approx$ \textbf{2.7분} --- 둘 다 ``CPU''인데
+      \textbf{어떤 물리를 계산하느냐}에 따라 40배로 갈린다.
+      ``느림''의 크기를 실감하라.}
+    \end{column}
+  \end{columns}
+\end{frame}

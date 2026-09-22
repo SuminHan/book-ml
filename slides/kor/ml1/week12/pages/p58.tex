@@ -1,0 +1,31 @@
+\begin{frame}{전체 트랜스포머 블록: 조각 조립}
+  12.1$\sim$12.3의 조각(Q/K/V 투영, scaled dot-product,
+  self/multi-head, PE, causal mask)을 조립하면
+  \kb{트랜스포머 블록(transformer block)}이 완성:
+  \begin{enumerate}
+    \item \textbf{multi-head self-attention} (+ \textbf{잔차
+      연결}, layer norm(Ba et al., 2016))
+    \item \textbf{position-wise feed-forward network}: 각 위치의
+      벡터를 \emph{독립적으로} 2층 MLP
+      ($d_{model} \to 4\,d_{model} \to d_{model}$)에 통과
+      (+ 잔차 연결, layer norm)
+  \end{enumerate}
+  \vskip0.3em
+  \begin{itemize}
+    \item \kb{잔차 연결 $y = x + F(x)$}는 ResNet(He et al.,
+      2015)의 ``단축로''과 \textbf{같은 구조} — 6$\sim$12층을
+      쌓아 그래디언트 경로가 길어지는 상황에서 중요.
+    \item \textbf{layer norm}은 \textbf{batch norm}(Ioffe \&
+      Szegedy, 2015)과 비슷한 ``층마다 스케일 정규화'' 역할
+      (Week 6.2 정규화 논리 참조).
+  \end{itemize}
+  \vskip0.3em
+  \begin{center}
+  \includegraphics[width=0.72\linewidth]{ch12_3_transformer_block.png}
+  \end{center}
+  {\footnotesize 인코더 블록 = MHA + FFN(각각 Add\&Norm),
+  6회 쌓기. 디코더 블록 = masked self-attention +
+  cross-attention(인코더 출력) + FFN, 6회 쌓기. 입력/출력
+  임베딩에 PE를 더하고, 디코더 출력은 linear + softmax로
+  \textbf{토큰 확률 분포}를 낸다.}
+\end{frame}

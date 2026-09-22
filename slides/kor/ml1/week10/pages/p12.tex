@@ -1,0 +1,19 @@
+\begin{frame}{파라미터 수 계산}
+  $C_{\text{in}}$ 개 입력 채널, $C_{\text{out}}$ 개 출력 채널(= 필터 개수),
+  필터 $k\times k$ 인 합성곱 층의 파라미터 수(bias 포함):
+  \[ \text{params} = (k \times k \times C_{\text{in}} + 1) \times C_{\text{out}} \]
+  \begin{itemize}
+    \item 예: 32$\times$32$\times$3 이미지, 3$\times$3 필터, 출력 채널 16:
+      $(3\times3\times3+1)\times16 = \mathbf{448}$ 개뿐
+    \item 같은 입력을 \textbf{완전연결층}(출력 뉴런 32$\times$32$\times$16)에
+      연결하려면 \textbf{수백만 개}가 필요하다
+  \end{itemize}
+  \vskip0.6em
+  \begin{center}
+  \kq{FLOPs는 ``파라미터 수''와는 \textbf{다른 질문}이다.}
+  \end{center}
+  \begin{itemize}
+    \item 파라미터 수 = ``얼마나 \textbf{많은 숫자를 저장}해야 하는가''
+    \item FLOPs = ``\textbf{몇 번의 곱셈-덧셈}을 하는가'' (속도)
+  \end{itemize}
+\end{frame}

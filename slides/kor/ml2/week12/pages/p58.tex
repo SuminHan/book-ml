@@ -1,0 +1,48 @@
+% ===== wrap-up =====
+\begin{frame}{12주차 정리}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.62\textwidth}
+      \kb{12.1 시연에서}
+      \begin{itemize}
+        \item BC = 시연 $(s,a)$ 쌍을 라벨로 쓴 지도학습(로지스틱
+          회귀 코드 그대로).
+        \item 실패는 \textbf{분포} 문제 (공분포 시프트, 복합 오차) —
+          $p^T$ 지수 감쇠 / $H^3$ 세제곱.
+        \item DAgger = ``에이전트가 달리고, 전문가가 라벨만'' 반복 —
+          보장은 완화이지 해결 아님.
+      \end{itemize}
+      \kb{12.2 비교에서}
+      \begin{itemize}
+        \item Bradley-Terry(차이만 보아 스케일 불변)로 보상모델
+          학습 $\to$ PPO 보상으로(RLHF).
+        \item 시연 = 상한이 사람, 비교 = \textbf{상한 초월 가능}.
+        \item 대신 \textbf{보상 해킹} 위험(Goodhart).
+      \end{itemize}
+      \kb{12.3 무엇을 쓸 것인가}
+      \begin{itemize}
+        \item 선택은 \textbf{가진 자원}(시연/비교/보상함수)이
+          정함.
+        \item 실전 표준: 초기 정책(BC 또는 선호 보상) + PPO
+          미세조정 (5$\times$5 격자: 함정 9 vs 26/30, 추월
+          193 vs 273ep).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \begin{block}{핵심 한 줄}
+        사람이 주는 \textit{것}이 다르면 알고리즘이 달라진다 —
+        \textbf{정답 행동} $\to$ DAgger(상한=사람), \textbf{비교}
+        $\to$ 보상모델 + PPO(초월 가능), \textbf{보상함수} $\to$
+        순수 RL.
+      \end{block}
+      \vskip0.6em
+      \begin{block}{다음 주 --- Week 13. 로봇 시뮬레이션과
+        제어 기초}
+        이 장의 방법들을 실제 로봇 시뮬레이션 환경으로 옮겨,
+        \textbf{시연으로 만든 초기 정책}을 PPO가 어떻게
+        \textbf{미세조정}하는지, 그리고 보상 해킹이 실제 로봇에서
+        어떻게 관찰되는지 구체적으로 본다.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,36 @@
+\frametitle{실습: 대명사 지시 관계를 시각화}
+(self-attention)
+  네 단어 $[\text{동물}, \text{도로}, \text{건너지},
+  \text{그것은}]$ 에 직접 설계한 임베딩으로 self-attention:
+\begin{lstlisting}
+words = ["동물", "도로", "건너지", "그것은"]
+E = [[3,0,0], [0,3,0], [0,0,3], [2.8,0.3,0]]
+# "그것은"이 "동물"과 유사하게 설계됨
+Q = K = V = E
+output, weights = attention(Q, K, V, d_k=3)
+for w, row in zip(words, weights):
+    print(w, [round(x, 3) for x in row])
+\end{lstlisting}
+  \vskip0.2em
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \scriptsize
+      \begin{tabular}{@{}lrrrr@{}}
+        \toprule
+        & 동물 & 도로 & 건너지 & 그것은 \\
+        \midrule
+        동물 & 0.582 & 0.003 & 0.003 & 0.412 \\
+        도로 & 0.005 & 0.980 & 0.005 & 0.009 \\
+        건너지 & 0.005 & 0.005 & 0.984 & 0.005 \\
+        \textbf{그것은} & \textbf{0.561} & 0.007 & 0.004 & 0.427 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch12_2_attention_heatmap.png}
+    \end{column}
+  \end{columns}
+  {\footnotesize ``그것은'' 행이 ``동물'' 열(0.561)과 자기 자신
+  열(0.427)에만 높은 값 — 대명사-선행사 관계가 숫자로 구현된
+  모습. 나머지 행은 대각선(자기 자신)에 집중.}

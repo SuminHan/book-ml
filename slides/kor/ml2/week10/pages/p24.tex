@@ -1,0 +1,25 @@
+\begin{frame}{자주 묻는 질문 (10.1)}
+  \small
+  \begin{itemize}
+    \item \kb{Q: 정책기반이 가치기반보다 항상 나은가?}
+      \textbf{아님.} 연속 공간에선 사실상 유일 선택지이나, 이산
+      공간이 작고 데이터가 충분하면 Q-learning/DQN이 더 \textbf{안정적}
+      이고 \textbf{데이터 효율적}인 경우가 많음 (10.2 실습에서
+      CartPole로 직접 비교).
+    \item \kb{Q: 연속 공간의 $\pi_\theta(a|s)$ 는 어떤 형태?}
+      신경망이 정규분포의 $\mu_\theta(s),\sigma_\theta(s)$ 를 출력,
+      행동은 그 분포에서 샘플링. 로그미분 트릭은 이산/연속
+      \textbf{동일}($\log\pi$ 가 정규 로그밀도로 바뀔 뿐).
+      Week 13--14 로봇 시뮬레이션이 바로 이 구조.
+    \item \kb{Q: 결정적 정책 $\pi(s)=a$ 에는?}
+      이 정리는 \textbf{확률적} 정책에 대한 것. 결정적 정책은
+      샘플링 단계가 없으므로 $\nabla_\theta\log\pi$ 대신
+      $\nabla_\theta a$ 가 등장 (Week 13 DDPG/TD3/SAC).
+      둘 다 policy gradient family이나 \textbf{미분 대상이 다름}.
+    \item \kb{Q: ``기댓값이 정확하다''의 정확한 의미?}
+      $\mathbb{E}[\hat g(\tau)] = \nabla_\theta J$(참 그래디언트) ---
+      단일 샘플 $\hat g(\tau)$ 자체가 참 값과 멀어질 수 있음(분산 큼).
+      ``기댓값 정확'' $\ne$ ``단일 샘플 정확''.
+  \end{itemize}
+  \normalsize
+\end{frame}

@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{실행 결과: 핵심은 숫자보다 절차}
+  \small
+  \begin{verbatim}
+크기: train=265  val=88  test=89
+val RMSE per lambda: {0.1: 58.07, 1.0: 61.75, 10.0: 73.04,
+                      100.0: 77.49, 1000.0: 78.07}
+val로 고른 lambda = 0.1  ->  최종 test RMSE (한 번만) = 53.79
+(잘못) test로 고르면 lambda = 1.0
+  \end{verbatim}
+  \par\normalsize
+  \begin{block}{핵심}
+    val로 고른 $\lambda$와 test로 고른 $\lambda$는 (이 작은 데이터에서)
+    \emph{같을 수도, 다를 수도} 있다 — 위 실행에선 0.1 vs 1.0으로 다름.
+    \vskip0.2em
+    우연히 같아도 \emph{원칙적으로} test를 선택에 썼으므로 그 test 수치는
+    선택편향의 $\mathbb{E}[\max]$를 먹고 있는 \textbf{부풀려진 추정치}.
+    \vskip0.2em
+    \kq{같은 모델·같은 코드인데도 ``$\lambda$를 어디서 고르느냐''만 달라져
+    최종 test 점의 \emph{신뢰성}이 달라짐 — 3분할은 ``코드가 아니라
+    \emph{절차}''의 문제.}
+  \end{block}
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}[fragile]{k-fold CV로 최적 $\lambda$ 찾기}
+  \small
+\begin{lstlisting}
+def cross_validate_lambda(X, y, lambdas, k=5, alpha=0.01, epochs=500):
+    data = list(zip(X, y))
+    results = {}
+    for lam in lambdas:
+        val_errors = []
+        for fold in range(k):
+            train, val = k_fold_split(data, k, fold)
+            Xtr, ytr = [d[0] for d in train], [d[1] for d in train]
+            Xva, yva = [d[0] for d in val],   [d[1] for d in val]
+            w = ridge_gradient_descent(Xtr, ytr, lam, alpha, epochs)
+            val_errors.append(mse(Xva, yva, w))
+        results[lam] = sum(val_errors) / len(val_errors)
+    return results
+\end{lstlisting}
+  ``학습 손실이 아니라 \textbf{검증 손실}로 $\lambda$를 고른다''는 원칙을
+  코드로 확인.
+\end{frame}

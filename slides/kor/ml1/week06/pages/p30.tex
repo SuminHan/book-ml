@@ -1,0 +1,21 @@
+\begin{frame}{U자형 곡선: 좌측=과적합, 우측=과소적합}
+  \begin{center}
+    \includegraphics[width=0.62\linewidth]{ch06_2_lambda_ucurve.png}
+  \end{center}
+  {\footnotesize $\lambda$(로그 스케일)에 따른 5-fold 평균 검증 MSE — U자형.
+  최소점 $\lambda^{*}\approx15.8$(MSE$\approx9.03$). 회색 점선 = fold별 MSE,
+  막대 = $\pm1$ 표준편차 밴드.}
+  \vskip0.4em
+  \begin{itemize}
+    \item \kb{U의 왼쪽}($\lambda$ 작음, 과적합): 13개 잡음 특징 가중치가
+      표본잡음에 맞춰 \textbf{분산 지배}. $\lambda\to0$일수록 이 쪽 —
+      정규화 없는 모델(12.520)은 최소점보다 나쁨.
+    \item \kb{U의 오른쪽}($\lambda$ 큼, 과소적합): 2개 \emph{진짜} 관련
+      특징 가중치까지 0으로 쪼그라들며 \textbf{편향} 커짐.
+    \item \kb{최소점}: 둘의 합이 가장 작은 위치.
+  \end{itemize}
+  \vskip0.2em
+  {\footnotesize 놓치기 쉬운 것: 평균 곡선이 U자형인 데다 \textbf{최소점
+  근처로 갈수록 fold 간 흩어짐(밴드)도 좁아진다} — ``제일 낮은 한 점''을
+  어디까지 믿을 수 있느냐의 문제.}
+\end{frame}

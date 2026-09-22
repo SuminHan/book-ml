@@ -1,0 +1,21 @@
+\begin{frame}{2-2-1 손계산: 그래디언트와 한 스텝 갱신}
+  \small
+  \[
+  \frac{\partial L}{\partial W_2} \approx \delta_2 \, a_1 \approx (-0.070,\; -0.057),
+  \qquad
+  \frac{\partial L}{\partial W_1} \approx
+  \begin{bmatrix} -0.017 & 0.016 \\ 0 & 0 \end{bmatrix}
+  \]
+  \begin{itemize}
+    \item 학습률 $\alpha = 0.5$로 \textbf{한 스텝} 갱신 $\Rightarrow$
+      손실 $0.097 \to 0.087$
+    \item \textbf{핵심}: 은닉층 가중치 $W_1$까지 \textbf{정확히 한 번의
+      역전파}로 갱신됐다
+  \end{itemize}
+  \begin{block}{왜 이 계산이 중요하나}
+    PyTorch/TensorFlow는 \texttt{.backward()} 한 줄로 이 모든 미분을
+    자동 계산(자동 미분, 1986 이후의 표준). 하지만 내부에서
+    연쇄법칙이 정확히 무엇을 하는지 모르면, 9.2절의 소실 문제를
+    \textbf{원인 진단}할 수 없다.
+  \end{block}
+\end{frame}

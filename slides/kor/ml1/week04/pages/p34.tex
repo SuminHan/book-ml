@@ -1,0 +1,21 @@
+\begin{frame}{자주 하는 실수: 검증셋 없이 훈련 정확도로 k 고르기}
+  \texttt{tune\_k}가 데이터를 훈련/검증으로 \textbf{굳이 나누는}
+  이유를 실수 사례로 확인:
+  \vskip0.8em
+  \begin{itemize}
+    \item 검증셋 없이 \textbf{훈련 데이터 자체}의 정확도로
+      $k$를 고르면: $k=1$일 때 ``가장 가까운 1개''가 항상
+      자기 자신 $\Rightarrow$ 훈련 정확도 \textbf{정확히 100\%}
+      (데이터 통째로 외운 것과 다름없음)
+    \item 이 기준으로 고르면 항상 $k=1$이 ``최고''로 보이지만,
+      \textbf{정작 새로운 데이터}에서는 노이즈 하나에도
+      흔들리는 \textbf{가장 불안정한} 선택
+    \item \texttt{tune\_k}가 \texttt{X\_val, y\_val}(학습에 안
+      쓴 데이터)로 정확도를 재는 이유가 정확히 이것을 막기
+      위함
+  \end{itemize}
+  \vskip0.6em
+  {\footnotesize Week 6에서 이 원칙(모델을 고르는 데 쓰는 데이터
+  와 최종 성능을 평가하는 데이터를 분리)을 train/val/test
+  3분할로 더 엄밀하게 다룬다.}
+\end{frame}

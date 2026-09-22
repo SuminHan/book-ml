@@ -1,0 +1,25 @@
+\begin{frame}{자주 하는 실수 (2): 시그모이드 오버플로}
+  \texttt{sigmoid(z)} 를 직접 계산하면 \textbf{오버플로}가 날 수
+  있다.
+  \vskip0.4em
+  \begin{itemize}
+    \item $z = -1000$ 이면 $e^{-z} = e^{1000}$ 이 float64 범위를
+      넘어 \texttt{inf} $\to$ $1/(1+\text{inf}) = 0$ ---
+      \textbf{실제로 0이 아니라 ``0과 거의 같은 값''을 0으로
+      잘림}.
+    \item $z = +1000$ 이면 $e^{-z} = e^{-1000} \approx 0$ $\to$
+      $1/(1+0) = 1$ --- ``1과 거의 같은 값''을 1로 잘림.
+    \item 둘 다 확률 0 또는 1에 가까울 때 \textbf{손실 $-\log p$ 가
+      \texttt{log(0) = -inf} 가 되어 NaN}.
+  \end{itemize}
+  \vskip0.6em
+  \textbf{실전 해결책 (택 1)}:
+  \begin{itemize}
+    \item \texttt{scipy.special.expit(z)} (C로 구현된, 오버플로
+      없는 시그모이드)
+    \item \texttt{np.where(z >= 0, 1/(1+np.exp(-z)),
+      np.exp(z)/(1+np.exp(z)))} --- 음수/양수 영역 분산 계산
+    \item 손실 계산 시 \texttt{np.clip(h, 1e-12, 1-1e-12)} 로 0/1에
+      딱 붙지 않게 클리핑
+  \end{itemize}
+\end{frame}

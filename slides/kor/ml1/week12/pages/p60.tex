@@ -1,0 +1,27 @@
+\begin{frame}{RNN 대비 이점}
+  Self-attention은 \textbf{모든 단어 쌍을 \emph{한 번에} 병렬로}
+  계산 — 순차 처리가 없어 \textbf{GPU 병렬성을 최대한 활용},
+  ``1번째와 100번째 단위의 관련성''도 \textbf{중간 99단계를
+  거치지 않고 직접} 계산(그래디언트 소실 문제 구조적으로
+  훨씬 덜함).
+  \vskip0.4em
+  \textbf{대신}: 문장 길이의 \textbf{제곱}에 비례하는 계산량
+  ($QK^T$ 가 $n \times n$ 행렬)이라는 \textbf{새로운 비용} —
+  아주 긴 문서를 다룰 때의 실무적 한계.
+  \small
+  \begin{tabular}{@{}p{3.6cm}p{4.3cm}p{5.6cm}@{}}
+    \toprule
+    관점 & RNN/LSTM (Ch.11) & Self-Attention (Ch.12) \\
+    \midrule
+    1번째 $\to$ 100번째 단어 경로 & 99 단계(순차 언폴딩) &
+      \textbf{1 단계}($Q\cdot K$ 직접) \\
+    병렬성 & 없음(순차 필수) & \textbf{모든 쌍 동시} \\
+    긴 거리 의존 & BPTT로 그래디언트 소실 & \textbf{구조적으로
+      없음}(경로 항상 1) \\
+    계산 복잡도(길이 $n$에 대해) & $O(n \cdot d^2)$ (선형) &
+      $O(n^2 \cdot d)$ (\textbf{제곱}) \\
+    순서 정보 & \emph{암묵적}(순차 구조 자체가) & \emph{명시적}
+      (PE를 입력에 추가) \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

@@ -1,0 +1,28 @@
+\begin{frame}{$\mathbb{E}[\max]$를 숫자로}
+  $\sigma=1$, 진짜 성능 0인 경우 4만 번 시뮬레이션. 후보 수 $m$에 따른
+  ``고른 최고 점''의 평균:
+  \small
+  \begin{tabular}{@{}ccccccccc@{}}
+    \toprule
+    $m$ & 1 & 2 & 5 & 10 & 20 & 50 & 100 & 500 \\
+    \midrule
+    $\mathbb{E}[\max]$ & $\approx0$ & 0.56 & 1.16 & 1.53 & 1.86 & 2.25 & 2.51 & 3.04 \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.4em\normalsize
+  \begin{center}
+    \includegraphics[width=0.46\linewidth]{ch06_3_selection_bias.png}
+  \end{center}
+  {\footnotesize 후보 수 $m$(로그 축)에 따른 $\mathbb{E}[\max]$ — 잡음 한
+  개($\sigma=1$)를 붉은 점선으로. $m=50$이면 잡음의 2배 이상, $m=100$이면
+  2.5배 부풀어 오름.}
+  \vskip0.3em
+  \begin{itemize}
+    \item $m=1$이면 편향 0 — 후보 한 개면 ``고르다''는 행위가 없음.
+    \item $m=5$만 되도 $\approx1.16$, $m=50$이면 $\approx2.25$ —
+      \textbf{잡음 한 개의 2배 이상}이 부풀려 올라감.
+    \item 실전 $m$은 ``모델 수 $\times$ 하이퍼파라미터 수''의 \textbf{곱}으로
+      커지기 쉬움(모델 5개 $\times$ $\lambda$ 20개 = 100개 → 부풀림
+      $\approx2.5$). 후보가 쌓이면 편향은 \emph{로그 스케일로} 계속 커짐.
+  \end{itemize}
+\end{frame}

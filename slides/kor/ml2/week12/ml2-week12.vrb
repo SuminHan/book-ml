@@ -1,0 +1,18 @@
+\frametitle{실습: 선호 쌍만으로 숨겨진 보상함수 복원}
+\begin{itemize}
+    \item 로봇 걸음걸이를 ``(부드러움, 덜컹거림)'' 두 특징으로 요약.
+    \item 사람은 (겉에 드러나지 않는) 진짜 보상
+      \[r^*(\text{traj})=2\times\text{부드러움}-1\times\text{덜컹거림}\]
+      을 마음속으로 갖고 선호 표현.
+    \item 알고리즘은 $r^*$를 \textbf{전혀 모름} — 비교 데이터
+      \textbf{300개}만 봄.
+\end{itemize}
+\begin{lstlisting}
+for epoch in range(200):
+    for win, lose in pairs:     # (선호된, 덜 선호된) 궤적 쌍
+        rw, rl = r_phi(win, w1, w2, b), r_phi(lose, w1, w2, b)
+        p = sigmoid(rw - rl)          # Bradley-Terry 예측
+        grad = p - 1                  # 정답 = 항상 "win이 이겼다"(=1)
+        w1 -= lr * grad * (win[0] - lose[0])
+        w2 -= lr * grad * (win[1] - lose[1])
+\end{lstlisting}

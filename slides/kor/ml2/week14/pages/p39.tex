@@ -1,0 +1,23 @@
+\begin{frame}{실측: 약 76배}
+  N=1,000, 2,000스텝 (=4s 시뮬레이션), 같은 머신:
+  \small
+  \begin{tabular}{@{}p{6.0cm}p{3.0cm}p{4.6cm}@{}}
+    \toprule
+    실행 방식 & 벽 시간 & 초당 환경스텝 수 \\
+    \midrule
+    CPU 순차 (진자를 하나씩, Python 루프) & 약 8.4 s & 약 239,000 \\
+    \textbf{배치 (numpy 벡터화, 1,000개 동시)} & \textbf{약 0.11 s} &
+      \textbf{약 18,150,000} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.7em
+  \begin{block}{76배의 성분}
+    ``CPU 순차''의 239,000 steps/s는 14.1 MuJoCo 진자(약 246,000)
+    와 \textbf{정확히 같은 수준} --- 진자 하나를 스텝시키는 비용은
+    물리 자체에 의해 결정된다. 76배는 물리 계산이 빨라진 게
+    \textbf{아니다}:
+    (a) Python이 매 진자마다 함수 호출·인덱싱하던 \textbf{오버헤드
+    소거}, (b) 하나의 배열 연산 안의 연산이 \textbf{1,000개 진자
+    만큼 나뉜 것}. 물리 계산 자체는 같은 CPU에서 그대로.
+  \end{block}
+\end{frame}

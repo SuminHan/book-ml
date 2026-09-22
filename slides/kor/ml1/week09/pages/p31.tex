@@ -1,0 +1,24 @@
+\begin{frame}{Dying ReLU — ReLU의 아킬레스건}
+  \small
+  \begin{itemize}
+    \item $z < 0$일 때 미분이 \textbf{정확히 0} — 뉴런이 ``죽으면''
+      \textbf{영원히} 부활 불가 (시그모이드 포화는 미분이 \textit{작지만}
+      0은 아님 — 성격이 다름)
+    \item 정상 망에서는 $z \sim \mathcal{N}(0,1)$의 절반이 음수라
+      약 50\%가 ``숨어'' — 이 자체는 \textbf{설계값}.
+      ``dying''은 이 비율이 \textbf{비정상적으로 치솟는 것}.
+  \end{itemize}
+  \vskip0.3em
+  \kb{실험} (실습 노트 검증, $y = \sin x_1 + \tfrac{1}{2}x_2^2$ 회귀,
+  음수 쪽 치우친 입력, 은닉 40 ReLU, SGD, 학습률만 변경):
+  \vskip0.3em
+  \texttt{ReLU 학습률=0.45: 죽은 뉴런 52\% $\to$ 97\% (100에폭) \ loss 0.26 고착}\\
+  \texttt{Leaky ReLU 학습률=0.45: 죽은 뉴런 0\% (정의상 불가) \ loss 0.095 계속 감소}
+  \vskip0.3em
+  {\footnotesize ``미분이 0''은 시그모이드 포화처럼 ``느리게만'' 만드는
+  게 아니라 \textbf{학습 경로의 한쪽을 완전히 차단}. 큰 학습률/BatchNorm
+  부재/outlier 입력 상황에서 죽은 뉴런이 돌이킬 수 없이 누적.
+  (Adam 스케일 조정 + BatchNorm이 $z$ 흔들림을 잡아주므로 실무에선
+  흔치 않지만, ``죽으면 되살릴 수 없다''는 \textbf{구조적} 취약함은
+  변하지 않음.)}
+\end{frame}

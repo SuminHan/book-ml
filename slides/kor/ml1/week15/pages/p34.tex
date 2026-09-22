@@ -1,0 +1,22 @@
+\begin{frame}{놀라운 닫힌 형태: JSD로 게임의 값}
+  $D^*$를 목적함수에 대입하면 게임의 값이 \textbf{닫힌 형태}로
+  나옴 (GAN 원논문 Theorem 7):
+  \[
+  V(D^*, G) = 2\,\mathrm{JSD}(p_{\text{data}} \| p_G) - \log 4
+  \]
+  \vskip0.6em
+  \begin{block}{JSD (Jensen-Shannon Divergence)}
+    KL 발산의 ``\textbf{양방향 평균}'' 버전:
+    $\mathrm{JSD}(p \| q) = \frac{1}{2} D_{KL}(p \| m) + \frac{1}{2}
+    D_{KL}(q \| m)$, $m = \frac{1}{2}(p + q)$.
+    \; KL은 $p, q$ 순서가 바뀌면 값이 달라지는 \textbf{비대칭} 발산인데,
+    JSD는 두 방향의 평균이라 \textbf{대칭}.
+  \end{block}
+  \vskip0.4em
+  \begin{itemize}
+    \item $\mathrm{JSD} \ge 0$이고 두 분포가 \textbf{정확히 같을 때만}
+      0 → $V$의 최솟값은 $p_G = p_{\text{data}}$에서의 $-\log 4$
+    \item $\mathrm{JSD} \le \log 2$ → 게임의 값은 항상
+      $[-\log 4,\; 0)$ 안에
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,24 @@
+\begin{frame}{Dyna-Q 루프 구조도}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch07_3_dyna_q_loop.png}
+      {\footnotesize Dyna-Q 루프: (1) 실제 경험으로 TD(0) 갱신,
+      (2) \texttt{model[(s,a)] = (r,s')} 저장, (3) 모델에서
+      \texttt{planning\_steps}번 무작위 $(s,a)$ 뽑아 가상 TD(0)
+      갱신. 실제/계획 갱신 \textbf{모두 하나의 $Q$ 테이블}로 모이고,
+      그 $Q$에서 $\varepsilon$-greedy 행동을 뽑아 다시 환경으로.}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \begin{block}{왜 \texttt{planning\_steps}이 하이퍼파라미터인지}
+        7.2에서 $n$을 ``편향-분산 사이 어딘가''로 튜닝했듯이,
+        여기서는 \texttt{planning\_steps}를 \textbf{``계산 비용 대
+        가속 효과'' 사이 어딘가}로 튜닝.
+        \vskip0.3em
+        이번 실험: \textbf{10$\sim$30이 좋은 구간}.
+        0(계획 없음)과 ``무한히 크게''(아래 실수 3 참조)는 둘
+        다 극단.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}

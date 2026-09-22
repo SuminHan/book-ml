@@ -1,0 +1,21 @@
+\begin{frame}{CliffWalking 환경}
+  Gymnasium의 \texttt{CliffWalking-v1} --- 4$\times$12 격자에서,
+  출발점 바로 옆 한 줄이 \textbf{전부 절벽}(밟으면 $-100$을 받고
+  출발점으로 회귀). 목표까지의 최단길이 정확히 절벽 바로 옆을 스치는
+  길이라, ``짧지만 위험한 길'' vs ``길지만 안전한 길''의 선택이
+  극명하게 드러남.
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    항목 & 내용 \\
+    \midrule
+    상태 & 48개 (0$\sim$47), $(\text{row},\text{col}) = \text{divmod}(s,12)$ \\
+    행동 & 4개: 0=위, 1=오른쪽, 2=아래, 3=왼쪽 \\
+    출발/목표 & $(3,0)$ = 36 / $(3,11)$ = 47 (터미널, 보상 0) \\
+    절벽 & $(3,1)\sim(3,10)$ --- 밟으면 $-100$ + $(3,0)$ 회귀 \\
+    벽 밖 이동 & \textbf{그 자리에 남고} 보상 $-1$ \\
+    시간 벌점 & 이동 자체에도 매 스텝 $-1$ \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

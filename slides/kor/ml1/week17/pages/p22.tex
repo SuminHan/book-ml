@@ -1,0 +1,32 @@
+\section{17.2 프롬프팅}
+\begin{frame}{프롬프팅: 다시 학습시키지 않고 행동을 바꾸기}
+  \begin{itemize}
+    \item 파인튜닝은 모델의 \textbf{가중치}를 바꾸는 작업.
+    \item \kb{프롬프팅}(prompting)은 가중치를 \textbf{전혀}
+      바꾸지 않고 \textbf{입력(지시문, 예시)}만으로 출력을
+      원하는 방향으로 유도.
+    \item 세 가지 기법:
+      \begin{itemize}
+        \item \textbf{Zero-shot}: 예시 없이 지시문만 ---
+          ``이 문장을 한국어로 번역해줘: …''
+        \item \textbf{Few-shot}: 입출력 예시 몇 개 포함시켜
+          패턴 파악 후 따라하게 (Brown et al., 2020).
+        \item \textbf{Chain-of-Thought(CoT)}: 최종 답 전에
+          \textbf{중간 추론 과정}을 출력하도록 유도.
+      \end{itemize}
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{스펙트럼: ``프롬프트에 \textbf{얼마나} 보여줄
+  것인가''}
+    zero-shot = ``\textbf{무엇을} 할지''만 말하고, few-shot =
+    ``어떤 \textbf{형식}으로'' 하는지 보여주고, CoT = 어떤
+    \textbf{과정}으로 하는지까지 보여준다.
+    공통: \textbf{가중치를 건드리지 않는다} --- 학습
+    업데이트(그래디언트, 역전파)가 한 번도 일어나지 않고
+    \textbf{추론(inference) 시점}에 프롬프트만으로 동작이
+    바뀜.
+    파인튜닝 = ``모델을 \textbf{바꾸는}'' / 프롬프팅 = 그
+    자리에서, \textbf{즉각적으로, 원상복구 가능하게} ``모델의
+    사용법을 바꾸는''.
+  \end{block}
+\end{frame}

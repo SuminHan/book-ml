@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{Ridge 경사하강 구현}
+\begin{lstlisting}
+def ridge_gradient_descent(X, y, lam, alpha, epochs):
+    m, n = len(X), len(X[0])
+    w = [0.0] * (n + 1)  # w[0] = bias
+    for _ in range(epochs):
+        grad = [0.0] * (n + 1)
+        for i in range(m):
+            pred = w[0] + sum(w[j+1] * X[i][j] for j in range(n))
+            error = pred - y[i]
+            grad[0] += error
+            for j in range(n):
+                grad[j+1] += error * X[i][j]
+        for j in range(n + 1):
+            # bias(w[0])는 관례적으로 정규화에서 제외
+            reg = lam * w[j] if j > 0 else 0
+            w[j] -= alpha * (grad[j] / m + reg)
+    return w
+\end{lstlisting}
+  $\lambda$를 0에서 키우면 학습된 가중치가 0에 가까워짐 — 같은 데이터에
+  $\lambda=0, 0.5, 5.0$을 넣으면 기울기 $w_1$이 $2.0 \to 1.4 \to 0.4$.
+\end{frame}

@@ -1,0 +1,36 @@
+\begin{frame}{읽기 3 — 결정적 평가가 베이스라인 \emph{아래}다}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item 세 시드의 $a=\mu$ 평가 평균 $\approx$ \textbf{$-1403$}으로
+          무작위 정책 ($-1274$) \textbf{아래}.
+      \end{itemize}
+      \vskip0.3em
+      \begin{center}
+      \kq{``학습 곡선이 올랐다''와 ``배운 정책이 무작위보다 낫다''는\\
+      서로 다른 두 문장이다.}
+      \end{center}
+      \begin{itemize}
+        \item 왜? 학습 도중 리턴은 \textbf{탐험 노이즈 $\sigma$가 섞인 채}
+          측정한 것 — $\sigma$ 샘플링이 운 좋게 진자를 높이 스윙하게 한
+          에피소드가 평균에 들어감 (11.2 FAQ: ``에피소드 리턴 \emph{자체}의
+          분산은 줄일 수 없다'').
+        \item 노이즈를 빼면 12만 스텝으로는 $\mu$가 상태별로 아직 정확하지
+          못해, 결정적 정책은 ``대충 그럴듯한 범위로 스윙'' 수준
+          (아무것도 안 함 $\approx -1230$과 같은 등급).
+        \item \textbf{버그가 아니라} 12만 스텝 학습 예산의 한계를 정직하게
+          측정한 것 — Ch13$\sim$14가 로봇 시뮬레이션에 \textbf{수백만 스텝}
+          예산을 계획하는 이유가 바로 이 격차.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch16_1_ppo_seed_curves.png}
+      \vskip0.3em
+      {\footnotesize 좌: 학습 곡선 (검정 점선 = 무작위 베이스라인 $-1274$,
+      시드마다 모양이 다르면 정상). 우: 같은 세 정책을 \textbf{네 가지
+      측정 방식}으로 — 학습 도중(탐험 포함)이 베이스라인을 크게 상회해도
+      결정적 $a=\mu$는 그 아래일 수 있음.}
+    \end{column}
+  \end{columns}
+\end{frame}

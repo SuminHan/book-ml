@@ -1,0 +1,19 @@
+\begin{frame}{LSTM의 ``고속도로'': ResNet 스킵의 시간 축 버전}
+  \begin{itemize}
+    \item LSTM/GRU가 이끄는 ``고속도로'' = \textbf{ResNet 스킵
+      연결의 시간 축 버전}
+    \item \kb{LSTM의 셀 상태 $C_t$}는 매 시점 ``전부 버리고 새로
+      계산''하는 것이 \textbf{아니라}:
+      \[ C_t = \underbrace{f_t \odot C_{t-1}}_{\text{기억 유지
+         (덧셈·스킵)}} \;+\; \underbrace{i_t \odot \tilde C_t}_{\text{신규
+         정보 추가 (덧셈)}} \]
+    \item 이전 셀 상태에 \textbf{더해져서} 전달된다
+    \item \textbf{곱셈(게이트)}은 ``얼마나 남길지''라는
+      \textbf{크기 조절 스위치}로만 사용
+    \item 정보 \textbf{본체}가 지나가는 통로는 \textbf{덧셈}
+  \end{itemize}
+  \vskip0.5em
+  \kq{이 한 문장이 곧 ``왜 LSTM이 긴 시퀀스에 강한가''의
+  전부 --- Week 10.2 스킵 연결과 Week 9.2 ``미분이 1에 가까울수록
+  그래디언트가 산다''가 시간 축에서 합류한 지점.}
+\end{frame}

@@ -1,0 +1,25 @@
+% ===== overview =====
+\begin{frame}{이번 주차 개요}
+  \begin{itemize}
+    \item \kb{7.1 n-step TD: MC와 TD(0) 사이의 다이얼} --- n-step 리턴
+      $G_t^{(n)}$을 정의하고, 7-state random walk에서
+      $n \in \{1,3,5,10,50\}$으로 30 seed 반복해 U자 곡선을 그린다.
+      \texttt{tau = t - n + 1}의 갱신 시차와 할인 지수 오프바이원 버그를
+      디버깅한다.
+    \item \kb{7.2 적격흔적과 파라미터 튜닝} --- 흔적 $e(s)$로 하나의 TD
+      오차가 \textbf{모든 상태를 동시에} 갱신하는 TD($\lambda$)를 배운다.
+      ``$\lambda$를 고르는 일''과 ``$n$을 고르는 일''은 같은 U자의 두 모습.
+      단 하나의 실행은 믿지 않는다(20회 반복 평균).
+    \item \kb{7.3 계획과 학습: Dyna-Q} --- 본 $(s,a)$의 결과 $(r,s')$를
+      모델로 저장하고 실제 스텝마다 가상 TD(0) 갱신을 끼워 넣는
+      ``경험 $\to$ 학습 $\to$ 모델 저장 $\to$ 계획'' 루프. 5$\times$5 격자에서
+      수렴 에피소드 334 $\to$ 35(약 9.5배)의 가속과 한계 효과를 측정한다.
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{이전·다음과의 연결}
+    n-step TD, TD($\lambda$), Dyna-Q는 모두 \textbf{``부트스트래핑을 얼마나
+    할 것인가''}라는 하나의 질문에 대한 서로 다른 답. Week 8 캡스톤에서
+    Gymnasium의 표 기반 환경으로 세 개를 직접 구현·비교하고,
+    n-step 리턴은 Week 9 DQN의 기본 옵션으로 다시 만난다.
+  \end{block}
+\end{frame}

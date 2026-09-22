@@ -1,0 +1,25 @@
+\begin{frame}{$k = 1$ 은 가치 반복: ``같은 연산의 다른 분해''}
+  \begin{block}{$k = 1$ 확인}
+    ``평가 1 sweep'' = 각 상태의 $V$ 를 $\max_a$[보상 + 할인
+    미래값]으로 갱신하는 한 바퀴(정책을 ``평가 중''에 argmax로
+    교체), ``개선''은 이미 그 sweep 안의 argmax로 \textbf{흡수}.
+    두 표현(평가+개선 분리 vs 한 sweep에 통합)은 \textbf{동일한
+    연산의 다른 분해}.
+  \end{block}
+  \vskip0.4em
+  $k$ 를 1에서 $\infty$(완전 수렴)로 늘리면 가치 반복에서 정책
+  반복으로 \textbf{연속적으로} 이어진다:
+  \[
+  \text{가치 반복}(k = 1) \to k = 2 \to k = 3 \to \cdots
+  \to \text{정책 반복}(k = \infty)
+  \]
+  \vskip0.4em
+  \begin{block}{$k$ 가 작아도 왜 최적인가}
+    $k$ sweep의 정책평가 연산 $T^{\pi, k}$ 는 ``$T^\pi$ 를 $k$ 번
+    적용''이므로 여전히 \textbf{$\gamma^k$-축소 사상}. 바나흐
+    정리(4.3절)와 ``고정점에서 멈추면 최적'' 논증은 \textbf{변함
+    없이 적용} --- \textbf{수렴 속도만} $k$ 에 따라 변한다.
+  \end{block}
+  {\footnotesize 실무적으로 $k$ 는 ``평가 한 sweep의 비용 대비
+  얼마나 정확한 $V^\pi$ 가 필요한가''의 \textbf{trade-off}.}
+\end{frame}

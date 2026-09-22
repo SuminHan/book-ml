@@ -1,0 +1,25 @@
+\begin{frame}{표로 비교: $V^\pi$ vs $Q^\pi$}
+  \small
+  \begin{tabular}{@{}p{0.16\linewidth}p{0.38\linewidth}p{0.38\linewidth}@{}}
+    \toprule
+     & $V^\pi(s)$ 상태가치 & $Q^\pi(s,a)$ 행동가치 \\
+    \midrule
+    고정하는 것 & 상태 $s$ (행동은 $\pi$ 가 정함) & 상태 $s$ \textbf{와 첫 행동} $a$ \\
+    무작위성 & 행동 \textbf{과} 전이 모두 & 첫 행동만 제거, 전이만 남음 \\
+    매기는 대상 & $\mathcal{S}$ 에 하나씩 & $\mathcal{S}\times\mathcal{A}$ 에 하나씩 \\
+    ``무엇을'' 측정 & 그 상태에서 $\pi$ 를 따를 때의 기대 리턴 & $a$ 를 한 다음 $\pi$ 를 따를 때의 기대 리턴 \\
+    주로 쓰이는 곳 & ``이 상태가 좋은가'' (정책평가, 가치 추정) & ``이 상태에서 어떤 행동이 좋은가'' (정책비교/향상, Q-학습) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{block}{두 개를 왜 둘 다 정의하는가}
+    둘 다 ``리턴의 기댓값''인데, \textbf{어디를 고정한지가 다르다}.
+    \textbf{동적계획법의 정책향상(policy improvement)}은 ``지금 이
+    상태에서 \textbf{어떤 행동}이 가장 좋은가''를 물어보는데, 그
+    물음은 $V^\pi(s)$ 만으로는 답할 수 없고, 각 행동의 가치
+    $Q^\pi(s,a)$ 를 \textbf{행동마다 비교}해야 한다.
+    \vskip0.2em
+    {\small 즉 $Q$ 가 있으면 \textbf{비교}할 수 있고, $V$ 만 있으면
+    \textbf{비교}할 수 없다. 그래서 둘 다 필요하다.}
+  \end{block}
+\end{frame}

@@ -1,0 +1,26 @@
+\begin{frame}{1단계 — 보상모델: Bradley-Terry 모델}
+  \begin{itemize}
+    \item 같은 질문 $x$에 대해 모델이 만든 두 답변 $y_w$
+      (\textbf{winner}, 더 선호)와 $y_l$(\textbf{loser},
+      덜 선호). 보상모델 $r_\phi(x, y)$가 $y_w$에 더 높은
+      점수를 주도록 학습.
+    \item \kb{브래들리-테리}(Bradley-Terry) 모델 — 선호
+      확률을 시그모이드로:
+      \[P(y_w \succ y_l \mid x) =
+      \sigma\big(r_\phi(x,y_w) - r_\phi(x,y_l)\big)\]
+    \item 이 확률을 최대화하는 손실 = \textbf{Week 2
+      로지스틱회귀와 같은 교차 엔트로피 형태} —
+      ``정답 라벨''이 ``$y_w$가 이겼다''는 사실 하나뿐인
+      이진분류이므로.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{왜 시그모이드인가 (Week 2와 같은 이유)}
+    (1) 점수 차이 $\in \mathbb{R}$을 [0,1] 확률로 매핑,
+    (2) 점수 차이가 선호 확률의 \textbf{로그-odds}가
+    선형 스케일로: 차이 +1 $\to$ odds $e$배, +2 $\to$ $e^2$배
+    (17.1 softmax의 ``원점수 차이 = 확률 비율''과 동일
+    구조), (3) 극단적 차이에서도 손실이 0에
+    \textbf{유한하게} 접근($-\log\sigma(z) \sim e^{-z}$)
+    $\to$ 잘 구분하는 쌍이 학습을 지배하지 않음.
+  \end{block}
+\end{frame}

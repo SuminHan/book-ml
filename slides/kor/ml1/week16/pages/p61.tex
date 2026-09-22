@@ -1,0 +1,32 @@
+\begin{frame}{val F1 vs test F1 — 우연이지 보장이 아니다}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=0.82\linewidth]{ch16_3_val_test_f1.png}
+      \vskip0.3em
+      {\footnotesize 5개 모델의 val F1(파랑, \textbf{순위}에
+      사용)과 test F1(남, \textbf{딱 한 번}) — 붉은 점선은
+      다수 클래스 베이스라인(0.768)}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      {\footnotesize 이 데이터에서 val/test 격차는 \textbf{작
+      다}. 하지만 ``작다''는 것은 \textbf{보장이 아니라 이
+      데이터의 운} — §6의 $\mathbb{E}[\max]$가 그 격차가
+      \textbf{뒤집힐 수 있는 폭}을 정한다.
+    }
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  \begin{block}{§8(a)가 이 절에서 \textbf{가장 오래 남을 숫자}}
+    누수의 위험성은 ``\textbf{해로움}''이 \textit{증명}될 수
+    없어서가 아니라 \textbf{보이지 않아서} — 깨끗한 데이터
+    에서 정규화 통계를 \textbf{전체}로 fit하면 \textbf{어떤
+    신호도 없음}(val F1 0.979 = 0.979). (b)처럼 \textbf{보일
+    때도}(+0.053), 그것 역시 ``\textbf{알고 보러}'' 갔을 때
+    만 보임 $\Rightarrow$ 복습 6번의 리뷰 질문이 ``판단''이
+    아니라 \textbf{기계적 점검}(``같은 환자가 train과 test에
+    동시에 들어갔나요?'') — 깨끗한 데이터에서는 누수가
+    \textbf{숫자에 드러나지 않으므로}, \textbf{절차(분할 코드)
+    가 유일한 방어선}.
+  \end{block}
+\end{frame}

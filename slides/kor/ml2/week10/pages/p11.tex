@@ -1,0 +1,36 @@
+\begin{frame}{유도: 궤적 확률에서 ``환경이 사라지는 순간''}
+  \small
+  궤적 $\tau=(s_0,a_0,r_1,s_1,\dots)$ 의 확률 = 환경 전이확률 $\times$
+  정책:
+  \[
+  P(\tau;\theta) = P(s_0)\prod_t \pi_\theta(a_t|s_t)\; P(s_{t+1}|s_t, a_t)
+  \]
+  미분(유한 궤적 공간에서 합/미분 교환은 안전):
+  \[
+  \nabla_\theta J
+  = \sum_\tau R(\tau)\, \nabla_\theta P(\tau;\theta)
+  \]
+  로그미분 트릭 적용 $\to$ 다시 기댓값 형태:
+  \[
+  \nabla_\theta P = P\, \nabla_\theta \log P
+  \quad\Rightarrow\quad
+  \nabla_\theta J = \mathbb{E}_\tau\big[ R(\tau)\,
+  \nabla_\theta \log P(\tau;\theta) \big]
+  \]
+  \textbf{핵심 단계} --- $\log$ 로 곱을 합으로 분해:
+  \[
+  \log P(\tau;\theta) = \log P(s_0) + \sum_t
+  \big[ \log\pi_\theta(a_t|s_t) + \log P(s_{t+1}|s_t, a_t) \big]
+  \]
+  $\theta$ 로 미분하면 $\log P(s_0)$ (상수)와
+  $\log P(s_{t+1}|s_t,a_t)$ (환경, $\theta$ 와 무관)은
+  \textbf{미분되자마자 0}:
+  \[
+  \nabla_\theta \log P(\tau;\theta) = \sum_t \nabla_\theta
+  \log\pi_\theta(a_t|s_t)
+  \]
+  \normalsize
+  {\footnotesize 무한 궤적 공간에서는 미분/적분 교환 조건 필요 ---
+  정책 파라미터화가 매끄럽고 궤적 공간의 \textbf{측도가 $\theta$ 에
+  무관}할 때 성립. 이 무관성이 model-free의 핵심.}
+\end{frame}

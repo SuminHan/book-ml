@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{실습: RBF 커널로 비선형 분류}
+  \begin{lstlisting}
+from sklearn.datasets import make_circles
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+
+X, y = make_circles(n_samples=200, noise=0.1, factor=0.4, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=0)
+
+linear_svm = SVC(kernel="linear").fit(X_train, y_train)
+rbf_svm    = SVC(kernel="rbf", gamma=2.0).fit(X_train, y_train)
+
+print("선형 커널 정확도:", round(linear_svm.score(X_test, y_test), 3))
+print("RBF 커널 정확도: ", round(rbf_svm.score(X_test, y_test), 3))
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize \texttt{make\_circles}: 바깥쪽 원환체(클래스 0,
+  반경 $\sim1.0$)와 안쪽 원환체(클래스 1, 반경 $\sim0.4$)가 동심원
+  모양으로 얽혀 있어 \textbf{어떤 직선으로도 나눌 수 없음}.
+  라벨 번호는 임의 배정에 불과 — 결과와 무관.}
+\end{frame}

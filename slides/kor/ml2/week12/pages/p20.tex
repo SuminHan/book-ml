@@ -1,0 +1,16 @@
+\begin{frame}[fragile]{교란 실험: 세계가 움직이면 둘은 갈라진다}
+  \begin{itemize}
+    \item 장난감 환경은 \textbf{결정적}이라 BC 실패가 ``시연 밖
+      상태의 \textit{존재}''만으로 설명됐다.
+    \item 실제 배포 환경은 \textbf{확률적} — 센서 노이즈, 다른
+      차량, 표면 마찰.
+    \item 매 스텝 \textbf{15\% 확률로 명령과 다른 이동}으로 바뀌는
+      교란을 넣고, 시연에 없던 시작 $(1,3)$에서 \textbf{200회 롤아웃}.
+  \end{itemize}
+\begin{lstlisting}
+def step_noise(s, a, rng, p=0.15):
+    if rng.random() < p:        # 15%: 명령이 다른 이동으로 바뀐다
+        a = rng.choice([x for x in ("up","down","left","right") if x != a])
+    return step(s, a)
+\end{lstlisting}
+\end{frame}

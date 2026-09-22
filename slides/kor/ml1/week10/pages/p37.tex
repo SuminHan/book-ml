@@ -1,0 +1,20 @@
+\begin{frame}{깊이 열화: 더 깊게 쌓으면 \textbf{나빠진다}}
+  2015년, Kaiming He 등(마이크로소프트)이 이상한 현상을 발견:
+  CNN을 더 깊게 쌓을수록 성능이 좋아질 줄 알았는데,
+  어느 지점을 넘으면 \textbf{오히려 나빠졌다}.
+  \begin{itemize}
+    \item \kb{과적합이 아니다} --- \textbf{학습 데이터에 대한
+      성능조차} 나빠졌다 (training·validation이 \textbf{같이}
+      떨어짐)
+    \item 층을 더해도 \textbf{그래디언트가 온전히 전달되지 못해}
+      깊은 층이 사실상 ``학습이 안 되는'' 문제 ---
+      Week 9의 그래디언트 소실이 CNN에서 \textbf{재발}
+  \end{itemize}
+  \vskip0.5em
+  이 현상을 \kb{깊이 열화(degradation)} 라고 부른다:
+  ``20층 네트워크는 뒤 10층을 \textbf{항등 함수}로 초기화하면
+  앞 10층 네트워크와 \textbf{정확히 동일}''하므로, 이론상 최소한
+  10층과 같은 성능을 내야 하는데 실제로는 나빠진다.
+  $\Rightarrow$ 원인은 과적합이 아니라 \textbf{최소값 찾기
+  최적화 문제}.
+\end{frame}

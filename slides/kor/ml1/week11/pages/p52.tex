@@ -1,0 +1,35 @@
+\begin{frame}{게이트(gate): LSTM 3개, GRU 2개}
+  ``게이트''는 이름만큼 단순한 장치: $\sigma(\cdot)$ 시그모이드로
+  산출한 \textbf{0과 1 사이의 숫자}로, ``이 정보를 \textbf{얼마나
+  통과/유지/갱신할 것인가}''를 \textbf{데이터와 학습}으로 결정하는
+  \textbf{연속 스위치} (0 = 완전 차단, 1 = 완전 개방).
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}llp{7.5cm}@{}}
+    \toprule
+    모델 & 게이트 & 역할(한 줄) \\
+    \midrule
+    LSTM & \textbf{망각 게이트} $f_t$ & ``기억(셀 상태)에서 지금
+      버릴 부분은?'' --- 1이면 그대로 유지 \\
+    LSTM & \textbf{입력 게이트} $i_t$ & ``지금 새로 기억에 쓸어
+      넣을 정보는?'' \\
+    LSTM & \textbf{출력 게이트} $o_t$ & ``저장된 기억 중 지금
+      출력에 보여줄 부분은?'' \\
+    GRU & \textbf{갱신 게이트} $z_t$ & 망각$+$입력을 하나로 통합:
+      ``기억의 얼마나를 새 값으로 교체할지'' \\
+    GRU & \textbf{출력 게이트} $r_t$ & LSTM 출력 게이트와 같은
+      역할 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{block}{공통 분모}
+    \textbf{LSTM = 3개의 스위치, GRU = 2개의 스위치} --- GRU는
+    LSTM의 망각·입력 게이트를 하나의 ``갱신'' 결정으로 \textbf{합쳐}
+    파라미터를 줄였다. RNN의 ``은닉 상태 \textbf{전체}를 매번 새로
+    쓴다''를, 게이트는 ``\textbf{어떤 부분은 보존하고 어떤 부분만
+    바꾸라}''고 학습된 판단을 내리게 만든다. 공통 원리: \textbf{곱}으로
+    조절하는 \textbf{스위치} + \textbf{덧}으로 전달하는 \textbf{통로}.
+  \end{block}
+  {\footnotesize 자세한 게이트 수식은 이번 학기에서는 다루지
+  않는다.}
+\end{frame}

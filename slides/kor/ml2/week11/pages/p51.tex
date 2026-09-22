@@ -1,0 +1,25 @@
+\begin{frame}{GAE의 두 가지 ``자주 하는 실수''}
+  \small
+  \begin{enumerate}
+    \item \kb{부호/위치 오류}: \texttt{delta}를
+      $r_t+\gamma V(s_t)-V(s_{t+1})$ 으로 쓰면(좌변·우변
+      뒤집음) \textbf{모든 어드밴티지의 부호가 반전}되어
+      정책이 \textbf{역으로} 학습.
+      \smallskip
+      {\footnotesize TD 오차 정의 = ``실제로 벌어진 것
+      ($r_t+\gamma V(s_{t+1})$)''에서 ``예측한 것
+      ($V(s_t)$)''을 뺀 것 — 6.1절과 대조하며 항상 한 번
+      확인.}
+    \item \kb{last value 0 처리 vs 정책 값 처리 혼동}:
+      \texttt{last\_value}는 *에피소드가 끝난 뒤*의 값.
+      \begin{itemize}
+        \item 에피소드가 끝났다면(터미널) $\to$ \textbf{0}.
+        \item 끝나지 않고 스텝 버퍼가 가득 찼다면 $\to$
+          \textbf{현재 정책으로} 마지막 상태의 $V(s_T)$ 계산.
+      \end{itemize}
+      ``끝나지 않았는데 0 대입''하면, 좋은 상태일수록 마지막
+      스텝의 $\delta$ 가 음수로 과대평가(가치를 0으로 낮게
+      보는 셈)되어 정책이 끝 상태의 좋은 상태를 피하게 됨 —
+      학습이 느려지는 원흉 중 하나.
+  \end{enumerate}
+\end{frame}

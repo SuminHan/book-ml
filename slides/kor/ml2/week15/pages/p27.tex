@@ -1,0 +1,21 @@
+\begin{frame}{UCT: 선택 단계의 규칙}
+  ``성과 + 덜 시도해본 정도''는 UCB1의 수식과
+  \textbf{정확히 같은 형태}. 노드 $s$에서 자식 $a$를 고를 때:
+  \[
+  \text{UCT}(s, a) \;=\; \frac{Q(s,a)}{N(s,a)} \;+\; c\, \sqrt{\frac{\ln N(s)}{N(s,a)}}
+  \]
+  \begin{itemize}
+    \item $Q(s,a)$ = 자식 $a$의 누적 승(수), $N(s,a)$ = 방문 횟수,
+      $N(s)$ = 부모 $s$의 방문 횟수
+    \item 첫 항 = \kb{활용}(``이 수의 승률이 얼마나 높은가''),
+      두 번째 항 = \kb{탐험}(``이 수를 얼마나 덜 보았는가'')
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{탐험 항의 감소}
+    탐험 항의 크기는 대략 $1/\sqrt{N(s,a)}$로 감소 --- 한 수가
+    \textbf{4번} 시도되면 탐험 보너스가 \textbf{절반},
+    \textbf{100번}이면 \textbf{1/10}으로 줄어듦. 그래서 ``명백히
+    낮은 수''는 소수 몇 번 추가 시도 후 \textbf{방치}되고,
+    ``경합 중인 수들''은 비례해서 계속 분배된다.
+  \end{block}
+\end{frame}

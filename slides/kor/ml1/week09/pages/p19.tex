@@ -1,0 +1,30 @@
+\begin{frame}{``XOR을 풀었다''는 말이 성립하려면: 초기화 + 학습률}
+  \small
+  XOR 학습 성공 = (1) \kb{무작위 초기화}가 적절 + (2) \kb{학습률}이 적절.
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{0-초기화} (대칭성 문제): 모든 은닉 유닛이 같은 입력 · 같은
+      업데이트를 받아 \textbf{영원히 같은 값} 유지
+      \vskip0.4em
+      \texttt{0-초기화: 예측 [0.5, 0.5, 0.5, 0.5], 손실 0.125 (멈춤)}
+      \vskip0.3em
+      {\footnotesize 출력층이 ``같은 값 4개를 합산'' = 사실상 1차원.
+      XOR을 분리할 표현력이 \textbf{구조적으로 없음}. (9.2절 Xavier/He 해결)}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{학습률} (같은 구조, 무작위 초기화, 시드 고정):
+      \vskip0.4em
+      \texttt{$\alpha=0.01$: 손실 0.124 (사실상 무학습)} \\
+      \texttt{$\alpha=0.5$ : 손실 0.0003 (성공)} \\
+      \texttt{$\alpha=2.0$ : 손실 0.0001 (성공, 약간 빠름)}
+      \vskip0.3em
+      {\footnotesize 0.01은 50,000 에폭이 돼야 겨우 수렴 — ``느리다''가
+      아니라 ``못 배운다''. 2.0은 이 예제에선 수렴하나, 데이터가 크면 발산.}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \kq{학습률의 ``적당함''은 문제별로 다르다.}
+  4점 XOR에서 $\alpha=0.5$가 동작한다고 10만 데이터의 CNN에서
+  $\alpha=0.5$가 동작하는 것은 아니다.
+\end{frame}

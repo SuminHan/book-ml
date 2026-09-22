@@ -1,0 +1,38 @@
+\begin{frame}{2상태 예: 반복 대입의 수렴}
+  위 2상태 예($R_0=1, R_1=2, \gamma=0.9$)를 이 함수로
+  $V_0 = V_1 = 0$ 에서 200번 돌리면:
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    반복 & $V_0$ & $V_1$ \\
+    \midrule
+    1 & 1.000 & 2.000 (``즉시 보상만'' 반영) \\
+    10 & 9.598 & 9.941 (10스텝까지 반영) \\
+    50 & 14.661 & 15.185 \\
+    200 & \textbf{14.737} & \textbf{15.263} (\textbf{닫힌 형태와 정확히 일치}) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{block}{``반복 $k$ 번 $\approx$ 미래 $k$ 스텝까지의
+      리턴''}
+        이 직관이 가치 반복의 \textbf{본질}. 반복을 한 번 더 하면
+        ``한 스텝 더 먼 미래''가 반영.
+      \end{block}
+      \vskip0.3em
+      {\footnotesize $\gamma^k$ 가 빠르게 0으로 줄므로(여기서
+      $\gamma=0.9$, 10스텝 $0.9^{10}\approx 0.35$, 50스텝
+      $\approx 0.005$), \textbf{수렴은 기하급수적으로 빨라진다}.
+      수렴 ``속도''를 좌우하는 것이 바로 $\gamma$ --- 1에 가까울수록
+      (장기적일수록) \textbf{수렴이 느려지는} 이유이기도 하다.}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch03_3_value_iteration_convergence.png}
+      \vskip0.3em
+      {\footnotesize 반복적 정책평가 수렴 곡선 --- $V=0$ 에서 시작해
+      기하급수적으로 닫힌해로 접근.}
+    \end{column}
+  \end{columns}
+\end{frame}

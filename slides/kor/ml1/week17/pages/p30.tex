@@ -1,0 +1,32 @@
+\begin{frame}{온도 체감: logits $[2.0, 1.0, 0.5, 0.2]$}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    $T$ & 분포 & 최상위 확률 \\
+    \midrule
+    0.5 & (0.825, 0.112, 0.041, 0.023) & 0.825 --- 매우 집중 \\
+    1.0 & (0.569, 0.209, 0.127, 0.094) & 0.569 \\
+    2.0 & (0.402, 0.244, 0.190, 0.164) & 0.402 --- 훨씬 평평 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch13_2_temperature.png}
+      \vskip0.3em
+      {\footnotesize 같은 logits에 $T \in [0.2, 3.0]$ 적용 시
+      최상위 확률 곡선(좌: $T\to 0$일수록 1로 수렴)과
+      $T=0.5/1.0/2.0$ 분포 막대(우).}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \kb{실무 감각}
+      \begin{itemize}
+        \item \textbf{결정적} 작업(사실 확인·추출·코드):
+          $T$ 낮게(0$\sim$0.3)
+        \item \textbf{창의적} 작업(시·카피·브레인스토밍):
+          $T$ 높게(0.7$\sim$1.0 이상)
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

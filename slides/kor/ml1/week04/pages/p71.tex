@@ -1,0 +1,43 @@
+\begin{frame}{손으로 한 번: EM 한 라운드 (E + M)}
+  점 3개 $x = 0, 3, 8$, $K=2$, 초기 $\mu_1=1, \mu_2=5$,
+  $\sigma_1=\sigma_2=1$, $\pi_1=\pi_2=0.5$.
+  \vskip0.4em
+  \textbf{E-step} --- 각 점의 두 밀도와 책임값:
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    점 & 두 밀도 & $\gamma = (\gamma_1, \gamma_2)$ \\
+    \midrule
+    $0$ & $\mathcal{N}(0;1,1)=0.242$, $\mathcal{N}(0;5,1)\approx
+        10^{-5}$ & $\approx (1, 0)$ \\
+    $3$ & $\mathcal{N}(3;1,1) = \mathcal{N}(3;5,1) = 0.054$
+        (\textbf{정중앙}이라 두 밀도 같음) & $(0.5, 0.5)$ \\
+    $8$ & $\mathcal{N}(8;1,1)\approx 0$, $\mathcal{N}(8;5,1)
+        = 0.00443$ & $\approx (0, 1)$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  정중앙 $x=3$이 \textbf{정확히 반반} --- k-means에선 임의로 한쪽에만
+  배정했을 텐데, GMM은 ``\textbf{확신이 없다}''를 책임값에 \textbf{그대로
+  남겨}둔다.
+  \vskip0.4em
+  \textbf{M-step} ($N_1 = N_2 = 1.5$):
+  \[
+  \mu_1 = \frac{1\cdot 0 + 0.5\cdot 3 + 0\cdot 8}{1.5} = 1.0,
+  \qquad
+  \mu_2 = \frac{0 + 0.5\cdot 3 + 1\cdot 8}{1.5} = 6.33
+  \]
+  \[
+  \sigma_1^2 = \frac{1(0-1.0)^2 + 0.5(3-1.0)^2}{1.5} = 2.0
+  \;(\sigma_1{=}1.41), \qquad
+  \sigma_2^2 = \frac{0.5(3-6.33)^2 + 1(8-6.33)^2}{1.5} = 5.56
+  \;(\sigma_2{=}2.36)
+  \]
+  $\pi = (0.5, 0.5)$ \textbf{그대로}($N_1 = N_2$). 두 가지:
+  (i) $x=8$을 \textbf{전부} 받은 클러스터 2의 $\mu_2$가 5$\to$6.33
+  \textbf{뛸음}(책임값 1.0 = ``완전히 내 것'');
+  (ii) \textbf{양쪽 분산이 커짐} --- 반씩 배정된 정중앙 점 3이
+  \textbf{두} 클러스터의 분산 추정에 모두 기여.
+  이 한 라운드로 log-likelihood가 \textbf{$-11.14 \to -7.40$}으로
+  증가(확인 문제에서 직접 계산).
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}{자주 묻는 질문 (3.2) II}
+  \begin{itemize}
+    \item \textbf{Q. $N \le d$ 일 때 $\hat\Sigma$ 의 역전렬이 안 되면?}
+      공분산이 비특이하려면 \textbf{표본 $N$ > 특징 $d$} 가 대략 필요.
+      $N\le d$ (문장 수백 개, 단어 특징 수천 개)면 $\hat\Sigma$ 가
+      \textbf{특이 행렬} $\to$ $\Sigma^{-1}$ 존재 X.
+      \vskip0.2em
+      실전: \textbf{자이더}(대각 정규화)
+      $\hat\Sigma \leftarrow \hat\Sigma + \lambda I$ ---
+      2.1절 L2 정규화와 같은 직관: ``데이터가 부족하면 샘플 통계를
+      100\% 믿지 말고 안전한 모양으로 당긴다''.
+      특징 수가 매우 크면(텍스트) 공분산 행렬 자체를 피하는
+      \kb{나이브베이즈}(3.3)로 갈아타는 게 보통 더 낫다.
+    \item \textbf{Q. GDA는 이진 분류에서만?} 아니다 ---
+      $K$ 클래스: 각 클래스에 가우시안 $(\mu_k,\Sigma)$ 공유를 두고
+      $P(x|y{=}k)P(y{=}k)$ 최댓값을 예측. 어느 두 클래스 간 경계도
+      여전히 \textbf{선형}(QDA는 쌍마다 다른 곡선). sklearn LDA/QDA가
+      이 옵션들을 직접 지원.
+  \end{itemize}
+\end{frame}

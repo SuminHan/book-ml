@@ -1,0 +1,29 @@
+\begin{frame}{자주 묻는 질문 (2): 낙관적 초기화 vs UCB}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \kb{낙관적 초기화}
+      \begin{itemize}
+        \item 구현이 \textbf{훨씬 간단}(초기값만 크게 잡으면 끝).
+        \item 초반 탐험 끝나면 \textbf{더 이상 탐험 유도 장치가
+          없음} --- 비정상 환경에서 취약.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \kb{UCB}
+      \begin{itemize}
+        \item 매 스텝마다 불확실성을 \textbf{다시 계산} $\to$
+          계속 적응적 탐험.
+        \item 그만큼 \textbf{계산이 조금 더 필요}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{세 전략, 한 줄씩}
+    \kb{ε-greedy}: 탐험의 \textbf{양}을 확률로 조종 --- 간단하지만
+    정보와 무관하게 탐험.\\
+    \kb{낙관적 초기화}: 탐험을 \textbf{초기값} 하나로 예약 ---
+    구현은 가장 간단, 초기값이 실제 보상을 벗어날 때까지만.\\
+    \kb{UCB}: 탐험을 \textbf{매 스텝의 불확실성}에 비례해 자동
+    계산 --- 가장 정교, 비정상 환경에도 적응.
+  \end{block}
+\end{frame}

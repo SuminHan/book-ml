@@ -1,0 +1,31 @@
+\begin{frame}{선택 편향의 크기: 후보 50개면?}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \textbf{본 프로젝트 규모}: 모델 5개 $\times$ 하이퍼파라미터
+      후보 10개 $=$ \textbf{후보 50개}. 잡음 $\sigma=0.02$
+      (F1 스케일)로 가정하면 부풀림 약 \textbf{0.045}.
+      \vskip0.6em
+      \kq{``test F1 0.97''이 실제로는 0.925일 수 있다는
+      뜻이다.}
+      \vskip0.6em
+      \begin{itemize}
+        \item val로 고르면 \textbf{val이} 이 편향을 먹고,
+          test는 한 번만 쓰이므로 부풀림이 test에 \textbf{전이
+          되지 않는다}.
+        \item 3분할 원칙은 ``정직한 test 숫자''를 사기 위한
+          \textbf{구조}.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=0.98\linewidth]{ch08_1_learning_curve.png}
+      {\footnotesize GBDT 학습 곡선 --- train F1은 10개 트리부터
+      거의 1.0(341건을 몇 그루면 외우기 쉬움), val F1은
+      0.93$\sim$0.97 사이로 느리게 이동. $n_{\text{estimators}}$는
+      \textbf{val 곡선으로만} 정한다.}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  {\footnotesize 6.3절 원칙이 그림에서 바로 보인다: \textbf{train
+  곡선은 ``배운 것을'' 재고, val 곡선만 ``재는 것을'' 한다.}}
+\end{frame}

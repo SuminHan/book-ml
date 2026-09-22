@@ -1,0 +1,24 @@
+\begin{frame}{밀도의 로그가 양수여도 괜찮은 이유 + $\log\sigma$ 를 배우기}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch13_3_logprob_sigma.png}
+      \vskip0.4em
+      {\footnotesize (a) $\mu\!=\!0$ 가우시안의 log 밀도: $\sigma$ 가 작을수록
+      좁고 높고, 정점이 0 위(양수)로. (b) $\log\sigma$ 학습 파라미터,
+      $\le 0$ 클램프(빨간 점선). 초기 $\log\sigma=-0.5$.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{클리핑 목적함수}는 두 밀도의 \emph{비}만 봄:
+      \[
+        r_t = \exp\big(\log\pi_{\text{new}} - \log\pi_{\text{old}}\big)
+      \]
+      로그 밀도의 \emph{차이}를 취하는 순간 상수 항
+      $-\tfrac{1}{2}\log(2\pi\sigma^2)$ 가 \textbf{서로 소거}.
+      \vskip0.4em
+      $\sigma$ 를 \emph{직접} 배우지 않고 \textbf{$\log\sigma$}
+      (\texttt{log\_std})를 배움 --- $\sigma=\exp(\log\sigma)$ 한 줄이
+      $\sigma>0$ 을 자동 보장.
+    \end{column}
+  \end{columns}
+\end{frame}

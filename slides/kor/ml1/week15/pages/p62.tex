@@ -1,0 +1,34 @@
+\begin{frame}{이번 주차 정리}
+  \begin{enumerate}
+    \item \kb{15.1 VAE} — \textbf{``EM의 E-step을 신경망이 맡는다''}.
+      ELBO = \textbf{복원 항} $-$ \textbf{KL 정규화 항} (옌센 부등식
+      한 번으로 유도). \; 갭 $= D_{KL}(q \| p(z|x))$ — ELBO
+      최대화 $=$ 변분 베이즈. \; \textbf{$\mu^2$ 항}이 인코더 위치를
+      원점 쪽으로, \textbf{$\sigma^2$ 항}이 너비를 제어. \;
+      \textbf{생성 모드}는 인코더를 \textbf{버리고} 디코더만 통과.
+      \; $\beta$-VAE가 ``복원 품질 vs 잠재 공간 매끄러움''을
+      튜닝. \; ``흐릿함''의 원인 = \textbf{기대값 최적화}.
+    \item \kb{15.2 GAN} — min-max 게임의 \textbf{내쉬 균형}
+      ($D(x) = 0.5$, $p_G = p_{\text{data}}$). \; 1차원 장난감에서
+      $V(D^*, G) = 2\,\mathrm{JSD} - \log 4$로 \textbf{닫힌
+      형태}. \; 성공 신호 = $V$가 $-\log 4$ 근방에서 \textbf{안정},
+      $D^*(0) \to 0.5$. \; \textbf{모드 붕괴}의 원인 = 목적함수에
+      \textbf{다양성 항이 없음} (VAE에는 KL 항이 대응). \;
+      WGAN/CycleGAN/StyleGAN/BigGAN = ``\textbf{안정화}''가 3년의
+      주제.
+    \item \kb{15.2 Diffusion + 비교} — 노이즈를 $T$단계로 \textbf{쪼갠
+      MSE 회귀}(가장 보통의 최적화 → \textbf{안정}). \; 역방향에도
+      $+\sigma_t z$(\textbf{다시 노이즈 추가})가 \textbf{필요}.
+      \; Stable Diffusion = \textbf{VAE 잠재 공간} $\times$
+      Diffusion. \; 세 원리: \textbf{잠재변수 · 학습 방법 · 안정성 ·
+      생성 속도}로 비교 — 실전 시스템은 \textbf{조합}.
+  \end{enumerate}
+  \vskip0.6em
+  \begin{block}{다음 주 — Week 16. Block B 캡스톤: 팀 프로젝트와
+  ML1 총정리}
+    이번 장에서 배운 \textbf{세 원리(VAE·GAN·Diffusion)}가 팀
+    프로젝트의 \textbf{모델 선택} 도구 상자로 등장 —
+    \textbf{안정성 · 생성 속도 · 품질}의 기준으로 선택하고
+    \textbf{정당화}.
+  \end{block}
+\end{frame}

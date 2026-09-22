@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{실현: numpy로 GDA 구현}
+  \begin{lstlisting}
+import numpy as np
+
+def fit_gda(X, y):
+    """GDA 파라미터 (phi, mu0, mu1, Sigma)의 최대우도추정."""
+    phi = y.mean()                                  # P(y=1) 추정
+    mu0, mu1 = X[y == 0].mean(axis=0), X[y == 1].mean(axis=0)
+    d0, d1 = X[y == 0] - mu0, X[y == 1] - mu1
+    Sigma = (d0.T @ d0 + d1.T @ d1) / len(X)        # 두 클래스 편차 pooling
+    return phi, mu0, mu1, Sigma
+
+def gda_scores(X, phi, mu0, mu1, Sigma):
+    """log P(y=1|x)/P(y=0|x) = w^Tx + b  (결정 경계는 직선!)"""
+    Sigma_inv = np.linalg.inv(Sigma)
+    w = Sigma_inv @ (mu1 - mu0)
+    b = -0.5 * (mu1 - mu0) @ Sigma_inv @ (mu1 + mu0) + np.log(phi / (1 - phi))
+    return X @ w + b, w, b
+  \end{lstlisting}
+  \vskip0.2em
+  {\footnotesize $fit\_gda$ = MLE(닫힌 형태), $gda\_scores$ = 로그
+  우도비 $z(x)=w^\top x+b$.}
+\end{frame}

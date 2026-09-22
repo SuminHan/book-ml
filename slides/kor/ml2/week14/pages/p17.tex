@@ -1,0 +1,24 @@
+\begin{frame}{핵심 메시지: 시연된 사실}
+  이 \texttt{MuJoCoPendulum}에 PD 정책을 그대로 걸어 200스텝:
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    정책 & 결과 \\
+    \midrule
+    PD & 최종 $(\theta, \dot\theta) = (-0.065, -6.26)$,
+      누적 보상 $-777$ \\
+    무작위 & 평균 $|\theta| = 2.97$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  $\Rightarrow$ 바로 위에서 \texttt{mj\_step}을 직접 돌린 결과와
+  \textbf{완전히 같다}.
+  \vskip0.7em
+  \begin{block}{이번 절의 핵심}
+    ``환경이 CartPole이든 MuJoCo 로봇이든 \textbf{알고리즘은
+    바뀌지 않는다}'' --- 이번엔 선언이 아니라 \textbf{30줄 래퍼로
+    시연된 사실}. \texttt{gym.make("Pendulum-v1")}을
+    \texttt{MuJoCoPendulum()}로 바꾸는 \textbf{한 줄}만 고치면
+    DQN·PPO 코드가 그대로 동작한다.
+  \end{block}
+\end{frame}

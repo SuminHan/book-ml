@@ -1,0 +1,24 @@
+\begin{frame}{자주 묻는 질문}
+  \small
+  \begin{itemize}
+    \item \textbf{두 무작위성 모두 필요한가?} 배깅만으론, \textbf{특정
+      강한 특징}이 있으면 샘플이 달라져도 거의 모든 트리가 그 특징으로
+      루트를 나눠 \textbf{너무 닮아버림} $\to$ 특징 무작위화까지 하면
+      어떤 트리는 그 특징을 아예 후보에서 못 봄 (앞의 40\%$\to$20\%).
+    \item \texttt{max\_features}는? \textbf{분류} 기본값 $\sqrt{n}$,
+      \textbf{회귀} 기본값 $n/3$. 특징 1000개면 $\sqrt{\,}\to$ 31개.
+      기본값은 \textbf{출발점}일 뿐 — 검증셋으로 $\sqrt{\,}$, $\log_2$,
+      $1.0$(전체)를 비교. 특징이 독립적 $\to$ 더 많이(값 크게),
+      상관관계 강하면 $\to$ 덜.
+    \item \texttt{predict\_proba}는? 각 트리의 \textbf{클래스 확률
+      평균} — 다수결(\texttt{predict})이 ``클래스를 더 많이 말았는가''를
+      세는 반면 부드러운 \textbf{확률}을 줌. OOB 계산·임계값 튜닝에
+      쓰임.
+    \item \textbf{사람이 ``이 예측이 왜?'', 읽을 수 있나?} \textbf{아니요}
+      — 100개 트리는 개별 예측 하나에 어떤 트리의 어떤 특징이 기여했는지
+      눈으로 따지기 어렵다. \textbf{7.3의 SHAP}이 정확히 이 문제를 푼다.
+    \item \texttt{feature\_importances\_}? 같은 방식(지니 감소 누적)이나,
+      RF는 \textbf{독립적} 학습 / GBDT는 \textbf{순차적}(잔차) 학습이라
+      같은 데이터에도 \textbf{중요도 순위가 달라질 수 있다}.
+  \end{itemize}
+\end{frame}

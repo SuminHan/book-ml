@@ -1,0 +1,42 @@
+\begin{frame}{손으로 한 번: 3팔 밴딧, 초기값 5.0}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      팔 A, B, C, 초기값 $Q_0 = 5.0$, 실제 평균 $[1.0, 1.5, 2.0]$
+      (매번 $\sigma=1$ 잡음).
+      \vskip0.3em
+      \small
+      \begin{tabular}{@{}clcc@{}}
+        \toprule
+        스텝 & 선택(탐욕) & 보상 $R$ & 갱신 후 $(Q_A,Q_B,Q_C)$ \\
+        \midrule
+        1 & A (동점$\to$첫 팔) & 0.64 & $(0.64,\; 5.00,\; 5.00)$ \\
+        2 & B (B, C가 5.0) & 0.94 & $(0.64,\; 0.94,\; 5.00)$ \\
+        3 & C (C만 5.0) & 1.33 & $(0.64,\; 0.94,\; 1.33)$ \\
+        4 & C (1.33 최대) & 2.47 & $(0.64,\; 0.94,\; 1.90)$ \\
+        5 & C & 1.35 & $(0.64,\; 0.94,\; 1.72)$ \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.5em
+      \textbf{핵심 = 스텝 1$\sim$3}: \textbf{탐험 확률 0}(매 스텝
+      $\max Q$ 만 고르는 순수 탐욕)인데도 A$\to$B$\to$C 순서로
+      \textbf{모든 팔이 정확히 한 번씩} 당겨짐.
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \kb{메커니즘: ``가짜 믿음''}
+      \begin{itemize}
+        \item 초기값 5.0이 ``\textbf{안 당겨본 팔은 5.0짜리
+          팔}''이라는 가짜 믿음을 만듦 --- 실제 보상(2.0
+          근처)보다 위에 있어, 추정치가 2.0 아래로 떨어지는
+          순간 ``다음으로 낙관적인 팔''이 \textbf{자동으로}
+          다음 선택.
+        \item 스텝 4부터는 \textbf{진짜 탐욕적 경쟁} ---
+          $Q_C$ 가 2.5까지 오르면 B(0.94)는 한동안 선택 불가.
+      \end{itemize}
+      \vskip0.3em
+      \begin{block}{한계}
+        낙관적 초기화의 ``탐험''은 \textbf{초기값이 실제
+        보상분포를 벗어날 때까지만} 지속.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}

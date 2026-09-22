@@ -1,0 +1,46 @@
+% ===== overview =====
+\begin{frame}{이번 주차 개요}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      Week 3에서 MDP를 정식화했지만, ``무한히 먼 미래까지
+      내다보아야 하는 것처럼 보이는'' 누적 보상 최대화 문제는
+      여전히 \textbf{계산 불가능}해 보인다. 벨만의 통찰은 이 무한합을
+      \kb{재귀적 관계}로 다시 쓸 수 있다는 것(3.3절 벨만 기대방정식).
+      이번 장은 그 재귀식을 \textbf{실제로 계산하는 절차}를 다룬다.
+      \vskip0.4em
+      \begin{block}{이 주차를 마치면}
+        \begin{itemize}
+          \item 벨만 기대방정식으로 주어진 정책의 $V^\pi, Q^\pi$ 를
+            \kb{반복적 정책평가}로 계산한다.
+          \item 정책 반복의 두 단계가 왜 필요하고, \kb{``멈추면
+            최적''}인지를 정책개선 정리(단조 증가) + 유한성으로
+            설명한다.
+          \item 가치 반복(평가 한 번 + 바로 개선)을 비교하고,
+            \kb{축소 사상(바나흐 고정점 정리)}이 수렴을 보장함을
+            설명한다.
+          \item \kb{모델 기반}($P$ 를 정확히 아는) 전제의 한계를
+            짚고, model-free(Week 5--6)의 필요성을 예측한다.
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \textbf{세 차시} (5칸 GridWorld 위에서 직관이 쌓인다)
+      \begin{enumerate}
+        \item \kb{4.1 벨만 최적방정식과 정책평가}
+          \,\--- 연립방정식 직접 풀이 vs 반복, $V^\pi$/$Q^\pi$ 다리,
+          최적방정식 유도.
+        \item \kb{4.2 정책 반복과 GridWorld 실습}
+          \,\--- 평가$\to$개선을 GridWorld에서 돌리고 ``멈추면
+          최적''을 정리로, 수정된 정책 반복까지.
+        \item \kb{4.3 가치 반복, 수렴 증명, 모델 기반 전제}
+          \,\--- ``한 줄 차이''인 가치 반복, $k$스텝 내다보기,
+          바나흐 고정점 정리, 전제 한계.
+      \end{enumerate}
+      \vskip0.5em
+      {\footnotesize 한 줄 감각: 벨만방정식은 \textbf{연립방정식이
+      아니라 반복 대입으로 푸는 것}. 이 감각은 Week 6 TD(경험으로
+      근사)와 Week 9 DQN(신경망으로 고정점 찾기)까지 그대로
+      재사용된다.}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,40 @@
+% ===== wrap-up =====
+\begin{frame}{이번 주차 정리}
+  \small
+  \begin{enumerate}
+    \item \kb{4.1 kNN} --- 게으른·비모수 방법, 예측 비용
+      $O(m\cdot d)$. \textbf{정규화 빼먹으면} 0.556$\to$1.000
+      반전의 실수. $k$를 키우며 \textbf{편향-분산} 트레이드오프:
+      톱니바퀴(과적합) $\to$ 직선(과소적합). $k=1$ 결정경계 =
+      \textbf{보로노이 다이어그램}.
+    \item \kb{4.2 차원의 저주} --- 부피 $0.5^n$ 증발,
+      $p^{1/n}$ 스케일, \textbf{이웃이 동거리에}
+      ($11^{1/n}\to1$). junk 축 50개 $\to$ 정확도
+      0.867$\to$\textbf{0.507}. $k$는 \textbf{검증셋}으로
+      고르고, ``훈련 정확도로 고르면 \textbf{항상 $k=1$}''
+      함정.
+    \item \kb{4.3 k-means} --- ``할당$\to$갱신''이 \textbf{SSE를
+      단조감소}시켜 수렴(단, \textbf{어디로}는 보장 안 됨).
+      \textbf{엘보우}로 $k$ 선택, \textbf{k-means++}
+      ($D(x)^2$-비례, $O(\log k)$ 보장) + \texttt{n\_init}.
+      경계가 \textbf{항상 직선(볼록)}이라는 \textbf{구조적
+      한계}. 로이드(1957)·매퀸(1967) 동시 발견.
+    \item \kb{4.4 GMM/EM} --- 하드 $\to$ \textbf{소프트
+      할당}. 라벨·파라미터 ``둘 다 모른다''는 순환을
+      E-step(책임값) $\to$ M-step(가중 평균)으로 반복.
+      \textbf{옌센 부등식 4줄} = ``우도가 절대 줄지 않는다''.
+      $\Sigma_k$가 \textbf{타원형·기울어진} 클러스터. $K$는
+      \textbf{BIC}로, \textbf{분산 붕괴} 퇴화 해 주의.
+      \textbf{LDA} = GMM의 ``점$\to$클러스터''를
+      ``단어$\to$토픽''으로.
+  \end{enumerate}
+  \vskip0.8em
+  \begin{block}{다음 주차 --- Week 5. SVM과 커널}
+    kNN의 결정경계는 ``이웃 순위''에 따라 결정되는
+    \textbf{국소적} 경계(보로노이). 다음 장은 반대로
+    ``무수히 많은 경계선 중 \textbf{어떤 것이 새 데이터에 가장
+    안전한가}''라는 \textbf{전역적·기하학적} 질문을 던지며,
+    그 답으로 \textbf{마진 최대화(SVM)}(Cortes \& Vapnik 1995)
+    와 \textbf{커널 트릭}을 소개한다.
+  \end{block}
+\end{frame}

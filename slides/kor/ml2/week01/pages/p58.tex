@@ -1,0 +1,30 @@
+\begin{frame}{비선형성이 실제로 필요한 순간: $y = \sin(x)$}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      $y = 2x{+}1$은 \textbf{직선} --- 선형 모델 하나로도 풀림.
+      \textbf{비선형} $y = \sin(x)$를 같은 2층 MLP로 근사:
+      (numpy MLP, 은닉 32유닛, ReLU, SGD lr=0.1, $x \in [-2,2]$,
+      512샘플, 800 에포크)
+      \begin{itemize}
+        \item \textbf{32개의 직선 조각}이 이어붙여 곡선이 됨 ---
+          $\sin(x)$ 곡률을 따라 ``계단식 근사''.
+        \item 손실: $1.44 \to 0.017 \to 0.008 \to 0.003$
+          (1/100/400/800 에포크) --- \textbf{지수적 감소}, 신경망
+          학습의 전형적 패턴.
+        \item 직선으로 \textit{불가능}했던 근사가 비선형 2층으로
+          \textit{가능} --- ``비선형성의 힘''.
+      \end{itemize}
+      {\footnotesize 주의: 32유닛 계단식 근사는 극값
+      ($x = \pm\pi/2$)과 양 끝($x = \pm 2$)에서 오차가 가장 큼 ---
+      곡률이 센 곳. 유닛을 늘리면 매끄러워짐.}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_2_sin_fitting.png}
+      \vskip0.4em
+      {\footnotesize 왼쪽: 800에포크 학습 후 근사(파란 원 = 데이터,
+      붉은 곡선 = MLP). 오른쪽: 손실 곡선(MSE, 로그 스케일),
+      최종 $\approx 0.0031$.}
+    \end{column}
+  \end{columns}
+\end{frame}

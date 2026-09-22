@@ -1,0 +1,23 @@
+\begin{frame}{13.2 자주 묻는 질문}
+  \small
+  \begin{itemize}
+    \item \textbf{PyBullet과 MuJoCo 중 뭘 써야 하나?} 둘 다 물리 엔진이고
+      Gymnasium이 양쪽 지원. MuJoCo는 계산 정확도(특히 접촉·마찰)가 높아
+      최근 연구에서 더 널리 쓰이고, \texttt{pip install gymnasium[mujoco]}
+      만으로 별도 컴파일 없이 설치. 이번 학기 로봇 실습은 \textbf{MuJoCo}
+      기본 (Week 14에서 엔진 자체를 더 자세히 비교).
+    \item \textbf{Reacher와 Ant의 상태·행동공간 크기가 왜 이렇게 다른가?}
+      \textbf{자유도}의 차이. Reacher는 팔 관절 2개, Ant는 다리 4개(각 2개씩
+      = 8개)를 \emph{동시에 조율} --- 몸에 붙은 관절이 많을수록 ``동시에
+      조율해야 할 변수''가 늘어나는 것이 로봇 제어가 어려운 이유.
+    \item \textbf{Ant 무작위 리턴이 양수($+3.60$)인 것이 ``거의 걸을 줄
+      안다''는 뜻인가?} 아님 --- 16스텝 만에 terminated. ``걸을 줄
+      안다''의 기준은 리턴이 아니라 \textbf{에피소드 전체(100스텝)를 유지
+      하면서 전진 속도 $\dot{x}$ 가 지속 양수}.
+    \item \textbf{Reacher는 항상 50스텝(시간 제한)인데 Ant는 16스텝에
+      끝나기도 --- 평가 코드에 영향이?} 아주 작음: \texttt{terminated or
+      truncated} 로 \texttt{break} 한 줄이면 같은 루프. 다만 평가 지표가
+      ``고정 100스텝''을 가정하면 안 됨 (16스텝 뒤에 ``가상의 84스텝
+      리턴 0''을 덧붙이는 식의 처리 금지).
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,27 @@
+\begin{frame}{배치는 필요조건, GPU는 실행 장치}
+  \begin{itemize}
+    \item \textbf{진짜 GPU 병렬}은 여기서 한 단계 더: numpy가 CPU의
+      8$\sim$16개 \textbf{SIMD 레지스터}로 처리하는 \textbf{같은
+      배열 연산}을, GPU의 \textbf{수천 개 코어}가 한 번에 수행
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{구분}
+    ``\textbf{배치}''가 데이터 구조의 \textbf{필요조건}(없으면 GPU
+    병렬 자체를 할 수 없다)이라면, \textbf{GPU}가 그 배치 구조를
+    실제로 수천 코어로 동시에 \textbf{실행하는 장치}.
+  \end{block}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch14_2_batch_fan.png}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      {\footnotesize 1,000개 진자를 $\theta_0 \in [-2.5, 2.5]$에서
+      무작위 시작, PD 토크로 2,000스텝(=4s). 모든 궤적이
+      \textbf{같은 물리 법칙}(같은 코드)을 따르되, \textbf{출발점}이
+      궤적의 모양으로 남는다 --- 하단 분포가 $\theta_0$ 균등분포
+      $\to$ 4초 뒤 0 중심으로 수렴.}
+    \end{column}
+  \end{columns}
+\end{frame}

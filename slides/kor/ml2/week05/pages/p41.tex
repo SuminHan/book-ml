@@ -1,0 +1,48 @@
+\begin{frame}{중요도 샘플링: 확률의 비율 $\rho$ 로 보정}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \kb{중요도 샘플링} 은 각 에피소드의 리턴에 ``이 궤적이
+      $\pi$ 에서 나왔을 확률 대비 $b$ 에서 나왔을 확률의
+      \textbf{비율}''을 가중치로 곱해 편향을 보정:
+      \[
+      \rho \;=\; \prod_t \frac{\pi(a_t | s_t)}{b(a_t | s_t)}
+      \]
+      \kb{왜 ``확률의 비율''인가} --- 평가하려는 값은
+      $V^\pi(s_0) = \mathbb{E}_\pi[G_0]$ 인데, $b$ 에서
+      샘플을 모으려면 $\pi$ 에 대한 기댓값을 $b$ 에 대한
+      기댓값으로 바꿔야 한다 --- 확률론의 기본 정리를
+      쓰는 것뿐:
+      \[
+      \mathbb{E}_\pi[f] =
+      \mathbb{E}_b\!\left[f \cdot \frac{p_\pi}{p_b}\right]
+      \]
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{직관}
+        목표 정책 $\pi$ 라면 거의 선택하지 않았을 행동을
+        행동 정책 $b$ 가 우연히 선택해서 얻은 궤적은, 그
+        \textbf{희소함}($\rho$ 가 작음)만큼 가중치를
+        \textbf{낮춰서} 반영.
+      \end{block}
+      \vskip0.4em
+      \begin{itemize}
+        \item 가중치가 \textbf{에피소드 전체의 비율}이고 단
+          한 스텝의 비율이 아닌가 --- 마르코프 성질 덕분에
+          스텝별 비율의 \textbf{곱}으로 분해.
+        \item $\rho$ 는 0 또는 1이 아니라 \textbf{4나 1/8처럼
+          ``10배''}가 될 수 있다.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \kq{``비율 2가 매 스텝마다 곱해져 $L$ 스텝 뒤에는
+  $2^L$ 이 된다''는 사실이 곧 \textbf{분산 폭증}의 근원.}
+  \vskip0.3em
+  {\footnotesize 이 아이디어는 Week 9(DQN)의
+  \kb{경험재현 버퍼}(과거 정책들이 모은 데이터를 재사용)와,
+  Week 11(PPO)의 \kb{확률비}에서 형태를 바꿔 다시
+  등장한다. Week 6 SARSA(Sutton, 1991)의 \kb{off-policy
+  TD(2)} --- 각 스텝의 TD 오류를 새 행동 정책이 실제로 고를
+  확률 $b(a'_{t+1}|s_{t+1})$ 로 가중 --- 도 같은 분산
+  문제를 한 스텝 단위로 다스린 사례.}
+\end{frame}

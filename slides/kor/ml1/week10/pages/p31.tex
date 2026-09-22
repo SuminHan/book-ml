@@ -1,0 +1,37 @@
+\begin{frame}{수용장 손계산 + 풀링이 스케일업하는 기제}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      입력 32$\times$32 예:
+      \begin{tabular}{@{}llrrl@{}}
+        \toprule
+        층 & 연산 & $k$ & $s$ & $R_l$ \\
+        \midrule
+        0 & 입력 & — & — & 1 \\
+        1 & Conv & 5 & 1 & 1+4$\cdot$1 = \textbf{5} \\
+        2 & MaxPool & 2 & 2 & 5+1$\cdot$1 = \textbf{6} \\
+        3 & Conv & 5 & 1 & 6+4$\cdot$2 = \textbf{14} \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.6em
+      \textbf{단 세 층 만에}, 마지막 합성곱 뉴런은 원본의
+      14$\times$14 영역(32$\times$32의 약 19\%)을 ``본다''.
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \item 3$\times$3, s=1 만 계속 쌓으면
+          $R_l = 1+2l$ 으로 \textbf{선형}
+        \item \textbf{풀링(s=2)을 한 번만} 끼워도 그 뒤의
+          \textbf{모든 확장이 2배 스케일업}
+        \item 10층만 쌓아도 수십 픽셀, 풀링을 섞으면
+          \textbf{이미지 전체}가 한 뉴런의 수용장
+      \end{itemize}
+      \vskip0.5em
+      \begin{block}{짝을 이룬다}
+        \kb{합성곱}(패턴 감지)이 ``\textbf{무엇을} 보는가''를
+        학습하고, \kb{풀링}(수용장 확대·해상도 축소)이
+        ``\textbf{얼마나 넓은 시야}로 보게 하는가''를 결정.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}

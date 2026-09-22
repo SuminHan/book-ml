@@ -1,0 +1,20 @@
+\begin{frame}[fragile]{k-fold 분할 코드}
+\begin{lstlisting}
+def k_fold_split(data, k, fold_idx):
+    n = len(data)
+    fold_size = n // k
+    start = fold_idx * fold_size
+    end = start + fold_size if fold_idx < k - 1 else n
+    val   = data[start:end]
+    train = data[:start] + data[end:]
+    return train, val
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{fold\_idx}번째 블록을 검증용(val), 나머지를 학습용(train)
+      반환. 마지막 fold는 남은 것을 전부 포함.
+    \item \kq{주의: 주어진 \emph{순서 그대로} 앞에서부터 자름 — 정렬된
+      데이터는 §자주 하는 실수 참조.}
+  \end{itemize}
+  {\footnotesize 실전 \texttt{KFold(shuffle=True)} 또는 클래스 비율을
+  유지하는 \texttt{StratifiedKFold} 권장.}
+\end{frame}

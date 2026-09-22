@@ -1,0 +1,23 @@
+\begin{frame}{현실 격차: 요인과 도메인 무작위화}
+  시뮬레이션은 실제 물리를 완벽히 재현 못 함. 시뮬레이션에서만 잘 작동하고
+  실물에서 실패하는 정책 = \kb{현실 격차}(reality gap).
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    요인 & 시뮬레이션 vs 실물 \\
+    \midrule
+    마찰 · 감쇠 & 단순 모델 vs 줄 경직 · 기어 마찰 · 볼 베어링 손실 복합 \\
+    액추에이터 지연 & 즉시 출력 vs ms 단위 지연 + 데드존 \\
+    센서 잡음 · 지연 & --- vs 인코더 분해능, IMU 드리프트 \\
+    접촉 모델링 & ``점 접촉'' vs 표면 재질 · 탄성 \\
+    질량 분포 & 설계값 vs 생산 편차, 배터리 잔량 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{block}{대응 1: \kb{도메인 무작위화}(domain randomization, Tobin et al., 2017)}
+    물리 파라미터(마찰, 질량, 조명 등)를 \textbf{매 학습 에피소드마다
+    무작위로 바꿔} 학습 $\to$ ``다양한 물리 조건 전체''에 잘 동작하도록
+    강제. Week 6(ML1)의 정규화와 구조가 같음.
+  \end{block}
+\end{frame}

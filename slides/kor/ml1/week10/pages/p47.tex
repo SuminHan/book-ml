@@ -1,0 +1,37 @@
+\begin{frame}{R-CNN (2014): ``후보 $\to$ 특징 $\to$ 판정'' 3단계}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch10_3_rcnn_pipeline.png}
+      \\[0.3em]{\footnotesize R-CNN 파이프라인 ---
+      (1) 셀렉티브 서치로 $\sim$2,000개 후보 박스,
+      (2) 각 후보를 224$\times$224로 줄여 CNN을 통과시켜
+      4,096차원 특징, (3) 클래스별 SVM + 박스 회귀로 판정,
+      (4) IoU 기반 NMS로 중복 박스 제거.}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \small
+      \begin{enumerate}
+        \item \kb{후보 지역}: \textbf{셀렉티브 서치}
+          (2012, \textbf{딥러닝이 아닌 기술})가 색·질감이
+          비슷한 인접 영역을 합치며 후보 박스
+          \textbf{$\sim$2,000개}. 슬라이딩 윈도우(수백만 개)
+          대비 ``미리 좁히기''가 통하는 이유: 사물은 실제로
+          그렇게 많지 않고 작지도 않은 경우가 대부분
+        \item \kb{특징 추출}: 2,000개 후보를 각각
+          224$\times$224로 비율만 맞춰 리사이즈하고,
+          \textbf{분류용 CNN의 마지막 분류층을 제외한
+          부분}을 그대로 통과 --- 각 후보마다 4,096차원
+          특징 벡터 1개. \textbf{``분류로 배운 특징
+          추출기''를 새 문제에 재사용하는} 순간
+        \item \kb{판정}: (a) \textbf{클래스별 SVM 하나씩}
+          (Week 5의 SVM --- 20개 클래스면 SVM 20개)로
+          ``무엇이'', (b) \textbf{회귀 모델}로 ``정확한
+          사물 경계로 미세 조정''. 2,000 후보 $\times$ SVM 20개
+          $= 40{,}000$회 판정 --- ``한 특징 벡터는 1번만
+          계산해도 4만 번 재사용''되는 또 하나의 파라미터
+          재사용
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+\end{frame}

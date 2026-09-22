@@ -1,0 +1,22 @@
+\begin{frame}{자주 묻는 질문 (2)}
+  \textbf{Q. 경진대회(Kaggle)에서 test 라벨이 안 공개되면?}
+  \begin{itemize}
+    \item 공개 \kb{public leaderboard}는 사실상 \emph{val}, 비공개
+      \kb{private}는 \emph{test} 역할.
+    \item public 점수로 $\lambda$를 골라 계속 제출하면, public을
+      ``20번 봤다''는 뜻 → §최적화 편향 관점에서 public 점수는
+      \textbf{부풀려진} 추정치. private의 제출 횟수 제한이 바로 이
+      선택 편향을 통제하기 위함.
+    \item \kq{교훈: 같은 검증 조각으로 비교한 후보가 $m$개면, 그 검증
+      점수는 $m$개 중 max를 본 셈.}
+  \end{itemize}
+  \vskip0.4em
+  \textbf{Q. k-fold CV 평균은 ``진짜 성능''의 공정한(무편향) 추정치?}
+  \begin{itemize}
+    \item ``한 모델 평가'' 용도라면 같은 분포의 새 데이터 기대 오차에 대한
+      합리적 추정치.
+    \item ``여러 $\lambda$ 후보 중 \emph{최솟값}을 고르는'' 용도로 쓰면
+      그 최솟값은 평균적으로 \emph{낮게}(낙관적) — 정직한 숫자가 필요하면
+      선택에 쓰지 않은 test(6.3)나 nested CV를 쓴다.
+  \end{itemize}
+\end{frame}

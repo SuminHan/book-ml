@@ -1,0 +1,22 @@
+\begin{frame}{그냥 최대화하면 폭주 — 그리고 그래디언트}
+  \begin{itemize}
+    \item $L^{\mathrm{IS}}$ 를 그냥 최대화하면 $r_t$ 가 한없이
+      커지도록 (같은 행동만 계속 더 밀어주도록) 학습이 \textbf{폭주}
+      — 데이터는 재사용되지만 ``정책이 너무 멀리 움직이지 않는다''는
+      보장은 어디에도 없다.
+  \end{itemize}
+  \vskip0.5em
+  \kq{왜 $L^{\mathrm{IS}}$ 를 최대화하면 원래 목표 $J(\theta)$ 를
+  최대화하는 것과 같은 방향인가?}
+  \small
+  $\pi_{\mathrm{old}}$ 는 $\theta$ 와 무관한 상수(데이터 수집 때
+  고정했던 정책)이므로:
+  \[
+  \nabla_\theta L^{\mathrm{IS}}
+  = \mathbb{E}_t\Big[\frac{\pi_\theta}{\pi_{\mathrm{old}}}\,
+  \nabla_\theta\log\pi_\theta\, A_t\Big]
+  = \mathbb{E}_t[\,r_t(\theta)\,\nabla_\theta\log\pi_\theta\, A_t\,]
+  \]
+  두 번째 등호는 10.1절 \kb{로그미분 트릭}
+  ($\nabla\pi = \pi\nabla\log\pi$)의 직접 적용.
+\end{frame}

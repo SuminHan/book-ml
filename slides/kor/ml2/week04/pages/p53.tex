@@ -1,0 +1,30 @@
+\begin{frame}{FAQ: 실전에서 쓰나요?}
+  \textbf{Q. 실전 강화학습에서 정책반복·가치반복을 직접
+  쓰나요?}
+  \begin{itemize}
+    \item \textbf{조건이 맞으면 쓰인다}: 상태 공간이
+      \textbf{작고} $P, R$ 을 \textbf{정확히 아는} 문제
+      (작은 그리드월드, 재고 관리 등)라면 \textbf{지금도
+      그대로} --- \textbf{정확한 최적해를 빠르게} 준다.
+    \item \textbf{대부분의 실전 문제}는:
+      \begin{itemize}
+        \item $P$ 를 \textbf{모른다}(model-free) $\to$
+          Week 5--7(경험만으로 학습).
+        \item 상태 공간이 \textbf{너무 커서} 표로 나타낼 수
+          없다 $\to$ Week 9 DQN(신경망으로 근사).
+      \end{itemize}
+    \item 이번 장의 알고리즘들은 \textbf{``정답이 무엇인지''
+      를 규명하는 이론적 뼈대}로서 \textbf{이후 모든 장의
+      기준점} 역할.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize 예습 확인 문제: ① 3-state MDP(0$\to$1, 1$\to$2,
+  2는 종료, 각 보상 $-1$, $\gamma = 0.9$) --- \textbf{비순환}이므로
+  터미널부터 \textbf{거꾸로 대입}만으로 $V(2) = 0$, $V(1) = -1$,
+  $V(0) = -1.9$ --- 연립방정식도 반복도 필요 없다. ② $\|TV_1 -
+  TV_2\|_\infty \le \gamma \|V_1 - V_2\|_\infty$ 와 고정점
+  $TV^{*} = V^{*}$ 로부터 $\|V_n - V^{*}\|_\infty \le \gamma^n
+  \|V_0 - V^{*}\|_\infty$ $\to$ $\gamma < 1$ 이므로 $\gamma^n
+  \to 0$ $\Rightarrow$ \textbf{어떤 초기값} $V_0$ 로 시작해도
+  \textbf{같은} $V^{*}$ 로 수렴.}
+\end{frame}

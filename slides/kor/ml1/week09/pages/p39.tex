@@ -1,0 +1,21 @@
+\begin{frame}{확인 문제 (9.2)}
+  \small
+  \begin{enumerate}
+    \item \kb{계산.} 20층 시그모이드, 각 층 $\sigma'(z_l) \le 0.25$이면
+      그래디언트는 $(1/4)^{20} = 2^{-40} \approx 9.1 \times 10^{-13}$
+      — 1조 분의 1의 1\%도 안 됨. 왜 ``실제'' 감소는 이 값과 정확히
+      같지 않은가? (힌트: 곱에는 $\sigma'$만이 아니라 $W_l$도 —
+      $\|W_l\| > 1$이면 보상, $< 1$이면 추가 감소)
+    \item \kb{코딩.} \texttt{he\_init\_std} = $\sqrt{2/\text{fan-in}}$,
+      \texttt{xavier\_init\_std} = $1/\sqrt{\text{fan-in}}$,
+      \texttt{e2\_out} 완성.
+      검증: \texttt{e2\_out(1, 100, he, relu)} $\approx 1.0$ (보존),
+      \texttt{e2\_out(1, 100, xavier, relu)} $\approx 0.5$ (소실),
+      \texttt{e2\_out(1, 100, he, tanh)} $\approx 2.0$ (선형 근사
+      매 층 2배).
+    \item \kb{개념.} 폭 100$\to$100$\to$100 ReLU에 Xavier(0.1)로
+      초기화, 10층 반복 시 $\mathbb{E}[a^2]$는 $0.5^{10} \approx 0.001$ —
+      소실인가 폭발인가? 그리고 He가 ``2''를 왜 곱하는지 ReLU의
+      어떤 성질에서 오는지 한 문장으로.
+  \end{enumerate}
+\end{frame}

@@ -1,0 +1,15 @@
+\begin{frame}[fragile]{DAgger: 정책이 달리고, 전문가가 답만 한다}
+  \begin{lstlisting}
+D = dict(demo)                        # ① 원래 시연 데이터로 시작
+for rnd in range(rounds):
+    s = s0
+    while not terminated(s):
+        a = policy_from(D)(s)         # ② 에이전트가 '자기 정책'으로 진행
+        D[s] = expert(s)              # ③ 전문가가 '방문한 상태'에 라벨만
+        s = step(s, a)                #    (확률적 교란은 여기서)
+    # ④ D 전체로 정책을 다시 학습
+  \end{lstlisting}
+  {\footnotesize (1) 학습된 정책으로 직접 환경에 돌아본다 $\to$
+  (2) 마주친 상태에 전문가에게 다시 물어본다 $\to$ (3) 새 데이터를
+  원래 시연에 합쳐 재학습. 반복.}
+\end{frame}

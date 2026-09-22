@@ -1,0 +1,50 @@
+\begin{frame}{NMS를 한 번 따라가보자}
+  1. 모든 (박스, 점수)를 \textbf{점수 내림차순} 정렬
+  2. 가장 점수 높은 박스를 \textbf{보관}하고, 그것과 겹기가
+     임계값(보통 $0.5$)을 넘는 모든 박스를 \textbf{제거}
+  3. 남은 박스에서 2를 반복
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    박스 & 좌표 $[x_0,y_0,x_1,y_1]$ & 점수 \\
+    \midrule
+    A & $[0,0,10,10]$ & 0.90 \\
+    B & $[1,1,11,11]$ & 0.80 \\
+    C & $[20,0,30,10]$ & 0.75 \\
+    D & $[21,1,31,11]$ & 0.60 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{itemize}
+        \item \textbf{A}(0.90) 먼저 보관
+        \item B와 IoU \textbf{0.68 $>$ 0.5} $\to$ \textbf{제거}
+        \item 남은 \textbf{C}(0.75) 보관, D와 IoU 0.68
+          $\to$ \textbf{제거}
+        \item \textbf{결과: A와 C만 남음} --- 4개 박스에서
+          사물 2개. A,B 쌍과 C,D 쌍의 IoU가 \textbf{같은 값
+          0.68}을 두 번 씀으로써 ``제거 기준은 점수가
+          아닌 \textbf{겹기}''임을 보임
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch10_3_iou_nms.png}
+      \\[0.3em]{\footnotesize 4개 박스 중 NMS(임계값 0.5)가
+      A와 C를 남기고 B, D를 제거 --- A와 B의 교집합(검정)이
+      합집합의 0.68을 차지해 B가 억제되는 것.}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  \textbf{임계값 0.5는 왜인가} --- ``맞는 값''이 아니라
+  \textbf{조율 대상}: 0.7로 올리면 같은 사물에 박스 두 개가
+  남을 수 있고(더블 카운팅), 0.2로 낮추면 서로 다른 사물이
+  살짝만 겹쳐도 하나가 통째로 사라진다.
+  \textbf{NMS는 왜 학습되지 않는가} --- 10.2 풀링과 같은
+  논리: ``점수 높은 쪽을 살리고 겹치는 쪽을 버린다''는
+  \textbf{보편 규칙}이라 학습 가능한 파라미터를 붙일 이유가
+  없고 라벨도 ``이 박스가 중복이다''로 주어지지 않는다 ---
+  \textbf{고정 규칙이 가장 일반화}된다. 파이프라인의 모든
+  부위가 미분 가능해야 하는 것은 아니다.
+\end{frame}

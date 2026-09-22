@@ -1,0 +1,25 @@
+\begin{frame}{손으로 한 번: 스칼라 RNN 세 스텝}
+  은닉 상태가 \textbf{스칼라(숫자 하나)}인 가장 단순한 RNN.
+  $w_{xh}=0.5$, $w_{hh}=0.8$, $b_h=0$, 입력이 매 시점 $x_t=1.0$으로
+  고정, $h_0=0$에서 시작:
+  \vskip0.5em
+  \[ h_1 = \tanh(0.5 \times 1.0 + 0.8 \times 0)
+          = \tanh(0.5) \approx 0.462 \]
+  \[ h_2 = \tanh(0.5 \times 1.0 + 0.8 \times 0.462)
+          = \tanh(0.870) \approx 0.701 \]
+  \[ h_3 = \tanh(0.5 \times 1.0 + 0.8 \times 0.701)
+          = \tanh(1.061) \approx 0.786 \]
+  \vskip0.5em
+  \begin{itemize}
+    \item 같은 입력($x_t = 1.0$)이 반복되는데도 $h_t$가 매 시점 다른
+      값으로 갱신 (0.462 $\to$ 0.701 $\to$ 0.786)
+    \item 이유: ``이전 은닉 상태''가 매번 입력에 \textbf{새로
+      더해지기} 때문
+    \item 점점 커지다가 어떤 값 근처로 \textbf{수렴}해간다 ---
+      $\tanh$가 큰 입력에서 \textbf{포화(saturate)}되어 1에
+      가까워지기 때문
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize 이 ``포화'' 현상이 11.3절의 그래디언트 소실과 정확히
+  같은 뿌리(미분이 0에 가까워짐)를 공유한다.}
+\end{frame}

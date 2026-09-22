@@ -1,0 +1,25 @@
+\begin{frame}{확인 문제: ``탐험''은 어디서 오는가}
+  기준: \kq{``탐험이 정보(지금까지의 $Q$, $N$)에 의존하는가,
+  아니면 그냥 고정 확률인가?''}
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}p{4em}p{7em}p{7.5em}@{}}
+    \toprule
+    & 전략 & 분류 \\
+    \midrule
+    (a) & 매 스텝 $\varepsilon{=}0.1$ 무작위, 0.9로 최대 $Q$ &
+      \textbf{외부 조종형(ε-greedy)} --- 정보와 무관하게 고정 확률.
+      ``최악'' 확신한 팔도 계속 당김 \\
+    (b) & $Q_0 = 5.0$ 초기화, 이후 매 스텝 $\max Q$ &
+      \textbf{내부 유도형(낙관적 초기화)} --- 초기값이 실제 보상
+      위에 있어 추정치 내려올 때까지. 이후 추가 장치 \textbf{없음} \\
+    (c) & 매 스텝 $Q_t + c\sqrt{\ln t/N_t}$ 최대 (안 당겨본 팔
+      우선) & \textbf{내부 유도형(UCB)} --- 매 스텝 \textbf{현재의}
+      $N_t(a)$ 반영, 환경 바뀌어도 적응적 탐험 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  한 줄로: (a) ``탐험의 \textbf{양}을 고정 확률로 조종'',
+  (b) ``탐험을 \textbf{초기값} 하나로 예약'', (c) ``탐험을
+  \textbf{매 스텝 재계산}''.
+\end{frame}

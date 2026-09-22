@@ -1,0 +1,38 @@
+\begin{frame}{L2 페널티 vs ``해결된(decoupled)'' weight decay}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{L2 페널티}
+      \[
+      w \leftarrow w - \eta\,(\nabla L + \lambda w)
+      \]
+      손실에 $\lambda\|w\|^2$를 붙여 그래디언트에 $\lambda w$를
+      포함.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{해결된 weight decay (AdamW 방식)}
+      \[
+      w \leftarrow w - \eta\, \nabla L
+      \;\;\text{이후}\;\;
+      w \leftarrow (1 - \eta\, wd)\, w
+      \]
+      손실 그래디언트만 내린 뒤 \textbf{곱셈으로} 줄임.
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  \begin{itemize}
+    \item $\nabla L$이 $w$의 \textbf{선형 함수}(이차 손실)이면 두 갱신이
+      \textbf{숫자적으로 일치} (이차 손실, $\eta=0.1$, $wd=0.01$ 한
+      스텝: 두 방식 모두 정확히 \textbf{0.99880000} — 실행 검증)
+    \item \textbf{비선형 손실}, 특히 \textbf{Adam처럼 adaptive
+      최적화기}에서는 L2 페널티의 ``$\lambda w$를 adaptive 스케일로
+      다시 나누는'' 동작이 의도치 않게 효과 왜곡 $\Rightarrow$
+      Adam에서는 \kb{\texttt{AdamW}(분리된 weight decay)}가 표준
+      (Loshchilov--Hutter, 2017)
+  \end{itemize}
+  {\footnotesize ``L2 = weight decay 아닌가?''의 정직한 답:
+  ``이차 손실에서는 같고, Adam에서는 다름 — 그래서 AdamW가 있다.''
+  weight decay는 \textbf{가중치의 크기}를 벌 (손실함수 쪽), dropout은
+  \textbf{뉴런의 공적응}을, BN은 \textbf{층간 분포}를 건듦 (계산 구조
+  쪽) — 서로 다른 축이므로 \textbf{함께} 쓰인다.}
+\end{frame}

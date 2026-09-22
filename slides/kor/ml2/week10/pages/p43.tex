@@ -1,0 +1,25 @@
+% ================= SESSION 10.3 =================
+\section{10.3 Actor-Critic}
+\begin{frame}{Actor-Critic: 분산을 줄이는 개선}
+  \begin{itemize}
+    \item REINFORCE: $G_t$ (실제 관찰된 누적 보상)를 \textbf{그대로}
+      사용 --- 하나의 에피소드를 샘플링한 결과라 \textbf{노이즈가
+      크다}(분산 높음).
+    \item \kb{Actor-Critic}: $G_t$ 대신 Week 4$\cdot$6의 \textbf{가치함수}
+      (Critic)로 추정한 기준값을 빼서 분산 감소 ---
+      $G_t - V(s_t)$ 의 차이를 \kb{어드밴티지(advantage)}라 부름.
+    \item \textbf{정책(Actor)}과 \textbf{가치함수(Critic)}를
+      \textbf{동시에} 학습.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{핵심 아이디어 (한 줄)}
+    ``정책 하나만 학습하는 것보다, \textbf{가치함수의 도움}을 받으면
+    \textbf{더 안정적으로} 학습된다.''
+    이 어드밴티지는 Week 11의 PPO에서 \textbf{그대로 재사용}됨.
+  \end{block}
+  {\footnotesize Q-learning이 ``얼마나 좋은지 평가한 뒤 최선을
+  고른다''는 \textbf{간접적} 전략이라면, 정책기반 방법은
+  ``무엇을 할지'' \textbf{자체}를 직접, 연속 행동 공간에서도
+  학습. 유한 MDP라면 최적 정책 $\pi^{*}$ 는 항상 존재 (Week 4) ---
+  policy gradient는 그 목표를 향해 \textbf{직접} 나아가는 방법.}
+\end{frame}

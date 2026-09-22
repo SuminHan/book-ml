@@ -1,0 +1,30 @@
+\begin{frame}{결과: 평균 24.1 스텝}
+  {\footnotesize \texttt{무작위 정책 (200 에피소드): 평균 24.1 스텝,
+  최소 9, 최대 100}}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \item 무작위여도 평균 \textbf{24스텝}은 버팀 ---
+          초기 $|\theta| \approx 0.05$ rad가 작고, 좌/우를 반반씩
+          미니까 \textbf{운 좋게} 짧은 구간을 버팀.
+        \item 500스텝 채우기(= 균형 완벽)는 \textbf{절대} 불가 ---
+          200개 중 \textbf{0개}.
+        \item \textbf{이 ``24.1''이 정렬 기준}: 2주차의
+          $\varepsilon$-greedy가 24를 크게 넘어서고, 9주차의 DQN이
+          \textbf{500에 근접}하는 과정을 \textbf{같은 숫자로}
+          따라가며 ``배우기''가 실제로 일어나는 것을 확인.
+        \item 시드 42: 24스텝 만에 쓰러짐 --- 카트 위치 $x(t)$는
+          거의 제자리, 막대 $\theta(t)$는 20스텝경부터 급격히 벌어져
+          $-0.2094$ rad(약 $-12^\circ$)를 넘고 \texttt{terminated}.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_cartpole_random_trajectory.png}
+      \vskip0.4em
+      {\footnotesize 무작위 정책 24스텝 에피소드의 관측 변화 ---
+      왼쪽: 카트 위치 $x(t)$, 오른쪽: 막대 각도 $\theta(t)$.
+      $\pm 0.2094$ rad(약 $\pm 12$도)를 넘으면 \texttt{terminated}.}
+    \end{column}
+  \end{columns}
+\end{frame}

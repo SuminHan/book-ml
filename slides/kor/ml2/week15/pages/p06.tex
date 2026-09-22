@@ -1,0 +1,30 @@
+\begin{frame}{두 축으로 모으기}
+  \begin{itemize}
+    \item \kb{학습}(값 개선)에 쓰면 --- Dyna-Q의 전형: 모델로 만든
+      가상 경험을 Q 갱신에 쓸 뿐, ``지금 이 수에서 무엇을 할지''를
+      직접 계산하지 않는다
+    \item \kb{계획}(결정)에 쓰면 --- 15.2절 MCTS의 전형: (가상의)
+      행동 시나리오를 전개해 \textbf{지금 당장 둘 수}를 골라낸다
+  \end{itemize}
+  \vskip0.8em
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+     & \textbf{known model} & \textbf{learned model} \\
+     & (규칙이 주어짐) & (데이터로 학습) \\
+    \midrule
+    \textbf{학습}(값 개선) & 가치반복·정책반복 (Week 4) & Dyna-Q (Week 7.3) \\
+    \textbf{계획}(지금의 결정) & MCTS·AlphaZero (15.2) & 로봇의 \kb{MPC} 등 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item 바둑 = \textbf{위쪽줄 오른쪽칸}: 모델은 정확히 알지만 상태 공간이
+      너무 커서 ``전체 계산''(Week 4)이 불가능 $\Rightarrow$
+      ``지금 필요한 것만 계산''(MCTS)으로 방향 전환
+    \item \kb{MPC(Model Predictive Control)}: 매 스텝마다 모델로 후보
+      행동 시퀀스를 미래로 시뮬레이션해, 결과를 가장 좋게 하는
+      시퀀스의 \textbf{첫 행동}만 취하는 제어 --- 산업용 로봇에 널리
+      쓰이는 ``모델로 계획하는'' 제어기
+  \end{itemize}
+\end{frame}

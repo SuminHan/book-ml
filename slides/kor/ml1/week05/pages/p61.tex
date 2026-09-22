@@ -1,0 +1,30 @@
+\begin{frame}{$\gamma$ 스윕 결과: 4단계}
+  \small
+  \begin{tabular}{@{}cccc@{}}
+    \toprule
+    $\gamma$ & train acc & test acc & 서포트 벡터 수 \\
+    \midrule
+    0.05 & 0.514 & \textbf{0.467} & 136 \\
+    0.30 & 0.993 & \textbf{1.000} & 74 \\
+    1.00 & 1.000 & \textbf{1.000} & 34 \\
+    30.00& 1.000 & \textbf{1.000} & 85 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize\vskip0.5em
+  \begin{itemize}
+    \item \kb{$\gamma=0.05$}: 경계가 \textbf{거의 직선}에 가깝게
+      뭉뚱그려져 동심원을 아예 분리 못함(0.47 — 선형 커널보다도
+      나쁨, \textbf{과소적합}).
+    \item \kb{$\gamma=0.3$}: 원형 경계가 생기며 정확도가 1.0으로
+      오름.
+    \item \kb{$\gamma=30$}: 각 점마다 좁은 봉우리가 생겨 경계가
+      학습 데이터 하나하나를 감싸는 형태로 \textbf{심하게
+      구불거림}(SV 85개 증가).
+  \end{itemize}
+  \vskip0.3em
+  이 동심원은 노이즈가 적어 큰 $\gamma$에서도 acc=1.00을 유지하지만
+  (운 좋게 일반화되는 것이지), \textbf{실제 노이즈 있는 데이터}에선
+  $\gamma=30$ 경계는 개별 노이즈 패턴까지 따라붙어 test가 급락 —
+  4.1절 kNN의 작은 $k$, 5.2절의 큰 $C$와 \textbf{정확히 같은
+  종류}의 과적합.
+\end{frame}

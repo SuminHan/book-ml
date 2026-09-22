@@ -1,0 +1,22 @@
+\begin{frame}{자주 묻는 질문 4: softmax의 그래디언트}
+  $p_i = e^{s_i} / \sum_j e^{s_j}$ 의 $s_k$ 에 대한 미분:
+  \[\frac{\partial p_i}{\partial s_k}
+    = p_i(\delta_{ik} - p_k)
+    \qquad (\text{크로네커 델타 } \delta_{ik})\]
+  해석: ``내 확률 $p_i$ 가, \emph{내} 원점수 $s_k$ 를 \emph{올리면}
+  $p_i(1 - p_k)$ 만큼 \emph{증가}하고, \emph{다른} 원점수
+  $s_j\,(j \neq k)$ 를 올리면 $p_i p_j$ 만큼 \emph{감소}.''
+  \vskip0.5em
+  \begin{block}{중요한 관찰}
+    \textbf{$p_i$ 가 1에 가까우면(one-hot)} $1 - p_k
+    \approx 1 - p_i \approx 0$ 이 되어 그 방향의
+    \textbf{그래디언트가 사실상 0} — ``이미 한 단어를 독점하면,
+    그 선택을 바꿀 학습 신호가 거의 안 온다.''
+    이게 ``softmax가 one-hot으로 붙으면 \emph{학습이
+    멈춘다}''는 앞 절 관찰의 \textbf{정확한 미분적 근거}.
+  \end{block}
+  {\footnotesize 이 미분 공식 자체는 Week 3 다중 분류 교차엔트로피
+  그래디언트 $(p - y)$ 와 \emph{정확히 같은} 구조 —
+  ``softmax + 교차엔트로피''의 그래디언트가 \emph{선형}으로
+  단순해지는 이유를 Week 3에서 본 바로 그 사실.}
+\end{frame}

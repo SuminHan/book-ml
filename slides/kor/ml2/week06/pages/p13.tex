@@ -1,0 +1,21 @@
+\begin{frame}[fragile]{실습: 7-state random walk에서 TD(0)}
+  노트북 핵심은 다음 함수 \textbf{하나}. 세 줄의 코드가 전부다:
+\begin{lstlisting}
+import random
+
+def td0_random_walk(seed=42, n_episodes=1000, alpha=0.1, gamma=1.0, start=3):
+    rng = random.Random(seed)
+    V = [0.0] * 7                     # 터미널 V(0)=V(6)=0은 항상 고정
+    for _ in range(n_episodes):
+        s = start
+        while s not in (0, 6):
+            sp = s + rng.choice([-1, 1])
+            r = 1.0                   # 매 스텝 +1
+            V[s] += alpha * (r + gamma * (0.0 if sp in (0, 6) else V[sp]) - V[s])
+            s = sp
+    return V
+
+V = td0_random_walk()
+print([round(v, 2) for v in V])   # 참값 [0, 5, 8, 9, 8, 5, 0]에 가까움
+\end{lstlisting}
+\end{frame}

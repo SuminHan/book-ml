@@ -1,0 +1,40 @@
+\begin{frame}{PE의 수식: 시계 쌍}
+  위치 $t$ 의 $d_{model}$ 차원 벡터를, \textbf{짝수 차원에
+  사인·홀수 차원에 코사인}을 두는 식:
+  \[ PE_{(t,\,2i)} = \sin\!\left( \frac{t}{10000^{2i/d_{model}}}
+     \right), \qquad
+     PE_{(t,\,2i+1)} = \cos\!\left( \frac{t}{10000^{2i/d_{model}}}
+     \right) \]
+  \begin{itemize}
+    \item 차원 쌍 $(2i, 2i+1)$ 하나하나가 \textbf{``시계(clock)''}
+      하나 — 주파수 $\omega_i = 1/10000^{2i/d_{model}}$ 의
+      사인/코사인 파동이 위치 $t$ 를 따라 \emph{tock-tock}하는 것.
+    \item 가장 작은 $d_{model}=4$ 로 값을 써보면:
+  \end{itemize}
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    위치 $t$ & $PE(t)$ (d=4) \\
+    \midrule
+    0 & (0.000, 1.000, 0.000, 1.000) \\
+    1 & (0.841, 0.540, 0.010, 1.000) \\
+    2 & (0.909, $-$0.416, 0.020, 0.9998) \\
+    10 & ($-$0.544, $-$0.839, 0.0998, 0.995) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  1번 시계(앞 짝, $\omega=1$)는 \textbf{빠르게}, 2번 시계
+  (뒤 짝, $\omega=0.01$)는 \textbf{아주 천천히} 돈다 —
+  첫 행에서 뒤 짝이 $(0,1) \to (0.01,1) \to (0.02, 0.9998)$ 로
+  \emph{거의 제자리}인 것과 대조.
+  $d_{model}=512$ 이면 \textbf{시계 256개} — 가장 빠른 시계
+  주기 약 $2\pi \approx 6.3$, 가장 느린 시계 주기 약 60,000.
+  \vskip0.3em
+  {\footnotesize 확인 문제 3: $d_{model}=4$ 의 1번 시계
+  ($\omega=1$)에서 $PE(3)$ 의 앞 2성분 $(\sin 3, \cos 3)
+  \approx (0.141, -0.990)$ 에 $R(1) \approx
+  \begin{pmatrix}0.540 & 0.841\\ -0.841 & 0.540\end{pmatrix}$ 를
+  곱하면 $PE(4)$ 의 앞 2성분 $(\sin 4, \cos 4) \approx
+  (-0.757, -0.654)$ 와 일치 — ``\textbf{1위치 이동 =
+  1라디안 회전}''.}
+\end{frame}

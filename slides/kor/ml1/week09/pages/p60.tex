@@ -1,0 +1,26 @@
+\begin{frame}{BatchNorm이 활성값의 흔들림을 없앤다 (숫자로)}
+  \small
+  ``internal covariate shift''가 실제로 일어나는지 — 입력 스케일
+  1$\to$3으로 변하도록 만들고 \textbf{2층에 들어가는 활성값의
+  표준편차}를 추적(실행 검증, 실습 노트 §3):
+  \vskip0.4em
+  \begin{tabular}{@{}lccccc@{}}
+    \toprule
+    구성 & ep 0 & ep 20 & ep 40 & ep 60 & ep 80 \\
+    \midrule
+    BN 없음 & 0.437 & 0.557 & 0.693 & 0.920 & 1.084 \\
+    BN 있음 & 0.595 & 0.576 & 0.580 & 0.577 & 0.591 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{itemize}
+    \item BN \textbf{없음}: 2층이 보는 활성값이 \textbf{0.44 $\to$
+      1.08로 2.5배} 미끄러짐 = 뒤층이 매번 다시 맞춰야 하는
+      internal covariate shift
+    \item BN \textbf{있음}: \textbf{0.58 부근으로 안정}
+  \end{itemize}
+  \begin{block}{``층의 입력 분포를 매 스텝 재설정한다''가 숫자로}
+    이 표가 바로 9.2의 ``BN이 활성값을 $\mathcal{O}(1)$로 묶어
+    그래디언트 소실·폭발이 어려워진다''를 실증하는 숫자.
+  \end{block}
+\end{frame}

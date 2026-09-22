@@ -1,0 +1,26 @@
+\begin{frame}{스무딩 효과 숫자로: `당첨'이 들어온 메일}
+  앞의 학습 데이터(어휘 \{공짜, 회의\})에서 \textbf{한 번도 보지
+  못한} `당첨'이 포함된 새 메일 $\{$공짜, \textbf{당첨}$\}$:
+  \vskip0.3em
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+     & $P(\text{당첨 있음}|\text{spam})$ & $P(\text{당첨 있음}|\text{ham})$ \\
+    \midrule
+    \textbf{스무딩 없이} & $0/2 = \textbf{0}$ & $0/2 = \textbf{0}$ \; $\Rightarrow$ 0 vs 0 \textbf{비교 불가} \\
+    \textbf{라플라스} & $1/4$ & $1/4$ \; $\Rightarrow$ \textbf{중립} 신호 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item 스무딩을 쓰면 `당첨'은 \textbf{중립}이 되고, 남은 `공짜'
+      (스팸 3/4 vs 정상 1/4)이 판단을 결정:
+      $P(x|\text{spam}) = \tfrac34\times\tfrac14 = 0.1875$,
+      $P(x|\text{ham}) = \tfrac14\times\tfrac14 = 0.0625$
+      --- `공짜'가 본래 가질 \textbf{3배의 증거}(0.1875/0.0625)를
+      그대로 살려 \textbf{스팸}으로 분류.
+    \item ``0/0 비교 불가''에서 ``3:1로 스팸''으로 바뀌는 것 ---
+      스무딩은 ``확률 0의 사건''을 ``아직 관찰되지 않았을 뿐, 매우
+      희소할 것''으로 \textbf{재정의}.
+  \end{itemize}
+\end{frame}

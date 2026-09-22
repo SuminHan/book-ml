@@ -1,0 +1,29 @@
+\begin{frame}{자주 묻는 질문 — $\epsilon$ 튜닝과 연속 vs 이산}
+  \small
+  \begin{itemize}
+    \item \kb{Q. $\epsilon$ 을 0.05 또는 0.5로?}
+      \begin{itemize}
+        \item 작으면 클립 구간 좁아져 한 번에 이동할 수 있는
+          거리 감소 — \textbf{안정성은 올라가지만 학습 느려짐}.
+        \item 크면 클립이 거의 발동하지 않아 사실상
+          \textbf{REINFORCE로 수렴}(더 공격적).
+        \item 실제 튜닝: 0.1$\sim$0.3 사이 탐색, 0.2는
+          ``안정성 vs 속도'' 균형점의 경험적 기본값.
+          ($\epsilon$ 과 GAE의 $\lambda$ 는 독립적
+          하이퍼파라미터이나 함께 안정성에 영향 — 11.3 FAQ.)
+      \end{itemize}
+    \item \kb{Q. Pendulum이 DQN(CartPole)보다 느린 이유
+      (연속 vs 이산)?}
+      \begin{itemize}
+        \item 이산: 최적점이 확률 벡터의 \textbf{꼭짓점}
+          (예: $[1,0]$) — softmax가 꼭짓점 \textit{근처}까지만
+          밀어주면 됨.
+        \item 연속: 상태마다 ``맞는 토크''가 연속 값 —
+          $\mu_\theta(s)$ 가 \textbf{연속 매개변수 곡면 전체}를
+          상태별로 적절히 맞춰야 하고 $\sigma_\theta$ 도 함께
+          학습, 탐색할 파라미터 공간이 무한대. ``근처까지''가
+          아니라 매 상태별 ``적절한 값''에 접근해야 함 —
+          연속 제어가 근본적으로 어려운 점.
+      \end{itemize}
+  \end{itemize}
+\end{frame}

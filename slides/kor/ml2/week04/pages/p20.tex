@@ -1,0 +1,25 @@
+\begin{frame}{FAQ}
+  \begin{itemize}
+    \item \textbf{Q. 정책평가는 왜 한 번에 안 풀고 반복으로
+      근사?} 상태가 적으면 연립 \textbf{일차방정식}으로 한 번에
+      풀 수도(Week 2.2 정규방정식 같은 닫힌 해). 하지만 상태가
+      많아지면 직접 풀이($O(n^3)$ 행렬 역산)가 반복법보다
+      \textbf{비싸지는} 경우가 많아, 실전에선 \textbf{반복적
+      정책평가를 표준}.
+    \item \textbf{Q. ``이 정책이 최적인가''를 정책평가만으로
+      판별할 수 있나요?} \textbf{아니다} --- 주어진 $\pi$ 의
+      $V^\pi$ \textbf{만} 계산할 뿐. 판별하려면 4.2절
+      \kb{정책개선 단계}: $\arg\max_a [R + \gamma \sum P\, V^\pi]$
+      가 현재 $\pi(s)$ 와 \textbf{모든 상태}에서 일치하는가
+      확인. ``아무것도 안 바꾸는 정책''이 바로 \textbf{최적
+      정책}(4.2절 핵심 정리).
+    \item \textbf{Q. $\gamma$ 가 1에 가까울수록 더 느려지나요?}
+      \textbf{맞다} --- $\gamma$ 가 \kb{축소율}이라 매 sweep
+      오류가 $\gamma$ 배로 줄어듦. $\gamma = 0.9$: $10^{-6}$ 까지
+      $\approx 120$ sweep, $\gamma = 0.99$: $\approx 1381$
+      sweep(\textbf{10배}). 이 사실이 4.2·4.3절에도 \textbf{그대로}.
+  \end{itemize}
+  {\footnotesize Q. $P$ 를 모르면? Week 5--7(MC, TD, Q-learning)
+  이 그 문제 --- 이 절 반복법이 \kb{모델 기반의 정답 기준}이므로
+  model-free의 ``정확성''을 이 절 값과 비교해 평가.}
+\end{frame}

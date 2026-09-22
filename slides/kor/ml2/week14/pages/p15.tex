@@ -1,0 +1,29 @@
+\begin{frame}{물리 시뮬레이터를 Gymnasium ``환경''으로 감싸기}
+  \begin{itemize}
+    \item Week 9--13의 알고리즘(DQN, PPO)을 이 MuJoCo 진자에
+      그대로 달아본다
+    \item 필요한 것은 \textbf{딱 하나} --- MuJoCo를
+      \texttt{(s, a, r, done)}을 돌려주는 \texttt{reset()}\,/\,
+      \texttt{step()} 인터페이스로 \textbf{감싸는} 작은 클래스
+  \end{itemize}
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{\texttt{reset()}}
+      \begin{itemize}
+        \item $q_{pos}$ 초기화
+        \item (상태, 정보) 반환
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{\texttt{step(action)}}
+      \begin{itemize}
+        \item \texttt{ctrl}에 행동 넣고 \texttt{mj\_step}
+        \item (다음 상태, 보상, 종료 여부) 반환
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  {\footnotesize 이 30줄 클래스는 \texttt{Reacher-v5}\,·\,\texttt{Ant-v5}가
+  내부에서 하는 일의 \textbf{미니판}이다.}
+\end{frame}

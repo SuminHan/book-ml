@@ -1,0 +1,26 @@
+\begin{frame}{진자 모델의 요소들}
+  \begin{itemize}
+    \item $q_{pos}$: 1개 --- 힌지 각도 $\theta$ \quad
+      $q_{vel}$: 1개 --- 각속도 $\dot\theta$
+    \item $\theta=0$: 막대가 아래로 수직인 \textbf{자연 휴식 상태}
+      (목표)
+    \item \texttt{damping}=$0.1$: 관절 자체의 마찰 --- 속도에 비례해
+      반대 방향 힘을 \textbf{자동}으로 가함
+  \end{itemize}
+  \vskip0.5em
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    항목 & 의미 \\
+    \midrule
+    \texttt{capsule fromto} & 축(0,0,0)에서 끝(0,0,-0.5)까지 0.5\,m 막대 \\
+    \texttt{ctrl} & \textbf{우리가} 매 스텝 직접 지정하는 토크 \\
+    실제 힘 & \texttt{ctrl} + 마찰력 합산 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{block}{\kb{PD(Proportional--Derivative, 비례-미분) 제어}}
+    토크 $= -3\,\theta - 0.5\,\dot\theta$
+    --- \textbf{P항}: 각도만큼 반대 힘 / \textbf{D항}: 각속도만큼
+    ``브레이크''
+  \end{block}
+\end{frame}

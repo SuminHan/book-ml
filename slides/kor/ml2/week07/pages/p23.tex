@@ -1,0 +1,29 @@
+\begin{frame}{실습: $n$을 바꿔가며 최적 지점 찾기}
+  \begin{itemize}
+    \item 같은 7-state random walk 환경. 참고: 이 절의 설정에서는
+      \textbf{참값 $V(s) = s/6$}(예: $V(3)=0.5$)이 정확히 알려져
+      있음.
+    \item \texttt{n\_step\_td}로 10 에피소드 학습, $n$별 RMS 오차,
+      \textbf{20회 반복 평균}:
+  \end{itemize}
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    $n$ & 평균 RMS 오차 \\
+    \midrule
+    1 & 0.3410 \\
+    3 & 0.1830 \\
+    \textbf{5} & \textbf{0.1687} $\leftarrow$ 최적 \\
+    10 & 0.1883 \\
+    50 & 0.2178 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item 다시 \textbf{U자} --- 양 극단($n=1$, $n=50$)보다 중간
+      ($n=5$)이 최저. (7.1의 30 seed 실험에선 $n=3$이 최저였음 ---
+      설정·시드 수에 따라 바닥 위치가 미세하게 움직임.)
+    \item 이 표가 아래 그림의 \textbf{왼쪽 패널}을 그대로 그린 것.
+  \end{itemize}
+\end{frame}

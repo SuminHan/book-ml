@@ -1,0 +1,39 @@
+\begin{frame}{숫자로 검증: 2행동 밴딧 한 스텝}
+  \begin{itemize}
+    \item \textbf{1스텝 밴딧}: 행동 0 $\to$ $+1.0$, 행동 1 $\to$
+      $+1.8$. $s=1$, $\pi(a|s) = \text{softmax}([0,0])$ $\to$
+      $p(a=0)=p(a=1)=0.5$.
+    \item \textbf{참값}: $V(s) = 0.5\times1.0 + 0.5\times1.8
+      = \mathbf{1.4}$.
+    \item 그래디언트: $\nabla\log\pi(a{=}0) = [0.5, -0.5]$,
+      $\nabla\log\pi(a{=}1) = [-0.5, 0.5]$.
+  \end{itemize}
+  \vskip0.3em
+  \scriptsize
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+     & $a{=}0$ 샘플 & $a{=}1$ 샘플 & 기댓값 (참 기울기) \\
+    \midrule
+    REINFORCE: $G_t\nabla\log\pi$
+      & $+1.0\,[0.5,-0.5] = [0.5,-0.5]$
+      & $+1.8\,[-0.5,0.5] = [-0.9,0.9]$
+      & $0.5[0.5,-0.5]+0.5[-0.9,0.9] = [-0.2,0.2]$ \\
+    베이스라인: $(G_t{-}V)\nabla\log\pi$
+      & $(1.0-1.4)[0.5,-0.5] = [-0.2,0.2]$
+      & $(1.8-1.4)[-0.5,0.5] = [-0.2,0.2]$
+      & $[-0.2,0.2]$ \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.4em
+  \begin{itemize}
+    \item \textbf{기댓값은 $[-0.2,0.2]$ 로 완전히 같음} ---
+      둘 다 ``행동 1(보상 $+1.8$)의 확률을 올리는 방향''.
+    \item 그런데 \textbf{샘플 하나하나}는 다름: REINFORCE의 첫
+      성분은 매 스텝 \textbf{1.4나 튀어다니는} 신호, 베이스라인
+      버전은 \textbf{두 샘플이 정확히 같은 벡터} --- 이 작은
+      예에서는 분산이 \textbf{정확히 0}.
+  \end{itemize}
+  {\footnotesize ``평균은 그대로, 흔들림은 줄어든다'' ---
+  숫자로 보임.}
+\end{frame}

@@ -1,0 +1,144 @@
+\documentclass[11pt,a4paper]{article}
+
+% ============ 폰트 / 한글 ============
+\usepackage{fontspec}
+\newcommand{\fontdir}{/Users/hansumin/Library/Fonts/}
+\setmainfont[Path=\fontdir, BoldFont={NotoSansCJKkr-Bold.otf}]{NotoSansCJKkr-Regular.otf}
+\XeTeXlinebreaklocale "ko"
+\XeTeXlinebreakskip=0pt plus 0.1pt
+
+% ============ 레이아웃 ============
+\usepackage[a4paper,top=20mm,bottom=20mm,left=20mm,right=20mm]{geometry}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{setspace}
+\setlength{\parindent}{0pt}
+\setstretch{1.15}
+
+\pagestyle{plain}
+\renewcommand{\thepage}{\arabic{page}}
+\renewcommand{\footnotesize}{\normalsize}
+
+% 가.일반사항 표
+\newcommand{\gilban}[5]{%
+  \noindent
+  \begin{tabular}{|p{2.3cm}|p{4.3cm}|p{2.3cm}|p{4.3cm}|}
+    \hline
+    \centering 교과목명 & \centering\arraybackslash #1 & \centering 교과목 번호 & \centering\arraybackslash #2 \\
+    \hline
+    \centering 강-실-학(숙제) & \multicolumn{3}{l|}{\hspace{2mm}#3} \\
+    \hline
+    \centering 선수과목 & \multicolumn{3}{l|}{\hspace{2mm}#4} \\
+    \hline
+    \centering 연계과목 & \multicolumn{3}{l|}{\hspace{2mm}#5} \\
+    \hline
+  \end{tabular}
+}
+
+\newcounter{gwamok}
+
+\newcommand{\gwamoktitle}[3]{%
+  \stepcounter{gwamok}
+  \vspace{6mm}
+  \noindent{\bf \thegwamok. #1 (#2, #3)}\par
+  \vspace{1mm}
+  \noindent\hspace*{3mm}가. 일반사항\par
+  \vspace{1mm}
+}
+
+\begin{document}
+
+\gwamoktitle{기계학습과 심층학습}{선택}{3학점}
+\gilban{기계학습과 심층학습}{MC0000}{3-0-3(6)}{없음}{강화학습}
+
+\vspace{3mm}
+\hspace*{3mm}나. 교과목 개요\\[1mm]
+\hspace*{5mm}\begin{minipage}{0.92\textwidth}
+기계학습과 심층학습 교과에서는 데이터로부터 패턴을 학습하는 기계학습의 기본 원리부터 최신
+딥러닝 기술까지를 다루는 과목이다. 회귀와 분류 등 고전적인 지도학습
+기법, 군집화 등 비지도학습 기법을 익힌 뒤, 신경망 기반의 딥러닝으로
+확장하여 합성곱 신경망, 시퀀스 모델, 어텐션과 트랜스포머, 생성모델에
+이르는 최신 인공지능 기술의 원리를 학습한다. 학기 중반과 종료 시점에
+팀 프로젝트를 통해 배운 이론을 실제 데이터에 적용하고 그 결과를
+정직하게 검증하고 보고하는 경험을 쌓는다.
+\end{minipage}
+
+\vspace{3mm}
+\hspace*{3mm}다. 교과목 목표\\[1mm]
+\hspace*{5mm}\begin{minipage}{0.92\textwidth}
+지도학습(회귀, 분류)과 비지도학습(군집화, 차원축소)의 원리를 이해하고
+구현하며, 정규화와 교차검증 등 모델 선택과 검증 원칙을 적용한다.
+신경망의 학습 원리(역전파)를 이해하여 CNN, RNN, 트랜스포머를 구현하고,
+팀 프로젝트를 통해 머신러닝 프로젝트를 정직한 절차로 수행하는 능력을
+기른다.
+\end{minipage}
+
+\vspace{3mm}
+\hspace*{3mm}라. 교과목 내용
+\begin{enumerate}[leftmargin=13mm,itemsep=0mm,label=\arabic*)]
+\item 회귀와 분류 등 지도학습, 클러스터링 등 비지도학습
+\item SVM, 정규화, 트리 기반 모델(GBDT) 등 모델 선택과 검증
+\item 신경망 기초와 역전파, CNN, 시퀀스 모델
+\item 어텐션과 트랜스포머
+\item 표현학습과 생성모델(GNN, PCA, VAE, GAN, Diffusion 등)
+\end{enumerate}
+
+\vspace{3mm}
+\hspace*{3mm}마. 평가방안\\[1mm]
+\hspace*{5mm}\begin{minipage}{0.92\textwidth}
+본 교과의 평가는 다양한 평가 방식을 활용한다. 매 주차 개념 이해도를
+확인하는 퀴즈, 개인별/팀별 과제, 중간고사와 기말고사, 그리고 두 차례의
+팀 프로젝트(보고서, 발표, 동료평가 포함)를 종합적으로 평가한다. 이때,
+결과의 우수성보다 실험 절차의 정직성(베이스라인 비교, 반복 검증,
+결과에 대한 정직한 보고)을 평가하여 데이터로부터 배운 모델을 정직하게
+검증하는 능력의 기초를 쌓는다.
+
+\end{minipage}
+
+\clearpage
+
+\gwamoktitle{강화학습}{선택}{3학점}
+\gilban{강화학습}{MC0000}{3-0-3(6)}{기계학습과 심층학습}{없음}
+
+\vspace{3mm}
+\hspace*{3mm}나. 교과목 개요\\[1mm]
+\hspace*{5mm}\begin{minipage}{0.92\textwidth}
+강화학습 교과에서는 에이전트가 환경과의 상호작용을 통해 스스로 좋은 행동을
+학습하는 강화학습의 원리를 다룬다. 멀티암 밴딧과 마르코프 결정과정
+(MDP) 같은 기본 개념에서 출발하여 동적계획법, 몬테카를로 방법, 시간차
+학습 등 표 기반 강화학습 기법을 익힌 뒤, 함수근사와 심층신경망을 결합한
+DQN, 정책 경사 방법, PPO 등 심층강화학습으로 확장한다. 후반부에는
+모방학습과 인간 피드백 기반 강화학습(RLHF), 로봇 시뮬레이션, 몬테카를로
+트리 탐색 등 실전 응용을 학습한다.
+\end{minipage}
+
+\vspace{3mm}
+\hspace*{3mm}다. 교과목 목표\\[1mm]
+\hspace*{5mm}\begin{minipage}{0.92\textwidth}
+마르코프 결정과정(MDP)과 벨만 방정식을 이해하고, 동적계획법, 몬테카를로,
+시간차 학습 등 표 기반 강화학습을 구현한다. 함수근사를
+이용한 심층강화학습(DQN, 정책 경사, PPO)과 모방학습, RLHF 등 최신
+응용 기법의 원리를 이해하며, 팀 프로젝트를 통해 정직한 실험 절차로
+알고리즘을 시뮬레이션 환경에 적용하는 능력을 기른다.
+\end{minipage}
+
+\vspace{3mm}
+\hspace*{3mm}라. 교과목 내용
+\begin{enumerate}[leftmargin=13mm,itemsep=0mm,label=\arabic*)]
+\item 멀티암 밴딧과 MDP 기초
+\item 동적계획법, 몬테카를로, 시간차 학습 등 표 기반 강화학습
+\item 함수근사와 DQN, 정책기반 강화학습, PPO 등 심층강화학습
+\item 모방학습과 RLHF
+\item 로봇 시뮬레이션과 모델기반 강화학습(MCTS 포함)
+\end{enumerate}
+
+\vspace{3mm}
+\hspace*{3mm}마. 평가방안\\[1mm]
+\hspace*{5mm}\begin{minipage}{0.92\textwidth}
+본 교과의 평가는 매 주차 퀴즈, 과제, 중간고사와 기말고사, 그리고 두
+차례의 팀 프로젝트(보고서, 발표, 동료평가)를 종합적으로 활용한다. 팀
+프로젝트에서는 시드를 달리한 반복 실험, 무작위 정책 대비 베이스라인
+비교 등 실험 절차의 정직성을 성능 자체보다 중요하게 평가한다.
+\end{minipage}
+
+\end{document}

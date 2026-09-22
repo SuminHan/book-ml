@@ -1,0 +1,33 @@
+\begin{frame}{자주 묻는 질문}
+  \small
+  \textbf{Q. 커널을 아무 함수나 써도 되나요?}
+  \begin{itemize}
+    \item 아니다 — 어떤 $\phi$ 의 내적에 대응하려면 \kb{머서 조건}
+      (커널 행렬이 \textbf{양의 준정부호})을 만족해야 함.
+      다항·RBF는 증명되어 안심하고 쓸 수 있지만, 아무 함수는
+      안 된다.
+  \end{itemize}
+  \vskip0.4em
+  \textbf{Q. $\phi$ 가 무한차원이면 어떻게 학습하나요?}
+  \begin{itemize}
+    \item $\phi$ 자체를 \textbf{계산하지 않기 때문에} — 쌍대 문제
+      구조상 데이터는 \textbf{내적값}으로만 등장하고, RBF는
+      유클리드 거리 하나로 계산.
+    \item ``무한차원''은 \textbf{개념적} 차원일 뿐, 실제 계산
+      비용이 무한하다는 뜻이 \textbf{아님}.
+  \end{itemize}
+  \vskip0.4em
+  \textbf{Q. 다항 커널의 도수 $d$ 는 어떻게 고르나요?}
+  \begin{itemize}
+    \item $d$ 는 ``경계가 얼마나 복잡한 곡면일 수 있는가'' 조절 —
+      $d=1$ 직선, $d=2$ 포물선/쌍곡선형, $d=3$ 더 복잡한 곡면.
+      \textbf{$d$ 를 키울수록 과적합 위험}.
+      XOR에선 $d=2$가 정확히 필요했지만, 실전은 \textbf{검증셋으로
+      튜닝}($(C,d)$ 함께 그리드 서치, $d>3$은 거의 안 씀).
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize 이 ``내적만 계산하면 고차원 변환을 우회한다''는
+  원리는 SVM에만 국한 \textbf{아님} — RBF 네트워크, Gaussian
+  Processes, 신경망의 \textbf{커널 정리}(neural tangent kernel,
+  Jacot et al. 2018)까지 이어진다.}
+\end{frame}

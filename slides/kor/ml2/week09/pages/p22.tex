@@ -1,0 +1,20 @@
+\begin{frame}{문제 1: 목표가 계속 움직인다}
+  \begin{itemize}
+    \item $\theta$가 매 스텝 갱신 $\Rightarrow$ 손실의 목표값도 매 스텝 바뀜.
+    \item 지도학습은 정답 $y$가 절대 안 바뀌는데, 여기선
+      \textbf{``정답''이 스스로를 쫓아다니는} 셈.
+    \item 결과: 학습이 불안정해짐 (진동, 발산).
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{해결책: \kb{타겟 네트워크}(Target Network)}
+    $Q$와 \textbf{똑같은 구조}의 두 번째 신경망 $Q(s,a;\theta^{-})$를 두고,
+    목표값 계산에는 \textbf{타겟 네트워크만} 쓴다:
+    \[
+    J(\theta) = \mathbb{E}\left[\left(r + \gamma \max_{a'} Q(s',a';\theta^{-})
+    - Q(s,a;\theta)\right)^2\right]
+    \]
+    $\theta^{-}$는 매 스텝 갱신 \textbf{안 되고}, 일정 주기(예: 1000스텝)마다
+    $\theta$의 현재값으로 \textbf{통째로 복사}. 그 사이 목표값은 고정 $\Rightarrow$
+    짧은 구간 동안은 ``정답이 고정된'' 지도학습 최적화.
+  \end{block}
+\end{frame}

@@ -1,0 +1,24 @@
+\begin{frame}{경로 ② 몬테카를로(Ch5) · 경로 ③ SARSA(Ch6 on-policy)}
+  \small
+  \begin{itemize}
+    \item \kb{경로 ② 몬테카를로} — greedy 정책(run@S, collect@G)으로
+      에피소드를 끝까지 roll-out하고, 실제 리턴 $G_t$를 그대로 목표값으로
+      (첫방문 MC). 4000 에피소드로 $V(S) \approx 2.594$ — 참값과
+      \textbf{0.2\% 차이}. MC는 \textbf{편향이 없다}(실제 실현된 리턴의
+      기댓값이 정확히 $V^\pi$) — ``충분히 많이 돌리면'' 약속이 이
+      예에선 정말로 지켜진다.
+    \item \kb{경로 ③ SARSA} — TD 오차로 갱신하되, 다음 행동 $a'$도
+      \textbf{실제 행동 정책($\varepsilon$-greedy)}이 고른 것을 쓴다.
+      \vskip0.2em
+      \begin{block}{이번 학기의 핵심 드라마}
+        \textbf{SARSA는 최적값이 아니라 ``탐험하는 행동 정책의 값''을
+        배운다.} $\varepsilon=0.3$ 고정 시 $\pi$의 값 $V^\pi(S)
+        \approx 2.29$로 수렴 — 해석적으로 \textbf{정확히 2.292}.
+        \textbf{2.589가 아니라 2.29.}
+      \end{block}
+      (참고: 이때 $Q(S,\text{run})$ 자체는 $\approx 2.53$ — $\pi$가
+      15\% 확률로 rest를 실제로 고르기 때문에
+      $V^\pi(S) = 0.85\,Q^\pi(S,\text{run}) + 0.15\,Q^\pi(S,\text{rest})$
+      가 \emph{실제 선택 분포}까지 반영해 더 낮아짐.)
+  \end{itemize}
+\end{frame}

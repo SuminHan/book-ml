@@ -1,0 +1,27 @@
+\begin{frame}{베이스라인이 ``틀린 값''이어도 기댓값은 안 바뀐다}
+  \begin{itemize}
+    \item $b = 1.9$ (참값 1.4와 \textbf{다른} 값)로 빼면:
+      샘플은 $[-0.45, 0.45]$ / $[0.05, -0.05]$ 가 되지만,
+      기댓값은 \textbf{여전히} $[-0.2, 0.2]$.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{이 사실이 실전적으로 중요한 이유 하나}
+    \textbf{Critic은 ``완벽할 때까지'' 기다릴 필요가 없다.}
+    처음부터 정확하지 않아도, \textbf{대략 근사한} $V$ 만 있으면
+    분산은 크게 줄고 기댓값은 안 훼손됨.
+    \vskip0.2em
+    $\to$ ``Critic이 \textbf{쓰이면서} 학습하고, \textbf{학습하면서}
+    더 정확해진다''는 상호보완 구조가 성립하는 \textbf{근거}가
+    바로 이 불변성.
+  \end{block}
+  \vskip0.4em
+  \begin{block}{\kb{어드밴티지} $A_t := G_t - V(s_t)$}
+    $V(s_t) = \mathbb{E}[G_t|s_t]$ 는 ``이 상태에서의 \textbf{평균적}
+    수준'' $\to$ $A_t$ = \textbf{평균 대비 향상분}.
+    $A_t > 0$: 평균보다 더 좋은 결과 $\to$ 그 행동 확률
+    \textbf{올림}. $A_t < 0$: 평균보다 나쁨 $\to$ \textbf{내림}.
+    (10.2의 정규화 줄 = ``에피소드 내 평균''이라는 가장 느슨한
+    베이스라인. Actor-Critic은 이를 \textbf{상태별 $V(s_t)$}로
+    업그레이드 --- 상태 의존적 기준값)
+  \end{block}
+\end{frame}

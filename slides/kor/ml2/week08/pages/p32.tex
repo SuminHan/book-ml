@@ -1,0 +1,29 @@
+\begin{frame}{``우연히 좋은'' 패턴 5가지 (1/2)}
+  {\footnotesize ML1에서 원천 = 테스트셋 유출·정확도의 함정·과적합.
+  강화학습에는 \textbf{검증/테스트셋 자체가 없으니} 학습 과정의
+  \textbf{무작위성}이 같은 역할. 8.1 실수 5가지의 \emph{리뷰어 눈} 버전.}
+  \vskip0.4em
+  \scriptsize
+  \begin{tabular}{@{}p{0.16\textwidth}p{0.24\textwidth}p{0.26\textwidth}p{0.30\textwidth}@{}}
+    \toprule
+    패턴 & 겉보기 & 실제로는 & 반박 가능한 질문(근거) \\
+    \midrule
+    \textbf{1. 시드 1개 학습 곡선} & ``곡선이 잘 올라가네'' & 학습 과정의
+      우연 --- $\varepsilon$-greedy + (FrozenLake 등) 전이 무작위성,
+      같은 코드도 매번 다른 곡선 & ``시드 2개 더 돌리면 greedy 평가의
+      표준편차가? 알고리즘 간 차이가 그 편차보다 큰가요?''(8.1 §비교
+      프로토콜) \\
+    \textbf{2. 평가 시에도 $\varepsilon$ 켜둔 채} & ``최종 정책의 성과다'' &
+      ``탐험이 섞인 행동''의 성과 --- CliffWalking에서 탐험 혼입 시
+      \textbf{Q만 급격히} 망가지고($-13\to-45$), SARSA는 거의 안
+      흔들림($-17\to-21$) & ``최종 평가가 $\varepsilon=0$이었나요?
+      $\varepsilon=0.1$로 하면 \textbf{순위가 뒤집힙니다}(Ch\,6.3 경로
+      차이)''(§실습 2) \\
+    \textbf{3. 알고리즘마다 다른 $\varepsilon$ 스케줄} & ``각자가 최적의
+      설정으로'' & \textbf{한 요인만 바꾸는} 비교 실험 원칙 위반 ---
+      알고리즘 차이와 스케줄 효과가 뒤섞임 & ``두 알고리즘에 \textbf{같은
+      스케줄}을 적용했나요? 한쪽만 감쇠했다면 어떻게 분리했나요?''(8.1
+      §자주 하는 실수) \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

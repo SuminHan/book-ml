@@ -1,0 +1,18 @@
+\begin{frame}[fragile]{Dropout 코드: masking + 스케일 보정}
+\begin{lstlisting}
+def dropout(activations, p, training):
+    if not training:
+        return activations
+    import random
+    return [0.0 if random.random() < p else a / (1 - p)
+            for a in activations]
+\end{lstlisting}
+  \begin{block}{왜 $/(1-p)$로 스케일을 보정하는가}
+    학습 때 평균적으로 뉴런의 $(1-p)$만 살아있으므로,
+    \textbf{추론 시 전체 뉴런을 다 쓰는 것과 기댓값을 맞추기}
+    위함 (inverted dropout).
+  \end{block}
+  \vskip0.2em
+  {\footnotesize Dropout: Srivastava--Hinton 등 2014, 아이디어는
+  Hinton 2012 (co-adaptation 방지).}
+\end{frame}

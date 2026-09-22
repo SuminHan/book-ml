@@ -1,0 +1,26 @@
+\section{5.3 중요도 샘플링과 MC 의 한계}
+\begin{frame}{off-policy 라는 문제: 그냥 평균내면 편향}
+  지금까지의 MC 는 ``행동에 쓰는 정책''과 ``가치를 평가하려는
+  정책''이 같았다 (\kb{on-policy}) ---
+  $\varepsilon$-greedy 로 행동하면서 그 $\varepsilon$-greedy
+  정책 \textbf{자신}의 가치를 학습했다.
+  \vskip0.5em
+  그런데 ``\textbf{무작위로 행동해서 모은 데이터}로
+  \textbf{탐욕적 정책의 가치}를 알고 싶다''면(\kb{off-policy}),
+  그냥 평균을 내면 \textbf{안 된다} ---
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{행동 정책} $b$ (behavior)
+
+      데이터를 \textbf{모을 때} 쓴 정책.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{목표 정책} $\pi$ (target)
+
+      가치를 \textbf{평가하려는} 정책.
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  $b \neq \pi$ 면 관찰된 리턴을 \textbf{그대로} 평균내는 것은
+  \textbf{편향된(biased) 추정}이다.
+\end{frame}

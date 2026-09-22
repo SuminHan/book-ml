@@ -1,0 +1,29 @@
+\section{17.3 포스트트레이닝: SFT, RLHF, DPO}
+\begin{frame}{사전학습만으로는 부족한 이유: InstructGPT}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item 2022년 OpenAI \kb{InstructGPT}(Ouyang et al.,
+          2022) 놀라운 관찰: 파라미터가 \textbf{100배 더 적은}
+          모델이라도 사람이 원하는 방향으로 다듬어졌다면,
+          사전학습만 거친 거대 모델보다 사람들이 \textbf{훨씬
+          더 선호}.
+        \item 17.1의 사전학습(다음 토큰 예측)은
+          ``\textbf{그럴듯한 텍스트}''를 만들어내지만, 그게
+          ``사람이 원하는 대답''이라는 보장은 아님.
+        \item 사전학습 데이터에는 훌륭한 글도, 엉뚱하거나
+          무례한 글도 \textbf{섞여} 있기 때문.
+        \item \kb{포스트트레이닝}: 사전학습된 모델을 ``사람이
+          실제로 원하는 방향''으로 다듬는 단계.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_instructgpt.png}
+      \vskip0.4em
+      {\footnotesize InstructGPT 3단계 학습 파이프라인(원
+      논문 Figure 2) — (1) SFT, (2) 보상모델(RM) 학습, (3) 이
+      보상모델을 이용한 PPO 강화학습.}
+    \end{column}
+  \end{columns}
+\end{frame}

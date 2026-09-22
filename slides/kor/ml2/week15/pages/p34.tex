@@ -1,0 +1,18 @@
+\begin{frame}{세 지점 ③: 터미널 상태의 확장}
+  \begin{itemize}
+    \item 게임이 이미 끝난 노드(돌 0개)에서는
+      \texttt{nim\_moves}가 \textbf{빈 리스트}를 돌려주므로,
+      터미널 검사를 하지 않고 확장을 시도하면
+      \texttt{IndexError}
+    \item \texttt{nim\_rollout}도 \textbf{같은 이유}로 첫 줄에
+      터미널 처리가 있다
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{``마지막 돌을 가져간 쪽이 이긴다''를 코드로}
+    \textbf{``누가 마지막에 이동했는가''}를
+    \texttt{-player}(차례가 \textbf{전달되기 전}의
+    플레이어)로 판정해야 한다는 점에 주의 ---
+    \texttt{nim\_rollout}이 종료 상태에서 \texttt{-player}를
+    반환하는 이유.
+  \end{block}
+\end{frame}

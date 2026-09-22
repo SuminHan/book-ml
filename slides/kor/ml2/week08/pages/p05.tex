@@ -1,0 +1,23 @@
+\begin{frame}{환경 고르는 실전 가이드: 점수를 매기는 4가지 기준}
+  \small
+  \begin{tabular}{@{}p{0.28\textwidth}p{0.66\textwidth}@{}}
+    \toprule
+    기준 & 왜인가 \\
+    \midrule
+    (1) 상태-행동 공간 크기 & 상태가 많으면(Taxi 500개) 표를 채우는
+      에피소드 수가 급증 \\
+    (2) 보상 구조가 ``학습 중''과 ``최종 정책''을 갈라놓나 & CliffWalking처럼
+      실수에 비례하지 않게 큰 벌($-100$) $\to$ on/off-policy 차이가 극적으로
+      드러나 6.3절을 숫자로 보여줌 \\
+    (3) 확률적 전이 & FrozenLake 미끄럼 $\to$ ``같은 정책이어도 에피소드가
+      매번 달라지는'' RL 특유의 불확실성 체감 \\
+    (4) 코드 재사용성 & Ch\,6.3·7.3 강의 코드가 거의 그대로 적용되는가.
+      시작 상태 다중 여부(Taxi)·에피소드 길이 상한 확인 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  {\footnotesize Gymnasium 레지스트리 이름은 버전에 따라 달라짐 --- 최근 버전에서
+  \texttt{Taxi-v3}는 deprecated $\to$ \texttt{Taxi-v4} 사용.
+  CliffWalking은 \texttt{gym.make("CliffWalking-v1")} 로 바로 사용
+  (4$\times$12 격자, 시작=좌하단, 목표=우하단, 사이를 절벽이 가로막음).}
+\end{frame}

@@ -1,0 +1,29 @@
+\begin{frame}{해결책: \kb{경험 재현}(Experience Replay)}
+  \begin{itemize}
+    \item 경험한 $(s, a, r, s')$를 바로 학습에 쓰지 않고,
+      \textbf{재현 버퍼}(replay buffer)라는 큰 저장소에 쌓아둔다.
+    \item 학습할 때 버퍼에서 \textbf{무작위}로 미니배치 샘플링.
+  \end{itemize}
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{이득 1: 상관 제거}
+      \begin{itemize}
+        \item 버퍼 = ``지난 10,000스텝''의 경험 혼합.
+        \item 무작위 32개는 \textbf{시간적으로 멀리} 떨어져 있음
+          (혼합시간보다 훨씬 벌어진 묶음 $\Rightarrow$ 사실상 독립).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{이득 2: 데이터 재사용}
+      \begin{itemize}
+        \item 한 번 모은 경험이 수천 번 샘플링되며 반복 학습에 사용.
+        \item 지도학습의 ``1 에포치'' 데이터를 \textbf{수천 에포치 worth}로
+          재사용.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  {\footnotesize 두 이득은 \textbf{서로 다른 문제}를 해결 --- 분리해 명심.
+  (Week 5.3의 ``과거 경험을 다른 목적으로 재사용''과 같은 뿌리.)}
+\end{frame}

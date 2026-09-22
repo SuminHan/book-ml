@@ -1,0 +1,24 @@
+\begin{frame}{자주 하는 실수 (1): ``코어가 많으니까 자동으로 빨라진다''}
+  \small
+  \begin{tabular}{@{}p{4.6cm}p{9.4cm}@{}}
+    \toprule
+    실수 & 왜 틀린가 \\
+    \midrule
+    ``GPU 코어가 16,384개니까 16,384배 빠진다'' &
+      \kb{Amdahl}: 순차 부분(동기화, VRAM$\leftrightarrow$host
+      복사, 정책 업데이트)이 병렬화되면 \textbf{상수로 묶임}.
+      환경 스텝만 볼 때 이론적 상한은 코어 수지만, 전체
+      파이프라인(경험 수집 $\to$ 미니배치 $\to$ 업데이트)의
+      속도는 \textbf{병렬화 불가 부분}이 정한다. 실제 Isaac Sim
+      벤치마크도 ``환경 스텝 $\times$수천''이지 ``$\times$16,384''
+      가 아니다 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  {\footnotesize 실수 2: ``\textbf{배치(텐서)로 모으는 것 = GPU
+  병렬}'' --- 배치는 \textbf{필요조건}이지 \textbf{충분 조건}이
+  아님. numpy가 CPU에서 벡터화해도 코어는 8$\sim$16개. GPU가 그
+  같은 배치를 수천 코어로 동시 실행해야 \textbf{진짜 GPU 병렬}.
+  ``배치로 썼으니까 빠르다''는 CPU 76배(numpy 벡터화 + 오버헤드
+  제거)와 GPU 수천 배를 \textbf{혼동}.}
+\end{frame}

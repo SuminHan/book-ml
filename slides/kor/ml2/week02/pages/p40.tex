@@ -1,0 +1,31 @@
+\begin{frame}{팔 개수가 늘어나면: $k=10$ 예}
+  $k=10$: 평균이 0.5부터 1.3까지 0.1 간격 9개 + 마지막 팔만 2.0.
+  같은 seed=0, 2000스텝.
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \kb{낙관적 초기화}: 각 팔 \textbf{정확히 1번}만 당겨진 뒤
+      가장 좋게 나온 10번째 팔(평균 2.0)에 집중.
+      10번째 팔 1991회, 나머지 9개 각 1회.
+      \textbf{총 보상 4001.3}.
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \kb{UCB}: ``불확실성이 큰 팔''을 계속 골라 재확인.
+      10번째 팔 1786회, 나머지 10$\sim$53회(합계 214회).
+      \textbf{총 보상 3802.1}.
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{itemize}
+    \item \textbf{ε-greedy의 낭비는 $k$ 에 선형으로 증가} ---
+      무작위 탐험이 나쁜 9개 팔에 떨어질 확률 높음.
+    \item \textbf{낙관적 초기화}: ``각 팔 1회'' 최소 비용, 탐색
+      비용이 $k$ 에 그침(여기서 9회).
+    \item \textbf{UCB}: $k$ 개 모두에 기회를 주되 $N$ 이 커지는
+      팔은 줄임 --- 탐험 비용을 $k$ 에 대해 \textbf{서브선형}으로
+      억제.
+  \end{itemize}
+  \vskip0.2em
+  {\footnotesize 팔이 수천 개(온라인 광고 수천 개 배너)인 실전
+  문제에서는 바로 이 차이가 전략 선택을 가름.}
+\end{frame}

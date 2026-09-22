@@ -1,0 +1,21 @@
+\begin{frame}{PPO의 전체 목적함수 — 세 항}
+  \small
+  실전 PPO는 Actor-Critic 구조(10.3절)이므로, $L^{\mathrm{CLIP}}$
+  은 \textbf{정책(Actor) 부분}만. 실제 미니배치 갱신:
+  \[
+  L(\theta) = \underbrace{\mathbb{E}_t\Big[\min\Big(r_tA_t,\;
+  \mathrm{clip}(r_t,1-\epsilon,1+\epsilon)A_t\Big)\Big]}
+  _{\text{정책 손실(최대화)}}
+  \underbrace{-\,c_v\,\mathbb{E}_t\big[(V_\theta(s_t)-\hat{R}_t)^2\big]}
+  _{\text{Critic 손실(최소화)}}
+  \underbrace{+\,c_e\,\mathbb{E}_t\big[\mathcal{H}(\pi_\theta
+  (\cdot\mid s_t))\big]}_{\text{엔트로피 보너스(탐험 유지)}}
+  \]
+  \begin{itemize}
+    \item $V_\theta$ = 10.3절 Critic, $\hat{R}_t$ = Critic
+      업데이트 목표값 (실습: GAE로 계산한 어드밴티지 $+V$).
+    \item $c_v,\,c_e$ = 손실 스케일 정규화 상수 (실습: 0.5, 0.01).
+    \item 엔트로피 항 = Week 5.2의 $\epsilon$-greedy의
+      \textbf{연속 버전}.
+  \end{itemize}
+\end{frame}

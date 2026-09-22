@@ -1,0 +1,34 @@
+\begin{frame}{실험: $\varepsilon$ 을 0$\to$1로 훑기}
+  \textbf{실험 설정}: $k=3$, $q^* = [1.0, 1.5, 2.0]$, $T=2000$,
+  $\varepsilon \in \{0, 0.01, 0.05, 0.1, 0.2, 0.5\}$, 각
+  $\varepsilon$ 마다 \textbf{200번 독립 실험}(시드 1000$\sim$1199).
+  \vskip0.3em
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \scriptsize
+      \begin{tabular}{@{}lrrc@{}}
+        \toprule
+        $\varepsilon$ & 평균 총보상 & 평균 후회 & 최선팔에 몰림 \\
+        \midrule
+        0.00 & 2245.6 & \textbf{1754.4} & 3\% (97\% 막힘) \\
+        0.01 & 3657.1 & 342.9 & 84\% \\
+        0.05 & \textbf{3872.4} & \textbf{127.6} & 98\% \\
+        0.10 & 3862.8 & 137.2 & 100\% \\
+        0.20 & 3785.9 & 214.1 & 100\% \\
+        0.50 & 3498.1 & 501.9 & 100\% \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.4em
+      {\footnotesize ``최선팔에 몰림'' = 종료 시 최선 팔 C가 50\%
+      이상 선택된 실험 비율. $\varepsilon=0$ 은 97\% 실험이 ``막힘''.}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch02_1_greedy_zero_hist.png}
+      \vskip0.3em
+      {\footnotesize $\varepsilon=0$ 총보상 히스토그램: 97\% 실패
+      vs 3\% 성공 --- ``가끔은 잘 동작한다''는 착시를 깨는
+      \textbf{양분포}.}
+    \end{column}
+  \end{columns}
+\end{frame}

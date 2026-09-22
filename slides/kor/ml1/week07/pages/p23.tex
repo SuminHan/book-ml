@@ -1,0 +1,23 @@
+\begin{frame}{자주 묻는 질문}
+  \small
+  \begin{itemize}
+    \item \textbf{지니불순도 vs 엔트로피?} 실전에서 거의 같은 분기를 고른다.
+      지니는 \textbf{로그 계산이 없어 더 빠르다} $\to$ scikit-learn 등
+      기본값. (반반 근처에서 엔트로피는 더 완만해, 가끔 분기가 달라질
+      수도.)
+    \item \textbf{왜 스케일링이 필요 없나?} kNN/SVM은 거리를 쓰니
+      스케일에 민감했지만, 결정 트리는 ``$t$보다 큰가?''라는
+      \textbf{순서(비교) 정보}만 쓴다 — 2배로 늘려도, 미터를 센티미터로
+      바꿔도 순서 관계가 안 변한다.
+    \item \textbf{연속 특징도 예/아니오로?} 그렇다 — 인접 고유값 \textbf{중간}만
+      후보 threshold($n$개 고유값 $\to$ $n-1$개). 실습의
+      \texttt{worst concave points <= 0.14}가 자동 골라진 cutoff.
+    \item \textbf{회귀에도?} CART = Classification and \textbf{Regression}
+      Trees — 리프 = 라벨 \textbf{평균}, 분기 기준 = \textbf{제곱오차
+      감소}(SSE 감소). 7.3절 GBDT에서 재등장.
+    \item \textbf{탐욕스러운 분기 = 전역 최적?} \textbf{아님} — 매 단계
+      ``그 순간 IG 최대''일 뿐. 전역 최적은 \textbf{지수 시간}에 탐색
+      불가 $\to$ ``충분히 좋고, 빠르다''는 탐욕 근사. 이 한계가
+      \textbf{랜덤 포레스트(7.2)와 GBDT(7.3)로 넘어가는 동기}.
+  \end{itemize}
+\end{frame}

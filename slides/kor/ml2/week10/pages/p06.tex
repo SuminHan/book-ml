@@ -1,0 +1,24 @@
+\begin{frame}{연속 정책: 확률분포를 ``생성''하는 상태 조건부 정규}
+  이산: 행동 유한 $\to$ softmax로 나열하면 끝. 연속 ($\mathbb{R}^d$:
+  로봇 관절 각도, 힘의 크기): \textbf{확률밀도를 내는 분포 자체}가
+  파라미터화 대상. 표준 선택:
+  \[
+  \pi_\theta(a|s) = \mathcal{N}\big(a\,;\, \mu_\theta(s),\; \Sigma_\theta(s)\big),
+  \qquad
+  a \sim \mathcal{N}\big(\mu_\theta(s),\, \Sigma_\theta(s)\big)
+  \]
+  \begin{itemize}
+    \item 신경망 출력을 둘로 나눔: \textbf{평균} $\mu_\theta(s)$
+      (``이 상태의 중심 행동'') $\cdot$ \textbf{분산} $\Sigma_\theta(s)$
+      (``주변으로 얼마나 넓게 탐색'').
+    \item $\Sigma$ 학습 $\to$ 탐색 강도가 \textbf{상태에 따라 달라지는}
+      양 $\to$ 탐색-착취가 $\epsilon$-greedy(Week 2) 같은 전역 상수가
+      아니라 \textbf{상태별로 학습}. (Week 13--14 Pendulum이 바로 이 구조)
+    \item 흔한 변형: 표준편차 $\sigma_\theta(s)$를 \textbf{로그 스케일}로
+      내서 $\Sigma = \text{diag}(\sigma_\theta^2)$.
+      (대각 분산 = 각 관절 독립 탐색 = PPO 기본 설정)
+  \end{itemize}
+  {\footnotesize 로그밀도도 준비 --- 그래디언트 식의 $\log\pi$ 자리에:
+  $\log\pi_\theta(a|s) = -\tfrac12(a-\mu_\theta)^T \Sigma_\theta^{-1}
+  (a-\mu_\theta) - \tfrac12\log|\Sigma_\theta| - \tfrac{d}{2}\log 2\pi$}
+\end{frame}

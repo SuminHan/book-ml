@@ -1,0 +1,28 @@
+\begin{frame}{세 방식 비교: SFT vs RLHF vs DPO}
+  \scriptsize
+  \begin{tabular}{@{}p{1.9cm}p{3.8cm}p{4.4cm}p{4.4cm}@{}}
+    \toprule
+     & SFT & RLHF & DPO \\
+    \midrule
+    사람이 주는 데이터 & ``이 답변이 좋다''(작성) & ``이쪽이 더 낫다''(비교) & ``이쪽이 더 낫다''(비교) \\
+    학습 대상 & 정책 $\pi_\theta$ & 보상모델 $r_\phi$ + 정책 $\pi_\theta$ & 정책 $\pi_\theta$ \\
+    손실 & 다음 토큰 예측 CE & BT(RM) + PPO(RL) & BT(정책 로그-비율) \\
+    보상모델 & 없음 & 별도 학습 & 없음(정책이 겸임) \\
+    강화학습 루프 & 없음 & 있음(불안정, 보상 해킹 위험) & 없음 \\
+    KL 항의 역할 & — & 보상 해킹 방지($\beta$ 튜닝) & $\beta$가 같은 역할 \\
+    상한 & 사람이 작성할 수 있는 품질 & (보상모델의 근사 한계) & (데이터의 선호 순서 한계) \\
+    LoRA 적용 & 가능 & 가능(RM도, 정책도) & 가능 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.7em
+  \begin{block}{계층도 구분할 것}
+    \kb{LoRA} = \textbf{학습 단계}의 효율화(어느
+    파인튜닝 단계든 적용 가능) / \kb{RAG/에이전트} =
+    \textbf{추론 단계}의 지식 보완(학습 없이 컨텍스트에
+    넣음) — \textbf{둘을 동시에} 쓰는 것이 실무 표준.
+  \end{block}
+  {\footnotesize ``LoRA 파인튜닝 + RAG 최신 정보 공급 +
+  에이전트 도구 호출''은 각각 \textbf{서로 다른 단계}의
+  문제(가중치 비용 / 지식 시효 / 계산 능력)를 해결하는
+  \textbf{독립 축}.}
+\end{frame}

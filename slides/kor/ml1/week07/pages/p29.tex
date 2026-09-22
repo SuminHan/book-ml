@@ -1,0 +1,29 @@
+\begin{frame}{손으로 한 번: ``여러 전문가의 평균''이 더 안정적이는가}
+  같은 유방암 학습 데이터에서 \textbf{부트스트랩 샘플 5개}로 깊이 제한
+  없는 트리를 \textbf{독립적으로} 5개 학습 (개별 트리 흔들림을 선명하게
+  보기 위해):
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}lccccc@{}}
+    \toprule
+     & tree 0 & tree 1 & tree 2 & tree 3 & tree 4 \\
+    \midrule
+    test acc & 0.871 & 0.918 & 0.895 & 0.889 & 0.883 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item 5개는 \textbf{87.1\% $\sim$ 91.8\%}로 흩어짐
+      (평균 89.1\%, \textbf{표준편차 1.55\%p}) — 어떤 부트스트랩 샘플을
+      뽑았느냐에 따라 꽤 요동침
+    \item 이 5개를 \textbf{100개 트리의 다수결}로 합친 랜덤 포레스트:
+    \begin{center}
+      {\large random forest (100 trees): \textbf{0.959}}
+    \end{center}
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize 개별 트리의 \textbf{최댓값(91.8\%)보다도} 높다.
+  포레스트를 5번 다른 시드로 다시 학습해도 95.9\%$\sim$97.7\%
+  (표준편차 \textbf{0.68\%p} — 개별 트리 1.55\%p보다 훨씬 좁음).
+  \textbf{정확도 상승 + 표준편차 감소} = 서두 주장의 실측 증거.}
+\end{frame}

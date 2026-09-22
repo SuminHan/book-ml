@@ -1,0 +1,31 @@
+\begin{frame}{Sigmoid와 Tanh의 한계}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{Sigmoid — 두 가지 문제}
+      \begin{enumerate}
+        \item \kb{포화}: $|z| \gtrsim 3$이면 $\sigma'(z) < 0.05$ —
+          깊은 망에서 소실을 가속
+        \item \kb{중심화 문제}: 출력이 항상 $(0,1)$의 \textbf{양의} 값
+          $\Rightarrow$ 다음 층의 가중치가 \textbf{동일 방향}으로
+          움직이는 경향 $\Rightarrow$ 비대칭 골짜기, 학습 느려짐
+      \end{enumerate}
+      {\footnotesize Ch.2의 로지스틱회귀에서는 확률 해석 때문에
+      시그모이드가 \textbf{옳지만}, 은닉층에서는 확률 해석이
+      불필요한데도 두 불이익만 받음.}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{Tanh — 시그모이드를 $-1$ 방향으로 중심화}
+      \[
+      \tanh(z) = 2\sigma(2z) - 1
+      \]
+      \begin{itemize}
+        \item 출력 $(-1,1)$ $\Rightarrow$ 중심화 문제 \textbf{해소}
+        \item 미분 최댓값 1 = 시그모이드(0.25)의 \textbf{4배}
+        \item 1990년대 은닉층의 \textbf{사실상 표준}
+        \item 그러나 $|z| \gtrsim 3$에서 여전히 포화
+          (0.985 $\to$ 미분 $\approx 0.03$) — \textbf{깊이}에는 부족
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

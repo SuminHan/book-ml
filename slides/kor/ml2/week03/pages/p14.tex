@@ -1,0 +1,28 @@
+\begin{frame}{확인 문제: MDP인가, 마르코프인가? (1/2)}
+  \kq{네 시나리오 각각에 대해 (a) MDP로 모델링할 수 있는가,
+  (b) 가능하다면 $\mathcal{S}, \mathcal{A}, P, R$ 을 한 줄씩 쓰라:}
+  \vskip0.6em
+  \begin{itemize}
+    \item \textbf{(a) 5층 건물의 엘리베이터 호출 제어}
+      \begin{itemize}
+        \item 답: \kb{MDP} --- $\mathcal{S} =$ (각 층의 상/하 호출
+          버튼 상태 $2^{10}$ 조합) $\times$ (엘리베이터 현재 층 5)
+          $=$ 5120개 이하, $\mathcal{A} = \{up, down, open\}$,
+          $P$ = 버튼 상태 + 층 이동, $R = -1$(매 스텝 벌금) 또는
+          ``누락 호출'' 페널티.
+        \item 마르코프 성질은 \textbf{성립}(현재 호출 상태가 미래의
+          모든 것을 결정).
+      \end{itemize}
+    \item \textbf{(b) ``오늘 기분''을 몰라서, 어제 몇 시간 폰을 봤는
+      것만 관측으로 가지는 추천 문제}
+      \begin{itemize}
+        \item 답: \kb{마르코프 성질이 깨진} 문제 --- ``기분''이
+          \textbf{hidden state}.
+        \item 어제 폰 사용 시간만으로는 같은 관측 아래
+          ``피곤한 날''과 ``재밌는 날''을 구별 못 해 \textbf{추천의
+          결과 분포가 달라진다}.
+        \item 해결: 최근 며칠의 관측을 확장 상태로 묶거나
+          (전략 1), 사용자 모델의 은닉 상태로 요약(전략 2).
+      \end{itemize}
+  \end{itemize}
+\end{frame}

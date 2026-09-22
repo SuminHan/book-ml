@@ -1,0 +1,26 @@
+\begin{frame}{``보상을 미분한다''와 벽의 두 얼굴}
+  \begin{itemize}
+    \item ``기대 보상을 최대화하는 $\theta$''를 \textbf{그대로}
+      미분하려 하면: 기대 보상은 \textbf{무작위로} 행동해 얻은
+      결과의 평균인데, 그 무작위성 자체가 $\theta$ 에 의존.
+    \item 2행동 밴딧(보상 $+1/-1$, 1스텝, $s=1$ 고정)으로 펼쳐보면:
+      \[
+      J(\theta) = p_0(+1) + p_1(-1) = 2\,p_0(\theta) - 1
+      \]
+      --- $\theta$ 에 대해 \textbf{매끄럽게} 미분 가능, 벽은 아직 안 보임.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{벽은 두 얼굴로 분리된다}
+    \textbf{(1) 적분의 미분} --- $\nabla_\theta$ 를 $\mathbb{E}$ 안으로
+    넘기려면 분포가 $\theta$ 에 대해 미분 가능해야 함. 이산+유한이면
+    유한 합으로 안전하나, \textbf{행동 연속이거나 상태 고차원}이면
+    궤적 확률이 \textbf{적분} $\to$ 그 미분은 실제로 불가능.
+    \vskip0.2em
+    \textbf{(2) 단절된 샘플} --- 단일 샘플 추정치
+    $\hat J = R(\tau_{\text{sample}})$ 는 $\theta$ 에 \textbf{무관한
+    상수}(뽑힌 궤적은 이미 결정된 일) $\to$ 단일 추정치의 미분은 0.
+    \vskip0.2em
+    둘 다 \textbf{같은 ``분포의 미분'' 문제} --- 로그미분 트릭이
+    \textbf{동시에} 해결.
+  \end{block}
+\end{frame}

@@ -1,0 +1,34 @@
+\begin{frame}{30초 결정 절차: 두 축이 만나는 지점}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch14_3_tool_decision.png}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \kb{Q1. 강한 접촉이 핵심인가?}
+      발이 바닥을 차는 보행, 물체가 부딪혀 튕기는 조작이
+      \textbf{핵심}인가?
+      \begin{itemize}
+        \item \textbf{아니오} $\to$ 정밀 LCP 접촉 불필요 $\to$
+          \textbf{Gymnasium 기본 환경} (CartPole, Pendulum)
+        \item \textbf{예} $\to$ 다음
+      \end{itemize}
+      \kb{Q2. 단일 CPU로 수 시간$\sim$날 단위까지 기다릴 수 없는
+      대규모(1억+ 스텝)인가?}
+      \begin{itemize}
+        \item \textbf{아니오} (초$\sim$분$\sim$수 시간이면 OK ---
+          책의 12만 스텝, 1,000만도 CPU 27분(환경 스텝만))
+          $\to$ \textbf{MuJoCo (CPU, 정밀)}
+        \item \textbf{예} $\to$ 다음
+      \end{itemize}
+      \kb{Q3. 적합한 GPU가 있는가?} (Isaac Sim: RTX 4080/16GB급
+      이상, RT 코어 필요 --- 14.2)
+      \begin{itemize}
+        \item \textbf{예} $\to$ \textbf{Isaac Sim (GPU 병렬)}
+        \item \textbf{아니오} $\to$ GPU 대기, or
+          \textbf{MuJoCo-XLA} 자동 병렬, or MuJoCo(CPU)로
+          \textbf{규모 축소}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

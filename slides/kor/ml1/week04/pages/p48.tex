@@ -1,0 +1,22 @@
+\begin{frame}{k를 고르는 법: 엘보우(elbow) 방법}
+  여러 $k$에 대해 \textbf{클러스터 내 분산}을 그려보고,
+  \textbf{감소폭이 급격히 줄어드는 지점}(``팔꿈치'')을 고르는
+  방법. 3-블롭 장난감 데이터(각 50점)에 $k=1\sim6$, 각
+  무작위 초기화 10번 중 가장 작은 SSE:
+  \small
+  \begin{tabular}{@{}lcccccc@{}}
+    \toprule
+     $k$ & 1 & 2 & 3 & 4 & 5 & 6 \\
+    \midrule
+    SSE(최소) & 3753.3 & 1867.1 & \textbf{258.4} & 223.4 & 197.5 & 167.4 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item $k=1\to2$: 거의 \textbf{반}으로 줄어듦(첫 분할)
+    \item $k=2\to3$: \textbf{일곱 배 이상} 폭락(1867$\to$258) ---
+      데이터에 실제로 \textbf{세 번째 덩어리}가 따로 존재
+    \item $k=3\to4$: 겨우 35만 감소 --- 이미 ``진짜 구조''를 다
+      건드렸고, 노이즈 수준에서 억지로 쪼갬
+  \end{itemize}
+\end{frame}

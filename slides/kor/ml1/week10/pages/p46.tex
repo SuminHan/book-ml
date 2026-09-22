@@ -1,0 +1,34 @@
+% ============================================================
+\section{10.3 분류를 넘어서: 탐지, 분할, 전이학습}
+\begin{frame}{분류를 넘어서: 두 가지 새 문제}
+  지금까지의 CNN은 ``이미지 \textbf{전체}가 어떤 클래스인가''(분류)만
+  답했다. 실전 문제는 더 세밀한 답을 요구한다:
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{객체 탐지(Object Detection)}
+      \begin{itemize}
+        \item ``이미지 안에 사물이 \textbf{어디에}, \textbf{무엇}이
+          있는가''
+        \item 각 사물의 \textbf{위치}를 사각형
+          (bounding box, 4개 좌표)으로, 그 안의 \textbf{클래스}를
+          함께 예측
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{의미론적 분할(Semantic Segmentation)}
+      \begin{itemize}
+        \item ``\textbf{각 픽셀}이 어떤 클래스에 속하는가''
+        \item 입력과 \textbf{동일한 크기}의 출력을 내며 각 픽셀에
+          클래스 라벨을 붙임
+        \item 자율주행: ``이 픽셀은 도로/보행자/차량''
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \kq{탐지는 ``\textbf{위치까지 붙은 분류}''다 ---
+  분류는 벡터 1개를 내지만, 탐지는 사물 \textbf{마다}
+  (클래스, x, y, w, h)를 내야 하고 \textbf{사물의 개수조차 모름}.}
+  어려운 부분은 ``무엇을 보는가''(10.2가 이미 잘한다)가 아니라
+  ``여러 개, 각기 다른 위치''를 \textbf{한 번의 전진전파}로
+  다루는가.
+\end{frame}

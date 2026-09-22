@@ -1,0 +1,18 @@
+\begin{frame}[fragile]{dqn\_loss: 두 자리를 분리해 읽자}
+\begin{lstlisting}
+def dqn_loss(Q_net, target_net, states, actions,
+             rewards, next_states, dones, gamma):
+    q_pred = Q_net(states).gather(1, actions.unsqueeze(1)).squeeze(1)
+    with torch.no_grad():
+        q_next = target_net(next_states).max(dim=1).values
+        target = rewards + gamma * q_next * (1 - dones)
+    return ((target - q_pred) ** 2).mean()
+\end{lstlisting}
+  \vskip0.3em
+  \begin{itemize}
+    \item \texttt{q\_pred} = 예측 $Q(s,a;\theta)$, \texttt{q\_next} =
+      목표의 원료 $\max_{a'} Q(s',a';\theta^{-})$ ---
+      9.1절의 ``같은 $\theta$ 두 자리''가 $\theta$, $\theta^{-}$로 분리된
+      바로 그 두 자리.
+  \end{itemize}
+\end{frame}

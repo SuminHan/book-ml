@@ -1,0 +1,17 @@
+\begin{frame}{$Q^{*}$ 버전: DQN의 출발점}
+  \[
+  Q^{*}(s,a) = R(s,a) + \gamma \sum_{s'} P(s'|s,a)\, V^{*}(s')
+  = R(s,a) + \gamma \sum_{s'} P(s'|s,a)\, \max_{a'} Q^{*}(s',a')
+  \]
+  $V^{*} = \max_a Q^{*}$ 이므로 \textbf{$Q^{*}$ 만으로 닫혀}:
+  \[
+  \pi^{*}(s) = \arg\max_a Q^{*}(s,a)
+  \]
+  \begin{block}{$Q^{*}$ 를 알면 최적 정책이 직접 주어진다}
+    이 관점이 \kb{Week 9 (DQN, Mnih et al., 2015)}의
+    출발점 --- DQN은 $V^{*}$ 표가 아니라 $Q^{*}$ 표(신경망)를
+    배우고, $\arg\max$ 로 정책을 읽어낸다. 이번 절에서 $Q^\pi$
+    표를 직접 채워본 경험은, DQN의 ``Q값을 추정하는 신경망''이
+    \textbf{무엇을} 추정하는지 이해하는 데 바로 쓰인다.
+  \end{block}
+\end{frame}

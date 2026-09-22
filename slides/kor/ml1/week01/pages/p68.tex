@@ -1,0 +1,40 @@
+\begin{frame}[fragile]{실습: pandas로 첫 EDA + 결측치와 그룹별 통계}
+  개념 코드는 순수 Python/numpy로 손으로 짜는 경우가 많지만, 실전
+  데이터 탐색 단계에서는 \textbf{\texttt{pandas} 가 사실상 표준}.
+  \begin{lstlisting}
+import pandas as pd
+
+data = {
+    "size_sqm": [59, 84, 112, 46, 132, 78],
+    "rooms": [2, 3, 4, 1, 4, 3],
+    "year_built": [2015, 2008, 1998, 2020, 1995, 2011],
+    "price_million": [320, 410, 505, 250, 560, 390],
+}
+df = pd.DataFrame(data)
+
+print(df.describe())          # 각 열의 평균/표준편차/최소/최대 한눈에
+print(df.corr(numeric_only=True)["price_million"])  # 목표와의 연관
+print(df.isna().sum())        # 열별 결측 개수
+\end{lstlisting}
+  \vskip0.1em
+  실제 데이터에는 결측치가 거의 항상 있다 --- 결측 + 지역 정보로
+  가장 자주 쓰는 처리:
+  \begin{lstlisting}
+import numpy as np
+df2 = pd.DataFrame({
+    "size_sqm": [59, 84, 112, 46, 132, 78, np.nan],
+    "district": ["A", "B", "A", "C", "B", "A", "C"],
+    "price_million": [320, 410, 505, 250, 560, 390, np.nan],
+})
+print(df2.isna().sum())       # size_sqm 1개, price_million 1개 결측
+print(len(df2.dropna()))      # 결측 행 제거 후 6행
+df2["size_sqm"] = df2["size_sqm"].fillna(df2["size_sqm"].median())
+print(df2.groupby("district")["price_million"].mean())  # 지역별 평균가
+\end{lstlisting}
+  \vskip0.1em
+  {\footnotesize \texttt{describe()} 가 ``스케일이 얼마나 다른가''를
+  즉시 보여줌 (Week 4.1 특징 정규화 미리 감). \texttt{corr()} 는
+  모델보다 \textbf{먼저} 실행해볼 만한 진단. \texttt{groupby()} 로
+  ``지역 A가 B보다 확실히 싼가?'' 같은 \textbf{모델링 전 가설}을
+  즉시 검증.}
+\end{frame}

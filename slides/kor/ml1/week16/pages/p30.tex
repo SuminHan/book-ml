@@ -1,0 +1,28 @@
+\begin{frame}{리뷰를 더 깊게: 데이터 구조 $\leftrightarrow$ 편향}
+  \begin{itemize}
+    \item Block A: ``모델을 어떻게 고르셨나요?''는 ``kNN의 $k$를 5로
+      한 이유는?''에 머물렀지만, Block B에서는 같은 질문이
+      \textbf{아래처럼 깊어짐}
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{(1) 데이터 구조 $\leftrightarrow$ 아키텍처의
+    귀납적 편향}
+    CNN의 \textbf{국소 receptive field + 파라미터 공유}는 ``이미지의
+    \textit{인접} 픽셀이 서로 \textbf{상관 있다}는 \textit{인과적}
+    가정''을 코드 속에 심어 넣는 것 (Ch10.1).
+    \begin{itemize}
+      \item 이 가정이 데이터에 \textbf{맞아야} CNN은 GBDT보다
+        유리해지고(Ch07.3 비교), \textbf{안 맞으면} (예: ``셀 하나
+        = 이미지 파일''인 경우) 그 가정은 \textbf{아무 가치}를 주지
+        못함
+      \item \kb{리뷰 질문 예}: ``여러분의 이미지에서 \textit{위치}가
+        실제로 정보인가요 — 이미지를 \textbf{무작위로 회전·이동}
+        시켰을 때 val 정확도가 얼마나 변하나요?'' — 발표팀이
+        \textbf{새 실험}(증강 효과를 측정하는 run)을 해야 답할
+        수 있으므로 8.2 기준대로 \textbf{3점}
+    \end{itemize}
+  \end{block}
+  \vskip0.3em
+  {\footnotesize 8.2의 질문 등급 기준은 그대로: ``새 실험이 필요
+  한 질문'' = 3점, ``말 몇 마디로 넘길 질문'' = 2점.}
+\end{frame}

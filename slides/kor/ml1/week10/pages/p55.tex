@@ -1,0 +1,31 @@
+\begin{frame}{같은 작업에서 세 팔(arm) 비교}
+  10.2의 \texttt{SmallCNN}(세로줄/가로줄 분류) 위에서 ---
+  동일 아키텍처·동일 데이터(300 학습/200 검증)·동일 30 에폭,
+  \textbf{다만 어느 층이 갱신되는가}만 바꿈:
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    팔 & 갱신되는 층 & 갱신 파라미터 (전체 1,762 중) \\
+    \midrule
+    A. 스크래치(scratch) & 전체 & 1,762 \\
+    B. 특징 추출(frozen) & 마지막 분류층(\texttt{fc})만
+        & \textbf{514} \\
+    C. 미세조정(fine-tuning) & 전체 (낮은 학습률 0.001) & 1,762 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{itemize}
+    \item 이 장난감 작업은 데이터가 충분하고 패턴이 단순해서
+      \textbf{세 팔 모두 검증 100\%}에 도달
+    \item 포인트는 \textbf{어느 쪽이 더 좋은가가 아니라,
+      B가 전체 파라미터의 \textbf{29\%}(514/1,762)만 건드리고도
+      같은 결과}를 냈다는 점
+    \item 실제 문제에서 \textbf{데이터가 적으면 차이는 극적으로}
+      벌어진다 --- A는 300장에 1,762개를 배우려다
+      \textbf{과적합}(Week 6)으로 검증 정확도가 처지고,
+      B는 ``새로 배울 것도 514개뿐''이라 같은 300장으로
+      충분히 배운다
+    \item SmallCNN의 \textbf{합성곱 층이 1,248개(71\%)}라는
+      장부가 전이학습의 ``혜택 크기''를 직접 재주는 셈
+  \end{itemize}
+\end{frame}

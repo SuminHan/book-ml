@@ -1,0 +1,24 @@
+\begin{frame}{TRPO $\to$ PPO: 기계장치를 클리핑 한 줄로}
+  \begin{itemize}
+    \item PPO는 이 세 단계를 \kb{클리핑 한 줄}로 대체:
+      \[
+      \min\Big(r_tA_t,\;
+      \mathrm{clip}\big(r_t,1-\epsilon,1+\epsilon\big)A_t\Big)
+      \]
+      $r_t$ 가 $[1-\epsilon,1+\epsilon]$ 범위를 벗어나면 밖으로
+      나간 만큼의 이득을 깎아버리는 \kb{모노토닉 근사}.
+    \item TRPO의 ``단조 개선 \textbf{보장}''은 2차 근사 + line
+      search가 \textbf{정확히} 동작할 때만 성립 — PPO는 그
+      보장을 \textbf{포기}하고 ``보장이 안 되더라도 실전에서 잘
+      작동한다''는 경험적 증거로 승부.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{구현 비용이 곧 채택의 차이}
+    TRPO 참고 구현: 약 \textbf{300$\sim$400줄}(피셔-벡터 곱,
+    conjugate gradient, line search 포함). PPO: \textbf{100줄
+    안팎}. ``같은 성능에 3배 적은 코드''가 아니라,
+    \kb{``대부분의 환경에서 충분히 좋은 성능에 3배 적은
+    코드''} — 연구실마다 TRPO 장치를 디버깅하는 시간 대신
+    PPO를 그냥 돌려보는 쪽으로 기울 수밖에 없었다.
+  \end{block}
+\end{frame}

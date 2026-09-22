@@ -1,0 +1,32 @@
+\begin{frame}{FAQ (2/2): ``기대''는 어디에? 왜 ``풀어야'' 하나?}
+  \begin{itemize}
+    \item \textbf{Q. ``기대(expectation)''가 어디에 있는 건가요?}
+      \begin{itemize}
+        \item 방정식 안의 $\mathbb{E}_\pi$ 가 바로 ``기대''.
+        \item 이 기댓값은 \textbf{두 가지 무작위성}에 대해
+          취한다: (1) \textbf{정책}이 행동을 확률적으로 고르는
+          무작위성 $\pi(a|s)$, (2) \textbf{환경의 전이}가
+          확률적으로 나타나는 무작위성 $P(s'|s,a)$.
+        \item 결정적 MDP+결정적 정책(위 2상태 예)에서는 이 둘이
+          모두 \textbf{사라져} $V(s) = R(s) + \gamma V(s')$ 의
+          단순한 \textbf{등식}으로 축소. ``기대''라는 이름은
+          \textbf{이 무작위성이 있을 때} 의미를 가진다.
+      \end{itemize}
+    \item \textbf{Q. 방정식인데 왜 ``풀어야'' 하나? 답이 이미
+      $V^\pi(s) = \mathbb{E}_\pi[G_t \mid s_t=s]$ 로 쓰여 있는
+      것 아닌가?}
+      \begin{itemize}
+        \item \textbf{``정의''와 ``계산''을 구별}. $V^\pi(s) =
+          \mathbb{E}_\pi[G_t\mid s_t=s]$ 는 \textbf{무한한 경로}의
+          리턴을 \textbf{평균}하라는 정의 --- 실제로 계산하려면
+          무한 경로를 모두 탐색해야 해 \textbf{계산 불가능}.
+        \item 벨만방정식 $V(s) = R(s) + \gamma V(s')$ 는 같은
+          $V^\pi$ 를 \textbf{인접 상태만} 쓰도록 \textbf{재귀적으로
+          다시 표현} --- ``무한 경로''를 ``한 스텝''으로 압축한
+          이 재귀 표현이 \textbf{계산 가능}.
+        \item 방정식을 ``풀다''는 곧 이 재귀 표현을 \textbf{반복
+          대입(value iteration)}해 \textbf{수치적 답}을 뽑아내는 것
+          --- \kb{정의(무한합)와 계산(재귀식)을 연결하는 다리}.
+      \end{itemize}
+  \end{itemize}
+\end{frame}

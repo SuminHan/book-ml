@@ -1,0 +1,11 @@
+\frametitle{베이스라인: 배우기 전에 네 가지 정책을 재라}
+PPO를 돌리기 전에, \textbf{학습을 전혀 쓰지 않는} 정책들의 리턴을
+  측정 --- 13.1절 PD vs RL, 13.2절 PD 그리드와 같은 ``베이스라인을
+  먼저 재라''의 습관:
+\begin{lstlisting}
+env0 = gym.make("Reacher-v5")
+print(f"무력(토크 0) 정책:  {evaluate(lambda s: np.zeros(2)):.2f}")
+print(f"무작위 정책:        {evaluate(lambda s: env0.action_space.sample()):.2f}")
+print(f"비례제어기 k=0.5:   {evaluate(lambda s: np.clip(-0.5 * s[8:10], -1, 1)):.2f}")
+print(f"비례제어기 k=2.0:   {evaluate(lambda s: np.clip(-2.0 * s[8:10], -1, 1)):.2f}")
+\end{lstlisting}

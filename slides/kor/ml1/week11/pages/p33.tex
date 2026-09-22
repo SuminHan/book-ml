@@ -1,0 +1,30 @@
+\begin{frame}{2시점 예제: 최종 그래디언트}
+  시점 1에서도 같은 과정(단, $\frac{\partial L}{\partial h_1}$에
+  \textbf{시점 2에서 흘러온 기여가 더해진} 뒤 곱해짐)을 반복하면:
+  \vskip0.4em
+  \scriptsize
+  \[ \frac{\partial L}{\partial W_{hy}} =
+     \begin{bmatrix} 0.0882 & 0.2058 \\ -0.1760 & -0.1977 \\ 0.0878 & -0.0081 \end{bmatrix},
+     \qquad
+     \frac{\partial L}{\partial W_{hh}} =
+     \begin{bmatrix} 0.1000 & 0.1587 \\ -0.0365 & -0.0579 \end{bmatrix} \]
+  \[ \frac{\partial L}{\partial W_{xh}} =
+     \begin{bmatrix} 0.2062 & 0.3434 & 0 \\ -0.2537 & -0.1254 & 0 \end{bmatrix},
+     \quad \frac{\partial L}{\partial b_h} =
+     \begin{pmatrix} 0.5496 \\ -0.3791 \end{pmatrix},
+     \quad \frac{\partial L}{\partial b_y} =
+     \begin{pmatrix} 0.5871 \\ -0.2530 \\ -0.3341 \end{pmatrix} \]
+  \vskip0.5em
+  \begin{itemize}
+    \item 이 값들을 numpy 코드(위 스넵킷)가 자동미분 없이 그대로
+      재현하며, \textbf{수치 미분}(각 가중치를 $\pm 10^{-6}$
+      흔들어서 $\frac{L(w+\epsilon) - L(w-\epsilon)}{2\epsilon}$)과
+      비교하면 전부 $10^{-10}$ 수준으로 일치
+    \item \kq{눈여겨볼 것은 $\frac{\partial L}{\partial W_{hh}}$}:
+      시점 2에서 온 그래디언트가 $h_1$을 통해 \textbf{시점 1의
+      $W_{hh}$ 기여에 덧붙었다}는 사실이 이 작은 예제에 한 박스 안에
+      담겨 있다
+    \item 11.1절 ``자기-루프가 시간 축의 파라미터 공유다''가
+      \textbf{그래디언트도} 공유된다는 뜻임을 숫자가 보여줌
+  \end{itemize}
+\end{frame}

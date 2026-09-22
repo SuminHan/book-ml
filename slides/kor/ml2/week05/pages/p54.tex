@@ -1,0 +1,50 @@
+\begin{frame}{MC 의 한계: 에피소드가 끝나야만 학습}
+  MC 는 모델이 필요 없다는 강력한 장점이 있지만,
+  \textbf{에피소드가 끝나야만} 학습할 수 있다는 근본적 제약이
+  있다 --- 리턴 $G_t$ 자체가 \textbf{에피소드 끝까지의 보상을
+  다 더한 값}이기 때문.
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{block}{continuing task(끝이 없는 과업)라면 MC 는
+      아예 쓸 수 없다}
+        ending 이 없으면 ``에피소드 끝까지의 보상 합''이라는
+        $G_t$ 자체가 \textbf{정의되지 않는다}.
+      \end{block}
+      \vskip0.4em
+      대신 \kb{H 스텝 절단 리턴}
+      \[
+      G_t^{(H)} = R_t + \gamma R_{t+1} + \cdots +
+      \gamma^{H-1} R_{t+H-1}
+      \]
+      로 대체할 수 있지만 \textbf{H 를 몇으로 잡을지}를
+      사람이 정해야 한다 --- H 가 너무 \textbf{짧으면
+      편향}(먼 미래 보상 무시), 너무 \textbf{길면
+      분산}(먼 미래 무작위성 누적).
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      매 스텝 $+1$, $\gamma = 0.9$ 인 continuing task ---
+      \textbf{진짜 리턴} $\frac{1}{1-\gamma} = 10$:
+      \small
+      \begin{tabular}{@{}cl@{}}
+        \toprule
+        $H$ & 절단 리턴 $G_t^{(H)}$ \\
+        \midrule
+        5   & 4.0951 \\
+        20  & 8.7842 \\
+        50  & 9.9485 \\
+        200 & 10.0000 \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.4em
+      ``에피소드가 끝나면 \textbf{알아서 결정되는} 문제''가
+      ``H 를 \textbf{수동으로 고르는} 문제''로 변했다.
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{block}{Week 6 의 시간차 학습}
+    ``에피소드가 끝나기를 기다리지 않고, \textbf{한 스텝만
+    보고도 즉시 갱신한다}''는 완전히 다른 절충안으로 이
+    문제를 푼다.
+  \end{block}
+\end{frame}

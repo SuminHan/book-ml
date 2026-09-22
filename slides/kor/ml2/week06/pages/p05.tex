@@ -1,0 +1,21 @@
+\begin{frame}{7-state random walk --- 환경과 참값}
+  \begin{itemize}
+    \item 상태 $0 \sim 6$이 일렬. 매 스텝 확률 $1/2$로 좌/우로 1칸 이동.
+    \item $0, 6$은 \kb{터미널}. \textbf{매 스텝} 보상 $+1$(
+      ``아직 끝나지 않은 시간''이 가치에 반영되도록).
+    \item $\gamma = 1$, 정책은 ``동전던지기'' 고정 --- 이번 절은
+      \textbf{예측} 문제(5.1절 MC 예측과 같음).
+  \end{itemize}
+  \vskip0.6em
+  $V^{*}(i)$는 $i$에서 출발해 0 또는 6에 닿을 때까지의 \textbf{보상 총합}
+  = \textbf{기대 흡수 시간}. 대칭적 무작위 유랑의 표준 결과로,
+  \[
+  V^{*} = \big[0,\ 5,\ 8,\ 9,\ 8,\ 5,\ 0\big]
+  \quad \big(T_i = i(6-i)\big)
+  \]
+  \vskip0.4em
+  \textbf{검산}: $V_i = 1 + \tfrac12 V_{i-1} + \tfrac12 V_{i+1}$ 에
+  $V_3 = 1 + \tfrac12(8+8) = 9$ 성립. 직관도 정확히 맞다 ---
+  가장 멀리서도 3스텝, 양 끝으로 가장 빠르게 빨려가는
+  상태 3이 최고 가치 9.
+\end{frame}

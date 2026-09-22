@@ -1,0 +1,29 @@
+\begin{frame}{왜 attention 뒤에 FFN이 필요한가}
+  \begin{itemize}
+    \item self-attention은 \emph{단어 \emph{사이}의 정보를
+      \emph{섞는}} 연산이지만, 그 연산 자체는 \textbf{선형}이다
+      — 점수 $QK^T$, 가중합 $AV$ 모두 \textbf{선형} (Week 9.2
+      ``\textbf{선형만으로는 접을 수 없다}'' 기억하자).
+    \item \emph{섞은 결과}에 \textbf{비선형 변환}을 적용하는
+      역할이 \textbf{FFN의 몫}.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{분담}
+    \textbf{attention} = ``\textbf{어떤 정보를, 어떤 단어끼리,
+    얼마나 섞을지}'',
+    그 뒤의 \textbf{FFN} = ``\textbf{섞인 정보를 어떻게
+    \emph{처리}할지}'' — 9장 이후 반복된 \textbf{``선형 +
+    비선형''} 논리의 또 다른 실체.
+  \end{block}
+  \vskip0.4em
+  \begin{block}{참고: 파라미터 스케일의 감각}
+    base 모델($d_{model}=512$, 6 블록)에서 한 블록의 파라미터
+    대부분은 attention(QKV$+W_O$ 합계 약 \textbf{39만})보다
+    \textbf{FFN}이 차지 — $512 \to 2048 \to 512 =
+    2 \times 512 \times 2048 \approx$ \textbf{210만}.
+    ``\textbf{트랜스포머의 지식이 어디에 있는지}''를 찾는 연구
+    (FFN을 ``키-값 메모리''로 본 해석 — Geva et al., 2020)에서
+    \textbf{사실상의 대부분이 FFN의 가중치에 담겨 있다}는
+    관찰이 이 비율과 맞닿아 있다.
+  \end{block}
+\end{frame}

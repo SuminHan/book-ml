@@ -1,0 +1,628 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\newcommand{\fontdir}{/Users/hansumin/Library/Fonts/}
+\setmainfont[Path=\fontdir, BoldFont={NotoSansCJKkr-Bold.otf}]{NotoSansCJKkr-Regular.otf}
+\XeTeXlinebreaklocale "ko"
+\XeTeXlinebreakskip=0pt plus 0.1pt
+
+\usepackage[a4paper,top=18mm,bottom=18mm,left=18mm,right=18mm]{geometry}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{setspace}
+\setlength{\parindent}{0pt}
+\setstretch{1.05}
+\pagestyle{plain}
+\renewcommand{\thepage}{\arabic{page}}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\begin{document}
+\begin{center}{\Huge\bf 강의계획서}\end{center}
+
+\vspace{2mm}
+
+\noindent{\large 2027학년도 2학기}
+
+\vspace{3mm}
+
+
+\noindent\small
+\begin{tabular}{|C{1.7cm}|C{3.4cm}|C{2.0cm}|C{2.1cm}|C{1.2cm}|C{1.0cm}|C{1.7cm}|C{2.6cm}|}
+\hline
+\multirow{2}{1.7cm}{\centering\bf 과목명} & \multirow{2}{3.4cm}{\centering 강화학습} & \bf 교과목 번호 & MC0000 & \bf 학점 & 3 & \multirow{2}{1.7cm}{\centering\bf 강의실} & \multirow{2}{2.6cm}{\centering 창의관 5701호} \\
+\cline{3-6}
+ & & \bf 교과 구분 & 선택 과목 & \bf 시수 & 3 & & \\
+\hline
+\end{tabular}
+
+
+\vspace{2mm}
+
+
+\noindent\small
+\begin{tabular}{|C{1.4cm}|C{1.4cm}|C{1.0cm}|C{2.6cm}|C{2.2cm}|C{2.6cm}|C{5.0cm}|}
+\hline
+\bf 담당교원 & \bf 이름 & \bf 분반 & \bf Office & \bf Office Hour & \bf 연락처 & \bf 이메일 \\
+\hline
+ & 한수민 & 1 & 창의관 5701호 & {[}추후 공지{]} & 051-606-2353 & suminhan@ksa.hs.kr \\
+\hline
+\end{tabular}
+
+
+\vspace{5mm}
+
+\noindent{\bf 1. 교과목 개요}
+
+\vspace{2mm}
+
+
+\noindent\fbox{\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\vspace{2mm}
+강화학습 교과에서는 에이전트가 환경과의 상호작용을 통해 스스로 좋은 행동을 학습하는 강화학습의 원리를 다룬다. 교과 내용의 약 70\%는 Sutton과 Barto의 표준 교재(Reinforcement Learning: An Introduction)를 따르는 이론 중심으로 구성되며, 멀티암 밴딧과 마르코프 결정과정(MDP) 같은 기본 개념에서 출발하여 동적계획법, 몬테카를로 방법, 시간차 학습 등 표 기반 강화학습을 익힌 뒤, 같은 교재가 다루는 함수근사와 정책 경사 이론으로 자연스럽게 확장한다. 나머지 약 30\%는 이 이론을 실전에 적용하는 응용 기법으로, PPO 등 안정화된 심층강화학습, 모방학습과 인간 피드백 기반 강화학습(RLHF), 로봇 시뮬레이션, 몬테카를로 트리 탐색을 다룬다. 본 교과는 "기계학습과 심층학습"의 후속 과목으로, 신경망에 대한 사전 지식을 전제로 한다.
+
+\vspace{3mm}
+
+\noindent{\bf 가. 교과목 목표}
+
+\begin{itemize}[leftmargin=6mm,itemsep=0.8mm,topsep=1mm]
+
+\item 에이전트가 환경과 상호작용하며 보상을 최대화해가는 원리를 이해하고, 여러 가지 기본적인 강화학습 알고리즘을 표를 이용해 직접 구현한다.
+
+\item 신경망을 결합한 심층강화학습과, 사람의 시연이나 피드백을 활용하는 최신 방법들의 기본 아이디어를 이해하며, 팀 프로젝트를 통해 정직한 실험 절차로 시뮬레이션 환경에 직접 적용해 본다.
+
+\end{itemize}
+
+\vspace{1mm}
+
+\noindent{\bf 나. 교과목 내용}
+
+\begin{itemize}[leftmargin=6mm,itemsep=1.2mm,topsep=1mm]
+
+\item 멀티암 밴딧과 MDP 기초
+
+\begin{itemize}[leftmargin=5mm,itemsep=0.3mm,topsep=0.5mm]
+
+\item[--] \small 탐험-활용 전략(ε-greedy, UCB)
+
+\item[--] \small MDP의 다섯 요소와 벨만 방정식
+
+\end{itemize}
+
+\item 동적계획법, 몬테카를로, 시간차 학습 등 표 기반 강화학습
+
+\begin{itemize}[leftmargin=5mm,itemsep=0.3mm,topsep=0.5mm]
+
+\item[--] \small 정책 반복과 가치 반복
+
+\item[--] \small TD(0), SARSA, Q-learning 등 대표 알고리즘
+
+\end{itemize}
+
+\item 함수근사와 정책경사 이론
+
+\begin{itemize}[leftmargin=5mm,itemsep=0.3mm,topsep=0.5mm]
+
+\item[--] \small 신경망으로 가치를 근사하는 DQN
+
+\item[--] \small 정책을 직접 학습하는 REINFORCE, Actor-Critic
+
+\end{itemize}
+
+\item 안정화된 심층강화학습과 모방학습
+
+\begin{itemize}[leftmargin=5mm,itemsep=0.3mm,topsep=0.5mm]
+
+\item[--] \small PPO 등 안정적인 정책경사 기법
+
+\item[--] \small 모방학습과 인간 피드백 기반 강화학습(RLHF)
+
+\end{itemize}
+
+\item 로봇 시뮬레이션과 모델기반 강화학습
+
+\begin{itemize}[leftmargin=5mm,itemsep=0.3mm,topsep=0.5mm]
+
+\item[--] \small MuJoCo, Isaac Sim 등 물리 시뮬레이터
+
+\item[--] \small 모델기반 강화학습과 몬테카를로 트리 탐색(MCTS)
+
+\end{itemize}
+
+\end{itemize}
+\vspace{2mm}
+\end{minipage}}
+
+
+\vspace{5mm}
+
+\noindent{\bf 2. 중점 목표 역량}
+
+\vspace{2mm}
+
+\noindent\small\begin{tabular}{|C{4.0cm}|C{4.0cm}|C{4.0cm}|C{4.0cm}|}
+
+\hline
+
+\multicolumn{4}{|c|}{\bf 교과 핵심 역량} \\
+
+\hline
+
+problem-solving skills & logical thinking & problem discovery and definition & creativity \\
+
+\hline
+
+\end{tabular}
+
+\vspace{5mm}
+
+\noindent{\bf 3. 교재 및 참고도서}
+
+\vspace{2mm}
+
+\noindent 가. 주교재 : 자체 제작 수업 자료\\[2mm]
+
+\noindent 나. 참고 서적
+
+\begin{itemize}[leftmargin=8mm,itemsep=0.5mm,topsep=1mm]
+
+\item "Reinforcement Learning: An Introduction (2nd ed.)", Richard S. Sutton and Andrew G. Barto
+
+\end{itemize}
+
+\vspace{3mm}
+
+\noindent{\bf 4. 수업 방법}
+
+\vspace{2mm}
+
+\noindent 가. 강의
+
+\vspace{5mm}
+
+\noindent{\bf 5. 평가 기준 및 방법}
+
+\vspace{2mm}
+
+\noindent 가. 평가 기준
+
+\vspace{2mm}
+
+\noindent\small\begin{tabular}{|C{2.2cm}|C{2.2cm}|C{2.2cm}|C{2.2cm}|C{2.2cm}|C{2.2cm}|}
+
+\hline
+
+\bf 퀴즈 & \bf 중간고사 & \bf 기말고사 & \bf 팀 프로젝트 & \bf 출결 및 태도 & \bf 합계 \\
+
+\hline
+
+10\% & 25\% & 25\% & 30\% & 10\% & 100\% \\
+
+\hline
+
+\end{tabular}
+
+\vspace{3mm}
+
+\noindent 나. 평가 방법
+
+\begin{itemize}[leftmargin=8mm,itemsep=0.8mm,topsep=1mm]
+
+\item 퀴즈: 매 주차 수업 내용에 대한 퀴즈로 개념 이해도를 확인한다.
+
+\item 중간고사/기말고사: 지필고사로 전반부(1\textasciitilde{}6주차, 표 기반 강화학습)와 후반부(9\textasciitilde{}14주차, 심층강화학습) 학습 내용의 이해도를 각각 평가한다.
+
+\item 팀 프로젝트: 7주차(Block A, 표 기반 강화학습)와 15주차(Block B, 심층강화학습) 두 차례에 걸쳐 보고서, 발표, 동료평가(peer-review)로 평가한다. 결과의 우수성보다 실험 절차의 정직성(시드 반복, 베이스라인 비교, 결과에 대한 정직한 보고)을 중요하게 평가한다.
+
+\end{itemize}
+
+\vspace{3mm}
+
+\noindent{\bf 6. 학점 부여 기준}
+
+\vspace{2mm}
+
+\begin{itemize}[leftmargin=8mm,itemsep=0.8mm,topsep=1mm]
+
+\item 출결 및 태도: 총 수업 시간의 3/4 이상 출석 시 100\% 부여
+
+\item 병결/공결 등으로 정규 중간고사와 기말고사에 미응시한 경우: 대체시험을 실시하여 그대로 점수로 반영
+
+\item 과목우수상 기준: 원점수 기준으로 정렬하여 결정
+
+\end{itemize}
+
+\vspace{3mm}
+
+\noindent{\bf 7. 주별 강의 계획}
+
+\vspace{2mm}
+
+{\small ※ 정확한 개강일, 중간고사, 기말고사 날짜는 2027학년도 학사일정 확정 후 반영 예정 (아래 날짜란은 공란으로 둠). \\※ 전반부(1\textasciitilde{}8주, 표 기반 강화학습)와 후반부(9\textasciitilde{}16주, 심층강화학습) 모두 "6주 수업 + 1주 캡스톤 발표 + 1주 시험" 구조로 구성한다. \\※ 9\textasciitilde{}10주차는 표 기반 방법을 신경망으로 확장하는 이론(함수근사, 정책경사)을 다루며, 이론에서 응용으로의 전환은 11주차부터 점진적으로 이루어진다.}
+
+\vspace{3mm}
+
+
+\noindent
+\begin{longtable}{|C{2.0cm}|L{11.3cm}|C{2.3cm}|}
+\hline
+\bf 주(기간) & \bf\centering 주제 및 내용 & \bf 비고 \\
+\hline
+\endfirsthead
+\hline
+\bf 주(기간) & \bf\centering 주제 및 내용 & \bf 비고 \\
+\hline
+\endhead
+
+
+\begin{minipage}[t]{1.8cm}\centering 제1주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+1. 강화학습이란 무엇인가, 그리고 이번 학기 로드맵\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 지도학습과 구별되는 강화학습의 정체성: 에이전트, 환경, 보상, 리턴
+\item\small 보상이 한참 뒤에야 주어지는 문제와, 보상을 잘 설계하는 것의 중요성
+\item\small 이번 학기 로드맵: 표 기반 강화학습에서 심층강화학습으로
+\end{itemize}
+\vspace{1mm}
+2. 신경망 미니 리뷰\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 순전파, 역전파, 연쇄법칙 등 신경망 핵심 복습
+\item\small 비선형 활성함수(ReLU)의 필요성
+\end{itemize}
+\vspace{1mm}
+3. 실습 환경 세팅: Gymnasium\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small Gymnasium 표준 인터페이스와 CartPole 환경
+\item\small 관측, 행동, 종료 조건의 구성
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small problem discovery and definition, logical thinking} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제2주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+4. 탐험과 활용: ε-greedy\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 탐험-활용 딜레마와 멀티암 밴딧 문제
+\item\small 무작위 시도와 최선의 선택을 섞는 ε-greedy 전략
+\end{itemize}
+\vspace{1mm}
+5. 낙관적 초기화와 UCB: 불확실성을 이용한 탐험\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 낙관적 초기화를 이용한 탐험 유도
+\item\small 아직 잘 모르는 선택지를 한 번 더 시도해보게 만드는 UCB 방법
+\end{itemize}
+\vspace{1mm}
+6. 밴딧 vs 완전한 MDP: 다음 장으로 가는 다리\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 밴딧을 상태가 하나뿐인 MDP로 재해석
+\item\small 미래에 받을 보상을 지금 얼마로 쳐줄지 정하는 할인율 개념
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, problem-solving skills} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제3주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+7. MDP의 다섯 요소와 마르코프 성질\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 상태, 행동, 전이확률, 보상, 할인율로 구성된 MDP
+\item\small 현재 상태만 알면 미래를 예측할 수 있다는 마르코프 성질
+\end{itemize}
+\vspace{1mm}
+8. 누적 보상, 할인율, 그리고 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 지금부터 앞으로 받을 보상을 모두 더한 값(리턴)의 정의
+\item\small 할인율이 최적 정책의 목표를 바꾸는 사례
+\end{itemize}
+\vspace{1mm}
+9. 가치함수와 벨만 기대방정식\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 상태가치함수 V와 행동가치함수 Q의 정의
+\item\small 지금의 가치를 다음 상태의 가치로 나타내는 벨만 방정식
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, problem-solving skills} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제4주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+10. 벨만 최적방정식과 정책평가\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 정책을 따랐을 때의 가치를 반복 계산으로 구하는 방법
+\item\small 가장 좋은 정책의 가치를 나타내는 벨만 최적방정식
+\end{itemize}
+\vspace{1mm}
+11. 정책 반복과 GridWorld 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 정책평가와 정책개선을 반복하는 정책 반복(policy iteration)
+\item\small GridWorld 환경에서의 최적 정책, 가치함수 실습
+\end{itemize}
+\vspace{1mm}
+12. 가치 반복, 수렴 증명, 그리고 모델 기반이라는 전제\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 가치 반복(value iteration)과 정책 반복의 관계
+\item\small 가치 반복을 반복할수록 결국 정답에 가까워지는 이유
+\item\small 환경의 규칙을 미리 정확히 알아야 한다는 한계와, 이를 보완하는 Dyna-Q
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, creativity} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제5주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+13. 모델 없이 배운다: MC 예측\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 환경의 규칙을 몰라도 직접 경험만으로 가치를 추정하는 몬테카를로 방법
+\item\small DP와 MC의 차이: 모델 유무
+\end{itemize}
+\vspace{1mm}
+14. MC 제어와 블랙잭 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 직접 겪은 경험을 바탕으로 더 좋은 행동을 찾아가는 몬테카를로 제어
+\item\small 블랙잭 환경에서 학습한 전략과 기본 전략표 비교
+\end{itemize}
+\vspace{1mm}
+15. 중요도 샘플링과 MC의 한계\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 다른 방식으로 행동하며 얻은 경험을 재활용하는 방법
+\item\small 이 방법의 한계와, 한 에피소드가 끝나야만 배울 수 있는 몬테카를로의 단점
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, problem-solving skills} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제6주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+16. TD(0): 한 스텝만 보고 갱신한다, TD vs MC\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 한 스텝만 경험하고 바로 예측을 수정하는 TD(0)의 기본 원리
+\item\small TD와 몬테카를로 방식의 장단점 비교, 그리고 그 사이를 조절하는 방법들
+\end{itemize}
+\vspace{1mm}
+17. SARSA와 CliffWalking 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 실제로 선택한 행동을 그대로 사용해 학습하는 SARSA
+\item\small CliffWalking 환경에서 안전 경로를 학습하는 이유
+\end{itemize}
+\vspace{1mm}
+18. Q-learning과 SARSA, Q-learning 경로 비교\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 항상 최선의 행동을 가정하고 학습하는 Q-learning
+\item\small SARSA와 Q-learning이 서로 다른 경로를 학습하는 이유
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, problem-solving skills} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제7주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+19. 팀 프로젝트 발표와 Peer-Review (Block A 캡스톤: 표 기반 강화학습)\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 환경 선정과 2개 이상 알고리즘 비교 실험 결과 발표 (1\textasciitilde{}6주차 내용 적용)
+\item\small 여러 번 반복 실험하고 비교 기준을 명확히 하는 등, 실험을 정직하게 수행했는지에 대한 동료 평가
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small problem discovery and definition, creativity, problem-solving skills, logical thinking} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제8주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+\centering\bf 1\textasciitilde{}6주차 범위 지필고사
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering 중간고사\end{minipage} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제9주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+20. Q-테이블의 한계와 함수근사\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 상태 공간이 클 때 Q-테이블의 한계와 함수근사의 필요성
+\item\small 신경망으로 Q값을 예측하는 DQN의 기본 구조
+\end{itemize}
+\vspace{1mm}
+21. DQN의 안정화 장치와 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 학습이 흔들리지 않도록 목표값을 잠시 고정해두는 방법
+\end{itemize}
+\vspace{1mm}
+22. 경험 재현과 CartPole 학습곡선 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 과거 경험을 저장해두었다가 다시 꺼내 학습하는 경험 재현
+\item\small CartPole 환경에서의 DQN 학습곡선 분석
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, problem-solving skills} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제10주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+23. 정책 그래디언트 정리\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 가치기반과 정책기반 강화학습의 차이
+\item\small 행동을 선택하는 확률 자체를 조금씩 개선해나가는 방법
+\end{itemize}
+\vspace{1mm}
+24. REINFORCE와 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 얻은 보상에 비례해 행동 확률을 조정하는 REINFORCE 알고리즘
+\end{itemize}
+\vspace{1mm}
+25. Actor-Critic\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 행동을 정하는 부분과 그 행동을 평가하는 부분을 함께 학습하는 Actor-Critic
+\item\small 같은 환경을 여러 개 동시에 복사해서 돌리며 경험을 빠르게 모으고, 그만큼 더 안정적으로 학습하는 방법(A2C, A3C)
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, creativity} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제11주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+26. 신뢰 영역과 확률비\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 정책이 한 번에 너무 많이 바뀌지 않도록 제한하는 신뢰 영역이라는 개념
+\item\small 이 개념을 실제로 구현한 초기 방법과 그 한계
+\end{itemize}
+\vspace{1mm}
+27. PPO 클리핑과 연속 제어 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 정책이 한 번에 급격히 바뀌지 않도록 제한을 걸어 안정적으로 학습하는 PPO
+\item\small Pendulum 환경에서의 연속 제어 실습
+\end{itemize}
+\vspace{1mm}
+28. GAE와 PPO가 표준이 된 이유\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 학습 신호의 정확도와 안정성 사이 균형을 맞추는 방법(GAE)
+\item\small PPO가 범용 강화학습 알고리즘으로 자리잡은 이유
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, problem-solving skills} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제12주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+29. 모방학습: 행동 복제와 DAgger\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 전문가의 행동을 그대로 따라 하며 배우는 행동 복제와, 작은 실수가 점점 커지는 문제
+\item\small 학습 중 새로 마주치는 상황에 대해서도 전문가의 조언을 추가로 받는 방법(DAgger)
+\end{itemize}
+\vspace{1mm}
+30. 선호 기반 보상모델과 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 두 행동 중 어느 쪽이 더 나은지 비교한 데이터로 보상 기준을 학습하는 방법
+\item\small 사람의 선호를 반영해 학습하는 RLHF의 과정과, 평가 기준을 편법으로 악용하는 문제
+\end{itemize}
+\vspace{1mm}
+31. 모방학습 vs 강화학습: 언제 무엇을 쓰는가\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 시연 데이터와 보상 신호 등 가용 자원에 따른 방법 선택
+\item\small 두 방법을 함께 사용하는 실전 방식
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small creativity, problem discovery and definition} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제13주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+32. 로봇공학 기초와 Sim-to-Real\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 로봇 팔의 각도와 위치를 계산하고 제어하는 기초 이론
+\item\small 시뮬레이션과 실제 환경의 차이를 줄이기 위한 방법
+\end{itemize}
+\vspace{1mm}
+33. 로봇 환경 탐색 실습\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 로봇팔, 사족보행 등 연속제어 환경 탐색과 평가 프로토콜
+\end{itemize}
+\vspace{1mm}
+34. 연속제어환경에 PPO 적용하기\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 힘의 크기처럼 연속적인 값을 다루는 정책 구조
+\item\small Reacher 환경에서의 PPO 적용 실습
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small problem-solving skills, creativity} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제14주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+35. World Models: 학습된 모델로 상상하며 계획하기\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 학습된 모델 위에서 상상 속 계획을 세우는 World Models
+\item\small 모델 오차 누적의 한계
+\end{itemize}
+\vspace{1mm}
+36. MuJoCo와 Isaac Sim: 물리 시뮬레이터와 GPU 가속\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 물체 사이의 충돌과 접촉까지 정교하게 계산하는 물리 시뮬레이터 MuJoCo
+\item\small 그래픽카드를 이용해 수많은 시뮬레이션을 동시에 돌리는 Isaac Sim
+\item\small 목적에 따라 알맞은 시뮬레이션 도구를 고르는 기준(자율주행 시뮬레이션 사례 포함)
+\end{itemize}
+\vspace{1mm}
+37. 모델기반 강화학습과 몬테카를로 트리 탐색(MCTS)\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small Dyna-Q 재조명: 학습된 모델로 가상 경험을 만들어 학습을 가속
+\item\small 여러 수를 미리 시뮬레이션해보고 가장 좋은 수를 찾는 몬테카를로 트리 탐색(MCTS)과 바둑 AI(AlphaGo)에서의 활용
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small logical thinking, problem-solving skills, creativity} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제15주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+38. 팀 프로젝트 발표와 Peer-Review (Block B 캡스톤: 심층강화학습)\\
+\vspace{-1mm}\begin{itemize}[leftmargin=5mm,itemsep=0.2mm,topsep=0.5mm,parsep=0pt]
+\item\small 여러 번 반복 실험한 결과를 비교해 발표 (9\textasciitilde{}14주차 내용 적용)
+\item\small 신경망 기반 강화학습에 특화된 체크리스트를 이용한 동료 평가
+\item\small 한 학기 개념지도 복습과 학기 이후 학습 방향(최신 동향) 안내
+\end{itemize}
+\vspace{1mm}
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering \end{minipage} \\
+
+\hline
+
+\bf\centering 핵심역량 & \multicolumn{2}{l|}{\small problem discovery and definition, creativity, problem-solving skills, logical thinking} \\
+
+\hline
+
+\begin{minipage}[t]{1.8cm}\centering 제16주\\[2mm]\hspace*{0mm}\end{minipage} & \begin{minipage}[t]{11.0cm}
+\centering\bf 9\textasciitilde{}14주차 범위 지필고사
+\end{minipage} & \begin{minipage}[t]{2.1cm}\centering 기말고사\end{minipage} \\
+
+\hline
+
+\end{longtable}
+\end{document}

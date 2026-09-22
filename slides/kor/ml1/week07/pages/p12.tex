@@ -1,0 +1,30 @@
+\begin{frame}[fragile]{세 함수를 손으로 구현}
+\begin{lstlisting}
+def gini(labels):
+    n = len(labels)
+    if n == 0:
+        return 0
+    counts = {}
+    for l in labels:
+        counts[l] = counts.get(l, 0) + 1
+    return 1 - sum((c / n) ** 2 for c in counts.values())
+
+def entropy(labels):
+    n = len(labels)
+    if n == 0:
+        return 0
+    counts = {}
+    for l in labels:
+        counts[l] = counts.get(l, 0) + 1
+    return -sum((c / n) * math.log2(c / n) for c in counts.values())
+
+def information_gain(parent_labels, left_labels, right_labels):
+    n = len(parent_labels)
+    weighted_child = (len(left_labels) / n) * entropy(left_labels) + \
+                      (len(right_labels) / n) * entropy(right_labels)
+    return entropy(parent_labels) - weighted_child
+\end{lstlisting}
+  {\footnotesize \texttt{gini} = ``잘못 고를 확률'' 해석, \texttt{entropy} =
+  ``비트 수'' 해석, \texttt{information\_gain} = IG 식(자식 엔트로피의
+  \textbf{크기 가중평균}을 뺀 값)을 그대로 구현.}
+\end{frame}

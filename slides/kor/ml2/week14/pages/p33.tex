@@ -1,0 +1,21 @@
+\begin{frame}{커널 한 번: 한 스텝이 지나면 (4단계)}
+  Isaac Sim 계열 GPU 물리엔진(Warp 기반, MuJoCo-XLA의 CUDA 경로와
+  같은 원리)의 한 스텝 순서:
+  \small
+  \begin{tabular}{@{}cl@{}}
+    \toprule
+    단계 & 내용 \\
+    \midrule
+    1. \kb{행동 배치} & 4,096개 환경 각자의 행동 $a_i$를 텐서
+      $A \in \mathbb{R}^{4096 \times d_a}$로 수집 \\
+    2. \kb{역학 커널} & 모든 복제본의 미분방정식(관성, 중력,
+      PD/모터 법칙)을 \textbf{한 번의 커널 호출}로 계산
+      --- CUDA 코어가 수천 개 나뉘어 동시 실행되는 곳 \\
+    3. \kb{접촉 커널} & 복제본마다 ``무엇이 무엇과 닿는가''를
+      \textbf{동시에} 검사 (4,096개 진자가 각각 바닥에 닿았는지
+      동시 질문) \\
+    4. \kb{통합} & 2$\sim$3의 결과를 모든 복제본에 동시 적용해
+      다음 상태 $q_{t+1}$ 산출 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

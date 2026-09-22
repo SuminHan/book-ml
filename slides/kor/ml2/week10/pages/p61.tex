@@ -1,0 +1,32 @@
+% ===== wrap-up =====
+\begin{frame}{이번 주차 정리}
+  \begin{enumerate}
+    \item \kb{10.1 정리를 세웠다} --- Q를 거치지 않고 정책을
+      직접 파라미터화(softmax / 조건부 정규). 로그미분 트릭이
+      ``적분의 미분''과 ``단절된 샘플''이라는 벽을 \textbf{동시에}
+      해산시켜 $\nabla_\theta J = \mathbb{E}_\tau[\sum_t
+      \nabla_\theta\log\pi_\theta(a_t|s_t)\,G_t]$ 에 도달.
+      one-vs-rest 모양과 $\mathbb{E}[\nabla\log\pi]=0$ 이
+      베이스라인 논리의 씨앗.
+    \item \kb{10.2 정리를 알고리즘으로} --- REINFORCE: 경사 상승 +
+      단일 샘플 $G_t$ (on-policy, model-free, MC 기반, 정책기반).
+      2행동 밴딧에서 ``좋은 행동 확률 $0.5 \to 0.98$'',
+      CartPole 300 에피소드 $14 \to 100$. 리턴을 정규화하지
+      않으면 ``덜 좋았을 뿐 양수'' 행동을 계속 올리려는 함정.
+    \item \kb{10.3 거침을 고쳤다} --- 행동에 무관한 베이스라인
+      $b(s_t)$ 를 빼도 \textbf{기댓값 불변, 분산만 감소}.
+      최적 베이스라인 $= V^\pi(s_t)$ $\to$ \kb{Actor-Critic}:
+      Actor는 어드밴티지 $G_t - V(s_t)$ 로, Critic은 TD(0)으로
+      동시에 학습. A2C가 시드 간 \textbf{일관성}에서
+      REINFORCE를 이김.
+  \end{enumerate}
+  \vskip0.6em
+  \begin{block}{다음 주차 --- Week 11. 정책이 한 업데이트 만에
+  무너지지 않게: PPO}
+    이번 주에 손에 쥐게 된 두 네트워크(Actor, Critic)와 어드밴티지
+    $A_t$ 가 PPO의 \textbf{재사용되는 구성 요소}. PPO는
+    \textbf{클리핑}(한 업데이트의 크기를 제한) + \textbf{경험
+    재사용}으로 REINFORCE의 거친 업데이트를 안정화 ---
+    Week 13$\sim$14 로봇 시뮬레이션(Pendulum)의 출발점.
+  \end{block}
+\end{frame}

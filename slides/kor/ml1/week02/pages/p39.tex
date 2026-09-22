@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{실습: numpy로 정규방정식 $\to$ GD와 비교}
+\begin{lstlisting}
+import numpy as np
+
+X_raw = np.array([1.0, 2.0, 3.0])
+y = np.array([3.0, 5.0, 7.0])
+m = len(X_raw)
+X = np.column_stack([np.ones(m), X_raw])  # bias 열 추가
+
+w_star = np.linalg.inv(X.T @ X) @ X.T @ y
+print("정규방정식 해:", w_star)            # [1. 2.]
+
+# 경사하강법으로 충분히 오래(2000스텝) 돌리면 같은 값에
+w0, w1, alpha = 0.0, 0.0, 0.1
+for _ in range(2000):
+    pred = w0 + w1 * X_raw
+    err = pred - y
+    w0 -= alpha * np.sum(err) / m
+    w1 -= alpha * np.sum(err * X_raw) / m
+print("GD(2000스텝):", w0, w1)             # 1.0, 2.0
+\end{lstlisting}
+\end{frame}

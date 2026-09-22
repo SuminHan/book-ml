@@ -1,0 +1,27 @@
+\section{13.1 로봇공학 기초와 Sim-to-Real}
+\begin{frame}{장난감 환경에서 실체 로봇으로: 3대 기둥}
+  \begin{itemize}
+    \item Week 9--12의 환경(CartPole, Pendulum)은 \textbf{단순화된} 로봇 제어 문제.
+    \item 실제 로봇: 팔 · 다리 · 바퀴가 달린 \textbf{물리적 시스템} --- 행동은
+      \textbf{연속적인 힘/토크}, 물리 법칙(관성 · 중력 · 마찰)을 거쳐 움직인다.
+  \end{itemize}
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    기둥 & 내용 \\
+    \midrule
+    상태공간 & 각 관절의 \kb{각도} + \kb{각속도}. 2관절 팔:
+      $(\theta_1, \theta_2, \dot\theta_1, \dot\theta_2)$ 4차원 \\
+    \kb{운동학} & \kb{정기구학}: 관절각 $\to$ 팔 끝 위치. \kb{역기구학}: 그 반대 \\
+    \kb{동역학} & 미분방정식: 토크 $\to$ 가속. 물리 법칙이 등장하는 곳 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{block}{강화학습 관점에서 중요한 것 하나}
+    MDP의 $\mathcal{S}, \mathcal{A}$가 추상적 기호가 아니라
+    \textbf{실제 각도·힘의 단위를 갖는 연속값}.
+    \kq{Week 9--12의 알고리즘을 물리 법칙이 지배하는 연속 행동공간에 어떻게
+    적용하는가?}
+  \end{block}
+\end{frame}

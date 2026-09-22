@@ -1,0 +1,29 @@
+\begin{frame}{다항 vs 베르누이: 독립 가정의 두 버전}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{베르누이 나이브베이즈}
+      \begin{itemize}
+        \item $x_j \in \{0,1\}$ --- ``단어 $j$ 가 \textbf{등장했는가}''
+        \item 문서 \textbf{길이와 무관} (`free' 1번이든 10번이든
+          ``등장 1건'')
+        \item 길이가 신호인 문제(짧은 제목 vs 긴 본문)에 유용.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{다항(Multinomial) 나이브베이즈}
+      \begin{itemize}
+        \item $x_j$ = ``단어 $j$ 가 \textbf{몇 번} 나왔는가''
+        \item $P(x|y) = \prod_j P(x_j|y)^{x_j}$ (다항분포)
+        \item `free' 10번 메일 $>$ 1번 메일처럼 보고 싶을 때
+          (대부분의 스팸/감성 분석) \textbf{자연스러움}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{공통}
+    둘 다 ``클래스가 주어지면 단어들이 독립'' + \textbf{빈도 추정}의
+    같은 구조. 실전에선 보통 다항이 더 잘 됨
+    (scikit-learn \texttt{MultinomialNB}). 이번 절 코드는
+    \textbf{베르누이} (교육적으로 단순).
+  \end{block}
+\end{frame}

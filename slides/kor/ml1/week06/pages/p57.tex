@@ -1,0 +1,28 @@
+\begin{frame}{유명한 사례: 환자 단위 누수}
+  의료 영상 AI에서 실제로 자주 발견되는 누수 — \textbf{같은 환자의 여러 장
+  스캔 중 일부는 train, 일부는 test에 무작위로 흩어지는} 경우.
+  \begin{itemize}
+    \item 같은 환자의 스캔은 서로 매우 비슷(같은 신체 구조, 같은 장비).
+    \item 모델이 test에서 ``새로운 환자를 진단''하는 게 아니라 \textbf{``이미
+      학습에서 본 그 환자를 살짝 다른 각도에서 다시 알아보는''} 셈이 됨.
+    \item 논문에 보고된 정확도가 \emph{실제 새로운 환자}에게 적용했을 때보다
+      \textbf{부풀려짐}.
+  \end{itemize}
+  \vskip0.3em
+  \small
+  환자 100명, 각 5장 스캔, kNN:
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    분할 방식 & test RMSE \\
+    \midrule
+    무작위 분할(이미지 단위) & 1.04 \\
+    환자(그룹) 분할 & 3.65 \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.3em\normalsize
+  \begin{center}
+    \includegraphics[width=0.44\linewidth]{ch06_3_patient_leakage.png}
+  \end{center}
+  {\footnotesize 이 문제는 여러 의료 AI 논문에서 사후 지적되어 재현성 논쟁으로
+  이어짐(예: Rumala 2023, 뇌 MRI 종단 연구의 피험자 식별 누수).}
+\end{frame}

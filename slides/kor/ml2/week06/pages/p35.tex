@@ -1,0 +1,38 @@
+\begin{frame}{손으로 한 스텝: 무작위 \texttt{down}이 골랐을 때}
+  \small
+  $s=(2,1)$(절벽 맨 왼쪽 칸 바로 위),
+  $Q(s) = [\text{위 }-1,\ \text{오른쪽 }-1,\ \text{아래 }0,\
+  \text{왼쪽 }-1]$. $\varepsilon=0.1$-greedy가 \textbf{무작위로
+  \texttt{down}을 고름} $\to$ 절벽, $r = -100$, $s'=(3,0)$ 회귀.
+  $Q(s') = [\text{위 }-2,\ \text{오른쪽 }-5,\ \text{아래 }-9,\
+  \text{왼쪽 }-4]$, $s'$에서 무작위 행동이 또 \texttt{down}이라
+  $a' = \texttt{down}$이 \textbf{실제로 골라짐}. $\alpha=1$, $\gamma=1$.
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{SARSA} --- 실제로 고른 $a'$의 값을 쓴다:
+      \[
+      \text{목표} = -100 + (-9) = -109
+      \]
+      \[
+      Q(s,\text{down}) \leftarrow 0 + 1\cdot(-109 - 0)
+      = \mathbf{-109}
+      \]
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{Q-learning(비교용)} --- 최선의 값을 쓴다:
+      \[
+      \text{목표} = -100 + \max(-2,-5,-9,-4) = -102
+      \]
+      \[
+      Q(s,\text{down}) \leftarrow \mathbf{-102}
+      \]
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  \begin{block}{본질}
+    한 번의 갱신 차이는 7에 불과. 하지만 본질은 ``7의 차이''가 아니라,
+    \textbf{SARSA의 목표값에 ``실제로 나쁜 행동을 고른'' 사건 자체가
+    들어갔느냐}다.
+  \end{block}
+\end{frame}

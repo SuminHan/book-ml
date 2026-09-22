@@ -1,0 +1,32 @@
+\begin{frame}{실습 결과: 복원된 것 — 크기가 아니라 방향}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      {\footnotesize 200 에폭 학습 후 (seed 42):}
+      \vskip0.3em
+      \begin{tabular}{@{}lrl@{}}
+        \toprule
+        & w1(부드러움) & w2(덜컹거림) \\
+        \midrule
+        학습된 & 7.264 & $-$3.643 \\
+        진짜 & 2 & $-$1 \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.6em
+      \begin{itemize}
+        \item 비율 $w_1/w_2\approx -1.99$ — 실제 비율 $-2$에 매우
+          가까움.
+        \item \textbf{검증}: 보지 못한 새 궤적 쌍 3개 —
+          3/3 정답.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch12_2_reward_direction.png}
+      {\footnotesize 회색 등고선 = 학습된 $r_\phi$, 파랑 = $r^*$
+      방향 $(2,-1)$, 주황 = 학습된 방향 $(7.26,-3.64)$ — 같은 방향,
+      길이만 다름.}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \kq{수식을 단 한 번도 알려주지 않았는데, 비교 300개로 관계가 복원됐다.}
+\end{frame}

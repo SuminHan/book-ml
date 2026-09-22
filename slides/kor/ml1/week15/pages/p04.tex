@@ -1,0 +1,31 @@
+\begin{frame}{``variational''이라는 이름의 기원}
+  \begin{itemize}
+    \item 2013년 논문(Auto-Encoding Variational Bayes)의 주된 공헌은
+      새 생성모델이 아니라 \kb{변분 베이즈}를 심층 신경망과 연결한 것
+    \item 정확한 사후 $p(z|x)$를 계산하는 대신 \textbf{함수족 안에서
+      최적의 근사 $q(z|x)$를 ``변분(변화시켜 보며)'' 구하는} 것
+    \item 맥스 웰링은 이 기법으로 텍스트 생성에 VAE를 적용한 논문
+      (ADAE, 2014)도 — 여기서 이미 표준 구조(인코더가 분포를 내놓는
+      구조)가 등장
+    \item ``생성형 신경망''은 2013$\sim$14년 한 번에 나온 것이 아니라
+      \textbf{변분 베이즈(오래된 통계 기법) × 심층학습}의 교차 지점에서
+      태동
+  \end{itemize}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{block}{방향적 그래프 모델 (원 논문 Fig.\,1)}
+        데이터 $\boldsymbol{x}$, 잠재 $\boldsymbol{z}$, 파라미터 $\theta$.
+        생성 모델 $p_\theta(z)$, $p_\theta(x|z)$와 인식 모델
+        $q_\phi(z|x)$의 구조.
+      \end{block}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[height=2.5cm]{ref_vae_diagram.png}
+      \vskip0.2em
+      {\footnotesize Fig.\,1 재구성: 실선=생성 $p_\theta$, 점선=근사
+      $q_\phi$}
+    \end{column}
+  \end{columns}
+\end{frame}

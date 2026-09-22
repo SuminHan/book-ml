@@ -1,0 +1,18 @@
+\begin{frame}{``RT 코어가 필요하다''는 제약의 정확한 이유}
+  \begin{itemize}
+    \item Isaac Sim은 물리만 GPU로 돌리는 게 아니라,
+      \textbf{렌더링(카메라 센서 시뮬레이션)까지} GPU에서
+    \item 실시간 렌더링을 위해 광선 추적(ray tracing)을 쓰면
+      GPU의 \textbf{RT 코어} 필요 --- A100\,·\,H100류 데이터센터
+      GPU는 학습용이라 RT 코어가 \textbf{없음}
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{정확한 이유}
+    ``학교 GPU(H100)로 Isaac Sim을 못 돌린다''는 제약은
+    \textbf{렌더링 축(시각적 리얼리즘)}에서 온다.
+    \textbf{물리만이라면 MuJoCo-XLA로 H100에서도 돌릴 수 있다}
+    --- ``GPU가 없어서 못 한다''가 아니라,
+    \textbf{``렌더링을 하려면 이 GPU가 아니다''}라는 정확한
+    이유 (14.3의 Q3가 이 지점을 다룬다).
+  \end{block}
+\end{frame}

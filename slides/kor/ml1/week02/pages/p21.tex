@@ -1,0 +1,26 @@
+\begin{frame}{10배 규칙: 실데이터에서는 느림이 흔한 실패모드}
+  장난감(3점) 데이터에선 학습률 비교가 ``발산/비발산'' 이분법이지만,
+  실사용 크기에서는 \textbf{느린 수렴}이 더 흔하다.
+  $y = 3x + 1 + \text{노이즈}(0, 0.5^2)$ 로 만든 \textbf{300개} 데이터,
+  $(0,0)$ 출발:
+  \vskip0.6em
+  \begin{center}
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    학습률 & 소음 바닥 도달 스텝 \\
+    \midrule
+    $\alpha = 0.001$ & 3000스텝 내 도달 불가 (최종 $J = 0.154$,
+      바닥보다 20\% 높음) \\
+    $\alpha = 0.01$ & 489 \\
+    $\alpha = 0.1$ & 47 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  {\footnotesize \kb{소음 바닥} $J_{\text{floor}} = 0.1287$ --- 노이즈가
+  만들어낸, 어떤 직선도 더 낮출 수 없는 이론적 최소 비용.}
+  \vskip0.4em
+  학습률을 10배 올리면 스텝 수도 약 10배 줄어든다 ---
+  안전한 범위(이 데이터의 경계 $\alpha^{*} \approx 1.98$) 안에서는
+  \textbf{클수록 비례해서 빨리} 수렴.
+\end{frame}

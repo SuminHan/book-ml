@@ -1,0 +1,18 @@
+\begin{frame}{자주 묻는 질문 4: 실제 모델에서 얼마나 큰가}
+  2017년 원논문(Vaswani et al.)의 스케일:
+  \begin{itemize}
+    \item 모델 차원 $d_{model} = 512$ $\Rightarrow$ $W_Q, W_K, W_V$ 는
+      각각 \textbf{512$\times$512} 행렬 (각각 약 \textbf{26만}개
+      파라미터).
+    \item 감각 비교: Week 6 당뇨 회귀 문제가 특징 10개인 것과
+      비교하면 스케일을 잡기 좋다.
+    \item 12.3절 멀티헤드에서는 이 512차원을 $h=8$ 개 헤드에 나눠
+      쓰므로 각 헤드 행렬은 \textbf{64$\times$64}가 된다.
+  \end{itemize}
+  \vskip0.6em
+  세 행렬 모두 \textbf{학습으로 결정}된다 — 사람이 ``이 행렬은
+  대명사 담당''이라고 설계하지 않는다.
+  \vskip0.4em
+  12.3절에서 보듯, 헤드들이 각자 다른 역할로 \textbf{스스로 분화}
+  한다는 것을 숫자와 관측으로 확인한다.
+\end{frame}

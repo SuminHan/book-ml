@@ -1,0 +1,21 @@
+\begin{frame}{왜 ``Gradient''인가: 잔차 = (음의) 기울기}
+  회귀에서 손실을 \textbf{제곱오차} $L(F) = \tfrac{1}{2}\sum_i (y^{(i)} -
+  F(x^{(i)}))^2$로 두면, $L$을 $F(x^{(i)})$로 미분하면:
+  \[ \frac{\partial\, L}{\partial\, F(x^{(i)})}
+     = F(x^{(i)}) - y^{(i)} = -\,r^{(i)} \]
+  \textbf{기울기는 정확히 잔차의 음수}(제곱손실 기준).
+  \vskip0.8em
+  \begin{itemize}
+    \item GBDT 스텝을 다시 쓰면:
+      $F_t(x) = F_{t-1}(x) - \eta\, g_t(x)$,
+      여기서 $g_t$는 $-r^{(i)}$(= 기울기)를 맞추는 트리
+    \item Week 2 경사하강법 $\theta \leftarrow \theta - \eta\nabla_\theta L$
+      과 \textbf{구조가 완전히 같은 식} — 차이 하나: 경사하강법은
+      \textbf{파라미터 공간}에서 $\theta$, GBDT는 \textbf{함수 공간}에서
+      $F$ 자체를 옮김
+    \item \textbf{Friedman(2001)의 핵심 통찰}: ``함수를 파라미터로 가지는
+      모델을 경사하강으로 학습한다'' — 손실만 미분가능하면 어떤 손실이든
+      적용 가능(분류는 로지스틱 손실의 기울기 $\to$
+      \texttt{predict\_proba}가 나오는 분류기)
+  \end{itemize}
+\end{frame}

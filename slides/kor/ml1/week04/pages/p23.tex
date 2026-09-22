@@ -1,0 +1,33 @@
+% ============================================================
+\section{4.2 차원의 저주와 실습: 검증셋으로 k 튜닝하기}
+\begin{frame}{차원의 저주(Curse of Dimensionality): ``가까운 이웃''이
+  멀어진다}
+  \kq{특징이 늘어날수록, ``가장 가까운 이웃''조차 점점 멀어진다.}
+  \vskip0.8em
+  \begin{itemize}
+    \item kNN의 전제 = ``가까운 데이터는 \textbf{비슷한 답}을
+      가질 것이다'' --- 특징이 수백 개가 되면 이 직관이 무너짐
+    \item \textbf{원인은 부피}: $n$차원에서 한 변을 0.5로만 줄여도
+      부피가 $0.5^n$으로 --- $n=100$이면 $10^{-30}$,
+      \textbf{기하급수적으로 증발}
+    \item 반대로 ``전체 부피의 일부''를 잡으려면 한 변을 거의 1에
+      가깝게 늘려야 함
+  \end{itemize}
+  \vskip0.8em
+  $n$차원 단위 정육면체 $[0,1]^n$에 점이 균등 분포,
+  전체의 비율 $p$를 포함하려면 한 변 $\ell$:
+  \[
+  \ell^n = p \quad\Longrightarrow\quad \ell = p^{1/n}
+  \]
+  \kq{$p=0.01$(전체의 1\%)일 때의 $\ell$:}
+  \small
+  \begin{tabular}{@{}ccc@{}}
+    \toprule
+     $n$ & $\ell = p^{1/n}$ & \\
+    \midrule
+    1  & 0.01 & \\
+    10 & 0.63 & \\
+    100 & 0.955 & \textbf{각 변 길이의 95.5\%나} 차지해야 겨우 1\% \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

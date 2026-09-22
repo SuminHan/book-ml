@@ -1,0 +1,25 @@
+\begin{frame}{학습 곡선: Block B에서 x축이 ``에포크''인 이유}
+  \begin{itemize}
+    \item 8.1: x축 = $n\_estimators$ — GBDT는 모델을
+      \textit{크게} 만드는 파라미터가 트리 수이므로 x축이 곧
+      \textbf{용량}
+    \item Block B: 신경망은 \textbf{구조(층 수·너비)로 용량을
+      고정}하고, \textbf{학습량(에포크)을 바꿔} train/val 곡선
+      을 그리는 것이 표준
+    \item 구조를 바꾸면 모델 \textbf{자신이 달라지므로}(트리 수
+      만큼 ``같은 모델의 크기''가 아님) \textbf{에포크를 x축}
+      으로
+  \end{itemize}
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    GBDT ($n\_estimators$) & train & val \\
+    \midrule
+    20 & 0.988 & 0.944 \\
+    50 & \textbf{1.000} & 0.961 \\
+    200 & 1.000 & 0.983 \\
+    \bottomrule
+  \end{tabular}
+  {\footnotesize train은 50트리에서 \textbf{1.0 포화}.}
+\end{frame}

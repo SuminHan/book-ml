@@ -1,0 +1,21 @@
+\begin{frame}[fragile]{VAE 손실함수: ELBO의 코드}
+\begin{lstlisting}
+def vae_loss(x, x_reconstructed, mu, log_var):
+    # 복원 손실 (여기서는 MSE로 근사)
+    recon_loss = sum((x[i] - x_reconstructed[i]) ** 2 for i in range(len(x)))
+    # KL divergence: 정규분포 q(mu, sigma^2)와 표준정규 N(0,1)의 닫힌 형태
+    kl_loss = -0.5 * sum(1 + log_var[i] - mu[i]**2 - math.exp(log_var[i])
+                          for i in range(len(mu)))
+    return recon_loss + kl_loss  # ELBO 최대화 = 음의 ELBO 최소화
+\end{lstlisting}
+  \vskip0.4em
+  정규분포 $\mathcal{N}(\mu, \sigma^2)$와 표준정규 $\mathcal{N}(0,1)$
+  사이의 KL은 닫힌 형태:
+  \[D_{KL}\big(\mathcal{N}(\mu, \sigma^2) \,\|\, \mathcal{N}(0,1)\big)
+  = \frac{1}{2}\left(\sigma^2 + \mu^2 - 1 - \log \sigma^2\right)\]
+  \vskip0.3em
+  {\footnotesize 코드에서 이 값을 \textbf{음수}로 쓰는 이유:
+  $-\frac{1}{2}(\sigma^2 + \mu^2 - 1 - \log\sigma^2)$는 ELBO 정규화 항에
+  마이너스가 붙은 형태($-D_{KL}$)이며, 복원 항과 더하면 ELBO 그
+  자체. 손실 = \textbf{음의 ELBO}를 최소화.}
+\end{frame}

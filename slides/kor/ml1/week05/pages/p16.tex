@@ -1,0 +1,33 @@
+\begin{frame}[fragile]{실습: 마진과 서포트 벡터를 눈으로 보자}
+  \begingroup\lstset{basicstyle=\ttfamily\tiny}
+  \begin{lstlisting}
+import numpy as np
+from sklearn.svm import SVC
+import matplotlib.pyplot as plt
+
+# 대각선 방향으로 떨어진 두 클러스터
+rng = np.random.default_rng(7)
+X = np.vstack([rng.normal([5, 5], 0.8, (40, 2)),
+               rng.normal([-5, -5], 0.8, (40, 2))])
+y = np.r_[np.ones(40), -np.ones(40)]
+
+clf = SVC(kernel="linear", C=1.0).fit(X, y)
+w, b = clf.coef_[0], clf.intercept_[0]
+sv = X[clf.support_]                       # 서포트 벡터만
+
+# 결정 경계(w.T x + b = 0)와 마진 경계(= ±1)를 x1축으로 해 x2를 표현
+x1 = np.linspace(-8, 8, 100)
+f  = lambda c: (-w[0]*x1 - b + c) / w[1]   # w.T x + b = c  ->  x2 = ...
+
+fig, ax = plt.subplots(figsize=(6, 6))
+for lbl, m in [(1, "red"), (-1, "blue")]:
+    ax.scatter(X[y == lbl, 0], X[y == lbl, 1], color=m, label=f"y={lbl}")
+ax.plot(x1, f(0),  "k",  lw=2,  label="결정 경계 (f=0)")
+ax.plot(x1, f(1),  "g--", lw=1, label="마진 경계 (f=+1)")
+ax.plot(x1, f(-1), "g--", lw=1, label="마진 경계 (f=-1)")
+ax.scatter(sv[:, 0], sv[:, 1], s=120, facecolors="none",
+           edgecolors="orange", lw=2, label="서포트 벡터")
+ax.set_aspect("equal"); ax.legend(); plt.show()
+\end{lstlisting}
+  \endgroup
+\end{frame}

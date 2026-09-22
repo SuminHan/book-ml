@@ -1,0 +1,27 @@
+\begin{frame}{실측(학교 서버 CPU, 2026-08)}
+  먼저 \textbf{책에서 실제로 돌린} 실행의 총 스텝 수:
+  \small
+  \begin{tabular}{@{}p{4.4cm}p{3.0cm}p{6.0cm}@{}}
+    \toprule
+    실행 & 총 스텝 수 & 계산 \\
+    \midrule
+    11.2 Pendulum PPO & 120,000 & 300 iter $\times$ 400 스텝 \\
+    13.3 Reacher PPO & 76,800 & 150 iter $\times$ 512 스텝 \\
+    \bottomrule
+  \end{tabular}
+  $\Rightarrow$ 이 책의 PPO 실습들은 \textbf{약 8만$\sim$12만 스텝}이면
+  ``배우는 것''이 끝남. 이제 각 엔진의 초당 스텝 수로 나누면:
+  \small
+  \begin{tabular}{@{}p{5.6cm}p{3.6cm}p{4.8cm}@{}}
+    \toprule
+    엔진 (환경) & 초당 스텝 수 & 120,000 스텝에 걸리는 시간 \\
+    \midrule
+    Gymnasium 기본 (CartPole-v1) & 약 247,000 & 약 \textbf{0.5 초} \\
+    MuJoCo (Ant-v5) & 약 6,200 & 약 \textbf{20 초} \\
+    \bottomrule
+  \end{tabular}
+  {\footnotesize 노트북 재현: \texttt{gym.make(...)} 후
+  \texttt{step()} 반복 + \texttt{time.perf\_counter()}, 워밍업
+  200스텝 제외. 이 숫자는 \textit{이 책의 실습 수준}에서 CPU의
+  절대 상한선을 재는 것.}
+\end{frame}

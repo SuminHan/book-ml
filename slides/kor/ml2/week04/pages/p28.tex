@@ -1,0 +1,26 @@
+\begin{frame}[fragile]{실습: 5칸 GridWorld의 \texttt{policy\_iteration}}
+\begin{lstlisting}
+def policy_iteration(P, R, n_actions, gamma):
+    policy = [1] * n_states   # 처음엔 무조건 오른쪽
+    while True:
+        V = policy_evaluation(P, R, policy, gamma)   # 1. 평가
+        stable = True
+        for s in range(n_states):                    # 2. 개선
+            best_a = max(range(n_actions),
+                         key=lambda a: R[s][a]
+                             + gamma * sum(p*V[ns] for p, ns in P[s][a]))
+            if best_a != policy[s]:
+                policy[s] = best_a
+                stable = False
+        if stable:                    # 멈춤: 바뀐 것이 없으면
+            return V, policy
+\end{lstlisting}
+  \vskip0.3em
+  \textbf{실행 결과}: $V = [-3.439, -2.710, -1.900, -1.000,
+  0.000]$, policy $= [1, 1, 1, 1, 0]$, \textbf{outer 2회},
+  sweep 총합 \textbf{10}. 시작 정책이 이미 ``무조건 오른쪽''이라
+  \textbf{첫 정책평가에서 곧바로 최적}이 나왔고, 개선 단계에서
+  ``더 바꿀 게 없다''는 것만 한 번 확인. $V(0) = -3.439$ 는
+  ``칸 0$\to$4까지 4번 이동의 할인 비용''
+  $(-1 - 0.9 - 0.81 - 0.729 \approx -3.439)$ 과 정확히 일치.
+\end{frame}

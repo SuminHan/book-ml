@@ -1,0 +1,25 @@
+\begin{frame}{추적 표 (2/2): $t=3$에서 한 오차, 세 상태}
+  \scriptsize
+  \begin{tabular}{@{}clll@{}}
+    \toprule
+    스텝 $t$ & 현재 상태 & $\delta_t$ & 이번 스텝 $V$ 갱신 \\
+    \midrule
+    3 & 4 & $+0.2$ & $e(2)=0.25, e(3)=0.625, e(4)=1$:  
+      $V(2)\mathrel{+}=+0.005$,  $V(3)\mathrel{+}=+0.0125$,  
+      $V(4)\mathrel{+}=0.1\cdot0.2\cdot1=+0.020$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item \textbf{하나의} TD 오차 $\delta_3=0.2$가 \textbf{세 개} 상태
+      (2, 3, 4)를 동시에 갱신:
+      \begin{itemize}
+        \item 현재 상태 4(흔적 1)가 가장 크게,
+        \item 직전 상태 3(0.625)이 그다음,
+        \item 한 번 더 지난 상태 2(0.25)가 가장 작게.
+      \end{itemize}
+      이것이 ``\textbf{후방으로 크레딧을 퍼뜨린다}''는 뜻.
+    \item $\lambda=0.5$라 기억이 1$\sim$2 스텝 전까지만 유효 ---
+      $\lambda=0.9$로 올리면 훨씬 길어짐.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,16 @@
+\begin{frame}{문제 본질을 수식으로: 학습 오차 vs 배포 오차}
+  \begin{itemize}
+    \item BC의 학습 오차와 배포 오차는 \textbf{서로 다른 분포 위의} 오차.
+    \item 학습 오차 — 전문가 정책 $\pi^E$의 상태 분포 $d_{\pi^E}$ 위에서:
+      \[\text{학습 오차}=\mathbb{E}_{s\sim d_{\pi^E}}\big[L(s)\big]\approx \frac{1}{n}\sum_{i=1}^{n}L(s_i)\]
+    \item 배포 오차 — 배포 시 정책의 상태 분포 $d_\pi$ 위에서(진짜
+      원하는 것):
+      \[\text{배포 오차}=\mathbb{E}_{s\sim d_\pi}\big[L(s)\big]\]
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{핵심}
+    ``학습 오차를 최소화하라''는 원칙은 $d_\pi\approx d_{\pi^E}$ 일 때만
+    배포 오차 최소화와 일치. \kb{복합 오차}란 바로 이 두 분포의
+    어긋남. 기계학습 언어로는 \kb{공분포 시프트}(covariate shift).
+  \end{block}
+\end{frame}

@@ -1,0 +1,27 @@
+\begin{frame}{기능적 마진 vs 기하적 마진}
+  스케일 불변성 때문에 ``같은 점의 마진''을 재는 방식이 두 가지로 갈린다:
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{기능적 마진}
+      \[
+      y^{(i)}\bigl(w^\top x^{(i)} + b\bigr)
+      \]
+      $(w,b)$를 $k$배로 스케일하면 \textbf{$k$배로 변한다}.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{기하적 마진}
+      \[
+      \frac{y^{(i)}\bigl(w^\top x^{(i)} + b\bigr)}{\|w\|}
+      \]
+      스케일에 \textbf{무관} — 실제 거리로 잰 마진.
+      앞선 $\frac{1}{\|w\|}$가 바로 이 것.
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{최적화 문제의 구성}
+    ``마진을 최대화하자''에서 진짜 재고 싶은 것은 \textbf{기하적 마진}.
+    그래서 기능적 마진의 스케일을 제약 $y^{(i)}(w^\top x^{(i)}+b)\ge 1$
+    으로 ``1로 고정''해 두고, 그 아래 $\|w\|$를 최소화 —
+    이 식으로 기하적 마진 $\frac{2}{\|w\|}$의 최대화를 푼다.
+  \end{block}
+\end{frame}

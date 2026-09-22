@@ -1,0 +1,28 @@
+\begin{frame}{할인율은 ``목표''를 바꾼다: 예 2 (3상태 MDP)}
+  \textbf{예 2}: 상태 0, 1, 2에, 각 상태에서 두 행동 A$\cdot$B.
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    현재 상태 & 행동 A & 행동 B \\
+    \midrule
+    0 & $\to$ 1, 보상 $+1$ & $\to$ 1, 보상 $+1$ \\
+    1 & $\to$ 2(50\%), 0(50\%), $+2$ & $\to$ 0(확정), 0 \\
+    2 (루프) & 자기 자신, $-10$ & 자기 자신, $-10$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{itemize}
+    \item \kb{정책 A}(항상 A): 상태 1에서 A를 하면 50\% 확률로
+      상태 2로 넘어가, 그 뒤 \textbf{매 스텝 $-10$ 을 영구히}
+      받는다(상태 2는 ``게임 종료''가 아니라 ``$-10$ 을 계속
+      주는 루프'').
+    \item \kb{정책 B}(항상 B): 상태 1에서 보상을 0으로 받고
+      상태 0으로 돌아가 --- ``$0 \xrightarrow{+1} 1
+      \xrightarrow{0} 0 \to \cdots$''의 \textbf{안전하지만 보상이
+      낮은 루프}.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize 터미널이 아니라 $-10$ 루프로 모델링한 이유:
+  터미널이었다면 $V(2)=0$ 이 되어 ``구덩이가 $\gamma$ 에 의해
+  얼마나 할인되는지''를 볼 수 없기 때문이다.}
+\end{frame}

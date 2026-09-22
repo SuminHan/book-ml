@@ -1,0 +1,23 @@
+\begin{frame}{``상태 간 참조'': 밴딧에 없던 구조}
+  \begin{itemize}
+    \item $V(s_1)=30$: ``이 상태에서 시작하면, 영원히 3.0을
+      할인해서 받은 총 보상''.
+    \item $V(s_0)=28$: ``현재 $s_0$ 에 있지만, 다음 스텝에 $s_1$ 로
+      넘어가 3.0을 영원히 받기 때문에, $1.0 + 0.9 \times 30 = 28$''.
+    \item \textbf{두 상태의 가치가 서로를 참조}하고 있는 모습.
+  \end{itemize}
+  \vskip0.4em
+  \begin{itemize}
+    \item \textbf{밴딧에는} ``현재 상태의 가치는 다른 상태의 가치에
+      달려 있다''는 구조가 \textbf{전혀 없음} --- 각 팔의 가치
+      $q^*(a)$ 는 그 팔 자신의 평균 보상만으로 완전히 결정.
+    \item \textbf{MDP에서는} \textbf{상태 간 참조}가 생기고, 이
+      참조가 벨만방정식의 \textbf{재귀 구조}(Week 3$\sim$4 전체)를
+      만듦.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize Week 4의 반복적 정책평가 한 스텝 =
+  $V_{k+1}(s) = R(s, \pi(s)) + \gamma \sum_{s'} P(s'|s, \pi(s)) V_k(s')$
+  --- 지금 손으로 한 $V(s_0) = 1.0 + 0.9 \cdot V(s_1)$ 이 바로
+  그 공식의 1-상태 전이판.}
+\end{frame}

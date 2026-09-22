@@ -1,0 +1,20 @@
+\begin{frame}{탐험에도 비용이 있다}
+  $\varepsilon$-greedy가 무작위 팔을 고르는 스텝에서, 그
+  ``무작위 팔''의 기대 보상 = $k$개 팔의 평균
+  $\frac{1}{k}\sum_a q^*(a)$ --- 최선의 팔 $q^*(a^*)$ 보다 \textbf{작다}.
+  \vskip0.5em
+  \begin{center}
+    탐험 스텝 하나당 기대 손실:
+    \[q^*(a^*) - \frac{1}{k}\sum_a q^*(a)\]
+  \end{center}
+  $k=3$, $q^* = [1.0, 1.5, 2.0]$ 이면 스텝마다
+  $2.0 - 1.5 = \mathbf{0.5}$ 의 기대 손실.
+  \vskip0.4em
+  \begin{itemize}
+    \item $\varepsilon$ \textbf{너무 작으면}: ``한 번의 나쁜 운''에
+      최적 팔을 놓칠 확률 증가.
+    \item $\varepsilon$ \textbf{너무 크면}: 이미 찾은 최선 팔을
+      외면한 채 스텝마다 0.5 손실 지속.
+    \item 양쪽 끝이 나쁘면 \textbf{가운데 어딘가}에 최대치 존재.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,33 @@
+\begin{frame}[fragile]{conv2d 직접 구현해보기}
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+\begin{lstlisting}
+def conv2d(image, kernel):
+    img_h, img_w = len(image), len(image[0])
+    k = len(kernel)
+    out_h, out_w = img_h - k + 1, img_w - k + 1
+    output = [[0.0] * out_w for _ in range(out_h)]
+    for i in range(out_h):
+        for j in range(out_w):
+            total = 0.0
+            for di in range(k):
+                for dj in range(k):
+                    total += image[i+di][j+dj] \
+                             * kernel[di][dj]
+            output[i][j] = total
+    return output
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item 입력 $n\times n$ $\to$ 출력
+          $(n-k+1)\times(n-k+1)$
+        \item 각 위치마다 필터와
+          \textbf{원소별 곱의 합}
+        \item ``합성곱층''이라는 용어는
+          후쿠시마의 \textit{네오코그니트론}
+          (1980)에서 처음 사용
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

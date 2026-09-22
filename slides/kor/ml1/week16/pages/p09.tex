@@ -1,0 +1,26 @@
+\begin{frame}{두 층의 베이스라인: ``무작위''와 ``GBDT''}
+  \begin{enumerate}
+    \item \kb{1층: 무작위(또는 다수 클래스)} — 모델이 \textit{아무것도}
+      배운 상태의 \textbf{하한}. 10클래스 균형 데이터면 무작위 정확도
+      10\%
+    \item \kb{2층: GBDT (Ch07.3)} — \textit{정형 도구의} \textbf{상한}
+      에 가까운 기준. ``신경망이 정형 도구보다 나은가''를 묻는 기준선
+    \item \kb{본인 모델(신경망)} — 위 두 층을 \textbf{둘 다} 넘어야
+      ``이 데이터에 딥러닝이 필요했다''고 말할 수 있다
+  \end{enumerate}
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}p{5.2cm}ccc@{}}
+    \toprule
+    모델 (digits, 8:1:1 stratify: 1,437/180/180) & val & test &
+      macro-F1 \\
+    \midrule
+    다수 클래스(숫자 `1', train 146개) & 0.100 & 0.100 & — \\
+    \textbf{GBDT}(200트리, 학습률 0.1) & 0.983 & 0.944 & 0.944 \\
+    \textbf{작은 CNN}(35,914 파라미터) & — & \textbf{0.939} & — \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  {\footnotesize CNN은 GBDT(0.944)에 \textbf{비등$\sim$소폭 열세} —
+  이 3층 숫자가 ``모델을 만들었다''는 주장을 단계별로 검증한다.}
+\end{frame}

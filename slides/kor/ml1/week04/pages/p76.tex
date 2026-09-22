@@ -1,0 +1,35 @@
+\begin{frame}{GMM vs LDA 한 표로}
+  \scriptsize
+  \begin{tabular}{@{}p{0.14\textwidth}p{0.36\textwidth}p{0.36\textwidth}@{}}
+    \toprule
+     & \textbf{GMM} & \textbf{LDA} \\
+    \midrule
+    관측 데이터 & 점 $x_i \in \mathbb{R}^d$ & 문서의 \textbf{단어}
+               $w_{dn}$(이산) \\
+    잠재변수 & 클러스터 라벨 $z_i$(1개/점) & 토픽 $z_{dn}$(1개/단어)
+               + 혼합 $\theta_d$(1개/문서) \\
+    ``덩어리''의 모양 & 정규분포 $\mathcal{N}(\mu_k, \Sigma_k)$ &
+               \textbf{단어 분포} $\phi_k$(디리클레 사전 위) \\
+    ``클러스터''의 의미 & 특징공간에서 \textbf{가까이 모인 점} &
+               \textbf{자주 함께 나타나는 단어 패턴}(토픽) \\
+    M-step 갱신 & $\mu_k, \Sigma_k, \pi_k$ & $\theta_d, \phi_k$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{block}{한 줄}
+    ``클러스터''가 특징공간에서의 \textbf{기하학적 근접성}(GMM)이
+    아니라 \textbf{단어 공출현의 통계적 패턴}(LDA)으로 바뀜 ---
+    이것이 \textbf{같은 EM}의 두 가지 얼굴을 가질 수 있는
+    이유. $K$ 선택 문제도 그대로 이어짐(토픽 수 선택도
+    \textbf{BIC 계열 트레이드오프} --- 다만 우도를 닫힌 형태로
+    계산할 수 없어 \textbf{변분 하한}을 기준으로 삼음).
+  \end{block}
+  \vskip0.6em
+  {\footnotesize \textbf{이름 충돌 주의} --- 이 책에서 ``LDA''가
+  \textbf{두 번} 등장한다. Week 3.2의 \textbf{피셔 선형 판별}(Fisher's
+  Linear Discriminant)도 LDA다 --- \textbf{서로 다른 문제를 푸는
+  별개의 모델}이 나중에 \textbf{약자를 공유}한 것. \textbf{이 절의
+  LDA} = 전부 \textbf{``잠재 디리클레 할당''}(Blei--Ng--Jordan,
+  NIPS 2001 / JMLR 2003). \textbf{차원축소/분류의 LDA}는 3.2절의
+  문맥에서만 등장.}
+\end{frame}

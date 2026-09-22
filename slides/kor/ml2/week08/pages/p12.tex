@@ -1,0 +1,17 @@
+\begin{frame}[fragile]{선형 $\varepsilon$ 감쇠 스케줄 (핵심 코드)}
+\begin{lstlisting}
+def make_epsilon_schedule(n_episodes, eps_start=1.0, eps_end=0.01):
+    def eps_fn(episode):  # 선형 감쇠
+        return max(eps_end,
+                   eps_start + (eps_end - eps_start) * episode
+                   / n_episodes)
+    return eps_fn
+\end{lstlisting}
+  \vskip0.4em
+  \begin{itemize}
+    \item $t=0$에서 $\varepsilon=1.0$(전부 탐험) $\to$ $t=$\texttt{n\_episodes}에서
+      $0.01$로 선형 하강, \texttt{max}가 하한을 보장.
+    \item 이 함수를 \textbf{두 알고리즘 모두}에 똑같이 전달하는 것이
+      ``한 요인만 바꾸는'' 비교 실험의 원칙.
+  \end{itemize}
+\end{frame}

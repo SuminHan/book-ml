@@ -1,0 +1,27 @@
+\begin{frame}{자주 묻는 질문 (2)}
+  \textbf{Q. $\lambda$가 너무 크면?}
+  \begin{itemize}
+    \item $\lambda\to\infty$이면 정규화 항이 원래 손실을 압도 →
+      모든 가중치(bias 제외)가 0에 수렴, ``항상 평균값만 예측하는'' 가장
+      단순한 모델로 수렴(분산 $\to$0, 편향 극도로 큼 = 과소적합 극단).
+  \end{itemize}
+  \vskip0.4em
+  \textbf{Q. $|w|$가 미분불가능하면 Lasso는 최적화할 수 없는 거 아닌가요?}
+  \begin{itemize}
+    \item 아님 — 0에서의 서브그래디언트($[-1,1]$)로 최적조건을 정의하면
+      해가 존재하고 \textbf{좌표하강}이 효율적으로 찾음.
+    \item L2는 모든 점에서 미분가능 → 구배하강·닫힌형 모두 가능. Lasso는
+      0에서 뾰족 → 전용 알고리즘(좌표하강·내적점). 실전에서 \texttt{Lasso}를
+      그냥 \texttt{.fit()}하는 것은 이 전용 알고리즘을 쓰는 것.
+  \end{itemize}
+  \vskip0.4em
+  \textbf{Q. 정규화 계수 $\lambda/2$ vs $\lambda$, sklearn \texttt{alpha}?}
+  \begin{itemize}
+    \item 기호가 서로 다름($\frac{\lambda}{2m}\|w\|^2$,
+      $\frac{\lambda}{2}\|w\|^2$, $\lambda\sum w_j^2$). sklearn
+      \texttt{Ridge(alpha=a)}는 $\frac{a}{2}\sum w_j^2$.
+    \item \textbf{상대적 강도만} 의미 있고 절대값은 무의미 → 다른
+      라이브러리의 $\lambda$를 \emph{숫자로} 비교하지 말 것. ``적절한 강도''
+     는 6.2의 CV로 \textbf{데이터가} 정한다.
+  \end{itemize}
+\end{frame}

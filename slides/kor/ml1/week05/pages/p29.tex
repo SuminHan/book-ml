@@ -1,0 +1,28 @@
+\begin{frame}{학습 궤적으로 확인: 대칭 데이터}
+  $hinge\_loss\_gradient\_descent$를 $C=1.0,\ \alpha=0.01$로
+  5.1절 대칭 데이터에 적용하면 ($b$는 처음부터 끝까지 정확히 0):
+  \small
+  \begin{tabular}{@{}ccc@{}}
+    \toprule
+    에폭 & $w_1\ (=w_2)$ & $b$ \\
+    \midrule
+    1 & 0.0333 & 0.0000 \\
+    10 & 0.1750 & 0.0000 \\
+    100 & 0.1719 & 0.0000 \\
+    2000 & 0.1735 & 0.0000 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize\vskip0.5em
+  \begin{itemize}
+    \item 몇십 에폭 만에 $w\approx0.17$로 수렴 — 5.1절의 정확해
+      $(1/6,1/6)\approx(0.167,0.167)$에 잘 붙는다.
+    \item 정확히 0.1667이 아니라 0.1735에 머무는 것은, full-batch
+      경사하강이 힌지 손실의 ``꺾임''($f=1$에서 미분 불가) 때문에
+      최적해 근처에서 \textbf{약간 진동}하며 2000 에폭 만에
+      완전히 가라앉지 않기 때문.
+    \item 대칭 데이터: 두 클래스의 위반 패턴이 완전히 대칭 $\Rightarrow$
+      $b$의 그래디언트가 항상 상쇄되어 0.
+      \textbf{실제 데이터는 대칭이 아니므로} $b$가 0에서 벗어나
+      경계의 위치를 결정.
+  \end{itemize}
+\end{frame}

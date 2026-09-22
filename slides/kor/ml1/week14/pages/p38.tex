@@ -1,0 +1,27 @@
+\begin{frame}{그래디언트가 로지스틱 회귀와 똑같은 이유}
+  \begin{itemize}
+    \item 이 학습의 그래디언트도 \texttt{(pred $-$ label)}이라는
+      \textbf{똑같은 인자}로 시작 --- 2장 로지스틱 회귀의
+      $(h_{w}(x) - y)$와 \textbf{완전히 같은 형태}.
+    \item \textbf{우연이 아님}: word2vec을 ``중심 $c$ 옆에 $t$가
+      실제로 나왔는가(label=1) / 무작위 가짜인가(label=0)''를 맞히는
+      \textbf{이진 분류} 문제로 학습시키기 때문.
+    \item ``가짜를 많이 넣으면 더 정확해지지 않나?'' ---
+      \textbf{항상 좋은 것은 아님}:
+  \end{itemize}
+  \vskip0.4em
+  \small
+  \begin{itemize}
+    \item $k_{\text{neg}} \approx 0$: ``함께 나오는 쌍의 내적만'' 커지고
+      안 나오는 쌍엔 페널티가 없어 \textbf{모든 내적이 비슷해짐}
+      (비슷하지 않은 단어까지 코사인이 높아짐).
+    \item $k_{\text{neg}}$ 매우 큼: 한 쌍당 이진 문제가 너무 많아
+      \textbf{학습 신호가 희석}되고 학습도 느려짐.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize 핵심: 네거티브 샘플링은 ``softmax를 근사''하는 것이
+  아니라, \textbf{softmax 대신 다른 loss}(이진 분류)를 쓰는 것 ---
+  매 스텝 $O(V)$인 계산 비용(대체, loss substitution)을 피하기 위한
+  것. \; 이 절의 작은 말뭉치($V = 10$)에서는 $k_{\text{neg}} = 4$가
+  좋음.}
+\end{frame}

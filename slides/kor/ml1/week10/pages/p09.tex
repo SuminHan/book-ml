@@ -1,0 +1,25 @@
+\begin{frame}{출력 크기 공식: 미적분이 아니라 ``세는 문제''}
+  입력 $n\times n$, 필터 $k\times k$, 패딩 $p$(가장자리에 0을 두르는
+  픽셀 수), 스트라이드 $s$(필터가 한 번에 이동하는 칸 수)일 때:
+  \[ n_{\text{out}} = \left\lfloor \frac{n + 2p - k}{s} \right\rfloor + 1 \]
+  \begin{itemize}
+    \item 예: $n{=}28, k{=}3, p{=}0, s{=}1$ 이면 $28-3+1 = \mathbf{26}$
+    \item 패딩 없이는 필터를 지날 때마다 이미지가 점점 작아진다
+    \item $p=(k-1)/2$ 로 하면(\kb{same padding}) 출력 크기를 입력과
+      같게 유지
+  \end{itemize}
+  \vskip0.5em
+  \textbf{유도 --- 필터가 다 들어가는 위치를 세자} (1D로 줄여):
+  \begin{itemize}
+    \item 필터는 입력 \textbf{안쪽}에 완전히 들어와야 하므로
+      시작 위치 최댓값은 $n-k$
+    \item $s$ 로 이동하면 시작 위치는 $0, s, 2s, \ldots$ 중
+      $\le n-k$ 인 것들 --- 항의 개수 $\lfloor (n-k)/s \rfloor + 1$
+    \item 패딩 $p$ 는 입력을 $n \to n+2p$ 로 만들어 준다
+      (좌·우 \textbf{두 쪽}에 $p$씩 --- 그래서 공식에는 $2p$)
+  \end{itemize}
+  \vskip0.3em
+  \kq{``패딩은 왜 2p인가'' --- 이 공식에서 가장 많이 범하는 실수.}
+  코드 \texttt{padding=1} 은 \textbf{한 변당} 1픽셀,
+  총 늘어나는 길이는 $2p$ 다.
+\end{frame}

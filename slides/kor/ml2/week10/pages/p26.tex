@@ -1,0 +1,36 @@
+\begin{frame}[fragile]{REINFORCE: 정리를 그대로 경사 상승으로}
+\begin{lstlisting}
+import math
+
+def softmax_policy(theta, state_feature):
+    logits = [theta[0]*state_feature, theta[1]*state_feature]
+    m = max(logits)
+    exps = [math.exp(l - m) for l in logits]   # 수치 안정화
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def reinforce_update(theta, episode, alpha, gamma):
+    # episode: [(state_feature, action, reward), ...]
+    T = len(episode)
+    G = [0.0] * T
+    running = 0.0
+    for t in reversed(range(T)):            # 루프 1: 리턴 G_t 역산
+        running = episode[t][2] + gamma * running
+        G[t] = running
+    for t, (s, a, r) in enumerate(episode): # 루프 2: 스텝별 갱신
+        probs = softmax_policy(theta, s)
+        if a == 0:
+            grad_log_pi = [(1 - probs[0]) * s, -probs[1] * s]
+        else:
+            grad_log_pi = [-probs[0] * s, (1 - probs[1]) * s]
+        theta[0] += alpha * G[t] * grad_log_pi[0]
+        theta[1] += alpha * G[t] * grad_log_pi[1]
+    return theta
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize 정책은 \textbf{가능히 가장 단순한} 형태: 1차원 상태
+  특징 $s$ 에 대한 \textbf{선형 로짓} $(\theta_0 s, \theta_1 s)$ 에
+  softmax --- 신경망은 등장하지 않음. 실제(아래 PyTorch
+  \texttt{PolicyNet})에서는 선형 부분을 $f_\theta(s)$ 신경망으로 바꿀
+  뿐, \textbf{갱신 식의 구조는 동일}.}
+\end{frame}

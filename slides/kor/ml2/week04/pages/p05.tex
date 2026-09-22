@@ -1,0 +1,33 @@
+\begin{frame}{$V^\pi$ 와 $Q^\pi$: 동전의 양면, 그리고 2$\times$2}
+  \kb{행동가치함수} $Q^\pi(s,a)$ --- ``상태 $s$ 에서 \textbf{행동
+  $a$ 를 강제 한 번 취하고}, 그 다음부터 $\pi$ 를 따른다''의
+  가치 --- 는 $V^\pi$ 와 같은 방식으로 재귀되고, 다리
+  $Q^\pi(s,\pi(s)) = V^\pi(s)$ 로 서로를 정의하는 \kb{동전의
+  양면}:
+  \[
+  Q^\pi(s,a) = R(s,a) + \gamma \sum_{s'} P(s'|s,a)\, V^\pi(s')
+  \]
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=0.95\linewidth]{ch04_1_bellman_equations.png}
+      \vskip0.3em
+      {\footnotesize 네 개의 벨만방정식: \textbf{기대 vs
+      최적} × \textbf{$V$ vs $Q$} 로 2$\times$2.}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \small
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+         & \kb{기대}($\pi$ 를 따른다) & \kb{최적}($\max$) \\
+        \midrule
+        \textbf{$V$} & $V^\pi$ (4.1절 = 오늘) & $V^{*}$ (4.2--4.3절) \\
+        \textbf{$Q$} & $Q^\pi$ & $Q^{*}$ (Week 9 DQN) \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.4em
+      {\footnotesize 이번 절의 모든 코드와 수식이 이 다리(V-방정식
+      $\leftrightarrow$ Q-방정식 사이)를 통해 오간다.}
+    \end{column}
+  \end{columns}
+\end{frame}

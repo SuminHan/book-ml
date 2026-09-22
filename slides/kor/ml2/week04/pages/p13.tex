@@ -1,0 +1,35 @@
+\begin{frame}{행동가치 $Q^\pi$: ``다음 행동을 포함해'' 평가}
+  $V^\pi(s)$ 는 ``정책이 시키는 대로 행동하면''의 가치. 4.2절
+  정책개선은 ``이 상태에서 \textbf{이 특정 행동}을 하면?''을
+  각 상태·행동마다 직접 재묻는다 --- 그 답이 $Q^\pi(s,a)$.
+  $V^\pi$ 와 같은 재귀 구조이되, ``첫 스텝 행동을 $a$ 로
+  \textbf{강제로 고정}''한 것.
+  \vskip0.4em
+  \begin{block}{$V^\pi$ 를 안다 $\iff$ $Q^\pi$ 를 안다}
+    다리 $V^\pi(s) = \sum_a \pi(a|s)\, Q^\pi(s,a)$ 로 정리하면,
+    \textbf{어느 한쪽을 안다면 다른 쪽은 즉시 계산}.
+  \end{block}
+  \vskip0.4em
+  ``오른쪽'' 정책에서 $V^{\text{right}} = [-3.439, -2.710,
+  -1.900, -1.000, 0]$ 와 $Q(s,a) = R(s,a) + 0.9\,V(s')$ 로
+  직접 채운 $Q^\pi$ 표:
+  \small
+  \begin{tabular}{@{}lrrl@{}}
+    \toprule
+    $s$ & $Q(s, \text{left})$ & $Q(s, \text{right})$ & 행의 $\arg\max$ \\
+    \midrule
+    0 & $-4.095$ & \textbf{$-3.439$} & right \\
+    1 & $-4.095$ & \textbf{$-2.710$} & right \\
+    2 & $-3.439$ & \textbf{$-1.900$} & right \\
+    3 & $-2.710$ & \textbf{$-1.000$} & right \\
+    4 & \textbf{$0.000$} (동점) & \textbf{$0.000$} (동점) & right (목표라 무의미) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  {\footnotesize 이 표의 굵은 값을 행마다 따면 ``오른쪽'' 정책은
+  \textbf{자기 자신을 되돌려준다} --- 자신의 $Q^\pi$ 기준으로
+  \textbf{이미 개선 불가}(policy-stationary), 곧 ``이 MDP에서
+  최적''을 암시. 반면 ``왼쪽''의 $Q^{\text{left}}$ 는 \textbf{모든
+  칸에서 right가 left보다 낫다} $\to$ 정책개선은 ``왼쪽''을
+  ``오른쪽''으로 바꾼다.}
+\end{frame}

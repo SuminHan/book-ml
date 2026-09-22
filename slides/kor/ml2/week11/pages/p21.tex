@@ -1,0 +1,20 @@
+\begin{frame}{11.1절 요약 — 두 사실}
+  \begin{itemize}
+    \item \kb{신뢰 영역}은 ``한 걸음의 크기를 믿을 수 있는 범위로
+      제한한다''는 직관.
+    \item \kb{확률비} $r_t=\pi_\theta/\pi_{\mathrm{old}}$ 는 ``옛
+      데이터를 새 정책 관점에서 재사용한다''는 도구.
+    \item $r_t$ 는 1에서 출발해 정책이 움직이는 만큼 벗어나고,
+      $L^{\mathrm{IS}}=\mathbb{E}[r_tA_t]$ 의 그래디언트는
+      \textbf{첫 스텝에서 policy gradient와 정확히 같아}
+      ``재사용해도 정직한 첫 걸음''을 보장.
+    \item 하지만 $r_t$ 가 크면 중요도 샘플링의 분산이
+      $e^{\mu^2}-1$ 로 \textbf{지수적으로 불어나} 소수 극단
+      샘플이 업데이트를 지배.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{PPO 전체의 설계 원리}
+    \kq{첫 걸음은 정직, 큰 걸음은 위험} — 이 두 사실이 11.2절의
+    클리핑이 존재하는 이유.
+  \end{block}
+\end{frame}

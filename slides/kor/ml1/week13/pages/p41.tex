@@ -1,0 +1,13 @@
+\begin{frame}[fragile]{코드: 대칭화하고 카라테 클럽에 적용}
+\begin{lstlisting}
+# Karate Club은 무방향 그래프이므로,
+# 친분 관계 하나를 양방향 링크로 취급한다
+directed_edges = KARATE_EDGES + [(b, a) for a, b in KARATE_EDGES]
+scores = pagerank(directed_edges, 34)
+print(sorted(scores.items(), key=lambda kv: -kv[1])[:3])
+# node 33, node 0이 가장 높다 -- 실제 두 "허브" 노드(관장, 감독)과
+# 정확히 일치
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize (대칭화, $d{=}0.85$, 100회 반복)}
+\end{frame}

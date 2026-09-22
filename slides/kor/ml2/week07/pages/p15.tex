@@ -1,0 +1,12 @@
+\begin{frame}{자주 하는 실수 (1/2)}
+  \begin{itemize}
+    \item \textbf{할인 지수를 잘못 세기.} \texttt{i - tau - 1}로 쓰면
+      $n=1$이어도 \textbf{편향된 목표값}. 2000 에피소드 후에도 참값
+      미도달. ``왜 안 수렴하지?'' $\to$ \textbf{먼저 지수를 확인}.
+    \item \texttt{tau = t}(지금 상태를 지금 갱신)로 쓰기.
+      $G_t^{(n)}$은 $R_t,\dots,R_{t+n-1}$이 다 모인 시점
+      ($t+n-1$)에야 계산됨. \texttt{tau = t}면 아직 모이지 않은
+      보상을 참조 $\to$ 인덱스 에러, 또는 0으로 채워져 편향.
+      \textbf{\texttt{tau = t - n + 1}이 정확}.
+  \end{itemize}
+\end{frame}

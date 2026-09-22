@@ -1,0 +1,20 @@
+\begin{frame}[fragile]{n-step TD 코드 (2/2): 핵심 3줄}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+            if tau >= 0:
+                G = sum(gamma ** (i - tau) * rewards[i]
+                        for i in range(tau, min(tau + n, len(rewards))))
+                if tau + n < T:
+                    G += gamma ** n * V[states[tau + n]]   # 추정치 항
+                V[states[tau]] += alpha * (G - V[states[tau]])
+  \end{lstlisting}
+  \begin{itemize}
+    \item $\tau \ge 0$: 실제 보상 $n$개가 다 모인 시점이므로 $G_\tau^{(n)}$
+      계산 가능.
+    \item \texttt{tau + n < T}: $n$ 스텝 윈도우가 끝나기 \textbf{전에}
+      에피소드가 끝나지 않았다면 $\gamma^n V(s_{\tau+n})$을 추가.
+      끝나면 \textbf{추정치 항 생략}(절단 목표값).
+    \item 이 절단 덕분에 $n$이 에피소드 길이보다 길면 \textbf{자동으로
+      MC}가 됨 --- $n=50$이 사실상 MC로 동작하는 이유(이 환경 에피소드
+      길이는 보통 50보다 짧음).
+  \end{itemize}
+\end{frame}

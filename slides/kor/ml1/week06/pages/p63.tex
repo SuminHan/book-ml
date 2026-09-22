@@ -1,0 +1,25 @@
+% ===== wrap-up =====
+\begin{frame}{이번 주차 정리}
+  \begin{enumerate}
+    \item \kb{6.1 페널티의 모양이 결과를 바꾼다} — $\lambda$를 올리면
+      분산을 편향과 바꿈. L2는 매끄러운 축소, L1은 soft-thresholding으로
+      \textbf{정확히 0}에 스냅시켜 특징 선택을 무상으로(원 vs 마름모).
+      bias는 정규화에서 제외.
+    \item \kb{6.2 학습 손실이 아니라 검증 손실로 $\lambda$를 고른다} —
+      k-fold CV로 U자형 곡선을 그리며, 1SE 규칙으로 ``최소점'' 단일 수치에
+      대한 불신을 제도화. ``여러 후보 중 최솟값을 고르는'' 행위 자체가
+      선택 → \textbf{최적화 편향}, nested CV로 격리.
+    \item \kb{6.3 train/val/test 3분할} — train은 배운다, val은 고르고,
+      test는 \textbf{딱 한 번}. ``정보 흐름의 역주행''(leakage)을 숫자로:
+      선택 편향($\mathbb{E}[\max]$), 전처리 통계량 누수, 시계열·환자 단위
+      분할.
+  \end{enumerate}
+  \vskip1em
+  \begin{block}{다음 주 — Week 7. 트리 기반 모델}
+    정규화·교차검증·3분할은 다음 장의 트리·앙상블(GBDT) 튜닝이 올라설
+    \textbf{초석}. 트리의 복잡도 손잡이는 가중치 페널티가 아니라 ``트리
+    깊이'', ``분할 횟수''가 되지만, ``수많은 후보 중 어떤 설정이
+    최적인가?''라는 질문은 \textbf{똑같이} 남는다 — 그 답을 만드는
+    틀(검증, 교차검증, train/val/test)이 바로 이 장에서 지은 것이다.
+  \end{block}
+\end{frame}

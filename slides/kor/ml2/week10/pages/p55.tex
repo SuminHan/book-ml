@@ -1,0 +1,23 @@
+\begin{frame}{세 가지로 읽기: 균일한 시작, 좁은 끝, ``속도''}
+  \begin{enumerate}
+    \item \kb{시작점은 A2C가 균일하다} --- 처음 20 에피소드
+      평균이 REINFORCE는 $14.1\sim42.5$ 로 \textbf{흩어진}
+      반면, A2C는 $20.4\sim21.6$ 로 \textbf{모임} ---
+      ``시드 불운''의 영향이 기준값을 빼면서 줄었음.
+    \item \kb{마지막 20 에피소드도 A2C가 좁다} --- A2C는
+      $178\sim211$ 의 좁은 밴드, REINFORCE는 $99.5\sim251.4$ 로
+      \textbf{150 넘게 벌어짐} --- 분산 감소가 시드 간
+      \textbf{일관성}으로 나타남.
+    \item \kb{도달 ``속도''는 이야기가 다름} --- 이 실험(300
+      에피소드, 시드 0$\sim$2)에서는 REINFORCE가 오히려
+      250 돌파가 빠른 시드가 \textbf{있었음}.
+  \end{enumerate}
+  \vskip0.3em
+  \begin{block}{``REINFORCE가 더 좋다''는 뜻이 \textbf{아님}}
+    분산이 크면 \textbf{위쪽으로도} 많이 튀기 때문.
+    분산 감소의 실제 이득 --- \textbf{안정성을 유지하면서}
+    학습을 \textbf{훨씬 오래, 훨씬 큰 환경}에서 돌릴 수 있게
+    된 것 --- 은 Week 11에서 PPO가 어드밴티지를 \textbf{클리핑된
+    목적함수}에 재사용하면서 비로소 온전히 수확됨.
+  \end{block}
+\end{frame}

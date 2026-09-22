@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{한 줄 차이 — SARSA vs Q-learning}
+\begin{lstlisting}
+# SARSA (on-policy): 다음 행동 a_next는 ε-greedy가 실제로 고른 것
+Q[s, a] += alpha * (r + gamma * Q[ns, a_next] - Q[s, a])
+# Q-learning (off-policy): 실제로 무엇을 했든 "최선"을 목표로
+Q[s, a] += alpha * (r + gamma * np.max(Q[ns])   - Q[s, a])
+\end{lstlisting}
+  \vskip0.6em
+  \begin{block}{왜 1개 MDP를 \emph{네 번} 푸는가가 가치 있는가}
+    단일 장에서는 보이지 않는 \textbf{세 가지}가 숫자로 드러난다.
+    \textbf{(1) 목표가 다르면 답이 다르다} — ③④는 갱신식이 한 줄
+    ($Q[ns,a']$ vs $\max Q[ns]$) 다른 구조인데 $V(S)$가 2.29와
+    2.589에 각각 수렴 — 간극이 정확히 $V^* - V^\pi = 0.297$,
+    ``탐험의 가격'' 그 자체. \textbf{(2) 네 경로 모두 같은
+    방정식을 쓴다} — ①이 벨만방정식을 직접 풀고, ②는 미래 항을
+    \emph{실제 실현}으로, ③④는 \emph{한 스텝 예측 + 자기 추정}으로
+    대체한 것뿐. \textbf{(3) 탐험의 비용이 측정된다} — ③의 0.297
+    간극은 ``$\varepsilon=0.3$의 탐험이 리턴 기준으로 이만큼
+    값어치가 한다''는 \textbf{숫자} — Ch2에서 직관으로 시작한
+    탐험-활용 딜레마가 여기서는 \emph{측정 대상}.
+  \end{block}
+\end{frame}

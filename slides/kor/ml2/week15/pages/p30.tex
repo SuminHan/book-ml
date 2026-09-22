@@ -1,0 +1,43 @@
+\begin{frame}[fragile]{MCTS 전체: 게임 규칙 + 노드 (님)}
+  게임 = \textbf{님(Nim)}: 돌을 1$\sim$3개씩 번갈아 가져가고
+  \textbf{마지막 돌을 가져가는 쪽이 이김}. 노드는
+  \textbf{그 노드에서 ``이동한 플레이어''(mover)의 관점}의
+  통계를 담는다는
+  점에 주목 --- \textbf{역전파가 무엇을 어떻게 더하는지}가
+  전부 여기서 결정된다:
+\begin{lstlisting}
+import math
+import random
+
+def nim_moves(state):
+    """이 상태에서 가능한 수: 남은 돌 수만큼, 1개/2개/3개 가져가기."""
+    return list(range(1, min(3, state) + 1))
+
+def nim_step(state, move, player):
+    """move개를 가져간다: 남은 돌이 줄고, 상대 차례가 된다."""
+    return max(0, state - move), -player
+
+def nim_terminal(state):
+    return state == 0
+
+def nim_rollout(state, player, rng):
+    """시뮬레이션(롤아웃): 완전히 무작위 정책으로 끝까지. 승자
+    (마지막 돌을 가져간 플레이어) 반환. 이미 종료된 상태면
+    막 이동한 쪽이 승자."""
+    if nim_terminal(state):
+        return -player
+    s, p = state, player
+    while not nim_terminal(s):
+        s, p = nim_step(s, rng.choice(nim_moves(s)), p)
+    return -p
+
+class MCTSNode:
+    def __init__(self, state, player, parent=None):
+        self.state = state        # 상태
+        self.player = player      # 이 상태의 차례인 플레이어
+        self.parent = parent      # 부모 노드 (역전파를 타고 올라갈 용도)
+        self.children = {}        # {move: 자식 노드}
+        self.visits = 0           # 방문 횟수
+        self.wins = 0.0           # "이 노드로 두어 도달한 플레이어"의 승 수
+\end{lstlisting}
+\end{frame}

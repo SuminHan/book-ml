@@ -1,0 +1,30 @@
+\begin{frame}[fragile]{특징 무작위화: ``강한 특징''이 루트를 독점하는가}
+  배깅만 하는 \texttt{BaggingClassifier}(특징 무작위화 \textbf{없음})와
+  랜덤 포레스트(\textbf{있음})를 50개 트리로 만들고, \textbf{각 트리가
+  루트에서 어떤 특징을 쓰는지} 세면:
+\begin{lstlisting}
+dom = list(data.feature_names).index("worst concave points")
+bag = BaggingClassifier(
+    estimator=DecisionTreeClassifier(max_depth=6, random_state=0),
+    n_estimators=50, random_state=0).fit(X_train, y_train)
+rf = RandomForestClassifier(n_estimators=50, max_depth=6, random_state=0) \
+       .fit(X_train, y_train)
+
+root_frac = lambda clf: np.mean([t.tree_.feature[0] == dom
+                                 for t in clf.estimators_])
+print("bagging-only:  ", round(root_frac(bag), 2))
+print("random forest: ", round(root_frac(rf), 2))
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize \texttt{bagging-only: 0.40 \quad random forest: 0.20}}
+  \vskip0.4em
+  \begin{itemize}
+    \item 배깅만: 50개 중 \textbf{40\%}가 루트에서
+      \texttt{worst concave points} 사용 $\to$ RF는 \textbf{절반}(20\%)
+    \item 이유: RF는 분기마다 30개 중 무작위 일부(기본
+      \texttt{max\_features=$\sqrt{30}\approx$5})만 후보로 보므로 강한
+      특징이 ``이번엔 후보에 안 들어가는'' 경우가 생김
+    \item 결과: 트리들이 \textbf{서로 다른 질문}을 탐색 $\to$ $\rho$를
+      낮추어 분산 감소를 \textbf{더 크게}
+  \end{itemize}
+\end{frame}

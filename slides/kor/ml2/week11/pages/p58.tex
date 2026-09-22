@@ -1,0 +1,23 @@
+\begin{frame}{``PPO를 돌린다'' — 실전 스택의 전체 그림}
+  \small
+  PPO 한 반복(1 iteration)이 실제로 하는 일, 위에서 아래로:
+  \vskip0.3em
+  \begin{enumerate}
+    \item \kb{① 경험 수집}: 현재 정책 $\pi_{\theta_{\mathrm{old}}}$
+      으로 $N$ 스텝(예: 2048) 수집 — 스텝마다 $s_t,\ a_t,\ r_t,\
+      \log\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t),\
+      V_{\theta_{\mathrm{old}}}(s_t)$ 저장.
+    \item \kb{② last value 계산}: 마지막 상태의 $V$ 값.
+    \item \kb{③ compute\_gae}: 각 스텝의 $A_t$
+      ($\lambda=0.95,\ \gamma=0.99$).
+    \item \kb{④ 정규화}: $A_t$ 를 미니배치 단위로
+      (mean 0, std 1).
+    \item \kb{⑤ $M$ epochs}(예: 4) 동안 미니배치(예: 64)마다 경사
+      상승: 정책 손실 $=-\min(r_tA_t,\ \mathrm{clip}(r_t,1\pm
+      \epsilon)A_t)$ ($\epsilon=0.2$) + Critic 손실
+      $\mathrm{MSE}(V_\theta(s_t),R_t)$ ($R_t=A_t+V(s_t)$)
+      $-c_e\,\mathcal{H}[\pi_\theta]$.
+    \item \kb{⑥ $\theta_{\mathrm{old}}\leftarrow\theta$}:
+      다음 반복의 기준 정책 갱신 $\to$ ①로.
+  \end{enumerate}
+\end{frame}

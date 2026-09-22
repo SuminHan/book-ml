@@ -1,0 +1,21 @@
+\begin{frame}{실습 설계: 통제된 대조 실험}
+  \begin{itemize}
+    \item 타겟 네트워크 효과를 \textbf{격리}하기 위한 의도적 최소 설정:
+      경험 재현 \textbf{없이}(온-폴리시, 매 스텝 학습), 시드 1개, 작은 환경.
+  \end{itemize}
+  \small
+  \begin{itemize}
+    \item \textbf{환경}: 1차원 랜덤워크. 상태 $x \in \{0,1,\dots,12\}$,
+      좌/우 이동(성공 0.9, 미끄러짐 0.1), 매 스텝 $-1$,
+      $x=12$ 도달: $+10$ 종료(목표), $x=0$: $-10$ 종료(위험),
+      $\gamma = 0.99$. 탐침 상태 \textbf{$x=8$}(목표 근처, Q 차이가 커서
+      편향이 선명).
+    \item \textbf{참값}: 값반복(value iteration, 5,000회 반복으로 수렴) ---
+      $Q^{*}(8,\text{오른쪽}) = 4.720$, $Q^{*}(8,\text{왼쪽}) = 2.642$,
+      이점 $\approx 2.08$.
+    \item \textbf{두 팔}: 1$\to$16$\to$16$\to$2, Adam $lr = 10^{-2}$,
+      $\varepsilon = 0.1$ 고정, 25,000스텝.
+      (A) 타겟 \textbf{없음} vs (B) 타겟 \textbf{있음}(하드, $C = 200$).
+  \end{itemize}
+  \normalsize
+\end{frame}

@@ -1,0 +1,25 @@
+\begin{frame}{이 절의 하이퍼파라미터 지도}
+  \small
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    방법 & 목표값 & 하이퍼파라미터(다이얼) & 이 절의 결과 \\
+    \midrule
+    TD(0) & $r+\gamma V(s')$ & ---($n=1$) & U의 좌측 극단 \\
+    n-step TD & $n$ 스텝 실제 + 나머지 추정 & $\mathbf{n}$ & U의 바닥 $n\approx 5$ \\
+    TD($\lambda$) & 모든 $n$의 가중평균 & $\boldsymbol{\lambda}$ & U의 바닥 $\lambda\approx 0.8$ \\
+    (참고) MC & 실제 리턴 $G_t$ & ---($n=\infty$, $\lambda=1$) & U의 우측 극단 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item 여기에 \kb{$\alpha$(학습률)}과 \kb{에피소드 수}가 겹침.
+    \item $\alpha$는 U자의 \textbf{깊이}를, 에피소드 수는 U자의
+      \textbf{바닥 위치}를 동시에 바꿈 --- 에피소드가 늘면 편향이
+      씻겨 나와 바닥이 \textbf{우측(긴 부트스트래핑)}으로 이동.
+    \item ``$n=5$, $\lambda=0.8$''은 \textbf{이 실험(10 에피소드,
+      $\alpha=0.2$)에서의 답}이지 보편 정수가 아님.
+  \end{itemize}
+  {\footnotesize 실정: ``데이터양을 늘릴수록 다이얼을 어떻게
+  이동시킬지''를 예상하고 검증 데이터로 확인하는 것이 정석.
+  (TD($\lambda$) 심화: Stanford CS234)}
+\end{frame}

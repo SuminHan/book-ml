@@ -1,0 +1,29 @@
+\begin{frame}[fragile]{실습: $C$ 스윕 — 이상치를 무시할지 받아안을지}
+  \begingroup\lstset{basicstyle=\ttfamily\tiny}
+  \begin{lstlisting}
+import numpy as np
+from sklearn.svm import SVC
+
+# 클러스터 ±(2.5,2.5) 스프레드 0.6, 각 40개 + 이상치 (-1.6,0.8)
+rng = np.random.default_rng(21)
+n = 40
+X = np.vstack([rng.normal([2.5, 2.5], 0.6, (n, 2)),
+               rng.normal([-2.5, -2.5], 0.6, (n, 2)),
+               np.array([[-1.6, 0.8]])])
+y = np.r_[np.ones(n), -np.ones(n), [1.0]]
+
+# 같은 데이터를 C = 0.01, 0.1, 1, 10, 100 으로 학습
+Cs = [0.01, 0.1, 1.0, 10.0, 100.0]
+print(f"{'C':>7s} {'마진 2/||w||':>12s} {'b/||w||':>8s} "
+      f"{'n_SV':>5s} {'이상치 f':>10s} {'정상점 오분류':>12s}")
+for C in Cs:
+    clf = SVC(kernel="linear", C=C).fit(X, y)
+    wc, bc = clf.coef_[0], clf.intercept_[0]
+    om = y[-1] * (wc @ X[-1] + bc)     # 이상치의 기능적 마진
+    mis = (clf.predict(X[:-1]) != y[:-1]).sum()
+    print(f"{C:7.2f} {2/np.linalg.norm(wc):12.3f} "
+          f"{bc/np.linalg.norm(wc):+8.3f} {len(clf.support_):5d} "
+          f"{om:10.3f} {mis:12d}")
+\end{lstlisting}
+  \endgroup
+\end{frame}

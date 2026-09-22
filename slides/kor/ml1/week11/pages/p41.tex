@@ -1,0 +1,18 @@
+\begin{frame}[fragile]{자주 하는 실수: \texttt{+=}을 \texttt{=}로 쓰는 것}
+  \begin{itemize}
+    \item \textbf{더 흔한} 실수: BPTT 루프에서 \verb|dWhh += ...|를
+      \verb|dWhh = ...|로 쓰는 것
+    \item $W_{hh}$가 모든 시점에서 공유되므로 각 시점의 기여를
+      \textbf{더해야} 하는데, \verb|=|로 쓰면
+      \textbf{가장 마지막(가장 과거) 시점 기여 하나만 남고} 나머지가
+      \textbf{덮어쓰임}
+    \item 증상: ``학습은 되는데 \textbf{느리고}, 긴 시퀀스일수록 더
+      못 배운다'' --- \textbf{손실을 한 시점만} 보고 있는 것과
+      같으니까
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{BPTT 코드를 읽을 때 \textbf{첫째로} 확인할 두 줄}
+    (1) \textbf{그래디언트 클리핑}이 있는가?
+    \\ (2) \verb|dWhh +=| 가 \verb|dWhh =|가 아닌가?
+  \end{block}
+\end{frame}

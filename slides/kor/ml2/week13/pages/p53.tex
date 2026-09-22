@@ -1,0 +1,29 @@
+\begin{frame}{네 수를 읽는 연습: 기준선은 $\approx -9.3$}
+  \small
+  \begin{center}
+    \begin{tabular}{@{}ll@{}}
+      \toprule
+      정책 & 10 에피소드 평균 리턴 (시드 42) \\
+      \midrule
+      무력(토크 0) & $-13.06$ \\
+      무작위 & $-44.34$ \\
+      비례제어기 $k = 0.5$ & $-9.32$ \quad $\leftarrow$ 기준선 \\
+      비례제어기 $k = 2.0$ & $-14.57$ \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+  \begin{itemize}
+    \item \textbf{무작위 $\approx -44.3$}: 거리 항 악화 + 제어 비용
+      $50 \times E[\|a\|^2] \approx 50\times\tfrac{2}{3} \approx 33.3$
+      이 쌓임.
+    \item \textbf{무력 $-13.1$}: 제어 비용 0, 초기 자세 fingertip(약
+      0.21 m)과 목표의 거리만 남음 (스텝당 $\approx 0.25$ m $\times$ 50).
+    \item \textbf{비례제어기 $k=0.5$($-9.3$)가 $k=2.0$($-14.6$)보다
+      낫다} --- 이득이 \emph{크면} 오히려 나빠짐. 미분 항이 없는
+      비례제어는 감쇠가 없어 $k$ 가 크면 목표점을 \textbf{과충격}
+      (overshoot)해 주위를 진동, 진동할 때마다 $\|a\|^2$ 벌 반복.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize \textbf{손으로 만든 1줄 규칙의 기준선 $-9.3$} --- RL이
+  ``사람이 쓴 규칙을 이긴다''를 보여려면 이 선을 넘어야.}
+\end{frame}

@@ -1,0 +1,30 @@
+\begin{frame}[fragile]{실습: 나이브베이즈 스팸 필터 (베르누이)}
+  \begin{lstlisting}
+import math
+
+def train_naive_bayes(emails, labels):
+    # emails: 단어 리스트의 리스트, labels: 0(정상)/1(스팸)
+    vocab = set(w for email in emails for w in email)
+    n_spam = sum(1 for l in labels if l == 1)
+    n_ham = len(labels) - n_spam
+    word_counts = {0: {}, 1: {}}
+    for email, label in zip(emails, labels):
+        for w in set(email):  # 등장 여부만 세는 Bernoulli 나이브베이즈
+            word_counts[label][w] = word_counts[label].get(w, 0) + 1
+    return {"vocab": vocab, "word_counts": word_counts,
+            "n_spam": n_spam, "n_ham": n_ham, "n_total": len(labels)}
+
+def classify(email, model):
+    words = set(email)
+    log_prob = {}
+    for label, n_docs in [(0, model["n_ham"]), (1, model["n_spam"])]:
+        log_p = math.log(n_docs / model["n_total"])   # log P(y)
+        for w in model["vocab"]:
+            p_present = (model["word_counts"][label].get(w, 0) + 1) / (n_docs + 2)
+            log_p += math.log(p_present) if w in words else math.log(1 - p_present)
+        log_prob[label] = log_p
+    return 1 if log_prob[1] > log_prob[0] else 0
+  \end{lstlisting}
+  {\footnotesize 라플라스 스무딩 $(+1)/(+2)$ 적용, 모든 단어의
+  $\log P(x_j|y)$ 를 \textbf{더함}.}
+\end{frame}

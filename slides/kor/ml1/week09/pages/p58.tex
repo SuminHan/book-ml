@@ -1,0 +1,28 @@
+\begin{frame}{결과: ``train이 함께 오른 정규화''}
+  \small
+  300에폭 학습 후 (미니배치 순서에 따라 숫자는 시드에 소폭 변동,
+  패턴 고정):
+  \vskip0.4em
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    모델 & train acc & val acc \\
+    \midrule
+    일반 MLP (정규화·스케줄링 없음) & 0.847 & 0.846 \\
+    정규화 MLP (dropout + BN + StepLR) & \textbf{0.870} & 0.846 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{itemize}
+    \item 정규화 모델이 \textbf{train 정확도까지 더 높음} —
+      ``정규화 = 모델을 단순하게 = train 하락''이라는 \textbf{오개념을
+      바로잡는} 예
+    \item train이 올랐다는 것: dropout의 ``단순화''가 아니라
+      \kb{BatchNorm이 학습 자체를 더 안정적으로 만들어서 더 잘
+      (많이) 배운} 결과
+    \item val이 ``떨어지지 않았다''는 것: 이 조합은
+      \textbf{과정규화에 빠지지 않는 안전한 지점}
+  \end{itemize}
+  {\footnotesize (실습 노트 §4) 에폭별 train/val 곡선으로
+  ``일반 모델은 학습 초반에 멈추고, 정규화 모델이 꾸준히 train을
+  올려가며 val을 지킨다''는 것을 눈으로 확인.}
+\end{frame}

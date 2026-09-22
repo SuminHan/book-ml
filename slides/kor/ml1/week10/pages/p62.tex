@@ -1,0 +1,23 @@
+\begin{frame}{확인 문제 (10.3): 숫자 네 개}
+  \small
+  \begin{enumerate}
+    \item \kb{격자 크기.} 224$\times$224 입력이 2$\times$2
+      최대풀링을 5번 $\to$ $224/2^5 = \mathbf{7}$,
+      ``위치별 분류기'' \textbf{49개}
+    \item \kb{IoU.} 박스 $[2,3,8,9]$ 와 $[4,3,10,7]$:
+      교집합 $[4,3,8,7]$ 면적 \textbf{16}, 각 박스 면적
+      \textbf{36}과 \textbf{24} $\to$ 합집합 \textbf{44}
+      $\Rightarrow$ $\text{IoU} = 16/44 = 4/11 \approx
+      \mathbf{0.36}$
+    \item \kb{NMS.} 앞 표의 4개 박스(A 0.90, B 0.80, C 0.75,
+      D 0.60)에 임계값 0.5 $\to$ \textbf{A와 C}가 남음
+      (A-B 쌍과 C-D 쌍의 IoU가 \textbf{둘 다} 0.68 ---
+      ``점수가 높은 쪽이 살아남는다''는 규칙만으로는
+      답이 안 나옴)
+    \item \kb{헤드 파라미터.} 2048차원 특징을 1,000개 클래스
+     로 미세조정: $2048\times1000+1000 = \mathbf{2{,}049{,}000}$
+      --- VGG-16 전체 1억 3,800만 파라미터에서
+      \textbf{$\approx 1.5\%$}. (``전이학습이 왜
+      저렴한가''의 숫자적 답)
+  \end{enumerate}
+\end{frame}

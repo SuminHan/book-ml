@@ -1,0 +1,26 @@
+\begin{frame}{dropna vs fillna: 보편 정답은 없다}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{\texttt{dropna()} } --- 결측 있는 행을 \textbf{통째로 버림}
+      \begin{itemize}
+        \item 결측이 \textbf{극히 일부}라면 간단하고 안전.
+        \item 위험: 데이터가 적거나 결측이 특정 \textbf{그룹에
+          몰려} 있으면 그 그룹 \textbf{통째}를 지워버림
+          (위 예: 지역 C의 결측을 지우면 지역 C의 평균가
+          정보 자체가 사라짐).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{\texttt{fillna()} } --- 중앙값·평균 등으로 \textbf{채움}
+      \begin{itemize}
+        \item 데이터가 적거나 결측이 특정 그룹에 몰려 있으면
+          \textbf{그룹 단위 통계}(지역별 중앙값)로 채우는 쪽이
+          안전.
+        \item 실전 한 단계 전: ``\textbf{왜} 결측인가''를 먼저
+          조사 --- \textbf{결측 패턴 자체가 정보}인 경우 (예:
+          ``층 수'' 결측이 단독주택에만 몰려 있으면 ``결측
+          여부''가 ``타입''을 보여주는 특징).
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

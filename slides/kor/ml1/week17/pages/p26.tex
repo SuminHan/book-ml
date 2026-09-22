@@ -1,0 +1,27 @@
+\begin{frame}{Chain-of-Thought: ``단계별로 생각해봐''}
+  \begin{itemize}
+    \item 2022년 \kb{Wei et al.}(Google Brain)에서 체계적으로
+      보고: ``27$\times$43을 계산해라''에 ``단계별로
+      풀어봐''(think step by step) 한마디를 붙이면 정답률이
+      현저히 올라감.
+    \item 같은 해 \kb{Kojima et al.}는 더 극단적: ``Let's
+      think step by step.''라는 문장 하나를 질문 뒤에
+      붙이기만 해도(예시 없이, 지시 한 줄) 추론 성능이
+      크게 좋아짐.
+    \item 왜 작동하는가 — 17.1 조건부 확률 관점에서 보면
+      직관적:
+      \begin{itemize}
+        \item 최종 답을 \textbf{한 번에} 예측하게 하면
+          \[P(\text{최종답} \mid \text{질문})\]
+          --- 중간 단계가 하나도 없는 \textbf{어려운}
+          조건부 확률을 출력해야 함.
+        \item ``단계별로''라고 요청하면, 그 하나의 어려운
+          확률이 \textbf{여러 개의 쉬운 조건부 확률의
+          곱}으로 분해:
+          \[P(m_1 \mid q) \; P(m_2 \mid q, m_1) \;
+          P(\text{최종답} \mid q, m_1, m_2, \ldots)\]
+          각 $m_i$는 ``지금까지 쓴 내 추론''이라는 풍부한
+          조건 아래 예측 $\to$ 한 단계당 난이도 대폭 하락.
+      \end{itemize}
+  \end{itemize}
+\end{frame}

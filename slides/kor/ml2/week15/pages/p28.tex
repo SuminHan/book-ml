@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{UCT 선택 --- 코드로}
+\begin{lstlisting}
+import math
+
+def uct_select(node_children, parent_visits, c=1.4):
+    # node_children: {move: (wins, visits)}
+    # UCB1과 정확히 같은 형태 -- Week 2.2를 그대로 게임 트리에 적용한 것
+    return max(node_children, key=lambda m: node_children[m][0] / node_children[m][1] +
+               c * math.sqrt(math.log(parent_visits) / node_children[m][1]))
+\end{lstlisting}
+  \vskip0.3em
+  숫자로 체감 --- 부모 \textbf{16회} 방문, 자식 세 개
+  (\texttt{A: 승 7/방문 10}, \texttt{B: 승 3/방문 5},
+  \texttt{C: 승 0/방문 1}), $c = 1.4$일 때:
+  \begin{itemize}
+    \item A: $7/10 + 1.4\sqrt{\ln 16 / 10} = 0.70 + 0.27
+      = \mathbf{1.437}$
+    \item B: $3/5 + 1.4\sqrt{\ln 16 / 5} = 0.60 + 0.59
+      = \mathbf{1.643}$
+    \item C: $0/1 + 1.4\sqrt{\ln 16 / 1} = 0.00 + 1.44
+      \approx \mathbf{2.331}$
+  \end{itemize}
+  \kq{승률 0인 \textbf{C가 선택}된다.}
+\end{frame}

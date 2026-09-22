@@ -1,0 +1,35 @@
+\begin{frame}{실습: Reacher에서 PPO 학습시키기 --- 같은 코드}
+  Week 11.2의 Pendulum PPO 실습과 \textbf{완전히 같은 코드}
+  (\texttt{GaussianPolicy}, \texttt{ValueNet}, GAE, 클리핑 손실)를
+  Reacher-v5에 그대로 적용 --- \textbf{환경 이름과 입출력 차원
+  (10$\to$2)만 바뀌고} 알고리즘 코드는 한 줄도 안 바뀜.
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch13_3_reacher_ppo_loop.png}
+      \vskip0.4em
+      {\footnotesize PPO 한 스텝: Actor($\mu$, log\_std) $\to$ 샘플링
+      토크 clip(±1) $\to$ MuJoCo $\to$ Critic $V(s)$ $\to$ GAE $\to$
+      클립 PPO. Actor의 $\mu(s)$ 만 배포.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      이 ``환경 이름만 바꿔도 된다''는 경험은 \textbf{산업 표준}
+      (역사적 일화는 21프레임에서).
+      \vskip0.3em
+      \textbf{먼저 짧은 실행부터} --- 100 반복 $\times$ 200 스텝
+      (총 2만 스텝, 시드 42):
+      \vskip0.2em
+      \scriptsize
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        & 리턴 \\
+        \midrule
+        무작위 & $-44.34$ \\
+        비례제어기 $k{=}0.5$ & $-9.32$ \\
+        PPO 2만, 결정론적($\mu$ 만) & $-11.92 \to -12.14$ \\
+        PPO 2만, 확률적(샘플링) & $-42.60 \to -52.51$ \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
+\end{frame}

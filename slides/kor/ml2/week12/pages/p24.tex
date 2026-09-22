@@ -1,0 +1,17 @@
+\begin{frame}{실전 체크리스트: 전문가 비용, 데이터 가중, GAIL}
+  \begin{enumerate}
+    \item \kb{전문가 비용} — 시뮬레이션에선 ``전문가''가 이미 잘
+      동작하는 기존 컨트롤러가 될 수 있음 $\Rightarrow$ 호출 즉시
+      답이므로 DAgger가 \textbf{완전히 자동화}. 실물 로봇(사람
+      매 라운드)이면 라운드를 작게(2$\sim$5회) 잡고, 나머지는
+      BC+RL(12.3절)로 메운다.
+    \item \kb{데이터 가중} — 라운드가 쌓이면 $D$는 초기 시연과
+      최근 라벨의 혼합. 최신 라벨에 가중을 크게 주면(예: 2배/라운드)
+      현재 분포에 빨리 맞춰지되 초기 정보를 빨리 잊음 —
+      \textbf{탐색-활용의 또 다른 얼굴}.
+    \item \kb{전문가가 ``비교''만 줄 수 있다면} — ``(s,a)'' 대신
+      ``두 시도 중 저쪽이 낫다''라면서 DAgger의 ③을 Bradley-Terry
+      손실로 대체: \kb{GAIL}(Generative Adversarial Imitation
+      Learning) 계열 — 12.2절이 그 변주.
+  \end{enumerate}
+\end{frame}

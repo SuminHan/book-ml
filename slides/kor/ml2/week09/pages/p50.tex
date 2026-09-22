@@ -1,0 +1,19 @@
+\begin{frame}{재현 버퍼가 루프 안에 끼어드는 자리}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \begin{enumerate}
+        \item 에이전트가 매 스텝 1개의
+          $(s, a, r, s', \text{done})$를 버퍼에 \texttt{push}(①).
+        \item 버퍼가 1,000개(워밍업) 차면, 매 스텝 \textbf{무작위 32개}
+          미니배치 추출(②).
+        \item $Q$-net $\to$ 타겟-net의 \textbf{TD 손실 $+$ 역전파}(③)로
+          $\theta$ 갱신.
+        \item 100스텝마다 $\theta^{-}$를 $\theta$로 \textbf{하드 동기화}(④).
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch09_3_replay_buffer_cycle.png}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,29 @@
+\begin{frame}{FAQ}
+  \begin{itemize}
+    \item \textbf{Q. 정책개선에서 ``더 나은 행동''이 여러 개
+      동점이면?} 이론적으로 동점 중 \textbf{아무거나} 골라도
+      성질(가치 감소 안 함) 유지. 실전: `max`가 \textbf{첫
+      번째} 최댓값 반환 $\to$ 순서에 따라 결과 \textbf{정책}은
+      달라져도 \textbf{가치($V$)는 항상 같음}.
+    \item \textbf{Q. 정책평가를 항상 끝까지(수렴까지) 해야
+      하나요?} \textbf{아니다} --- 수렴시키지 않고 몇 번만
+      돌린 뒤 바로 개선해도 결국 \textbf{최적 정책으로 수렴}
+      (수정된 정책 반복). 극단적으로 \textbf{딱 한 번}만 하면
+      $\to$ 4.3절 \textbf{가치 반복과 정확히 같아짐}.
+    \item \textbf{Q. ``왼쪽'' 537 vs ``오른쪽'' 10 sweep,
+      같은 알고리즘인데 왜?} \textbf{평가 단계의 sweep 수}가
+      초기 정책에 따라 달라짐. ``왼쪽''은 벽에 붙은 무한 루프를
+      $10^{-6}$ 까지 풀어내야 133 sweep, ``오른쪽''은 5 sweep.
+      바깥 반복 \textbf{횟수}도 5 vs 2. 두 요인이 \textbf{곱해져}
+      총 계산량이 초기 정책에 민감.
+    \item \textbf{Q. 실전에서 어디에 쓰나요?} 상태 공간이
+      \textbf{작고} $P, R$ 를 \textbf{정확히 아는} 문제(작은
+      그리드, 재고 관리, 스케줄링)엔 지금도 그대로. ``$P$ 를
+      모른다''(Week 5--7)나 ``상태가 너무 크다''(Week 9 DQN,
+      Mnih et al., 2015)엔 직접 쓰지 \textbf{않고}, 대신 이 절의
+      \textbf{논증 구조}(평가$\to$개선$\to$단조 증가$\to$
+      고정점$=$최적)가 TD·Q-learning의 ``왜 수렴하는가''
+      논의의 \textbf{뼈대}로 재사용. (DQN의 \textbf{residual
+      검사} = ``Q-망이 벨만 최적방정식을 만족하는가''.)
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,33 @@
+\section{9.2 그래디언트 소실·폭발, 활성함수, 초기화}
+\begin{frame}{시그모이드의 숨은 함정: 그래디언트 소실}
+  \begin{itemize}
+    \item 역전파는 이론적으로 층이 몇 개든 그래디언트를 계산 가능
+    \item 실제로 10개, 20개로 깊게 쌓으면: \textbf{입력 가까운 층은
+      학습이 거의 진행되지 않음} — 깊을수록 오히려 못 배운다
+    \item 1990년대: 르쿤의 MNIST 네트워크도 \textbf{2$\sim$3층}에 불과,
+      ``딥러닝''이라는 말 자체가 2006년 힌턴까지 사실상 사라짐
+  \end{itemize}
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_alexnet.png}
+      {\footnotesize AlexNet (2012, ImageNet 승리): 5 합성곱 + 3 완전연결
+      = 8층 — 그 ``깊음'' 자체가 뉴스였다.}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \small
+      원인: $\sigma'(z) = \sigma(z)(1-\sigma(z))$의 \textbf{최댓값은
+      $z=0$에서 0.25}. 역전파는 층을 거슬러 이 미분값을 \textbf{곱해서}
+      전달.
+      \[
+      \underbrace{0.25 \times 0.25 \times \cdots}_{10\,\text{개 층}}
+      \approx 9.5 \times 10^{-7}
+      \]
+      $\to$ \kb{그래디언트 소실(vanishing)}: 신호가 사실상 0.
+      \vskip0.3em
+      반면 가중치 초기화가 잘못되면 층을 거칠수록 오히려 \textbf{지수적으로
+      커지는} \kb{그래디언트 폭발(exploding)}도 일어남.
+    \end{column}
+  \end{columns}
+\end{frame}

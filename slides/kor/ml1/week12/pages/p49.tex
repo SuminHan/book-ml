@@ -1,0 +1,48 @@
+\begin{frame}{역사: 헤드 역할 분화는 관측된 사실인가}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \textbf{네} — ``인터프리테이빌리티'' 연구로 실제로 확인:
+      \begin{itemize}
+        \item Clark·Khandelwal·Levy·Manning (``What does BERT
+          look at?'', 2019)은 BERT(Devlin et al., 2018)의 헤드를
+          하나씩 분석:
+          \begin{enumerate}
+            \item \textbf{바로 앞 단어만} 보는 ``위치 헤드''
+            \item \textbf{같은 품사}의 단어끼리 집중하는 헤드
+            \item \textbf{문법적 통사}(주어-구문)를 추적하는 헤드
+          \end{enumerate}
+          가 \textbf{분명히 존재}함을 보였다.
+        \item \textbf{부수적 결과}: 헤드의 50$\sim$60\%를
+          \emph{임의}로 제거해도 성능 저하 \textbf{매우 작다} —
+          역할 분화는 실제로 있으면서도 \textbf{여분(redundancy)}이
+          크다 (이 때문에 \textbf{헤드 프루닝} (Michel et al.,
+          2019)이 추론 속도 기법으로 쓰임).
+        \item \textbf{주의}: \emph{어떤} 헤드가 \emph{어떤}
+          역할을 맡는가는 학습 run마다 \textbf{다르다}.
+      \end{itemize}
+      \vskip0.3em
+      {\footnotesize 2017년 ablation: 헤드를 8$\to$\textbf{1개}로
+      줄이면 BLEU가 \textbf{약 1점} 감소 (EN-DE 24.16$\to$23.48,
+      EN-FR 38.19$\to$37.19) — ``관점 하나만''이면 눈에 띄게
+      손해; 8개 이상은 \textbf{감소수익}. 헤드당 차원이 너무
+      얇아지면($d_k = d_{model}/h$, 예: $h=32$이면 $d_k=16$)
+      이득이 사라진다.}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_bertbert.png}
+      \vskip0.2em
+      {\footnotesize ``What Does BERT Look At?'' Figure 5 —
+      특정 헤드들은 인접 토큰, 품사 같은 토큰, 통사 구조적으로
+      연결된 토큰(주어-동사, 대명사-선행사)에 집중.}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{block}{현재 대형 LLM(GPT(Radford et al., 2018),
+      LLaMA(Touvron et al., 2023) 등)}
+    헤드를 \textbf{수십$\sim$100개 이상} 쓰지만 $d_{model}$ 이
+    4096$\sim$8192로 \emph{비례}로 커진 덕분이며,
+    \textbf{헤드당 차원은 여전히 64$\sim$128 부근} —
+    \textbf{2017년 설계가 그대로 살아 있는 값}.
+  \end{block}
+\end{frame}

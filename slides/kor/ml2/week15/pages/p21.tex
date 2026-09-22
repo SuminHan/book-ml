@@ -1,0 +1,28 @@
+\begin{frame}{확인 문제(15.1)}
+  \small
+  \begin{enumerate}
+    \item \textbf{체인 전파}: 체인을 $S \to X_1 \to \cdots \to X_8
+      \to T$(10개 상태, 링크마다 보상 0, 마지막 링크만 $+1$,
+      $\gamma=0.9$)로 늘리면, 가치반복에서 $Q(S)$가 0이 아닌 값이
+      되려면 몇 번 반복이 필요한가? known model로 시뮬레이션만
+      하면 몇 스텝이면 충분한가? (힌트: ``한 번에 한 칸'' vs
+      ``한 스텝에 한 칸''.)
+    \item \textbf{틀린 모델}: \texttt{dyna\_q\_grid}의 모델 갱신 줄
+      \texttt{model[(s, a)] = (r, ns)}를
+      \texttt{model[(s, a)] = (r, (4 - ns[0], 4 - ns[1]))}로
+      (다음 상태를 판 대각 반대 자리라 예측하는) 틀린 모델로 바꿔
+      $planning\_steps{=}30$, 400 에피소드 학습 후 출발점
+      $(4,0)$의 max $Q$와 25에피소드 평균 리턴을 기록.
+      ``아래/왼쪽'' 엔트리가 다음 상태를 \textbf{목표} $(0,4)$로
+      예측하는 것을 확인하고, 이 엔트리가 Q값과 greedy 정책을
+      어디로 끌어당기는지 설명.
+    \item \textbf{도로 vs 목적지}: $planning\_steps{=}0$(순수
+      Q-learning)도 400 에피소드 후 greedy 정책이 25개 상태 전
+      $Q^{*}$와 일치(불일치 0/25). 그럼에도 계획이 실제로
+      ``가속''한 것은 무엇인가? (``처음 진입'' 열 참고.)
+    \item \textbf{루프 대응}: Dyna-Q 루프의 세 요소(학습된 모델,
+      Q 테이블, 계획에 의한 가상 갱신)를 AlphaZero의 구성
+      요소(신경망 정책/가치 헤드, MCTS)와 짝짓고 각 대응을
+      한 문장으로.
+  \end{enumerate}
+\end{frame}

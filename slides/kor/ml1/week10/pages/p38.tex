@@ -1,0 +1,28 @@
+\begin{frame}{깊이 열화 재현: 스킵이 100\%와 50\%를 가른다}
+  \begin{columns}[T]
+    \begin{column}{0.62\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch10_2_depth_curves.png}
+      \\[0.3em]{\footnotesize 24개 합성곱 층(3$\times$3 Conv-Conv
+      블록 12개)을 세로줄/가로줄 데이터로 25 에폭 학습.
+      왼쪽: cross-entropy loss --- 스킵 없이는 $\ln2$ 근처에서
+      거의 움직임 없음. 오른쪽: train 정확도 --- 스킵이 있는
+      버전만 100\%에 도달. 구조·데이터·초기화 시드 모두 같고
+      \textbf{스킵 연결만} 달랐다.}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item \textbf{평범 24층}(스킵 없음):
+          loss $\approx 0.693$ ($\ln2$, 동전 던지기),
+          train\_acc \textbf{0.500으로 고정}
+        \item \textbf{잔차 24층}(스킵 있음):
+          15 에폭에 loss 0.355,
+          \textbf{25 에폭 내 100\% 도달}
+        \item 매우 단순한 분류라 ``학습 못 한다''가
+          \textbf{극단적으로} 드러난 예 ---
+          ImageNet에서는 점진적으로,
+          메커니즘은 같음
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

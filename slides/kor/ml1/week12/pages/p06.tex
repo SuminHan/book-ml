@@ -1,0 +1,18 @@
+\begin{frame}{Query, Key, Value — 세 가지 역할}
+  각 단어(임베딩 벡터 $x$)는 세 가지 벡터로 변환된다:
+  \begin{itemize}
+    \item \kb{Query (Q)}: ``내가 지금 무엇을 \textbf{찾고} 있는가''
+    \item \kb{Key (K)}: ``나는 어떤 정보를 \textbf{갖고} 있는가''
+    \item \kb{Value (V)}: ``실제로 \textbf{전달}할 내용''
+  \end{itemize}
+  \vskip0.6em
+  세 벡터 모두 같은 입력 임베딩 $x$에 \textbf{서로 다른} 학습 가능한
+  가중치 행렬을 곱해 얻는다:
+  \[Q = XW_Q, \qquad K = XW_K, \qquad V = XW_V\]
+  \vskip0.4em
+  2014년 Bahdanau 버전에서는 Q·K·V가 모두 RNN 은닉 상태에서 나왔다
+  (번역 쪽 이전 은닉 상태 = Q, 원문 쪽 은닉 상태 = K = V).
+  Q/K/V 이름 체계는 2017년 트랜스포머가 행렬 곱 $XW_Q, XW_K, XW_V$ 로
+  일반화하면서 표준 정착했다. 구조는 같다 — \textbf{``찾는 쪽
+  (질문), 답변 쪽(색인), 내용 그 자체''의 삼각 관계}.
+\end{frame}

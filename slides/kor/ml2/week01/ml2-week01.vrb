@@ -1,0 +1,22 @@
+\frametitle{무작위 정책의 ``베이스라인''을 수치로 잡다}
+``무작위로 행동하면 얼마나 버티는가''를 \textbf{숫자로} 알아두면,
+  이후 ``배운 정책''의 성적을 대조할 \textbf{기준점}이 생김.
+  200개 시드의 무작위 에피소드:
+\begin{lstlisting}
+import numpy as np
+env = gym.make("CartPole-v1")
+lengths = []
+for seed in range(200):
+    s, _ = env.reset(seed=seed)
+    env.action_space.seed(seed)   # 행동 무작위성도 고정 -> 완전히 재현 가능
+    total, n = 0.0, 0
+    while True:
+        a = env.action_space.sample()
+        s, r, term, trunc, _ = env.step(a)
+        total += r; n += 1
+        if term or trunc: break
+    lengths.append(n)
+lengths = np.array(lengths)
+print(f"무작위 정책 (200 에피소드): 평균 {lengths.mean():.1f} 스텝, "
+      f"최소 {lengths.min()}, 최대 {lengths.max()}")
+\end{lstlisting}

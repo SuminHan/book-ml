@@ -1,0 +1,32 @@
+\begin{frame}{실습: 가상 발표를 코드로 검증하기}
+  8.2 실습(``99.8\%'' 검증)과 같은 구조로 가상 발표(``MLP로
+  0.95'')를 코드로 검증 — 노트북이 \textbf{순서대로} 보여줌:
+  \begin{enumerate}
+    \item \textbf{세 모델 + 베이스라인}을 \textbf{같은 test
+      분할}에서 정확도·F1·PR-AUC·AUC·log-loss로 비교 —
+      ``0.95 vs 0.94''가 실제로 얼마나 큰 차이인지
+    \item \textbf{MLP 학습 곡선} — 에폭 단위로 그려 ``에폭 50
+      이 정당한가''를 val \textbf{포화 지점}으로 확인
+    \item \textbf{표본 잡음 실험} — \textit{같은 모델·가중치}로
+      test 100건을 \textbf{60번} 하위샘플링, 모델 간 차이가
+      \textbf{표본 선택}에 의존하는지
+    \item \textbf{교정 체크} — ``\textbf{0.90+ 확률}로 예측한
+      건''이 실제로 얼마나 맞는지를 계수로 — 정확도 0.95가
+      \textbf{신뢰할 수 있는 확률}인지 분리
+  \end{enumerate}
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.4\textwidth}
+      \centering
+      \includegraphics[width=0.88\linewidth]{ch16_2_mlp_epoch_curve.png}
+      \vskip0.3em
+      {\footnotesize val 정확도 25~30 부근 포화, 그 뒤 train
+      손실만 계속 하락}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      {\footnotesize 노트북의 핵심 숫자 \textbf{세 가지}를 미리
+      짚으면, ``이 숫자가 나오면 3점 질문을 쓸 수 있다''는
+      감각이 생긴다. (다음 프레임)}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,46 @@
+\begin{frame}{왜 우도가 항상 증가하는가: 옌센 부등식 (2)}
+  \[
+  \log p(x) \ge \mathbb{E}_{z \sim \gamma}[\log p(x, z)]
+  - \mathbb{E}_{z \sim \gamma}[\log \gamma(z)]
+  \;\; \stackrel{\text{def}}{=} \;\; \mathcal{F}(\theta, \gamma)
+  \]
+  우변 $\mathcal{F}(\theta, \gamma)$가 \textbf{우도의 하한}.
+  \textbf{등호가 성립하는 조건}: $\frac{p(x,z)}{\gamma(z)}$가
+  $z$에 대해 \textbf{상수}, 즉 $\gamma$가 \textbf{진짜
+  사후확률} $p(z|x)$인 경우 --- \textbf{바로 이 조건이 EM의
+  설계 원리}.
+  \vskip0.6em
+  EM의 두 단계를 이 \textbf{하한}으로 읽으면:
+  \begin{itemize}\small
+    \item \kb{E-step}: $\gamma$를 \textbf{현재 파라미터
+      $\theta_{\text{old}}$에서의 진짜 사후확률}로 잡음
+      $\Rightarrow$ 등호가 성립해서
+      $\mathcal{F}(\theta_{\text{old}}, \gamma) = \log
+      p(x; \theta_{\text{old}})$ (하한이 \textbf{뚫리지 않는
+      정도로 꽉 조인} 상태)
+    \item \kb{M-step}: $\gamma$를 \textbf{고정}하고 $\theta$를
+      $\mathcal{F}$를 최대화하도록 갱신 $\Rightarrow$
+      $\mathcal{F}(\theta_{\text{new}}, \gamma) \ge
+      \mathcal{F}(\theta_{\text{old}}, \gamma)$
+  \end{itemize}
+  두 걸을 합치면:
+  \[
+  \log p(x; \theta_{\text{new}}) \ge \mathcal{F}(\theta_{\text{new}}, \gamma)
+  \ge \mathcal{F}(\theta_{\text{old}}, \gamma)
+  = \log p(x; \theta_{\text{old}})
+  \]
+  \kq{우도가 매 반복마다 절대 줄지 않는다.}
+  \vskip0.4em
+  \textbf{6개 데이터로 실제로 확인}($m=6$,
+  $[1.0,1.5,0.8,9.2,10.1,9.8]$, 초기 $\mu=[2,8],\sigma=[1,1],
+  \pi=[0.5,0.5]$): log-likelihood가
+  $-15.56 \to -6.05 \to -6.05$(2회차에 \textbf{멈춤}) ---
+  \textbf{단조증가는 성립}하지만 도달한 점이 \textbf{전역
+  최적해}라는 보장은 이 논증 어디에도 없음.
+  \vskip0.4em
+  Week 15.1절 \kb{VAE}는 ``E-step의 사후확률을 정확히 계산할
+  수 없을 때(연속 무한한 잠재변수) 이 하한을 \textbf{신경망}
+  $q_\phi(z|x)$로 근사해서 \textbf{역전파}로 올린다''는
+  알고리즘 --- EM과 VAE는 \textbf{같은 부등식의 두 실행
+  전략}.
+\end{frame}

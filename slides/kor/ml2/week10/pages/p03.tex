@@ -1,0 +1,30 @@
+% ================= SESSION 10.1 =================
+\section{10.1 정책 그래디언트 정리}
+\begin{frame}{두 경로: 가치기반 vs 정책기반}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \begin{itemize}
+        \item \textbf{좌측} 가치기반 (Week 6$\cdot$9): 상태 $s_t$ $\to$
+          Q-네트워크 $\to$ 각 행동의 가치 $Q(s,a)$ $\to$
+          \textbf{argmax}로 행동 결정.
+        \item \textbf{우측} 정책기반 (이번 장): $s_t$ $\to$ 정책 네트워크
+          $\to$ 확률분포 $\pi_\theta(a|s_t)$ $\to$
+          \textbf{샘플링}해 환경에 행동 전송.
+        \item 환경은 두 경로 모두에 $r_{t+1}, s_{t+1}$ 반환.
+        \item 우측: 리턴 $G_t$가 \textbf{곱수로} 그래디언트를 만들어
+          policy update(경사 상승).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch10_1_policy_based_flow.png}
+      \vskip0.4em
+      {\footnotesize 좌: 점수 내고 \textbf{최댓값} 뽑기.
+      우: 확률 내고 \textbf{샘플링}.}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \kq{핵심 질문: ``점수를 올리는 방향''이 아니라
+  \textbf{분포 자체를} 어떻게 고치겠는가?}
+  --- Policy Gradient Theorem이 답하는 질문.
+\end{frame}

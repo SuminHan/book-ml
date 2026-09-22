@@ -1,0 +1,30 @@
+\begin{frame}{MCTS와 미니맥스: 경쟁 게임의 연결고리}
+  \begin{itemize}
+    \item 15.2의 MCTS는 사실 ``상대방도 \textbf{최선을
+      다한다}''고 가정하는 \textbf{2인 제로섬 게임}에서는
+      \kb{미니맥스(minimax)} 탐색의 \textbf{확률적 근사}로
+      볼 수 있음 --- 15.1의 틱택토 완전탐색(minimax)과
+      15.2의 MCTS가 풀려던 문제(\textbf{다음 수 정하기})는
+      사실 \textbf{같은 문제}, 다만 상태 공간이 커서
+      완전탐색이 안 될 때 \textbf{표본추출로 근사}한 것이
+      MCTS
+    \item 이것을 ``협력이 아니라 \textbf{경쟁}''이라는
+      멀티에이전트의 한 형태로 보면, ML1 Week 15.3의
+      \textbf{GAN}에서 본 \textbf{min-max 게임}(생성자와
+      판별자가 서로 다른 목표로 상호작용)과도
+      \textbf{구조적으로 닮음} --- 둘 다 ``한쪽의 이득이
+      다른 쪽의 손해인 두 참여자''라는 틀을 최적화 문제로
+      표현
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{GAN 훈련의 불안정성 $\Leftrightarrow$ RPS}
+    GAN의 교대 최적화(ML1 15.3)는, 위 바위-가위-보에서
+    ``순수 전략의 내쉬 균형이 없어 \textbf{균형을 향해
+    진동하며} 수렴한다''는 사실의 \textbf{최적화 버전} ---
+    \textbf{경쟁 게임의 학습 동역학이 본질적으로
+    ``균형으로의 수렴''보다 ``균형 근처의 \textbf{진동}''에
+    가깝다}는 인식이 GAN과 MARL 양쪽에서 같은 안정화
+    아이디어를 유도(ML1 15.3의 GAN 학습 스케줄링, MARL에서
+    \textbf{상대의 이전 체크포인트와 대국하기} 등).
+  \end{block}
+\end{frame}

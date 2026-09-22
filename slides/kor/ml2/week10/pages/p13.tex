@@ -1,0 +1,20 @@
+\begin{frame}{``확률합 $=1$'' 제약이 만든 모양: one-vs-rest}
+  2행동 softmax, $\theta=[\theta_0,\theta_1]$, 로짓 $z_k = \theta_k s$:
+  \[
+  \nabla_\theta \log\pi_\theta(0|s) = \big[(1-p_0)\,s,\; -p_1\,s\big],
+  \qquad
+  \nabla_\theta \log\pi_\theta(1|s) = \big[-p_0\,s,\; (1-p_1)\,s\big]
+  \]
+  \begin{itemize}
+    \item \textbf{고른 행동}의 파라미터 성분 $(1-p_a)$,
+      \textbf{고르지 않은} 행동 $-p_a$ --- \kb{one-vs-rest}.
+    \item 유래 = ``확률합 $=1$'': $p_0 \uparrow$ 면 반드시
+      $p_1 = 1-p_0$ 가 $\downarrow$.
+    \item ``행동 0 확률 올리는 방향''은 구조적으로 ``행동 1 확률
+      내리는 방향''과 \textbf{동일 벡터}.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize 이 제약이 만든 두 번째 성질은 다음 프레임 ---
+  ``기대 그래디언트가 0''이라는, 10.2$\cdot$10.3 베이스라인 논리의
+  공통 출발점.}
+\end{frame}

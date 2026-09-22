@@ -1,0 +1,31 @@
+\begin{frame}{200스텝 비교: 무작위 vs PD}
+  200스텝 실행 검증 (seed 0):
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    정책 & 결과 \\
+    \midrule
+    무작위 정책 & 평균 $|\theta| = 2.97$ (초기 3.0에서 거의 안 줄어듦) \\
+    PD 제어 정책 & 평균 $|\theta| = 1.69$, \textbf{최종} $\theta = -0.065$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.7em
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch14_1_pendulum_pd_vs_random.png}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      {\footnotesize \textbf{파란 실선(PD)}: 큰 진폭으로 흔들리다가
+      진폭이 줄며 거의 0(목표)에 안착.
+      \textbf{회색 선(무작위)}: $\pm\pi$ 안에서 이리저리 떠돌다
+      처음 위치(약 3.0) 근처에 그대로 머문다.
+      $\theta$ 단위: 라디안.}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  \begin{itemize}
+    \item Week 13.2에서 이미 본 패턴 --- 이번엔 \textbf{래퍼 없이}
+      \texttt{MjModel}\,/\,\texttt{MjData}\,/\,\texttt{mj\_step}을 직접 다룸
+  \end{itemize}
+\end{frame}

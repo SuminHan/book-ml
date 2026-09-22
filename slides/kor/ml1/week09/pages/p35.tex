@@ -1,0 +1,28 @@
+\begin{frame}{초기화 요약 + ``표준편차를 감으로''의 대가}
+  \small
+  \begin{tabular}{@{}p{3.4cm}p{2.9cm}p{3.2cm}p{3.7cm}@{}}
+    \toprule
+    초기화 & 표준편차 & 잘 맞는 활성함수 & 핵심 아이디어 \\
+    \midrule
+    Xavier (2010) & $1/\sqrt{\text{fan-in}}$ & tanh, sigmoid, linear &
+      $\mathbb{E}[a^2]$를 1:1 보존 (선형 가정) \\
+    He (2015) & $\sqrt{2/\text{fan-in}}$ & ReLU 계열 & ReLU가 버리는
+      ½을 2배로 보상 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  \kb{실험}: 표준편차로만 다른 10개 ReLU 층(폭 100) 통과 후 활성값 분산:
+  \vskip0.3em
+  \texttt{$\sigma=1.0$: \ 1.002 $\to$ 34 $\to$ 1.6$\times$10$^3$ $\to$ \dots $\to$
+  1.1$\times$10$^{17}$ (폭발)}\\
+  \texttt{$\sigma=0.01$: \ 1.002 $\to$ 3.4$\times$10$^{-3}$ $\to$ \dots $\to$
+  1.1$\times$10$^{-23}$ (소실)}\\
+  \texttt{He ($\sigma\approx0.141$): \ 1.002 $\to$ 0.688 $\to$ 0.650 $\to$
+  0.759 $\to$ \dots $\to$ 1.114 (안정)}
+  \vskip0.3em
+  {\footnotesize 분포는 Gaussian이나 Uniform($k=\sqrt{3}\sigma$) 모두
+  가능. PyTorch \texttt{nn.Linear} 기본값: ReLU 계열 $\to$
+  \texttt{kaiming\_uniform\_}, 그 외 $\to$ \texttt{xavier\_uniform\_}
+  — \textbf{프레임워크가 이미 이번 절의 결론을 기본값으로}.
+  ``적당해 보이는 숫자를 감으로 고르는 것''과의 차이가 이 정도다.}
+\end{frame}

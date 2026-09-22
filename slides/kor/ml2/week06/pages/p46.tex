@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{Q-learning: 모델 없이, 최선의 다음 행동을 가정}
+  실제로 무엇을 골랐든 상관없이, \textbf{항상 다음 상태에서 최선의
+  행동을 가정}하고 그 Q값을 목표로:
+  \[
+  Q(s,a) \leftarrow Q(s,a) + \alpha
+  \left[r + \gamma \max_{a'} Q(s',a') - Q(s,a)\right]
+  \]
+\begin{lstlisting}
+def q_learning_update(Q, s, a, r, s_next, alpha, gamma):
+    max_next_q = max(Q[s_next].values()) if isinstance(Q[s_next], dict) \
+                 else max(Q[s_next])
+    td_error = r + gamma * max_next_q - Q[s][a]
+    Q[s][a] += alpha * td_error
+    return Q
+\end{lstlisting}
+  \vskip0.4em
+  Q-learning은 행동 정책이 무엇이든($\varepsilon$-greedy로 무작위
+  탐험을 섞어도) \textbf{목표 정책}(최적 정책)의 가치를 직접 학습 ---
+  Week 5.3의 언어로 \kb{off-policy}.
+  $Q(s,a)$를 알면 최적 정책은 $\pi^{*}(s) = \arg\max_a Q(s,a)$로
+  \textbf{즉시} 얻어진다.
+\end{frame}

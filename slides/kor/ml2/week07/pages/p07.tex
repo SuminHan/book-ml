@@ -1,0 +1,29 @@
+\begin{frame}[fragile]{n-step TD 코드 (1/2)}
+  \begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
+def n_step_td(env_step, n, n_episodes, alpha, gamma,
+              n_states, start_state):
+    V = [0.0] * n_states
+    for _ in range(n_episodes):
+        states, rewards = [start_state], []
+        s, T, t = start_state, float('inf'), 0
+        while True:
+            if t < T:
+                a = random.randrange(2)   # 데모용 무작위 정책
+                ns, r, done = env_step(s, a)
+                states.append(ns); rewards.append(r)
+                if done:
+                    T = t + 1
+                s = ns
+            tau = t - n + 1       # tau번 상태를 지금 갱신
+            # --- 핵심 3줄은 다음 슬라이드에서 뜯어 봄 ---
+            if tau >= 0:
+                G = n_step_target(tau)      # 목표값 계산
+                V[states[tau]] += alpha * (G - V[states[tau]])
+            if tau == T - 1:
+                break
+            t += 1
+    return V
+  \end{lstlisting}
+  {\footnotesize 환경 \texttt{env\_step}: 0과 6이 터미널,
+  \texttt{(next\_state, reward, done)} 반환.}
+\end{frame}

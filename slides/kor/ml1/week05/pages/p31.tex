@@ -1,0 +1,44 @@
+\begin{frame}[fragile]{실습: 소프트 마진의 세 영역을 눈으로 보자}
+  \begin{lstlisting}
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.svm import SVC
+
+# 5.1절 대각선 클러스터 + 이상치 두 개
+rng = np.random.default_rng(7)
+X = np.vstack([rng.normal([5, 5], 0.8, (40, 2)),
+               rng.normal([-5, -5], 0.8, (40, 2)),
+               np.array([[2.0, -3.0], [-2.0, 3.0]])])
+y = np.r_[np.ones(40), -np.ones(40), [1.0, -1.0]]
+
+clf = SVC(kernel="linear", C=1.0).fit(X, y)
+wc, bc = clf.coef_[0], clf.intercept_[0]
+sv = X[clf.support_]                          # 서포트 벡터만
+outs = X[80:82]                               # 이상치 두 개
+
+x1 = np.linspace(-8, 8, 100)
+f_line = lambda c: (-wc[0]*x1 - bc + c) / wc[1]   # f = c 의 직선
+
+fig, ax = plt.subplots(figsize=(6.5, 6.5))
+for lbl, col in [(1, "red"), (-1, "blue")]:
+    ax.scatter(X[y == lbl, 0], X[y == lbl, 1], color=col,
+               alpha=0.6, label=f"y={lbl}")
+ax.plot(x1, f_line(0),  "k",   lw=2,  label="결정 경계 (f=0)")
+ax.plot(x1, f_line(1),  "g--", lw=1, label="마진 경계 (f=+1)")
+ax.plot(x1, f_line(-1), "g--", lw=1, label="마진 경계 (f=-1)")
+ax.scatter(sv[:, 0], sv[:, 1], s=160, facecolors="none",
+           edgecolors="orange", lw=2.5, label="서포트 벡터")
+ax.scatter(outs[:, 0], outs[:, 1], s=260, marker="*",
+           facecolors="white", edgecolors="red", lw=1.5, label="이상치")
+ax.set_aspect("equal"); ax.legend(loc="upper left", fontsize=9)
+ax.set_title("소프트 마진: 이상치가 마진 안/너머로 허용됨 (C=1)")
+plt.show()
+
+# 이상치가 어느 영역(②/③)에 빠졌는지 직접 계산
+for i in [80, 81]:
+    m = y[i] * (wc @ X[i] + bc)
+    print(f"이상치 {tuple(X[i])}: f={m:+.3f} -> xi={max(0.0,1-m):.3f}, "
+          f"{'서포트 벡터' if i in clf.support_ else '아님'}")
+print(f"서포트 벡터 {len(sv)}개 / 전체 {len(X)}개,  마진 2/||w|| = {2/np.linalg.norm(wc):.3f}")
+\end{lstlisting}
+\end{frame}

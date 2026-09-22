@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{PyTorch REINFORCE (2/2): 리턴 계산과 업데이트}
+\begin{lstlisting}
+def reinforce_update(log_probs, rewards, gamma):
+    G, returns = 0.0, []
+    for r in reversed(rewards):            # 루프 1: 리턴 역산
+        G = r + gamma * G
+        returns.insert(0, G)
+    returns = torch.tensor(returns, dtype=torch.float32)
+    returns = (returns - returns.mean())   # 분산 감소용 정규화
+            /  (returns.std() + 1e-8)
+    loss = -sum(lp * g for lp, g in zip(log_probs, returns))
+    # 경사 "상승"이므로 부호 반전 (최소화 프레임워크에서 +로)
+    opt.zero_grad(); loss.backward(); opt.step()
+\end{lstlisting}
+  \vskip0.4em
+  \begin{block}{$\log\pi_\theta$ 를 손으로 미분하지 않아도 됨}
+    \texttt{torch.distributions.Categorical} 이
+    \texttt{log\_prob()} 제공 $\to$ 10.1절의 $\log\pi_\theta(a_t|s_t)$
+    를 \textbf{그대로} 획득. 손실을 $-\texttt{log\_prob} \times G$
+    로 정의하고 \texttt{.backward()} 호출 $\to$ PyTorch가
+    Policy Gradient Theorem의 그래디언트를 \textbf{자동} 계산
+    (one-vs-rest 식이 정확히 내부 계산 값).
+  \end{block}
+\end{frame}

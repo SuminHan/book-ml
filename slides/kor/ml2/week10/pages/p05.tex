@@ -1,0 +1,23 @@
+\begin{frame}{이산 정책: softmax와 그 두 성질}
+  \[
+  \pi_\theta(a|s) = \text{softmax}(f_\theta(s))_a,
+  \qquad
+  p_a = \pi_\theta(a|s) = \frac{e^{z_a}}{\sum_{a'} e^{z_{a'}}}
+  \]
+  \begin{itemize}
+    \item $f_\theta(s)$: 상태 $\to$ 각 행동의 \textbf{원점수(logit)}
+      를 내는 신경망. softmax가 ``숫자''를 ``합이 1인 확률''로 변환.
+    \item 목표: \kb{$J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]$}
+      를 최대화. $\tau$ = 궤적(에피소드 전체), $R(\tau)$ = 총 보상.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{두 성질 --- 이번 절 전체에서 반복 등장}
+    \textbf{(1) 합이 1} --- 한 행동의 확률을 올리면 \textbf{나머지는
+    반드시 내려감} $\to$ one-vs-rest 그래디언트 모양의 이유.
+    \textbf{(2) 미분 가능} --- $\theta$가 $z$를, $z$가 확률을
+    \textbf{매끄럽게} 끔.
+    \vskip0.2em
+    ``미분 가능한 함수로 표현된 것''이 곧 \kb{파라미터화} =
+    그래디언트 최적화의 \textbf{필요조건}.
+  \end{block}
+\end{frame}

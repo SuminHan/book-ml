@@ -1,0 +1,23 @@
+\begin{frame}{FAQ: 셀 상태 vs 은닉 상태 --- LSTM의 구조적 핵심}
+  \begin{block}{Q. 게이트 모델의 ``셀 상태''와 기본 RNN의 ``은닉
+  상태''는 같은 것인가요?}
+    \textbf{아니다} --- 이것이 LSTM의 \textbf{구조적 핵심}.
+    \begin{itemize}
+      \item \textbf{기본 RNN}: \textbf{하나의 벡터} $h_t$가
+        ``지금의 출력에도 쓰이고 다음 시점의 입력에도 쓰이는''
+        \textbf{둘의 역할을 동시에} 함 (\textbf{출력 = 상태})
+      \item \textbf{LSTM}: 이 둘을 \textbf{분리}
+      \begin{itemize}
+        \item \kb{셀 상태 $C_t$}: 장기 기억, \textbf{덧셈으로만
+          전달}되어 사실상 소실되지 않는 ``저장소''
+        \item \kb{은닉 상태 $h_t$}: 지금 시점의 ``출력용 요약'',
+          \textbf{셀에 게이트를 씌운 것}
+      \end{itemize}
+      \item ``\textbf{기억을 오래 보관한다($C_t$)}''와
+        ``\textbf{지금 말한다($h_t$)}''를 \textbf{역할분담}한 것이,
+        소실을 \textbf{구조적으로} 줄이는 진짜 이유
+      \item \textbf{GRU}는 이 분리를 \textbf{덜} 해(셀·은닉을
+        하나의 벡터로 통합) \textbf{파라미터가 줄어든다}
+    \end{itemize}
+  \end{block}
+\end{frame}

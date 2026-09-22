@@ -1,0 +1,36 @@
+\begin{frame}[fragile]{실습 1: 죄수의 딜레마 자기학습}
+  두 에이전트가 같은 보상 행렬을 놓고, \textbf{둘 다 Week 6의
+  $\varepsilon$-greedy Q-learning으로 배우며 서로를 상대로
+  플레이(self-play)} --- 알고리즘은 각자가 자기 $Q$값을
+  갱신할 뿐(상대도 학습 중이라는 사실은 \textbf{어디에도
+  명시되지 않음}):
+\begin{lstlisting}
+import numpy as np
+# 행=에이전트1 행동, 열=에이전트2 행동 (0=C 침묵, 1=D 자백)
+PD = np.array([[3.0, 0.0],   # (C,C)=3, (C,D)=0
+               [5.0, 1.0]])  # (D,C)=5, (D,D)=1
+
+def eps_greedy(Q, eps, rng):
+    if rng.random() < eps:
+        return int(rng.integers(len(Q)))
+    return int(np.argmax(Q))
+
+def self_play(games, payoff, alpha=0.5, eps_start=1.0, eps_end=0.02,
+              tau=500.0, seed=0):
+    rng = np.random.default_rng(seed)
+    Q1, Q2 = np.zeros(2), np.zeros(2)
+    rewards1 = []
+    for g in range(games):
+        eps = eps_end + (eps_start - eps_end) * np.exp(-g / tau)  # 탐험 감소
+        a1 = eps_greedy(Q1, eps, rng)
+        a2 = eps_greedy(Q2, eps, rng)
+        r1 = payoff[a1, a2]
+        r2 = payoff[a2, a1]               # 게임이 대칭
+        Q1[a1] += alpha * (r1 - Q1[a1])   # Week 6의 TD 갱신 그대로
+        Q2[a2] += alpha * (r2 - Q2[a2])
+        rewards1.append(r1)
+    return np.array(rewards1), Q1, Q2
+
+rewards, Q1, Q2 = self_play(20000, PD)
+\end{lstlisting}
+\end{frame}

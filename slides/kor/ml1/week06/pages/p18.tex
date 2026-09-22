@@ -1,0 +1,28 @@
+\begin{frame}{숫자로 확인: $\lambda$ 축을 훑는다}
+  \small
+  \begin{tabular}{@{}rrrr@{}}
+    \toprule
+    $\lambda$ & $\text{Bias}^2$ & $\text{Var}$ & test RMSE \\
+    \midrule
+    0     & 5.64  & 110.90 & 10.81 \\
+    0.001 & 0.24  & 0.030  & 0.66 \\
+    0.01  & 0.26  & 0.015  & 0.68 \\
+    0.1   & 0.40  & 0.008  & 0.80 \\
+    1.0   & 0.44  & 0.004  & 0.85 \\
+    10    & 0.48  & 0.004  & 0.88 \\
+    100   & 0.49  & 0.004  & 0.89 \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.5em\normalsize
+  \begin{itemize}
+    \item \kb{$\lambda=0$}: ``주사위''처럼 출렁. $\text{Var}=110.9$로 극도로
+      크고 RMSE 10.81은 \textbf{잡음 플로어(0.88)의 12배}. 과적합이
+      $\lambda$ 축의 \emph{왼쪽 끝}.
+    \item \kb{$\lambda=0.001$}: Var 110.9$\to$0.03으로 4자릿수 급감, Bias²
+      0.24로 아직 작음. RMSE 0.66 = \textbf{곡선의 바닥}. ``분산 제거''에
+      \textbf{극도로 효율적}.
+    \item \kb{$\lambda=100$}: 가중치 완전히 눌려 ``훈련 평균값만 내뱉는''
+      수준. Bias² 0.49, RMSE 0.89로 잡음 플로어에 붙음 —
+      ``$\lambda\to\infty$이면 평균값만 예측하는 모델''의 숫자 확인.
+  \end{itemize}
+\end{frame}

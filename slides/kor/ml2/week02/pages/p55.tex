@@ -1,0 +1,20 @@
+\begin{frame}{손으로 한 번: 2-상태 MDP에서 무엇이 달라지는가}
+  가장 작은 ``진짜'' MDP --- 상태 $s_0, s_1$ 두 개, 각 상태에서
+  행동을 하나만 가지는 장난감 환경:
+  \vskip0.4em
+  \begin{itemize}
+    \item $s_0$: 어떤 행동을 해도 \textbf{보상 1.0}, 항상
+      $s_1$ 로 전이 $(P(s_1|s_0)=1)$.
+    \item $s_1$: 어떤 행동을 해도 \textbf{보상 3.0}, 항상
+      \textbf{자기 자신} $s_1$ 로 전이 $(P(s_1|s_1)=1)$ ---
+      한 번 $s_1$ 에 도착하면 \textbf{영원히} $s_1$ 에 남음.
+  \end{itemize}
+  \vskip0.4em
+  할인율 $\gamma = 0.9$ 라 하자:
+  \begin{itemize}
+    \item $s_1$ (자기 전이만): $V^\pi(s_1) = 3.0 + 0.9\,V^\pi(s_1)$
+      $\Rightarrow$ $V^\pi(s_1) = 3.0/(1-0.9) = \mathbf{30.0}$
+    \item $s_0$ (보상 1.0 한 번 $\to$ $s_1$):
+      $V^\pi(s_0) = 1.0 + 0.9 \cdot 30.0 = \mathbf{28.0}$
+  \end{itemize}
+\end{frame}

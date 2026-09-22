@@ -1,0 +1,33 @@
+\begin{frame}[fragile]{밴딧 실험: ``좋은 행동을 더 선호한다''를 눈으로}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{itemize}
+        \item \textbf{2-arm 밴딧}: 행동 0 $\to$ $+1$, 행동 1 $\to$
+          $-1$ (1스텝 $\to$ $G_t=r_t$, $\gamma$ 무관).
+        \item $\theta=[0,0]$(반반)에서 시작, $\alpha=0.05$,
+          \textbf{300 에피소드}:
+      \end{itemize}
+      \scriptsize
+      \begin{verbatim}
+p(행동 0): 1회 = 0.5000 -> 50회 = 0.8719
+        -> 100회 = 0.9443
+        -> 200회 = 0.9727 -> 300회 = 0.9832
+최종 theta = [2.0352, -2.0352]
+      \end{verbatim}
+      \normalsize
+      {\footnotesize ``정답''이 있는 환경에서 좋은 행동 확률이
+      50\% $\to$ 100\%에 가까워져야 하는데 \textbf{그렇게 된다}
+      --- REINFORCE의 ``smoke test''.}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch10_2_reinforce_bandit.png}
+      \vskip0.3em
+      {\footnotesize $p$(행동 0): 0.5 (무작위) $\to$
+      0.98 (거의 확정), 300 에피소드.}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  \kq{곡선의 ``모양'': 학습의 대부분(0.5$\to$0.87)은 \textbf{처음
+  50 에피소드}에 집중, 이후 1에 점근하듯 느림.}
+\end{frame}

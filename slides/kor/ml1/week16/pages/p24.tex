@@ -1,0 +1,30 @@
+\begin{frame}{확인 문제 3~4}
+  \textbf{3.} train 손실 0.01, val 손실 0.40인 에포크까지
+  ``\textbf{test가 더 좋아질 때까지} 돌렸다''고 보고 — Ch09.3 과적합
+  과 Ch06.3 test-한-번 원칙을 들어 깨진 원칙 \textbf{두 가지}와
+  올바른 방법?
+  \vskip0.3em
+  \small
+  \begin{block}{답}
+    (1) train/val 격차 0.39 = \textbf{과적합}(Ch09.3) — train이 0으로
+    가는데 val이 오르는 구간. (2) ``test가 좋아질 때까지'' =
+    \textbf{test를 튜닝에 쓰는} 선택 편향(Ch06.3) — test는
+    \textit{한 번}만. 올바르게: \textbf{val 손실의 최솟값(또는
+    plateau) 에포크}를 정한 뒤, 그 에포크로 \textbf{test를 딱 한 번}.
+  \end{block}
+  \vskip0.3em
+  \textbf{4.} ``우리 팀은 정형 표 데이터(5,000행$\times$12열)인데 LLM을
+  fine-tune했다'' — 2축(구조·규모)과 Grinsztajn et al.\ 2022 결과를
+  근거로 \textbf{반박 가능한 질문 하나}.
+  \vskip0.3em
+  \begin{block}{답}
+    축 1(구조)이 정형이고 축 2(규모)도 12열로 작아 GBDT가
+    \textbf{경쟁적/우위}인 영역(2022). 질문: ``12열·5,000행 정형에서
+    LLM fine-tune의 test 성능이 같은 데이터의 GBDT(Ch07.3)와
+    비교해서 \textit{절대적으로} 얼마나 더 좋나요? 그 차이가
+    ``특징의 국소 공유'' 같은 \textit{구조적} 이득이 아니라 단순히
+    용량 때문이라면, 정형이므로 GBDT가 상한인데 왜 LLM을 선택했
+    냐요?'' — ``최신이라서''로 답할 수 없는, Ch07(GBDT)를 근거로
+    둔 질문.
+  \end{block}
+\end{frame}

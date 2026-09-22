@@ -1,0 +1,20 @@
+\begin{frame}{Node2Vec의 진짜 기여: 두 계수 $p$와 $q$}
+  \begin{itemize}
+    \item 13.1절 코드의 일괄적 걷기 = 원본 논문의 \textbf{가장 단순한
+      특수한 경우} ($p{=}q{=}1$).
+    \item 논문의 실제 기여: 걷기에 \kb{$p$}(return)과 \kb{$q$}(in-out)
+      두 계수를 붙여 ``\textbf{이웃 탐색의 스타일}''을 조절.
+  \end{itemize}
+  \vskip0.5em
+  걷기가 노드 $x_t$에 도달했을 때(직전 $x_{t-1}$), 다음 노드
+  $x_{t+1}$를 고르는 확률은 가중치 $w_{x_{t-1}}(x_{t+1})$에
+  \textbf{비례}:
+  \begin{itemize}
+    \item \textbf{돌아가기} --- 방금 있던 노드로 복귀
+      ($x_{t+1} = x_{t-1}$): 가중치 $1/p$
+    \item \textbf{인근 머물기} --- $x_{t-1}$의 이웃(이미 탐색한
+      로컬 영역 안): 가중치 $1/q$
+    \item \textbf{새 영토로} --- 나머지(아직 탐색 안 한 이웃):
+      가중치 $1$
+  \end{itemize}
+\end{frame}

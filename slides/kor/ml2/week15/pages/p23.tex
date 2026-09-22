@@ -1,0 +1,25 @@
+\% ===== CONTINUED =====
+\section{15.2 몬테카를로 트리 탐색: 이론과 실습}
+\begin{frame}{MCTS: 네 단계의 반복}
+  MCTS는 현재 상태에서 시작해, \textbf{정해진 횟수}만큼 다음
+  네 단계를 반복해 ``어떤 수가 가장 유망한가''에 대한
+  \textbf{통계}를 쌓는다:
+  \begin{enumerate}
+    \item \kb{선택(Selection)}: 루트(현재 상태)에서, ``지금까지의
+      성과'' + ``아직 덜 시도해본 정도''를 함께 고려하는 규칙
+      (Week 2.2의 UCB와 \textbf{정확히 같은 발상})으로 자식을
+      골라 내려가, 아직 다 확장되지 않은 노드까지
+    \item \kb{확장(Expansion)}: 그 노드에 새로운 자식(아직 안 가본
+      수)을 \textbf{하나} 추가
+    \item \kb{시뮬레이션(Simulation/Rollout)}: 그 새 노드에서
+      (간단한 정책으로, 극단적으로 \textbf{완전 무작위}로)
+      \textbf{끝까지} 플레이 --- Week 5의 몬테카를로처럼 결과
+      (승/패)를 얻는다
+    \item \kb{역전파(Backpropagation)}: 그 결과를 지나온 모든
+      노드에 통계로 반영(방문 +1, 승률 갱신)
+  \end{enumerate}
+  \vskip0.5em
+  {\footnotesize 이 ``역전파''는 ML1 Week 9의 역전파와 \textbf{이름만
+  같을 뿐 완전히 다른 개념}: 신경망의 그래디언트가 아니라,
+  트리의 \textbf{승패 통계}를 전달한다.}
+\end{frame}

@@ -1,0 +1,39 @@
+\begin{frame}{엔트로피 보너스: 탐험을 유지하는 작은 항}
+  \small
+  11.2절 실습의 \texttt{GaussianPolicy} 는
+  $\mathrm{exp}(\texttt{log\_std})$ 를 \textbf{학습 가능한}
+  파라미터로 두었는데, 무엇이 \texttt{log\_std}를 줄여(탐험을
+  줄여) 갈까? 답은 세 번째 항:
+  \[
+  L^{\mathrm{PPO}}(\theta) = \mathbb{E}_t[L^{\mathrm{CLIP}}_t]
+  - c_v\,\mathbb{E}_t[(V_\theta(s_t)-R_t)^2]
+  + c_e\,\mathbb{E}_t\Big[\underbrace{
+  \mathcal{H}\big[\pi_\theta(\cdot\mid s_t)\big]}_{\text{엔트로피
+  보너스}}\Big]
+  \]
+  \begin{itemize}
+    \item 세 항: \kb{클리핑 항}(정책 = actor) +
+      \kb{Critic TD/리턴 손실}($V$ 를 어드밴티지 계산에 쓸 만큼
+      정확히 학습해야 GAE가 의미 있음) + \kb{정책 엔트로피}
+      더하기.
+    \item 클리핑은 ``한 스텝의 이동''을 막는 \textbf{장치}일 뿐 —
+      정책이 \textit{천천히}도 특정 행동에 확률을 1로 몰아붙일
+      수 있다. \kb{탐험 소실(exploration collapse)}: 한 번
+      확률이 0에 가까워진 행동은 다시 샘플링될 기회가 없어
+      \textbf{영원히} 돌아오지 못함.
+    \item 엔트로피 $\mathcal{H}[\pi(\cdot\mid s)]
+      = -\sum_a \pi(a\mid s)\log\pi(a\mid s)$ 는 ``정책이
+      얼마나 불확실한가(균등하면 최대)'' — 최대화하면
+      \kb{단일 행동에 수렴하는 것을 구조적으로 늦춤},
+      ``한 행동에 확률을 몰아붙이지 마라''는 연료.
+  \end{itemize}
+  \begin{block}{$c_e$ 는 보통 $0.001\sim0.01$ — 작게}
+    크게 하면 ``무작위에 가까운 정책''을 장려해 성능 오히려
+    나빠짐. 가우시안 정책에서는 $\sigma$ 가 클수록 엔트로피가
+    커지므로 이 항이 바로 \texttt{log\_std}를 \textbf{올려}
+    주는 힘. 실전: \texttt{log\_std}를 점진적으로 줄여 가는
+    (annealing) 방식도 함께 — ``처음엔 많이 탐험, 수렴하면
+    줄여간다''. 11.2절 Pendulum이 아주 느렸던 이유 중 하나는
+    바로 이 탐험 신호의 부재(또는 부족).
+  \end{block}
+\end{frame}

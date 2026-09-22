@@ -1,0 +1,24 @@
+\begin{frame}{클리핑: 너무 멀리 못 가게 막기}
+  \small
+  $r_t$ 가 $[1-\epsilon,\,1+\epsilon]$ (보통 $\epsilon=0.2$)
+  범위를 벗어나면, 그 구간 밖으로 나간 만큼의 이득을 깎아버린다:
+  \[
+  L^{\mathrm{CLIP}}(\theta) = \mathbb{E}_t\Big[\min\Big(
+  r_t(\theta)A_t,\;
+  \mathrm{clip}\big(r_t(\theta),\,1-\epsilon,\,1+\epsilon\big)A_t
+  \Big)\Big]
+  \]
+  \vskip0.5em
+  \begin{itemize}
+    \item \kb{min을 쓰는 이유}: clip 안 한 값과 clip한 값 중 더
+      ``비관적인''(작은) 쪽을 목적함수로 삼아, 한쪽으로 너무
+      밀려가는 것에 대한 보상을 스스로 제한.
+    \item \kb{직관}: $A_t>0$(좋은 행동)인데 $r_t$ 가 이미
+      $1+\epsilon$ 을 넘었으면 더 밀어붙여도 그래디언트 0(이미
+      충분히 밀었으니 그만). $A_t<0$(나쁜 행동)인데 $r_t$ 가
+      $1-\epsilon$ 밑으로 떨어졌으면 역시 그래디언트 0(이미 충분히
+      눌렀으니 그만).
+  \end{itemize}
+  결과: ``좋은 행동을 과도하게 밀어주지도, 나쁜 행동을 과도하게
+  눌러버리지도 않는'' \kb{암묵적 신뢰 영역}.
+\end{frame}

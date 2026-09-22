@@ -1,0 +1,24 @@
+\begin{frame}{템플릿 ① ``왜?'': 부호 읽기와 $(\hat p-y)x$}
+  \begin{itemize}
+    \item \kb{부호 읽기}: 샘플 1은 실제 0인데 0.525로 예측 $\to$
+      $(\hat p-y)>0$ --- 양수 기여가 $w$를 \textbf{작아지는} 쪽으로
+      당김. 샘플 2·3은 실제 1인데 0.55·0.57 $\to$ 음수 기여로
+      $w$를 \textbf{크는} 쪽으로 밀어올림.
+    \item $x_i$가 곱하기 때문에 $x=3$인 샘플 3의 기여($-1.277$)는
+      $x=1$인 샘플 1($+0.525$)의 \textbf{2.4배} ---
+      ``크게 틀린'' 샘플이 아니라 \textbf{``큰 특징 값으로
+      틀린'' 샘플이 더 강한 힘}. \textbf{이 부호·가중 해석 한
+      줄}이 ``대입만 한 답''과 ``이해한 답''을 가른다.
+    \item \kb{왜 $(\hat p-y)x$인가}(빈칸은 보통 여기): 연쇄법칙
+      $\frac{\partial}{\partial w}[-\log\hat p]=-\frac1{\hat p}\cdot
+      \frac{d\hat p}{dz}\cdot\frac{dz}{dw}$ 에
+      $\frac{d\sigma}{dz}=\sigma(1-\sigma)$ 를 대입하면
+      $\frac1{\hat p}\cdot\hat p(1-\hat p)=1-\hat p$ 로 시그모이드
+      의 미분이 \textbf{정말 예쁜 형태}로 정리. ``시그모이드의
+      미분이 \textbf{자신을 곱한 것}''이 이 깔끔함의 원인.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize 검증: $\ell(w)$를 $w$의 함수로 짜서 유한차분
+  $\frac{\ell(w+\delta)-\ell(w-\delta)}{2\delta}$로 교차 검증하면
+  $-0.550675$와 일치(실습 노트북 §1).}
+\end{frame}

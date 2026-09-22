@@ -1,0 +1,23 @@
+\begin{frame}{LeNet-5 (1998)를 10.1 공식으로 풀기}
+  \small
+  \begin{tabular}{@{}llrlr@{}}
+    \toprule
+    층 & 연산 & 출력 크기 & 채널 & 파라미터 \\
+    \midrule
+    — & 입력 & 32$\times$32 & 1 & — \\
+    C1 & 5$\times$5 Conv + sigmoid & 28$\times$28 & 6 & $(25\cdot1+1)\cdot6 = 156$ \\
+    S2 & 2$\times$2 MaxPool & 14$\times$14 & 6 & 0 \\
+    C3 & 5$\times$5 Conv + sigmoid & 10$\times$10 & 16 & $(25\cdot6+1)\cdot16 = 2{,}416$ \\
+    S4 & 2$\times$2 MaxPool & 5$\times$5 & 16 & 0 \\
+    C5 & 5$\times$5 Conv + sigmoid & 1$\times$1 & 120 & $(25\cdot16+1)\cdot120 = 48{,}120$ \\
+    F6 & 완전연결 (tanh) & — & 84 & $(1\cdot120)\cdot84+84 = 10{,}164$ \\
+    OUT & 완전연결 (softmax) & — & 10 & $84\cdot10+10 = 850$ \\
+    \midrule
+    \multicolumn{4}{@{}l}{\textbf{합계}} & \textbf{$\approx 6.2$만} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  각 행은 10.1의 합성곱 공식 $(k^2C_{\text{in}}+1)C_{\text{out}}$ 과
+  완전연결 공식 $C_{\text{in}}C_{\text{out}}+C_{\text{out}}$ 을 그대로
+  대입(합성곱은 bias 포함, 풀링은 0).
+\end{frame}

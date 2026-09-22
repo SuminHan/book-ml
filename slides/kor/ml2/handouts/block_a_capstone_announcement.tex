@@ -1,0 +1,186 @@
+\documentclass[12pt]{article}
+
+\usepackage{problem_set_style}
+\usepackage{kotex}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+
+\begin{document}
+\heading{8}{2027. X. XX (예정)}{}{Spring 2027}{Block A 캡스톤 팀 프로젝트 공고 (샘플)}
+
+\section*{1. 프로젝트 개요}
+Chapter 4$\sim$7에서 배운 표 기반(tabular) 강화학습 기법(동적계획법,
+몬테카를로, 시간차 학습, n-step 부트스트래핑)을 실제 Gymnasium
+환경에 적용하는 4주짜리 팀 프로젝트이다. 목표는 ``좋은 정책을
+만드는 것'' 자체가 아니라, \textbf{그 성능 숫자를 정직하게 얻는
+절차}를 실제로 수행하고 보고하는 것이다.
+
+\vspace{4pt}
+\noindent 4주 파이프라인: \textbf{환경 고르기 $\to$ 구현 $\to$
+평가 $\to$ 발표}.
+
+\section*{2. 필수 요구사항}
+\begin{itemize}
+\item \textbf{환경}: Gymnasium의 표 기반(이산 상태·행동) 환경
+  하나 --- \texttt{FrozenLake-v1}, \texttt{CliffWalking-v1},
+  \texttt{Taxi-v4} 등.
+\item \textbf{적용 알고리즘}: Chapter 4$\sim$7 중 \textbf{최소 두
+  가지}(예: Q-learning vs SARSA, MC 제어 vs n-step TD)를 같은
+  환경에 적용해 학습 곡선과 최종 정책을 비교한다.
+\item \textbf{수식적 정당화 최소 1개}: 예 --- Q-learning/SARSA
+  비교라면 on/off-policy 관점에서 정책이 왜 다르게 학습됐는지,
+  $\varepsilon$/$\alpha$ 변경 실험이라면 수렴 조건과 연결, Dyna-Q
+  라면 계획 스텝 수와 학습 속도의 관계를 직접 측정.
+\item \textbf{베이스라인 필수}: 무작위 정책의 평균 리턴을 먼저
+  측정해, ``배운 정책이 실제로 무작위보다 나은가''를 판정할
+  기준점을 마련한다.
+\item \textbf{시드 $\ge 3$}, 모든 시드에 \textbf{동일한 평가
+  프로토콜}(greedy 평가 $\varepsilon=0$, 동일 에피소드 수)을
+  적용한다.
+\end{itemize}
+
+\newpage
+\section*{3. 환경 후보 (예시)}
+\begin{center}
+\small
+\begin{tabular}{@{}lllp{4.4cm}@{}}
+\toprule
+환경 & 상태$\times$행동 & 보상 구조 & 잘 어울리는 비교 \\
+\midrule
+FrozenLake-v1 & 16$\times$4 (미끄럼) & 도착 +1, 그 외 0 (구멍 종료)
+& MC vs SARSA --- 확률 전이에서 시드 안정성 \\
+CliffWalking-v1 & 48$\times$4 & 스텝 $-1$, 절벽 $-100$, 도착 0 &
+SARSA vs Q-learning --- on/off-policy 클래식 비교 \\
+Taxi-v4 & 500$\times$6 & 성공 +20, 불법 $-10$, 스텝 $-1$ &
+n-step vs TD(0), Dyna-Q \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+환경 선택은 자유이지만, \textbf{Chapter 4$\sim$7의 개념 검증
+목적}에 근거해야 한다 (상태 수, 보상 구조, 확률 전이 중 무엇이 이
+비교를 정당화하는지 설명할 수 있어야 한다).
+
+\section*{4. 시드 프로토콜}
+``한 번의 실행''은 아무것도 말해주지 않는다 --- $\varepsilon$-greedy
+탐험의 무작위성, 환경 전이 자체의 무작위성, 정책 초기화 때문에
+같은 코드·같은 파라미터를 그대로 돌려도 매번 다른 학습 곡선이
+나온다.
+\begin{enumerate}
+\item \textbf{시드 $\ge 3$}으로 비교할 모든 알고리즘을 전부
+  돌린다.
+\item 학습 도중 성과(탐험 포함)와 학습 후 \textbf{greedy 평가}
+  성과를 반드시 분리해서 보고한다.
+\item 하이퍼파라미터는 학습 곡선(validation)으로만 튜닝하고,
+  최종 평가 수치를 보며 조정하지 않는다.
+\end{enumerate}
+
+\newpage
+\section*{5. 일정 및 마일스톤 (M1$\sim$M4)}
+\begin{center}
+\small
+\begin{tabular}{@{}p{7.4cm}p{5.4cm}@{}}
+\toprule
+\textbf{주 / 해야 할 일} & \textbf{마일스톤(제출)} \\
+\midrule
+\textbf{1주}: 환경 후보 2$\sim$3개 조사(상태 수·보상 구조·확률
+전이 여부), 팀 회의, 문제 정의 문서(어떤 MDP인지, 어떤 지표를
+쓸지, 베이스라인) & \textbf{M1} 문제 정의 + 환경 선택 (1p) \\
+\textbf{2주}: 두 알고리즘 구현, 베이스라인 리턴 측정, 시드 3개
+중 1개에서 엔드투엔드 동작 확인 & \textbf{M2} 중간 코드 리뷰
+(코드 + 베이스라인 숫자 1줄) \\
+\textbf{3주}: 나머지 시드 실행, $\varepsilon$/$\alpha$ 튜닝(모두
+동일 프로토콜), greedy 평가($\varepsilon=0$), 시드 비교표 도출 &
+\textbf{M3} 학습 곡선 1장 + 시드 비교표 \\
+\textbf{4주}: 수식적 정당화, 보고서·슬라이드 완성, 발표
+(5$\sim$7분), 다른 팀 2개에 대한 peer-review 작성 & \textbf{M4}
+보고서 + 발표 + 리뷰 2건 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+M1, M2는 팀 전체가 모여 함께 결정한다.
+
+\section*{6. 보고서 구조}
+\begin{enumerate}
+\item \textbf{문제 정의} (0.5p): MDP 5요소(상태·행동·전이·보상·
+  할인율), 주 지표(greedy 평가 평균 리턴), 베이스라인(무작위
+  정책 리턴).
+\item \textbf{알고리즘 선택과 이유} (1p): 후보 2개 이상, 왜 이
+  알고리즘을 이 환경에 골랐는가(보상 구조·상태 수와 연결),
+  하이퍼파라미터($\alpha,\gamma,\varepsilon$ 스케줄)와 선택 근거.
+\item \textbf{실험 프로토콜} (1p): 시드 목록, 학습 에피소드 수,
+  평가 프로토콜($\varepsilon=0$, 에피소드 수, 모든 알고리즘 동일)
+  명시.
+\item \textbf{결과} (1p): 시드 비교표, 학습 곡선 1장(여러 시드를
+  한 그림에 얇은 선으로), greedy 정책 경로 시각화.
+\item \textbf{수식적 정당화} (1p): 배운 개념 1개 이상으로 ``왜
+  이 결과''.
+\item \textbf{잘 안 된 부분과 원인 진단} (0.5p, \textbf{필수}):
+  안 된 부분이 없었다면 무엇을 시도했다가 안 됐는지를 쓴다.
+\end{enumerate}
+
+\newpage
+\section*{7. 채점 기준 (Rubric)}
+\begin{center}
+\small
+\begin{tabular}{@{}lcp{6.8cm}@{}}
+\toprule
+항목 & 비중 & 좋은 답 \\
+\midrule
+문제 정의와 환경 & 15\% & MDP 5요소·지표·베이스라인이 명확하고,
+선택이 개념 검증 목적에 근거 \\
+방법론 적절성 & 20\% & 환경 특성에 맞는 알고리즘·파라미터 선택,
+근거가 배운 개념으로 설명됨 \\
+\textbf{실험 프로토콜의 정직성} & \textbf{25\%} & 시드 $\ge 3$,
+동일 평가 프로토콜, 베이스라인, $\varepsilon$ 스케줄이 보고서에서
+추적 가능할 만큼 명시 \\
+수식적 정당화 & 20\% & 배운 개념 1개 이상으로 ``왜''를 설명했고,
+관측한 숫자와 일치 \\
+\textbf{결과의 정직성과 반성} & \textbf{20\%} & 불안정했던
+시드·구간을 숨기지 않고 배운 개념으로 진단 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+``실험 프로토콜의 정직성''과 ``결과의 정직성과 반성'' 두 항목이
+합쳐서 \textbf{45\%}를 차지한다.
+
+\section*{8. 발표와 Peer-Review}
+\begin{itemize}
+\item \textbf{발표}: 팀당 5$\sim$7분.
+\item \textbf{Peer-Review}: 발표를 들은 팀은 다른 두 팀에 대해
+  작성 리뷰를 각 1통씩 제출한다. 각 리뷰는 아래 4항목
+  체크리스트와, 반박 가능한 질문을 1개 이상 포함해야 한다.
+\end{itemize}
+
+\vspace{4pt}
+\noindent\textbf{Peer-Review 체크리스트 (4항목)}
+\begin{center}
+\small
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+항목 & 확인할 것 \\
+\midrule
+환경 설명 & 상태·행동·보상이 명확히 정의됐는가, 주 지표(학습중
+리턴? greedy 평가?)가 분리되어 있는가 \\
+알고리즘 선택 & 환경 특성(상태 공간, 보상 구조, 확률 전이)이 그
+비교를 정당화하는가 \\
+수식적 정당화 & 짚은 개념이 실측 숫자와 일치하는가 \\
+결과의 정직성 & 시드 $\ge 3$, 불안정했던 시드·구간이 숨겨지지
+않고 보고됐는가 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{9. 팀 구성 및 제출 방식}
+\begin{itemize}
+\item \textbf{팀 구성}: 팀당 인원 및 팀 편성 방식은 추후 공지.
+\item \textbf{제출물}: 보고서(PDF), 코드(저장소 링크 또는 압축
+  파일), 발표 슬라이드, peer-review 2건.
+\item \textbf{제출 방법 및 마감}: 추후 공지 (LMS/과제 제출 시스템
+  및 마감 일시는 별도 안내 예정).
+\end{itemize}
+
+\end{document}

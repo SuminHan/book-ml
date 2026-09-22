@@ -1,0 +1,35 @@
+\begin{frame}{3단어 예: causal mask 전/후}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    위치 & 마스크 \emph{없}은 가중치 행 &
+      마스크 \emph{있}(causal) 가중치 행 \\
+    \midrule
+    1 (개) & (0.284, 0.140, 0.576) &
+      \textbf{(1.000, 0, 0)} \\
+    2 (고양이) & (0.248, 0.503, 0.248) &
+      (0.330, 0.670, \textbf{0}) \\
+    3 (쫓는다) & (0.187, 0.045, 0.768) &
+      (0.187, 0.045, 0.768) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item \textbf{첫 번째 단어는 이제 \emph{자기 자신}만 본다.}
+    \item 3번째 단어(마지막)는 미래를 볼 게 없으므로 \textbf{전/후
+      가중치 행이 동일}.
+    \item \textbf{중간 위치} 2에서: ``(0.248, 0.503, 0.248) $\to$
+      (0.330, 0.670, 0)'' — 3번째 위치(미래)에 주려던 0.248이
+      사라지고, 남은 두 위치에 \emph{재분배}.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{train/test 일치}
+    ``softmax \emph{이전}에 $-\infty$ 를 더하면 $t$번째 위치가
+    $\le t$ 위치만 본다'' — 이 점이 \textbf{``학습 때의 $t$번째
+    출력''과 ``실제 생성 때의 $t$번째 토큰''이 \emph{동일한
+    정보}에 의존하게} 만들어 train/test \emph{일치}를 보장
+    (힌트: 학습 때 미래를 \emph{보게} 하면, 추론 때 미래가
+    \emph{없는} 상황이 \emph{분포적으로} 달라져 모델이 학습 시
+    익숙하지 않은 상태에 처한다 — 과적합/분포 불일치 관점).
+  \end{block}
+\end{frame}

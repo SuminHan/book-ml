@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{링크 함수 + 실습: 같은 계산, 두 가지 해석}
+  ``출력 해석을 확률로 바꾸는'' 단계 = \kb{링크 함수}: 회귀 =
+  \kb{항등 함수}($z$ 를 그대로), 이진 분류 = \kb{시그모이드}.
+  Week 2에서 이 차이로 \textbf{손실함수가 어떻게 달라지는지}
+  직접 유도(MSE vs 교차 엔트로피).
+  \begin{lstlisting}
+import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+w = [0.5, -2.0]
+b = 1.0
+x = [3, 0.5]
+
+z = sum(wi * xi for wi, xi in zip(w, x)) + b
+print("z =", z)                        # 1.5
+print("회귀로 읽으면:", z)               # 1.5 (그대로 예측값)
+print("분류로 읽으면:", sigmoid(z))      # 약 0.818 (양성 클래스일 확률)
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize $z$ 를 만드는 코드는 \textbf{한 줄로 똑같고},
+  \texttt{sigmoid()} 를 씌우느냐 마느냐 \textbf{한 줄 차이}가
+  회귀/분류. Week 2: 이 $z$ 를 만드는 $w, b$ 자체를 \textbf{데이터로
+  학습}(경사하강법). Colab: 2D 점군을 회귀선 vs 분류 경계로 나란히,
+  \texttt{classify\_dataset()} 작성.}
+\end{frame}

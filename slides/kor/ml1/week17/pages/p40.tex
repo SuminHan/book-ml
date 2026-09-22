@@ -1,0 +1,28 @@
+\begin{frame}{17.3의 지도: 왜 정렬이 필요한가}
+  \begin{itemize}
+    \item \kb{정렬(alignment)} = 데이터 분포 \textbf{안에서}
+      사람이 선호하는 쪽의 확률을 끌어올리는 \textbf{재조정
+      (reweighting)}. LM 분포가 ``그럴듯한 문장을 고르는
+      기준''이었다면, 정렬은 ``사람이 고를 문장'' 쪽으로
+      기준을 \textbf{옮기는} 것 — \textbf{새 능력을 넣는
+      게 아니라, 이미 있는 능력의 선택 기준을 바꾸는 것}.
+  \end{itemize}
+  \vskip0.2em
+  \centering
+  \includegraphics[width=0.66\textwidth]{ch13_3_posttraining_pipeline.png}
+  \vskip0.3em
+  \begin{itemize}
+    \item 사전학습된 LM이 \textbf{SFT}(사람이 작성한
+      Q\&A)와 \textbf{선호 데이터}(두 답변 비교)를 거쳐
+      두 갈래: \textbf{보상모델(BT) 학습 $\to$
+      RLHF(PPO)} 경유, 또는 \textbf{DPO}로 선호 데이터에서
+      정책을 직접 학습 — 모두 ``정렬된 모델''로 수렴.
+    \item \kb{LoRA/PEFT}($\Delta W = BA$)는 어느 단계든
+      적용 가능, \kb{RAG/에이전트}는 학습을 통하지 않고
+      \textbf{추론 시점}에서 지식을 보완하는 별개의 경로.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize 지도의 핵심 축: ``\textbf{학습 단계}''
+  (가중치를 고치는 것)와 ``\textbf{추론 단계}''(가중치
+  밖의 컨텍스트에 무엇을 넣는 것)를 구별.}
+\end{frame}

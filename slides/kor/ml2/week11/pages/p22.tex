@@ -1,0 +1,22 @@
+\section{11.2 PPO 클리핑과 연속 제어 실습}
+\begin{frame}{위치: 11.1절의 문제를 클리핑 한 줄로 바꾸기}
+  11.1절은 문제를 정확히 짚었다: $L^{\mathrm{IS}}(\theta)=
+  \mathbb{E}_t[r_t(\theta)A_t]$ 를 그냥 최대화하면 $r_t$ 가
+  한없이 커지도록 학습이 폭주.
+  \vskip0.6em
+  \begin{itemize}
+    \item \kb{TRPO}(11.3절에서 다룸)는 이 문제를 ``KL 발산이
+      $\Delta$ 를 넘지 않는다''는 명시적 제약을 2차 미분 도구로
+      풀어내려다 \textbf{무거워졌다}.
+    \item \kb{PPO}의 제안은 의외로 간단했다 — \textbf{제약을 식에
+      직접 박아 넣는 것}:
+      \begin{center}
+        ``$r_t$ 가 1 근처를 벗어나면, 벗어난 만큼의 이득은
+        인정하지 않겠다.''
+      \end{center}
+  \end{itemize}
+  \vskip0.4em
+  이 절: (1)반 — 그 한 줄(클리핑)이 만들어내는 목적함수의 모양을
+  손으로 확인. (2)반 — 연속 제어 환경(Pendulum)에서 PPO를 통째로
+  구현.
+\end{frame}

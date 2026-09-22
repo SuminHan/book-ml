@@ -1,0 +1,31 @@
+\begin{frame}{핵심: 답하는 질문이 다르다}
+  \begin{block}{Q-learning vs SARSA}
+    Q-learning = ``\textbf{이상적으로 항상 최선을 다한다면}''이라는
+    가정 아래 최적 경로를 찾고,
+    SARSA = ``\textbf{실제로 가끔 실수(탐험)할 수 있다}''는 현실을
+    감안한 경로를 찾는다.
+    어느 쪽이 ``더 낫다''가 아니라, \textbf{애초에 답하는 질문이
+    다르다}.
+  \end{block}
+  \vskip0.6em
+  \begin{itemize}
+    \item 실전 선택 기준:
+      \begin{itemize}
+        \item ``학습 \textbf{도중에도} 안전이 중요한가''(로봇 제어처럼
+          실제 사고가 나면 안 되는 경우) $\to$ \kb{SARSA} 계열 선호.
+        \item ``학습은 시뮬레이터에서 안전하게, 최종 \textbf{배포만}
+          최적이면 되는가'' $\to$ \kb{Q-learning}도 무방.
+      \end{itemize}
+    \item \kq{학습 도중 리턴의 격차($-31$ vs $-53$)를 ``학습이 잘
+      되고 있다''는 지표로 쓰지 말 것.}
+      이 격차는 두 알고리즘이 \textbf{다른 정책을 평가}하고 있기
+      때문이지, Q-learning이 더 ``나쁘게'' 학습해서가 아니다.
+      오히려 최종(탐욕적) 리턴에서는 Q-learning이 앞선다.
+  \end{itemize}
+  \vskip0.4em
+  off-policy 학습을 모니터링할 때는 ``학습 도중의 행동 리턴''이 아니라
+  \textbf{목표 정책으로 평가한 리턴}($\varepsilon=0$ 롤아웃, 또는
+  별개 평가 정책의 리턴)을 보라는 교훈 --- 이 ``평가 정책과 학습
+  정책을 분리해서 보는'' 습관이 Week 9(DQN)과 Week 11(PPO)의 학습
+  곡선 읽기로 이어진다.
+\end{frame}

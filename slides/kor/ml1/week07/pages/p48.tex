@@ -1,0 +1,24 @@
+\begin{frame}{중요도 순위가 바뀐다: 학습 과정의 반영}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+     & 랜덤 포레스트 (7.2) & GBDT (이번 실습) \\
+    \midrule
+    1위 & worst perimeter (0.151) & \textbf{worst concave points (0.445)} \\
+    2위 & worst concave points (0.135) & mean concave points (0.275) \\
+    3위 & mean concave points (0.131) & worst perimeter (0.071) \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item \textbf{같은 데이터, 같은 지표}(지니 감소량)인데 \textbf{순위가
+      바뀜} — 트리를 \textbf{만드는 방식}이 다르기 때문
+    \item RF의 각 트리는 데이터 전체의 분포를 ``그대로'' 봄; GBDT의 각
+      트리는 \textbf{이전 트리의 잔차}만 봄 — 잔차에는 원래 데이터의
+      구조가 아니라 \textbf{``아직 못 맞춘 오차의 구조''}가 남아 있음
+    \item $\to$ \texttt{feature\_importances\_}는 ``\textbf{모델의 학습
+      과정을 반영한} 값''이지 ``\textbf{데이터의 속성}''이 아니다
+    \item 이 제한이 \textbf{``예측 단위''의 SHAP으로 넘어가야 하는
+      두 번째 이유}
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,31 @@
+\begin{frame}{CoT의 메커니즘: 숫자로}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \kb{직접 한 방에 답}
+      \begin{itemize}
+        \item 중간 결과를 조건으로 쓸 수 없어, 각 부분
+          추론을 \textbf{한 번에} 맞히기(하나당 0.5):
+          \[0.5^3 = 0.125\]
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \kb{CoT로 단계별로}
+      \begin{itemize}
+        \item 각 중간 결과가 다음 단계의 \textbf{조건}이
+          되어 하나당 0.9:
+          \[0.9^3 = 0.729\]
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{block}{핵심 메커니즘이 숫자로}
+    \kq{\textbf{모델이 스스로 쓴 중간 결과가, 다음 토큰
+    예측의 조건이 된다} --- 쓰느냐 마느냐가 부분 추론
+    하나당 0.5에서 0.9로 끌어올린다.}
+  \end{block}
+  {\footnotesize 어텐션으로: 최종 답 토큰이 앞의 중간
+  추론 토큰을 실제로 ``본다''. 단계가 늘수록 격차
+  기하급수: 2단계 0.81 vs 0.25 / 5단계 0.59 vs 0.03 /
+  10단계 0.35 vs 0.001. 노트북 4,000회 시뮬레이션으로
+  $\approx 0.125$ vs $\approx 0.73$ 직접 확인.}
+\end{frame}

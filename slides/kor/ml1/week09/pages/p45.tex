@@ -1,0 +1,22 @@
+\begin{frame}{Dropout: 그림 + 자주 하는 실수}
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_dropout.png}
+      {\footnotesize (a) 표준 신경망 vs (b) 드롭아웃 적용 ``얇아진''
+      신경망 — 훈련 중 랜덤 제거되는 유닛 (원 논문 Figure 1).}
+    \end{column}
+    \begin{column}{0.53\textwidth}
+      \begin{block}{자주 하는 실수: 추론 때도 \texttt{model.train()}을 켜둔 채}
+        PyTorch는 \texttt{.train()} 모드에서만 masking을 켜고,
+        \texttt{.eval()}에서 끄고 $(1-p)$ 스케일로 동작.
+        \texttt{model.eval()}을 잊으면 \textbf{매번 다른 예측} +
+        값이 $(1-p)$배 축소된 ``학습용'' 분포 $\to$ 정답률에 미치고도
+        정확도가 이상하게 뚝. ``테스트마다 결과가 달라지는''
+        \textbf{정석 원인}.
+      \end{block}
+      {\footnotesize 검증/추론 루프는 항상
+      \texttt{with torch.no\_grad(): model.eval(); ...}로 감싼다.}
+    \end{column}
+  \end{columns}
+\end{frame}

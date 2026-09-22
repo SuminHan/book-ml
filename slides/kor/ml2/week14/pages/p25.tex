@@ -1,0 +1,24 @@
+\begin{frame}{먼저 숫자로: 같은 CPU에서 40배}
+  \small
+  \begin{tabular}{@{}llr@{}}
+    \toprule
+    환경 & 물리 수준 & 초당 스텝 수 \\
+    \midrule
+    CartPole-v1 (Gymnasium 기본) & 단순 근사 & 약 242,000 \\
+    Pendulum (MuJoCo, 14.1의 진자) & 정밀(단일 관절) & 약 246,000 \\
+    Ant-v5 (MuJoCo, 사족보행) & 정밀(복잡한 접촉) & 약 5,900 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.7em
+  \begin{itemize}
+    \item \textbf{같은 CPU}에서도 환경에 따라 약 \textbf{40배} 차이
+      --- ``CPU''라는 틀이 속도를 정하는 게 아니라,
+      \textbf{어떤 물리를 계산하느냐}가 정한다
+      (14.1의 LCP 접촉이 매 스텝 푸는 계산이 그 차이의 정체)
+    \item 10억 스텝이면: CartPole
+      $10^9/2.4\times10^5 \approx 4{,}100$초 $\approx$
+      \textbf{약 1.2시간}
+    \item 같은 10억 스텝을 Ant(5,900 steps/s)로:
+      $\approx 1.7\times10^5$초 $\approx$ \textbf{약 2일}
+  \end{itemize}
+\end{frame}

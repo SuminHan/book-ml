@@ -1,0 +1,23 @@
+\begin{frame}{``노이즈 예측'' 회귀 문제 (DDPM)}
+  실전(DDPM)에서는 역방향 분포를 직접 매개변수화하지 않고, 대신
+  신경망 $\epsilon_\theta(x_t, t)$가 \textbf{$x_t$에 추가된 노이즈
+  $\epsilon_t$를 예측}하도록 학습:
+  \[
+  \mathcal{L}(\theta) =
+  \mathbb{E}_{t, x_0, \epsilon}\left[
+    \lVert \epsilon - \epsilon_\theta(x_t, t) \rVert^2
+  \right]
+  \]
+  \vskip0.6em
+  \begin{block}{이 식이 \textbf{MSE 회귀 손실}이라는 점에 주목}
+    이 장에서 본 모든 방식(EM의 M-step, VAE의 ELBO 역전파)과 달리,
+    GAN의 min-max 게임도 아니고, 우도의 적분 근사도 아닌,
+    \textbf{가장 보통의 단일 회귀 최적화}.
+    \; ``안정적으로 학습된다''의 \textbf{정체}가 바로 이것.
+  \end{block}
+  \vskip0.4em
+  {\footnotesize 수학적으로 이 $\epsilon$ 예측은 $\nabla_x \log p_t(x)$,
+  즉 데이터 분포의 \textbf{스코어 함수}를 추정하는 것과 동치
+  (Song \& Ermon, 2019) — ``노이즈를 잘 예측'' = ``데이터가 어디에
+  빽빽한지 그 기울기를 안다''.}
+\end{frame}

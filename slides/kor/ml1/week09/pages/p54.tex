@@ -1,0 +1,28 @@
+\begin{frame}{골짜기에서 직접 확인 + 왜 ``한 번에 큰 lr''이 위험한가}
+  \small
+  1차원 포물선 $L(w) = (w - 3)^2 + 0.5$, 시작 $w = 0$, 300스텝:
+  \vskip0.3em
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    전략 & 결과 \\
+    \midrule
+    작은 lr 고정 (0.0072) & 300스텝 뒤 $|w - 3| \approx 0.039$ —
+      \textbf{바닥에 못 도착} (예산 소진) \\
+    0.08 (200스텝) $\to$ 0.0072 (100스텝) & $|w - 3| \approx
+      2\times10^{-15}$ — \textbf{도착} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  \kb{진동 직접 보기}: 같은 포물선에 $\alpha = 0.9$(최적 0.5 초과)로
+  1스텝 반복:
+  \[
+  w: \; 0.0 \to 5.4 \to 1.08 \to 4.54 \to 1.77 \to 3.98 \to 2.21
+  \to 3.63 \to 2.50 \to \cdots
+  \]
+  \textbf{최솟값 3을 오차로 왔다갔다}하며 점진적으로만 수렴 —
+  큰 lr은 ``빠르다''지만 \textbf{바닥에 못 붙는다}.
+  \vskip0.3em
+  {\footnotesize 이 포물선은 볼록해 큰 lr도 결국 수렴하지만, 실제
+  비볼록 손실에서는 \textbf{한 번에 너무 큰 lr}은 최솟값을 넘나들며
+  발산하거나 나쁜 극소점에 갇힌다.}
+\end{frame}

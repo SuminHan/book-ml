@@ -1,0 +1,49 @@
+\begin{frame}[fragile]{손으로 한 번: CNN의 파라미터 수}
+  실습 노트북의 구조(Ch10.1 공식으로 계산):
+  \[
+  \small 1\times8\times8
+  \xrightarrow{\text{Conv2d}(1,32,3,\,\text{pad}=1,\,\text{str}=2)}
+  32\times4\times4
+  \xrightarrow{\text{MaxPool2d}(2)}
+  32\times2\times2
+  \]
+  \[
+  \small \xrightarrow{\text{Flatten}} 128
+  \xrightarrow{\text{FC}} 256
+  \xrightarrow{\text{ReLU}} 256
+  \xrightarrow{\text{FC}} 10
+  \]
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{tabular}{@{}llc@{}}
+        \toprule
+        층 & 공식 & 파라미터 수 \\
+        \midrule
+        Conv2d(1$\to$32, 3$\times$3) & $1\times3\times3\times32 + 32$
+          & \textbf{320} \\
+        MaxPool2d(2) & (파라미터 없음) & 0 \\
+        FC 128$\to$256 & $128\times256 + 256$ & \textbf{33,024} \\
+        FC 256$\to$10 & $256\times10 + 10$ & \textbf{2,570} \\
+        \midrule
+        \textbf{합계} & & \textbf{35,914} \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.4em
+      {\footnotesize conv: $\text{in\_ch}\times k\times k\times
+      \text{out\_ch}+\text{out\_ch}$, \; FC:
+      $\text{in}\times\text{out}+\text{out}$ (Ch10.1)}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{lstlisting}
+import torch
+n = sum(p.numel()
+        for p in model.parameters())
+print(n)   # 35,914
+\end{lstlisting}
+      {\footnotesize PyTorch로 돌려 \textbf{정확히 일치(35,914)}
+      확인 — ``10.1 공식으로 설계 정당화'' 요구사항의 뼈대가
+      라이브러리 없이도 성립하는 것.}
+    \end{column}
+  \end{columns}
+\end{frame}

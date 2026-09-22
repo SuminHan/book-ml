@@ -1,0 +1,32 @@
+\begin{frame}{StepLR / 코사인 / warmup — 모양을 기억하자}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      % [fig missing] \includegraphics[width=\linewidth]{ch09_3_lr_schedules.png}
+      {\footnotesize 고정 lr(회색 수평선) / StepLR(파랑 계단) /
+      코사인(빨강, 300에폭 동안 0.01 $\to$ 0으로 부드럽게).}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \small
+      \begin{itemize}
+        \item \kb{StepLR}: \texttt{step\_size} 에폭마다 $\alpha \leftarrow
+          \gamma\, \alpha$. 예: $\alpha_0 = 0.01$, $\gamma = 0.5$,
+          step=50 $\Rightarrow$ $0.01 \to 0.005 \to 0.0025 \to
+          0.00125$
+        \item \kb{코사인}: $\alpha_t = \alpha_{\min} + \tfrac{1}{2}
+          (\alpha_{\max} - \alpha_{\min})
+          \bigl(1 + \cos(\pi t / T_{\max})\bigr)$ —
+          계단 뚝뚝보다 ``lr의 공백기'' 없음, 후반 수렴 매끄러움
+        \item \kb{warmup}: 처음 몇 에폭은 \textbf{아주 작은 lr}으로
+          시작해 점차 늘린 뒤 decay
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.2em
+  {\footnotesize \textbf{왜 warmup이 필요한가} — 무작위로 막
+  초기화된 가중치에 Adam 같은 \textbf{adaptive 최적화기}를 처음부터
+  큰 lr으로 돌리면, 첫 스텝들의 그래디언트/2차 통계가 아직
+  무의미한데 큰 업데이트가 나가 \textbf{초반 손실이 오히려 발사}.
+  짧은 warmup이 이 첫 스텝들을 안정 — \kb{GPT/트랜스포머 학습에서
+  warmup이 표준}인 이유가 바로 이것.}
+\end{frame}

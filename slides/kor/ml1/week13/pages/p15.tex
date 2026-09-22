@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{코드: 일괄적 무작위 걷기로 말뭉치 만들기}
+\begin{lstlisting}
+def random_walk(neighbors, start, length):
+    walk = [start]
+    for _ in range(length - 1):
+        cur = walk[-1]
+        if not neighbors[cur]:
+            break
+        walk.append(random.choice(neighbors[cur]))
+    return walk
+
+def build_walks(edges, n_nodes, walks_per_node=10, walk_length=8):
+    neighbors = {i: [] for i in range(n_nodes)}
+    for a, b in edges:
+        neighbors[a].append(b)
+        neighbors[b].append(a)
+    walks = []
+    for node in range(n_nodes):
+        for _ in range(walks_per_node):
+            walks.append([str(n) for n in random_walk(neighbors, node,
+                                                      walk_length)])
+    return walks
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize \texttt{random\_choice} = 이웃을 동등한 확률로
+  고르는 일괄적 걷기. 각 걷기 = ``문장'', 각 노드 번호 = ``단어''.}
+\end{frame}

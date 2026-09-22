@@ -1,0 +1,24 @@
+\begin{frame}{왜 이 두 단계인가 + 개선 = $Q^\pi$ 표 행별 argmax}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{평가 alone}은 ``지금 정책이 \textbf{얼마나 좋은가}''
+      만 답하고, ``어떻게 \textbf{고쳐야} 하는가''를 말해주지
+      않음(4.1절 FAQ: 정책평가만으론 ``최적인가'' \textbf{판별
+      불가}).
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{개선 alone}은 ``더 나은 행동''을 $V^\pi$ 기준으로
+      판단해야 하는데, \textbf{정책이 바뀌면 $V^\pi$ 자체가
+      바뀌어} 다시 계산 필요 $\to$ 한 발도 못 뺌.
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{핵심 연결}
+    개선 식의 우변 $R(s,a) + \gamma \sum_{s'} P(s'|s,a)\,
+    V^\pi(s')$ 는 4.1절 \textbf{$Q^\pi(s,a)$ 그 자체}. 즉 4.1절이
+    직접 채운 \kb{$Q^\pi$ 표가 정책개선의 점수표}이고, 개선은
+    \textbf{각 행에서 최댓값을 따는 동작}. ``오른쪽'' 정책은
+    자기 $Q^\pi$ 기준으로 \textbf{이미 바꿀 것이 없는} 상태
+    (정책개선의 \kb{고정점}).
+  \end{block}
+\end{frame}

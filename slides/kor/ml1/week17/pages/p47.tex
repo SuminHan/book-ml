@@ -1,0 +1,51 @@
+\begin{frame}{보상모델은 ``점수''가 아니라 ``상대 순서''}
+  \begin{itemize}
+    \item 위 장난감 실험이 보여주는 것: 보상모델이
+      ``\textbf{점수}를 만드는 것''이 아니라
+      \textbf{``상대 비교''의 일관된 순서를 만드는 것}.
+    \item $r_\phi$에 상수를 더해도(모든 점수 +100) 모든
+      margin이 \textbf{불변} $\to$ BT 손실도 \textbf{불변}.
+      $\Rightarrow$ 점수는 \textbf{절대값에 의미가 없고
+      차이(margin)에만} 의미가 있다.
+    \item \kb{2단계 — 강화학습으로 정책 학습}: LM을 ``질문
+      $x$라는 \textbf{상태}에서, 답변 $y$라는
+      \textbf{행동}을 \textbf{토큰 하나씩} 순차적으로
+      고르는 \textbf{정책}''으로 취급.
+    \item 보상모델 점수 $r_\phi(x, y)$를 보상 삼아
+      \textbf{강화학습}(상태·행동·보상; 이번 학기 주제
+      아님, ML2 전문)으로 파라미터 조정.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{왜 ``토큰 하나씩''이 강화학습인가}
+    \textbf{목표 함수의 관점}에서 전혀 다른 문제: SFT는
+    정답 토큰이 주어지므로 각 토큰 손실을 \textbf{독립}으로
+    계산 가능. RLHF는 정답이 \textbf{없다} — 보상모델은
+    \textbf{완성된 답변 전체}에 하나의 점수만 줄 뿐.
+    ``높게 점수 받은 \textbf{공로}가 어느 토큰에 있는가''
+    (credit assignment)를 가르는 것이 \textbf{강화학습이
+    존재하는 이유}.
+  \end{block}
+  {\footnotesize 17.2 CoT와 대비: CoT는 중간 결과를
+  출력물에 써서 다음 토큰 예측의 \textbf{조건}으로(추론
+  시점), RLHF는 출력 전체의 보상을 출력 경로의 확률
+  (로그-우도)에 비례해 \textbf{역분배}(학습 시점) ---
+  ``프롬프팅은 즉각적이고 파인튜닝은 영구적''의 재확인.}
+
+  \vskip0.3em
+    \begin{itemize}
+    \item 보상모델은 수천$\sim$수만 개 (질문, 답변-답변)
+      쌍에서 학습 $\to$ Week 6의 \kb{과적합}에 그대로
+      노출.
+    \item 훈련 데이터에서 일관된 선호를 보이는 특정
+      \textbf{형식}(특정 어미, 특정 길이)을 \textbf{지나치게}
+      높은 점수로 매기면 $\to$ 정책이 그 형식만 반복하는
+      ``\textbf{보상 해킹의 특화판}'' — 형식은 맞는데
+      \textbf{내용은 공허}한 답변.
+    \item 실무 완화 장치:
+      \begin{itemize}
+        \item 보상모델을 \textbf{여러 개로 학습해 평균}
+        \item \textbf{KL 항을 동적으로 조절}
+      \end{itemize}
+      — 모두 이 과적합을 완화하기 위함.
+  \end{itemize}
+\end{frame}

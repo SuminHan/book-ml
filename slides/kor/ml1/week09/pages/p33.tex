@@ -1,0 +1,25 @@
+\begin{frame}{가중치 초기화: 0이 왜 치명적인가}
+  \small
+  \begin{itemize}
+    \item $w_{ij} = 0$ 모두이면 $a_l = f(b_l)$로 층마다 \textbf{상수} 출력,
+      역전파 시 각 뉴런 그래디언트가 \textbf{동일} $\Rightarrow$
+      모든 가중치가 \textbf{동일하게} 갱신 $\Rightarrow$ \textbf{대칭이
+      영원히 안 깨짐}
+    \item 결과: \textbf{폭 100짜리 층 하나가 폭 1짜리 뉴런 하나와
+      완전 같은 표현력} (9.1의 0-초기화 XOR 실험과 동일)
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{기준: 활성값의 2차 모멘트 $\mathbb{E}[a^2]$를 층을 거치며 보존}
+    $z_l = \sum_i w_{li}\, a_{l-1,i}$, $w$가 $\mathbb{E}[w]=0$,
+    분산 $\sigma_w^2$이면:
+    \[
+    \mathbb{E}[z_l^2] = n_{l-1}\, \sigma_w^2\, \mathbb{E}[a_{l-1}^2]
+    \quad (n_{l-1} = \text{fan-in})
+    \]
+    이를 1로 $\Rightarrow$ $\sigma_w = 1/\sqrt{n_{l-1}}$ =
+    \kb{Xavier (Glorot, 2010) 초기화}.
+  \end{block}
+  {\footnotesize $\mathbb{E}[a^2]$를 쓰는 이유: 정규화(9.3)가 조절하는
+  대상이 ``스케일'' = 2차 모멘트. tanh 같은 0-중심·대칭 활성함수에서는
+  $\mathbb{E}[a^2] = \text{Var}(a)$라 ``분산 보존''과 동일.}
+\end{frame}

@@ -1,0 +1,21 @@
+\begin{frame}{표 vs DQN: 같은 목표, 다른 갱신 속도}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    단계 & 표 Q-learning (Week 6) & DQN (위 숫자) \\
+    \midrule
+    현재 값 & $Q(s,a)$ (표 칸) $= 0.0020$ & $Q(s,a;\theta) = 0.0020$ \\
+    목표값 & $= 1.1494$ & $= 1.1494$ \\
+    갱신 & $Q \leftarrow Q + \alpha(\text{target} - Q)$ & 경사하강(역전파) \\
+    한 스텝 후 & $0.0020 \to 0.1167$ ($\alpha = 0.1$) & $0.0020 \to 0.0260$ \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.6em
+  \begin{itemize}
+    \item 같은 현재값, 같은 목표값에서 출발. 표는 한 스텝에
+      \textbf{목표까지의 10\%}를 채움 ($0.0020 + 0.1 \times 1.1474$).
+    \item 표: $0.0020 \to 0.1167 \to 0.2200 \to \cdots \to 1.1494$로
+      지수적 접근. DQN도 같은 고정점이지만 \textbf{속도와 방식}이 다름.
+  \end{itemize}
+\end{frame}

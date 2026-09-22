@@ -1,0 +1,28 @@
+\begin{frame}[fragile]{SARSA 코드}
+\begin{lstlisting}
+import random
+
+def epsilon_greedy(Q, s, epsilon, n_actions):
+    if random.random() < epsilon:
+        return random.randrange(n_actions)
+    return max(range(n_actions), key=lambda a: Q[s][a])
+
+def sarsa_train(env_step, n_states, n_actions, n_episodes, alpha, gamma,
+                epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    for _ in range(n_episodes):
+        s = start_state
+        a = epsilon_greedy(Q, s, epsilon, n_actions)
+        for _ in range(200):
+            ns, r, done = env_step(s, a)
+            na = epsilon_greedy(Q, ns, epsilon, n_actions)
+            Q[s][a] += alpha * (r + gamma * Q[ns][na] - Q[s][a])  # 실제로 고른 na
+            s, a = ns, na
+            if done:
+                break
+    return Q
+\end{lstlisting}
+  SARSA는 지금 실제로 따르는 정책(\textbf{탐험을 포함한 $\varepsilon$-greedy}
+  그 자체)의 가치를 학습한다 --- \kb{on-policy}
+  (6.3절 Q-learning과의 핵심 차이가 바로 여기서).
+\end{frame}

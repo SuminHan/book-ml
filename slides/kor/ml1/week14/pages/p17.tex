@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{자주 하는 실수: 표준화 없이 PCA}
+  \begin{itemize}
+    \item PCA가 \textbf{분산} 기준으로 축을 고르니, ``수치가 큰(분산이
+      큰) 특징''이 자동으로 더 큰 비중을 차지.
+    \item 특징 \textbf{단위가 서로 다르다면} 거의 항상 \textbf{버그}다.
+  \end{itemize}
+  \vskip0.3em
+  키(cm, 평균 170, 표준편차 8)와 몸무게(kg, 평균 65, 표준편차 6) 40명:
+\begin{lstlisting}
+raw = np.column_stack([h, wt])     # 키, 몸무게(키와 상관 있음)
+cov_raw = np.cov(raw.T)            # (1) 표준화 없이 PCA
+w_raw, v_raw = np.linalg.eigh(cov_raw)
+# RAW    PC1: [-0.851 -0.525]  1차원 설명분산: 92.7%  (키에 쏠림)
+
+scaled = (raw - raw.mean(0)) / raw.std(0)   # (2) 표준화 후 PCA
+cov_s = np.cov(scaled.T)
+w_s, v_s = np.linalg.eigh(cov_s)
+# SCALED PC1: [ 0.707  0.707]  1차원 설명분산: 91.3%  (45도)
+\end{lstlisting}
+  {\footnotesize 표준화 \textbf{없이}는 PC1이 키 축에 쏠린
+  $\approx(-0.85,-0.53)$, \textbf{후}에는 두 축을 동등하게 대우한
+  $\approx(0.71,0.71)$ 45도. \kq{같은 데이터인데, 단위를 어떻게 줬는지에
+  따라 주성분의 방향이 달라진다}.}
+\end{frame}

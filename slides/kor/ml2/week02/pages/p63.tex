@@ -1,0 +1,19 @@
+\begin{frame}{실습: 밴딧 $\to$ 1-상태 $\to$ 2-상태 MDP}
+  \begin{itemize}
+    \item \textbf{A. 밴딧($=$1-상태 MDP)에서 ε-greedy 실행}:
+      2.1절 코드 그대로. 동일 시드(0)에서 $\varepsilon=0.1$ 만
+      달리면, 두 줄의 ``후회''가 \textbf{약 20배} 차이:
+      $\varepsilon=0.1$ 은 최선 팔을 1800번 넘게 골라 총보상
+      $\approx$3900, $\varepsilon=0.0$ 은 단 한 번의 불운으로
+      1999번 최악의 팔만 당겨 총보상 $<2000$(후회 $\approx$2000).
+    \item \textbf{B. 1-상태 MDP의 벨만방정식 직접 대입}:
+      $V = q^* + \gamma \cdot V$ 반복 대입. $\gamma=0$: $V=2.0$,
+      $\gamma=0.9$: $V=20.0$ --- ``γ가 보는 눈의 깊이''.
+    \item \textbf{C. 2-상태 MDP에서 벨만방정식 직접 풀기}:
+      반복 대입 $\to$ $V(s_1)=30.0$, $V(s_0)=28.0$ ---
+      손계산과 정확히 일치.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize Week 4의 \texttt{policy\_evaluation} 함수의
+  2-상태 특수판을, 지금 이 지점에서 한 번 먼저 맛봄.}
+\end{frame}

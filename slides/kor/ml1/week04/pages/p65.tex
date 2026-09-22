@@ -1,0 +1,20 @@
+\begin{frame}{EM 알고리즘: E-step}
+  \kb{E-step (Expectation)} --- 현재 각 클러스터의 파라미터
+  ($\mu_k, \sigma_k^2, \pi_k$)가 주어졌다고 가정하고, 각 데이터
+  점 $x_i$가 클러스터 $k$에 속할 \textbf{사후확률}
+  (\kb{책임값}, responsibility) $\gamma_{ik}$를 \textbf{베이즈
+  정리}로 계산:
+  \[
+  \gamma_{ik} = P(z_i{=}k \mid x_i)
+  = \frac{\pi_k \, \mathcal{N}(x_i; \mu_k, \sigma_k^2)}
+         {\sum_{j} \pi_j \, \mathcal{N}(x_i; \mu_j, \sigma_j^2)}
+  \]
+  \begin{itemize}
+    \item 분자: ``$k$번 클러스터가 $x_i$를 만들 확률''
+      (선후확률, prior $\times$ likelihood)
+    \item 분모: \textbf{모든} 클러스터 중 $x_i$를 만들 확률의
+      합 $\Rightarrow$ $\gamma_{ik}$는 $0\sim1$의 \textbf{실수}
+    \item $\sum_k \gamma_{ik} = 1$ (각 점은 모든 클러스터에
+      확률 합 1로 분배됨)
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}{자주 묻는 질문 (2/2)}
+  \begin{itemize}
+    \item \kq{Q. Q-learning의 $\max$은 ``다음 상태의 모든 행동''에 대한
+      건데, 행동이 연속이거나 매우 많으면?}
+      이 강의의 \textbf{Table Q-러닝}(행동을 이산적으로 열거)에서는
+      $\max$이 유한한 표에서 최대를 찾는 단순 연산.
+      행동 공간이 연속(로봇 각도·속도)이거나 매우 크면 표 자체가
+      불가능해져 \textbf{함수 근사}(Week 9 DQN)로 넘어가야 ---
+      이때 $\max_a Q(s',a)$는 ``함수 $Q(s',a)$를 행동 $a$로 관해
+      최대화''로 일반화. \textbf{원리는 같고}, ``표에서 max''가
+      ``최대화(optimization)''로 바뀜.
+    \item \kq{Q. 둘 다 수렴하나, 하나만?}
+      \textbf{둘 다}, 같은 조건(모든 (상태,행동) 쌍이 무한히 방문 +
+      $\alpha$가 Robbins-Monro)이면. 다만 \textbf{수렴하는 값이
+      다르다}: Q-learning은 $Q^{*}$(최적 행동가치), SARSA는
+      $\varepsilon$-greedy 행동 정책 자체의 $Q^{\pi}$.
+      ``둘 다 수렴''이라 해도 \textbf{도달하는 지점이 다르다} ---
+      ``다른 질문''이 수렴 결과값으로도 나타난다.
+  \end{itemize}
+\end{frame}

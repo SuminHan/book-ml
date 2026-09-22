@@ -1,0 +1,35 @@
+\begin{frame}{실습: 원점수 2개만 있는 예로 흐름 추적}
+  $n=2$, $d_k=2$ 아주 작은 예. $Q = K = \begin{pmatrix}1&0\\0&1\end{pmatrix}$,
+  $V = \begin{pmatrix}10&0\\0&10\end{pmatrix}$.
+  \begin{enumerate}
+    \item \kb{Step 1 — $QK^T$}: 항등행렬이므로
+      $QK^T = \begin{pmatrix}1&0\\0&1\end{pmatrix}$.
+      (1,1) 성분 $= 1 \times 1 + 0 \times 0 = 1$.
+    \item \kb{Step 2 — $\sqrt{d_k} = \sqrt{2} \approx 1.414$ 로
+      나누기}: $\dfrac{QK^T}{\sqrt{2}} =
+      \begin{pmatrix}0.707&0\\0&0.707\end{pmatrix}$.
+    \item \kb{Step 3 — 첫 행 $[0.707, 0]$ 에 softmax}:
+      $e^{0.707} \approx 2.028$, $e^0 = 1$, 합 3.028.
+      \[p_1 = \frac{2.028}{3.028} \approx 0.670, \qquad
+        p_2 = \frac{1}{3.028} \approx 0.330\]
+      첫 단어는 \emph{자기 자신}에 67\%, 다른 단어에 33\% —
+      Q·K가 \emph{같은} 벡터라 \textbf{자기 비교가 항상 한 번
+      더 유리한 구조}(아래 ``자기 주입'' 참고).
+    \item \kb{Step 4 — 가중합}:
+      $\text{out}_1 = 0.670 \times V_1 + 0.330 \times V_2 =
+      (6.70, 3.30)$.
+  \end{enumerate}
+  \vskip0.4em
+  출력 $(6.70, 3.30)$ 을 $V$ 의 원행들 $(10,0), (0,10)$ 과
+  비교하면 \textbf{첫 번째 $V$ 에 67\%의 ``분량''이 더
+  섞여 있다}는 것이 직접 보인다 — ``관련도가 높은 단어의
+  Value가 더 많이 기여한다''는 어텐션의 \textbf{핵심 행동}이
+  숫자로 구현된 모습. (이 예는 12.3절 연습문제 3의 설정과
+  정확히 같다.)
+  \vskip0.3em
+  \begin{block}{핵심 한 줄}
+    ``관련 단어의 내용을 관련도만큼 섞는다'' — 이 문장이
+    $QK^T \to$ 스케일링 $\to$ softmax $\to$ $V$ 가중합의
+    4단계를 통과하면서 숫자가 되는 과정이다.
+  \end{block}
+\end{frame}

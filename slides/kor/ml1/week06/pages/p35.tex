@@ -1,0 +1,23 @@
+\begin{frame}{$\lambda$를 고르는 것 자체가 ``선택'': 최적화 편향}
+  지금까지 CV 곡선의 ``최소점''을 그 $\lambda$ 모델의 ``진짜 성능''인
+  것처럼 다루었다. 절차 전체를 한 발 물러서면:
+  \begin{enumerate}
+    \item 각 $\lambda$ 후보마다 CV 평균 계산(데이터 사용).
+    \item 그중 \textbf{가장 작은 값을 가진} $\lambda$를 고른다 — \emph{이것도}
+      같은 데이터로 한 \textbf{선택}.
+    \item 그 최소점의 값을 ``선택된 모델의 기대 성능''으로 보고.
+  \end{enumerate}
+  \vskip0.4em
+  2단계는 6.3의 선택 편향(``후보 $m$개 중 최고 점''을 고르면
+  $\mathbb{E}[\max]$만큼 부풀음)과 \textbf{정확히 같은 구조} — 고르는
+  대상이 모델이 아니라 $\lambda$ 후보일 뿐.
+  \begin{block}{\kb{최적화 편향(optimization bias)}}
+    후보가 많을수록, 각 후보의 CV 평균 간 흔들림이 클수록, \textbf{곡선의
+    최소점은 평균적으로 낙관적}. CV 곡선 \emph{자체}가 그 데이터로
+    ``조정된(tuned)'' 결과이므로 그 최솟값은 \emph{보아온 숫자} 중
+    제일 좋은 숫자.
+  \end{block}
+  {\footnotesize 이 편향을 정량화한 대표 논문: Varma·Simon (2006),
+  ``Bias in error estimation when using cross-validation for model
+  selection''.}
+\end{frame}

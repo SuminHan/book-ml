@@ -1,0 +1,35 @@
+\begin{frame}{LDA의 생성 과정: GMM 골격 그대로}
+  ``\textbf{주사위를 굴리고, 그 주사위 결과의 분포에서
+  샘플링한다}''는 두 단계:
+  \begin{enumerate}
+    \item \kb{토픽 혼합 뽑기}: 문서 $d$의 토픽 혼합
+      $\theta_d$를 \kb{디리클레 사전분포}
+      $\text{Dir}(\alpha)$에서 뽑음 ($K$개 주제에 대한
+      확률벡터 --- GMM의 혼합비율 $\pi$에 대응)
+    \item \kb{단어 뽑기}: 문서의 \textbf{각 단어 위치} $n$마다,
+      (i) 주사위 $\text{Categorical}(\theta_d)$로 토픽
+      $z_{dn}$ 뽑고, (ii) 그 토픽의 \textbf{단어 분포}
+      $\phi_{z_{dn}}$에서 단어 $w_{dn}$ 뽑음
+  \end{enumerate}
+  \vskip0.6em
+  \begin{itemize}
+    \item $\phi_k$ = ``\textbf{주제 $k$의 단어 프로필}'' ---
+      '정치' 토픽이면 ``선거·정책·대통령'', '경제'면
+      ``금리·물가·주식''이 높은 확률을 갖는 \textbf{어휘 크기
+      만큼의} 확률벡터. $\phi_k$도 디리클레 사전
+      $\text{Dir}(\beta)$에서 뽑힘
+    \item $\alpha, \beta$ = ``문서가 주제를 어떻게
+      \textbf{섞는지}'', ``토픽이 단어를 어떻게
+      \textbf{섞는지}''에 대한 \textbf{사전적 믿음}을 담은
+      하이퍼파라미터 --- 통상 \textbf{균일한 작은 값}
+      (예: $\alpha = 50/K,\ \beta = 0.01$)
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{켤레성의 선물}
+    디리클레 분포는 단순히 ``확률벡터 위의 분포''가 아니라
+    \textbf{다항분포의 켤레(conjugate) 분포}라
+    \textbf{E-step과 M-step이 전부 닫힌 형태로 유지}
+    --- GMM의 정규-감마 구조가 해준 것과 \textbf{정확히 같은
+    역할}.
+  \end{block}
+\end{frame}

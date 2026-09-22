@@ -1,0 +1,21 @@
+\begin{frame}{CartPole에서 DQN 실습: 설정}
+  \begin{itemize}
+    \item \textbf{300 에피소드} 실행. 9.2의 \texttt{dqn\_train}과 같은 설정:
+  \end{itemize}
+  \small
+  \begin{itemize}
+    \item \texttt{QNetwork(4,2)}, Adam $lr = 10^{-3}$, \texttt{batch\_size=32},
+      $\gamma = 0.99$.
+    \item \textbf{Huber loss} --- TD 오차 절댓값이 클 때 MSE보다 안정
+      (큰 오차의 기울기 폭주 방지).
+    \item \texttt{update\_freq=100}(타겟 하드 동기화),
+      $\varepsilon$: 1.0에서 0.05까지 \textbf{스텝당 0.9997배} 감쇠.
+    \item \texttt{capacity=10000}, \textbf{워밍업 1,000스텝}
+      (버퍼 1,000개 모일 때까지 학습 없이 경험만 수집).
+  \end{itemize}
+  \normalsize
+  \vskip0.5em
+  \begin{block}{CartPole의 최대 리턴은 \textbf{500}}
+    500스텝 버티면 \textbf{타임아웃으로 만점}.
+  \end{block}
+\end{frame}

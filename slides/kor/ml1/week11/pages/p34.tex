@@ -1,0 +1,19 @@
+\begin{frame}{곱적의 양: 소실·폭발이 여기서 시작된다}
+  유도에서 $\frac{\partial L}{\partial h_t}$가 시점을 거슬러 내려올
+  때마다 매번 $W_{hh}^\top$과 $(1 - h^2)$ (즉 $\tanh'$)를 곱받는다.
+  \begin{itemize}
+    \item 이 곱이 $T$번 반복 $\Rightarrow$ $\prod_t tanh'(z_t)\, W_{hh}$
+    \item $\tanh' \in (0, 1]$(최대 1, 대부분 그 이하)이고 $W_{hh}$
+      크기도 보통 1 근처
+    $\Rightarrow$ 시퀀스가 길어질수록 \textbf{지수적으로 0으로
+    수렴하거나 발산}
+    \item 숫자로 ($\tanh' \approx 0.5$, $W_{hh}$ 크기 0.9, $T=20$):
+      $(0.5 \times 0.9)^{20} \approx 4.5 \times 10^{-7}$ ---
+      \textbf{사실상 0} (11.3절 ``그래디언트 소실'' 예습)
+    \item 반대로 고유값이 1을 넘으면 \textbf{발산(폭발)}
+  \end{itemize}
+  \vskip0.5em
+  \kq{BPTT의 산술적 구조 자체가, 시퀀스 길이에 따라 그래디언트가
+  지수적으로 줄어들거나 커지는 \textbf{원천}이다 --- 다음 실습에서
+  ``그래디언트 클리핑''을 왜 넣는지가 바로 이것.}
+\end{frame}

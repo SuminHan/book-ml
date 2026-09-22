@@ -1,0 +1,28 @@
+\begin{frame}{DQN의 실제 구조: 합성곱 신경망}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item Atari 화면을 입력받아 \textbf{조이스틱 행동별 Q값}을 출력.
+        \item 앞단 CNN이 ``화면 $\to$ 특징''을 압축한 뒤 완전연결로
+          Q값 예측 (ML1 Week 10의 CNN 재등장).
+      \end{itemize}
+      \vskip0.5em
+      \begin{block}{한 스텝 갱신을 숫자로: 미분 확인}
+        목표값을 상수 $T$로 놓으면:
+        \[
+        \frac{\partial L}{\partial Q(s,a;\theta)}
+        = 2\big(Q(s,a;\theta) - T\big)
+        \]
+        $T = r + \gamma \max_{a'} Q(s',a';\theta^{-})$ ($\theta$에 대해 상수).
+        그래디언트가 정확히 \textbf{``갭을 줄이는 방향''} ---
+        회귀 손실 $(\hat y - y)^2$와 동일. 갱신의 \textbf{방향}이
+        이제 잘 정의된다.
+      \end{block}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_dqn.png}
+      \\[0.3em]{\footnotesize 원 논문 Extended Data Figure 1.}
+    \end{column}
+  \end{columns}
+\end{frame}

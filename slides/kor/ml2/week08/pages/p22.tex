@@ -1,0 +1,36 @@
+\begin{frame}{실습: 미니 프로젝트를 한 흐름으로 (6단계)}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \small
+      \begin{enumerate}
+        \item \textbf{CliffWalking-v1} --- 4$\times$12 격자, 절벽 $-100$
+          (6.3절과 같은 \texttt{gym.make("CliffWalking-v1")}).
+        \item \textbf{SARSA와 Q-learning 구현} --- Ch\,6.3의 두 갱신 규칙
+          그대로.
+        \item \textbf{고정 $\varepsilon=0.1$, 500 에피소드, 시드 0/1/2} ---
+          학습 도중 리턴 vs greedy 평가 비교.
+        \item \textbf{greedy 정책 경로 시각화} --- 절벽 옆 최단(13스텝)
+          vs 안전(17스텝)이 눈에 보도록.
+        \item \textbf{$\varepsilon$ 감쇠(1.0$\to$0.01) 재실행} --- 같은
+          파라미터·시드로 스케줄 하나만 바꿔 greedy 평가 변화 확인
+          (변하지 않음 --- 부정적 결과도 결과).
+        \item \textbf{FrozenLake-v1: MC 제어(첫방문, Ch\,5.3) vs SARSA} ---
+          1000 에피소드, 시드 3개. 확률 전이 환경에서는 같은 알고리즘의
+          greedy 평가도 시드마다 크게 벌어짐 (MC: 0.045/0.090/0.125).
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch08_1_cliff_paths.png}
+      \vskip0.3em
+      {\footnotesize greedy 정책 경로 --- SARSA(파랑)는 절벽에서
+      떨어진 위쪽 17스텝, Q-learning(빨강)은 절벽 바로 옆 13스텝.
+      6.3절 on/off-policy 차이를 한 장에.}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{block}{세 가지 언어}
+    이 6단계 = 보고서 6절 = 8.2 체크리스트 4항목. \textbf{코드, 보고서,
+    리뷰로 같은 절차를 말할 수 있어야} 프로젝트가 끝난 것.
+  \end{block}
+\end{frame}

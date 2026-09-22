@@ -1,0 +1,31 @@
+\begin{frame}{에이전트와 RAG: ``모델이 필요할 때 바깥에 접근''}
+  \begin{itemize}
+    \item 프롬프팅만으로는 \textbf{모르는 최신 정보}나
+      외부 문서를 답할 수 없다.
+    \item \kb{RAG}(Retrieval-Augmented Generation, Lewis
+      et al., 2020): 질문과 관련된 문서를 \textbf{먼저
+      검색해} 프롬프트에 함께 넣어줌.
+    \item \kb{에이전트}(agent, ReAct: Yao et al., 2022):
+      한 걸음 더 — 모델이 검색·계산기·코드 실행 같은
+      \textbf{도구를 스스로 호출}하도록 만듦.
+    \item 둘 다 ``파라미터 안에 모든 지식을 우겨넣는''
+      대신 ``\textbf{모델이 필요할 때 바깥 정보/도구에
+      접근}하게 한다''는 \textbf{같은 방향}의 해법.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{RAG를 17.2의 언어로}
+    RAG는 \textbf{프롬프팅의 확장}: few-shot 예시가
+    ``모델이 \textbf{조건}으로 삼는 토큰''을 확장한다면,
+    RAG는 \textbf{검색된 문서}를 그 조건으로 삼는 것.
+    모델의 파라미터는 \textbf{아무것도} 바뀌지 않고,
+    \textbf{컨텍스트에 문서를 넣는 행위 자체가 학습을
+    대체}.
+  \end{block}
+  {\footnotesize 예: ``8.3 / 5.2 = ?''에 RAG가
+  \textbf{계산기 도구}를 호출해 1.596을 얻고, ``그 값을 3으로
+  곱해줘''는 4.788을 산출. 이 과정은 17.2 환각 완화
+  수단(도구를 \textbf{프롬프트 바깥에서} 덧붙인다)의
+  \textbf{자동화} 버전. ``스스로 판단''이 \textbf{에이전트}의
+  핵심 — ``다음 토큰이 \textbf{도구 호출}이라는 특수
+  토큰''일 가능성을 모델이 학습한 것.}
+\end{frame}

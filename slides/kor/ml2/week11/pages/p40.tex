@@ -1,0 +1,21 @@
+\begin{frame}{자주 묻는 질문 — 구현 선택들}
+  \small
+  \begin{itemize}
+    \item \kb{Q. \texttt{log\_std}를 왜 상태와 무관한 파라미터로?}
+      구현 단순화 — ``탐험 정도는 학습이 진행되며 전역적으로
+      줄어든다''는 가정 하나로 충분. (상태별 탐험을 원하면 신경망
+      출력으로 만들 수 있음.)
+    \item \kb{Q. 왜 매 반복마다 데이터를 새로 모으나요?}
+      PPO는 on-policy의 연장선 — 클리핑은 ``$r_t$ 가 1에서 크게
+      벗어나지 않는다''는 전제로 설계. 오래된 데이터(정책이 많이
+      바뀜)는 애초에 $r_t$ 가 클리핑 범위를 크게 벗어나 거의
+      기여 못 함. Week 9 경험재현(오래된 데이터 계속 재사용)과
+      \textbf{정반대}의 전략.
+    \item \kb{Q. $\texttt{torch.exp}(\texttt{log\_std})$ 의 이유는?}
+      $\sigma>0$ 제약(표준편차는 양수)을 \textbf{파라미터 공간
+      자체에서} 강제 — $\log\sigma$ 는 $(-\infty,+\infty)$
+      에서 자유롭게 움직여도 $\exp$ 후에는 항상 양수.
+      Week 5 softmax가 logit 공간을 쓰는 것과 동일한 ``제약을
+      파라미터 공간 밖으로 밀어낸다'' 전략.
+  \end{itemize}
+\end{frame}

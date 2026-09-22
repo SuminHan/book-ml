@@ -1,0 +1,32 @@
+\begin{frame}{소프트 마진: 위반을 허용하는 법}
+  고법의 핵심은 한 줄이면 충분하다:
+  \begin{center}
+  ``제약을 만족 못 하면, \textbf{얼마만큼 못 했는지 재서 벌을}
+  부리고, 벌의 크기는 \textbf{하이퍼파라미터로} 조절한다.''
+  \end{center}
+  \vskip0.6em
+  \begin{itemize}
+    \item 각 데이터마다 위반을 어느 정도 허용하는
+      \kb{여유 변수}(slack variable) $\xi^{(i)} \ge 0$:
+      \[
+      y^{(i)}\bigl(w^\top x^{(i)}+b\bigr) \ge 1 - \xi^{(i)}
+      \]
+    \item $\xi^{(i)}$는 ``몇 만큼까지 마진 제약을 무시할 수 있는가''의
+      \textbf{권한}.
+  \end{itemize}
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    $\xi^{(i)}$의 값 & 의미 \\
+    \midrule
+    $0$ & 5.1절 제약과 정확히 같음 \\
+    $0.5$ & 마진 경계 안쪽으로 0.5쯤 들어와도 괜찮다 (정답, 마진 위반) \\
+    $1$ & 결정 경계(마진 0) 위에 있어도 괜찮다 \\
+    $>1$ & \textbf{경계 너머(반대쪽 영역)}로 넘어가도 되는 허락 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize\vskip0.3em
+  하나의 수 $\xi$가 ``정답인데 마진 안''에서 ``오분류''까지를
+  \textbf{연속적으로} 표현한다.
+\end{frame}

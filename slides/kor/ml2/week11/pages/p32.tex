@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{실습: Pendulum에서 PPO — 가우시안 정책}
+  Pendulum-v1: 진자를 세워서 유지하는 고전 연속 제어 과제, 행동은
+  \textbf{$-2\sim+2$Nm의 토크 하나}. 연속 행동공간에서는 정책이
+  정규분포의 평균·표준편차를 출력.
+  \begin{lstlisting}
+class GaussianPolicy(nn.Module):
+    def __init__(self, state_dim, act_dim):
+        super().__init__()
+        self.net = nn.Sequential(nn.Linear(state_dim,64), nn.Tanh(),
+                                 nn.Linear(64,64), nn.Tanh())
+        self.mu = nn.Linear(64, act_dim)
+        self.log_std = nn.Parameter(torch.zeros(act_dim) - 0.5)  # 학습 가능한 표준편차
+    def forward(self, x):
+        h = self.net(x)
+        mu = torch.tanh(self.mu(h)) * act_high   # 행동 범위에 맞게 스케일
+        std = torch.exp(self.log_std)
+        return mu, std
+  \end{lstlisting}
+  \vskip0.2em
+  {\footnotesize 행동 샘플링: $\mathrm{dist}=\mathrm{Normal}
+  (\mu,\mathrm{std})$; $\ a=\mathrm{dist.sample()}$;
+  $\ \log p=\mathrm{dist.log\_prob}(a).\mathrm{sum()}$. GAE로
+  advantage 계산 $\to$ 4 에폭 미니배치 재사용 $\to$
+  ppo\_clip\_loss로 정책 갱신.}
+\end{frame}

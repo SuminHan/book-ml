@@ -1,0 +1,32 @@
+\begin{frame}{자주 하는 실수: ``정확도가 높으니 좋은 모델''}
+  \begin{itemize}
+    \item 딥러닝에서 특히 잦은 부실한 리뷰: ``\textbf{test 정확도
+      95\%라 정말 잘 만들었다}'' — 숫자 \textbf{하나}만으로 판단
+    \item 그 정확도가 Ch06.3 원칙(train/val/test 분리, \textbf{
+      누수 방지})을 지키고 나온 숫자인지, 불균형이면 Ch2.3
+      \textbf{PR-AUC}를 함께 확인했는지를 먼저 따지는 것이 건설적
+    \item 예: ``\textbf{검증셋·테스트셋을 나눈 기준}을 설명해
+      주시겠어요?'' — 다시 확인해봐야 답할 수 있는 질문
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{Block B에서 특히 위험한 이유}
+    ``좋은 정확도''가 \textbf{우연일 가능성}이 Block A보다
+    \textbf{훨씬 높음}. Ch6.3 선택 편향 — 후보 $m$개 중 max를 고르면
+    $\mathbb{E}[\max]$만큼 \textbf{부풀어 오름} — $m$이 클수록
+    커진다.
+  \end{block}
+  \vskip0.3em
+  \small
+  \begin{tabular}{@{}p{8.3cm}p{5.6cm}@{}}
+    \toprule
+    후보 공간(Block B) & $\sigma=0.02$일 때 부풀림(8.1 표) \\
+    \midrule
+    모델 2~3개 $\times$(에폭$\times$드롭아웃$\times$학습률) 10~30개
+      $\Rightarrow m = 30\sim90$ & \textbf{0.045$\sim$0.052} 부근 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  \kq{``test 정확도 0.95''가 실제로 0.90대 초반일 수 있다 —
+  8.2의 ``0.1\%p가 잡음 수준'' 논리가 그대로 적용되되, Block B
+  에서는 그 \textbf{잡음이 더 크고, 후보가 더 많다.}}
+\end{frame}

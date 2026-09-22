@@ -1,0 +1,35 @@
+\frametitle{두 단계 전이: ``다른'' 작업에서 배운 특징}
+실전 전이학습은 \textbf{다른(보통 훨씬 큰) 작업}에서 배운
+  가중치를 가져온다: (1) \textbf{큰} 데이터셋(4,000장,
+  period 3 줄무늬 --- ``ImageNet''의 위장)에서
+  \texttt{SmallCNN} 학습(100\%) $\to$
+  (2) 합성곱 가중치를 \texttt{copy\_} 로 복사, 합성곱
+  \textbf{동결}하고 \textbf{작은} 데이터셋(300장, period 4 ---
+  ``새 문제'')의 \textbf{헤드만} 20 에폭 학습 $\to$
+  \textbf{검증 정확도 100\%}.
+\begin{lstlisting}
+pre = SmallCNN()                       # 1단계: 큰 데이터에서 사전학습
+# ... 15 에폭 학습 ...   # 학습 정확도 100%
+
+model = SmallCNN()
+with torch.no_grad():                  # 2단계: 가중치 복사
+    for d, s in zip(model.conv1.parameters(),
+                    pre.conv1.parameters()):
+        d.copy_(s)
+    # ... conv2도 동일하게 ...
+for p in model.conv1.parameters():
+    p.requires_grad = False            # 합성곱 동결
+# ... conv2도 ...
+opt = torch.optim.Adam(
+    filter(lambda p: p.requires_grad,
+           model.parameters()), lr=0.01)
+# ... 20 에폭 ...   # 검증 정확도 100%
+\end{lstlisting}
+  \vskip0.2em
+  \kq{중요한 디테일: 새 작업의 줄무늬 \textbf{주파수가 변했다}
+  (period 3 $\to$ 4).} 사전학습된 특징은 새 작업의 ``정답
+  특징''이 \textbf{아니다} --- 그런데도 헤드 재학습만으로
+  100\%. 왜? 첫 합성곱 층이 배운 것은 ``줄무늬의 주기 3''이
+  아니라 \textbf{``줄이 있다는 사실'', 즉 모서리·대비} 때문
+  --- 주기 자체는 \textbf{뒤쪽 층(헤드)}이 담당. ``앞쪽 =
+  범용, 뒤쪽 = 특화''라는 \textbf{비대칭이 직접 관찰}됨.

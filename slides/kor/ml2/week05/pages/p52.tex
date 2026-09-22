@@ -1,0 +1,23 @@
+\begin{frame}{자주 묻는 질문 (5.3) --- 단일 샘플 vs 전체 궤적}
+  \textbf{``단일 샘플''과 ``전체 궤적'' 중요도 샘플링의
+  차이는?}
+  \begin{itemize}
+    \item 위에서 쓰던 $\rho = \prod_t \frac{\pi(a_t|s_t)}{b(a_t|s_t)}$
+      은 \kb{전체 궤적 (full trajectory)} 중요도 --- 에피소드
+      전체 확률의 비율.
+    \item 상태가치 $V^\pi(s)$ 를 추정할 때는 \kb{상태 $s$ 이후
+      부분}(partial trajectory)만 쓰면 충분 --- 분모가 ``$s$
+      에서 시작하는 궤적 확률의 비율''이라 전체 궤적보다
+      \textbf{분산이 작다}.
+    \item $Q^\pi(s,a)$ 를 추정할 때는 해당 $(s,a)$ 이후 부분만
+      쓴다.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{실전 원칙}
+    \textbf{가능한 한 짧은(목표와 관련된) 부분 궤적만 가중치로
+    쓴다} --- 이것이 분산을 줄이는 가장 간단한 방법.
+    (5.2절 블랙잭에서 ``플레이어 합 12 이상 상태에서만 $Q$ 를
+    학습''한 것도 같은 원리 --- 시작 상태부터가 아니라
+    \textbf{관심 상태 이후}의 리턴만 쓴다.)
+  \end{block}
+\end{frame}

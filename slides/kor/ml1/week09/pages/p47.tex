@@ -1,0 +1,24 @@
+\begin{frame}{BN이 학습을 빨리 하는 이유 — 그리고 한 발 더}
+  \small
+  \begin{itemize}
+    \item 이전 층 가중치가 매 스텝 갱신될수록 \textbf{뒤층이 보는
+      입력 분포가 계속 바뀜}(mean/분산 미끄러짐 =
+      \kb{internal covariate shift}) — 뒤층이 매번 ``파라미터를
+      다시 맞춰야'' 하는 이중 작업, 큰 학습률 불가, 초기화에
+      예민
+    \item BN은 각 층 입력을 매 스텝 $(0,1)$로 재설정:
+      (1) \textbf{큰 학습률}을 안전하게, (2) \textbf{초기화에
+      훨씬 덜 민감}, (3) batch 통계에 노이즈가 담겨
+      \textbf{가벼운 정규화 효과}까지
+    \item 9.2 연결: BN이 활성값을 $\mathcal{O}(1)$로 묶어
+      \textbf{그래디언트 소실·폭발이 훨씬 어려워짐} — ``깊은 망을
+      실제로 학습시킬 수 있게'' 하는 또 다른 각도의 답
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{한 발 더 정직하게}
+    원 논문은 속도의 주된 원인을 ``internal covariate shift 감소''로
+    꼽았으나, 후속 분석(Santurkar 등, 2018)은 손실함수의 \textbf{조건
+    개선(landscape 매끄러워짐)}이 진짜 주효 요인이라고 보정.
+    둘 다 사실 — ``분포 안정화''는 가장 쉬운 직관.
+  \end{block}
+\end{frame}
