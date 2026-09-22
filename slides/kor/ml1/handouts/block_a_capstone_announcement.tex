@@ -1,0 +1,167 @@
+\documentclass[12pt]{article}
+
+\usepackage{problem_set_style}
+\usepackage{kotex}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+
+\begin{document}
+\heading{8}{2027. X. XX (예정)}{}{Spring 2027}{Block A 캡스톤 팀 프로젝트 공고 (샘플)}
+
+\section*{1. 프로젝트 개요}
+Chapter 2$\sim$7에서 배운 고전 머신러닝 기법(회귀, 생성모델 기반
+분류, 거리 기반 모델, SVM, 정규화와 모델 선택, 트리 기반 모델)을
+\textbf{실제 정형(tabular) 데이터}에 적용하는 4주짜리 팀
+프로젝트이다. 목표는 ``높은 성능'' 자체가 아니라, \textbf{그 성능
+숫자를 정직하게 얻는 절차}를 실제로 수행하고 보고하는 것이다.
+
+\vspace{4pt}
+\noindent 4주 파이프라인: \textbf{데이터 선정 $\to$ 구현 $\to$
+검증 $\to$ 발표}.
+
+\section*{2. 필수 요구사항}
+\begin{itemize}
+\item \textbf{데이터}: Kaggle 또는 UCI Machine Learning Repository의
+  정형(행/열) 데이터 하나 (이미지·텍스트 제외 --- 표 형태가
+  Ch.2$\sim$7 모델 검증에 적합).
+\item \textbf{적용 알고리즘}: Chapter 2$\sim$7 중 \textbf{최소 두
+  가지} 모델(예: 로지스틱회귀 + GBDT)을 같은 데이터에 적용해 비교한다.
+\item \textbf{수식적 정당화 최소 1개}: 예 --- 정규화를 적용했다면
+  편향-분산 관점에서 왜 성능이 바뀌었는지, GBDT를 썼다면 SHAP으로
+  예측 하나를 분해, 여러 모델을 비교했다면 PR-AUC로 불균형을 고려한
+  비교.
+\item \textbf{검증 원칙}: train/validation/test 3분할을 준수하고,
+  \textbf{테스트 성능은 딱 한 번}만 확인한다. 전처리는 반드시
+  train으로만 fit한다.
+\item \textbf{학습 곡선 필수 제시}: 최종 숫자만으로는 하이퍼파라미터를
+  어떻게 정했는지 검증할 수 없다 --- validation 곡선이 실제로
+  선택에 쓰였는지가 그림에서 드러나야 한다.
+\end{itemize}
+
+\newpage
+\section*{3. 데이터 고르기 실전 가이드}
+\begin{enumerate}
+\item \textbf{행의 물리적 단위}를 한 문장으로 설명할 수 있는가
+  (환자? 거래? 주문?) --- 설명이 안 되면 예측 대상 단위를
+  일반화할 수 있는지 물을 수 없다.
+\item \textbf{레이아웃의 함정}이 있는가 --- 같은 개체의 여러 행이
+  있으면 무작위 분할 시 데이터 누수가 발생할 수 있다(그룹 단위
+  분할 필요).
+\item \textbf{시계열이면 시간순}으로 분할해야 한다.
+\item \textbf{클래스 비율을 먼저 보고 지표를 정한다} --- 비율이
+  99:1처럼 극단적이면 정확도가 아니라 PR-AUC/재현율을 사용한다.
+\item \textbf{크기} --- 100행 미만이면 교차검증 폴드가 너무 작아
+  숫자가 심하게 흔들린다. 500$\sim$10{,}000행 정도가 다루기 편하다.
+\end{enumerate}
+
+\section*{4. 일정 및 마일스톤 (M1$\sim$M4)}
+\begin{center}
+\small
+\begin{tabular}{@{}p{7.4cm}p{5.4cm}@{}}
+\toprule
+\textbf{주 / 해야 할 일} & \textbf{마일스톤(제출)} \\
+\midrule
+\textbf{1주}: 데이터 후보 2$\sim$3개 조사(크기·결측치·클래스 비율),
+팀 회의, 문제 정의 문서(행의 단위, 라벨, 주 지표, 베이스라인) &
+\textbf{M1} 문제 정의 + 데이터 선택 (1p) \\
+\textbf{2주}: 3분할 코드 스캐폴드, train으로만 fit하는 전처리, 1개
+모델 엔드투엔드 확인, 베이스라인 측정 & \textbf{M2} 중간 코드
+리뷰(코드 + 베이스라인 1줄) \\
+\textbf{3주}: 나머지 모델 적용, validation/교차검증으로 튜닝,
+\textbf{test 최종 측정(한 번만)}, 학습 곡선 도출 & \textbf{M3}
+학습 곡선 1장 + 최종 test 숫자 \\
+\textbf{4주}: 수식적 정당화 작성, 보고서·슬라이드 완성, 발표
+(5$\sim$7분), 다른 팀 2개에 대한 peer-review 작성 & \textbf{M4}
+보고서 + 발표 + 리뷰 2건 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+M2가 베이스라인 숫자 한 줄을 요구하는 이유: 이 숫자를 봐야 ``모델을
+만들었다''고 말할 수 있는지 판정할 수 있다. M3가 학습 곡선 한 장을
+요구하는 이유: 최종 숫자만 제출하면 하이퍼파라미터를 어떻게 정했는지
+검증할 수 없다.
+
+\newpage
+\section*{5. 보고서 구조}
+\begin{enumerate}
+\item \textbf{문제 정의} (0.5p): 행의 단위, 라벨, 주 지표,
+  베이스라인, ``왜 이 지표를 골랐는가'' 한 문장.
+\item \textbf{데이터와 전처리} (1p): 원본 통계(크기·결측치·이상치),
+  train으로만 fit한 전처리 명시, 3분할 비율과 stratify 여부.
+\item \textbf{모델 선택과 이유} (1$\sim$2p): 후보 2개 이상, 왜 이
+  후보들인가(데이터 특성과 연결: 거리 기반이면 스케일링, 트리
+  기반이면 불필요), validation 비교표.
+\item \textbf{결과} (1p): 최종 test 숫자(한 번), 학습 곡선 1장,
+  validation 비교표.
+\item \textbf{수식적 정당화} (1p): 편향-분산, 정규화, SHAP, PR-AUC
+  중 1개 이상으로 ``왜 이 결과가 나왔는지''.
+\item \textbf{잘 안 된 부분과 원인 진단} (0.5p, \textbf{필수}): 안
+  된 부분이 없었다면 무엇을 시도했다가 안 됐는지를 쓴다.
+\end{enumerate}
+
+\section*{6. 채점 기준 (Rubric)}
+\begin{center}
+\small
+\begin{tabular}{@{}lcp{6.8cm}@{}}
+\toprule
+항목 & 비중 & 좋은 답 \\
+\midrule
+문제 정의와 데이터 & 15\% & 행의 단위·라벨·지표·베이스라인이
+명확하고, 지표 선택이 데이터 특성에 근거함 \\
+방법론 적절성 & 25\% & 데이터 특성(불균형·차원·시계열·그룹)에
+맞는 모델·전처리·분할을 Ch.2$\sim$7 개념으로 근거 \\
+\textbf{검증의 정직성} & \textbf{25\%} & 3분할·train-fit·test
+한 번·베이스라인·학습 곡선·validation 튜닝이 추적 가능할 정도로
+명시 \\
+수식적 정당화 & 20\% & 배운 개념 1개 이상으로 ``왜''를 설명했고,
+그 설명이 실제 관측 숫자와 일치 \\
+결과의 정직성과 반성 & 15\% & 잘 안 된 부분을 숨기지 않고
+Ch.2$\sim$7 개념으로 원인 진단 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+목적은 ``높은 성능''이 아니라 \textbf{``성능 숫자를 정직하게 얻는
+절차''를 수행한 것을 증명}하는 것이다. 성능이 낮아도 절차가
+정직하면 높은 점수를, 성능이 좋아 보여도 test를 두 번 썼거나
+베이스라인이 없으면 크게 감점받는다.
+
+\newpage
+\section*{7. 발표와 Peer-Review}
+\begin{itemize}
+\item \textbf{발표}: 팀당 5$\sim$7분.
+\item \textbf{Peer-Review}: 발표를 들은 팀은 다른 두 팀에 대해
+  작성 리뷰를 각 1통씩 제출한다. 각 리뷰는 아래 4항목 체크리스트와,
+  근거를 대야만 답할 수 있는 반박 가능한 질문을 1개 이상 포함해야
+  한다.
+\end{itemize}
+
+\vspace{4pt}
+\noindent\textbf{Peer-Review 체크리스트 (4항목)}
+\begin{center}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+항목 & 확인할 것 \\
+\midrule
+문제 정의 & 무엇을 예측/분류하려 했는지 명확한가 \\
+방법론 적절성 & 데이터 특성(불균형, 차원 수 등)에 맞는 모델을
+골랐는가 \\
+수식적 정당화 & 요구사항을 충족했고, 그 설명이 실제로 타당한가 \\
+결과의 정직성 & 잘 안 된 부분을 숨기지 않고 원인을 분석했는가 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{8. 팀 구성 및 제출 방식}
+\begin{itemize}
+\item \textbf{팀 구성}: 팀당 인원 및 팀 편성 방식은 추후 공지.
+\item \textbf{제출물}: 보고서(PDF), 코드(저장소 링크 또는 압축
+  파일), 발표 슬라이드, peer-review 2건.
+\item \textbf{제출 방법 및 마감}: 추후 공지 (LMS/과제 제출 시스템
+  및 마감 일시는 별도 안내 예정).
+\end{itemize}
+
+\end{document}

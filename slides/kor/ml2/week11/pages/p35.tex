@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{전체 알고리즘 루프}
+  \texttt{GaussianPolicy} 만으로는 PPO가 아니다 —
+  ``데이터를 모은 뒤 여러 번 재사용하면서 클리핑으로 업데이트를
+  제한한다''는 절차가 PPO의 본체.
+  \begin{lstlisting}
+for iteration in range(N_ITER):          # 보통 수백 회
+    # (1) 현재 정책으로 STEPS 스텝 상호작용: (s,a,r,s') 수집
+    #     + 각 스텝의 logp_old = log pi_old(a|s), V_old(s) 저장
+    # (2) GAE로 각 스텝의 A_t, 리턴 목표 R_t 계산 (11.3절)
+    #     A_t = A_t - mean / std 로 정규화
+    for epoch in range(N_EPOCH):         # (3) 같은 데이터 4~10 에폭 재사용
+        for minibatch in shuffle_split(collected, MB_SIZE):
+            mu, std, v = actor_critic(s_batch)
+            logp_new = Normal(mu, std).log_prob(a_batch).sum()
+            ratio = exp(logp_new - logp_old)    # <-- 11.1절의 r_t
+            loss = -min(ratio*A, clip(ratio,1-eps,1+eps)*A).mean() \
+                   + 0.5*((v - R_batch)**2).mean() \
+                   - 0.01*Normal(mu, std).entropy().sum()
+            optimizer.step()
+    # (4) 이 iteration에 모은 데이터 버림 -> (1)로
+  \end{lstlisting}
+\end{frame}

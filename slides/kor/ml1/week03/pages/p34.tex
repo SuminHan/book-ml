@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{실습: sklearn LDA로 GDA 확인}
+  scikit-learn의 \kb{LinearDiscriminantAnalysis}(LDA)가 정확히
+  ``공분산을 공유하는'' GDA에 해당 --- 손 계산 예로 확인:
+  \begin{lstlisting}
+import numpy as np
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+X = np.array([[2.0], [3.0], [4.0], [6.0], [7.0], [8.0]])
+y = np.array([0, 0, 0, 1, 1, 1])
+
+lda = LinearDiscriminantAnalysis()
+lda.fit(X, y)
+print(lda.predict([[4.5], [5.0], [5.5]]))   # [0 0 1] (5.0 근처가 경계)
+print(lda.means_)                            # [[3.] [7.]]
+  \end{lstlisting}
+  \vskip0.2em
+  {\footnotesize $lda.means_ = [3,7]$ --- 손으로 구한 $\mu_0{=}3,
+  \mu_1{=}7$ 과 정확히 일치. \textbf{실제 predict 출력은 $[0,0,1]$} ---
+  $x{=}5.0$ 은 경계 위 동점이므로 sklearn은 ``동점이면 클래스 0'' 규칙
+  적용. numpy GDA와 sklearn LDA를 2차원에서 함께 돌리면 $w$ 방향이
+  동일하고 예측도 거의 모든 점에서 일치(확률값만 스케일 상수 차이).}
+\end{frame}

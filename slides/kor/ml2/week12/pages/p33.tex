@@ -1,0 +1,28 @@
+\begin{frame}{RLHF의 두 단계 전체 그림}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch12_2_rlhf_loop.png}
+      {\footnotesize ① 정책이 같은 $x$에서 $y_w,y_l$ 생성 $\to$
+      ② 사람에게 표시 $\to$ ③ 선호 쌍 $(x,y_w,y_l)$ 수집 $\to$
+      ④ Bradley-Terry로 $r_\phi$ 학습 $\to$ ⑤ $r_\phi$를 보상으로
+      PPO로 $\pi_\theta$ 갱신 $\to$ ① 반복.}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \kb{단계 1: 보상모델 학습(지도학습)}
+      \begin{itemize}
+        \item 선호 쌍 $(x,y_w,y_l)$으로 $r_\phi$ 학습.
+        \item Week 2 같은 \textbf{정지} 문제 — 탐색도, 환경
+          상호작용도 없음.
+        \item LLM RLHF 실전: 사람 비교 응답 \textbf{수만$\sim$
+          수십만} 개 수집.
+      \end{itemize}
+      \kb{단계 2: 보상 최적화(강화학습)}
+      \begin{itemize}
+        \item $r_\phi(x,y)$를 \textbf{보상으로 그대로} PPO에.
+        \item ``보상이 사람''이 아니라 ``사람의 선호를 학습한
+          \textbf{대리 모델}''.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

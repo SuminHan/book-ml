@@ -1,0 +1,30 @@
+% ===== wrap-up =====
+\begin{frame}{이번 주차 정리}
+  \begin{enumerate}
+    \item \kb{MC 예측 (5.1)} --- \textbf{기댓값 = 샘플
+      평균}이라는 통계학 원리를 강화학습에 그대로 이식.
+      잔디깎는 기 MDP 에서 전이확률 단 한 줄도 쓰지 않은 채
+      DP 의 정확해와 \textbf{같은 숫자}($0.286$ 등)에
+      도달. \textbf{첫방문} MC 가 무편향인 이유는
+      \textbf{마르코프 성질 + 대수의 법칙} 두 줄. 뒤에서부터
+      훑으면 ``마지막 방문''을 세게 되어 \textbf{편향된
+      추정치}(0.756 vs 0.713)가 됨 --- 코딩 실수가 통계적
+      편향으로 바뀌는 대표적 예.
+    \item \kb{MC 제어 (5.2)} --- $V$ 대신 $Q(s,a)$ 를
+      추정하고 $\arg\max$ 로 결정론적 정책을 뽑음.
+      $\varepsilon$-greedy 로 블랙잭 30$\sim$40만 에피소드를
+      돌리면 \textbf{교과서 기본 전략표}(17 이상 스틱,
+      12$\sim$13 히트)가 학습만으로 재현(104/110 $\to$ 105/110
+      일치). 학습 대상은 \textbf{행동 정책 $\pi$ 의
+      $Q^\pi$} (on-policy) --- $Q^{*}$ 보다 항상 약간
+      낮게 측정. ``방문 횟수 = 신뢰도''.
+    \item \kb{중요도 샘플링 (5.3)} --- off-policy 의
+      편향을 확률의 비율
+      $\rho = \prod_t \frac{\pi(a_t|s_t)}{b(a_t|s_t)}$
+      로 보정. 5칸 회랑에서 손으로 확인: 편향은 없애주되
+      $\text{Var}[\rho] = 2^L - 1$ 로 \textbf{지수적으로
+      분산 폭증}. ``분모 0 무시'' 금지(지원 조건
+      $\text{supp}(\pi) \subseteq \text{supp}(b)$),
+      on/off-policy 트레이드오프를 정리.
+  \end{enumerate}
+\end{frame}

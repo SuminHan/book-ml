@@ -1,0 +1,29 @@
+\begin{frame}{확인 문제 (1/2): 절차가 개념을 요구할 때}
+  \small
+  \begin{block}{Q1. 시드 2 \textbf{하나}만 돌려 Q $-13$, SARSA $-17$을 얻고
+  ``Q-learning이 더 좋다''고 결론}
+  \begin{itemize}
+    \item 시드 1개의 greedy 평가는 ``무작위성 한 번''의 결과 --- 시드 2가
+      \textbf{우연히} 편차가 작은 시드였을 수 있음.
+    \item 재실행: ``SARSA $-17/-17/-17$, Q $-13/-13/-13$''처럼 \textbf{시드별
+      숫자가 일관}되면, 결론은 ``greedy 평가에서 Q-learning이 4스텝 꾸준히
+      앞선다 --- 6.3절 on/off-policy 설계 차이''로 \textbf{격상}.
+    \item 단, ``이 환경에서 편차가 작았음''은 환경의 보장이 아님
+      (FrozenLake)임을 함께 적어야 \textbf{정직한 보고}.
+    \item 또한 이 비교는 ``\textbf{탐욕적 실행} 시 어느 정책이 나은가''의
+      답이지 ``더 좋은 알고리즘''의 답이 아님.
+  \end{itemize}
+  \end{block}
+  \vskip0.4em
+  \begin{block}{Q2. ``$\varepsilon$ 스케줄을 종료 시점에 0.1로, 최종 평가는
+  탐험 없이 했다''는 프로토콜 문장의 결함}
+  \begin{itemize}
+    \item $\varepsilon=0.1$이면 매 스텝 10\% 확률로 무작위 행동이
+      들어감 $\to$ ``탐험 없이''와 \textbf{모순}.
+    \item 고쳐 쓰기: (a) 학습 스케줄: 1.0$\to$0.01 선형 감쇠,
+      (b) 최종 평가: $\varepsilon=0$ (greedy), 200 에피소드,
+      모든 알고리즘·시드에 \textbf{동일} --- \textbf{학습 스케줄과
+      평가 프로토콜을 따로} 명시.
+  \end{itemize}
+  \end{block}
+\end{frame}

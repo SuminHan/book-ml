@@ -1,0 +1,25 @@
+\begin{frame}{손계산: 연립방정식 풀기와 검산}
+  \textbf{연립방정식 풀기} --- $V^\pi(S_1) = 2 + 0.9\,V^\pi(S_0)$ 를
+  첫 번째 식에 대입:
+  \[
+  V^\pi(S_0) = 2 + 0.9\big(2 + 0.9\,V^\pi(S_0)\big)
+  = 2 + 1.8 + 0.81\,V^\pi(S_0) = 3.8 + 0.81\,V^\pi(S_0)
+  \]
+  $V^\pi(S_0)(1 - 0.81) = 3.8$ 이므로
+  $V^\pi(S_0) = 3.8/0.19 = \kb{20}$. 다시 대입하면
+  $V^\pi(S_1) = 2 + 0.9\cdot 20 = \kb{20}$.
+  \vskip0.5em
+  \textbf{검산:} $Q$ 값으로 되돌아와서 $V = \sum_a \pi(a|s)\,Q$ 가
+  정말 성립하는지:
+  \begin{itemize}
+    \item $Q^\pi(S_0,a_0) = 1 + 0.9\cdot 20 = 19$,
+      $Q^\pi(S_0,a_1) = 3 + 0.9\cdot 20 = 21$.
+      $\tfrac{1}{2}(19) + \tfrac{1}{2}(21) = 20 = V^\pi(S_0)$
+      \, $\checkmark$
+    \item $Q^\pi(S_1,a_0) = 2 + 0.9\cdot 20 = 20 = V^\pi(S_1)$
+      \, $\checkmark$
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize \textbf{둘 다 정확히 20.} ``$V$ 는 각 행동을 정책
+  확률로 가중평균한 $Q$ 의 합''이 수식 수준에서 성립한다.}
+\end{frame}

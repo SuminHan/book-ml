@@ -1,0 +1,60 @@
+\begin{frame}{LoRA: $W$는 고정한 채 $\Delta W = BA$만 학습}
+  \begin{itemize}
+    \item \kb{LoRA}(Low-Rank Adaptation, Hu et al., 2022) /
+      \kb{PEFT}(Parameter-Efficient Fine-Tuning):
+      수십$\sim$수백억 파라미터 전체 파인튜닝은 계산·저장
+      비용이 큼.
+    \item 원래 가중치 $W$를 \textbf{고정한 채}, 훨씬 작은
+      두 저차원 행렬의 곱 $\Delta W = BA$($B, A$의
+      차원이 $W$보다 훨씬 작음)만 학습 $\to$ $W +
+      \Delta W$를 새 가중치로.
+    \item 학습 파라미터 수를 \textbf{수백 분의 1}로 줄이면서도
+      실전에서 전체 파인튜닝과 \textbf{비슷한 성능}.
+    \item Week 10.3 전이학습(``합성곱 층 고정, 분류층만
+      학습'')과 같은 정신. 차이: ``일부 층을 통째로
+      고정'' 대신 \textbf{모든 층에 아주 작은 저차원
+      보정}을 추가로 학습.
+    \item \textbf{왜 ``저차원''이 충분한가}: LoRA의 가설은
+      파인튜닝의 \textbf{효과적 변화} $\Delta W$가 본래
+      $W$의 전체 차원보다 \textbf{낮은 계수(rank)}를
+      가진다는 것. $W \in \mathbb{R}^{20 \times 20}$에
+      rank-4 $\Delta W$를 SVD로 근사:
+  \end{itemize}
+  \vskip0.2em
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    rank $r$ & 파라미터 수 (vs 전체 400) & 상대 오차 \\
+    \midrule
+    4 (정확) & 160 (40\%) & $\approx 0$ \\
+    3 & 120 (30\%) & 0.326 \\
+    1 & 40 (10\%) & 0.701 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.3em
+  {\footnotesize rank-4를 rank-4로 표현 $\to$ 오차 0(정확
+  재현), 파라미터 40\%로 축소. rank-3: 33\%, rank-1:
+  70\% — \textbf{진짜 rank를 넘는 순간 정보 손실}. 실제
+  LLM($4096 \times 4096$ 한 층, 약 $1.7 \times 10^7$
+  파라미터)에서 $r = 8$: $2 \times 4096 \times 8 =
+  65{,}536$ — \textbf{전체의 0.39\%}에 불과.}
+
+  \vskip0.3em
+    \begin{itemize}
+    \item Week 10.3 전이학습: \textbf{앞쪽 층을 통째로}
+      고정하고 마지막 층만 학습 — ``저수준 특징(모서리,
+      색)은 이미지에 공통''이라는 \textbf{층별 역할 분화}
+      기반.
+    \item LLM(17.1): \textbf{앞쪽 층} = 문언어적 특징,
+      \textbf{뒤쪽 층} = 고수준 의미/행동 특징.
+    \item LoRA는 이분법(통째로 고정 vs 전체 학습) 대신,
+      \textbf{모든 층에 저차원 보정}을 추가:
+      ``\textbf{앞쪽은 거의 건드리지 않고(보정 크기를
+      작게 학습률 조절), 뒤쪽은 충분히}''라는 \textbf{연속
+      스펙트럼} 가능.
+    \item 실전: \textbf{어떤 층에 LoRA를 적용할지}(Q/K/V
+      어텐션만? FFN도? Embedding도?)가 하이퍼파라미터 —
+      이 선택 자체가 ``어느 층의 \textbf{어떤 방향}을
+      바꾸고 싶은가''의 \textbf{가설}을 반영.
+  \end{itemize}
+\end{frame}

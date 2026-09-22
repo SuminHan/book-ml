@@ -1,0 +1,33 @@
+\begin{frame}{손으로 한 번: 2상태 순환 MDP (결정적)}
+  상태 2개($S_0, S_1$)가 서로를 오가는 아주 작은 MDP. 정책이
+  고정(각 상태에서 행동 하나): $S_0$ 에서는 항상 보상 $R_0=1$ 을
+  받고 $S_1$ 로, $S_1$ 에서는 항상 보상 $R_1=2$ 를 받고 $S_0$ 로.
+  $\gamma = 0.9$.
+  \vskip0.4em
+  리턴의 무한 등비급수를 \textbf{직접 닫힌 형태로} 풀면:
+  \[
+  V(S_0) = R_0 + \gamma R_1 + \gamma^2 R_0 + \cdots
+  = \frac{R_0+\gamma R_1}{1-\gamma^2}
+  = \frac{1+0.9\times 2}{1-0.81} \approx \kb{14.737}
+  \]
+  \[
+  V(S_1) = \frac{R_1+\gamma R_0}{1-\gamma^2}
+  = \frac{2+0.9\times 1}{1-0.81} \approx \kb{15.263}
+  \]
+  \vskip0.5em
+  \textbf{벨만 기대방정식} $V(s) = R(s) + \gamma V(s')$ 을
+  실제로 만족하는지 \textbf{검산}:
+  \[
+  R_0 + \gamma V(S_1) = 1 + 0.9\times 15.263 \approx 14.737 = V(S_0)
+  \ \checkmark
+  \]
+  \[
+  R_1 + \gamma V(S_0) = 2 + 0.9\times 14.737 \approx 15.263 = V(S_1)
+  \ \checkmark
+  \]
+  \vskip0.3em
+  {\footnotesize \textbf{정확히 들어맞는다.} 이 결정적 예는
+  확률적 예(20 $=$ 20)와 대비된다: 보상(1,2)이 \textbf{고정}되어
+  두 상태의 \textbf{기대 보상이 다르니} 가치도 \textbf{다르다}
+  (14.737 vs 15.263).}
+\end{frame}

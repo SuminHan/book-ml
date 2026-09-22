@@ -1,0 +1,23 @@
+\begin{frame}{자주 묻는 질문 (4.2-b): 속도/메모리는 별개의 문제}
+  \small
+  \begin{itemize}
+    \item \textbf{Q. 고차원에서는 ``속도''도 문제되지 않나요?}
+      된다 --- 그리고 이는 정확도 문제(동거리)와
+      \textbf{서로 다른} 문제. 순진한 구현은 예측 1번에
+      $O(m \cdot n)$ 연산: $m=10^6, n=100$이면 약 $10^8$ 회
+      곱셈/덧셈 --- numpy로 0.1초 이내, 순수 Python 루프로는
+      수 초
+    \item 더 큰 문제는 \textbf{메모리}: $10^6$개 점의 좌표를
+      double(8바이트)로 저장 = $8\times10^8$ 바이트
+      $\approx$ \textbf{800MB} + 예측 시점의 중간 배열
+    \item 실전에서는 \kb{k-d 트리}(Friedman, 1970) 같은 탐색
+      가속 자료구조를 쓰지만, 대략 $n > 20$ 이상에서는 탐색
+      효율이 급격히 떨어져 \textbf{선형 탐색과 비슷}해짐
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{정리}
+    ``고차원에서는 kNN이 느리다'' = \textbf{정확도} 문제와
+    \textbf{속도/메모리} 문제가 \textbf{독립적으로} 모두 성립하는
+    두 가지의 합.
+  \end{block}
+\end{frame}

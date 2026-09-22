@@ -1,0 +1,29 @@
+\begin{frame}[fragile]{라벨 노이즈: $C$가 과적합을 조절하는 방식}
+  \begin{itemize}
+    \item 실전에서 더 흔한 문제는 \kb{라벨링 오류} — 데이터가 수천
+      개면 라벨이 틀린 것 5$\sim$15\% 섞여 있는 것이 \textbf{정상}.
+    \item 이상치와의 차이: 라벨 노이즈는 \textbf{경계 근처에 있는}
+      점의 라벨이 뒤집혀 있다.
+    \item 이 경우 $C$의 역할이 가장 극적으로 드러난다:
+      $C$가 클수록 ``모든 라벨에 충실하려'' 틀린 라벨까지 맞춰주려
+      경계를 그 오류 쪽으로 끌고 간다.
+  \end{itemize}
+  \vskip0.5em
+  \small
+  \textbf{실험 설정}: 클러스터 $\pm(3,3)$ (스프레드 1.5, 각 100개,
+  총 200개). $y=+1$ 중 \textbf{경계에 가장 가까운 30개}(15\%)의
+  라벨을 $-1$로 뒤집기. 테스트: 같은 분포의 \textbf{깨끗한} 600개.
+  \normalsize
+  \vskip0.5em
+  \begin{lstlisting}
+rng2 = np.random.default_rng(5)
+n2 = 100
+Xn = np.vstack([rng2.normal([3, 3], 1.5, (n2, 2)),
+                rng2.normal([-3, -3], 1.5, (n2, 2))])
+yn = np.r_[np.ones(n2), -np.ones(n2)]
+pos_scores = Xn[:n2].sum(axis=1)      # 경계(원점)에 가까울수록 작음
+flip_idx = np.argsort(pos_scores)[:30]  # +1 중 경계 가장 가까운 30개
+yn[flip_idx] = -1                     # 라벨 15% 뒤집기
+# ... SVC(C)와 LogisticRegression을 각각 fit, train/test score 출력
+\end{lstlisting}
+\end{frame}

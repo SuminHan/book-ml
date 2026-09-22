@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{계수 경로: 0은 점진적이지 않고 ``도착지''}
+  ``Lasso는 무관한 계수를 정확히 0으로 만든다''를 \emph{경로 전체}로:
+  $\lambda$를 0에서 서서히 키우며 계수를 기록.
+  \small
+  \textbf{데이터}: 30개 점, $x_1\sim U(-1,1)$, $y=3x_1+$잡음($\sigma{=}1$),
+  $x_2\sim N(0,1)$($y$와 무관한 잡음). $\lambda=0$(OLS)에서
+  $x_1\approx3.09$, $x_2\approx0.15$.
+  \par\normalsize
+  \vskip0.3em
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{진짜 $x_1$}: 3.09에서 \emph{점점} 줄어, 잡음 스냅
+      ($\approx0.13$)보다 훨씬 늦은 $\lambda\approx1.2$에서야 정확히 0.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{잡음 $x_2$}: 0.15에서 시작해 $\lambda\approx0.13$ 넘는 순간
+      \textbf{정확히 0}, 그 뒤 한 번도 0에서 벗어나지 않음.
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  \begin{center}
+    \includegraphics[width=0.5\linewidth]{ch06_1_lasso_path.png}
+  \end{center}
+  {\footnotesize \kb{LARS}(Least Angle Regression, Efron 등 2004): Lasso 해가
+  $\lambda$에 대해 구간별로 선형이라는 성질 이용해 모든 $\lambda$의 계수를
+  \emph{한 번에} 구하는 표준 알고리즘.}
+\end{frame}

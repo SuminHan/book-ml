@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{표준 계약: \texttt{reset}과 \texttt{step}}
+\begin{lstlisting}
+obs, info = env.reset(seed=42)
+# ... 정책이 obs를 보고 행동 a를 정한다 ...
+obs_next, reward, terminated, truncated, info = env.step(a)
+\end{lstlisting}
+  \begin{itemize}
+    \item \texttt{reset} --- 에피소드(한 번의 게임$\cdot$시도) 시작,
+      \textbf{초기 상태} \texttt{obs}를 돌려줌.
+    \item \texttt{step} --- 한 행동을 받아 \textbf{다섯 개}를 돌려줌:
+      다음 관측 \texttt{obs\_next}, 한 스텝의 \textbf{보상}
+      \texttt{reward}, 종료 신호 두 가지 \texttt{terminated}/
+      \texttt{truncated}(아래에서 구분), 부가 정보 \texttt{info}.
+  \end{itemize}
+  \vskip0.4em
+  이 계약이 1.1절의 강화학습 정의를 코드로 옮긴 것:
+  \[s_{t+1} = f(s_t, a_t), \qquad \text{보상 } r_{t+1} \text{ 을 함께
+  받음}\]
+  $f$ = 환경의 \kb{전이(transition)}. $f$를 \textbf{정확히 안다면}
+  모델 기반, \textbf{모르면} 모델 프리 --- 5$\sim$7주차이 다루는
+  것은 후자.
+\end{frame}

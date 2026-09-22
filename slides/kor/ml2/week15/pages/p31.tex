@@ -1,0 +1,34 @@
+\begin{frame}[fragile]{MCTS 전체: 4단계 조립}
+\begin{lstlisting}
+def mcts_nim(stones, iters, c=1.4, seed=0):
+    """돌이 stones개인 님 게임에서 루트 위치의 MCTS. 루트 노드 반환."""
+    rng = random.Random(seed)
+    root = MCTSNode(stones, player=1, parent=None)
+    for _ in range(iters):
+        # 1) 선택: "아직 다 확장되지 않은 리프"까지 UCT로 내려간다.
+        node = root
+        while not nim_terminal(node.state) and len(node.children) == len(nim_moves(node.state)):
+            node = max(node.children.values(), key=lambda ch:
+                       ch.wins / ch.visits + c * math.sqrt(math.log(node.visits) / ch.visits)
+                       if ch.visits else float('inf'))
+        # 2) 확장: 안 가본 수 하나를 자식으로 추가. (이미 끝난 상태면 확장 생략)
+        if not nim_terminal(node.state):
+            unexpanded = [m for m in nim_moves(node.state) if m not in node.children]
+            m = rng.choice(unexpanded)
+            next_state, next_player = nim_step(node.state, m, node.player)
+            node.children[m] = MCTSNode(next_state, next_player, parent=node)
+            leaf = node.children[m]
+        else:
+            leaf = node
+        # 3) 시뮬레이션: 리프에서 무작위 정책으로 끝까지, 승자 판정
+        winner = nim_rollout(leaf.state, leaf.player, rng)
+        # 4) 역전파: 지나온 모든 노드 방문 +1; 승자가 mover면 승 +1
+        cur = leaf
+        while cur is not None:
+            cur.visits += 1
+            mover = cur.parent.player if cur.parent is not None else cur.player
+            cur.wins += 1.0 if winner == mover else 0.0
+            cur = cur.parent
+    return root
+\end{lstlisting}
+\end{frame}

@@ -1,0 +1,21 @@
+\begin{frame}{학습률 스케줄링: 큰 lr으로 시작, 작은 lr으로 끝}
+  \small
+  \begin{itemize}
+    \item Week 2.1: $\alpha$가 너무 크면 \textbf{발산}, 너무 작으면
+      \textbf{느림} — 신경망에서는 이 둘을 \textbf{동시에} 얻는 법
+    \item \kb{학습률 스케줄링}: 초반 큰 $\alpha$로 빠르게 손실 줄임
+      $\to$ 진행할수록 $\alpha$를 줄여 골짜기 바닥 근처에서
+      \textbf{정교하게 수렴} — ``학습률이 크면 최솟값 근처에서
+      튕겨 나간다''를 \textbf{후반부에서만} 피하는 절충안
+    \item 흔한 방식: \kb{StepLR} (에폭마다 일정 비율로 감소),
+      \kb{코사인 스케줄} (부드러운 감소, Loshchilov--Hutter 2016
+      SGDR)
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize \kb{왜} — 골짜기에서 볼링공: 최솟값 근처의 손실은
+  \textbf{좁고 가파른 골짜기}. 큰 스텝 $\to$ 바닥을 \textbf{건너뛰고}
+  반대편 벽에 부딪혀 \textbf{진동}(바닥에 못 착지). 작은 스텝은
+  천천히지만 \textbf{정확하게} 착지. 반면 최솟값에서 \textbf{멀리}
+  있을 때는 작은 스텝만으론 너무 느림. $\Rightarrow$ \textbf{멀리
+  있을 때는 크게(빠르게), 가까이 왔을 때는 작게(정교하게)}.}
+\end{frame}

@@ -1,0 +1,23 @@
+\begin{frame}{CNN의 병렬 vs Isaac Sim의 병렬}
+  \small
+  \begin{tabular}{@{}p{2.6cm}p{5.4cm}p{6.0cm}@{}}
+    \toprule
+     & CNN의 병렬 (ML1 10.1) & Isaac Sim의 병렬 \\
+    \midrule
+    반복되는 단위 & 같은 \textbf{필터}(파라미터)를 위치마다
+      적용 & 같은 \textbf{물리 스텝}(코드)을 복제본마다 적용 \\
+    공유되는 것 & 파라미터 (무게) & 프로그램 (물리 법칙, 코드) \\
+    달라지는 것 & 입력 픽셀 (위치마다 다름) & 상태
+      (초기조건이 다른 복제본) \\
+    병렬의 방향 & 공간(픽셀 위치) & 시간 대신 \textbf{환경}
+      (독립 실행 실체) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.7em
+  \begin{block}{공통 뼈대}
+    ``\textbf{한 번 작성된 연산을, 나란히 놓인 서로 다른 데이터
+    요소에 동시에 적용한다}.''
+    CNN은 한 입력 안에서 \textbf{공간적으로} 병렬, Isaac Sim은
+    한 물리 법칙 안에 \textbf{환경 단위로} 병렬.
+  \end{block}
+\end{frame}

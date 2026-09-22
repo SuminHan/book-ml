@@ -1,0 +1,27 @@
+\begin{frame}{학습 곡선: 추락이 사라지는 과정}
+  1000에피소드, 시드 42, $\varepsilon = 0.1$ 고정:
+  \begin{itemize}
+    \item 첫 100에피소드 평균 리턴 약 \textbf{$-65$} $\to$
+      마지막 100에피소드 약 \textbf{$-19$}로 상승.
+    \item 절벽 추락이 한 번 이상 일어난 에피소드 비율:
+      \textbf{28\% $\to$ 0\%}로 떨어짐.
+    \item 곡선 아래로 툭툭 떨어지는 $-100$ 이하 리턴 =
+      ``아직 안전 경로를 모르니 절벽 옆을 시험하다 떨어진다''.
+    \item 후반 추락 소멸 = ``절벽 옆 칸들의 Q값이 뚝 떨어졌으니
+      이제 그 옆을 안 간다''는 학습의 결과.
+  \end{itemize}
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.62\textwidth}
+      \includegraphics[width=\linewidth]{ch06_2_sarsa_returns.png}
+      \vskip0.3em
+      {\footnotesize 에피소드별 리턴(점)과 50에피소드 이동평균.
+      파랑 = $\varepsilon=0.1$ 고정, 주황 = $\varepsilon$ 감쇠
+      (0.3$\to$0.01). 초반의 $-100$ 추락이 명확히 보인다.}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      {\footnotesize 이 학습 곡선은 6.3절의 Q-learning과
+      같은 환경에서 나란히 비교된다.}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,29 @@
+\begin{frame}{확인 문제 + 자주 묻는 질문 (9.3)}
+  \small
+  \begin{itemize}
+    \item \kb{확인 1 (1/(1-p)의 불변성)}: $a = (1, -2, 3, 4)$, $p = 0.5$
+      — ``보정이 없으면 학습 기댓값이 $(1-p)$배 줄어 추론값과 어긋난다''를
+      \textbf{수식으로} 보이고, 보정 후 $\text{E}[\text{학습}] =
+      \text{추론}$임을 확인.
+    \item \kb{확인 2 (BN 이중 모드)}: 추론 시 BN이 \textbf{러닝
+      평균/분산}을 쓰고 현재 배치 통계를 쓰지 않는 이유(배치 부재,
+      배치 통계 노이즈) — dropout의 \texttt{.train()/.eval()}과
+      같은 범주의 함정임을 한 문장으로.
+    \item \kb{확인 3 (L2 vs weight decay)}: 어떤 손실에서는 같고,
+      Adam에서는 왜 다르고, 그래서 \texttt{AdamW}가 등장하는지.
+    \item \kb{확인 4 (스케줄링의 기하)}: 포물선 $(w - 3)^2$의
+      overshoot(진동)으로 ``왜 큰 lr로 시작해 작은 lr으로
+      끝내는가'' — ``최솟값 근처 큰 스텝 = 바닥 건너뛰기''.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize \kb{FAQ}: Dropout+BN 순서는 \texttt{Linear $\to$ BN
+  $\to$ ReLU $\to$ Dropout} 권장. $\lambda$(Ch.6)는 ``얼마나 단순해야
+  하는가''(손실함수)를, 스케줄은 ``얼마나 빠르게/정교하게 찾아갈
+  것인가''(최적화 속도)를 조절 — 서로 다른 축. BN은 약한 정규화
+  효과가 있어 과적합이 심한(데이터 적은) 문제에서는 dropout도 함께.
+  LayerNorm은 batch 축을 특징 축으로 — batch 작거나 시계열/순서
+  표준. weight decay + dropout은 흔히 함께, 단 한꺼번에 강하게 쓰면
+  \textbf{과소적합} — val 곡선으로 하나씩 강도 올리기.
+  스케줄링 없이는 ``초반 큰 lr의 속도 + 후반 작은 lr의 정교함''을
+  \textbf{한 값으로} 잡을 수 없음.}
+\end{frame}

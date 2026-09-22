@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{알고리즘 조립 ②: 학습 루프와 하드 동기화}
+\begin{lstlisting}
+            if len(buffer) >= batch_size:      # 충분히 차면 학습 시작
+                batch = buffer.sample(batch_size)
+                states = torch.tensor([b[0] for b in batch],
+                                      dtype=torch.float32)
+                actions = torch.tensor([b[1] for b in batch])
+                rewards = torch.tensor([b[2] for b in batch],
+                                       dtype=torch.float32)
+                next_states = torch.tensor([b[3] for b in batch],
+                                           dtype=torch.float32)
+                dones = torch.tensor([b[4] for b in batch],
+                                     dtype=torch.float32)
+                loss = dqn_loss(Q_net, target_net, states, actions,
+                                rewards, next_states, dones, gamma)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+            if step_id % update_freq == 0:     # 하드 업데이트 (C 스텝)
+                target_net.load_state_dict(Q_net.state_dict())
+            s, step_id, total = s2, step_id + 1, total + r
+            if done: break
+        print(f"episode {ep + 1}: 리턴 {total:.0f}")
+        s = env.reset()
+    return Q_net
+\end{lstlisting}
+\end{frame}

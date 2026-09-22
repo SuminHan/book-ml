@@ -1,0 +1,30 @@
+\begin{frame}{누수 원칙, 숫자로: 스케일러 fit의 위치}
+  확인 문제 6의 ``가장 흔히 깨지는 지점'' ---
+  \texttt{StandardScaler}의 \texttt{fit}(평균·표준편차)을
+  \textbf{전체} 데이터로 하는 것 --- 의 효과를 diabetes(위
+  스펙트럼과 같은 분할)에서 \textbf{실측}:
+  \vskip0.4em
+  \small
+  \begin{center}
+  \begin{tabular}{@{}lc@{}}
+    \toprule
+    스케일러 fit 범위 & val R$^2$ \\
+    \midrule
+    전체(train+val+test) --- \textbf{원칙 위반} & 0.4417 \\
+    train만 --- 원칙 준수 & 0.4417 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vskip0.3em
+  \begin{block}{차이는 $3\times10^{-5}$ --- ``거의 없다''가 정답}
+    diabetes는 ``행 하나 = 독립 관측''이어서 train의
+    평균/표준편차와 전체의 것이 거의 같다. 누수가 \textbf{크게}
+    벌어지는 것은 Week 6.3의 환자 예처럼 \textbf{동일 실체
+    (환자, 계좌, 사용자)가 train과 val/test에 동시에 들어와
+    정보를 공유할 때}다 --- 그때는 \texttt{fit}의 위치가
+    아니라 \textbf{분할 자체}가 문제를 만든다.
+  \end{block}
+  \vskip0.3em
+  \kq{시험 판정 기준: ``누수가 커지는 조건(공유된 실체, 시간
+  순서)을 설명할 수 있는가''.}
+\end{frame}

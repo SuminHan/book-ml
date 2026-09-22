@@ -1,0 +1,41 @@
+\begin{frame}[fragile]{실습: 4$\times$4 특징지도를 최대풀링으로}
+  10.1절의 \texttt{conv2d} 코드와 같은 스타일로 최대풀링 직접 구현:
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+\begin{lstlisting}
+def max_pool(feature_map, pool_size=2):
+    h, w = len(feature_map), \
+           len(feature_map[0])
+    out_h, out_w = h // pool_size, \
+                   w // pool_size
+    output = [[0.0] * out_w for _
+              in range(out_h)]
+    for i in range(out_h):
+        for j in range(out_w):
+            block = [
+                feature_map[
+                    i*pool_size+di]
+                    [j*pool_size+dj]
+                for di in range(pool_size)
+                for dj in range(pool_size)]
+            output[i][j] = max(block)
+    return output
+
+fm = [[1, 0, 2, 1],
+      [1, 0, 3, 1],
+      [1, 0, 4, 1],
+      [1, 0, 2, 1]]
+print(max_pool(fm, 2))  # [[1, 3], [1, 4]]
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \begin{itemize}
+        \item ``원본'' 특징지도를 그대로 넣으면
+          $\begin{bmatrix}1&3\\1&4\end{bmatrix}$ ---
+          앞 계산과 \textbf{정확히 일치}
+        \item 1픽셀 이동 버전도 \textbf{같은 결과}
+          --- 둔감함이 코드로
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

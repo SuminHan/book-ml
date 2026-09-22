@@ -1,0 +1,26 @@
+\begin{frame}[fragile]{tune\_k 코드}
+\begin{lstlisting}
+def train_val_split(X, y, val_ratio=0.3, seed=0):
+    import random
+    idx = list(range(len(X)))
+    random.Random(seed).shuffle(idx)
+    n_val = int(len(X) * val_ratio)
+    val_idx, train_idx = idx[:n_val], idx[n_val:]
+    return ([X[i] for i in train_idx], [y[i] for i in train_idx],
+            [X[i] for i in val_idx], [y[i] for i in val_idx])
+
+def tune_k(X, y, k_candidates):
+    X_train, y_train, X_val, y_val = train_val_split(X, y)
+    best_k, best_acc = None, -1.0
+    for k in k_candidates:
+        correct = sum(knn_predict(X_train, y_train, xv, k) == yt
+                      for xv, yt in zip(X_val, y_val))
+        acc = correct / len(X_val)
+        if acc > best_acc:
+            best_k, best_acc = k, acc
+    return best_k
+\end{lstlisting}
+  핵심: 정확도를 \texttt{X\_val, y\_val}(학습에 안 쓴 데이터)
+  로만 측정 --- 훈련 데이터 자체의 정확도로 고르면 4.1절의
+  함정에 빠진다(다음 프레임).
+\end{frame}

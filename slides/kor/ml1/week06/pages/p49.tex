@@ -1,0 +1,10 @@
+\begin{frame}[fragile]{scikit-learn의 표준 구현}
+\begin{lstlisting}
+# 올바른 순서: train으로만 fit, val/test에는 transform만
+scaler = StandardScaler().fit(X_train)
+X_val  = scaler.transform(X_val)
+X_test = scaler.transform(X_test)
+\end{lstlisting}
+  {\footnotesize \texttt{.fit\_transform(X\_all)}을 val·test에 쓰면
+  ``누수'' 열과 동일한 위장이 일어난다.}
+\end{frame}

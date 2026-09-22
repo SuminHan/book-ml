@@ -1,0 +1,29 @@
+\begin{frame}{네 단계가 순환하는 구조}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch15_2_mcts_loop.png}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{itemize}
+        \item 왼쪽: 님 게임(돌 5개) 게임 트리 --- 루트에서
+          ``1개/2개/3개 가져가기'' 세 갈림
+        \item 각 자식 노드에 \textbf{방문 횟수 + 승률}이 쌓임
+          (3000회 시뮬레이션 후 실제 값:
+          \textbf{2954/0.987}, 26/0.269, 20/0.150)
+        \item 오른쪽: 선택은 트리를 \textbf{내려가고}, 역전파는
+          지나온 \textbf{모든} 노드의 통계를 갱신한 뒤
+          다음 선택으로 돌아온다
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{itemize}
+    \item 수백$\sim$수만 번 반복한 뒤, 루트에서
+      \textbf{가장 많이 방문된} 자식(반복적으로 가장 유망하다고
+      확인된 수)을 실제로 둘 수로 선택
+    \item ``가장 많이 방문된 것''과 ``승률이 가장 높은 것''은
+      \textbf{대개 일치하지만 항상 같지는 않다}
+      (FAQ에서 다룬다)
+  \end{itemize}
+\end{frame}

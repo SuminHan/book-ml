@@ -1,0 +1,22 @@
+\section{7.3 계획과 학습: Dyna-Q}
+\begin{frame}{경험을 버리지 않는 법}
+  \begin{itemize}
+    \item 지금까지의 모델-프리 방법(MC, TD, Q-learning)은 경험을
+      \textbf{한 번 쓰고 버림}.
+    \item 그런데 한 스텝 $(s,a)\to(r,s')$에는 두 가지가 담겨 있다:
+      \begin{itemize}
+        \item (1) \textbf{Q를 갱신할 신호}(TD(0) 갱신)
+        \item (2) \textbf{환경에 대한 지식} --- ``$(s,a)$를 하면
+          대략 $(r,s')$이 나온다''.
+      \end{itemize}
+      모델-프리는 (2)를 \textbf{버림}.
+    \item (2)는 어디에 쓰이는가? --- \textbf{아직 실제로 가보지 못한
+      상태의 가치를 추정}하는 데.
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{\kb{Dyna-Q}(Sutton, 1990 박사논문)}
+    이 정보를 간단한 \textbf{모델}로 저장해뒀다가, 실제
+    상호작용 사이사이에 \textbf{가상의 추가 학습(계획, planning)}을
+    끼워 넣는다.
+  \end{block}
+\end{frame}

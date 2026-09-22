@@ -1,0 +1,30 @@
+\begin{frame}{실습: 블랙잭에서 MC 제어로 학습하기}
+  Sutton \& Barto 의 RL 교재에서 MC 제어를 소개할 때 쓰는
+  \textbf{표준 예제}가 블랙잭이다.
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item \kb{상태} $s = (\text{플레이어 합},\ \text{딜러의
+          보이는 카드})$
+        \item \kb{행동}: 0 = \kb{스틱}(멈추기), 1 = \kb{히트}(카드
+          더 받기)
+        \item \kb{보상}: $+1$(이김), $-1$(지면/버스트), $0$(무)
+        \item 스틱하면 \textbf{딜러가 17 이상}이 될 때까지
+          받는 과정을 한꺼번에 시뮬레이션.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{왜 블랙잭인가}
+        MC 제어의 두 가설(모델 불필요 + 에피소드가 있어야
+        함)을 \textbf{동시에} 가장 선명하게 보여준다.
+        \begin{itemize}
+          \item 카드 덱의 전이확률은 손으로 계산하기 번거롭지만
+            게임을 ``돌려보면'' 알 수 있다.
+          \item 한 판은 \textbf{분명히 끝난다} (버스트 또는
+            딜러 마무리) --- MC 의 ``에피소드 끝까지 기다려
+            리턴 계산''이 그대로 적용.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}

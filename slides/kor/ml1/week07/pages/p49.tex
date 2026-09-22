@@ -1,0 +1,15 @@
+\begin{frame}[fragile]{GBDT만이 치르는 가격: overfitting 곡선}
+  소음 섞인 1차원 함수 ($y = \sin 1.2x + 0.5\cos 2x +$ 잡음, 200
+  학습/100 검증)을 \textbf{500단계} 학습, \texttt{staged\_predict}로
+  \textbf{매 단계} train/test MSE 추적:
+\begin{lstlisting}
+reg = GradientBoostingRegressor(n_estimators=500, learning_rate=0.1,
+                                max_depth=3, random_state=0).fit(Xtr, ytr)
+train_mse = [mean_squared_error(ytr, p) for p in reg.staged_predict(Xtr)]
+test_mse  = [mean_squared_error(yte, p) for p in reg.staged_predict(Xte)]
+best_stage = int(np.argmin(test_mse)) + 1
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize \texttt{검증 MSE 최저점: 10단계 (test\_MSE=0.727)} \\
+  \texttt{500단계까지 계속하면: train\_MSE=0.005 \quad test\_MSE=1.290}}
+\end{frame}

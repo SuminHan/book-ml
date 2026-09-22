@@ -1,0 +1,32 @@
+\begin{frame}{이 숫자의 의미는 비교해야 보인다}
+  \begin{itemize}
+    \item 같은 8$\times$8을 \textbf{flatten(64-dim)}해서
+      64$\to$64$\to$10 단순 MLP면 파라미터 \textbf{4,810}개뿐 —
+      conv 층(320)보다 \textbf{작다}
+    \item 즉, 작은 데이터에서는 ``깊게/넓게''가 아니라
+      \textbf{입력 차원(flatten)이 작으면 GBDT}(특수한 파라미터가
+      아예 없음)가 효율적이다
+    \item ``왜 CNN''의 진짜 이유 = \textbf{해상도 $S$가 커질 때}
+  \end{itemize}
+  \vskip0.3em
+  \small
+  \begin{tabular}{@{}cccc@{}}
+    \toprule
+    해상도 $S$ & ``flatten $\to$ 256'' FC ($S^2\times256$) &
+      3$\times$3 conv(1$\to$32) & 비율 \\
+    \midrule
+    8 & 16,384 & 320 & 51$\times$ \\
+    32 & 262,144 & 320 & 819$\times$ \\
+    64 & 1,048,576 & 320 & 3,277$\times$ \\
+    224 & 12,845,056 & 320 & 40,141$\times$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{block}{``상수 vs 제곱''}
+    flatten은 해상도 \textbf{제곱}($S^2$)으로 폭증하지만, conv는
+    해상도와 무관하게 \textbf{320으로 일정} — 이 차이가
+    ``이미지가 커질수록 CNN(파라미터 공유, 평행불변)이 필수''를
+    \textbf{수학적으로} 말한다. 이 표 한 장이 발표용
+    \textbf{수식적 정당화}로 그대로 쓰인다.
+  \end{block}
+\end{frame}

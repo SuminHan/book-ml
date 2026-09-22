@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{시드(seed)와 재현성}
+  RL은 \textbf{확률적} --- 초기 상태의 무작위성, 행동 샘플링의
+  무작위성, 전이의 확률성. ``같은 코드를 돌렸는데 결과가 다르다''는
+  \textbf{버그가 아니라 정상}.
+\begin{lstlisting}
+import numpy as np
+env = gym.make("CartPole-v1")
+obs1, _ = env.reset(seed=42)
+obs2, _ = env.reset(seed=42)
+print("같은 시드 -> 같은 초기 관측:", np.allclose(obs1, obs2))  # True
+
+env.action_space.seed(7); a1 = env.action_space.sample()
+env.action_space.seed(7); a2 = env.action_space.sample()
+print("같은 시드 -> 같은 행동:", a1 == a2)  # True
+\end{lstlisting}
+  \begin{itemize}
+    \item \textbf{다른 시드} $\to$ \textbf{다른} 무작위 설정 ---
+      ``여러 시드로 평가해서 평균 내자''의 실전 관행의 이유.
+    \item \texttt{action\_space.sample()}의 시드와
+      \texttt{reset}의 시드는 \textbf{독립}된 무작위 스트림 ---
+      초기 상태를 고정해도 \textbf{행동은 고정되지 않음}(반대도).
+      \textbf{둘 다} 고정해야 완전히 결정적 재현.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,22 @@
+\begin{frame}{왜 softmax가 이렇게 극단적인가 — 원점수에서}
+  ``같은 계산을 \textbf{원점수 단계}에서 한 번 더 펼쳐보면'' 왜
+  softmax가 이렇게 극단적인 가중치를 내는지 선명해진다:
+  \begin{itemize}
+    \item $QK^T/\sqrt{3}$ 의 ``그것은'' 행은
+      \textbf{$[4.85,\ 0.52,\ 0.0,\ 4.578]$} — ``동물''(4.85)과
+      자기 자신(4.578)이 다른 두 단어(0.52, 0.0)보다 \emph{크게}
+      벌어져 있다.
+    \item softmax가 이 \textbf{4.85 vs 0.52의 차이를 지수적으로
+      증폭} ($\approx e^{4.33} \approx 75$배)해서
+      \textbf{56\% vs 0.7\%}의 가중치로 변환.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{두 단계의 ``스케일이 다르다''}
+    softmax \emph{이전}: ``동물''과 ``도로''의 원점수 차이
+    \textbf{4.33}이라는 \emph{절대적 크기}.
+    softmax \emph{이후}: \textbf{56배의 가중치 비}라는
+    \emph{상대적 비율}.
+    --- 이 스케일 차이가 ``softmax가 차이를 증폭한다''는
+    관찰의 \emph{구체적 수치}다.
+  \end{block}
+\end{frame}

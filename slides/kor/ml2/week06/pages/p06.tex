@@ -1,0 +1,34 @@
+\begin{frame}{손계산: 첫 에피소드 $3\to4\to5\to6$}
+  $\alpha = 0.5$, 초기 $V = [0,0,0,0,0,0,0]$,
+  운 좋게 오른쪽 끝에 한 번에 닿는 에피소드. 실제 리턴 $G = +3$.
+  매 스텝 $r = 1$, $\gamma = 1$:
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    스텝 & 전이 & 목표 $r+\gamma V(s')$ & 갱신 \\
+    \midrule
+    $t$   & $3 \to 4$ & $1 + 0 = 1$ & $V(3) \leftarrow \mathbf{0.5}$ \\
+    $t{+1}$ & $4 \to 5$ & $1 + 0 = 1$ & $V(4) \leftarrow \mathbf{0.5}$ \\
+    $t{+2}$ & $5 \to 6$(터미널) & $1 + 0 = 1$ & $V(5) \leftarrow \mathbf{0.5}$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \includegraphics[width=\linewidth]{ch06_1_td0_bootstrap.png}
+      \vskip0.3em
+      {\footnotesize 한 스텝 전이에서 실제 보상 $r$(파랑)과 부정확한
+      추정치 $V(s')$이 목표값 $r+\gamma V(s')$에서 만난다 ---
+      에피소드가 끝나지 않았는데도 $V(4)$를 0.5로 갱신한다.}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \kb{첫째} --- 한 에피소드 만에 ``방향''은 맞췄지만 ``크기''는 틀림
+      (참값 9·8·5에 0.5·0.5·0.5).\\[0.5em]
+      MC라면 이 한 에피소드에서
+      $V(3)=V(4)=V(5)=G=3$ 로 \textbf{한 번에} 갱신(매방문, $\alpha=1$).\\
+      둘 다 참값과 멀지만, MC = ``unbiased한 큰 점프'',
+      TD = ``biased한 작은 점프''.
+    \end{column}
+  \end{columns}
+\end{frame}

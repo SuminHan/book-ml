@@ -1,0 +1,21 @@
+\begin{frame}{SARSA: 실제로 고른 행동을 쓴다}
+  \kb{SARSA}(State-Action-Reward-State-Action) --- 이름 자체가 갱신에
+  필요한 다섯 요소를 그대로 나열. 실제로 다음에 \textbf{고른} 행동 $a'$의
+  Q값을 목표로 TD 갱신:
+  \[
+  Q(s,a) \leftarrow Q(s,a) + \alpha \left[r + \gamma Q(s',a') - Q(s,a)\right]
+  \]
+  \vskip0.6em
+  다섯 요소는 \textbf{한 줄의 궤적}에서 온다:
+  \begin{itemize}
+    \item $s, a$ --- 현재 상태와 거기서 \textbf{행동 정책(behavior policy,
+      여기서는 $\varepsilon$-greedy)으로 고른} 행동.
+    \item $r, s'$ --- 환경이 \textbf{관찰되게} 주는 보상과 다음 상태.
+    \item $a'$ --- \textbf{$s'$에 도착한 \textbf{뒤}에} 다시 같은 행동
+      정책으로 고르는 행동.
+  \end{itemize}
+  \vskip0.4em
+  앞의 네 개는 ``경험'', 마지막 $a'$는 ``다음에도 지금 같은 방식으로
+  행동하겠다''는 선택이 갱신식에 반영되는 지점 ---
+  \textbf{이 ``실제로 고른 것을 쓴다''는 점이 SARSA를 정의한다.}
+\end{frame}

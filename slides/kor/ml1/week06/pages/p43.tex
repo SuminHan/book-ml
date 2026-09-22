@@ -1,0 +1,25 @@
+% =====================================================================
+\section{6.3 train/val/test 분리 원칙 실전}
+\begin{frame}{왜 3분할이 필요한가: 배우다와 재다를 나누어야}
+  머신러닝 파이프라인은 \textbf{두 가지 완전히 다른 일}을 동시에 한다:
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{배우는 일}
+      train 데이터로 모델의 파라미터를 정하는 것.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{재는 일}
+      그 모델이 \emph{보지 못한} 데이터에서 얼마나 잘하는지 평가.
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  \begin{block}{이 둘을 같은 데이터로 하면}
+    모델이 ``재는 데이터''까지 보고 만들어졌으므로, 그 점수는
+    ``학습을 얼마나 잘했는가''가 아니라 \textbf{``기억을 얼마나
+    잘했는가''}를 재게 된다. 4.1의 과적합(``train에서 완벽, test에서
+    참사'')과 \textbf{정확히 같은 구조}.
+  \end{block}
+  \vskip0.3em
+  6.1의 정규화($\lambda$)와 6.2의 교차검증은 이 문제를 \emph{완화}했지만
+  \textbf{역할 분리} 자체를 정한 곳은 아직 없다.
+\end{frame}

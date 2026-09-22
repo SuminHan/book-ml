@@ -1,0 +1,25 @@
+\begin{frame}{$\mu$ 항이 주인공, $\sigma$ 항은 보조 변수}
+  \begin{itemize}
+    \item 핵심 구조는 \kb{Policy Gradient Theorem의 one-vs-rest
+      일반화}. 10.2절 softmax 그래디언트
+      $[(1-p_a)s,\ -p_as]$ 의 ``고른 행동 확률 올리고, 나머지는
+      내린다''가, 정규분포에서는 \kb{``고른 행동 쪽으로 평균을
+      이동시킨다''}로 바뀜.
+    \item \kb{$\mu$ 항}: 부호는 $a-\mu$ 의 부호로 정해짐.
+      $A_t>0$ 이면 고른 행동 쪽으로 평균이 당겨지고, $A_t<0$
+      이면 반대로 밀려남 — softmax의 ``고른 행동을 올린다''가
+      정확히 이 $\mu$ 항.
+    \item \kb{$\sigma$ 항}: 부호가 $(a-\mu)^2-\sigma^2$ 로 정해져
+      까다로움.
+      \begin{itemize}
+        \item $|a-\mu|>\sigma$ (``의도하지 않은 극단적 행동'')
+          $\to$ $\sigma$ \textbf{줄이는} 방향.
+        \item $\sigma$ 이내(보통의 경우) $\to$ $\sigma$
+          \textbf{늘리는} 방향.
+      \end{itemize}
+  \end{itemize}
+  \begin{block}{기억하면 충분한 큰 그림}
+    \kb{$\mu$ 가 주된 학습 대상이고, $\sigma$ 는 $A_t$ 의 부호와
+    엔트로피 보너스 사이에 놓인 보조 변수}.
+  \end{block}
+\end{frame}

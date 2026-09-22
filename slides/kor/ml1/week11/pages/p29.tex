@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{BPTT 코드: 핵심 루프}
+\begin{lstlisting}
+# 역전파: t = T-1, T-2, ..., 0 순으로 (0-indexed)
+dh_next = np.zeros(H)                 # dL/dh_{t+1} (첫 루프: 0)
+dWxh = dWhh = dWhy = 0; dbh = dby = 0
+for t in reversed(range(T)):
+    p = softmax(Why @ hs[t] + by)
+    dp = p.copy(); dp[targets[t]] -= 1  # p_t - onehot
+    dWhy += np.outer(dp, hs[t]); dby += dp        # (A)
+    dh = Why.T @ dp + dh_next               # (A)+(B)의 합
+    dz = dh * (1 - hs[t]**2)                # * tanh'(z_t)
+    dh_next = Whh.T @ dz                    # -> 이전 시점 B로 전달
+    dWhh += np.outer(dz, hps[t]); dbh += dz
+    dWxh += np.outer(dz, one_hot(inputs[t]))
+\end{lstlisting}
+  \begin{itemize}
+    \item \kb{첫째} \verb|dh = Why.T @ dp + dh_next|: 본 시점 오차에
+      \textbf{더 새로운 시점}에서 흘러온 그래디언트를 더하는 $(A)+(B)$
+    \item \kb{둘째} \verb|dWhh += ...| 는 \verb|=|가 아니라 \verb|+=|
+      --- $W_{hh}$가 \textbf{모든 시점에서 공유}되므로 각 시점의
+      기여를 \textbf{같은 텐서에 계속 더해야} 함
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,27 @@
+\begin{frame}{10.2 마무리: REINFORCE가 주는 가치는 ``명확함''}
+  \begin{block}{한 줄 요약}
+    REINFORCE는 Policy Gradient Theorem의 \textbf{가장 단순하고
+    직접적인 구현} --- ``결과가 좋았던 궤적에서 고른 행동의
+    확률을 올리고, 나빴던 행동의 확률은 내린다''는 것을,
+    관찰된 리턴 $G_t$ 가 좋은/나쁜의 기준으로 삼아 구현.
+  \end{block}
+  \vskip0.4em
+  \begin{itemize}
+    \item 가치는 \textbf{속도가 아니라 \textbf{명확함}} ---
+      코드 한 줄이 정리 한 항과 직접 대응.
+    \item 이후 Actor-Critic(10.3) $\cdot$ PPO(Week 11)의
+      \textbf{모든 개선}은 ``REINFORCE의 이 특정 부분을 바꾼
+      것'':
+  \end{itemize}
+  \vskip0.2em
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+     & REINFORCE (10.2) & 개선 (10.3, Week 11) \\
+    \midrule
+    리턴 & $G_t$ 그대로 & 베이스라인 붙인 추정 ($G_t - V(s_t)$) \\
+    경험 재사용 & 에피소드당 1회 & 여러 회 사용 + 클리핑 (PPO) \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+\end{frame}

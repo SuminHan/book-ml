@@ -1,0 +1,29 @@
+\begin{frame}{자주 묻는 질문 (14.3): GPU가 없다면}
+  \begin{itemize}
+    \item \textbf{Q. ``GPU가 있어야 Isaac Sim''인데, GPU가
+      \textbf{전혀 없다면} 대규모(1,000만 스텝) 학습은 못
+      하는 것인가?} \textbf{아니다} --- 1,000만 스텝을
+      \textbf{CPU MuJoCo}로 돌리면 환경 스텝만 \textbf{약 27분}.
+      ``느리지만 \textbf{가능}''
+    \item GPU가 필요한 이유: ``못 한다''가 아니라, 대규모를
+      \textbf{반복해 실험해야 하는} 연구에서 \textbf{시간}을
+      줄여주는 것
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{GPU가 없다면 세 가지 대응}
+    (a) \textbf{규모를 줄여}(예: 100만 스텝) CPU로,
+    (b) \kb{MuJoCo-XLA}로 TPU/GPU 자동 병렬,
+    (c) GPU 클러스터에 \textbf{제출}하는 방식.
+    도구를 못 ``쓰는'' 것이 아니라, \textbf{어떤} GPU를 쓰느냐의
+    문제.
+  \end{block}
+  \vskip0.5em
+  {\footnotesize Q. 벤치마크 숫자(247,000 / 6,200)는 내 노트북에서
+  같은가? \textbf{같은 값}은 아님(CPU 주파수, 코어 수, 메모리, OS
+  차이) --- 그러나 \textbf{비율}(정밀 물리가 CPU를 수십 배 느리게
+  한다는 \textit{사실})은 대부분의 CPU에서 유지. \textbf{결론}(두
+  축, 30초 절차)은 변하지 않고, \textbf{절대 숫자}만 재측정하면
+  되는 것. 실습 노트북 코드를 자기 머신에서 돌려 \textbf{자기
+  숫자}로 대체하는 것이 정석.
+  }
+\end{frame}

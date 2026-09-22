@@ -1,0 +1,44 @@
+\begin{frame}{PUCT: 신경망의 직관이 탐색 방향을 정하다}
+  이 결합에서 선택 규칙도 UCT에서 \kb{PUCT}(Policy UCT)로
+  발전:
+  \[
+  \text{PUCT}(s,a) \;=\; \frac{Q(s,a)}{N(s)+N(s,a)} \;+\; c_{\text{puct}}\,
+  P_{\theta}(s,a)\, \frac{\sqrt{N(s)}}{1+N(s,a)}
+  \]
+  \begin{itemize}
+    \item \textbf{차이 = 탐험 항}: UCT의 $c\sqrt{\ln N(s)/N(s,a)}$
+      는 시도 안 된 수에 \textbf{균등하게} 보너스, PUCT는
+      \textbf{정책 신경망의 사전확률} $P_{\theta}(s,a)$로
+      \textbf{가중} --- ``\textbf{신경망의 직관}''이 탐색의
+      방향을 정하고, MCTS가 그 직관을 \textbf{검증·수정하는
+      통계}로 되돌려주는 식
+    \item 활용 항도 $Q/(N+N(a))$로 \textbf{부드럽게} 정교해짐
+  \end{itemize}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_alphago.png}
+      \vskip0.2em
+      {\footnotesize 정책망·가치망 학습 파이프라인(좌)과 두
+      신경망의 합성곱 구조(우) (원 논문 Fig.\,1).}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \textbf{학습 루프 한 바퀴:}
+      \begin{enumerate}
+        \item \kb{자기 자신과의 대국(self-play)}으로 경험 생성
+        \item MCTS로 각 국면 탐색한 \textbf{방문 분포}로
+          \textbf{정책망} 지도학습
+        \item 게임 \textbf{최종 승패}로 \textbf{가치망} 지도학습
+        \item 더 나은 망으로 \textbf{다시} self-play
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  \begin{block}{AlphaZero (2017)}
+    이 루프 \textbf{만으로}, 게임 규칙만 알려주고(\textbf{데이터
+    없이}) 바둑·체스·상체를 전부 마스터 --- ``탐색과 학습이
+    서로를 개선한다''는 핵심 문장이 \textbf{알고리즘 루프
+    자체}로 성립했음을 보여줌.
+  \end{block}
+\end{frame}

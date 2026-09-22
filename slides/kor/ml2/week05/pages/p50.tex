@@ -1,0 +1,35 @@
+\begin{frame}{자주 하는 실수: ``분모가 0'' 무시 --- 그리고
+지원 조건}
+  $\rho = \prod_t \frac{\pi(a_t|s_t)}{b(a_t|s_t)}$ 에서
+  \textbf{분모} $b(a_t|s_t) = 0$ 인 상태·행동이 나타나면
+  $\rho$ 가 \textbf{정의되지 않는다}.
+  \begin{itemize}
+    \item $\varepsilon$-greedy $b$ ($\varepsilon > 0$)에서는
+      모든 행동을 (작지만) nonzero 확률로 고르므로
+      \textbf{괜찮}.
+    \item \textbf{결정론적} 행동 정책을 쓰면 $b$ 가 0인
+      행동이 $\pi$ 에서 nonzero 라면 $\rho = \infty$.
+  \end{itemize}
+  \vskip0.4em
+  $\rho$ 의 분모 0은 ``이 궤적은 $b$ 에서는 불가능하지만
+  $\pi$ 에서는 가능''이라는 \kb{지원(support) 불일치}를
+  의미 --- 이런 경우 중요도 샘플링은 \textbf{원래부터
+  성립하지 않는다}(편향도 분산도 논할 여지 없이 추정 자체가
+  무의미).
+  \vskip0.4em
+  \begin{block}{실전 규칙}
+    $b(a|s) = 0$ 인 (상태, 행동) 쌍은 \textbf{평가 대상에서
+    제외}하거나, 그 에피소드를 \textbf{통째로 버린다}.
+    ``분모가 0이면 그냥 1로 치자''는 \textbf{가장 흔한
+    실수}.
+  \end{block}
+  \vskip0.4em
+  \kb{지원 조건 (support condition)}:
+  \[
+  \text{supp}(\pi) \;\subseteq\; \text{supp}(b)
+  \]
+  목표 정책이 행동하는 (상태, 행동) 쌍의 집합이 행동 정책의
+  지원에 \textbf{포함}되어야 한다. 이 조건이 깨지면 어떤
+  가중치로도 \textbf{보정 불가}. $\varepsilon > 0$ 으로 모든
+  행동을 (작게라도) 포함하는 것이 표준.
+\end{frame}

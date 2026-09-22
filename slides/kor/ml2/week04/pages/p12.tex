@@ -1,0 +1,39 @@
+\begin{frame}{두 정책 나란히: ``왼쪽''의 나쁨을 정량화}
+  ``왼쪽'' 정책은 이 GridWorld에서 \textbf{나쁜 정책}이지만,
+  그 ``나쁨''을 정량화하는 것이 $V^{\text{left}}(s) = -10$.
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch04_1_policy_evaluation_convergence.png}
+      \vskip0.3em
+      {\footnotesize 두 정책의 반복적 정책평가 수렴 곡선
+      ($V(0)$, in-place sweep 단위).}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      {\small
+      \begin{tabular}{@{}lr@{}}
+        \toprule
+        & $V$ \\
+        \midrule
+        right & $[-3.439, -2.710, -1.900, -1.000, 0]$ \\
+        left & $[-10.000, -10.000, -10.000, -10.000, 0]$ \\
+        \bottomrule
+      \end{tabular}}
+      \vskip0.5em
+      \begin{itemize}
+        \item ``오른쪽''은 \textbf{5 sweep} 만에 수렴 --- 4.2절
+          ``정책 반복이 첫 sweep에서 멈춘다''와 일치.
+        \item ``왼쪽''은 벽(칸 0)에 막혀 무한 루프 $\to$
+          \textbf{133 sweep}. 가치($-10$)가 $\gamma$ 로 할인돼
+          \textbf{유한}하게 수렴 --- ``$\gamma < 1$ 이면 무한 합
+          이 수렴''(3.2절)과 같은 원리.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  {\footnotesize \kq{$\theta$ 가 결과에 미치는 영향은 작다} ---
+  $\theta = 1\mathrm{e}{-4}$ vs $1\mathrm{e}{-8}$ 로 수렴시키면
+  최대 차이가 $< 10^{-4}$. $\theta$ 는 \textbf{수렴 판정
+  기준}(정밀도)이지, 답 자체를 결정하는 파라미터가 \textbf{아니다}.}
+\end{frame}

@@ -1,0 +1,19 @@
+\frametitle{실무 1: ``수렴했는지'' 확인 없이 반복 횟수만 고정하기}
+위의 코드는 단순화를 위해 \texttt{iters=100}을 \textbf{고정}했다 ---
+  실제 사용에서는 \textbf{변화량이 기준 $\varepsilon$ 아래로 떨어질
+  때까지} 돌리는 것이 정석:
+  \vskip0.4em
+\begin{lstlisting}
+def pagerank_converged(edges, n_nodes, d=0.85, tol=1e-9,
+                       max_iters=1000):
+    # ... (위 pagerank와 동일, 단 반복 조건이 다름)
+    pr = {i: 1 / n_nodes for i in range(n_nodes)}
+    for _ in range(max_iters):
+        new = {i: (1 - d) / n_nodes + d * sum(pr[j] / outdeg[j]
+                 for j in incoming[i]) for i in range(n_nodes)}
+        delta = max(abs(new[i] - pr[i]) for i in range(n_nodes))
+        pr = new
+        if delta < tol:
+            break
+    return pr
+\end{lstlisting}

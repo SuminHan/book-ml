@@ -1,0 +1,25 @@
+\begin{frame}{두 곡선 현상: 배포용 $\mu(s)$ 와 학습용 샘플}
+  \begin{columns}[T]
+    \begin{column}{0.6\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch13_3_ppo_reacher_curves.png}
+      \vskip0.4em
+      {\footnotesize 파랑 실선 = 결정론적($\mu$ 만), 주황 = 확률적
+      (샘플링 포함). 회색 점선 = 비례제어기 $\approx -9.3$,
+      은색 세로점선 = 무작위 $\approx -44.3$. y축 뒤집어 위(0 근처)가
+      좋음.}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      세 가지:
+      \begin{itemize}
+        \item \textbf{(1) 결정론적 곡선이 손으로 만든 제어기($-9.3$)와
+          같은 선상} --- 64-64 네트워크 + 100만 스텝으로 ``1줄
+          규칙과 어깨를 나란히''하는 팔을 학습.
+        \item \textbf{(2) 확률적 곡선은 계속 나빠짐} --- 엔트로피
+          보상이 ``큰 $\sigma$''를 보상해 $\sigma$ 를 1.0 클램프까지
+          밀어올림.
+        \item \textbf{(3) 두 곡선은 같은 정책의 \emph{다른 측면}}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

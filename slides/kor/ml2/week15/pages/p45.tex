@@ -1,0 +1,27 @@
+\begin{frame}{AlphaGo/AlphaZero: MCTS + 신경망}
+  \begin{itemize}
+    \item 순수 MCTS의 시뮬레이션 = \textbf{무작위}로 끝까지 ---
+      님처럼 승패가 몇 수 안에 명확해지는 게임에서는 충분히
+      정확한 신호
+    \item \textbf{바둑처럼 한 수의 영향이 아주 나중에} 드러나는
+      게임에서는, 무작위 롤아웃 하나하나가 사실상 \textbf{노이즈}에
+      가까워 부정확
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{AlphaGo/AlphaZero의 핵심 개선}
+    무작위 롤아웃을 \textbf{신경망}으로 대체:
+    \begin{itemize}
+      \item \kb{정책(policy)}: ``이 상태에서 각 수가 얼마나
+        유망한가'' (Week 10.1의 $\pi_\theta$와 같은 역할)
+      \item \kb{가치(value)}: ``이 상태가 최종적으로 얼마나
+        유리한가'' (Week 3.3의 $V(s)$와 같은 역할) --- 다른
+        헤드 또는 같은 신경망의 다른 출력
+    \end{itemize}
+  \end{block}
+  \vskip0.5em
+  MCTS는 이 추정치를 \textbf{길잡이} 삼아 탐색을 훨씬 더
+  효율적으로 좁혀가고, MCTS로 찾아낸 \textbf{더 정확한 수}를
+  다시 신경망 학습의 \textbf{정답(지도학습 목표)}으로 사용 ---
+  \kq{탐색(MCTS)과 학습(신경망)이 \textbf{서로를 개선하는
+  루프}.}
+\end{frame}

@@ -1,0 +1,37 @@
+\begin{frame}[allowframebreaks]{유도 템플릿 ①: 로지스틱회귀 경사하강 1스텝}
+  \begin{block}{문제}
+    1차원 입력, $n=3$ 샘플, $x=(1,2,3)$, $y=(0,1,1)$, 현재
+    $w=0.1$, $b=0$, 학습률 $\eta=0.5$. 교차 엔트로피 손실
+    \[ \ell = -\frac1n\sum_i \big[y_i\log\hat p_i + (1-y_i)\log(1-\hat p_i)\big]
+       \qquad (\hat p_i=\sigma(wx_i+b)) \]
+    에서 \textbf{경사하강 1스텝}을 손으로 수행하라. 4단계가
+    \kb{예측 대입 $\to$ 손실 계산 $\to$ 경사 $\to$ 업데이트} ---
+    손실이 무엇이든 이 순서만 지키면 같은 모양.
+  \end{block}
+  \vskip0.3em
+  \textbf{1단계 — 예측 대입.} $z_i = wx_i+b = (0.1, 0.2, 0.3)$:
+  \small
+  \begin{center}
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    샘플 & $x_i, y_i$ & $z_i$ & $\hat p_i=\sigma(z_i)$ & $\hat p_i - y_i$ \\
+    \midrule
+    1 & (1, 0) & 0.1 & 0.524979 & $+0.524979$ \\
+    2 & (2, 1) & 0.2 & 0.549834 & $-0.450166$ \\
+    3 & (3, 1) & 0.3 & 0.574443 & $-0.425557$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \textbf{2단계 — 손실 계산}(미분 전에 대수의 정확성 점검):
+  \[ \ell = -\frac13\big[\log(0.475021)+\log(0.549834)+\log(0.574443)\big]
+     = \frac{0.744436+0.597797+0.554336}{3} \approx 0.6322 \]
+  \textbf{3단계 — 경사.} $\frac{\partial\ell}{\partial w}
+  =\frac1n\sum_i(\hat p_i-y_i)x_i$ 에 대입:
+  \[ \frac13\big[(+0.524979)(1)+(-0.450166)(2)+(-0.425557)(3)\big]
+     = \frac{0.524979-0.900332-1.276671}{3} = -0.550675 \]
+  $\frac{\partial\ell}{\partial b}=\frac13\sum_i(\hat p_i-y_i)
+  =-0.116915$ 도 함께.
+  \textbf{4단계 — 업데이트.}
+  \[ w \leftarrow 0.1-0.5\times(-0.550675)=0.375338, \qquad
+     b \leftarrow 0-0.5\times(-0.116915)=+0.058457 \]
+\end{frame}

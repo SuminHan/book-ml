@@ -1,0 +1,28 @@
+\begin{frame}{자주 하는 실수: ``내적 = 코사인 유사도''}
+  ``내적만 하면 되지 않나'' 하고 $\boldsymbol{q}\cdot\boldsymbol{d}$로만
+  순위를 매기는 실수 --- 둘은 \textbf{벡터의 길이가 다르면} 순서가
+  \textbf{달라진다} (14.2 ``단어 벡터의 노름은 빈도와 비례''와
+  같은 구조).
+  \vskip0.4em
+  위 손계산 예에서 문서 2의 벡터를 $(4, 6)$으로 바꿔보자
+  (= 같은 \textbf{방향}을 2배로 키운 것, 문서가 두 배로 길어진 것과
+  같음):
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    & $d_{2} = (2,3)$ & $d_{2}' = (4,6)$ (= 2배) \\
+    \midrule
+    내적 $\boldsymbol{q}\cdot\boldsymbol{d}_{2}$ & 11 & $4\times4 + 1\times6 = \mathbf{22}$ \\
+    코사인 & $0.740$ & $\frac{22}{\sqrt{17}\sqrt{52}} \approx \mathbf{0.740}$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{block}{핵심}
+    \textbf{벡터를 2배로 키워도 코사인은 변하지 않음} --- 분모의
+    노름도 2배가 되어 상쇄.
+    \par 코사인은 \textbf{각도(방향)만}, 내적은 \textbf{각도 $\times$
+    크기}를 봄 --- ``문서가 길면 내적이 커진다''는 \textbf{길이 편향}.
+    \par $\to$ 의미 유사도 검색에서는 \textbf{코사인}(또는 단위벡터로
+    정규화한 뒤의 내적)을 쓴다 --- 14.2 원칙의 \textbf{문서 버전}.
+  \end{block}
+\end{frame}

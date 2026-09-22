@@ -1,0 +1,33 @@
+\begin{frame}{왜 곱셈이 문제고 덧셈은 아닌가}
+  ``곱을 반복하면 지수''는 수학의 당연한 결과 ($a^T$). 그런데 같은
+  길이의 사슬이어도, \textbf{각 단계가 이전 값을 ``곱으로'' 이어가는지
+  ``더함으로'' 이어가는지}에 따라 그래디언트의 운명이 완전히
+  갈린다.
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{기본 RNN (11.2절)}: 이전 은닉 상태를 \textbf{곱}해서
+      전달
+      \vskip0.3em
+      \[ h_t = \tanh(\cdots + W_{hh}\, h_{t-1})
+         \quad \Longrightarrow \quad
+         \frac{\partial h_t}{\partial h_{t-1}} \propto W_{hh}
+         \;\;(\text{매 단계 곱}) \]
+      \vskip0.3em
+      매 단계마다 그래디언트를 \textbf{할인율 $< 1$}로 곱함.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{ResNet 스킵 연결 (Week 10.2)}: \textbf{더함}
+      $y = F(x) + x$
+      \vskip0.3em
+      \[ \frac{\partial y}{\partial x} =
+         \frac{\partial F(x)}{\partial x} + 1 \]
+      \vskip0.3em
+      \textbf{``+1''이 매 스킵마다 정확히 1의 그래디언트를
+      통과시킴} --- 미분 경로가 1로 ``단락''해 있다. 스킵 20개를
+      쌓아도 $0.45^{20}$이 아니라 $(1 + 0.45)^{20} \approx
+      3.7 \times 10^{2}$ --- \textbf{할인 없이 1 그대로} 한
+      가닥을 통과.
+    \end{column}
+  \end{columns}
+\end{frame}

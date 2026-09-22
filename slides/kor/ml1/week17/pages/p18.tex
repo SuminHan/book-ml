@@ -1,0 +1,25 @@
+\begin{frame}{왜 앞쪽은 고정한 채 뒤쪽만 다듬나}
+  \begin{itemize}
+    \item CNN에서: \textbf{앞쪽 층}(저수준: 모서리, 색)은
+      이미지에 $\to$ 고정, \textbf{마지막 층}(고수준: 고양이
+      인가 개인가)만 재학습.
+    \item LLM에도 같은 층별 역할 분화:
+      \begin{itemize}
+        \item \textbf{앞쪽 Transformer 층}: 토큰 주변의
+          문법/의미 패턴 --- \textbf{문언어적(low-level
+          linguistic) 특징}
+        \item \textbf{뒤쪽 층}: 어떤 내용/톤/형식의 답변이
+          적절할 것인가 --- \textbf{고수준 의미/행동 특징}
+      \end{itemize}
+    \item 사전학습이 앞쪽에 폭넓은 지식을 이미 집어넣었으므로,
+      파인튜닝은 \textbf{뒤쪽 층 중심}으로 ``어떤 상황에서
+      어떤 답변을 할 것인가''라는 \textbf{행동 매핑만}
+      다듬으면 된다 $\to$ 전체 파라미터의 소수\%(LoRA, 17.3절)
+      만 갱신해도 효과가 큰 이유.
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize 앞쪽을 재학습하면(= 사전학습을 다시 하면)
+  축적한 지식을 파괴하면서 작업에 맞지 않는 방향으로
+  편향시킬 위험 --- 파인튜닝에서는 앞쪽을 \textbf{고정하거나
+  아주 작은 학습률로만} 갱신하는 것이 표준.}
+\end{frame}

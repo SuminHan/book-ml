@@ -1,0 +1,57 @@
+\begin{frame}{PPO: 목적함수의 형태}
+  \begin{itemize}
+    \item 이때 가장 널리 쓰이는 알고리즘: \kb{PPO}(Proximal
+      Policy Optimization, Schulman et al., 2017). 유도는
+      ML2에서 — 여기서는 목적함수의 \textbf{형태만}:
+      \[J(\theta) = \mathbb{E}\left[r_\phi(x,y)\right] -
+      \beta \, D_{KL}\big(\pi_\theta(\cdot|x) \,\|\,
+      \pi_{\text{ref}}(\cdot|x)\big)\]
+    \item 앞항: 보상모델 점수의 기대를 최대화. 뒤항:
+      \textbf{기준 모델}(사전학습 + SFT 후의 $\pi_{\text{ref}}$)
+      에서 벗어나는 정도에 $\beta$로 \textbf{벌}.
+    \item \kb{KL 수치의 감각}: 2.3절의 $D_{KL}(p \| q) =
+      \sum p \log(p/q)$. 두 토큰 어휘 $\{A, B\}$,
+      $\pi_{\text{ref}} = (0.5, 0.5)$라 하면:
+      \begin{itemize}
+        \item 정책이 기준과 \textbf{정확히 같으면} KL =
+          정확히 $0$(동일 분포, 이탈 없음).
+        \item A에 몰아붙인 극단 $\pi = (0.95, 0.05)$:
+          \[D_{KL} = 0.95 \cdot \log(0.95/0.5) + 0.05 \cdot
+          \log(0.05/0.5) \approx 0.610 - 0.115
+          \approx 0.495\]
+          $\beta = 1$이면 이 이탈에 0.5의 \textbf{벌}.
+      \end{itemize}
+    \item KL이 0(동일)에서 0.5(극단적 편향)으로 커지는
+      모습 = ``\textbf{기준 모델의 말투에서 얼마나
+      벗어났는가}''를 단일 숫자로 재는 \textbf{이탈 거리}.
+  \end{itemize}
+
+  \vskip0.3em
+    \begin{itemize}
+    \item PPO는 LLM 정렬을 위해 발명된 것이 \textbf{아니다}.
+      2017년 OpenAI가 발표한 PPO는 \textbf{로봇 제어}
+      (인공신경망 정책 + 연속 행동)에서 ``정책 업데이트를
+      \textbf{한 번에 크게 하지 마라}''는 안전 장치를
+      \kb{클리핑}(clipping)이라는 단순한 수단으로 구현.
+    \item 업데이트 후 정책이 이전 정책의
+      $\tfrac{\pi_\theta}{\pi_{\text{old}}} \in
+      [1-\epsilon, 1+\epsilon]$(보통 $\epsilon = 0.2$)을
+      벗어나면 그 영역에서 목적함수의 기울기를 0으로 만듦.
+    \item 이 ``한 단계만 조심스럽게''라는 사상이, LLM
+      정렬에서는 \textbf{KL 페널티}라는 또 다른 형태로
+      구현.
+    \item \textbf{둘은 같은 목적}(``기준 정책에서 크게
+      벗어나지 말 것'')을 실현하는 서로 다른 수학적
+      장치.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize ML2에서 PPO 클리핑 목적함수를 직접
+  유도·구현할 때, 이 17.3절의 KL 항과 \textbf{같은 문제의
+  다른 얼굴}임을 재확인.}
+  \vskip0.3em
+  \centering
+  \includegraphics[width=0.58\textwidth]{ref_ppo.png}
+  {\footnotesize PPO 클리핑 목적함수 $L_{\text{CLIP}}$ 한
+  항(단일 timestep)을 확률비 $r$의 함수로 — 좌: 이익 $A>0$,
+  우: $A<0$(원 논문 Figure 1).}
+\end{frame}

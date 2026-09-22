@@ -1,0 +1,27 @@
+\begin{frame}{BN 그림 + 이중 모드(학습 vs 추론)}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_batchnorm.png}
+      {\footnotesize BatchNorm 유무에 따른 MNIST 학습 수렴 속도
+      (원 논문 Figure 1) — BN이 더 큰 학습률로 적은 스텝에
+      고 정확도 도달.}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{block}{꼭 알아야 할 세부: 이중 모드}
+        \textbf{학습} 때는 \textbf{현재 미니배치}의 $\mu_B,
+        \sigma_B^2$ 사용. \textbf{추론} 때는
+        \begin{enumerate}
+          \item 배치가 없을 수 있음 (batch size = 1)
+          \item 한 배치 통계는 그 배치만의 ``요행/사고'' 포함
+        \end{enumerate}
+        $\Rightarrow$ 학습 중 \kb{러닝 평균·분산}(지수 이동 평균)
+       을 계속 기록해 두고, \textbf{추론 때는 그 누적된 통계}를
+        사용.
+      \end{block}
+      {\footnotesize ``학습/추론 시 통계가 다르다''는 사실은
+      dropout의 \texttt{.train()/.eval()}과 \textbf{같은 범주의
+      함정} — BN을 직접 구현할 때 가장 많이 틀리는 부분.}
+    \end{column}
+  \end{columns}
+\end{frame}

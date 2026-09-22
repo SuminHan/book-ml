@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{BC 코드: 로지스틱회귀와 한 줄도 다름없다}
+  \begin{lstlisting}
+import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-max(-20, min(20, z))))
+
+def train_behavior_cloning(demos, epochs, lr):
+    # demos: [(state, action), ...] (이진 예시, action = 0 또는 1)
+    w, b = 0.0, 0.0
+    for _ in range(epochs):
+        for s, a in demos:
+            pred = sigmoid(w * s + b)
+            grad = pred - a          # 로지스틱회귀와 똑같은 형태
+            w -= lr * grad * s
+            b -= lr * grad
+    return w, b
+  \end{lstlisting}
+  {\footnotesize \texttt{demos} = $(x,y)$ 쌍, \texttt{sigmoid} = 모델,
+  \texttt{grad = pred - a} = 교차엔트로피 그래디언트 — 갱신 규칙 그대로.
+  }
+\end{frame}

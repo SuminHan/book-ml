@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{kmeans 코드}
+\begin{lstlisting}
+def kmeans(X, k, max_iters=100):
+    import random
+    centroids = random.sample(X, k)
+    for _ in range(max_iters):
+        clusters = [[] for _ in range(k)]
+        for x in X:
+            distances = [sum((x[j]-c[j])**2 for j in range(len(x)))
+                         for c in centroids]
+            closest = distances.index(min(distances))
+            clusters[closest].append(x)
+        new_centroids = [
+            [sum(pt[j] for pt in cluster) / len(cluster)
+             for j in range(len(X[0]))] if cluster else centroids[i]
+            for i, cluster in enumerate(clusters)]
+        if new_centroids == centroids:
+            break
+        centroids = new_centroids
+    return centroids, clusters
+\end{lstlisting}
+  {\footnotesize \texttt{if cluster else centroids[i]}: 빈
+  클러스터의 ``평균''은 정의되지 않으므로, 그 중심점을 그대로
+  유지하는 것이 관례적 처리.}
+\end{frame}

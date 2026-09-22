@@ -1,0 +1,26 @@
+\begin{frame}{비용은 전부 예측 시점에 몰려 있다}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    단계 & 비용 & 비고 \\
+    \midrule
+    거리 계산(1) & $O(m \cdot d)$ & $m$개 점 모두 $d$차원 비교 \\
+    정렬(2) & $O(m \log m)$ & 사실상 가장 비싼 작업 \\
+    다수결(3) & $O(k)$ & 무시할 만 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item $m$이 크면 부분 정렬 \texttt{heapq.nsmallest(k, ...)}으로
+      $O(m \log k)$까지 줄일 수 있음
+    \item 100만 개로 학습한 kNN은 예측 \textbf{한 번}에 100만 번
+      거리 계산
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{실용적 해결}
+    \textbf{KD-트리}, \kb{ANN}(approximate nearest neighbor, 예:
+    HNSW, Malkov \& Yashunin 2016) 같은 인덱스 자료구조로
+    ``거리를 다 재지 않고도 가까운 점만 찾는다''. 개념적으로는
+    항상 ``모든 점을 다 본다''는 전제로 이해.
+  \end{block}
+\end{frame}

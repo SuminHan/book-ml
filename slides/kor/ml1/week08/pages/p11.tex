@@ -1,0 +1,18 @@
+\begin{frame}{모델 비교의 기준: val에서 정하고, test는 한 번만}
+  ``최소 두 모델을 비교한다''의 정확한 절차:
+  \begin{enumerate}
+    \item 모든 후보 모델을 \textbf{train으로만} fit하고,
+      \textbf{val 성능으로 순위} 매기기
+      (하이퍼파라미터 포함이면 val 안에 Week 6.2 교차검증 사용).
+    \item \textbf{val 순위 1등}을 최종 모델로 결정.
+    \item 그 모델 \textbf{만} test에 적용해 최종 숫자를
+      \textbf{한 번} 얻는다.
+  \end{enumerate}
+  \vskip0.5em
+  \begin{block}{왜 ``한 번''인가}
+    test로 후보 $m$개를 돌려봐서 가장 좋은 것을 고르면, 잡음
+    $\sigma$ 기준으로 $\mathbb{E}[\max]$만큼 성능이 \textbf{부풀어
+    오른다}(Week 6.3 선택 편향 시뮬레이션). 형식적 원칙이
+    아니라 \textbf{정량적} 이유다.
+  \end{block}
+\end{frame}

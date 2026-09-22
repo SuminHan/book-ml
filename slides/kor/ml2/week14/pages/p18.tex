@@ -1,0 +1,18 @@
+\begin{frame}{왜 MuJoCo가 ``정밀''한가: LCP 접촉}
+  \begin{itemize}
+    \item ``정밀''은 속도나 모델 크기가 아니다 --- 핵심은
+      \kb{접촉(contact)}을 푸는 방식
+    \item 공이 바닥에 \textbf{닿는 순간}은 단순 미분방정식이 아니다:
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{두 조건이 ``동시에''}
+    \textbf{비침투}(non-penetration): 겹쳐 들어가면 안 되지만
+    --- \textbf{비음}(non-negativity): 겹치지 않을 땐 힘 필요 없음
+    $\Rightarrow$ 수학적으로 \kb{선형 보완 문제(LCP, Linear
+    Complementarity Problem)}라는 특별한 형태의 최적화
+  \end{block}
+  \vskip0.5em
+  \begin{itemize}
+    \item MuJoCo는 이 LCP를 \textbf{매 스텝}에서 안정적으로 풀어낸다
+  \end{itemize}
+\end{frame}

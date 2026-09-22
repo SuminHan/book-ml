@@ -1,0 +1,29 @@
+\begin{frame}{확인 문제: 장을 넘나드는 복습 4개 (3)-(4)}
+  \small
+  \begin{itemize}
+    \item \textbf{3.} DQN(off-policy)이 리플레이 버퍼의 \emph{오래된}
+      경험을 재사용할 수 있는데, REINFORCE·PPO는 왜(
+      \emph{PPO는 부분적으로만}) 그럴 수 없는가?
+      \vskip0.2em
+      {\footnotesize $\to$ DQN은 \textbf{Q-함수}(정답이 정해진 값)를
+      배우는 것이라 ``누가 그 경험을 만들었는지''와 무관하게 벨만
+      방정식이 성립 — \textbf{off-policy}. REINFORCE는 정책 그래디언트가
+      ``\emph{지금} 정책이 그 행동을 선택할 확률''에 의존 — 정책이
+      바뀌면 그 확률도 바뀌어 \textbf{옛 데이터의 그래디언트가 더 이상
+      정확하지 않}다(\textbf{on-policy}). PPO는 확률비
+      $r_t(\theta)$로 이 차이를 \textbf{보정}하고 클리핑으로 오차를
+      억제해서 \emph{몇 에폭 정도}는 재사용 가능하지만, DQN처럼
+      완전히 오래된 경험까지는 재사용 못 함.}
+    \item \textbf{4.} Ch12.1 \kb{모방학습}(BC/DAgger)과 Ch15.2
+      \kb{MCTS}는 둘 다 ``에이전트가 직접 시행착오를 겪는 것의
+      대안''. 각각 무엇을 대신 활용하는가?
+      \vskip0.2em
+      {\footnotesize $\to$ 모방학습은 \textbf{사람의 시연}(전문가가
+      실제로 어떻게 행동했는지)을 \textbf{정답} 삼아 지도학습으로
+      정책을 배움. MCTS는 \textbf{완벽한 모델(규칙)로 만든 가상의
+      시뮬레이션}을 반복해서, 실제로 행동하기 전에 결과를 미리
+      들여다봄. 둘 다 표준 RL보다 \textbf{안전하거나 효율적}이지만,
+      전자는 \textbf{사람의 시연 데이터}가, 후자는 \textbf{정확한
+      모델(규칙)}이 있어야 한다는 \textbf{전제}가 필요.}
+  \end{itemize}
+\end{frame}

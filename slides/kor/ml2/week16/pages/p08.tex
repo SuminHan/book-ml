@@ -1,0 +1,16 @@
+\begin{frame}{환경 후보 비교 — Block B 대표 4종}
+  \small
+  \begin{tabular}{@{}lllll@{}}
+    \toprule
+    환경 & 상태$\times$행동 & 보상 구조 & 에피소드 & 잘 어울리는 비교/개념 \\
+    \midrule
+    \textbf{Pendulum-v1} & 3$\times$1 (연속) & $r=-\theta^2-0.1\dot\theta^2-0.001a^2$, 항상 음수(0=완벽) & 200 & PPO(Ch11) 클래식 페어링 — 클리핑 효과(11.3) \\
+    \textbf{CartPole-v1} & 4$\times$2 (이산) & 생존 시 스텝당 $-1$, 쓰러지면 종료 & 500 & DQN(Ch9) vs PPO — 이산 행동·연속 상태 \\
+    \textbf{MountainCar-v0} & 2$\times$3 (이산) & 스텝당 $-1$ (희소) & 200 & 희소 보상 + 긴 지평 — GAE $\lambda$ 트레이드오프(11.3) \\
+    \textbf{HumanoidStandup-v5} & 348$\times$17 (연속) & 포텐셜 기반 shaping(Ch14) & 1000 & 도메인 무작위화(13.1), MuJoCo 경험(Ch14) \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  {\footnotesize 보상 구조의 ``형''이 다르면 좋은 정책의 \textbf{모습} 자체가 달라
+  --- 평가 지표의 의미가 바뀐다.}
+\end{frame}

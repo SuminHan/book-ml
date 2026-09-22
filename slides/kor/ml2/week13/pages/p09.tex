@@ -1,0 +1,18 @@
+\begin{frame}[fragile]{진자 식이 코드가 되는 순간 --- 시뮬레이션의 정체}
+  Gymnasium의 \texttt{Pendulum-v1}(13.2절 실습의 주인공)이 내부에서
+  정확히 이 식을 쓴다: $g = 10, m = l = 1$ 로 대입하면
+  $\ddot\theta = 15\sin\theta + 3u$, 이를 \textbf{오일러 적분}으로 스텝:
+\begin{lstlisting}
+# Pendulum-v1의 step() 핵심 (g=10, m=1, l=1, dt=0.05, max_speed=8)
+new_thdot = thdot + (15.0 * np.sin(th) + 3.0 * u) * dt
+new_thdot = np.clip(new_thdot, -8.0, 8.0)   # 속도 상한
+new_th    = th + new_thdot * dt             # (반-암시) 오일러 적분
+\end{lstlisting}
+  {\footnotesize ``반-암시(semi-implicit)'' --- 새로 계산한 각속도로 각도를
+  갱신하는, 안정성이 좋은 적분 방식.}
+  \vskip0.4em
+  \begin{block}{``시뮬레이션''의 정체}
+    미분방정식을 작은 간격 $dt = 0.05$ s 로 \textbf{끊어 반복}. 200스텝
+    에피소드 = \textbf{실제 시간 10초}. ``물리 엔진''이라 불리는 이유.
+  \end{block}
+\end{frame}

@@ -1,0 +1,21 @@
+\begin{frame}{실험: planning\_steps 0 $\to$ 30}
+  \begin{itemize}
+    \item 400 에피소드 학습(시드 0, 시드 1$\sim$3으로 재현 확인).
+    \item 지표: \textbf{``25에피소드 평균 리턴이 최적치($-7$)에서
+      1.0 이내($> -8$)로 처음 들어가는 에피소드''}.
+  \end{itemize}
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    \texttt{planning\_steps} & 수렴 에피소드 (시드 0) & 시드 1$\sim$3 & 400 에피소드 후 max\,$Q$(start) \\
+    \midrule
+    0 (순수 Q-learning) & 334 & 334$\sim$387 & $-6.61$ \\
+    5 & 75 & 65$\sim$75 & $-7.00$ \\
+    10 & 52 & 51$\sim$55 & $-7.00$ \\
+    30 & 35 & 35$\sim$61 & $-7.00$ \\
+    \bottomrule
+  \end{tabular}
+  {\footnotesize 모델 커버리지: 400 에피소드 후 100개 $(s,a)$ 중
+  95$\sim$96개 모델에 저장.}
+\end{frame}

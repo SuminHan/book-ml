@@ -1,0 +1,22 @@
+\begin{frame}{on-policy vs off-policy: 같은 데이터, 다른 대상}
+  \small
+  \begin{tabular}{@{}lllll@{}}
+    \toprule
+     & 행동 정책 $b$ & 목표 정책 $\pi$ & 갱신에 쓰는 다음 행동 & 이름 \\
+    \midrule
+    \textbf{SARSA} & $\varepsilon$-greedy & \textbf{같은} $\varepsilon$-greedy
+      & 실제로 고른 $a'$ & \textbf{on-policy} \\
+    \textbf{Q-learning} & $\varepsilon$-greedy & \textbf{탐욕적}
+      ($\varepsilon=0$) & $\arg\max_{a'}Q(s',a')$ & \textbf{off-policy} \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{block}{핵심}
+    \textbf{행동 정책}($b$, 실제로 행동을 고르는 정책)과 \textbf{목표
+    정책}($\pi$, 가치를 평가/학습하려는 정책)의 관계로 표현:
+    $b = \pi$이면 on-policy, 다르면 off-policy.
+    SARSA = ``내가 지금 이렇게(탐험 포함) 행동할 때''의 가치를 배우고,
+    Q-learning = ``나는 항상 최선만 고를 텐데''라는 \textbf{이상적
+    정책}의 가치를 배운다.
+  \end{block}
+\end{frame}

@@ -1,0 +1,31 @@
+\begin{frame}{Pendulum 학습 결과 (300 반복 $\times$ 400 스텝)}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch11_2_ppo_pendulum_curve.png}
+      {\footnotesize 시드 42, 총 12만 스텝. 연회색 = 에피소드별
+      리턴(항상 음수, 0에 가까울수록 좋음), 파랑 실선 = 25에피소드
+      이동평균.}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      {\small
+      \begin{tabular}{@{}lr@{}}
+        \toprule
+        처음 10 에피소드 평균 & $-805.3$ \\
+        마지막 10 에피소드 평균 & $-742.3$ \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.5em
+      \begin{itemize}
+        \item 약 \textbf{8\%} 개선, 여전히 절댓값이 크고 학습
+          곡선도 매끄럽지 않음 (중간 지점에서 오히려 나빠지는
+          구간도 있었음).
+        \item 구현 오류가 아니라, Pendulum 같은 연속 제어는
+          완전 수렴에 \textbf{수십만$\sim$수백만 스텝}이 필요
+          — 정직한 결과.
+        \item DQN(CartPole, 300에피소드 만에 상당한 개선, 9.3절)
+          과 비교: 연속 제어가 이산보다 \textbf{더 오래} 걸림.
+      \end{itemize}}
+    \end{column}
+  \end{columns}
+\end{frame}

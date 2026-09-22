@@ -1,0 +1,24 @@
+\begin{frame}{손으로 한 번: 힌지 손실의 그래디언트}
+  $f = y^{(i)}(w^\top x^{(i)}+b)$, $L = \max(0, 1-f)$ 의 그래디언트:
+  \[
+  \frac{\partial L}{\partial w} =
+  \begin{cases}
+  -y^{(i)}x^{(i)} & \text{if } f < 1 \quad (\text{마진 위반})\\
+  0 & \text{if } f \ge 1 \quad (\text{마진 만족})
+  \end{cases}
+  \qquad
+  \frac{\partial L}{\partial b} =
+  \begin{cases}
+  -y^{(i)} & \text{if } f < 1\\
+  0 & \text{if } f \ge 1
+  \end{cases}
+  \]
+  \vskip0.4em
+  \begin{itemize}
+    \item 마진을 만족하는 점의 기여는 \textbf{정확히 0}.
+    \item 로지스틱회귀에서는 아무리 잘 맞혀도 $1-\sigma(f)>0$이라
+      모든 점이 계속 기울기에 기여했지만, 힌지 손실은
+      ``충분히 맞힌'' 점의 기여가 \textbf{완전히} 사라진다.
+    \item 이 차이가 \kb{서포트 벡터} 개념을 가능하게 한다.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,27 @@
+\begin{frame}{2단계 파이프라인과 비용의 비대칭성}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch13_1_pretrain_finetune_pipeline.png}
+      \vskip0.4em
+      {\footnotesize 인터넷 규모 텍스트로 다음 토큰 예측(수천
+      GPU, 수 주$\sim$수 달) $\to$ 기본 모델 $\to$ 질문-답변/
+      선호 데이터로 SFT·RLHF 파인튜닝(소규모 클러스터, 수
+      시간$\sim$수 주) $\to$ 지시를 따르는 모델.}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \begin{itemize}
+        \item 사전학습 비용은 \textbf{데이터의 양}(수조 토큰)에
+          비례 $\to$ \textbf{``한 번만''}.
+        \item 파인튜닝 비용은 \textbf{작업의 수}(대화, 코드,
+          요약, 역할극…)에 비례 $\to$ \textbf{``작업마다''}.
+      \end{itemize}
+      \vskip0.4em
+      \begin{block}{하나의 기본 모델 + 여러 파인튜닝}
+        ``여러 개의 별도 사전학습 모델''보다 효율적인 이유 =
+        이 \textbf{비용의 비대칭성}(데이터 비례 vs 작업
+        비례).
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}

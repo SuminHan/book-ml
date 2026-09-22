@@ -1,0 +1,24 @@
+\begin{frame}{손으로 한 번: ``움직이는 과녁''을 숫자로}
+  \begin{itemize}
+    \item 극도로 단순한 장난감: $Q(s,a;\theta) = \theta$, $r = 1$,
+      $\gamma = 0.99$.
+    \item 학습 진행 중 $\theta : 0 \to 0.5 \to 0.9$.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{타겟 네트워크 \textbf{없이}}
+    \[
+    1 + 0.99 \times 0 = 1.0, \qquad
+    1 + 0.99 \times 0.5 \approx 1.495, \qquad
+    1 + 0.99 \times 0.9 \approx 1.891
+    \]
+    환경·보상은 전혀 안 바뀌었는데, 목표값이
+    \textbf{1.0 $\to$ 1.495 $\to$ 1.891}로 계속 움직임 ---
+    ``방금 도달한 목표''를 향해 갱신했더니 갱신 때문에 목표가
+    더 멀리 도망간 셈.
+  \end{block}
+  \begin{block}{타겟 네트워크 \textbf{있음}}
+    $\theta^{-}$가 $\theta_0 = 0$에 고정 $\Rightarrow$ 두 번의 갱신 동안
+    목표값은 \textbf{정확히 1.0으로 그대로}. 이 숫자 하나로
+    ``고정된 정답을 향해 안정 수렴''이 설명된다.
+  \end{block}
+\end{frame}

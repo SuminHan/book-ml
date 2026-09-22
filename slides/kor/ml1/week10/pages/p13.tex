@@ -1,0 +1,21 @@
+\begin{frame}{FLOPs 공식: $n_{\text{out}}^{\,2}$ 이 곱해진다}
+  출력의 한 위치·한 채널을 계산하려면 $k\times k \times C_{\text{in}}$ 번
+  곱셈이 필요하고, 이걸 \textbf{모든 출력 위치} $\times$ \textbf{모든 필터}
+  로 반복:
+  \[ \text{FLOPs} \approx n_{\text{out}}^{\,2} \times C_{\text{out}} \times
+     (k \times k \times C_{\text{in}}) \]
+  \begin{itemize}
+    \item 파라미터 수 공식과 거의 똑같이 생겼지만, \textbf{파라미터 수엔
+      없던 $n_{\text{out}}^{\,2}$} 이 곱해진다
+    \item 이유: 같은 필터(같은 파라미터)를 \textbf{출력 위치마다 재사용}
+      하니 파라미터는 적어도, 계산은 그 위치 수만큼 \textbf{반복}
+  \end{itemize}
+  \vskip0.5em
+  예: 224$\times$224 흑백 ($C_{\text{in}}{=}1$), 3$\times$3 필터 1개,
+  p=0, s=1: $n_{\text{out}}=222$
+  \[ \text{FLOPs} = 222^2 \times 1 \times 9
+     = 49{,}284 \times 9 = 443{,}556 \;\; (\text{약 44만 MAC}) \]
+  필터를 64개 ($C_{\text{out}}{=}64$)로 늘리면 \textbf{정확히 64배}
+  (약 2,839만 MAC) --- \kb{커널 개수를 늘리면 파라미터 수와 연산량이
+  똑같이 정비례}로 늘어난다.
+\end{frame}

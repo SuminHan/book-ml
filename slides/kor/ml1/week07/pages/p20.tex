@@ -1,0 +1,29 @@
+\begin{frame}{U자 곡선: 편향-분산 트레이드오프}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch07_1_depth_ucurve.png}
+      \vskip0.3em
+      {\footnotesize train은 1.0까지 단조 증가, test는 depth 2$\sim$6에서
+      정점 후 depth 8에서 0.912로 떨어져 U자.}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{itemize}
+        \item \textbf{왼쪽}(깊이 1$\sim$2, 너무 얕은): train·test 모두 낮음 —
+          \kb{편향(bias)} 영역. 질문 1개(스텀)로는 부족
+        \item \textbf{가운데}(깊이 2$\sim$6, 적당히): test \textbf{0.947}
+          정점, 그 부근에서 평탄하게 머문다 — \textbf{최적 깊이}
+        \item \textbf{오른쪽}(깊이 8$\sim$None, 너무 깊은): train
+          \textbf{1.000}(100\% 외움) vs test \textbf{0.912} —
+          \kb{분산(variance)} 영역
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{실무 규칙}
+    최적 깊이는 \textbf{test 정확도의 정점}(depth 2$\sim$6, 0.947).
+    ``train이 1.0인 가장 깊은 트리''를 고르면 U자 \textbf{오른쪽 끝}
+    (0.912)에 떨어져 \textbf{3.5\%p 나빠진다} — 검증셋(또는 7.2의 OOB)으로
+    이 U자를 그려 골라야 한다.
+  \end{block}
+\end{frame}

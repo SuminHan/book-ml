@@ -1,0 +1,32 @@
+\begin{frame}[fragile]{실습: XML로 진자 + PD 제어 정책}
+\begin{lstlisting}
+import mujoco
+import numpy as np
+xml = """
+<mujoco>
+  <option gravity="0 0 -9.81"/>
+  <worldbody>
+    <body pos="0 0 1">
+      <joint name="hinge" type="hinge" axis="0 1 0"
+             damping="0.1"/>
+      <geom type="capsule" fromto="0 0 0  0 0 -0.5"
+            size="0.02" mass="1"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <motor joint="hinge" gear="1" ctrlrange="-5 5"/>
+  </actuator>
+</mujoco>
+"""
+model = mujoco.MjModel.from_xml_string(xml)
+data = mujoco.MjData(model)
+data.qpos[0] = 3.0        # 목표(0)에서 멀리 떨어뜨려 시작
+mujoco.mj_forward(model, data)
+
+# PD 제어 정책: 각도가 클수록, 각속도가 클수록 반대 방향으로 토크
+for _ in range(200):
+    theta, thetadot = data.qpos[0], data.qvel[0]
+    data.ctrl[0] = np.clip(-3.0*theta - 0.5*thetadot, -5, 5)
+    mujoco.mj_step(model, data)
+\end{lstlisting}
+\end{frame}

@@ -1,0 +1,30 @@
+\begin{frame}{그림으로 보는 클리핑: min이 만드는 ``모서리''}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch11_2_ppo_clip_loss.png}
+      {\footnotesize 한 샘플분, $\epsilon=0.2$, $r_t$ 를 0$\sim$2.2
+     까지. 파랑 실선 = $r_tA_t$, 검정 = 실제 목적함수, 빨강 점선 =
+      $\mathrm{clip}(r_t,0.8,1.2)\,A_t$, 회색 세로점선 = 클립
+      경계.}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      {\small
+      \kb{왼쪽 $A=+1$(좋은 행동)}
+      \begin{itemize}
+        \item $r_t\in[0.8,1.2]$ 안: 검은 곡선 = 파랑 실선
+          (원래 중요도 목적함수 그대로).
+        \item $r_t>1.2$ 순간: \textbf{수평으로 꺾임} —
+          ``좋은 행동을 추가로 더 밀어주는 것''의 보상이 0.
+      \end{itemize}
+      \kb{오른쪽 $A=-1$(나쁜 행동)}
+      \begin{itemize}
+        \item $r_t<0.8$: 목적함수가 \textbf{−0.8로 고정} —
+          ``나쁜 행동을 조금 더 덜 선호하게 하는 것''의 추가
+          보상 0.
+        \item $r_t>1.2$ (나쁜 것을 더 선호하는 방향): 벌금은
+          \textbf{상한 없이} 계속 커진다.
+      \end{itemize}}
+    \end{column}
+  \end{columns}
+\end{frame}

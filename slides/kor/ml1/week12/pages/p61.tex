@@ -1,0 +1,25 @@
+\begin{frame}{마지막 행이 앞 네 행의 ``대가(trade-off)''}
+  \begin{itemize}
+    \item 병렬성과 경로 길이 이점을 \emph{사면}, \textbf{그
+      대가로}:
+      \begin{enumerate}
+        \item \textbf{제곱 계산량} ($O(n^2)$),
+        \item ``\textbf{순서를 \emph{스스로} 인코딩}해야
+          하는'' PE라는 \textbf{명시적 장치}.
+      \end{enumerate}
+    \item \textbf{RNN}은 \textbf{순서 정보를 \emph{계산 구조
+      안에} 숨겼고}(대가: 순차성 + 소실), \textbf{어텐션}은
+      \textbf{\emph{입력 안에} 넣었다}(대가: $n^2$ + PE 설계).
+    \item 두 구조는 \textbf{같은 ``순서'' 정보를 \emph{다를
+      곳에} 둔 것}.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{자주 묻는 질문 1: $O(n^2)$ 가 실전에서 얼마나}
+    문장 1,000단어면 $1000^2 = 100\text{만}$ 쌍, 10,000단어면
+    $1\text{억}$ 쌍 — \textbf{길이가 10배 늘면 계산량은 100배}.
+    이 때문에 아주 긴 문서(책 한 권 분량)를 다루는 LLM은
+    이 제곱 비용을 줄이는 \textbf{다양한 근사 기법}(희소
+    어텐션 — Child et al., 2019; 슬라이딩 윈도우 등)을
+    \emph{함께} 쓴다.
+  \end{block}
+\end{frame}

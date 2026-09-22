@@ -1,0 +1,23 @@
+\begin{frame}{멀티헤드 공식}
+  모델 차원 $d_{model}$ 을 $h$개의 헤드에 나눠, $i$번째 헤드는
+  $d_k = d_{model}/h$ 차원의 Q, K, V 위에서 12.2절의 어텐션을
+  계산:
+  \[
+  \text{MultiHead}(Q,K,V) =
+  \text{Concat}(\text{head}_1, \dots, \text{head}_h)\, W_O,
+  \qquad
+  \text{head}_i = \text{Attention}\!\left(QW_i^Q,\; KW_i^K,\;
+  VW_i^V\right)
+  \]
+  \begin{itemize}
+    \item $W_i^Q, W_i^K \in \mathbb{R}^{d_{model} \times d_k}$,
+      $W_i^V \in \mathbb{R}^{d_{model} \times d_v}$:
+      \textbf{헤드별 투영 행렬} — 각 헤드가 ``무엇과 무엇을
+      비교할지''(Q·K)와 ``무엇을 전달할지''(V)를 \emph{각자}
+      학습(12.1절의 Q/K/V 삼분 구조가 \textbf{헤드마다 하나씩}).
+    \item $W_O \in \mathbb{R}^{h d_v \times d_{model}}$:
+      이어붙인 결과를 다시 $d_{model}$ 차원으로 — ``각 헤드의
+      정보를 어떻게 섞어 다음 층에 줄지''를 결정하는
+      \textbf{최종 선형변환}.
+  \end{itemize}
+\end{frame}

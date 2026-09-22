@@ -1,0 +1,31 @@
+\begin{frame}{이 재귀식이 얼마나 강력한가 --- 상태가 100만 개여도}
+  재귀식의 가장 큰 쓸모는 \kb{계산량}이다.
+  \begin{itemize}
+    \item 정의대로 $V^\pi(s)$ 를 계산하려면 상태 $s$ 에서 출발해
+      \textbf{무한히 많은 경로}를 모두 탐색하고 각각의 할인 리턴을
+      평균내야 한다 --- 상태가 100만 개면 경로 수는 사실상
+      \textbf{무한대로 폭증}.
+    \item 벨만방정식은 ``상태 $s$ 의 가치를 알려면
+      \textbf{인접 상태들} $s'$ 의 가치만 알면 된다''고 말한다.
+    \item 즉 100만 개의 상태를 모두 한 번씩 ``인접 상태의 가치에
+      지금 보상을 더하는'' 일로 계산 --- \kb{경로 탐색이 상태별 한
+      스텝 연산으로} 압축.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{동적계획법의 핵심 아이디어}
+    이 ``무한 경로 $\to$ 인접 상태만''이 바로 \kb{동적계획법
+    (dynamic programming)}이라는 이름의 \textbf{핵심 아이디어}이며,
+    다음 장의 \textbf{정책평가 알고리즘 전체}가 이 한 줄의 직접적
+    결과물이다.
+  \end{block}
+  \vskip0.3em
+  {\footnotesize 그림: 벨만방정식의 첫 스텝 분해 --- 확률적 정책
+  (각 1/2)으로 두 가지가 갈렸다가, 같은 상태 $s_1 \cdot s_0$ 로
+  다시 모인다. ``같은 상태는 같은 가지''를 하나의 노드로 병합하는
+  것이 무한 경로를 상태 수(여기서 2개)로 줄이는 재귀식의 기하학적
+  모습.}
+  \vskip0.3em
+  \begin{center}
+    \includegraphics[width=0.85\linewidth]{ch03_3_bellman_tree.png}
+  \end{center}
+\end{frame}

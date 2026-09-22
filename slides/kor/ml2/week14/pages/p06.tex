@@ -1,0 +1,22 @@
+\begin{frame}{자유낙하로 검산: 한 스텝 $\approx$ 0.002초}
+  \begin{itemize}
+    \item \texttt{free} 관절: 위치 $q_{pos}$ 7개 성분, 속도 $q_{vel}$ 6개 ---
+      공 하나만 떠 있어도 상태가 이 정도
+    \item 방향을 4차원 \kb{쿼터니언}으로: 유러 각은 \textbf{짐벌 락}
+      기이점에서 계산이 깨지지만, 쿼터니언은 안 깨진다
+    \item 5스텝: 1.0000 $\to$ 0.9994\,m (아직은 아주 조금)
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{검산: 50스텝($\approx$0.1초)}
+    자유낙하 공식 $h = 1 - \tfrac12 gt^2$ 의 예측은 \textbf{0.951\,m} ---
+    실제 시뮬레이션 값 \textbf{0.95\,m}으로 거의 정확히 일치.
+    즉 \texttt{mj\_step} 한 번 = 물리 시간 약 \textbf{0.002초}.
+  \end{block}
+  \vskip0.5em
+  \begin{itemize}
+    \item 같은 API(\texttt{MjModel}\,/\,\texttt{MjData}\,/\,\texttt{mj\_step})로
+      다리가 여러 개인 로봇, 로봇팔, 인간형까지 표현
+    \item Gymnasium의 \texttt{HalfCheetah}\,·\,\texttt{Ant}\,·\,\texttt{Humanoid}
+      --- Week 13.2의 \texttt{Reacher-v5}\,·\,\texttt{Ant-v5}도 이 엔진 위에 있다
+  \end{itemize}
+\end{frame}

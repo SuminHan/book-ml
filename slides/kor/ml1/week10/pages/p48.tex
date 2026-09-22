@@ -1,0 +1,36 @@
+\begin{frame}{왜 3단계인가 + 대가: 속도, 그리고 후속 3세대}
+  \begin{itemize}
+    \item ``여기에 사물이 있을 법한가''(후보) / ``여기에 무슨
+      패턴이 있는가''(CNN 특징) / ``도대체 뭘까, 어디까지인가''
+      (SVM+회귀) --- \textbf{각 단계에 가장 잘 맞는 도구를 쓰는
+      분업}
+    \item 대가는 \textbf{속도}: PASCAL VOC 2012 테스트(20,000장)
+      1 GPU 약 \textbf{463초} vs 슬라이딩 윈도우 약
+      \textbf{605초}(논문 수치, 약 1.3배)로 ``\textbf{느리지만
+      정확했다}'' --- 2014년 ImageNet·PASCAL 탐지를 제패
+      (전 SOTA 대비 15\%대 mAP 향상)
+  \end{itemize}
+  \vskip0.4em
+  이후 연구 = ``정확도를 유지한 채 \textbf{어떻게 빠르게 할 것인가}'':
+  \small
+  \begin{tabular}{@{}llp{8.2cm}@{}}
+    \toprule
+    모델 & 연도 & 속도화 전략 \\
+    \midrule
+    Fast R-CNN & 2015 & 이미지 \textbf{하나}를 한 번 통과시켜 특징맵을
+      만들고, 후보마다 해당 영역의 특징만 \textbf{풀링으로 공유}
+      재사용 --- 2,000회 전진전파가 1회로 줄어 \textbf{10배 이상} 빠짐 \\
+    Faster R-CNN & 2015 & 후보 추출(셀렉티브 서치) 자체도 학습 가능한
+      합성곱 층(\kb{RPN}, Region Proposal Network)으로 ---
+      ``2012년 딥러닝 이전 기술''이 마지막 남은 고리 \\
+    YOLO & 2016 & 후보도 단계도 없애고, 특징맵의 \textbf{격자 위치마다}
+      (클래스, 박스 좌표)를 \textbf{한 번의} 전진전파로 직접 회귀 ---
+      탐지를 ``\textbf{회귀 문제로}'' 재정의, 실시간 탐지의 표준 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  네 세대 모두 ``\textbf{합성곱 특징 추출기 + 문제마다 다른 출력
+  헤드}'' 골격은 그대로 --- 각각 10.1의 \textbf{파라미터 공유},
+  Week 9의 \textbf{학습 가능한 구성요소}, 10.2의 \textbf{격자
+  특징맵}이 탐지에 적용된 모습.
+\end{frame}

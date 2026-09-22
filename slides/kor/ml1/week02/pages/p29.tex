@@ -1,0 +1,36 @@
+\begin{frame}{실데이터: diabetes 데이터셋 (1/2)}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      3개 데이터의 장난감을 넘어, \textbf{실전 문제}
+      (특징 10개, 442명)에서 경사하강법의 수렴 모양을 확인.
+      \vskip0.4em
+      \begin{itemize}
+        \item sklearn \texttt{load\_diabetes} (당뇨 진행도 예측, 10개
+          신체 특징) 전체 442명 --- Efron, Hastie, Johnstone,
+          Tibshirani (2004) 의 데이터.
+        \item 모든 특징을 \textbf{표준화}한 뒤 (2.2절 스케일링의
+          동기) 두 가지를 재본다.
+      \end{itemize}
+      \vskip0.4em
+      \textbf{(1) 세 학습률의 비용 곡선}
+      ($\alpha \in \{0.01, 0.05, 0.2\}$): 표준화 후 $(1/m)X^TX$ 의
+      최대 고유값 $\lambda_{\max} \approx 4.0$ 이므로 경계
+      $\alpha^{*} = 2/\lambda_{\max} \approx 0.50$ --- $\alpha = 0.2$
+      도 경계 안이라 발산하지 않는다.
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch02_diabetes_bmi_scatter.png}
+      \vskip0.2em
+      {\footnotesize 10개 특징 중 하나(bmi)만 골라 본 모습. 출처:
+      \texttt{scikit-learn.org/stable/datasets/\allowbreak
+      toy\_dataset.html\#diabetes-dataset}.}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  초기 $J \approx 14537$ 에서 1000스텝 후 $J$:
+  \textbf{1439 / 1435 / 1430}, 6000스텝 후
+  \textbf{1433.9 / 1429.9 / 1429.9} --- \textbf{클수록 빠르게 바닥에
+  붙고}, ``10배 규칙''이 실데이터에서도 대략 성립.
+\end{frame}

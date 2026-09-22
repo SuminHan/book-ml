@@ -1,0 +1,24 @@
+\begin{frame}{실무 규칙: early stopping이 필수}
+  \begin{itemize}
+    \item \texttt{n\_estimators}는 RF처럼 ``많을수록(안정적으로) 좋다''가
+      \textbf{아님} — 검증 곡선의 \textbf{정점(최저 MSE)을 찾아 거기서
+      멈추는 early stopping이 필수}(sklearn \texttt{validation\_fraction}
+      옵션으로 내장)
+    \item \texttt{learning\_rate}를 \textbf{작게}(0.1 $\to$ 0.01) 하면 각
+      스텝이 작아져 같은 수준까지 \textbf{더 많은 단계}가 필요 $\to$
+      정점의 위치·높이가 \textbf{완만해져 early stopping이 정밀}해짐
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{표준 워크플로}
+    \textbf{``learning\_rate를 작게 하고, n\_estimators를 early stopping으로
+    결정''} — 실무 표준.
+  \end{block}
+  \vskip0.6em
+  \begin{itemize}
+    \item 이 ``정점을 지나 다시 올라가는 곡선'' = Week 1.1 \textbf{편향-분산
+      트레이드오프}: 트리 적으면(불충분 학습) \textbf{편향}이 크고,
+      많으면(과적합) \textbf{분산}이 큼
+    \item RF는 오른쪽(분산) 끝이 \textbf{거의 평탄}해서 ``많게 해두면
+      된다'', GBDT는 \textbf{가파르게 올라서} ``정점을 찾아 멈춰야 한다''
+  \end{itemize}
+\end{frame}

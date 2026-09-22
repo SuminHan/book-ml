@@ -1,0 +1,35 @@
+\begin{frame}{고정점: TD(0)는 어디로 수렴하나}
+  $V$가 더 이상 움직이지 않는(고정점) 지점에서 목표값
+  $r + \gamma V(s')$가 $V(s)$와 \textbf{항상} 같아야 하므로,
+  고정점은 $\pi$의 벨만 \textbf{기대}방정식의 해 = $V^\pi$.
+  (여기서는 정책이 동전던지기 하나뿐 --- ``더 나은 정책으로의 개선''은
+  6.2절 이후.)
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{MC의 수렴 조건}
+      \begin{itemize}
+        \item 에피소드가 \textbf{유한}히 끝나고
+        \item 모든 상태가 충분히 방문
+      \end{itemize}
+      {\footnotesize (불편한 샘플 평균이므로)}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \textbf{TD(0): MC보다 한 가지 까다로움}
+      \begin{itemize}
+        \item 에피소드가 유한한 것
+        \item 모든 상태가 \textbf{무한히} 방문
+        \item 학습률 $\alpha$가 \textbf{적절히 줄어}가는 것
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{Robbins-Monro 조건}
+    $\sum_k \alpha_k = \infty$ 이고 $\sum_k \alpha_k^2 < \infty$.
+    이유(Week 2 증분 평균의 직관): $\alpha$가 계속 크면(예: 항상 0.5)
+    잡음이 섞인 목표값이 계속 들어와, 추정치가 참값에 ``착지''하지 못하고
+    \textbf{주위를 맴돈다}.
+    노트북에서 $\alpha = 0.5$ vs $0.1$ 비교 --- 0.5 쪽이 참값 9 근처에서
+    더 크게 흔들린다.
+  \end{block}
+\end{frame}

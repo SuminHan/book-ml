@@ -1,0 +1,36 @@
+\begin{frame}{패딩·스트라이드 바꾸며 직접 세어보기}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      8$\times$8 입력, 3$\times$3 필터 ($p=0$), 스트라이드만 바꾸며:
+      \begin{tabular}{@{}lclr@{}}
+        \toprule
+        $s$ & 시작 위치 & 개수 \\
+        \midrule
+        1 & 0, 1, 2, 3, 4, 5 & 6 \\
+        2 & 0, 2, 4 & 3 \\
+        4 & 0, 4 & 2 \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.6em
+      직접 세는 것과 $\lfloor(8-3)/s\rfloor+1$ 이 $s\ne1$ 에서도
+      일치 --- $s{=}4$: ``5칸을 4칸씩 건너뛰면 0과 4 두 곳''.
+      수직·수평 방향은 \textbf{독립적} --- 사각형 입력이면
+      출력도 사각형.
+      \vskip0.6em
+      \kb{명명}: \texttt{padding="valid"} = 패딩 없음
+      (필터가 다 들어가는 위치만), \texttt{padding="same"} =
+      $k$ 가 홀수일 때 $p=(k-1)/2$ 로 $n_{\text{out}}=n$.
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch10_1_padding_strides.png}
+      \\[0.3em]{\footnotesize 같은 28$\times$28, k=3 을 1D로 줄여
+      (p, s) 조합 4가지 --- 회색은 패딩, 각 틱(tick)은 유효한 필터
+      시작 위치 하나. \textbf{틱의 개수가 곧 $n_{\text{out}}$}:
+      $p{=}0,s{=}1 \to 26$ · $p{=}1,s{=}1 \to 28$ (same) ·
+      $p{=}0,s{=}2 \to 13$ · $p{=}1,s{=}2 \to 14$.
+      네 숫자 모두 $\lfloor(28+2p-3)/s\rfloor+1$ 로 그대로 계산된다.}
+    \end{column}
+  \end{columns}
+\end{frame}

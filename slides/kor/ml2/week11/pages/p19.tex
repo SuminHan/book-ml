@@ -1,0 +1,19 @@
+\begin{frame}{자주 묻는 질문 — KL 발산의 방향}
+  \kq{KL 발산은 비대칭인데, 방향($\pi_\theta\|\pi_{\mathrm{old}}$
+  vs. 그 반대)이 왜 중요한가?}
+  \vskip0.6em
+  \begin{itemize}
+    \item $D_{\mathrm{KL}}(\pi_\theta\|\pi_{\mathrm{old}})$ 는
+      ``새 정책이 옛 정책이 \textbf{거의 확률 0}로 보는 행동에
+      확률을 붙이는 것''을 \textbf{무겁게 벌}한다.
+      \smallskip
+      {\small 그 행동이 옛 정책에서 거의 안 나왔는데 새 정책에서
+      자주 나오면 로그비가 크게 음수, 그 \textit{부정}이 커짐.}
+    \item 이 방향을 쓰면 \kb{``새 정책이 옛 데이터에서 본 적 없는
+      영역으로 도망가지 못한다''}는 직감이 자연스럽게 붙는다 —
+      데이터 재사용의 전제가 ``옛 정책이 실제로 방문한 상태·행동''
+      이므로, 그 영역 밖으로 나가는 걸 막는 방향.
+    \item (실전 PPO는 KL 발산 대신 \textbf{확률비 클리핑}으로 이
+      역할을 근사한다.)
+  \end{itemize}
+\end{frame}

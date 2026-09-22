@@ -1,0 +1,27 @@
+\begin{frame}{이 뼈대가 강화학습에서 어떻게 쓰이는가}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{Q-학습의 신경망 버전 (DQN, 9주차)}
+      \begin{itemize}
+        \item \textbf{모델}: $Q_\theta(s, a)$ --- 상태-행동 쌍의
+          ``장래 누적 보상 예측''
+        \item \textbf{손실}:
+          $J = \mathbb{E}\left[(r + \gamma \max_{a'} Q_{\theta^-}(s', a')
+          - Q_\theta(s, a))^2\right]$ ---
+          \kb{벨만 방정식}(4주차)의 ``왼쪽''과 ``오른쪽''의 오차
+        \item \textbf{학습}: 동일한 세 줄
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{정책 기반 (REINFORCE, PPO, 10$\sim$11주차)}
+      \begin{itemize}
+        \item \textbf{모델}: $\pi_\theta(a|s)$ --- 각 행동의 확률
+          (출력층 소프트맥스)
+        \item \textbf{손실}:
+          $-\sum_t \log \pi_\theta(a_t|s_t)\cdot G_t$ ---
+          ``보상이 큰 행동의 확률을 올린다'' (정책 그래디언트 정리)
+        \item \textbf{학습}: 여전히 동일한 세 줄
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

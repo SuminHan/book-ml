@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{실습: 트리가 어떤 질문을 던지나 (복습)}
+  유방암 데이터, 깊이 3 — 7.1절과 같은 코드:
+\begin{lstlisting}
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, export_text
+
+data = load_breast_cancer()
+X_train, X_test, y_train, y_test = train_test_split(
+    data.data, data.target, test_size=0.3, random_state=0)
+
+tree = DecisionTreeClassifier(max_depth=3, random_state=0).fit(X_train, y_train)
+print(export_text(tree, feature_names=list(data.feature_names), max_depth=2))
+print("트리 정확도:", round(tree.score(X_test, y_test), 3))
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize 루트가 \texttt{worst concave points}(가장 오목한 부분의
+  정도)로 먼저 나누는 것이 보임 — 정보이득이 가장 큰 질문을 알고리즘이
+  스스로 찾아낸 것.}
+  \vskip0.4em
+  \begin{itemize}
+    \item 대출 심사 예시처럼, 이 \textbf{트리 하나}는 ``왜 이렇게
+      예측했는가''를 사람이 \textbf{그대로 읽을 수 있다}
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}{데이터 나누기: 순서가 중요한 이유}
+  EDA가 끝나면 모델링 전의 \textbf{첫 번째 실제 결정}:
+  \textbf{train set} / \textbf{test set} 분리.
+  \vskip0.6em
+  \begin{block}{실무 원칙 (Week 6에서 엄밀하게)}
+    데이터에 대한 \textbf{통계를 써야 하는 모든 조작}은 \\[0.3em]
+    \hspace{1em} \kb{훈련 셋에서 fit(계산)} $\;\to\;$
+    \kb{테스트 셋에 apply(적용)} \\[0.3em]
+    순서로 --- 결코 ``전체에서 fit $\to$ 훈련 셋에 apply''
+    하지 않는다.
+  \end{block}
+  \vskip0.5em
+  \begin{itemize}
+    \item 예: 가격 결측 5\%를 \textbf{전체 평균}으로 채운 뒤 나눠
+      버리면, 훈련 행이 ``\textbf{테스트 행이 포함된 평균}''으로
+      채워진 셈 --- 실전(전체 평균을 알 수 없는 상황)에서 불가능한
+      정보를 훈련에 살짝 새겨넣은 것.
+    \item 이를 \kb{데이터 누수 (data leak)}라 부름.
+  \end{itemize}
+\end{frame}

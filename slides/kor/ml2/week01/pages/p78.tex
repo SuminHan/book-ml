@@ -1,0 +1,35 @@
+\begin{frame}{자주 묻는 질문}
+  \small
+  \begin{itemize}
+    \item \textbf{\texttt{reset}이 (obs, info)를 돌려주는데 \texttt{info}는?}
+      Gymnasium 1.x는 \textbf{2-튜플}. \texttt{info}는 초기 관측과
+      함께 오는 부가 정보(샘플링 방식 등) --- 교육 환경에서는
+      \textbf{빈 dict} $\{\}$. \texttt{obs}만 필요하면
+      \texttt{obs, \_ = env.reset(seed=...)}로 \texttt{\_}를 붙여
+      무시하는 것이 관례.
+    \item \textbf{Gymnasium 1.x의 계약}: \texttt{step}은
+      \textbf{5-튜플}(\texttt{obs, reward, terminated, truncated,
+      info}), \texttt{reset}은 \textbf{2-튜플}.
+      구버전 \texttt{gym}은 \texttt{step}이 4-튜플(\texttt{done} 하나) ---
+      인터넷 예제에서 \texttt{done}만 나오는 4-튜플을 만나면,
+      이번 책에서는 \texttt{terminated}/\texttt{truncated}로
+      \textbf{나누어} 받는다는 점만 기억.
+    \item \textbf{\texttt{action\_space.sample()}의 무작위성은 어떻게
+      고정?} \texttt{action\_space}의 무작위 발생기는 \textbf{상태를
+      유지} --- 같은 시드를 주면 한 에피소드 내 \textbf{전체 행동
+      시퀀스}가 재현. 단 \texttt{reset(seed=...)}으로 \textbf{자동
+      고정되지 않아서} \texttt{action\_space.seed(7)}를 \textbf{별도로}
+      호출. 완전한 재현에는 \textbf{두 시드 모두} 고정.
+    \item \textbf{로컬에 설치가 안 되면?} 이 책의 모든 노트북은
+      \textbf{Google Colab}에서 바로 실행(Colab 배지). Colab은 CPU만
+      주지만 CartPole$\cdot$Pendulum 같은 \textbf{가벼운} 환경엔
+      충분. 13$\sim$14주차의 무거운 시뮬레이터는 Colab GPU 런타임.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{1.3절의 한 줄}
+    \texttt{reset}/\texttt{step} 두 함수가 ``지금 상태를 보고, 하나를
+    행동하면 다음 상태$\cdot$보상$\cdot$종료 여부가 돌아온다''는
+    \textbf{유일한 계약}. 이 계약이 1.1절의 ``관측 $\to$ 행동 $\to$
+    보상 $\to$ 다음 관측'' RL 정의를 \textbf{코드로 만든 것}.
+  \end{block}
+\end{frame}

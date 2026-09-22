@@ -1,0 +1,26 @@
+\begin{frame}[fragile]{bigram 모델: ``서울의'' 뒤에?}
+\begin{lstlisting}
+from collections import defaultdict
+import math
+
+def next_token_distribution(corpus_tokens, context_word):
+    # context_word가 등장한 모든 위치에서, 바로 다음 토큰을
+    # {다음단어: 확률} 딕셔너리로 반환 (bigram 모델, n=2)
+    counts = defaultdict(int)
+    for i in range(len(corpus_tokens) - 1):
+        if corpus_tokens[i] == context_word:
+            counts[corpus_tokens[i + 1]] += 1
+    total = sum(counts.values())
+    if total == 0:
+        return {}   # 문맥이 한 번도 등장한 적 없으면 예측 근거 없음
+    return {w: c / total for w, c in counts.items()}
+
+corpus = "서울의 겨울은 춥다 서울의 봄은 따뜻하다 파리의 겨울은 춥다".split()
+print(next_token_distribution(corpus, "서울의"))
+# {'겨울은': 0.5, '봄은': 0.5}  -- "서울의" 뒤에는 겨울/봄이 각 50%
+\end{lstlisting}
+  {\footnotesize 실제 LLM의 다음 토큰 분포도 이 딕셔너리의
+  ``어휘 사전 전체 버전''에 불과 --- 3만$\sim$20만 토큰을 키로
+  하는 확률 테이블. 다만 값들이 \textbf{문장 전체}에 조건부이고
+  \textbf{학습으로} 결정된다는 두 차이뿐.}
+\end{frame}

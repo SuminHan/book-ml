@@ -1,0 +1,17 @@
+\begin{frame}{코드 읽기: 4단계가 그대로 번역}
+  \begin{itemize}
+    \item \texttt{scores[i][j]} = $Q[i] \cdot K[j] / \sqrt{d_k}$ —
+      $QK^T$ 의 $(i,j)$ 성분. \texttt{scores} 전체가 $n \times n$
+      \textbf{원점수 행렬} 자체.
+    \item \texttt{weights[i]} = \texttt{scores[i]}에 softmax를
+      적용한 결과 — $i$번째 단어(행)가 $j$번째 단어들(열)에
+      나눠준 주의의 비율, \textbf{합이 1}.
+    \item \texttt{output[i]} = \texttt{weights[i]}라는 가중치로
+      $V$ 의 $n$개 행을 \textbf{가중합}한 값 — ``$i$번째 단어가
+      다른 단어들에게 요청한 정보(V)들을 관련도만큼 섞은 결과''.
+  \end{itemize}
+  \vskip0.5em
+  3중 중첩 리스트 컴프리헨션이 처음엔 눈에 거슬리겠지만,
+  각각 $QK^T$ $\to$ $\sqrt{d_k}$ 스케일 $\to$ softmax $\to$
+  $V$ 가중합의 4단계를 \textbf{그대로 번역}한 것일 뿐이다.
+\end{frame}

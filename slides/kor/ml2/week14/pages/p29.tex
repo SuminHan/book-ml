@@ -1,0 +1,23 @@
+\begin{frame}{데이터가 GPU 위에서 어떻게 배치되는가}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch14_2_batch_step_v2.png}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      {\footnotesize CPU: 환경 스텝을 \textbf{하나씩} 순서대로
+      (C1$\to$C2$\to$C3$\to$\ldots). GPU: 4096개 환경의 상태를
+      \textbf{한 개의 연속 텐서 배열}에 나란히 담아
+      \textbf{물리 스텝 커널 1회 호출}로 4096개 환경의 다음
+      상태를 동시 계산.}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{itemize}
+    \item 그림의 핵심: ``\textbf{모든 환경의 상태를 한 개의 연속
+      배열(텐서)에 나란히 담는다}''
+    \item GPU가 빠른 이유: ``코어가 많아서''가 아니라,
+      \textbf{코어 개수와 데이터가 나란히 배열된 길이가 일치하기
+      때문}
+  \end{itemize}
+\end{frame}

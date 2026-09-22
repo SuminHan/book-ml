@@ -1,0 +1,24 @@
+\begin{frame}{확인 문제 3~4}
+  \small
+  \textbf{3.} ``텍스트에 RNN'' — 시퀀스를 \textbf{무작위로
+  70/15/15} 분할. Ch06.3의 어떤 원칙이 깨졌고, 왜 test가 낙관
+  적인가?
+  \begin{block}{답}
+    ``시계열/시퀀스는 \textbf{시간순(또는 그룹 단위)}으로 나눠야
+    한다''. 무작위 분할이면 같은 시퀀스 앞뒤가 train/test에
+    섞여 RNN이 \textit{학습한 문맥의 잔해}를 보고 ``예측'' —
+    \textbf{그룹 단위 누수}. test가 ``새 시퀀스에 잘 일반화하는
+    가''가 아니라 ``\textbf{같은 시퀀스의 나머지를 얼마나 외웠
+    는가}''를 재게 되어 낙관적.
+  \end{block}
+  \vskip0.2em
+  \textbf{4.} ``데이터가 이미지라서 CNN을 썼다''가 \textbf{형식
+  (2점)}에 머무는 이유, 3점으로 \textbf{바꾸는 법}?
+  \begin{block}{답}
+    ``이미지라서 CNN''은 Ch10.1의 \textit{왜}를 설명하지 않음 —
+    국소 receptive field + 파라미터 공유가 \textit{어떤 구조적
+    특성}(인접 픽셀 상관)에 맞는지 말해야 ``구조-편향 매칭''이
+    성립. 3점: ``\textit{위치}가 실제로 정보인가요 — \textbf{
+    무작위 회전·이동} 시키면 val이 얼마나 변하나요?''
+  \end{block}
+\end{frame}

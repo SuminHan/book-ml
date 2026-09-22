@@ -1,0 +1,33 @@
+\begin{frame}{초기 학습률 $\alpha_0$ 고르는 실무 기준}
+  \small
+  기준: \kb{``가장 큰, 하지만 손실이 안정적으로 감소하는 lr''}.
+  $\{10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}, 10^{0}\}$ 스윕 $\to$
+  손실이 \textbf{꾸준히} 줄어드는 가장 큰 lr 선택 $\to$
+  스케줄링으로 후반에 감소.
+  \vskip0.3em
+  moons 데이터(300개, 64-64-64 MLP, SGD, 150에폭), lr만 스윕:
+  \vskip0.3em
+  \begin{tabular}{@{}cccccc@{}}
+    \toprule
+    $\alpha$ & 0.001 & 0.01 & 0.1 & 0.2 & 0.5 \\
+    \midrule
+    train acc & 0.770 & 0.837 & 0.860 & 0.857 & 0.860 \\
+    val acc   & 0.771 & 0.832 & 0.852 & 0.850 & 0.846 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  \begin{itemize}
+    \item $\alpha = 0.001$: 150에폭이 지나도 0.77 — \textbf{배우지
+      못함}(과소적합)
+    \item $0.1 \sim 0.2$에서 최고(0.85); $\alpha = 0.5$는 \textbf{오히려
+      나빠짐}(0.846) — ``큰 것이 나을 것''이라는 직관이 여기 깨짐
+    \item ``안정적으로 감소하는 가장 큰 lr'' = 0.1$\sim$0.2,
+      스케줄링으로 후반에 줄이면 최적
+  \end{itemize}
+  {\footnotesize \kb{자주 하는 실수}: (1) 스케줄링 없이 처음부터
+  너무 큰 lr $\to$ 발산, (2) 너무 작은 lr $\to$ ``이 구조는 안
+  배우는 것 아닌가'' 착각 (실제로 lr 문제), (3) Adam으로
+  \textbf{warmup 없이} 큰 lr $\to$ 초반 손실 발사. 셋 다
+  ``학습이 안 된다/나빠진다''의 동일 증상 — \textbf{원인을 lr
+  쪽에서 먼저} 확인.}
+\end{frame}

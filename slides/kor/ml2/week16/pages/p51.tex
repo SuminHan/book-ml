@@ -1,0 +1,24 @@
+\begin{frame}{``달리거나 쉬거나'' MDP — 숫자로 보는 학기 중간고사}
+  {\footnotesize 같은 작은 MDP를 Week 4$\sim$6의 네 경로로 풀어, 네
+  경로가 ``같은 답, 또는 설명 가능한 다른 답''에 도달하는 것을 확인.
+  실습 노트북이 네 경로의 학습 곡선을 코드로 재현.}
+  \vskip0.4em
+  MDP(8.3 템플릿 ②): 3-state, $\gamma = 0.9$
+  \begin{itemize}
+    \item \textbf{S}(시작): \emph{run} — 0.7 확률로 G, 0.3 확률로 S로
+      \textbf{미끄러짐}, 보상 0. \emph{rest} — S에 남음, 보상 $-1$.
+    \item \textbf{G}(골): \emph{collect} — T로 전이, 보상 $+3$.
+    \item \textbf{T}: 터미널.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{경로 ① — 동적계획법(Ch4): 벨만방정식을 손으로 푼다}
+    +3을 받는 유일한 길은 G에서 collect $\Rightarrow$ $V^*(G) = 3$.
+    S에서 run이 최선(후보 추측)이면:
+    \[V^*(S) = 0.9\big(0.7 \times 3 + 0.3\,V^*(S)\big)
+      = 1.89 + 0.27\,V^*(S)
+    \;\Longrightarrow\; V^*(S) = \frac{1.89}{0.73} \approx 2.589\]
+    검증(후보+검증 Step 3):
+    \[Q^*(S,\text{run}) = 2.589 \;>\;
+    Q^*(S,\text{rest}) = -1 + 0.9 \times 2.589 = 1.330 \;\checkmark\]
+  \end{block}
+\end{frame}

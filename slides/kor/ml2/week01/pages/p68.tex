@@ -1,0 +1,25 @@
+\begin{frame}{종료 조건 세 가지, 종료 플래그는 두 종류}
+  \small
+  \begin{tabular}{@{}p{0.09\textwidth}p{0.55\textwidth}p{0.28\textwidth}@{}}
+    \toprule
+    조건 & 내용 & 플래그 \\
+    \midrule
+    1 & 막대 각도 $|\theta|$가 $0.2094$ rad(약 12도)
+      \textbf{초과} $\to$ \textbf{진짜 실패} & \texttt{terminated} \\
+    2 & 카트가 레일 끝($|x| > 2.4$ m) \textbf{벗어남} $\to$
+      환경이 \textbf{진짜 실패}로 처리 & \texttt{terminated} \\
+    3 & \textbf{500 스텝} 채움(막대는 아직 서 있다) $\to$
+      \textbf{시간 한도} & \texttt{truncated} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  즉 \textbf{조건 1$\cdot$2는 모두 \texttt{terminated}},
+  \texttt{truncated}는 \textbf{시간 한도(조건 3)뿐}이 세움.
+  \vskip0.6em
+  \kb{보상}: \textbf{살아 있는 한 스텝마다 $+1$} --- ``버틴 스텝 수''가
+  곧 에피소드 리턴. 막대각도$\cdot$중앙에서 멀어짐 같은 \textbf{중간 신호를
+  주지 않고} ``아직 살아 있는가''에만 상 $\to$ 에이전트가 ``어떻게
+  버틸 것인가''를 \textbf{스스로 발견}해야 --- 교육용으로 좋은 이유.
+  (``각도 0에 가까울수록 $+\alpha$'' 같은 \textbf{보상 성형}은 보상이
+  \textit{정말} 희박할 때(13$\sim$14주차 로봇)의 별도 주제.)
+\end{frame}

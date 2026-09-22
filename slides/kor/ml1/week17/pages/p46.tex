@@ -1,0 +1,40 @@
+\begin{frame}{손으로: 2차원 보상모델을 실제로 학습}
+  \small
+  \begin{itemize}
+    \item BT 손실은 로지스틱회귀와 같은 모양 $\to$
+      \textbf{로지스틱회귀의 기계(구현, SGD)를 그대로}
+      재사용. 장난감 보상모델 $r_\phi(x,y) = w_1 \cdot
+      \text{길이} + w_2 \cdot \text{거절 여부}$.
+  \end{itemize}
+  \vskip0.3em
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    질문 & winner (길이, 거절) & loser (길이, 거절) \\
+    \midrule
+    Q1 & (2, 0) & (5, 0) \\
+    Q2 & (3, 0) & (7, 1) \\
+    Q3 & (4, 0) & (8, 2) \\
+    Q4 & (2, 0) & (3, 1) \\
+    Q5 & (5, 0) & (4, 1) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  \begin{itemize}
+    \item winner는 모두 더 \textbf{짧고} 거절하지 않는
+      쪽. $w=(0,0)$에서: 모든 margin 0 $\to$ 손실 $5
+      \times \log 2 \approx 3.47$, 5쌍 모두 50\%
+      ``동점''. $\eta = 0.5$로 몇 백 번 $\to$ $w \approx
+      (-1.90, -6.69)$, 5쌍 \textbf{모두} 정확, 평균 손실
+      $\approx 0.002$(노트북 Section 2).
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize (1) 두 특징 모두 \textbf{부호가 음수} —
+  ``짧을수록, 거절하지 않을수록 높게''의 \textbf{방향}을
+  모델이 스스로 찾음. (2) \textbf{스케일이 다르면 크기가
+  다름} — 거절 $\pm1$, 길이 $\pm3\sim4$ $\Rightarrow$
+  $w_2$가 $w_1$의 약 3.5배. (3) 5쌍은 \textbf{선형분리
+  가능}이라 완전 분리 가능 --- 실제 (질문, 답변) 쌍은
+  훨씬 고차원이고 분리 불가가 많아, \textbf{margin의
+  순서}만 맞으면 되고 ``손실이 안 떨어진다''는 사실
+  자체가 선호 데이터의 \textbf{모순}을 알려주는 신호.}
+\end{frame}

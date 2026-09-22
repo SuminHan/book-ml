@@ -1,0 +1,21 @@
+\begin{frame}{TD(0) 갱신식}
+  Week 4의 벨만방정식 $V^\pi(s) = R(s,\pi(s)) + \gamma V^\pi(s')$의 우변
+  기댓값을, 실제로 한 번 관찰한 \textbf{샘플 하나로} 대체한다:
+  \vskip0.6em
+  \[
+  V(s) \leftarrow V(s) + \alpha\big[r + \gamma V(s') - V(s)\big]
+  \]
+  \vskip0.6em
+  \begin{block}{TD 오차(TD error)}
+    대괄호 안 $r + \gamma V(s') - V(s)$.
+    ``아직 확실하지 않은 추정치를 가지고 스스로를 갱신한다''는 뜻에서
+    \kb{부트스트래핑}(bootstrapping)이라 부른다.
+  \end{block}
+  \vskip0.4em
+  \begin{itemize}
+    \item MC: 목표 = 실제 리턴 $G_t$(에피소드 끝까지의 실제 보상 합)
+    \item TD: 목표 = $r + \gamma V(s')$(한 스텝 실제 보상 + 다음 상태 \textbf{추정치})
+    \item 부트스트래핑 덕분에 \textbf{에피소드가 끝나지 않아도}, 심지어 끝이
+      없는 과업에서도 매 스텝 학습 가능.
+  \end{itemize}
+\end{frame}

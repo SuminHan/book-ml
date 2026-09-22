@@ -1,0 +1,18 @@
+\begin{frame}{자주 묻는 질문: EM/GMM과의 관계 · 차원 선택}
+  \begin{block}{VAE와 15.1절 EM/GMM의 관계?}
+    GMM: $z$가 \textbf{이산}(클러스터 번호)이라 E-step(책임값)이 닫혀
+    계산 가능 → EM 성립. VAE: $z$가 \textbf{연속}이라 E-step 자체가
+    계산 불가능 → \textbf{E-step을 신경망 $q_\phi(z|x)$로 대체}(근사),
+    M-step을 \textbf{역전파}로 수행. ``EM의 E-step을 신경망이
+    대신한다''. M-step도 ``잠재변수별 파라미터 가중평균''이 아니라
+    ``전체 파라미터를 ELBO의 그래디언트로 갱신''으로 바뀜.
+  \end{block}
+  \vskip0.4em
+  \begin{block}{$\texttt{latent\_dim} = 2$가 왜 2차원인가?}
+    \textbf{학습 대상이 아니라 하이퍼파라미터}. 두 봉우리 데이터:
+    ``두 가지 원인''이 있어 1차원으로 충분, 2차원이면 두 봉우리가
+    원점 중심의 \textbf{대칭} 위치로 자연스럽게 배치. 이미지 데이터:
+    20$\sim$200 차원이 흔함 — 너무 작으면 복원 품질 떨어짐, 너무
+    크면 ``사용하지 않는 차원''으로 가득 차 KL이 커짐.
+  \end{block}
+\end{frame}

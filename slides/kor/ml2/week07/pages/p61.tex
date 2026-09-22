@@ -1,0 +1,27 @@
+\begin{frame}{자주 묻는 질문 (2/2)}
+  \begin{itemize}
+    \item \kq{Dyna-Q는 on-policy인가, off-policy인가?}
+      --- \textbf{off-policy}. $Q$ 갱신 방식은 6.3절 Q-learning과
+      \textbf{완전히 같음} --- 목표값에 $\max_a Q(s',a)$(탐욕).
+      계획이 모델에서 $(s,a)$를 \textit{무작위}로 뽑는 것은
+      ``행동 정책''이 아니라 ``어떤 $(s,a)$의 $Q$를 갱신할지''를
+      고르는 것. 갱신 본질엔 여전히 $\max$가 들어감.
+    \item \kq{DQN의 경험 재사용(experience replay, Week 9)과
+      무엇이 다른가?}
+      --- 공통: ``과거 경험을 재사용해 실제 스텝당 갱신을 여러
+      번''. 차이: \textbf{재사용의 원천}.
+      \begin{itemize}
+        \item \textbf{재생}: \textit{실제} $(s,a,r,s')$ 튜플을
+          버퍼에서 다시 뽑아 씀 $\Rightarrow$ \textbf{모델 오차
+          없음}. 단, 경험한 전이만 재사용할 뿐 \textit{새로운}
+          전이는 못 만듦.
+        \item \textbf{Dyna-Q 계획}: \textit{모델 예측} $(r,s')$으로
+          갱신 $\Rightarrow$ \textbf{모델 오차 동반}. 단, 모델이
+          연결한 \textit{아직 경험하지 않은} 상태의 전이까지
+          만들 수 있음.
+      \end{itemize}
+      ``안전하지만 새것을 못 만든다''(재생) vs ``새것을 만들 수
+      있지만 오차가 동반된다''(계획) --- 이 트레이드오프가
+      Week 9 이후 모델 기반 DQN 변형들의 줄거리.
+  \end{itemize}
+\end{frame}

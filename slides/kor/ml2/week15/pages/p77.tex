@@ -1,0 +1,52 @@
+\% ===== wrap-up =====
+\begin{frame}{15주차 정리}
+  \small
+  \begin{enumerate}
+    \item \kb{15.1 — 두 축의 지도} --- 모델기반 RL =
+      \textbf{모델의 출처}(known/learned) $\times$ \textbf{용도}(학습/
+      계획). 틱택토 549,946개 vs 바둑 $2 \times 10^{170}$:
+      ``모델을 안다'' $\neq$ ``계산할 수 있다''. 가치반복은
+      \textbf{한 반복당 한 칸}, 깊이 시뮬레이션은 \textbf{압축}.
+      Dyna-Q: 계획 10스텝으로 334$\to$52 에피소드(약 6.4배),
+      $30$으로 35(한계 효과 감소) --- \textbf{목적지는 같고
+      도로의 길이만} 달라. ``모델이 있으니 학습 불필요''는
+      \textbf{양쪽(known/learned) 모두}에서 성립하지 않음.
+    \item \kb{15.2 — MCTS = UCB + 끝까지 해보기} ---
+      \textbf{선택}(UCB의 형태 UCT) · \textbf{확장} ·
+      \textbf{시뮬레이션}(무작위 롤아웃) · \textbf{역전파}
+      (승패 통계 전달). 님(5)에서 4의 배수 전략을 \textbf{규칙을
+      몰라도} 98.5\%로 찾음. 추정 승률 98.7\% $>$ 무작위 참
+      승률 67\% = \textbf{트리(기억) + 롤아웃(표본추출)의
+      합성}. 탐색 상수 $c$ = 탐험 예산의 \textbf{다이얼}.
+      버그 투어: 에러 없이 ``조금 이상한 결과''가 가장
+      사악함. AlphaZero = \textbf{PUCT}(정책망 사전확률로
+      가중) + self-play 루프; 100억 판으로 $10^{170}$의
+      $10^{-158}$.
+    \item \kb{15.3 — 게임 설계의 학문(선택)} ---
+      \textbf{비정상성}: 상대가 학습하면 수렴해야 할 ``정답''
+      자체가 움직임. 알고리즘(단순 Q-learning/fictitious
+      play)은 \textbf{모두 같고} 결과가 달라지는 것은 오직
+      \textbf{보상 구조} --- 죄수의 딜레마(상호 배신,
+      최종 1.012), 조율 게임((L,L) \textbf{잠금}, 경로 의존,
+      VHS/Betamax), 바위-가위-보(혼합 균형 1/3).
+      ``단일 에이전트를 N번 돌린다''는 실수는
+      \textbf{마르코프 성질 파괴·공동 최적 $\neq$ 개인 최적·
+      균형 수렴 무보증} 세 곳에서 무너짐. self-play가
+      AlphaZero를 잇는 관념.
+    \item \kb{15.4 — 학습된 모델 안에서 상상} ---
+      \textbf{World Models}(VAE + MDN-RNN, 잠재 공간 안에서만
+      컨트롤러)와 \textbf{Dreamer}(상상 궤적을 통째로
+      역전파)가 learned model을 신경망 스케일로 밀어붙임.
+      CartPole 실습: 상상 생존 스텝이 \textbf{실제와 네
+      자리 모두 일치}(8/10/100/8), 20스텝쯤부터 오차가
+      쌓여 궤적이 벌어짐 --- \textbf{유한한 정확도의 근사}.
+  \end{enumerate}
+  \vskip0.6em
+  \begin{block}{다음 주 --- Week 16. Block B 캡스톤:
+  팀 프로젝트와 학기 총정리}
+    이번 장(모델기반 계획: Dyna · MCTS · World Models)까지
+    갖춘 후반부 \textbf{모든 도구}를 로봇 시뮬레이션 팀
+    프로젝트에 \textbf{직접 적용} --- 이번 장이 그 캡스톤
+    전에 새 도구를 챙기는 \textbf{마지막 장}.
+  \end{block}
+\end{frame}

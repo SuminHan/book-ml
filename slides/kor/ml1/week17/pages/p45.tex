@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{BT 손실: 코드와 숫자}
+\begin{lstlisting}
+import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+def reward_model_loss(r_win, r_lose):
+    # Bradley-Terry: P(y_w > y_l) = sigmoid(r_win - r_lose)
+    return -math.log(sigmoid(r_win - r_lose))
+\end{lstlisting}
+  \small
+  \begin{itemize}
+    \item \textbf{손으로:} $r_w = 1$, $r_l = -1$ (margin
+      $z = 2$) $\Rightarrow$ $\mathcal{L} = -\log\sigma(2)
+      \approx -\log 0.8808 \approx \mathbf{0.1269}$.
+    \item \textbf{거꾸로}($r_w = -1$, $r_l = 1$):
+      $-\log\sigma(-2) \approx \mathbf{2.1269}$ — 잘
+      구분한 쌍보다 \textbf{약 17배} 큼.
+    \item margin 0(무작위 추측): $\log 2 \approx 0.693$.
+    \item 로그-odds로 읽기: $z = 2$일 때 odds는 $e^2
+      \approx 7.4$ — ``이 사람이 $y_w$를 $y_l$보다
+      선호할 odds가 약 7:1''.
+  \end{itemize}
+\end{frame}

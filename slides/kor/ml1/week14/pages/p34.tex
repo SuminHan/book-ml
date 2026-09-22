@@ -1,0 +1,20 @@
+\begin{frame}{학습 데이터와 loss}
+  \begin{itemize}
+    \item 학습 데이터: 말뭉치 전체에서 \textbf{모든 (중심, 주변) 단어
+      쌍} --- 앞뒤 $w$개 \kb{윈도우} 안에서 실제로 함께 나온 쌍.
+    \item loss: 3절 다중분류로 쓴 바로 그 \kb{이진 교차엔트로피}를
+      쌍마다 더해줌:
+  \end{itemize}
+  \[
+    \mathcal{L} = -\sum_{(c,t)\in \text{말뭉치}} \Big[
+      \log p(t \mid c)
+      + \sum_{t' \in \text{네거티브 샘플}} \log (1 - p(t' \mid c))
+    \Big]
+  \]
+  \vskip0.6em
+  \begin{block}{한 줄}
+    ``함께 나오는 쌍의 내적을 \textbf{크게}, 안 나오는 쌍의 내적을
+    \textbf{작게}'' --- 이 상대적 \kb{순위(ranking)}를 만드는 것이
+    word2vec 전체의 학습 목표.
+  \end{block}
+\end{frame}

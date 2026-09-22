@@ -1,0 +1,22 @@
+\begin{frame}{코드 세 줄 읽기 --- ``모델이 없다''는 뜻}
+  \begin{itemize}
+    \item (1) \texttt{sp = s + rng.choice([-1, 1])} --- 환경의 유일한
+      무작위성.
+    \item (2) \texttt{V[s] += alpha * (...)} --- TD(0) 갱신식 자체.
+    \item (3) \texttt{(0.0 if sp in (0, 6) else V[sp])} --- \textbf{터미널 처리}.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{``모델을 쓰지 않는다''는 것의 의미}
+    \textbf{우리가} $P(s'\mid s)$를 알고 있느냐는 이 예제에서는
+    부차적. 알고리즘이 갱신식에 쓰는 것은 \textbf{실제로 관찰된}
+    $(s, r, s')$ 한 줄뿐이다.
+  \end{block}
+  \vskip0.4em
+  \begin{itemize}
+    \item ``모델이 없다'' = 확률을 \textbf{사용하지 않고} 배운다는 것이지,
+      확률을 모른다는 뜻이 \textbf{아니다}(여기는 알고 있다).
+    \item 확률이 알려졌다면 이 예제에서는 Week 4의 DP가 더 효율적 ---
+      TD의 가치는 확률을 \textbf{모를 때}에 있다.
+      그 ``모를 때''의 표준 예제 \kb{CliffWalking}은 6.2절에서 만난다.
+  \end{itemize}
+\end{frame}

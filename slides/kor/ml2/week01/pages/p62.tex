@@ -1,0 +1,16 @@
+\begin{frame}{자주 하는 실수 (1): 초기화와 \texttt{zero\_grad()}}
+  \begin{itemize}
+    \item \kb{실수 1: ``층을 더 쌓으면 무엇이든 잘 배운다''} --- 아님.
+      초기화가 잘못되면(가중치가 너무 크거나 작으면) 신호가 층을 거치며
+      \textbf{폭주하거나 사라져} 학습이 시작조차 안 됨.
+      \texttt{MLP(1, 16, 1)}의 16이 ``적당히'' 큰 이유: PyTorch
+      \texttt{nn.Linear}의 \kb{Kaiming 초기화}(입력 차원에 반비례 균등
+      분포, He et al., 2015). 1024로 늘리면 느려지거나 발산.
+      \textbf{깊이는 표현력을 주지만, 안정성은 초기화가 보장}.
+    \item \kb{실수 2: \texttt{zero\_grad()}를 빼먹기} ---
+      \texttt{.backward()} 반복 시 그래디언트 \textbf{축적}.
+      빠뜨리면 ``에포크 1 + 에포크 2의 그래디언트''로 업데이트 $\to$
+      발산/비수렴 ``이상한 현상''의 \textbf{가장 흔한 원인}.
+      \textbf{매 업데이트 전에 \texttt{zero\_grad()}}.
+  \end{itemize}
+\end{frame}

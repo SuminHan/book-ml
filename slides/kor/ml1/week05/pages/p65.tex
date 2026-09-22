@@ -1,0 +1,38 @@
+\begin{frame}{커널 트릭의 직접 검증 + XOR 결과}
+  \begin{itemize}
+    \item \kb{커널 트릭 직접 검증}: $\phi_2$ 의 내적이 정확히
+      $(x\cdot x'+1)^2$ 와 같은지 50개 랜덤 점으로 확인 —
+      최대 오차 $10^{-14}$ 수준으로 \textbf{숫자 하나까지 일치}.
+      ``커널 트릭은 전개를 생략할 뿐, 같은 내적을 계산한다''의
+      직접 검증.
+  \end{itemize}
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    모델 & 정확도 & 서포트 벡터 수 & 비고 \\
+    \midrule
+    선형 (d=1) & 0.74 & 319 & 대각선 교차를 못 나눔 \\
+    다항 d=2 & \textbf{1.00} & 18 & $x_1x_2$ 항 포함 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize\vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch05_3_poly_xor.png}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \small
+      \begin{itemize}
+        \item \textbf{도수 하나만 바꿨을 뿐}인데 SV가
+          319$\to$18로 줄고 정확도 0.74$\to$1.00.
+        \item 선형(좌): 원점을 지나는 직선 하나에 머물며
+          대각선 교차를 못 나눔.
+        \item d=2(우): 경계가 \textbf{쌍곡선형}
+          ($x_1x_2=c$ 곡선)으로 사분면을 따라 구부러짐 —
+          ``도수 2 단항식 $x_1x_2$ 가 추가된'' 효과의 시각화.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

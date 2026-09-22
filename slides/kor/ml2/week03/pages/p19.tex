@@ -1,0 +1,50 @@
+\begin{frame}[fragile]{실습: 마르코프 성질을 샘플링으로 직접 검증}
+  마르코프 성질이 ``성립한다''는 말이 \kb{검증 가능한 수학적
+  주장}인지 직접 확인. 간단한 \textbf{결정적} 환경(2-경로 환경:
+  상태 0에서 행동 0이면 1로, 행동 1이면 2로 전이)을 만들고,
+  \textbf{같은 상태 1}에 \textbf{다른 경로}(0$\to$1 vs
+  0$\to$2$\to$1)로 도달한 뒤, 다음 상태 분포가 같은지 샘플링으로
+  확인:
+  \begin{lstlisting}
+import numpy as np
+
+class TwoPathsEnv:
+    """0 -> {1, 2} -> 1 -> 1(self-loop) 결정적 MDP."""
+    def __init__(self, seed=0):
+        self.rng = np.random.default_rng(seed)
+        self.s = 0
+    def reset(self, seed=None):
+        if seed is not None:
+            self.rng = np.random.default_rng(seed)
+        self.s = 0
+        return self.s
+    def step(self, a):
+        if self.s == 0:
+            self.s = 1 if a == 0 else 2
+        elif self.s == 1:
+            self.s = 1  # self-loop, 경로 무관
+        else:
+            self.s = 1 if a == 0 else 2
+        return self.s, 0.0, False, False, {}
+
+# 마르코프 검증: 상태 1에 두 경로로 도달, 다음 전이 분포 비교
+rng = np.random.default_rng(42)
+dist_via_01, dist_via_021 = [], []
+N = 10000
+for _ in range(N):
+    env = TwoPathsEnv(seed=rng.integers(0, 2**31)); env.reset()
+    env.step(0); env.step(0)          # 0->1, 1->1
+    dist_via_01.append(env.s)
+for _ in range(N):
+    env = TwoPathsEnv(seed=rng.integers(0, 2**31)); env.reset()
+    env.step(1); env.step(0); env.step(0)  # 0->2->1, 1->1
+    dist_via_021.append(env.s)
+
+p1, p2 = np.mean(dist_via_01 == 1), np.mean(dist_via_021 == 1)
+print(f"경로 0->1    : P(다음=1 | s=1) ≈ {p1:.4f}")
+print(f"경로 0->2->1 : P(다음=1 | s=1) ≈ {p2:.4f}")
+print(f"차이: {abs(p1-p2):.4f}  (마르코프 성질: 0이어야 함)")
+assert abs(p1 - p2) < 0.01, "마르코프 성질 위반!"
+print("✓ 두 경로에서 다음 상태 분포가 일치 — 마르코프 성질 확인")
+  \end{lstlisting}
+\end{frame}

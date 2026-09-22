@@ -1,0 +1,22 @@
+\begin{frame}{자주 하는 실수: UCB를 낙관적 초기화로 대체}
+  낙관적 초기화와 UCB는 \textbf{초반에는} 거의 같은 일을 하는
+  것처럼 보이나(둘 다 ``안 당겨본 팔''을 먼저 시도),
+  \textbf{초반 이후가 완전히 다름}.
+  \vskip0.5em
+  \begin{enumerate}
+    \item \textbf{``초반 $k$ 회만 무작위로 당기고, 이후엔 순수
+      탐욕''을 UCB로 착각} --- 탐험을 $k$ 회로 \textbf{고정}.
+      $k$ 이후 환경이 바뀌어도 \textbf{전혀} 적응하지 못함.
+      ``각 팔 1회'' 보장조차 안 됨.
+    \item \textbf{UCB 보너스를 ``한 번만 계산''}하고 이후에는
+      $Q_t$ 만 비교 --- $N$ 이 커져도 보너스가 \textbf{감소하지
+      않아}, ``탐험이 점점 줄어든다''는 메커니즘이 \textbf{완전히
+      사라짐}. ``불확실성 보너스까지 붙인 고정 탐험''이 됨.
+  \end{enumerate}
+  \vskip0.4em
+  \begin{block}{UCB 구현의 본질}
+    \textbf{매 스텝마다 갱신된 $N_t(a)$ 로 보너스를 \textbf{재계산}}
+    해야 함. 이 ``재계산''이 UCB의 본질이며, 빼먹으면 UCB가
+    아님.
+  \end{block}
+\end{frame}

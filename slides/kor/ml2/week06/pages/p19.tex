@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{확인 문제 3: 코드 진단}
+  루프의 문제를 찾아, 그것이 \textbf{어떤 상태의 학습}을 빼먹게 되는지
+  설명하라:
+\begin{lstlisting}
+while s not in (0, 6):
+    sp = s + rng.choice([-1, 1])
+    r = 1.0
+    if sp in (0, 6):
+        break                         # ← 갱신 전/후 어디에 두었는가?
+    V[s] += alpha * (r + gamma * V[sp] - V[s])
+    s = sp
+\end{lstlisting}
+  \vskip0.6em
+  \begin{itemize}
+    \item \textbf{힌트}: \texttt{break}는 \texttt{V[s] += ...} \textbf{전}에
+      있다. $5\to6$ 스텝의 갱신은 어디에 갔는가?
+    \item (4) (개념) $\gamma = 0$이면 갱신식은
+      $V(s) \leftarrow V(s) + \alpha(r - V(s))$ 로 줄어든다.
+      $V(s')$이 목표값에 들어오지 않는다는 직관을 바탕으로, 이 환경의
+      참값 $V^{*}(i)$가 모든 내부 상태에서 몇이 되는지 구하고,
+      ``내다보기 0스텝''이라는 표현과 어떻게 일치하는지 설명하라.
+  \end{itemize}
+\end{frame}

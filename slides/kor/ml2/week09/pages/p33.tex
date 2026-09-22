@@ -1,0 +1,23 @@
+\begin{frame}{역사: ``오래된 목표''는 DQN보다 오래된 아이디어}
+  \begin{itemize}
+    \item 표 기반 Q-learning 갱신식에서 우변의 $Q(s',a')$은 \textbf{갱신 전}
+      값 --- \texttt{target}을 먼저 계산하고 나서야 \texttt{Q[s][a]}를 쓰는
+      그 순서 하나. 표에서는 이 규칙이 \textbf{보이지 않는다}(각 칸이
+      독립 파라미터라서).
+    \item 신경망에서는 모든 칸이 \textbf{같은 $\theta$를 공유} $\Rightarrow$
+      ``읽는 시점 vs 갱신 시점''의 차이는 \textbf{함수 전체}의 차이.
+      $\theta$/$\theta^{-}$ 분리는 표의 이 한 줄 규칙을
+      \textbf{독립 파라미터로 명시적으로 쓴 것}.
+  \end{itemize}
+  \vskip0.4em
+  \begin{itemize}
+    \item 1990년 \kb{TD-GAMMON}이 먼저 다뤘다 --- ``목표 계산용 네트워크를
+      덜 자주 갱신'' 완화책. Sutton \& Barto(1998): ``지연된(damped) 목표''.
+    \item 하드 업데이트 = 표의 ``갱신 전 값'' 규칙의 확장.
+      \textbf{소프트 업데이트} $\theta^{-} \leftarrow \tau\theta + (1-\tau)\theta^{-}$
+      = 1960년대 확률근사 문헌의 \kb{Polyak averaging}.
+    \item 2018년 \kb{Rainbow} (Hessel et al.)이 두 방식을 스펙트럼 하나로 통합;
+      연속제어 DDPG 계열에서는 $\tau = 10^{-3} \sim 10^{-2}$ 소프트가 사실상
+      표준.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,22 @@
+\begin{frame}{확인 문제 6.3}
+  \small
+  \begin{enumerate}
+    \item \emph{테스트 정보가 다른 단계로 흘러나가는} 것에 모두 체크:
+      (a) val RMSE로 $\lambda$ 고르기 (b) test RMSE로 $\lambda$ 고르기
+      (c) \texttt{StandardScaler().fit(X\_all)} 후 train/val/test에
+      transform (d) train으로 fit한 스케일러로 test transform
+      (e) test에서 제일 잘 맞는 모델을 보고, ``더 잘 맞추려고'' train에
+      test를 추가로 넣기.
+    \item 모델 후보 10개 $\times$ $\lambda$ 후보 10개 = 100개 조합을
+      \emph{테스트}로 평가해 최고 조합 고름. 잡음 $\sigma=0.5$라면,
+      ``고른 조합의 test 점''은 진짜 성능보다 \textbf{평균적으로} 얼마나
+      높을까? (힌트: $\mathbb{E}[\max]$를 $\sigma$로 곱해라.)
+    \item 아래 2단계 3분할 중 \emph{원칙 위반}: (가) 80/20 $\to$
+      val/test 10/10, (나) 80/20 $\to$ test에서 제일 좋은 $\lambda$ 골라
+      train/val에 다시 적용, (다) train으로 fit한 PCA로 val/test 투영.
+    \item ``데이터 100개뿐이라 3분할하면 test가 20개밖에 안 돼서 val을 빼고
+      80/20만 쓰고, test로 $\lambda$를 고르되 최종 수치는 그 test의 5-fold
+      평균으로 보고하자''는 제안을 평가 — 어떤 점이 원칙을 지키고, 어떤
+      점이 위반하는가?
+  \end{enumerate}
+\end{frame}

@@ -1,0 +1,17 @@
+\begin{frame}[fragile]{OOB 실습: test와 거의 붙는다}
+\begin{lstlisting}
+rf = RandomForestClassifier(n_estimators=100, oob_score=True, random_state=0)
+rf.fit(X_train, y_train)
+print("OOB score:", round(rf.oob_score_, 3))
+print("test score:", round(rf.score(X_test, y_test), 3))
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize \texttt{OOB score: 0.955 \quad test score: 0.959}}
+  \vskip0.5em
+  \begin{itemize}
+    \item OOB 점수(0.955)가 진짜 test(0.959)와 \textbf{거의 붙는다}
+    \item \textbf{주의}: \texttt{oob\_score\_}는 \texttt{oob\_score=True}로
+      학습했을 때만 \textbf{속성}으로 생기며, \texttt{oob\_score()}라는
+      \textbf{메서드가 아니다}
+  \end{itemize}
+\end{frame}

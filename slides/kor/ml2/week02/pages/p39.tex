@@ -1,0 +1,24 @@
+\begin{frame}{seed=0, $k=3$, 2000스텝: 실전 숫자}
+  \small
+  \begin{tabular}{@{}lclcc@{}}
+    \toprule
+    전략 & 총 보상 & $N = (N_A, N_B, N_C)$ & $Q = (Q_A, Q_B, Q_C)$ \\
+    \midrule
+    ε-greedy ($\varepsilon{=}0.1$) & \textbf{3893.9} & (82, 50, 1868) & (0.978, 1.315, 2.006) \\
+    낙관적 초기화 ($Q_0{=}5.0$) & \textbf{4007.7} & (3, 1, 1996) & (1.099, 0.103, 2.006) \\
+    UCB ($c{=}2.0$) & \textbf{3940.2} & (35, 72, 1893) & (1.150, 1.476, 2.004) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \textbf{세 가지 관찰}:
+  \begin{enumerate}
+    \item \textbf{낙관적 초기화 1위}(4007.7) --- 초기값 5.0이 실제
+      보상(2.0)보다 위에 있어, 각 팔이 \textbf{최소 한 번}은 당겨진
+      뒤 최선의 팔(C)에 집중. 효율 최고.
+    \item \textbf{ε-greedy 3위}(3893.9) --- 정보와 무관하게 나쁜
+      팔(A: 82회, B: 50회)을 계속 다시 당기며 낭비.
+    \item \textbf{UCB 중간}(3940.2) --- ``불확실성이 큰 팔''만 골라
+      재확인. ε-greedy보다 낭비 적지만, ``각 팔 정확히 한 번씩''
+      최소 비용 보장은 못 해줌.
+  \end{enumerate}
+\end{frame}

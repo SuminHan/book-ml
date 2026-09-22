@@ -1,0 +1,24 @@
+\begin{frame}{Actor의 구조: 트렁크 + $\mu$ 헤드 + 전역 표준편차}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch13_3_gaussian_policy_structure.png}
+      \vskip0.4em
+      {\footnotesize 10차원 상태 $\to$ 64-64 트렁크 $\to$ $\mu$ 헤드(tanh) +
+      전역 log\_std $\to$ 2차원 가우시안 정책. ValueNet은 $V(s)$ 추정.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      세 부분:
+      \begin{itemize}
+        \item \textbf{(1) 트렁크}(64-64 은층): 10차원 상태 처리 ---
+          11.2절 Pendulum Actor와 같은 뼈대, 입력 차원만 바뀜.
+        \item \textbf{(2) $\mu$ 헤드}: 64차원 특징 $\to$ 2차원 평균.
+          출력을 \texttt{tanh}$\times$1.0 --- 평균을 행동 범위
+          $[-1,1]$ 안에 가둬두면 정책 ``중심''이 로봇이 낼 수 있는
+          범위를 벗어남.
+        \item \textbf{(3) log\_std 파라미터}: 표준편차. \textbf{$s$ 가
+          붙지 않음} --- 모든 상태에 \emph{공유}되는 2차원 벡터 하나.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

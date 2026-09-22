@@ -1,0 +1,24 @@
+\begin{frame}{온도(temperature) 관점}
+  \kq{``$\sqrt{d_k}$ 가 아니라 $d_k$ 로 나누면 안 되나?''}
+  \begin{itemize}
+    \item $d_k$ 로 나누면 내적의 표준편차가 $1/\sqrt{d_k}$ 까지
+      \textbf{과도하게} 줄어든다 — 원점수가 모두 0에 붙어
+      softmax가 \textbf{균등분포}$(1/n)$에 가까워지고, ``어떤
+      단어가 관련 있는가'' 구분하는 신호가 소실된다.
+    \item 스케일링은 ``\textbf{정확히} 정규화''의 문제 —
+      $\sqrt{d_k}$ 가 아니라 $d_k$ 나 1이면 softmax 출력이
+      극단(one-hot)이나 반대(균등)로 치우친다.
+    \item 실습 노트북에서 세 가지 스케일 ($1$, $\sqrt{d_k}$,
+      $d_k$)을 같은 원점수에 적용해 가중치 분포를 나란히 비교.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{더 일반적인 형태: 온도 $t$}
+    어텐션 원점수를 온도 $t$ 로 나눠 $\text{softmax}(s/t)$ 로
+    적용. $t$ 크면 가중치가 \textbf{균등에 가까워지고}, $t$ 작으면
+    \textbf{극단적}(한 단어 독주). $\sqrt{d_k}$ 스케일링은 초기
+    무작위 상태에서 원점수의 표준편차가 $\sqrt{d_k}$ 라는 사실을
+    이용해 \textbf{$t = \sqrt{d_k}$ 라는 ``정규 온도''}를 선택한
+    것. 실전에서 이 온도 관점으로 어텐션을 의도적으로
+    ``분산''/``집중''하게 조절하기도 한다.
+  \end{block}
+\end{frame}

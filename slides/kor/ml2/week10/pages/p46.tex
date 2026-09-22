@@ -1,0 +1,34 @@
+\begin{frame}{베이스라인의 핵심 수학적 사실: 3단계로}
+  $b(s_t)$ 를 \textbf{현재 상태 $s_t$ 에만 의존하고, 행동 $a_t$ 에는
+  전혀 의존하지 않는} 어떤 값이라 하자 (Week 4의 가치함수
+  $V(s_t)$ 가 대표 예):
+  \[
+  \mathbb{E}_{a_t \sim \pi(\cdot|s_t)}
+  \big[ \nabla_\theta \log\pi_\theta(a_t|s_t)\, b(s_t) \big]
+  = b(s_t)\, \mathbb{E}_{a_t}
+  \big[ \nabla_\theta \log\pi_\theta(a_t|s_t) \big]
+  = b(s_t)\, \underbrace{\sum_{a_t} \nabla_\theta \pi_\theta(a_t|s_t)}_{=0}
+  = 0
+  \]
+  세 단계:
+  \begin{enumerate}
+    \item $b(s_t)$ 는 $a_t$ 와 무관한 \textbf{상수}라 기댓값
+      \textbf{밖으로} 나옴.
+    \item $\nabla\log\pi = \nabla\pi/\pi$ 이므로
+      $\sum_a \pi(a)\nabla\log\pi(a) = \sum_a \nabla\pi(a)$.
+    \item 모든 행동의 확률 합은 $1$이고, \textbf{상수의 미분은 0}.
+  \end{enumerate}
+  \vskip0.3em
+  \begin{block}{한 줄 결론}
+    \[
+    \mathbb{E}\big[ (G_t - b(s_t))\,\nabla_\theta\log\pi_\theta(a_t|s_t) \big]
+    = \mathbb{E}\big[ G_t\,\nabla_\theta\log\pi_\theta(a_t|s_t) \big]
+    - \underbrace{b(s_t)\,\mathbb{E}
+    \big[ \nabla_\theta \log\pi_\theta(a_t|s_t) \big]}_{=0}
+    \]
+    \textbf{그래디언트 기댓값(= 진짜 기울기 방향)은 $b(s_t)$ 를
+    빼도 그대로} --- 그런데 \textbf{분산만} 줄어듦
+    ($G_t$ 가 크게 흔들리던 신호가 ``기준에서 얼마나 벗어나는가''로
+    감소).
+  \end{block}
+\end{frame}

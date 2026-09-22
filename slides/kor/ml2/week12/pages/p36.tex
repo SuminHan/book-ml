@@ -1,0 +1,22 @@
+\begin{frame}{그리고 그 함정: 보상 해킹과 Goodhart}
+  \begin{itemize}
+    \item PPO는 $r_\phi$를 \textbf{완벽한} 것으로 믿고 값을 높이는
+      방향으로 움직임.
+    \item 그런데 $r_\phi$는 결국 \textbf{학습된 근사}.
+    \item ``사람의 \textit{진짜} 선호''와 ``모델이 \textit{추정}한
+      선호''가 다른 영역으로 벗어나면:
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{\kb{보상 해킹}(reward hacking)}
+    정책이 \textbf{보상모델의 약점(잘 못 점수 매긴 지역)을 파고들며}
+    점수는 오르는 데 실제 선호는 안 좋아지는 행동을 배울 수 있다.
+  \end{block}
+  \vskip0.4em
+  \begin{itemize}
+    \item \kb{Goodhart의 법칙} — ``측정 지표가 목적이 되면 더 이상
+      좋은 지표가 아니다'' — 의 \textbf{강화학습 버전}.
+    \item 보상을 ``진짜 선호''가 아니라 ``모델 \textit{출력}''으로
+      대치한 순간, 최적화 대상은 \textbf{모델 출력을 높이는 것}이
+      됨.
+  \end{itemize}
+\end{frame}

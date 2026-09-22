@@ -1,0 +1,33 @@
+\begin{frame}{역사: 도구를 고른 사람들}
+  \begin{itemize}
+    \item \kb{MuJoCo} (2012, Todorov): ``로봇 재현''이 아니라
+      \kb{모델 기반 제어의 재현성과 속도}를 위해 설계 --- 접촉을
+      LCP로 푸는 것이 이 \textbf{최적화 관점의 자연스러운
+      결과}. 2021 무료 오픈소스화 $\to$ ``CPU에서 정밀 로봇
+      물리''가 \textbf{대중화}
+    \item \kb{Isaac Sim} (NVIDIA, 2023 정식 출시): \textbf{속도
+      축을 극단으로} --- ``같은 물리 스텝을 GPU 위에서 수천 개
+      복제본에 흩뿌려'' CPU의 \textbf{순차} 한계를 \textbf{병렬}로
+      부수기
+  \end{itemize}
+  \vskip0.5em
+  \begin{itemize}
+    \item CPU 쪽도 멈추지 않음: \kb{MuJoCo-XLA}(2021$\sim$) ---
+      MuJoCo 물리를 TPU/GPU로 \textbf{자동 병렬화}, 전용
+      시뮬레이터가 없어도 정밀 물리를 대량으로
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{도구 선택의 역사}
+    \textbf{정밀도 축을 지키면서 속도 축을 계속 늘려온 역사} ---
+    MuJoCo(정밀, CPU) $\to$ MuJoCo-XLA(정밀, GPU/TPU 자동
+    병렬) $\to$ Isaac Sim(정밀+센서, GPU 전용 병렬).
+  \end{block}
+  {\footnotesize 교훈: 도구를 고르는 건 ``어떤 알고리즘을 쓸
+  것인가''가 아니라 \textbf{``이 작업이 정밀도·속도 두 축에서
+  어디에 찍히느냐''를 재는 일}. 두 축이 \textbf{독립}이라 한
+  축이 빠르면 다른 축을 소홀히 해도 된다는 \textbf{허용}을
+  준다. 두 축을 혼동하면(빨라서=좋다, 정밀해서=좋다) ``잘못된
+  물리를 빠르게'' 또는 ``필요 없는 정밀에 비싸게'' 두 실수 중
+  하나를 한다.
+  }
+\end{frame}

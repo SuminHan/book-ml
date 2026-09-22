@@ -1,0 +1,16 @@
+\begin{frame}{PageRank 방정식}
+  노드 $i$의 페이지랭크 $PR(i)$는 다음을 만족해야 한다 ---
+  \textbf{자신을 가리키는 모든 노드 $j$로부터, 그 노드가 가진 점수를
+  그 노드의 바깥 링크 수만큼 나눠 받은 합}:
+  \vskip0.8em
+  \[ PR(i) = \frac{1-d}{N} + d\sum_{j \to i} \frac{PR(j)}{\text{outdeg}(j)} \]
+  \vskip0.8em
+  \begin{itemize}
+    \item $N$ = 전체 노드 수.
+    \item $d$ (보통 \textbf{0.85}) = \kb{댐핑 팩터}(damping factor):
+      확률 $d$로 링크를 따라가고, 확률 $1-d$로 \textbf{아무 노드로나
+      순간이동}(teleport).
+    \item 순간이동 = \textbf{막다른 골목}에 갇히거나 \textbf{순환}에
+      갇히는 것을 막기 위한 장치.
+  \end{itemize}
+\end{frame}

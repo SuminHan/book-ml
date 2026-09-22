@@ -1,0 +1,21 @@
+\begin{frame}{자주 묻는 질문: 리파라미터화 · 흐릿함}
+  \begin{block}{Reparameterization trick이 왜 꼭 필요한가?}
+    Week 9: 역전파는 연쇄법칙으로 미분 가능한 연산 사슬을 거슬러
+    올라가는 것. ``확률분포에서 무작위 추출'' 연산은 미분이 정의
+    안 됨. $z = \mu + \sigma \odot \epsilon$으로 다시 쓰면 무작위성은
+    $\epsilon$(입력과 무관한 상수)에만, $\mu, \sigma$로 가는 경로는
+    전부 미분 가능(곱셈·덧셈) → 역전파가 인코더 파라미터까지
+    정상적으로 흐름.
+  \end{block}
+  \vskip0.4em
+  \begin{block}{KL 항이 ``흐릿함''의 원인이라는 말은?}
+    복원 항은 \textbf{기대값} $\mathbb{E}_{z\sim q}[\log p(x|z)]$를
+    최적화 — 인코더 분포의 \textbf{모든} $z$로 복원했을 때의
+    \textbf{평균}이 좋아야 함. 분포가 넓을수록($\sigma^2$ 클수록)
+    복원된 $x$ 후보가 넓게 퍼져 ``모든 $z$의 평균''이 흐려짐 →
+    VAE 생성 이미지의 \textbf{흐릿함(blurry)} 근원. $\beta$를 크게
+    하면 더 강해짐 (정보를 더 압축하니까). GAN이 ``한 개 $z$ → 한 개
+    $x$''를 \textbf{결정적으로} 학습(흐릿하지 않은 선명함)하는 이유도
+    결국 ``기대값 최적화 vs 결정적 복원''의 차이.
+  \end{block}
+\end{frame}

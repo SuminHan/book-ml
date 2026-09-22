@@ -1,0 +1,28 @@
+\begin{frame}{왜 실차는 두 개의 루프로 나뉘는가}
+  \begin{itemize}
+    \item 이번 학기 실습의 로봇(Reacher, 사족보행)은
+      \textbf{시행착오로} 배울 수 있었다 --- 시뮬레이터 안의
+      스텝은 \textbf{싸고}, 실패는 \textbf{무료}였기 때문
+    \item \textbf{실차는 그럴 수 없다}:
+    \begin{itemize}
+      \item 실차의 한 스텝 = \textbf{물리적 시간}으로 수백 밀리초
+      \item ``실패하는 실험''은 \textbf{무료도 안전하지도} 않음
+    \end{itemize}
+  \end{itemize}
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}p{1.8cm}p{2.4cm}p{5.6cm}p{4.2cm}@{}}
+    \toprule
+    루프 & 실행 위치 & 하는 일 & 제약 \\
+    \midrule
+    \kb{Onboard} & 실차 안, 실시간 & 센서 $\to$ Perception
+      $\to$ Planner: 매 순간 주변을 인식해 \textbf{즉시}
+      경로/제어 결정 & \textbf{수십 밀리초} 안에 결정해야 하고,
+      차를 멈춰놓고 ``생각''할 수 없음 \\
+    \kb{Offboard} & 데이터센터, 사후 & 같은 Planner를
+      \textbf{시뮬레이터}에서 대량의 주행 시나리오(에피소드)로
+      돌려 \textbf{평가 · 재학습} & 느리도록 돌릴 수 있지만,
+      평가가 믿을 만하려면 \textbf{``현실적으로''} 만들어야 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

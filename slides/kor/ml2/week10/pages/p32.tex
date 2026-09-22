@@ -1,0 +1,31 @@
+\begin{frame}[fragile]{PyTorch REINFORCE (1/2): PolicyNet과 에피소드 실행}
+  자동 미분을 이용하면 훨씬 \textbf{간결}하게 같은 알고리즘:
+\begin{lstlisting}
+import torch, torch.nn as nn
+
+class PolicyNet(nn.Module):
+    def __init__(self, state_dim, n_actions):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(state_dim, 64), nn.ReLU(),
+            nn.Linear(64, n_actions))
+    def forward(self, x):
+        return torch.softmax(self.net(x), dim=-1)
+
+policy = PolicyNet(4, 2)              # CartPole: 상태 4차원, 행동 2개
+opt  = torch.optim.Adam(policy.parameters(), lr=1e-2)
+
+def run_episode(env, seed):
+    s, _ = env.reset(seed=seed)
+    log_probs, rewards = [], []
+    for _ in range(500):
+        probs = policy(torch.tensor(s, dtype=torch.float32))
+        dist  = torch.distributions.Categorical(probs)
+        a = dist.sample()
+        log_probs.append(dist.log_prob(a))    # log pi_theta(a|s)
+        s, r, term, trunc, _ = env.step(a.item())
+        rewards.append(r)
+        if term or trunc: break
+    return log_probs, rewards
+\end{lstlisting}
+\end{frame}

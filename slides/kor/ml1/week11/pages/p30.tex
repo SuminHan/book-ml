@@ -1,0 +1,26 @@
+\begin{frame}{왜 \texttt{p - onehot}인가: softmax + CE}
+  크로스엔트로피($-\log p_k$, $k$가 정답)를 softmax 출력 $p_j$로
+  미분하면 \textbf{경악할 정도로 깔끔한} 결과:
+  \vskip0.4em
+  \[ \frac{\partial L}{\partial z_j} = p_j - \mathbb{1}[j = k] \]
+  \vskip0.4em
+  ``softmax의 출력에서 \textbf{정답 클래스 자리에만 1을 빼고}
+  나머지는 그대로''.
+  \begin{itemize}
+    \item Week 9.1의 로지스틱 회귀 + 크로스엔트로피 그래디언트
+      ``(예측 $-$ 정답)''와 \textbf{정확히 같은 패턴}의 다항분류
+      버전
+    \item 왜 단순해지는가: 연쇄법칙으로 펼치면
+      $\sum_k (-y_k/p_k)\, p_k(\delta_{kj} - p_j)$
+      $= -\underbrace{\sum_k y_k \delta_{kj}}_{y_j}
+       + p_j \underbrace{\sum_k y_k}_{1} = p_j - y_j$
+    \item softmax의 $p_k$가 크로스엔트로피의 $1/p_k$와
+      \textbf{상쇄}되기 때문
+    \item 직관: \textbf{예측 $p_j$가 정답 $y_j$에 가까울수록
+      그래디언트가 작아진다} --- ``이미 잘 맞힌 클래스는 거의
+      건드리지 않는다''는 직관이 수식으로 확인되는 지점
+    \item 정답 클래스: $p_k - 1 < 0$ $\Rightarrow$ 그 로짓을
+      \textbf{올리고}, 나머지는 $p_j > 0$ $\Rightarrow$ 로짓을
+      \textbf{내려} 확률 질량을 정답 쪽으로 이동
+  \end{itemize}
+\end{frame}

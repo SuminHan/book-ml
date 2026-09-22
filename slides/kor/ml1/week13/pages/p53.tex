@@ -1,0 +1,21 @@
+\begin{frame}{자주 하는 실수: ``PageRank = 도(degree)''로 읽기}
+  \begin{itemize}
+    \item ``가리키는/가리켜지는 링크가 많을수록 점수가 크다''는
+      설명 때문에 PageRank를 ``\textbf{도 순위}''로 단순화하는 경우
+     가 많다.
+    \item 무방향 그래프의 \textbf{대칭화}된 PageRank에서는 둘의
+      순위가 \textbf{매우 강하게} 상관난다(카라테 그래프에서도
+      상위권이 거의 도 순서와 일치).
+    \item 그러나 이 둘은 \textbf{같은 것이 아니다} ---
+      $\sum_{j \to i} \frac{PR(j)}{\text{outdeg}(j)}$ 는
+      \textbf{\textit{어떤}} 노드가 나를 가리키느냐를 \textbf{가중}.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{본래 설계 목적}
+    방향 그래프에서는 차가 확 벌어진다:
+    ``중요하지 않은 페이지 10개가 링크''보다 ``\textbf{가장 중요한
+    페이지 1개가 링크}''가 더 높은 PageRank를 만드는 것.
+    \textbf{인기(도)}와 \textbf{권위}(가리켜지는 쪽의 중요도)는
+    다른 개념이며, PageRank가 측정하는 쪽은 \textbf{후자}.
+  \end{block}
+\end{frame}

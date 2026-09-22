@@ -1,0 +1,26 @@
+\begin{frame}{토큰은 왜 ``단어 조각''인가: BPE}
+  \begin{itemize}
+    \item 문법상 단어는 유한하지만 실제 쓰이는 단어는
+      \textbf{거의 무한} --- 합성어, 고유명사, 새로 지어지는 말.
+      반면 벡터를 표현할 수 있는 수(= 어휘 사전 크기)는
+      \textbf{유한}: 실제 모델 대략 3만$\sim$20만.
+    \item \kb{BPE}(Byte Pair Encoding)가 이 모순의 표준 해결책:
+      \begin{enumerate}
+        \item 토큰을 문자(한글 글자, 바이트) 단위로 쪼갬.
+        \item ``문서에서 가장 자주 함께 나타나는 두 인접 토큰''을
+          \textbf{반복 병합(merge)}.
+        \item 어휘 사전이 목표 크기(예: 32{,}768개)가 될 때까지.
+      \end{enumerate}
+    \item 병합된 조각도 사전에 한 단위로 추가 $\Rightarrow$
+      잦은 조각(``은'', ``의'', ``하다'')은 한 토큰, 드문 단어는
+      여러 조각 --- 자연스러운 계층.
+    \item \textbf{보상}: 사전에 없던 전혀 새로운 단어도
+      \textbf{아는 조각의 조합}으로 분해 $\to$ \kb{OOV}
+      (out-of-vocabulary) 문제를 \textbf{원천적으로 회피} ---
+      n-gram은 ``보지 못한 단어 = 확률 0''이었으나, BPE 모델은
+      보지 못한 단어라도 아는 조각으로 분해해 예측 가능.
+    \item 17.1절 전체의 흐름 = \textbf{어휘의 유한성}이라는
+      한계를 단어 $\to$ 임베딩 $\to$ 조각의 순서로 우회해 온
+      역사.
+  \end{itemize}
+\end{frame}

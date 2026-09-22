@@ -1,0 +1,29 @@
+\begin{frame}{자주 하는 실수: 섞지 않은 데이터를 fold로}
+  \texttt{k\_fold\_split}은 \textbf{순서 그대로} 앞에서부터 자른다 —
+  데이터가 정렬되어 있으면 심각한 문제.
+  \begin{itemize}
+    \item 샘플 12개 중 앞 6개 = 클래스 0, 뒤 6개 = 클래스 1로 정렬되어
+      있으면: \texttt{fold\_idx=0}의 검증셋(0,1,2)은 \textbf{클래스 0만},
+      \texttt{fold\_idx=3}(9,10,11)은 \textbf{클래스 1만}.
+    \item 학습에서의 클래스 비율과 검증 fold의 비율이 달라져, 검증 성능이
+      실제보다 훨씬 나쁘게(또는 우연히 좋게) 나옴.
+  \end{itemize}
+  \vskip0.4em
+  \small
+  분류 30개(앞 15개 클래스 0, 뒤 15개 클래스 1로 정렬), 특징 1개,
+  $\lambda=0$으로 5-fold:
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    분할 & fold별 정확도 & 평균 & fold 간 $\sigma$ \\
+    \midrule
+    섞지 않음(순서) & 1.00, 1.00, 0.50, 0.00, 0.00 & 0.50 & 0.447 \\
+    섞음(시드 42)  & 0.50, 0.67, 0.33, 0.33, 0.67 & 0.50 & 0.149 \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.4em\normalsize
+  첫 행: 검증셋이 \textbf{어느 쪽 끝에 놓였는지가} fold별 정확도를
+  정해버림(1.00$\to$0.00). 비율이 기울면 평균 자체가 왜곡.
+  \vskip0.2em
+  \kq{``5-fold 평균 0.50''만 보고 비교하는 순간 — fold별 \emph{흩어짐}을
+  볼 줄 알아야 ``평균''을 읽을 수 있다.}
+\end{frame}

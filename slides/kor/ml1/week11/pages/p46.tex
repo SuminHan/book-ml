@@ -1,0 +1,29 @@
+% ============================================================
+\section{11.3 그래디언트 소실의 재발과 LSTM/GRU}
+\begin{frame}{그래디언트 소실이 시간 축에서 재발}
+  Week 9.2에서 본 것과 \textbf{정확히 같은 패턴}:
+  \begin{itemize}
+    \item $\tanh'$의 최댓값은 1이지만 \textbf{대부분의 구간에서 1보다
+      작}고
+    \item 여기에 $W_{hh}$까지 $T$번(시퀀스 길이만큼) 곱해진다
+    \item 시퀀스가 길수록($T$가 클수록) 이 곱은
+    \begin{itemize}
+      \item $W_{hh}$ 고유값 $< 1$: 지수적으로 0에 가까워짐
+        --- \kb{그래디언트 소실}
+      \item $W_{hh}$ 고유값 $> 1$: \textbf{발산}
+        --- \kb{그래디언트 폭발}
+    \end{itemize}
+  \end{itemize}
+  \vskip0.5em
+  \begin{itemize}
+    \item 결과: 기본 RNN은 \textbf{먼 과거의 정보를 거의 기억하지
+      못}한다 --- ``10단어 전에 나온 주어''를 지금 활용해야 하는
+      문장에서 특히 취약
+  \end{itemize}
+  \vskip0.4em
+  숫자로 ($\tanh' \approx 0.5$, $W_{hh}$ 크기 0.9, $T=20$):
+  \[ (0.5 \times 0.9)^{20} = 0.45^{20} \approx 4.5 \times 10^{-7}
+     \;\;(\text{사실상 0}) \]
+  {\footnotesize 20단어 전의 정보는 지금 시점의 학습에 거의 아무
+  영향도 주지 못한다.}
+\end{frame}

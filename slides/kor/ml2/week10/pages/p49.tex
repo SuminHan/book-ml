@@ -1,0 +1,38 @@
+\begin{frame}[fragile]{A2C 코드 (1/2): 네트워크와 에피소드 실행}
+  10.2 REINFORCE 코드에서 \textbf{딱 두 가지}를 바꿈:
+  (1) $G_t$ 를 $A_t = G_t - V(s_t)$ 로,
+  (2) $V(s_t)$ 를 내주는 \textbf{Critic}을 하나 더 붙임.
+\begin{lstlisting}
+import torch, torch.nn as nn
+
+class ActorCriticNet(nn.Module):
+    def __init__(self, state_dim, n_actions):
+        super().__init__()
+        self.shared = nn.Sequential(
+            nn.Linear(state_dim, 64), nn.ReLU())
+        self.actor_head = nn.Linear(64, n_actions)  # Actor: 확률
+        self.critic_head = nn.Linear(64, 1)         # Critic: V(s)
+    def forward(self, x):
+        h = self.shared(x)
+        return (torch.softmax(self.actor_head(h), dim=-1),
+                self.critic_head(h).squeeze(-1))
+
+net = ActorCriticNet(4, 2)          # CartPole: 상태 4, 행동 2
+opt = torch.optim.Adam(net.parameters(), lr=1e-3)
+
+def a2c_episode(env, seed, gamma):
+    s, _ = env.reset(seed=seed)
+    states, log_probs, rewards, nexts = [], [], [], []
+    for _ in range(500):
+        st = torch.tensor(s, dtype=torch.float32)
+        states.append(st)
+        probs, _ = net(st)
+        dist = torch.distributions.Categorical(probs)
+        a = dist.sample()
+        log_probs.append(dist.log_prob(a))   # log pi(a_t|s_t)
+        s, r, term, trunc, _ = env.step(a.item())
+        rewards.append(r)
+        nexts.append(torch.tensor(s, dtype=torch.float32))
+        if term or trunc: break
+\end{lstlisting}
+\end{frame}

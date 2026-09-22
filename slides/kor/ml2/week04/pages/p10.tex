@@ -1,0 +1,27 @@
+\begin{frame}{in-place(가우시) vs synchronous(야코비)}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{in-place (가우시)} --- 위 코드
+      \begin{itemize}
+        \item sweep \textbf{안에서도}, 앞쪽 상태가 갱신된 값을
+          뒤쪽이 \textbf{즉시} 사용.
+        \item sweep 중반 $V$ 는 ``어떤'' 가치함수의 우변도
+          아니지만, $\gamma < 1$ 이면 같은 고정점으로 수렴.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{synchronous (야코비)}
+      \begin{itemize}
+        \item sweep을 \textbf{완전히 끝낸 뒤}에야 갱신
+          ($V$ 는 이전 sweep의 값).
+        \item $V_{\text{new}}$ 리스트를 따로 모았다가 교체.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{실용적 차이}
+    둘 다 \textbf{같은 답}에 수렴하지만 \textbf{속도}는 다를 수
+    있다. sweep당 비용은 동일하고, in-place가 갱신 정보가 sweep
+    안에 전파돼 보통 \textbf{2$\sim$10배} sweep 수를 아낀다.
+  \end{block}
+\end{frame}

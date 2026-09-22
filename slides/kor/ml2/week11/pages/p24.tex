@@ -1,0 +1,14 @@
+\begin{frame}[fragile]{ppo\_clip\_loss — 핵심 5줄}
+  \begin{lstlisting}
+def ppo_clip_loss(ratio, advantage, epsilon=0.2):
+    unclipped = ratio * advantage
+    clipped = max(min(ratio, 1 + epsilon), 1 - epsilon) * advantage
+    return min(unclipped, clipped)  # 목적함수(최대화 대상)의 한 샘플분
+  \end{lstlisting}
+  \vskip0.3em
+  \begin{itemize}
+    \item \texttt{clip} = $\max(\min(r,\,1+\epsilon),\,1-\epsilon)$
+      — $r_t$ 를 $[1-\epsilon,\,1+\epsilon]$ 안으로 자름.
+    \item 최종 목적함수는 두 값의 \textbf{min}(비관적 쪽).
+  \end{itemize}
+\end{frame}

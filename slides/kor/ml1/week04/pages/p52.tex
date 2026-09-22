@@ -1,0 +1,25 @@
+\begin{frame}{자주 하는 실수: 초기화의 영향을 무시}
+  k-means는 \textbf{볼록하지 않은}(non-convex) 최적화 문제 ---
+  경사하강법처럼 초기 중심점을 어디서 시작하느냐에 따라
+  \textbf{다른 지역 최적해}에 도달할 수 있다.
+  \vskip0.6em
+  \begin{itemize}
+    \item 초기 중심점 두 개가 우연히 \textbf{같은 덩어리 안에
+      가깝게} 잡히면: 그 덩어리를 둘로 \textbf{잘못 쪼개고}
+      다른 덩어리 하나를 \textbf{통째로 놓쳐} 수렴
+    \item 실전에서 흔히 하는 실수: \texttt{kmeans(X, k)}를
+      \textbf{딱 한 번만} 돌리고 결과를 그대로 믿음
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{표준 대응}
+    \begin{enumerate}\small
+      \item 서로 다른 무작위 초기화로 \textbf{여러 번}(예: 10회)
+        돌려서, 그중 \textbf{클러스터 내 분산이 가장 작은}
+        결과를 채택 (\texttt{sklearn.cluster.KMeans}의 기본
+        \texttt{n\_init}이 정확히 이 역할)
+      \item 또는 \kb{k-means++}처럼 서로 멀리 떨어진 점을
+        우선적으로 고르는 \textbf{똑똑한 초기화}로 나쁜
+        지역최적해에 빠질 확률 자체를 크게 줄임
+    \end{enumerate}
+  \end{block}
+\end{frame}

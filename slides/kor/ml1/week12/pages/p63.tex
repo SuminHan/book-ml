@@ -1,0 +1,28 @@
+% ===== wrap-up =====
+\begin{frame}{12주차 정리}
+  \begin{enumerate}
+    \item \kb{12.1 — 어텐션은 RNN의 패치에서 시작}
+      압축 병목을 우회해 ``원문 전체를 다시 보고 적절한 비율로
+      쓴다''. Q·K·V는 \emph{같은 입력에서 서로 다른} 세 변환 —
+      $W_Q, W_K, W_V$ 가 \textbf{학습으로 결정}되며, 이 세
+      행렬의 존재가 어텐션의 핵심.
+    \item \kb{12.2 — 4단계와 $\sqrt{d_k}$}
+      $QK^T \to$ $\sqrt{d_k}$ 스케일 $\to$ softmax $\to$
+      $V$ 가중합. softmax는 \emph{원점수 차이를 지수적으로
+      증폭}하고, $\sqrt{d_k}$ 는 \textbf{무작위 내적의 표준편차}
+      (차원 $d_k$)를 1로 환원하는 상수 — one-hot으로 붙는
+      softmax를 막는 안전장치.
+    \item \kb{12.3 — 관점 $h$배 + 순서 명시적 인코딩}
+      멀티헤드는 \textbf{파라미터를 재배분}해 독립 관점의
+      수를 $h$배로 산다. PE는 시계(사인/코사인)의 \emph{회전
+      성질}로 \emph{상대 위치}를 선형 도구로 읽게 해준다.
+      causal mask가 \textbf{학습의 병렬성과 생성의 순차성}을
+      하나로 통일.
+  \end{enumerate}
+  \vskip0.6em
+  \begin{block}{다음 주차 — Week 13. 그래프 표현학습}
+    노드와 엣지로 표현되는 데이터를 벡터로: Node2Vec·PageRank.
+    ``어텐션이 단어 쌍의 관련성을 직접 계산''한다는 아이디어가
+    ``그래프의 이웃 구조''로 이동한다.
+  \end{block}
+\end{frame}

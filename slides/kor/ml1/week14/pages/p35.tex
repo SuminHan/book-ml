@@ -1,0 +1,32 @@
+\begin{frame}{CBOW vs Skip-gram}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{CBOW} (Continuous Bag-of-Words)
+      \begin{itemize}
+        \item \textbf{주변 $\to$ 중심} 방향.
+        \item 주변 단어 여러 개의 임베딩을 \textbf{평균}해서
+          중심 단어를 예측.
+        \item 계산이 \textbf{빠름}.
+        \item \textbf{고빈도 단어}(주변에 자주 나오는 명사·동사)의
+          의미를 더 정확히 잡음.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{Skip-gram}
+      \begin{itemize}
+        \item \textbf{중심 $\to$ 주변} 방향.
+        \item 하나의 중심에서 주변을 \textbf{하나씩} 예측.
+        \item 계산은 \textbf{느림}.
+        \item \textbf{저빈도 단어}(희귀 고유명사, 전문 용어)를 더
+          정확히 잡음 --- ``주변이 무엇이었는가''를 하나하나
+          명시적으로 학습하기 때문.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.8em
+  \begin{block}{실용적 합의}
+    데이터가 크고 \textbf{빨리} 뽑고 싶으면 CBOW,
+    \textbf{희귀단어의 정확도}가 중요하면 Skip-gram. \; (본문의 코드는
+    Skip-gram)
+  \end{block}
+\end{frame}

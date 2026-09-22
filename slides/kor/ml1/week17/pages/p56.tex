@@ -1,0 +1,30 @@
+\begin{frame}{17.3 자주 하는 실수}
+  \begin{enumerate}
+    \item \textbf{실수:} ``RLHF는 사람 선호를 모델에 직접
+      주입하는 것 아닌가?'' \textbf{아님}. 선호 데이터는
+      \textbf{보상모델}의 학습에 쓰이며, 정책은 보상모델의
+      점수(간접 신호)를 따라간다. 사람이 직접 정책을 가르
+      치는 것은 SFT.
+    \item \textbf{실수:} ``KL 항은 불필요한 복잡함 아닌가?''
+      \textbf{아님}. KL 항(또는 DPO의 $\beta$)은
+      \kb{보상 해킹}과 \textbf{과소최적화}의 균형을
+      조율하는 \textbf{핵심} 하이퍼파라미터 — 없으면
+      정책이 보상모델의 \textbf{외삽 오차}를 노리거나,
+      너무 강하면 아무것도 안 학습.
+    \item \textbf{실수:} ``DPO는 무조건 RLHF보다 낫다?''
+      \textbf{아님}. DPO는 \textbf{2단계를 1단계로} 압축한
+      것 — 보상모델을 \textbf{별도 평가 기준}으로 재사용
+     하거나, 보상모델을 \textbf{여러 개로} 학습해 평균
+      내는 \textbf{유연성}은 RLHF만 가짐.
+    \item \textbf{실수:} ``LoRA rank가 클수록 좋다?''
+      \textbf{아님}. rank $\to$ \textbf{과적합}과
+      \textbf{파라미터 폭증}. 실제는 \textbf{작은 rank}(4~32)
+      가 대부분 충분 — \textbf{효과적 변화}가 낮은
+      계수라는 \textbf{가설}을 반영.
+    \item \textbf{실수:} ``SFT 데이터가 많을수록 좋다?''
+      \textbf{아님}. 데이터 \textbf{품질}(다양성,
+      정확성)이 수량보다 중요 — InstructGPT는
+      \textbf{약 1만 3천 개}의 예시로도 \textbf{GPT-3
+      175B를 뛰어넘}.
+  \end{enumerate}
+\end{frame}

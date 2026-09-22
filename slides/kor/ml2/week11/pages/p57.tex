@@ -1,0 +1,37 @@
+\begin{frame}{``범용적''이라는 말의 구체적 의미}
+  PPO의 목적함수는 \kb{행동공간이 이산이든 연속이든 같은
+  형태}.
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{이산} (CartPole, 언어모델의 토큰 선택)
+      \begin{itemize}
+        \item $\pi$ 가 $\mathrm{softmax}$.
+        \item $\log\pi(a\mid s)$ 는 Categorical 분포의
+          로그확률.
+        \item 행동은 \texttt{argmax} 대신 \textbf{샘플링}
+          (10.2절
+          \texttt{torch.distributions.Categorical}).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{연속} (Pendulum, 로봇 관절)
+      \begin{itemize}
+        \item $\pi$ 가 \textbf{가우시안}
+          $\mathcal{N}(\mu_\theta(s),\,\sigma_\theta^2 I)$.
+        \item $\log\pi(a\mid s)$ 는 정규분포의 로그우도.
+        \item 행동은 \texttt{dist.sample()} (11.2절
+          \texttt{GaussianPolicy}).
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.7em
+  \begin{block}{점}
+    목적함수 $\mathbb{E}[L^{\mathrm{CLIP}}]$ 과 GAE, 엔트로피 항의
+    \textbf{수학적 형식은 같다} — 변하는 건 ``$\log\pi$ 를 어떤
+    분포에서 계산하느냐''뿐. (11.2절 FAQ의 ``연속 정책이
+    $\mathrm{tanh}$ 로 스케일되는 이유''도 이 맥락: 가우시안의
+    지지공간이 실수 전체인데 실제 환경은 행동 범위가
+    $[-1,1]$ 같이 제한 → $\mathrm{tanh}$ 로 압축.)
+  \end{block}
+\end{frame}

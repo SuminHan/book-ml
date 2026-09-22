@@ -1,0 +1,21 @@
+\begin{frame}{``역전파''라는 이름의 의미: 오차 벡터의 재사용}
+  \begin{itemize}
+    \item 오차 $\delta$는 \textbf{출력층}에서 계산되고, 은닉층 방향으로
+      \textbf{거꾸로 전파}되면서 각 층의 그래디언트를 만듦
+  \end{itemize}
+  \[
+  \delta_{1,i}
+  = \delta_2 \cdot W_{2,i} \cdot \sigma'(z_{1,i})
+  \quad \Longrightarrow \quad
+  \delta_1 = (W_2 \, \delta_2) \odot \sigma'(z_1)
+  \]
+  \begin{block}{그래디언트 재사용 — 역전파는 동적 프로그래밍}
+    각 층의 $\delta$를 \textbf{한 번} 계산해 두고 아래 층에 \textbf{다시 쓰는} —
+    ``같은 미분을 두 번 계산하지 않는'' 알고리즘.
+  \end{block}
+  \begin{itemize}\small
+    \item 매 파라미터를 $\epsilon$씩 흔드는 수치 미분: $O(W)$ 전파 $\times$ $O(W)$
+      파라미터 $= O(W^2)$
+    \item 역전파: \textbf{순전파 1회 + 역전파 1회 $\approx O(W)$}
+  \end{itemize}
+\end{frame}

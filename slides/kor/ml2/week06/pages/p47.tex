@@ -1,0 +1,40 @@
+\begin{frame}{왜 $\max$인가 — 같은 경험, 다른 목표값}
+  SARSA와 Q-learning 갱신식은 $r + \gamma(\cdots)$의 괄호 안
+  \textbf{한 항만} 다르다. 그 차이가 얼마나 근본적인지,
+  \textbf{같은 한 스텝}에 대해 두 알고리즘이 각각 어떤 목표값을
+  계산하는지 숫자로:
+  \vskip0.4em
+  \small
+  \kb{손으로 한 스텝}: $s$에서 $a$를 하고 $r = -1$ 받아 $s'$로.
+  $s'$에서 두 행동 $a_1, a_2$: 현재 $Q(s',a_1) = 0$,
+  $Q(s',a_2) = 5$. $\varepsilon$-greedy가 \textbf{무작위로 $a_1$}
+  (Q값 0인 ``나쁜'' 행동)을 고름. $\alpha=0.5$, $\gamma=1.0$,
+  갱신 중인 $Q(s,a)=0$.
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{SARSA}(실제로 고른 $a_1$ 사용):
+      \[
+      \text{목표} = -1 + 1.0 \times 0 = -1
+      \]
+      \[
+      Q(s,a) \leftarrow 0 + 0.5(-1-0) = -0.5
+      \]
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{Q-learning}(최선 $\max=5$ 사용):
+      \[
+      \text{목표} = -1 + 1.0 \times 5 = +4
+      \]
+      \[
+      Q(s,a) \leftarrow 0 + 0.5(4-0) = +2.0
+      \]
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  \begin{block}{부호가 다르다}
+    \textbf{같은 경험}에 대해 SARSA는 $-0.5$로, Q-learning은 $+2.0$로
+    갱신. 이 차이가 곧 두 알고리즘이 ``배우는 것''의 차이 ---
+    6.2절 CliffWalking에서 이 차이가 \textbf{경로의 모양}으로 드러난다.
+  \end{block}
+\end{frame}

@@ -1,0 +1,27 @@
+\begin{frame}{실험: ``활성함수 + 초기화'' 실패의 두 얼굴}
+  \small
+  같은 구조(은닉 7층 $\times$ 폭 16, 출력 1), 4점 XOR, 1500에폭,
+  SGD 학습률 0.5, MSE — 활성함수만 변경(초기화는 각각에 맞는 값):
+  \vskip0.5em
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    구성 & 결과 \\
+    \midrule
+    tanh (Xavier) & ep 0: loss=0.3796 $\to$ ep 50: \textbf{loss=NaN (폭발 — 발산)} \\
+    ReLU (He) & ep 0: loss=0.4453 $\to$ ep 1500: \textbf{loss=0.2500
+      (정체 — 0.5 상수 예측)} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{itemize}
+    \item tanh: 그래디언트 \textbf{폭발} $\to$ NaN — ``무언가가 터졌다''는
+      \textbf{명확한} 신호
+    \item ReLU: 0.2500 = ``라벨 평균 $\bar{y}=0.5$를 상수로 예측''의 MSE
+      — \textbf{가중치가 하나도 학습되지 않은 상태와 정확히 같은 손실}
+    \item ``loss가 0.25로 수렴했다''고 보고하면 성공처럼 보임 —
+      전형적 \kb{정체(stagnation)} 실패
+  \end{itemize}
+  {\footnotesize 참고: 7층 XOR은 평범한 SGD로 \kb{안장점(saddle point)}에
+  갇히기 쉬우며, Adam(lr=0.01)을 추가하면 같은 구조가 실제로 수렴한다
+  (실습 노트). ``활성함수+초기화''만으로 완전 해결되지 않음.}
+\end{frame}

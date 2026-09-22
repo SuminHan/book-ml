@@ -1,0 +1,26 @@
+\begin{frame}{정규 정책에도 같은 구조: 평균 갱신 = ``예측-실제 차이''}
+  이산(softmax)이든 연속(정규)이든 $\nabla_\theta\log\pi$ 의
+  \textbf{형태만} 바뀌고 Policy Gradient Theorem의 구조는 동일.
+  정규 정책 $\pi_\theta(a|s) = \mathcal{N}(a;\, \mu_\theta(s),
+  \sigma_\theta^2 I)$ (대각 분산, $\sigma$ 로그 스케일)에서:
+  \[
+  \nabla_{\mu} \log\pi_\theta(a|s)
+  = \frac{(a - \mu_\theta(s))}{\sigma_\theta^2}
+  \]
+  \begin{itemize}
+    \item ``실제로 고른 $a$ 가 예측 평균 $\mu$ 에서 얼마나 벗어나는가''를
+      $\sigma^2$ 로 나눈 벡터.
+    \item $a=\mu$ (예측 정확히 맞음) $\to$ 그래디언트 \textbf{0}
+      --- ``고칠 것 없음''.
+    \item $a > \mu$ 이고 $G_t>0$ $\to$ $\mu$ 를 \textbf{올리는} 방향
+      --- ``예측보다 큰 행동을 골랐고 결과가 좋았으니, 예측 평균을
+      그쪽으로''.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{이번 절에서 기억할 것}
+    \textbf{평균 $\mu$ 의 갱신 = ``예측-실제 차이''의 방향}
+    (분산 $\sigma^2$ 에 대한 그래디언트도 존재 --- 10.3 A2C/PPO에서
+    $\sigma$ 동시 학습). 이 직관이 Week 11 PPO ``왜 $\sigma$ 를
+    클리핑하지 않는가'' 질문의 출발점.
+  \end{block}
+\end{frame}

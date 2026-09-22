@@ -1,0 +1,22 @@
+\begin{frame}{자주 하는 실수 (2): 미니배치와 규모}
+  \small
+  \begin{tabular}{@{}p{4.6cm}p{9.4cm}@{}}
+    \toprule
+    실수 & 왜 틀린가 \\
+    \midrule
+    ``1,000개 환경이 동시에 돌면 PPO 미니배치도 1,000개가
+      된다'' & 미니배치는 \textbf{연속된 트랙}의 (s,a,G) 튜플을
+      묶는 것. 1,000개 독립 트랙을 하나로 묶으면 \textbf{분산이
+      커지고} GAE의 편향-분산 tradeoff가 달라짐. 실무에서는
+      경험 수집을 1,000배 빨리하고, \textbf{미니배치 크기는
+      알고리즘이 요구하는 크기로 유지} (수집을 빨리 $\to$
+      같은 미니배치 크기로 \textbf{더 자주} 업데이트) \\
+    ``GPU가 빠르니까 CartPole 실습도 GPU로'' & CartPole 24만
+      steps/s $\times$ 책의 12만 스텝 = \textbf{0.5초}. GPU로
+      옮겨도 최소 오버헤드(데이터 복사, 동기화) 때문에 \textbf{오히려
+      느려질} 수 있음. GPU 병렬의 값은 \textbf{총 스텝 수가 CPU에서
+      수 시간$\sim$날 단위가 될 때}(1억+, 14.3)만 드러남 ---
+      \textbf{규모 미만의 작업에 GPU는 과잉} \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

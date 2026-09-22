@@ -1,0 +1,21 @@
+\begin{frame}{PPO 한 반복의 전체 데이터 흐름}
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch11_3_ppo_pipeline.png}
+      {\footnotesize experience buffer가 GAE와 Critic 손실,
+      정책 손실(클리핑)로 분기, 엔트로피 항이 정책 손실에 더해지는
+      구조.}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      {\small
+      ①경험수집 $\to$ ②last value $\to$ ③GAE $\to$ ④정규화
+      $\to$ ⑤$M$ epochs 미니배치 경사상승 $\to$ ⑥
+      $\theta_{\mathrm{old}}$ 갱신.
+      \\[0.8em]
+      11.2절의 골격 + 11.3절의 GAE·엔트로피 = \textbf{실전
+      스택}.
+      }
+    \end{column}
+  \end{columns}
+\end{frame}

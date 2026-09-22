@@ -1,0 +1,19 @@
+\begin{frame}[fragile]{해결: 무어-펜로즈 준역행렬 (pinv)}
+  \texttt{inv} 대신 유한한 값을 돌려주는 \texttt{np.linalg.pinv}
+  (\kb{무어-펜로즈 준역행렬}, Moore-Penrose pseudoinverse):
+\begin{lstlisting}
+w_pinv = np.linalg.pinv(X2.T @ X2) @ X2.T @ y
+print(w_pinv)                 # [1.  0.4 0.8]
+print(X2 @ w_pinv)            # [3. 5. 7.] — 정확히 들어맞음
+
+w_alt = np.array([1.0, 1.0, 0.5])   # 똑같은 예측을 내는 *다른* 해
+print(X2 @ w_alt)                # [3. 5. 7.]
+print("||w_pinv||^2 =", w_pinv @ w_pinv, "  ||w_alt||^2 =", w_alt @ w_alt)
+# 1.8 vs 2.25
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize 두 해 모두 세 데이터를 정확히 맞는데, \texttt{pinv}가
+  고른 해의 $\|\boldsymbol{w}\|^2$ 가 더 작다 --- \texttt{pinv}는 무한히 많은 해 중
+  \kb{$\|\boldsymbol{w}\|^2$ 가 가장 작은 해}(최소범위 해, minimum-norm solution)를
+  골라준다.}
+\end{frame}

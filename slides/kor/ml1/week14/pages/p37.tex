@@ -1,0 +1,31 @@
+\begin{frame}[fragile]{skip-gram 학습 코어 (핵심만)}
+\begin{lstlisting}
+def train_skipgram(corpus, window=2, dim=8, epochs=50, lr=0.05, neg_k=3):
+    vocab = sorted(set(corpus))
+    idx = {w: i for i, w in enumerate(vocab)}
+    V = len(vocab)
+    W_in  = [[random.uniform(-0.5, 0.5) for _ in range(dim)] for _ in range(V)]
+    W_out = [[random.uniform(-0.5, 0.5) for _ in range(dim)] for _ in range(V)]
+
+    pairs = []
+    for i, center in enumerate(corpus):
+        for j in range(max(0, i - window), min(len(corpus), i + window + 1)):
+            if j != i:
+                pairs.append((idx[center], idx[corpus[j]]))
+
+    for _ in range(epochs):
+        random.shuffle(pairs)
+        for c, o in pairs:
+            targets = [(o, 1)] + [(random.randrange(V), 0) for _ in range(neg_k)]
+            for t, label in targets:
+                z = sum(W_in[c][k] * W_out[t][k] for k in range(dim))
+                pred = sigmoid(z)
+                grad = (pred - label) * lr
+                for k in range(dim):
+                    W_in[c][k]  -= grad * W_out[t][k]
+                    W_out[t][k] -= grad * W_in[c][k]
+    return {w: W_in[idx[w]] for w in vocab}
+\end{lstlisting}
+  {\footnotesize 실제 word2vec은 수백만 단어·수십억 쌍으로 학습 ---
+  위는 아이디어만 보이려는 축소판.}
+\end{frame}

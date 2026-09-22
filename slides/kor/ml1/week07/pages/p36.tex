@@ -1,0 +1,27 @@
+\begin{frame}{숲 전체가 어떤 특징을 보는가: 중요도}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item 단일 트리의 \texttt{feature\_importances\_} = ``그 트리가''
+          어떤 특징을 많이 봤는지
+        \item 100개 트리의 그것 = \textbf{각 트리가 분기마다 줄인
+          지니불순도(7.1)를 특징별로 누적해 100개에 걸쳐 평균} —
+          ``숲 전체가'' 어떤 특징을 보는지
+        \item 유방암: \texttt{worst perimeter}(0.151) $>$
+          \texttt{worst concave points}(0.135) $>$
+          \texttt{mean concave points}(0.131)
+        \item ``worst(최악)'' 특징의 상위권 = 실제 진단에서
+          ``가장 나쁜 상태''가 가장 결정적이었음을 뜻함
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch07_2_feature_importance.png}
+      \vskip0.3em
+      {\footnotesize 상위 5개 특징 중요도(지니 감소량, 트리 전체 평균).}
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  {\footnotesize 단, 이 중요도는 \textbf{상관관계에 편향}될 수 있다 —
+  7.3의 SHAP이 이 한계를 보완하는 ``예측 단위'' 설명.}
+\end{frame}

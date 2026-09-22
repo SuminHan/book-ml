@@ -1,0 +1,26 @@
+\begin{frame}{k-means++ vs 단순 무작위}
+  같은 3-블롭 데이터, 초기화 20회 비교:
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    초기화 & SSE 범위 (20회) \\
+    \midrule
+    단순 무작위 & 258.4 $\sim$ 2210.7 (\textbf{최소한 1$\sim$2회
+                  크게 이탈}) \\
+    k-means++ & 258.4 $\sim$ 258.4 (\textbf{모두 동일}) \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{itemize}
+    \item k-means++가 ``\textbf{무작위성을 없애주는}'' 게
+      아니라, ``\textbf{나쁜 무작위성의 가능성을 크게 줄여주는}''
+      것 --- 이론적으로는 여전히 지역 최소해에 빠질 수 있다
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{실전 표준 조합}
+    \textbf{k-means++ 초기화 + \texttt{n\_init}회 반복} 두 가지를
+    \textbf{함께}. \texttt{sklearn.cluster.KMeans}의 기본값이
+    \texttt{init="k-means++"}, \texttt{n\_init=10}인 이유가
+    바로 이것.
+  \end{block}
+\end{frame}

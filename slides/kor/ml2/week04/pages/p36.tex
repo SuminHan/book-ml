@@ -1,0 +1,28 @@
+\begin{frame}{동점 실행 결과: 정책 2가지, $V^{*}$ 1가지}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    동점 처리 & 결과 policy & $V$ \\
+    \midrule
+    \texttt{'first'} (최소 행동 번호) & $[0, 0, 0]$ & $[1.0000, 0.0000, 0.0000]$ \\
+    \texttt{'last'} (최대 행동 번호) & $[1, 1, 1]$ & $[1.0000, 0.0000, 0.0000]$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item 상태 0에서 두 행동: $Q(0, \text{left}) = 1 + 0 = 1$,
+      $Q(0, \text{right}) = 1 + 0 = 1$ --- \textbf{완벽한 동점}.
+    \item \textbf{결과 정책은 완전히} 다르고($[0,0,0]$ vs
+      $[1,1,1]$), $V$ 는 \textbf{완전히} 같다($[1, 0, 0]$).
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{유한성 논증이 약속한 그대로}
+    동점 MDP에서 \textbf{``최적 정책''은 유일하지 않을 수
+    있다}(여기서 2개 이상 공존), 하지만 \textbf{``최적 가치
+    $V^{*}$''는 유일}. 실전에서 동점이 중요한 이유: (a) 같은
+    $V^{*}$ 를 전제로 정책은 \textbf{추가 기준}(더 안전한 행동
+    선호, 물리적 비용)으로 골라야 하며, (b) ``정책이 다르다''는
+    이유로 ``알고리즘 실패''로 판단하면 \textbf{안 된다} ---
+    \textbf{$V^{*}$ 가 일치하면 성공}.
+  \end{block}
+\end{frame}

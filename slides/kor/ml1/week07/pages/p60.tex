@@ -1,0 +1,31 @@
+\begin{frame}{자주 묻는 질문}
+  \small
+  \begin{itemize}
+    \item \textbf{GBDT가 왜 RF보다 과적합에 취약한가?} RF는 트리들이
+      독립적이라 새 트리가 이전 트리의 실수를 ``따라 하지'' 않음. GBDT는
+      \textbf{매 트리가 이전까지의 잔차를 목표}로 학습 — 라벨링 오류가
+      섞여 있으면 뒤따르는 트리가 계속 ``그 오류를 맞히려'' 노력해,
+      트리를 너무 많이 추가하면 \textbf{노이즈까지 학습}.
+      $\to$ \texttt{learning\_rate} 작게 + \texttt{n\_estimators}
+      early stopping이 특히 중요.
+    \item \textbf{SHAP 값이 크다고 ``좋은'' 기여인가?} \textbf{아님} —
+      \textbf{부호}가 방향, \textbf{크기}가 세기만 알려줄 뿐 ``좋다/
+      나쁘다''를 말해주지 않음. 예: 대출 심사 ``신용점수 $-0.3$'' =
+      ``이 신청자의 경우 승인 확률을 0.3 낮추는 \textbf{방향}''이지,
+      신용점수라는 특징이 나쁘다는 뜻이 아님 (다른 특징 소득은 $+0.5$로
+      반대 방향 가능, \textbf{합이 정확히 최종 예측}이 됨 = 가산성).
+    \item \texttt{learning\_rate}를 0.1 $\to$ 0.01로? 스텝 크기가
+      $1/10$ $\to$ \textbf{약 10배 더 많은 단계} 필요. 장점:
+      (1) 정점이 \textbf{완만}해져 정확히 멈추는 단계가 극단적으로
+      일찍 오지 않음, (2) 한 트리의 과적합이 전체에 미치는 영향 감소.
+      표준 조합: \texttt{lr=0.01$\sim$0.05} + \texttt{n=500$\sim$2000}
+      (early stopping 결정) — 학습 10배가 ``정밀 early stopping''을 위한
+      투자.
+    \item \textbf{SHAP값의 합이 예측값과 정확히 같은 게 우연인가?}
+      \textbf{아님} — \textbf{가산성} 성질이 보장. 각 순서에서
+      ``빈집합 $\to$ 전체 집합''으로 이어지는 한계기여의 합은
+      \textbf{항상} $f(x) - \phi_0$와 정확히 같고(경로의 총 변화량은
+      \textbf{경로 순서에 무관}), 그 평균도 동일 $\to$ 400회 근사에도
+      \textbf{오차 0.000000}.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,24 @@
+\begin{frame}{``최소한 1''이 정말 성립하는가 --- 수식과 수치}
+  $L$개의 잔차 블록을 쌓았을 때, 마지막 출력 $x_L$ 에 대한
+  첫 입력 $x_0$ 의 그래디언트는 연쇄법칙으로:
+  \[ \frac{\partial x_L}{\partial x_0}
+     = \prod_{l=1}^{L} \left( \frac{\partial F_l}{\partial x_{l-1}}
+        + 1 \right) \]
+  이 곱을 전개하면(각 인자에서 ``1''을 고르거나
+  ``$\partial F_l/\partial x_{l-1}$'' 을 고르는 모든 조합의 합)
+  정확히 \textbf{한 항}이 ``모든 인자에서 1만 고른'' $= 1$:
+  \[ \frac{\partial x_L}{\partial x_0}
+     = 1 + \text{(나머지 항들의 합)} \]
+  스킵이 없으면 0에 수렴했을 경로에 항상
+  \textbf{``1''이라는 바닥}이 깔려 있다. 수치로도 확인:
+  무작위 초기화(표준편차 0.1)의 20층 FC에서
+  출력에 대한 입력의 그래디언트 노름:
+  \begin{itemize}
+    \item 스킵 \textbf{없는} 20층: $|dz/dx| \approx 2.5\times10^{-14}$
+      (사실상 0 --- 그래디언트 소실)
+    \item 스킵 \textbf{있는} 20층: $|dz/dx| \approx 8.2$
+      (신호 유지)
+  \end{itemize}
+  같은 가중치·구조, 스킵 연결만으로 \textbf{약 330조 배}
+  ($8.2 / 2.5\times10^{-14} \approx 3\times10^{14}$) 차이.
+\end{frame}

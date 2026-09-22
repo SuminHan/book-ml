@@ -1,0 +1,24 @@
+\begin{frame}{실무 노트: 모델 고르는 ``사다리''}
+  앞의 논리를 한 문장으로 실무 지침으로:
+  \vskip0.6em
+  \begin{center}
+    \small
+    기본 RNN $\to$ (길이에 따라 정확도 갈리면) \textbf{GRU} $\to$
+    (여전히 부족하면) \textbf{LSTM} $\to$ (길이 극단적)
+    \textbf{Attention} (Week 12)
+  \end{center}
+  \vskip0.6em
+  \begin{itemize}
+    \item \kb{그래디언트 클리핑은 기본 세팅이다} --- 게이트가 소실을
+      \textbf{완화}해도 \textbf{폭발}은 막아주지 않음(승수가 1을
+      넘는 경로는 여전히 존재) --- 매 스텝 그래디언트 노름을 상수로
+      잘라내는 클리핑은 RNN/LSTM/GRU 훈련의 \textbf{의무}
+    \item \kb{망각 게이트의 ``기억하는 쪽''으로의 편향} --- 이상적
+      기억 과제에서 망각 게이트는 \textbf{1(전부 유지)에 수렴}해야
+      함. 게이트가 0.5 근처에서 떠돌면 ``기억을 못 한다'' 증상 ---
+      \textbf{게이트의 초기화 + 초기 망각 게이트 바이어스}로 조절
+      하는 것이 실전 LSTM의 잘 알려진 트릭 (Jozefowicz et al.,
+      2016) --- ``게이트가 1 근처로 \textbf{초기화}되어 있어야
+      기억을 \textbf{살릴 기회}가 있다''는 직감만 기억할 것
+  \end{itemize}
+\end{frame}

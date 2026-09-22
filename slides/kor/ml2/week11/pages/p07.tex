@@ -1,0 +1,22 @@
+\begin{frame}{확률비와 중요도 샘플링}
+  핵심 도구 — \kb{확률비}(probability ratio): 지금 업데이트하려는
+  정책 $\pi_\theta$ 와 데이터를 모을 때 썼던 정책
+  $\pi_{\theta_{\mathrm{old}}}$ 가 \textbf{같은 행동}에 부여하는
+  확률의 비.
+  \[
+  r_t(\theta) := \frac{\pi_\theta(a_t\mid s_t)}
+  {\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)},
+  \quad r_t(\theta_{\mathrm{old}}) = 1
+  \]
+  \begin{itemize}
+    \item $r_t > 1$: 그 행동을 전보다 \textbf{더} 선호.
+      \; $r_t < 1$: \textbf{덜} 선호.
+    \item 이 비율로 ``옛 정책이 모은 데이터''를 ``새 정책
+      관점에서'' 재사용 — \kb{중요도 샘플링}(Week 5.3의
+      MC off-policy 학습에서 처음 등장한 바로 그 도구).
+  \end{itemize}
+  \[
+  L^{\mathrm{IS}}(\theta) = \mathbb{E}_t[\,r_t(\theta)\, A_t\,]
+  \]
+  $A_t$ 는 10.3절의 어드밴티지 $A_t := G_t - V(s_t)$.
+\end{frame}

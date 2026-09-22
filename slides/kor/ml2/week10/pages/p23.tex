@@ -1,0 +1,24 @@
+\begin{frame}{FAQ: 정규분포는 왜 ``최대 엔트로피'' 분포인가}
+  \begin{itemize}
+    \item 이산: ``무차별 시 엔트로피 최대'' 원리 $\to$ 모든 행동에
+      균등 확률 $1/K$ $\to$ 엔트로피 최대 분포 = \textbf{균등 분포}.
+    \item 연속: \textbf{같은} 원리를 적용하면 \textbf{정규분포}.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{증명 (변분법, 간단)}
+    엔트로피 $h(p)$ 를 $p$ 에 대해 최대화하되
+    $\mathbb{E}_p[x] = \mu$, $\mathbb{E}_p[x^2] = \mu^2 + \sigma^2$
+    제약 아래 변분하면, 결과 분포
+    $p(x) = \exp(-\lambda_0 - \lambda_1 x - \lambda_2 x^2)$
+    --- \textbf{정규분포}.
+  \end{block}
+  \vskip0.3em
+  \begin{itemize}
+    \item $\to$ 정규 정책이 ``\textbf{가장 보수적} 파라미터화'':
+      평균$\cdot$분산 제약 아래 엔트로피 최대 = ``정보를 최소로
+      가정''하는 분포. 학습 초기엔 \textbf{안전}하나, 복잡한 분포
+      구조의 행동 공간에선 \textbf{표현력 한계}.
+  \end{itemize}
+  {\footnotesize 한계 극복 연구: GAN 기반 정책, 미분 가능
+  정상 흐름 (normalizing flow) 정책.}
+\end{frame}

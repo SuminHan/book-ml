@@ -1,0 +1,21 @@
+\begin{frame}{Batch Normalization: 각 층 입력을 매 스텝 재조정}
+  \small
+  \kb{BatchNorm} (Ioffe--Szegedy, 2015): 각 층의 \textbf{입력}을
+  미니배치 단위로 평균 0, 분산 1로 정규화한 뒤, \textbf{학습 가능한}
+  스케일·시프트를 다시 붙임:
+  \[
+  \hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}},
+  \qquad
+  \text{출력} = \gamma\, \hat{x} + \beta
+  \]
+  \begin{itemize}
+    \item $\mu_B, \sigma_B^2$: \textbf{그 미니배치}의 평균·분산, \;
+      $\gamma$(스케일)·$\beta$(시프트): \textbf{학습되는 파라미터}
+    \item $\gamma, \beta$가 있는 이유: 정규화가 표현력을 해칠 수
+      있으니, 필요 시 ``정규화를 \textbf{일부 취소}''할 자유도를
+      남겨주는 \textbf{보험}
+  \end{itemize}
+  \vskip0.2em
+  {\footnotesize 원 논문 Figure 1: BN이 MNIST 테스트 정확도 상승을
+  크게 가속화하고, 더 큰 학습률을 쓸 수 있게 함.}
+\end{frame}

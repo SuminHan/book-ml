@@ -1,0 +1,37 @@
+\begin{frame}{이번 주차 개요}
+  1996년 티브시라니(Tibshirani)의 한 생각 — 손실함수에 가중치 절댓값의 합을
+  페널티로 더하면, 무관한 특징의 가중치가 \textbf{정확히 0}이 된다.
+  특징이 수천 개여도 사람이 일일이 고를 필요가 없다.
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \textbf{이 주차를 마치면}
+      \begin{itemize}\small
+        \item ``가중치가 작다 = 모델이 단순하다 = 분산이 작다''의 연결고리를
+          설명하고, L2는 매끄러운 축소(shrinkage)를, L1은 \textbf{정확히 0}으로
+          특징 선택까지 해내는 이유를 짚음
+        \item $\lambda$를 편향-분산 트레이드오프 위의 \kb{손잡이}로 해석하고,
+          계수 경로(coefficient path) 실험으로 확인
+        \item k-겹 교차검증으로 $\lambda$ 후보를 검증 MSE로 비교하고,
+          U자형 곡선의 좌측 = 과적합 · 우측 = 과소적합으로 읽음
+        \item train/val/test 3분할 원칙을 적용하고, ``정보 흐름의 역주행''
+          (leakage)이 있는 코드를 진단
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \textbf{세 차시 한 줄}
+      \begin{itemize}\small
+        \item \kb{6.1} 페널티의 ``모양''이 결과를 바꾼다 — 원(L2) 대
+          마름모(L1), soft-thresholding
+        \item \kb{6.2} 학습 손실이 아니라 \textbf{검증} 손실로
+          $\lambda$를 고른다: k-fold CV · 1SE 규칙 · 최적화 편향
+        \item \kb{6.3} train은 배운다, val은 고르고, test는 \textbf{딱 한 번} —
+          정보 흐름에 방벽을 세운다
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  {\footnotesize 이미 써본 그 손잡이: Week 5 소프트 마진 SVM의 목적함수
+  $\frac{1}{2}\|w\|^2 + C\sum_i \xi^{(i)}$에서 $\|w\|^2$ 자체가 L2 페널티,
+  $C$는 이 장의 $\lambda$와 같은 종류의 손잡이였다.}
+\end{frame}

@@ -1,0 +1,24 @@
+\begin{frame}{목표값 분포를 숫자로: 1000 에피소드}
+  7-state random walk에서 두 방법의 \textbf{목표값 분포}를 실제 펼쳐보기
+  (노트북, 시드 42, 상태 3에서 1000에피소드):
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    방법 & $V(3)$ 추정 & 쓴 목표값 & 목표값의 산포 \\
+    \midrule
+    MC(매방문) & $\approx 9.3$ & 리턴 $G$
+      & 평균 9.3, 표준편차 $\approx 7.3$, \textbf{범위 3$\sim$51} \\
+    TD(0), $\alpha{=}0.1$ & $\approx 10.0$ & $1 + V(s')$
+      & 평균 7.6, 표준편차 $\approx 3.0$, 범위 1$\sim$11.7 \\
+    참값 $V^{*}(3)$ & 9 & --- & --- \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item MC의 각 목표값(리턴)은 \textbf{에피소드 전체의 운}을 담는다 ---
+      3스텝에 끝나기도, 51스텝을 방황하다 끝나기도.
+    \item TD의 각 목표값은 ``보상 1 + 옆 상태 추정치''뿐 --- $V$가 자리를
+      잡으면 5$\sim$10의 좁은 범위에서만 다님(표준편차는 MC의 절반 이하).
+  \end{itemize}
+\end{frame}

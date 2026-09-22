@@ -1,0 +1,26 @@
+\begin{frame}{2단계 3분할은 정말 겹치지 않는가}
+  실전에선 \emph{한 번에} 3등분보다 \textbf{2단계}로 나눔: 전체 40\%를
+  (val+test)로 떼고, 그 40\%를 다시 절반씩 val/test로.
+  \vskip0.3em
+  샘플 100개(0$\sim$99)를 ``앞 60=train, 뒤 40=temp'' 1차 분할 후
+  temp(60$\sim$99)를 ``앞 20=val, 뒤 20=test'' 2차:
+  \small
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    조각 & 인덱스 범위 & 개수 \\
+    \midrule
+    train & 0$\sim$59 & 60 \\
+    val   & 60$\sim$79 & 20 \\
+    test  & 80$\sim$99 & 20 \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.5em\normalsize
+  \begin{itemize}
+    \item 세 범위가 \textbf{서로 겹치지 않는지}(train/val, train/test,
+      val/test 두루) — 교집합이 빈집합인지.
+    \item val $\cup$ test가 ``처음 떼어둔 뒤 40\%''(60$\sim$99)와
+      \textbf{등치}하는지.
+  \end{itemize}
+  {\footnotesize ``한 번에 3등분''과 ``2단계 분할''이 동일한 disjoint 조건을
+  만족함을 보이면, 2단계 분할을 써도 3분할 원칙을 위반하지 않음이 확인.}
+\end{frame}

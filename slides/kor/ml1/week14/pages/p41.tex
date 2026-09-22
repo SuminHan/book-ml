@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{실습: 코사인 유사도로 비슷한 단어 찾기}
+  동물·과일 관련 작은 말뭉치로 학습 후, ``고양이는''과 가장 비슷한
+  단어:
+\begin{lstlisting}
+def cos_sim(a, b):
+    dot = sum(x*y for x, y in zip(a, b))
+    na = math.sqrt(sum(x*x for x in a))
+    nb = math.sqrt(sum(x*x for x in b))
+    return dot / (na*nb + 1e-9)
+
+corpus = ("고양이는 동물이다 강아지는 동물이다 사자는 동물이다 "
+          "고양이는 귀엽다 강아지는 귀엽다 "
+          "사과는 과일이다 바나나는 과일이다 포도는 과일이다 "
+          "사과는 맛있다 바나나는 맛있다").split()
+random.seed(42)
+emb = train_skipgram(corpus, window=2, dim=8, epochs=200, lr=0.1, neg_k=4)
+query = "고양이는"
+sims = sorted(((w, cos_sim(emb[query], emb[w])) for w in emb if w != query),
+              key=lambda kv: -kv[1])
+\end{lstlisting}
+  {\footnotesize 결과: 동물이다 0.875, 사자는 0.622, 귀엽다 0.581,
+  \textbf{사과는 0.549}, 강아지는 0.533, 과일이다 0.287, $\cdots$}
+\end{frame}

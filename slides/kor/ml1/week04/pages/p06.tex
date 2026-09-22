@@ -1,0 +1,19 @@
+\begin{frame}[fragile]{알고리즘: 가장 가까운 k개의 다수결}
+  \begin{enumerate}\small
+    \item 모든 학습점 $x^{(i)}$와 $x$의 거리를 계산
+    \item 가장 가까운 $k$개를 고른다
+    \item 그 $k$개의 라벨 중 \textbf{다수결}(분류) 또는
+      \textbf{평균}(회귀)을 예측
+  \end{enumerate}
+\begin{lstlisting}
+def knn_predict(X_train, y_train, x_new, k):
+    distances = []
+    for i in range(len(X_train)):
+        d = sum((X_train[i][j] - x_new[j]) ** 2
+                for j in range(len(x_new))) ** 0.5
+        distances.append((d, y_train[i]))
+    distances.sort(key=lambda p: p[0])
+    k_nearest_labels = [label for _, label in distances[:k]]
+    return max(set(k_nearest_labels), key=k_nearest_labels.count)  # 다수결
+\end{lstlisting}
+\end{frame}

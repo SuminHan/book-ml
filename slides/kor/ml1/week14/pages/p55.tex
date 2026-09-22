@@ -1,0 +1,23 @@
+\begin{frame}{RAG: 임베딩 공간에서 ``가까운 문서''를 찾는다}
+  \begin{itemize}
+    \item \kb{RAG}(Retrieval-Augmented Generation)를 프롬프팅 기법
+      으로 보면(13장) ``관련 문서를 프롬프트에 붙여준다'' ---
+      \textbf{어떻게 찾나}는 순전히 이 장의 문제:
+    \item \kb{질문도 벡터, 문서(조각)도 벡터} $\to$
+      \textbf{코사인 유사도(또는 내적)가 가장 큰 문서를 찾는다}.
+    \item 14.2에서 \textbf{단어} 벡터의 유사도를 코사인으로 쟀던 것과
+      \textbf{정확히 같은 연산} --- 대상이 단어에서 문서로 바뀐
+      것뿐.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{밀집 검색(dense retrieval) vs 키워드 매칭}
+    ``임베딩 $\to$ 유사도 검색'' 파이프라인 = \kb{밀집 검색}.
+    \par \textbf{키워드 매칭}(TF-IDF, BM25): ``정확히 같은 단어가
+    있는가''. \; \textbf{밀집 검색}: ``의미가 비슷한가''를 벡터 공간
+    에서 잰다 --- 질문에 없는 단어로 쓰인 문서도 찾음 (``자동차
+    연비''로 검색 $\to$ ``1km당 연료 소비량'' 문서가 걸림).
+  \end{block}
+  {\footnotesize RAG의 검색 단계 원 논문: Lewis et al., 2020 ---
+  검색 단계를 희소 인덱스(BM25 등)로 하고 \textbf{생성 단계}까지
+  연결한 것.}
+\end{frame}

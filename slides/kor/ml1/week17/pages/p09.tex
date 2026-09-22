@@ -1,0 +1,26 @@
+\begin{frame}{n-gram의 두 한계, 그리고 PPL을 손으로}
+  \begin{itemize}
+    \item \kb{첫째, 과소표본(sparsity)}: ``파리의 겨울은'' bigram이
+      corpus에 한 번만 있으면 $P(\text{춥다} \mid \text{파리의,
+      겨울은}) = 1.0$ — \textbf{관찰 1개}에 기반한 확신. 반대
+      증거 한 줄(``파리의 겨울은 덥다'')만 추가해도 $1/2$로
+      반토막.
+    \item \kb{둘째, OOV}: corpus에 한 번도 없는 토큰(``뉴욕의'')에는
+      \textbf{빈 딕셔너리}를 반환 --- 근거 자체가 없음.
+  \end{itemize}
+  \vskip0.4em
+  \begin{itemize}
+    \item bigram($n=2$)의 \kb{퍼플렉시티}: 각 위치 ``실제로 온
+      다음 토큰''의 확률을 곱한 뒤 $N$제곱근:
+      \[\text{PPL} = \exp\left(-\frac{1}{N}\sum_{t=2}^{N}\log
+      P(x_t \mid x_{t-1})\right)
+      = \left(\prod_{t=2}^{N} P(x_t \mid x_{t-1})\right)^{1/N}\]
+    \item 이 corpus(9개 토큰)에서 unigram($n=1$)과 대조:
+      \textbf{문맥을 볼수록 PPL이 낮아짐} --- 실습에서 unigram
+      $\approx 5.67$ vs bigram $\approx 1.19$.
+  \end{itemize}
+  \vskip0.2em
+  {\footnotesize 이 두 한계(데이터 부족한 데 확신, 못 본 토큰엔
+  침묵)가 바로 \textbf{더 긴 문맥을 보는 신경망} + \textbf{조각
+  기반 BPE}의 존재 이유. \kq{좋은 언어모델 = PPL이 낮은 모델.}}
+\end{frame}

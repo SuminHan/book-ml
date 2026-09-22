@@ -1,0 +1,24 @@
+\begin{frame}{단일 시드는 재현이 안 된다 --- 시드된 RNG로}
+  ``로봇 환경의 분위기''를 잡는 데는 이 정도면 충분. 그런데 단일 시드의
+  숫자는 \textbf{재현이 안 된다} --- \texttt{env.action\_space.sample()} 가
+  전역 numpy RNG에서 뽑기 때문에, \emph{이전까지 몇 번 샘플링했는지}에 따라
+  같은 코드도 숫자가 달라진다.
+  \vskip0.5em
+  \begin{block}{노트북의 교훈: 비교할 숫자는 \textbf{재현 가능한}
+    프로토콜로 재야 한다}
+    에피소드마다 \emph{시드된} RNG(\texttt{default\_rng(1000+seed)})로
+    무작위 행동을 뽑아 시드 0$\sim$2 확장:
+    \vskip0.3em
+    \small
+    \begin{tabular}{@{}ll@{}}
+      \toprule
+      환경 & 시드별 100스텝 리턴 \\
+      \midrule
+      Reacher-v5 (50스텝에서 truncated) & seed0 $-42.98$, seed1 $-40.02$, seed2 $-39.75$ \\
+      Ant-v5 (조기 종료) & seed0 $-6.88$ (63스텝), seed1 $-19.47$ (24스텝), seed2 $-9.94$ (11스텝) \\
+      \bottomrule
+    \end{tabular}
+  \end{block}
+  {\footnotesize 언제 다시 돌려도 같은 숫자. Ant 에피소드가 100스텝 전에
+  \emph{조기 종료}된다는 점에 주목 --- 다음에서 ``장부''로 설명.}
+\end{frame}

@@ -1,0 +1,21 @@
+\begin{frame}{자주 하는 실수: $C$를 ``느낌''으로 고정하기}
+  \begin{itemize}
+    \item $C$를 한 번 정하면 그 값이 이상치를 얼마나 용인할지를
+      사실상 \textbf{결정}해버린다.
+    \item 흔한 실수: $C=1.0$(scikit-learn의 기본값) 같은 값을
+      \textbf{별다른 검증 없이} 그대로 쓰는 것.
+    \item 데이터에 라벨링 오류/이상치가 많이 섞여 있으면
+      $C$가 너무 커서 소수 이상치에 과도하게 맞추려다
+      \textbf{전체 경계가 왜곡}된다.
+    \item 반대로 데이터가 매우 깨끗한데 $C$를 너무 작게 잡으면
+      굳이 필요 없는 여유(마진)를 과하게 허용해
+      \textbf{분류 성능을 낭비}.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{$C$는 검증셋으로 튜닝하는 하이퍼파라미터}
+    2장의 학습률, 4장의 $k$와 마찬가지로 \textbf{검증셋 성능으로
+    튜닝}해야 한다 — \texttt{sklearn.model\_selection.GridSearchCV}로
+    여러 $C$ 값(로그 스케일로 0.01, 0.1, 1, 10, 100)을
+    검증셋 정확도로 비교하는 것이 표준.
+  \end{block}
+\end{frame}

@@ -1,0 +1,25 @@
+\begin{frame}{리턴(return)의 정의}
+  강화학습의 목표는 한 스텝의 보상이 아니라, 앞으로 받을 \textbf{보상들의
+  합} --- \kb{리턴(return) $G_t$} --- 을 최대화하는 것이다:
+  \[
+  G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots
+  \;=\; \sum_{k=0}^{\infty} \gamma^k R_{t+k}
+  \]
+  \vskip0.8em
+  \begin{block}{왜 할인율 $\gamma$ 가 필요한가}
+    \begin{enumerate}
+      \item \textbf{수학적으로}: $\gamma < 1$ 이면 보상이 유계(bounded)인
+        한 이 \textbf{무한급수가 항상 수렴}(기하급수). $\gamma = 1$
+        이면 끝나지 않는 과업에서 리턴이 \textbf{무한대로 발산}할 수
+        있다.
+      \item \textbf{직관적으로}: ``지금 당장의 보상 1''이 ``10스텝 뒤의
+        보상 1''보다 더 가치 있다고 보는 경우가 많다(사람의 시간
+        선호, 금융의 이자율과 같은 방향).
+    \end{enumerate}
+  \end{block}
+  \vskip0.5em
+  \begin{itemize}
+    \item $\gamma$ 가 0에 가까우면 \kb{근시안적}(당장의 보상만
+      중시), 1에 가까우면 \kb{장기적}(먼 미래까지 충분히 고려).
+  \end{itemize}
+\end{frame}

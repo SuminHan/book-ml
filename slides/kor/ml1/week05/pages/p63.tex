@@ -1,0 +1,52 @@
+\begin{frame}[fragile]{실습: RBF 전개를 수치로 검증 — 교대 수렴}
+  $\phi(x)$ 를 도수 합 $k\le N$ 으로 절단하고, 부분합의 내적이
+  정확한 커널값 $K(x,x')$ 으로 수렴하는지:
+  \begin{lstlisting}
+def phi_terms(x, N):   # 도수 합 |alpha| <= N 인 모든 성분 phi_alpha(x)
+    x1, x2 = x; out = []
+    for a1 in range(N + 1):
+        for a2 in range(N - a1 + 1):
+            k = a1 + a2
+            out.append(math.exp(-gamma * (x1*x1 + x2*x2))
+                       * (2 * gamma) ** (k / 2) * x1 ** a1 * x2 ** a2
+                       / (math.sqrt(math.factorial(a1))
+                          * math.sqrt(math.factorial(a2))))
+    return out
+def rbf(x, z, g=gamma):
+    return math.exp(-g * np.sum((np.asarray(x) - np.asarray(z)) ** 2))
+x, z = (1.2, -0.7), (0.5, 1.1)
+exact = rbf(x, z)
+for N in [0, 1, 2, 5, 10, 20, 40]:
+    s = sum(a * b for a, b in zip(phi_terms(x, N), phi_terms(z, N)))
+    print(f"도수 합 <= {N:2d}: 부분합 = {s:.10f}   (오차 {s - exact:+.2e})")
+\end{lstlisting}
+  \vskip0.3em
+  \small
+  \begin{tabular}{@{}ccc@{}}
+    \toprule
+    $N$ (도수 절단) & 부분합 내적 & 오차 \\
+    \midrule
+    0 & 0.0337 & $+9.7\times10^{-3}$ \\
+    1 & 0.0222 & $-1.8\times10^{-3}$ \\
+    2 & 0.0242 & $+2.0\times10^{-4}$ \\
+    5 & 0.02399 & $-6.9\times10^{-8}$ \\
+    10 & 0.0239928358 & $\approx 0$ \\
+    \bottomrule
+  \end{tabular}
+  \normalsize\vskip0.4em
+  \begin{itemize}
+    \item 정확한 값 $K(x,z) = 0.0239928358$.
+    \item $N=0$: 0.0337로 \textbf{크고}, $N=1$: 0.0222로
+      \textbf{작고}, $N=2$: 다시 초과, $N\ge5$에서 급격히 수렴 —
+      테일러급수의 \textbf{교대 수렴}(oscillating convergence).
+    \item $N=10$이면 오차 $10^{-15}$ 수준(이중 정밀도의 한계).
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{핵심}
+    $\phi$ 는 무한차원 벡터지만 \textbf{커널 SVM은 $\phi$ 를 직접
+    계산하지 않는다} — 쌍대 문제의 구조가 그렇다. 실제로 계산하는
+    것은 \textbf{커널값 $K(x,x')$ 뿐}이고, 그 값은 유클리드 거리
+    하나로 계산된다. ``무한차원''은 $\phi$ 의 \textbf{개념적}
+    차원일 뿐, \textbf{실제 계산 비용이 무한하다는 뜻이 아니다}.
+  \end{block}
+\end{frame}

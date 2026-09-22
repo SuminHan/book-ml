@@ -1,0 +1,31 @@
+\begin{frame}{정량화: ``오차 수명'' $1/(1-\gamma)$}
+  \begin{itemize}
+    \item \textbf{(1) 할인율 자체가 오차의 수명을 정한다.}
+      미래 오차는 $\gamma^k$만큼 할인되어 현재로 전파 ---
+      ``신뢰할 수 있는 미래''의 길이는 사실상 $1/(1-\gamma)$스텝.
+  \end{itemize}
+  \vskip0.3em
+  \small
+  \begin{tabular}{@{}ccc@{}}
+    \toprule
+    $\gamma$ & 오차 수명 $1/(1-\gamma)$ & 오차 반감기 \\
+    \midrule
+    0.9 & 10 스텝 & 약 7 스텝 \\
+    0.99 & 100 스텝 & 약 69 스텝 \\
+    0.999 & 1{,}000 스텝 & 약 693 스텝 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.6em
+  \begin{itemize}
+    \item $\gamma = 0.99$이면 \textbf{100스텝 앞} 상태의 오차가 현재 목표에
+      거의 그대로 반영 --- 목표가 ``자신이 100스텝 전에 계산했을 때의
+      자신''을 따른다.
+    \item \textbf{(2) 피드백 루프가 끊기지 않는다}:
+      오차 $\varepsilon$ $\to$ 목표 $\to$ 추정 $\to$ 오차, 매 스텝 \textbf{닫혀}
+      있고 감쇠는 $(1-\gamma)$에 비례($\gamma=0.99$면 한 스텝에 겨우 1\%만 감쇠).
+  \end{itemize}
+  \kq{타겟 네트워크는 이 루프를 $C$스텝 동안 \textbf{물리적으로 자른다}
+  --- 목표는 과거 스냅샷($\theta^{-}$)이므로 현재 오차가 목표에
+  반영되는 통로가 없다.}
+\end{frame}

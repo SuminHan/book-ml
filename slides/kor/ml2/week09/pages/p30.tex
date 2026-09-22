@@ -1,0 +1,28 @@
+\begin{frame}[fragile]{알고리즘 조립 ①: 초기화와 $\varepsilon$-greedy}
+\begin{lstlisting}
+def dqn_train(env, n_episodes, max_steps, batch_size=32, gamma=0.99,
+              lr=1e-3, update_freq=100, eps_start=1.0, eps_min=0.05,
+              eps_decay=0.995):
+    Q_net = QNetwork(env.state_dim, env.n_actions)      # 9.1의 네트워크
+    target_net = QNetwork(env.state_dim, env.n_actions)
+    target_net.load_state_dict(Q_net.state_dict())      # 처음엔 둘이 동일
+    optimizer = torch.optim.Adam(Q_net.parameters(), lr=lr)
+    buffer = ReplayBuffer(capacity=10000)               # 9.3의 재현 버퍼
+
+    step_id = 0
+    for ep in range(n_episodes):
+        eps = max(eps_min, eps_start * eps_decay ** ep) # e-greedy, 감소
+        s, done, total = env.reset(), False, 0.0
+        for t in range(max_steps):
+            if random.random() < eps:
+                a = random.randrange(env.n_actions)     # 탐험
+            else:
+                with torch.no_grad():
+                    a = int(Q_net(torch.tensor([s]))
+                            .argmax(dim=1).item())      # 착취
+            s2, r, done = env.step(a)
+            buffer.push((s, a, r, s2, float(done)))
+\end{lstlisting}
+  {\footnotesize 옵티마이저는 \texttt{Q\_net.parameters()} \textbf{만} ---
+  타겟 네트워크는 학습 대상이 아니다.}
+\end{frame}

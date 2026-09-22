@@ -1,0 +1,41 @@
+\begin{frame}[allowframebreaks]{확인 문제 8$\sim$9: 템플릿 ①③}
+  \begin{itemize}
+    \item \textbf{8.} 템플릿 ①에서 학습률을 $\eta=0.5$ 대신
+      $\eta=2$로 쓰면 1스텝 후의 $w, b$는? ``학습률을 크게
+      하면 항상 빨리 수렴한다''가 왜 \textbf{성급한 결론}인지,
+      이 숫자만으로 말할 수 있는 한계는?
+      \vskip0.2em
+      {\footnotesize \textbf{답}: $w=0.1-2\times(-0.550675)
+      =1.201350$, $b=0-2\times(-0.116915)=0.233830$ --- 스텝이
+      \textbf{정확히 4배}. 한계: 손실면이 볼록(교차 엔트로피는
+      볼록)이므로 이 방향의 큰 스텝은 손실을 \textbf{낮추기는}
+      한다, 그러나 스텝이 경사 변화율에 비해 너무 크면 다음
+      스텝에서 반대쪽으로 \textbf{오버슈팅}하며 손실이
+      튀어오를 수 있다 --- 1스텝만으로는 ``수렴''이 아니라
+      ``더 큰 스텝''만을 볼 수 있다. (Ch09 Block B에서 학습률
+      스케줄링이 이 주제의 일반화.)}
+  \end{itemize}
+
+  \begin{itemize}
+    \item \textbf{9.} Lasso(Ch06.1)의 목적함수 두 항을 쓰고,
+      ``왜 L1은 가중치를 \textbf{정확히 0}으로 만들지만 L2는
+      (유한한 $\lambda$에서는) 그렇지 않은가''를 한 문장으로
+      답하자.
+      \vskip0.2em
+      {\footnotesize \textbf{답}:
+      $\min_w \ell_{\text{MSE}}(w) + \lambda\|w\|_1$.
+      $\|w\|_1$은 $w_j=0$에 \textbf{켄(kink)}을 만들어, 원래
+      손실 기울기의 절댓값이 $\lambda$ 이하이면 정답이 그 켄
+      에 딱 붙어 $w_j=0$이 된다(Ch06.1의 소스 스로싱
+      $\mathcal{T}_\lambda$). 반면 $\|w\|^2$은 0에서 \textbf{기울기
+      가 0인 매끄러운} 볼록함수라 $w_j$를 0으로 \textbf{가까이
+      당기지만} 유한한 $\lambda$로는 정확히 0까지 데려가지
+      못한다.}
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{이번 프로젝트가 남기는 교훈}
+    \kq{지금까지 배운 어떤 모델도 ``항상 최선''이지 않다 ---
+    실전에서는 데이터의 특성을 보고 어떤 도구를 쓸지
+    \textbf{스스로 판단}해야 한다.}
+  \end{block}
+\end{frame}

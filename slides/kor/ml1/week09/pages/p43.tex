@@ -1,0 +1,21 @@
+\begin{frame}{Dropout: 앙상블 관점 — $2^N$개의 서브네트워크}
+  \small
+  \begin{itemize}
+    \item 한 전파에서 살아남는 뉴런의 \textbf{조합}이 매번 달라 $\Rightarrow$
+      $N$개 이진 뉴런의 층에서 이론상 $2^N$개의 ``서브네트워크'' 존재
+    \item $N = 10$이면 1024개, 은닉층 3개면 \textbf{수백만$\sim$수십억}
+      개 — dropout은 이 모든 서브네트워크를 \textbf{파라미터를 공유한
+      채} 동시에 학습
+    \item 앙상블 = 구성원이 서로 다른 실수를 해서 평균냈을 때 편차
+      감소(Week 4.1) — dropout은 ``수억 개를 만들되 파라미터를
+      공유''해서 그 이득을 \textbf{지수적으로 싸게} 얻는 장치
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{왜 이것이 ``과적합 억제''인가}
+    뉴런이 서로의 존재를 전제로 학습(co-adapt)하지 못하게 됨 —
+    ``나만 잘하면 돼''가 아니라 ``\textbf{나를 꺼놔도 팀이 돌아가야
+    하니까}'' $\Rightarrow$ 특정 뉴런에 집중해 잡음까지 외우던
+    (과적합) 대신, 어떤 뉴런이 빠져도 \textbf{견고하게 동작하는
+    분산된 특징} 학습.
+  \end{block}
+\end{frame}

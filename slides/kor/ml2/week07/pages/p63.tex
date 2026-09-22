@@ -1,0 +1,28 @@
+% ===== wrap-up =====
+\begin{frame}{이번 주차 정리}
+  \begin{itemize}
+    \item \kb{7.1 n-step TD} --- $G_t^{(n)}$은 MC와 TD(0) 사이의
+      하나의 다이얼. \texttt{tau = t - n + 1}의 갱신 시차,
+      할인 지수 하나만 틀리면 $n=1$이어도 \textbf{편향된 고정점}.
+      7-state random walk에서 30 seed 평균 $\Rightarrow$ \textbf{U자}.
+      보편적 최적 $n$은 없으므로 검증으로 튜닝.
+    \item \kb{7.2 적격흔적} --- 흔적 $e(s)$로 하나의 TD 오차가
+      \textbf{모든 상태를 동시에} 후방 갱신. $\lambda$는
+      ``$n$ 하나 고르기''를 ``가중치 분포 $\lambda^{n-1}$의
+      형태 고르기''로 승화. \textbf{단일 실행은 믿지 말 것}
+      (20회 반복 평균). $\lambda=0$ $\Leftrightarrow$ TD(0),
+      $\lambda=1$ $\Leftrightarrow$ MC 건성 체크.
+    \item \kb{7.3 Dyna-Q} --- 본 $(s,a)$의 $(r,s')$를 모델로
+      저장, 실제 스텝마다 모델에서 가상 TD(0) 갱신.
+      \textbf{실제/계획이 같은 $Q$ 테이블 공유}가 전부.
+      5$\times$5 격자: 334 $\to$ 35 에피소드(약 9.5배),
+      한계 효과 + 모델 커버리지가 상한.
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{다음 주 --- Week 8. Block A 캡스톤}
+    Gymnasium의 표 기반 환경에서 \textbf{n-step TD · TD($\lambda$) ·
+    Dyna-Q를 팀 프로젝트로 직접 구현·비교}. 이번 주 세 다이얼이
+    \textbf{같은 질문(``부트스트래핑을 얼마나 할 것인가'')}의
+    서로 다른 답이라는 것만 기억하면, 비교 설계가 훨씬 수월해진다.
+  \end{block}
+\end{frame}

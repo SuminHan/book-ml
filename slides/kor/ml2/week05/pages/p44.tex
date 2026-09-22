@@ -1,0 +1,29 @@
+\begin{frame}{중요도 보정: 스텝별 비율}
+  $b$ 가 50-50이고 $\pi$ 가 항상 오른쪽이므로 \textbf{스텝별
+  비율}은:
+  \[
+  \frac{\pi(a_t|s_t)}{b(a_t|s_t)} \;=\;
+  \begin{cases} 2 & a_t = \text{right} \\ 0 & a_t =
+  \text{left} \end{cases}
+  \]
+  다시 말해, \textbf{왼쪽이 한 번이라도 나오면 그 에피소드의
+  $\rho = 0$} --- ``$\pi$ 라면 절대 이렇게 행동하지
+  않았을 궤적''이라 평가에서 \textbf{완전히 제외}. 오른쪽만
+  나오면(시작 2에서 오른쪽만 $L$번 $\to$ 종료 4) $\rho = 2^L$
+  다.
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    에피소드 (시작 2) & 리턴 $G_0$ & $\rho$ & $\rho \cdot G_0$ \\
+    \midrule
+    (2,오) $\to$ (3,오, 종료) & $0 + 0.9 \times 1 = 0.9$ & $2 \times 2 = 4$ & $3.6$ \\
+    (2,좌) $\to$ (1,오) $\to$ (2,오) $\to$ (3,오, 종료) & $0.9^3 = 0.729$ & $0$ (첫 스텝에 왼쪽) & $0$ \\
+    (2,좌) $\to$ (1,$\cdots$) $\to$ (0, 종료) & $\approx -1$ & $0$ & $0$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  목표 정책이 \textbf{결정론적}이라 시작 2에서 $\rho \neq 0$
+  인 궤적은 \textbf{``오른쪽, 오른쪽'' 단 하나뿐} ---
+  $\rho G_0$ 가 오직 두 값 $\{3.6, 0\}$ 만 취한다.
+\end{frame}

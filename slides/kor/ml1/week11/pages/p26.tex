@@ -1,0 +1,27 @@
+\begin{frame}{펼쳐진 계산 그래프: 시점이 곧 ``층''}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch11_2_bptt_unroll.png}
+      \vskip0.3em
+      {\footnotesize 역전파는 오른쪽(손실)에서 왼쪽(과거)으로.}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      중요한 것 세 가지:
+      \begin{enumerate}
+        \item \kb{수직 화살표($W_{hh}$)}: 자기-루프
+          ($h_{t-1} \to h_t$). 역전파에서는 \textbf{위에서
+          아래로} --- $h_t$에서 $h_{t-1}$으로 거슬러 올라감
+        \item \kb{각 시점의 출력 화살표($W_{hy}$)}: $h_t \to y_t$.
+          손실이 \textbf{모든 시점}의 $y_t$에서 나므로 역전파는
+          이 화살표들에서 시작
+        \item \kb{같은 색 박스가 모든 시점에서 반복}: 시점 1과
+          시점 2의 $W_{xh}, W_{hh}, W_{hy}$는 \textbf{동일한}
+          가중치 (파라미터 공유) $\Rightarrow$ 각 시점의 그래디언트는
+          \textbf{같은 가중치의 그래디언트에 더해짐}
+      \end{enumerate}
+      \vskip0.3em
+      \kq{이 ``누적''이 BPTT에서 가장 실수하기 쉬운 지점.}
+    \end{column}
+  \end{columns}
+\end{frame}

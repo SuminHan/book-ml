@@ -1,0 +1,24 @@
+\begin{frame}{TD 오차: ``예측 오차''로 읽는 갱신식}
+  \[
+  V(s) \leftarrow V(s) + \alpha
+  \underbrace{\big[r + \gamma V(s') - V(s)\big]}_{\text{TD 오차 } \delta}
+  \]
+  \begin{itemize}
+    \item 상태 $s$에 도착했을 때 ``여기서는 대략 $V(s)$ 값이다''라고
+      \textbf{예측}한다.
+    \item 한 스텝 진행 뒤, 관찰한 $r$과 도착 상태의 추정치 $V(s')$을 합치면
+      \textbf{사후} 평가 $r + \gamma V(s')$이 생긴다.
+    \item 두 것의 차이가 예측 오차:
+  \end{itemize}
+  \[
+  \delta = \underbrace{r + \gamma V(s')}_{\text{사후 평가}}
+        - \underbrace{V(s)}_{\text{사전 예측}}
+  \]
+  \vskip0.4em
+  \begin{itemize}
+    \item $\delta > 0$: ``예상보다 좋았다'' $\to$ 추정치 \textbf{올림}.
+      $\delta < 0$: ``예상보다 나빴다'' $\to$ \textbf{내림}.
+    \item 손계산 첫 에피소드: 세 스텝 모두 $\delta = 1 - 0 = +1$ ---
+      ``0으로 예측해 두었는데 목표값이 1이라 전부 기대 이상''.
+  \end{itemize}
+\end{frame}

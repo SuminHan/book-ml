@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{UCB 구현: ``안 당겨본 팔부터''가 필수}
+\begin{lstlisting}
+import math
+
+def ucb_bandit(true_means, c, steps):
+    k = len(true_means)
+    Q = [0.0] * k
+    N = [0] * k
+    for t in range(1, steps + 1):
+        unplayed = [i for i in range(k) if N[i] == 0]
+        if unplayed:
+            a = unplayed[0]  # 아직 안 당겨본 팔을 먼저 시도
+        else:
+            a = max(range(k), key=lambda i: Q[i] + c * math.sqrt(math.log(t) / N[i]))
+        r = random.gauss(true_means[a], 1.0)
+        N[a] += 1
+        Q[a] += (r - Q[a]) / N[a]
+    return Q
+\end{lstlisting}
+{\footnotesize \texttt{unplayed} 분기를 빼먹으면 $N(a)=0$ 대입으로
+\textbf{0으로 나누기 오류} --- 다음 슬라이드.}
+\end{frame}

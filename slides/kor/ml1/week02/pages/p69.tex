@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{로지스틱 경사하강법: 시그모이드 한 줄만 추가}
+\begin{lstlisting}
+import math
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+def logistic_gradient_descent(X, y, alpha, epochs):
+    m, n = len(X), len(X[0])
+    w = [0.0] * (n + 1)
+    for _ in range(epochs):
+        grad = [0.0] * (n + 1)
+        for i in range(m):
+            pred = sigmoid(w[0] + sum(w[j+1] * X[i][j] for j in range(n)))
+            error = pred - y[i]
+            grad[0] += error
+            for j in range(n):
+                grad[j+1] += error * X[i][j]
+        for j in range(n + 1):
+            w[j] -= alpha * grad[j] / m
+    return w
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize 2.1절 코드와 \textbf{차이 = \texttt{sigmoid()} 한
+  줄}. ``오차 $\times$ 특징'' 패턴이 시그모이드를 통과해도 살아남는
+  것을 2.3절이 확인.}
+\end{frame}

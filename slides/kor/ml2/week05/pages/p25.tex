@@ -1,0 +1,36 @@
+\begin{frame}[fragile]{MC 제어: 코드 (첫방문 기준 $Q$ 갱신)}
+\begin{lstlisting}
+def mc_control(env_step, n_states, n_actions, n_episodes,
+               epsilon, gamma, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    counts = [[0] * n_actions for _ in range(n_states)]
+
+    def generate_episode():
+        s, episode = start_state, []
+        for _ in range(100):
+            a = random.randrange(n_actions) if random.random() < epsilon \
+                else max(range(n_actions), key=lambda x: Q[s][x])
+            ns, r, done = env_step(s, a)
+            episode.append((s, a, r))
+            s = ns
+            if done:
+                break
+        return episode
+
+    for _ in range(n_episodes):
+        episode = generate_episode()
+        G, visited = 0.0, set()
+        for t in reversed(range(len(episode))):
+            s, a, r = episode[t]
+            G = r + gamma * G
+            if (s, a) not in visited:          # (상태, 행동) 쌍 방문
+                visited.add((s, a))
+                counts[s][a] += 1
+                Q[s][a] += (G - Q[s][a]) / counts[s][a]  # 증분 평균
+    return Q
+\end{lstlisting}
+  {\footnotesize MC 예측과 \textbf{거의 같다} --- $V[s]$ 가
+  아니라 $Q[s][a]$ 를 갱신하고, ``방문'' 기준이 상태 $s$ 가
+  아니라 \textbf{(상태, 행동) 쌍} $(s,a)$ 임. 나머진 동일(뒤에서
+  훑어 $G_t$ 재귀 계산, 증분 평균).}
+\end{frame}

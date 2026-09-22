@@ -1,0 +1,39 @@
+\begin{frame}[fragile]{베이스라인: $\gamma$ 가 리턴을 어떻게 바꾸나}
+  \begin{lstlisting}
+import gymnasium as gym
+import numpy as np
+
+env = gym.make("CartPole-v1")
+for gamma in [0.9, 0.95, 0.99]:
+    returns = []
+    for seed in range(200):
+        s, _ = env.reset(seed=seed)
+        env.action_space.seed(seed)
+        total, discount = 0.0, 1.0
+        while True:
+            a = env.action_space.sample()
+            s, r, term, trunc, _ = env.step(a)
+            total += discount * r
+            discount *= gamma
+            if term or trunc:
+                break
+        returns.append(total)
+    returns = np.array(returns)
+    print(f"gamma={gamma}: 무작위 평균 리턴 = {returns.mean():.2f}  "
+          f"(500스텝 최대: {(1-gamma**500)/(1-gamma):.2f})")
+env.close()
+  \end{lstlisting}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      {\scriptsize\begin{lstlisting}
+gamma=0.9:  평균 리턴 = 8.62  (최대: 10.00)
+gamma=0.95: 평균 리턴 = 13.07 (최대: 20.00)
+gamma=0.99: 평균 리턴 = 20.77 (최대: 99.34)
+      \end{lstlisting}}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch03_2_gamma_policy_crossover.png}
+    \end{column}
+  \end{columns}
+\end{frame}

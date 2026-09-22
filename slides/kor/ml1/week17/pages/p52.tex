@@ -1,0 +1,31 @@
+\begin{frame}{숫자로: DPO 손실의 그래디언트 방향}
+  \small
+  \begin{itemize}
+    \item 17.2 장난감 상황(두 후보 $y_w, y_l$, $\beta =
+      1$). 초기: $\pi_\theta(y_w|x) = 0.6$,
+      $\pi_\theta(y_l|x) = 0.2$, $\pi_{\text{ref}}(y_w|x)
+      = 0.4$, $\pi_{\text{ref}}(y_l|x) = 0.3$.
+    \item 두 로그-비율: $\log \tfrac{0.6}{0.4} \approx
+      0.4055$, \; $\log \tfrac{0.2}{0.3} \approx -0.4055$.
+    \item margin $z = 0.4055 - (-0.4055) \approx 0.811$,
+      손실 $\mathcal{L} = -\log\sigma(0.811) \approx
+      \mathbf{0.368}$.
+    \item BT 그래디언트를 그대로:
+      $\partial \mathcal{L}/\partial \log
+      \tfrac{\pi_\theta(y_w)}{\pi_{\text{ref}}(y_w)} =
+      \sigma(z) - 1 \approx -0.308$,
+      $\partial \mathcal{L}/\partial \log
+      \tfrac{\pi_\theta(y_l)}{\pi_{\text{ref}}(y_l)} =
+      1 - \sigma(z) \approx +0.308$ — \textbf{$y_w$의
+      로그-비율을 올리고 $y_l$의를 내리는} 방향이 정확히 BT
+      손실을 줄이는 방향.
+    \item 학습 진행 $\pi_\theta(y_w|x) = 0.7$,
+      $\pi_\theta(y_l|x) = 0.1$ $\Rightarrow$ $z \approx
+      1.658$, 손실 $\approx 0.174$ — \textbf{같은 BT 손실
+      곡선을, 별도 보상모델 없이 정책 확률로 직접} 내림.
+    \item $\beta = 0.1$이면 margin도 $1/10$ ($z \approx
+      0.081$), 손실 $0.653$ — $\beta$는 \textbf{``선호를
+      얼마나 강하게 반영할 것인가''의 강도 조절}, RLHF의
+      KL 항 강도와 같은 역할.
+  \end{itemize}
+\end{frame}

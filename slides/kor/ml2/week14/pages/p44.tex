@@ -1,0 +1,19 @@
+\begin{frame}{공통 원리}
+  \begin{block}{GPU 병렬을 결정하는 것}
+    ``코어 수 $\times$ 데이터 길이''가 아니라,
+    \textbf{``병렬화 가능한 부분 $\times$ 코어 수''}로 결정된다.
+  \end{block}
+  \vskip0.5em
+  \begin{itemize}
+    \item ``순차 부분''이 \textbf{작을수록}(환경 스텝이 대부분이고,
+      동기화가 스텝 경계마다 한 번이면) $\to$ 이 곱에 \textbf{가깝}
+    \item ``순차 부분''이 \textbf{크면}(정책 업데이트가 환경 스텝과
+      1:1이면) $\to$ Amdahl 상한이 \textbf{훨씬 낮}아진다
+  \end{itemize}
+  \vskip0.6em
+  {\footnotesize 확인 문제 예시: 환경 스텝 99\%($p=0.99$) + 정책
+  업데이트 1\%인 시뮬레이터에서 1,000코어 병렬화 후 전체 가속
+  $= 1/((1-p)+p/N) \approx 990$배, $N\to\infty$ 상한 = 100배.
+  (힌트: $1/((1-p)+p/N)$, $p=0.99, N=1000$)
+  }
+\end{frame}

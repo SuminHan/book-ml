@@ -1,0 +1,44 @@
+\begin{frame}{실제로 재보기: 무작위 내적 200쌍}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      무작위 벡터(각 성분 $\mathcal{N}(0,1)$) 두 개를 200쌍
+      만들어 내적 계산 ($d=64$):
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        & 관측 범위 \\
+        \midrule
+        스케일링 \textbf{전} & $-19.1 \sim +22.3$ \\
+        $\sqrt{64} = 8$으로 \textbf{후} & $-2.4 \sim +2.8$ \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.4em
+      \begin{itemize}
+        \item 최대치 22.3 $\approx 2.8\sigma$ — \textbf{기대와
+          일치}.
+        \item \emph{전}의 $-19 \sim +22$면 softmax는 사실상
+          one-hot ($\sigma(22) \approx 1 - 2.7 \times 10^{-10}$).
+        \item $\sqrt{64} = 8$으로 나누면 \textbf{$-2.4 \sim +2.8$} —
+          ``분화된 가중치''를 정상적으로 내는 범위.
+      \end{itemize}
+      $\sqrt{d_k}$ 는 ``마법 숫자''가 아니라 \textbf{내적의
+      표준편차를 정확히 1로 되돌리는 상수} — ``무작위 기준선''에서
+      얼마나 벗어났는지를 \emph{표준편차 단위로} 재게 한다.
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch12_2_scaling_vs_dim.png}
+      \vskip0.3em
+      {\footnotesize 차원 $d_k$ 가 커질 때, 스케일링 없이
+      $d$: 4$\to$256이면 softmax \textbf{최대 가중치 0.63$\to$0.96}
+      (one-hot에 수렴); $1/\sqrt{d_k}$ 스케일링은 $d$와 무관하게
+      \textbf{0.46$\to$0.04}로 낮게(분화되게) 유지 (500회 평균,
+      실습 실험 6).}
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  $\sqrt{d_k}$ 가 ``차원을 모르는 마법 상수''가 아니라
+  \textbf{``내적의 표준편차를 1로 환원하는'' 스케일}이라,
+  원점수가 \emph{의미 있는 차이}를 가질 때 softmax가
+  \emph{어떤 차원이든} 정상적으로 분화된다.
+\end{frame}

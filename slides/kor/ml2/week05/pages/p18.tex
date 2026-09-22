@@ -1,0 +1,29 @@
+\begin{frame}[fragile]{자주 하는 실수: 뒤에서부터 훑으면 ``마지막 방문''}
+  이 절의 \texttt{mc\_prediction} 을 처음 만들 때(이 교재의 이전
+  버전에도) \textbf{실제로} 그런 버그가 있었다:
+\begin{lstlisting}
+for t in reversed(range(len(episode))):   # 뒤에서부터
+    s, a, r = episode[t]
+    G = r + gamma * G
+    if s not in visited:   # "아직 못 봤다" = 이 에피소드에서
+                           # 가장 늦게(마지막으로) 나온 방문
+        ...
+\end{lstlisting}
+  \texttt{reversed} 순서에서 ``아직 visited 에 없는 상태''를
+  만나면, 그 방문은 \textbf{그 상태에서 가장 늦게(마지막으로)
+  방문한 것} --- 앞(시간 순서)에서부터 훑어야 첫방문을 센다.
+  \vskip0.5em
+  왜 \textbf{단순 코딩 실수가 아니라 추정치의 정합성 문제}인가를
+  숫자로 본다(같은 20만 에피소드, 시드 42):
+  \small
+  \begin{tabular}{@{}clrr@{}}
+    \toprule
+    상태 & 정확값 & 첫방문 MC & \textbf{마지막 방문 MC} \\
+    \midrule
+    $(0,0)$ & $+0.286$ & $+0.288$ & \textbf{$+0.388$} \\
+    $(0,1)$ & $+0.465$ & $+0.466$ & \textbf{$+0.542$} \\
+    $(0,2)$ & $+0.713$ & $+0.713$ & \textbf{$+0.756$} \\
+    $(1,2)$ & $+0.951$ & $+0.951$ & \textbf{$+1.000$} \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

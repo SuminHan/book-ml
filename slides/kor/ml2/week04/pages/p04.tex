@@ -1,0 +1,24 @@
+\begin{frame}{복습: 벨만 기대방정식과 \kb{벨만 연산자} $T^\pi$}
+  \kb{결정론적 정책}(각 상태에서 정확히 한 행동 $\pi(s)$)로 쓰면:
+  \[
+  V^\pi(s) = R(s, \pi(s)) + \gamma \sum_{s'} P(s'|s,\pi(s)) V^\pi(s')
+  \]
+  직관: ``지금 상태의 가치 = 지금 당장 받는 보상 + 할인된 다음
+  상태들의 가치의 기댓값.'' --- 게임이 끝날 때까지 통째로 계산
+  대신, \textbf{한 스텝 앞만 내다보는 계산을 반복}하면 정확한
+  답에 도달한다.
+  \vskip0.4em
+  확률적 정책 일반형 $\pi(a|s)$ 로 쓰면 우변이 \textbf{가중합}:
+  \[
+  V^\pi(s) = \sum_a \pi(a|s)\Big[R(s,a)
+  + \gamma \sum_{s'} P(s'|s,a)\, V^\pi(s')\Big]
+  \]
+  이 전체를 \kb{벨만 연산자} $T^\pi$ (``가치함수를 먹여 우변을
+  돌려주는 함수의 함수'')라 부른다. 모든 반복법은 \textbf{이
+  연산자를 같은 값에 계속 대입}:
+  \[
+  V_0 \xrightarrow{T^\pi} V_1 \xrightarrow{T^\pi} \cdots
+  \xrightarrow{T^\pi} V^\pi
+  \]
+  이 관점이 4.3절 ``왜 수렴하는가'' 증명의 핵심.
+\end{frame}

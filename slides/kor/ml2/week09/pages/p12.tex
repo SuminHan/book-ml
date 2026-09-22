@@ -1,0 +1,15 @@
+\begin{frame}{구조를 눈으로 따라간다: 출력 $\vert\mathcal{A}\vert$개}
+  \begin{itemize}
+    \item 입력: 상태 $s$ (CartPole 4원 벡터 / Atari는 84$\times$84 이미지).
+    \item 두 은닉층(각 64 뉴런, ReLU) $\to$
+      \textbf{출력 $\vert\mathcal{A}\vert$개} --- 각 행동을 하나의 출로(outlet)로.
+    \item $a=0$번 출력 $= Q(s,0;\theta)$, $a=1$번 출력 $= Q(s,1;\theta)$.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{왜 ``한 네트워크 - 여러 출력''인가}
+    \textbf{한 번의 순전파}로 모든 행동을 동시에 평가 $\Rightarrow$
+    $\max_{a'} Q(s',a';\theta)$ 는 출력 벡터의 \texttt{.max()} 한 줄.
+    \textbf{공유된 은닉층}이 ``비슷한 상태를 비슷한 Q값으로'' 만드는
+    \textbf{공통 특징 추출기} --- 이 구조가 일반화의 핵심.
+  \end{block}
+\end{frame}

@@ -1,0 +1,21 @@
+\begin{frame}{첫방문 MC 예측: 알고리즘}
+  한 상태를 한 에피소드 안에서 \textbf{여러 번} 방문할 수 있다.
+  \kb{첫방문 (first-visit)} MC 는 각 에피소드에서 그 상태를
+  \textbf{처음} 방문했을 때의 리턴만 카운트한다 (모든 방문을 다
+  쓰는 \kb{모든방문} MC 도 있음 --- 이번 학기는 첫방문만 다룸).
+  \vskip0.5em
+  \begin{enumerate}
+    \item 에피소드 $\pi$ 로 샘플링.
+    \item 에피소드를 \textbf{뒤에서부터} 훑으며 리턴을 재귀
+      계산: $G_t = R_t + \gamma\, G_{t+1}$.
+    \item 각 상태의 \textbf{첫 방문} 시점의 $G_t$ 로 $V(s)$ 를
+      갱신(증분 평균).
+  \end{enumerate}
+  \vskip0.5em
+  \begin{block}{왜 뒤에서부터 훑나}
+    리턴 $G_t = R_t + \gamma G_{t+1}$ 이 재귀적으로 정의되므로,
+    맨 마지막 스텝부터 거꾸로 누적하면 \textbf{한 번의 순회}로
+    매 스텝의 $G_t$ 를 전부 계산 --- Week 4 ``터미널부터
+    거꾸로 대입'' 패턴과 같은 아이디어.
+  \end{block}
+\end{frame}

@@ -1,0 +1,24 @@
+\begin{frame}{손으로 한 번: 누수를 숫자로}
+  세 번째 실수(정규화 통계량을 전체 데이터로 미리 계산)가 어떤 왜곡을
+  만드는지. 값 $1\sim10$을 앞 7개(train)·뒤 3개(test)로 나눔:
+  \small
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    기준 & 평균 & 표준편차 \\
+    \midrule
+    전체 10개(누수) & 5.5 & 2.872 \\
+    train 7개만(올바름) & 4.0 & 2.000 \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.5em\normalsize
+  test $=[8,9,10]$를 각각의 통계량으로 표준화:
+  \[
+  \text{전체(누수)}: [0.870,\ 1.219,\ 1.567]\qquad
+  \text{train(올바름)}: [2.0,\ 2.5,\ 3.0]
+  \]
+  \begin{itemize}
+    \item 전체 데이터로 미리 계산한 평균·std를 쓰면 test 값이 실제보다
+      훨씬 ``평범(z값 작음)''해 보인다 — std 자체가 test의 큰 값들 때문에
+      이미 커져 있기 때문(2.872 vs 2.0).
+  \end{itemize}
+\end{frame}

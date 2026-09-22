@@ -1,0 +1,32 @@
+\begin{frame}{가치반복의 반복 1$\to$3: 값이 ``한 칸씩'' 퍼져 나간다}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    반복 & 계산 & 결과 \\
+    \midrule
+    1 (초기 $Q$ 전부 0) & $Q(X) \leftarrow 1 + 0.9 \cdot Q(T)$,
+      $Q(S) \leftarrow 0 + 0.9 \cdot Q(X)$ & $Q(X)=1$, $Q(S)=0$
+      (아직 $Q(X)$가 0이므로) \\
+    2 & $Q(S) \leftarrow 0 + 0.9 \cdot Q(X) = 0.9$ &
+      $Q(S)=0.9$, $Q(X)$는 변하지 않음 \\
+    3 & 아무 값도 변하지 않음 & \textbf{수렴} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item $Q(S)$가 0에서 0.9로 도약하는 데 \textbf{정확히 2번}의
+      반복이 걸렸다
+    \item 반복 1: 목표에서 \textbf{1칸} 떨어진 $X$만 ``+1이 2칸 뒤에
+      있다''는 사실을 알게 됐고, 2칸 떨어진 $S$는 아직 0
+    \item 반복 2: 값이 엣지 $S \to X$를 타고 \textbf{한 칸 뒤로 퍼져}
+      $S$까지 도착
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{본질: 한 반복당 한 칸}
+    값 정보가 모델 그래프를 따라 \textbf{정확히 한 상태만큼} 퍼져
+    나간다 --- 목표에서 $d$칸 떨어진 상태는 정확히 $d$번 반복,
+    $L$개 링크 체인의 전체 수렴은 \textbf{$L+1$번째 반복}.
+    (7.3절 5$\times$5 격자: 최단 경로 8스텝 $\Rightarrow$ 9번
+    반복에 수렴.)
+  \end{block}
+\end{frame}

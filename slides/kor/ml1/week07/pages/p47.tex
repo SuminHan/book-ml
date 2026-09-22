@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{실습: GBDT vs 랜덤 포레스트 (같은 데이터)}
+  7.2절의 유방암 데이터:
+\begin{lstlisting}
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+
+rf = RandomForestClassifier(n_estimators=100, random_state=0).fit(X_train, y_train)
+gbdt = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1,
+                                  random_state=0).fit(X_train, y_train)
+print("RandomForest:", round(rf.score(X_test, y_test), 3))
+print("GBDT:        ", round(gbdt.score(X_test, y_test), 3))
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize \texttt{RandomForest: 0.959 \quad GBDT: 0.977} \quad
+  상위 3 중요도: \texttt{worst concave points 0.445},
+  \texttt{mean concave points 0.275}, \texttt{worst perimeter 0.071}}
+  \vskip0.4em
+  \begin{itemize}
+    \item GBDT가 RF보다 \textbf{근소하게 더 높음}(0.977 vs 0.959) —
+      ``독립적으로 합치는 것''보다 ``\textbf{잔차를 순차적으로 쫓는
+      것}''이 조금 더 정교하게 맞춤
+    \item \texttt{feature\_importances\_}는 \textbf{모델 전체}의 설명이지
+      ``이 환자 한 명의 예측'' 설명은 아님 $\to$ 개별 예측 하나를
+      설명하려면 \textbf{SHAP}이 필요
+  \end{itemize}
+\end{frame}

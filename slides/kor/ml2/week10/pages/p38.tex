@@ -1,0 +1,30 @@
+\begin{frame}{솔직한 비고: 정규화 효과가 시드에 따라 갈릴 수 있다}
+  같은 CartPole에서 정규화 줄을 빼고 재검증한 결과
+  (마지막 20 에피소드 평균):
+  \small
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+     & seed 0 & seed 1 & seed 2 \\
+    \midrule
+    정규화 \textbf{있음} (베이스라인) & 99.45 & 191.10 & 144.20 \\
+    정규화 \textbf{없음} ($G_t$ 그대로) & 383.10 & 139.00 & 76.15 \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.5em
+  \begin{itemize}
+    \item seed 0에서는 오히려 ``정규화 안 한 쪽''이 더 잘했고,
+      seed \textbf{사이의 편차도 넓음}.
+  \end{itemize}
+  \begin{block}{``정규화가 무의미하다''는 뜻이 \textbf{아니라}}
+    \textbf{300 에피소드라는 데이터량으로는 베이스라인의 이득
+    (분산 감소)이 노이즈에 묻힐 수 있다}는 뜻.
+    베이스라인의 주된 효과는 ``더 빠르게''가 아니라
+    \textbf{``에피소드 노이즈 한 방에 학습 곡선을 주행하지
+    않게''} 하는 것 --- 에피소드가 많고 리턴 편차가 클수록
+    이득이 뚜렷해짐.
+  \end{block}
+  {\footnotesize 베이스라인의 ``적은'' 형태(에피소드당 평균이
+  아니라 \textbf{상태별} 가치함수 $V(s_t)$)가 10.3절의
+  Actor-Critic.}
+\end{frame}

@@ -1,0 +1,22 @@
+\begin{frame}{자주 하는 실수: 스케일이 다른 특징을 그대로 섞기}
+  ``공부 시간''(1$\sim$9)과 ``가구 소득''(5000$\sim$6000만 원)으로
+  합격을 예측 --- 학습점 $P_1=(9,\,5000)$(합격),
+  $P_2=(1,\,5050)$(불합격), 새 점 $(8,\,6000)$:
+  \[
+  d(P_1, \text{new}) \approx 1000.0005, \qquad
+  d(P_2, \text{new}) \approx 950.026
+  \]
+  \vskip0.4em
+  \kq{소득 축이 거리를 독차지해 $P_2$가 오히려 더 가깝게} ---
+  직관(공부시간 8 vs 9)과 정반대.
+  \vskip0.6em
+  0$\sim$1 정규화($P_1\to(1.0,0.0)$, $P_2\to(0.0,0.05)$,
+  $\text{new}\to(0.875,1.0)$)하면:
+  \[
+  d(P_1, \text{new}) \approx 1.008, \qquad d(P_2, \text{new}) \approx 1.292
+  \]
+  정규화 후에는 $P_1$이 더 가까워 \textbf{뒤집힌다} --- 직관과
+  일치. \texttt{StandardScaler}나 \texttt{MinMaxScaler}
+  (scikit-learn, Pedregosa et al.\ 2012)를 쓰는 것은 선형회귀의
+  학습률 선택만큼이나 \textbf{기본적인 체크리스트 항목}.
+\end{frame}

@@ -1,0 +1,16 @@
+\begin{frame}{손으로 한 번: n-gram으로 다음 토큰 분포 세기}
+  \begin{itemize}
+    \item 신경망에 들어가기 전에, 가장 단순한 \kb{n-gram
+      언어모델}으로 뼈대를 손으로 만든다. (세는 데 집중하기
+      위해 여기서는 \textbf{단어 단위} 토큰 ---
+      \texttt{.split()}으로 여백에서 나눈 것.)
+    \item ``다음 토큰의 확률''을 \textbf{앞의 $n-1$개 토큰만으로
+      조건부}로 근사:
+      \[P(x_t \mid x_1, \ldots, x_{t-1}) \approx
+      P(x_t \mid x_{t-n+1}, \ldots, x_{t-1})\]
+    \item $n=1$: 앞 토큰을 보지 않는 무조건분포(어휘 전체에
+      나눈 단어 빈도). $n=2$: \textbf{bigram}.
+    \item 학습은 단순히 \textbf{세는 것}: ``서울의''가 나온
+      모든 위치에서 바로 다음 토큰을 센다.
+  \end{itemize}
+\end{frame}

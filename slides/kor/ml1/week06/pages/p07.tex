@@ -1,0 +1,26 @@
+\begin{frame}{soft-thresholding 공식과 좌표하강}
+  \[
+  w_j \leftarrow \mathcal{T}_\lambda(z_j) =
+  \text{sign}(z_j)\,\max(|z_j|-\lambda,\ 0)
+  \]
+  $z_j$는 ``페널티 없는 세계에서 $w_j$에 걸린 당기힘''(나머지 고정, $w_j$만
+  최적 적합). 행동 세 줄:
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    조건 & 결과 \\
+    \midrule
+    $|z|\le\lambda$ & \textbf{0} (0으로 스냅) \\
+    $z>\lambda$ & $z-\lambda$ ($\lambda$만큼 축소) \\
+    $z<-\lambda$ & $z+\lambda$ \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.5em\normalsize
+  \kb{soft-thresholding}: ``신호가 약하면 0으로 스냅, 강하면 초과분만 통과''.
+  \vskip0.3em
+  \begin{block}{왜 좌표하강(coordinate descent)}
+    $|w|$가 미분불가능해 \textbf{구배하강을 그대로 쓸 수 없으므로},
+    한 번에 $w_j$ \emph{하나만} 이 공식으로 갱신하고 나머지는 고정.
+    scikit-learn \texttt{Lasso}가 내부적으로 하는 일이 이 공식의 반복.
+  \end{block}
+\end{frame}

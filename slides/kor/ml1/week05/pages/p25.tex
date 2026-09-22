@@ -1,0 +1,24 @@
+\begin{frame}{목적함수: 마진 최대화 vs 위반 최소화}
+  \begin{itemize}
+    \item ``마진을 최대화하고 싶다''($\|w\|$ 최소화)와
+      ``위반을 최소화하고 싶다''($\sum\xi$ 최소화)의 트레이드오프:
+      \[
+      J(w,b) = \frac{1}{2}\|w\|^2 + C\sum_{i=1}^{m} \xi^{(i)}
+      \]
+    \item \kb{힌지 손실}(hinge loss)로 다시 쓸 수 있다 —
+      $\max(0,\cdot)$이 $\xi^{(i)}$의 최소값을 자동으로 계산해주기
+      때문:
+      \[
+      J(w,b) = \frac{1}{2}\|w\|^2
+      + C\sum_{i=1}^{m} \max\bigl(0,\ 1-y^{(i)}(w^\top x^{(i)}+b)\bigr)
+      \]
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{$C$: 이 절의 유일한 손잡이}
+    $C$가 \textbf{크면} 위반에 더 엄격 $\Rightarrow$ 라벨에 충실
+    (과적합 위험).
+    $C$가 \textbf{작으면} 마진을 넓게 잡는 대신 위반을 더 허용
+    (과소적합 위험).
+    6장의 정규화 세기 조절과 \textbf{정확히 같은 종류}의 트레이드오프.
+  \end{block}
+\end{frame}

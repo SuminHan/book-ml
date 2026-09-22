@@ -1,0 +1,40 @@
+\begin{frame}{수렴을 추적: 이기는 수의 점유율과 승률}
+  이기는 수(``1개 가져가기'')의 \textbf{방문 점유율}과
+  \textbf{추정 승률}을 시뮬레이션 횟수별로 추적(시드 0):
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}lrrrrrrrr@{}}
+    \toprule
+    시뮬레이션 횟수 & 100 & 200 & 500 & 1000 & 2000 & 5000 & 10000 \\
+    \midrule
+    1개 수 방문 점유율 & 76\% & 86\% & 94\% & 96\% & 98\% & 99\% & 99.5\% \\
+    1개 수 추정 승률 & 0.84 & 0.90 & 0.95 & 0.97 & 0.98 & 0.99 & 1.00 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item (a) 점유율: 100회 76\% $\to$ 1만 회 \textbf{99.5\%}
+          수렴
+        \item (b) ``3개 수''는 방문 20$\sim$26회, 승률
+          0.15$\sim$0.27에서 \textbf{안정}
+        \item (a)의 점선 $2/3$ = ``무작위 상대'' 기준 참 승률 ---
+          MCTS 추정치가 \textbf{이를 뛰어넘는} 이유가 ``트리가
+          기억하는'' 정보 때문
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch15_2_mcts_convergence.png}
+      \vskip0.3em
+      {\footnotesize 이기는 수의 방문 점유율(좌), 3개 수의
+      점유율·승률(우).}
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  {\footnotesize ``1만 회면 충분한가?'' 이 게임(남은 깊이 5 이하)
+  에서는 그렇다. \textbf{남은 게임이 짧을수록 수렴은 빠르다} ---
+  바둑처럼 수백 수 남으면 같은 횟수로 같은 정확도는 기대할 수
+  없으니 AlphaGo는 한 수당 수 초$\sim$수 분의 컴퓨트를 배정.}
+\end{frame}

@@ -1,0 +1,24 @@
+\begin{frame}{자주 하는 실수 1 — ``$r_t=1$ 로 고정하면 되지 않나?''}
+  \begin{itemize}
+    \item $r_t=1$ 을 유지하려면 $\pi_\theta=\pi_{\theta_{\mathrm{old}}}$,
+      즉 정책을 \textbf{전혀 움직이지 말아야} 한다 — 그러면 학습
+      자체가 안 된다.
+    \item 문제는 $r_t=1$ 을 유지하는 것이 아니라,
+      \textbf{$r_t$ 가 1에서 조금만 벗어나도록 허용하되
+      ($\epsilon$ 만큼), 그 이상은 잘라내는 것}.
+    \item ``아예 못 움직이는 것''과 ``적당히만 움직이는 것''을
+      혼동하면 안 된다.
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{자주 하는 실수 2 — ``확률비를 쓰면 편향이 사라지는가?''}
+    \textbf{아니다}. $L^{\mathrm{IS}}$ 의 그래디언트가 \textit{첫
+    스텝}($\theta=\theta_{\mathrm{old}}$)에서 policy gradient와
+    같다는 것은, 그 이후에는 다르다는 뜻이기도 하다. $r_t$ 를
+    여러 에폭에 걸쳐 재사용할수록 ($\theta$ 가
+    $\theta_{\mathrm{old}}$ 에서 멀어질수록) 근사 오차가 쌓인다 —
+    그래서 PPO는 데이터를 \textbf{몇 에폭만} 쓰고 버린다(11.2 FAQ).
+    확률비는 ``편향을 없애는'' 도구가 아니라,
+    \kb{짧은 시간 안에 거의 bias-free로 데이터를 재사용하게 해주는}
+    도구다.
+  \end{block}
+\end{frame}

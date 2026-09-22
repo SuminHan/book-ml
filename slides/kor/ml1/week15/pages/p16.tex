@@ -1,0 +1,19 @@
+\begin{frame}{Reparameterization Trick}
+  \begin{itemize}
+    \item $z$를 확률분포에서 \textbf{직접 샘플링}하면 ``샘플링''
+      연산은 \textbf{미분이 안 됨} → 역전파가 인코더까지
+      흘러가지 못함
+    \item \kb{Reparameterization Trick} (Rezende et al., 2014):
+    \[z = \mu + \sigma \odot \epsilon, \qquad
+      \epsilon \sim \mathcal{N}(0,1)\]
+    \item $\epsilon$은 \textbf{무작위성을 밖으로 빼낸 상수 취급}
+    \item $\mu, \sigma$로 가는 경로가 전부 미분 가능한 연산(곱셈,
+      덧셈) → 역전파가 인코더 파라미터까지 정상적으로 흐름
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{왜 꼭 필요한가 (Week 9 연결)}
+    역전파는 연쇄법칙으로 미분 가능한 연산 사슬을 거슬러 올라가는
+    것 — ``확률분포에서 무작위 추출'' 연산은 미분이 정의되지 않는다.
+    이 트릭이 없으면 VAE의 인코더를 학습할 수 없다.
+  \end{block}
+\end{frame}

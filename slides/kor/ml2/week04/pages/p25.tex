@@ -1,0 +1,25 @@
+\begin{frame}{이론 (2/3): 증명은 두 줄}
+  \textbf{(ii)} $\pi'(s)$ 의 \textbf{정의}($V^\pi$ 기준 argmax)로,
+  $\pi'(s)$ 의 점수가 \textbf{모든} 행동 중 최대 $\to$ 현재
+  $\pi(s)$ 보다 작을 수 없다:
+  \[
+  R(s,\pi'(s)) + \gamma \sum_{s'} P(s'|s,\pi'(s))\, V^\pi(s')
+  \ge R(s,\pi(s)) + \gamma \sum_{s'} P(s'|s,\pi(s))\, V^\pi(s')
+  = V^\pi(s)
+  \]
+  (마지막 등호: 벨만 기대방정식.)
+  \vskip0.4em
+  \textbf{두 줄 합치기:}
+  \[
+  V^{\pi'}(s) \;\ge\; R(s,\pi'(s)) + \gamma \sum_{s'}
+  P(s'|s,\pi'(s))\, V^\pi(s') \;\ge\; V^\pi(s) \qquad \square
+  \]
+  \vskip0.4em
+  \textbf{한 칸 손계산으로 체감.} ``왼쪽'' 정책($V = -10$ 모든
+  칸)에서 \textbf{칸 3}: $Q(3, \text{left}) = -1 + 0.9 \times
+  (-10) = -10$, $Q(3, \text{right}) = -1 + 0.9 \times 0 = -1$
+  $\to$ right 이김 $\to$ $V^{\pi'}(3) = -1$ (목표에 1걸음),
+  이전 $-10$ 보다 \textbf{나아짐}. 칸 0은 $\pi'$ 에서도
+  왼쪽 $\to$ $V^{\pi'}(0) = -10$ \textbf{그대로} --- ``같거나
+  낫다''는 \textbf{칸마다}(점순) 성립.
+\end{frame}

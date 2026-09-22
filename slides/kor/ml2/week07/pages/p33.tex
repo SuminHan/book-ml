@@ -1,0 +1,28 @@
+\begin{frame}{단 한 번의 실행은 믿지 마라}
+  \begin{itemize}
+    \item 위 실습 코드($\alpha=0.2$, 10 에피소드)를 \textbf{단 한 번}
+      (시드 0)만 돌려 마지막 $V$를 참값 $V(s)=s/6$과 비교:
+  \end{itemize}
+  \vskip0.3em
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+     & $V(1\sim5)$ (RMS) \\
+    \midrule
+    $n=1$ & 0.00  0.02  0.08  0.16  0.48  (0.370) \\
+    $n=5$ & 0.05  0.07  0.30  0.44  0.67  (0.201) \\
+    $n=50$ & 0.12  0.20  0.37  0.56  0.81  \textbf{(0.099) $\leftarrow$ 이번엔 이게 제일 좋다} \\
+    참값 & 0.17  0.33  0.50  0.67  0.83 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{itemize}
+    \item 단일 실행에선 \textbf{$n=50$이 제일 정확} --- 이 실행만
+      보고 튜닝했다면 $n=50$을 골랐을 것.
+    \item 그러나 20회 평균에선 $n=50$은 0.2178로 \textbf{양 끝 중
+      나쁜 쪽}. ``이번엔 운이 좋아 $n=50$이 잘 된'' \textbf{단일 시드가
+      전체 U자를 완전히 역전}시킨 것.
+  \end{itemize}
+  {\footnotesize 아래 그림은 이 단일 실행(시드 0)의 세 곡선을 참값과
+  함께 그린 것 --- $n=50$(빨강)이 이번 실행에선 참값에 가장 가까움.}
+\end{frame}

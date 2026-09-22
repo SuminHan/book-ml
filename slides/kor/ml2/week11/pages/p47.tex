@@ -1,0 +1,20 @@
+\begin{frame}{손으로 계산: 3스텝 에피소드의 TD 오차}
+  에피소드 3스텝: $s_0\to s_1\to s_2\to s_3$ ($s_3$ 터미널),
+  $\gamma=0.9$, critic의 값 $V=[2.0,\,1.4,\,0.6,\,0]$, 보상
+  $r=[1,\,1,\,0]$.
+  \vskip0.6em
+  \kb{TD 오차} $\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)$:
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    스텝 & 계산 & $\delta$ \\
+    \midrule
+    $t=0$ & $1 + 0.9\times1.4 - 2.0$ & $+0.26$ \\
+    $t=1$ & $1 + 0.9\times0.6 - 1.4$ & $+0.14$ \\
+    $t=2$ & $0 + 0.9\times0 - 0.6$ & $-0.60$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  첫 스텝 $s_0$ 의 GAE를 $\lambda$ 별로 계산 — 각 항 가중계수
+  $(1,\ \gamma\lambda,\ \gamma^2\lambda^2)$:
+\end{frame}

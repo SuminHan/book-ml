@@ -1,0 +1,26 @@
+\frametitle{실습: PyTorch로 정규화·스케줄링 적용 MLP}
+\begin{lstlisting}
+import torch, torch.nn as nn
+
+class RegMLP(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(2, 64), nn.BatchNorm1d(64), nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(64, 64), nn.BatchNorm1d(64), nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(64, 64), nn.BatchNorm1d(64), nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(64, 1))
+    def forward(self, x):
+        return self.net(x).squeeze(-1)
+
+opt = torch.optim.SGD(model.parameters(), lr=0.1)
+sched = torch.optim.lr_scheduler.StepLR(opt, step_size=100, gamma=0.3)
+# 학습 루프 안에서: opt.step() 다음에 sched.step() 호출
+\end{lstlisting}
+  {\footnotesize \texttt{make\_moons}(선형분리 불가능) 데이터,
+  64-64-64 은닉층, 300 에폭. 순서: \texttt{Linear $\to$ BatchNorm
+  $\to$ ReLU $\to$ Dropout} — dropout을 BN보다 먼저 하면 미니배치마다
+  꺼지는 뉴런이 달라 BN의 평균·분산 계산 자체가 불안정해짐.}

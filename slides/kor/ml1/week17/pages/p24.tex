@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{장난감 모델로 확인: 예시가 있으면 더 잘 맞히는가}
+\begin{lstlisting}
+# zero-shot: "사과는"이라는 패턴을 프롬프트에서 한 번도 보여주지 않음
+zero_shot_context = "오늘 기분이 좋다 사과는".split()
+print(next_token_distribution(zero_shot_context, "사과는"))
+# {}  -- 아무 근거가 없어 예측 불가
+
+# few-shot: "OO는 OO이다" 패턴 예시 2개 + 질문
+few_shot_context = "사과는 과일이다 바나나는 과일이다 자동차는 기계이다 사과는".split()
+print(next_token_distribution(few_shot_context, "사과는"))
+# {'과일이다': 1.0}  -- 프롬프트 안의 예시가 곧바로 예측 근거가 됨
+
+# 한계: "비행기는"은 예시에서 나온 적 없으니, 패턴을 알더라도 {}
+\end{lstlisting}
+  {\footnotesize zero-shot: ``사과는''가 문맥에 없어 예측
+  불가(빈 딕셔너리). few-shot: 예시가 이미 포함되어 있어
+  그 패턴을 근거로 100\% 확신.
+  이 장난감 모델은 진짜 LLM의 \textbf{훨씬 단순화된 버전}
+  --- 진짜 LLM은 의미적으로 유사한 새 단어에도 일반화.
+  하지만 ``\textbf{프롬프트에 넣은 토큰이 곧바로 다음
+  예측의 조건이 된다}''는 기계적 원리 하나 --- \textbf{그
+  원리가 few-shot의 전부}. 노트북에서는
+  \texttt{temperature}까지 붙여 ``같은 프롬프트에서 왜 매번
+  다른 답이 나는가'' 확인.}
+\end{frame}

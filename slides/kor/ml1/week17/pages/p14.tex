@@ -1,0 +1,19 @@
+\begin{frame}{문장 손실과 PPL: 하나의 사슬}
+  \begin{itemize}
+    \item 문장(minibatch) 전체 손실은 토큰 손실의 \textbf{평균}:
+      \[\mathcal{L} = -\frac{1}{N}\sum_{t=1}^{N}\log
+      P(x_t \mid x_1, \ldots, x_{t-1})\]
+    \item \kb{퍼플렉시티는 이 손실의 지수}:
+      \[\text{PPL} = e^{\mathcal{L}}\]
+    \item $\mathcal{L} = 2.3$이면 PPL $= e^{2.3} \approx 10$ —
+      ``평균 10개의 균등한 후보 중 하나를 고르는 것과
+      같음''.
+    \item 교차 엔트로피 $\leftrightarrow$ PPL, 로그
+      $\leftrightarrow$ 지수 --- 앞 softmax의 ``원점수 차이가
+      확률 비율로'' 변환과 \textbf{같은 수학적 구조}.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize \textbf{logits $\to$ 확률 $\to$ 손실 $\to$
+  PPL}이 하나의 사슬로 이어져 있다 — 17.3절 보상모델 손실
+  (또다시 $-\log$ 형태)까지 자연스럽게 이어진다.}
+\end{frame}

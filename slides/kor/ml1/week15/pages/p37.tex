@@ -1,0 +1,41 @@
+\begin{frame}{40스텝 교대 최적화 궤적}
+  $s_0 = 2.0$, 학습률 $\eta = 0.15$로 40스텝 (수반 노트북 2절):
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    스텝 & $s$ & $V(D^*, G)$ & $D^*(0)$ \\
+    \midrule
+    0   & 2.000 & $-1.201$ & 0.667 \\
+    10  & 1.664 & $-1.276$ & 0.625 \\
+    20  & 1.339 & $-1.346$ & 0.572 \\
+    30  & 1.113 & $-1.381$ & 0.527 \\
+    40  & 1.026 & $-1.386$ & 0.507 \\
+    $\infty$ & 1.000 & $-\log 4 \approx -1.386$ & 0.500 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item \textbf{(i)} 균형점의 게임 값은 $-\log 4 \approx -1.386$
+          인데 \textbf{0이 아님} — ``생성자 손실이 0에 가까워지면
+          성공''은 \textbf{틀린 읽기}. 성공 신호 = $V$가 더 이상
+          줄지 않고 $-\log 4$ 근방에서 \textbf{안정}
+        \item \textbf{(ii)} $D^*(0)$(판별자가 데이터 중심 $x = 0$을
+          ``진짜''로 판정하는 확률)이 0.667에서 0.5로 \textbf{점점
+          구별력을 잃는} 궤적 — ``내쉬 균형 = 판별자가 완전히
+          헷갈리는 점''의 실행
+        \item \textbf{(iii)} $V$는 줄지만 \textbf{0으로 가지 않음}
+          — 게임 값 하한 $-\log 4$. 양쪽이 완벽히 헷갈려도 손실은
+          양쪽 로그 항이 $\log 0.5 = -\log 2$씩 기여해 합계 $-\log 4$
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch15_3_gan_dynamics.png}
+      \vskip0.3em
+      {\footnotesize 왼쪽: $V(D^*,G)$ 궤적, 오른쪽: $D^*(0)$ 수렴}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,26 @@
+\begin{frame}{확인 문제 (1/2)}
+  \small
+  \begin{itemize}
+    \item \kb{1. (시그모이드 손계산)} 초기
+      $\boldsymbol{v}_{c} = (0.4, -0.2)$, $\boldsymbol{u}_{t} = (0.1, 0.3)$
+      일 때: (a) $\sigma(z)$, (b) label=1일 때
+      $\text{err} = \sigma(z) - 1$, (c) $\eta = 0.1$일 때 $\boldsymbol{v}_{c}$
+     의 첫 성분 업데이트량 $\Delta v_{c,1}$.
+      \par {\footnotesize 답: $z = -0.02$, $\sigma \approx 0.495$,
+      $\text{err} \approx -0.505$, \;
+      $\Delta v_{c,1} = -\eta \cdot \text{err} \cdot u_{t,1} =
+      -0.1 \times (-0.505) \times 0.1 \approx +0.00505$.}
+    \item \kb{2. (네거티브 샘플의 역할)} \texttt{neg\_k = 0}(정답만
+      학습)으로 바꾸면 코사인 유사도 \textbf{분포}가 어떻게 변하나?
+  \end{itemize}
+  \vskip0.5em
+  {\footnotesize 힌트: 함께 나오는 쌍의 내적을 \textbf{올리는} 학습만
+  있고, 안 나오는 쌍의 내적을 \textbf{낮추는} 학습은 \textbf{전혀
+  없음} $\to$ ``고양이는--사자는''이 +0.928으로 극단 상승,
+  ``고양이는--바나나는''는 $+0.282 \to -0.081$으로 오히려 \textbf{음수}
+  ($-$0.081)로 떨어짐 --- 공유 문맥(``동물이다'')을 통해 연결된
+  동물 단어들이 서로 거의 같은 방향으로 수렴. \; ``동물-과일 gap''이
+  1.009로 ``크게 보이지만'' 이는 ``과일이 밀려난'' 것이 아니라
+  ``동물 쪽이 극단으로 올라간'' 결과 --- \textbf{상대적 순위(ranking)
+  전체를 읽어야 하는 함정}.}
+\end{frame}

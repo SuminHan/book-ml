@@ -1,0 +1,33 @@
+\begin{frame}{``정확한 수렴'' $\neq$ 실용적 --- 에피소드 수가
+지수적으로 폭증}
+  수학적으로는 $\rho$ 가중 MC 도 에피소드 수 $\to \infty$ 에서
+  $V^\pi$ 로 수렴한다(편향이 없으므로). 그런데
+  ``\textbf{수렴한다}''와 ``\textbf{실용적}''은 다른 이야기 ---
+  표준오차는 $\sigma/\sqrt{N}$ 인데, 매 에피소드별 표준편차
+  $\sigma$ 자체가 \textbf{에피소드 길이에 대해 지수적으로}
+  커진다 ($\sigma^2 \propto \mathbb{E}[\rho^2] \sim 2^L$).
+  \vskip0.5em
+  길이 $L$ 인 에피소드에서 $\pm 0.05$ 정확도를 원하면 필요한
+  에피소드 수는 대략
+  \[
+  N \approx \left(\frac{2}{\delta}\right)^2 \cdot 2^L \cdot
+  \mathbb{E}[G^2]
+  \]
+  $L$ 이 1 커질 때마다 \textbf{2배}. $L = 5$ 이면 $10^4$ 급,
+  $L = 20$ 이면 $10^9$ 급 --- \textbf{15 스텝이 길어진 대가로
+  필요한 데이터가 약 $2^{15} \approx 3$만 배}.
+  \vskip0.4em
+  \begin{block}{off-policy 학습 전반의 근본 난제}
+    에피소드가 조금만 길어져도 \textbf{``수학적으로는
+    가능하지만 실제로는 불가능''}이 된다.
+  \end{block}
+  \vskip0.3em
+  {\footnotesize Week 11(PPO)의 \kb{클리핑된 확률비}가 바로
+  이 문제를 ``$\rho$ 가 너무 크면 \textbf{자른다}''는 가장
+  단순한 다스림법 ---
+  $\text{clip}(\rho_t, 1-\varepsilon, 1+\varepsilon)$ 는
+  ``$\rho$ 가 100배가 되는 궤적을 100배로 반영''하지 않고
+  ``최대 1.1배까지만'' 반영. 편향을 들여들이는 대가(클리핑된
+  후에는 더 이상 정확한 IS가 아님)를 치르되 분산을 극단적으로
+  줄이는 \textbf{편향-분산 트레이드오프의 의도적 선택}.}
+\end{frame}

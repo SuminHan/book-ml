@@ -1,0 +1,42 @@
+\begin{frame}{역방향 실수: 모델이 known하면 학습 불필요?}
+  ``모델을 완벽히 안다면(known model), 학습은 전혀 필요 없다''는
+  역방향 버전 ---
+  \begin{itemize}
+    \item 틱택토 실습: 이 주장은 \textbf{상태 공간이 작을 때만}
+      성립
+    \item 바둑: 상태 공간이 너무 커서 \textbf{완벽한 모델이 있어도}
+      전체 공간으로 최적 행동을 계산할 수 없다
+  \end{itemize}
+  \vskip0.6em
+  \kq{AlphaGo/AlphaZero가 규칙을 완전히 알면서도 신경망을
+  학습시킨 이유는 ``모델을 배우기 위해''가 아니라
+  ``탐색 공간을 \textbf{압축}하기 위해서''.}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \kb{모델(규칙)이 말하는 것}
+      \\[0.4em]
+      {\footnotesize ``이 수를 두면 판이 어떻게 변하는지''
+      --- 답이 \textbf{어디에 있는지}.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \kb{신경망이 말하는 것}
+      \\[0.4em]
+      {\footnotesize ``어떤 갈림길부터 들여다볼 가치가 있는가''
+      --- \textbf{어디를 볼지}.}
+    \end{column}
+  \end{columns}
+  \vskip0.7em
+  \begin{itemize}
+    \item MCTS는 신경망의 힌트를 따라 유망한 소수 가지만 골라 깊이
+      시뮬레이션 --- 제한된 시간(예: 한 수당 2초)에 수백$\sim$수천
+      번의 시뮬레이션으로 ``모델이 아는 답''을 채굴
+    \item 모델을 몰랐다면 시뮬레이션 한 번도 못 돌렸을 텐데,
+      모델이 있어도 \textbf{탐색 방향}을 몰랐다면 시뮬레이션을
+      엉뚱한 가지만에 흘릴 뻔
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize ``모델을 안다''는 것은 계획의 \textbf{재료}를,
+  ``학습''은 계획의 \textbf{방향}을 준비해 준다 --- 둘은 서로를
+  대체하지 않는다.}
+\end{frame}

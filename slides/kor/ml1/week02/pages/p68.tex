@@ -1,0 +1,28 @@
+\begin{frame}{시그모이드와 교차 엔트로피 손실}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch03_sigmoid_crossentropy.png}
+      \vskip0.4em
+      {\footnotesize 시그모이드 함수(좌)와 예측 확률에 따른
+      교차 엔트로피 손실(우) --- 정답과 반대로 확신할수록 손실이
+      무한히 커진다.}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \item 정답 $y = 1$ 인데 $h_{\boldsymbol{w}}(\boldsymbol{x}) \to 0$ 으로 확신하면
+          $-\log h_{\boldsymbol{w}}(\boldsymbol{x}) \to \infty$ --- 손실이 \textbf{무한히} 커짐.
+        \item \kb{확신을 갖고 틀리면 그만큼 크게 벌}.
+      \end{itemize}
+      \vskip0.6em
+      신기하게도 이 손실을 미분하면 2.1절 선형회귀와
+      \textbf{똑같은 형태}의 그래디언트:
+      \[
+      \frac{\partial J}{\partial w_j} = \frac{1}{m}\sum_{i=1}^m
+      \left(h_{\boldsymbol{w}}(\boldsymbol{x}^{(i)}) - y^{(i)}\right) x_j^{(i)}
+      \]
+      \vskip0.2em
+      $\to$ 경사하강법 구현은 2.1절과 거의 동일.
+    \end{column}
+  \end{columns}
+\end{frame}

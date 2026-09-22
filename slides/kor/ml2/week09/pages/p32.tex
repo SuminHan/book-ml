@@ -1,0 +1,24 @@
+\begin{frame}{하이퍼파라미터를 하나씩 짚자}
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    파라미터 & 의미 \\
+    \midrule
+    \texttt{lr=1e-3} + Adam & DQN의 표준 시작점 (표의 $\alpha$와 단위 비교
+      실수는 9.1 참고) \\
+    \texttt{update\_freq=100} & 타겟 네트워크의 $C$ --- 이 절의 주제 \\
+    \texttt{eps\_decay=0.995} & $\varepsilon$-greedy(Week 2)를 에피소드마다
+      0.995배 감소: ``처음엔 탐색, 끝엔 착취'' \\
+    \texttt{batch\_size=32} & RL에서는 작은 배치가 일반적 ---
+      버퍼 샘플은 본래 ``다른 정책 시대''의 경험을 섞고 있고 메모리도 배로 듦 \\
+    \texttt{capacity=10000} & 재현 버퍼 크기, 일반적으로 클수록 좋음 (9.3) \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.6em
+  \begin{block}{조립체가 보이는 순간}
+    한 줄 한 줄이 어디서 왔는지 보면, DQN은 ``새로운 알고리즘''이 아니라
+    \textbf{Q-learning(Week 6) $+$ 함수근사(9.1) $+$ 두 안정화 장치(9.2$\cdot$9.3)}
+    의 조립체다.
+  \end{block}
+\end{frame}

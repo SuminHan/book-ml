@@ -1,0 +1,28 @@
+\begin{frame}{실습: 세 전략을 같은 문제에서 붙여 싸우기}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item 같은 밴딧 문제에서 세 전략(ε-greedy, 낙관적
+          초기화, UCB) 비교.
+        \item ``추정치가 얼마나 정확한가''가 아니라
+          \textbf{``그 과정에서 실제로 얼마나 많은 보상을
+          벌었는가''} --- 탐험 자체에도 비용(나쁜 팔을 시도하는
+          동안 그만큼 보상 손해).
+        \item 각 전략마다 \texttt{random.seed(0)} 를 다시 걸면
+          세 전략이 \textbf{같은 무작위 시퀀스를 독립적으로}
+          경험 $\to$ \textbf{공정한 비교}.
+      \end{itemize}
+      \vskip0.4em
+      {\footnotesize 설정: $k=3$, $q^* = [1.0, 1.5, 2.0]$,
+      2000스텝. ε-greedy($\varepsilon=0.1$), 낙관적
+      ($Q_0=5.0$), UCB($c=2.0$).}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch02_2_ucb_h2h.png}
+      \vskip0.3em
+      {\footnotesize 위: 누적 보상 곡선. 아래: 각 팔 당김 횟수 ---
+      ε-greedy만 나쁜 팔(A, B)을 대량으로 다시 당김.}
+    \end{column}
+  \end{columns}
+\end{frame}

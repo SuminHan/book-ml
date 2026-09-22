@@ -1,0 +1,20 @@
+\begin{frame}{역할 분리: 각 조각이 딱 한 역할만}
+  데이터를 세 조각으로 나눠, 각 조각이 서로 다른 질문에 답하도록
+  \textbf{각각 딱 한 역할만} 쓰기로 약속:
+  \begin{itemize}
+    \item \kb{train}은 \textbf{배운다} — 학습 데이터로 파라미터($w$)를 정.
+    \item \kb{val}은 \textbf{모델을 고른다} — 하이퍼파라미터
+      ($\lambda$, kNN의 $k$, 트리 깊이 등)를 정.
+    \item \kb{test}는 \textbf{딱 한 번}만 최종 점수를 준다.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{한 줄 압축}
+    \kq{``정보의 흐름 방향을 정한다''.}
+    train은 val·test로, val은 최종 모델로 정보가 흐를 수 있지만,
+    \textbf{test에서는 어디로도 정보가 흘러나와서는 안 된다}.
+    test는 파이프라인의 \emph{마지막 관문} — 한 번 지나가면 돌아올 수 없다.
+  \end{block}
+  \vskip0.2em
+  {\footnotesize 테스트를 하이퍼파라미터 튜닝에 쓰면 ``부정행위''
+  (test를 몰래 봐서 고른 모델)와 다를 게 없다.}
+\end{frame}

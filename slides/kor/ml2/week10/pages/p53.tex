@@ -1,0 +1,26 @@
+\begin{frame}{Actor-Critic 구조도 (순환)}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch10_3_actor_critic_structure.png}
+      \vskip0.3em
+      {\footnotesize $s_t$ $\to$ 공유 특성 층 $\to$
+      Actor 헤드(softmax 정책) + Critic 헤드($V(s_t)$).}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \begin{itemize}
+        \item $s_t$ $\to$ \kb{공유 층(shared)} $\to$
+          \textbf{Actor 헤드}(softmax 정책) +
+          \textbf{Critic 헤드}($V(s_t)$).
+        \item Actor에서 $a_t$ 샘플링 $\to$ 환경 $\to$
+          $(r_t, s_{t+1})$.
+        \item 에피소드 종료 후 리턴 $G_t$ 계산, $V(s_t)$ 와
+          만나 \textbf{$A_t = G_t - V(s_t)$} 생성.
+        \item Actor 손실 $-\sum_t \log\pi \cdot A_t$ 와 Critic
+          손실(TD(0) MSE)이 각각 \textbf{Adam}으로 갱신.
+        \item 갱신된 파라미터가 \textbf{공유 층으로 돌아오는
+          순환} --- 매 에피소드마다 반복.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

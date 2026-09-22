@@ -1,0 +1,25 @@
+\begin{frame}{자주 하는 실수: 전처리 fit 시점과 ``살짝만 조정''}
+  \textbf{Q. 전처리(스케일링, 임베딩, 결측치 대체)를 \emph{모델과 함께}
+  파이프라인으로 묶으면 leak이 안 생기나요?}
+  \begin{itemize}
+    \item 그 반대 — \textbf{파이프라인으로 묶는 것이 leak을 막는 정석}.
+    \item \texttt{Pipeline([('scaler', StandardScaler()),
+      ('model', Ridge())])}에서 \texttt{pipeline.fit(X\_train, y\_train)}만
+      하고 \texttt{pipeline.predict(X\_test)}를 쓰면, scaler가 \emph{train만}
+      fit되어 val/test에는 \emph{train 통계량}이 자동 적용.
+    \item 반대로 \texttt{scaler.fit\_transform(X\_all)}을 \emph{분할 전에}
+      하면 §손계산의 ``누수'' 열이 그대로 재현.
+    \item \kq{전처리 fit은 항상 \emph{분할 이후}, \textbf{train 조각에만}.}
+  \end{itemize}
+  \vskip0.4em
+  \textbf{Q. val로 $\lambda$ 고르고 test로 ``한 번'' 확인했는데, test가
+  기대에 못 미쳐 val을 다시 보고 살짝만 조정했다. 이 test 수치 신뢰?}
+  \begin{itemize}
+    \item \textbf{아님.} ``살짝만'' 조정하는 순간 test는 \emph{선택 과정에
+      쓰였다} — 후보 수 $m$이 1에서 2로 늘어난 셈이라 편향이 0에서
+      $\mathbb{E}[\max\text{ of 2}]$로 뛸음.
+    \item \kq{``한 번만''은 \textbf{정말로 한 번}이라는 뜻 — 한 번 보고
+      마음에 안 들면 \emph{같은 test}를 다시 보며 ``이번엔 진짜
+      마지막으로''라고 해도 이미 두 번째.}
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,30 @@
+\begin{frame}{이산 vs 연속: 두 정책 파라미터화 한눈에}
+  \scriptsize
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+     & 이산 (softmax) & 연속 (정규) \\
+    \midrule
+    행동 공간 & 유한 $\{0,1,\dots\}$ & $\mathbb{R}^d$ \\
+    분포 & 카테고리컬 & 가우시안 $\mathcal{N}(\mu,\Sigma)$ \\
+    신경망 출력 & 로짓 $z_a$ (각 행동 하나) & 평균 $\mu$ + 분산 $\Sigma$ \\
+    로그밀도 & $\log z_a - \log\sum_{a'} z_{a'}$ &
+      $-\tfrac12(a-\mu)^T\Sigma^{-1}(a-\mu)
+      -\tfrac12\log|\Sigma| - \tfrac d2 \log 2\pi$ \\
+    $\nabla_\theta \log\pi$ & one-vs-rest & $\Sigma^{-1}(a-\mu)$ (평균 부분) \\
+    탐색 메커니즘 & softmax 자체 & 분산 $\Sigma$ 학습 \\
+    엔트로피 & $-\sum_a p_a \log p_a$ & $\tfrac{d}{2}(1 + \log 2\pi e\, \sigma^2)$ \\
+    사용 장소 & CartPole, Atari & 로봇 시뮬레이션 (Week 13--14) \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.5em
+  \begin{block}{구조 동일성이 policy gradient의 힘}
+    둘 다 $\nabla_\theta J = \mathbb{E}[\sum_t \nabla_\theta
+    \log\pi_\theta(a_t|s_t)\,G_t]$ 를 공유 ---
+    다만 $\nabla_\theta\log\pi$ 의 \textbf{형태만} 다름.
+  \end{block}
+  {\footnotesize 주의: 엔트로피 행 --- 이산(비트 단위)과 연속(자연로그
+  단위)의 \textbf{단위가 다름} $\to$ $\beta$(엔트로피 보너스 계수)를
+  이산$\leftrightarrow$연속 사이에 직접 이관 불가. Week 13--14에서
+  $\beta$ 튜닝 시 직접 부딪힘.}
+\end{frame}

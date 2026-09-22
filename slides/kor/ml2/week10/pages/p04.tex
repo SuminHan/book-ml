@@ -1,0 +1,28 @@
+\begin{frame}{``점수 $\to$ argmax'' 중간 단계를 건너뛴다}
+  \begin{itemize}
+    \item Week 6$\cdot$9: $Q(s,a)$를 먼저 배우고,
+      $\pi(s)=\arg\max_a Q(s,a)$ 로 \textbf{간접}적으로 정책 획득.
+    \item \kb{정책기반 방법}: 이 중간 단계를 \textbf{건너뛰고},
+      $\pi_\theta(a|s)$ (행동의 확률분포를 직접 내놓는 함수) 자체를
+      신경망으로 표현해 학습.
+    \item 연속 공간에서도 ``이 행동의 확률밀도가 얼마인가''는 잘
+      정의됨 $\to$ argmax 문제가 자연스럽게 해결.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{이 선택의 대가, 한 줄로}
+    가치기반 = \textbf{표}(각 행동의 ``얼마나 좋은지'')를 배우고 뒤에
+    결정 규칙을 붙임. 정책기반 = 표를 버리고 \textbf{행동을 고르는 습관}을
+    배우고 ``습관을 고치는 방향''을 보상으로 직접 계산.
+    ``표 $\to$ 조회'' 두 단계가 ``샘플링'' 한 단계로 \textbf{병합}.
+  \end{block}
+  \vskip0.3em
+  \begin{block}{용어: 이번 장의 ``정책''은 \kb{확률적(stochastic) 정책}}
+    같은 상태에서 \textbf{여러 행동}을 각자 다른 확률로 고름 ---
+    샘플링이 곧 탐험. (매 상태에서 항상 같은 행동인
+    \textbf{결정적} $\pi(s)=a$ 는 Week 6$\cdot$9의 argmax 방식이 본질적
+    형태, Week 13 DDPG/TD3/SAC에서 다룸.)
+    ``정책 = 확률분포''로 읽으면 ``정책의 그래디언트''가
+    $\nabla_\theta \log\pi_\theta(a|s)$, 즉 \textbf{확률의 미분}임이
+    자연스럽게 읽힘.
+  \end{block}
+\end{frame}

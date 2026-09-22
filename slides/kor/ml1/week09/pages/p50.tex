@@ -1,0 +1,19 @@
+\begin{frame}{가중치 감쇠: Week 6의 L2가 최적화기로 바뀐 얼굴}
+  \small
+  \begin{itemize}
+    \item Week 6의 L2($\lambda\|w\|^2$)는 \textbf{손실함수 자체}를
+      바꿈. 신경망에서는 같은 일을 \textbf{최적화기 옵션}으로 하는
+      \kb{weight decay}가 표준 — PyTorch \texttt{SGD(weight\_decay=...)},
+      \texttt{AdamW} 등
+    \item 직관: \[ w \leftarrow (1 - \eta\, wd)\, w \]
+      매 스텝 \textbf{모든 가중치를 $(1 - \eta\, wd)$배로 살짝 줄임}
+      — ``가중치를 끊임없이 0 방향으로 살짝 당겨, 불필요하게 큰
+      가중치를 허용하지 않는'' 규칙
+    \item 예: $wd = 0.001$, $\eta = 1$ $\Rightarrow$ 스텝마다
+      $0.999$배 $\Rightarrow$ 1000스텝 뒤 $0.999^{1000} \approx
+      0.368 \approx 1/e$ (실행 검증)
+  \end{itemize}
+  \vskip0.3em
+  {\footnotesize = Week 6의 $\lambda$가 \textbf{최적화 규칙으로
+  재포장}된 것.}
+\end{frame}

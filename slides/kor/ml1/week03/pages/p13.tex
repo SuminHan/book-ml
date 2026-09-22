@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{실습: 여러 증거를 곱해서 갱신}
+  `무료'뿐 아니라 `당첨'도 등장했다면? 3.3절의 \kb{독립 가정}을
+  미리 쓰면, 가능도를 \textbf{곱하기}만 하면 된다:
+  \begin{lstlisting}
+def bayes_update(prior_spam, likelihoods_spam, likelihoods_ham):
+    """likelihoods_*: 관찰된 각 단어의 P(단어|클래스) 리스트"""
+    p_spam = prior_spam
+    for l_spam in likelihoods_spam:
+        p_spam *= l_spam
+    p_ham = 1 - prior_spam
+    for l_ham in likelihoods_ham:
+        p_ham *= l_ham
+    return p_spam / (p_spam + p_ham)
+
+# "무료"(0.6 vs 0.05)와 "당첨"(0.4 vs 0.02)이 함께 등장
+result = bayes_update(0.3, [0.6, 0.4], [0.05, 0.02])
+print(round(result, 4))  # 0.9904
+  \end{lstlisting}
+  \vskip0.2em
+  {\footnotesize 증거가 하나 더해질수록 사후확률이 ``거의 확실히
+  스팸''으로 쏠림 --- \textbf{순차적 추론}의 자연스러운 틀.}
+\end{frame}

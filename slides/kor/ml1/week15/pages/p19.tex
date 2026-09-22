@@ -1,0 +1,21 @@
+\begin{frame}{인코더가 두 봉우리에 배운 분포}
+  학습이 끝난 뒤 인코더가 두 봉우리 각각에 어떤 분포를 배웠는지
+  확인 (시드 42 실행):
+  \begin{itemize}
+    \item 왼쪽 봉우리($\approx 1$)의 점들:
+      평균 $(\mu_1, \mu_2) \approx (0.5, -0.88)$
+    \item 오른쪽($\approx 9$): $(-0.77, 1.42)$ 근처로 \textbf{분리}
+    \item 분산은 아주 작음 ($\log\sigma^2 \approx -1.7$ 이하)
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{GMM과의 연결}
+    인코더가 ``왼쪽 점''과 ``오른쪽 점''을 잠재 공간에서
+    \textbf{다른 위치에, 좁은 분포로} 배치 — GMM의 이산적 클러스터
+    할당에 해당하는 \textbf{연속적(soft) 버전}.
+  \end{block}
+  \vskip0.4em
+  {\footnotesize 두 군집의 분산도 작게 수렴 — ``여기''에 속한 점은
+  거의 결정적으로 배정되는, GMM의 책임값이 사실상 0/1에 가까워진
+  것과 같은 상태. 그 위치가 \textbf{원점(사전분포의 중심)을 사이에
+  두고} 대략 대칭 — KL 항이 두 군집을 원점 쪽으로 끌어당긴 흔적.}
+\end{frame}

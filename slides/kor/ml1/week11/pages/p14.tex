@@ -1,0 +1,28 @@
+\begin{frame}{고정점과 그 ``속도''}
+  위 계산을 10단계까지 이어가면 ($w_{xh}=0.5$, $w_{hh}=0.8$):
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}l|cccccccc@{}}
+    \toprule
+    $t$ & 1 & 2 & 3 & 4 & 5 & 6 & 8 & 10 \\
+    \midrule
+    $z_t = 0.5 + 0.8\,h_{t-1}$ & 0.500 & 0.870 & 1.061 & 1.129 & 1.149 & 1.154 & 1.156 & 1.156 \\
+    $h_t = \tanh(z_t)$ & 0.462 & 0.701 & 0.786 & 0.811 & 0.817 & 0.819 & 0.820 & 0.820 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{itemize}
+    \item $h_t$는 \kb{고정점(fixed point)}
+      $h^\ast = \tanh(0.5 + 0.8\, h^\ast)$으로 수렴 --- 해는
+      $h^\ast \approx 0.8196$, $t=10$에서 차이 $< 10^{-3}$
+    \item ``같은 입력이 계속 오면 은닉 상태가 결국 한 곳에
+      정지한다'' --- RNN의 \textbf{동적(dynamics)}을 이해하는
+      출발점
+    \item 수렴 \textbf{속도}는 고정점 근처의 ``\textbf{증폭 인자}''로
+      결정: $\frac{d h_t}{d h_{t-1}} = 0.8 \cdot tanh'(z_t)$
+    \item $h^\ast \approx 0.82$에서 $\tanh'(z^\ast) = 1 - (h^\ast)^2
+      \approx 0.325$ $\Rightarrow$ 증폭 인자 $0.8 \times 0.325
+      \approx 0.26$ --- 각 단계마다 차이가 약 4분의 1로 줄어듦
+      (표에서 $h_5$ 이후가 거의 움직이지 않는 이유)
+  \end{itemize}
+\end{frame}

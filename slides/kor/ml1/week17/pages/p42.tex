@@ -1,0 +1,28 @@
+\begin{frame}{손으로 한 번: SFT가 분포를 어떻게 바꿀까}
+  \small
+  \begin{itemize}
+    \item 어휘 7개 $\{A_1, \ldots, A_7\}$, 7단계 이상적인
+      답변. 각 단계에서 정답 토큰에 주는 확률:
+      \begin{itemize}
+        \item 사전학습(기준) 모델: $(0.2, 0.5, 0.3, 0.4,
+          0.3, 0.5, 0.6)$
+        \item SFT 이후 모델: $(0.8, 0.7, 0.5, 0.6, 0.4,
+          0.6, 0.8)$
+      \end{itemize}
+    \item 사슬 분해 — 이상적 답변 전체 확률 = 각 단계의 곱:
+      \[P_{\text{ref}}(y^*) = 0.2 \times 0.5 \times 0.3 \times
+      0.4 \times 0.3 \times 0.5 \times 0.6 \approx 0.0011\]
+      \[P_{\text{SFT}}(y^*) = 0.8 \times 0.7 \times 0.5 \times
+      0.6 \times 0.4 \times 0.6 \times 0.8 \approx 0.0323\]
+    \item \textbf{약 30배}. 토큰 하나당 손실(평균 $-\log p$)
+      로 보면 $0.98 \to 0.49$ --- 둘 다 ``잘 예측''하지만,
+      SFT는 \textbf{정답 답변 전체의 합적 확률}을 30배로
+      끌어올림.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{핵심: ``각 단계는 0.2에서 0.8로만 올랐는데''}
+    \textbf{곱}으로 쌓이므로 짧은 답변에서도 큰 격차 ---
+    17.1의 사슬 분해가 포스트트레이닝에서 다시 작동하는
+    모습. (정확한 값은 실습 노트북 Section 1에서 검증.)
+  \end{block}
+\end{frame}

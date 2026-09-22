@@ -1,0 +1,25 @@
+\begin{frame}{왜 ReLU인가(기본 활성 함수)}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{시그모이드} $\sigma(z) = 1/(1+e^{-z})$
+      \begin{itemize}
+        \item 비선형이고 XOR은 풀 수 있음.
+        \item $z$가 아주 크거나 작으면 도함수 $\approx 0$
+          $\to$ 층이 깊어질수록 그래디언트가 지수급으로 작아지는
+          \kb{사라지는 그래디언트}(지도학습 과목 9주차).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{ReLU} $\max(0, z)$
+      \begin{itemize}
+        \item $z>0$에서 도함수가 \textbf{정확히 1} ---
+          사라지는 그래디언트가 훨씬 완화.
+        \item \textbf{이번 학기 실습의 기본 활성 함수}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip1em
+  {\footnotesize 단면 예: 1-2-1 손계산(다음)에서 $z=-1$인 유닛은
+  ReLU 도함수 0으로 ``죽어'' 이번 업데이트에서 전혀 움직이지 않음 ---
+  \textbf{희소 활성(sparse activation)}.}
+\end{frame}

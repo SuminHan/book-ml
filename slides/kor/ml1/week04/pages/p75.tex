@@ -1,0 +1,30 @@
+\begin{frame}{LDA의 E/M-step: GMM과의 대비}
+  E/M-step은 ``\textbf{책임값이 무엇으로 바뀌는가}''만
+  다를 뿐:
+  \begin{itemize}\small
+    \item \kb{E-step}: 문서 \textbf{각 단어 위치}의 \textbf{토픽
+      사후확률} $\gamma_{dnk} = P(z_{dn} = k \mid w_d, \theta,
+      \phi)$ --- GMM의 ``점 $i$가 \textbf{클러스터} $k$일
+      확률''이 ``문서 $d$의 $n$번째 \textbf{단어}가 \textbf{토픽}
+      $k$에서 왔을 확률''로 바뀜(관측 데이터가 점 대신 \textbf{단어})
+    \item \kb{M-step}: 책임값으로 두 파라미터 갱신 ---
+      $\theta_{dk} \propto \sum_n \gamma_{dnk}$(이 문서가
+      토픽 $k$를 쓰는 비중), $\phi_{kw} \propto \sum_{d,n:\,
+      w_{dn} = w} \gamma_{dnk}$(토픽 $k$에서 단어 $w$가
+      나온 누적 책임) --- GMM의 ``책임값 \textbf{가중 평균}''과
+      \textbf{동일한 구조}
+  \end{itemize}
+  \vskip0.6em
+  엄밀히는 ``\textbf{완전한 EM}''이 아님 --- E-step이 각 단어
+  위치의 토픽을 \textbf{독립}으로 근사하는 \textbf{변분
+  추론}(mean-field 근사), 정석 명칭은 \textbf{변분 EM
+  (VEM)}. ``계산 안 되는 E-step을 근사한다''는 수법은
+  Week 15.1절 \kb{VAE}가 \textbf{신경망}으로 하는 것의
+  \textbf{가장 고전적인 예시} --- VAE가 신경망으로 근사하는
+  것을, LDA는 ``\textbf{위치별 독립}''이라는 더 단순한 가정으로
+  근사한 셈.
+  \vskip0.4em
+  \textbf{실전}: LDA 계열 토픽모델로 \textbf{뉴스 분류 ·
+  의견 분석 · 문서 자동 요약}, 14.3절 문서 임베딩·RAG에서
+  ``어떤 문서가 관련 있는가''를 판정하는 \textbf{보조 도구}.
+\end{frame}

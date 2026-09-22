@@ -1,0 +1,19 @@
+\begin{frame}[fragile]{코드: pagerank (거듭제곱법)}
+\begin{lstlisting}
+def pagerank(edges, n_nodes, d=0.85, iters=100):
+    outgoing = {i: [] for i in range(n_nodes)}  # directed: a -> b
+    for a, b in edges:
+        outgoing[a].append(b)
+    outdeg = {i: max(1, len(outgoing[i])) for i in range(n_nodes)}
+    incoming = {i: [] for i in range(n_nodes)}  # who points to me?
+    for a, b in edges:
+        incoming[b].append(a)
+
+    pr = {i: 1 / n_nodes for i in range(n_nodes)}
+    for _ in range(iters):
+        pr = {i: (1 - d) / n_nodes + d * sum(pr[j] / outdeg[j]
+                                             for j in incoming[i])
+              for i in range(n_nodes)}
+    return pr
+\end{lstlisting}
+\end{frame}

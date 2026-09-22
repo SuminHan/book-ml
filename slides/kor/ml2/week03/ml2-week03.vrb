@@ -1,0 +1,25 @@
+\frametitle{반복 대입: 재귀식을 푸는 절차 (다음 장 예고)}
+``값이 안 바뀔 때까지 반복 대입''이 정확히 어떤 절차인지 ---
+  그리고 그것이 다음 장 \kb{정책평가}의 핵심 루프인지. 벨만방정식
+  $V(s) = R(s) + \gamma V(s')$ 를 \textbf{가치 반복(value
+  iteration)}으로:
+  \begin{lstlisting}
+def policy_evaluation_value_iteration(P, R, policy, gamma,
+                                       max_iter=200, theta=1e-6):
+    # P[s][a] = [(prob, next_state), ...]
+    # R[s][a] = 즉시 보상 ; policy[s] = 상태 s에서 고르는 행동
+    n = len(P)
+    V = [0.0] * n                     # 0으로 시작 (초기값은 아무거나)
+    for it in range(1, max_iter+1):
+        V_new = list(V)               # 동기식: "이전" V를 쓴다
+        delta = 0.0
+        for s in range(n):
+            a = policy[s]
+            v_new = R[s][a] + gamma * sum(p * V[s2] for p, s2 in P[s][a])
+            delta = max(delta, abs(v_new - V[s]))
+            V_new[s] = v_new
+        V = V_new
+        if delta < theta:             # 값이 (거의) 안 바뀌면 멈춤
+            break
+    return V, it
+  \end{lstlisting}

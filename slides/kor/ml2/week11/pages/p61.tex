@@ -1,0 +1,24 @@
+\begin{frame}{실습: CartPole에서 $\lambda$ 를 바꿔가며 PPO}
+  이론 검증 — CartPole(이산 행동)에서 PPO를 \kb{$\lambda$ 를
+  바꿔가며} 학습, GAE의 절충점을 눈으로 확인. 11.2절
+  Pendulum(연속, 30만 스텝에도 $-1092$)과 달리 CartPole은
+  이산 보상(매 스텝 $+1$, 최대 500)이라 \textbf{5만 스텝
+  안에도} 명확한 차이.
+  \vskip0.5em
+  세 가지 $\lambda$ — 0.0 (TD(0) 기반, 편향$\uparrow$분산$\downarrow$),
+  0.95 (실전 기본값), 1.0 (MC 기반, 편향$\downarrow$분산$\uparrow$) —
+  을 \textbf{같은 시드(0), 같은 반복 수}(150$\times$512 스텝
+  $\approx$ 7.7만 스텝)로.
+  \vskip0.6em
+  \small
+  \begin{tabular}{@{}lrrrl@{}}
+    \toprule
+    $\lambda$ & 처음20 리턴 & 마지막20 리턴 & 최고 리턴 &
+      20에피소드 평가 (평균/최고) \\
+    \midrule
+    0.0 (TD) & 55.7 & 126.5 & 270 & 272 / 301 \\
+    0.95 (기본) & 29.8 & 141.2 & 442 & 274 / 317 \\
+    1.0 (MC) & 26.1 & 169.1 & 449 & \textbf{500 / 500} \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

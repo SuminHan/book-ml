@@ -1,0 +1,21 @@
+\begin{frame}{FAQ: 상한, ML1의 RLHF, 26회, BC+RL의 한계}
+  \small
+  \begin{itemize}
+    \item \textbf{Q: DAgger도 상한=전문가?} A: 그렇다 — 복합 오차만
+      줄여 ``전문가 수준에 더 \textbf{안정적으로} 도달''할 뿐.
+      반면 선호 기반은 \textbf{비교}만 받으므로 정답 밖 시도에도
+      점수를 줘 \textbf{초월 가능} — 모방학습보다 RL에 가까움.
+    \item \textbf{Q: ML1(Week 17)의 LLM RLHF와 같은 구조?} A:
+      수학(BT 모델, 보상모델, RL 최적화)은 \textbf{동일} —
+      정책이 생성하는 것(토큰 vs 관절 토크)만 다름.
+    \item \textbf{Q: BC가 함정 26번 = ``BC가 위험하다''?} A: 아님 —
+      \textbf{정책 자체}가 위험 행동을 고른 게 아니라, \textbf{시연
+      커버리지 밖}에 정책이 없었기 때문. ``BC는 가장 안전하다''는
+      주장은 \textbf{시연이 배포 분포를 커버할 때만} 성립.
+    \item \textbf{Q: 왜 RL을 \textbf{본격적으로} 돌려야 하냐?} A:
+      BC 초기값은 시연 \textbf{근방}만 정확하고, 바깥 Q값은 0 —
+      그 영역을 채우려면 \textbf{실제로 방문}해야 하므로 순수 RL과
+      같은 탐험이 필요. 그래서 최종 $-9.15$에 머물고, 충분히 탐색한
+      후에야 8스텝 최적에 수렴.
+  \end{itemize}
+\end{frame}

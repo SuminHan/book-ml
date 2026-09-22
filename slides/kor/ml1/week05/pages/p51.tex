@@ -1,0 +1,32 @@
+\begin{frame}{쌍대 문제: 내적이 드러나는 자리}
+  5.1$\sim$5.2에선 primal $J(w,b)=\frac12\|w\|^2 + C\sum\xi^{(i)}$
+  를 직접 풀었다. \textbf{라그랑주 쌍대}로 다시 쓰면
+  (라그랑주 함수 구성, $w,b$ 최소화, KKT 조건까지의 완전한 유도 —
+  이 책 범위 밖, ``쌍대가 어떻게 생겼는지''만):
+  \[
+  \text{최대화}\ \sum_i \alpha^{(i)}
+  - \frac{1}{2}\sum_{i,j}\alpha^{(i)}\alpha^{(j)}y^{(i)}y^{(j)}
+  \,\phi(x^{(i)})\cdot\phi(x^{(j)})
+  \qquad \text{s.t.}\ \alpha^{(i)} \ge 0,\ \sum_i \alpha^{(i)} y^{(i)}=0
+  \]
+  \vskip0.3em
+  \begin{itemize}
+    \item $\phi$ 는 \textbf{단 한 곳} — 내적
+      $\phi(x^{(i)})\cdot\phi(x^{(j)})$ — 에서만 나온다.
+      이 내적값을 $K(x^{(i)},x^{(j)})$ 라는 \textbf{별개의 함수}로
+      교체해도 \textbf{수학이 깨지지 않음}. $\phi$ 가 어떤 공간으로
+      가는지도, 차원이 몇인지도 \textbf{알 필요 없음}.
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{왜 내적으로만 나오게 된 것일까}
+    직관: $w$=경계의 \textbf{방향}, $\alpha^{(i)}$=각 점이 경계를
+    \textbf{떠받치는 세기}. KKT에 의해 비-SV의 $\alpha$ 는 0 $\Rightarrow$
+    $w = \sum_{i\in \text{SV}} \alpha^{(i)} y^{(i)} \phi(x^{(i)})$
+    (서포트 벡터의 \textbf{선형 결합}).
+    $w$ 가 SV들의 합으로 표현되는 순간 $w^\top\phi(x^{(j)})$ 는
+    $\sum_i \alpha^{(i)}y^{(i)}\,\phi(x^{(i)})\cdot\phi(x^{(j)})$
+    로 펼쳐져 — 데이터의 등장 방식이 \textbf{내적 쌍}으로
+    \textbf{통일}. ``내적 쌍''만 계산할 수 있으면 $\phi$ 자체는
+    \textbf{영원히 볼 필요 없음}.
+  \end{block}
+\end{frame}

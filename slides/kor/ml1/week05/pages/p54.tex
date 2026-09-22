@@ -1,0 +1,29 @@
+\begin{frame}{커널 함수: 내적을 우회한다}
+  가장 널리 쓰이는 커널:
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{다항 커널}(polynomial)
+      \[
+      K(x,x') = (x\cdot x' + c)^d
+      \]
+      ``도수 $d$ 이하의 \textbf{모든 단항식}''을 내포.
+      $(x\cdot x'+1)^d$ 를 전개하면 도수 $d$ 이하의 모든
+      단항식 $x_1^{a_1}x_2^{a_2}\cdots$ ($a_1+a_2+\cdots\le d$)
+      이 (일정한 계수로) 전부 섞여 나온다.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{RBF(가우시안) 커널}
+      \[
+      K(x,x') = \exp\Bigl(-\frac{\|x-x'\|^2}{2\sigma^2}\Bigr)
+      \]
+      두 점이 가까울수록 1에, 멀수록 0에 가까운 \textbf{유사도}
+      함수. \textbf{무한 차원}의 $\phi$ 에 대응한다는 것이
+      알려져 있는데도, 커널 함수 자체는 \textbf{유클리드 거리
+      하나로} 계산.
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  {\footnotesize $\exp(-\gamma\|x-x'\|^2)$ 로 정의하는 문헌도
+  많다 — $\gamma = 1/(2\sigma^2)$ 로 대응. scikit-learn의
+  \texttt{SVC}는 \texttt{gamma}를 받는다.}
+\end{frame}

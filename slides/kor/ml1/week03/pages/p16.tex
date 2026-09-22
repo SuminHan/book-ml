@@ -1,0 +1,20 @@
+\begin{frame}{자주 하는 실수: 기저율 오류}
+  \kq{가장 흔한 실수: 가능도 $P(x|y)$만 보고 사전확률 $P(y)$ 를 빼먹기.}
+  \vskip0.5em
+  의료 검진 예 --- 유병률 0.1\%, 검사 정확도 99\%:
+  \[ P(\text{병}|\text{양성}) =
+     \frac{0.99\times0.001}{0.99\times0.001 + 0.01\times0.999}
+     = \frac{0.00099}{0.01098} \approx \textbf{0.090} \]
+  \vskip0.3em
+  \begin{itemize}
+    \item 양성 나와도 실제로 병에 걸렸을 확률은 \textbf{$\approx$9\%}뿐.
+    \item 1000명 검사: 병든 1명 중 진짜 양성 $\approx$1명, 건강한 999명 중
+      가짜 양성 $\approx$10명.
+    \item \textbf{가짜 양성 10 : 진짜 양성 1} 비율이 사후확률을 9\%로
+      붙잡아 놓음.
+    \item \kb{기저율 오류}(base rate fallacy) = 위양성의 역설:
+      가능도가 아무리 높아도 사전확률이 낮으면 사후확률은 훨씬 낮음.
+    \item 생성적 모델 실전에선 \textbf{사전확률 = 학습 데이터의 클래스
+      비율}로 정확히 추정하는 게 중요.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,22 @@
+\begin{frame}{손으로 한 스텝: DQN 갱신을 숫자로 (1/2)}
+  CartPole(\texttt{gym.make("CartPole-v1")}, 시드 0),
+  초기화 직후(\texttt{torch.manual\_seed(0)}, 아직 아무것도 못 배운) 네트워크:
+  \vskip0.4em
+  \small
+  \begin{itemize}
+    \item 초기 $s_0 = [0.0137, -0.0230, -0.0459, -0.0483]$,
+      행동 $a = 1$(오른쪽).
+    \item 1스텝 후: $s_1 = [0.0132, 0.1727, -0.0469, -0.3552]$,
+      $r = 1$, \texttt{done} = 0.
+  \end{itemize}
+  \normalsize
+  \vskip0.4em
+  \small
+  \begin{enumerate}
+    \item \textbf{예측}: $Q(s_0,1;\theta_{\text{init}}) = 0.0020$
+    \item \textbf{목표 원료}: $\max_{a'} Q(s_1,a';\theta_{\text{init}}) = 0.1509$
+    \item \textbf{목표값}: $1 + 0.99 \times 0.1509 = \mathbf{1.1494}$
+  \end{enumerate}
+  \normalsize
+  {\footnotesize Week 6의 규칙: 살아남으면 $+1$, 최대 리턴 500.}
+\end{frame}

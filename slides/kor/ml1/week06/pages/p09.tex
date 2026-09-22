@@ -1,0 +1,27 @@
+\begin{frame}{기하학적 직관: 원 vs 마름모}
+  제약 $R(w)\le t$에서 원래 손실을 최소화하는 문제로 다시 쓰면:
+  \begin{itemize}
+    \item \kb{L2}: 제약 영역은 \textbf{원}(구) — 등고선이 표면 어디든 만남.
+    \item \kb{L1}: 제약 영역은 \textbf{마름모}(각 축에 뾰족한 꼭짓점) —
+      등고선이 \textbf{꼭짓점}(어떤 좌표가 0인 지점)에서 만날 확률이 훨씬 높음.
+  \end{itemize}
+  \vskip0.4em
+  \textbf{2차원 숫자}: $X=[1,2,3,4]$, $y=[3,5,7,9]$(직선 $y=2x+1$, OLS 해
+  $(1,2)$)에서 제약 $t=2$:
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    & 최적점 & SSE \\
+    \midrule
+    L2(원) & $(0.67,\ 1.88)$ — 둘 다 0 아님 & $\approx1.60$ \\
+    L1(마름모) & $(0,\ 2.0)$ — $w_0$ 축 \textbf{꼭짓점} & $\approx4.00$ \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.5em\normalsize
+  \begin{block}{차원이 클수록 희소해진다}
+    2차원에선 꼭짓점이 4개뿐이지만 특징 $p$개면 $p$차원 정다면체로 변해
+    꼭짓점(=어떤 좌표가 0인 점)이 \textbf{방대}해짐. 특징이 많을수록
+    ``등고선이 꼭짓점에서 만남'' 확률이 커지므로, Lasso의 희소(sparse)한
+    해는 \textbf{차원이 클수록 더 흔해진다}.
+  \end{block}
+\end{frame}

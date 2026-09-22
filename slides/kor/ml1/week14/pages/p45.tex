@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{실습: 축 전환 --- ``고양이는 $-$ 귀엽다 $+$ 맛있다''}
+\begin{lstlisting}
+target = [a - b + c for a, b, c in zip(emb["고양이는"], emb["귀엽다"], emb["맛있다"])]
+analogy = sorted(((w, cos_sim(target, emb[w])) for w in emb
+                  if w not in {"고양이는", "귀엽다", "맛있다"}),
+                 key=lambda kv: -kv[1])[:3]
+print(analogy)
+# [('사과는', 0.571), ('바나나는', 0.478), ('과일이다', 0.456)]
+\end{lstlisting}
+  \begin{itemize}
+    \item ``귀엽다''는 \textbf{동물-속성 축}, ``맛있다''는
+      \textbf{과일-속성 축}의 한 방향 --- 뺄셈/덧셈이
+      \textbf{``동물-속성 $\to$ 과일-속성''으로의 축 전환}과 같음.
+    \item 10개 단어짜리 말뭉치에서 0.571로 ``사과''가 1위 ---
+      ``의미 축의 병렬 이동''이 이미 작은 스케일에서 학습되고 있음을
+      보여주는 좋은 신호.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize 병렬 4각형이 성립하려면 $d$가 ``포착할 의미 축의
+  수''보다 \textbf{충분히 커야} 한다 --- 성별·지위·시제·수·품사가
+  10개인데 $d = 8$이면 몇몇 축이 ``섞여'' 정확히 닫히지 않음.
+  \; = 14.1 PCA와 같은 \textbf{차원-정확도 트레이드오프}.}
+\end{frame}

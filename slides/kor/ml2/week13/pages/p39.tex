@@ -1,0 +1,26 @@
+\begin{frame}{``큰 로봇''의 물리적 대가: 스텝당 시간}
+  모델이 크면 스텝당 계산도 무거워진다 (2000회 \texttt{env.step()} 루프,
+  로컬 측정):
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    환경 & 상태 차원 & 행동 차원 & 스텝당 소요(측정) \\
+    \midrule
+    Pendulum-v1 & 3 & 1 & $\approx 23$ $\mu$s \\
+    Reacher-v5 & 10 & 2 & $\approx 37$ $\mu$s \\
+    Ant-v5 & 105 & 8 & $\approx 180$ $\mu$s \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{itemize}
+    \item Ant가 Reacher의 약 5배지만, 둘 다 노트북 CPU에서 ``학습할 수
+      있을 만큼'' 빠름 --- 물리 엔진이 빨라서 \emph{학습}이 병목이
+      안 되는 것이 MuJoCo가 연구 표준이 된 이유 (13.1절 역사적 일화).
+    \item 실무에서 병목이 되는 것은 거의 항상 \textbf{필요 스텝 수}:
+      13.3절의 PPO는 Reacher에서 100만 스텝을 써야 1줄 제어기와
+      어깨를 나란히. 스텝당 시간(5배)은 \emph{선형} 문제, 필요 스텝 수는
+      알고리즘 난이도의 \emph{본질} 문제 (스텝당 시간을 줄이는 GPU
+      병렬은 Week 14.2).
+  \end{itemize}
+\end{frame}

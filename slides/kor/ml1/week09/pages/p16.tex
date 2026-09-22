@@ -1,0 +1,26 @@
+\begin{frame}{수치 미분 검증: ``역전파가 맞다''를 기계로}
+  \small
+  \kb{수치 미분}(numerical gradient checking): 가중치를 아주 작게
+  ($\epsilon = 10^{-6}$) 흔들어서 손실 변화량으로 미분을 직접 재봄
+  \[
+  \frac{\partial L}{\partial w} \approx
+  \frac{L(w + \epsilon) - L(w - \epsilon)}{2\epsilon}
+  \]
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    파라미터 & 역전파 & 수치 미분 & 차이 \\
+    \midrule
+    $\partial L/\partial b_2$   & $-0.1087$ & $-0.1087$ & $6.6\times10^{-12}$ \\
+    $\partial L/\partial W_{2,1}$ & $-0.0702$ & $-0.0702$ & $1.5\times10^{-11}$ \\
+    $\partial L/\partial b_{1,1}$  & $-0.0174$ & $-0.0174$ & $6.3\times10^{-12}$ \\
+    $\partial L/\partial W_{1,11}$ & $-0.0174$ & $-0.0174$ & $6.3\times10^{-12}$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  {\footnotesize 모든 차이 $10^{-11}$ 수준 = 반중심 차분 오차 한계
+  $O(\epsilon^2) + O(10^{-16})$와 정확히 일치. 새 구조를 직접 구현할 때
+  실무에서 흔히 쓰는 디버깅 기법.
+  \textbf{주의}: $W_1$의 행/열 컨벤션이 코드와 다르면 그래디언트가
+  \textbf{전치}되어 ``맞는 값인데 왜 안 맞지?'' — 역전파가 틀린 게 아니라
+  컨벤션이 다른 것.}
+\end{frame}

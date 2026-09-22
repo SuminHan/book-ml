@@ -1,0 +1,25 @@
+\begin{frame}{검증: 모델 vs ``무조건 0'' (스팸 데이터)}
+  실습 노트북 §5 --- 위 스팸 데이터 (테스트 세트 양성 비율 15.3\%):
+  \vskip0.6em
+  \begin{center}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+     & 정확도 & PR-AUC / ROC-AUC \\
+    \midrule
+    학습한 모델 & 0.847 (\@ 0.5) & \textbf{0.642} / 0.805 \\
+    \textbf{무조건 0 모델} & 0.847 & \textbf{0.153} (= 양성 비율
+      0.15와 일치) / 0.5 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vskip0.8em
+  \begin{block}{결론}
+    모델의 정확도(0.847 @ 0.5)와 ``무조건 0''의 정확도(0.847)가
+    \textbf{정확히 같은}데도 PR-AUC는 0.642 대 0.153 --- \textbf{4배
+    차이}, ROC-AUC도 0.805 대 0.5.
+    \\ \kb{정확도는 이 두 모델을 구분하지 못하지만, PR-AUC와
+    ROC-AUC는 구분한다} --- 불균형 데이터에서 정확도가 ``허위
+    지표''가 되는 이유.
+  \end{block}
+\end{frame}

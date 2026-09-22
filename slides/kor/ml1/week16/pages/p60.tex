@@ -1,0 +1,32 @@
+\begin{frame}{실습: 검증 절차를 한 흐름으로}
+  기말 프로젝트의 \textbf{절차 전체}를 breast\_cancer(569건
+  $\times$ 30 특성)로 한 흐름에 실행 — 채점·리뷰·총정리가 ``감
+  ''이 아니라 \textbf{숫자}에 뿌리박는지 확인:
+  \small
+  \begin{enumerate}
+    \item \textbf{문제 정의} — 행=환자, 라벨=악성(1)/양성(0),
+      주 지표 \textbf{F1}(양성 비율 62.7\%라 정확도보다 F1)
+    \item \textbf{3분할} — 341/114/114(stratify, seed 0)
+    \item \textbf{5개 모델 후보}(Ch02/04/07.1/07.2/07.3)를
+      \textbf{val F1로만} 순위 — logreg 0.993 $>$ kNN 0.979 $>$
+      RF 0.957 $>$ GBDT 0.950 $>$ tree 0.944 (기말은 Ch09~15
+      DL 기법을 요구하지만 \textbf{절차는 모델 종류와 무관} —
+      Block A 모델로 시연)
+    \item \textbf{베이스라인} — 다수 클래스(악성) val F1
+      \textbf{0.768}. 1위와 격차 \textbf{+0.225} = ``모델을
+      만들었다''는 증거
+    \item \textbf{test 딱 한 번} — val 1위(logreg)로 test
+      acc 0.974, \textbf{F1 0.979}
+    \item \textbf{선택 편향} — 50개 후보 중 test 최고를 고르면
+      $\mathbb{E}[\max]\approx\textbf{0.045}$ 부풀림
+    \item \textbf{val 순위 vs test 순위} — 이 데이터에서는
+      \textbf{일치}. 그러나 그것은 \textbf{우연이지 보장이
+      아님}
+    \item \textbf{누수 시연} — (a) 스케일러를 \textbf{전체
+      데이터}로 fit해도, 잘 섞인 깨끗한 데이터에서는 val F1이
+      \textbf{동일}(0.979 = 0.979) — ``\textbf{보이지 않는
+      누수}''. (b) train의 같은 행 50건을 ``test''로 넣으면
+      정확도 0.947 $\to$ \textbf{1.000}(+0.053) —
+      \textbf{모델·하이퍼파라미터 불변, 분할 방식만}
+  \end{enumerate}
+\end{frame}

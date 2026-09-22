@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{미니 RAG: 두 질문으로 검색}
+\begin{lstlisting}
+for q in ["양자 컴퓨터", "고양이는 손질한다"]:
+    qv = mean_vec(tok(q), emb)
+    sims = sorted(((n, cos_sim(qv, dv)) for n, dv in docvecs.items()),
+                  key=lambda kv: -kv[1])
+    print("\n질문:", q)
+    for n, s in sims:
+        print(f"  {n}: {s:+.3f}")
+\end{lstlisting}
+  \small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    질문: 양자 컴퓨터 & 질문: 고양이는 손질한다 \\
+    \midrule
+    D3 양자: $+0.793$ \; (1위) & D4 고양이: $+0.951$ \; (1위) \\
+    D2 태양광: $+0.454$ & D5 배터리: $+0.558$ \\
+    D4 고양이: $+0.408$ & D3 양자: $+0.555$ \\
+    D1 전기차: $+0.354$ & D2 태양광: $+0.481$ \\
+    D5 배터리: $+0.244$ & D1 전기차: $+0.329$ \\
+    \bottomrule
+  \end{tabular}
+  {\footnotesize \texttt{random.seed(42)}로 재현 가능.}
+\end{frame}

@@ -1,0 +1,32 @@
+\begin{frame}{자주 하는 실수: $\gamma$ 를 ``느낌''으로 고르기}
+  \begin{itemize}
+    \item \texttt{gamma}(대략 $\frac{1}{2\sigma^2}$)가 ``결정
+      경계가 얼마나 구불구불해질 수 있는가''를 \textbf{통째로}
+      결정.
+    \item \kb{$\gamma$ 극단적으로 크게}($\sigma$ 작음): 각 학습점
+      바로 주변에 좁고 뾰족한 ``영향권'' $\Rightarrow$ 학습 데이터
+      하나하나를 거의 다 따로 감싸는 \textbf{심하게 구불거림}
+      (전형적 \textbf{과적합}).
+    \item \kb{$\gamma$ 너무 작게}: 모든 점의 영향권이 서로 겹쳐
+      사실상 \textbf{선형 커널과 비슷}하게 뭉뚱그려진 경계만
+      나옴(과소적합).
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{수치적 증거: 앞 $\gamma$ 스윕 표}
+    $\gamma=0.05$: test 0.467로 \textbf{동전 던지기보다 나쁨}(선형
+    0.517보다도 낮음) — RBF가 ``거의 상수 행렬''에 가까워져
+    ``모든 점이 비슷'' $\Rightarrow$ 사실상 \textbf{무작위}.
+    $\gamma=30$: train/test 1.00 — \textbf{이 데이터는 노이즈가
+    적어} 운 좋게 일반화되는 것. 노이즈 있는 실전 데이터에선
+    개별 노이즈 패턴까지 따라붙어 test가 \textbf{급락}.
+  \end{block}
+  \vskip0.4em
+  {\footnotesize 4.1절 kNN의 $k$, 5.2절의 $C$와 \textbf{같은 종류}의
+  ``복잡도 손잡이'' — $C$와 $\gamma$ 를 \textbf{동시에} 그리드
+  서치하는 것이 표준(서로 영향을 주고받음).}
+  \vskip0.3em
+  \begin{center}
+  \kq{검증셋으로 $(C, \gamma)$ 를 함께 그리드 서치하는 것 =\\
+      5.2절 $C$ 튜닝의 비선형 버전.}
+  \end{center}
+\end{frame}

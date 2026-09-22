@@ -1,0 +1,20 @@
+\begin{frame}{자주 하는 실수: 리턴을 정규화하지 않고 그대로 쓰기}
+  \begin{itemize}
+    \item \texttt{returns = (returns - returns.mean()) /
+      (returns.std() + 1e-8)} 줄을 \textbf{빼고} 원래 $G_t$ 를
+      그대로 쓰면?
+    \item CartPole의 리턴은 \textbf{항상 양수}(매 스텝 $+1$) $\to$
+      모든 행동의 그래디언트가 \textbf{항상} ``그 행동의 확률을
+      높이는'' 방향으로만 움직임.
+    \item 나빴던 행동조차 ``\textbf{덜 좋았을 뿐} 여전히 양수''라서
+      그 확률을 계속 높이려 듦.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{해결: 평균을 빼면 방향이 생기게 됨}
+    ``베이스라인을 빼서 어떤 행동이 평균보다 \textbf{나았는지/
+    나빴는지}를 상대적으로 비교'' (10.3 아이디어)를 가장
+    단순하게 구현한 것이 바로 이 정규화 ---
+    평균보다 나빴던 행동은 \textbf{음수 신호}를 받아 확률이
+    실제로 \textbf{낮아짐}.
+  \end{block}
+\end{frame}

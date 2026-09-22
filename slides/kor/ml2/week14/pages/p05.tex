@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{MuJoCo: XML로 모델, mj\_step으로 시뮬레이션}
+  MuJoCo(Multi-Joint dynamics with Contact)는 관절·접촉·마찰을
+  물리적으로 정확하게 계산하는 엔진 --- 2021년 무료 공개 후 로봇 RL
+  연구의 사실상 표준. 모델은 \textbf{XML}로 정의한다:
+\begin{lstlisting}
+import mujoco
+xml = """
+<mujoco>
+  <worldbody>
+    <light name="top" pos="0 0 1"/>
+    <geom type="plane" size="1 1 0.1"/>
+    <body pos="0 0 1">
+      <joint type="free"/>
+      <geom type="sphere" size="0.1" rgba="1 0 0 1"/>
+    </body>
+  </worldbody>
+</mujoco>
+"""
+model = mujoco.MjModel.from_xml_string(xml)
+data = mujoco.MjData(model)
+for step in range(5):
+    mujoco.mj_step(model, data)  # 물리 법칙에 따라 한 스텝 전진
+print("5스텝 후 공의 높이:", round(data.qpos[2], 4))
+\end{lstlisting}
+\end{frame}

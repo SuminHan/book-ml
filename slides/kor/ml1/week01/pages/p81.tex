@@ -1,0 +1,24 @@
+\begin{frame}{확인 문제 (c)(d)}
+  \small
+  \begin{itemize}
+    \item \textbf{(c)} 어떤 모델의 train R² = \textbf{0.99},
+      test R² = \textbf{0.41}. 가장 가능성 높은 진단은? 24차
+      다항식 예제와 어떻게 같은 이야기인가?
+    \item \textbf{답}: \kb{과대적합} --- 모델이 훈련 데이터의 규칙
+     이 아니라 \textbf{잡음을 외움}. 24차 예제(train R²=1.0000,
+      test R²=$-$63495)가 이 현상의 \textbf{극단적 버전}. 두 경우
+      모두 ``\textbf{훈련 점수가 높다}는 사실 자체''가 의심의
+      대상.
+  \end{itemize}
+  \vskip0.4em
+  \begin{itemize}
+    \item \textbf{(d)} 새 데이터를 받아 실행 \textbf{전에}, 특징
+      벡터가 완전히 같은 행 두 개가 \textbf{서로 다른 라벨}을 갖고
+      있음을 발견. 가장 먼저 무엇을 해야 하는가?
+    \item \textbf{답}: \kb{데이터 문제를 먼저 의심} --- Aha!
+      데이터셋 사고가 정확히 이 상황.
+      \texttt{df.duplicated(keep=False)} 로 몇 개인지 파악한 뒤,
+      하나를 제거할지 라벨을 재확인할지를 \textbf{도메인 지식을
+      바탕으로} 결정 (알고리즘을 바꾸는 문제가 아님).
+  \end{itemize}
+\end{frame}

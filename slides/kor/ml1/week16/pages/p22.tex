@@ -1,0 +1,32 @@
+\begin{frame}{실습: ``왜 DL''의 숫자를 코드로 검증하기}
+  실습 노트북(sklearn digits만으로, CPU에서도)에서 이 절의 핵심 주장
+  — ``정형·저차원에서는 GBDT가 상한이고, CNN의 우위는 \textbf{구조
+  (공유)}와 \textbf{규모}에서 온다'' — 를 한 흐름으로 검증:
+  \scriptsize
+  \begin{enumerate}
+    \item \textbf{문제 정의} — digits(1,797$\times$64), 0~9 분류,
+      주 지표 정확도
+    \item \textbf{3분할} — 1,437/180/180, stratify
+    \item \textbf{두 층 베이스라인} — 다수 클래스(`1') val/test 0.100
+    \item \textbf{GBDT 베이스라인} — 200트리: val 0.983 / test 0.944 /
+      macro-F1 0.944
+    \item \textbf{CNN 파라미터 공식} — §``손으로 한 번''의 표를 코드로
+      재계산, torch와 \textbf{정확히 일치(35,914)} 확인
+    \item \textbf{GBDT vs CNN (64차원)} — 작은 CNN test 0.939,
+      GBDT(0.944)에 소폭 열세(0.006) — ``예상된 결과'' 확인
+    \item \textbf{8$\times$8 $\to$ 28$\times$28 확대} — 같은 digits를
+      784차원으로: GBDT 0.944 vs CNN \textbf{0.961} — 0.006 열세가
+      \textbf{0.017로 역전}(축 2의 증거)
+    \item \textbf{해상도 vs 파라미터} — flatten FC($S^2$)와 conv(상수)
+      표 생성
+    \item \textbf{학습 곡선} — GBDT $n\_estimators$ 곡선(train 50트리
+      1.0 포화) + CNN \textbf{에포크} 곡선(train $\to$ 0, val은 그
+      뒤로 꺾임)
+    \item \textbf{선택 편향} — ``에포크·구조 후보를 test로 골랐다면''
+      의 $\mathbb{E}[\max]$ 부풀림(8.1과 동일, Ch06.3)
+  \end{enumerate}
+  \vskip0.4em
+  {\footnotesize 이 흐름이 보고서 6절로, 다시 16.2의 체크리스트
+  (``왜 DL'' 추가 항목 포함)로 매핑 — \textbf{세 가지 언어(코드,
+  보고서, 리뷰)}로 같은 절차를 말할 수 있어야 끝.}
+\end{frame}

@@ -1,0 +1,31 @@
+\begin{frame}{Reacher-v5: ``상태 10, 행동 2''의 내면}
+  \kb{Reacher-v5}: 링크 길이 \textbf{0.1 m + 0.11 m}인 2관절 평면
+  로봇팔 (팔 끝 fingertip는 팔꿈치 기준 0.11 m, 완전히 쭉 펴면
+  \textbf{0.21 m}까지 닿음). 과제: \textbf{50스텝(실시간 1초,
+  $dt = 0.02$ s) 안에 fingertip을 무작위 목표 지점에 붙이기}.
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch13_3_reacher_task.png}
+      \vskip0.4em
+      {\footnotesize 0.1+0.11 m 2관절 팔. 빨강 별 = 목표(반경 0.2 원 안),
+      녹색 = fingertip, 회색 화살표 = 오차 벡터 fingertip − target.}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      10차원 상태 (\texttt{reacher\_v5.py} 의 \texttt{\_get\_obs}):
+      \vskip0.3em
+      \scriptsize
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        인덱스 & 내용 \\
+        \midrule
+        obs[0:2] & $\cos\theta_1, \cos\theta_2$ (두 관절각 코사인) \\
+        obs[2:4] & $\sin\theta_1, \sin\theta_2$ (두 관절각 사인) \\
+        obs[4:6] & $(x_t, y_t)$ 목표 지점 좌표 (m) \\
+        obs[6:8] & $\dot\theta_1, \dot\theta_2$ (각속도 rad/s) \\
+        obs[8:10] & fingertip − target \textbf{오차 벡터} (m) \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
+\end{frame}

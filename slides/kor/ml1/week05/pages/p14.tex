@@ -1,0 +1,22 @@
+\begin{frame}{손 계산 결과의 검증}
+  \begin{itemize}
+    \item 손 계산: $w \approx [0.167, 0.167]$, $b=0$.
+    \item `hinge\_loss\_gradient\_descent' (연습문제 1)을 2000 에폭
+      돌리면 이 값으로 수렴.
+    \item `sklearn.svm.SVC(kernel="linear")'으로 학습시켜도
+      \textbf{소수점까지 똑같은} $w, b$가 나온다.
+    \item 서포트 벡터 2개 $(3,3)$, $(-3,-3)$ — 마진 경계 위에만 존재.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{확인 문제}
+    서포트 벡터가 아니었던 $(4,3)$을 원점 방향으로 훨씬 가깝게
+    $(0.5, 0.5)$로 옮긴다면 최적 경계 $w, b$가 바뀔까?
+    \vskip0.3em
+    힌트: 원래 경계에 대입하면
+    $1\times(0.5/6+0.5/6)\approx 0.167 < 1$ — 이 점이 이제
+    \textbf{마진을 위반}한다.
+    \vskip0.3em
+    실제로 학습시키면 $w\approx(0.286,0.286)$, $b\approx0.714$로
+    바뀌고, $(0.5,0.5)$와 $(-3,-3)$이 \textbf{새로운} 두 서포트 벡터.
+  \end{block}
+\end{frame}

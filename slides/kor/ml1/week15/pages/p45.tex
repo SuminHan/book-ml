@@ -1,0 +1,24 @@
+\begin{frame}{Diffusion: 정방향/역방향 과정}
+  \begin{block}{정방향 과정 (forward process)}
+    진짜 이미지 $x_0$에 \textbf{아주 작은 노이즈를 $T$번 반복}해서
+    추가해, 결국 $x_T$가 \textbf{순수한 무작위 노이즈}가 됨.
+    \; 이 과정은 \textbf{고정된 절차이지 학습 대상이 아님}.
+  \end{block}
+  \vskip0.4em
+  \begin{block}{역방향 과정 (reverse process)}
+    신경망이 \textbf{``한 단계 전 노이즈가 어땠는지''}를 예측하도록
+    학습. \; 학습 후, 순수 노이즈 $x_T$에서 시작해 이 역방향 단계를
+    $T$번 반복 → \textbf{새로운 이미지}.
+  \end{block}
+  \vskip0.6em
+  \begin{itemize}
+    \item GAN이 ``\textbf{한 번에}'' 노이즈를 이미지로 바꾸려 하는
+      것과 달리, Diffusion은 그 어려운 문제를 \textbf{아주 작은
+      단계 $T$개로 잘게 쪼갬} — 각 단계는 ``노이즈를 아주 조금만
+      제거''하는 훨씬 쉬운 문제 → \textbf{전체적으로 훨씬 안정적}
+    \item \textbf{대가}: 이미지 하나 생성에 $T$번 반복 필요 → GAN보다
+      \textbf{생성 속도 느림}
+    \item 지금 가장 널리 쓰이는 이미지 생성 모델(Stable Diffusion
+      등)이 이 원리 사용
+  \end{itemize}
+\end{frame}

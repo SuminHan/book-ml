@@ -1,0 +1,27 @@
+\begin{frame}{자주 묻는 질문(15.3)}
+  \small
+  \begin{itemize}
+    \item \textbf{Q: MARL의 실제 알고리즘(QMIX, MAPPO
+      등)은 무엇을 하나?} --- 위 세 실습의 ``단순 Q-learning
+      + self-play''에서 크게 \textbf{세 방향}으로 발전:
+      (1) \kb{중앙 집중 학습 + 분산 실행} --- 훈련 때는 모든
+      에이전트 상태를 한데 모아 한 가치함수를
+      학습(Centralized Training), 실행할 때는 각자가 자기
+      관측만으로 행동(Decentralized Execution) =
+      ``움직이는 표적'' 문제를 \textbf{``훈련 중에는 표적을
+      고정시킨다}''로 우회 (2) \kb{보상(가치) 분해} ---
+      협력 게임에서 ``공동 가치''를 각 에이전트의 가치합으로
+      분해(QMIX, 2018) (3) \kb{경쟁형 self-play + MCTS} ---
+      AlphaZero 계열. 이번 학기 목적 = ``\textbf{왜 단일
+      에이전트 관점이 깨지는가}(non-stationarity)'' +
+      ``\textbf{보상 구조가 동역학을 정하는가}'' 이해
+    \item \textbf{Q: 에이전트끼리 소통하면 상황이 바뀌나?}
+      --- \textbf{네, 근본적으로} --- 소통은 행동에 ``메시지''
+      채널을 더하는 것으로, 협력 게임에서 ``내가 무엇을
+      할지''를 공유하면 조율 게임의 \textbf{경로 의존성을
+      대폭 감소}(두 차가 방향을 합의하면 충돌은 원칙적으로
+      없어짐). 다만 소통 자체가 ``누가 무엇을 말할지''를
+      학습하는 \textbf{또 하나의 멀티에이전트 문제}를
+      만들므로 별도 연구 주제
+  \end{itemize}
+\end{frame}

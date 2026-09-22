@@ -1,0 +1,21 @@
+\begin{frame}{핵심 공식 한눈에}
+  \small
+  \begin{tabular}{@{}p{2.6cm}p{7.2cm}p{4.6cm}@{}}
+    \toprule
+    항목 & 공식 & 무엇을 말하나 \\
+    \midrule
+    순전파 (재귀) & $h_t = \tanh(W_{xh} x_t + W_{hh} h_{t-1} + b_h)$ &
+      시점마다 은닉 상태 갱신 \\
+    출력 & $y_t = W_{hy} h_t + b_y$ & 시점별 예측 (선형, 활성함수 없음) \\
+    파라미터 & $(HV + 1) + H^2 + (VH + 1)$ & \textbf{시퀀스 길이 $T$와
+      무관} \\
+    기억의 감쇠 & $z_t \approx \sum_{k} w_{hh}^{\,k-1} \cdot w_{xh}\,
+      x_{t-k+1}$ & $w_{hh}$가 ``기억의 길이''를 결정 \\
+    \bottomrule
+  \end{tabular}
+  \vskip1em
+  \begin{block}{한 줄}
+    RNN = \textbf{같은 세 행렬을 $T$번 순서대로 돌리며}, 이전 요약을
+    $\tanh$로 압축해 갱신하는 구조.
+  \end{block}
+\end{frame}

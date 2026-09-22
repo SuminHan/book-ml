@@ -1,0 +1,22 @@
+\begin{frame}{FAQ 4·5: FLOPs의 bias, PyTorch 확인}
+  \begin{block}{Q. FLOPs 공식에 bias의 ``$+1$''이 없는데?}
+    \small
+    bias는 출력 위치당 \textbf{한 번만} 더해지는 값 ---
+    그 비용 $n_{\text{out}}^2 C_{\text{out}}$ 은 주항 대비
+    \textbf{1 차수 낮은 차수 항}(일반 3$\times$3 층에서 약 10\% 미만).
+    표준 FLOPs 관례는 곱셈-덧셈(MAC) 수로 세고 bias를 무시.
+  \end{block}
+  \vskip0.8em
+  \begin{block}{Q. PyTorch에서 28$\times$28 입력의 3$\times$3 conv
+  출력이 정말 26$\times$26인가?}
+    \small
+    맞다 --- \texttt{nn.Conv2d(1, 4, 3)}(기본 padding=0, stride=1)의
+    출력은 26$\times$26, \texttt{nn.Conv2d(1, 4, 3, padding=1)} 는
+    28$\times$28. PyTorch의 \texttt{padding} 인자는 이 절 공식의
+    \textbf{한 변당 패딩 수 $p$} 그대로(총 $2p$). $p=(k-1)/2$ 의
+    same-padding 트릭도 똑같이 동작.
+    {\footnotesize (참고: 26$\times$26 에 또 p=0의 3$\times$3을 쓰면
+    24$\times$24 --- 짝수/홀수가 층을 지나며 바뀌지만
+    ``크기 장부'' 문제일 뿐 오류가 아님.)}
+  \end{block}
+\end{frame}

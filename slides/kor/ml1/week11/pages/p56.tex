@@ -1,0 +1,32 @@
+\begin{frame}{게이트의 비용: 파라미터가 얼마나 늘까}
+  게이트는 \textbf{공짜가 아니다}. 기본 RNN은 시점마다
+  $W_{xh}, W_{hh}, W_{hy}$ 세 개($\approx 2\,d_{in}d_h + d_h^2$)인데,
+  게이트 모델은 \textbf{이 조합을 3$\sim$4개로 복제}.
+  \vskip0.4em
+  입력 차원 $d_{in} = 512$, 은닉 크기 $d_h = 128$에서:
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    모델 & 시점당 가중치($\approx$) & 기본 RNN 대비 \\
+    \midrule
+    기본 RNN & $512 \cdot 128 + 128^2 \approx 8.2 \times 10^{4}$
+      & 1$\times$ \\
+    GRU (게이트 3) & $3(d_{in} + d_h)\,d_h \approx 2.5 \times
+      10^{5}$ & \textbf{$\approx 3\times$} \\
+    LSTM (게이트 4) & $4(d_{in} + d_h)\,d_h \approx 3.3 \times
+      10^{5}$ & \textbf{$\approx 4\times$} \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{itemize}
+    \item 게이트 하나마다 입력$\to$은닉, 은닉$\to$은닉 가중치 한
+      조($(d_{in}+d_h)\,d_h$) 추가
+    \item LSTM $\approx$ 4배, GRU $\approx$ 3배의 \textbf{메모리·계산}
+    \item \kq{\textbf{데이터가 적은 문제에서는 게이트 모델이 오히려
+      과적합}하기 쉬움 --- ``파라미터를 더 사서 버는 능력''과 ``더
+      사서 무너지는'' 사이에 Week 6의 \textbf{편향-분산 트레이드오프}
+      가 그대로 놓여 있다.} 게이트가 \textbf{시퀀스가 충분히 길어
+      소실이 실제로 병이 될 때}에 비로소 3$\sim$4배의 비용이
+      \textbf{값}을 하는 것이다.
+  \end{itemize}
+\end{frame}

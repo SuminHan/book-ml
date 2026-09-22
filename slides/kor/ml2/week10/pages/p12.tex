@@ -1,0 +1,27 @@
+\begin{frame}{최종 정리: $R$ 을 시점별 리턴 $G_t$ 로, 그리고 model-free}
+  기댓값에 대입한 뒤, $R(\tau)=\sum_t r_t$ 를 시점별 \textbf{리턴}
+  $G_t = \sum_{t'\ge t}\gamma^{t'-t} r_{t'}$ 로 바꿈:
+  \[
+  \nabla_\theta J(\theta)
+  = \mathbb{E}_\tau\left[ \sum_t \nabla_\theta \log\pi_\theta(a_t|s_t)\; G_t
+  \right],
+  \qquad
+  \hat g(\tau) = \sum_t \nabla_\theta \log\pi_\theta(a_t|s_t)\; G_t
+  \]
+  \begin{itemize}
+    \item 각 $\nabla_\theta\log\pi(a_t|s_t)$ 가 \textbf{자기 시점부터의}
+      $G_t$ 를 가중치로 씀 --- ``시점 $t$ 의 행동은 $t$ 이후의 보상만
+      책임진다''는 \textbf{인과적 구조}.
+    \item \textbf{단일 샘플 추정치} $\hat g(\tau)$ 의 \textbf{기댓값}이
+      참 그래디언트 --- ``단절된 $R$'' 대신 \textbf{미분 가능한}
+      $\nabla_\theta\log P$ 를 가중치로 쓴 셈.
+      (10.2절 REINFORCE가 바로 이 $\hat g$ 를 계산)
+  \end{itemize}
+  \vskip0.3em
+  \begin{block}{model-free의 핵심 성질이 ``사라진 항''에서 온다}
+    $\nabla_\theta\log P(s_{t+1}|s_t,a_t) = 0$ 이라 최종 식에
+    \textbf{환경 파라미터가 하나도} 남지 않음.
+    $\Rightarrow$ \kb{환경 모델을 몰라도 정책을 학습할 수 있다} ---
+    Week 4 벨만방정식(환경 모델 전제)과 대비되는 정책기반의 본질.
+  \end{block}
+\end{frame}

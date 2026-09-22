@@ -1,0 +1,25 @@
+\begin{frame}{자주 하는 실수: $d_k$ 를 ``임베딩 차원''으로 오해}
+  \kq{$\sqrt{d_k}$ 의 $d_k$ 가 ``임베딩 차원''이라는 것은
+  \emph{아니다}.}
+  \begin{itemize}
+    \item $d_k$ 는 \textbf{Key 벡터의 차원}, 즉 $W_K$ 가
+      \emph{만들어낸} 벡터의 길이.
+    \item 12.1절에서 $K = XW_K$ 로, $W_K$ 가 입력 임베딩 차원
+      $d_{model}$ 에서 \textbf{$d_k$ 차원으로 \emph{투영}}하는
+      변환임을 보았다.
+    \item $d_{model} = 512$ 인데 $d_k = 64$ 라면, $K$ 는 64차원
+      벡터이고 스케일 상수는 $\sqrt{64} = 8$.
+  \end{itemize}
+  \vskip0.5em
+  이 투영 자체가 \textbf{파라미터 수를 줄이는 효과}(512$\times$512
+  행렬 대신 512$\times$64)를 주기도 하지만, \emph{그것보다
+  중요한 역할}은:
+  \begin{itemize}
+    \item \textbf{``비교에 쓸 차원''($d_k$)과 ``전달할 내용의
+      차원''($d_v$, Value의 차원)을 \emph{독립적으로} 설계}할 수
+      있게 해준다.
+  \end{itemize}
+  이 ``\textbf{비교 차원 vs 내용 차원을 분리}하는 아이디어''가
+  12.3절의 \textbf{멀티헤드 설계}(각 헤드가 \emph{자신의} 작은
+  $d_k, d_v$ 를 가짐)의 직접적 전제 조건이 된다.
+\end{frame}

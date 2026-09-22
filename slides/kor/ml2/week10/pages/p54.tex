@@ -1,0 +1,35 @@
+\begin{frame}{실습: CartPole에서 REINFORCE vs A2C (결과)}
+  두 알고리즘 \textbf{300 에피소드씩, 세 시드}(0, 1, 2):
+  \small
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    알고리즘 (시드) & 처음 20 평균 & 마지막 20 평균 & 최고 & 250 첫 도달 \\
+    \midrule
+    REINFORCE (0) & 14.1 & 99.5 & 500 & 194 \\
+    REINFORCE (1) & 42.5 & 251.4 & 500 & 150 \\
+    REINFORCE (2) & 17.5 & 151.9 & 500 & 98 \\
+    A2C (0) & 20.6 & 211.3 & 500 & 299 \\
+    A2C (1) & 21.6 & 177.9 & 500 & 277 \\
+    A2C (2) & 20.4 & 184.2 & 476 & --- (미도달) \\
+    \bottomrule
+  \end{tabular}
+  \normalsize
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch10_3_reinforce_vs_a2c.png}
+      \vskip0.2em
+      {\footnotesize 좌: 리턴 학습 곡선(20 에피소드 이동평균).
+      우: 마지막 20 에피소드 평균의 시드 간 박스플롯.}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      {\footnotesize
+      REINFORCE 곡선은 시드마다 100$\sim$250 사이로
+      \textbf{크게 갈라짐}. A2C 곡선은 세 시드 모두
+      \textbf{180$\sim$210 대}에서 비슷한 높이로 수렴.
+      박스플롯: A2C의 박스가 REINFORCE보다 \textbf{좁음}
+      (시드 간 변동이 작음).}
+    \end{column}
+  \end{columns}
+\end{frame}

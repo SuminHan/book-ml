@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{블랙잭: 에피소드 생성 코드}
+\begin{lstlisting}
+def gen_episode(Q, epsilon):
+    player_sum = draw_card() + draw_card()
+    dealer_showing = draw_card()
+    s = (player_sum, dealer_showing)
+    episode = []
+    while True:
+        if s[0] < 12:
+            a = 1  # 12 미만이면 무조건 히트 (자명한 선택)
+        else:
+            a = random.randrange(2) if (s not in Q or random.random() < epsilon) \
+                else max(range(2), key=lambda x: Q[s][x])  # 0=스틱, 1=히트
+        ns, r, done = step(s, a)
+        episode.append((s, a, r))
+        if done:
+            break
+        s = ns
+    return episode
+\end{lstlisting}
+  {\footnotesize (아래는 학습 목적의 단순화 버전 --- 실제
+  카지노의 ``소프트 에이스'' 처리는 생략.)}
+\end{frame}

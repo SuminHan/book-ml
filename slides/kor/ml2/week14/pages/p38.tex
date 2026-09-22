@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{step\_batch: 한 줄의 numpy 연산이 N개 진자를 ``동시''}
+\begin{lstlisting}
+def step_batch(theta, thetadot, torque, dt=0.002, b=0.1, L=0.5, m=1.0):
+    """N개 진자의 물리를 한 번의 numpy 연산으로 동시 스텝 (RK4)."""
+    def f(th, thd, tau):
+        return thd, -(9.81/L)*np.sin(th) - b*thd + tau  # 각가속도
+    # RK4: 4단계 미분 계산 — 각 단계가 numpy 배열 전체에 동시에 적용
+    k1t, k1v = f(theta, thetadot, torque)
+    k2t, k2v = f(theta+0.5*dt*k1t, thetadot+0.5*dt*k1v, torque)
+    k3t, k3v = f(theta+0.5*dt*k2t, thetadot+0.5*dt*k2v, torque)
+    k4t, k4v = f(theta+dt*k3t, thetadot+dt*k3v, torque)
+    theta   += dt/6*(k1t + 2*k2t + 2*k3t + k4t)
+    thetadot+= dt/6*(k1v + 2*k2v + 2*k3v + k4v)
+    return theta, thetadot
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize \texttt{torque}가 (N,) 배열이면, \texttt{f} 안의
+  \texttt{np.sin(th)}\,·\,\texttt{b*thd} 등 모든 연산이
+  \textbf{N개 요소에 동시} 적용 --- 이것이 ``커널 한 번''의 CPU
+  미니판. 대조: \texttt{for i in range(N): step(theta[i])}
+  (CPU 순차).}
+\end{frame}

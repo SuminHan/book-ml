@@ -15,17 +15,23 @@ mkdir -p "$OUT"
 
 flatten_raster() { convert "$1" -background white -alpha remove -alpha off "$2"; }
 
-resolve() {  # <NAME> -> 0 if figs/<name>.png now exists, else 1
-  local name="${1%.png}"; name="${name%.svg}"
+resolve() {  # <NAME as it appears in \includegraphics{}> -> 0 if usable in figs/, else 1
+  local orig="$1" name="${1%.png}"; name="${name%.svg}"
+  # already sitting in figs/ under the exact name requested (any extension,
+  # e.g. a .jpg copied straight from src/images -- LaTeX includes it as-is)
+  [ -f "$OUT/$orig" ] && return 0
   [ -f "$OUT/$name.png" ] && return 0
   if [ -f "$SRC/$name.svg" ]; then
     rsvg-convert -b white -z 3 "$SRC/$name.svg" -o "$OUT/$name.png" 2>/dev/null \
       && { echo "  svg->png  $name.png"; return 0; }
+  elif [ -f "$SRC/$orig" ]; then
+    flatten_raster "$SRC/$orig" "$OUT/$name.png" 2>/dev/null \
+      && { echo "  flatten   $name.png"; return 0; }
   elif [ -f "$SRC/$name.png" ]; then
     flatten_raster "$SRC/$name.png" "$OUT/$name.png" 2>/dev/null \
       && { echo "  flatten   $name.png"; return 0; }
   fi
-  echo "  MISSING   $name  (no $SRC/$name.{svg,png})"
+  echo "  MISSING   $orig  (not in $OUT/, no $SRC/$orig or $SRC/$name.{svg,png})"
   return 1
 }
 
@@ -41,16 +47,42 @@ fi
 
 TEX="$1"
 [ -f "$TEX" ] || { echo "no such file: $TEX"; exit 1; }
-echo "[build_figs] resolving figures in $TEX"
-grep -oE '\\includegraphics(\[[^]]*\])?\{[^}]+\}' "$TEX" \
+
+# Since the "덱마다 개별 폴더" reorg, each deck keeps its own figs/ next to
+# its .tex (referenced first via \graphicspath{{figs/}{./}{../../../figs/}}
+# in the theme) -- resolve into THAT, not the old shared slides/figs/ (which
+# is now only a fallback for legacy shared assets like ksa-logo).
+OUT="$(dirname "$TEX")/figs"
+mkdir -p "$OUT"
+
+# A migrated deck (per-page pages/pNN.tex, wrapper .tex is just \input lines)
+# keeps its \includegraphics calls inside pages/, not in $TEX itself -- scan
+# those too, and neutralise missing figures in whichever page file has them.
+PAGES_DIR="$(dirname "$TEX")/pages"
+SEARCH_FILES=("$TEX")
+if [ -d "$PAGES_DIR" ]; then
+  while IFS= read -r -d '' f; do SEARCH_FILES+=("$f"); done \
+    < <(find "$PAGES_DIR" -maxdepth 1 -name '*.tex' -print0 | sort -z)
+fi
+
+echo "[build_figs] resolving figures in ${SEARCH_FILES[*]}"
+grep -hoE '\\includegraphics(\[[^]]*\])?\{[^}]+\}' "${SEARCH_FILES[@]}" \
   | sed -E 's/.*\{([^}]+)\}/\1/' | sort -u \
   | while read -r fig; do
       [ "$fig" = "ksa-logo.png" ] && continue
       if ! resolve "$fig"; then
-        # comment out every \includegraphics referencing this missing figure
+        # comment out every \includegraphics referencing this missing figure,
+        # in every file (wrapper or page) that references it. Write to a temp
+        # file + mv instead of `sed -i` -- BSD sed's `-i` needs an explicit
+        # (possibly empty) backup-suffix arg or it silently eats the next
+        # flag, which breaks `-i -E` on macOS.
         esc=$(printf '%s\n' "$fig" | sed 's/[.[\*^$/]/\\&/g')
-        sed -i -E "s|^([[:space:]]*)(\\\\includegraphics(\\[[^]]*\\])?\\{$esc\\})|\1% [fig missing] \2|" "$TEX"
-        echo "  -> neutralised \\includegraphics{$fig} in $(basename "$TEX")"
+        for f in "${SEARCH_FILES[@]}"; do
+          grep -q "includegraphics.*{$fig}" "$f" || continue
+          sed -E "s|^([[:space:]]*)(\\\\includegraphics(\\[[^]]*\\])?\\{$esc\\})|\1% [fig missing] \2|" "$f" > "$f.tmp" \
+            && mv "$f.tmp" "$f"
+          echo "  -> neutralised \\includegraphics{$fig} in $(basename "$f")"
+        done
       fi
     done
 echo "[build_figs] done -> $OUT/"

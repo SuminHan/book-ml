@@ -1,0 +1,30 @@
+% ================= SESSION 9.3 =================
+\section{9.3 경험 재현과 CartPole 학습곡선 실습}
+\begin{frame}{문제 2: 데이터 자체가 서로 상관돼 있다}
+  \begin{itemize}
+    \item 연속된 프레임(상태)은 서로 거의 같음 $\Rightarrow$
+      순서대로 학습하면 \textbf{최근 몇 개의 비슷한 경험에 과도하게
+      치우친} 학습.
+  \end{itemize}
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \kb{지도학습(ML1)}
+      \begin{itemize}
+        \item 데이터셋을 \textbf{셔플}: 한 배치의 32개 샘플이 서로
+          무관하도록 섞음.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \kb{온-폴리시 강화학습}
+      \begin{itemize}
+        \item 데이터 스트림은 \textbf{하나의 연속 궤적}.
+        \item CartPole 연속 10프레임: $\theta$가 스텝당 바뀔 수 있는
+          크기가 극히 작아 $s_t$와 $s_{t+1}$은 \textbf{거의 같은 벡터}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.5em
+  \kq{``배치 32개를 순서대로 가져온다'' = 같은 한 궤적에서 32장을 연속
+  촬영한 사진을 한 묶음으로 주는 것과 같다.}
+\end{frame}

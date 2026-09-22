@@ -1,0 +1,17 @@
+\begin{frame}{왜 스케일은 안 나오고 방향만 나오는가}
+  \begin{itemize}
+    \item Bradley-Terry 확률은 $r_w-r_l$의 \textbf{차이}에만
+      의존 — 모든 가중치를 \textbf{같은 배수로} 늘려도 예측
+      확률과 동일.
+    \item 즉 \textbf{스케일 불변}: ``이 궤적의 점수가 몇 점''이라는
+      \textbf{절대 해석 불가}. 오직 \textbf{상대 순위}만 의미.
+    \item (LLM 보상모델도 같은 이유에서 절대 점수 해석 불가.)
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{보상 $b$가 학습되지 않는 이유}
+    $r_w-r_l$에서 공통 보상 $b$는 \textbf{완전히 소거}됨 $\Rightarrow$
+    어떤 값이든 손실을 안 바꿔 \textbf{추정 불가능}. 그래서 코드에서
+    $b=0$ 고정, $w_1,w_2$만 갱신. ``차이만 본다''는 설계가 스케일·
+    상수 불변성을 \textbf{구조적으로} 만든다.
+  \end{block}
+\end{frame}

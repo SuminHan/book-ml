@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{반복적 정책평가: 코드}
+  상태가 많으면 다음을 값이 더 이상 안 바뀔 때까지 반복 근사:
+\begin{lstlisting}
+def policy_evaluation(P, R, policy, gamma, theta=1e-6):
+    n_states = len(P)
+    V = [0.0] * n_states
+    while True:
+        delta = 0                     # 매 sweep 시작마다 초기화!
+        for s in range(n_states):
+            a = policy[s]
+            v_new = R[s][a] + gamma * sum(prob * V[next_s]
+                                          for prob, next_s in P[s][a])
+            delta = max(delta, abs(v_new - V[s]))
+            V[s] = v_new             # in-place: 갱신된 값을 즉시 사용
+        if delta < theta:
+            break
+    return V
+\end{lstlisting}
+  \vskip0.2em
+  매 sweep마다 모든 상태의 $V(s)$ 를 벨만 우변으로 갱신. 우변의
+  $V(s')$ 는 아직 \textbf{정확한 값이 아닌} 추정치인데도,
+  $\gamma < 1$ 이면 정확한 $V^\pi$ 로 수렴(\kb{수축 사상},
+  4.3절 증명).
+\end{frame}

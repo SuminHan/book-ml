@@ -1,0 +1,37 @@
+\begin{frame}{2$\times$2 커널 행렬과 꼭짓점}
+  SV 두 점의 \textbf{2$\times$2 커널(내적) 행렬}:
+  \[
+  K =
+  \begin{pmatrix} (3,3)\cdot(3,3) & (3,3)\cdot(-3,-3) \\
+  (3,3)\cdot(-3,-3) & (-3,-3)\cdot(-3,-3) \end{pmatrix}
+  =
+  \begin{pmatrix} 18 & -18 \\ -18 & 18 \end{pmatrix}
+  \]
+  \begin{itemize}
+    \item $q = 18 + 18 + 2(1)(-1)(-18) = 72$.
+    \item $f(a)$ 는 $f'(a) = 2 - q\,a = 0$ 에서 꼭짓점:
+      $a^* = 2/q = 1/36$.
+    \item KKT로 $w$ 를 복원:
+      \[
+      w = \sum_i \alpha^{(i)}y^{(i)}x^{(i)}
+      = \tfrac{1}{36}(+1)(3,3) + \tfrac{1}{36}(-1)(-3,-3)
+      = \left(\tfrac16,\ \tfrac16\right)
+      \]
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{결과: 5.1절의 primal 손계산 해와 숫자 하나까지 일치}
+    $b=0$ (대칭성). 실습 노트 3부에서 이 계산을 코드로 돌려
+    6개 제약의 기능적 마진 $[1,\ 1.1667,\ 1.1667,\ 1,\ 1.1667,\
+    1.1667]$(두 SV만 정확히 $=1$)과 기하적 마진
+    $2/\|w\|=8.485$까지 \textbf{primal과 동일}함을 확인.
+    \vskip0.3em
+    \kb{primal과 dual이 같은 해를 주는 것}(강렬한 쌍대성)은 SVM이
+    \textbf{볼록 최적화} 문제이기 때문에 성립 — 이 절의 커널
+    트릭 이야기 \textbf{자체}가 이 성질에 의존.
+    \vskip0.3em
+    우리가 계산한 것은 \textbf{2$\times$2 내적 행렬}뿐 — primal에선
+    $w=(1/6,1/6)$ 을 직접 들고 다녔지만, 쌍대에선 $w$ 를 알
+    \textbf{필요 없이} \textbf{커널값(내적)으로만} 복원. 이
+    구조가 RBF처럼 $\phi$ 가 무한차원인 경우에도 그대로 작동.
+  \end{block}
+\end{frame}

@@ -1,0 +1,34 @@
+\begin{frame}{확인 문제: 장을 넘나드는 복습 4개 (답)}
+  \scriptsize
+  \begin{tabular}{@{}p{0.34\textwidth}p{0.62\textwidth}@{}}
+    \toprule
+    질문 & 답 (핵심) \\
+    \midrule
+    1. Ch\,2 밴딧과 Ch\,3 MDP의 관계 & 밴딧 = \textbf{상태가 하나뿐}이고
+      어떤 행동을 해도 같은 상태로 전이하는 \textbf{특수한 MDP}.
+      탐험-활용 딜레마는 이 특수 경우에도 그대로, Ch\,5$\sim$6의
+      $\varepsilon$-greedy = 그 전략의 MDP 전체 확장 \\
+    2. 정책반복/가치반복(Ch\,4) vs MC/TD(Ch\,5$\sim$6)의 근본 차이 &
+      Ch\,4는 전이확률 $P(s'|s,a)$를 \textbf{정확히 안다고 가정}하고
+      벨만방정식을 반복 대입(모델 기반). Ch\,5$\sim$6은 $P$를 몰라도
+      \textbf{실제 경험}으로부터 추정(모델 프리) --- 단, 둘 다
+      ``벨만방정식이라는 \textbf{같은 재귀 구조}''에 기대 \\
+    3. MC / TD(0) / n-step의 목표값을 편향-분산으로 한 줄 &
+      MC: 실제 리턴 $G_t$를 그대로 $\to$ \textbf{편향 없으나 분산
+      큰} / TD(0): 한 스텝 실제 + 추정치 $\to$ \textbf{분산 작으나
+      편향 있는} / n-step: 그 사이($n$이 다이얼, U자 트레이드오프) \\
+    4. SARSA vs Q-learning의 on/off-policy 구분이 실전에서 중요한 이유 &
+      \textbf{학습이 실제 위험한 환경}에서 일어나면 학습 도중의 안전까지
+      고려하는 \textbf{SARSA(on-policy)} 계열이 유리. \textbf{시뮬레이터}
+      에서 충분히 학습하고 최종 배포만 중요하다면 목표 정책의 최적성을
+      직접 배우는 \textbf{Q-learning(off-policy)}이 유리(Ch\,6.3) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  \begin{block}{한 줄 요약}
+    Ch\,2$\sim$7의 모든 알고리즘은 \textbf{``미래의 불확실한 보상을 지금
+    어떻게 수치화할 것인가''}에 대한 답 --- 이제 이 질문에
+    \textbf{신경망}을 결합해 표에 담을 수 없을 만큼 큰 문제로 나아갈
+    차례.
+  \end{block}
+\end{frame}

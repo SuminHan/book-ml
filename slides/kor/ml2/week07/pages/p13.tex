@@ -1,0 +1,36 @@
+\begin{frame}{U자 곡선: n별 RMS 오차 (30 seed 평균)}
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \small
+      \begin{tabular}{@{}ll@{}}
+        \toprule
+        $n$ & RMS 오차 (10 에피소드) \\
+        \midrule
+        1 (TD(0)) & 0.4007 \\
+        \textbf{3} & \textbf{0.3061} $\leftarrow$ 이 환경·예산에서 최적 \\
+        5 & 0.3493 \\
+        10 & 0.3994 \\
+        50 (사실상 MC) & 0.4170 \\
+        \bottomrule
+      \end{tabular}
+      \vskip0.6em
+      설정: $\alpha=0.1$, $\gamma=0.9$, 10 에피소드, 30 seed.
+      오차가 $n$에 대해 \textbf{U자}.
+    \end{column}
+    \begin{column}{0.53\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch07_1_nstep_ucurve.png}
+      {\footnotesize (좌) 10 에피소드: 최저점 $n=3$.
+      (우) 500 에피소드: 최저점이 $n=1$ 쪽으로 \textbf{이동}
+      ($n=1$: 0.268, $n=3$: 0.336, $n=50$: 0.457).}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \begin{itemize}
+    \item $n=1$: 추정치 의존(편향)이 10 에피소드로는 씻겨나감
+      부족. $n=50$: 분산이 너무 커서 적은 에피소드로 불안정.
+    \item 데이터가 쌓이면 ``갱신이 잦고 분산 작은'' TD(0)의 이점이
+      살아나 최저점이 $n=1$ 쪽으로 이동. 큰 $n$ 패널티는 예산이
+      커져도 크게 줄지 않음.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,42 @@
+\begin{frame}[allowframebreaks]{확인 문제 1$\sim$4: 장 넘나들기}
+  \begin{itemize}
+    \item \textbf{1.} 로지스틱회귀(Ch02)와 GDA(Ch03)는 둘 다
+      \textbf{어떤 공통된 최종 형태}에 도달하는가?
+      \vskip0.2em
+      {\footnotesize \textbf{답}: 둘 다 $P(y{=}1|x)=\sigma(w^\top x+b)$
+      라는 \textbf{같은 시그모이드-선형 형태}(Ch03.2). 다만
+      로지스틱회귀는 \textbf{판별적으로} 직접 학습하고, GDA는
+      정규분포를 가정한 \textbf{생성적 모델링}에서 베이즈
+      정리로 유도해내는 \textbf{경로}가 다르다.}
+    \item \textbf{2.} kNN(Ch04)에서 $k$를 1로 두는 것과 SVM(Ch05)
+      에서 $C$를 매우 크게 두는 것은 편향-분산 관점에서 어떤
+      \textbf{공통점}이 있는가?
+      \vskip0.2em
+      {\footnotesize \textbf{답}: 둘 다 모델을 데이터에 최대한
+      정확히 맞추려는 \textbf{극단} --- \textbf{분산이 커지고}
+      (과적합 위험) 편향은 작아지는 쪽. $k=1$은 노이즈 하나에도
+      민감하고, $C$가 매우 크면 이상치 하나까지 완벽히 분류하려
+      든다(Ch05.2).}
+  \end{itemize}
+
+  \begin{itemize}
+    \item \textbf{3.} Ridge(Ch06)와 소프트 마진 SVM(Ch05.2)
+      목적함수는 둘 다 ``두 항의 합''. 각각 어떤 두 항인가?
+      \vskip0.2em
+      {\footnotesize \textbf{답}: Ridge는 ``적합도(원래 손실) +
+      $\lambda\times$가중치 크기'', SVM은
+      ``$\frac12\|w\|^2$(마진 최대화) + $C\times$위반 정도(힌지
+      손실)''. 둘 다 ``데이터에 잘 맞추기''와 ``단순하게
+      유지하기'' 사이 트레이드오프를 \textbf{하나의
+      하이퍼파라미터}($\lambda$ 또는 $C$)로 조절.}
+    \item \textbf{4.} 나이브베이즈(Ch03.3)와 결정 트리(Ch07.1)는
+      \textbf{왜 둘 다} 특징 스케일링이 필요 없는가?
+      \vskip0.2em
+      {\footnotesize \textbf{답}: 나이브베이즈는 각 특징의 확률
+      $P(x_j|y)$를 \textbf{독립적으로} 추정할 뿐 값들 사이의
+      \textbf{거리를 재지} 않는다. 결정 트리는 ``이 특징이
+      threshold보다 큰가''라는 \textbf{순서 정보}만 쓴다(Ch07.1
+      FAQ) --- 둘 다 kNN·SVM·k-means처럼 거리를
+      직접 계산하지 않기 때문.}
+  \end{itemize}
+\end{frame}

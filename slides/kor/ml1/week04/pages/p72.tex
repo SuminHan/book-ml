@@ -1,0 +1,47 @@
+\begin{frame}{$K$를 고르는 법: BIC}
+  ``데이터가 몇 개의 덩어리인가'' = \textbf{$K$ 선택}.
+  \begin{alertblock}{주의: likelihood로 $K$를 골라서는 안 된다}
+    클러스터가 하나 더 늘면 모델이 더 유연해져 likelihood는
+    \textbf{항상} 좋아진다 --- 극단적으로 $K = m$(각 점마다
+    분산 0 가우시안)이면 \textbf{완벽}. 4.3절 ``최소 SSE로 고르면
+    $k=n$''과 \textbf{정확히 같은 함정}.
+  \end{alertblock}
+  \vskip0.4em
+  대신 \kb{BIC}(Bayesian Information Criterion):
+  \[
+  \text{BIC} = -2 \log \mathcal{L}(\hat{\theta}) + p \log m
+  \]
+  $\mathcal{L}$=likelihood, $p$=\textbf{자유 모수 개수}, $m$=점
+  개수. ``likelihood 올리기'' vs ``$p \times \log m$ \textbf{벌점}''
+  의 트레이드오프 --- $m$이 크면 클수록 \textbf{과적합}을 더 강하게
+  벌. $m\to\infty$에서 \textbf{진짜 $K$}의 BIC가 확률 1로 최소
+  (\textbf{일관성}).
+  \vskip0.4em
+  \begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      3-블롭 150점에 $K=1\sim4$ EM (BIC 최소 = \textbf{정확히
+      $K=3$}):
+      \small
+      \begin{tabular}{@{}rcc@{}}
+        \toprule
+         $K$ & log-likelihood & BIC \\
+        \midrule
+        1 & $-749.1$ & 1513.2 \\
+        2 & $-630.6$ & 1296.2 \\
+        3 & $-410.1$ & \textbf{875.4} \\
+        4 & $-410.1$ & 895.4 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=0.92\linewidth]{ch15_gmm_bic.png}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  $K=3\to4$: log-likelihood \textbf{동일}($-410.1$, 네 번째
+  클러스터는 피팅을 안 높이고 기존 덩어리만 쪼갬)인데 \textbf{BIC
+  벌점}($p$: 11$\to$15)이 판을 뒤집음. 엘보우가 그 꺾임을 \textbf{눈}
+  으로 찾은 것을, BIC는 하나의 \textbf{숫자}로 내리는 원리 있는
+  버전.
+\end{frame}

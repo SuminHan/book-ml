@@ -1,0 +1,42 @@
+\begin{frame}[fragile]{실습 코드: 5$\times$5 격자 Dyna-Q}
+  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+ACTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # up, down, left, right
+START, GOAL = (4, 0), (0, 4)
+
+def step(s, a):
+    r, c = s
+    nr = min(max(r + ACTIONS[a][0], 0), 4)
+    nc = min(max(c + ACTIONS[a][1], 0), 4)
+    ns = (nr, nc)
+    if ns == GOAL:
+        return ns, 0.0, True
+    return ns, -1.0, False
+
+def dyna_q_grid(n_episodes, planning_steps,
+                alpha=0.1, gamma=1.0, epsilon=0.1, seed=0):
+    rng = random.Random(seed)
+    Q, model, returns = {}, {}, []
+    for _ in range(n_episodes):
+        s, ret = START, 0.0
+        for _ in range(100):
+            a = rng.randrange(4) if rng.random() < epsilon \
+                else max(range(4), key=lambda x: Q.get((s, x), 0.0))
+            ns, r, done = step(s, a)
+            Q[(s, a)] = Q.get((s, a), 0.0) + alpha * (
+                r + gamma * max(Q.get((ns, x), 0.0) for x in range(4))
+                - Q.get((s, a), 0.0))               # 1) 실제
+            model[(s, a)] = (r, ns)                  # 2) 모델
+            for _ in range(planning_steps):          # 3) 계획
+                (ps, pa), (pr, pns) = rng.choice(list(model.items()))
+                Q[(ps, pa)] = Q.get((ps, pa), 0.0) + alpha * (
+                    pr + gamma * max(Q.get((pns, x), 0.0) for x in range(4))
+                    - Q.get((ps, pa), 0.0))
+            s, ret = ns, ret + r
+            if done:
+                break
+        returns.append(ret)
+    return Q, returns
+  \end{lstlisting}
+  {\footnotesize \texttt{dyna\_q}의 격자 버전. 실제/모델/계획 3단계가
+  같은 $Q$를 갱신.}
+\end{frame}

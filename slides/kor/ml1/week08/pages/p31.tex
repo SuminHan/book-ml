@@ -1,0 +1,29 @@
+\begin{frame}{실습: ``정확도 99.8\%''를 코드로 검증 (1)}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{itemize}
+        \item 노트북은 발표의 설정(거래 10만 건, 사기 200건 =
+          0.2\%)을 1차원 장난감 데이터로 재현하고, 임계값
+          분류자로 정확도·재현율·PR-AUC를 직접 계산.
+        \item \kb{(1)} \textbf{``쓸모있는 모델''의 정확도는
+          ``무조건 정상''보다 낮다}: 사기를 약 90\% 잡는
+          분류자(임계값 $t=2.5$)의 정확도는 \textbf{99.37\%}
+          --- 아무 모델 없이 전부 ``정상''을 찍으면
+          \textbf{99.8\%}(사기 1건도 못 잡는데도 정확도만으로는
+          더 낫다).
+      \end{itemize}
+      \vskip0.3em
+      \kq{정확도 99.8\%가 ``모델이 좋다''는 증거가 아님을
+      보여주는 가장 직접적인 숫자.}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch08_2_accuracy_trap.png}
+      {\footnotesize 왼쪽: 임계값 $t$ 1.0$\to$5.0을 올리면 정확도는
+      99.8\%(무조건 정상, 붉은 점선) 부근에서 거의 움직임이
+      없음. 오른쪽: 같은 범위에서 재현율은 0에서 0.99까지
+      크게 변한다 --- 정확도로 ``동점''인 동안, 사기를 잡는
+      능력은 완전히 다름.}
+    \end{column}
+  \end{columns}
+\end{frame}

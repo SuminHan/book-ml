@@ -1,0 +1,33 @@
+\begin{frame}{자주 묻는 질문 (5.2) --- MC 예측 vs MC 제어}
+  \textbf{코드적으로 얼마나 다른가요?} --- \textbf{거의
+  같다, 두 줄만 바뀐다}.
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{MC 예측 (5.1)}
+      \begin{itemize}
+        \item $V[s]$ 를 갱신.
+        \item 상태 $s$ 만 ``방문''으로 셈.
+      \end{itemize}
+      \vskip0.5em
+      \kb{MC 제어 (5.2)}
+      \begin{itemize}
+        \item $Q[s][a]$ 를 갱신.
+        \item \textbf{(상태, 행동) 쌍} $(s,a)$ 를 방문
+          기준으로 삼음.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      나머지는 \textbf{동일} (에피소드를 뒤에서부터 훑어
+      $G_t$ 를 재귀 계산, 증분 평균으로 갱신).
+      \vskip0.6em
+      이 ``거의 같다''가 MC 의 미덕 --- \textbf{예측을 할 줄
+      안다면 제어는 자동으로 따라온다.}
+      \vskip0.6em
+      \textbf{왜 $V$ 만으로는 안 되고 $Q$ 여야 하는가?} ---
+      $V(s)$ 만으로는 ``다음에 \textbf{어느 행동}을
+      골랐는지''가 사라져 다음 행동을 결정할 수 없다.
+      $Q(s,a)$ 는 ``지금 행동까지 포함''한 가치로 그
+      부족함을 메운다.
+    \end{column}
+  \end{columns}
+\end{frame}

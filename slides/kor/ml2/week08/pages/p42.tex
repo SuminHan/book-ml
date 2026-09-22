@@ -1,0 +1,31 @@
+\begin{frame}{확인 문제 (1/2): 리뷰어가 될 때의 판단력}
+  \small
+  \begin{block}{Q1. ``시드 3개를 돌려 greedy가 $-13/-14/-12$로 Q-learning이
+  안정적이다'' --- 이 편차는 \emph{무엇의} 편차이고, \emph{무엇의}
+  편차가 \emph{아니}인가}
+  \begin{itemize}
+    \item 세 숫자 = \textbf{세 개의 서로 다른 정책}의 greedy 평가
+      (학습 과정의 무작위성/시드가 만든) --- ``어떤 정책이 학습됐는가''
+      의 편차이지, ``그 정책을 재는 \textbf{측정 오차}''가 아님.
+    \item 평가 에피소드를 늘려도 \textbf{사라지지 않음}. 각 시드
+      자체($-13$ 등)는 200 에피소드 측정의 평균이라 \textbf{그 시드의}
+      측정 오차만 줄어듦.
+    \item ``안정적이다''라 말하려면 \textbf{두 층을 구분}: ``시드 간
+      편차 $\pm 1$, 각 시드 측정 오차 $\pm 0.x$''.
+  \end{itemize}
+  \end{block}
+  \vskip0.4em
+  \begin{block}{Q2. ``학습에 $\varepsilon=0.1$ 쓰고, 최종 평가는 \emph{학습된
+  정책으로} 200 에피소드''의 모순}
+  \begin{itemize}
+    \item $\varepsilon=0.1$이면 매 스텝 10\% 확률로 무작위 $\to$
+      ``학습된 정책으로''도 \textbf{탐험이 섞인} 측정.
+    \item CliffWalking에서 이는 \textbf{결론의 방향을 가름}:
+      $\varepsilon=0.1$ 평가 $\to$ SARSA $-21.3$ vs Q $-45.3$(SARSA
+      우위); $\varepsilon=0$ $\to$ Q $-13$ vs SARSA $-17$(\textbf{순수
+      역전}). 질문: ``최종 평가가 $\varepsilon=0$(greedy)였나요?
+      $\varepsilon=0.1$으로 재평가하면 순위가 뒤집힙니다(Ch\,6.3) ---
+      두 프로토콜 모두로 시드 3개를 재실행해주세요.''
+  \end{itemize}
+  \end{block}
+\end{frame}

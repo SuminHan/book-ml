@@ -1,0 +1,18 @@
+\begin{frame}{실전: 잘라내기 BPTT (truncated BPTT)}
+  실제로 긴 문장을 학습할 때 $T$가 커지면:
+  \begin{enumerate}
+    \item 그래디언트 곱적이 지수적으로 소실 $\Rightarrow$
+      \textbf{먼 과거가 거의 학습에 기여하지 못}함
+    \item 계산·메모리가 $T$에 \textbf{비례}해 증가
+  \end{enumerate}
+  $\Rightarrow$ 시퀀스를 \textbf{여러 개의 짧은 창(window)으로
+  잘라} 각 창별로 BPTT를 하고, \textbf{은닉 상태만 창 사이로
+  넘겨주는} 잘라내기 BPTT.
+  \begin{itemize}
+    \item ``창 길이''는 \textbf{소실되는 신호와 계산량} 사이의
+      하이퍼파라미터
+    \item \kq{LSTM은(11.3절) 이 잘라내기에 크게 의존하지 않도록
+      \textbf{그래디언트 경로 자체}를 수정한 구조임을 대비해서
+      기억.}
+  \end{itemize}
+\end{frame}

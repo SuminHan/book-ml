@@ -1,0 +1,30 @@
+\begin{frame}{편향-분산 스펙트럼: 같은 데이터, 네 모델}
+  ``유연한 모델 vs 단순한 모델''을 \textbf{같은 데이터}에서
+  놓고 train/val을 동시에 보는 문제는 Week 4.1·6.2·7.3을
+  한 문항에 끼워 넣는 전형. diabetes(442$\times$10)로
+  train 265 / val 88 / test 89(스케일러 fit은 train으로만)를
+  나눠 4개 모델 \textbf{실측}:
+  \vskip0.4em
+  \small
+  \begin{center}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    모델 & train R$^2$ & val R$^2$ & 격차 (train $-$ val) \\
+    \midrule
+    Ridge($\lambda{=}10^{-4}$) [Ch02,06] & 0.579 & 0.443 & 0.137 \\
+    Ridge($\lambda{=}1$) [Ch06] & 0.579 & 0.442 & 0.137 \\
+    kNN(k=5) [Ch04] & 0.618 & 0.329 & 0.290 \\
+    Tree(무제한 깊이) [Ch07.1] & 1.000 & \textbf{$-0.014$}
+      & \textbf{1.014} \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \vskip0.4em
+  \begin{center}
+  \includegraphics[width=0.90\linewidth]{ch08_3_model_spectrum.png}
+  {\footnotesize 같은 diabetes 데이터에 네 모델의 train R$^2$
+  (파랑)·val R$^2$(빨강) --- 왼쪽$\to$오른쪽으로 갈수록 train은
+  올라가고 val은 벌어지며, 트리는 train 1.000인데 val이 0 아래
+  ($-0.014$)로 처진다.}
+  \end{center}
+\end{frame}

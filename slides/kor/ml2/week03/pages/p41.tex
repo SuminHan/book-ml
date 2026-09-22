@@ -1,0 +1,31 @@
+\begin{frame}{자주 하는 실수: 할인율을 빼먹기 / 두 번 할인}
+  \kb{실수 1: 할인율을 빼먹고 그냥 보상을 다 더하기}
+  \begin{itemize}
+    \item 매 스텝 보상이 1씩 5번($R_0 = \cdots = R_4 = 1$) 들어오면:
+      \[
+      G_0 = 1 + 0.9 + 0.81 + 0.729 + 0.6561 = 4.0951
+      \]
+      단순 합(5)보다 \textbf{항상 작다}(할인율이 ``미래 보상을
+      깎아서'' 계산).
+    \item \texttt{total\_return += reward}처럼 \texttt{discount}를
+      곱하는 걸 빼먹으면: (1) 값 자체가 $G_t$ 의 정의와 달라지고,
+      (2) $\gamma = 1$ 인 것과 같아져 \textbf{끝나지 않는 과업에서
+      발산} 위험.
+    \item 디버깅: ``리턴이 이상하게 크다''면 \textbf{먼저 할인율
+      곱셈이 빠졌는지} 확인.
+  \end{itemize}
+  \vskip0.4em
+  \kb{실수 2: 할인을 두 번 적용하기}(실수 1의 정반대)
+  \begin{itemize}
+    \item \texttt{total\_return += discount * reward}를 쓰면서
+      \textbf{동시에} \texttt{reward = reward * gamma}로 보상을 먼저
+      깎아놓으면, \textbf{두 번} 깎인 $\gamma^{2k}$ 가 적용.
+    \item $\gamma = 0.95$ 이면 10스텝째 보상의 계수가 $0.95^{10}
+      \approx 0.60$ 이 아니라 $0.95^{20} \approx 0.36$ 으로,
+      \textbf{두 배 이상} 빨리 0에 가까워진다.
+    \item ``에이전트가 이상하게 \textbf{근시안적}으로 느껴지는가?''가
+      의문이면 할인 곱셈이 두 군데에 있는지 코드 전체를 grep.
+      (위 CartPole 예에서 10스텝 리턴이 8.025 대신 6.58이면
+      ``두 번 할인''의 전형적 신호.)
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,35 @@
+\begin{frame}{$\varepsilon$을 줄여가며: 탐험에서 착취로}
+  5.2절 MC 제어에서 $\varepsilon$을 에피소드가 진행됨에 따라 줄여가며
+  학습($\varepsilon$-decay)하는 것을 봤다. Q-learning에서도 decay가
+  \textbf{같은 역할}: $\varepsilon$을 처음엔 크고(탐험 많이), 나중에
+  0으로(착취, exploitation) 줄이면:
+  \vskip0.5em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{학습 초반}($\varepsilon$ 큼)
+      \begin{itemize}
+        \item 거의 모든 행동이 시도되어 $Q$값들이 충분히 방문.
+        \item $\max_{a'}Q(s',a')$가 \textbf{믿을 만한} 값이 됨.
+        \item 수렴 조건의 ``모든 (상태,행동) 쌍이 무한히 방문''을
+          실질적으로 만족.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{학습 후반}($\varepsilon \to 0$)
+      \begin{itemize}
+        \item 행동이 거의 탐욕적.
+        \item 학습 도중 리턴이 최종 성능을 반영.
+        \item Q-learning은 여기서 ``절벽 옆 최단 경로''를 \textbf{안정적으로}
+          학습.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  반면 $\varepsilon$을 0.1로 \textbf{고정}하면:
+  SARSA는 ``탐험이 영원히 섞인'' 정책의 가치를 계속 갱신해
+  \textbf{절벽을 피하는 경로에 머물러} 있고, Q-learning은 ``탐험이
+  조금씩 섞이더라도 최선을 고를 테니''라는 낙관론으로 절벽 옆을
+  스치는 경로를 학습.
+  \textbf{decay의 유무가 ``배우는 정책''에 따라 배운 경로의 모양까지
+  바꾼다.}
+\end{frame}

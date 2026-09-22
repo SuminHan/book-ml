@@ -1,0 +1,33 @@
+\begin{frame}{확인 문제 (2/2): 두 층의 불확실성, 좋은 정당화}
+  \small
+  \begin{block}{Q3. ``MC 분산이 크므로 greedy 평가 에피소드를 10{,}000개로
+  늘리자'' --- 학습/평가 에피소드 수는 각각 어떤 불확실성을 줄여주나}
+  \begin{itemize}
+    \item \textbf{평가} 에피소드 = \textbf{고정된} 정책의 성능 측정
+      \textbf{오차}만 줄임 --- 나쁜 정책 10{,}000번 = 나쁜 정책의
+      정확한 평균.
+    \item \textbf{시드} = \textbf{어떤 정책이 학습됐는가}의 학습 과정
+      무작위성 --- FrozenLake처럼 0.045/0.090/0.125(2.8배) 흩어지는 것은
+      측정 오차가 아니라 \textbf{학습 결과의 차이}, 평가 에피소드로
+      사라지지 않음. (ML1 8.1: ``어떤 모델이 나왔는가'' vs ``재는
+      오차'')
+  \end{itemize}
+  \end{block}
+  \vskip0.4em
+  \begin{block}{Q4. ``$\varepsilon$-greedy라 학습이 진행되면 탐험 비중이 줄고
+  성과가 좋아졌다'' --- 좋은 예인가}
+  \begin{itemize}
+    \item \textbf{나쁜 예}에 가깝다 --- 장치를 기계적으로 서술할 뿐,
+      6.3절 개념 + \textbf{실측 숫자의 일치}가 없음.
+    \item 좋은 예는 \textbf{정의($\varepsilon$-greedy) + 환경 구조($-100$)
+      + 실측 숫자의 삼박자}: 고정 $\varepsilon=0.1$에서 Q 학습중 리턴
+      (시드 평균 $\approx -50$)이 SARSA($\approx -26$)의 2배로 나쁘다
+      --- $\varepsilon=0.1$이면 절벽 옆 13스텝 경로에서 에피소드당
+      $1-0.9^{13}\approx 0.73$ 확률로 무작위 행동이 1회 이상, 그것이
+      ``아래''면 $-100$ $\to$ 학습중 손실의 대부분이 절벽 사고.
+      (참고: $1-0.9^{13}\approx 0.73$, $1-0.99^{13}\approx 0.12$ ---
+      절벽 사고 기대 빈도 \textbf{예측}은 성립하지만, 실제로 학습중
+      리턴이 그만큼 개선되지는 않음: §$\varepsilon$ 감쇠의 부정적 결과.)
+  \end{itemize}
+  \end{block}
+\end{frame}

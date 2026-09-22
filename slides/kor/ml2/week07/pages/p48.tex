@@ -1,0 +1,18 @@
+\begin{frame}{추적 (2/3): 계획 한 스텝이 $Q(S)$를 움직인다}
+  \begin{itemize}
+    \item \textbf{계획 한 스텝} 등장: 모델에서 무작위 $(s,a)$를 뽑았는데
+      $(S,a)$가 뽑힘(모델엔 이미 $(S,a)\to(0,X)$ 존재).
+    \item 모델이 예측한 $(r, s')$을 그대로 TD(0) 갱신에 사용:
+    \[
+    Q(S) \leftarrow 0 + 0.5\Big(0 + 0.9\cdot
+    \underbrace{Q(X)}_{0.5} - 0\Big) = 0.5 \times 0.45 = 0.225
+    \]
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{Dyna-Q의 본질}
+    \kq{에이전트는 $S$에 다시 발을 디딤 \textbf{없이}, $X$에서 막
+    배운 값(0.5)이 \textbf{모델을 타고 $S$로 ``거꾸로'' 퍼졌다}.}
+    실제 경험이 한 상태의 $Q$를 바꾸면, 계획은 그 변화가
+    \textbf{모델로 연결된 다른 상태들}의 $Q$에까지 퍼지도록 만든다.
+  \end{block}
+\end{frame}

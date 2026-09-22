@@ -1,0 +1,26 @@
+\begin{frame}{자주 묻는 질문 (14.2): ``한 번''이 진짜 한 번인가}
+  \begin{itemize}
+    \item \textbf{Q. 4,096개 환경이 \textbf{진짜} 동시에인가?}
+      구조적으로는 \textbf{``한 번''} --- 호출은 한 번, 그 안에서
+      수천 개 코어가 \textbf{동시에} 수행.
+    \item 물리적으로: GPU의 SM(Streaming Multiprocessor)이
+      \kb{워프}(32개 스레드) 단위로 스케줄링 $\Rightarrow$
+      4,096개 환경이 \textbf{완벽히} 동시에 끝나는 건 아님 ---
+      대부분이 동시에, 일부는 \textbf{다음 워프 스케줄링}에서
+    \item 하지만 호출 오버헤드가 \textbf{일단}만 치러지므로,
+      순차 4,096회 호출에 비해 총 시간은 \textbf{수천 분의 1}
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{핵심}
+    ``\textbf{완벽한 동시성}''이 아니라,
+    \textbf{``호출 오버헤드를 상수로 묶는다''}는 것이 핵심.
+  \end{block}
+  \vskip0.4em
+  {\footnotesize Q. MuJoCo-XLA vs Isaac Sim? 둘 다 ``정밀 물리를
+  GPU/TPU로 병렬화''하지만 \textbf{범위}가 다름: MuJoCo-XLA =
+  물리만(LCP 포함, 렌더링 없음, CPU MuJoCo와 \textbf{완전히 같은
+  물리}). Isaac Sim = 물리+렌더링+센서(RT 코어 필요, 물리 엔진도
+  NVIDIA Warp 기반). ``정밀 물리만 GPU로''면 MuJoCo-XLA,
+  ``물리+카메라로 판단하는 정책''이면 Isaac Sim.
+  }
+\end{frame}

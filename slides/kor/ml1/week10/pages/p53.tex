@@ -1,0 +1,30 @@
+\begin{frame}{전이학습: 처음부터 다시 배우지 않는다}
+  대규모 데이터(ImageNet, 수백만 장)로 \textbf{미리 학습된
+  CNN의 앞쪽 층}들은 선/모서리/질감 같은 \textbf{아주 범용적인}
+  패턴을 감지하도록 학습돼 있다 --- ``고양이를 구분하는
+  능력''이 아니라 \textbf{``이미지를 보는 능력''} 자체에 가깝다.
+  \kb{전이학습(Transfer Learning)}은 이 사전학습된 앞쪽
+  층을 \textbf{그대로 재사용}하고, 마지막 몇 층만 새 문제에 맞게
+  다시 학습시킨다:
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{특징 추출(feature extraction)}
+      \begin{itemize}
+        \item 사전학습된 층의 가중치를 \textbf{전부 고정
+          (freeze)}, \textbf{마지막 분류층만} 새로 학습
+        \item \textbf{데이터가 적을 때} 특히 유리 ---
+          새로 학습할 파라미터가 훨씬 적기 때문
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{미세조정(fine-tuning)}
+      \begin{itemize}
+        \item 사전학습된 가중치를 \textbf{학습의 시작점}으로만
+          쓰고, 전체(또는 뒤쪽 일부) 층을 \textbf{낮은 학습률}로
+          계속 학습
+        \item \textbf{새 데이터가 어느 정도 있을 때} 특징 추출보다
+          더 좋은 성능
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

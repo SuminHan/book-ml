@@ -1,0 +1,25 @@
+\begin{frame}{``정보의 전파''로 보는 수렴}
+  \kq{``왜 우변에 아직 안 푼 값이 들어가도 될까?''}
+  \vskip0.5em
+  답은 \kb{전파(propagation)} 직관. 5칸 GridWorld(칸 4가 목표,
+  걸음마다 $-1$, $\gamma = 0.9$)에서 ``오른쪽'' 정책을 평가하면:
+  sweep 1에서 ``목표가 가까울수록 $-1$''이라는 \textbf{약간
+  정확한} 정보가 퍼지고, sweep 2에서 \textbf{한 칸 더} 왼쪽으로
+  이동, 계속되면 $-1 - 0.9 - 0.9^2 - \cdots$ 의 꼬리 합으로
+  수렴.
+  \vskip0.5em
+  \begin{block}{경험칙}
+    \textbf{``정보는 한 sweep에 한 칸 전파된다.''} $\Rightarrow$
+    sweep 수 $\approx$ 목표까지 최대 거리 $\times$ (할인이
+    충분히 작아질 때까지의 횟수). \textbf{순환} MDP에서는
+    ``순환 한 바퀴 전파''.
+  \end{block}
+  {\footnotesize \textbf{손으로 한 sweep}: ``왼쪽'' 정책을 0에서
+  시작해 in-place로 돌리면 sweep 1 $\to$
+  $[-1.0000, -1.9000, -2.7100, -3.4390, 0]$, sweep 2 $\to$
+  $[-1.9000, -2.7100, \ldots]$ --- 첫 sweep에서 $-1$ 이 한 칸,
+  두 번째에서 $-1.9 = -1 + 0.9 \times (-1)$ 이 한 칸 전파.
+  수렴값 $-10$ 은 $\sum_{k=0}^{\infty} (-1)(0.9)^k
+  = \frac{-1}{1-0.9} = -10$ --- 벽에 막혀 왼쪽으로 밀리는
+  \textbf{무한 루프}의 가치(약 133 sweep).}
+\end{frame}

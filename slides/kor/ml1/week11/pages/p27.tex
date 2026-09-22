@@ -1,0 +1,15 @@
+\begin{frame}{BPTT 유도: 시점마다 ``(A) + (B)''}
+  손실을 \textbf{모든 시점}의 크로스엔트로피 합으로 놓는다:
+  \vskip0.4em
+  \[ L = -\sum_{t=1}^{T} \sum_{k} y_{t,k}^{\,\text{true}} \log p_{t,k} \]
+  {\footnotesize $p_t = \operatorname{softmax}(W_{hy} h_t + b_y)$ =
+  시점 $t$의 다음-문자 분포, $y_t^{\,\text{true}}$ = 원-핫 정답.}
+  \vskip0.4em
+  역전파는 \textbf{마지막 시점 $T$에서 첫 시점 1로} 순차적으로
+  내려간다. 핵심 --- 각 시점 $t$의 은닉 상태 그래디언트는
+  \textbf{두 부분의 합}:
+  \vskip0.4em
+  \[ \underbrace{W_{hy}^{\top}\big(p_t - y_t^{\,\text{true}}\big)}_{(A)\;\text{본 시점의 출력 오차}}
+     \;+\; \underbrace{W_{hh}^{\top}\Big[\frac{\partial L}{\partial h_{t+1}}
+     \odot (1 - h_{t+1}^{\,2})\Big]}_{(B)\;\text{시점 } t{+1} \text{에서 흘러온 그래디언트}} \]
+\end{frame}

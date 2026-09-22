@@ -1,0 +1,28 @@
+\begin{frame}{$w_{hh}$를 0.9로 키우면? --- 그리고 발산}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item 고정점은 $h^\ast \approx 0.853$으로 조금 높아짐
+        \item 증폭 인자 $0.9 \times (1 - 0.853^2) \approx 0.245$ ---
+          0.8 경우(0.263)보다 오히려 약간 \textbf{작아짐}
+        \item 둘 다 6단계 만에 고정점의 $10^{-3}$ 이내로 \textbf{정착}
+        \item ``\textbf{발산}''은 여전히 하지 않는다: 증폭 인자가 1보다
+          작기 때문
+        \item 스칼라 RNN은 $\tanh$의 범위 $[-1, 1]$에 갇혀 있어
+          발산 자체가 \textbf{불가능}
+      \end{itemize}
+      \vskip0.5em
+      \kq{단, 은닉 크기가 큰($H > 1$) RNN에서는 $W_{hh}$의
+      \textbf{고유값이 1보다 크면} $h_t$가 실제로 발산하거나
+      진동할 수 있다 --- 11.2절 ``자주 하는 실수''의 그래디언트
+      폭발과 같은 뿌리 (Pascanu et al., 2013).}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch11_1_scalar_convergence.png}
+      \vskip0.3em
+      {\footnotesize $w_{hh}=0.8$: 0.820으로, $w_{hh}=0.9$: 0.853으로
+      수렴 --- 약 6단계 만에 정착.}
+    \end{column}
+  \end{columns}
+\end{frame}

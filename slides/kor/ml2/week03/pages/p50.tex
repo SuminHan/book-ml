@@ -1,0 +1,23 @@
+\begin{frame}{벨만 기대방정식: 무한합을 재귀식으로}
+  $G_t$ 의 정의를 \textbf{한 스텝만} 풀어써보면:
+  \[
+  G_t = R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \cdots
+  = R_t + \gamma\big(R_{t+1} + \gamma R_{t+2} + \cdots\big)
+  = R_t + \gamma G_{t+1}
+  \]
+  즉 \kb{리턴은 ``지금 당장의 보상 + 할인된 다음 시점 리턴''으로
+  재귀적으로 쓸 수 있다}. 이 관찰을 $V^\pi$ 의 정의에 대입하면
+  (기댓값의 \textbf{선형성}을 이용):
+  \[
+  V^\pi(s)
+  = \mathbb{E}_\pi\big[R_t + \gamma G_{t+1} \mid s_t=s\big]
+  = \mathbb{E}_\pi\big[R_t + \gamma V^\pi(s_{t+1}) \mid s_t=s\big]
+  \]
+  \vskip0.6em
+  \begin{block}{이게 \kb{벨만 기대방정식}(Bellman expectation
+  equation)}
+    무한히 먼 미래까지 다 더해야 할 것 같던 $V^\pi(s)$ 가,
+    ``\textbf{지금 보상 + 다음 상태의 가치(할인됨)}''이라는
+    \kb{한 스텝짜리 재귀식}으로 압축된다.
+  \end{block}
+\end{frame}

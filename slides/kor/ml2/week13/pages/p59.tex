@@ -1,0 +1,23 @@
+\begin{frame}{역사적 일화: ``같은 코드, 다른 환경''이 표준 레시피}
+  ``환경 이름만 바꿔도 된다''는 경험은 교육적 편의가 아니라
+  심층 RL의 \textbf{산업 표준}:
+  \begin{itemize}
+    \item PPO 논문(Schulman et al., 2017)의 실험 섹션: \textbf{같은 PPO
+      코드로 MuJoCo 로봇 30여 종}(Walker2D, Hopper, Ant,
+      HalfCheetah, $\cdots$)을 훈련해 그 표를 냄 --- 연속제어 시대의
+      벤치마크 표.
+    \item ``물리엔진 + PPO'' 조합이 심층 RL의 제어 능력을 처음
+      \emph{검증 가능한} 형태로 만듦.
+    \item ``데이터를 병렬로 모은다''의 방향은 더 이르다 --- 비동기적
+      \kb{A3C}가 ``수많은 워커 프로세스가 트래젝터리를 병렬로 수집해
+      공유 정책망을 갱신한다''를 표준 레시피로 만듦.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{알고리즘은 환경에서 분리된다}
+    바로 이 구조가 2020$\sim$2021년 GPU 대량병렬(OpenAI A1 시연,
+    Isaac Gym ``하나의 GPU로 수천 개 환경'')을 가능하게 --- 알고리즘이
+    환경과 깔끔하게 분리되지 않았다면, 그런 시스템을 \emph{쓸 수
+    없게} 만드는 데도 그만큼의 시간이 걸렸을. 이 책 14$\sim$16장도
+    같은 구조: \textbf{알고리즘은 고정, 환경만 바꾸는 것}.
+  \end{block}
+\end{frame}

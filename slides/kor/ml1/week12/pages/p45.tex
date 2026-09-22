@@ -1,0 +1,32 @@
+\begin{frame}{$d_{model}$ 을 $h$로 나눈 이유}
+  \kq{헤드를 ``크게'' 만드는 것이 아니라 \textbf{``다'' 만드는
+  것}.}
+  \begin{itemize}
+    \item 헤드 수를 늘리되 헤드당 차원을 줄이지 않으면(각
+      헤드도 $d_{model}$ 차원 그대로), QKV 파라미터가 \textbf{헤드
+      수만큼 \emph{배}로} 늘어난다.
+    \item $d_k = d_{model}/h$ 로 나눠야 \textbf{파라미터 수가
+      \emph{단일 헤드와 (거의) 같다}}:
+  \end{itemize}
+  \[
+  \underbrace{h \times 3 \times d_{model} \times
+    \frac{d_{model}}{h}}_{\text{h 헤드의 QKV 합계}}
+  = 3\, d_{model}^2
+  \;=\;
+  \underbrace{3 \times d_{model} \times d_{model}}_{\text{단일
+  헤드 QKV}}
+  \]
+  \vskip0.3em
+  $d_{model}=512,\; h=8$ 으로 대면: $8 \times 3 \times 512
+  \times 64 = 786{,}432 = 3 \times 512 \times 512$ —
+  \textbf{정확히 같다}. (여기에 $W_O$(512$\times$512 =
+  262,144)만 더해진다.)
+  \vskip0.3em
+  \begin{block}{설계의 요지}
+    \textbf{파라미터 비용을 거의 그대로 유지한 채 독립적 관점의
+    수를 $h$배로 사는} 것 — 더 많은 파라미터가 아니라
+    \emph{같은} 파라미터를 \textbf{재배분}하는 설계.
+    (12.2절 ``$d_k$ 는 임베딩 차원이 아니라 \emph{헤드당} Key
+    차원''이라는 사실의 설계적 귀결.)
+  \end{block}
+\end{frame}

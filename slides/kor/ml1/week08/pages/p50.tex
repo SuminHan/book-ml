@@ -1,0 +1,32 @@
+\begin{frame}{유도 템플릿 ③: ``두 항의 구조'' (적합도 + 단순성)}
+  \scriptsize
+  \begin{tabular}{@{}llll@{}}
+    \toprule
+    모델 & 목적함수 & 적합도 / 단순성 항 & 노브(트레이드오프) \\
+    \midrule
+    Ridge (Ch06) & $\ell_{\text{MSE}}+\frac{\lambda}{2}\|w\|^2$
+      & $\ell_{\text{MSE}}$: 데이터에 맞추기 \; / \;
+        $\|w\|^2$: 가중치 축소(분산$\downarrow$)
+      & $\lambda$ (0$\to$무정규화, $\infty\to w=0$) \\
+    Lasso (Ch06) & $\ell_{\text{MSE}}+\lambda\|w\|_1$
+      & 위와 같음 \; / \; $\|w\|_1$: \textbf{정확히 0} 만드는
+        켄(kink) & $\lambda$ \\
+    소프트 마진 SVM (Ch05.2) & $\tfrac12\|w\|^2+C\sum_i\xi_i$
+      & $C\sum\xi_i$: 위반 사들이기 \; / \;
+        $\tfrac12\|w\|^2$: 마진 최대화
+      & $C$ (0$\to w=0$, $\infty\to$하드마진) \\
+    GBDT (Ch07.3) & (반복) 잔차에 트리 적합 + $\eta$로 축소
+      & 트리: 잔차 설명 \; / \; $\eta$(학습률), $n$(트리 수)
+      & $\eta$, $n$ \\
+    kNN (Ch04) & \textit{(파라미터 없음 --- 전량 memorize)}
+      & ``적합'' = 전량 암기 \; / \; $k$: 이웃 평균으로
+        매끄럽게 & $k$ (1$\to$암기, $\infty\to$다수 클래스) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{block}{패턴 한 줄}
+    \kq{적합도 항은 ``데이터에 잘 맞추는 것'', 단순성 항은
+    ``모델을 단순하게 유지하는 것''을 재고, 노브 하나가 둘의
+    비중을 조절한다.}
+  \end{block}
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}{자주 하는 실수 (1/3)}
+  \begin{itemize}
+    \item \kb{갱신 뒤 \texttt{s, a = ns, na}를 \texttt{s = ns}만 하면
+      ``SARSA''가 아니다.}
+      다섯 번째 요소 $a'$는 ``다음 상태에서 \textbf{실제로 고른} 행동''.
+      $s$는 갱신하고 $a$를 안 하면, 다음 \texttt{env.step(a)}는
+      \textbf{새 상태에 옛 행동}을 실행하게 되고, 이전 갱신의 목표값에
+      쓰인 $Q(s',na)$는 실제로 이어지는 궤적과 맞지 않게 된다.
+      ($s,a,r,s',a'$가 \textbf{한 줄의 실제 전이}를 나타내지 않으면,
+      그 갱신은 ``한 적도 없는 경로''의 가치를 학습시킨다.)
+  \end{itemize}
+  \vskip0.5em
+  \begin{itemize}
+    \item \kb{``$\gamma$는 항상 1보다 작아야 한다''고 배운다.}
+      에피소드 과업(유한히 끝나는 CliffWalking처럼)에서는 리턴이 원래
+      유한하므로 $\gamma = 1.0$도 문제없다 --- 이 실습도 6.3절과 비교
+      가능하게 $\gamma = 1.0$ 사용. ``$\gamma=1$이면 무한 리턴의 합이
+      발산''이라는 걱정은 끝이 없는 \textbf{continuing 과업}의 이야기.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}[fragile]{실습: 깊이를 늘리면 — U자 곡선}
+\begin{lstlisting}
+depths = [1, 2, 3, 4, 5, 6, 8, 12, None]
+for d in depths:
+    m = DecisionTreeClassifier(max_depth=d, random_state=0) \
+              .fit(X_train, y_train)
+    print(f"max_depth={str(d):>4}: train={m.score(X_train, y_train):.3f} "
+          f"test={m.score(X_test, y_test):.3f} leaves={m.get_n_leaves()}")
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize
+  \texttt{max\_depth=1: train=0.930 test=0.895 leaves=2} \quad
+  \texttt{max\_depth=2: train=0.960 test=0.947 leaves=4} \\
+  \texttt{max\_depth=3: train=0.967 test=0.947 leaves=7} \quad
+  \texttt{max\_depth=8: train=1.000 test=0.912 leaves=19} \\
+  \texttt{max\_depth=None: train=1.000 test=0.912 leaves=19}}
+  \vskip0.4em
+  {\footnotesize \texttt{max\_depth=4}는 test 0.947, \texttt{=5}는 0.936,
+  \texttt{=6}는 0.947, \texttt{=12}도 test 0.912.}
+\end{frame}

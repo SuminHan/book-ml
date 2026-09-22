@@ -1,0 +1,25 @@
+\begin{frame}{유효 시계: 반대로 쓰기 + ``5\%''의 의미}
+  \begin{block}{반대로 쓰는 법(실전 팁)}
+    유효 시계 공식을 뒤집으면 $\gamma = \epsilon^{1/H}$ 다.
+    ``에이전트가 $H$ 스텝을 볼 수 있게 하라''고 정하면 $\gamma$ 가
+    \textbf{자동으로} 결정된다:
+    \begin{itemize}
+      \item 500스텝짜리 에피소드를 다 보려면 $\gamma
+        = 0.05^{1/500} \approx 0.994$.
+      \item 100스텝짜리 환경이면 $\gamma = 0.05^{1/100} \approx 0.97$.
+    \end{itemize}
+    ``\textbf{환경의 수명에 $\gamma$ 를 맞춘다}''는 실전 관행이 바로
+    이 식에서 온다.
+  \end{block}
+  \vskip0.5em
+  \begin{block}{``5\%로 깎였다''가 왜 ``사실상 무시''인가?}
+    $H$ 스텝 \textbf{이후}에 들어오는 \textbf{모든} 보상의 합은, 그
+    직전 스텝의 보상에 $\frac{\epsilon}{1-\gamma}$ 를 곱한 것
+    \textbf{이상으로 클 수 없다}. $\gamma = 0.9$,
+    $\epsilon = 0.05$ 이면 28스텝 이후의 \textbf{모든} 미래 보상의
+    합이 28스텝째 보상의 $0.05/0.1 = 0.5$ 배를 넘지 못한다.
+    \vskip0.2em
+    {\small ``무한히 먼 미래''가 실제로는 \textbf{한 스텝짜리 상한}에
+    압축되는 것이다.}
+  \end{block}
+\end{frame}

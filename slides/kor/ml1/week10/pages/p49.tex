@@ -1,0 +1,26 @@
+\begin{frame}{IoU: 박스의 겹침을 재는 법}
+  탐지 모델은 같은 사물에 \textbf{겹치는 박스 여러 개}를 낸다.
+  그래서 학습이 \textbf{아닌} 고정 후처리 \kb{NMS(Non-Maximum
+  Suppression, 비최대 억제)}가 붙고, 여기서 ``겹기''는
+  \kb{IoU(Intersection over Union)}로 잰다:
+  \[ \text{IoU}(A, B) = \frac{|A \cap B|}{|A \cup B|}
+     = \frac{\text{겹치는 면적}}{\text{합쳐진(겹침 한 번만) 면적}} \]
+  \begin{itemize}
+    \item $[0,1]$ 에 있고 \textbf{1이면 완전 일치}
+    \item Week 3의 \kb{재카드 지수}(Jaccard index)가
+      \textbf{면적 버전}으로 ``박스 두 개의 비슷함''을 재는 것
+  \end{itemize}
+  \vskip0.4em
+  \textbf{손으로}: $A=[0,0,10,10]$, $B=[1,1,11,11]$ ---
+  교집합 $[1,1,10,10]$ $\to$ 면적 $9\times9=81$,
+  합집합 $100+100-81=119$.
+  \[ \text{IoU} = 81/119 \approx \mathbf{0.68} \]
+  \textbf{왜 IoU인가} --- ``교집합/작은 박스''나 ``박스 중심거리''가
+  안 되는 이유는 \kb{스케일 불변성}: 중심거리는 박스가 크면 같은
+  겹기라도 ``멀어'' 보이고, 교집합/합집합 비율은 박스를 함께
+  키우면(스케일) \textbf{변하지 않음}.
+  {\footnotesize 탐지 \textbf{훈련 라벨링}에서도 쓰인다 ---
+  예측 박스가 정답과 IoU $\ge 0.5$면 ``탐지 성공'' 정밀도
+  평가 규칙이 PASCAL VOC·COCO \textbf{표준}. 같은 함수가
+  학습·평가 양쪽에 들어가는 셈.}
+\end{frame}

@@ -1,0 +1,16 @@
+\begin{frame}{10차원 상태에서 읽을 세 가지}
+  \begin{enumerate}
+    \item \textbf{각도를 (cos, sin) 쌍으로 준다} --- $\theta$ 와
+      $\theta+2\pi$ 는 물리적으로 같은 자세인데, 원래 각도 $\theta$ 는
+      $\pm\pi$ 경계에서 숫자가 급격히 점프하는 \emph{불연속} 특징.
+      cos/sin은 매끄러운 주기함수라 신경망이 ``같은 자세''를 같은
+      입력으로 봄 --- Pendulum이 $(\cos\theta, \sin\theta, \dot\theta)$ 인
+      이유(Week 1, 11.2절)와 \textbf{정확히 같은 설계 원칙}:
+      \emph{신경망이 다루기 쉬운 특징을 주자}.
+    \item \textbf{환경이 ``오차''를 obs[8:10]으로 직접 준다} ---
+      아래 베이스라인의 1줄 규칙 \texttt{action = -k * obs[8:10]} 이
+      바로 이 벡터를 씀.
+    \item \textbf{목표 지점은 반경 0.2 m 원판 안에서 버림표본법으로
+      놓임}.
+  \end{enumerate}
+\end{frame}

@@ -1,0 +1,25 @@
+\begin{frame}{자주 하는 실수: bias(절편)까지 정규화}
+  코드가 \texttt{reg = lam*w[j] if j > 0 else 0}로 bias를 굳이 건너뛰는
+  이유. bias까지 정규화($D=I$)하면 같은 $\lambda=2$에서
+  $w^{*}\_{\text{wrong}}=(X^TX+2I)^{-1}X^Ty\approx[0.818,\ 1.818]$ — bias가
+  1에서 0.818로 \textbf{불필요하게} 끌려 내려감.
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    $\lambda$ & 올바른 $D=\mathrm{diag}(0,1)$ & 틀린 $D=I$(bias도 정규화) \\
+    \midrule
+    2 & $[3.00,\ 1.00]$ & $[0.82,\ 1.82]$ \\
+    10 & $[4.33,\ 0.33]$ & $[0.57,\ 1.28]$ \\
+    \bottomrule
+  \end{tabular}
+  \par\vskip0.5em\normalsize
+  \begin{block}{왜 안 좋은가}
+    bias는 ``모델 복잡함''이 아니라 데이터 전체의 \textbf{평균적 높이}.
+    기울기가 눌리면 bias가 \emph{보상하며 더 커져야} 한다(3.00$\to$4.33)는데,
+    bias까지 정규화하면 $\lambda$가 커질수록 0 쪽으로 \emph{반대 방향}으로
+    끌려가(0.82$\to$0.57) $y$의 평균이 원점에서 먼 데이터(주택 가격)에서
+    체계적으로 \emph{아래}로 치우친다.
+  \end{block}
+  {\footnotesize scikit-learn \texttt{Ridge}, \texttt{Lasso} 등은 기본적으로
+  bias/intercept를 정규화 대상에서 제외.}
+\end{frame}

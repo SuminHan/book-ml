@@ -1,0 +1,26 @@
+\begin{frame}[fragile]{Dyna-Q 코드: 경험 $\to$ 학습 $\to$ 모델 저장 $\to$ 계획}
+  \begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+def dyna_q(env_step, n_states, n_actions, n_episodes,
+           planning_steps, alpha, gamma, epsilon, start_state):
+    Q = [[0.0] * n_actions for _ in range(n_states)]
+    model = {}  # (s, a) -> (r, s')  관찰한 것을 그대로 저장
+    for _ in range(n_episodes):
+        s = start_state
+        for _ in range(100):
+            a = random.randrange(n_actions) if random.random() < epsilon \
+                else max(range(n_actions), key=lambda x: Q[s][x])
+            ns, r, done = env_step(s, a)
+            Q[s][a] += alpha * (r + gamma * max(Q[ns]) - Q[s][a])  # 1) 실제 학습
+            model[(s, a)] = (r, ns)                                 # 2) 모델 갱신
+            for _ in range(planning_steps):                         # 3) 계획
+                (ps, pa), (pr, pns) = random.choice(list(model.items()))
+                Q[ps][pa] += alpha * (pr + gamma * max(Q[pns]) - Q[ps][pa])
+            s = ns
+            if done:
+                break
+    return Q
+  \end{lstlisting}
+  {\footnotesize 결정론적 환경 가정(같은 $(s,a)$은 항상 같은
+  $(r,s')$을 냄). \texttt{planning\_steps}가 클수록 실제 스텝 1회당
+  경험을 모델을 통해 ``몇 번이고 복습''.}
+\end{frame}

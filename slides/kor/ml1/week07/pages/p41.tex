@@ -1,0 +1,20 @@
+\begin{frame}{GBDT: 순차적으로 잔차를 추격}
+  \begin{itemize}
+    \item 목표: $T$개 트리 $f_1,\dots,f_T$를 \textbf{순차적으로 더}해
+      예측 $F_T(x) = \sum_{t=1}^{T} f_t(x)$
+    \item $t$번째 트리 학습 시: 지금까지 쌓은 예측 $F_{t-1}$의 \textbf{잔차}
+      \[ r^{(i)} = y^{(i)} - F_{t-1}(x^{(i)}) \]
+      을 \textbf{새 목표값}으로 삼아 그 잔차를 예측하는 트리를 학습
+  \end{itemize}
+  \vskip0.6em
+  \begin{itemize}
+    \item \kb{learning\_rate}(축소율, shrinkage): 각 트리의 기여를 일부러
+      \textbf{줄여서} 한 트리가 과적합하는 것을 막고, 여러 트리가 조금씩
+      나눠서 학습하게 함 — Week 2 경사하강법의 \textbf{학습률}과 같은 역할
+    \item ``잔차를 향해 조금씩 이동'' = \textbf{함수 공간에서의 경사하강법}
+      $\to$ 그래서 이름이 \textbf{gradient} boosting
+    \item \kb{XGBoost}(2016), \kb{LightGBM}(2017) = 실무 최적화 라이브러리,
+      지금도 \textbf{정형(tabular) 데이터 대회(Kaggle)}에서 가장 자주
+      우승하는 축
+  \end{itemize}
+\end{frame}

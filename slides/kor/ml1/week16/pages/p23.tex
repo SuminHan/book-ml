@@ -1,0 +1,28 @@
+\begin{frame}{확인 문제 1~2}
+  \textbf{1.} CIFAR-10(60,000개 32$\times$32) CNN으로 test 0.82를
+  내고 ``신경망이 GBDT보다 좋다''고 결론낸 팀 — 이 결론이 성립하려면
+  \textbf{먼저 확인해야 할 숫자 하나}와 이유?
+  \vskip0.3em
+  \small
+  \begin{block}{답}
+    \textbf{같은 flatten(3$\times$32$\times$32=3,072-dim) 데이터에
+    GBDT를 돌려 얻은 test 정확도}. ``좋다''는 것은 GBDT보다
+    \textit{상대}로 좋은지를 보여줘야 성립(2층 베이스라인).
+    CIFAR 32$\times$32를 flatten하면 3,072차원(64차원 digits보다
+    훨씬 고차원)이라 GBDT가 CNN에 육박할 수도 있음 — 그 비교 없이는
+    ``신경망이 좋다''는 1층(무작위)만 이긴 것에 그칠 수 있다.
+  \end{block}
+  \vskip0.3em
+  \textbf{2.} Ch10.1 공식으로, 입력 3$\times$32$\times$32에
+  \texttt{Conv2d(3,64,3, padding=1)} 한 층의 파라미터 수를 계산하고,
+  ``flatten FC와 달리 해상도와 무관하다''는 것을 $S{=}32$에서
+  flatten($\to$256)과 비교해 보여라.
+  \vskip0.3em
+  \begin{block}{답}
+    conv: $3\times3\times3\times64 + 64 = 1{,}792$ (해상도 32와
+    무관). flatten FC(3,072$\to$256): $3{,}072\times256 + 256 =
+    786{,}688$ — conv의 \textbf{약 439배}. 해상도 64가 되면 FC는
+    $12{,}288\times256$으로 4배가 되는데 conv는 그대로 1,792 —
+    \textbf{상수 vs 제곱}이 ``커질수록 CNN''의 근거.
+  \end{block}
+\end{frame}

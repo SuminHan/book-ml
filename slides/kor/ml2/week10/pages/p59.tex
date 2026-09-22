@@ -1,0 +1,37 @@
+\begin{frame}{자주 묻는 질문 (10.3)}
+  \small
+  \begin{itemize}
+    \item \kb{Q: Actor와 Critic은 왜 따로 학습하나? 하나로
+      합칠 수는 없나?}
+      서로 \textbf{다른 것을 예측} --- Actor: ``어떤 행동을 할
+      것인가''(정책), Critic: ``지금 상태가 얼마나 좋은가''
+      (가치함수). 실제 구현은 \textbf{앞부분(특징 추출 층)을
+      공유}하고 마지막 출력층만 다르게 --- 10.2
+      \texttt{PolicyNet}에 가치 예측 출력 하나만 추가하면
+      간단한 Actor-Critic.
+    \item \kb{Q: $G_t - V(s_t)$ 를 빼도 기댓값이 그대로라는 게
+      왜 참인가?}
+      $V(s_t)$ 는 \textbf{행동 $a_t$ 와 무관하게 상태 $s_t$
+      만으로} 결정 --- ``어떤 행동을 고르든 똑같이 빼지는
+      상수''. 기댓값 관점에서 편향 없음. 샘플 하나하나로는
+      $G_t$ 의 큰 변동폭이 $V(s_t)$ 만큼 \textbf{상쇄}
+      $\to$ 분산은 확실히 감소.
+    \item \kb{Q: on-policy인가, off-policy인가?}
+      이 절의 구현은 \textbf{on-policy} --- Actor와 Critic이 모두
+      \textbf{현재 정책}이 만든 경험에서만 학습, 경험 재생
+      버퍼 \textbf{없음}. (off-policy Actor-Critic --- DQN +
+      정책 결합, Week 9 경험 재생 변형 --- 도 존재) 이번 학기
+      표준 흐름 \kb{A2C $\to$ Week 11 PPO}는 \textbf{on-policy}
+      패밀리 안에서 ``분산을 줄이는'' 방향으로 발전.
+    \item \kb{Q: 이산 공간인데 굳이 Actor-Critic? DQN이면
+      됐지.}
+      맞는 말에 가깝다 --- 이산이면 DQN이 더 데이터 효율적일
+      때가 많음. Actor-Critic이 \textbf{필수}인 순간:
+      (1) \textbf{연속 행동공간}(Week 13--14 로봇)에서
+      $\max_a Q(s,a)$ 를 계산할 수 없을 때,
+      (2) \textbf{탐색 정책} 자체를 확률적으로 학습하고 싶을
+      때. 게다가 $A_t$ 는 \textbf{PPO의 입력}이므로 PPO까지
+      이 구조를 실무적으로 익숙해져 있어야 함.
+  \end{itemize}
+  \normalsize
+\end{frame}

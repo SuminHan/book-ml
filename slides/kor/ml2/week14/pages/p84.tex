@@ -1,0 +1,40 @@
+% ===== wrap-up =====
+\begin{frame}{이번 주차 정리}
+  \small
+  \begin{enumerate}
+    \item \kb{14.1 — 정밀 물리를 손으로} --- XML로 로봇 정의
+      ($MjModel$\,/\,$MjData$\,/\,$mj\_step$), 무작위 vs PD
+      200스텝($|\theta|$: 2.97 vs 1.69/최종 -0.065),
+      \textbf{D항 없이는 관성 과속 진동·부호 오류면 발산}.
+      30줄 래퍼로 ``환경이 바뀌어도 알고리즘은 그대로''
+      \textbf{시연}. 정밀의 뿌리 = 매 스텝 \textbf{LCP 접촉}
+      해결.
+    \item \kb{14.2 — 수천 배의 기원} --- 한 환경은 \textbf{시간
+      방향 의존성} 때문에 병렬화 불가, 병렬의 대상은
+      \textbf{환경(초깃값이 다른 복제본)}. ``모든 상태를 한
+      텐서에, \textbf{커널 한 번}'' --- CNN과 같은 뼈대(공유는
+      코드, 차이는 상태). numpy 1,000 진자 실측 \textbf{76배}.
+      Amdahl: 순차 부분이 상한.
+    \item \kb{14.3 — 두 축으로 고르기} ---
+      \textbf{정밀도(물리 vs 센서)} $\times$ \textbf{속도}
+      (총 스텝 수 $\div$ 초당 스텝 수). 같은 CPU에서
+      \textbf{40배}, 10억 스텝이면 CPU \textbf{2일} vs GPU
+      \textbf{1.3분} $\Rightarrow$ 1억+ 스텝에서야 GPU 필수.
+      30초 결정 절차: \textbf{정밀도 = 필요충분, 속도 = 비용
+      절감}.
+    \item \kb{14.4 — 산업 규모} --- Waymo Onboard/Offboard =
+      \kb{policy iteration/Dyna}의 산업 버전. 시나리오를 채우는
+      \kb{SceneDiffuser} = ``현실적 교통이란 무엇인가''를 배운
+      \textbf{생성모델}(ML1 15.2 diffusion의 대상 교체).
+  \end{enumerate}
+  \vskip0.6em
+  \begin{block}{다음 주 --- Week 15. 모델기반 RL과 몬테카를로
+  트리 탐색(MCTS)}
+    이번 장은 \textbf{사람이 쓴 물리 모델}이 주어지는 문제였다.
+    다음 장은 그 물리 모델이 \textbf{주어지지 않는} 문제 ---
+    모델이 \textit{학습될 대상}이 되는 경우(Dyna, MCTS,
+    World Models)로 넘어간다. 시뮬레이터가 주는 경험인지,
+    배운 모델이 주는 경험인지에 따라 \textbf{경험을 모으는
+    방식}이 어떻게 달라지는지 보게 된다.
+  \end{block}
+\end{frame}

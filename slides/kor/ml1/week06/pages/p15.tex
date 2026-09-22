@@ -1,0 +1,28 @@
+\begin{frame}[fragile]{실습: L1과 L2의 ``정확히 0'' 차이}
+  \small
+\begin{lstlisting}
+from sklearn.linear_model import Ridge, Lasso
+x1 = np.array([1,2,3,4,5,6], dtype=float)
+x2 = np.array([5,3,8,1,9,2], dtype=float)   # y와 무관한 잡음
+y  = 2 * x1 + 1
+X  = np.column_stack([x1, x2])
+for alpha in [0.1, 1.0, 5.0]:
+    ridge = Ridge(alpha=alpha).fit(X, y)
+    lasso = Lasso(alpha=alpha).fit(X, y)
+    print(f"alpha={alpha}: ridge x2={ridge.coef_[1]:.4f}, "
+          f"lasso x2={lasso.coef_[1]:.4f}")
+\end{lstlisting}
+\begin{columns}[T]
+  \begin{column}{0.5\textwidth}
+    \kb{Ridge}: $x_2$ 계수는 점점 작아지지만
+    \textbf{정확히 0이 아님}
+    (-0.0004 $\to$ -0.0040 $\to$ -0.0153)
+  \end{column}
+  \begin{column}{0.5\textwidth}
+    \kb{Lasso}: 세 $\alpha$ 모두 $x_2$ 계수를 \textbf{정확히
+    0.0000}으로 — 잡음 특징을 아예 ``제거''
+  \end{column}
+\end{columns}
+  {\footnotesize 실전 데이터에서 Lasso가 이런 특징들의 계수를 0으로
+  만들어주는 것이 곧 ``특징 선택을 자동으로 해낸다''의 실제 의미.}
+\end{frame}

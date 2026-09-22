@@ -1,0 +1,30 @@
+% ============================================================
+\section{4.4 GMM, EM 알고리즘, 그리고 LDA}
+\begin{frame}{닭이 먼저냐 달걀이 먼저냐: 잠재변수 문제}
+  4.3절 k-means는 각 점을 \textbf{딱 하나의} 클러스터에 배정
+  (\kb{하드 할당}). 실제 데이터는 경계가 \textbf{모호}한 경우가
+  많다 --- 어떤 점은 ``A에 60\%, B에 40\%'' 속한다고 보는 게 더
+  자연스러울 수 있다.
+  \vskip0.8em
+  \begin{itemize}
+    \item \kb{가우시안 혼합모델(GMM)}: 각 클러스터를
+      \textbf{정규분포}로 표현(Week 3 GDA와 같은 가정)하고,
+      각 점이 어느 클러스터에서 왔는지를 \textbf{확률}로
+      표현(소프트 할당)
+    \item 문제는 각 점의 \textbf{진짜} 클러스터 $z$가 데이터에
+      \textbf{관측되지 않음}(\kb{잠재변수}, latent variable)
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{순환}
+    \begin{itemize}\small
+      \item $z$(진짜 클러스터)를 \textbf{안다면} $\to$ 각
+        클러스터의 평균·분산 구하기 \textbf{쉬움}(GDA처럼)
+      \item 평균·분산을 \textbf{안다면} $\to$ 각 점의
+        \textbf{사후확률} $z$ 구하기 \textbf{쉬움}(베이즈 정리)
+      \item \textbf{둘 다 모른다} = 닭 vs 달걀의 순환
+    \end{itemize}
+  \end{block}
+  EM은 이 순환을 \textbf{반복}으로 풀어낸다: 하나를 (아무 값으로)
+  고정 $\to$ 다른 하나를 구함 $\to$ 그걸로 다시 처음 것을 고침,
+  \textbf{값이 더 이상 바뀌지 않을 때까지}.
+\end{frame}

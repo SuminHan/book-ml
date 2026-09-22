@@ -1,0 +1,34 @@
+\begin{frame}{배운 Q표: 경로를 읽어보자}
+  1000에피소드 주 학습 결과. 두 칸만 떼어내도 스토리가 읽힌다:
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    상태 & Q(위) & Q(오른쪽) & Q(아래) & Q(왼쪽) \\
+    \midrule
+    $(3,0)$ 출발 & $-21.2$ & $-124.7$ & $-27.2$ & $-35.5$ \\
+    $(2,1)$ 절벽 옆 & $-17.1$ & $-59.0$ & $-146.5$ & $-20.1$ \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item $(3,0)$에서 \texttt{right} $= -124.7$ ---
+          ``여기서 절벽 방향으로 가겠다는 가치에 \textbf{추락 위험 전체}가
+          가격에 들어 있다'' ($\varepsilon$-greedy 관점의 가치 평가).
+        \item $(2,1)$에서 \texttt{down} $= -146.5$는 $-100$보다도 작음 ---
+          추락 후 \textbf{출발점으로 돌아가 다시 걸어와야 하는} 대가까지
+          반영된 값.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch06_2_sarsa_qtable.png}
+      \vskip0.3em
+      {\footnotesize 칸 색 = $\max_a Q(s,a)$(어두울수록 낮음),
+      화살표 = 탐욕 행동. 파랑 실선 = SARSA가 배운 17스텝 안전 경로,
+      빨강 점선 = $\gamma=1$ 최적 13스텝 경로. 검은 칸 = 절벽.}
+    \end{column}
+  \end{columns}
+\end{frame}

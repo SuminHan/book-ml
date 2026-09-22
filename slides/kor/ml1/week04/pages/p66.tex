@@ -1,0 +1,23 @@
+\begin{frame}{EM 알고리즘: M-step}
+  \kb{M-step (Maximization)} --- 방금 구한 책임값을
+  \textbf{``가중치''}로 삼아, 각 클러스터의 파라미터를
+  \textbf{다시 추정} --- $\gamma_{ik}$가 클수록 그 점이
+  $\mu_k, \sigma_k^2$ 추정에 더 크게 기여:
+  \[
+  \mu_k = \frac{\sum_i \gamma_{ik} x_i}{\sum_i \gamma_{ik}},
+  \qquad
+  \sigma_k^2 = \frac{\sum_i \gamma_{ik}(x_i-\mu_k)^2}{\sum_i \gamma_{ik}},
+  \qquad
+  \pi_k = \frac{\sum_i \gamma_{ik}}{m}
+  \]
+  \vskip0.6em
+  \begin{block}{한 번 더 천천히 보면 --- 정말 새 수식이 아님}
+    ``라벨이 \textbf{전부 $k$}인 점들의 \textbf{평균·분산·
+    비율}''(Week 3의 \textbf{닫힌 형태 MLE})에서, 각 점의
+    ``소속 여부''($0$ 또는 $1$)를 \textbf{책임값
+    $\gamma_{ik}$}(0과 1 사이의 실수)로 \textbf{바꾼 것}뿐.
+    E-step = ``\textbf{하드 라벨 대신 소프트 라벨을 채워넣는}''
+    단계, M-step = ``\textbf{소프트 라벨이 주어졌을 때의 닫힌
+    형태 MLE}'' --- \textbf{EM의 전부가 이 한 문장}.
+  \end{block}
+\end{frame}

@@ -1,0 +1,23 @@
+\begin{frame}{자주 하는 실수: ``벡터 길이가 모두 비슷하다''고}
+  \begin{itemize}
+    \item ``임베딩 벡터는 모두 \textbf{같은 길이}(노름)라 코사인으로
+      비교해도 된다''는 믿음은 \textbf{틀림} --- word2vec 임베딩의
+      \textbf{노름은 서로 다름}(위 실험: 사자는=2.88, 사과는=2.00).
+    \item 원인: 학습 중 \textbf{빈도가 높은 단어가 더 많이
+      업데이트}되어 길어짐 (빈도 $\propto$ 노름의 경향).
+    \item \kb{코사인 유사도}는 노름을 제거한 \textbf{각도만} 측정 ---
+      ``의미 유사도''를 재기엔 적합.
+    \item 그러나 \kb{유사도 연산}($\boldsymbol{a} - \boldsymbol{b} + \boldsymbol{c}$)
+      할 때는, \textbf{노름 차이가 병렬 4각형의 ``닫힘''에 영향}을
+      준다는 점을 기억 --- ``왕 $-$ 남자 $+$ 여자''가 정확히 여왕에
+      닿으려면 ``남자$\to$왕''과 ``여자$\to$여왕''의 \textbf{노름이
+      비슷}해야 한다.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{실용적 정리}
+    \textbf{비슷한 단어 찾기}: 코사인 유사도 (노름 무시) \; / \;
+    \textbf{유사도 연산(analogy)}: 노름 차이를 주의.
+    \par 실전에서는 \textbf{단위벡터로 정규화}한 뒤 analogy ---
+    ``빈도 효과'' 제거로 정밀도 상향.
+  \end{block}
+\end{frame}

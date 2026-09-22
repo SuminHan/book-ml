@@ -1,0 +1,32 @@
+\begin{frame}{실습: CartPole을 ``상상 속에서만'' 조종}
+  이 절의 노트북은 위 아이디어를 \textbf{CartPole}으로 아주
+  작게 재현:
+  \begin{enumerate}
+    \item \textbf{무작위 행동}으로 모은
+      $(s_t, a_t, s_{t+1})$ \textbf{9,297개}로 작은 MLP
+      \textbf{다이내믹스 모델}을 80 epoch 학습
+    \item 1스텝 예측 오차: 각도 기준 $\theta$ RMSE
+      \textbf{0.067 rad (0 epoch) $\to$ 0.0013 rad (79
+      epoch)}
+  \end{enumerate}
+  \vskip0.6em
+  그다음부터는 실제 환경(\texttt{env.step})을 \textbf{한 번도
+  부르지 않고}, 이 모델 \textbf{안에서만} 정책을 굴려 봄
+  (``상상 롤아웃'', \texttt{imagine}):
+  \vskip0.5em
+  \small
+  \begin{tabular}{@{}lllll@{}}
+    \toprule
+    & \textbf{고정 행동 1} & \textbf{고정 행동 2} &
+    \textbf{손으로 짠 선형 제어} & \textbf{부호 뒤집은 고장난 제어} \\
+    \midrule
+    \textbf{생존 스텝(상상)} & 8 & 10 & 100 & 8 \\
+    \textbf{생존 스텝(실제)} & 8 & 10 & 100 & 8 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.7em
+  \begin{block}{네 자리 \textbf{모두 정확히 일치}}
+    \textbf{학습된 모델이 실제 환경의 동역학을 충분히 잘
+    복제}했다는 뜻.
+  \end{block}
+\end{frame}

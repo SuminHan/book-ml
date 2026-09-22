@@ -1,0 +1,27 @@
+\begin{frame}{확인 문제 (14.4): 무작위 대신 생성모델}
+  ``Offboard 루프에 시나리오를 채운다''에서,
+  \textbf{완전 무작위 샘플링}이 diffusion 같은 생성모델을
+  \textbf{대신할 수 없는 이유}:
+  \begin{enumerate}
+    \item 각 에이전트를 \textbf{독립적으로} 배치하면
+      \textbf{상관 관계}가 망가진다 ---
+      ``차선이 같은 차량의 추종'', ``보행자의 동시 이동'' 같은
+      결합 구조가 사라져 \textbf{비현실적인 교통}
+      (한 차선 10대 겹침)까지 생성
+  \end{enumerate}
+  \vskip0.5em
+  \begin{itemize}
+    \item \kb{로그 리플레이}로는 \textbf{희귀 상황의 커버리지}가
+      부족 --- ``실제로 일어났던 것뿐''이라, 바로 테스트하고 싶은
+      상황(주차 차량 사이에서 보행자 돌출)은 거의 없
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{연결: World Model(15.4)과의 공통점}
+    15.4 World Model은 \textbf{학습된 스텝 다이내믹스 모델}
+    (다음 상태 예측)로 경험을 만들고, 자율주행 Offboard는
+    \textbf{물리 시뮬레이터 + 학습된 장면 분포}로 경험을 만든다.
+    둘 다 \textbf{``학습된 모델''이 ``현실적 상황 생성''}을
+    대신하는 것 --- 학습의 대상(스텝 vs 장면 분포)만 다를
+    뿐이다.
+  \end{block}
+\end{frame}

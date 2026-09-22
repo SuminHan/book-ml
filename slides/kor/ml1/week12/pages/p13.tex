@@ -1,0 +1,24 @@
+\begin{frame}{A/B 비교: 변환 없이 Q=K=V=X로 쓰면}
+  같은 2단어 예에서 \textbf{변환 없이} $Q = K = V = X$
+  ($X=\begin{pmatrix}1&0\\0&1\end{pmatrix}$)로 어텐션을 돌려본다:
+  점수 $XX^T = \begin{pmatrix}1&0\\0&1\end{pmatrix}$
+  $\to$ $\sqrt{2}$ 스케일링 후 (0.707, 0) / (0, 0.707)
+  $\to$ softmax 후 \textbf{(0.670, 0.330) / (0.330, 0.670)}
+  $\to$ 출력: 단어 1 = (0.670, 0.330), 단어 2 = (0.330, 0.670).
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    경우 & 어텐션 가중치 (단어 1 행) & 단어 1의 출력 \\
+    \midrule
+    $Q=K=V=X$ (변환 없음) & (0.670, 0.330) & (0.670, 0.330) \\
+    학습된 $W_Q, W_K, W_V$ & (0.587, 0.413) & (1.587, 1.413) \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  \begin{center}
+  \includegraphics[width=0.6\linewidth]{ch12_1_qkv_weights.png}
+  \end{center}
+  {\footnotesize 두 경우 모두 대각선이 우세하지만 가중치의
+  ``기울어짐'' 정도가 다르다.}
+\end{frame}

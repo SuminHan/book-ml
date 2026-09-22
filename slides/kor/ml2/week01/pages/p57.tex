@@ -1,0 +1,20 @@
+\begin{frame}{세 줄 루프: \texttt{zero\_grad()} $\to$ \texttt{backward()}
+$\to$ \texttt{step()}}
+  \begin{enumerate}
+    \item \texttt{optimizer.zero\_grad()} --- 이전 에포크의 그래디언트를
+      \textbf{초기화}. PyTorch는 \texttt{.backward()} 반복 시 그래디언트가
+      \kb{축적(accumulate)} $\to$ 매 업데이트 전에 \textbf{반드시} 0으로
+      비워야. 빠뜨리면 그래디언트가 계속 쌓여 \textbf{학습이 발산}.
+    \item \texttt{loss.backward()} --- \textbf{역전파} 실행.
+      손계산한 4줄의 그래디언트를 모든 파라미터에 자동 계산해
+      \texttt{.grad}에 채움.
+    \item \texttt{optimizer.step()} ---
+      $\theta \leftarrow \theta - \eta\, \nabla J$ 실행.
+      Adam은 모멘텀 + 적응적 학습률로 보정.
+  \end{enumerate}
+  \vskip0.6em
+  \begin{block}{이번 학기 내내 반복되는 리듬}
+    이 세 줄이 9주차(DQN), 10$\sim$11주차(정책 신경망)에서
+    \textbf{똑같이} 반복됨.
+  \end{block}
+\end{frame}

@@ -1,0 +1,16 @@
+\begin{frame}{벨만방정식까지: 1-상태 MDP의 가치}
+  Week 3의 가치함수
+  \[V^\pi(s) = \mathbb{E}\left[\sum_{t=0}^{\infty} \gamma^t R_t
+  \;\middle|\; s_0 = s\right]\]
+  를 1-상태 MDP의 유일한 상태 $s^*$ 에 대입. 정책 $\pi$ 가 팔 $a$ 를
+  (확률 1로) 골라준다면, 매 스텝 보상 $R(s^*, a) = q^*(a)$ 반복:
+  \vskip0.4em
+  \begin{center}
+    \[V^\pi(s^*) = q^*(a) + \gamma\, q^*(a) + \gamma^2 q^*(a) + \cdots
+    = \frac{q^*(a)}{1 - \gamma}\]
+  \end{center}
+  \kb{1-상태 MDP의 벨만방정식} $V^\pi(s^*) = R(s^*, \pi(s^*)) +
+  \gamma \sum_{s'} P(s'|s^*, \pi(s^*)) V^\pi(s')$ 를, 전이 확률이
+  $P(s^*|s^*, a)=1$ 뿐이라 줄인 형태. \textbf{기하급수}라 닫힌해가
+  바로 $q^*(a)/(1-\gamma)$.
+\end{frame}

@@ -1,0 +1,18 @@
+\begin{frame}{\texttt{torch.no\_grad()}의 두 가지 일}
+  \begin{enumerate}
+    \item 목표값 계산에 계산도를 짓지 않으므로 \textbf{메모리·계산 절약}.
+    \item \textbf{이 스텝의 최적화 문제에서 목표값은 상수} ---
+      그래디언트가 타겟 가중치로 흘러가지 않아 \texttt{backward()}가
+      건드릴 수 있는 것은 $\theta$ 쪽뿐.
+  \end{enumerate}
+  \vskip0.5em
+  \begin{block}{이 ``상수 취급''이 없으면}
+    손실을 줄이려는 그래디언트가 ``예측을 목표로 당기는'' 것뿐 아니라
+    \textbf{``목표를 예측 쪽으로 당기는''} 경로도 만들어버린다
+    (목표는 미분 가능한 입력이므로) --- 움직이는 과녁 문제가
+    \textbf{미분 구조}까지 새어 들어온다.
+  \end{block}
+  \vskip0.5em
+  {\footnotesize ``미분을 끊는다'' $\ne$ ``값을 동결한다'' ---
+  값 동결에는 \textbf{바뀌지 않는 파라미터} $\theta^{-}$가 필요하다.}
+\end{frame}

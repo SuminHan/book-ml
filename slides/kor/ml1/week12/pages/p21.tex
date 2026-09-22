@@ -1,0 +1,23 @@
+\begin{frame}[fragile]{코드로 4단계}(실습)
+\begin{lstlisting}
+import math
+
+def softmax(row):
+    m = max(row)
+    exps = [math.exp(v - m) for v in row]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def attention(Q, K, V, d_k):
+    scores = [[sum(Q[i][t] * K[j][t] for t in range(d_k))
+               / math.sqrt(d_k) for j in range(len(K))]
+              for i in range(len(Q))]          # QK^T / sqrt(d_k)
+    weights = [softmax(row) for row in scores] # softmax
+    output = [[sum(weights[i][j] * V[j][t] for j in range(len(V)))
+               for t in range(len(V[0]))]
+              for i in range(len(Q))]          # V 가중합
+    return output, weights
+\end{lstlisting}
+  {\footnotesize 실전에서는 이 4단계를 numpy 행렬 곱으로 한 줄씩
+  줄인다 (실습 노트북 참고).}
+\end{frame}

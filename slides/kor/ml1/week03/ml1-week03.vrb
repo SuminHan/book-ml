@@ -1,0 +1,28 @@
+\frametitle{4/4 모두 올바르게}
+\begin{lstlisting}
+spam_train = ["free money now", "win prize today", "free cash click",
+              "prize free offer", "money win now", "free click here",
+              "prize cash deal", "offer win cheap"]
+ham_train = ["meeting project tomorrow", "project deadline review",
+             "team meeting report", "meeting notes call", "project update plan",
+             "report review friday", "team lunch call", "meeting agenda notes"]
+
+emails = spam_train + ham_train
+labels = [1]*8 + [0]*8
+model = train_multinomial_nb(emails, labels)
+
+test_emails = [
+    ("free prize money", 1),        # 학습에서 보지 못한 스팸 조합
+    ("win click offer", 1),
+    ("meeting project report", 0),  # 학습에서 보지 못한 정상 조합
+    ("team call notes", 0),
+]
+for email, truth in test_emails:
+    lp = multinomial_log_probs(email.split(), model)
+    pred = 1 if lp[1] > lp[0] else 0
+    print(f"{'SPAM' if truth else 'HAM ':4s} pred={pred} "
+          f"margin={abs(lp[1]-lp[0]):.2f} nats  {email!r}")
+  \end{lstlisting}
+  \vskip0.1em
+  {\footnotesize 4/4 정답: \texttt{SPAM pred=1 margin=4.09 / 3.58},
+  \texttt{HAM pred=0 margin=4.09 / 3.30} (nat).}

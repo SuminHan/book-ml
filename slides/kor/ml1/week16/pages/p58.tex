@@ -1,0 +1,31 @@
+\begin{frame}{복습 문제 5~6: 절차 자체가 개념}
+  \textbf{5.} ``\textbf{하이퍼파라미터 조합 8개}를 시도해 가장
+  좋은 것을 보고했다. test F1 \textbf{0.97}.'' Ch06.3 선택 편향
+  으로 \textbf{부풀림 크기}를 추정하고, 반박 가능한 질문 하나.
+  \vskip0.3em
+  \small
+  \begin{block}{답}
+    후보 8개는 8.1 표에서 5개($\approx0.023$)와 50개
+    ($\approx0.045$) 사이의 \textbf{$\approx0.03$} 부풀림 —
+    ``0.97''이 실제로는 \textbf{0.94 부근}일 수 있음. 질문:
+    ``8개 조합 중 \textbf{val F1로} 고른 것과 \textbf{test F1
+    로} 고른 것의 차이는 얼마인가요? val-test 격차가 0.02 미만
+    이면 그 격차는 선택 편향 크기보다 \textbf{작아} — test로
+    고르지 않았다는 \textbf{근거가 없습니다}.''
+  \end{block}
+  \vskip0.3em
+  \textbf{6.} 실습 §8에서 ``\textbf{누수된 test}''의 정확도
+  \textbf{1.000}, 실제 test \textbf{0.947}(차이 \textbf{+0.053}) —
+  모델과 하이퍼파라미터를 \textbf{하나도 바꾸지 않고} 이 차이가
+  가능한가? 리뷰어는 무엇을 물어보는가?
+  \vskip0.3em
+  \begin{block}{답}
+    \textbf{가능} — \textbf{분할 방식 하나}가 바뀌면 됨.
+    train에 이미 있는 \textbf{같은 단위}(환자/행)를 test에 넣는
+    \textbf{그룹 누수}(Ch06.3). 리뷰 질문은 \textbf{판단이
+    아니라 기계적 점검}: ``train과 test에 \textbf{같은 환자가
+    동시에} 들어갔나요? \texttt{GroupKFold}로 재분할하면 test
+    F1이 어떻게 변하나요?'' — \textbf{분할 코드 한 줄}을 보면
+    즉시 판정.
+  \end{block}
+\end{frame}

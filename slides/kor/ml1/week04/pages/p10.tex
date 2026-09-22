@@ -1,0 +1,30 @@
+\begin{frame}{정규화: 각 특징의 ``동등한 목소리''}
+  거리를 재기 전 \kb{특징 정규화}가 거의 필수 ---
+  ``방 개수''(0$\sim$10)와 ``집값''(수억 원)을 그대로 섞으면
+  스케일이 큰 특징이 거리를 \textbf{독차지}한다.
+  \vskip0.8em
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \kb{MinMax 정규화}
+      \begin{itemize}\small
+        \item 범위를 $0\sim1$로 스케일 변환
+        \item 극단값(outlier)에 휘어질 수 있음
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \kb{표준화 (z-score)}
+      \begin{itemize}\small
+        \item $z_j = (x_j - \mu_j)/\sigma_j$
+          (평균 0, 표준편차 1)
+        \item outlier가 있으면 조금 더 방어적
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.8em
+  \begin{block}{핵심 원리(둘 다)}
+    각 특징이 거리에 ``\textbf{동등한 목소리}''를 가지게 한다.
+    정규화가 해결된 뒤에는 $p$의 선택이 비로소 의미가 있다 ---
+    실전에서 $p$를 1과 2 사이에서 고르는 것보다
+    \textbf{정규화 빼먹는 실수}가 훨씬 큰 성능 차이를 만든다.
+  \end{block}
+\end{frame}

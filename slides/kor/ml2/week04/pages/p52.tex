@@ -1,0 +1,26 @@
+\begin{frame}{연습문제 (핵심 확인)}
+  \begin{enumerate}
+    \item \kb{(코딩)} 3-state MDP에서
+      \texttt{policy\_evaluation}과 \texttt{value\_iteration}
+      (핵심 줄이 빈칸)을 완성 --- \textbf{차이점 한 줄}:
+      \texttt{policy\_evaluation}은 \texttt{a = policy[s]}를
+      따르고, \texttt{value\_iteration}은 \texttt{max\_a}를
+      취하는 것뿐.
+    \item \kb{(손유도, 비순환)} 0$\to$1$\to$2(종료, 각
+      보상 $-1$, $\gamma = 0.9$) MDP: 터미널 $V(2) = 0$ 부터
+      \textbf{거꾸로 대입(backward induction)}만으로
+      $V(1) = -1 + 0.9 \times 0 = -1$, $V(0) = -1 + 0.9 \times
+      (-1) = -1.9$ --- \textbf{연립방정식도 반복도 필요 없는}
+      특수 경우.
+    \item \kb{(손유도, 축소 사상)} $T$ 가 $\gamma$-축소 사상이고
+      $TV^{*} = V^{*}$ 라면, \textbf{임의의} 초기값 $V_0$ 에서
+      \[
+      \|V_n - V^{*}\|_\infty \le \gamma^n \|V_0 - V^{*}\|_\infty
+      \]
+      $\to$ $\gamma < 1$ 이므로 $\gamma^n \to 0$ $\Rightarrow$
+      \textbf{어떤 $V_0$ 로 잡아도 같은 $V^{*}$ 로 수렴}.
+  \end{enumerate}
+  {\footnotesize 이 세 문제는 4.1절(반복)·4.2절(수정된 정책
+  반복)·4.3절(축소 사상 수렴)의 \textbf{핵심 한 줄}을 각각
+  확인하게 한다.}
+\end{frame}

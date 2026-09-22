@@ -1,0 +1,33 @@
+\begin{frame}{1-2-1 손계산: 역전파 (끝) + 흐름도}
+  \[\frac{\partial J}{\partial W_1} =
+  \frac{\partial J}{\partial z_1}\, x^T
+  = \begin{bmatrix} -2 \\ 0 \end{bmatrix}\cdot 1
+  = \begin{bmatrix} -2 \\ 0 \end{bmatrix}, \qquad
+  \frac{\partial J}{\partial b_1} =
+  \frac{\partial J}{\partial z_1} = \begin{bmatrix} -2 \\ 0 \end{bmatrix}
+  \]
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item 두 번째 유닛의 그래디언트가 \textbf{정확히 0} ---
+          ``아무 책임도 없다''. 죽은 유닛은 이번 업데이트에서
+          \textbf{전혀 움직이지 않음} (희소 활성).
+        \item 이 네 줄($W_2, b_2, W_1, b_1$)이 \textbf{역전파의 전부}.
+          PyTorch의 \texttt{.backward()}가 내부에서 자동으로 하는 것이
+          \textbf{정확히 이것} --- 층이 100개여도 같은 4줄(각 층마다
+          반복).
+        \item 각 단계를 코드로 재현하면
+          \texttt{.backward()}가 채운
+          \texttt{model.net[i].weight.grad}가 손계산과 \textbf{정확히
+          일치} --- ``역전파가 내가 생각한 것과 같다''는 신뢰의 근거.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch01_2_mlp_backprop.png}
+      \vskip0.4em
+      {\footnotesize 1-2-1 역전파 흐름도 --- 순전파(실선)와 역전파(붉은
+      점선)가 위 수치와 대응. 죽은 유닛은 그래디언트 0.}
+    \end{column}
+  \end{columns}
+\end{frame}

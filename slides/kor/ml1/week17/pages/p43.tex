@@ -1,0 +1,27 @@
+\begin{frame}{RLHF: 작성 대신 비교로}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item \kb{RLHF}(Reinforcement Learning from Human
+          Feedback, Christiano et al., 2017): 다른 전략.
+        \item 사람이 매번 ``정답''을 새로 쓰는 대신, 모델이
+          만든 \textbf{여러 답변 중 어느 쪽이 더 나은지
+          고르기만} 하면 됨 --- 비교가 작성보다 훨씬
+          쉽고 빠름.
+        \item 이 \textbf{선호 데이터}로 \kb{보상모델}
+          (reward model)을 학습.
+        \item 그 보상모델의 점수를 \textbf{최대화}하도록
+          언어모델 자체를 조정.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ref_rlhf.png}
+      \vskip0.4em
+      {\footnotesize RLHF 구조(원 논문 Figure 1) — 보상
+      예측기(reward predictor)가 트래젝터리 세그먼트의
+      인간 비교 피드백으로 비동기 학습된 뒤, 그 보상을
+      이용해 정책을 강화학습으로 학습하는 파이프라인.}
+    \end{column}
+  \end{columns}
+\end{frame}

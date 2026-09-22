@@ -1,0 +1,21 @@
+\begin{frame}{in-place vs synchronous: 여기서 왜 일치하나?}
+  위 \texttt{value\_iteration}은 \textbf{in-place}(sweep
+  \textbf{중}에도 갱신된 값을 사용)인데, 이 5칸 예에서는
+  synchronous와 \textbf{매 스텝 값이 정확히 일치} --- 위 표의
+  $V_k$ 행이 바로 \textbf{두 버전 공통의 추적궤적}.
+  \vskip0.4em
+  \begin{block}{이유: 최적 전이가 오른쪽 방향뿐}
+    이 GridWorld의 \textbf{최적 전이가 오른쪽 방향만}이므로,
+    sweep을 \textbf{0$\to$4 순서}로 돌리면 갱신 정보가 ``아직 안
+    갱신된 $\to$ 이미 갱신된 상태로만'' 흘러간다(sweep 순서가 정보
+    흐름과 \textbf{반대} 방향).
+  \end{block}
+  \vskip0.4em
+  \begin{block}{sweep 순서 = 정보 흐름 방향이면}
+    sweep 순서가 정보 흐름과 \textbf{같은} 방향(예: 상태 순서를
+    4$\to$0 으로 뒤집으면)이면 in-place가 \textbf{한 sweep 안에
+    정보를 더 멀리 전파해 \textbf{더 빠르게} 수렴}할 수 있다
+    (4.1절). \textbf{같은 고정점}으로 수렴한다는 보장은
+    \textbf{변하지 않음} --- 차이는 \textbf{속도}뿐.
+  \end{block}
+\end{frame}

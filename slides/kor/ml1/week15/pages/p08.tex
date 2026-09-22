@@ -1,0 +1,33 @@
+\begin{frame}{우도 기반 접근과 ``적분'' 문제}
+  \begin{itemize}
+    \item VAE는 생성형 모델 방식 중 첫 번째 — \kb{우도 기반}
+      (likelihood-based): 모델이 학습 데이터를 만들어낼 확률 $P(x)$를
+      (근사치로라도) \textbf{최대화}
+    \item 문제:
+    \[p_\theta(x) = \int p_\theta(x|z)\,p(z)\,dz\]
+      가능한 모든 $z$에 대한 \textbf{적분}이라 일반적으로 계산
+      불가능(intractable)
+  \end{itemize}
+  \vskip0.8em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{GMM과의 대조 (1)}
+      \begin{itemize}
+        \item GMM: $p(x) = \sum_k \pi_k \mathcal{N}(x;\mu_k,\sigma_k^2)$
+        \item $z$가 \textbf{유한} → 유한 합, 각 항이 정규 밀도로
+          \textbf{닫힘} → 우도 정확히 계산 가능
+        \item VAE: $z$가 \textbf{연속} → 적분으로 바뀜, 디코더가 신경망
+         이라 닫힌 형태 없음
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{GMM과의 대조 (2)}
+      \begin{itemize}
+        \item GMM: 이산이라 사후확률(책임값) 계산 가능 → \kb{EM} 성립
+        \item VAE: 이 적분의 ``역방향'' $p(z|x)$도 계산 불가능 →
+          \textbf{E-step 수행 불가}
+        \item 그래서 E-step을 신경망 $q_\phi(z|x)$로 \textbf{대체}(근사)
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

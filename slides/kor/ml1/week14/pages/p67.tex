@@ -1,0 +1,24 @@
+\begin{frame}{자주 묻는 질문 --- RAG (2/2)}
+  \small
+  \begin{itemize}
+    \item \kb{Q. 이 데모가 RAG 전체인가?} \textbf{아니다} ---
+      \textbf{검색 단계만}. \; 검색된 문서를 받아 ``이 문서에 기반해
+      답하라''고 하는 \textbf{생성 단계}는 LLM의 일이므로 Week 17에서.
+    \item \kb{Q. 왜 차원 8, 문서 5개처럼 \textbf{작게}?} 노트북에서
+      실행하고 \textbf{구조를 명확히} 보이려는 의도.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{실전 RAG와의 차이 (구조는 동일)}
+    \begin{enumerate}
+      \item 임베딩: \texttt{train\_skipgram} $\to$ \textbf{전문
+        임베딩 모델} (384$\sim$1536차원, ``질문 $\leftrightarrow$
+        관련 문서'' 쌍으로 학습).
+      \item 문서: 통째 $\to$ \textbf{문장 단위로 잘라}(chunking)
+        벡터화.
+      \item 인덱스: \textbf{벡터 DB}(FAISS, HNSW 등)로 수십억
+        문서에서 빠르게 최상 탐색.
+    \end{enumerate}
+    \par \kq{원리는 지금 만든 이 20줄과 같다 --- 차원과 모델 규모만
+    다를 뿐.}
+  \end{block}
+\end{frame}

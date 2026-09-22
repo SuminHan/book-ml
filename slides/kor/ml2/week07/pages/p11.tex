@@ -1,0 +1,31 @@
+\begin{frame}{online 관점 vs forward 관점}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \kb{online 관점 (online view)}
+      \begin{itemize}
+        \item 학습이 \textbf{진행되면서} 목표를 만들어 갱신.
+        \item ``지금 $t$ 스텝을 왔다'' $\to$ 지금까지 \textbf{실제로
+          쌓인} $R_t,\dots,R_{t+n-1}$으로 $G_t^{(n)}$ 계산.
+        \item 위 코드의 \texttt{tau = t - n + 1}과 \texttt{tau + n < T}
+          분기가 바로 산물.
+        \item 실제 알고리즘의 \textbf{실행 순서}(갱신 시차, 에피소드
+          끝 처리)를 정확히 반영.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \kb{forward 관점 (forward view)}
+      \begin{itemize}
+        \item 같은 경험(trajectory) 위에서 $n$을 바꾸면
+          \textbf{서로 다른 목표값}이 생김.
+        \item $n=1$: $R_t + \gamma V(s_{t+1})$
+        \item $n=2$: $R_t + \gamma R_{t+1} + \gamma^2 V(s_{t+2})$
+        \item ``$n$이 커지면 MC에 가까워진다''는 직관(목표값
+          \textbf{정의 자체}에서 $n\to\infty$가 MC 리턴)을 가장
+          투명하게 보여줌.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  {\footnotesize 두 관점은 \textbf{동일한 알고리즘}을 기술. 7.2의
+  적격흔적은 ``모든 $n$을 동시에'' 쓰면서 이 연결의 핵심이 됨.}
+\end{frame}

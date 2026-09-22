@@ -1,0 +1,20 @@
+\begin{frame}{``평균을 빼도'' 그래디언트 기댓값이 안 바뀌는 이유}
+  상태 $s_t$ 에만 의존(행동과 무관)한 값 $b(s_t)$ 를 빼도,
+  그래디언트 기댓값은 \textbf{그대로}:
+  \[
+  \mathbb{E}_{a\sim\pi}\Big[ (G_t - b(s_t))\, \nabla_\theta\log\pi_\theta(a|s_t) \Big]
+  = \mathbb{E}_{a\sim\pi}\big[ G_t \nabla_\theta\log\pi \big]
+  - b(s_t)\, \underbrace{\mathbb{E}_{a\sim\pi}
+  \big[ \nabla_\theta \log\pi_\theta(a|s_t) \big]}_{=\, \nabla_\theta
+  \sum_a \pi_\theta(a|s_t) = \nabla_\theta 1 = 0}
+  \]
+  \begin{itemize}
+    \item 핵심은 \textbf{밑줄 친 부분}: ``각 행동의 확률합이 항상
+      1''이므로 확률가중평균 그래디언트는 0.
+    \item \kq{\kb{베이스라인은 행동을 의존하면 안 된다}} ---
+      $b$ 가 $a$ 에도 의존하면 이 소거가 깨져 기댓값이 실제로
+      바뀜(편향).
+    \item 위 정규화 줄 = 이 형태의 가장 단순한 베이스라인 ---
+      ``\textbf{에피소드당 평균 리턴}을 빼기''.
+  \end{itemize}
+\end{frame}

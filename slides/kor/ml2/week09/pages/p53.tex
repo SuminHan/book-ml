@@ -1,0 +1,31 @@
+\begin{frame}{학습곡선을 읽는 세 가지}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{enumerate}
+        \item \kq{곡선은 ``계단''이 아니라 ``들쭉날쭉한 상승''.}
+          개별 에피소드는 5$\sim$500까지 튀어 다님. \textbf{이동평균}(두꺼운
+          선)이 진짜 진행 --- $\varepsilon \approx 1$(완전 무작위)에서
+          리턴 10$\sim$30로 시작해 $\varepsilon$ 감소와 함께 상승.
+          이 ``들쭉날쭉'' = 9.2의 불안정성 $+$ 9.3의 불안정성이
+          \textbf{겹친 결과}.
+        \item \kq{``만점 500에 도달''의 의미.} 500은 \textbf{타임아웃} ---
+          한 번 500을 찍었어도 ``500을 \textbf{안정적으로} 낸다''는 뜻은
+          아님. ``한 번 만점'' vs ``안정적으로 만점''을 구분하는 것이
+          평가의 핵심 (마지막 N 에피소드 평균, 또는 $\varepsilon = 0$ 그리디
+          N회 평균).
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch09_3_dqn_cartpole_curve.png}
+      \\[0.2em]{\footnotesize (a) 에피소드 리턴, 시드 3개.
+      검정 점선 = 만점 500.
+      (b) TD 손실(로그, 시드 0).}
+    \end{column}
+  \end{columns}
+  \vskip0.2em
+  {\footnotesize \textbf{③ 손실 곡선이 ``떨어진다'' $\ne$ ``잘 배우고 있다''.}
+  TD 손실 하락 = ``자기(타겟) 목표와 점점 일관적''일 뿐
+  (9.2 교훈: 낮은 TD 손실 $\ne$ 올바른 $Q$). 진짜 판정 기준 =
+  \textbf{평가 리턴}.}
+\end{frame}

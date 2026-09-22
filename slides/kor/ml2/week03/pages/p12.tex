@@ -1,0 +1,35 @@
+\begin{frame}{왜 이 성질이 알고리즘의 모든 것을 결정하는가}
+  마르코프 성질이 ``좋은 가정''을 넘어서 \textbf{필요 불가결}인
+  이유. \textbf{성질이 없다면}:
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{상태가치가 정의되지 않는다}
+      \begin{itemize}
+        \item $V^\pi(s)$ 는 ``상태 $s$ 에서 시작''의 리턴 기댓값.
+        \item ``같은 $s$''에 과거 이력이 \textbf{다른} 두 경로가
+          존재하고 그 미래 분포가 다르면, $s$ 만으로 인자화한 하나의
+          함수 $V(s)$ 로 그 둘을 동시에 설명할 수 없다.
+        \item 같은 자리에 ``두 개의 다른 가치''가 공존하는데,
+          표 기반 알고리즘은 \textbf{한 칸에 한 값}만 쓸 수 있다.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{학습이 수렴하지 않는다}
+      \begin{itemize}
+        \item 같은 $s$ 를 매번 \textbf{다른 ``진짜 상황''}의
+          대리인으로 쓰면, 추정치는 서로 다른 답을 향해 계속
+          튀어 다닌다.
+        \item Week 6--11의 모든 수렴 증명은 ``같은 $s$ 는 같은 미래
+          분포를 갖는다''는 \textbf{이 동일성} 위에 서 있다.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.6em
+  \begin{block}{반대로: 성질이 성립하면}
+    상태 하나가 \textbf{과거 전체를 압축하는 무손실 요약}이 된다 ---
+    통계학의 표현을 빌리면, 상태는 미래에 대한 과거 이력의
+    \kb{충분 통계량(sufficient statistic)} 역할을 한다. 이 성질
+    덕분에 ``기억의 길이''가 문제에서 빠져나가고,
+    \textbf{현재 관측} 하나로 의사결정이 닫힌다.
+  \end{block}
+\end{frame}

@@ -1,0 +1,35 @@
+\begin{frame}{실습: 실제 GBDT에 퍼머테이션 근사 SHAP}
+  \textbf{알고 만든} 4개 특징 합성 데이터:
+  신호 $z = 0.9 f_0 - 0.8 f_1 + 0.5\sin f_2 - 0.3 f_3 +$ 잡음,
+  양수면 클래스 1. GBDT(80트리, depth 2) 학습 후, 예측 확률
+  0.3$\sim$0.7 사이인 점 하나를 골라 \textbf{400회 퍼머테이션 근사}:
+  \vskip0.5em
+  {\small
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+     & 값 \\
+    \midrule
+    test accuracy & 0.758 \\
+    고른 점 & index=113, pred\_prob=0.485, true\_label=0 \\
+    $f_0$ (강한 +) & $\phi = \mathbf{+0.113}$ \\
+    $f_1$ (강한 $-$) & $\phi = \mathbf{-0.380}$ \\
+    $f_2$ ($\sin$, 비선형) & $\phi = +0.190$ \\
+    $f_3$ (약한 $-$) & $\phi = +0.108$ \\
+    baseline $\phi_0$ & 0.454 \\
+    prediction & 0.485 \\
+    prediction $-$ baseline & $+0.032$ \\
+    sum of all $\phi$ & \textbf{+0.032} \quad (가산성 오차: \textbf{0.000000}) \\
+    \bottomrule
+  \end{tabular}}
+  \vskip0.6em
+  \begin{itemize}
+    \item \textbf{가산성이 정확히 성립}: 0.454 + $(+0.113 - 0.380 +
+      0.190 + 0.108)$ = 0.485 — 400회 근사인데도 \textbf{오차 0}
+    \item \textbf{부호가 신호 방향과 대체로 일치}: $f_0$ 양 신호 $\to$
+      $+0.113$, $f_1$ 음 신호 $\to$ $-0.380$
+    \item $f_3$는 이 점에서 $+0.108$으로 ``예상(음)과 반대'' — 약한 신호는
+      \textbf{교차 효과에 쉽게 덮임} $\to$ \kq{SHAP 값은 ``이 예측
+      하나''에 대한 \textbf{국지적} 설명이지, ``특징의 본질적 방향''이
+      아님}
+  \end{itemize}
+\end{frame}

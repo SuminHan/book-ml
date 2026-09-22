@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{연습문제 (2/3): 수렴 논증 빈칸 + TD(0) 코딩}
+  \small
+  \textbf{3. (손유도, Tier C) 수렴 논증의 빈칸 채우기 (4.3절 연습문제 3
+  같은 형식):}
+  \begin{lstlisting}[language={},basicstyle=\ttfamily\scriptsize]
+가정: T는 gamma-축소 사상이고, V*는 T의 고정점 (T V* = V*).
+     V_{n+1} = T V_n.
+Step 1: ||V_1 - V*|| = ||T V_0 - T V*|| <= gamma * ||V_0 - V*||
+Step 2: ||V_2 - V*|| <= gamma * ||V_1 - V*||
+         <= gamma^2 * ||V_0 - V*||
+Step 3: ||V_n - V*|| <= gamma^n * ||V_0 - V*||
+결론: gamma < 1이므로 gamma^n -> 0, 따라서 V_n -> V*.
+\end{lstlisting}
+  \vskip0.3em
+  \textbf{4. (코딩) TD(0) 가치 갱신의 빈칸 채우기}
+  \begin{lstlisting}
+def td0_update(V, s, r, ns, done, alpha, gamma):
+    target = r + (0.0 if done else gamma * V[ns])
+    V[s]  += alpha * (target - V[s])
+\end{lstlisting}
+  {\footnotesize 정확성 확인: (a) \texttt{done=True}일 때 목표값이 $r$
+  되는지 출력으로 확인, (b) 7.2절 random walk에서 $\alpha=1.0$ vs
+  $0.1$ 비교로 ``$\alpha$가 너무 크면 수렴하지 않고 흔들린다'' 관찰.}
+\end{frame}

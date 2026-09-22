@@ -1,0 +1,23 @@
+\begin{frame}{차원 문제, 그리고 커널 트릭 한 문장}
+  \begin{itemize}
+    \item $\phi(x)$ 를 명시적으로 계산하면 \textbf{차원이 감당
+      못 하게} 커진다:
+      다항식 특징을 도수 $d$까지 추가하면 $\binom{n+d}{d}$ 개,
+      RBF는 \textbf{무한} 개.
+    \item \kb{커널 트릭}(kernel trick, Cortès \& Vapnik 1995)은 이걸
+      \textbf{피해간다}:
+    \begin{itemize}
+      \item SVM의 최적화 문제를 \textbf{라그랑주 쌍대}로 다시 쓰면,
+        데이터가 항상 $\phi(x^{(i)})\cdot\phi(x^{(j)})$
+        (\textbf{내적}) 형태로만 등장함을 알 수 있다.
+      \item 그러면 $\phi$ 를 직접 계산하지 않고, 이 내적값을
+        \textbf{곧바로} 계산해주는 \kb{커널 함수}
+        $K(x,x') = \phi(x)\cdot\phi(x')$ 만 있으면 충분.
+    \end{itemize}
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{이게 전부다}
+    커널 트릭은 ``새로운 모델''이 아니라, \textbf{같은 모델의
+    계산 방식을 고차원 내적으로만 다시 쓴 것}.
+  \end{block}
+\end{frame}

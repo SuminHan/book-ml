@@ -1,0 +1,26 @@
+\begin{frame}{자주 하는 실수: ``모델이 있으니 학습이 필요 없다''}
+  모델기반 RL을 처음 배울 때의 흔한 오해 ---
+  \vskip0.3em
+  \begin{center}
+  ``환경의 규칙을 완벽히 안다면, Week 4의 가치반복 같은
+  planning으로 바로 최적 정책을 계산할 수 있으니
+  \textbf{신경망 학습이 아예 필요 없다}''
+  \end{center}
+  \begin{itemize}
+    \item 이건 \textbf{상태 수가 작을 때만} 맞는 말
+    \item 바둑처럼 상태 수가 천문학적이면, ``모델을 안다''는 것과
+      ``그 모델로 최적 행동을 \textbf{실제로 계산}할 수 있다''는 것은
+      \textbf{전혀 다른 얘기} --- 그래서 AlphaGo/AlphaZero는
+      여전히 신경망을 \textbf{학습}시킨다
+    \item 반대로 Dyna-Q처럼 모델이 \textbf{학습된} 것일 때는
+      \textbf{모델 오차}가 Q값에 누적: 초기에 몇 안 되는 경험으로
+      학습한 부정확한 모델로 가상 경험을 너무 많이 만들면, 그
+      부정확함이 Q값에 스며들어 오히려 \textbf{학습을 방해}
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{기억할 것}
+    ``모델기반''이 공짜로 정확한 답을 주는 게 아니다 ---
+    \textbf{모델의 정확도(또는 완전성)}과 \textbf{상태 공간의
+    크기} \textbf{둘 다}가 계획의 실현 가능성을 결정한다.
+  \end{block}
+\end{frame}

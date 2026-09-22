@@ -1,0 +1,31 @@
+\begin{frame}{자주 묻는 질문: DQN 경험 재사용과의 관계}
+  \textbf{Q: known model 경우와 Week 9 DQN의 경험 재사용
+  (experience replay)은 관계가 있나?}
+  \vskip0.5em
+  둘 다 ``\textbf{손에 있는 정보를 더 많이 쓰자}''는 기술이지만
+  \textbf{재사용의 원천이 다르다}:
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \kb{경험 재생(experience replay)}
+      \begin{itemize}
+        \item \textbf{실제} $(s,a,r,s')$ 튜플을 버퍼에서
+          다시 뽑아 쓰기 때문에 \textbf{모델 오차가 없음}
+        \item 단, \textbf{경험하지 않은 전이는 만들 수 없다}
+        \item ``\textbf{안전하지만} 새것을 못 만든다''
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \kb{모델 계획(Dyna)}
+      \begin{itemize}
+        \item 모델로 전이를 \textbf{생성} --- 경험이 커버하지
+          않은 상태까지 \textbf{갈 수 있음}
+        \item 단, \textbf{모델 오차를 짊어진다}
+        \item ``새것을 만들 수 있지만 \textbf{오차가 동반}''
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.8em
+  {\footnotesize 9장 이후의 모델기반 DQN 변형들은 학습된 신경망
+  모델을 얹어 이 둘을 \textbf{결합}하는 방향으로 나아간다.}
+\end{frame}

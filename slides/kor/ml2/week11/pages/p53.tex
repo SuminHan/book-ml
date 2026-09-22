@@ -1,0 +1,23 @@
+\begin{frame}{TRPO의 한 스텝이 왜 무거운가}
+  \small
+  PPO 이전에 같은 문제(너무 큰 업데이트로 인한 정책 붕괴)를
+  풀던 \kb{TRPO}(2015): KL 제약을 명시적으로 걸고 2차 미분
+  도구로 최적화 — 한 스텝은 세 단계.
+  \begin{enumerate}
+    \item \kb{KL 제약}
+      $\mathbb{E}_t[D_{\mathrm{KL}}(\pi_{\theta_{\mathrm{old}}}
+      \,\|\,\pi_\theta)]\le\delta$ 를 \textit{명시적으로}
+      해석 — 2차 근사(피셔 정보 행렬
+      $F=\mathbb{E}[\nabla\log\pi\,\nabla\log\pi^{\top}]$)
+     까지 쓰면 이 제약 아래 최대화는 $F$ 의 \textbf{역행렬 곱}을
+      구해야 하는 \kb{최대제곱(정준경로) 문제}.
+    \item $F$ 는 파라미터 수 $p$ 의 $p\times p$ 행렬 —
+      신경망 정책에서 $p$ 가 수만$\sim$수십만, \textbf{직접
+      역행렬은 불가}. ``피셔-벡터 곱만 계산할 수 있으면 된다''
+      는 성질을 이용해 \kb{conjugate gradient}(반복법)로 근사 해.
+    \item 근사해도 \textit{제약이 실제로} 만족되는지 확인 —
+      \kb{line search}(제안 방향으로 얼마나 가도 안전한지).
+  \end{enumerate}
+  세 단계 모두 ``정책 그래디언트'' 자체와 무관한
+  \kb{최적화 장치}.
+\end{frame}

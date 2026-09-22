@@ -1,0 +1,29 @@
+% ================= SESSION 10.2 =================
+\section{10.2 REINFORCE와 실습}
+\begin{frame}{위치: 정리에서 알고리즘으로}
+  10.1에서 ``무작위 결과인데도 미분할 수 있다''는 큰 걸음 ---
+  Policy Gradient Theorem:
+  \[
+  \nabla_\theta J(\theta) = \mathbb{E}_\tau\left[ \sum_t
+  \nabla_\theta \log\pi_\theta(a_t|s_t)\, G_t \right]
+  \]
+  \begin{itemize}
+    \item 그런데 ``식은 얻었다''와 ``실행할 수 있다''는 \textbf{다른 문제}.
+    알고리즘으로 바꾸려면 두 질문을 답해야:
+  \end{itemize}
+  \begin{enumerate}
+    \item \textbf{$\nabla_\theta\log\pi_\theta(a_t|s_t)$ 는 어떤
+      \textbf{모양}인가?} --- softmax 파라미터화에 대해 실제로 미분.
+    \item \textbf{$\mathbb{E}_\tau$ 는 어떤 \textbf{샘플}로 추정하나?}
+      --- 가장 단순한 선택: 현재 정책으로 에피소드 \textbf{한 번}
+      굴려서, 실제로 관찰한 $G_t$ 와 실제로 고른 행동의
+      $\log\pi_\theta$ 를 사용.
+  \end{enumerate}
+  \vskip0.3em
+  \begin{block}{이번 절의 \kb{REINFORCE}}
+    이 ``가능한 가장 단순한'' 선택을 \textbf{모두} 채택한 알고리즘.
+    이 \textbf{단순함} 그 자체가 교육적 가치 (``역사''에서 다시 볼
+    것) --- 이동 부품을 최소화해서 \textbf{코드 한 줄이 정리 한 항과
+    직접 대응}.
+  \end{block}
+\end{frame}

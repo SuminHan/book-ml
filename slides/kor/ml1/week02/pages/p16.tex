@@ -1,0 +1,22 @@
+\begin{frame}[fragile]{경사하강법 구현 (순수 Python)}
+\begin{lstlisting}
+def gradient_descent(X, y, alpha, epochs):
+    m, n = len(X), len(X[0])
+    w = [0.0] * (n + 1)  # w[0]=bias
+    for _ in range(epochs):
+        grad = [0.0] * (n + 1)
+        for i in range(m):
+            pred = w[0] + sum(w[j+1] * X[i][j] for j in range(n))
+            error = pred - y[i]
+            grad[0] += error
+            for j in range(n):
+                grad[j+1] += error * X[i][j]
+        for j in range(n + 1):
+            w[j] -= alpha * grad[j] / m
+    return w
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize ``grad 계산 $\to$ 반영''의 \textbf{두 단계 구조}가
+  동시 업데이트를 구현한 것. $\boldsymbol{w}$ 는 0에서 시작 --- 관례일 뿐,
+  볼록함수라면 어디서 시작하든 같은 최솟값에 도달.}
+\end{frame}

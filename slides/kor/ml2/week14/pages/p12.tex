@@ -1,0 +1,20 @@
+\begin{frame}{자주 하는 실수: D항을 빼거나 부호를 뒤집으면}
+  ``PD가 마법처럼 보인다'' --- 그 마법의 대부분은 \textbf{D항}
+  $(-0.5\,\dot\theta)$에서 온다. 이득만 바꿔 200스텝 실행 검증:
+  \small
+  \begin{tabular}{@{}p{4.2cm}p{3.6cm}p{5.6cm}@{}}
+    \toprule
+    정책 (토크) & 200스텝 후 $|\theta|$ & 결과 \\
+    \midrule
+    \textbf{완전한 PD} $\;-3\theta - 0.5\dot\theta\;$ & 0.065 &
+      목표(0)에 접근 \\
+    \textbf{P만} $\;-3\theta\;$ & 1.31 (각속도까지 11.5!) &
+      크게 진동만 함 \\
+    \textbf{너무 약한 PD} $\;-1\theta - 0.2\dot\theta\;$ & 0.69 &
+      거의 못 줌 \\
+    \textbf{부호 오류} $\;+3\theta - 0.5\dot\theta\;$ & 7.62 &
+      발산(목표와 반대) \\
+    \textbf{제어 없음} (0) & 2.60 & 처음 그대로 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

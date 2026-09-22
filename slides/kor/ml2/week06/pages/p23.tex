@@ -1,0 +1,24 @@
+\section{6.2 SARSA와 CliffWalking 실습}
+\begin{frame}{$V(s)$에서 $Q(s,a)$로}
+  \begin{itemize}
+    \item Week 4의 $V(s)$는 ``상태의 가치''. 이것만으론 \textbf{다음 행동을
+      고를 수 없다} --- 어느 행동이 좋은 다음 상태로 이어지는지 알려면
+      전이확률 $P$가 필요(Week 5.2에서 짚은 이유).
+    \item 그래서 TD도 $V(s)$ 대신 한 걸음 더 세분화한 \kb{Q-함수}
+      $Q(s,a)$를 학습: ``상태 $s$에서 $a$를 한 뒤, 그 이후 정책을
+      따랐을 때의 기대 누적 보상''.
+  \end{itemize}
+  \vskip0.8em
+  벨만방정식과 같은 방식으로 정의 --- 다음 상태를 \textbf{행동 $a$로}
+  이동한다는 것만 다름:
+  \[
+  Q^{\pi}(s,a) = R(s,a) + \gamma \sum_{s'} P(s'\mid s,a)\, V^{\pi}(s')
+  \]
+  \vskip0.5em
+  \begin{block}{$V$와 $Q$의 관계 --- 한 줄}
+    $V^{\pi}(s) = \sum_a \pi(a\mid s)\, Q^{\pi}(s,a)$ :
+    \textbf{상태 가치는 그 상태의 행동 가치들의 정책가중 평균}.
+    $Q$를 알면 $V$는 이 평균으로 바로 얻어지지만, 반대($V$에서 행동을
+    고르는 것)는 $P$가 필요 --- \textbf{$Q$가 이득}.
+  \end{block}
+\end{frame}

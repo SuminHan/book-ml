@@ -1,0 +1,21 @@
+\begin{frame}{손으로 한 번: 1차원 장난감에서 ELBO}
+  15.1절 GMM과 같은 모양(1 근처·9 근처 두 봉우리)의 데이터.
+  1차원 $z$, 디코더 $p(x|z) = \mathcal{N}(x; z, 1)$, 사전
+  $p(z) = \mathcal{N}(0,1)$. 근사분포를 \textbf{아무렇게나}
+  $q(z) = \mathcal{N}(1,1)$으로 고르고 $x = 1$에 대해 ELBO를 계산:
+  \vskip0.6em
+  \begin{itemize}
+    \item \textbf{복원 항}:
+      $\mathbb{E}_{z\sim\mathcal{N}(1,1)}[\log \mathcal{N}(x; z, 1)]$
+      \item $z$가 평균 1·분산 1이면 $\mathbb{E}[(x-z)^2] = (x-1)^2 + 1$
+      (분산 $\sigma_z^2$ 항 — 아래 ``자주 하는 실수'' ① 참고)
+    \item $\Rightarrow -\frac{1}{2}[(x-1)^2 + 1 + \log 2\pi]
+      \approx -\frac{1}{2}[0 + 1 + 1.838] = \mathbf{-1.419}$
+    \item \textbf{정규화 항}:
+      $D_{KL}(\mathcal{N}(1,1) \| \mathcal{N}(0,1))$ — 정규분포 사이 KL은
+      닫힌 형태:
+      $\frac{1}{2}(\sigma_q^2 + \mu_q^2 - 1 - \log \sigma_q^2)
+      = \frac{1}{2}(1 + 1 - 1 - 0) = \mathbf{0.5}$
+    \item \textbf{ELBO} $= -1.419 - 0.5 = \mathbf{-1.919}$
+  \end{itemize}
+\end{frame}

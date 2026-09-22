@@ -1,0 +1,24 @@
+\begin{frame}{자주 하는 실수: CartPole 벤치마크로 ``CPU면 충분''}
+  \small
+  \begin{tabular}{@{}p{4.8cm}p{9.2cm}@{}}
+    \toprule
+    실수 & 왜 틀린가 \\
+    \midrule
+    ``CartPole로 247,000 steps/s를 보고 CPU는 25만 스텝/초니까
+      빠르다'' & 그 숫자는 \textbf{물리 근사} 환경의 속도. 정밀
+      로봇(Ant)은 같은 CPU에서 \textbf{40배 느린} 6,200 steps/s.
+      \textbf{어떤 물리를 계산하느냐}가 속도를 정한다 \\
+    ``화면이 사실적이니까'' Isaac Sim을 정밀 제어 작업에 &
+      \textbf{시각적 리얼리즘(렌더링)} $\neq$ \textbf{물리
+      정밀도}. 접촉력이 정확한 작업은 \textbf{물리 정밀도}가
+      필요, 렌더링은 \textbf{센서 축} \\
+    GPU가 1,000배 빠르다며 책의 8만 스텝 실습도 GPU로 & 8만
+      스텝은 CPU에서 초$\sim$분 단위로 끝남(위 표). GPU 병렬의
+      값(수천 배)은 \textbf{1억+ 스텝}에서야 ``2일 $\leftrightarrow$
+      1분''으로 드러남. \textbf{규모 미만의 작업에 GPU는 과잉} \\
+    ``정밀한 엔진이 항상 더 좋다''며 MuJoCo를 CartPole에도 &
+      MuJoCo로 CartPole을 돌리면 \textbf{40배 느리고}, 정밀 LCP
+      접촉이 \textbf{불필요}한 작업에 계산 비용만 지름 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

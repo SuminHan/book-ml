@@ -1,0 +1,21 @@
+\begin{frame}{자주 하는 실수 (5가지)}
+  \begin{itemize}
+    \item \kb{GBDT 베이스라인 없이 ``신경망 정확도 0.95'' 발표} —
+      두 층의 2층이 빠짐 (Ch07.3 ``정형이면 GBDT와 비교'' 위반).
+      리뷰 질문: ``같은 데이터에 GBDT를 돌리면 몇 \%인가요?
+      0.95가 \textit{상대}로 얼마나 좋은지?''
+    \item \kb{``신경망이 최신이라서''라는 이유} — 2축 + 2숫자가
+      \textbf{전부} 빠져 있음. ``최신''은 근거가 아님 (2022
+      Grinsztajn et al.: 정형에서는 GBDT가 여전히 경쟁적)
+    \item \kb{에포크를 test로 정하기} — ``test 정확도가 더 높아지는
+      에포크까지 돌렸다'' = Ch06.3 test-한-번 원칙 위반.
+      에포크·학습률·구조는 \textbf{val 곡선만}으로
+    \item \kb{flatten해서 GBDT에 비등한 것을 ``신경망이 졌다''로
+      결론} — digits(64-dim) 비등은 \textit{예상된} 결과.
+      ``64차원 정형''과 ``28$\times$28 원시 픽셀''을 구분하지 않고
+      단순 결론내는 것 — \textbf{차원/구조의 효과를 분리}해 논의
+    \item \kb{증강 없이 ``val 과적합''만 보고 dropout만 올리기} —
+      과적합이 \textit{데이터 부족}(증강)인지 \textit{모델 과대}
+      (dropout/L2)인지 먼저 구분 — Ch09.3의 \textbf{다른 처방}
+  \end{itemize}
+\end{frame}

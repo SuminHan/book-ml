@@ -1,0 +1,26 @@
+\begin{frame}{편향-분산 분해와 수치 실험}
+  \[
+  \mathbb{E}\left[(y - \hat f(x))^2\right] =
+  \underbrace{\left(\text{Bias}[\hat f(x)]\right)^2}_{\text{구조적으로 못 맞추는 정도}}
+  + \underbrace{\text{Var}[\hat f(x)]}_{\text{표본이 바뀔 때 예측이 흔들림}}
+  + \underbrace{\sigma^2}_{\text{데이터 잡음(줄일 수 없음)}}
+  \]
+  \vskip0.4em
+  1차원 $f^*(x) = \sin(2\pi x)$ + 잡음 $\sigma=0.5$, 100개 점을
+  \textbf{300번 재표본}, 40개 테스트 지점에서 측정:
+  \vskip0.4em
+  \small
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+     $k$ & $\text{Bias}^2$ & $\text{Var}$ \\
+    \midrule
+    1  & 0.001 & 0.255 \\
+    5  & 0.006 & 0.056 \\
+    50 & 0.470 & 0.019 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.8em
+  $k=1$: 편향은 거의 0인데 분산 0.255(표본마다 예측 크게 다름).
+  $k=50$: 분산 거의 사라지지만 편향 0.470($\sin$ 곡률을 못 따라가고
+  ``전체 평균'' 쪽으로 수렴). $k=5$가 둘 다 중간.
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}{셀 상태의 그래디언트가 왜 1 근처를 유지하는가}
+  ``셀 상태가 덧셈으로 전달된다''를 그래디언트 관점에서 정확히
+  전개. 게이트만 추상화하면:
+  \vskip0.4em
+  \[ C_t = \underbrace{f_t \cdot C_{t-1}}_{\text{기억 유지}}
+     \;+\; \underbrace{i_t \cdot \tilde C_t}_{\text{신규 기록}}
+     \qquad (f_t, i_t \in (0,1)) \]
+  \vskip0.4em
+  기억이 시점 1에서 $T$까지 전해지는 그래디언트: 신규 기록 항
+  ($i_t \tilde C_t$)은 $C_{t-1}$에 무관하므로 미분에서 \textbf{떨어져
+  나가고},
+  \vskip0.4em
+  \[ \frac{\partial C_T}{\partial C_1} = \prod_{t=2}^{T} f_t \]
+  \vskip0.4em
+  \begin{itemize}
+    \item \kb{RNN의 $\prod tanh'(z_t)\, w_{hh}$에서 $\tanh'$
+      (고정 할인율, $\approx 0.45$)의 자리에 \textbf{학습된
+      망각 게이트 $f_t$}가 들어온 것}
+  \end{itemize}
+\end{frame}

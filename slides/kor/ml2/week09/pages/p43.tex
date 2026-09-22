@@ -1,0 +1,27 @@
+\begin{frame}[fragile]{ReplayBuffer: 두 줄이 전부다}
+\begin{lstlisting}
+import random
+
+class ReplayBuffer:
+    def __init__(self, capacity):
+        self.buffer = []
+        self.capacity = capacity
+
+    def push(self, transition):
+        if len(self.buffer) >= self.capacity:
+            self.buffer.pop(0)          # 가장 오래된 항목 밀려남
+        self.buffer.append(transition)
+
+    def sample(self, batch_size):
+        return random.sample(self.buffer, batch_size)  # 비복원 추출
+\end{lstlisting}
+  \vskip0.3em
+  \begin{itemize}
+    \item \texttt{push}: \textbf{FIFO} 큐 --- \texttt{capacity}에 닿으면
+      가장 오래된 항목(\texttt{pop(0)})이 밀려남.
+    \item \texttt{sample}: \texttt{random.sample} \textbf{비복원 추출}
+      (한 배치 안에서 같은 경험 두 번 금지).
+  \end{itemize}
+  {\footnotesize 참고: \texttt{list.pop(0)}은 $O(n)$ ---
+  실제 구현은 \texttt{collections.deque(maxlen=10000)}로 $O(1)$.}
+\end{frame}

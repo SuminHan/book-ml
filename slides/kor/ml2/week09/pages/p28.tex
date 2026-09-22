@@ -1,0 +1,18 @@
+\begin{frame}{목표는 얼마나 ``낡아도'' 되는가 --- $C$의 대가}
+  \begin{itemize}
+    \item 하드 업데이트: $C$스텝마다 $\theta$를 통째로 복사
+      (DQN 원논문 Atari 실험: $C = 10{,}000$).
+    \item 두 동기화 사이 목표는 동결 --- 그만큼 $\theta$와 $\theta^{-}$가
+      최대 약 $C$스텝 벌어질 수 있음.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{읽는 법}
+    \textbf{목표는 고작 $C$스텝 ``낡은'' 값}일 수 있다 ---
+    \textbf{안정성은 이 ``느림''의 대가로} 산 것이다.
+  \end{block}
+  \begin{itemize}
+    \item 적절한 $C$는 환경 규모에 따라 다름:
+      CartPole $\approx 100$, Atari급 $\approx 10{,}000$.
+    \item $\alpha$, $lr$과 마찬가지로 \textbf{튜닝 대상 하이퍼파라미터}.
+  \end{itemize}
+\end{frame}

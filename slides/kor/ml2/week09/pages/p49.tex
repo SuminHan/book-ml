@@ -1,0 +1,19 @@
+\begin{frame}{\texttt{train\_step}을 한 줄 한 줄 대응해 읽자}
+  \begin{itemize}
+    \item \texttt{batch = buffer.sample(batch\_size)} ---
+      \textbf{경험 재현이 들어오는 유일한 줄}. 32개는 지난 10,000스텝에서
+      무작위 비복원 추출 $\Rightarrow$ 시간적으로 멀리 떨어져, 독립에 가까움.
+    \item 나머지: 9.1의 \texttt{QNetwork}로 텐서 조립 $\to$
+      9.2의 \texttt{dqn\_loss}가 \textbf{타겟 네트워크} $Q(s',a';\theta^{-})$로
+      목표 계산 $\to$ \texttt{optimizer.step()}로 \textbf{$\theta$만} 갱신
+      (타겟은 \texttt{no\_grad()}로 상수).
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{한 스텝 = ``버퍼 샘플링(9.3) $\to$ 목표값 계산(9.2)
+  $\to$ 역전파(9.1)''의 한 바퀴}
+    행동 선택($\varepsilon$-greedy)은 \textbf{현재} 네트워크의 출력을 쓰고,
+    그 결과를 버퍼에 \texttt{push}한 \textbf{다음}에 샘플링해 학습.
+    \textbf{행동은 ``지금 정책''이 하되, 학습은 ``과거 $+$ 지금''의 혼합
+    경험}을 한다 --- 이 \textbf{비대칭}이 off-policy의 본체.
+  \end{block}
+\end{frame}

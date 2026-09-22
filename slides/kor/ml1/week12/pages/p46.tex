@@ -1,0 +1,34 @@
+\begin{frame}{손으로 한 번: 두 헤드(자기 / 이웃)}
+  단어 2개(임베딩 $x_1=(1,0),\; x_2=(0,1)$) 예에서 두 헤드를
+  직접 설계:
+  \begin{itemize}
+    \item \textbf{헤드 A} (자기): $W_Q = W_K = W_V = I$ —
+      12.2절의 ``자기 주입'' 헤드.
+    \item \textbf{헤드 B} (이웃): 그것과 \textbf{$W_K$ 하나만}
+      $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ (두 차원을 바꾸는
+      행렬)로 달라도, $Q=K=V=X$ 에서 $K$ 만 이 행렬을 거치면
+      각 단어가 \emph{다른} 단어의 Key와 더 잘 맞게 되어
+      ``이웃 우선'' 헤드.
+  \end{itemize}
+  \small
+  \begin{tabular}{@{}lllp{6cm}@{}}
+    \toprule
+    헤드 & $W_K$ & 어텐션 가중치 (행=Query) & 읽기 \\
+    \midrule
+    A (자기) & $I$ & (0.670, 0.330) / (0.330, 0.670) &
+      각 단어가 \textbf{자기 자신}에 67\% \\
+    B (이웃) & $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ &
+      (0.330, 0.670) / (0.670, 0.330) &
+      각 단어가 \textbf{다른 단어}에 67\% \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.5em
+  두 행렬은 \textbf{완전한 미러}다 — A 헤드의 ``자기 우위''
+  방향이 바로 B 헤드의 ``이웃 우위'' 방향. $V$ 가 같은데도
+  \textbf{출력이 다르다}:
+  \begin{itemize}
+    \item 헤드 A의 단어 1 출력 = $[0.670, 0.330]$
+    \item 헤드 B의 단어 1 출력 = $[0.330, 0.670]$
+  \end{itemize}
+  {\footnotesize 가중치가 반대라 섞임 비율이 뒤집힌 것.}
+\end{frame}

@@ -1,0 +1,24 @@
+% ===== overview =====
+\begin{frame}{이번 주차 개요}
+  \begin{itemize}
+    \item 로봇 팔의 관절에 가할 힘: $-10$Nm$\sim$$+10$Nm의 \kb{연속값} 중 아무거나.
+    \item Week 6$\cdot$9의 Q-learning/DQN은 매 스텝 $\max_{a'} Q(s',a')$ ---
+      행동을 \textbf{나열해} 최댓값을 찾아야 함.
+    \item 행동이 연속이면 후보가 \textbf{무한} --- argmax 자체가 불가능.
+    \item 답: 행동 확률분포 $\pi_\theta(a|s)$를 신경망으로 표현해
+      \textbf{정책을 직접 학습}. 최댓값을 ``찾는'' 대신 \textbf{샘플링}.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{세 차시의 흐름}
+    \textbf{10.1} 정리를 세운다 --- softmax/조건부 정규 정책,
+    로그미분 트릭 $\to$ Policy Gradient Theorem, 엔트로피 보너스, 분산 문제 \\
+    \textbf{10.2} 정리를 알고리즘으로 --- REINFORCE 손계산, 2행동 밴딧,
+    PyTorch CartPole, ``리턴을 그대로 쓰는'' 함정 \\
+    \textbf{10.3} 거침을 고친다 --- 베이스라인/어드밴티지로 분산 감소,
+    Actor-Critic, REINFORCE vs A2C 비교
+  \end{block}
+  \vskip0.3em
+  {\footnotesize 이번 장의 REINFORCE/Actor-Critic 기초 위에 Week 11에서
+  PPO를 세우고, Week 13--14의 로봇 시뮬레이션(Pendulum)이 그 위에 올라간다.
+  심화 자료: Stanford CS234 (Reinforcement Learning).}
+\end{frame}

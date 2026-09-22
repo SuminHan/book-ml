@@ -1,0 +1,30 @@
+\begin{frame}[fragile]{코드: 편향 무작위 걷기 (일괄적 걷기를 대체)}
+\begin{lstlisting}
+def biased_walk(nb, start, length, p, q, rng):
+    """Node2Vec의 편향 무작위 걷기. nb: 노드 -> 이웃 목록"""
+    walk = [start]
+    prev = None
+    for _ in range(length - 1):
+        cur = walk[-1]
+        weights = []
+        for nxt in nb[cur]:
+            if prev is None:
+                weights.append(1.0)
+            elif nxt == prev:
+                weights.append(1.0 / p)      # 돌아가기
+            elif nxt in nb[prev]:
+                weights.append(1.0 / q)      # 로컬 영역 머무르기
+            else:
+                weights.append(1.0)          # 새 영토로
+        r = rng.random() * sum(weights)      # 가중치에 비례해 뽑기
+        acc, chosen = 0.0, nb[cur][0]
+        for nxt, w in zip(nb[cur], weights):
+            acc += w
+            if r <= acc:
+                chosen = nxt
+                break
+        walk.append(chosen)
+        prev, cur = cur, chosen
+    return walk
+\end{lstlisting}
+\end{frame}

@@ -1,0 +1,35 @@
+\begin{frame}[fragile]{실습: 세 공식을 코드 한 페이지로}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+\begin{lstlisting}
+def out_size(n, k, p=0, s=1):
+    return (n + 2*p - k) // s + 1
+    # 1D 한 방향의 출력 크기
+
+def conv_cost(n_in, k, c_in, c_out,
+              p=0, s=1):
+    n_out = out_size(n_in, k, p, s)
+    params = (k*k*c_in + 1) * c_out
+    flops  = n_out**2 * c_out \
+             * (k*k*c_in)
+    return n_out, params, flops
+
+print(conv_cost(28, 3, 1, 4))    # (26, 40, 24336)
+print(conv_cost(26, 3, 4, 8))    # (24, 296, 165888)
+print(conv_cost(12, 3, 8, 16))   # (10, 1168, 115200)
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{itemize}
+        \item 합계 \textbf{1,504} --- 손계산 표의
+          파라미터 합계와 정확히 일치
+        \item ``수식 $\to$ 코드 $\to$ 표''가
+          하나의 계산을 \textbf{세 번} 확인
+        \item 세 공식($n_{\text{out}}$, params, FLOPs)은
+          \textbf{독립이 아니라} 같은
+          $(n,k,p,s,C_{\text{in}},C_{\text{out}})$ 에서
+          나란히 계산되는 \textbf{하나의 패키지}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

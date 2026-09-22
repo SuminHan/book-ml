@@ -1,0 +1,19 @@
+\begin{frame}{1-2-1 손계산: 역전파 (출력층)}
+  \textbf{출력층 그래디언트}(연쇄법칙, 가장 단순한 층부터):
+  \[\frac{\partial J}{\partial W_2} = 2\,\mathrm{err}\cdot a_1^T
+  = 2(-1)\begin{bmatrix} 2 & 0 \end{bmatrix}
+  = \begin{bmatrix} -4 & 0 \end{bmatrix}, \qquad
+  \frac{\partial J}{\partial b_2} = 2\,\mathrm{err} = -2
+  \]
+  \vskip0.8em
+  \textbf{은닉층 그래디언트} --- 출력층의 ``오차 신호''
+  $2\,\mathrm{err}\cdot W_2$를 내려보내고 ReLU 도함수로 걸러냄:
+  \[\frac{\partial J}{\partial a_1} = 2\,\mathrm{err}\cdot W_2^T
+  = 2(-1)\begin{bmatrix} 1 \\ 1 \end{bmatrix}
+  = \begin{bmatrix} -2 \\ -2 \end{bmatrix}\]
+  \[\frac{\partial J}{\partial z_1} =
+  \frac{\partial J}{\partial a_1} \odot \mathrm{ReLU}'(z_1)
+  = \begin{bmatrix} -2 \\ -2 \end{bmatrix}
+  \odot \begin{bmatrix} 1 \\ 0 \end{bmatrix}
+  = \begin{bmatrix} -2 \\ 0 \end{bmatrix}\]
+\end{frame}

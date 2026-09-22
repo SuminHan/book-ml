@@ -1,0 +1,25 @@
+\begin{frame}{자주 하는 실수: 버퍼가 차기 전에 학습을 시작하는 것}
+  \begin{itemize}
+    \item 학습 루프의 \texttt{if len(buffer) $>$= batch\_size:} 조건을
+      빼먹고 버퍼가 거의 비어 있는 상태에서부터 학습 $\Rightarrow$
+      배치 샘플이 사실상 \textbf{같은(극소수) 경험의 반복 추출}
+      $\Rightarrow$ 다양성 부족, 불안정한 학습.
+  \end{itemize}
+  \vskip0.4em
+  \begin{block}{왜 1,000개 이상인가}
+    \texttt{batch\_size=32}라면 ``32개만 차면 학습''도 \textbf{가능}은
+    하지만, 32개 안의 경험은 \textbf{최근 32스텝}뿐 ---
+    혼합시간(몇십 스텝)과 같은 길이이므로 \textbf{상관 제거 효과가
+    거의 없음}. 1,000개면 최근 1,000스텝이 섞여 32개 샘플이
+    시간적으로 \textbf{넓게} 퍼진다.
+    \textbf{최소} 조건 = 버퍼 $>$ 배치 크기,
+    \textbf{실용} 조건 = 혼합시간보다 충분히 크 것.
+  \end{block}
+  \begin{itemize}
+    \item \kq{연관 실수: \texttt{ReplayBuffer} 없이 순서대로 온-폴리시로만.}
+      9.2의 별칭 버그가 여기까지 오면, 문제 2(상관)가 \textbf{완전히}
+      회귀 --- 발산하거나, 오래 진동하다 \textbf{``잘못된 값에
+      안정''}(9.2의 (A) 팔). \textbf{두 장치는 독립적으로도 필요하고,
+      함께 쓰일 때} 9.1의 ``불안정한 조합''을 제어한다.
+  \end{itemize}
+\end{frame}

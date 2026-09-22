@@ -1,0 +1,24 @@
+\begin{frame}{자주 묻는 질문 (1)}
+  \textbf{Q. 항상 Lasso(L1)를 쓰는 게 낫나요?}
+  \begin{itemize}
+    \item 아님. 특징이 강하게 상관되면(집 크기 대 방 개수) Lasso는 하나만
+      임의로 남기고 나머지를 0으로 — \textbf{불안정}(데이터 살짝 바꿔도
+      남는 특징이 달라질 수 있음).
+    \item Ridge는 상관 특징들의 가중치를 비슷하게 나눠 갖는 경향 →
+      \textbf{안정적}.
+    \item 실전: 둘을 섞은 \kb{엘라스틱넷}(Zou·Hastie 2005),
+      $R(w) = \alpha\|w\|_1 + (1-\alpha)\|w\|_2^2$.
+  \end{itemize}
+  \vskip0.4em
+  \textbf{Q. Lasso가 0으로 만든 특징이 사실 중요했지만 효과 작아
+  떨어진 경우, 어떻게 구별?}
+  \begin{itemize}
+    \item 구분할 \emph{수 없는} 것이 정답에 가까움 — $w_j=0$은 ``무관하다''는
+      증명이 아니라 \emph{그 $\lambda$에서} 최적화가 내린 \textbf{선택의 결과}.
+    \item 진짜 계수 3이면 $\lambda=0.13$ 넘겨도 살아남지만 0.2였으면 같은
+      $\lambda$에서 0 — 신뢰도는 ``진짜 계수 $>$ 임계 $\lambda$'' 전제에
+      달려 있고, 그 전제는 데이터 이전에 보장되지 않음.
+    \item 줄이는 법: 특징 \textbf{스케일링} + $\lambda$를 6.2의 CV로
+      ``너무 크게'' 잡지 않게.
+  \end{itemize}
+\end{frame}

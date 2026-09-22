@@ -1,0 +1,22 @@
+\begin{frame}{진짜 $\log p(x)$와 비교: 부등식이 실제로 성립}
+  \begin{itemize}
+    \item \textbf{진짜} $\log p(1)$: $p(x) = \int \mathcal{N}(x|z,1)\,
+      \mathcal{N}(z;0,1)\,dz$ — ``정규분포 두개의 합(적분)은
+      정규분포'' → $\mathcal{N}(x; 0, 2)$
+    \item $\log p(1) = -\frac{1}{4} - \frac{1}{2}\log(4\pi)
+      \approx \mathbf{-1.516}$
+    \item \kq{부등식이 실제로 성립: $-1.516 \ge -1.919$}
+    \item 갭 $-1.516 - (-1.919) = 0.403$은 정확히
+      $D_{KL}(q \| p(z|x))$ — 진짜 사후
+      $p(z|x) = \mathcal{N}(0.5, 0.5)$ (Week 3 GDA 공식: 두 정규분포의
+      ``합''이 사후)과 엉터리 근사 $\mathcal{N}(1,1)$ 사이의 거리
+  \end{itemize}
+  \vskip0.8em
+  \begin{block}{$x = 9$로 다시 계산}
+    복원 항 $\approx -33.419$, 정규화 항 0.5 → ELBO $\approx -33.92$.
+    진짜 $\log p(9) = \log \mathcal{N}(9;0,2) \approx -21.52$ —
+    \textbf{갭이 12.40으로 벌어짐}. $q = \mathcal{N}(1,1)$은 $x=1$
+    근처에선 ``그럭저럭'' 근사(갭 0.4)지만 $x=9$엔 \textbf{완전히
+    부적합}(갭 12.4).
+  \end{block}
+\end{frame}

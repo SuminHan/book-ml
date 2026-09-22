@@ -1,0 +1,29 @@
+\begin{frame}{자주 묻는 질문}
+  \small
+  \begin{itemize}
+    \item \textbf{Q. 정형 데이터에 굳이 신경망을 써도 되나요?} \;
+      된다 — 다만 정형에서는 지금도 GBDT 계열이 경쟁적인 경우가 흔함.
+      선택했다면 ``왜 GBDT보다 이 문제에 더 적합하다고 판단했는지''
+      (복잡한 상호작용 자동 학습, 다른 DL 모듈과 결합 계획 등)를
+      발표에서 설명할 수 있어야 — ``최신이라서''는 근거가 아님.
+      GBDT 비교 숫자가 그 \textit{증거}가 되어야 한다.
+    \item \textbf{Q. Ch09~15 중 여러 기법을 동시에 써도 되나요?} \;
+      \textbf{권장} — 예: CNN으로 이미지 특징 추출 $\to$ 어텐션으로
+      조합. ``왜 이 조합인가''의 추가 설계 근거 기회. 단,
+      \textbf{수식적 정당화 1개}는 그중 하나의 기법만 충족하면 됨.
+    \item \textbf{Q. GPU가 없는데 CNN을 돌릴 수 있나요?} \; \textbf{되
+      다} — 기본 코스(digits 8$\times$8, EMNIST 28$\times$28,
+      CIFAR 32$\times$32)는 Colab 무료 CPU/T4로도 4주 안에 충분.
+      작은 CNN(35,914)은 CPU에서 수 분 만에 수렴. 대규모
+      (ResNet, BERT full fine-tune)가 필요하면 HF \textbf{pretrained}
+      모델 transfer + 마지막 층만 학습 — 정당화는 ``왜 이 pretrained
+      구조인가''(Ch13 사전학습)로 변경.
+    \item \textbf{Q. ``왜 DL'' 질문에 GBDT가 이기면(신경망이 못
+      이기면) 점수가 떨어지나요?} \; \textbf{떨어지지 않음} — 오히려
+      \textbf{정직한 결과}. 64차원 정형에서 GBDT와 비등은 \textit{예상
+      }이며, ``그래서 내 문제는 차원이 더 큰(784-dim) EMNIST여야 CNN
+      우위를 검증할 수 있다''로 연결하면 \textbf{높은} 점수.
+      감점은 GBDT를 돌려놓고도 ``신경망 0.94''만 보고 \textit{단순
+      결론}내는 경우.
+  \end{itemize}
+\end{frame}

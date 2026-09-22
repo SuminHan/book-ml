@@ -1,0 +1,50 @@
+\begin{frame}{자주 묻는 질문 (4.4)}
+  \small
+  \begin{itemize}
+    \item \textbf{Q. EM이 항상 전역 최적해로 수렴하나요?}
+      \textbf{아니} --- 매 반복마다 우도가 절대 \textbf{감소하지
+      않음}(그래서 언젠가 수렴)은 보장되지만, 4.3절 k-means와
+      마찬가지로 초기 파라미터에 따라 \textbf{지역 최적해}에
+      갇힐 수 있음. 실전: \textbf{서로 다른 초기화로 여러 번
+      돌려 가장 좋은 것을 채택}(k-means와 정확히 같은 대응책)
+    \item \textbf{Q. GMM이 k-means보다 항상 더 좋은가?}
+      \textbf{아니} --- GMM은 각 클러스터가 정규분포를 따른다는
+      가정(Week 3.2 GDA와 동일) + 부드러운 soft 할당 계산
+      $\Rightarrow$ k-means보다 \textbf{계산 비용 더 듦}.
+      클러스터가 \textbf{겹쳐 있거나 모양이 서로 다를} 가능성이
+      있으면 GMM 유리, \textbf{뚜렷이 분리돼 있고 속도가
+      중요}하면 k-means로 충분
+    \item \textbf{Q. GMM의 E-step이 ``정확한'' 사후확률을 계산
+      한다면, VAE는 왜 신경망으로 근사하나요?}
+      GMM의 잠재변수 $z$는 \textbf{이산}이고 가능치가 $K$개
+      뿐이라, 사후확률을 $K$개 항의 합으로 \textbf{정확히}
+      계산 가능. VAE(15.1절)의 잠재변수는 \textbf{연속}
+      벡터라 가능한 $z$가 \textbf{무한}하고, 사후확률의
+      \textbf{적분이 계산 불가능}(intractable)
+      $\Rightarrow$ ``계산 안 되는 E-step''을 \textbf{신경망}
+      $q_\phi(z|x)$로 근사하고 M-step도 \textbf{역전파}로
+      --- VAE는 정확히 이 필요에서 나온 \textbf{``EM의 약한
+      근사 버전''}
+    \item \textbf{Q. EM은 얼마나 빨리 수렴하나요?}
+      통상 \textbf{선형(linear) 수렴} --- 수렴점 가까울수록
+      오차가 ``고정된 비율''로 줄어들어 \textbf{마지막 몇 자리
+      정밀도는 의외로 오래} 걸림. 실전: ``파라미터 변화가
+      $\epsilon$ 미만''이나 ``likelihood 변화가 $\epsilon$
+      미만'' 같은 \textbf{수렴 기준}. 고차원에선 $\Sigma_k$가
+      \textbf{특이}(singular, 역행렬이 없는) 행렬에 \textbf{가깝게}
+      수렴하기 쉬우니, 실전 라이브러리
+      (\texttt{sklearn.mixture.GaussianMixture} 등)는
+      (i) \textbf{대각 공분산}만 허용, (ii) 모든 클러스터
+      \textbf{같은 공분산}, (iii) $\Sigma_k + \epsilon I$ 같은
+      \textbf{정규화} 옵션 제공
+    \item \textbf{Q. ``생성 모델''이라면서 어떻게 데이터를
+      \emph{만들어}냅니까?}
+      학습이 끝나면 \textbf{완전한} 데이터 생성 절차
+      $p(z) \to p(x|z)$를 가짐 --- 새 점: (1) 주사위 $\pi$로
+      $z$ 뽑고, (2) 그 $z = k$의 $\mathcal{N}(\mu_k, \Sigma_k)$
+      에서 $x$ 샘플링. 이 ``생성'' 능력이 Week 15(VAE가
+      $z \sim \mathcal{N}(0, I)$에서, GAN이 \textbf{노이즈}
+     에서)의 ``데이터 생성''과 \textbf{정확히 같은 질문}의
+      가장 단순한 버전
+  \end{itemize}
+\end{frame}

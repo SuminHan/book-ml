@@ -1,0 +1,16 @@
+\begin{frame}[fragile]{자주 하는 실수: 특징이 겹쳐 행렬이 특이해지면}
+  정규방정식은 $(X^TX)^{-1}$ 이 \textbf{존재할 때만} 계산 가능.
+  두 번째 특징이 첫 번째의 배수(완전 선형종속, 예: ``미터 단위
+  넓이'' + ``제곱피트 단위 넓이'') 면:
+\begin{lstlisting}
+X2_raw = np.column_stack([X_raw, 2 * X_raw])   # 두 번째 = 첫 번째의 2배
+X2 = np.column_stack([np.ones(m), X2_raw])
+print("det(X^T X) =", np.linalg.det(X2.T @ X2))   # 0.0
+np.linalg.inv(X2.T @ X2)   # LinAlgError: Singular matrix
+\end{lstlisting}
+  \vskip0.2em
+  행렬식이 정확히 0 --- \textbf{다중공선성}(multicollinearity) 으로
+  정보가 $\boldsymbol{w}$ 의 두 성분 중 어느 쪽에 어떻게 배분돼야 할지 수학적으로
+  결정할 방법이 없어져, \textbf{무한히 많은} $(w_1, w_2)$ 조합이
+  똑같은 예측을 내놓을 수 있게 된다.
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}{자주 하는 실수 4가지}
+  \begin{enumerate}
+    \item \kb{\texttt{gym.make}에서 바로 \texttt{step} 호출} ---
+      \texttt{make}는 환경만 만들고 초기화는 안 함. 반드시
+      \texttt{reset}이 먼저. \texttt{reset} 없이 \texttt{step}이면
+      \texttt{ResetNeeded: Cannot call env.step() before calling
+      env.reset()} 오류.
+    \item \kb{\texttt{done}을 하나로만 취급} --- 종료 판단에
+      \texttt{terminated or truncated}는 맞되, \textbf{가치 업데이트}
+      시 둘을 구분하지 않으면 500스텝째(터미널이 \textit{아닌})를
+      0으로 잘라 학습이 부정확.
+    \item \kb{보상을 누적하지 않음} --- \texttt{step}은
+      \textbf{한 스텝}의 보상만 줌. 에피소드 리턴은
+      \texttt{total += reward}로 \textbf{매 스텝 누적}해야.
+    \item \kb{\texttt{env.close()}를 깜빡함} --- 작은 환경에선
+      대수롭지 않으나 시뮬레이터 환경(13$\sim$14주차)은 메모리를
+      계속 점유 $\to$ \texttt{try/finally}나 \texttt{with} 블록으로
+      정리하는 습관.
+  \end{enumerate}
+\end{frame}

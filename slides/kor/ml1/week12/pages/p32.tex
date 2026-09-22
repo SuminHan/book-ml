@@ -1,0 +1,19 @@
+\begin{frame}{이 예의 한계를 정확히 짚어두기}
+  \begin{itemize}
+    \item 위 계산은 \textbf{임베딩을 손으로 설계}한 것 —
+      ``그것은이 동물과 관련 있다''는 \emph{설계}가 결과에 그대로
+      담기는 \textbf{``확인 실험''(confirmation experiment)}에
+      가깝다. 실제 모델에서는 이 임베딩과 $W_Q, W_K, W_V$ 가
+      \emph{데이터로부터 학습}되어 ``의미적으로 관련된 단어가
+      서로 높은 원점수를 낸다''는 패턴이 \emph{스스로}
+      만들어진다.
+    \item 이 예의 $d_k = 3$ 은 너무 작아 $\sqrt{d_k}$ 스케일링의
+      ``극단화 방지'' 효과가 실제로는 \emph{약하게} 보인다
+      (원점수가 0$\sim$5 범위라 softmax가 이미 충분히
+      분화되어 있음).
+    \item $d_k$ 가 크면(예: 512) 원점수가
+      $\sqrt{d_k} \approx 23$ 스케일로 벌어져 \textbf{스케일링이
+      없으면 one-hot으로 붙는 것} — 앞 절의 ``무작위 내적
+      분산'' 논리의 \textbf{본 장면}.
+  \end{itemize}
+\end{frame}

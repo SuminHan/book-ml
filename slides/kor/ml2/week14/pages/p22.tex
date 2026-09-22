@@ -1,0 +1,27 @@
+\begin{frame}{자주 묻는 질문 (14.1): PPO를 그대로 돌리면?}
+  \begin{itemize}
+    \item \textbf{Q. 직접 만든 환경에 Week 13.2 PPO를 그대로?}
+      \texttt{reset()}\,/\,\texttt{step()} 시그니처를 지키면
+      \texttt{env} 인자로 \texttt{MuJoCoPendulum()}을 받기만 하면 된다.
+      \textbf{두 가지 실전 차이}:
+  \end{itemize}
+  \vskip0.4em
+  \begin{enumerate}
+    \item \kb{보상의 스케일} --- PPO의 GAE·어드밴티지 정규화는
+      보상 범위에 민감. 진자의 ``$-$각도$^2$'' 보상이 CartPole의
+      ``$+1$/스텝''보다 절대값이 크면 \textbf{정규화 파라미터를
+      다시 맞춰}야 한다
+    \item \kb{시드 결정성} --- Gymnasium은
+      \texttt{env.reset(seed=...)}로 결정적 시드를 보장, 직접 만든
+      클래스는 \texttt{reset}에서 시드를
+      \texttt{np.random.default\_rng}에 넘겨줘야
+      ``같은 시드 $\to$ 같은 궤적''이 성립
+      (코드에서 \texttt{self.rng}가 그 역할)
+  \end{enumerate}
+  \vskip0.5em
+  {\footnotesize 확인 문제 예시: \texttt{done}을
+  \texttt{abs(th) < 0.1}로 바꾸면 PPO의 리턴 $G_t$ 길이에 어떻게
+  영향을 주는가? (``에피소드가 목표 달성 시 조기 종료'' + 성공/실패를
+  보상과 연결하는 방식)
+  }
+\end{frame}

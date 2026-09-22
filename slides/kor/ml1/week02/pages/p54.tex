@@ -1,0 +1,20 @@
+\begin{frame}{특이 행렬의 실전 해석과 근종속}
+  \begin{itemize}
+    \item \textbf{실전 해석 시 주의}: 완전히 중복된 특징이 섞인
+      모델에서 $w_1, w_2$ 각각의 값은 ``진짜'' 계수가 아니라
+      \textbf{배분의 산물} --- 그런 특징끼리는 \textbf{하나를 골라
+      버리는 것}이 해석을 위한 정석적 해결.
+    \item 실전에서 \texttt{LinAlgError} 나, \texttt{det} 가 0에
+      아주 가까워 \textbf{조건수가 거대}하면, ``특징 중 서로 거의
+      같은 정보를 담은 게 있는지''부터 점검이 \textbf{첫 단추}.
+    \item ``완전'' 종속보다 \textbf{``거의'' 종속} (상관계수 0.99) 이
+      더 흔하고 더 슬프다 --- 역행렬은 존재하지만 조건수가
+      $10^{15}$ 을 넘으면 float64 유효숫자가 바닥나 $\boldsymbol{w}$ 가 미세한
+      흔들림에 \textbf{거대하게} 요동.
+  \end{itemize}
+  \vskip0.4em
+  {\footnotesize 경사하강법은 에러 없이 돌아가지만 $\boldsymbol{w}$ 가 매우
+  불안정 --- Week 6의 정규화(regularization)가 이런 상황을 다스리는
+  정식 도구 ($\ell_2$ 정규화가 조건수를 기계적으로 다듬는 이유도
+  6.1절 확인).}
+\end{frame}

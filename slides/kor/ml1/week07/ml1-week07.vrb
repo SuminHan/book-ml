@@ -1,0 +1,33 @@
+\frametitle{실습: 코드로 섀플리값 직접 계산}
+특징 2개라 \textbf{정밀 계산}이 가능:
+\begin{lstlisting}
+f = {frozenset(): 10, frozenset("A"): 16,
+     frozenset("B"): 13, frozenset("AB"): 20}
+
+phi_A = 0.5 * ((f[frozenset("A")] - f[frozenset()])
+              + (f[frozenset("AB")] - f[frozenset("B")]))
+phi_B = 0.5 * ((f[frozenset("B")] - f[frozenset()])
+              + (f[frozenset("AB")] - f[frozenset("A")]))
+
+print(f"phi_A = {phi_A},  phi_B = {phi_B}")
+assert 10 + phi_A + phi_B == 20
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize \texttt{phi\_A = 6.5, \quad phi\_B = 3.5} \\
+  \texttt{검산: 10 + 6.5 + 3.5 = 20.0 \quad (f(\{A,B\}) = 20)} }
+  \vskip0.5em
+  \begin{itemize}
+    \item 특징이 \textbf{30개}가 되면 순서 $30! \approx 2.65\times10^{32}$개
+      — 우주 나이만큼 초박사들 동원해도 못 셈
+    \item 실전 SHAP의 두 \textbf{근사 전략}:
+    \begin{enumerate}
+      \item \textbf{퍼머테이션 샘플링}: $n!$개 중 작은 수(수백$\sim$수천개)를
+        무작위로 골라 평균
+      \item \textbf{트리 구조를 이용한 정밀 계산}: GBDT의 분기 경로를
+        따라 ``특징 $j$ 합류 시 예측 변화''를 \textbf{모든 경로의 합}으로
+        효율 계산 $\to$ RF/GBDT에 한해 \textbf{근사 없이} 정밀
+        (\texttt{shap} 패키지 \texttt{TreeExplainer})
+    \end{enumerate}
+    \item ``경로''가 없는 신경망 등: 퍼머테이션 또는 \textbf{통합
+      기대(KernelSHAP)} 같은 근사
+  \end{itemize}

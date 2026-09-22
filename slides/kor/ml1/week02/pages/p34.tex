@@ -1,0 +1,24 @@
+\begin{frame}{자주 묻는 질문 (2)}
+  \textbf{Q. 학습률은 실전에서 어떻게 정하나요?}
+  \vskip0.4em
+  \begin{itemize}
+    \item $J$ 가 이차함수이면 (선형회귀) 이 절의 공식으로 정량적:
+      \[0 < \alpha < 2/\lambda_{\max}\]
+      ($\lambda_{\max}$ = $(1/m)X^TX$ 의 최대 고유값).
+    \item 신경망처럼 이차함수가 아니면 공식이 없으므로, 보통
+      $\alpha = 0.1 \sim 0.01$ 에서 시작해 비용 곡선을 보고
+      조절: 매끄럽게 내려가면 더 큰 값으로, 흔들리거나 발산하면
+      10배 줄인다.
+    \item 파라미터마다 학습률을 자동 조절하는 \kb{적응형 학습률
+      알고리즘} (SGD 변형, Adam 등)이 실전의 표준 --- Week 9.
+  \end{itemize}
+  \vskip0.8em
+  \textbf{Q. 0에서 시작하는 것은 필수인가?}
+  \vskip0.4em
+  \begin{itemize}
+    \item 아니요 --- 볼록함수는 \textbf{어디서 시작하든} 같은
+      최솟값에 도달 (첫 Q 참고). 0은 관례일 뿐.
+    \item 단, 초기값이 멀수록 스텝 수 $\uparrow$ --- 특징 표준화
+      (2.2절)가 실용적인 이유.
+  \end{itemize}
+\end{frame}

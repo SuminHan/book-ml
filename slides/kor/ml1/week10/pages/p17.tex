@@ -1,0 +1,40 @@
+\begin{frame}{자주 하는 실수: 공식이 걸리는 두 곳}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \kb{실수 1: ``패딩은 출력에 더해지는 거다''}
+      \begin{itemize}
+        \item $n{=}28, k{=}3, p{=}1, s{=}1$ 의 출력을
+          ``$28+2=30$'' 이라고 ---
+          패딩 픽셀이 출력을 만든다고 오해
+        \item \kb{패딩은 출력 위치를 새로 만들지 않는다} ---
+          ``벗어나갈 것 같았던 위치''(필터가 원본 경계를 넘는
+          위치)를 \textbf{유효하게 만들어 주는 것}뿐
+        \item 출력 = ``패딩된 입력 안에서 필터가 완전히 들어가는
+          위치 수'' $= \lfloor(28+2-3)/1\rfloor+1 = 28$
+        \item 패딩의 정당한 용도는 \textbf{``same padding으로
+          크기를 유지''}, ``출력을 키우는 것''이 아니다
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \kb{실수 2: ``FLOPs = 파라미터 $\times$ 고정 계수''}
+      \begin{itemize}
+        \item FC에서는 샘플당 FLOPs $\approx 2\times$파라미터라,
+          이 습관을 합성곱에도 적용하기 쉬움
+        \item 그러나 \kb{합성곱의 FLOPs/파라미터 비율은
+          $n_{\text{out}}^2$ 이며 층마다 다름}
+        \item 같은 224$\times$224, 64 출력 채널:
+          3$\times$3 = 640 params, $\approx$2,839만 MAC
+          vs 1$\times$1 = 128 params, $\approx$321만 MAC
+        \item 파라미터 비율 \textbf{5배}인데 FLOPs 비율은
+          \textbf{약 8.8배}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  \kq{연산량을 비교할 때는 ``파라미터 몇 배''가 아니라
+  \textbf{공식}으로 직접 계산.}
+  {\footnotesize (1$\times$1 합성곱은 공간 크기 그대로 두고
+  채널만 선형 결합 --- ``경량으로 채널을 섞는다''는 용도로
+  VGG·ResNet 중간층에서 실전에 많이 쓰인다. 10.2에서 다시 만난다.)}
+\end{frame}

@@ -1,0 +1,28 @@
+\begin{frame}{같은 데이터, 두 근사기: 표 vs 신경망}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \small
+      \begin{itemize}
+        \item 1차원 랜덤워크 장난감: $x\in[0,6]$, 매 스텝 $\pm0.6$ 균일,
+          0에서 $-1$, 6에서 $+1$ 종료, $\gamma=0.9$.
+        \item \textbf{동일한} 300개 에피소드(시드 7)로 각각 학습.
+        \item 표: 0.1칸(61칸) 평균 리턴 / 신경망: 1$\to$16$\to$16$\to$1 MLP.
+      \end{itemize}
+      \small
+      \begin{itemize}
+        \item \textbf{본 적 있는 곳}: 둘 다 참값 $V^{*}$에 가까움(표의 미덕).
+        \item \textbf{칸과 칸 사이}: 표는 보간이 없는데, 신경망은 매끄러운 곡선.
+          \textbf{이 보간이 곧 일반화}.
+        \item \textbf{표의 빈 칸}: 표는 답을 못 내는데, 신경망은 주변을 보고 추론.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch09_1_table_vs_net.png}
+      \\[0.3em]
+      {\footnotesize (a) 전 구간: 표는 칸마다 점프,
+      신경망은 매끄러운 곡선. (b) 목표(6) 근처 확대:
+      표의 ``칸''이 참값의 급격한 변화를 놓친다.}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{첫방문 MC 예측: 코드}
+\begin{lstlisting}
+def mc_prediction(policy, env_sample_episode, n_episodes, gamma):
+    # env_sample_episode(policy) -> [(state, action, reward), ...]
+    returns_sum = {}
+    returns_count = {}
+    for _ in range(n_episodes):
+        episode = env_sample_episode(policy)
+        G = 0.0
+        visited = set()
+        for t in reversed(range(len(episode))):   # 뒤에서부터: G_t 재귀
+            s, a, r = episode[t]
+            G = r + gamma * G
+            if s not in visited:                  # 첫 방문만 카운트
+                visited.add(s)
+                returns_sum[s] = returns_sum.get(s, 0.0) + G
+                returns_count[s] = returns_count.get(s, 0) + 1
+    return {s: returns_sum[s] / returns_count[s] for s in returns_sum}
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize \kq{주의:} 위 코드는 뒤에서부터 훑으면서
+  ``아직 안 본 상태''를 카운트하는 구조라 사실상
+  \textbf{마지막 방문}을 세고 있다 --- 이 구별은 아래
+  ``자주 하는 실수''에서 정확히 짚는다.}
+\end{frame}

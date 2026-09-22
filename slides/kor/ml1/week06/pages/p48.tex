@@ -1,0 +1,28 @@
+\begin{frame}{배포 시나리오: 미래를 볼 수 없다}
+  \begin{itemize}
+    \item 모델을 배포하는 시점에는 \textbf{미래에 들어올 데이터(test에
+      해당)를 아직 볼 수 없음} → 애초에 그 통계량을 계산에 쓸 수 없다.
+    \item \kb{train 통계량만으로 표준화}가 실제 배포 상황을 정확히 흉내
+      낸 것이고, 전체 데이터로 계산하는 것은 ``미래를 몰래 들여다본'' 값.
+    \item 이 차이가 검증 성능을 \textbf{실제보다 낙관적으로 부풀리는}
+      방향으로 작용하는 경우가 많다.
+  \end{itemize}
+  \vskip0.4em
+  \begin{center}
+    \includegraphics[width=0.5\linewidth]{ch06_3_leakage_zscore.png}
+  \end{center}
+  {\footnotesize 좌측: 원본 축에서 test(8$\sim$10)는 train 범위(1$\sim$7)를
+  벗어남. 우측: 전체로 fit한 std(2.87)로 나누면 test의 z가 0.87$\sim$1.57로
+  ``평범'', train만 fit한 std(2.0)로 나누면 2.0$\sim$3.0으로 ``극단''.}
+  \vskip0.3em
+  \begin{block}{왜 std가 test 때문에 커지는가}
+    전체 10개의 std(2.872)가 train 7개(2.0)보다 큰 것은, test의 큰 값들
+    (8,9,10)이 \emph{분산 계산에 이미 들어와} 전체 std를 끌어올린 것.
+    \vskip0.2em
+    \kq{재고 싶은 것(test)이 재는 자(통계량)를 미리 바꿔놓은 것 = 누수의
+    핵심.}
+  \end{block}
+  {\footnotesize PCA(Week 14)의 주성분, 결측치 대체 평균 등 ``데이터를 보고
+  계산하는 \emph{모든} 통계량''에 동일 — \textbf{반드시 train으로만 계산하고,
+  val/test에는 적용만}.}
+\end{frame}

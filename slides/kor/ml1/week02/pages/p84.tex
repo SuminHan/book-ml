@@ -1,0 +1,18 @@
+\begin{frame}{자주 하는 실수 (1): 스케일링 없이 경사하강법이 왜곡}
+  \begin{itemize}
+    \item 선형회귀(2.1절)에서는 스케일링이 ``학습률 선택의
+      \textbf{편의}'' 였지만, 로지스틱회귀에서는 \textbf{더 심}.
+    \item 시그모이드의 그래디언트 $\sigma'(z) = \sigma(z)(1-\sigma(z))$
+      가 $z = \boldsymbol{w}^T\boldsymbol{x}$ 에 \textbf{의존} --- 특징 스케일이 30배로
+      다르면 $z$ 의 크기 자체가 30배 차이.
+    \item 스케일이 큰 특징 쪽 그래디언트가 \textbf{더 커짐} $\to$
+      경사하강법이 ``스케일 큰 특징을 \textbf{먼저 학습}''하는
+      왜곡된 경로를 타고, 학습률이 스케일에 맞춰 조정되지 않으면
+      \textbf{발산하거나 극도로 느려짐}.
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{실전 표준}
+    \kb{\texttt{StandardScaler}} 로 스케일링 후 학습 ---
+    이 절의 실습 노트북도 스케일링 후.
+  \end{block}
+\end{frame}

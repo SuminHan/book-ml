@@ -1,0 +1,24 @@
+\begin{frame}{왜 이렇게 느리게 수렴하는가}
+  \begin{block}{힌트}
+    $p_0$ 가 1에 가까워질수록:
+    \begin{itemize}
+      \item 그래디언트 성분 $(1-p_0)$ 이 \textbf{줄어}
+        ``더 올릴 힘''이 약해지고,
+      \item ``나쁜 행동''을 샘플링해 자신감을 \textbf{교정}해줄
+        기회도 줄어듦.
+    \end{itemize}
+    $\to$ 단일 샘플 $G_t$ 로 업데이트하는 \textbf{모든} REINFORCE
+    계열 알고리즘의 \textbf{본질적 특성}.
+  \end{block}
+  \vskip0.4em
+  {\footnotesize 10.3절에서 가치함수로 추정하는 것(또는 더 많은
+  샘플을 쓰는 것)이 이 ``느림''을 공격하는 방법 중 하나.}
+  \vskip0.6em
+  \begin{block}{왜 이게 model-free인가 --- 다시 한 번}
+    궤적 확률 $P(\tau;\theta) = \prod_t \pi_\theta(a_t|s_t)\,
+    P(s_{t+1}|s_t,a_t)$ 를 \textbf{로그}로 바꾸면, 환경 전이확률 항은
+    $\theta$ 와 \textbf{무관}해서 미분하면 \textbf{사라짐}.
+    최종 식에는 정책 $\pi_\theta$ \textbf{만} 남고 환경 모델은
+    전혀 등장하지 않음 --- model-free의 핵심 성질이 여기서 나옴.
+  \end{block}
+\end{frame}

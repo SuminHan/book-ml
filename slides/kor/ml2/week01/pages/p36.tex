@@ -1,0 +1,24 @@
+\begin{frame}[fragile]{\texttt{reset}/\texttt{step}으로 직접 보고}
+\begin{lstlisting}
+import gymnasium as gym
+
+# (1) CartPole: 막대 균형. 4차원 연속 상태, 2개 이산 행동
+env = gym.make("CartPole-v1")
+obs, _ = env.reset(seed=0)
+print("CartPole 초기 상태:", obs)
+print("  상태 공간:", env.observation_space)
+print("  행동 공간:", env.action_space)
+env.close()
+
+# (2) Pendulum: 막대를 위로 균형. 3차원 연속 상태, *연속* 행동
+env = gym.make("Pendulum-v1")
+obs, _ = env.reset(seed=0)
+print("Pendulum 초기 상태:", obs)
+print("  상태 공간:", env.observation_space)
+print("  행동 공간:", env.action_space)   # 연속: Box(-2, +2)
+env.close()
+\end{lstlisting}
+  {\footnotesize 지금은 \texttt{env.action\_space.sample()}로
+  \textbf{완전 무작위}로 행동 --- 2$\sim$11주차을 거치며 이 한 줄이
+  ``알고리즘이 고른 행동''으로 똑똑해지는 것을 확인.}
+\end{frame}

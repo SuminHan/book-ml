@@ -1,0 +1,21 @@
+\begin{frame}{세 그룹: A(순수 BC) · B(순수 RL) · C(BC+RL)}
+  \small
+  \begin{tabular}{@{}p{0.12\textwidth}p{0.84\textwidth}@{}}
+    \toprule
+    A & \textbf{순수 BC} — 시연 $(s,a)$로만 학습. 시연에 없던
+         상태에서는 \textbf{무작위}. \\
+    B & \textbf{순수 RL} — Q-learning(Week 6, DQN의 핵심)을 0부터
+         $\varepsilon$-탐험으로 학습. \\
+    C & \textbf{BC+RL} — BC 정책의 \textbf{가치함수를 초기값}으로
+         주고, 그 위에 Q-learning 미세조정. \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{block}{BC+RL의 ``초기값''이 정확히 무엇인가}
+    BC가 학습한 것은 \textbf{정책} $\pi$이지 가치함수 아님. 이
+    실험의 초기값: 시연 경로 위 상태 $s$에서 전문가 행동을 따르면
+    남은 스텝 수 $k$만큼 더 받아 $Q(s,\pi(s))\approx-k$, 다른
+    행동은 $-(k-1)$, 시연에 없는 상태는 0(미학습) — ``\textbf{시연
+    근방에선 시연만큼 정확하고, 바깥은 아직 모름}.``
+  \end{block}
+\end{frame}

@@ -1,0 +1,17 @@
+\begin{frame}{커널 한 번의 의미}
+  \begin{itemize}
+    \item NVIDIA GPU: 수천$\sim$수만 개의 가벼운 코어(CUDA 코어) ---
+      모두 \textbf{같은 연산을 나란히 놓인 데이터 요소마다} 수행
+     하도록 설계
+    \item ``4,096개 환경의 상태''를 하나의 큰 텐서
+      $(4096 \times \text{상태차원})$로 모으면:
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{``커널 한 번''}
+    물리 스텝을 계산하는 \kb{커널(kernel) 함수를 한 번만} 호출하면
+    수천 개의 코어가 \textbf{각자 자신의 환경}의 물리 스텝을
+    동시에 처리. 함수를 4,096번 \textbf{호출하는 게} 아니라,
+    \textbf{한 번의 함수 호출 안의 연산이 수천 개로 나뉜다}
+    --- 이것이 CPU 순차 호출과의 근본적 차이.
+  \end{block}
+\end{frame}

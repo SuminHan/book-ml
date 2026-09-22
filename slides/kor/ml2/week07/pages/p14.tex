@@ -1,0 +1,21 @@
+\begin{frame}{결론: 보편적인 최적 $n$은 없다}
+  \begin{block}{핵심}
+    \kq{최적 $n$은 에피소드 예산 · 환경의 확률적 정도 · 할인율에
+    따라 움직이는 하이퍼파라미터다.}
+    이것이 실전에서 $n$을 검증으로 튜닝해야 하는 이유이며, 7.2의
+    적격흔적이 ``$n$을 고르는 문제'' 자체를 피하는(모든 $n$을 흔적으로
+    가중합) 대안인 이유이기도 하다.
+  \end{block}
+  \vskip0.6em
+  \kb{$n$을 고르는 경험칙}
+  \begin{itemize}
+    \item (i) 에피소드 \textbf{짧고} 경험 \textbf{많다}: $n=\infty$(MC)나
+      작은 $n$(TD(0))이 안전 --- 편향을 씻어낼 데이터가 있으므로.
+    \item (ii) 에피소드 \textbf{길고} 경험 \textbf{적다}: 중간 $n$(3$\sim$10)이
+      편향을 줄이면서 분산을 관리.
+    \item (iii) 에피소드 \textbf{끝이 없다}(continuing task): MC 자체가
+      불가능 $\Rightarrow$ 유한 $n$ 또는 적격흔적(7.2).
+  \end{itemize}
+  {\footnotesize 실전 DQN(Mnih et al., 2015) 계열에서도 n-step 리턴은
+  기본 옵션, 보통 3$\sim$10 범위로 튜닝.}
+\end{frame}

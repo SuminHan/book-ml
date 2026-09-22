@@ -1,0 +1,31 @@
+\begin{frame}{EDA: 모델을 돌리기 전에 데이터와 ``대화''하기}
+  EDA의 목적은 ``데이터를 보는 것'' 자체가 아니라, 모델링 \textbf{전에}
+  다음 질문에 답을 얻어두는 것 --- 이 질문들은 \textbf{모델이 아니라
+  데이터}에 대해 묻는 것들이다:
+  \begin{enumerate}
+    \item \textbf{각 특징의 스케일이 서로 얼마나 다른가?} ---
+      평수(수십$\sim$백) vs 연식(네 자리 연도) vs 가격(억 단위).
+      차이가 크면 Week 4.1의 \textbf{특징 정규화}를 모델에 넣기 전에
+      --- EDA의 \textbf{첫} 질문.
+    \item \textbf{어떤 특징이 목표 변수와 강하게 연관되는가?} ---
+      아무 특징도 관련이 없으면 예측력에 한계 (1.2절의 강조와 정확히
+      같은 질문).
+    \item \textbf{목표 변수의 분포가 합리적인가?} --- 음수값,
+      한쪽 꼬리가 극단적으로 긴가 (가격 데이터는 보통 \textbf{오른쪽
+      꼬리}가 긴 분포). 꼬리가 길면 ``평균을 얼마나 잘 맞히느냐''
+      기준(MSE, Week 2)이 극단값에 지나치게 민감해질 수 있음.
+    \item \textbf{클래스 균형(분류)은 적당한가?} --- 양성:음성 =
+      99:1이면 전부를 ``음성''으로 예측하는 멍한 모델도 정확도
+      99\% --- 정확도는 \textbf{무의미}하고 PR-AUC(Week 2.3)를
+      처음부터 염두.
+  \end{enumerate}
+  \vskip0.3em
+  {\footnotesize 실 데이터로: Kaggle ``House Prices''(1,460행 $\times$
+  81 특징)는 \texttt{describe()} 만 찍어도 \texttt{SalePrice} 가
+  \textbf{오른쪽으로 심하게 치우켜} 있고 \textbf{최댓값이
+  99퍼센타일보다 수 배} 크다는 것을 즉시 보여준다 --- 극단값 몇 개가
+  훈련을 얼마나 끌어당기는지 Week 6의 정규화를 배우기 전에 감 잡기.
+  \texttt{describe()} $\cdot$ \texttt{corr()} $\cdot$
+  \texttt{isna().sum()} $\cdot$ \texttt{groupby()} 는 \textbf{도구}일
+  뿐 --- EDA는 그 도구로 \textbf{질문에 답하는 과정}.}
+\end{frame}

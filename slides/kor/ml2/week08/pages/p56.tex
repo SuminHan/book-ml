@@ -1,0 +1,49 @@
+\begin{frame}{복습 자가진단: 11$\sim$20 + 답 (한 줄)}
+  \scriptsize
+  \begin{tabular}{@{}clp{0.72\textwidth}@{}}
+    \toprule
+    \# & 장 & 한 문장 질문 \\
+    \midrule
+    11 & Ch\,05/06 & MC와 TD(0)의 목표값을 각각 \textbf{수식}으로 \\
+    12 & Ch\,06 & ``TD 오차가 0''이 ``벨만방정식을 만족한다''와 같은
+      말인 이유는? \\
+    13 & Ch\,06 & SARSA와 Q-learning의 차이를 한 문장으로 \\
+    14 & Ch\,06 & CliffWalking에서 ``더 짧은 경로''를 배운 알고리즘은?
+      학습중 리턴이 오히려 더 나쁜 이유는? \\
+    15 & Ch\,07 & n-step 리턴 $G_t^{(n)}$을 수식으로, $n=1$과
+      $n=\infty$(유한)는 무엇으로 퇴화하는가? \\
+    16 & Ch\,07 & 적격흔적 감쇠율 $\gamma\lambda$에서 $\lambda$의 역할? \\
+    17 & Ch\,07 & Dyna-Q의 모델이 저장하는 것은? 계획 한 스텝의
+      비용(대가)은? \\
+    18 & Ch\,05/06 & 같은 정책의 가치 추정 시 분산 큰 쪽: MC vs TD(0)? \\
+    19 & Ch\,05/06 & off-policy가 무엇이고, 왜 중요도 샘플링이 필요한가? \\
+    20 & Ch\,06 & Q-learning이 $Q^*$로 수렴해도 행동 정책($\varepsilon$-greedy)
+      이 최적이라 말하지 못하는 이유는? \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.4em
+  {\footnotesize
+  \textbf{답(한 줄) 예} --- 6: 주어진 정책의 가치 \emph{평가} vs
+  최선의 가치를 \emph{찾음}, 차이 = $\max$ 한 줄. 9: 방문 후
+  \emph{실제로 실현된} 리턴을 그대로 쓰므로 무편향(부트스트래핑
+  없음). 12: $\delta=$(목표값 $-$ 현재 추정)가 모든 (s,a)에서 0인 것
+  $\Leftrightarrow$ 해당 방정식의 해인 것. 14: \textbf{Q-learning}(절벽
+  옆 13스텝) --- 학습중 $\varepsilon$ 실수 한 번이 $-100$이라 학습중
+  리턴은 더 나쁨. 15:
+  $G_t^{(n)}=\sum_{k=0}^{n-1}\gamma^k R_{t+k+1}+\gamma^n
+  V(s_{t+n})$; $n=1\to$ TD(0), $n=\infty\to$ MC. 17: (s,a)마다
+  \textbf{마지막으로 관찰한} $(r,s')$; 계획 = 모델 오차(부정확한
+  예측의 복리 증식)가 대가. 20: 수렴 대상은 \emph{목표 정책(탐욕)}의
+  $Q^*$이지, 탐험 수단인 $\varepsilon$-greedy \emph{행동 정책}이 아님.
+  (나머지: 1 횟수 없으면 ``10회 중 5득점''과 ``1회 5득점'' 구별 불가 /
+  2 확률적 랜덤·못 간 값을 크게·불확실성 상한 보너스 / 3 $\mathcal
+  S,\mathcal A,P$, 초기 상태 분포 / 4 무한 호라이즌(할인 없는 무한
+  합은 발산, 축소 사상 논증 전제) / 5 상태 하나뿐인 특수 MDP / 7
+  거리가 $\gamma$배 이하로 줄어듦 / 8 한 번($V(s)=R+\gamma\cdot 0$) /
+  10 MC=방문 후 에피소드 끝까지 실제 리턴, SARSA=다음 \emph{실제 고른}
+  행동의 1스텝 목표값 / 11 MC $G_t=R_{t+1}+\gamma R_{t+2}+\cdots$,
+  TD(0) $R_{t+1}+\gamma V(s_{t+1})$ / 13 \emph{실행하는} 정책의 가치
+  (SARSA) vs \emph{탐욕} 정책의 가치(Q) --- 갱신식에 $\max$ 여부 /
+  16 $\lambda=0$이 TD(0), $\lambda=1$이 MC에 가까움 / 18 MC /
+  19 행동 정책과 목표 정책이 다른 것, 보정에 가중치(중요도) 필요)}
+\end{frame}

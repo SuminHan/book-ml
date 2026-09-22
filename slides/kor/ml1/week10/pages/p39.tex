@@ -1,0 +1,37 @@
+\begin{frame}[fragile]{스킵 연결: $y = F(x) + x$}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \kb{스킵 연결(skip / residual connection)}은
+      그래디언트 \textbf{곱셈 사슬에 지름길}을 낸다 ---
+      한 블록의 출력을 $F(x)$ 로 두는 대신,
+      \textbf{입력을 그대로 더한} $y=F(x)+x$ 로 정의:
+\begin{lstlisting}
+def residual_block(x, F):
+    # F: 합성곱 층 몇 개로 이루어진
+    #    함수 (예: Conv-ReLU-Conv)
+    return [F(x)[i] + x[i]
+            for i in range(len(x))]
+    # F(x) + x
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{왜 그래디언트를 살리는가}(직관):
+      $y=F(x)+x$ 를 $x$ 로 미분하면
+      \[ \frac{\partial y}{\partial x}
+         = \frac{\partial F}{\partial x} + 1 \]
+      \begin{itemize}
+        \item Week 9의 $\prod_l \sigma'(z_l)\cdot W_l$
+          곱셈 사슬에서 $\partial F/\partial x$ 가
+          아무리 작아져도(소실),
+          \textbf{``$+1$'' 항} 덕분에 그래디언트가
+          \textbf{최소 1은 유지}된 채 전달될 길 남음
+        \item 입력을 ``건너뛰어'' 뒤쪽 층으로
+          \textbf{그대로 흘려보내는 지름길}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vskip0.3em
+  이 아이디어 덕분에 \textbf{100층이 넘는 CNN도 안정적으로}
+  학습할 수 있게 됐고, Week 12의 \textbf{Transformer}에도
+  (다른 형태로) 그대로 쓰인다.
+\end{frame}

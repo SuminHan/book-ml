@@ -1,0 +1,29 @@
+\begin{frame}[fragile]{실습: sklearn으로 트리를 배우고 ``읽기''}
+  유방암 진단 데이터(양성/악성, 30개 특징), train/test 7:3, \textbf{깊이 3}.
+\begin{lstlisting}
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, export_text
+
+data = load_breast_cancer()
+X_train, X_test, y_train, y_test = train_test_split(
+    data.data, data.target, test_size=0.3, random_state=0)
+
+tree = DecisionTreeClassifier(max_depth=3, random_state=0).fit(X_train, y_train)
+print(export_text(tree, feature_names=list(data.feature_names), max_depth=2))
+\end{lstlisting}
+  \vskip0.3em
+  {\footnotesize
+  \texttt{|--- worst concave points <= 0.14} \;
+  \texttt{|--- worst concave points > 0.14} \ldots \\
+  \texttt{train acc: 0.967 \quad test acc: 0.947}}
+  \vskip0.4em
+  \begin{itemize}
+    \item \texttt{export\_text}가 \textbf{알고리즘이 스스로 골라낸 질문}을
+      그대로 보여준다
+    \item 루트가 \texttt{worst concave points}인 것 = \textbf{정보이득이
+      가장 큰 질문}을 자동 탐색해 루트에 놓은 것
+    \item 이 트리 하나는 사람이 \textbf{그대로 읽을 수 있다}:
+      ``0.14 이하이면(악성 쪽) worst area로 한 번 더 나누고…''
+  \end{itemize}
+\end{frame}

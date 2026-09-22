@@ -1,0 +1,30 @@
+\begin{frame}{세 단어 [개, 고양이, 쫓는다]: 서로 다른 3개 헤드}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item \textbf{(a) 자기-우위 헤드}: $Q=K=V$ 로
+          self-attention — 12.2절 ``자기 주입'' 효과
+          (자기 자신과의 내적 $\|q_i\|^2$ 가 최대)로
+          \textbf{대각선 우세} (``개'' 0.78, ``고양이'' 0.74,
+          ``쫓는다'' 0.93).
+        \item \textbf{(b) 위치-유사 헤드}: \emph{Key만}
+          1위치 순환 이동 ($K_i = E_{i+1}$) — 각 단어는
+          \textbf{다음 단어}의 Key와 가장 잘 맞아
+          (개$\to$고양이 0.78, 고양이$\to$쫓는다 0.74,
+          쫓는다$\to$개 0.93) — \emph{위상(순서)} 정보가
+          가중치에 새겨진다.
+        \item \textbf{(c) 역할 없음}: 모든 Key를 $(1,1)$ 으로 —
+          모든 가중치가 \textbf{0.333 균일}, ``아직 아무
+          역할도 분화하지 못한'' 헤드.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch12_3_multihead_weights.png}
+      \vskip0.2em
+      {\footnotesize 3단어에 대해 패턴이 서로 다른 3개 헤드.
+      학습된 모델에는 (a)(b) 같은 서로 다른 패턴의 헤드들이
+      실제로 공존한다.}
+    \end{column}
+  \end{columns}
+\end{frame}

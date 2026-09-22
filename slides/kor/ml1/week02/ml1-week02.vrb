@@ -1,0 +1,19 @@
+\frametitle{실습: sklearn으로 평가 지표 한 번에}
+\begin{lstlisting}
+from sklearn.metrics import classification_report, average_precision_score
+
+y_true = [1, 1, 1, 0, 0, 0, 1, 0]
+y_pred = [1, 0, 1, 0, 1, 0, 1, 0]
+y_scores = [0.9, 0.4, 0.8, 0.3, 0.6, 0.2, 0.7, 0.1]  # 임계값 0.5 적용 전 확률
+
+print(classification_report(y_true, y_pred, target_names=["정상", "스팸"]))
+print("PR-AUC:", round(average_precision_score(y_true, y_scores), 3))
+\end{lstlisting}
+  \vskip0.2em
+  \begin{itemize}
+    \item \texttt{classification\_report}: P/R/F1을 \textbf{클래스별
+      한 번에} 출력.
+    \item \texttt{average\_precision\_score}: 임계값을 \textbf{하나로
+      고정하지 않고} \texttt{y\_scores}(확률) 전체를 보고 PR-AUC
+      계산 --- \textbf{순위(ranking) 능력}을 평가.
+  \end{itemize}

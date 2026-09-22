@@ -1,0 +1,19 @@
+\begin{frame}{잘라내기가 ``거의 같은'' 이유}
+  \begin{itemize}
+    \item 잘라내기가 ``약한'' 것이 아니라 ``\textbf{거의 같은}''
+      이유: \textbf{곱적이 지수적으로 소실되기 때문}
+    \item 초기(학습 전) 가중치에서: 전체 11시점 BPTT로 구한
+      $W_{hh}$ 그래디언트 노름 $\gg$ 마지막 4시점만 BPTT로 구한
+      것 --- 그러나 \textbf{그 차이가 생각만큼 크지 않음}
+    \item 먼 과거(시점 1$\sim$7)의 기여는 $W_{hh}^\top$을 \textbf{여덟
+      번 곱한 곱적}이라 이미 많이 작아져, \textbf{4시점 창으로
+      잘라도 전체 그래디언트의 상당 부분이 재현}
+    \item 300에폭 진행 시 \textbf{전체 BPTT든 창 길이 4든}
+      ``abcabcabcabc''를 정확히 재현
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{의의}
+    긴 시퀀스에서 ``\textbf{먼 과거의 그래디언트}''는 본질적으로
+    \textbf{미미}하므로 잘라내기의 \textbf{비용은 생각보다 작다}.
+  \end{block}
+\end{frame}

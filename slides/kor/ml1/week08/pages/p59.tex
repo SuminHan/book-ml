@@ -1,0 +1,41 @@
+\begin{frame}[allowframebreaks]{확인 문제 5$\sim$7: 장 넘나들기 + 템플릿 ②}
+  \begin{itemize}
+    \item \textbf{5.} RF(Ch07.2)와 GBDT(Ch07.3)의 트리 학습
+      방식(\textbf{독립 병렬} vs \textbf{순차적 잔차 학습})
+      차이가, \textbf{라벨링 오류에 대한 취약성}에 어떤
+      영향을 주는가?
+      \vskip0.2em
+      {\footnotesize \textbf{답}: RF는 트리들이 서로 \textbf{독립}
+      적이라 한 트리가 라벨 오류를 과하게 학습해도 \textbf{다수결}
+      에서 다른 트리에 의해 희석. GBDT는 각 트리가 이전까지의
+      \textbf{잔차를 좇으므로}, 라벨 오류가 만드는 이상한
+      잔차를 후속 트리들이 계속 따라가며 \textbf{과적합할
+      위험}이 더 크다(Ch07.3 FAQ).}
+    \item \textbf{6.} Week 6.3의 데이터 누수(leakage) 원칙이
+      이번 프로젝트에서 \textbf{가장 흔히 깨지는 지점}은?
+      \vskip0.2em
+      {\footnotesize \textbf{답}: 정규화·표준화 통계량(평균,
+      표준편차)이나 결측치 대체값을 train/val/test로 나누기
+      \textbf{전에 전체 데이터로} 미리 계산하는 경우(Ch06.3)
+      --- \texttt{fit}은 반드시 \textbf{train에만} 적용하고,
+      val/test에는 \texttt{transform}만 적용.}
+  \end{itemize}
+
+  \begin{itemize}
+    \item \textbf{7.} 템플릿 ②의 4점 문제에서, $C=3.125$와
+      $C=100$의 해($w^\star, b^\star$, SV 집합)는 \textbf{같다}.
+      KKT 조건으로 \textbf{왜} 같은지, 그리고 $C$를 더 키워도
+      바뀌지 않는 마진의 \textbf{상한 값(0.8)}을 두 점의
+      지오메트리에서 직접 구해보자.
+      \vskip0.2em
+      {\footnotesize \textbf{답}: $C\ge25/8$에서는 A·B($-1,+1$)
+      과 이상치 E($-0.2,-1$)가 \textbf{모두 마진 위에} 있고
+      ($0<\alpha_i<C$), C($+2$)는 \textbf{마진 바깥}
+      ($\alpha_C=0$) --- 이 세 상태(마진 위/위/바깥)는 $C$의
+      \textbf{크기에 의존하지 않으므로} KKT의 해도 $C$에 무관.
+      마진의 상한은 \textbf{가장 가까운 다른 클래스 두 점}이
+      정한다: A($-1,+1$)과 E($-0.2,-1$) 사이의 \textbf{거리
+      0.8}이므로 경계는 중점 $-0.6$, 반갭 $0.4$, 마진
+      $2/\|w\|=0.8 \Rightarrow \|w\|=2.5,\ \|w\|^2=6.25$.}
+  \end{itemize}
+\end{frame}

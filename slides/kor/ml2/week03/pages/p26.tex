@@ -1,0 +1,32 @@
+\begin{frame}{FAQ (3/3)}
+  \begin{itemize}
+    \item \textbf{Q. 터미널 상태(terminal state)는 MDP의 다섯
+      요소에서 어디에 들어가는가?}
+      \begin{itemize}
+        \item 터미널 상태는 $\mathcal{S}$ 의 \textbf{원소}지만,
+          \textbf{전이 행동이 제한된} 특수한 상태 --- 보통
+          \kb{self-loop}(자기 자신으로 확률 1 전이)로 표현하고,
+          \kb{보상 0}을 준다.
+        \item ``종료''의 의미를 MDP 형식 안에 넣는 \textbf{표준
+          방식}이 바로 이것.
+        \item Week 4 정책평가 코드에서 볼 수 있듯, 터미널 상태를
+          self-loop으로 표현하면 벨만방정식이 터미널에서도
+          \textbf{같은 형태}($V(s_{\text{term}}) = 0$)를 유지해
+          \textbf{코드 분기가 필요 없다}.
+      \end{itemize}
+    \item \textbf{Q. Gymnasium의 \texttt{terminated} 와
+      \texttt{truncated} 는 MDP의 어떤 것에 해당하는가?}
+      \begin{itemize}
+        \item \texttt{terminated} = \kb{진짜 종료}(터미널 상태
+          도달, 게임 끝) $\to$ MDP의 \textbf{터미널 상태}와
+          정확히 대응.
+        \item \texttt{truncated} = \kb{시간 한도 도달}(게임은
+          계속됐을 것이지만 학습 편의상 끊음) $\to$ MDP 형식에는
+          \textbf{직접 대응하지 않는 학습 장치}.
+        \item 가치함수 업데이트 시 \texttt{terminated} 는
+          ``\textbf{미래 가치 0}''로, \texttt{truncated} 는
+          ``\textbf{다음 상태의 가치를 그대로}''로 처리해야
+          한다는 차이(1.3절에서 봤듯)가 여기에서 온다.
+      \end{itemize}
+  \end{itemize}
+\end{frame}

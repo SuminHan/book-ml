@@ -1,0 +1,25 @@
+\begin{frame}{정밀도 축을 작업별로 대입하면}
+  \small
+  \begin{tabular}{@{}p{4.6cm}p{2.8cm}p{6.6cm}@{}}
+    \toprule
+    작업 (Week) & 필요한 정밀도 & 이유 \\
+    \midrule
+    CartPole, Pendulum (9$\sim$11) & 낮음$\sim$중간 &
+      단일 막대/진자. 접촉 없음, 물리 근사만으로도 충분 \\
+    Reacher, 2관절 로봇팔 (13) & 중간 & 관절 운동은 있지만
+      \textbf{자발적인 강한 접촉} 없음 \\
+    사족보행/인간형 보행 (13.2) & \textbf{높음} & 발이 바닥에
+      \textbf{붙었다 떨어지는} 반복 접촉. 접촉력 정확도가 핵심 \\
+    카메라로 판단하는 정책 & 높음(센서) + 물리 & 렌더링
+      리얼리즘과 물리 정밀도 \textbf{둘 다} 필요 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.7em
+  \begin{block}{정밀도 축의 결론}
+    ``\textbf{접촉이 얼마나 중요한가}''로 결정된다. 접촉이 거의
+    없으면(Pendulum) Gymnasium 기본 환경, 관절이 있지만 강한
+    접촉이 없으면(Reacher) PyBullet/MuJoCo 어느 쪽이든 충분,
+    \textbf{발이 바닥을 차는 보행}이라면 MuJoCo급 정밀 LCP
+    접촉이 \textbf{필수}.
+  \end{block}
+\end{frame}

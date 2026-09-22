@@ -1,0 +1,22 @@
+\begin{frame}{역전파: 연쇄법칙을 거꾸로}
+  \begin{itemize}
+    \item 새 문제: \textbf{은닉층 가중치를 어떻게 학습할 것인가} —
+      은닉층에는 정답을 직접 비교할 대상이 없다
+    \item \kb{역전파}(rumelhart--hinton--williams, 1986): 출력층의 오차를
+      \textbf{연쇄법칙으로 거꾸로} 흘려보내, 각 가중치가 최종 오차에
+      얼마나 책임이 있는지 정확히 계산
+  \end{itemize}
+  \vskip0.4em
+  \[
+  z_1 \to a_1 \to z_2 \to a_2 \to L
+  \quad \text{(이 긴 사슬을 출력에서 입력 방향으로 거꾸로 따라가며 미분을 곱)}
+  \]
+  \begin{enumerate}
+    \item \kb{출력층 오차}: $\delta_2 = \dfrac{\partial L}{\partial z_2}
+      = (a_2 - y)\,\sigma'(z_2)$
+    \item \kb{은닉층 오차}: $\delta_1 = (W_2 \, \delta_2) \odot \sigma'(z_1)$
+      \;($\odot$: 원소별 곱)
+    \item \kb{그래디언트}: $\dfrac{\partial L}{\partial W_2} = \delta_2\, a_1^\top$, \;
+      $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
+  \end{enumerate}
+\end{frame}

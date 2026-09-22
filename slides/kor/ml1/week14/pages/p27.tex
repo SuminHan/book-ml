@@ -1,0 +1,25 @@
+\begin{frame}[fragile]{연습: 손으로 만드는 \texttt{pca} 함수}
+  완성할 함수 --- 중심화, 공분산, \texttt{eigh}, 내림차순 정렬,
+  상위 $n$개 주성분에 투영:
+\begin{lstlisting}
+import numpy as np
+
+def pca(X, n_components):
+    Xc = X - X.mean(axis=0)
+    cov = (Xc.T @ Xc) / len(Xc)
+    eigvals, eigvecs = np.linalg.eigh(cov)   # 단위 고유벡터 보장
+    order = np.argsort(eigvals)[::-1]        # 내림차순
+    eigvals, eigvecs = eigvals[order], eigvecs[:, order]
+    return Xc @ eigvecs[:, :n_components]
+
+X = np.array([[-2,-1],[-1,-2],[2,1],[1,2]], dtype=float)
+Z = pca(X, n_components=1)
+# Z = [약 -2.12, -2.12, +2.12, +2.12] (PC1 = 45도 대각선)
+# 확인: Z.var() == lambda_1 == 4.5
+\end{lstlisting}
+  \vskip0.2em
+  {\footnotesize 손계산 문제: 4개 점 $(-3,0),(0,0),(3,0),(0,0)$ (모두
+  x축 위) --- (a) 공분산 행렬? (b) 고유값? (c) PC1의 방향과 투영 분산?
+  \; 힌트: y축 분산은 0이므로 행렬은 $\left(\begin{smallmatrix} * & 0 \\
+  0 & 0 \end{smallmatrix}\right)$ 형태 --- PC1 = x축, PC2의 분산 = 0.}
+\end{frame}

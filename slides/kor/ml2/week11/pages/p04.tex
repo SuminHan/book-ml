@@ -1,0 +1,35 @@
+\begin{frame}{신뢰 영역이라는 직관}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \kb{산에서 안개 낀 내리막}
+      \begin{itemize}
+        \item 한 치 앞만 보이는 안개 속에서, 가장 가파른 방향으로
+          무작정 큰 걸음을 내디디면 절벽으로 떨어질 수 있다.
+        \item 안전한 전략: \textbf{한 걸음의 크기를 ``믿을 수 있는
+          범위''(신뢰 영역) 안으로 제한}.
+        \item 매 스텝이 실제로 개선을 보장하는 좁은 범위 안에서만
+          이동하게 한다 — 이것이 PPO의 핵심 아이디어.
+      \end{itemize}
+      \vskip0.6em
+      \kq{``한 걸음의 크기''는 어떻게 재는가?}
+      \smallskip
+      \small
+      정책은 행동의 \textbf{확률분포}이므로, 파라미터의 차
+      $\lVert\theta-\theta_{\mathrm{old}}\rVert$ 로 재기보다
+      \textbf{분포 자체의 거리}로 재는 것이 자연스럽다.
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \kb{표준적인 선택: KL 발산}
+      \[
+      D_{\mathrm{KL}}(\pi_\theta\,\|\,\pi_{\theta_{\mathrm{old}}})
+      = \mathbb{E}_{s\sim\rho}\Big[\,
+      \mathbb{E}_{a\sim\pi_\theta(\cdot\mid s)}
+      \log\frac{\pi_\theta(a\mid s)}
+      {\pi_{\theta_{\mathrm{old}}}(a\mid s)}\Big]
+      \]
+      {\footnotesize $\rho$ = 상태 방문 분포. 0이면 두 정책이
+      정확히 같고, 클수록 서로 다른 행동을 다르게 선호 —
+      ``정책 공간에서의 걸음 크기''를 재는 눈금.}
+    \end{column}
+  \end{columns}
+\end{frame}

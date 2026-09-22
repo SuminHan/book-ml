@@ -1,0 +1,26 @@
+\begin{frame}{이미지 밖으로: Waymo SceneDiffuser}
+  Diffusion의 ``노이즈를 점진적으로 되돌린다''는 원리는 픽셀 공간에
+  머물지 않음.
+  \begin{itemize}
+    \item 2024년 \kb{Waymo} 자율주행 개발 시뮬레이션 도구
+      \kb{SceneDiffuser}:
+      \textbf{자연어 지시}(``자신의 차가 저속 차량을 따라가는
+      장면'' 같은)로부터 \textbf{3차원 교통 장면의 초기 배치}(차량·
+      보행객의 위치, 진행 방향, 크기)를 생성 + 그 장면을
+      \textbf{앞으로 전개될 미래(롤아웃)}까지 시뮬레이션
+    \item 핵심: ``\textbf{장면 수준(scene-level)의 Diffusion
+      사전분포}'' — 장면 전체 상태가 시간에 따라 어떻게 흘러갈지를
+      하나의 \textbf{스페이오-템포럴(spatio-temporal, 공간-시간)}
+      Diffusion 모델로 예측
+    \item roadgraph·교통 신호 같은 제약 조건으로 노이즈 제거를 유도하는
+      \textbf{조건부 생성} — Stable Diffusion의 ``텍스트 $\to$
+      이미지''와 \textbf{정확히 같은 패턴}
+    \item Stable Diffusion이 \textbf{이미지 하나}의 잠재 공간에서
+      노이즈를 되돌렸다면, SceneDiffuser는 \textbf{시간을 축으로 한
+      장면 전체}에서 되돌림
+    \item $\Rightarrow$ 자율주행 시스템을 테스트할 \textbf{상상 속
+      시나리오}를 대량으로 생성 — ``\textbf{생성 모델이 안전 검증
+      도구로 쓰인다}''는 점을 보여주는 대표 사례.
+      추론에 필요한 모델 호출 횟수도 \textbf{16배} 감소
+  \end{itemize}
+\end{frame}

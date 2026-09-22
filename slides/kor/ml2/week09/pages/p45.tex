@@ -1,0 +1,20 @@
+\begin{frame}{``무작위 균일'' 그 이상: 우선순위 경험 재현}
+  \begin{itemize}
+    \item 기본 \texttt{sample}은 모든 경험에 \textbf{같은 확률}.
+    \item 그러나 ``막대가 거의 쓰러진 순간'', ``드문 상태의 큰 보상'' 같은
+      \textbf{정보량이 큰 경험}이 더 많이 쓰이면 좋겠다는 직감.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{\kb{우선순위 경험 재현}(PER) (Schaul et al., 2016)}
+    각 경험에 \textbf{TD 오차의 크기}에 비례한 우선순위를 붙여
+    \textbf{중요한 경험을 더 자주} 샘플링.
+    기본 DQN의 균일 샘플링 = 우선순위가 전부 1인 \textbf{특수한 경우}.
+  \end{block}
+  \vskip0.5em
+  \begin{itemize}
+    \item (FAQ) 복원 \texttt{random.choice}로 뽑으면 안 되나? --- 작동은
+      함. 비복원은 배치 내 중복이 없으므로 분산이 약간 더 큼.
+      버퍼가 $10^4$ 이상이면 두 방식의 차이는 \textbf{무의미}하게 작다.
+      핵심은 ``버퍼에서 \textbf{무작위}로 뽑는다''는 것.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,25 @@
+\begin{frame}{확인 문제 (14.4): MDP 네 요소 대응시키기}
+  \kb{Onboard 루프} --- Perception $\to$ Planner $\to$ 제어 ---
+  는 MDP의 모양을 한다.
+  \small
+  \begin{tabular}{@{}p{3.0cm}p{5.4cm}p{5.6cm}@{}}
+    \toprule
+     & 실차 (Onboard) & Offboard 시뮬레이션 \\
+    \midrule
+    \kb{환경의 다이내믹스} & \textbf{실제 도로 위의} 다른
+      차량·보행자의 실제 반응 (측정 불가, 관찰만) &
+      시뮬레이터의 \textbf{물리 + 학습된 장면 분포}가 만든
+      가상 에이전트 반응 \\
+    \kb{평가} & 사고 여부, 정지 시간 등 \textbf{사후 기록}된
+      실차 지표 (실험 비용 극대) & 에피소드마다 \textbf{저렴하게}
+      재계산되는 안전·승차감·진행률 지표 \\
+    \bottomrule
+  \end{tabular}
+  \vskip0.6em
+  \begin{itemize}
+    \item \textbf{상태} = Perception의 결과, \textbf{행동} =
+      Planner의 궤적/제어 (양쪽 동일)
+    \item 차이: 실차의 한 스텝은 \textbf{물리적 시간 + 위험},
+      Offboard의 한 스텝은 \textbf{수 밀리초 + 실패 무료}
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,26 @@
+\begin{frame}{자주 하는 실수 2$\cdot$3: Critic에 MC 리턴, 속도 변화
+  를 버그로 판단}
+  \kb{2. Critic 목표값에 $G_t$(MC 리턴) 사용}
+  \begin{itemize}
+    \item Critic 손실을 $(G_t - V(s_t))^2$ 로 쓰면 Critic도
+      \textbf{MC 학습자}가 됨 --- 안 \textbf{틀리지만},
+      \textbf{부트스트랩이 사라져 Critic의 분산이 커짐}.
+    \item Critic은 ``Actor의 노이즈를 \textbf{잡아줄 사람}''인데
+      자기 자신이 노이즈가 많으면 기준값 $V(s_t)$ 가 \textbf{흔들리고},
+      그 흔들림이 \textbf{그대로} Actor의 어드밴티지에 전이.
+    \item \textbf{의도된 설계}: Critic은 \textbf{TD(0)}(Week 6
+      부트스트랩, 분산 작음), Actor는 \textbf{MC 리턴} ---
+      이 \textbf{비대칭}.
+  \end{itemize}
+  \vskip0.4em
+  \kb{3. ``베이스라인 넣었더니 학습 속도가 달라졌다''를 버그로
+  판단}
+  \begin{itemize}
+    \item 베이스라인은 \textbf{기댓값}(진짜 기울기 방향)은
+      \textbf{바꾸지 않}지만 \textbf{분산은} 바꿈 $\to$ 신호
+      \textbf{크기}가 달라져 \textbf{실효 스텝 크기}가 달라지고,
+      \textbf{학습 속도}가 바뀌는 것은 \textbf{정상}.
+    \item 속도 변화 $\ne$ 기댓값(방향) 깨짐 --- 실제로는
+      \textbf{변하지 않음} (앞 밴딧 예의 $b=1.9$ 행이 증거).
+  \end{itemize}
+\end{frame}

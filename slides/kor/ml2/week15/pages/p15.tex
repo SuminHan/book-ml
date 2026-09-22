@@ -1,0 +1,46 @@
+\begin{frame}{결과: 334 에피소드 $\to$ 35 에피소드}
+  \small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    설정 & ``거의 최적'' 최초 진입$^{\dagger}$ & 400에피소드 시 max $Q$(출발) \\
+    \midrule
+    가치반복 (known model) & 9번 반복 & 정확히 $-7.00$ \\
+    Q-learning ($planning\_steps{=}0$) & 334 에피소드 & $-6.61$ \\
+    Dyna-Q ($planning\_steps{=}5$) & 75 & $-7.00$ \\
+    Dyna-Q ($planning\_steps{=}10$) & 52 & $-7.00$ \\
+    Dyna-Q ($planning\_steps{=}30$) & 35 & $-7.00$ \\
+    \bottomrule
+  \end{tabular}
+
+  {\footnotesize $^{\dagger}$ 25에피소드 평균 리턴 $> -8$}
+  \vskip0.6em
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item \textbf{(1) 가속은 극적}: 실제 상호작용 35회로, 계획
+          없이는 334회가 걸렸던 학습이 끝남(약 \textbf{9.5배}).
+          ``실제 스텝 1회 = 로봇 이동 1초'' 환경이면 쓸 수 있는
+          수준까지의 \textbf{벽시계}가 같은 비율로 줄어듦
+        \item \textbf{(2) 한계 효과 감소}: 0$\to$10은 334$\to$52(6.4배)
+          크게 빨라지나, 10$\to$30은 52$\to$35(1.5배)로만
+          --- 계획 계산량 2배가 수렴 2배가 아님
+        \item $planning\_steps$도 $\alpha$, $\varepsilon$처럼
+          \textbf{검증 성능으로 튜닝하는 하이퍼파라미터}
+        \item \textbf{(3) 목적지는 같다}: 순수 Q-learning도 400
+          에피소드 끝에 모든 25개 상태의 greedy 정책이 $Q^{*}$와
+          일치(불일치 0/25) --- 계획이 바꾸는 것은 \textbf{도착
+          지점}이 아니라 \textbf{도달 비용(실제 상호작용 횟수)}.
+          결정론적 환경이라 학습된 모델 표는 결국 항상 정확해져
+          ``공짜 모델'' 품질을 회복
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch15_1_dyna_planning_curves.png}
+      \vskip0.3em
+      {\footnotesize 위: max\,$Q$(출발) 학습 곡선 --- 0(빨강)이
+      에피소드 330쯤 $-7$ 도달, 10/30(초록/파랑)은 40$\sim$50.
+      회색 점선 = 참값 $-7$. 아래: ``거의 최적'' 최초 진입 에피소드 수.}
+    \end{column}
+  \end{columns}
+\end{frame}

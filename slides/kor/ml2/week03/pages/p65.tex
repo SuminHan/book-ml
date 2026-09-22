@@ -1,0 +1,27 @@
+\begin{frame}{벨만방정식의 세 가지 읽기방식}
+  같은 방정식 $V^\pi(s) = \mathbb{E}_\pi[R_t + \gamma V^\pi(s_{t+1})
+  \mid s_t=s]$ 를 \kb{세 가지 각도}로 읽을 수 있고, 이 세 가지가
+  각각 다른 알고리즘/관점을 낳는다:
+  \vskip0.5em
+  \begin{enumerate}
+    \item \kb{정의(definition)로서}: ``이 정책 $\pi$ 의 상태가치는
+      다음 조건을 만족하는 \textbf{(유일한) 함수}다.'' --- 이 절의
+      관점. $V^\pi$ 를 \textbf{정의하는} 방정식.
+    \item \kb{계산 절차(procedure)로서}: ``값이 안 바뀔 때까지
+      $V \leftarrow \mathcal{B}^\pi V$ 로 반복 대입.'' --- 위
+      정책평가 코드. \textbf{다음 장 동적계획법}의 알고리즘.
+    \item \kb{학습 목표(learning target)로서}: ``\textbf{신경망}이
+      이 방정식의 좌변과 우변을 같게 되도록 학습하자.'' ---
+      \textbf{Week 9 DQN}의 손실함수. DQN의 손실
+      $(r + \gamma \max_{a'} Q_{\theta^-}(s',a') -
+      Q_\theta(s,a))^2$ 는 정확히 ``\textbf{벨만방정식의 좌변
+      (예측값)과 우변(목표값)의 오차}''다.
+  \end{enumerate}
+  \vskip0.4em
+  {\footnotesize 가치함수(3.3) $\to$ 정책평가(Week 4) $\to$
+  동적계획법(Week 4) $\to$ Q-러닝$\cdot$DQN(Week 6, 9) $\to$
+  정책 그래디언트(Week 10)까지, 사실상 \textbf{모든 알고리즘}은
+  \textbf{이 재귀식을 어떤 형태로 계산/학습하는가}를 다룬다.
+  ``벨만방정식을 몇 가지 버전으로 바꿔서 푸는 학기''라고 이번
+  학기를 요약할 수 있을 정도.}
+\end{frame}

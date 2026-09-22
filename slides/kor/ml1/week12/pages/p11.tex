@@ -1,0 +1,22 @@
+\begin{frame}{전체 파이프라인 미리보기: 3단계}
+  위 2단어 예 하나로 12.2절의 ``어텐션 연산'' 전체를 미리 본다.
+  \begin{enumerate}
+    \item 모든 단어 쌍의 \textbf{원점수(raw score)} $QK^T$ 계산
+    \item 각 행에 \textbf{softmax}를 적용해 분포(어텐션 가중치) 생성
+    \item 그 가중치로 $V$ 의 행을 \textbf{가중합} $\to$ 출력
+  \end{enumerate}
+  \vskip0.6em
+  원점수:
+  \[QK^T = \begin{pmatrix} 1 & 0 \\ 0 & 2 \end{pmatrix}
+  \begin{pmatrix} 0.5 & 0 \\ 0 & 0.5 \end{pmatrix}
+  = \begin{pmatrix} 0.5 & 0 \\ 0 & 1 \end{pmatrix}\]
+  \begin{itemize}
+    \item 단어 1의 Query $(1,0)$: 단어 1의 Key $(0.5,0)$ 과 잘 맞고,
+      단어 2의 Key $(0,0.5)$ 와는 직각(내적 0).
+    \item 단어 2의 Query $(0,2)$: 자기 Key와 방향 일치
+      ($2 \times 0.5 = 1$), 단어 1의 Key와는 0.
+  \end{itemize}
+  {\footnotesize 이 예에서는 $W_Q, W_K$ 를 각 단어가 서로를
+  교차하지 않는 방향으로 \textbf{직접 설계}했다 — 실전에서는
+  이 설계를 \textbf{학습}이 대체한다.}
+\end{frame}

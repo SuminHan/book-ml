@@ -1,0 +1,42 @@
+\frametitle{17.3 연습문제}
+  \small
+  \begin{enumerate}
+    \item DPO 손실 $\mathcal{L} = -\log
+      \sigma(\beta[\log \tfrac{\pi_\theta(y_w)}{\pi_{\text{ref}}(y_w)}
+      - \log \tfrac{\pi_\theta(y_l)}{\pi_{\text{ref}}(y_l)}])$
+      에서 $\beta = 1$, $\pi_\theta(y_w)=0.7$,
+      $\pi_{\text{ref}}(y_w)=0.4$, $\pi_\theta(y_l)=0.1$,
+      $\pi_{\text{ref}}(y_l)=0.3$. margin $z$와 손실값을
+      계산하고, $\beta$가 0.1이면 $z$가 어떻게 되는가?
+    \item PPO 목적함수 $J(\theta) = \mathbb{E}[r(x,y)] -
+      \beta D_{KL}$: (a) $\beta = 0$이면 최적해가
+      어디로 흐르는가? (b) $\beta \to \infty$이면?
+      (c) 17.3의 1차원 장난감에서 $\beta = 10$이면 $q^*$
+      $\approx 0.67$, $V(q^*) \approx -0.01$인데 —
+      \textbf{진짜 가치의 최대}($q = 0.33$, $V = +0.67$)
+     를 놓치는 이유를 보상모델의 \textbf{외삽 오차}로
+      설명.
+    \item LoRA: $W \in \mathbb{R}^{4096 \times 4096}$에
+      $r = 8$이면 학습 파라미터가 몇 개인가? 전체 $1.68 \times
+      10^7$ 대비 비율은?
+    \item \textbf{판별:} ``RLHF에서 KL 항이 클수록 보상
+      해킹이 더 잘 막힌다'' — 참/거짓, 이유.
+    \item \textbf{판별:} ``DPO는 보상모델을 학습하지 않기
+      때문에 보상 해킹이 불가능하다'' — 참/거짓, 이유
+      (힌트: DPO의 $\beta$와 KL 항의 관계).
+    \item \textbf{판별:} ``RAG는 모델의 지식을 향상시킨다''
+      — 참/거짓, 이유 (17.2 ``컨텍스트 = 조건''과의 관계).
+  \end{enumerate}
+  \vskip0.4em
+  \begin{lstlisting}[language=Python, title=예제: DPO 손실(장난감)]
+import numpy as np
+from scipy.special import expit  # logistic(sigmoid)
+
+def dpo_loss(pi_th_w, pi_ref_w, pi_th_l, pi_ref_l, beta=1.0):
+    margin = beta * (np.log(pi_th_w / pi_ref_w) - np.log(pi_th_l / pi_ref_l))
+    return -np.log(expit(margin))
+
+print(dpo_loss(0.7, 0.4, 0.1, 0.3))        # 0.1739
+print(dpo_loss(0.7, 0.4, 0.1, 0.3, beta=0.1))  # 0.6533
+print(dpo_loss(0.6, 0.4, 0.2, 0.3))        # 0.3682 (초기)
+  \end{lstlisting}

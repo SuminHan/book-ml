@@ -1,0 +1,23 @@
+\begin{frame}{도구 지도: 어떤 문제에 어떤 도구}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch09_3_reg_toolbox.png}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{itemize}\small
+        \item 실무 두 축: (a) \kb{과적합} (train 높고 val/test
+          뒤처짐), (b) \kb{학습 불안정} (손실 안 줄거나
+          초기화·배치·lr에 예민)
+        \item \kb{과적합 문제면}: dropout + weight decay +
+          근본 해법인 \textbf{더 많은 데이터·증강}
+        \item \kb{느리다/불안정하면}: Batch/LayerNorm(분포 안정
+          $\to$ 큰 lr 가능) + \kb{학습률 스케줄링}
+        \item \kb{``모두 쓰면 될까요?''}: \textbf{아니} — BN과
+          dropout은 \textbf{둘 다} 약한 정규화 효과를 내, 과용 시
+          \textbf{과정규화(train·val 함께 떨어짐)}. 실무: \textbf{하나
+          추가 $\to$ val 곡선 확인 $\to$ 다음 추가}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

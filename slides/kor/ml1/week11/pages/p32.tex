@@ -1,0 +1,25 @@
+\begin{frame}{2시점 예제: 출력 분포와 손실}
+  각 시점의 출력 분포 (softmax):
+  \vskip0.4em
+  \[ p_1 = \operatorname{softmax}(W_{hy} h_1)
+     = \begin{pmatrix} 0.2937 \\ 0.3848 \\ 0.3215 \end{pmatrix},
+     \qquad p_2 = \operatorname{softmax}(W_{hy} h_2)
+     = \begin{pmatrix} 0.2934 \\ 0.3622 \\ 0.3444 \end{pmatrix} \]
+  \vskip0.4em
+  손실 (다음-문자 크로스엔트로피; 시점 1 목표 b(인덱스 1),
+  시점 2 목표 c(인덱스 2)):
+  \vskip0.4em
+  \[ L = -\log p_1[b] - \log p_2[c]
+     = -\log 0.3848 - \log 0.3444 = 0.9550 + 1.0660
+     = \boxed{2.0210} \]
+  \vskip0.4em
+  {\footnotesize 역전파는 시점 $2 \to 1$ 순서로. 시점 2부터:
+  $\delta_2^{(y)} = [0.2934, \; 0.3622, \; -0.6556]$ (목표 인덱스 2를
+  $-1$ 감소) $\Rightarrow$ $\frac{\partial L}{\partial W_{hy}} \mathrel{+}=
+  \delta_2^{(y)} h_2^\top$, $\frac{\partial L}{\partial b_y} \mathrel{+}=
+  \delta_2^{(y)}$, $\frac{\partial L}{\partial h_2} =
+  W_{hy}^\top \delta_2^{(y)} + \underbrace{0}_{\text{시점 3 없음}}$,
+  $\frac{\partial L}{\partial z_2} = \frac{\partial L}{\partial h_2}
+  \odot (1 - h_2^2)$, 그리고 $\frac{\partial L}{\partial h_1} \mathrel{+}=
+  W_{hh}^\top \frac{\partial L}{\partial z_2}$.}
+\end{frame}

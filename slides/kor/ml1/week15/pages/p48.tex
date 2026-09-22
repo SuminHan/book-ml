@@ -1,0 +1,28 @@
+\begin{frame}{역방향 단계(DDPM)와 ``다시 노이즈 추가''}
+  역방향 단계는 한 줄:
+  \[
+  x_{t-1} = \frac{1}{\sqrt{\alpha_t}}\Big( x_t -
+  \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\,
+  \epsilon_\theta(x_t,t) \Big) + \sigma_t\, z, \quad
+  z \sim \mathcal{N}(0, I)
+  \]
+  \vskip0.6em
+  \begin{itemize}
+    \item ``$\epsilon_\theta$만큼 \textbf{빼고}(조금 깨끗해지고),
+      $\sigma_t z$만큼 \textbf{다시 더한다}(다시 노이즈를 조금)''
+    \item \textbf{역방향에도 노이즈를 다시 추가}하는 이 마지막 항이
+      처음엔 의외로 보일 수 있음
+    \item 이유: $x_{t-1} \mid x_t$가 ``\textbf{하나의 점}''이 아니라
+      \textbf{가우시안 분포}(불확실성이 있는)이기 때문
+    \item ``한 단계 전''도 \textbf{관측되지 않았으므로}, 그 분포에서
+      샘플링하는 것이 \textbf{절차의 일부}
+  \end{itemize}
+  \vskip0.6em
+  \begin{block}{자주 하는 실수 3}
+    ``denoise = 계속 깨끗해지는 과정''이라는 직관과 달리, DDPM의
+    역방향 단계에는 $+\sigma_t z$(\textbf{다시 노이즈 추가})가
+    있음. 이 항을 빼면 역방향 과정이 더 이상 $p(x_{t-1}\mid x_t)$
+    가 아니라 \textbf{``점 추정''}으로 바뀌고, 생성 품질이 크게
+    떨어짐. $x_{t-1} \mid x_t$가 \textbf{분포}라는 점을 잊지 말 것.
+  \end{block}
+\end{frame}

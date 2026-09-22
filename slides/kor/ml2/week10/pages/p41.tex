@@ -1,0 +1,31 @@
+\begin{frame}{자주 묻는 질문 (10.2)}
+  \small
+  \begin{itemize}
+    \item \kb{Q: 에피소드가 끝날 때까지 갱신 안 한다는 건
+      Week 5 ``몬테카를로'' 방식인가?}
+      \textbf{네.} 실제 관찰된 $G_t$ 를 쓰는 점에서 MC와 같은
+      구조. 다만 분류는 \textbf{네 가지 속성}으로: REINFORCE는
+      \textbf{on-policy, model-free, MC 기반, 정책기반}.
+      ``정책기반''이 포함된 이유: 배우는 대상이 가치표가 아니라
+      \textbf{정책의 파라미터}, 갱신 방식이 ``평균''
+      ($Q \leftarrow Q + \alpha(G-Q)$)이 아니라 ``경사 상승''
+      ($\theta \leftarrow \theta + \alpha G \nabla\log\pi$).
+      정책기반 + \textbf{TD} = 10.3 Actor-Critic ---
+      ``배우는 대상(정책 vs 가치)''과 ``갱신 원리(경사 상승 vs
+      부트스트랩)''은 \textbf{독립적인 축}.
+    \item \kb{Q: 최고 리턴 500이 나왔는데, 마지막 20 에피소드
+      평균이 왜 100 정도?}
+      ``최고''는 \textbf{단일 행운 에피소드}의 기록 --- 분산이
+      커서 정책이 좋아진 뒤에도 가끔 짧은 에피소드가 나오는
+      것은 정상. 정책의 ``진짜'' 수준은 마지막 $N$ 에피소드의
+      \textbf{평균}(또는 별도 평가 롤아웃)으로 판단 (Week 6.3의
+      ``탐욕적 평가로 판단'' 교훈과 같음).
+    \item \kb{Q: 긴 지평선 태스크에서는 너무 느럽지 않나요?}
+      \textbf{그렇다.} 에피소드 하나를 끝까지 기다리는 것은 느리고,
+      $G_t$ 는 ``여기부터 끝까지'' 보상 전체를 담고 있어 분산 큼.
+      10.3 Actor-Critic은 $G_t$ 를 \textbf{가치함수 기반 부트스트랩
+      추정}($G_t - V(s_t)$, 어드밴티지)으로 바꿔 \textbf{매 스텝}
+      갱신 $\to$ 기다림도 줄고 분산도 줄어듦.
+  \end{itemize}
+  \normalsize
+\end{frame}

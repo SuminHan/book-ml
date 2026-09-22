@@ -1,0 +1,20 @@
+\begin{frame}{FAQ: 문장 전체를 펼쳐 MLP에 넣으면 안 되는가}
+  세 가지 이유다:
+  \begin{enumerate}
+    \item \kb{파라미터} --- 문장 길이 $T$ $\times$ 임베딩 차원 $d$개
+      입력을 100개 뉴런의 은닉층에 연결하면 $100\,T\,d$개 가중치 ---
+      $T$에 \textbf{비례해 팽창}. RNN은 $T$와 무관하게
+      $HV + H^2 + VH$개만
+    \item \kb{길이 가변성} --- 실제 문장은 길이 불균일: 5단어와
+      200단어 입력을 하나의 MLP로 처리하려면 \textbf{패딩}이나
+      \textbf{분리된 모델}이 필요. RNN은 같은 가중치로 어떤
+      길이든 처리
+    \item \kb{위치 인코딩 불필요} --- MLP에 ``100번째 단어''를
+      넣으려면 ``이건 100번째 위치의 단어''라는 정보(위치 인코딩,
+      Week 12)를 \textbf{별도로} 줘야. RNN은 \textbf{순차적 처리
+      자체}가 위치 정보를 자동 반영
+  \end{enumerate}
+  \vskip0.5em
+  {\footnotesize 그럼에도 ``RNN은 순차적이라 느리다''는 이유로
+  Transformer가 주류가 된 이유도 11.3절에서 본다.}
+\end{frame}

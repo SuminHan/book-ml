@@ -1,0 +1,32 @@
+\begin{frame}{편향-분산 U자 — 이론이 아니라 실험}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{ch11_3_gae_lambda_ucurve.png}
+      {\footnotesize $\lambda=0$(TD 기반, 편향$\uparrow$분산$\downarrow$)
+      에서 $\lambda=1$(MC 기반, 편향$\downarrow$분산$\uparrow$)
+      사이의 U자 곡선.}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      {\small
+      \kb{실험}(실습 1$\sim$3절): 참값이 정확히 알려진
+      7-상태 random walk(7.2절과 같은 환경)에서, \textbf{의도
+      적으로 약간 틀린 critic}으로 TD 오차를 만들어
+      $A^{\mathrm{GAE}}$ 를 추정 — 참 어드밴티지가 0이므로
+      MSE가 곧 ``편향$^2$+분산''.
+      \begin{itemize}
+        \item $\lambda$ 를 0$\to$1로 훑으면 MSE가 \textbf{U자},
+          바닥은 이 환경에서 $\lambda\approx0.9$ 부근.
+        \item $n$-step 어드밴티지로 같은 실험이면 바닥
+          $n\approx3$ — GAE는 ``n을 고정하고 $\lambda$ 를
+          조정''하는 일반화.
+      \end{itemize}
+      }
+    \end{column}
+  \end{columns}
+  \vskip0.4em
+  {\small \kb{7.2절의 교훈이 여기서도 그대로}: 단일 실행(단일
+  시드)으로 최적 $\lambda$ 를 정하면 안 된다 — 여러 시드의
+  평균으로 U자를 확인한 뒤, 바닥 근처 ``0.90$\sim$0.99''
+  사이의 값을 고르면 대체로 안전.}
+\end{frame}

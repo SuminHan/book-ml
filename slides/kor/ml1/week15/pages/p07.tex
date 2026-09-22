@@ -1,0 +1,28 @@
+\begin{frame}{구조도: 학습 모드 vs 생성 모드}
+  \small
+  \begin{center}
+  \includegraphics[width=\linewidth]{ch15_2_vae_structure.png}
+  \end{center}
+  \vskip0.2em
+  {\footnotesize 점선 = 생성 시 흐름(인코더 미사용), 실선 = 학습 시 흐름.}
+  \vskip0.3em
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \kb{학습 모드} (실선)
+      \begin{itemize}
+        \item $x$가 주어지면 인코더가 $(\mu, \sigma^2)$를 내놓고,
+          샘플링한 $z$로 디코더가 $x$를 복원
+        \item 인코더 분포는 사전분포 $p(z)$에 가깝도록 KL 항이
+          ``끌어당김''
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \kb{생성 모드} (점선)
+      \begin{itemize}
+        \item 학습 후 \textbf{인코더는 완전히 버려짐}
+        \item 사전분포 $p(z)$에서 $z$를 무작위 추출 $\to$ 디코더에만
+          통과시켜 새 샘플
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

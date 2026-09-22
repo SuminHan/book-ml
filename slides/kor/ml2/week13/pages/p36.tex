@@ -1,0 +1,17 @@
+\begin{frame}{Ant의 양수 리턴 에피소드: 보상은 ``장부''다}
+  시드 0$\sim$2 는 모두 음수지만, 무작위 Ant 에피소드 중에는
+  \textbf{리턴이 양수}인 것이 있다 (시드 4: \textbf{$+3.60$},
+  16스텝에서 \texttt{terminated}). ``무작위 로봇이 양수 점수를 받았
+  다니?'' --- Ant의 보상은 단일 항이 아니라 \textbf{4항의 장부}:
+  \[
+    r = \underbrace{1.0 \times \mathbb{1}[\text{healthy}]}_{\text{생존}}
+    + \underbrace{1.0 \times \dot{x}}_{\text{전진}}
+    - \underbrace{0.5\,\|a\|^{2}}_{\text{제어비용}}
+    - \underbrace{5\times 10^{-4}\,\sum F_{\text{contact}}^{2}}_{\text{접촉비용}}
+  \]
+  \small
+  $\dot{x}$ = 몸통 x 방향 속도(스텝당 $0.05$ s, \texttt{frame\_skip = 5}),
+  healthy = 몸통 높이 $[0.2, 1.0]$ m 범위 안. seed4 장부:
+  생존 $+15$ + 전진 $\approx +10.5$ − 제어 $\approx -21.9$ − 접촉
+  $\approx -0.01$ $\approx +3.6$.
+\end{frame}
