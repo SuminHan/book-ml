@@ -775,7 +775,8 @@ function loadSource() {
       sourceBox.disabled = false;
       sourceSaveBtn.disabled = false;
       sourceSaveOnlyBtn.disabled = false;
-      sourceStatus.textContent = '';
+      sourceStatus.textContent = '자동 저장 켜짐 (재빌드는 버튼으로)';
+      sourceStatus.className = 'status';
       sourceUnbuilt = false;
     })
     .catch(() => { sourceStatus.textContent = '불러오기 실패'; sourceStatus.className = 'status err'; });
@@ -862,8 +863,28 @@ function saveSource(rebuild) {
   });
 }
 
-sourceSaveBtn.onclick = () => saveSource(true);
-sourceSaveOnlyBtn.onclick = () => saveSource(false);
+sourceSaveBtn.onclick = () => { clearTimeout(sourceSaveTimer); sourceSaveTimer = null; saveSource(true); };
+sourceSaveOnlyBtn.onclick = () => { clearTimeout(sourceSaveTimer); sourceSaveTimer = null; saveSource(false); };
+
+// auto-save (save-only, no rebuild) while typing, same debounce pattern as the note box
+let sourceSaveTimer = null;
+const SOURCE_AUTOSAVE_DELAY = 900;
+
+function flushSourcePending() {
+  if (sourceSaveTimer) {
+    clearTimeout(sourceSaveTimer);
+    sourceSaveTimer = null;
+    saveSource(false);
+  }
+}
+
+sourceBox.addEventListener('input', () => {
+  if (!sourceEditable) return;
+  clearTimeout(sourceSaveTimer);
+  sourceStatus.textContent = '입력 중...';
+  sourceStatus.className = 'status';
+  sourceSaveTimer = setTimeout(() => { sourceSaveTimer = null; saveSource(false); }, SOURCE_AUTOSAVE_DELAY);
+});
 
 function refreshDeleteUI() {
   const isDeleted = deletedPages.has(page);
@@ -966,6 +987,7 @@ function scheduleAutosave() {
 
 function goTo(p) {
   flushPending();
+  flushSourcePending();
   p = Math.max(1, Math.min(total, p));
   page = p;
   img.src = `/img?id=$${encodeURIComponent(did)}&page=$${p}&t=$${Date.now()}`;
@@ -1037,7 +1059,7 @@ document.getElementById('saveBtn').onclick = () => { clearTimeout(saveTimer); sa
 
 document.addEventListener('keydown', (e) => {
   const inBox = document.activeElement === box;
-  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); flushPending(); return; }
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); flushPending(); flushSourcePending(); return; }
   if (inBox) return;
   if (e.key === 'ArrowLeft') goTo(page - 1);
   if (e.key === 'ArrowRight') goTo(page + 1);
@@ -1048,6 +1070,12 @@ window.addEventListener('beforeunload', () => {
     clearTimeout(saveTimer);
     const payload = JSON.stringify({id: did, page, note: box.value});
     navigator.sendBeacon('/api/save', new Blob([payload], {type: 'application/json'}));
+  }
+  if (sourceSaveTimer && sourceEditable) {
+    clearTimeout(sourceSaveTimer);
+    // save-only (rebuild=false): a rebuild is too slow to trust to sendBeacon on unload
+    const payload = JSON.stringify({id: did, page: sourceLoadedPage, content: sourceBox.value, rebuild: false});
+    navigator.sendBeacon('/api/source', new Blob([payload], {type: 'application/json'}));
   }
 });
 
