@@ -1,0 +1,24 @@
+\begin{frame}{이 우도비, 실전 어디서 또 만나는가}
+  \begin{itemize}
+    \item 로그 점수의 \textbf{차이}만 의미 있다고 했다 --- 단어
+      하나만 떼서 보면, 그 단어의 ``스팸스러움''은
+      \[ \log P(x_j|\text{spam}) - \log P(x_j|\text{ham})
+         = \log\frac{P(x_j|\text{spam})}{P(x_j|\text{ham})} \]
+    \item 이 \kb{로그 우도비}로 단어를 \textbf{순위 매기면} ``스팸을
+      가장 강하게 가리키는 단어 top-N''이 나온다.
+  \end{itemize}
+  \vskip0.5em
+  \begin{block}{코퍼스언어학의 ``keyness''가 바로 이것}
+    AntConc 같은 코퍼스 분석 도구의 \kb{keyness} 측정치(Mutual
+    Information, Log Ratio)는 ``이 단어가 타깃 코퍼스에서
+    기준 코퍼스보다 얼마나 튀는가''를 정확히 같은 형태
+    $\log(O/E)$ --- \textbf{관측/기댓값의 로그비}로 잰다. 스팸
+    필터의 ``이 단어가 스팸을 얼마나 가리키는가''와 수학적으로
+    동일한 질문.
+  \end{block}
+  \vskip0.4em
+  {\footnotesize 여기서는 사전분포 없이 우도비만 썼다 --- 여기에
+  \textbf{사전분포}(Dirichlet)까지 얹어 ``문서가 어떤 주제들의
+  혼합인가''를 완전한 베이즈 생성모델로 풀면 Week 4.4의
+  \kb{LDA}(Latent Dirichlet Allocation)가 된다.}
+\end{frame}

@@ -1,0 +1,23 @@
+\begin{frame}{cf.\ 시계열이면 무작위로 쪼개면 안 된다}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \centering
+      \includegraphics[height=5.0cm]{ref_nested_cv_timeseries.png}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \footnotesize
+      \begin{itemize}
+        \item 일반 $k$-fold는 \textbf{무작위로 섞어서} 쪼갠다 ---
+          시계열에서는 \textbf{미래 데이터가 과거 학습에 새는}
+          것(data leakage)과 같다.
+        \item \kb{Rolling-origin}(확장 윈도우): 항상 \textbf{앞
+          구간만 train}, 그 다음 구간을 test로 --- 시간이 지날수록
+          train 구간이 넓어지며 반복.
+        \item 그림의 \kb{Outer loop}는 이렇게 test 오차를 여러 번
+          측정해 평균내고, \kb{Inner loop}는 그 안에서(train
+          구간만으로) 하이퍼파라미터를 튜닝 --- \textbf{중첩(nested)
+          CV}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
