@@ -1,7 +1,6 @@
 \begin{frame}[fragile]{자주 하는 실수: 훈련 정확도로 k 고르기}
   \begin{alertblock}{실수: 훈련 데이터 자체의 정확도로 $k$를 고르면}
 \begin{lstlisting}
-# ❌ 실수: 훈련 데이터 자체의 정확도로 k를 고르는 함수
 def tune_k_wrong(X, y, k_candidates):
     X_train, y_train, X_val, y_val = train_val_split(X, y)
     best_k, best_acc = None, -1.0
@@ -10,7 +9,7 @@ def tune_k_wrong(X, y, k_candidates):
                   for xt, yt in zip(X_train, y_train)) / len(X_train)
         if acc > best_acc:
             best_k, best_acc = k, acc
-    return best_k   # -> 항상 1 이 반환된다
+    return best_k   # always returns 1
 \end{lstlisting}
   \end{alertblock}
   \begin{itemize}
