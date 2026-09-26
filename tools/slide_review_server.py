@@ -54,6 +54,7 @@ import json
 import re
 import secrets
 import subprocess
+import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -70,6 +71,12 @@ RENDER_DPI = 200
 
 _render_locks: dict[str, threading.Lock] = {}
 _render_locks_guard = threading.Lock()
+
+# did -> (pdf_mtime_when_counted, page_count). Avoids shelling out to pdfinfo
+# (a fresh subprocess) on every single page click once a deck's page count is
+# known -- only re-checked when the PDF's own mtime moves (i.e. a rebuild).
+_page_count_cache: dict[str, tuple[float, int]] = {}
+_page_count_cache_guard = threading.Lock()
 
 
 def find_decks() -> list[str]:
@@ -129,6 +136,12 @@ def rebuild_deck(did: str) -> tuple:
     log = (proc.stdout or "") + (proc.stderr or "")
     if ok:
         refresh_sections(did)
+        # The rebuild just invalidated this deck's page images. Re-render them now,
+        # in the background, so the next click doesn't pay a synchronous pdftoppm
+        # pass over the whole deck.
+        threading.Thread(
+            target=lambda: ensure_rendered(did), daemon=True
+        ).start()
     return ok, log[-4000:]  # tail only -- tectonic logs can be long
 
 
@@ -257,7 +270,15 @@ def ensure_rendered(did: str) -> int:
     pdf = deck_pdf(did)
     if not pdf.exists():
         raise FileNotFoundError(did)
-    n = pdf_page_count(pdf)
+    pdf_mtime = pdf.stat().st_mtime
+    with _page_count_cache_guard:
+        cached = _page_count_cache.get(did)
+    if cached is not None and cached[0] == pdf_mtime:
+        n = cached[1]
+    else:
+        n = pdf_page_count(pdf)  # only shells out to pdfinfo when the PDF actually changed
+        with _page_count_cache_guard:
+            _page_count_cache[did] = (pdf_mtime, n)
     width = len(str(n))
     cache = cache_dir_for(did)
     last = cache / f"page-{n:0{width}d}.png"
@@ -1608,6 +1629,12 @@ def main():
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--no-warm", action="store_true", help="skip pre-rendering all decks on startup")
     args = ap.parse_args()
+    # Redirected stdout is block-buffered, which makes the warm-up progress log
+    # look empty (and the server look hung) when started with `> server.log`.
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+    except AttributeError:
+        pass
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     print(f"Slide review server: http://localhost:{args.port}  (Ctrl+C to stop)")
     if not args.no_warm:
