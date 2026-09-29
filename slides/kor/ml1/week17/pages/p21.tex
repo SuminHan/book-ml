@@ -1,4 +1,4 @@
-\begin{frame}[fragile]{연습문제: softmax·CE·PPL을 완성하라}
+\begin{frame}[fragile,shrink=4]{연습문제: softmax·CE·PPL을 완성하라}
 \begin{lstlisting}
 import math
 
@@ -18,16 +18,20 @@ assert abs(p[0] - 0.935) < 1e-3        # [0.935, 0.047, 0.017, 0.001]
 assert abs(cross_entropy_loss(p, 0) - 0.067) < 1e-3
 print(f"{perplexity([0.067, 0.693, 3.912]):.2f}")  # e^1.557 ~= 4.75
 \end{lstlisting}
-  {\footnotesize ``확률이 높을수록 손실이 작아진다''가 숫자로
-  확인되어야 한다. 손계산: (a) bigram $P(\text{춥다} \mid
-  \text{파리의, 겨울은})$ vs $P(\text{춥다} \mid \text{서울의,
-  겨울은})$, (b) unigram $P(\text{춥다})$(힌트: ``춥다'' 2회,
-  토큰 9개). shift-invariance: 모든 logit에 $+100$를
-  더해도 분포 불변.}
+  
   \vskip0.3em
   {\footnotesize \textbf{실습 노트북}: ① BPE 5회 병합(3개
   토큰) ② bigram (0.5, 0.5) + PPL 5.67 vs 1.19 ③ softmax
   검증 ④ 온도 4종 분포 ⑤ CE·PPL 세 값 ⑥ \textbf{미니 신경망
   언어모델 학습} --- 학습 곡선(손실 감소)으로 ``다음 토큰
   예측 = 분포 학습''을 수치로 확인.}
+
+\note{\begin{itemize}
+\item {\footnotesize ``확률이 높을수록 손실이 작아진다''가 숫자로
+  확인되어야 한다. 손계산: (a) bigram $P(\text{춥다} \mid
+  \text{파리의, 겨울은})$ vs $P(\text{춥다} \mid \text{서울의,
+  겨울은})$, (b) unigram $P(\text{춥다})$(힌트: ``춥다'' 2회,
+  토큰 9개). shift-invariance: 모든 logit에 $+100$를
+  더해도 분포 불변.}
+\end{itemize}}
 \end{frame}

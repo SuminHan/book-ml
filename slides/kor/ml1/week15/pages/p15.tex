@@ -14,8 +14,12 @@ def vae_loss(x, x_reconstructed, mu, log_var):
   \[D_{KL}\big(\mathcal{N}(\mu, \sigma^2) \,\|\, \mathcal{N}(0,1)\big)
   = \frac{1}{2}\left(\sigma^2 + \mu^2 - 1 - \log \sigma^2\right)\]
   \vskip0.3em
-  {\footnotesize 코드에서 이 값을 \textbf{음수}로 쓰는 이유:
+  
+
+\note{\begin{itemize}
+\item {\footnotesize 코드에서 이 값을 \textbf{음수}로 쓰는 이유:
   $-\frac{1}{2}(\sigma^2 + \mu^2 - 1 - \log\sigma^2)$는 ELBO 정규화 항에
   마이너스가 붙은 형태($-D_{KL}$)이며, 복원 항과 더하면 ELBO 그
   자체. 손실 = \textbf{음의 ELBO}를 최소화.}
+\end{itemize}}
 \end{frame}

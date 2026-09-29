@@ -1,15 +1,12 @@
 \begin{frame}{He 초기화: ReLU가 버리는 ½을 2배로}
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
   \small
   \begin{itemize}
-    \item ReLU는 입력의 절반($z<0$)을 0으로 버림 $\Rightarrow$
-      2차 모멘트가 \textbf{정확히 절반}:
-      $\mathbb{E}[\text{ReLU}(z)^2] = \tfrac{1}{2}\,\mathbb{E}[z^2]$
-    \item 이 ½을 보상 $\Rightarrow$ 가중치 분산 \textbf{2배}:
-      $\sigma_w = \sqrt{2/n_{l-1}}$ = \kb{He (Kaiming He 등, 2015,
-      ResNet 논문) 초기화}
+    \item \textbf{ReLU 2차 모멘트 절반}
+    \item \textbf{He 초기화: 분산 2배}
   \end{itemize}
   \vskip0.4em
-  \kb{측정} (실습 노트, fan-in 100, 한 층 통과 후 $\mathbb{E}[a^2]$ 승수):
+  
   \vskip0.3em
   \begin{tabular}{@{}lcl@{}}
     \toprule
@@ -22,8 +19,18 @@
     \bottomrule
   \end{tabular}
   \vskip0.4em
-  {\footnotesize ``2''라는 숫자가 정확히 ReLU가 버리는 ½을 보상한다는
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item ReLU는 입력의 절반($z<0$)을 0으로 버림 $\Rightarrow$
+      2차 모멘트가 \textbf{정확히 절반}:
+      $\mathbb{E}[\text{ReLU}(z)^2] = \tfrac{1}{2}\,\mathbb{E}[z^2]$
+\item 이 ½을 보상 $\Rightarrow$ 가중치 분산 \textbf{2배}:
+      $\sigma_w = \sqrt{2/n_{l-1}}$ = \kb{He (Kaiming He 등, 2015,
+      ResNet 논문) 초기화}
+\item \kb{측정} (실습 노트, fan-in 100, 한 층 통과 후 $\mathbb{E}[a^2]$ 승수):
+\item {\footnotesize ``2''라는 숫자가 정확히 ReLU가 버리는 ½을 보상한다는
   것을 \textbf{정확한 수치}로 확인. tanh+Xavier가 0.39인 것은 포화
   압축 — 실무에서 tanh도 Xavier를 쓰는 건 1:1 보존이 1차 근사이고,
   미세한 스케일 드리프트는 9.3 BatchNorm이 흡수.}
+\end{itemize}}
 \end{frame}

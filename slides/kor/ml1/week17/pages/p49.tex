@@ -1,14 +1,8 @@
 \begin{frame}{보상 해킹을 숫자로: KL 항 없으면}
   \small
   \begin{itemize}
-    \item KL 항을 없애면($\beta = 0$) 최적화는 ``보상모델
-      점수 $r(q)$를 그냥 \textbf{최대화}''로 단순화.
-    \item 1차원 장난감: 품질 $q \in [0, 2]$, \textbf{진짜
-      가치} $V(q) = 2q - 3q^2$, \textbf{보상} $r(q) = 2q -
-      0.2q^2$. 둘은 저품질($q \lesssim 0.6$)에서 거의
-      일치하지만, 고품질 구간으로 갈수록 보상모델은
-      \textbf{실제 가치의 하락을 과소평가} — 학습 데이터가
-      ``보통 품질''에 집중 $\to$ \textbf{외삽 오차}.
+    
+    \item \textbf{보상모델은 고품질 구간에서 실제 가치 하락을 과소평가}
   \end{itemize}
   \vskip0.3em
   \begin{columns}[T]
@@ -48,8 +42,20 @@
       효과도 거의 없음}.
   \end{itemize}
   \vskip0.2em
-  {\footnotesize $\beta$가 작으면 보상 해킹, 크면
+  
+
+\note{\begin{itemize}
+\item KL 항을 없애면($\beta = 0$) 최적화는 ``보상모델
+      점수 $r(q)$를 그냥 \textbf{최대화}''로 단순화.
+\item 1차원 장난감: 품질 $q \in [0, 2]$, \textbf{진짜
+      가치} $V(q) = 2q - 3q^2$, \textbf{보상} $r(q) = 2q -
+      0.2q^2$. 둘은 저품질($q \lesssim 0.6$)에서 거의
+      일치하지만, 고품질 구간으로 갈수록 보상모델은
+      \textbf{실제 가치의 하락을 과소평가} — 학습 데이터가
+      ``보통 품질''에 집중 $\to$ \textbf{외삽 오차}.
+\item {\footnotesize $\beta$가 작으면 보상 해킹, 크면
   \textbf{과소최적화}(under-optimization) — RLHF 실무에서
   가장 어려운 튜닝 중 하나. (표의 값은 실습 노트북
   Section 3에서 계산·그려 확인.)}
+\end{itemize}}
 \end{frame}

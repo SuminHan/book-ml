@@ -1,8 +1,6 @@
 \begin{frame}{왜 중요도 샘플링이 필요 없는가 --- 5.3절 연결}
   \begin{itemize}
-    \item Week 5.3: off-policy MC는 행동/목표 정책의 \textbf{리턴
-      분포}가 다르므로 중요도 가중치
-      $\rho = \prod_t \pi(a_t\mid s_t)/b(a_t\mid s_t)$로 보정해야.
+    
     \item 그런데 Q-learning은 off-policy임에도
       \textbf{중요도 샘플링을 쓰지 않는다}.
   \end{itemize}
@@ -16,10 +14,17 @@
     구조적으로 불필요.
   \end{block}
   \vskip0.4em
-  MC는 ``리턴을 평균''해야 하므로 보정 필요, TD는 ``한 스텝 목표값''
+  \textbf{TD는 한 스텝 목표값 사용으로 보정 불필요}
+
+\note{\begin{itemize}
+\item Week 5.3: off-policy MC는 행동/목표 정책의 \textbf{리턴
+      분포}가 다르므로 중요도 가중치
+      $\rho = \prod_t \pi(a_t\mid s_t)/b(a_t\mid s_t)$로 보정해야.
+\item MC는 ``리턴을 평균''해야 하므로 보정 필요, TD는 ``한 스텝 목표값''
   을 쓰므로 보정 불필요 --- 같은 off-policy 문제를
   \textbf{분포 보정(중요도 샘플링)}과 \textbf{고정점 근사
   (부트스트래핑)}라는 전혀 다른 두 도구로. 이것이 Week 9(DQN)에서
   경험재현 버퍼(다른 정책이 모은 데이터를 재사용)를 자유롭게 쓸 수
   있는 이유이기도 하다.
+\end{itemize}}
 \end{frame}

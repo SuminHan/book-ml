@@ -1,7 +1,5 @@
 \begin{frame}{``노이즈 예측'' 회귀 문제 (DDPM)}
-  실전(DDPM)에서는 역방향 분포를 직접 매개변수화하지 않고, 대신
-  신경망 $\epsilon_\theta(x_t, t)$가 \textbf{$x_t$에 추가된 노이즈
-  $\epsilon_t$를 예측}하도록 학습:
+  \textbf{DDPM: 신경망 $\epsilon_\theta(x_t, t)$로 노이즈 $\epsilon_t$ 예측}
   \[
   \mathcal{L}(\theta) =
   \mathbb{E}_{t, x_0, \epsilon}\left[
@@ -16,8 +14,15 @@
     \; ``안정적으로 학습된다''의 \textbf{정체}가 바로 이것.
   \end{block}
   \vskip0.4em
-  {\footnotesize 수학적으로 이 $\epsilon$ 예측은 $\nabla_x \log p_t(x)$,
+  \textbf{$\epsilon$ 예측은 스코어 함수 $\nabla_x \log p_t(x)$ 추정과 동치}
+
+\note{\begin{itemize}
+\item 실전(DDPM)에서는 역방향 분포를 직접 매개변수화하지 않고, 대신
+  신경망 $\epsilon_\theta(x_t, t)$가 \textbf{$x_t$에 추가된 노이즈
+  $\epsilon_t$를 예측}하도록 학습:
+\item {\footnotesize 수학적으로 이 $\epsilon$ 예측은 $\nabla_x \log p_t(x)$,
   즉 데이터 분포의 \textbf{스코어 함수}를 추정하는 것과 동치
   (Song \& Ermon, 2019) — ``노이즈를 잘 예측'' = ``데이터가 어디에
   빽빽한지 그 기울기를 안다''.}
+\end{itemize}}
 \end{frame}

@@ -1,0 +1,81 @@
+<title>슬라이드 이미지 검토함</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{--bg:#f5f5f8;--card:#fff;--ink:#1b1c2a;--muted:#5f6177;--line:#dfe0ea;--accent:#2e3192;--accent-soft:#e7e8f6;--photo:#7a5a12;--photo-soft:#f6eed9;--gen:#1f6b4a;--gen-soft:#e2f2ea;--flag:#b3261e;--flag-soft:#fbe7e5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13141c;--card:#1c1d28;--ink:#e9e9f1;--muted:#a2a4ba;--line:#2f3142;--accent:#a3a6ff;--accent-soft:#272a58;--photo:#e8c77a;--photo-soft:#352c16;--gen:#86d9b1;--gen-soft:#193326;--flag:#ff8c82;--flag-soft:#3b1f1d}}
+:root[data-theme="dark"]{--bg:#13141c;--card:#1c1d28;--ink:#e9e9f1;--muted:#a2a4ba;--line:#2f3142;--accent:#a3a6ff;--accent-soft:#272a58;--photo:#e8c77a;--photo-soft:#352c16;--gen:#86d9b1;--gen-soft:#193326;--flag:#ff8c82;--flag-soft:#3b1f1d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 "Noto Sans KR",system-ui,sans-serif;padding-inline:16px;padding-block:24px 96px}
+.wrap{max-width:1200px;margin:0 auto;display:grid;gap:16px}
+h1{margin:0;font-size:1.45rem;text-wrap:balance}
+.sub{margin:2px 0 0;color:var(--muted)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar button{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer}
+.bar button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.card.flagged{border-color:var(--flag);box-shadow:0 0 0 1px var(--flag)}
+.thumb{aspect-ratio:16/9;max-width:100%;background:#fff;display:block;width:100%;object-fit:contain;border-bottom:1px solid var(--line);cursor:zoom-in}
+.body{padding:10px 12px;display:grid;gap:6px;flex:1}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.75rem}
+.chip{padding:1px 8px;border-radius:999px;font-weight:500}
+.chip.photo{background:var(--photo-soft);color:var(--photo)}.chip.gen{background:var(--gen-soft);color:var(--gen)}.chip.new{background:var(--accent-soft);color:var(--accent)}
+.loc{font-family:"IBM Plex Mono",monospace;color:var(--muted);font-size:.72rem}
+.title{font-weight:700;font-size:.92rem}
+.what{color:var(--muted);font-size:.8rem}
+.src{font-size:.75rem;overflow-wrap:anywhere}.src a{color:var(--accent)}
+.act{display:flex;gap:8px;align-items:center;padding:8px 12px;border-top:1px solid var(--line)}
+.act button{font:inherit;font-size:.8rem;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;padding:3px 10px;cursor:pointer;white-space:nowrap}
+.act button[aria-pressed="true"]{background:var(--flag);border-color:var(--flag);color:#fff}
+.act input{flex:1;min-width:0;font:inherit;font-size:.8rem;border:1px solid var(--line);border-radius:6px;padding:3px 8px;background:transparent;color:var(--ink)}
+.dock{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding-block:10px;padding-inline:16px}
+.dock .in{max-width:1200px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.dock button{font:inherit;border:0;background:var(--accent);color:#fff;border-radius:8px;padding:7px 14px;cursor:pointer}
+.dock button:disabled{opacity:.45;cursor:default}
+.dock span{color:var(--muted)}
+dialog{border:0;padding:0;max-width:min(96vw,1100px);background:transparent}dialog img{width:100%;display:block;border-radius:6px}dialog::backdrop{background:rgba(0,0,0,.7)}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
+</style>
+<div class="wrap">
+<header><h1>슬라이드 이미지 검토함</h1>
+<p class="sub">서브에이전트가 새로 넣은 이미지들. 카드 그림은 <b>실제 슬라이드에 들어간 모습</b>이다. 마음에 안 드는 것은 <b>교체</b>를 누르고 이유를 적은 뒤, 아래 <b>목록 복사</b>로 대화창에 붙여 넣으면 그것만 다시 작업한다.</p></header>
+<nav class="bar" id="decks" aria-label="덱"></nav>
+<nav class="bar" id="kinds" aria-label="종류"></nav>
+<main class="grid" id="grid"></main>
+</div>
+<div class="dock"><div class="in"><button id="copy" disabled>교체 목록 복사</button><span id="count">교체 요청 0개</span></div></div>
+<dialog id="zoom"><img alt=""></dialog>
+<script>
+const D=__DATA__;
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const key=o=>o.deck+"/"+o.page_file+"/"+o.image;
+let st={};try{st=JSON.parse(localStorage.getItem("imgreview")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("imgreview",JSON.stringify(st))}catch(e){}};
+let fDeck="전체",fKind="전체";
+const decks=["전체",...new Set(D.map(o=>o.deck))],kinds=["전체","사진","도식","교체 요청"];
+function pills(el,list,get,set){el.innerHTML=list.map(v=>`<button aria-pressed="${v===get()}">${esc(v)}${v!=="전체"&&el.id==="decks"?` <span class="loc">${D.filter(o=>o.deck===v).length}</span>`:""}</button>`).join("");
+ [...el.children].forEach((b,i)=>b.onclick=()=>{set(list[i]);pills(el,list,get,set);render()})}
+pills(document.getElementById("decks"),decks,()=>fDeck,v=>fDeck=v);
+pills(document.getElementById("kinds"),kinds,()=>fKind,v=>fKind=v);
+function dom(u){try{return new URL(u).hostname}catch(e){return u}}
+function render(){
+ const g=document.getElementById("grid");
+ const items=D.filter(o=>(fDeck==="전체"||o.deck===fDeck)&&(fKind==="전체"||(fKind==="교체 요청"?st[key(o)]?.flag:o.kind===fKind)));
+ g.innerHTML=items.map(o=>{const s=st[key(o)]||{};return `<article class="card${s.flag?" flagged":""}" data-k="${esc(key(o))}">
+ ${o.thumb?`<img class="thumb" src="${o.thumb}" alt="${esc(o.title)} 슬라이드">`:`<div class="thumb"></div>`}
+ <div class="body"><div class="meta"><span class="chip ${o.kind==="사진"?"photo":"gen"}">${o.kind}</span>${o.new_frame?'<span class="chip new">새 슬라이드</span>':'<span class="chip new">기존 슬라이드에 추가</span>'}<span class="loc">${esc(o.deck)} · ${o.pdf_page?o.pdf_page+"쪽":"?"} · ${esc(o.page_file)}</span></div>
+ <div class="title">${esc(o.title)}</div>${o.what?`<div class="what">${esc(o.what)}</div>`:""}
+ <div class="src">${o.source?`출처: <a href="${esc(o.source)}" target="_blank" rel="noopener">${esc(dom(o.source))}</a>`:"직접 생성한 그림"} · <span class="loc">${esc(o.image)}</span></div></div>
+ <div class="act"><button aria-pressed="${!!s.flag}">교체</button><input id="r-${esc(key(o)).replace(/[^\w-]/g,"_")}" placeholder="이유 (선택)" value="${esc(s.reason||"")}" aria-label="교체 이유"></div></article>`}).join("")||'<p class="sub">해당하는 이미지가 없다.</p>';
+ g.querySelectorAll(".card").forEach(c=>{const k=c.dataset.k;
+  c.querySelector(".act button").onclick=()=>{st[k]={...(st[k]||{}),flag:!(st[k]?.flag)};save();render()};
+  c.querySelector("input").oninput=e=>{st[k]={...(st[k]||{}),reason:e.target.value};save();dock()};
+  const im=c.querySelector("img.thumb");if(im)im.onclick=()=>{const d=document.getElementById("zoom");d.querySelector("img").src=im.src;d.showModal()}});
+ dock()}
+function dock(){const f=D.filter(o=>st[key(o)]?.flag);document.getElementById("count").textContent=`교체 요청 ${f.length}개`;const b=document.getElementById("copy");b.disabled=!f.length;
+ b.onclick=async()=>{const txt="이미지 교체 요청:\n"+f.map(o=>`- ${o.deck} ${o.page_file} ${o.image} (${o.pdf_page}쪽, ${o.title})${st[key(o)].reason?" — "+st[key(o)].reason:""}`).join("\n");
+  try{await navigator.clipboard.writeText(txt);b.textContent="복사됨"}catch(e){prompt("아래를 복사해서 붙여넣기",txt)}setTimeout(()=>b.textContent="교체 목록 복사",1500)}}
+document.getElementById("zoom").onclick=e=>e.currentTarget.close();
+render();
+</script>

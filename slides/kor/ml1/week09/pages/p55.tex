@@ -2,7 +2,7 @@
   \begin{columns}[T]
     \begin{column}{0.52\textwidth}
       \centering
-      % [fig missing] \includegraphics[width=\linewidth]{ch09_3_lr_schedules.png}
+      \includegraphics[width=\linewidth]{ch09_3_lr_schedules.png}\\[0.3em]
       {\footnotesize 고정 lr(회색 수평선) / StepLR(파랑 계단) /
       코사인(빨강, 300에폭 동안 0.01 $\to$ 0으로 부드럽게).}
     \end{column}
@@ -23,10 +23,14 @@
     \end{column}
   \end{columns}
   \vskip0.2em
-  {\footnotesize \textbf{왜 warmup이 필요한가} — 무작위로 막
+  
+
+\note{\begin{itemize}
+\item {\footnotesize \textbf{왜 warmup이 필요한가} — 무작위로 막
   초기화된 가중치에 Adam 같은 \textbf{adaptive 최적화기}를 처음부터
   큰 lr으로 돌리면, 첫 스텝들의 그래디언트/2차 통계가 아직
   무의미한데 큰 업데이트가 나가 \textbf{초반 손실이 오히려 발사}.
   짧은 warmup이 이 첫 스텝들을 안정 — \kb{GPT/트랜스포머 학습에서
   warmup이 표준}인 이유가 바로 이것.}
+\end{itemize}}
 \end{frame}

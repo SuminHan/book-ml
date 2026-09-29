@@ -1,4 +1,4 @@
-\begin{frame}[fragile]{skip-gram 학습 코어 (핵심만)}
+\begin{frame}[fragile,shrink=18]{skip-gram 학습 코어 (핵심만)}
 \begin{lstlisting}
 def train_skipgram(corpus, window=2, dim=8, epochs=50, lr=0.05, neg_k=3):
     vocab = sorted(set(corpus))
@@ -26,6 +26,10 @@ def train_skipgram(corpus, window=2, dim=8, epochs=50, lr=0.05, neg_k=3):
                     W_out[t][k] -= grad * W_in[c][k]
     return {w: W_in[idx[w]] for w in vocab}
 \end{lstlisting}
-  {\footnotesize 실제 word2vec은 수백만 단어·수십억 쌍으로 학습 ---
+  
+
+\note{\begin{itemize}
+\item {\footnotesize 실제 word2vec은 수백만 단어·수십억 쌍으로 학습 ---
   위는 아이디어만 보이려는 축소판.}
+\end{itemize}}
 \end{frame}

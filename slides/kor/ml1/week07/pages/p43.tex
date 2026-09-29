@@ -1,8 +1,6 @@
 \begin{frame}{잔차 추적을 눈으로: 스템 8개로 직선 근사}
-  1차원 데이터: 목표 $y = x$ ($x=1,\dots,10$). 쓸 수 있는 모델은
-  \textbf{스텀}(깊이 1: threshold보다 작으면 $a$, 크면 $b$)뿐 —
-  스템 하나로는 직선을 절대 못 그린다.
-  \texttt{learning\_rate=0.5}로 \textbf{8단계} 추격:
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
+  \textbf{스텀 8개로 직선 근사}
   \vskip0.5em
   {\scriptsize
   \begin{tabular}{@{}lll@{}}
@@ -23,12 +21,21 @@
   \begin{itemize}
     \item train MSE: 스템 0개(모두 0 예측)의 \textbf{38.5}에서 8단계 만에
       \textbf{0.16}까지
-    \item 1단계: 왼쪽 절반 $+3.0\times0.5$, 오른쪽 $+8.0\times0.5$로 상수
+    
+    
+  \end{itemize}
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item 1차원 데이터: 목표 $y = x$ ($x=1,\dots,10$). 쓸 수 있는 모델은
+  \textbf{스텀}(깊이 1: threshold보다 작으면 $a$, 크면 $b$)뿐 —
+  스템 하나로는 직선을 절대 못 그린다.
+  \texttt{learning\_rate=0.5}로 \textbf{8단계} 추격:
+\item 1단계: 왼쪽 절반 $+3.0\times0.5$, 오른쪽 $+8.0\times0.5$로 상수
       $\to$ 2단계 함수는 \textbf{기울기를 못 그려} 남은 오차가 ``기울기''로
       $\to$ 2단계는 threshold=3을 \textbf{1단계의 왼쪽 구간 내부}에 더해
       그 기울기를 수정
-    \item tree 7, 8은 이전 트리가 이미 쓴 threshold(=1)를 \textbf{다시} 골라
+\item tree 7, 8은 이전 트리가 이미 쓴 threshold(=1)를 \textbf{다시} 골라
       진폭만 미세 조정($-0.892\to-0.446$) — ``새 트리가 항상 새 위치''가
       아니라 \textbf{``남은 잔차를 가장 잘 분기하는 곳''}
-  \end{itemize}
+\end{itemize}}
 \end{frame}
