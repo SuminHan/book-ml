@@ -1,4 +1,4 @@
-\begin{frame}[fragile]{MC 제어: 코드 (첫방문 기준 $Q$ 갱신)}
+\begin{frame}[fragile,shrink=30]{MC 제어: 코드 (첫방문 기준 $Q$ 갱신)}
 \begin{lstlisting}
 def mc_control(env_step, n_states, n_actions, n_episodes,
                epsilon, gamma, start_state):
@@ -29,8 +29,12 @@ def mc_control(env_step, n_states, n_actions, n_episodes,
                 Q[s][a] += (G - Q[s][a]) / counts[s][a]  # 증분 평균
     return Q
 \end{lstlisting}
-  {\footnotesize MC 예측과 \textbf{거의 같다} --- $V[s]$ 가
+  \textbf{$Q[s][a]$ 갱신, $(s,a)$ 방문 기준}
+
+\note{\begin{itemize}
+\item {\footnotesize MC 예측과 \textbf{거의 같다} --- $V[s]$ 가
   아니라 $Q[s][a]$ 를 갱신하고, ``방문'' 기준이 상태 $s$ 가
   아니라 \textbf{(상태, 행동) 쌍} $(s,a)$ 임. 나머진 동일(뒤에서
   훑어 $G_t$ 재귀 계산, 증분 평균).}
+\end{itemize}}
 \end{frame}

@@ -1,7 +1,16 @@
 \begin{frame}{자주 하는 실수 3가지}
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
   \small
   \begin{enumerate}
-    \item \textbf{EM을 한 번만 돌려 믿기}(k-means 실수보다
+    
+    \item \textbf{``likelihood가 가장 큰 $K$를 고른다''} ---
+      $K = m$이 \textbf{항상} 이김(위 BIC 섹션).
+      \textbf{BIC/AIC/교차검증}을 써야
+    
+  \end{enumerate}
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item \textbf{EM을 한 번만 돌려 믿기}(k-means 실수보다
       \textbf{더 위험}) --- k-means의 ``나쁜 초기화 $\to$
       나쁜 지역최적해''가 GMM에도 그대로 있지만, GMM은
       \textbf{분산까지 자유}라 실패의 모양이 다름: 무작위
@@ -17,10 +26,7 @@
       \textbf{추가 경로}까지 열려 있음. 대응책: \textbf{여러
       초기화}(\texttt{n\_init}) + \textbf{최종 우도로} 결과
       비교(\textbf{최대} 우도를 가진 결과 채택)
-    \item \textbf{``likelihood가 가장 큰 $K$를 고른다''} ---
-      $K = m$이 \textbf{항상} 이김(위 BIC 섹션).
-      \textbf{BIC/AIC/교차검증}을 써야
-    \item \textbf{책임값 0.4를 ``오류''로 읽기} ---
+\item \textbf{책임값 0.4를 ``오류''로 읽기} ---
       클러스터가 겹치는 영역에서 $\gamma = (0.4, 0.6)$가
       나온 것은 모델이 \textbf{불확실성을 바르게 보고한
       것}이지 학습이 안 된 것이 아님. k-means로 같은 영역을
@@ -29,5 +35,5 @@
       \textbf{soft assignment의 불확실성 정보}는
       (예: 경계점만 따로 골라 \textbf{인간이 재분류}하는)
       후속 작업에 실제로 유용
-  \end{enumerate}
+\end{itemize}}
 \end{frame}

@@ -1,7 +1,5 @@
 \begin{frame}{자주 하는 실수: 시계열을 무작위로 나누기}
-  환자에게 있는 ``단위'' 문제의 다른 얼굴이 \textbf{시간 순서}.
-  시계열은 \textbf{데이터가 이미 시간순 정렬되어 있을 때 무작위 shuffle이
-  구조를 깨는} 방향으로 작용.
+  
   \vskip0.3em
   \small
   추세(매일 $+1$)가 있는 일일 데이터 365일, kNN:
@@ -15,12 +13,8 @@
   \end{tabular}
   \par\vskip0.5em\normalsize
   \begin{itemize}
-    \item \kb{무작위}: test 점들이 시간축 곳곳에 흩어져 각 test 점 근처에
-      train 점이 항상 있음(과거든 미래든) → kNN이 잘 맞힘. 그런데
-      \textbf{미래 값을 과거 값으로 ``예측''}한 것 — 실전(미래는 아직
-      없음)에선 성립하지 않음.
-    \item \kb{시간순}: test가 train의 시간 범위(horizon)를 벗어나 kNN이
-      밖으로 외삽, 추세를 못 쫓아 RMSE 급등.
+    \item \textbf{무작위 분할은 미래 값을 과거로 예측}
+    \item \textbf{시간순 분할은 외삽으로 RMSE 급등}
   \end{itemize}
   \vskip0.2em
   \begin{block}{교훈}
@@ -30,4 +24,16 @@
     {\footnotesize \texttt{train\_test\_split(shuffle=False)} /
     \texttt{TimeSeriesSplit}. 그룹(환자·기기·지점): \texttt{GroupKFold}.}
   \end{block}
+
+\note{\begin{itemize}
+\item 환자에게 있는 ``단위'' 문제의 다른 얼굴이 \textbf{시간 순서}.
+  시계열은 \textbf{데이터가 이미 시간순 정렬되어 있을 때 무작위 shuffle이
+  구조를 깨는} 방향으로 작용.
+\item \kb{무작위}: test 점들이 시간축 곳곳에 흩어져 각 test 점 근처에
+      train 점이 항상 있음(과거든 미래든) → kNN이 잘 맞힘. 그런데
+      \textbf{미래 값을 과거 값으로 ``예측''}한 것 — 실전(미래는 아직
+      없음)에선 성립하지 않음.
+\item \kb{시간순}: test가 train의 시간 범위(horizon)를 벗어나 kNN이
+      밖으로 외삽, 추세를 못 쫓아 RMSE 급등.
+\end{itemize}}
 \end{frame}

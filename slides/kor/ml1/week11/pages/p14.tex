@@ -1,5 +1,6 @@
 \begin{frame}{고정점과 그 ``속도''}
-  위 계산을 10단계까지 이어가면 ($w_{xh}=0.5$, $w_{hh}=0.8$):
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
+  
   \vskip0.4em
   \small
   \begin{tabular}{@{}l|cccccccc@{}}
@@ -12,17 +13,25 @@
   \end{tabular}
   \vskip0.5em
   \begin{itemize}
-    \item $h_t$는 \kb{고정점(fixed point)}
+    \item \textbf{$h_t$는 고정점 $h^\ast \approx 0.8196$으로 수렴}
+    
+    \item \textbf{수렴 속도는 증폭 인자로 결정}
+    
+  \end{itemize}
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item 위 계산을 10단계까지 이어가면 ($w_{xh}=0.5$, $w_{hh}=0.8$):
+\item $h_t$는 \kb{고정점(fixed point)}
       $h^\ast = \tanh(0.5 + 0.8\, h^\ast)$으로 수렴 --- 해는
       $h^\ast \approx 0.8196$, $t=10$에서 차이 $< 10^{-3}$
-    \item ``같은 입력이 계속 오면 은닉 상태가 결국 한 곳에
+\item ``같은 입력이 계속 오면 은닉 상태가 결국 한 곳에
       정지한다'' --- RNN의 \textbf{동적(dynamics)}을 이해하는
       출발점
-    \item 수렴 \textbf{속도}는 고정점 근처의 ``\textbf{증폭 인자}''로
+\item 수렴 \textbf{속도}는 고정점 근처의 ``\textbf{증폭 인자}''로
       결정: $\frac{d h_t}{d h_{t-1}} = 0.8 \cdot tanh'(z_t)$
-    \item $h^\ast \approx 0.82$에서 $\tanh'(z^\ast) = 1 - (h^\ast)^2
+\item $h^\ast \approx 0.82$에서 $\tanh'(z^\ast) = 1 - (h^\ast)^2
       \approx 0.325$ $\Rightarrow$ 증폭 인자 $0.8 \times 0.325
       \approx 0.26$ --- 각 단계마다 차이가 약 4분의 1로 줄어듦
       (표에서 $h_5$ 이후가 거의 움직이지 않는 이유)
-  \end{itemize}
+\end{itemize}}
 \end{frame}

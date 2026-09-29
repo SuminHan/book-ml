@@ -1,10 +1,5 @@
 \begin{frame}{Self-Attention: 문장이 자기 자신을 본다}
-  Q, K, V가 모두 \textbf{같은 문장}에서 나오면 \kb{self-attention}
-  — 각 단어가 같은 문장 안의 다른 모든 단어(\textbf{자기 자신
-  포함})와의 관련도를 계산. \textbf{이게 이번 장 도입부의
-  메커니즘}: ``그것은''의 Query가 문장 안 모든 단어의 Key와
-  내적했을 때 ``그 동물''의 Key와 \textbf{가장 높은 점수}가
-  나오도록 학습된다.
+  \textbf{Self-Attention: 같은 문장 내 관련도 계산}
   \vskip0.4em
   \begin{block}{구조를 한 줄로}
     각 단어의 ``새로운 표현'' = 같은 문장 안의 \emph{모든}
@@ -20,7 +15,16 @@
     근본적으로 다른 점} (12.1절의 병렬성 문제 바로 그 차이).
   \end{block}
   \vskip0.4em
-  또 하나: \textbf{어텐션 연산 자체에는 ``단어의 위치''라는
+  
+
+\note{\begin{itemize}
+\item Q, K, V가 모두 \textbf{같은 문장}에서 나오면 \kb{self-attention}
+  — 각 단어가 같은 문장 안의 다른 모든 단어(\textbf{자기 자신
+  포함})와의 관련도를 계산. \textbf{이게 이번 장 도입부의
+  메커니즘}: ``그것은''의 Query가 문장 안 모든 단어의 Key와
+  내적했을 때 ``그 동물''의 Key와 \textbf{가장 높은 점수}가
+  나오도록 학습된다.
+\item 또 하나: \textbf{어텐션 연산 자체에는 ``단어의 위치''라는
   정보가 전혀 없다.} $QK^T$ 는 \emph{내적}만 계산 — 단어를
   \emph{재배열}해도 각 쌍의 원점수는 그대로(\textbf{순서 불변}),
   ``강아지가 고양이를 쫓는다''와 ``고양이가 강아지를 쫓는다''가
@@ -28,4 +32,5 @@
   해결책 \kb{positional encoding}(12.3절) — 여기서는
   ``\textbf{어텐션이 \emph{순서를 모른다}는 사실 자체}''를
   기억해 두자.
+\end{itemize}}
 \end{frame}

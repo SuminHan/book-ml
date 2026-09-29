@@ -1,16 +1,7 @@
 \begin{frame}{자주 하는 실수 (1/2)}
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
   \begin{itemize}
-    \item \kb{$\max$을 \texttt{Q[s\_next][a\_next]}로 써서 ``Q-learning''
-      이라고 생각한다.}
-      $\max_{a'}Q(s',a')$의 $\max$은 \textbf{다음 상태 $s'$의 모든
-      행동 $a'$에 대한 최대}이지, 실제로 고른 $a'$의 값이 아니다.
-      실제로 고른 $a'$의 값을 쓰면 그것이 SARSA다.
-      \vskip0.3em
-      코드로: \texttt{target = r + gamma*max(Q[ns])} (Q-learning)
-      vs \texttt{target = r + gamma*Q[ns][na]} (SARSA) ---
-      \textbf{\texttt{max()}의 유무}가 두 알고리즘을 가르는 전부.
-      \texttt{na}를 \texttt{max} 안에 잘못 넣거나 빼먹으면 둘 다 아닌
-      ``어중간한 경로''(절벽도 안 피하고, 최단 길로도 안 감)를 만든다.
+    \item \textbf{Q-learning vs SARSA: $\max$()의 유무}
   \end{itemize}
   \vskip0.5em
   \begin{itemize}
@@ -23,4 +14,18 @@
       \texttt{max\_next\_q = max(Q[ns]) if not done else 0.0} 처럼
       \texttt{done} 플래그로 0을 강제.
   \end{itemize}
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item \kb{$\max$을 \texttt{Q[s\_next][a\_next]}로 써서 ``Q-learning''
+      이라고 생각한다.}
+      $\max_{a'}Q(s',a')$의 $\max$은 \textbf{다음 상태 $s'$의 모든
+      행동 $a'$에 대한 최대}이지, 실제로 고른 $a'$의 값이 아니다.
+      실제로 고른 $a'$의 값을 쓰면 그것이 SARSA다.
+      \vskip0.3em
+      코드로: \texttt{target = r + gamma*max(Q[ns])} (Q-learning)
+      vs \texttt{target = r + gamma*Q[ns][na]} (SARSA) ---
+      \textbf{\texttt{max()}의 유무}가 두 알고리즘을 가르는 전부.
+      \texttt{na}를 \texttt{max} 안에 잘못 넣거나 빼먹으면 둘 다 아닌
+      ``어중간한 경로''(절벽도 안 피하고, 최단 길로도 안 감)를 만든다.
+\end{itemize}}
 \end{frame}

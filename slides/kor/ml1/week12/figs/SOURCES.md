@@ -1,0 +1,6 @@
+photo_bengio.jpg | https://commons.wikimedia.org/wiki/File:ICLR_2025_-_Yoshua_Bengio_02.jpg | Yoshua Bengio (2014년 "Neural Machine Translation by Jointly Learning to Align and Translate" 공저자; 2018 ACM Turing Award 공동 수상), ICLR 2025 현장 사진, Xuthoria 촬영, CC BY-SA 4.0.
+photo_llionjones.jpg | https://commons.wikimedia.org/wiki/File:Llion_Jones,_author_of_Attention_is_All_You_Need,_at_CIC_Tokyo_speaking_about_sakana.ai.jpg | Llion Jones (2017년 "Attention Is All You Need" 8인 공저자 중 1인, 현 Sakana AI 공동창업자), 2024년 도쿄 CIC 강연 사진, Syced 촬영, CC0.
+photo_aidangomez.jpg | https://commons.wikimedia.org/wiki/File:Aidan_Gomez_at_%22ALL_IN%22_2025_03.jpg | Aidan Gomez (2017년 "Attention Is All You Need" 8인 공저자 중 1인, 현 Cohere CEO), 2025년 ALL IN 컨퍼런스 사진, CC BY-SA 4.0.
+photo_attnpaper_titlepage.png | https://arxiv.org/abs/1706.03762 | Vaswani et al., "Attention Is All You Need" (2017) arXiv 논문 1페이지 원본 스캔 (제목·저자 8인·초록).
+ref_transformer.png | https://arxiv.org/abs/1706.03762 | Vaswani et al. (2017) Figure 1 — 트랜스포머 전체 구조도(인코더/디코더 스택).
+ref_bertbert.png | https://arxiv.org/abs/1906.04341 | Clark, Khandelwal, Levy, Manning, "What Does BERT Look At? An Analysis of BERT's Attention" (2019) Figure 5 — 헤드별 어텐션 패턴(인접 토큰/품사/통사 구조).

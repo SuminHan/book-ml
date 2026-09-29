@@ -1,4 +1,5 @@
 \begin{frame}{2시점 예제: 출력 분포와 손실}
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
   각 시점의 출력 분포 (softmax):
   \vskip0.4em
   \[ p_1 = \operatorname{softmax}(W_{hy} h_1)
@@ -13,7 +14,10 @@
      = -\log 0.3848 - \log 0.3444 = 0.9550 + 1.0660
      = \boxed{2.0210} \]
   \vskip0.4em
-  {\footnotesize 역전파는 시점 $2 \to 1$ 순서로. 시점 2부터:
+  \textbf{역전파는 시점 $2 \to 1$ 순서로}
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item {\footnotesize 역전파는 시점 $2 \to 1$ 순서로. 시점 2부터:
   $\delta_2^{(y)} = [0.2934, \; 0.3622, \; -0.6556]$ (목표 인덱스 2를
   $-1$ 감소) $\Rightarrow$ $\frac{\partial L}{\partial W_{hy}} \mathrel{+}=
   \delta_2^{(y)} h_2^\top$, $\frac{\partial L}{\partial b_y} \mathrel{+}=
@@ -22,4 +26,5 @@
   $\frac{\partial L}{\partial z_2} = \frac{\partial L}{\partial h_2}
   \odot (1 - h_2^2)$, 그리고 $\frac{\partial L}{\partial h_1} \mathrel{+}=
   W_{hh}^\top \frac{\partial L}{\partial z_2}$.}
+\end{itemize}}
 \end{frame}

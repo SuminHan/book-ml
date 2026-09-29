@@ -9,13 +9,19 @@ Xc  = np.column_stack([x1, x2c, x3])
 print(Lasso(alpha=2.0).fit(Xc, y).coef_)
 # [0. 0.5905 0.]   (순서: [x1, x2c, x3])
 \end{lstlisting}
-  놀라운 결과: Lasso는 \textbf{진짜 계수 2를 가진 $x_1$을 0으로 만들고},
-  등가인 $x_{2c}$를 남김(계수 0.59, 환산 기울기 $\approx1.77$).
+  \textbf{Lasso는 등가 특징 중 하나만 남김}
   \vskip0.3em
-  ``어느 쪽을 남길지''는 \textbf{데이터가 결정하지 않는다} — 등가이면
+  
+  \vskip0.2em
+  \textbf{Ridge는 가중치 분산, Lasso는 희소 해}
+
+\note{\begin{itemize}
+\item 놀라운 결과: Lasso는 \textbf{진짜 계수 2를 가진 $x_1$을 0으로 만들고},
+  등가인 $x_{2c}$를 남김(계수 0.59, 환산 기울기 $\approx1.77$).
+\item ``어느 쪽을 남길지''는 \textbf{데이터가 결정하지 않는다} — 등가이면
   손실함수가 그 방향으로 평탄해져 해가 유일하지 않고, 솔버가 어느 꼭짓점에
   먼저 닿느냐에 따라 둘 중 하나가 \emph{임의로} 낙점.
-  \vskip0.2em
-  {\footnotesize 대조: Ridge는 상관 특징들의 가중치를 \emph{나눠 갖고}, Lasso는
+\item {\footnotesize 대조: Ridge는 상관 특징들의 가중치를 \emph{나눠 갖고}, Lasso는
   하나를 \emph{통째로 삭제} — 안정적 해 vs 희소 해, 둘 다 ``합법적''.}
+\end{itemize}}
 \end{frame}

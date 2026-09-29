@@ -1,7 +1,6 @@
 \section{12.1 어텐션 아이디어와 Query·Key·Value}
 \begin{frame}{RNN의 근본 문제: 순차성과 압축 병목}
-  Week 11에서 본 RNN은 \textbf{한 단어씩 순서대로} 처리해야 했다 —
-  100번째 단어를 보려면 1$\sim$99번째를 순서대로 거쳐야 한다.
+  
   \begin{itemize}
     \item 문제 (1): GPU는 \textbf{병렬 연산}에 특화됐는데,
       \textbf{순차 구조는 병렬성을 활용하지 못해} 느리다.
@@ -22,7 +21,13 @@
     그래디언트 소실과 같은 ``길이에 대한 취약성''의 또 다른 모습.
   \end{block}
   \vskip0.4em
-  \kq{2014년 Bahdanau·Cho·Bengio가 보여준 우회로: 생성의 각
+  \textbf{어텐션(attention)의 도입}
+
+\note{\begin{itemize}
+\item Week 11에서 본 RNN은 \textbf{한 단어씩 순서대로} 처리해야 했다 —
+  100번째 단어를 보려면 1$\sim$99번째를 순서대로 거쳐야 한다.
+\item \kq{2014년 Bahdanau·Cho·Bengio가 보여준 우회로: 생성의 각
   단계에서 ``원문의 각 단어를 다시 돌아가서 보고, 적절한 비율로
   쓴다'' — 그게 바로 \kb{어텐션(attention)}이다.}
+\end{itemize}}
 \end{frame}
