@@ -1,19 +1,12 @@
 \begin{frame}{n-step 어드밴티지와 GAE의 관계}
-  \small
-  $n$-step 어드밴티지를 따로 정의:
+  
   \[
   A_t^{(n)} := G_t^{(n)} - V(s_t) = \sum_{k=0}^{n-1}
   \gamma^{k}\,\delta_{t+k}
   \]
   \begin{itemize}
-    \item \kb{직접 확인할 것}: 두 식은 정확히 같다 — 좌변을
-      전개하면 실제 보상 $r_t+\gamma r_{t+1}+\cdots$ 가 나오고,
-      우변의 각 $\delta$ 를 정의대로 전개하면 같은 보상들이
-      $\gamma^k$ 로 할인되어 합쳐지며, \textbf{가운데의 $V$ 들이
-      연속적으로 상쇄}(telescoping:
-      $\gamma V(s_{t+1})-\gamma V(s_{t+1})$ 등).
-    \item $n=1$ 이면 $A_t^{(1)}=\delta_t$, 에피소드 길이보다
-      큰 $n$ 이면 $A_t^{(n)}=G_t-V(s_t)$ (10.3절 원래 정의).
+    \item \textbf{두 식은 정확히 같다}
+    
   \end{itemize}
   \vskip0.5em
   \begin{block}{정리 (수식은 한 줄)}
@@ -26,10 +19,7 @@
   \end{block}
   \vskip0.5em
   \begin{enumerate}
-    \item 각 $A_t^{(n)}$ 을 위 telescoping 식으로 바꾸면, 같은
-      $\delta_{t+k}$ 를 만드는 모든 $n$ ($n>k$, 즉
-      $n=k+1,k+2,\ldots$)에서 해당 $\delta$ 가 $\gamma^k$
-      계수로 한 번씩 등장.
+    
     \item $(1-\lambda)\sum_{n=k+1}^{\infty}\lambda^{n-1}\gamma^k
       = (\gamma\lambda)^k$ — 지수급수의 꼬리를 정리하면
       바로 무한합 정의가 나옴.
@@ -43,4 +33,21 @@
     \textbf{같은 승화} — GAE를 ``어드밴티지에 적용한
     적격흔적''이라 부르는 이유.
   \end{block}
+
+\note{\begin{itemize}
+\item \small
+  $n$-step 어드밴티지를 따로 정의:
+\item \kb{직접 확인할 것}: 두 식은 정확히 같다 — 좌변을
+      전개하면 실제 보상 $r_t+\gamma r_{t+1}+\cdots$ 가 나오고,
+      우변의 각 $\delta$ 를 정의대로 전개하면 같은 보상들이
+      $\gamma^k$ 로 할인되어 합쳐지며, \textbf{가운데의 $V$ 들이
+      연속적으로 상쇄}(telescoping:
+      $\gamma V(s_{t+1})-\gamma V(s_{t+1})$ 등).
+\item $n=1$ 이면 $A_t^{(1)}=\delta_t$, 에피소드 길이보다
+      큰 $n$ 이면 $A_t^{(n)}=G_t-V(s_t)$ (10.3절 원래 정의).
+\item 각 $A_t^{(n)}$ 을 위 telescoping 식으로 바꾸면, 같은
+      $\delta_{t+k}$ 를 만드는 모든 $n$ ($n>k$, 즉
+      $n=k+1,k+2,\ldots$)에서 해당 $\delta$ 가 $\gamma^k$
+      계수로 한 번씩 등장.
+\end{itemize}}
 \end{frame}

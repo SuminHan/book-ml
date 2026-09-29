@@ -1,13 +1,10 @@
 \begin{frame}{왜 추정값이 수렴하는가: 무작위 기준선}
-  기준선 먼저 --- MCTS 없이, ``1개 가져가기''를 둔 뒤 남은 게임
-  (돌 4개, 상대 차례)을 \textbf{양쪽 다 무작위}로 끝까지 할 때
-  나의 승률은? ``돌 $n$개에서 \textbf{차례인 쪽}의 무작위
-  승률''을 $P(n)$이라 하면, 규칙 그대로 재귀된다:
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
+  
   \[
   P(1)=1, \qquad P(n) = \frac{1}{k(n)} \sum\_{m} \bigl(1 - P(n-m)\bigr)
   \]
-  {\footnotesize $k(n)$ = 가능한 수의 개수, $n \le 3$이면
-  $k = n$.}
+  
   \vskip0.4em
   \begin{itemize}
     \item 손으로: $P(1)=1$,
@@ -20,7 +17,17 @@
       (실제 측정: 0.671 / 0.505 / 0.496)
   \end{itemize}
   \vskip0.5em
-  \kq{순수 무작위 플레이로는 승패를 \textbf{약 17\%p 차이}로밖에
+  \textbf{MCTS의 핵심은 무작위와의 갭}
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item 기준선 먼저 --- MCTS 없이, ``1개 가져가기''를 둔 뒤 남은 게임
+  (돌 4개, 상대 차례)을 \textbf{양쪽 다 무작위}로 끝까지 할 때
+  나의 승률은? ``돌 $n$개에서 \textbf{차례인 쪽}의 무작위
+  승률''을 $P(n)$이라 하면, 규칙 그대로 재귀된다:
+\item {\footnotesize $k(n)$ = 가능한 수의 개수, $n \le 3$이면
+  $k = n$.}
+\item \kq{순수 무작위 플레이로는 승패를 \textbf{약 17\%p 차이}로밖에
   구분할 수 없다 --- 그런데 MCTS의 추정 승률은 98.7\%, 67\%를
   훨씬 뛰어넘는다. 이 갭이 MCTS의 핵심.}
+\end{itemize}}
 \end{frame}

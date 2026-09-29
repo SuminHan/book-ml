@@ -1,7 +1,5 @@
 \begin{frame}[fragile]{A2C 코드 (1/2): 네트워크와 에피소드 실행}
-  10.2 REINFORCE 코드에서 \textbf{딱 두 가지}를 바꿈:
-  (1) $G_t$ 를 $A_t = G_t - V(s_t)$ 로,
-  (2) $V(s_t)$ 를 내주는 \textbf{Critic}을 하나 더 붙임.
+  \textbf{A2C 코드: REINFORCE에서 두 가지 변경}
 \begin{lstlisting}
 import torch, torch.nn as nn
 
@@ -35,4 +33,10 @@ def a2c_episode(env, seed, gamma):
         nexts.append(torch.tensor(s, dtype=torch.float32))
         if term or trunc: break
 \end{lstlisting}
+
+\note{\begin{itemize}
+\item 10.2 REINFORCE 코드에서 \textbf{딱 두 가지}를 바꿈:
+  (1) $G_t$ 를 $A_t = G_t - V(s_t)$ 로,
+  (2) $V(s_t)$ 를 내주는 \textbf{Critic}을 하나 더 붙임.
+\end{itemize}}
 \end{frame}

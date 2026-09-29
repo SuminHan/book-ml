@@ -1,6 +1,6 @@
 \begin{frame}{실측: CliffWalking, 시드 0/1/2 (고정 $\varepsilon=0.1$)}
-  \small
-  {\footnotesize $\alpha=0.5$, $\gamma=1.0$, $\varepsilon=0.1$ 고정, 500 에피소드}
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
+  
   \vskip0.4em
   \begin{tabular}{@{}lcccc@{}}
     \toprule
@@ -13,11 +13,18 @@
   \end{tabular}
   \vskip0.8em
   \begin{itemize}
-    \item (1) \textbf{학습 도중}: SARSA($-24\sim-32$)가 Q-learning(약 $-50$)보다
+    \item \textbf{학습 도중: SARSA가 Q-learning보다 낫다}
+    \item \textbf{학습 후: Q-learning 최단, SARSA 안전}
+  \end{itemize}
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item \small
+  {\footnotesize $\alpha=0.5$, $\gamma=1.0$, $\varepsilon=0.1$ 고정, 500 에피소드}
+\item (1) \textbf{학습 도중}: SARSA($-24\sim-32$)가 Q-learning(약 $-50$)보다
       \textbf{오히려 낫다} --- 6.3절 그대로, Q-learning이 배우는 ``절벽 바로
       옆 최단 경로''는 탐험 중 무작위 한 번이 $-100$으로 이어지는 경로.
-    \item (2) \textbf{학습 후}: Q-learning 13스텝 최단($-13$), SARSA 17스텝
+\item (2) \textbf{학습 후}: Q-learning 13스텝 최단($-13$), SARSA 17스텝
       안전($-17$) --- \textbf{세 시드 모두} 일관. 차이는 우연이 아니라
       on/off-policy \textbf{설계 차이}, 시드별 표는 그 재현을 보여준다.
-  \end{itemize}
+\end{itemize}}
 \end{frame}

@@ -1,8 +1,7 @@
 \begin{frame}{엔트로피 보너스: 탐색이 ``학습 목표로'' 들어가도 되는가}
+\begin{center}\begin{varwidth}{0.92\textwidth}\usebeamercolor[fg]{normal text}
   \begin{itemize}
-    \item softmax 이산 정책: 탐색은 \textbf{내장}(모든 로짓에서 모든
-      행동에 양의 확률). 그런데 훈련하다 $\pi_\theta$ 가
-      \textbf{디랙 근사}(한 행동만)로 수렴하면 탐색 \textbf{사라짐}.
+    
     \item 표준 기법 = \kb{엔트로피 보너스}: 목적함수에 엔트로피를 더함.
   \end{itemize}
   \[
@@ -14,12 +13,19 @@
   \begin{itemize}
     \item $H_\theta(s)$: 행동 분포가 얼마나 ``퍼져 있는가''.
       $H>0$ 유지 $\to$ 한쪽 확률 1로 수렴하는 퇴화 방지.
-    \item $\beta=0$: 순수 리턴 최대화. $\beta$ 큼 $\to$ 탐색 강화.
-      \textbf{$\beta$ 는 작게}(예: $10^{-3}$) --- 커지면 ``탐색만 하고
-      보상엔 관심 없음''.
+    
   \end{itemize}
   \vskip0.2em
-  {\footnotesize 엔트로피의 그래디언트도 같은 구조:
+  \textbf{엔트로피 그래디언트 구조}
+\end{varwidth}\end{center}
+\note{\begin{itemize}
+\item softmax 이산 정책: 탐색은 \textbf{내장}(모든 로짓에서 모든
+      행동에 양의 확률). 그런데 훈련하다 $\pi_\theta$ 가
+      \textbf{디랙 근사}(한 행동만)로 수렴하면 탐색 \textbf{사라짐}.
+\item $\beta=0$: 순수 리턴 최대화. $\beta$ 큼 $\to$ 탐색 강화.
+      \textbf{$\beta$ 는 작게}(예: $10^{-3}$) --- 커지면 ``탐색만 하고
+      보상엔 관심 없음''.
+\item {\footnotesize 엔트로피의 그래디언트도 같은 구조:
   $\nabla_\theta \mathbb{E}_s[H_\theta] =
   \mathbb{E}_s[\mathbb{E}_{a\sim\pi}[\nabla_\theta\log\pi \,
   (-\log\pi_\theta(a|s))]]$ --- $\nabla_\theta\log\pi$ 로 표현.
@@ -27,4 +33,5 @@
   ``가중치''로 쓰는 \textbf{같은} 업데이트 식.
   (PPO 목적함수에도 $\mathbb{E}[\min(r_t \hat A_t, \text{clip}(\cdots))]
   - \beta H$ 로 포함)}
+\end{itemize}}
 \end{frame}

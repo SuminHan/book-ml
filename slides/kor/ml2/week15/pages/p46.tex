@@ -1,17 +1,11 @@
 \begin{frame}{PUCT: 신경망의 직관이 탐색 방향을 정하다}
-  이 결합에서 선택 규칙도 UCT에서 \kb{PUCT}(Policy UCT)로
-  발전:
+  
   \[
   \text{PUCT}(s,a) \;=\; \frac{Q(s,a)}{N(s)+N(s,a)} \;+\; c_{\text{puct}}\,
   P_{\theta}(s,a)\, \frac{\sqrt{N(s)}}{1+N(s,a)}
   \]
   \begin{itemize}
-    \item \textbf{차이 = 탐험 항}: UCT의 $c\sqrt{\ln N(s)/N(s,a)}$
-      는 시도 안 된 수에 \textbf{균등하게} 보너스, PUCT는
-      \textbf{정책 신경망의 사전확률} $P_{\theta}(s,a)$로
-      \textbf{가중} --- ``\textbf{신경망의 직관}''이 탐색의
-      방향을 정하고, MCTS가 그 직관을 \textbf{검증·수정하는
-      통계}로 되돌려주는 식
+    \item \textbf{PUCT: 정책 신경망의 사전확률로 탐색 방향 결정}
     \item 활용 항도 $Q/(N+N(a))$로 \textbf{부드럽게} 정교해짐
   \end{itemize}
   \vskip0.6em
@@ -41,4 +35,15 @@
     서로를 개선한다''는 핵심 문장이 \textbf{알고리즘 루프
     자체}로 성립했음을 보여줌.
   \end{block}
+
+\note{\begin{itemize}
+\item 이 결합에서 선택 규칙도 UCT에서 \kb{PUCT}(Policy UCT)로
+  발전:
+\item \textbf{차이 = 탐험 항}: UCT의 $c\sqrt{\ln N(s)/N(s,a)}$
+      는 시도 안 된 수에 \textbf{균등하게} 보너스, PUCT는
+      \textbf{정책 신경망의 사전확률} $P_{\theta}(s,a)$로
+      \textbf{가중} --- ``\textbf{신경망의 직관}''이 탐색의
+      방향을 정하고, MCTS가 그 직관을 \textbf{검증·수정하는
+      통계}로 되돌려주는 식
+\end{itemize}}
 \end{frame}
