@@ -2,12 +2,8 @@
   \begin{itemize}
     \item \texttt{adv = rets - vs.detach()} --- \texttt{vs}는
       \texttt{net}의 \textbf{Critic 헤드 출력}.
-    \item \texttt{.detach()}를 빼면 \texttt{actor\_loss.backward()}
-      의 그래디언트가 \texttt{vs}를 타고 \textbf{Critic 헤드
-      파라미터까지} 흘러가, \textbf{Actor 갱신 과정에서 Critic도
-      함께} 갱신됨.
-    \item ``두 손실이 각자 역할을 할 것''이라는 \textbf{구조가
-      무너짐}.
+    
+    
   \end{itemize}
   \vskip0.4em
   \begin{block}{왜 \texttt{.detach()}가 필요한가}
@@ -17,4 +13,13 @@
     이 버그는 ``Critic이 이상하게 빨리/느리게 학습하는'' 형태로만
     나타나서 \textbf{찾기 어렵다}.
   \end{block}
+
+\note{\begin{itemize}
+\item \texttt{.detach()}를 빼면 \texttt{actor\_loss.backward()}
+      의 그래디언트가 \texttt{vs}를 타고 \textbf{Critic 헤드
+      파라미터까지} 흘러가, \textbf{Actor 갱신 과정에서 Critic도
+      함께} 갱신됨.
+\item ``두 손실이 각자 역할을 할 것''이라는 \textbf{구조가
+      무너짐}.
+\end{itemize}}
 \end{frame}
