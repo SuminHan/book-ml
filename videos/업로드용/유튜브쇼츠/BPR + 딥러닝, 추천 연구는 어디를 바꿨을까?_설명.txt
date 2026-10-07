@@ -1,0 +1,20 @@
+BPR과 딥러닝 추천 모델(VBPR, NCF, NGCF, LightGCN)의 흐름을 1분에 정리해요.
+
+2009년의 BPR은 두 부품으로 볼 수 있어요. 사용자와 영화를 숫자 묶음(벡터)으로 바꿔 곱하는 '점수 계산기', 그리고 본 영화를 안 본 영화보다 위로 올리는 '순서 학습(BPR 손실)'. 딥러닝 연구들은 주로 점수 계산기를 바꿨어요.
+
+• VBPR (He & McAuley, AAAI 2016): 미리 학습된 CNN으로 상품 이미지의 특징을 뽑아 점수에 더해요. 관객이 없는 신작도 이미지로 추천할 수 있어 콜드 스타트를 완화해요.
+• NCF (He 외, WWW 2017): 두 벡터를 곱하는 대신, 신경망(MLP)에 넣어 점수를 계산해요.
+• NGCF (Wang 외, SIGIR 2019) · LightGCN (He 외, SIGIR 2020): 사용자–아이템 연결 그래프에서 이웃 정보를 모아 벡터를 만들어요. 학습은 여전히 BPR 손실이에요.
+• 반전: LightGCN은 NGCF에서 특징 변환과 비선형 활성화를 덜어냈는데 오히려 더 좋아졌어요. Rendle 외(RecSys 2020)도 하이퍼파라미터를 잘 고른 내적(곱셈)이 NCF의 MLP보다 낫다고 보였어요.
+
+→ 순서 학습은 BPR 그대로, 계산기는 진화, 그리고 깊다고 늘 좋은 건 아니에요.
+
+📚 References
+[1] S. Rendle, C. Freudenthaler, Z. Gantner, L. Schmidt-Thieme, "BPR: Bayesian Personalized Ranking from Implicit Feedback", UAI 2009.
+[2] R. He, J. McAuley, "VBPR: Visual Bayesian Personalized Ranking from Implicit Feedback", AAAI 2016.
+[3] X. He, L. Liao, H. Zhang, L. Nie, X. Hu, T.-S. Chua, "Neural Collaborative Filtering", WWW 2017.
+[4] X. Wang, X. He, M. Wang, F. Feng, T.-S. Chua, "Neural Graph Collaborative Filtering", SIGIR 2019.
+[5] X. He, K. Deng, X. Wang, Y. Li, Y. Zhang, M. Wang, "LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation", SIGIR 2020.
+[6] S. Rendle, W. Krichene, L. Zhang, J. Anderson, "Neural Collaborative Filtering vs. Matrix Factorization Revisited", RecSys 2020.
+
+#추천시스템 #BPR #딥러닝 #shorts
