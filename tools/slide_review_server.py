@@ -51,11 +51,13 @@ Usage:
 import argparse
 import base64
 import json
+import os
 import re
 import secrets
 import subprocess
 import sys
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -68,6 +70,7 @@ SLIDES_DIR = ROOT / "slides"
 CACHE_DIR = ROOT / ".review_cache"
 EXCLUDE_DIR_NAMES = {"exams", "quizzes"}  # sensitive drafts, skip in the review tool
 RENDER_DPI = 200
+WATCH_INTERVAL = 0.5  # seconds -- how often to poll for tex file changes
 
 _render_locks: dict[str, threading.Lock] = {}
 _render_locks_guard = threading.Lock()
@@ -77,6 +80,11 @@ _render_locks_guard = threading.Lock()
 # known -- only re-checked when the PDF's own mtime moves (i.e. a rebuild).
 _page_count_cache: dict[str, tuple[float, int]] = {}
 _page_count_cache_guard = threading.Lock()
+
+# tex file -> mtime at last check. The watcher polls this and rebuilds any
+# deck whose tex files have a newer mtime than recorded.
+_tex_watch_state: dict[Path, float] = {}
+_tex_watch_lock = threading.Lock()
 
 
 def find_decks() -> list[str]:
@@ -101,6 +109,59 @@ def deck_tex(did: str) -> Path:
 
 def deck_pages_dir(did: str) -> Path:
     return deck_tex(did).parent / "pages"
+
+
+def collect_tex_files() -> dict[str, Path]:
+    """Map did -> main .tex file for all decks. Used by the file watcher."""
+    result = {}
+    for did in find_decks():
+        tex = deck_tex(did)
+        if tex.exists():
+            result[did] = tex
+    return result
+
+
+def start_tex_watcher() -> threading.Thread:
+    """Start a background thread that polls for .tex file changes and
+    automatically rebuilds affected decks. Returns the daemon thread."""
+    def watch_loop():
+        last_seen = {}  # did -> max mtime of tex + pages/*.tex
+        print("Tex file watcher started (interval=%.1fs)" % WATCH_INTERVAL)
+        while True:
+            time.sleep(WATCH_INTERVAL)
+            try:
+                decks = find_decks()
+                for did in decks:
+                    tex = deck_tex(did)
+                    if not tex.exists():
+                        continue
+                    # Collect mtime of main tex + all pages/*.tex
+                    max_mtime = tex.stat().st_mtime
+                    pages_dir = deck_pages_dir(did)
+                    if pages_dir.is_dir():
+                        for pf in pages_dir.glob("p*.tex"):
+                            try:
+                                max_mtime = max(max_mtime, pf.stat().st_mtime)
+                            except OSError:
+                                pass
+                    prev = last_seen.get(did, 0.0)
+                    if max_mtime > prev:
+                        last_seen[did] = max_mtime
+                        print(f"[watcher] tex changed: {did}")
+                        try:
+                            ok, log = rebuild_deck(did)
+                            if ok:
+                                print(f"[watcher] rebuild OK: {did}")
+                            else:
+                                print(f"[watcher] rebuild FAILED: {did}\n{log[-2000:]}")
+                        except Exception as e:
+                            print(f"[watcher] rebuild error: {did}: {e}")
+            except Exception as e:
+                print(f"[watcher] scan error: {e}")
+
+    t = threading.Thread(target=watch_loop, daemon=True)
+    t.start()
+    return t
 
 
 def page_source_files(did: str) -> list:
@@ -1628,6 +1689,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--no-warm", action="store_true", help="skip pre-rendering all decks on startup")
+    ap.add_argument("--no-watch", action="store_true", help="disable automatic rebuild on .tex changes")
     args = ap.parse_args()
     # Redirected stdout is block-buffered, which makes the warm-up progress log
     # look empty (and the server look hung) when started with `> server.log`.
@@ -1639,6 +1701,8 @@ def main():
     print(f"Slide review server: http://localhost:{args.port}  (Ctrl+C to stop)")
     if not args.no_warm:
         threading.Thread(target=warm_cache, daemon=True).start()
+    if not args.no_watch:
+        start_tex_watcher()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
