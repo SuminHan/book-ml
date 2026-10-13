@@ -51,7 +51,62 @@ python3 slides/v2/tools/deck.py sheet  <덱폴더>        # 전체를 12장씩 �
   `lessons/` 와 달라진 점: 베르누이 모델로 통일, '당첨' 정상 확률 0.02 → 0.20, 실습은 영어 SMS 실데이터.
 
 ## 진행 현황
-| 주제 | 상태 |
-|---|---|
-| ml1/week03/naive_bayes | 25쪽 (표지 + 24) · 베르누이 NB · 실습: UCI SMS Spam (BernoulliNB 비교) |
-| ml1/week03/gda (3.2절) | 다음 후보 |
+
+강의 단위 = 쇼츠 주제 하나: **강의 20~30분 + 문제풀이 / Colab** (2026-10-13 개편). 주차는 대략적인 배치이고,
+배정 근거는 `course-prep/ML1_2027_주차별_쇼츠배분.md` (v4). 폴더마다 README 가 원본 쇼츠(`lessons/ml1/<주제>/`)를 가리킨다.
+
+| 주 | 주제 폴더 | 내용 | 상태 |
+|---|---|---|---|
+| 1 | `week01/course_intro` | 첫 강의: AI는 과학인가 공학인가 · 역사 · 이 수업의 방식 (50분, 이 덱은 그대로 둔다) | 29쪽 (표지 + 28) |
+| 1 | `week01/overfitting` | 과대적합과 과소적합 | — |
+| 1 | `week01/dirty_data` | 더티 데이터 (1주 3차시) | 14쪽 · 실습: 더럽힌 iris 청소 |
+| 2 | `week02/linear_regression` | 선형회귀 | 16쪽 · 실습: 경사하강법 구현 + Auto MPG |
+| 2 | `week02/sgd` | SGD 확률적 경사하강법 | 23쪽 · 실습: diabetes SGD + PyTorch MNIST |
+| 2 | `week02/cross_entropy` | 교차 엔트로피 | 15쪽 · 실습: 유방암 CE vs MSE + 셰익스피어 다음 글자 |
+| 2 | `week02/precision_recall` | 정밀도와 재현율 | — |
+| 2 | `week02/pr_auc` | PR-AUC | — |
+| 3 | `week03/gaussian` | 가우시안 분포 | — |
+| 3 | `week03/naive_bayes` | 나이브 베이즈 | 25쪽 · 실습: UCI SMS Spam |
+| 4 | `week04/knn` | kNN 최근접 이웃 | — |
+| 4 | `week04/kmeans` | k-means 클러스터링 | — |
+| 4 | `week04/em_algorithm` | EM 알고리즘 | — |
+| 5 | `week05/svm` | 서포트 벡터 머신 | — |
+| 7 | `week07/decision_tree` | 결정 트리 | — |
+| 7 | `week07/entropy` | 섀넌 엔트로피 | — |
+| 7 | `week07/random_forest` | 랜덤 포레스트 | — |
+| 7 | `week07/gbdt_shap` | GBDT와 SHAP | — |
+| 8 | `week08/ablation` | Ablation 테스트 | — |
+| 8 | `week08/good_researcher` | 좋은연구자가되려면 | — |
+| 8 | `week08/peer_review` | AI 논문 리뷰 | — |
+| 9 | `week09/xor_backprop` | XOR과 역전파 | — |
+| 9 | `week09/vanishing_gradient` | 기울기 소실 Vanishing Gradient | — |
+| 9 | `week09/dropout` | Dropout 드롭아웃 | — |
+| 9 | `week09/batchnorm` | BatchNorm 배치 정규화 | — |
+| 9 | `week09/momentum_adam` | 모멘텀과 Adam | — |
+| 10 | `week10/cnn` | CNN 합성곱 신경망 | — |
+| 10 | `week10/resnet` | ResNet 잔차 신경망 | — |
+| 10 | `week10/data_augmentation` | 데이터 증강 Data Augmentation | — |
+| 11 | `week11/rnn` | RNN 순환 신경망 | — |
+| 11 | `week11/lstm` | LSTM 장단기 메모리 | — |
+| 12 | `week12/attention` | 어텐션 | — |
+| 12 | `week12/seq2seq` | Seq2Seq 시퀀스투시퀀스 | — |
+| 12 | `week12/transformer` | 트랜스포머 | — |
+| 13 | `week13/gcn` | GCN 그래프 신경망 | — |
+| 14 | `week14/pca` | PCA 주성분 분석 | — |
+| 14 | `week14/tsne` | t-SNE 데이터 지도 | — |
+| 14 | `week14/word2vec` | word2vec | — |
+| 14 | `week14/embedding` | 표상과 임베딩 | — |
+| 14 | `week14/bert` | BERT 빈칸 채우기 | — |
+| 15 | `week15/vae` | VAE 변분 오토인코더 | — |
+| 15 | `week15/kl_divergence` | KL 발산 | — |
+| 15 | `week15/gan` | GAN 생성적 적대 신경망 | — |
+| 15 | `week15/diffusion` | Diffusion 확산 모델 | — |
+| 16 | `week16/review_validity` | 리뷰어 팩트체크 | — |
+| 16 | `week16/review_cutoff` | ICLR 커트라인 | — |
+| 17 | `week17/gpt` | GPT 다음 단어 맞히기 | — |
+| 17 | `week17/tokenizer_bpe` | 토큰화 BPE | — |
+| 17 | `week17/cot` | Chain-of-Thought 생각의 사슬 | — |
+| 17 | `week17/temperature` | 온도 Temperature | — |
+| 17 | `week17/rlhf` | RLHF 사람 피드백 강화학습 | — |
+
+6주차(정규화·교차검증·분리)는 맞는 쇼츠가 없어 비어 있다. 10주의 alexnet 복습은 `week01/course_intro` 로 대신한다.

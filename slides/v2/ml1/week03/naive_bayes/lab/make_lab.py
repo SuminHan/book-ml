@@ -160,5 +160,9 @@ for a in [0.01, 0.1, 1.0, 10.0]:
 ]
 
 if __name__ == "__main__":
+    REL = os.path.relpath(HERE, os.path.expanduser("~/book-ml"))
+    COLAB = f"https://colab.research.google.com/github/SuminHan/book-ml/blob/main/{REL}/{TOPIC}.ipynb"
+    kind, first = CELLS[0]                                   # 첫 칸 제목 아래에 Colab 배지
+    CELLS[0] = (kind, first.replace("\n", f"\n\n[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({COLAB})\n", 1))
     lab.build(CELLS, f"{HERE}/{TOPIC}.ipynb", f"{HERE}/{TOPIC}_solution.ipynb")
     print(lab.verify(f"{HERE}/{TOPIC}_solution.ipynb"))
