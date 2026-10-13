@@ -27,24 +27,24 @@ from sklearn.metrics import log_loss"""),
 
 정답 쪽에 남은 칩 비율이 $q$ 일 때 벌점(비트) $= -\\log_2 q$. 슬라이드의 값 (90개 0.15 · 50개 1 · 1개 6.64) 이 나오는지 확인한다."""),
 ("code", """def penalty_bits(q):
-    \"\"\"정답에 건 비율 q (0~1) → 벌점(비트)\"\"\"
+    \"\"\"share q (0~1) bet on the right answer -> penalty (bits)\"\"\"
     return -np.log2(q)                                   #@ANS return None             # TODO: -log₂ q
 
 for left in [90, 50, 25, 1]:
-    print(f"정답 쪽 칩 {left:3d}개 → 벌점 {penalty_bits(left / 100):.2f} 비트")
+    print(f"{left:3d} chips on the answer -> penalty {penalty_bits(left / 100):.2f} bits")
 with np.errstate(divide="ignore"):
-    print("정답 쪽 칩   0개 → 벌점", penalty_bits(0.0), "(파산)")"""),
+    print("  0 chips on the answer -> penalty", penalty_bits(0.0), "(bankrupt)")"""),
 ("md", """실제 학습 코드는 자연로그 $\\ln$ 을 쓴다. 이진 분류의 평균 교차 엔트로피:
 $$L = -\\frac{1}{m}\\sum_{i=1}^{m} \\big[y_i \\ln \\hat y_i + (1-y_i)\\ln(1-\\hat y_i)\\big]$$"""),
 ("code", """def binary_ce(y, p):
-    \"\"\"y: 정답 0/1 배열, p: 1일 확률 배열 → 평균 교차 엔트로피 (ln)\"\"\"
-    return -np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))   #@ANS return None   # TODO: 위 식
+    \"\"\"y: true labels 0/1, p: probability of 1 -> mean cross-entropy (ln)\"\"\"
+    return -np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))   #@ANS return None   # TODO: the formula above
 
 y = np.array([1, 0, 1, 1, 0])
 p = np.array([0.9, 0.1, 0.5, 0.01, 0.9])
-print("직접 계산:", round(binary_ce(y, p), 4))
+print("by hand:", round(binary_ce(y, p), 4))
 print("sklearn  :", round(log_loss(y, p), 4))
-print("각 샘플 벌점:", np.round(-np.log(np.where(y == 1, p, 1 - p)), 2))"""),
+print("penalty per sample:", np.round(-np.log(np.where(y == 1, p, 1 - p)), 2))"""),
 ("md", """**관찰**: 다섯 개 중 넷째(정답 1에 0.01)와 다섯째(정답 0인데 1에 0.9)가 평균 벌점의 대부분을 차지한다. 확신하고 틀린 샘플이 손실을 끌고 간다."""),
 ("md", """## 파트 2. 유방암 진단: 교차 엔트로피 vs MSE
 
@@ -56,19 +56,19 @@ print("각 샘플 벌점:", np.round(-np.log(np.where(y == 1, p, 1 - p)), 2))"""
 ("code", """from sklearn.datasets import load_breast_cancer
 
 d = load_breast_cancer()
-X = (d.data - d.data.mean(0)) / d.data.std(0)            # 특징 30개 표준화
-y = d.target.astype(float)                               # 1 = 양성(benign), 0 = 악성(malignant)
+X = (d.data - d.data.mean(0)) / d.data.std(0)            # standardize 30 features
+y = d.target.astype(float)                               # 1 = benign, 0 = malignant
 m, n = X.shape
-print(f"{m}명, 특징 {n}개, 양성 비율 {y.mean():.0%}")
+print(f"{m} patients, {n} features, benign {y.mean():.0%}")
 
 sigmoid = lambda z: 1 / (1 + np.exp(-z))
 
 def grad(w, b, loss):
     p = sigmoid(X @ w + b)
     if loss == "ce":
-        dz = p - y                                       #@ANS dz = None               # TODO: 교차 엔트로피의 ∂L/∂z
+        dz = p - y                                       #@ANS dz = None               # TODO: dL/dz for cross-entropy
     else:
-        dz = 2 * (p - y) * p * (1 - p)                   #@ANS dz = None               # TODO: MSE 의 ∂L/∂z
+        dz = 2 * (p - y) * p * (1 - p)                   #@ANS dz = None               # TODO: dL/dz for MSE
     return X.T @ dz / m, dz.mean()
 
 def train(loss, w0, steps=300, lr=0.5):
@@ -81,15 +81,15 @@ def train(loss, w0, steps=300, lr=0.5):
         w, b = w - lr * gw, b - lr * gb
     return ces, accs
 
-good = X.T @ (y - y.mean()) / m                           # 대략 옳은 방향
-w_wrong = -3 * good / np.linalg.norm(good)                # 그 반대로, 크게: 확신하고 틀린 출발점
+good = X.T @ (y - y.mean()) / m                           # roughly the right direction
+w_wrong = -3 * good / np.linalg.norm(good)                # the opposite, scaled up: a confidently wrong start
 fig, axs = plt.subplots(1, 2, figsize=(11, 4))
 for loss, c in [("ce", "C0"), ("mse", "C1")]:
     ces, accs = train(loss, w_wrong)
     axs[0].plot(ces, c, label=loss); axs[1].plot(accs, c, label=loss)
-    print(f"{loss:3s}: 처음 정확도 {accs[0]:.0%} → 20걸음 {accs[20]:.0%} → 300걸음 {accs[-1]:.0%}")
-axs[0].set_title("교차 엔트로피 (평가용)"); axs[0].set_yscale("log"); axs[1].set_title("정확도")
-for a in axs: a.set_xlabel("걸음"); a.legend()
+    print(f"{loss:3s}: start accuracy {accs[0]:.0%} -> step 20 {accs[20]:.0%} -> step 300 {accs[-1]:.0%}")
+axs[0].set_title("cross-entropy (for evaluation)"); axs[0].set_yscale("log"); axs[1].set_title("accuracy")
+for a in axs: a.set_xlabel("step"); a.legend()
 plt.tight_layout(); plt.show()"""),
 ("md", """**해 보기**: `w_wrong` 대신 `np.zeros(n)` (반반에서 출발) 으로 바꿔 보자. 이때도 차이가 클까? 슬라이드의 기울기 그림에서 $\\hat y = 0.5$ 근처의 두 곡선을 비교해 보자."""),
 ("md", """## 파트 3. 셰익스피어: 다음 글자에 칩 나눠 걸기
@@ -106,22 +106,22 @@ text = open("data/shakespeare.txt").read()
 chars = sorted(set(text)); V = len(chars); idx = {c: i for i, c in enumerate(chars)}
 cut = int(len(text) * 0.9)
 train_txt, test_txt = text[:cut], text[cut:]
-print(f"글자 {len(text):,}개, 종류 {V}개")
+print(f"{len(text):,} characters, {V} distinct")
 print(test_txt[:200])"""),
-("code", """# 모델 1: 고르게 → 어떤 글자든 1/V
+("code", """# Model 1: uniform -> every character gets 1/V
 uniform_bits = penalty_bits(1 / V)
-print(f"고르게 걸기: 글자당 벌점 {uniform_bits:.2f} 비트")
+print(f"uniform bet: {uniform_bits:.2f} bits per character")
 
-# 모델 2: 앞 글자 a 다음에 b 가 나온 횟수 (+1 스무딩) 로 비율을 정한다
+# Model 2: share = count of b right after a (+1 smoothing)
 counts = np.ones((V, V))
 for a, b in zip(train_txt, train_txt[1:]):
     counts[idx[a], idx[b]] += 1
-q = counts / counts.sum(1, keepdims=True)                 # q[a, b] = a 다음에 b 에 건 비율
+q = counts / counts.sum(1, keepdims=True)                 # q[a, b] = share bet on b after a
 
 pairs = np.array([(idx[a], idx[b]) for a, b in zip(test_txt, test_txt[1:])])
-bits = penalty_bits(q[pairs[:, 0], pairs[:, 1]])          #@ANS bits = None   # TODO: 실제 다음 글자에 건 비율의 벌점들
-print(f"세어서 걸기: 글자당 평균 벌점 {bits.mean():.2f} 비트")"""),
-("code", """# 앞 글자가 'q' 일 때 어디에 걸었나? (영어에서 q 다음은 거의 u)
+bits = penalty_bits(q[pairs[:, 0], pairs[:, 1]])          #@ANS bits = None   # TODO: penalties for the share bet on the actual next character
+print(f"counted bet: {bits.mean():.2f} bits per character on average")"""),
+("code", """# Where does it bet after 'q'? (in English, q is almost always followed by u)
 top = np.argsort(q[idx['q']])[::-1][:3]
 for t in top:
     print(repr(chars[t]), f"{q[idx['q'], t]:.0%}")"""),

@@ -27,7 +27,7 @@ CELLS = [
 import pandas as pd
 from sklearn.datasets import load_iris
 
-# ---- 일부러 더럽히기 (이 셀은 고치지 말고 실행만) ----
+# ---- Make the data dirty on purpose (just run this cell, don't edit) ----
 iris = load_iris(as_frame=True)
 clean = iris.frame.rename(columns={"sepal length (cm)": "sepal_length", "sepal width (cm)": "sepal_width",
                                    "petal length (cm)": "petal_length", "petal width (cm)": "petal_width"})
@@ -35,18 +35,18 @@ clean["species"] = iris.target_names[iris.target]
 clean = clean.drop(columns="target")
 
 def make_dirty(seed=2026):
-    \"\"\"깨끗한 iris 에 결측치 · 중복 · 이상치 · 표기 흔들림을 섞는다\"\"\"
+    \"\"\"Mix missing values, duplicates, outliers and inconsistent labels into clean iris\"\"\"
     rng = np.random.default_rng(seed)
     d = clean.copy()
-    d.loc[rng.choice(150, 5, replace=False), "petal_length"] = np.nan           # 진짜 빈칸
-    d.loc[rng.choice(150, 4, replace=False), "sepal_width"] = -999              # '비었음'을 -999 로
-    d.loc[rng.choice(np.where(clean.species != "setosa")[0], 5, replace=False), "petal_width"] = 0   # '비었음'을 0 으로
-    d.loc[rng.choice(150, 3, replace=False), "sepal_length"] *= 10             # cm 대신 mm 로 적은 오타
+    d.loc[rng.choice(150, 5, replace=False), "petal_length"] = np.nan           # real blanks
+    d.loc[rng.choice(150, 4, replace=False), "sepal_width"] = -999              # 'missing' written as -999
+    d.loc[rng.choice(np.where(clean.species != "setosa")[0], 5, replace=False), "petal_width"] = 0   # 'missing' written as 0
+    d.loc[rng.choice(150, 3, replace=False), "sepal_length"] *= 10             # typo: written in mm instead of cm
     styles = [str.capitalize, lambda s: " " + s, lambda s: s + " ", str.upper]
-    for i, f in zip(rng.choice(150, 4, replace=False), styles):              # 표기만 다른 라벨
+    for i, f in zip(rng.choice(150, 4, replace=False), styles):              # same label, different spelling
         d.loc[i, "species"] = f(d.loc[i, "species"])
-    dups = d.loc[rng.choice(150, 8, replace=False)].copy()                    # 같은 기록이 두 번
-    dups.iloc[:3, dups.columns.get_loc("species")] = [str.upper(v) for v in dups.species.iloc[:3]]  # 그중 3개는 표기만 다르게
+    dups = d.loc[rng.choice(150, 8, replace=False)].copy()                    # the same record twice
+    dups.iloc[:3, dups.columns.get_loc("species")] = [str.upper(v) for v in dups.species.iloc[:3]]  # 3 of them with different spelling only
     return pd.concat([d, dups]).sample(frac=1, random_state=0).reset_index(drop=True)
 
 df = make_dirty()
@@ -59,29 +59,29 @@ print(df.shape); df.head()"""),
 
 빈칸(`NaN`)은 `isna()` 가 찾아 주지만, `0` 과 `-999` 는 숫자인 척한다. 꽃받침·꽃잎 길이가 0cm 이하일 수 있을까?"""),
 ("code", """num_cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
-print("빈칸(NaN) 개수:\\n", df[num_cols].isna().sum(), "\\n")
-print("0 이하인 값 개수:\\n", (df[num_cols] <= 0).sum())"""),
-("code", """# 숫자인 척하는 '비었음' (0 이하) 을 진짜 빈칸 NaN 으로 바꾼다
-df[num_cols] = df[num_cols].mask(df[num_cols] <= 0)        #@ANS df[num_cols] = None   # TODO: 0 이하 → NaN (힌트: .mask)
+print("Blank (NaN) count:\\n", df[num_cols].isna().sum(), "\\n")
+print("Values <= 0:\\n", (df[num_cols] <= 0).sum())"""),
+("code", """# Turn 'missing' values pretending to be numbers (<= 0) into real blanks (NaN)
+df[num_cols] = df[num_cols].mask(df[num_cols] <= 0)        #@ANS df[num_cols] = None   # TODO: <= 0 -> NaN (hint: .mask)
 print(df[num_cols].isna().sum())"""),
 ("md", """## 파트 2. 중복과 라벨 표기
 
 `value_counts()` 로 꽃 종류를 세어 보자. 종류가 3개여야 하는데 몇 개인가?"""),
 ("code", """print(df["species"].value_counts(), "\\n")
-print("완전히 같은 줄:", df.duplicated().sum(), "개")"""),
-("code", """# 표기를 하나로: 앞뒤 공백 제거 + 소문자
-df["species"] = df["species"].str.strip().str.lower()      #@ANS df["species"] = None    # TODO: 공백 제거 + 소문자
+print("Exact duplicate rows:", df.duplicated().sum())"""),
+("code", """# One spelling: strip spaces + lowercase
+df["species"] = df["species"].str.strip().str.lower()      #@ANS df["species"] = None    # TODO: strip + lowercase
 print(df["species"].value_counts(), "\\n")
-print("표기를 맞춘 뒤 같은 줄:", df.duplicated().sum(), "개")
+print("Duplicate rows after fixing labels:", df.duplicated().sum())
 df = df.drop_duplicates().reset_index(drop=True)
-print("중복 지운 뒤:", df.shape)"""),
+print("After dropping duplicates:", df.shape)"""),
 ("md", """**관찰**: 표기를 맞추기 전에는 컴퓨터가 찾은 중복 수가 실제보다 적다. 띄어쓰기나 대소문자 하나만 달라도 다른 줄로 본다. 무엇을 같은 것으로 볼지는 사람이 정한다."""),
 ("md", """## 파트 3. 이상치: 51cm 꽃받침?
 
 붓꽃의 꽃받침 길이는 보통 4~8cm 다. 상자 그림으로 튀는 값을 찾아보자."""),
 ("code", """df[num_cols].plot(kind="box", figsize=(8, 3.5)); plt.ylabel("cm"); plt.show()
 print(df.loc[df.sepal_length > 10, ["sepal_length", "species"]])"""),
-("code", """# 분야 지식: 꽃받침이 10cm 를 넘는 값은 mm 로 적은 오타 → 10 으로 나눠 cm 로
+("code", """# Domain knowledge: a sepal longer than 10 cm is a typo in mm -> divide by 10 to get cm
 too_big = df.sepal_length > 10
 df.loc[too_big, "sepal_length"] = df.loc[too_big, "sepal_length"] / 10      #@ANS df.loc[too_big, "sepal_length"] = None   # TODO: mm → cm
 print(df.sepal_length.describe().round(2))"""),
@@ -94,18 +94,18 @@ from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-# 청소한 데이터: 남은 빈칸을 꽃 종류별 평균으로
+# Cleaned data: fill the remaining blanks with the mean of each species
 filled = df.copy()
-filled[num_cols] = filled.groupby("species")[num_cols].transform(lambda c: c.fillna(c.mean()))   #@ANS filled[num_cols] = None   # TODO: 종류별 평균으로 채우기
+filled[num_cols] = filled.groupby("species")[num_cols].transform(lambda c: c.fillna(c.mean()))   #@ANS filled[num_cols] = None   # TODO: fill with the per-species mean
 
-# 청소 안 한 데이터: 첫 셀과 같은 make_dirty() 에서 빈칸만 0 으로
+# Uncleaned data: same make_dirty() as the first cell, only blanks filled with 0
 raw = make_dirty().fillna(0)
 
-import warnings; warnings.filterwarnings("ignore")      # 1개짜리 '종류' 때문에 나는 경고는 숨긴다
+import warnings; warnings.filterwarnings("ignore")      # hide warnings caused by 1-member 'species'
 model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
-for name, data in [("청소 안 함", raw), ("청소함", filled), ("원래 깨끗한 iris", clean)]:
+for name, data in [("not cleaned", raw), ("cleaned", filled), ("original clean iris", clean)]:
     acc = cross_val_score(model, data[num_cols], data["species"], cv=5)
-    print(f"{name:14s}: 꽃 종류 {data.species.nunique()}개, 정확도 {acc.mean():.1%}")"""),
+    print(f"{name:20s}: {data.species.nunique()} species, accuracy {acc.mean():.1%}")"""),
 ("md", """**확인 질문**
 1. 파트 1 에서 `-999` 를 그대로 두고 꽃받침 너비의 평균을 내면 얼마가 되나? 실제 평균(약 3cm)과 비교해 보자.
 2. 파트 2 에서 표기를 맞추기 전과 후에 `duplicated()` 가 찾은 수가 다른 이유는?

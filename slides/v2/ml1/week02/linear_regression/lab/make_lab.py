@@ -25,10 +25,10 @@ CELLS = [
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 
-# 슬라이드와 같은 예시 데이터: 학생 30명의 공부 시간(시간)과 점수
+# Same example as the slides: study hours and scores of 30 students
 r = np.random.default_rng(7); x = r.uniform(0.5, 10, 30)
 y = 40 + 5 * x + r.normal(0, 5, 30)
-plt.scatter(x, y); plt.xlabel("공부 시간"); plt.ylabel("점수"); plt.show()"""),
+plt.scatter(x, y); plt.xlabel("study hours"); plt.ylabel("score"); plt.show()"""),
 ("md", """## 파트 1. 경사하강법 직접 구현
 
 $$J = \\frac{1}{2m}\\sum (h - y)^2, \\qquad \\frac{\\partial J}{\\partial w_0} = \\frac{1}{m}\\sum (h - y), \\qquad \\frac{\\partial J}{\\partial w_1} = \\frac{1}{m}\\sum (h - y)\\,x$$"""),
@@ -36,7 +36,7 @@ $$J = \\frac{1}{2m}\\sum (h - y)^2, \\qquad \\frac{\\partial J}{\\partial w_0} =
     return np.mean((w0 + w1 * x - y) ** 2) / 2
 
 def gradient(w0, w1):
-    err = w0 + w1 * x - y                                # 오차 h − y
+    err = w0 + w1 * x - y                                # error h - y
     g0 = err.mean()                                      #@ANS g0 = None               # TODO: ∂J/∂w0
     g1 = (err * x).mean()                                #@ANS g1 = None               # TODO: ∂J/∂w1
     return g0, g1
@@ -45,24 +45,24 @@ def gradient_descent(alpha, steps, w0=0.0, w1=0.0):
     history = []
     for _ in range(steps):
         g0, g1 = gradient(w0, w1)
-        w0, w1 = w0 - alpha * g0, w1 - alpha * g1        #@ANS w0, w1 = None, None     # TODO: 한 걸음
+        w0, w1 = w0 - alpha * g0, w1 - alpha * g1        #@ANS w0, w1 = None, None     # TODO: one step
         history.append(cost(w0, w1))
     return w0, w1, history
 
 w0, w1, hist = gradient_descent(alpha=0.02, steps=5000)
-print(f"w0 = {w0:.2f}, w1 = {w1:.2f}  →  7시간이면 {w0 + 7 * w1:.1f}점")
+print(f"w0 = {w0:.2f}, w1 = {w1:.2f}  ->  7 hours gives {w0 + 7 * w1:.1f} points")
 m_ = LinearRegression().fit(x.reshape(-1, 1), y)
 print(f"sklearn: w0 = {m_.intercept_:.2f}, w1 = {m_.coef_[0]:.2f}")
-plt.plot(hist); plt.yscale("log"); plt.xlabel("걸음"); plt.ylabel("비용 J"); plt.show()"""),
-("code", """# 학습률을 키워 보자: 0.05 와 0.06
+plt.plot(hist); plt.yscale("log"); plt.xlabel("step"); plt.ylabel("cost J"); plt.show()"""),
+("code", """# Try larger learning rates: 0.05 and 0.06
 for alpha in [0.05, 0.06]:
     _, _, h = gradient_descent(alpha, steps=30)
-    print(f"alpha={alpha}: 처음 J={h[0]:.1f}  30걸음 뒤 J={h[-1]:.3g}")"""),
+    print(f"alpha={alpha}: first J={h[0]:.1f}  after 30 steps J={h[-1]:.3g}")"""),
 ("md", """**관찰**: 0.06 은 발산한다. 슬라이드의 오른쪽 그림처럼 바닥을 건너뛰며 매번 더 높이 튄다.
 
 $R^2$ 와 RMSE 도 확인하자 (슬라이드: RMSE 4.40, $R^2$ 0.915)."""),
 ("code", """pred = w0 + w1 * x
-rmse = np.sqrt(np.mean((pred - y) ** 2))                 #@ANS rmse = None             # TODO: RMSE (½ 없이)
+rmse = np.sqrt(np.mean((pred - y) ** 2))                 #@ANS rmse = None             # TODO: RMSE (no 1/2)
 print(f"RMSE = {rmse:.2f},  R² = {r2_score(y, pred):.3f}")"""),
 ("md", """## 파트 2. 실제 자동차 데이터: 마력 → 연비
 
@@ -74,12 +74,12 @@ if not os.path.exists("data/mpg.csv"):
     import urllib.request; urllib.request.urlretrieve(url, "data/mpg.csv")
 cars = pd.read_csv("data/mpg.csv").dropna(subset=["horsepower"])
 hp, mpg = cars["horsepower"].to_numpy(float), cars["mpg"].to_numpy(float)
-print(len(cars), "대");  print(cars[["name", "horsepower", "mpg"]].head())
-plt.scatter(hp, mpg, s=12); plt.xlabel("마력"); plt.ylabel("연비 (mpg)"); plt.show()"""),
+print(len(cars), "cars");  print(cars[["name", "horsepower", "mpg"]].head())
+plt.scatter(hp, mpg, s=12); plt.xlabel("horsepower"); plt.ylabel("mpg"); plt.show()"""),
 ("code", """features = {
     "x":        hp.reshape(-1, 1),
     "x, x²":    np.c_[hp, hp ** 2],
-    "log x":    np.log(hp).reshape(-1, 1),             #@ANS "log x":    None,         # TODO: log 변환 한 열
+    "log x":    np.log(hp).reshape(-1, 1),             #@ANS "log x":    None,         # TODO: one column, log-transformed
 }
 hs = np.linspace(hp.min(), hp.max(), 200)
 plt.scatter(hp, mpg, s=10, color="lightgray")
@@ -88,7 +88,7 @@ for name, F in features.items():
     print(f"{name:8s}: R² = {r2_score(mpg, model.predict(F)):.3f}")
     Fs = {"x": hs.reshape(-1, 1), "x, x²": np.c_[hs, hs ** 2], "log x": np.log(hs).reshape(-1, 1)}[name]
     plt.plot(hs, model.predict(Fs), lw=2, label=name)
-plt.legend(); plt.xlabel("마력"); plt.ylabel("연비"); plt.show()"""),
+plt.legend(); plt.xlabel("horsepower"); plt.ylabel("mpg"); plt.show()"""),
 ("md", """## 파트 3. 차수를 계속 올리면? (과적합)
 
 자동차 **25대만** 학습에 쓰고, 나머지 367대로 시험한다. 데이터가 적을 때 차수를 올리면 어떻게 될까?"""),
@@ -102,10 +102,10 @@ tr_err, te_err = [], []
 for k in degrees:
     model = make_pipeline(StandardScaler(), PolynomialFeatures(k), LinearRegression()).fit(h_tr, m_tr)
     tr_err.append(np.sqrt(mean_squared_error(m_tr, model.predict(h_tr))))
-    te_err.append(np.sqrt(mean_squared_error(m_te, model.predict(h_te))))   #@ANS te_err.append(None)  # TODO: 시험 RMSE
-    print(f"{k:2d}차: 학습 RMSE {tr_err[-1]:6.2f}   시험 RMSE {te_err[-1]:8.2f}")
-plt.plot(degrees, tr_err, "o-", label="학습"); plt.plot(degrees, te_err, "s-", label="시험")
-plt.yscale("log"); plt.xlabel("차수"); plt.ylabel("RMSE (mpg)"); plt.legend(); plt.show()"""),
+    te_err.append(np.sqrt(mean_squared_error(m_te, model.predict(h_te))))   #@ANS te_err.append(None)  # TODO: test RMSE
+    print(f"degree {k:2d}: train RMSE {tr_err[-1]:6.2f}   test RMSE {te_err[-1]:8.2f}")
+plt.plot(degrees, tr_err, "o-", label="train"); plt.plot(degrees, te_err, "s-", label="test")
+plt.yscale("log"); plt.xlabel("degree"); plt.ylabel("RMSE (mpg)"); plt.legend(); plt.show()"""),
 ("md", """**확인 질문**
 1. 파트 1 에서 학습률 0.06 이 발산하는 이유를 슬라이드의 그림으로 설명해 보자.
 2. 파트 2 에서 가장 좋은 특징은? 그 모델도 '선형'회귀인 이유는?

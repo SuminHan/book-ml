@@ -28,10 +28,10 @@ from sklearn.linear_model import LogisticRegression
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))                         #@ANS return None             # TODO: σ(z) = 1 / (1 + e^{-z})
 
-# 슬라이드와 같은 예시: 학생 40명의 공부 시간 → 합격(1) / 불합격(0)
+# Same example as the slides: study hours of 40 students -> pass (1) / fail (0)
 r = np.random.default_rng(11); x = np.round(r.uniform(0.5, 10, 40), 1)
 y = (r.uniform(size=40) < sigmoid(-6 + 1.2 * x)).astype(int)
-print("합격", y.sum(), "명 /", len(y), "명")"""),
+print("passed", y.sum(), "/", len(y))"""),
 ("md", """## 파트 1. 선형회귀 코드에서 한 줄만 바꾸기
 
 선형회귀의 기울기: $\\frac{1}{m}\\sum(\\hat y - y)\\,x$ (단 $\\hat y = w_0 + w_1 x$).
@@ -39,20 +39,20 @@ print("합격", y.sum(), "명 /", len(y), "명")"""),
 ("code", """def gradient_descent(alpha=0.1, steps=20000):
     w0, w1 = 0.0, 0.0
     for _ in range(steps):
-        y_hat = sigmoid(w0 + w1 * x)                     #@ANS y_hat = None            # TODO: 선형회귀와 다른 단 한 줄
+        y_hat = sigmoid(w0 + w1 * x)                     #@ANS y_hat = None            # TODO: the only line that differs from linear regression
         err = y_hat - y
         w0, w1 = w0 - alpha * err.mean(), w1 - alpha * (err * x).mean()
     return w0, w1
 
 w0, w1 = gradient_descent()
 print(f"w0 = {w0:.2f}, w1 = {w1:.2f}")
-print(f"결정 경계 x = {-w0 / w1:.2f}시간,  7시간 → 합격 확률 {sigmoid(w0 + 7 * w1):.0%}")
-m_ = LogisticRegression(C=1e6).fit(x.reshape(-1, 1), y)       # C 를 크게 = 정규화 거의 없음
+print(f"decision boundary x = {-w0 / w1:.2f} h,  7 h -> pass probability {sigmoid(w0 + 7 * w1):.0%}")
+m_ = LogisticRegression(C=1e6).fit(x.reshape(-1, 1), y)       # large C = almost no regularization
 print(f"sklearn: w0 = {m_.intercept_[0]:.2f}, w1 = {m_.coef_[0, 0]:.2f}")
 
 xs = np.linspace(0, 10.5, 200)
 plt.scatter(x, y, c=y, cmap="coolwarm_r"); plt.plot(xs, sigmoid(w0 + w1 * xs))
-plt.axvline(-w0 / w1, ls="--", color="gray"); plt.xlabel("공부 시간"); plt.ylabel("합격 확률"); plt.show()"""),
+plt.axvline(-w0 / w1, ls="--", color="gray"); plt.xlabel("study hours"); plt.ylabel("pass probability"); plt.show()"""),
 ("md", """## 파트 2. 타이타닉: 누가 살아남았나
 
 1912년 타이타닉 승객 891명. `survived` (1 = 생존) 를 성별 · 객실 등급 · 나이로 예측한다. 처음 실행하면 CSV 를 내려받는다."""),
@@ -61,34 +61,34 @@ os.makedirs("data", exist_ok=True)
 if not os.path.exists("data/titanic.csv"):
     import urllib.request; urllib.request.urlretrieve(url, "data/titanic.csv")
 t = pd.read_csv("data/titanic.csv")
-t = t.dropna(subset=["age"])                             # 나이를 모르는 승객은 뺀다 (더티 데이터 차시!)
+t = t.dropna(subset=["age"])                             # drop passengers with unknown age (see the dirty data lesson!)
 t["female"] = (t["sex"] == "female").astype(int)
 t["first_class"] = (t["pclass"] == 1).astype(int)
 t["third_class"] = (t["pclass"] == 3).astype(int)
 feats = ["female", "first_class", "third_class", "age"]
-print(len(t), "명, 생존률", f"{t.survived.mean():.0%}")
+print(len(t), "passengers, survival rate", f"{t.survived.mean():.0%}")
 t[feats + ["survived"]].head()"""),
 ("code", """model = LogisticRegression(max_iter=1000).fit(t[feats], t["survived"])
 for name, w in zip(feats, model.coef_[0]):
-    odds = np.exp(w)                                     #@ANS odds = None             # TODO: 오즈 배수 e^w
-    print(f"{name:12s} w = {w:+.3f}   오즈 {odds:.2f}배")
-print("\\n해석 예: female 의 오즈 배수 = 같은 등급 · 나이라면 여성의 생존 오즈가 남성의 몇 배인가")"""),
-("code", """# 직접 물어보기: 1등석 20세 여성 vs 3등석 20세 남성
+    odds = np.exp(w)                                     #@ANS odds = None             # TODO: odds ratio e^w
+    print(f"{name:12s} w = {w:+.3f}   odds x{odds:.2f}")
+print("\\nReading: the female odds ratio = how many times higher a woman's survival odds are than a man's, at the same class and age")"""),
+("code", """# Ask the model: 20-year-old woman in 1st class vs 20-year-old man in 3rd class
 ask = pd.DataFrame([[1, 1, 0, 20], [0, 0, 1, 20]], columns=feats)
-for desc, p in zip(["1등석 20세 여성", "3등석 20세 남성"], model.predict_proba(ask)[:, 1]):
-    print(f"{desc}: 생존 확률 {p:.0%}")"""),
+for desc, p in zip(["woman, 20, 1st class", "man, 20, 3rd class"], model.predict_proba(ask)[:, 1]):
+    print(f"{desc}: survival probability {p:.0%}")"""),
 ("md", """## 파트 3. 임계값과 PR 곡선
 
 `predict` 는 확률 0.5 를 기준으로 자른다. 기준을 바꾸면 정밀도와 재현율이 어떻게 바뀔까?"""),
 ("code", """from sklearn.metrics import precision_score, recall_score, precision_recall_curve, average_precision_score
 p = model.predict_proba(t[feats])[:, 1]
 for th in [0.3, 0.5, 0.7]:
-    pred = (p >= th).astype(int)                         #@ANS pred = None             # TODO: 확률이 th 이상이면 1
-    print(f"임계값 {th}: 정밀도 {precision_score(t.survived, pred):.2f}  재현율 {recall_score(t.survived, pred):.2f}")
+    pred = (p >= th).astype(int)                         #@ANS pred = None             # TODO: 1 if probability >= th
+    print(f"threshold {th}: precision {precision_score(t.survived, pred):.2f}  recall {recall_score(t.survived, pred):.2f}")
 
 prec, rec, _ = precision_recall_curve(t.survived, p)
-plt.plot(rec, prec); plt.xlabel("재현율"); plt.ylabel("정밀도")
-plt.title(f"PR 곡선  (PR-AUC = {average_precision_score(t.survived, p):.2f},  생존률 {t.survived.mean():.2f} 이 아무렇게나 찍는 기준)")
+plt.plot(rec, prec); plt.xlabel("recall"); plt.ylabel("precision")
+plt.title(f"PR curve  (PR-AUC = {average_precision_score(t.survived, p):.2f}; random guessing = survival rate {t.survived.mean():.2f})")
 plt.show()"""),
 ("md", """**확인 질문**
 1. 파트 1 에서 선형회귀와 다른 줄은 정확히 어디인가? 기울기 식은 왜 같은 모양일까? (슬라이드의 약분)
