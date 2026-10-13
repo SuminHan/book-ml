@@ -10,8 +10,11 @@ from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 from matplotlib.patheffects import withStroke
 import os
 
-fm.fontManager.addfont('/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc')
-plt.rcParams['font.family'] = 'Noto Sans CJK JP'
+try:
+    fm.fontManager.addfont('/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc')
+    plt.rcParams['font.family'] = 'Noto Sans CJK JP'
+except OSError:                      # macOS 등: 설치된 한글 글꼴 사용
+    plt.rcParams['font.family'] = 'Noto Sans CJK KR'
 plt.rcParams['axes.unicode_minus'] = False
 
 OUT = os.path.join(os.path.dirname(__file__), '..')
@@ -259,16 +262,19 @@ def fig_gda_vs_qda():
 # ------------------------------------------------------------------
 def fig_clt():
     rng = np.random.default_rng(1)
-    ns = [1, 4, 30]
-    fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.2), sharey=False)
+    ns = [1, 2, 4, 30]
+    fig, axes = plt.subplots(1, 4, figsize=(15, 4.2), sharey=False)
     for ax, n in zip(axes, ns):
         samples = rng.uniform(0, 1, size=(20000, n)).sum(axis=1)
         ax.hist(samples, bins=40, color=NAVY, alpha=0.75, density=True, edgecolor='white')
-        ax.set_title(f'균등분포 {n}개 합' if n > 1 else '균등분포 1개', fontsize=13)
+        mu, sd = n / 2, np.sqrt(n / 12)                       # 균등분포 n개 합의 평균 · 표준편차
+        xs = np.linspace(samples.min(), samples.max(), 200)
+        ax.plot(xs, np.exp(-0.5 * ((xs - mu) / sd) ** 2) / (sd * np.sqrt(2 * np.pi)), color=RED, lw=2.2)
+        ax.set_title(f'균등분포 {n}개 합' if n > 1 else '균등분포 1개', fontsize=14)
         ax.set_yticks([])
         for spine in ['top', 'right', 'left']:
             ax.spines[spine].set_visible(False)
-    fig.suptitle('작은 효과 여러 개를 더하면 --- 중심극한정리로 가우시안 모양에 가까워진다',
+    fig.suptitle('파랑: 0~1 사이 아무 수를 n개 뽑아 더한 값 2만 번   빨강: 같은 평균 · 분산의 가우시안',
                  fontsize=14, y=1.03)
     savefig(fig, 'ch03_clt_illustration.png')
 

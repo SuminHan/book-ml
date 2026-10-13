@@ -40,6 +40,12 @@ Applying a plan (by Claude, in a later session):
            board. Skipping this leaves cards permanently flagged as moved
            even though the reorder is already live.
 
+"반영하기" button (/deck and /board headers): shows a preview of the pending
+items and the exact prompt, then on 실행 spawns a fresh headless
+`claude -p --model <haiku|sonnet|opus>` session in the deck folder that does
+the steps above for that deck only. Progress streams into the page's log
+panel; the page reloads when the session ends.
+
 On startup, every deck's pages are pre-rendered in the background (pass
 --no-warm to skip) so clicking into any deck's /deck or /board is instant
 instead of waiting on pdftoppm for that deck's first view.
@@ -51,6 +57,7 @@ Usage:
 import argparse
 import base64
 import json
+import shutil
 import os
 import re
 import secrets
@@ -135,6 +142,9 @@ def start_tex_watcher() -> threading.Thread:
                     tex = deck_tex(did)
                     if not tex.exists():
                         continue
+                    job = _apply_jobs.get(did)
+                    if job and job["status"] == "running":
+                        continue  # the apply session builds it itself; rebuild once after
                     # Collect mtime of main tex + all pages/*.tex
                     max_mtime = tex.stat().st_mtime
                     pages_dir = deck_pages_dir(did)
@@ -174,10 +184,21 @@ def page_source_files(did: str) -> list:
 
 
 def page_source_path(did: str, page: int):
-    files = page_source_files(did)
-    if not files or page < 1 or page > len(files):
+    """The pages/*.tex file that produced PDF page `page`, from the build's
+    .nav (see page_file_map). Sorting the pages/ folder by name is NOT the
+    page order: auto section-divider pages, files dropped from \\input but
+    left on disk, and inserted p11b/p09g1-style files all shift it."""
+    hit = page_file_map(did).get(page)
+    return deck_tex(did).parent / hit[0] if hit else None
+
+
+def source_file_by_name(did: str, rel: str):
+    """A pages/*.tex path the client loaded earlier, validated to stay inside pages/."""
+    pages = deck_pages_dir(did).resolve()
+    path = (deck_tex(did).parent / rel).resolve()
+    if path.parent != pages or path.suffix != ".tex" or not path.exists():
         return None
-    return files[page - 1]
+    return path
 
 
 def rebuild_deck(did: str) -> tuple:
@@ -245,7 +266,7 @@ def load_sections(did: str) -> list:
         return []
 
 
-def write_page_source(did: str, page: int, content: str, rebuild: bool = True) -> tuple:
+def write_page_source(did: str, page: int, content: str, rebuild: bool = True, file: str = "") -> tuple:
     """Overwrite one page's source file, optionally rebuilding the deck.
 
     With rebuild=True (the default): on a failed build, restores the
@@ -257,10 +278,14 @@ def write_page_source(did: str, page: int, content: str, rebuild: bool = True) -
     until a later save actually rebuilds. Useful for iterating on a page
     without paying the tectonic cost on every keystroke-adjacent save.
 
+    `file` (the pages/… path returned when the source was loaded) wins over
+    `page`, so a rebuild that shifts page numbers between load and save can
+    never redirect the write into a different frame's file.
+
     Returns (ok, error_message)."""
-    path = page_source_path(did, page)
+    path = source_file_by_name(did, file) if file else page_source_path(did, page)
     if path is None:
-        return False, "이 덱은 아직 페이지별 소스 분할이 안 되어 있어 코드 편집을 지원하지 않음"
+        return False, "이 쪽의 소스 파일을 찾지 못함 (빌드 기록과 소스가 어긋남 — 재빌드 후 다시 열어 보세요)"
     old = path.read_text(encoding="utf-8")
     if not content.endswith("\n"):
         content += "\n"
@@ -327,35 +352,130 @@ def pdf_page_count(pdf: Path) -> int:
     return int(m.group(1))
 
 
+# Page images are double-buffered: a new build renders into "<cache>.tmp" in
+# the background and is swapped in only when complete, so while a deck
+# rebuilds the viewer keeps serving the previous render instead of blocking
+# every page click on a full-deck pdftoppm. meta.json records which PDF
+# (mtime) a cache dir holds.
+_render_running: set = set()
+
+
+def _cache_meta(did: str):
+    try:
+        m = json.loads((cache_dir_for(did) / "meta.json").read_text())
+        return m["mtime"], m["n"]
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+def _render_into_cache(did: str) -> bool:
+    """Render the current PDF into a temp dir, then swap it in. False if the
+    PDF was still being written (or changed mid-render) -- caller retries."""
+    pdf = deck_pdf(did)
+    mtime = pdf.stat().st_mtime
+    cache = cache_dir_for(did)
+    tmp = cache.with_name(cache.name + ".tmp")
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    tmp.mkdir(parents=True)
+    try:
+        n = pdf_page_count(pdf)
+        subprocess.run(["pdftoppm", "-png", "-r", str(RENDER_DPI), str(pdf), str(tmp / "page")],
+                       check=True, capture_output=True)
+    except (subprocess.CalledProcessError, AttributeError):
+        return False
+    if pdf.stat().st_mtime != mtime:
+        return False
+    (tmp / "meta.json").write_text(json.dumps({"mtime": mtime, "n": n}))
+    old = cache.with_name(cache.name + ".old")
+    if old.exists():
+        shutil.rmtree(old)
+    if cache.exists():
+        cache.rename(old)
+    tmp.rename(cache)
+    if old.exists():
+        shutil.rmtree(old)
+    with _page_count_cache_guard:
+        _page_count_cache[did] = (mtime, n)
+    return True
+
+
+def _render_lock(did: str) -> threading.Lock:
+    with _render_locks_guard:
+        return _render_locks.setdefault(did, threading.Lock())
+
+
+def _render_until_current(did: str) -> None:
+    pdf = deck_pdf(did)
+    with _render_lock(did):
+        for _ in range(60):
+            meta = _cache_meta(did)
+            if meta and meta[0] == pdf.stat().st_mtime:
+                return
+            # let tectonic finish writing before reading the PDF
+            m0 = pdf.stat().st_mtime
+            time.sleep(0.6)
+            if pdf.stat().st_mtime != m0:
+                continue
+            if not _render_into_cache(did):
+                time.sleep(1.0)
+
+
+def _kick_render(did: str) -> None:
+    with _render_locks_guard:
+        if did in _render_running:
+            return
+        _render_running.add(did)
+
+    def run():
+        try:
+            _render_until_current(did)
+        finally:
+            with _render_locks_guard:
+                _render_running.discard(did)
+
+    threading.Thread(target=run, daemon=True).start()
+
+
+def _adopt_legacy_cache(did: str) -> None:
+    """Caches from before meta.json: trust them if their last page is newer than the PDF."""
+    pdf = deck_pdf(did)
+    cache = cache_dir_for(did)
+    pngs = sorted(cache.glob("page-*.png")) if cache.is_dir() else []
+    if pngs and pngs[-1].stat().st_mtime >= pdf.stat().st_mtime:
+        (cache / "meta.json").write_text(json.dumps({"mtime": pdf.stat().st_mtime, "n": len(pngs)}))
+
+
 def ensure_rendered(did: str) -> int:
+    """Page count of the render being served. Never blocks while an older
+    render exists; only the very first render of a deck is synchronous."""
     pdf = deck_pdf(did)
     if not pdf.exists():
         raise FileNotFoundError(did)
-    pdf_mtime = pdf.stat().st_mtime
-    with _page_count_cache_guard:
-        cached = _page_count_cache.get(did)
-    if cached is not None and cached[0] == pdf_mtime:
-        n = cached[1]
-    else:
-        n = pdf_page_count(pdf)  # only shells out to pdfinfo when the PDF actually changed
-        with _page_count_cache_guard:
-            _page_count_cache[did] = (pdf_mtime, n)
-    width = len(str(n))
-    cache = cache_dir_for(did)
-    last = cache / f"page-{n:0{width}d}.png"
-    with _render_locks_guard:
-        lock = _render_locks.setdefault(did, threading.Lock())
-    with lock:
-        if not last.exists() or last.stat().st_mtime < pdf.stat().st_mtime:
-            cache.mkdir(parents=True, exist_ok=True)
-            for f in cache.glob("page-*.png"):
-                f.unlink()
-            subprocess.run(
-                ["pdftoppm", "-png", "-r", str(RENDER_DPI), str(pdf), str(cache / "page")],
-                check=True,
-                capture_output=True,  # keep concurrent renders' stderr out of the shared log
-            )
-    return n
+    meta = _cache_meta(did)
+    if meta is None:
+        _adopt_legacy_cache(did)
+        meta = _cache_meta(did)
+    if meta and meta[0] == pdf.stat().st_mtime:
+        return meta[1]
+    if meta:
+        _kick_render(did)
+        return meta[1]
+    _render_until_current(did)
+    meta = _cache_meta(did)
+    if not meta:
+        raise FileNotFoundError(did)
+    return meta[1]
+
+
+def render_status(did: str) -> dict:
+    meta = _cache_meta(did)
+    pdf = deck_pdf(did)
+    current = bool(meta) and meta[0] == pdf.stat().st_mtime
+    if not current:
+        _kick_render(did)
+    return {"version": meta[0] if meta else 0, "n": meta[1] if meta else 0,
+            "updating": not current or did in _render_running}
 
 
 def page_image_path(did: str, page: int, total: int) -> Path:
@@ -604,6 +724,412 @@ def set_page_deleted(did: str, page: int, deleted: bool) -> bool:
     return found
 
 
+# ---------------------------------------------------------------------------
+# "반영하기": one fresh, headless Claude Code session per click
+# ---------------------------------------------------------------------------
+# The button spawns `claude -p` in the deck's folder (so slides/CLAUDE.md
+# applies), hands it only this deck's pending notes / plan inline, and lets it
+# edit pages/*.tex, rebuild, and resolve each item through this server's API.
+# A new session per click keeps token use small: nothing from earlier applies
+# rides along. The watcher skips a deck while its job runs, then rebuilds it
+# once more after the job ends so page images refresh.
+
+APPLY_MODELS = ["haiku", "sonnet", "opus"]  # first = default
+APPLY_ALLOWED_TOOLS = [
+    "Read", "Edit", "Write", "Glob", "Grep",
+    "Bash(tectonic:*)", "Bash(curl:*)", "Bash(pdftotext:*)", "Bash(pdfinfo:*)",
+    "Bash(pdftoppm:*)", "Bash(rsvg-convert:*)", "Bash(cp:*)", "Bash(ls:*)", "Bash(grep:*)",
+    # 그림(make_figs.py) · 노트북(make_lab.py) 을 다시 만드는 파이썬, v2 덱 빌드 도구
+    "Bash(~/Documents/manim_shorts/_env/v/bin/python:*)",
+    f"Bash({os.path.expanduser('~')}/Documents/manim_shorts/_env/v/bin/python:*)",
+    "Bash(python3 slides/v2/tools/deck.py:*)", f"Bash(python3 {ROOT}/slides/v2/tools/deck.py:*)",
+]
+# acceptEdits auto-approves some filesystem commands (mv was seen running), so
+# block the destructive ones explicitly.
+APPLY_DISALLOWED_TOOLS = ["Bash(rm:*)", "Bash(mv:*)", "Bash(git:*)", "Bash(rmdir:*)"]
+SERVER_PORT = 8765  # set in main(); the prompt tells the session where to POST resolves
+
+_apply_jobs: dict[str, dict] = {}
+_apply_lock = threading.Lock()
+
+
+def page_file_map(did: str) -> dict:
+    """PDF page -> (pages/pNN.tex, kind) for the deck as last built.
+
+    Walks the main .tex's \\input{pages/..} order, expanding each file into
+    the frames it emits (an auto section-divider frame per \\section, then one
+    per \\begin{frame}), and zips that with the .nav's \\beamer@framepages
+    ranges. Returns {} if the counts disagree (stale build, odd source) so
+    callers fall back to the old "find it yourself" instruction.
+    """
+    tex = deck_tex(did)
+    nav = tex.with_suffix(".nav")
+    if not nav.exists():
+        return {}
+    ranges = [(int(a), int(b)) for a, b in
+              re.findall(r"\\beamer@framepages \{(\d+)\}\{(\d+)\}", nav.read_text(encoding="utf-8"))]
+    owners = []
+    for line in tex.read_text(encoding="utf-8").splitlines():
+        line = line.split("%", 1)[0] if not line.lstrip().startswith("\\%") else line
+        m = re.search(r"\\input\{(pages/[^}]+)\}", line)
+        if not m:
+            continue
+        rel = m.group(1) if m.group(1).endswith(".tex") else m.group(1) + ".tex"
+        src = tex.parent / rel
+        if not src.exists():
+            return {}
+        body = "\n".join(l.split("%", 1)[0] for l in src.read_text(encoding="utf-8").splitlines())
+        owners += [(rel, "섹션 시작 쪽(\\section 이 자동으로 만드는 쪽)")] * len(re.findall(r"\\section\b", body))
+        owners += [(rel, "프레임")] * len(re.findall(r"\\begin\{frame\}", body))
+    if len(owners) != len(ranges):
+        return {}
+    out = {}
+    for (rel, kind), (a, b) in zip(owners, ranges):
+        for pg in range(a, b + 1):
+            out[pg] = (rel, kind)
+    return out
+
+
+def plan_pending(did: str) -> dict:
+    """Summary of storyboard changes not yet baked into the .tex."""
+    items = load_plan(did)
+    inserts = [it for it in items if it.get("type") == "insert"]
+    deleted = [it for it in items if it.get("type") == "page" and it.get("deleted")]
+    pages = [it.get("page") for it in items if it.get("type") == "page"]
+    moved = pages != sorted(pages)
+    return {"inserts": len(inserts), "deleted": len(deleted), "moved": moved}
+
+
+def pending_count(did: str) -> int:
+    pp = plan_pending(did)
+    return len(load_notes(did)) + pp["inserts"] + pp["deleted"] + (1 if pp["moved"] else 0)
+
+
+def apply_prompt(did: str, extra: str = "") -> str:
+    tex = deck_tex(did)
+    notes = load_notes(did)
+    pp = plan_pending(did)
+    items = load_plan(did)
+    pmap = page_file_map(did)
+    base = f"http://localhost:{SERVER_PORT}"
+
+    def where(pg):
+        if not deck_pages_dir(did).is_dir():          # v2: tex 한 파일 → 하단 번호와 첫 줄(제목)로 알려 준다
+            try:
+                first = subprocess.run(["pdftotext", "-f", str(pg), "-l", str(pg), str(deck_pdf(did)), "-"],
+                                       capture_output=True, text=True).stdout.strip().splitlines()[0]
+            except (IndexError, OSError):
+                first = "?"
+            return f"하단 번호 {pg - 1} · 제목 '{first}' (deck.py where 로 tex 줄 확인)"
+        hit = pmap.get(pg)
+        return f"{hit[0]} ({hit[1]})" if hit else "파일 미확인 — pdftotext 로 직접 찾을 것"
+    is_v2 = not deck_pages_dir(did).is_dir()       # slides/v2: tex 한 파일 + make_figs.py + lab/
+    parts = [
+        f"슬라이드 덱 `{tex.name}` (폴더 {tex.parent}) 에 아래 요청을 반영해라.",
+        "규칙은 slides/CLAUDE.md 를 따른다: 프레임 하나 = pages/pNN.tex 하나. "
+        "pNN 번호는 PDF 쪽 번호와 다를 수 있으니(p09g1 같은 파일), 쪽 번호로 지시된 요청은 "
+        f"`pdftotext -f N -l N {tex.with_suffix('.pdf').name} - | head` 로 글자를 보고 grep 으로 파일을 찾는다.",
+        "요청받은 부분만 고친다. 요청과 상관없는 쪽은 건드리지 않는다. "
+        "파일 삭제·이동(rm, mv)과 git 은 금지. 붙여넣은 그림(figs/pasted_*)은 그 이름 그대로 쓴다.",
+        "",
+        "## 쪽별 메모",
+    ]
+    if is_v2:
+        parts[1] = ("이 덱은 slides/v2 형식이다: 덱 전체가 tex 한 파일(pages/ 없음). 규칙은 스킬 slide-v2 와 slides/v2/README.md. "
+                    "그림은 손으로 고치지 말고 make_figs.py 를 고친 뒤 `~/Documents/manim_shorts/_env/v/bin/python make_figs.py` 로 다시 만든다. "
+                    f"빌드는 `python3 {ROOT}/slides/v2/tools/deck.py build {tex.parent}`, "
+                    f"쪽 확인은 `python3 {ROOT}/slides/v2/tools/deck.py show {tex.parent} N` (N = 하단 번호 = PDF 쪽 − 1). "
+                    "아래 메모의 쪽 번호는 PDF 쪽 번호다. 슬라이드 내용을 바꾸면 그 프레임의 \\note{} 도 같이 고친다.")
+        parts = [x for x in parts if not x.startswith("쪽 번호 → 파일 대응은")]
+        if pp["deleted"] or pp["inserts"] or pp["moved"]:
+            parts.append("쪽 삭제·순서 변경은 tex 안의 \\begin{frame}...\\end{frame} 블록을 옮기거나 지워서 한다.")
+    if notes:
+        for k, v in sorted(notes.items(), key=lambda kv: int(kv[0])):
+            parts.append(f"- PDF {k}쪽 = {where(int(k))}: {v.get('note', '')}")
+    else:
+        parts.append("(없음)")
+    if pmap:
+        parts.insert(2, "쪽 번호 → 파일 대응은 서버가 빌드 기록(.nav)으로 계산해 아래에 적어 두었다. "
+                        "그대로 믿고 쓰고, 쪽 번호를 다시 추측하지 않는다(그림만 있는 쪽은 글자 검색으로 못 찾는다).")
+    if extra.strip():
+        parts += [
+            "",
+            "## 주차 전체 지시 (덱 전체에 적용, 필요한 쪽을 직접 찾아 고친다)",
+            extra.strip(),
+        ]
+    if pp["deleted"]:
+        parts += ["", "## 지울 쪽 (해당 \\input 줄만 뺀다, 파일은 남김. 섹션 시작 쪽이면 그 \\section 줄을 뺀다)"]
+        for it in items:
+            if it.get("type") == "page" and it.get("deleted"):
+                parts.append(f"- item_id={it['id']} · PDF {it.get('page')}쪽 = {where(it.get('page'))}")
+    if pp["inserts"] or pp["moved"]:
+        parts += [
+            "",
+            "## 스토리보드 계획 (순서 변경 / 새 쪽)",
+            "아래가 목표 순서다. 새 쪽은 그 자리에 새 pages 파일로 만들고 \\input 을 넣는다.",
+        ]
+        for i, it in enumerate(items, 1):
+            if it.get("type") == "insert":
+                parts.append(f"{i}. [새 쪽 item_id={it['id']}] {it.get('prompt', '')}")
+            elif not it.get("deleted"):
+                parts.append(f"{i}. PDF {it.get('page')}쪽 = {where(it.get('page'))}")
+    parts += [
+        "",
+        "## 끝내는 법",
+        (f"1. `python3 {ROOT}/slides/v2/tools/deck.py build {tex.parent}` 로 빌드하고 오류·Overfull 이 없을 때까지 고친다."
+         if is_v2 else
+         f"1. 덱 폴더에서 `tectonic -X compile --keep-intermediates {tex.name}` 로 빌드하고 오류가 없을 때까지 고친다."),
+        "2. 반영한 항목마다 아래를 호출한다(action = 한 일 한 줄, 한국어):",
+        f"   - 메모: curl -s -X POST {base}/api/resolve -H 'Content-Type: application/json' "
+        f"-d '{{\"id\":\"{did}\",\"page\":N,\"action\":\"...\"}}'",
+        f"   - insert: {base}/api/plan/resolve_insert  body {{\"id\",\"item_id\",\"action\"}}",
+        f"   - delete: {base}/api/plan/resolve_delete  body {{\"id\",\"item_id\",\"action\"}}",
+        f"   - 계획을 반영했다면 마지막에 한 번: {base}/api/plan/commit  body {{\"id\",\"action\"}}",
+        "   각 curl 응답에 \"ok\": true 가 있는지 확인한다. 아니면 item_id 를 다시 보고 재시도한다.",
+        "   쪽 삭제·추가·순서 변경을 하나라도 했다면, 다 끝난 뒤 plan/commit 을 꼭 한 번 호출한다"
+        "(안 하면 쪽 번호가 어긋난 채로 남는다).",
+        "   반영하지 못한 항목은 resolve 하지 말고 남겨 둔다.",
+        "3. 마지막 답은 항목마다 한 줄씩: `✅ p.N 무엇을 함` 또는 `⚠️ p.N 못 한 이유`.",
+    ]
+    return "\n".join(parts)
+
+
+def _stamp(line: str) -> str:
+    return time.strftime("[%H:%M:%S] ") + line
+
+
+def _summarize_event(ev: dict):
+    """One short log line per interesting stream-json event, else None."""
+    t = ev.get("type")
+    if t == "assistant":
+        out = []
+        for block in ev.get("message", {}).get("content", []):
+            if block.get("type") == "text" and block.get("text", "").strip():
+                out.append(block["text"].strip())
+            elif block.get("type") == "tool_use":
+                inp = block.get("input", {})
+                arg = inp.get("file_path") or inp.get("command") or inp.get("pattern") or ""
+                arg = str(arg).replace(str(ROOT) + "/", "").strip().split("\n")[0]
+                out.append(f"→ {block.get('name')} {arg[:120]}")
+        return "\n".join(out) or None
+    if t == "result":
+        cost = ev.get("total_cost_usd")
+        secs = (ev.get("duration_ms") or 0) / 1000
+        tail = f" · ${cost:.3f}" if isinstance(cost, (int, float)) else ""
+        return f"[끝] {ev.get('subtype', '')} · {secs:.0f}초{tail}"
+    return None
+
+
+def start_apply(did: str, model: str, extra: str = "") -> tuple:
+    with _apply_lock:
+        job = _apply_jobs.get(did)
+        if job and job["status"] == "running":
+            return False, "이미 반영 중입니다"
+        if pending_count(did) == 0 and not extra.strip():
+            return False, "반영할 항목이 없습니다"
+        job = {"status": "running", "model": model, "started": now_iso(),
+               "lines": [_stamp(f"[시작] 모델 {model} · 새 Claude Code 세션")], "exit": None}
+        if extra.strip():
+            job["lines"].append(_stamp("[주차 전체 지시] " + extra.strip()))
+        _apply_jobs[did] = job
+
+    def run():
+        cmd = ["claude", "-p", apply_prompt(did, extra), "--model", model,
+               "--permission-mode", "acceptEdits",
+               "--allowedTools", *APPLY_ALLOWED_TOOLS,
+               "--disallowedTools", *APPLY_DISALLOWED_TOOLS,
+               "--output-format", "stream-json", "--verbose",
+               "--no-session-persistence"]
+        try:
+            proc = subprocess.Popen(cmd, cwd=deck_tex(did).parent, stdin=subprocess.DEVNULL,
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            for raw in proc.stdout:
+                raw = raw.strip()
+                if not raw:
+                    continue
+                try:
+                    line = _summarize_event(json.loads(raw))
+                except json.JSONDecodeError:
+                    line = raw[:300]
+                if line:
+                    job["lines"].append(_stamp(line))
+            job["exit"] = proc.wait()
+            job["status"] = "done" if job["exit"] == 0 else "failed"
+        except Exception as e:
+            job["lines"].append(_stamp(f"[오류] {e}"))
+            job["status"] = "failed"
+
+    threading.Thread(target=run, daemon=True).start()
+    return True, ""
+
+
+def apply_preview(did: str) -> dict:
+    """What a click would send, for the confirm dialog: items + the exact prompt."""
+    items = load_plan(did)
+    pp = plan_pending(did)
+    notes = load_notes(did)
+    return {
+        "notes": [{"page": int(k), "note": v.get("note", "")}
+                  for k, v in sorted(notes.items(), key=lambda kv: int(kv[0]))],
+        "inserts": [{"pos": i + 1, "prompt": it.get("prompt", "")}
+                    for i, it in enumerate(items) if it.get("type") == "insert"],
+        "deleted": [it.get("page") for it in items if it.get("type") == "page" and it.get("deleted")],
+        "moved": pp["moved"],
+        "prompt": apply_prompt(did),
+    }
+
+
+def apply_parts(did: str) -> dict:
+    return {"apply_html": APPLY_HTML, "apply_panel": APPLY_PANEL,
+            "apply_js": APPLY_JS.replace("DID_JSON", json.dumps(did))}
+
+
+def apply_status(did: str) -> dict:
+    job = _apply_jobs.get(did)
+    base = {"pending": pending_count(did), "models": APPLY_MODELS}
+    if not job:
+        return {**base, "status": "idle", "lines": []}
+    return {**base, "status": job["status"], "model": job["model"], "lines": job["lines"][-200:]}
+
+
+APPLY_HTML = """
+<span class="apply-box">
+  <select id="applyModel" title="반영에 쓸 모델"></select>
+  <button id="applyBtn">반영하기</button>
+</span>
+"""
+
+APPLY_PANEL = """<div id="applyBar" class="apply-bar" hidden>
+  <span id="applyNow"></span>
+  <button id="applyLogBtn" type="button">▾ 전체</button>
+</div>
+<pre id="applyLog" class="apply-log" hidden></pre>
+<dialog id="applyDialog" class="apply-dialog">
+  <h3>반영할 항목 미리보기</h3>
+  <div id="applyItems"></div>
+  <label class="apply-extra-label" for="applyExtra">주차 전체 지시 (선택)</label>
+  <textarea id="applyExtra" class="apply-extra" placeholder="예: 이 주차 전체에서 수식 기호를 \\boldsymbol{w} 로 통일 / 모든 예제 숫자에 단위 붙이기"></textarea>
+  <details><summary>세션에 보낼 지시문 전체</summary><pre id="applyPrompt"></pre></details>
+  <div class="apply-dialog-row">
+    <span id="applyModelLabel"></span>
+    <button id="applyCancel" class="secondary">취소</button>
+    <button id="applyGo">실행</button>
+  </div>
+</dialog>"""
+
+APPLY_JS = """
+<script>
+(function () {
+  const did = DID_JSON;
+  const sel = document.getElementById('applyModel');
+  const btn = document.getElementById('applyBtn');
+  const logBtn = document.getElementById('applyLogBtn');
+  const logBox = document.getElementById('applyLog');
+  let saved = 'haiku';
+  try { saved = localStorage.getItem('applyModel') || 'haiku'; } catch (e) {}
+  let timer = null, wasRunning = false;
+  function paint(s) {
+    if (!sel.options.length) {
+      s.models.forEach(function (m) { const o = document.createElement('option'); o.value = o.textContent = m; sel.appendChild(o); });
+      sel.value = s.models.indexOf(saved) >= 0 ? saved : s.models[0];
+    }
+    const running = s.status === 'running';
+    btn.disabled = running;
+    btn.textContent = running ? '반영 중… (' + (s.model || '') + ')' : '반영하기 (' + s.pending + '건)';
+    const bar = document.getElementById('applyBar');
+    bar.hidden = !s.lines.length;
+    // one line only: the latest event, first line of it (final answers are multi-line)
+    const last = s.lines.length ? s.lines[s.lines.length - 1] : '';
+    document.getElementById('applyNow').textContent = (running ? '⏳ ' : '') + last.split('\\n')[0];
+    logBox.textContent = s.lines.join('\\n');
+    if (!logBox.hidden) { logBox.scrollTop = logBox.scrollHeight; }
+    if (wasRunning && !running) { setTimeout(function () { location.reload(); }, 1500); }
+    wasRunning = running;
+    clearTimeout(timer);
+    timer = setTimeout(poll, running ? 1500 : 5000);
+  }
+  function poll() {
+    fetch('/api/apply/status?id=' + encodeURIComponent(did)).then(function (r) { return r.json(); }).then(paint)
+      .catch(function () { timer = setTimeout(poll, 5000); });
+  }
+  sel.addEventListener('change', function () { try { localStorage.setItem('applyModel', sel.value); } catch (e) {} });
+  logBtn.addEventListener('click', function () {
+    logBox.hidden = !logBox.hidden;
+    logBtn.textContent = logBox.hidden ? '▾ 전체' : '▴ 접기';
+    logBox.scrollTop = logBox.scrollHeight;
+  });
+  const dlg = document.getElementById('applyDialog');
+  const itemsBox = document.getElementById('applyItems');
+  function row(tag, text, page) {
+    const d = document.createElement('div'); d.className = 'apply-item';
+    if (page) {
+      d.classList.add('clickable');
+      d.title = page + '쪽 보기';
+      d.addEventListener('click', function () {
+        if (typeof goTo === 'function') { dlg.close(); goTo(page); }
+        else { location.href = '/deck?id=' + encodeURIComponent(did) + '&start=' + page; }
+      });
+    }
+    const b = document.createElement('b'); b.textContent = tag; d.appendChild(b);
+    const t = document.createElement('span'); t.textContent = text; d.appendChild(t);
+    itemsBox.appendChild(d);
+  }
+  btn.addEventListener('click', function () {
+    fetch('/api/apply/preview?id=' + encodeURIComponent(did)).then(function (r) { return r.json(); }).then(function (pv) {
+      itemsBox.textContent = '';
+      pv.notes.forEach(function (n) { row('p.' + n.page, n.note, n.page); });
+      pv.inserts.forEach(function (n) { row('추가 @' + n.pos, n.prompt || '(빈 프롬프트)'); });
+      pv.deleted.forEach(function (pg) { row('삭제', 'p.' + pg, pg); });
+      if (pv.moved) { row('순서', '스토리보드에서 쪽 순서가 바뀜'); }
+      if (!itemsBox.childNodes.length) { row('', '쪽별 메모 없음 — 아래에 주차 전체 지시를 적으면 실행할 수 있습니다.'); }
+      document.getElementById('applyPrompt').textContent = pv.prompt;
+      document.getElementById('applyModelLabel').textContent = '모델: ' + sel.value;
+      dlg.showModal();
+    });
+  });
+  document.getElementById('applyCancel').addEventListener('click', function () { dlg.close(); });
+  document.getElementById('applyGo').addEventListener('click', function () {
+    dlg.close();
+    btn.disabled = true;
+    fetch('/api/apply', { method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ id: did, model: sel.value, extra: document.getElementById('applyExtra').value }) })
+      .then(function (r) { return r.json(); })
+      .then(function (r) { if (!r.ok) { alert(r.error); } poll(); });
+  });
+  poll();
+})();
+</script>
+"""
+
+APPLY_CSS = """
+.apply-box { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.apply-box select, .apply-box button { font-size: 13px; padding: 5px 10px; border-radius: 6px; border: 1px solid #c9c9c4; background: #fff; cursor: pointer; }
+.apply-box #applyBtn { background: #2354a5; color: #fff; border-color: #2354a5; font-weight: 600; }
+.apply-box #applyBtn:disabled { opacity: .55; cursor: default; }
+.apply-dialog { width: min(720px, 92vw); border: 1px solid #c9c9c4; border-radius: 10px; padding: 18px 20px; }
+.apply-dialog h3 { margin: 0 0 12px; font-size: 15px; }
+.apply-item { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid #eee; font-size: 13px; white-space: pre-wrap; }
+.apply-item b { min-width: 64px; color: #2354a5; }
+.apply-item.clickable { cursor: pointer; border-radius: 6px; padding-left: 6px; padding-right: 6px; }
+.apply-item.clickable:hover { background: #eef3fb; }
+.apply-item.clickable b { text-decoration: underline; }
+.apply-dialog details { margin-top: 12px; font-size: 12px; }
+.apply-extra-label { display: block; margin-top: 14px; font-size: 13px; font-weight: 600; color: #444; }
+.apply-extra { width: 100%; min-height: 80px; margin-top: 6px; padding: 8px; font-size: 13px; border: 1px solid #c9c9c4; border-radius: 6px; font-family: inherit; }
+.apply-dialog details pre { max-height: 260px; overflow: auto; background: #f4f4f1; padding: 10px; white-space: pre-wrap; }
+.apply-dialog-row { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
+.apply-dialog-row span { margin-right: auto; color: #666; font-size: 12px; }
+.apply-dialog-row button { font-size: 13px; padding: 6px 14px; border-radius: 6px; border: 1px solid #c9c9c4; background: #fff; cursor: pointer; }
+.apply-dialog-row #applyGo { background: #2354a5; color: #fff; border-color: #2354a5; font-weight: 600; }
+.apply-bar { display: flex; align-items: center; gap: 10px; padding: 6px 20px; background: #111; color: #d6f5d6;
+  font: 12px ui-monospace, Menlo, monospace; border-bottom: 1px solid #333; }
+.apply-bar #applyNow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.apply-bar button { background: #222; color: #d6f5d6; border: 1px solid #444; border-radius: 5px; padding: 2px 8px; font-size: 12px; cursor: pointer; }
+.apply-log { margin: 0; max-height: 260px; overflow: auto; padding: 10px 20px; background: #111; color: #d6f5d6;
+  font-size: 12px; line-height: 1.45; white-space: pre-wrap; border-bottom: 1px solid #333; }
+"""
+
+
 PAGE_CSS = """
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
@@ -757,7 +1283,9 @@ VIEWER_TMPL = Template("""<!doctype html><html><head><meta charset="utf-8">
   <a href="/">&larr; 목록</a>
   <a href="/board?id=$did_quoted">스토리보드</a>
   <h1>$did &nbsp;·&nbsp; <span id="pageLabel"></span> / $total</h1>
+  $apply_html
 </header>
+$apply_panel
 <main>
 <div class="viewer">
   <div class="page-wrap">
@@ -835,6 +1363,7 @@ let sourceEditable = false;
 let sourceLoadedPage = null;
 let sourceUnbuilt = false; // true once "저장만" has saved something the PDF doesn't reflect yet
 
+let sourceLoadedFile = '';
 function loadSource() {
   sourceError.hidden = true;
   sourceStatus.textContent = '불러오는 중...';
@@ -849,7 +1378,8 @@ function loadSource() {
       sourceLoadedPage = page;
       sourceEditable = !!res.editable;
       if (!sourceEditable) {
-        sourceBox.value = '(이 덱은 아직 pages/ 파일 분할이 안 되어 있어서 코드 편집을 지원하지 않음)';
+        sourceBox.value = '(이 쪽의 소스 파일을 찾지 못함 — 빌드 기록과 소스가 어긋난 상태. 재빌드가 끝난 뒤 다시 열어 보세요)';
+        sourceLoadedFile = '';
         sourceStatus.textContent = '';
         return;
       }
@@ -857,7 +1387,8 @@ function loadSource() {
       sourceBox.disabled = false;
       sourceSaveBtn.disabled = false;
       sourceSaveOnlyBtn.disabled = false;
-      sourceStatus.textContent = '자동 저장 켜짐 (재빌드는 버튼으로)';
+      sourceLoadedFile = res.file || '';
+      sourceStatus.textContent = res.file + (res.kind && res.kind !== '프레임' ? ' · ' + res.kind : '') + ' · 자동 저장 켜짐 (재빌드는 버튼으로)';
       sourceStatus.className = 'status';
       sourceUnbuilt = false;
     })
@@ -916,7 +1447,7 @@ function saveSource(rebuild) {
   fetch('/api/source', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({id: did, page: savedPage, content: sourceBox.value, rebuild}),
+    body: JSON.stringify({id: did, page: savedPage, file: sourceLoadedFile, content: sourceBox.value, rebuild}),
   }).then(r => r.json()).then(res => {
     sourceSaveBtn.disabled = false;
     sourceSaveOnlyBtn.disabled = false;
@@ -1076,6 +1607,7 @@ function goTo(p) {
   pdfLink.href = `/pdf?id=$${encodeURIComponent(did)}#page=$${p}`;
   label.textContent = p;
   input.value = p;
+  history.replaceState(null, '', '/deck?id=' + encodeURIComponent(did) + '&start=' + p);
   box.value = (notes[p] && notes[p].note) || '';
   status.textContent = '자동 저장 켜짐';
   status.className = 'status';
@@ -1156,15 +1688,36 @@ window.addEventListener('beforeunload', () => {
   if (sourceSaveTimer && sourceEditable) {
     clearTimeout(sourceSaveTimer);
     // save-only (rebuild=false): a rebuild is too slow to trust to sendBeacon on unload
-    const payload = JSON.stringify({id: did, page: sourceLoadedPage, content: sourceBox.value, rebuild: false});
+    const payload = JSON.stringify({id: did, page: sourceLoadedPage, file: sourceLoadedFile, content: sourceBox.value, rebuild: false});
     navigator.sendBeacon('/api/source', new Blob([payload], {type: 'application/json'}));
   }
 });
+
+// While a rebuild renders in the background the old page images stay up;
+// when the new render lands, refresh the current image (or reload if the
+// page count changed -- the URL keeps the page).
+let renderVersion = null;
+const buildBadge = document.createElement('span');
+buildBadge.className = 'status';
+buildBadge.style.marginLeft = '8px';
+document.querySelector('header h1').appendChild(buildBadge);
+function pollRender() {
+  fetch('/api/render_status?id=' + encodeURIComponent(did)).then(r => r.json()).then(st => {
+    buildBadge.textContent = st.updating ? '· 새 빌드 반영 중…' : '';
+    if (renderVersion !== null && st.version !== renderVersion) {
+      if (st.n !== total) { location.reload(); return; }
+      img.src = '/img?id=' + encodeURIComponent(did) + '&page=' + page + '&t=' + Date.now();
+    }
+    renderVersion = st.version;
+  }).catch(() => {}).finally(() => setTimeout(pollRender, 2000));
+}
+pollRender();
 
 buildJumplist();
 const startParam = Number(new URLSearchParams(location.search).get('start'));
 goTo(startParam >= 1 && startParam <= total ? startParam : 1);
 </script>
+$apply_js
 </body></html>""")
 
 BOARD_TMPL = Template("""<!doctype html><html><head><meta charset="utf-8">
@@ -1174,7 +1727,9 @@ BOARD_TMPL = Template("""<!doctype html><html><head><meta charset="utf-8">
   <a href="/">&larr; 목록</a>
   <a href="/deck?id=$did_quoted">페이지별 보기</a>
   <h1>$did &nbsp;·&nbsp; 스토리보드</h1>
+  $apply_html
 </header>
+$apply_panel
 <main>
 <div class="board-toolbar">
   <button id="addFirstBtn">+ 맨 앞에 빈 페이지 추가</button>
@@ -1382,6 +1937,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 render();
 </script>
+$apply_js
 </body></html>""")
 
 
@@ -1397,6 +1953,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _send_html(self, html: str, status: int = 200):
+        html = html.replace("</style>", APPLY_CSS + "</style>", 1)
         self._send(status, html.encode("utf-8"), "text/html; charset=utf-8")
 
     def _send_json(self, obj, status: int = 200):
@@ -1424,6 +1981,17 @@ class Handler(BaseHTTPRequestHandler):
                 return self.handle_board(qs.get("id", [None])[0])
             if parsed.path == "/api/plan":
                 return self.handle_api_plan(qs.get("id", [None])[0])
+            if parsed.path == "/api/render_status":
+                did = qs.get("id", [None])[0]
+                if did not in find_decks():
+                    raise FileNotFoundError()
+                return self._send_json(render_status(did))
+            if parsed.path in ("/api/apply/status", "/api/apply/preview"):
+                did = qs.get("id", [None])[0]
+                if did not in find_decks():
+                    raise FileNotFoundError()
+                fn = apply_status if parsed.path.endswith("status") else apply_preview
+                return self._send_json(fn(did))
         except FileNotFoundError:
             return self._send_html("<h1>404</h1>not found", 404)
         except Exception as e:
@@ -1431,6 +1999,14 @@ class Handler(BaseHTTPRequestHandler):
         self._send_html("<h1>404</h1>", 404)
 
     def do_POST(self):
+        if self.path == "/api/apply":
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length) or b"{}")
+            did, model = body.get("id"), body.get("model", "haiku")
+            if did not in find_decks() or model not in APPLY_MODELS:
+                return self._send_json({"ok": False, "error": "bad request"}, 400)
+            ok, err = start_apply(did, model, str(body.get("extra", ""))[:4000])
+            return self._send_json({"ok": ok, "error": err}, 200 if ok else 409)
         if self.path == "/api/save":
             length = int(self.headers.get("Content-Length", 0))
             body = json.loads(self.rfile.read(length) or b"{}")
@@ -1539,7 +2115,8 @@ class Handler(BaseHTTPRequestHandler):
             rebuild = body.get("rebuild", True)
             if did not in find_decks():
                 return self._send_json({"ok": False, "error": "unknown deck"}, 400)
-            ok, err = write_page_source(did, int(page), content, rebuild=bool(rebuild))
+            ok, err = write_page_source(did, int(page), content, rebuild=bool(rebuild),
+                                        file=str(body.get("file") or ""))
             if not ok:
                 return self._send_json({"ok": False, "error": err}, 400)
             return self._send_json({"ok": True, "rebuilt": bool(rebuild)})
@@ -1604,6 +2181,7 @@ class Handler(BaseHTTPRequestHandler):
             notes_json=json.dumps(notes),
             deleted_json=json.dumps(deleted_pages),
             sections_json=json.dumps(load_sections(did)),
+            **apply_parts(did),
         )
         self._send_html(html)
 
@@ -1623,6 +2201,7 @@ class Handler(BaseHTTPRequestHandler):
             did_json=json.dumps(did),
             notes_json=json.dumps(notes),
             plan_json=json.dumps(plan),
+            **apply_parts(did),
         )
         self._send_html(html)
 
@@ -1635,6 +2214,10 @@ class Handler(BaseHTTPRequestHandler):
         total = ensure_rendered(did)
         page_n = int(page)
         path = page_image_path(did, page_n, total)
+        if not path.exists():
+            time.sleep(0.4)  # mid-swap of a fresh render: the new dir lands a moment later
+            total = ensure_rendered(did)
+            path = page_image_path(did, page_n, total)
         if not path.exists():
             raise FileNotFoundError()
         self._send(200, path.read_bytes(), "image/png")
@@ -1659,7 +2242,9 @@ class Handler(BaseHTTPRequestHandler):
         path = page_source_path(did, int(page))
         if path is None:
             return self._send_json({"ok": True, "editable": False})
-        return self._send_json({"ok": True, "editable": True, "content": path.read_text(encoding="utf-8")})
+        kind = page_file_map(did)[int(page)][1]
+        return self._send_json({"ok": True, "editable": True, "content": path.read_text(encoding="utf-8"),
+                                "file": f"pages/{path.name}", "kind": kind})
 
 
 def warm_cache(workers: int = 4):
@@ -1691,6 +2276,8 @@ def main():
     ap.add_argument("--no-warm", action="store_true", help="skip pre-rendering all decks on startup")
     ap.add_argument("--no-watch", action="store_true", help="disable automatic rebuild on .tex changes")
     args = ap.parse_args()
+    global SERVER_PORT
+    SERVER_PORT = args.port
     # Redirected stdout is block-buffered, which makes the warm-up progress log
     # look empty (and the server look hung) when started with `> server.log`.
     try:

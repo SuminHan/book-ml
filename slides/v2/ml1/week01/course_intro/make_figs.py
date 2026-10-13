@@ -65,7 +65,7 @@ fig.savefig(O + "intro_timeline.png", bbox_inches="tight"); plt.close(fig)
 people = [("lecun.jpg", None, 0.1, "얀 르쿤", "CNN\n2018 튜링상"),
           ("hinton.jpg", None, 0.0, "제프리 힌턴", "역전파\n2024 노벨 물리학상"),
           ("bengio.jpg", None, 0.05, "요슈아 벤지오", "딥러닝\n2018 튜링상"),
-          ("sutskever_rao.jpg", (40, 0, 330, 300), 0.0, "일리야 서츠케버", "AlexNet\nOpenAI 공동창업"),
+          ("../figs/pasted_p16_63bd65d7.png", None, 0.0, "일리야 서츠케버", "AlexNet\nOpenAI 공동창업"),
           ("ng.jpg", None, 0.05, "앤드루 응", "Google Brain · Coursera\nBaidu 수석 과학자"),
           ("feifei.jpg", None, 0.05, "페이페이 리", "ImageNet\nStanford HAI"),
           ("hassabis.jpg", None, 0.1, "데미스 허사비스", "AlphaGo · AlphaFold\n2024 노벨 화학상")]
@@ -78,20 +78,23 @@ fig.subplots_adjust(wspace=0.08)
 fig.savefig(O + "intro_people.png", bbox_inches="tight"); plt.close(fig)
 
 # 4. 연구실에서 회사로
-rows = [("토론토 (힌턴)", "DNNresearch → Google (2013)"),
-        ("NYU (르쿤)", "Facebook AI Research (2013)"),
-        ("Stanford (응)", "Google Brain (2011) · Coursera (2012) · Baidu (2014)"),
-        ("토론토 → Google (서츠케버)", "OpenAI 공동창업 (2015)"),
-        ("UCL (허사비스)", "DeepMind (2010) → Google (2014)"),
-        ("Stanford (페이페이 리)", "Google Cloud (2017) · World Labs (2024)")]
-fig, ax = plt.subplots(figsize=(13.5, 4.6)); ax.axis("off"); ax.set_xlim(0, 13.5); ax.set_ylim(-0.6, len(rows))
-ax.text(2.6, len(rows) - 0.1, "연구실", ha="center", fontsize=17, fontweight="bold", color=BLUE)
-ax.text(9.3, len(rows) - 0.1, "회사 · 창업", ha="center", fontsize=17, fontweight="bold", color=RED)
-for i, (a, b) in enumerate(rows):
+rows = [("토론토 (힌턴)", "DNNresearch → Google (2013)", "Google 퇴사 (2023), AI 위험 경고"),
+        ("NYU (르쿤)", "Facebook AI Research (2013)", "Meta 퇴사 → AMI Labs 창업 (2025)"),
+        ("Stanford (응)", "Google Brain · Coursera · Baidu", "AI Fund · DeepLearning.AI"),
+        ("토론토 → Google (서츠케버)", "OpenAI 공동창업 (2015)", "OpenAI 퇴사 → SSI 창업 (2024)"),
+        ("UCL (허사비스)", "DeepMind (2010) → Google (2014)", "Google DeepMind CEO"),
+        ("Stanford (페이페이 리)", "Google Cloud (2017)", "World Labs 창업 (2024)")]
+fig, ax = plt.subplots(figsize=(16.5, 4.6)); ax.axis("off"); ax.set_xlim(0, 16.5); ax.set_ylim(-0.6, len(rows))
+ax.text(2.4, len(rows) - 0.1, "연구실", ha="center", fontsize=17, fontweight="bold", color=BLUE)
+ax.text(7.7, len(rows) - 0.1, "회사 · 창업", ha="center", fontsize=17, fontweight="bold", color=RED)
+ax.text(13.5, len(rows) - 0.1, "지금 (2026)", ha="center", fontsize=17, fontweight="bold", color=GREEN)
+for i, (a, b, c) in enumerate(rows):
     y = len(rows) - 1 - i - 0.25
-    box(ax, 2.6, y, 4.4, 0.66, a, "#eef0fa", BLUE, fs=14)
-    box(ax, 9.3, y, 7.0, 0.66, b, "#fbeeee", RED, fs=14)
-    arrow(ax, (4.85, y), (5.75, y), color=GRAY, lw=2)
+    box(ax, 2.4, y, 4.2, 0.66, a, "#eef0fa", BLUE, fs=14)
+    box(ax, 7.7, y, 4.6, 0.66, b, "#fbeeee", RED, fs=14)
+    box(ax, 13.5, y, 5.4, 0.66, c, "#e8f4f2", GREEN, fs=14)
+    arrow(ax, (4.55, y), (5.35, y), color=GRAY, lw=2)
+    arrow(ax, (10.05, y), (10.75, y), color=GRAY, lw=2)
 fig.savefig(O + "intro_valley.png", bbox_inches="tight"); plt.close(fig)
 
 # 5. 이 수업의 흐름

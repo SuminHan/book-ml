@@ -62,6 +62,7 @@ python3 slides/v2/tools/deck.py sheet  <덱폴더>        # 전체를 12장씩 �
 | 1 | `week01/dirty_data` | 더티 데이터 (1주 3차시) | 14쪽 · 실습: 더럽힌 iris 청소 |
 | 2 | `week02/linear_regression` | 선형회귀 | 16쪽 · 실습: 경사하강법 구현 + Auto MPG |
 | 2 | `week02/sgd` | SGD 확률적 경사하강법 | 23쪽 · 실습: diabetes SGD + PyTorch MNIST |
+| 2 | `week02/logistic_regression` | 로지스틱회귀 (쇼츠 없음) | 14쪽 · 실습: 한 줄 바꿔 구현 + 타이타닉 + PR 곡선 |
 | 2 | `week02/cross_entropy` | 교차 엔트로피 | 15쪽 · 실습: 유방암 CE vs MSE + 셰익스피어 다음 글자 |
 | 2 | `week02/precision_recall` | 정밀도와 재현율 | — |
 | 2 | `week02/pr_auc` | PR-AUC | — |
@@ -71,6 +72,10 @@ python3 slides/v2/tools/deck.py sheet  <덱폴더>        # 전체를 12장씩 �
 | 4 | `week04/kmeans` | k-means 클러스터링 | — |
 | 4 | `week04/em_algorithm` | EM 알고리즘 | — |
 | 5 | `week05/svm` | 서포트 벡터 머신 | — |
+| 6 | `week06/regularization` | 정규화: L1 · L2 (Ridge · Lasso) — 쇼츠 없음, 실습 위주 | — |
+| 6 | `week06/cross_validation` | 교차검증: λ 를 데이터로 — 쇼츠 없음, 실습 위주 | — |
+| 6 | `week06/train_val_test` | train / val / test 분리와 데이터 누수 — 쇼츠 없음, 실습 위주 | — |
+| 6 | `week06/early_stopping` | Early Stopping 조기 종료 | — |
 | 7 | `week07/decision_tree` | 결정 트리 | — |
 | 7 | `week07/entropy` | 섀넌 엔트로피 | — |
 | 7 | `week07/random_forest` | 랜덤 포레스트 | — |
@@ -109,4 +114,4 @@ python3 slides/v2/tools/deck.py sheet  <덱폴더>        # 전체를 12장씩 �
 | 17 | `week17/temperature` | 온도 Temperature | — |
 | 17 | `week17/rlhf` | RLHF 사람 피드백 강화학습 | — |
 
-6주차(정규화·교차검증·분리)는 맞는 쇼츠가 없어 비어 있다. 10주의 alexnet 복습은 `week01/course_intro` 로 대신한다.
+6주차(정규화·교차검증·분리)는 쇼츠가 없어서 `notebooks/ml1/chapter06_*` 를 바탕으로 실습 위주로 만든다. 신경망의 정규화(dropout · batchnorm)는 9주차. 10주의 alexnet 복습은 `week01/course_intro` 로 대신한다.

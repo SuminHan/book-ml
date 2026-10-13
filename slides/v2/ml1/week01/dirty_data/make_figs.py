@@ -50,19 +50,33 @@ ax.text(len(rows) - 2, TYPO_V + 18, "오타?", ha="center", color=RED, fontsize=
 ax.text(len(rows) - 1, ATH_V + 18, "농구 선수", ha="center", color=GOLD, fontsize=15, fontweight="bold")
 fig.tight_layout(); fig.savefig(O + "dd_outlier.png"); plt.close(fig)
 
-# 5. 그림으로 찾기: 상자 그림
-vals = [v for _, v in REAL] + [TYPO_V, ATH_V]
-fig, ax = plt.subplots(figsize=(9, 4.6))
-ax.boxplot(vals, orientation="vertical", widths=0.5, whis=1.5, flierprops=dict(marker="o", markerfacecolor=RED, markersize=11, markeredgecolor=RED))
-ax.scatter(np.ones(len(vals)) + np.random.default_rng(0).uniform(-0.08, 0.08, len(vals)), vals, color=BLUE, s=30, zorder=3)
-q1, med, q3 = np.percentile(vals, [25, 50, 75]); iqr = q3 - q1
-hi = max(v for v in vals if v <= q3 + 1.5 * iqr)
-for y, t in [(q3, f"상자 윗변 = 75% 지점 ({q3:g})"), (med, f"가운데 선 = 50% 지점, 중앙값 ({med:g})"), (q1, f"상자 아랫변 = 25% 지점 ({q1:g})")]:
-    ax.annotate(t, (1.25, y), (1.42, y), fontsize=13, va="center", arrowprops=dict(arrowstyle="-", color=GRAY))
-ax.annotate(f"수염 끝 ({hi:g}): 상자 높이의 1.5배 안\n에서 가장 먼 값", (1.0, hi), (1.42, hi + 9), fontsize=12, va="center", color=GRAY, arrowprops=dict(arrowstyle="-", color=GRAY))
-ax.annotate(f"{TYPO_V}", (1.0, TYPO_V), (0.8, TYPO_V - 3), fontsize=15, color=RED)
-ax.annotate(f"{ATH_V}", (1.0, ATH_V), (0.8, ATH_V - 3), fontsize=15, color=RED)
-ax.set_xlim(0.6, 2.4); ax.set_xticks([]); ax.set_ylabel("키 (cm)"); ax.spines["bottom"].set_visible(False)
+# 5. 그림으로 찾기: 상자 그림 (세로) — 왼쪽: 읽는 법, 오른쪽: 우리 반 키
+vals = np.array([v for _, v in REAL] + [TYPO_V, ATH_V])
+q1, med, q3 = np.percentile(vals, [25, 50, 75]); iqr = q3 - q1; fence = q3 + 1.5 * iqr
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(12, 5.6), gridspec_kw={"width_ratios": [1.15, 1]})
+# 읽는 법 (모양만 보여 주는 그림)
+from matplotlib.patches import Rectangle
+a1.add_patch(Rectangle((0.3, 3), 0.8, 3, fc="#eef0fa", ec="black", lw=1.6))
+a1.plot([0.3, 1.1], [4.3, 4.3], color=RED, lw=3)
+a1.plot([0.7, 0.7], [6, 7.6], color="black", lw=1.4); a1.plot([0.55, 0.85], [7.6, 7.6], color="black", lw=1.4)
+a1.plot([0.7, 0.7], [3, 1.6], color="black", lw=1.4); a1.plot([0.55, 0.85], [1.6, 1.6], color="black", lw=1.4)
+a1.scatter([0.7], [9.3], s=110, color=RED)
+for y, t, c in ((9.3, "이상치 후보: 수염보다 바깥", RED), (7.6, "수염 끝: 상자에서 상자 길이 × 1.5 안의 가장 먼 값", GRAY),
+                (6, "75% (Q3): 이보다 큰 값이 1/4", "black"), (4.3, "중앙값 (50%): 한가운데", RED),
+                (3, "25% (Q1): 이보다 작은 값이 1/4", "black"), (1.6, "수염 끝", GRAY)):
+    a1.text(1.3, y, t, va="center", fontsize=13.5, color=c)
+a1.annotate("", (0.2, 6), (0.2, 3), arrowprops=dict(arrowstyle="<->", color=BLUE, lw=1.6))
+a1.text(0.12, 4.5, "상자 = 가운데 절반", rotation=90, va="center", ha="right", fontsize=13, color=BLUE)
+a1.set_xlim(-0.3, 6.2); a1.set_ylim(0.8, 10.2); a1.axis("off"); a1.set_title("상자 그림 읽는 법", fontsize=16, fontweight="bold")
+# 우리 반 키
+a2.boxplot(vals, positions=[0], widths=0.45, medianprops=dict(color=RED, lw=2.5),
+           flierprops=dict(marker="o", markerfacecolor=RED, markersize=11, markeredgecolor=RED))
+a2.axhline(fence, color=GRAY, ls=":", lw=1.5); a2.text(0.32, fence + 2, f"Q3 + 1.5 × 상자 길이 = {fence:g}", color=GRAY, fontsize=12)
+for v in (TYPO_V, ATH_V):
+    a2.text(0.32, v, f"{v} cm", color=RED, fontsize=14, va="center", fontweight="bold")
+a2.text(0.32, med, f"중앙값 {med:g}", color=RED, fontsize=12.5, va="center")
+a2.set_xlim(-0.6, 1.6); a2.set_xticks([]); a2.set_ylabel("키 (cm)"); a2.spines["bottom"].set_visible(False)
+a2.set_title("우리 반 키 (10명)", fontsize=16, fontweight="bold")
 fig.tight_layout(); fig.savefig(O + "dd_box.png"); plt.close(fig)
 
 # 6. 모델도 속는다: iris 꽃잎 길이 → 너비, '비었음'을 0으로 적은 꽃 6송이
