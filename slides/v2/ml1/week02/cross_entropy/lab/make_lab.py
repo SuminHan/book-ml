@@ -63,21 +63,21 @@ print(f"{m} patients, {n} features, benign {y.mean():.0%}")
 
 sigmoid = lambda z: 1 / (1 + np.exp(-z))
 
-def grad(w, b, loss):
+def grad(w, b, X, y, loss):
     p = sigmoid(X @ w + b)
     if loss == "ce":
         dz = p - y                                       #@ANS dz = None               # TODO: dL/dz for cross-entropy
     else:
         dz = 2 * (p - y) * p * (1 - p)                   #@ANS dz = None               # TODO: dL/dz for MSE
-    return X.T @ dz / m, dz.mean()
+    return X.T @ dz / len(y), dz.mean()
 
-def train(loss, w0, steps=300, lr=0.5):
+def train(X, y, loss, w0, steps=300, lr=0.5):
     w, b = w0.copy(), 0.0
     ces, accs = [], []
     for _ in range(steps):
         p = np.clip(sigmoid(X @ w + b), 1e-12, 1 - 1e-12)
         ces.append(binary_ce(y, p)); accs.append(np.mean((p > 0.5) == y))
-        gw, gb = grad(w, b, loss)
+        gw, gb = grad(w, b, X, y, loss)
         w, b = w - lr * gw, b - lr * gb
     return ces, accs
 
@@ -85,7 +85,7 @@ good = X.T @ (y - y.mean()) / m                           # roughly the right di
 w_wrong = -3 * good / np.linalg.norm(good)                # the opposite, scaled up: a confidently wrong start
 fig, axs = plt.subplots(1, 2, figsize=(11, 4))
 for loss, c in [("ce", "C0"), ("mse", "C1")]:
-    ces, accs = train(loss, w_wrong)
+    ces, accs = train(X, y, loss, w_wrong)
     axs[0].plot(ces, c, label=loss); axs[1].plot(accs, c, label=loss)
     print(f"{loss:3s}: start accuracy {accs[0]:.0%} -> step 20 {accs[20]:.0%} -> step 300 {accs[-1]:.0%}")
 axs[0].set_title("cross-entropy (for evaluation)"); axs[0].set_yscale("log"); axs[1].set_title("accuracy")

@@ -14,13 +14,13 @@ x, y = study_pass(); xs = np.linspace(0, 10.5, 300)
 jit = np.random.default_rng(0).uniform(-0.03, 0.03, len(y))
 
 
-def base(ax):
+def base(ax, x, y, jit):
     ax.scatter(x, y + jit, s=55, c=np.where(y == 1, BLUE, RED), zorder=3)
     ax.set_xlabel("공부 시간 (시간)"); ax.set_yticks([0, 0.5, 1], ["불합격 0", "0.5", "합격 1"]); ax.set_xlim(0, 10.5)
 
 
 # 1. 직선으로 예측하면
-fig, ax = plt.subplots(figsize=(8.5, 4.6)); base(ax)
+fig, ax = plt.subplots(figsize=(8.5, 4.6)); base(ax, x, y, jit)
 k = np.polyfit(x, y, 1); ax.plot(xs, np.polyval(k, xs), color=GOLD, lw=3)
 ax.axhspan(1, 1.6, color=RED, alpha=0.08); ax.axhspan(-0.6, 0, color=RED, alpha=0.08)
 ax.text(8.2, 1.3, "확률 > 1 ?", color=RED, fontsize=16, fontweight="bold"); ax.text(0.3, -0.35, "확률 < 0 ?", color=RED, fontsize=16, fontweight="bold")
@@ -37,7 +37,7 @@ ax.set_xlabel("$z$"); ax.set_ylabel("$\\sigma(z)$"); ax.set_ylim(-0.05, 1.05)
 fig.tight_layout(); fig.savefig(O + "logit_sigmoid.png"); plt.close(fig)
 
 # 3. 학습 결과: 확률 곡선과 결정 경계
-fig, ax = plt.subplots(figsize=(8.5, 4.6)); base(ax)
+fig, ax = plt.subplots(figsize=(8.5, 4.6)); base(ax, x, y, jit)
 ax.plot(xs, sigmoid(W0 + W1 * xs), color=BLUE, lw=3)
 ax.axvline(BOUNDARY, color=GRAY, ls="--", lw=2); ax.text(BOUNDARY + 0.15, 0.08, f"경계 {BOUNDARY}시간", fontsize=14, color=GRAY)
 ax.scatter([7], [P7], s=200, color=GOLD, edgecolor="black", zorder=4)

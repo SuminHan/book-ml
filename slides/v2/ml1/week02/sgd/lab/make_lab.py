@@ -30,27 +30,27 @@ y = (d.target - d.target.mean()) / d.target.std()       # disease progression on
 m, n = X.shape
 print(f"{m} patients, {n} features:", list(d.feature_names))
 
-def cost(w, b):
+def cost(w, b, X, y):
     \"\"\"J = (1/m) Σ ½ (ŷ_i − y_i)²\"\"\"
     return 0.5 * np.mean((X @ w + b - y) ** 2)
 
-def full_grad(w, b):
+def full_grad(w, b, X, y):
     \"\"\"full gradient = average of the per-example gradients\"\"\"
     r = X @ w + b - y                                    # residual y_hat - y
-    return X.T @ r / m, r.mean()"""),
+    return X.T @ r / len(y), r.mean()"""),
 ("md", """## 파트 1. 미니배치 기울기는 평균적으로 정확할까?
 
 미니배치 $\\mathcal B$ ($B$명) 의 기울기: $g_{\\mathcal B} = \\dfrac{1}{B}\\sum_{i\\in\\mathcal B} g_i$. 슬라이드의 결과 $\\mathbb E[g_{\\mathcal B}] = \\partial J/\\partial w$ 를 확인한다."""),
-("code", """def minibatch_grad(w, b, idx):
+("code", """def minibatch_grad(w, b, X, y, idx):
     \"\"\"idx: indices of the sampled examples. Same computation as full_grad, on those examples only\"\"\"
     r = X[idx] @ w + b - y[idx]                         #@ANS r = None                # TODO: residual of the sampled examples
     return X[idx].T @ r / len(idx), r.mean()
 
 w0, b0 = np.zeros(n), 0.0
-gw_full, gb_full = full_grad(w0, b0)
+gw_full, gb_full = full_grad(w0, b0, X, y)
 rng = np.random.default_rng(0)
 for B in [1, 16, 64]:
-    gs = np.array([minibatch_grad(w0, b0, rng.choice(m, B, replace=False))[0] for _ in range(1000)])
+    gs = np.array([minibatch_grad(w0, b0, X, y, rng.choice(m, B, replace=False))[0] for _ in range(1000)])
     cos = gs @ gw_full / (np.linalg.norm(gs, axis=1) * np.linalg.norm(gw_full))
     print(f"B={B:3d}  |mean - full gradient| {np.linalg.norm(gs.mean(0) - gw_full):.3f}   "
           f"spread (sum of std) {gs.std(0).sum():.2f}   points downhill {np.mean(cos > 0):.0%}")
@@ -59,27 +59,28 @@ print("full gradient norm", round(np.linalg.norm(gw_full), 3))"""),
 ("md", """## 파트 2. SGD 직접 구현
 
 에폭마다 ① 섞고 ② 앞에서부터 $B$ 개씩 잘라 ③ 미니배치 기울기로 한 걸음."""),
-("code", """def sgd(B, alpha, epochs, seed=0):
+("code", """def sgd(X, y, B, alpha, epochs, seed=0):
+    m, n = X.shape
     rng = np.random.default_rng(seed)
     w, b = np.zeros(n), 0.0
-    history = [cost(w, b)]
+    history = [cost(w, b, X, y)]
     for ep in range(epochs):
         perm = rng.permutation(m)                        #@ANS perm = None             # TODO: (1) shuffled order of 0..m-1
         for i in range(0, m, B):
             idx = perm[i:i + B]                          #@ANS idx = None              # TODO: (2) B examples starting at i
-            gw, gb = minibatch_grad(w, b, idx)
+            gw, gb = minibatch_grad(w, b, X, y, idx)
             w, b = w - alpha * gw, b - alpha * gb        #@ANS w, b = None, None       # TODO: (3) one step
-        history.append(cost(w, b))
+        history.append(cost(w, b, X, y))
     return w, b, history
 
 alpha, epochs = 0.02, 20
 plt.figure(figsize=(7, 4))
 for B in [1, 16, m]:
-    w, b, h = sgd(B, alpha, epochs)
+    w, b, h = sgd(X, y, B, alpha, epochs)
     plt.plot(h, marker="o", ms=3, label=f"B={B} ({-(-m // B)} steps per epoch)")
     print(f"B={B:3d}: J after {epochs} epochs = {h[-1]:.3f}")
 w_ls = np.linalg.lstsq(np.c_[X, np.ones(m)], y, rcond=None)[0]
-print("minimum J =", round(cost(w_ls[:-1], w_ls[-1]), 3))
+print("minimum J =", round(cost(w_ls[:-1], w_ls[-1], X, y), 3))
 plt.xlabel("epoch"); plt.ylabel("cost J"); plt.legend(); plt.title(f"same learning rate {alpha}"); plt.show()"""),
 ("md", """**해 보기**: `alpha` 를 0.2, 1.0 으로 바꿔 보자. 전체 배치(`B=m`)는 학습률을 키우면 빨라지지만, `B=1` 은 어떻게 될까?"""),
 ("md", """## 파트 3. MNIST: 같은 6만 장, 54% vs 96%
@@ -93,7 +94,8 @@ Xtr = tr.data.float().div(255).view(-1, 784); ytr = tr.targets
 Xte = te.data.float().div(255).view(-1, 784); yte = te.targets
 N = len(ytr)
 
-def one_epoch(B, lr):
+def one_epoch(Xtr, ytr, Xte, yte, B, lr):
+    N = len(ytr)
     torch.manual_seed(0)
     model = nn.Sequential(nn.Linear(784, 64), nn.ReLU(), nn.Linear(64, 10))
     opt = torch.optim.SGD(model.parameters(), lr=lr)
@@ -109,11 +111,11 @@ def one_epoch(B, lr):
     return acc, time.time() - start
 
 for B, lr in [(N, 2.0), (32, 0.3)]:                     # each with its best learning rate (as in the slides)
-    acc, sec = one_epoch(B, lr)
+    acc, sec = one_epoch(Xtr, ytr, Xte, yte, B, lr)
     print(f"B={B:6d} ({-(-N // B):5d} steps)  test accuracy {acc:.1%}  ({sec:.1f} s)")"""),
 ("code", """# Try other batch sizes (the learning rate may need to change too)
 for B, lr in [(8, 0.1), (128, 1.0), (1024, 0.3)]:
-    acc, sec = one_epoch(B, lr)
+    acc, sec = one_epoch(Xtr, ytr, Xte, yte, B, lr)
     print(f"B={B:6d} ({-(-N // B):5d} steps)  test accuracy {acc:.1%}  ({sec:.1f} s)")"""),
 ("md", """**확인 질문**
 1. 파트 1 에서 `B` 가 1 이어도 1,000개의 평균이 전체 기울기와 거의 같은 이유는? (슬라이드의 기댓값 유도)

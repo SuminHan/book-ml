@@ -79,18 +79,18 @@ fig.tight_layout(); fig.savefig(O + "sgd_epoch.png", bbox_inches="tight"); plt.c
 from sklearn.datasets import load_diabetes
 d = load_diabetes(); x = d.data[:, 2]; yv = d.target
 x = (x - x.mean()) / x.std(); yv = (yv - yv.mean()) / yv.std(); m_ = len(x)
-def J(w, b): return 0.5 * np.mean((w * x[:, None, None] + b - yv[:, None, None]) ** 2, axis=0)
-def gd(w, b, ids): r = w * x[ids] + b - yv[ids]; return np.mean(r * x[ids]), np.mean(r)
+def J(w, b, x, yv): return 0.5 * np.mean((w * x[:, None, None] + b - yv[:, None, None]) ** 2, axis=0)
+def gd(w, b, x, yv, ids): r = w * x[ids] + b - yv[ids]; return np.mean(r * x[ids]), np.mean(r)
 rng = np.random.default_rng(0); w, b, a_ = -1.2, 1.2, 0.05; path_gd = [(w, b)]
 for _ in range(3):
-    gw, gb = gd(w, b, np.arange(m_)); w, b = w - a_ * gw, b - a_ * gb; path_gd.append((w, b))
+    gw, gb = gd(w, b, x, yv, np.arange(m_)); w, b = w - a_ * gw, b - a_ * gb; path_gd.append((w, b))
 w, b = -1.2, 1.2; path_sgd = [(w, b)]
 for ep in range(3):
     perm = rng.permutation(m_)
     for i in range(0, m_, 16):
-        gw, gb = gd(w, b, perm[i:i + 16]); w, b = w - 0.05 * gw, b - 0.05 * gb; path_sgd.append((w, b))
+        gw, gb = gd(w, b, x, yv, perm[i:i + 16]); w, b = w - 0.05 * gw, b - 0.05 * gb; path_sgd.append((w, b))
 W, Bb = np.meshgrid(np.linspace(-1.6, 1.5, 120), np.linspace(-1.0, 1.5, 120))
-Z = J(W, Bb); wopt = np.polyfit(x, yv, 1)
+Z = J(W, Bb, x, yv); wopt = np.polyfit(x, yv, 1)
 fig, axs = plt.subplots(1, 2, figsize=(11, 4.6), sharey=True)
 for ax, P, col, ttl in ((axs[0], path_gd, RED, f"전체 배치 ({m_}명) · 3에폭 = 3걸음 · α 0.05"), (axs[1], path_sgd, BLUE, f"미니배치 16명 · 3에폭 = {len(path_sgd) - 1}걸음 · α 0.05")):
     ax.contour(W, Bb, Z, levels=np.geomspace(0.39, 2.5, 9), colors=GRAY, linewidths=0.8)
@@ -98,7 +98,7 @@ for ax, P, col, ttl in ((axs[0], path_gd, RED, f"전체 배치 ({m_}명) · 3에
     ax.plot(*wopt, "*", color=GOLD, ms=18); ax.set_title(ttl, fontsize=14, color=col); ax.set_xlabel("w")
 axs[0].set_ylabel("b")
 fig.tight_layout(); fig.savefig(O + "sgd_paths.png"); plt.close(fig)
-PATHS = dict(gd_end=path_gd[-1], sgd_end=path_sgd[-1], sgd_steps=len(path_sgd) - 1, J_gd=J(*path_gd[-1]).item(), J_sgd=J(*path_sgd[-1]).item(), J_opt=J(*wopt).item())
+PATHS = dict(gd_end=path_gd[-1], sgd_end=path_sgd[-1], sgd_steps=len(path_sgd) - 1, J_gd=J(*path_gd[-1], x, yv).item(), J_sgd=J(*path_sgd[-1], x, yv).item(), J_opt=J(*wopt, x, yv).item())
 print("paths", PATHS)
 
 # 7. MNIST 정답률 곡선 (본 사진 수)

@@ -36,7 +36,7 @@ print("passed", y.sum(), "/", len(y))"""),
 
 선형회귀의 기울기: $\\frac{1}{m}\\sum(\\hat y - y)\\,x$ (단 $\\hat y = w_0 + w_1 x$).
 로지스틱회귀도 **같은 식**이고 $\\hat y = \\sigma(w_0 + w_1 x)$ 만 다르다."""),
-("code", """def gradient_descent(alpha=0.1, steps=20000):
+("code", """def gradient_descent(x, y, alpha=0.1, steps=20000):
     w0, w1 = 0.0, 0.0
     for _ in range(steps):
         y_hat = sigmoid(w0 + w1 * x)                     #@ANS y_hat = None            # TODO: the only line that differs from linear regression
@@ -44,7 +44,7 @@ print("passed", y.sum(), "/", len(y))"""),
         w0, w1 = w0 - alpha * err.mean(), w1 - alpha * (err * x).mean()
     return w0, w1
 
-w0, w1 = gradient_descent()
+w0, w1 = gradient_descent(x, y)
 print(f"w0 = {w0:.2f}, w1 = {w1:.2f}")
 print(f"decision boundary x = {-w0 / w1:.2f} h,  7 h -> pass probability {sigmoid(w0 + 7 * w1):.0%}")
 m_ = LogisticRegression(C=1e6).fit(x.reshape(-1, 1), y)       # large C = almost no regularization

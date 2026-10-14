@@ -34,7 +34,7 @@ clean = iris.frame.rename(columns={"sepal length (cm)": "sepal_length", "sepal w
 clean["species"] = iris.target_names[iris.target]
 clean = clean.drop(columns="target")
 
-def make_dirty(seed=2026):
+def make_dirty(clean, seed=2026):
     \"\"\"Mix missing values, duplicates, outliers and inconsistent labels into clean iris\"\"\"
     rng = np.random.default_rng(seed)
     d = clean.copy()
@@ -49,7 +49,7 @@ def make_dirty(seed=2026):
     dups.iloc[:3, dups.columns.get_loc("species")] = [str.upper(v) for v in dups.species.iloc[:3]]  # 3 of them with different spelling only
     return pd.concat([d, dups]).sample(frac=1, random_state=0).reset_index(drop=True)
 
-df = make_dirty()
+df = make_dirty(clean)
 print(df.shape); df.head()"""),
 ("md", """## 파트 0. 첫눈에 훑어보기
 
@@ -88,7 +88,7 @@ print(df.sepal_length.describe().round(2))"""),
 ("md", """**생각해 보기**: 여기서는 '10 으로 나누기' 로 고쳤다. 만약 꽃받침이 9.5cm 라면? 오타인지 진짜 큰 꽃인지는 데이터만 봐서는 모른다. 지울지, 고칠지, 남길지는 그 분야를 아는 사람이 정한다."""),
 ("md", """## 파트 4. 청소 전 vs 후: 모델은 얼마나 달라질까?
 
-남은 빈칸은 그 꽃 종류의 평균으로 채우고 (꽃 종류별 평균), 같은 모델(로지스틱회귀, 5-겹 교차검증) 로 정확도를 비교한다. 비교용 '청소 안 한' 데이터는 첫 셀의 `make_dirty()` 결과에서 빈칸만 0 으로 채운 것이다."""),
+남은 빈칸은 그 꽃 종류의 평균으로 채우고 (꽃 종류별 평균), 같은 모델(로지스틱회귀, 5-겹 교차검증) 로 정확도를 비교한다. 비교용 '청소 안 한' 데이터는 첫 셀의 `make_dirty(clean)` 결과에서 빈칸만 0 으로 채운 것이다."""),
 ("code", """from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import make_pipeline
@@ -98,8 +98,8 @@ from sklearn.preprocessing import StandardScaler
 filled = df.copy()
 filled[num_cols] = filled.groupby("species")[num_cols].transform(lambda c: c.fillna(c.mean()))   #@ANS filled[num_cols] = None   # TODO: fill with the per-species mean
 
-# Uncleaned data: same make_dirty() as the first cell, only blanks filled with 0
-raw = make_dirty().fillna(0)
+# Uncleaned data: same make_dirty(clean) as the first cell, only blanks filled with 0
+raw = make_dirty(clean).fillna(0)
 
 import warnings; warnings.filterwarnings("ignore")      # hide warnings caused by 1-member 'species'
 model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))

@@ -81,15 +81,15 @@ for word in ["win", "txt", "call", "ok"]:
 ("code", """vocab = sorted({w for i in train for w in words[i]}); V = len(vocab)     # vocabulary (words seen in training data)
 index = {w: j for j, w in enumerate(vocab)}
 
-def to_binary(ids):
+def to_binary(ids, words, index):
     \"\"\"message x vocabulary matrix: 1 if the word is present, else 0 (unseen words are dropped)\"\"\"
-    X = np.zeros((len(ids), V))
+    X = np.zeros((len(ids), len(index)))
     for r, i in enumerate(ids):
         for w in words[i]:
             if w in index: X[r, index[w]] = 1
     return X
 
-X_tr, X_te = to_binary(train), to_binary(test)
+X_tr, X_te = to_binary(train, words, index), to_binary(test, words, index)
 y_tr, truth = is_spam[train], is_spam[test]
 
 M = {"spam": int(y_tr.sum()), "ham": int((~y_tr).sum())}                     # messages per class
@@ -101,28 +101,29 @@ print("M =", M, " V =", V, " prior =", {c: round(p, 3) for c, p in prior_c.items
 j = index["claim"]
 print("ham messages with 'claim':", int(n["ham"][j]), ",  spam messages:", int(n["spam"][j]))
 print("without smoothing P(claim present | ham) =", n["ham"][j] / M["ham"], " -> the whole product becomes 0")"""),
-("code", """def p_word(c):
-    \"\"\"probability that each word is present in class c (array of length V)\"\"\"
-    return (n[c] + 1) / (M[c] + 2)                                             #@ANS return None                  # TODO: Laplace smoothing (one imaginary message each)
+("code", """def p_word(n_c, M_c):
+    \"\"\"n_c: messages of class c containing each word, M_c: messages of class c -> P(word present | c)\"\"\"
+    return (n_c + 1) / (M_c + 2)                                             #@ANS return None                  # TODO: Laplace smoothing (one imaginary message each)
 
-def log_score(X, c):
-    \"\"\"X: message x vocabulary matrix. Per message: log prior + sum [log p if present, log(1-p) if absent]\"\"\"
-    p = p_word(c)
-    return np.log(prior_c[c]) + X @ np.log(p) + (1 - X) @ np.log(1 - p)         #@ANS return None                  # TODO: log prior + log p for present words + log(1-p) for absent words
+def log_score(X, p, prior):
+    \"\"\"X: message x vocabulary matrix, p: P(word present | class), prior: P(class).
+    Per message: log prior + sum [log p if present, log(1-p) if absent]\"\"\"
+    return np.log(prior) + X @ np.log(p) + (1 - X) @ np.log(1 - p)         #@ANS return None                  # TODO: log prior + log p for present words + log(1-p) for absent words
 
-def spam_prob(X):
-    s_spam, s_ham = log_score(X, "spam"), log_score(X, "ham")
+def spam_prob(X, p, prior_c):
+    s_spam, s_ham = log_score(X, p["spam"], prior_c["spam"]), log_score(X, p["ham"], prior_c["ham"])
     return 1 / (1 + np.exp(s_ham - s_spam))                                    # log scores -> spam probability
 
-print("with smoothing P(claim present | ham) =", round(p_word("ham")[index["claim"]], 4))
+p = {c: p_word(n[c], M[c]) for c in M}
+print("with smoothing P(claim present | ham) =", round(p["ham"][index["claim"]], 4))
 demo = ["Free entry! Claim your prize now, text WIN to 80082", "Ok, see you at the cafe tomorrow", "Can you call me when you are free?"]
 for msg in demo:
     x = np.zeros((1, V))
     for w in set(tokenize(msg)):
         if w in index: x[0, index[w]] = 1
-    print(f"{spam_prob(x)[0]:6.1%}  {msg}")"""),
+    print(f"{spam_prob(x, p, prior_c)[0]:6.1%}  {msg}")"""),
 ("code", """# Evaluate on the 20% test set
-pred = spam_prob(X_te) > 0.5
+pred = spam_prob(X_te, p, prior_c) > 0.5
 tp, fp = (pred & truth).sum(), (pred & ~truth).sum()
 fn, tn = (~pred & truth).sum(), (~pred & ~truth).sum()
 print(f"accuracy {(pred == truth).mean():.1%}")
@@ -130,7 +131,7 @@ print(f"spam caught {tp} · spam missed {fn} · ham flagged as spam {fp} · ham 
 print(f"spam precision {tp / (tp + fp):.1%}  recall {tp / (tp + fn):.1%}")
 
 # Which words push hardest toward spam? (log likelihood ratio)
-ratio = np.log(p_word("spam") / p_word("ham"))
+ratio = np.log(p["spam"] / p["ham"])
 common = np.where(n["spam"] + n["ham"] >= 20)[0]
 top = common[np.argsort(-ratio[common])]
 print("words pointing to spam:", [vocab[j] for j in top[:12]])
