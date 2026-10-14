@@ -21,7 +21,9 @@ $\\hat y = \\sigma(w_0 + w_1 x)$ = 1일 확률. 슬라이드의 숫자를 재현
 | 3 | 임계값을 바꿔 정밀도 · 재현율 보기, PR 곡선과 PR-AUC | 8분 |
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요."""),
-("code", """{FONT_CELL}
+("code", """import os
+import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 

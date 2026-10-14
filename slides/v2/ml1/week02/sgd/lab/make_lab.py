@@ -21,7 +21,9 @@ CELLS = [
 | 3 | PyTorch 로 MNIST 54% vs 96% 재현 · 배치 크기 바꿔 보기 | 8분 |
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요."""),
-("code", """{FONT_CELL}
+("code", """import os
+import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.datasets import load_diabetes
 
 d = load_diabetes()

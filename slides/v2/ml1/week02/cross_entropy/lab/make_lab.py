@@ -21,7 +21,9 @@ CELLS = [
 | 3 | 셰익스피어: 다음 글자에 칩 나눠 걸기 (고르게 vs 세어서) | 8분 |
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요."""),
-("code", """{FONT_CELL}
+("code", """import os
+import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.metrics import log_loss"""),
 ("md", """## 파트 1. 칩 비유를 코드로
 

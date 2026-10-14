@@ -21,7 +21,9 @@ CELLS = [
 | 3 | 차수를 올리며 학습 / 시험 오차 비교 (과적합) | 7분 |
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요."""),
-("code", """{FONT_CELL}
+("code", """import os
+import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 

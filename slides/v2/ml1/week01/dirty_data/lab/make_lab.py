@@ -23,7 +23,9 @@ CELLS = [
 | 4 | 청소 전 vs 후: 같은 모델의 정확도 비교 | 6분 |
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요."""),
-("code", """{FONT_CELL}
+("code", """import os
+import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.datasets import load_iris
 
