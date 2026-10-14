@@ -72,9 +72,9 @@ url = "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/mpg.csv"
 os.makedirs("data", exist_ok=True)
 if not os.path.exists("data/mpg.csv"):
     import urllib.request; urllib.request.urlretrieve(url, "data/mpg.csv")
-cars = pd.read_csv("data/mpg.csv").dropna(subset=["horsepower"])
-hp, mpg = cars["horsepower"].to_numpy(float), cars["mpg"].to_numpy(float)
-print(len(cars), "cars");  print(cars[["name", "horsepower", "mpg"]].head())
+df = pd.read_csv("data/mpg.csv").dropna(subset=["horsepower"])
+hp, mpg = df["horsepower"].to_numpy(float), df["mpg"].to_numpy(float)
+print(len(df), "cars");  print(df[["name", "horsepower", "mpg"]].head())
 plt.scatter(hp, mpg, s=12); plt.xlabel("horsepower"); plt.ylabel("mpg"); plt.show()"""),
 ("code", """features = {
     "x":        hp.reshape(-1, 1),
@@ -110,7 +110,7 @@ plt.yscale("log"); plt.xlabel("degree"); plt.ylabel("RMSE (mpg)"); plt.legend();
 1. 파트 1 에서 학습률 0.06 이 발산하는 이유를 슬라이드의 그림으로 설명해 보자.
 2. 파트 2 에서 가장 좋은 특징은? 그 모델도 '선형'회귀인 이유는?
 3. 파트 3 에서 알맞은 차수는 몇이라고 생각하나? 학습 오차만 보고 고르면 몇 차를 고르게 될까? `train_size` 를 200 으로 늘리면 어떻게 달라질까?
-4. (도전) `cars` 의 `weight`(무게) 를 특징으로 추가하면 $R^2$ 이 얼마나 오를까?
+4. (도전) `df` 의 `weight`(무게) 를 특징으로 추가하면 $R^2$ 이 얼마나 오를까?
 
 데이터 출처: Auto MPG, UCI Machine Learning Repository (Quinlan, 1993), seaborn-data 사본."""),
 ]

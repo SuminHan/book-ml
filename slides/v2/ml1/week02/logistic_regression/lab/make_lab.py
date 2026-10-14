@@ -60,15 +60,15 @@ plt.axvline(-w0 / w1, ls="--", color="gray"); plt.xlabel("study hours"); plt.yla
 os.makedirs("data", exist_ok=True)
 if not os.path.exists("data/titanic.csv"):
     import urllib.request; urllib.request.urlretrieve(url, "data/titanic.csv")
-t = pd.read_csv("data/titanic.csv")
-t = t.dropna(subset=["age"])                             # drop passengers with unknown age (see the dirty data lesson!)
-t["female"] = (t["sex"] == "female").astype(int)
-t["first_class"] = (t["pclass"] == 1).astype(int)
-t["third_class"] = (t["pclass"] == 3).astype(int)
+df = pd.read_csv("data/titanic.csv")
+df = df.dropna(subset=["age"])                             # drop passengers with unknown age (see the dirty data lesson!)
+df["female"] = (df["sex"] == "female").astype(int)
+df["first_class"] = (df["pclass"] == 1).astype(int)
+df["third_class"] = (df["pclass"] == 3).astype(int)
 feats = ["female", "first_class", "third_class", "age"]
-print(len(t), "passengers, survival rate", f"{t.survived.mean():.0%}")
-t[feats + ["survived"]].head()"""),
-("code", """model = LogisticRegression(max_iter=1000).fit(t[feats], t["survived"])
+print(len(df), "passengers, survival rate", f"{df.survived.mean():.0%}")
+df[feats + ["survived"]].head()"""),
+("code", """model = LogisticRegression(max_iter=1000).fit(df[feats], df["survived"])
 for name, w in zip(feats, model.coef_[0]):
     odds = np.exp(w)                                     #@ANS odds = None             # TODO: odds ratio e^w
     print(f"{name:12s} w = {w:+.3f}   odds x{odds:.2f}")
@@ -81,14 +81,14 @@ for desc, p in zip(["woman, 20, 1st class", "man, 20, 3rd class"], model.predict
 
 `predict` 는 확률 0.5 를 기준으로 자른다. 기준을 바꾸면 정밀도와 재현율이 어떻게 바뀔까?"""),
 ("code", """from sklearn.metrics import precision_score, recall_score, precision_recall_curve, average_precision_score
-p = model.predict_proba(t[feats])[:, 1]
+p = model.predict_proba(df[feats])[:, 1]
 for th in [0.3, 0.5, 0.7]:
     pred = (p >= th).astype(int)                         #@ANS pred = None             # TODO: 1 if probability >= th
-    print(f"threshold {th}: precision {precision_score(t.survived, pred):.2f}  recall {recall_score(t.survived, pred):.2f}")
+    print(f"threshold {th}: precision {precision_score(df.survived, pred):.2f}  recall {recall_score(df.survived, pred):.2f}")
 
-prec, rec, _ = precision_recall_curve(t.survived, p)
+prec, rec, _ = precision_recall_curve(df.survived, p)
 plt.plot(rec, prec); plt.xlabel("recall"); plt.ylabel("precision")
-plt.title(f"PR curve  (PR-AUC = {average_precision_score(t.survived, p):.2f}; random guessing = survival rate {t.survived.mean():.2f})")
+plt.title(f"PR curve  (PR-AUC = {average_precision_score(df.survived, p):.2f}; random guessing = survival rate {df.survived.mean():.2f})")
 plt.show()"""),
 ("md", """**확인 질문**
 1. 파트 1 에서 선형회귀와 다른 줄은 정확히 어디인가? 기울기 식은 왜 같은 모양일까? (슬라이드의 약분)
