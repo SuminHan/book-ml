@@ -132,4 +132,6 @@ if __name__ == "__main__":
     kind, first = CELLS[0]                                   # 첫 칸 제목 아래에 Colab 배지
     CELLS[0] = (kind, first.replace("\n", f"\n\n[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({COLAB})\n", 1))
     lab.build(CELLS, f"{HERE}/{TOPIC}.ipynb", f"{HERE}/{TOPIC}_solution.ipynb")
-    print(lab.verify(f"{HERE}/{TOPIC}_solution.ipynb"))
+    sys.path.insert(0, os.path.join(HERE, "../../../../tools"))
+    from expected import add_expected                         # 학생용 코드 칸 아래에 '예상 결과' (정답을 실제 실행한 출력)
+    print(add_expected(f"{HERE}/{TOPIC}.ipynb", f"{HERE}/{TOPIC}_solution.ipynb"))
