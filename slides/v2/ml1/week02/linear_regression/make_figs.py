@@ -74,7 +74,7 @@ for ax, alpha, title, c in ((axs[0], 0.01, "학습률 적당", BLUE), (axs[1], 0
 axs[0].set_ylabel("비용 $J$")
 fig.tight_layout(); fig.savefig(O + "lr_alpha.png"); plt.close(fig)
 
-# 6. 결과: 7시간 → 75.4점
+# 6. 결과: 7시간 → 75.3점
 fig, ax = plt.subplots(figsize=(8, 4.6)); base(ax, x, y)
 ax.plot(xs, W0 + W1 * xs, color=RED, lw=3)
 ax.scatter([7], [PRED7], s=200, color=GOLD, zorder=4, edgecolor="black")

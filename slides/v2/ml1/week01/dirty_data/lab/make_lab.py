@@ -34,20 +34,20 @@ clean = iris.frame.rename(columns={"sepal length (cm)": "sepal_length", "sepal w
 clean["species"] = iris.target_names[iris.target]
 clean = clean.drop(columns="target")
 
-def make_dirty(clean, seed=2026):
+def make_dirty(clean):
     \"\"\"Mix missing values, duplicates, outliers and inconsistent labels into clean iris\"\"\"
-    rng = np.random.default_rng(seed)
     d = clean.copy()
-    d.loc[rng.choice(150, 5, replace=False), "petal_length"] = np.nan           # real blanks
-    d.loc[rng.choice(150, 4, replace=False), "sepal_width"] = -999              # 'missing' written as -999
-    d.loc[rng.choice(np.where(clean.species != "setosa")[0], 5, replace=False), "petal_width"] = 0   # 'missing' written as 0
-    d.loc[rng.choice(150, 3, replace=False), "sepal_length"] *= 10             # typo: written in mm instead of cm
-    styles = [str.capitalize, lambda s: " " + s, lambda s: s + " ", str.upper]
-    for i, f in zip(rng.choice(150, 4, replace=False), styles):              # same label, different spelling
-        d.loc[i, "species"] = f(d.loc[i, "species"])
-    dups = d.loc[rng.choice(150, 8, replace=False)].copy()                    # the same record twice
-    dups.iloc[:3, dups.columns.get_loc("species")] = [str.upper(v) for v in dups.species.iloc[:3]]  # 3 of them with different spelling only
-    return pd.concat([d, dups]).sample(frac=1, random_state=0).reset_index(drop=True)
+    d.loc[[3, 26, 54, 95, 124], "petal_length"] = np.nan             # real blanks
+    d.loc[[52, 105, 117, 122], "sepal_width"] = -999                   # 'missing' written as -999
+    d.loc[[59, 66, 79, 113, 132], "petal_width"] = 0                   # 'missing' written as 0
+    d.loc[[90, 94, 112], "sepal_length"] *= 10                         # typo: mm instead of cm (5.5 -> 55)
+    d.loc[97, "species"] = d.loc[97, "species"].capitalize()           # 'Versicolor'
+    d.loc[94, "species"] = " " + d.loc[94, "species"]                  # ' versicolor'
+    d.loc[67, "species"] = d.loc[67, "species"] + " "                  # 'versicolor '
+    d.loc[122, "species"] = d.loc[122, "species"].upper()              # 'VIRGINICA'
+    dups = d.loc[[124, 64, 77, 21, 32, 39, 40, 13]].copy()             # these 8 records appear twice
+    dups.loc[[124, 64, 77], "species"] = dups.loc[[124, 64, 77], "species"].str.upper()   # 3 copies differ only in case
+    return pd.concat([d, dups]).sample(frac=1, random_state=0).reset_index(drop=True)   # shuffle the rows
 
 df = make_dirty(clean)
 print(df.shape); df.head()"""),

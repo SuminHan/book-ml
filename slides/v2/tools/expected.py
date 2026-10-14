@@ -1,6 +1,6 @@
 """학생용 노트북의 코드 칸마다 '예상 결과' 칸을 붙인다.
 
-정답 노트북을 실제로 실행해 나온 출력(print · 표 · 그래프 수)을 그대로 옮기므로,
+정답 노트북을 실제로 실행해 나온 출력(print · 표 · 그래프 그림)을 그대로 옮기므로,
 코드를 고쳐 make_lab.py 를 다시 돌리면 예상 결과도 함께 맞춰진다.
 
     from expected import add_expected
@@ -15,8 +15,8 @@ MAX_LINES = 18
 
 
 def _text_of(cell):
-    """코드 칸 하나의 출력: (텍스트, 그래프 수). stderr(경고)는 뺀다."""
-    texts, images = [], 0
+    """코드 칸 하나의 출력: (텍스트, 그래프 png 목록(base64)). stderr(경고)는 뺀다."""
+    texts, images = [], []
     for o in cell.get("outputs", []):
         kind = o.get("output_type")
         if kind == "stream" and o.get("name") == "stdout":
@@ -24,7 +24,7 @@ def _text_of(cell):
         elif kind in ("execute_result", "display_data"):
             data = o.get("data", {})
             if "image/png" in data:
-                images += 1
+                images.append(data["image/png"])
             elif "text/plain" in data:
                 texts.append(data["text/plain"].rstrip("\n"))
     text = "\n".join(t for t in texts if t.strip())
@@ -55,11 +55,17 @@ def add_expected(student_path, solution_path, timeout=900):
         parts = ["**예상 결과**"]
         if text:
             parts.append("```\n" + text + "\n```")
-        if images:
-            parts.append(f"그래프 {images}개가 나온다." if images > 1 else "그래프가 하나 나온다.")
+        attachments = {}
+        for k, png in enumerate(images):                 # 정답을 실행해 그린 그래프를 그대로 붙인다
+            name = f"expected_{len(cells)}_{k}.png"
+            attachments[name] = {"image/png": png}
+            parts.append(f"![]({'attachment:' + name})")
         if re.search(r"\d\.\d+ ?s\)", text):
             parts.append("걸린 시간(초)은 컴퓨터마다 다르다.")
-        cells.append(nbf.v4.new_markdown_cell("\n\n".join(parts)))
+        cell = nbf.v4.new_markdown_cell("\n\n".join(parts))
+        if attachments:
+            cell["attachments"] = attachments
+        cells.append(cell)
     stu.cells = cells
     nbf.write(stu, student_path)
     return "\n".join(t for t in log if t)

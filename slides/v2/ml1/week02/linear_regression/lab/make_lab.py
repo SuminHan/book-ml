@@ -14,7 +14,7 @@ CELLS = [
 
 직선 $h = w_0 + w_1 x$, 비용 $J$ (오차 제곱의 평균), 경사하강법. 슬라이드의 숫자를 직접 재현하고 실제 자동차 데이터에 써 본다.
 
-- **파트 1**: 경사하강법 직접 구현 → 7시간 75.4점 재현 · 학습률 바꿔 발산 보기
+- **파트 1**: 경사하강법 직접 구현 → 7시간 75.3점 재현 · 학습률 바꿔 발산 보기
 - **파트 2**: 자동차 398대: 마력 → 연비, 직선 vs $x^2$ vs $\\log x$
 - **파트 3**: 차수를 올리며 학습 / 시험 오차 비교 (과적합)
 
@@ -26,8 +26,12 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 
 # Same example as the slides: study hours and scores of 30 students
-r = np.random.default_rng(7); x = r.uniform(0.5, 10, 30)
-y = 40 + 5 * x + r.normal(0, 5, 30)
+x = np.array([6.4, 9.0, 7.9, 2.6, 3.4, 8.8, 0.6, 8.3, 8.1, 4.9,
+              3.4, 3.1, 2.9, 4.7, 5.3, 5.8, 10.0, 8.0, 6.4, 9.9,
+              2.5, 2.0, 6.3, 0.9, 0.8, 5.4, 4.9, 9.2, 6.5, 5.4])      # study hours
+y = np.array([65, 83, 74, 49, 62, 80, 43, 86, 77, 64,
+              57, 56, 48, 64, 73, 61, 94, 81, 69, 99,
+              57, 44, 72, 47, 43, 70, 64, 89, 80, 64])      # exam score
 plt.scatter(x, y); plt.xlabel("study hours"); plt.ylabel("score"); plt.show()"""),
 ("md", """## 파트 1. 경사하강법 직접 구현
 
@@ -60,7 +64,7 @@ for alpha in [0.05, 0.06]:
     print(f"alpha={alpha}: first J={h[0]:.1f}  after 30 steps J={h[-1]:.3g}")"""),
 ("md", """**관찰**: 0.06 은 발산한다. 슬라이드의 오른쪽 그림처럼 바닥을 건너뛰며 매번 더 높이 튄다.
 
-$R^2$ 와 RMSE 도 확인하자 (슬라이드: RMSE 4.40, $R^2$ 0.915)."""),
+$R^2$ 와 RMSE 도 확인하자 (슬라이드: RMSE 4.36, $R^2$ 0.916)."""),
 ("code", """pred = w0 + w1 * x
 rmse = np.sqrt(np.mean((pred - y) ** 2))                 #@ANS rmse = None             # TODO: RMSE (no 1/2)
 print(f"RMSE = {rmse:.2f},  R² = {r2_score(y, pred):.3f}")"""),

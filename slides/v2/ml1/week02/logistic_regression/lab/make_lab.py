@@ -28,9 +28,15 @@ from sklearn.linear_model import LogisticRegression
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))                         #@ANS return None             # TODO: σ(z) = 1 / (1 + e^{-z})
 
-# Same example as the slides: study hours of 40 students -> pass (1) / fail (0)
-r = np.random.default_rng(11); x = np.round(r.uniform(0.5, 10, 40), 1)
-y = (r.uniform(size=40) < sigmoid(-6 + 1.2 * x)).astype(int)
+# Same example as the slides: 40 students
+x = np.array([1.7, 5.2, 6.2, 0.8, 1.9, 9.3, 1.2, 1.7, 9.5, 6.4,
+              4.0, 5.4, 6.8, 3.1, 1.8, 8.0, 6.9, 5.4, 8.3, 5.7,
+              9.8, 2.4, 5.8, 5.1, 3.9, 6.1, 2.7, 8.1, 8.7, 1.7,
+              4.9, 3.1, 1.3, 9.0, 4.6, 1.9, 6.9, 2.4, 9.1, 2.6])      # study hours
+y = np.array([0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+              0, 0, 1, 1, 0, 1, 1, 1, 1, 1,
+              1, 0, 1, 1, 0, 1, 0, 1, 1, 0,
+              0, 0, 0, 1, 1, 0, 1, 0, 1, 0])      # 1 = passed, 0 = failed
 print("passed", y.sum(), "/", len(y))"""),
 ("md", """## 파트 1. 선형회귀 코드에서 한 줄만 바꾸기
 
