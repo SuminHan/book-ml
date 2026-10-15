@@ -604,53 +604,122 @@ print(f"number of common friends: AUC {roc_auc_score(y, common):.2f}")"""),
 - 그래프 신경망 (13주차 GCN) 은 공통 지인 같은 규칙을 직접 정하지 않고 배운다."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="bike_demand", title="공유 자전거 수요 예측", sector="도시 · 공간",
-     keywords=["수요예측", "모빌리티 · 공유 서비스", "재배치 운영"],
-     teaser="서울 공유 자전거 1년치 시간별 대여 수. 내일 아침 8시엔 몇 대가 필요할까?",
-     data="Seoul Bike Sharing Demand", data_src="UCI (Sathishkumar V E & Cho, 2020), 서울 공공자전거 2017.12~2018.11 시간별 대여 수 8,760개 + 날씨",
-     size="약 0.6MB",
-     five=[("① 한 행", "한 시간"), ("② 입력 X", "시각 · 요일 · 기온 · 습도 · 비 · 휴일 …"), ("③ 출력 y", "그 시간의 대여 수"),
-           ("④ 평가지표", "MAE (대)"), ("⑤ 기준선", "학습 기간의 '같은 시각' 평균")],
+dict(slug="taxi_demand", title="뉴욕 택시 수요 예측 (시공간)", sector="도시 · 공간", keywords=["시공간 (spatiotemporal) 수요예측", "모빌리티 · 배차", "지도 데이터"],
+     teaser="뉴욕 택시 한 달 300만 번. 다음 한 시간, 어느 구역에서 택시를 몇 번 부를까?",
+     data="NYC TLC Yellow Taxi Trip Records · 2024년 1월", data_src="뉴욕시 택시 · 리무진 위원회 (TLC) 공개 데이터: 노란 택시 승차 기록 약 296만 건 (승차 · 하차 시각, 구역 번호, 거리, 요금) + 택시 구역 263개 지도 (shapefile)",
+     size="약 50MB",
+     five=[("① 한 행", "구역 × 한 시간"), ("② 입력 X", "그 구역의 지난 1 · 2시간, 어제 · 지난주 같은 시각 승차 수 + 이웃 구역 승차 수 + 시각 · 요일"),
+           ("③ 출력 y", "다음 한 시간 승차 수"), ("④ 평가지표", "MAE (건)"), ("⑤ 기준선", "지난 한 시간 그대로 · 지난주 같은 시각")],
      cells=[
-("md", """## 입장: 데이터 받기"""),
-("code", """URL = "https://archive.ics.uci.edu/static/public/560/seoul+bike+sharing+demand.zip"
-with zipfile.ZipFile(download(URL, "data/seoul_bike.zip")) as z:
-    df = pd.read_csv(z.open("SeoulBikeData.csv"), encoding="latin1")
-df.columns = ["date", "count", "hour", "temp", "humidity", "wind", "visibility", "dew_point", "solar", "rain", "snow", "season", "holiday", "functioning"]
-df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
-print(df.shape, df["date"].min().date(), "~", df["date"].max().date())
-df.head()"""),
-("md", """## 열어 보기
+("md", """## 입장: 데이터 받기
 
-하루 중 언제 많이 빌릴까? 출근 · 퇴근 시간이 보일까?"""),
-("code", """df["weekend"] = df["date"].dt.dayofweek >= 5
-by_hour = df[df["functioning"] == "Yes"].groupby(["hour", "weekend"])["count"].mean().unstack()
-by_hour.columns = ["weekday", "weekend"]
-by_hour.plot(figsize=(8, 3), marker="o"); plt.ylabel("bikes rented per hour"); plt.show()
-print("hours when the service was off:", (df["functioning"] == "No").sum(), "(count is always", df.loc[df["functioning"] == "No", "count"].max(), ")")"""),
-("md", """## 문제 하나 골라 보기: 한 시간 → 대여 수
+승차 기록 (parquet, 약 50MB) + 택시 구역 지도 (shapefile)."""),
+("code", """BASE = "https://d37ci6vzurychx.cloudfront.net/"
+trips = pd.read_parquet(download(BASE + "trip-data/yellow_tripdata_2024-01.parquet", "data/yellow_2024_01.parquet"),
+                        columns=["tpep_pickup_datetime", "PULocationID", "DOLocationID", "trip_distance", "total_amount"])
+lookup = pd.read_csv(download(BASE + "misc/taxi_zone_lookup.csv", "data/taxi_zone_lookup.csv"))
+print(trips.shape, trips["tpep_pickup_datetime"].min(), "~", trips["tpep_pickup_datetime"].max())
+trips.sample(5, random_state=0)"""),
+("md", """**관찰**: 2002년 · 2024년 2월 같은 날짜가 섞여 있다 (기계 시계 오류, 1주 3차시 '이상한 값'). 1월만 남긴다."""),
+("code", """trips = trips[(trips["tpep_pickup_datetime"] >= "2024-01-01") & (trips["tpep_pickup_datetime"] < "2024-02-01")]
+print(len(trips), "trips in January")
+print(trips.merge(lookup, left_on="PULocationID", right_on="LocationID")["Zone"].value_counts().head(8))"""),
+("md", """## 지도 파일 열어 보기
 
-**시간 순서** 로 나눈다: 2018년 9월 전까지 학습, 9~11월 시험. 기준선 = 학습 기간의 같은 시각 (평일/주말 따로) 평균."""),
-("code", """from sklearn.ensemble import HistGradientBoostingRegressor
+shapefile 도 결국 숫자 묶음이다 (`.shp` = 구역마다 꼭짓점 좌표, `.dbf` = 구역 이름 표). 라이브러리 없이 직접 읽어 보자."""),
+("code", """import struct
+from matplotlib.collections import PolyCollection
 
-def mae(y_true, y_pred):
-    return np.mean(np.abs(np.asarray(y_true) - np.asarray(y_pred)))
+def read_shp(b):
+    \"\"\"Polygons of a .shp file: list (one per record) of point arrays (one per part)\"\"\"
+    shapes, pos = [], 100
+    while pos < len(b):
+        _, length = struct.unpack(">ii", b[pos:pos + 8]); rec = b[pos + 8:pos + 8 + length * 2]; pos += 8 + length * 2
+        if struct.unpack("<i", rec[:4])[0] == 0:
+            shapes.append([]); continue
+        nparts, npts = struct.unpack("<ii", rec[36:44])
+        parts = list(struct.unpack(f"<{nparts}i", rec[44:44 + 4 * nparts])) + [npts]
+        pts = np.frombuffer(rec[44 + 4 * nparts:44 + 4 * nparts + 16 * npts], dtype="<f8").reshape(-1, 2)
+        shapes.append([pts[parts[i]:parts[i + 1]] for i in range(nparts)])
+    return shapes
 
-data = df[df["functioning"] == "Yes"].copy()
-data["dow"] = data["date"].dt.dayofweek
-train, test = data[data["date"] < "2018-09-01"], data[data["date"] >= "2018-09-01"]
-hour_mean = train.groupby(["hour", "weekend"])["count"].mean()
-base = test.set_index(["hour", "weekend"]).index.map(hour_mean).values
-feats = ["hour", "dow", "temp", "humidity", "wind", "visibility", "solar", "rain", "snow"]
-m = HistGradientBoostingRegressor(random_state=0).fit(train[feats], train["count"])
-print(f"baseline (same hour mean): MAE {mae(test['count'], base):.0f} bikes")
-print(f"gradient boosting        : MAE {mae(test['count'], m.predict(test[feats])):.0f} bikes")"""),
-("md", """**생각해 보기**: 내일 아침 8시를 예측할 때 '내일 8시의 실제 기온 · 강수량' 을 알 수 있을까? 실제 서비스에서는 **일기예보** 를 입력으로 써야 한다. 이 노트북의 점수는 그래서 실제보다 좋게 나온다.
+def read_dbf(b):
+    \"\"\"Attribute table of a .dbf file as a DataFrame\"\"\"
+    nrec, hlen, rlen = struct.unpack("<IHH", b[4:12]); fields, p = [], 32
+    while b[p] != 0x0D:
+        fields.append((b[p:p + 11].split(b"\\0")[0].decode(), b[p + 16])); p += 32
+    rows = []
+    for r in range(nrec):
+        rec, o, row = b[hlen + r * rlen + 1:hlen + (r + 1) * rlen], 0, {}
+        for name, flen in fields:
+            row[name] = rec[o:o + flen].decode("latin1").strip(); o += flen
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+with zipfile.ZipFile(download(BASE + "misc/taxi_zones.zip", "data/taxi_zones.zip")) as z:
+    shapes = read_shp(z.read("taxi_zones/taxi_zones.shp")); zones = read_dbf(z.read("taxi_zones/taxi_zones.dbf"))
+zones["LocationID"] = zones["LocationID"].astype(int)
+print(len(shapes), "polygons;", zones[["LocationID", "zone", "borough"]].head(3).to_dict("records"))
+
+def draw_zones(ax, values, shapes, zones, cmap="YlOrRd"):
+    \"\"\"Colour each taxi zone by values[LocationID]\"\"\"
+    polys, vals = [], []
+    for s, zid in zip(shapes, zones["LocationID"]):
+        for part in s:
+            polys.append(part); vals.append(values.get(zid, 0))
+    pc = PolyCollection(polys, array=np.log1p(np.array(vals, dtype=float)), cmap=cmap, edgecolor="white", linewidth=0.2)
+    ax.add_collection(pc); ax.autoscale(); ax.set_aspect("equal"); ax.axis("off")
+    return pc
+
+fig, ax = plt.subplots(figsize=(7, 7))
+pc = draw_zones(ax, trips["PULocationID"].value_counts().to_dict(), shapes, zones)
+plt.colorbar(pc, ax=ax, shrink=0.6, label="log(1 + pickups in January)"); plt.show()"""),
+("md", """## 시공간 표로 바꾸기: 시간 × 구역
+
+한 행 = (시간, 구역). 744시간 × 263구역. 맨해튼 한가운데와 공항 (JFK · 라과디아) 이 가장 많다."""),
+("code", """trips["hour"] = trips["tpep_pickup_datetime"].dt.floor("h")
+counts = trips.groupby(["hour", "PULocationID"]).size().unstack(fill_value=0).reindex(columns=range(1, 264), fill_value=0)
+print(counts.shape)
+top = counts.sum().sort_values(ascending=False).head(4).index
+counts[top].iloc[:24 * 7].plot(figsize=(11, 3), lw=1, title="pickups per hour, first week (top 4 zones)")
+plt.legend([lookup.set_index("LocationID").loc[z, "Zone"] for z in top], fontsize=8); plt.show()"""),
+("md", """## 문제 하나 골라 보기: (구역, 시간) → 다음 한 시간 승차 수
+
+**시간 순서**: 1월 25일 전 학습, 그 뒤 시험. 입력에 **이웃 구역** (지도에서 가까운 5개) 의 지난 한 시간 승차 수를 넣는다 = 공간 정보.
+기준선: 지난 한 시간 그대로, 지난주 같은 시각."""),
+("code", """from scipy.spatial import cKDTree
+from sklearn.ensemble import HistGradientBoostingRegressor
+
+centre = pd.DataFrame([np.concatenate(s).mean(0) if s else [np.nan, np.nan] for s in shapes], columns=["x", "y"])
+centre["LocationID"] = zones["LocationID"].values
+centre = centre.groupby("LocationID").mean().dropna()
+_, nb = cKDTree(centre.values).query(centre.values, k=6)
+neighbours = {z: [centre.index[j] for j in row[1:]] for z, row in zip(centre.index, nb)}
+
+def make_rows(counts, neighbours):
+    \"\"\"(hour, zone) rows with past counts of the zone and of its neighbours\"\"\"
+    f = pd.DataFrame({f"lag{k}": counts.shift(k).stack() for k in (1, 2, 24, 168)})
+    f["neigh1"] = pd.DataFrame({z: counts[neighbours[z]].sum(1) if z in neighbours else 0 for z in counts.columns}).shift(1).stack()
+    f["y"] = counts.stack()
+    f = f.dropna().reset_index(); f.columns = ["hour", "zone"] + list(f.columns[2:])
+    f["hod"], f["dow"] = f["hour"].dt.hour, f["hour"].dt.dayofweek
+    return f
+
+rows = make_rows(counts, neighbours)
+tr, te = rows[rows["hour"] < "2024-01-25"].copy(), rows[rows["hour"] >= "2024-01-25"].copy()
+zone_mean = tr.groupby("zone")["y"].mean(); tr["zmean"] = tr["zone"].map(zone_mean); te["zmean"] = te["zone"].map(zone_mean)
+feats = ["lag1", "lag2", "lag24", "lag168", "neigh1", "hod", "dow", "zmean"]
+m = HistGradientBoostingRegressor(random_state=0, max_iter=300).fit(tr[feats], tr["y"])
+print(f"test rows {len(te):,}, mean pickups per zone-hour {te['y'].mean():.1f}")
+for name, pred in [("last hour", te["lag1"]), ("same hour last week", te["lag168"]), ("gradient boosting", m.predict(te[feats]))]:
+    print(f"{name:20s} MAE {np.mean(np.abs(pred - te['y'])):.2f} pickups")"""),
+("md", """**관찰**: '지난 한 시간 그대로' 보다 '지난주 같은 시각' 이 낫다 (출퇴근 · 요일 패턴). 모델은 둘을 섞고 이웃 구역까지 봐서 더 낫다. 실제 배차 회사는 날씨 · 행사 (경기 · 공연) 까지 입력에 넣는다.
 
 ## 다른 문제로 바꿔 보기
 
-- **재배치 운영**: 서울 전체가 아니라 '대여소 × 시간' 을 한 행으로 하면 '어느 대여소에 자전거를 옮겨 둘까' 문제가 된다.
-- 비 오는 날을 많이 틀리는 게 더 손해라면 지표를 어떻게 바꿀까?"""),
+- **배차 · 요금**: '수요' 만이 아니라 '공급 (빈 택시)' 도 구역 × 시간으로 맞히면, 어디로 택시를 보낼지 · 할증을 얼마나 붙일지 정할 수 있다.
+- **도착 시간 (ETA)**: 한 행 = 운행 한 번, 입력 = 출발 · 도착 구역 · 시각, 출력 = 걸린 분 (`tpep_dropoff_datetime − tpep_pickup_datetime`).
+- **그래프로**: 구역을 점, 이웃을 선으로 두면 13주차 그래프 신경망 문제가 된다."""),
 ]),
 # ------------------------------------------------------------------
 dict(slug="semiconductor_yield", title="반도체 공정 불량 예측", sector="제조",
@@ -2046,7 +2115,8 @@ PAPERS = {
     "korean_reviews": [("NSMC 저장소 (Lucy Park, 2015): 데이터 설명 · 만든 방법", "https://github.com/e9t/nsmc")],
     "link_prediction": [("Liben-Nowell & Kleinberg (2007) The link-prediction problem for social networks, JASIST", "https://doi.org/10.1002/asi.20591"),
                         ("Yin, Benson, Leskovec & Gleich (2017) Local Higher-Order Graph Clustering, KDD (email-Eu-core)", "https://doi.org/10.1145/3097983.3098069")],
-    "bike_demand": [("Sathishkumar V E, Park & Cho (2020) Using data mining techniques for bike sharing demand prediction in metropolitan city, Computer Communications", "https://doi.org/10.1016/j.comcom.2020.02.007")],
+    "taxi_demand": [("Yao et al. (2018) Deep Multi-View Spatial-Temporal Network for Taxi Demand Prediction, AAAI", "https://arxiv.org/abs/1802.08714"),
+                    ("NYC TLC Trip Record Data (데이터 원본 · 설명)", "https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page")],
     "predictive_maintenance": [("Matzka (2020) Explainable Artificial Intelligence for Predictive Maintenance Applications, AI4I", "https://doi.org/10.1109/AI4I49448.2020.00023")],
     "steel_defects": [("UCI Steel Plates Faults 데이터 설명 (Semeion Research Center)", "https://archive.ics.uci.edu/dataset/198/steel+plates+faults")],
     "bearing_vibration": [("Smith & Randall (2015) Rolling element bearing diagnostics using the CWRU data: A benchmark study, MSSP", "https://doi.org/10.1016/j.ymssp.2015.04.021"),
@@ -2084,7 +2154,7 @@ FIT = {
     "support_routing": ("고객 상담 · CX 소프트웨어, 콜센터, 금융 · 통신 고객센터", "대화형 AI · LLM 엔지니어, NLP 엔지니어, CX 데이터 분석가"),
     "hotel_booking": ("여행 · 숙박 플랫폼, 항공 · 호텔, 모빌리티", "가격 (레비뉴) 매니지먼트 분석가, 수요예측 데이터 사이언티스트"),
     "link_prediction": ("SNS · 메신저, 커리어 네트워크, 커머스 (함께 산 상품), 금융 (거래 연결망)", "그래프 ML 엔지니어, 추천 엔지니어"),
-    "bike_demand": ("모빌리티 · 공유 서비스, 물류 · 배달, 지자체 · 공공 데이터", "수요예측 데이터 사이언티스트, 운영 최적화 (OR) 엔지니어"),
+    "taxi_demand": ("모빌리티 · 택시 · 배차 플랫폼, 배달 · 물류, 지도 · 내비게이션", "시공간 수요예측 데이터 사이언티스트, 배차 · 운영 최적화 엔지니어"),
     "aml_transactions": ("은행 · 증권 · 카드사, 핀테크 · 가상자산 거래소, 금융 감독 · 규제", "자금세탁방지 (AML) 분석가, 그래프 ML 엔지니어, 컴플라이언스"),
     "real_estate": ("부동산 플랫폼 · 프롭테크, 은행 (담보 평가), 건설 · 도시계획", "부동산 데이터 분석가, 공간 데이터 사이언티스트, 자동 가치 평가 (AVM) 모델러"),
     "earthquakes": ("재난 · 안전 (기상 · 지질 기관), 보험 · 재보험, 건설 · 인프라", "시공간 데이터 사이언티스트, 재난 위험 모델러, 지구물리 데이터 분석가"),

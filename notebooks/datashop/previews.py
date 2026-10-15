@@ -225,21 +225,39 @@ def link_prediction(thumb):
                               f"연결의 {same:.0%} 가 같은 부서 안. 부서가 42개라 무작위라면 훨씬 낮을 것")])
 
 
-def bike_demand(thumb):
-    with zipfile.ZipFile(os.path.join(D, "seoul_bike.zip")) as z:
-        df = pd.read_csv(z.open("SeoulBikeData.csv"), encoding="latin1")
-    df.columns = ["date", "count", "hour", "temp", "humidity", "wind", "visibility", "dew", "solar", "rain", "snow", "season", "holiday", "functioning"]
-    df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y"); df["weekend"] = df["date"].dt.dayofweek >= 5
-    h = df[df["functioning"] == "Yes"].groupby(["hour", "weekend"])["count"].mean().unstack()
-    fig, ax = plt.subplots(figsize=(4.8, 3))
-    ax.plot(h.index, h[False], color=C1, label="평일"); ax.plot(h.index, h[True], color=C2, label="주말")
-    ax.set_xlabel("시각"); ax.set_ylabel("시간당 대여"); ax.legend(frameon=False, fontsize=8); fig.tight_layout(); save_thumb(fig, thumb)
-    d = df.groupby("date")["count"].sum()
-    return dict(stats=stats(df), sample=table(df[["date", "hour", "count", "temp", "humidity", "rain", "season", "holiday"]].assign(date=lambda x: x["date"].dt.date)),
-                charts=[chart("시각별 평균 대여 수", [line(h.index, h[False].round(0), S1, "평일"), line(h.index, h[True].round(0), S2, "주말")], "시각", "대여 수 / 시간", "평일은 출근 8시 · 퇴근 18시에 두 봉우리"),
-                        chart("하루 대여 수 (2017.12 ~ 2018.11)", [dict(type="scatter", mode="lines", x=[str(t.date()) for t in d.index], y=d.values.tolist(), line=dict(color=S1, width=1.5), name="")], "", "대여 수 / 일",
-                              "겨울엔 적고 여름 · 가을에 많다. 0 인 날은 서비스를 쉰 날")])
-
+def taxi_demand(thumb):
+    import struct
+    from matplotlib.collections import PolyCollection
+    def read_shp(b):
+        shapes, pos = [], 100
+        while pos < len(b):
+            _, length = struct.unpack(">ii", b[pos:pos + 8]); rec = b[pos + 8:pos + 8 + length * 2]; pos += 8 + length * 2
+            if struct.unpack("<i", rec[:4])[0] == 0: shapes.append([]); continue
+            nparts, npts = struct.unpack("<ii", rec[36:44]); parts = list(struct.unpack(f"<{nparts}i", rec[44:44 + 4 * nparts])) + [npts]
+            pts = np.frombuffer(rec[44 + 4 * nparts:44 + 4 * nparts + 16 * npts], dtype="<f8").reshape(-1, 2)
+            shapes.append([pts[parts[i]:parts[i + 1]] for i in range(nparts)])
+        return shapes
+    z = zipfile.ZipFile(os.path.join(D, "taxi_zones.zip")); shapes = read_shp(z.read("taxi_zones/taxi_zones.shp"))
+    ids = list(range(1, len(shapes) + 1))
+    t = pd.read_parquet(os.path.join(D, "yellow_2024_01.parquet"), columns=["tpep_pickup_datetime", "PULocationID", "trip_distance", "total_amount", "passenger_count"])
+    t = t[(t["tpep_pickup_datetime"] >= "2024-01-01") & (t["tpep_pickup_datetime"] < "2024-02-01")]
+    day = t[t["tpep_pickup_datetime"].dt.date == pd.Timestamp("2024-01-10").date()]
+    per = day.groupby([day["tpep_pickup_datetime"].dt.hour, "PULocationID"]).size().unstack(fill_value=0)
+    vmax = np.log1p(per.values.max())
+    def frame(h):
+        fig, ax = plt.subplots(figsize=(4.8, 3)); polys, vals = [], []
+        for s_, zid in zip(shapes, ids):
+            for part in s_: polys.append(part); vals.append(per.loc[h].get(zid, 0) if h in per.index else 0)
+        ax.add_collection(PolyCollection(polys, array=np.log1p(np.array(vals, float)), cmap="YlOrRd", clim=(0, vmax), edgecolor="white", linewidth=0.15))
+        ax.autoscale(); ax.set_aspect("equal"); ax.axis("off")
+        ax.text(0.02, 0.92, f"{h:02d}:00", transform=ax.transAxes, fontsize=13, fontweight="bold", color=C1)
+        fig.subplots_adjust(0, 0, 1, 1); return fig
+    save_gif(frame, 24, thumb.replace(".png", ".gif"), fps=4)
+    hourly = t.groupby(t["tpep_pickup_datetime"].dt.floor("h")).size()
+    byh = t.groupby(t["tpep_pickup_datetime"].dt.hour).size() / 31
+    return dict(thumb="thumb.gif", stats=stats(t.sample(300000, random_state=0)), sample=table(t.assign(tpep_pickup_datetime=t["tpep_pickup_datetime"].dt.strftime("%Y-%m-%d %H:%M"))),
+                charts=[chart("시간별 전체 승차 수 (2024년 1월)", [dict(type="scatter", mode="lines", x=[str(x) for x in hourly.index], y=hourly.tolist(), line=dict(color=S1, width=1), name="")], "", "승차 / 시간", "하루 두 번의 봉우리, 주말 밤에 높고, 눈 오는 날 꺼진다"),
+                        chart("하루 중 시각별 평균 승차 수", [bar(byh.index, byh.values.round(0))], "시", "승차 / 시간", "새벽 5시가 가장 적고 저녁 6시가 가장 많다")])
 
 def semiconductor_yield(thumb):
     with zipfile.ZipFile(os.path.join(D, "secom.zip")) as z:
