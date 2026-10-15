@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<nav class="crumb"><a href="../">← 데이터 목록</a><a href="../worldcup/">데이터 월드컵 하러 가기 →</a></nav>
 <div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/assets/genspark_prompts.md" target="_blank" rel="noopener">AI 생성 이미지</a> · 프롬프트 공개</span></div>
 <div class="hero" style="grid-template-columns: 1fr">
   <div>
@@ -37,7 +37,7 @@
   <div class="stat-head"><div><b>1,494</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>8</b><span>열</span></div></div>
   <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="match">match</td><td title="숫자">숫자</td><td title="0">0</td><td title="64">64</td><td title="0 ~ 63 (평균 33.39)">0 ~ 63 (평균 33.39)</td></tr><tr><td title="x">x</td><td title="숫자">숫자</td><td title="0">0</td><td title="328">328</td><td title="59 ~ 120 (평균 104.6)">59 ~ 120 (평균 104.6)</td></tr><tr><td title="y">y</td><td title="숫자">숫자</td><td title="0">0</td><td title="396">396</td><td title="0.7 ~ 79.2 (평균 39.86)">0.7 ~ 79.2 (평균 39.86)</td></tr><tr><td title="body">body</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="4">4</td><td title="가장 흔한 값: Right Foot (52.2%)">가장 흔한 값: Right Foot (52.2%)</td></tr><tr><td title="kind">kind</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="4">4</td><td title="가장 흔한 값: Open Play (92.5%)">가장 흔한 값: Open Play (92.5%)</td></tr><tr><td title="goal">goal</td><td title="숫자">숫자</td><td title="0">0</td><td title="2">2</td><td title="0 ~ 1 (평균 0.1305)">0 ~ 1 (평균 0.1305)</td></tr><tr><td title="sb_xg">sb_xg</td><td title="숫자">숫자</td><td title="0">0</td><td title="316">316</td><td title="0 ~ 0.897 (평균 0.1258)">0 ~ 0.897 (평균 0.1258)</td></tr><tr><td title="team">team</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="32">32</td><td title="가장 흔한 값: Argentina (7.4%)">가장 흔한 값: Argentina (7.4%)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>슛 위치 (주황 = 골)</h3><div class="plot" id="plot-0" role="img" aria-label="슛 위치 (주황 = 골)"></div></div><div class="chart"><h3>슛 종류별 골 비율</h3><p class="note">페널티킥은 약 70%, 일반 슛은 10% 남짓</p><div class="plot" id="plot-1" role="img" aria-label="슛 종류별 골 비율"></div></div></div></section>
-<div class="two">
+<div class="stack">
   <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>슛 한 번</td></tr><tr><td>② 입력 X</td><td>골대까지 거리 · 각도 · 몸의 부위 (발/머리) · 슛 종류 · 압박</td></tr><tr><td>③ 출력 y</td><td>골인가 (확률)</td></tr><tr><td>④ 평가지표</td><td>로그 손실 (확률이 맞나)</td></tr><tr><td>⑤ 기준선</td><td>모든 슛에 전체 골 비율</td></tr></tbody></table>
     <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (goal rate 0.111 for every shot): log loss 0.492</pre></section>

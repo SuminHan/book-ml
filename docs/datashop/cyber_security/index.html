@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<nav class="crumb"><a href="../">← 데이터 목록</a><a href="../worldcup/">데이터 월드컵 하러 가기 →</a></nav>
 <div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/assets/genspark_prompts.md" target="_blank" rel="noopener">AI 생성 이미지</a> · 프롬프트 공개</span></div>
 <div class="hero" style="grid-template-columns: 1fr">
   <div>
@@ -37,7 +37,7 @@
   <div class="stat-head"><div><b>125,973</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>7</b><span>열</span></div></div>
   <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="duration">duration</td><td title="숫자">숫자</td><td title="0">0</td><td title="2981">2981</td><td title="0 ~ 42,908 (평균 287.1)">0 ~ 42,908 (평균 287.1)</td></tr><tr><td title="protocol_type">protocol_type</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: tcp (81.5%)">가장 흔한 값: tcp (81.5%)</td></tr><tr><td title="service">service</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="70">70</td><td title="가장 흔한 값: http (32.0%)">가장 흔한 값: http (32.0%)</td></tr><tr><td title="flag">flag</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="11">11</td><td title="가장 흔한 값: SF (59.5%)">가장 흔한 값: SF (59.5%)</td></tr><tr><td title="src_bytes">src_bytes</td><td title="숫자">숫자</td><td title="0">0</td><td title="3341">3341</td><td title="0 ~ 1,379,963,888 (평균 45,566.7)">0 ~ 1,379,963,888 (평균 45,566.7)</td></tr><tr><td title="dst_bytes">dst_bytes</td><td title="숫자">숫자</td><td title="0">0</td><td title="9326">9326</td><td title="0 ~ 1,309,937,401 (평균 19,779.1)">0 ~ 1,309,937,401 (평균 19,779.1)</td></tr><tr><td title="attack">attack</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="23">23</td><td title="가장 흔한 값: normal (53.5%)">가장 흔한 값: normal (53.5%)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>학습 데이터의 연결 종류 (상위 8)</h3><p class="note">neptune (SYN flood, DoS) 이 정상 다음으로 많다</p><div class="plot" id="plot-0" role="img" aria-label="학습 데이터의 연결 종류 (상위 8)"></div></div><div class="chart"><h3>시험에만 있는 공격 17종 (상위 10)</h3><p class="note">학습 때 본 적 없는 공격: 진짜 실력을 재는 부분</p><div class="plot" id="plot-1" role="img" aria-label="시험에만 있는 공격 17종 (상위 10)"></div></div></div></section>
-<div class="two">
+<div class="stack">
   <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>네트워크 연결 한 건</td></tr><tr><td>② 입력 X</td><td>41개 숫자 · 범주 (프로토콜 · 서비스 · 바이트 수 · 실패 비율 …)</td></tr><tr><td>③ 출력 y</td><td>정상 / 공격</td></tr><tr><td>④ 평가지표</td><td>재현율 (놓친 공격) · 정밀도 (헛경보)</td></tr><tr><td>⑤ 기준선</td><td>전부 &#x27;정상&#x27;</td></tr></tbody></table>
     <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">random split of train        accuracy 99.9%  precision 99.9%  recall 99.8%

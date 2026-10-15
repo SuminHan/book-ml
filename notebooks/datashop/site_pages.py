@@ -56,8 +56,9 @@ h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: .15em 0 .3em; 
 footer { color: var(--muted-ink); font-size: .82rem; padding: 32px 0 40px; }
 footer a { color: var(--muted-ink); }
 /* item page */
-.crumb { padding-top: 24px; font-size: .9rem; }
-.crumb a { text-decoration: none; }
+.crumb { padding-top: 24px; font-size: .9rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.crumb a { text-decoration: none; padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); }
+.crumb a:hover, .crumb a:focus-visible { border-color: var(--gold); }
 .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: center; padding: 18px 0 8px; }
 .hero img { width: 100%; border-radius: 12px; border: 1px solid var(--line); background: #fff; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
@@ -85,7 +86,10 @@ table.five td:first-child { width: 120px; color: var(--navy); font-weight: 700; 
 .plot { width: 100%; height: 300px; }
 .chart.small .plot { height: 190px; }
 pre.result { background: var(--bg); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: .85rem; margin: 0; }
-.two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.two > * { min-width: 0; }
+.stack { display: grid; gap: 0; }
+.stack > * { min-width: 0; }
 ul.papers { margin: 0; padding-left: 18px; }
 ul.papers li { margin: 4px 0; }
 .fit dt { font-weight: 700; color: var(--navy); margin-top: 6px; }
@@ -253,7 +257,7 @@ def metrics_related_html(i):
 
 
 def hero_html(i, actions):
-    return f"""<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+    return f"""<nav class="crumb"><a href="../">← 데이터 목록</a><a href="../worldcup/">데이터 월드컵 하러 가기 →</a></nav>
 <div class="cover"><img src="cover.jpg" alt="">{credit_html(i.get("credit"))}</div>
 <div class="hero" style="grid-template-columns: 1fr">
   <div>
@@ -298,7 +302,7 @@ def render_item(i, prev, nxt, preview, results):
 </section>
 {stats_html}
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts">{chart_html}</div></section>
-<div class="two">
+<div class="stack">
   <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody>{five}</tbody></table>
     <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">{res}</pre></section>

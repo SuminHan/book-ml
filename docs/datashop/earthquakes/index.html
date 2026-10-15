@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<nav class="crumb"><a href="../">← 데이터 목록</a><a href="../worldcup/">데이터 월드컵 하러 가기 →</a></nav>
 <div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/assets/genspark_prompts.md" target="_blank" rel="noopener">AI 생성 이미지</a> · 프롬프트 공개</span></div>
 <div class="hero" style="grid-template-columns: 1fr">
   <div>
@@ -37,7 +37,7 @@
   <div class="stat-head"><div><b>14,048</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>7</b><span>열</span></div></div>
   <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="time">time</td><td title="날짜">날짜</td><td title="0">0</td><td title="14,048">14,048</td><td title="2023-01-01 01:41:43.755000+00:00 ~ 2024-12-31 23:13:20.048000+00:00">2023-01-01 01:41:43.755000+00:00 ~ 2024-12-31 23:13:20.048000+00:00</td></tr><tr><td title="latitude">latitude</td><td title="숫자">숫자</td><td title="0">0</td><td title="13,919">13,919</td><td title="-65.85 ~ 86.53 (평균 0.5074)">-65.85 ~ 86.53 (평균 0.5074)</td></tr><tr><td title="longitude">longitude</td><td title="숫자">숫자</td><td title="0">0</td><td title="13,908">13,908</td><td title="-180 ~ 180 (평균 41.16)">-180 ~ 180 (평균 41.16)</td></tr><tr><td title="depth">depth</td><td title="숫자">숫자</td><td title="0">0</td><td title="6976">6976</td><td title="1.358 ~ 653.8 (평균 63.62)">1.358 ~ 653.8 (평균 63.62)</td></tr><tr><td title="mag">mag</td><td title="숫자">숫자</td><td title="0">0</td><td title="64">64</td><td title="4.5 ~ 7.8 (평균 4.8)">4.5 ~ 7.8 (평균 4.8)</td></tr><tr><td title="magType">magType</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="10">10</td><td title="가장 흔한 값: mb (79.2%)">가장 흔한 값: mb (79.2%)</td></tr><tr><td title="place">place</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="8836">8836</td><td title="가장 흔한 값: South Sandwich Islands region (3.1%)">가장 흔한 값: South Sandwich Islands region (3.1%)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>지도: 2년 동안의 지진 (색 · 크기 = 규모)</h3><p class="note">판의 경계 (불의 고리) 를 따라 늘어선다</p><div class="plot" id="plot-0" role="img" aria-label="지도: 2년 동안의 지진 (색 · 크기 = 규모)"></div></div><div class="chart"><h3>규모 분포</h3><p class="note">규모가 0.1 커질 때마다 개수가 일정한 비율로 준다 (구텐베르크-리히터 법칙)</p><div class="plot" id="plot-1" role="img" aria-label="규모 분포"></div></div><div class="chart"><h3>달마다 지진 수</h3><div class="plot" id="plot-2" role="img" aria-label="달마다 지진 수"></div></div></div></section>
-<div class="two">
+<div class="stack">
   <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>격자 칸 (위도 10° × 경도 10°) × 한 주</td></tr><tr><td>② 입력 X</td><td>그 칸의 지난 지진 수 (지난주 · 지난 4주 · 지난해)</td></tr><tr><td>③ 출력 y</td><td>다음 주에 규모 4.5 이상 지진이 있나</td></tr><tr><td>④ 평가지표</td><td>정밀도 · 재현율, ROC-AUC</td></tr><tr><td>⑤ 기준선</td><td>&#x27;지난주에 있었으면 이번 주도&#x27;</td></tr></tbody></table>
     <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">always none        accuracy 82.6%  precision 0%  recall 0%
