@@ -8,7 +8,13 @@ cands = json.load(open(os.path.join(HERE, "candidates.json"))); covers = json.lo
 credits = {}
 for c in cands:
     i = c["id"]; path = os.path.join(IMG, i + ".jpg")
-    if i in covers:
+    if i in covers and covers[i].get("local"):
+        cv = covers[i]
+        credits[i] = dict(title=cv["title"], artist=cv["artist"], license=cv["license"], page=cv["page"]) if cv.get("page") else None
+        im = Image.open(os.path.join(HERE, "..", cv["local"])).convert("RGB"); w, h = 480, 300
+        r = min(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
+        canvas = Image.new("RGB", (w, h), "white"); canvas.paste(im, ((w - im.width) // 2, (h - im.height) // 2)); canvas.save(path, quality=80)
+    elif i in covers:
         cv = covers[i]
         credits[i] = dict(title=cv["title"].replace("File:", ""), artist=cv["artist"] or "작자 미상", license=cv["license"], page=cv["page"])
         if not os.path.exists(path):
@@ -24,7 +30,8 @@ s = re.sub(r"const CANDS = \[.*?\];\n", lambda m: "const CANDS = " + json.dumps(
 s = re.sub(r"const CREDITS = \{.*?\};\n", lambda m: "const CREDITS = " + json.dumps(credits, ensure_ascii=False) + ";\n", s, count=1, flags=re.S)
 n = len(cands)
 s = re.sub(r"공개 데이터 \d+개\.", f"공개 데이터 {n}개.", s)
-s = s.replace('[[32, "32강", "전부 · 31경기"]', f'[[32, "32강", "{n}개 중 무작위 32개 · 31경기"]')
+s = re.sub(r'\[\[\d+, "\d+강", "[^"]*"\], \[\d+, "\d+강", "[^"]*"\]\]', f'[[32, "32강", "{n}개 중 무작위 32개 · 31경기"], [16, "16강", "{n}개 중 무작위 16개 · 15경기"]]', s)
+s = re.sub(r"let mode = \d+;", "let mode = 32;", s)
 s = s.replace('if (!c) { li.textContent = `${byId[id].title}: 직접 그린 패턴 그림 (원형 · 쪼개기와 모으기 · 한곳에 모으기)`; }',
               'if (!c) { li.textContent = `${byId[id].title}: 데이터로 직접 그린 그림`; }')
 open(PAGE, "w", encoding="utf-8").write(s)

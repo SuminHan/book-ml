@@ -341,71 +341,59 @@ print(f"gradient boosting            : MAE {np.mean(np.abs(pred - ok_test['adr']
 - **여행일정 개인화**: 고객 한 명의 과거 예약이 여러 개 있어야 한다. 이 데이터에는 고객 번호가 없다."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="form_understanding", title="서식 문서 이해", sector="전문 서비스",
-     keywords=["감사 자동화", "문서지능 처리", "리스크 · 내부통제"],
-     teaser="스캔한 서식 199장, 글 덩어리 9천여 개. 어느 것이 '질문' 이고 어느 것이 '답' 일까?",
-     data="FUNSD", data_src="Jaume, Ekenel & Thiran (2019), Form Understanding in Noisy Scanned Documents. 스캔 서식 199장 (학습 149 · 시험 50), 글 덩어리마다 header · question · answer · other 표시",
-     size="약 17MB",
-     five=[("① 한 행", "서식 속 글 덩어리 하나 (상자 + 글자)"), ("② 입력 X", "위치 · 크기 · 글자 (콜론으로 끝나나, 숫자인가 …)"),
-           ("③ 출력 y", "header / question / answer / other"), ("④ 평가지표", "정확도 + 종류별 재현율"),
-           ("⑤ 기준선", "가장 흔한 종류")],
+dict(slug="document_types", title="문서 종류 자동 분류", sector="전문 서비스", keywords=["문서 자동 분류", "업무 자동화 (RPA)", "이미지 분류"],
+     teaser="스캔한 문서 1,200장. 편지일까, 영수증일까, 이력서일까?",
+     data="RVL-CDIP (종류별 100장 판)", data_src="Harley et al. (2015). 스캔한 업무 문서 흑백 사진 16종류 (편지 · 양식 · 이메일 · 손글씨 · 광고 · 보고서 · 논문 · 사양서 · 파일 폴더 · 뉴스 · 예산 · 송장 · 발표 자료 · 설문 · 이력서 · 메모). 원본 40만 장 중 종류마다 75장씩 고른 판 (Hugging Face jordyvl/rvl_cdip_100_examples_per_class, 학습 800 · 시험 400)",
+     size="약 135MB",
+     five=[("① 한 행", "문서 사진 한 장"), ("② 입력 X", "줄인 흑백 사진 (48×64) + 줄 · 칸마다 잉크 양"), ("③ 출력 y", "16가지 문서 종류"),
+           ("④ 평가지표", "정확도 + 종류별 재현율"), ("⑤ 기준선", "가장 흔한 종류 (모두 같은 수라 1/16)")],
      cells=[
-("md", """## 입장: 데이터 받기"""),
-("code", """import json
-URL = "https://guillaumejaume.github.io/FUNSD/dataset.zip"
-zf = zipfile.ZipFile(download(URL, "data/funsd.zip"))
-names = [n for n in zf.namelist() if n.endswith(".json") and "__MACOSX" not in n]
-print(len(names), "annotated forms;", names[:2])"""),
+("md", """## 입장: 데이터 받기
+
+약 135MB. 처음엔 1~2분."""),
+("code", """from PIL import Image
+NAMES = ["letter", "form", "email", "handwritten", "advertisement", "scientific report", "scientific publication", "specification",
+         "file folder", "news article", "budget", "invoice", "presentation", "questionnaire", "resume", "memo"]
+BASE = "https://huggingface.co/api/datasets/jordyvl/rvl_cdip_100_examples_per_class/parquet/default/"
+train = pd.read_parquet(download(BASE + "train/0.parquet", "data/rvlcdip100_train.parquet"))
+test = pd.read_parquet(download(BASE + "test/0.parquet", "data/rvlcdip100_test.parquet"))
+print(train.shape, test.shape)
+print(pd.Series([NAMES[i] for i in train["label"]]).value_counts().to_dict())"""),
 ("md", """## 열어 보기
 
-서식 한 장 = 사진 (png) + 글 덩어리 목록 (json). 한 장을 그려 보자. 색 = 종류."""),
-("code", """from PIL import Image
-COLORS = {"header": "purple", "question": "blue", "answer": "green", "other": "gray"}
-name = names[0]
-form = json.loads(zf.read(name))["form"]
-img = Image.open(io.BytesIO(zf.read(name.replace("annotations", "images").replace(".json", ".png"))))
-plt.figure(figsize=(6, 8)); plt.imshow(img, cmap="gray")
-for block in form:
-    x0, y0, x1, y1 = block["box"]
-    plt.gca().add_patch(plt.Rectangle((x0, y0), x1 - x0, y1 - y0, fill=False, ec=COLORS[block["label"]], lw=1.2))
-plt.axis("off"); plt.title(" / ".join(f"{k}={v}" for k, v in COLORS.items()), fontsize=9); plt.show()
-print([(b["label"], b["text"]) for b in form[:6]])"""),
-("md", """## 문제 하나 골라 보기: 글 덩어리 → 종류
+종류마다 한 장씩. 글자를 읽지 않아도 **모양 (배치)** 만으로 구분되는 종류가 있을까?"""),
+("code", """fig, axs = plt.subplots(2, 8, figsize=(16, 5))
+for k, ax in enumerate(axs.ravel()):
+    i = np.where(train["label"].values == k)[0][0]
+    ax.imshow(Image.open(io.BytesIO(train["image"][i]["bytes"])), cmap="gray"); ax.set_title(NAMES[k], fontsize=9); ax.axis("off")
+plt.tight_layout(); plt.show()"""),
+("md", """## 문제 하나 골라 보기: 문서 사진 → 종류 (16가지)
 
-한 행 = 글 덩어리 하나. 사람이 서식을 볼 때 쓰는 단서를 숫자로 만든다: 위치, 크기, 글자 수, 콜론(`:`) 으로 끝나나, 숫자가 많은가, 대문자 비율. 학습 149장 · 시험 50장은 데이터가 정해 둔 대로 나눈다."""),
+글자는 읽지 않는다. 사진을 48×64 로 줄이고, 줄마다 · 칸마다 잉크 양 (어디에 글이 몰려 있나) 을 더해 랜덤 포레스트. 데이터가 나눠 둔 학습 · 시험을 그대로 쓴다."""),
 ("code", """from sklearn.ensemble import RandomForestClassifier
 
-def block_features(block, width, height):
-    \"\"\"Simple layout + text clues for one text block\"\"\"
-    x0, y0, x1, y1 = block["box"]; t = block["text"]
-    return dict(x=x0 / width, y=y0 / height, w=(x1 - x0) / width, h=(y1 - y0) / height, n_chars=len(t),
-                ends_colon=float(t.strip().endswith(":")), digits=sum(c.isdigit() for c in t) / max(len(t), 1),
-                upper=sum(c.isupper() for c in t) / max(sum(c.isalpha() for c in t), 1))
+def layout_features(image_bytes):
+    \"\"\"Small grayscale picture + ink per row / column of one scanned page\"\"\"
+    g = np.asarray(Image.open(io.BytesIO(image_bytes)).convert("L").resize((48, 64)), dtype=np.float32) / 255
+    ink = 1 - g
+    return np.r_[g.ravel(), ink.mean(1), ink.mean(0), ink.mean(), (ink > 0.5).mean()]
 
-rows = []
-for n in names:
-    img = Image.open(io.BytesIO(zf.read(n.replace("annotations", "images").replace(".json", ".png"))))
-    for b in json.loads(zf.read(n))["form"]:
-        if b["text"].strip():
-            rows.append({**block_features(b, *img.size), "label": b["label"], "split": "test" if "testing" in n else "train"})
-blocks = pd.DataFrame(rows)
-print(blocks.groupby("split")["label"].value_counts().unstack())
+Xtr = np.stack([layout_features(b["bytes"]) for b in train["image"]])
+Xte = np.stack([layout_features(b["bytes"]) for b in test["image"]])
+m = RandomForestClassifier(500, random_state=0, n_jobs=-1).fit(Xtr, train["label"])
+pred = m.predict(Xte); y = test["label"].values
+print(f"baseline (one class): accuracy {1 / 16:.1%}")
+print(f"random forest on page layout: accuracy {np.mean(pred == y):.1%}")
+per = pd.Series(pred == y).groupby([NAMES[i] for i in y]).mean().sort_values()
+print("hardest:", per.head(4).round(2).to_dict()); print("easiest:", per.tail(4).round(2).to_dict())"""),
+("md", """**관찰**: 글자를 하나도 읽지 않고 모양만 봐도 기준선 (6%) 보다 훨씬 잘 맞힌다. 손글씨 · 이메일 · 파일 폴더처럼 모양이 뚜렷한 것은 쉽고, 발표 자료 · 양식 · 송장 · 편지는 서로 많이 헷갈린다. 이런 것은 글자를 읽어야 (OCR) 구분된다.
 
-tr, te = blocks[blocks["split"] == "train"], blocks[blocks["split"] == "test"]
-feats = [c for c in blocks.columns if c not in ("label", "split")]
-most_common = tr["label"].value_counts().idxmax()
-m = RandomForestClassifier(300, random_state=0).fit(tr[feats], tr["label"])
-pred = m.predict(te[feats])
-print(f"\\nbaseline (always '{most_common}'): accuracy {np.mean(te['label'] == most_common):.1%}")
-print(f"random forest on 8 clues       : accuracy {np.mean(te['label'] == pred):.1%}")
-print("recall per label:", pd.Series(te["label"].values == pred).groupby(te["label"].values).mean().round(2).to_dict())"""),
-("md", """## 다른 문제로 바꿔 보기
+## 다른 문제로 바꿔 보기
 
-- **문서지능**: 종류를 맞힌 다음, 어느 '질문' 과 어느 '답' 이 짝인지 맞히는 문제 (FUNSD 의 `linking`) 로 넘어갈 수 있다. 출력이 '짝 목록' 이면 지표는?
-- **감사 자동화**: 영수증 (SROIE), 계약서 (CUAD: 계약서 510건, 조항 41종) 처럼 서식이 정해진 문서라면 한 행 · 출력이 어떻게 바뀔까?
-- **내부통제**: '틀린 서식' 을 찾는 문제라면 y 는 무엇이고, 그 정답은 누가 매기나?"""),
+- **업무 자동화**: 회사로 들어오는 문서를 종류별로 나눠 담당 부서로 보내기. 틀리면 어떤 손해가 큰가 (송장을 광고로 분류하면?)
+- **글자도 쓰면**: OCR 로 글자를 뽑아 단어 빈도를 더하면 정확도가 얼마나 오를까?
+- **더 어려운 문제로**: 종류를 맞힌 뒤 송장에서 '금액 · 날짜 · 업체' 칸을 찾아 읽기 (문서 이해)."""),
 ]),
-# ------------------------------------------------------------------
 dict(slug="ai_usecases", title="AI 활용사례 찾기", sector="전문 서비스",
      keywords=["인공지능 전환 전략", "활용사례 발굴 · 검증", "인공지능 거버넌스"],
      teaser="사람들은 AI 를 어떤 일에 쓰고 있을까? 업무 1만 9천 가지로 찾는 AI 활용사례.",
@@ -2052,7 +2040,7 @@ PAPERS = {
     "support_routing": [("Casanueva et al. (2020) Efficient Intent Detection with Dual Sentence Encoders (Banking77)", "https://arxiv.org/abs/2003.04807")],
     "shop_conversion": [("Sakar et al. (2019) Real-time prediction of online shoppers' purchasing intention using MLP and LSTM, Neural Computing and Applications", "https://doi.org/10.1007/s00521-018-3523-0")],
     "hotel_booking": [("Antonio, Almeida & Nunes (2019) Hotel booking demand datasets, Data in Brief", "https://doi.org/10.1016/j.dib.2018.11.126")],
-    "form_understanding": [("Jaume, Ekenel & Thiran (2019) FUNSD: A Dataset for Form Understanding in Noisy Scanned Documents", "https://arxiv.org/abs/1905.13538")],
+    "document_types": [("Harley, Ufkes & Derpanis (2015) Evaluation of Deep Convolutional Nets for Document Image Classification and Retrieval, ICDAR (RVL-CDIP)", "https://arxiv.org/abs/1502.07058")],
     "ai_usecases": [("Handa et al. (2025) Which Economic Tasks are Performed with AI? Evidence from Millions of Claude Conversations", "https://arxiv.org/abs/2503.04761")],
     "movie_ratings": [("Harper & Konstan (2015) The MovieLens Datasets: History and Context, ACM TiiS", "https://doi.org/10.1145/2827872")],
     "korean_reviews": [("NSMC 저장소 (Lucy Park, 2015): 데이터 설명 · 만든 방법", "https://github.com/e9t/nsmc")],
@@ -2121,7 +2109,7 @@ FIT = {
     "predictive_maintenance": ("중공업 · 조선 · 자동차, 발전 · 플랜트, 산업 IoT 솔루션", "예지보전 데이터 사이언티스트, 설비 · 신뢰성 엔지니어"),
     "steel_defects": ("철강 · 금속, 자동차 부품, 비전 검사 장비", "비전 검사 AI 엔지니어, 품질 엔지니어"),
     "bearing_vibration": ("모터 · 기계 · 풍력, 철도 · 항공 정비, 산업 센서 · 진단 솔루션", "신호처리 · 진단 엔지니어, 예지보전 엔지니어"),
-    "form_understanding": ("회계 · 감사 법인, 은행 · 보험 (서류 심사), 문서 AI · OCR 솔루션", "문서 AI 엔지니어, OCR · 비전 엔지니어, 감사 데이터 분석가"),
+    "document_types": ("회계 · 감사 법인, 은행 · 보험 (서류 심사), 문서 AI · RPA 솔루션", "문서 AI 엔지니어, 업무 자동화 (RPA) 엔지니어"),
     "ai_usecases": ("AI 전환 (AX) 컨설팅, 기업 디지털 전략 · 혁신 조직, 공공 정책 연구", "AI 전략 컨설턴트, 데이터 기반 기획 · 정책 분석가"),
 }
 
@@ -2168,15 +2156,21 @@ def fetch_cover(slug, out_path):
     covers = json.load(open(os.path.join(HERE, "covers.json")))
     if slug not in covers:                       # 자금세탁: 직접 그린 패턴 그림
         shutil.copy(os.path.join(ROOT, "docs", "datashop", "worldcup", "img", f"{slug}.jpg"), out_path); return None
-    c = covers[slug]; cache = os.path.join(HERE, "data", "covers", slug + ".jpg")
+    c = covers[slug]; cache = os.path.join(HERE, c["local"]) if c.get("local") else os.path.join(HERE, "data", "covers", slug + ".jpg")
     if not os.path.exists(cache):
         os.makedirs(os.path.dirname(cache), exist_ok=True)
         req = urllib.request.Request(c["thumb"], headers={"User-Agent": "ML course datashop"})
         open(cache, "wb").write(urllib.request.urlopen(req, timeout=120).read())
     im = Image.open(cache).convert("RGB"); w, h = 1200, 340
-    r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
-    l, t = (im.width - w) // 2, (im.height - h) // 2
-    im.crop((l, t, l + w, t + h)).save(out_path, quality=78)
+    if c.get("local"):                                 # a diagram: fit it inside (no cropping), white margins
+        r = min(w / im.width, h / im.height) * 0.96; im = im.resize((round(im.width * r), round(im.height * r)))
+        canvas = Image.new("RGB", (w, h), "white"); canvas.paste(im, ((w - im.width) // 2, (h - im.height) // 2)); canvas.save(out_path, quality=85)
+    else:
+        r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
+        l, t = (im.width - w) // 2, (im.height - h) // 2
+        im.crop((l, t, l + w, t + h)).save(out_path, quality=78)
+    if not c.get("page"):
+        return None                                   # drawn by us, no credit line
     return dict(page=c["page"], artist=c["artist"], license=c["license"])
 
 
@@ -2186,6 +2180,7 @@ def build_site(items):
     out = os.path.join(ROOT, "docs", "datashop")
     os.makedirs(out, exist_ok=True)
     open(os.path.join(out, "shop.css"), "w", encoding="utf-8").write(site_pages.CSS)
+    shutil.copy(os.path.join(HERE, "favicon.svg"), os.path.join(out, "favicon.svg"))
     types = {c["id"]: c["type"] for c in json.load(open(os.path.join(HERE, "worldcup", "candidates.json")))}
     page_items = []
     for it in items:

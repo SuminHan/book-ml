@@ -306,24 +306,23 @@ def bearing_vibration(thumb):
                 charts=small + [chart("조각(1,024 샘플)의 평균 첨도", [bar(list(kur), [round(v, 2) for v in kur.values()])], "", "첨도", "결함이 있으면 뾰족한 충격 → 첨도가 커진다")])
 
 
-def form_understanding(thumb):
-    import json as js
-    zf = zipfile.ZipFile(os.path.join(D, "funsd.zip"))
-    names = sorted(n for n in zf.namelist() if n.endswith(".json") and "__MACOSX" not in n)
-    name = names[3]; form = js.loads(zf.read(name))["form"]
-    img = Image.open(io.BytesIO(zf.read(name.replace("annotations", "images").replace(".json", ".png"))))
-    col = {"header": "#6250d6", "question": C1, "answer": C3, "other": "#999999"}
-    w, h = img.size; crop = img.crop((0, 0, w, int(w * 0.625)))
-    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.imshow(crop, cmap="gray")
-    for b in form:
-        x0, y0, x1, y1 = b["box"]
-        if y1 < crop.size[1]:
-            ax.add_patch(plt.Rectangle((x0, y0), x1 - x0, y1 - y0, fill=False, ec=col[b["label"]], lw=1))
-    ax.axis("off"); fig.subplots_adjust(0, 0, 1, 1); save_thumb(fig, thumb)
-    rows = [(b["label"], "test" if "testing" in n else "train") for n in names for b in js.loads(zf.read(n))["form"] if b["text"].strip()]
-    lab = pd.DataFrame(rows, columns=["label", "split"])["label"].value_counts()
-    return dict(stats=stats(pd.DataFrame(rows, columns=["label", "split"])), sample=dict(columns=["종류 (label)", "글"], rows=[[b["label"], b["text"][:60]] for b in form if b["text"].strip()][:7]),
-                charts=[chart("글 덩어리 종류별 개수 (199장 전체)", [bar(lab.index, lab.values)], "", "개수", "질문 · 답이 대부분. 제목 (header) 은 적어서 맞히기 어렵다")])
+def document_types(thumb):
+    names = ["letter", "form", "email", "handwritten", "advertisement", "scientific report", "scientific publication", "specification",
+             "file folder", "news article", "budget", "invoice", "presentation", "questionnaire", "resume", "memo"]
+    df = pd.read_parquet(os.path.join(D, "rvlcdip100_train.parquet"))
+    fig, axs = plt.subplots(2, 4, figsize=(4.8, 3))
+    for ax, k in zip(axs.ravel(), [0, 2, 3, 4, 8, 11, 12, 14]):
+        i = np.where(df["label"].values == k)[0][0]
+        ax.imshow(Image.open(io.BytesIO(df["image"][i]["bytes"])), cmap="gray"); ax.axis("off"); ax.set_title(names[k], fontsize=7)
+    fig.subplots_adjust(0, 0, 1, 0.93, 0.03, 0.18); save_thumb(fig, thumb)
+    rows = []
+    for b, l in zip(df["image"], df["label"]):
+        im = Image.open(io.BytesIO(b["bytes"])).convert("L"); g = np.asarray(im.resize((96, 128)), dtype=float) / 255
+        rows.append(dict(label=names[l], width=im.size[0], height=im.size[1], ink=round(float((1 - g).mean()), 3)))
+    meta = pd.DataFrame(rows)
+    ink = meta.groupby("label")["ink"].mean().sort_values()
+    return dict(stats=stats(meta), sample=table(meta),
+                charts=[chart("종류별 평균 잉크 양 (검은 부분의 비율)", [bar(ink.index, ink.values.round(3))], "", "잉크 비율", "광고 · 발표 자료는 진하고, 편지 · 이메일은 연하다: 모양만으로도 단서가 된다", xaxis=dict(tickangle=-45, title=""))])
 
 
 def ai_usecases(thumb):

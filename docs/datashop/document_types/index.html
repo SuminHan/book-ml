@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문서 종류 자동 분류 · 현실의 데이터</title>
+<meta name="description" content="스캔한 문서 1,200장. 편지일까, 영수증일까, 이력서일까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Collection_of_colorful_binders_on_a_shelf_for_storing_documents_in_an_office_setting.jpg" target="_blank" rel="noopener">Shixart1985</a> · CC BY 2.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">33</span><span>전문 서비스</span></div>
+    <h1>문서 종류 자동 분류</h1>
+    <div class="chips"><span class="chip">문서 자동 분류</span><span class="chip">업무 자동화 (RPA)</span><span class="chip">이미지 분류</span></div>
+    <p class="teaser-big">스캔한 문서 1,200장. 편지일까, 영수증일까, 이력서일까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/33_document_types.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="33_document_types.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>줄인 흑백 사진 (48×64) + 줄 · 칸마다 잉크 양</div>
+  <div class="model">→ 모델 →<small>다중 분류 (이미지)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>16가지 문서 종류</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">RVL-CDIP (종류별 100장 판) · 약 135MB</div><p class="src">Harley et al. (2015). 스캔한 업무 문서 흑백 사진 16종류 (편지 · 양식 · 이메일 · 손글씨 · 광고 · 보고서 · 논문 · 사양서 · 파일 폴더 · 뉴스 · 예산 · 송장 · 발표 자료 · 설문 · 이력서 · 메모). 원본 40만 장 중 종류마다 75장씩 고른 판 (Hugging Face jordyvl/rvl_cdip_100_examples_per_class, 학습 800 · 시험 400)</p></div>
+  <img src="thumb.png" alt="문서 종류 자동 분류 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>label</th><th>width</th><th>height</th><th>ink</th></tr></thead><tbody><tr><td title="scientific report">scientific report</td><td title="757">757</td><td title="1000">1000</td><td title="0.142">0.142</td></tr><tr><td title="budget">budget</td><td title="754">754</td><td title="1000">1000</td><td title="0.038">0.038</td></tr><tr><td title="scientific publication">scientific publication</td><td title="772">772</td><td title="1000">1000</td><td title="0.021">0.021</td></tr><tr><td title="letter">letter</td><td title="780">780</td><td title="1000">1000</td><td title="0.024">0.024</td></tr><tr><td title="news article">news article</td><td title="754">754</td><td title="1000">1000</td><td title="0.048">0.048</td></tr><tr><td title="file folder">file folder</td><td title="783">783</td><td title="1000">1000</td><td title="0.403">0.403</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>800</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>4</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="label">label</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="16">16</td><td title="가장 흔한 값: letter (6.2%)">가장 흔한 값: letter (6.2%)</td></tr><tr><td title="width">width</td><td title="숫자">숫자</td><td title="0">0</td><td title="79">79</td><td title="625 ~ 902 (평균 766.2)">625 ~ 902 (평균 766.2)</td></tr><tr><td title="height">height</td><td title="숫자">숫자</td><td title="0">0</td><td title="1">1</td><td title="1000 ~ 1000 (평균 1000)">1000 ~ 1000 (평균 1000)</td></tr><tr><td title="ink">ink</td><td title="숫자">숫자</td><td title="0">0</td><td title="213">213</td><td title="0.001 ~ 0.859 (평균 0.0814)">0.001 ~ 0.859 (평균 0.0814)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>종류별 평균 잉크 양 (검은 부분의 비율)</h3><p class="note">광고 · 발표 자료는 진하고, 편지 · 이메일은 연하다: 모양만으로도 단서가 된다</p><div class="plot" id="plot-0" role="img" aria-label="종류별 평균 잉크 양 (검은 부분의 비율)"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>문서 사진 한 장</td></tr><tr><td>② 입력 X</td><td>줄인 흑백 사진 (48×64) + 줄 · 칸마다 잉크 양</td></tr><tr><td>③ 출력 y</td><td>16가지 문서 종류</td></tr><tr><td>④ 평가지표</td><td>정확도 + 종류별 재현율</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 종류 (모두 같은 수라 1/16)</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (one class): accuracy 6.2%
+random forest on page layout: accuracy 42.2%</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://huggingface.co/datasets/aharley/rvl_cdip" target="_blank" rel="noopener">RVL-CDIP 전체 (Hugging Face)</a> <span>· 같은 16종류, 40만 장</span></li><li><a href="https://huggingface.co/datasets/naver-clova-ix/cord-v2" target="_blank" rel="noopener">CORD 영수증 (Hugging Face)</a> <span>· 영수증 사진 → 항목 · 금액 (다음 단계 문제)</span></li><li><a href="https://www.docvqa.org/" target="_blank" rel="noopener">DocVQA</a> <span>· 문서 사진에 대한 질문 · 답</span></li><li><a href="https://huggingface.co/datasets?search=document%20classification" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/1502.07058" target="_blank" rel="noopener">Harley, Ufkes &amp; Derpanis (2015) Evaluation of Deep Convolutional Nets for Document Image Classification and Retrieval, ICDAR (RVL-CDIP)</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>회계 · 감사 법인, 은행 · 보험 (서류 심사), 문서 AI · RPA 솔루션</dd><dt>직무</dt><dd>문서 AI 엔지니어, 업무 자동화 (RPA) 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../chess/">← 32 체스: 누가 이길까?</a><a href="../ai_usecases/">34 AI 활용사례 찾기 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "종류별 평균 잉크 양 (검은 부분의 비율)", "note": "광고 · 발표 자료는 진하고, 편지 · 이메일은 연하다: 모양만으로도 단서가 된다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["email", "scientific report", "budget", "memo", "letter", "presentation", "questionnaire", "form", "specification", "resume", "invoice", "handwritten", "news article", "scientific publication", "file folder", "advertisement"], "y": [0.016, 0.044, 0.048, 0.048, 0.049, 0.057, 0.058, 0.059, 0.063, 0.067, 0.074, 0.087, 0.098, 0.113, 0.186, 0.237]}], "layout": {"xaxis": {"tickangle": -45, "title": ""}, "yaxis": {"title": "잉크 비율"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

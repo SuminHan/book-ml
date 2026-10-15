@@ -164,6 +164,7 @@ def head(title, desc, css_href):
 <meta name="description" content="{E(desc)}">
 {FONT}
 <link rel="stylesheet" href="{css_href}">
+<link rel="icon" href="{css_href.replace('shop.css', 'favicon.svg')}" type="image/svg+xml">
 <!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
 </head>
 <body>
