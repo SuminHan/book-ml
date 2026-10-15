@@ -196,7 +196,7 @@ def render_index(items, sections, stubs):
 <header class="top">
   <div class="eyebrow">Machine Learning 1 · 데이터 가게</div>
   <h1>현실의 데이터</h1>
-  <p class="lead">추천, 이상거래 탐지, 수요예측, 불량 예측, 문서 이해 … 산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 {len(items) + len(stubs)}가지를 모았습니다. 인턴이나 산학협력 과제에서 처음 받게 될 데이터도 대개 이런 모양입니다. 하나를 골라 들어가 데이터를 보고, 노트북을 받아 문제를 직접 정해 보세요.</p>
+  <p class="lead">추천, 이상거래 탐지, 수요예측, 불량 예측, 문서 이해 … 산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 {len(items) + len(stubs)}가지를 모았습니다. 하나를 골라 들어가 데이터를 보고, 노트북을 받아 문제를 직접 정해 보세요.</p>
   <p class="lead" style="margin-top:10px"><a href="worldcup/">데이터 월드컵 하러 가기 →</a> 32개 중 가장 해 보고 싶은 데이터를 골라 보세요.</p>
 </header>
 <main>""")
@@ -237,7 +237,7 @@ def papers_fit_html(i):
   <section class="block"><h2>논문 · 출처</h2><ul class="papers">{papers}</ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>{E(fit[0])}</dd><dt>직무</dt><dd>{E(fit[1])}</dd></dl>
-    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+    <p class="src" style="margin-top:8px">프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>"""
 
 

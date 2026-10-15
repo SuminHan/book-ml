@@ -1734,12 +1734,12 @@ print(pd.Series(m.coef_[0], index=X.columns).round(2).to_dict())"""),
 - **패스의 가치**: 한 행 = 패스, y = 이 패스 뒤 10초 안에 골이 났나 (VAEP, 아래 논문)."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="chess", title="체스: 누가 이길까?", sector="스포츠 · 게임", keywords=["게임 데이터", "승패 예측", "실력 측정 (레이팅)"],
-     teaser="두 사람의 레이팅만 보고 누가 이길지 알 수 있을까?",
+dict(slug="chess", title="체스: 누가 이길까?", sector="스포츠 · 게임", keywords=["게임 데이터", "실시간 승률 (중계)", "실력 측정 (레이팅)"],
+     teaser="두 사람의 레이팅과 지금까지 둔 수. 중계 화면처럼 '지금 누가 이기고 있나' 를 확률로 낼 수 있을까?",
      data="Lichess 공개 대국 · 2013년 1월", data_src="온라인 체스 Lichess 의 모든 대국 기록 (CC0) 중 2013년 1월 121,332판 (Hugging Face Lichess/standard-chess-games): 결과 · 두 사람 레이팅 · 시간 규칙 · 수 기록",
      size="약 37MB",
-     five=[("① 한 행", "대국 하나"), ("② 입력 X", "백 · 흑 레이팅, 레이팅 차, 시간 규칙"), ("③ 출력 y", "백 승 / 무승부 / 흑 승"),
-           ("④ 평가지표", "정확도 · 로그 손실"), ("⑤ 기준선", "레이팅이 높은 쪽이 이긴다")],
+     five=[("① 한 행", "대국 하나를 N수 둔 시점 (10 · 20 · 30수)"), ("② 입력 X", "레이팅 차 + 그 시점 판의 기물 점수 차 (폰 1 · 나이트/비숍 3 · 룩 5 · 퀸 9)"), ("③ 출력 y", "백 승 / 무승부 / 흑 승"),
+           ("④ 평가지표", "정확도 · 로그 손실"), ("⑤ 기준선", "레이팅만 보기")],
      cells=[
 ("md", """## 입장: 데이터 받기"""),
 ("code", """URL = "https://huggingface.co/datasets/Lichess/standard-chess-games/resolve/main/data/year=2013/month=01/train-00000-of-00001.parquet"
@@ -1759,32 +1759,152 @@ win = df.groupby(bins, observed=True)["Result"].apply(lambda r: (r == "1-0").mea
 elo = 1 / (1 + 10 ** (-np.array([(-650), -250, -150, -75, -25, 25, 75, 150, 250, 650]) / 400))
 plt.figure(figsize=(8, 3.5)); plt.plot(range(len(win)), win.values, "o-", label="actual (white score)"); plt.plot(range(len(win)), elo, "s--", label="Elo formula")
 plt.xticks(range(len(win)), [str(i) for i in win.index], rotation=45, fontsize=8); plt.ylabel("white score"); plt.legend(); plt.tight_layout(); plt.show()"""),
-("md", """## 문제 하나 골라 보기: 대국 → 결과 (3가지)
+("md", """## 문제 하나 골라 보기: N수 둔 판 → 결과 (중계의 '실시간 승률')
 
-**날짜 순서** (데이터가 시간 순서로 놓여 있다) 로 앞 80% 학습, 뒤 20% 시험.
-- 기준선 1: 늘 '백 승' (백이 먼저 두니까)
-- 기준선 2: 레이팅이 높은 쪽이 이긴다
-- 모델: 레이팅 · 차 · 시간 규칙으로 로지스틱회귀 (확률까지)"""),
-("code", """from sklearn.linear_model import LogisticRegression
+레이팅만 보면 첫 수를 두기 전에 이미 답이 정해진다. 실제 중계 화면의 승률 막대는 **지금 판** 을 본다. 그래서 한 행을 '대국 하나를 N수 둔 시점' 으로 바꾼다.
+- 판을 다시 두어 보려면 `python-chess` 가 필요하다 (아래 첫 줄).
+- 판에서 뽑는 값은 가장 단순한 것 하나: **기물 점수 차** (백 − 흑, 폰 1 · 나이트/비숍 3 · 룩 5 · 퀸 9).
+- N수까지 둔 값만 쓰니 누수가 아니다. 단, N수보다 일찍 끝난 대국은 그 시점이 없어서 빠진다.
 
-d = df.dropna(subset=["base_sec", "diff", "WhiteElo", "BlackElo"])
-X = np.c_[d["diff"], (d["WhiteElo"] + d["BlackElo"]) / 2, np.log1p(d["base_sec"])]
-y = d["Result"].map({"1-0": 0, "1/2-1/2": 1, "0-1": 2}).values
-cut = int(len(d) * 0.8); tr, te = slice(0, cut), slice(cut, None)
-m = LogisticRegression(max_iter=2000).fit(X[tr] / [100, 1000, 1], y[tr])
-prob = m.predict_proba(X[te] / [100, 1000, 1])
-higher = np.where(X[te][:, 0] >= 0, 0, 2)
-print(f"always white wins     : accuracy {np.mean(y[te] == 0):.1%}")
-print(f"higher rating wins    : accuracy {np.mean(y[te] == higher):.1%}")
-print(f"logistic (3 numbers)  : accuracy {np.mean(y[te] == prob.argmax(1)):.1%}, "
-      f"log loss {-np.mean(np.log(prob[np.arange(len(prob)), y[te]] + 1e-9)):.3f}")
-print(f"draw rate in test: {np.mean(y[te] == 1):.1%}")"""),
-("md", """**관찰**: 레이팅 차만으로도 동전 던지기보다 훨씬 잘 맞힌다. 무승부는 드물어서 거의 맞히지 못한다. 그런데 `movetext` (둔 수 전체) 나 `Termination` (어떻게 끝났나) 을 입력에 넣으면? **경기가 끝나야 알 수 있는 값** 이라 누수다.
+**날짜 순서** 로 앞 80% 학습, 뒤 20% 시험. 같은 대국들 위에서 '레이팅만' 과 '레이팅 + 판' 을 비교한다. 빨리 돌리려고 앞 5만 판만 쓴다."""),
+("code", """!pip -q install chess"""),
+("code", """import re
+import chess
+from sklearn.linear_model import LogisticRegression
+
+PIECE = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9}
+
+def material_after(movetext, plies):
+    \"\"\"White-minus-black material after `plies` half-moves, or None if the game ended earlier\"\"\"
+    text = re.sub(r"\\{[^}]*\\}", " ", movetext)                      # drop {comments}
+    sans = [t.rstrip("?!") for t in text.split() if not re.match(r"^\\d+\\.+$", t) and t not in ("1-0", "0-1", "1/2-1/2", "*")]
+    if len(sans) < plies:
+        return None
+    board = chess.Board()
+    for san in sans[:plies]:
+        board.push_san(san)
+    return sum(PIECE.get(p.piece_type, 0) * (1 if p.color == chess.WHITE else -1) for p in board.piece_map().values())
+
+def compare_at(games, plies):
+    \"\"\"Accuracy and log loss of rating-only vs rating + material, on games that reached `plies`\"\"\"
+    mat = games["movetext"].map(lambda m: material_after(m, plies))
+    g = games.assign(mat=mat).dropna(subset=["mat", "diff"])
+    y = g["Result"].map({"1-0": 0, "1/2-1/2": 1, "0-1": 2}).values
+    cut = int(len(g) * 0.8)
+    out = {}
+    for name, cols in [("rating only", ["diff"]), ("rating + material", ["diff", "mat"])]:
+        X = g[cols].values / np.array([100, 1][:len(cols)])
+        prob = LogisticRegression(max_iter=2000).fit(X[:cut], y[:cut]).predict_proba(X[cut:])
+        out[name] = (np.mean(prob.argmax(1) == y[cut:]), -np.mean(np.log(prob[np.arange(len(prob)), y[cut:]] + 1e-9)))
+    return len(g), out
+
+games = df.iloc[:50000]
+for moves in [10, 20, 30]:
+    n, res = compare_at(games, moves * 2)
+    for name, (acc, ll) in res.items():
+        print(f"after {moves:2d} moves ({n:,} games)  {name:18s} accuracy {acc:.1%}  log loss {ll:.3f}")"""),
+("md", """**관찰**: 10수 뒤에는 판을 봐도 거의 그대로다 (아직 기물을 거의 안 잃었다). 20수, 30수로 갈수록 기물 점수 차가 레이팅보다 더 많은 것을 알려 준다. 반대로 '레이팅만' 의 정확도는 뒤로 갈수록 떨어진다. 오래 버틴 대국일수록 실력이 비슷한 사람들끼리였기 때문이다 (같은 칸에서 비교해야 하는 이유).
+
+`Termination` (어떻게 끝났나) 이나 **둔 수 전체** 를 넣으면? 경기가 끝나야 알 수 있는 값이라 누수다.
 
 ## 다른 문제로 바꿔 보기
 
+- **더 좋은 판 정보**: 기물 점수 말고 캐슬링 했나 · 킹 주변 폰 · 둘 수 있는 수의 개수. 아니면 체스 엔진의 평가값 (이 데이터의 `[%eval ...]` 이 붙은 대국).
 - **수 예측**: 한 행 = 한 수, 입력 = 지금 판, 출력 = 사람이 둘 다음 수. 레이팅마다 다르게 두는 '사람 같은 AI' (Maia, 아래 논문).
 - **부정행위 탐지**: 사람의 레이팅에 비해 너무 엔진 같은 수만 두는 계정 찾기."""),
+]),
+# ------------------------------------------------------------------
+dict(slug="baseball", title="야구: 오늘 경기, 홈팀이 이길까?", sector="스포츠 · 게임", keywords=["데이터 야구 (세이버메트릭스)", "승패 예측", "피타고리안 승률"],
+     teaser="메이저리그 10시즌, 2만 4천 경기. 경기 전 성적만 보고 오늘 승패를 맞힐 수 있을까?",
+     data="Retrosheet 경기 기록 (MLB 2015 ~ 2025)", data_src="Retrosheet 이 공개한 메이저리그 경기별 기록: 날짜 · 두 팀 · 점수 · 낮/밤 · 구장 · 관중 · 경기 시간 · 선발 투수. 2020 단축 시즌은 뺐다. The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at www.retrosheet.org.",
+     size="약 5MB (시즌 10개)",
+     five=[("① 한 행", "경기 하나"), ("② 입력 X", "두 팀의 그 경기 전까지 승률 · 경기당 득실차 · 최근 10경기 승률"), ("③ 출력 y", "홈팀이 이기나 (확률)"),
+           ("④ 평가지표", "정확도, 로그 손실"), ("⑤ 기준선", "늘 홈팀 승 (약 53%)")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+시즌마다 zip 파일 하나 (0.5MB). 머리줄이 없는 161칸짜리 표라서 필요한 칸만 번호로 골라 이름을 붙인다 (칸 설명: retrosheet.org/gamelogs/glfields.txt).
+
+출처 문구 (Retrosheet 의 조건): *The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at www.retrosheet.org.*"""),
+("code", """SEASONS = [2015, 2016, 2017, 2018, 2019, 2021, 2022, 2023, 2024, 2025]      # 2020 was a 60-game season
+FIELDS = {0: "date", 3: "away", 6: "home", 9: "away_runs", 10: "home_runs", 12: "day_night", 16: "park", 17: "attendance", 18: "minutes"}
+
+def read_season(year):
+    \"\"\"One season of Retrosheet game logs with the columns in FIELDS\"\"\"
+    path = download(f"https://www.retrosheet.org/gamelogs/gl{year}.zip", f"data/retrosheet/gl{year}.zip")
+    with zipfile.ZipFile(path) as z:
+        return pd.read_csv(z.open(z.namelist()[0]), header=None, usecols=list(FIELDS)).rename(columns=FIELDS)
+
+games = pd.concat([read_season(y) for y in SEASONS], ignore_index=True)
+games["date"] = pd.to_datetime(games["date"].astype(str)); games["season"] = games["date"].dt.year
+games = games[games["home_runs"] != games["away_runs"]].reset_index(drop=True)     # drop the rare tied (suspended) games
+games["home_win"] = (games["home_runs"] > games["away_runs"]).astype(int)
+print(games.shape, "| teams", games["home"].nunique(), "| home team won", f"{games['home_win'].mean():.1%}")
+games.sample(5, random_state=0)"""),
+("md", """## 열어 보기: 홈 이점과 '득실차'
+
+- 시즌마다 홈팀은 몇 % 이겼을까?
+- 한 시즌 동안 낸 점수 (득점) 와 내준 점수 (실점) 만으로 승률을 맞힐 수 있을까? 빌 제임스의 **피타고리안 승률** = 득점² / (득점² + 실점²)."""),
+("code", """def team_seasons(games):
+    \"\"\"One row per team and season: games, wins, runs scored and allowed\"\"\"
+    home = games.rename(columns={"home": "team", "home_runs": "rs", "away_runs": "ra"}).assign(win=games["home_win"])
+    away = games.rename(columns={"away": "team", "away_runs": "rs", "home_runs": "ra"}).assign(win=1 - games["home_win"])
+    both = pd.concat([home[["season", "team", "rs", "ra", "win"]], away[["season", "team", "rs", "ra", "win"]]])
+    out = both.groupby(["season", "team"]).agg(g=("win", "size"), w=("win", "sum"), rs=("rs", "sum"), ra=("ra", "sum")).reset_index()
+    out["wpct"] = out["w"] / out["g"]; out["pythag"] = out["rs"] ** 2 / (out["rs"] ** 2 + out["ra"] ** 2)
+    return out
+
+ts = team_seasons(games)
+fig, axs = plt.subplots(1, 2, figsize=(12, 4))
+by_season = games.groupby("season")["home_win"].mean() * 100
+axs[0].bar(by_season.index.astype(str), by_season.values, color="tab:blue"); axs[0].axhline(50, color="gray", ls=":")
+axs[0].set_ylim(45, 58); axs[0].set_title("home team win rate by season (%)")
+axs[1].scatter(ts["pythag"], ts["wpct"], s=12, alpha=0.6); axs[1].plot([0.3, 0.7], [0.3, 0.7], color="gray", ls=":")
+axs[1].set_xlabel("Pythagorean RS^2 / (RS^2 + RA^2)"); axs[1].set_ylabel("actual win %"); axs[1].set_title("team seasons")
+plt.tight_layout(); plt.show()
+print(f"team-season win % vs Pythagorean: correlation {ts['wpct'].corr(ts['pythag']):.3f}, MAE {np.mean(np.abs(ts['wpct'] - ts['pythag'])) * 162:.1f} wins per 162 games")"""),
+("md", """## 문제 하나 골라 보기: 경기 전 성적 → 오늘 홈팀 승리
+
+**함정 조심**: 입력은 그 경기 **전까지** 의 성적만 써야 한다. 시즌 최종 승률을 쓰면 오늘 경기 결과가 이미 들어 있다 (데이터 누수, 1주 3차시). 그래서 팀마다 날짜 순으로 줄 세우고 한 칸 밀어서 (`shift`) 누적 평균을 낸다.
+
+**시간 순서**: 2015 ~ 2023 학습, 2024 · 2025 시험. 시즌 첫 10경기는 성적이 너무 적어 뺀다.
+- 기준선 1: 늘 홈팀 승
+- 기준선 2: 지금까지 승률이 높은 팀 승
+- 모델: 두 팀의 차이 (승률 · 경기당 득실차 · 최근 10경기 승률) → 로지스틱 회귀"""),
+("code", """from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import log_loss
+
+def form_before_game(games):
+    \"\"\"For every game, home-minus-away form computed only from earlier games of the same season\"\"\"
+    home = pd.DataFrame({"gid": games.index, "season": games["season"], "team": games["home"], "rd": games["home_runs"] - games["away_runs"], "win": games["home_win"], "is_home": 1})
+    away = pd.DataFrame({"gid": games.index, "season": games["season"], "team": games["away"], "rd": games["away_runs"] - games["home_runs"], "win": 1 - games["home_win"], "is_home": 0})
+    t = pd.concat([home, away]).sort_values(["season", "team", "gid"]); grp = t.groupby(["season", "team"])
+    t["n"] = grp.cumcount()                                                   # games already played
+    t["wpct"] = grp["win"].transform(lambda s: s.shift().expanding().mean())
+    t["rd_pg"] = grp["rd"].transform(lambda s: s.shift().expanding().mean())
+    t["last10"] = grp["win"].transform(lambda s: s.shift().rolling(10, min_periods=1).mean())
+    h = t[t["is_home"] == 1].set_index("gid").reindex(games.index); a = t[t["is_home"] == 0].set_index("gid").reindex(games.index)
+    X = pd.DataFrame({"season": games["season"], "home_win": games["home_win"], "n": np.minimum(h["n"], a["n"])})
+    for c in ["wpct", "rd_pg", "last10"]:
+        X["d_" + c] = h[c] - a[c]
+    return X[X["n"] >= 10].dropna()
+
+X = form_before_game(games)
+tr, te = X[X["season"] <= 2023], X[X["season"] >= 2024]; y = te["home_win"].values
+print(f"train {len(tr):,} games | test {len(te):,} games")
+print(f"{'always home':30s} accuracy {np.mean(y == 1):.1%}   log loss {log_loss(y, np.full(len(y), tr['home_win'].mean())):.4f}")
+print(f"{'better record so far':30s} accuracy {np.mean((te['d_wpct'] > 0).astype(int).values == y):.1%}")
+for feats in [["d_wpct"], ["d_wpct", "d_rd_pg"], ["d_wpct", "d_rd_pg", "d_last10"]]:
+    p = LogisticRegression().fit(tr[feats], tr["home_win"]).predict_proba(te[feats])[:, 1]
+    print(f"{' + '.join(feats):30s} accuracy {np.mean((p > 0.5) == y):.1%}   log loss {log_loss(y, p):.4f}")"""),
+("md", """**관찰**: 늘 홈팀이라고만 해도 53% 를 맞힌다. 경기 전 성적을 다 써도 55% 쯤이다. 야구는 원래 잘 맞히기 어려운 경기다 (아무리 강한 팀도 한 시즌에 60% 를 넘기기 어렵다). 승률보다 **득실차** 가 조금 더 도움이 되고 (운이 덜 섞인 실력), **최근 10경기 (연승 · 연패의 '기세')** 는 거의 보탬이 안 된다. 정확도 2% 차이는 작아 보이지만, 확률을 묻는 문제라면 로그 손실로 재야 그 차이가 제대로 보인다.
+
+## 다른 문제로 바꿔 보기
+
+- **선발 투수**: 오늘 누가 던지나 (`FIELDS` 에 101 · 103 번 칸, 선발 투수 ID 를 더한다). 투수의 지난 등판 성적을 입력에 넣으면 얼마나 오를까?
+- **관중 수 예측 (회귀)**: 한 행 = 경기, 출력 = 관중 수. 요일 · 낮/밤 · 두 팀 성적 · 구장. 구단 마케팅 · 티켓 가격 문제다.
+- **경기 시간 예측**: `minutes` 열. 2023년 피치 클록 도입 뒤 경기가 얼마나 짧아졌을까? (규칙 변경 = 데이터 분포가 바뀌는 순간)
+- **KBO 로**: 한국 프로야구 기록은 KBO 기록실 (koreabaseball.com) 에 있다. 같은 다섯 칸으로 문제를 다시 세워 보자."""),
 ]),
 # ------------------------------------------------------------------
 dict(slug="cyber_security", title="네트워크 침입 탐지", sector="플랫폼 · 서비스", keywords=["보안관제", "침입 탐지 (IDS)", "처음 보는 공격"],
@@ -2250,6 +2370,8 @@ PAPERS = {
     "air_quality": [("Liang et al. (2015) Assessing Beijing's PM2.5 pollution: severity, weather impact, APEC and winter heating, Proc. R. Soc. A", 'https://doi.org/10.1098/rspa.2015.0257')],
     "electricity": [('UCI 데이터 설명 (Hebrail & Berard, 2012)', 'https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption')],
     "football": [('Decroos et al. (2019) Actions Speak Louder Than Goals: Valuing Player Actions in Soccer, KDD', 'https://arxiv.org/abs/1802.07127')],
+    "baseball": [("Miller (2007) A Derivation of the Pythagorean Won-Loss Formula in Baseball, Chance", "https://arxiv.org/abs/math/0509698"),
+                 ("Retrosheet: 경기 기록 (game logs) 칸 설명", "https://www.retrosheet.org/gamelogs/glfields.txt")],
     "chess": [('McIlroy-Young et al. (2020) Aligning Superhuman AI with Human Behavior: Chess as a Model System (Maia), KDD', 'https://arxiv.org/abs/2006.01855')],
     "speech": [('Warden (2018) Speech Commands: A Dataset for Limited-Vocabulary Speech Recognition', 'https://arxiv.org/abs/1804.03209')],
     "crop": [('Hughes & Salathé (2015) An open access repository of images on plant health to enable the development of mobile disease diagnostics', 'https://arxiv.org/abs/1511.08060')],
@@ -2285,6 +2407,7 @@ FIT = {
     "air_quality": ('기상 · 환경 기관, 지자체, 공기청정 · 가전', '환경 데이터 분석가, 시계열 예측 데이터 사이언티스트'),
     "electricity": ('전력 · 에너지 공기업, 스마트홈 · 가전, 에너지 거래 플랫폼', '에너지 데이터 분석가, 수요예측 데이터 사이언티스트'),
     "football": ('프로 구단 · 스포츠 데이터 회사, 스포츠 중계 · 미디어, 게임 (스포츠)', '스포츠 데이터 분석가, 게임 데이터 사이언티스트'),
+    "baseball": ("프로 구단 전력분석 · 스카우트, 스포츠 데이터 · 중계, 야구 게임 · 판타지 스포츠", "전력 분석원 (세이버메트릭스), 스포츠 데이터 사이언티스트"),
     "chess": ('게임 회사, e스포츠 · 매칭 시스템, 교육용 AI', '게임 데이터 사이언티스트, 추천 · 매칭 엔지니어'),
     "speech": ('AI 스피커 · 가전, 자동차 (음성 제어), 통신사', '음성 인식 엔지니어, 온디바이스 AI 엔지니어'),
     "crop": ('스마트팜 · 농업 기술, 종자 · 비료, 공공 연구 (농촌진흥청 등)', '농업 AI 엔지니어, 비전 AI 엔지니어'),
@@ -2325,7 +2448,7 @@ def notebook(item):
 
 **데이터**: {item['data']} ({item['size']}). {item['data_src']}.
 
-인턴 · 산학협력 과제에서 처음 받게 될 데이터와 닮은 공개 데이터다. 데이터를 열어 보고, 아래 예시처럼 문제 하나를 정해 기준선과 비교한 뒤, 맨 끝의 **나의 다섯 칸** 을 채운다 (1주 2차시 '문제 정형화와 평가지표').
+산업 현장의 문제와 닮은 공개 데이터다. 데이터를 열어 보고, 아래 예시처럼 문제 하나를 정해 기준선과 비교한 뒤, 맨 끝의 **나의 다섯 칸** 을 채운다 (1주 2차시 '문제 정형화와 평가지표').
 
 {five_table(item['five'])}
 

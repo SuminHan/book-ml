@@ -624,6 +624,30 @@ def chess(thumb):
                         chart("가장 많이 둔 오프닝 10개", [bar(op.index[::-1], op.values[::-1], horizontal=True)], "판 수", "", "", margin=dict(l=200))])
 
 
+def baseball(thumb):
+    import zipfile
+    fields = {0: "date", 3: "away", 6: "home", 9: "away_runs", 10: "home_runs", 12: "day_night", 16: "park", 17: "attendance", 18: "minutes"}
+    frames = []
+    for y in [2015, 2016, 2017, 2018, 2019, 2021, 2022, 2023, 2024, 2025]:
+        with zipfile.ZipFile(os.path.join(D, "retrosheet", f"gl{y}.zip")) as z:
+            frames.append(pd.read_csv(z.open(z.namelist()[0]), header=None, usecols=list(fields)).rename(columns=fields))
+    g = pd.concat(frames, ignore_index=True); g["date"] = pd.to_datetime(g["date"].astype(str)); g["season"] = g["date"].dt.year
+    g = g[g["home_runs"] != g["away_runs"]]; g["home_win"] = (g["home_runs"] > g["away_runs"]).astype(int)
+    home = pd.DataFrame({"season": g["season"], "team": g["home"], "rs": g["home_runs"], "ra": g["away_runs"], "win": g["home_win"]})
+    away = pd.DataFrame({"season": g["season"], "team": g["away"], "rs": g["away_runs"], "ra": g["home_runs"], "win": 1 - g["home_win"]})
+    ts = pd.concat([home, away]).groupby(["season", "team"]).agg(w=("win", "mean"), rs=("rs", "sum"), ra=("ra", "sum")).reset_index()
+    ts["pythag"] = ts["rs"] ** 2 / (ts["rs"] ** 2 + ts["ra"] ** 2)
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.scatter(ts["pythag"] * 100, ts["w"] * 100, s=9, color=C1, alpha=0.6); ax.plot([30, 70], [30, 70], color="gray", ls=":")
+    ax.set_xlabel("득점²/(득점²+실점²) (%)"); ax.set_ylabel("실제 승률 (%)"); fig.tight_layout(); save_thumb(fig, thumb)
+    hw = g.groupby("season")["home_win"].mean() * 100
+    show = g[["date", "away", "home", "away_runs", "home_runs", "day_night", "attendance", "minutes"]].assign(date=lambda d: d["date"].dt.date)
+    return dict(stats=stats(show), sample=table(show),
+                charts=[chart("시즌별 홈팀 승률 (%)", [bar([str(s) for s in hw.index], hw.values.round(1))], "", "%", "늘 50% 보다 조금 높다: 홈 이점 (2020 단축 시즌은 뺐다)", xaxis=dict(type="category", title=""), yaxis=dict(range=[48, 56], title="%")),
+                        chart("팀 시즌: 득실로 계산한 승률 vs 실제 승률", [dict(type="scatter", mode="markers", x=(ts["pythag"] * 100).round(1).tolist(), y=(ts["w"] * 100).round(1).tolist(),
+                              text=(ts["season"].astype(str) + " " + ts["team"]).tolist(), marker=dict(color=S1, size=6, opacity=0.6), name="")],
+                              "피타고리안 승률 (%)", "실제 승률 (%)", "점수만 알아도 승률이 거의 맞는다 (빌 제임스)")])
+
+
 def cyber_security(thumb):
     cols = ["duration", "protocol_type", "service", "flag", "src_bytes", "dst_bytes"] + [f"f{i}" for i in range(6, 41)] + ["attack", "difficulty"]
     tr = pd.read_csv(os.path.join(D, "nslkdd_train.txt"), header=None, names=cols); te = pd.read_csv(os.path.join(D, "nslkdd_test.txt"), header=None, names=cols)

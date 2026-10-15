@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>체스: 누가 이길까? · 현실의 데이터</title>
-<meta name="description" content="두 사람의 레이팅만 보고 누가 이길지 알 수 있을까?">
+<meta name="description" content="두 사람의 레이팅과 지금까지 둔 수. 중계 화면처럼 &#x27;지금 누가 이기고 있나&#x27; 를 확률로 낼 수 있을까?">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shop.css">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -18,14 +18,14 @@
   <div>
     <div class="tag"><span class="num">33</span><span>스포츠 · 게임</span></div>
     <h1>체스: 누가 이길까?</h1>
-    <div class="chips"><span class="chip">게임 데이터</span><span class="chip">승패 예측</span><span class="chip">실력 측정 (레이팅)</span></div>
-    <p class="teaser-big">두 사람의 레이팅만 보고 누가 이길지 알 수 있을까?</p>
+    <div class="chips"><span class="chip">게임 데이터</span><span class="chip">실시간 승률 (중계)</span><span class="chip">실력 측정 (레이팅)</span></div>
+    <p class="teaser-big">두 사람의 레이팅과 지금까지 둔 수. 중계 화면처럼 &#x27;지금 누가 이기고 있나&#x27; 를 확률로 낼 수 있을까?</p>
     <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/33_chess.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="33_chess.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
 </div>
 <section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
-  <div class="io"><b>입력 X</b>백 · 흑 레이팅, 레이팅 차, 시간 규칙</div>
-  <div class="model">→ 모델 →<small>분류</small></div>
+  <div class="io"><b>입력 X</b>레이팅 차 + 그 시점 판의 기물 점수 차 (폰 1 · 나이트/비숍 3 · 룩 5 · 퀸 9)</div>
+  <div class="model">→ 모델 →<small>분류 (확률)</small></div>
   <div class="io"><b>출력 y (기대하는 답)</b>백 승 / 무승부 / 흑 승</div>
 </div></section>
 <section class="block"><h2>데이터</h2>
@@ -38,11 +38,14 @@
   <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="Result">Result</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: 1-0 (51.2%)">가장 흔한 값: 1-0 (51.2%)</td></tr><tr><td title="WhiteElo">WhiteElo</td><td title="숫자">숫자</td><td title="0">0</td><td title="1337">1337</td><td title="782 ~ 2403 (평균 1,606.0)">782 ~ 2403 (평균 1,606.0)</td></tr><tr><td title="BlackElo">BlackElo</td><td title="숫자">숫자</td><td title="0">0</td><td title="1356">1356</td><td title="789 ~ 2386 (평균 1,595.8)">789 ~ 2386 (평균 1,595.8)</td></tr><tr><td title="TimeControl">TimeControl</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="394">394</td><td title="가장 흔한 값: 60+0 (12.0%)">가장 흔한 값: 60+0 (12.0%)</td></tr><tr><td title="Termination">Termination</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: Normal (68.8%)">가장 흔한 값: Normal (68.8%)</td></tr><tr><td title="Opening">Opening</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="1846">1846</td><td title="가장 흔한 값: Van&#x27;t Kruijs Opening (3.3%)">가장 흔한 값: Van&#x27;t Kruijs Opening (3.3%)</td></tr><tr><td title="ECO">ECO</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="411">411</td><td title="가장 흔한 값: A00 (7.8%)">가장 흔한 값: A00 (7.8%)</td></tr><tr><td title="diff">diff</td><td title="숫자">숫자</td><td title="0">0</td><td title="1654">1654</td><td title="-1257 ~ 1257 (평균 10.15)">-1257 ~ 1257 (평균 10.15)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>레이팅 차에 따른 백 승률</h3><p class="note">차가 클수록 높은 쪽이 이긴다 (Elo 의 설계대로)</p><div class="plot" id="plot-0" role="img" aria-label="레이팅 차에 따른 백 승률"></div></div><div class="chart"><h3>가장 많이 둔 오프닝 10개</h3><div class="plot" id="plot-1" role="img" aria-label="가장 많이 둔 오프닝 10개"></div></div></div></section>
 <div class="stack">
-  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>대국 하나</td></tr><tr><td>② 입력 X</td><td>백 · 흑 레이팅, 레이팅 차, 시간 규칙</td></tr><tr><td>③ 출력 y</td><td>백 승 / 무승부 / 흑 승</td></tr><tr><td>④ 평가지표</td><td>정확도 · 로그 손실</td></tr><tr><td>⑤ 기준선</td><td>레이팅이 높은 쪽이 이긴다</td></tr></tbody></table>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>대국 하나를 N수 둔 시점 (10 · 20 · 30수)</td></tr><tr><td>② 입력 X</td><td>레이팅 차 + 그 시점 판의 기물 점수 차 (폰 1 · 나이트/비숍 3 · 룩 5 · 퀸 9)</td></tr><tr><td>③ 출력 y</td><td>백 승 / 무승부 / 흑 승</td></tr><tr><td>④ 평가지표</td><td>정확도 · 로그 손실</td></tr><tr><td>⑤ 기준선</td><td>레이팅만 보기</td></tr></tbody></table>
     <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
-  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">always white wins     : accuracy 51.3%
-higher rating wins    : accuracy 64.2%
-logistic (3 numbers)  : accuracy 64.1%, log loss 0.730</pre></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">after 10 moves (47,420 games)  rating only        accuracy 63.6%  log loss 0.748
+after 10 moves (47,420 games)  rating + material  accuracy 64.3%  log loss 0.740
+after 20 moves (40,252 games)  rating only        accuracy 63.2%  log loss 0.765
+after 20 moves (40,252 games)  rating + material  accuracy 67.9%  log loss 0.711
+after 30 moves (26,988 games)  rating only        accuracy 61.4%  log loss 0.816
+after 30 moves (26,988 games)  rating + material  accuracy 69.5%  log loss 0.716</pre></section>
 </div>
 <div class="two">
   <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div><div class="metric"><div class="what"><b>로그 손실 (log loss)</b><span>확률을 얼마나 잘 맞혔나 (작을수록 좋다)</span></div><div class="tex" data-tex="-\frac{1}{n}\sum_{i=1}^{n}\big[y_i \log p_i + (1 - y_i)\log(1 - p_i)\big]">-\frac{1}{n}\sum_{i=1}^{n}\big[y_i \log p_i + (1 - y_i)\log(1 - p_i)\big]</div></div></section>
@@ -52,9 +55,9 @@ logistic (3 numbers)  : accuracy 64.1%, log loss 0.730</pre></section>
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/2006.01855" target="_blank" rel="noopener">McIlroy-Young et al. (2020) Aligning Superhuman AI with Human Behavior: Chess as a Model System (Maia), KDD</a></li></ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>게임 회사, e스포츠 · 매칭 시스템, 교육용 AI</dd><dt>직무</dt><dd>게임 데이터 사이언티스트, 추천 · 매칭 엔지니어</dd></dl>
-    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+    <p class="src" style="margin-top:8px">프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<nav class="pager"><a href="../football/">← 32 축구: 이 슛은 골일까?</a><a href="../document_types/">34 문서 종류 자동 분류 →</a></nav>
+<nav class="pager"><a href="../football/">← 32 축구: 이 슛은 골일까?</a><a href="../baseball/">34 야구: 오늘 경기, 홈팀이 이길까? →</a></nav>
 <footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">

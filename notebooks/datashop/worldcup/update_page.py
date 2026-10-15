@@ -38,7 +38,7 @@ s = open(PAGE, encoding="utf-8").read()
 s = re.sub(r"const CANDS = \[.*?\];\n", lambda m: "const CANDS = " + json.dumps(cands, ensure_ascii=False) + ";\n", s, count=1, flags=re.S)
 s = re.sub(r"const CREDITS = \{.*?\};\n", lambda m: "const CREDITS = " + json.dumps(credits, ensure_ascii=False) + ";\n", s, count=1, flags=re.S)
 n = len(cands)
-s = re.sub(r"공개 데이터 \d+개\.", f"공개 데이터 {n}개.", s)
+s = re.sub(r"공개 데이터 \d+개", f"공개 데이터 {n}개", s)
 s = re.sub(r'\[\[\d+, "\d+강", "[^"]*"\], \[\d+, "\d+강", "[^"]*"\]\]', f'[[32, "32강", "{n}개 중 무작위 32개 · 31경기"], [16, "16강", "{n}개 중 무작위 16개 · 15경기"]]', s)
 s = re.sub(r"let mode = \d+;", "let mode = 32;", s)
 s = s.replace('if (!c) { li.textContent = `${byId[id].title}: 직접 그린 패턴 그림 (원형 · 쪼개기와 모으기 · 한곳에 모으기)`; }',
