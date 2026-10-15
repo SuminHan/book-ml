@@ -684,24 +684,57 @@ def hiring_match(thumb):
                         chart("이력서 길이 (단어 수)", [bar(*hist_bins(meta["resume_words"].clip(0, 1500), np.arange(0, 1550, 50)))], "단어 수", "이력서 수")])
 
 
+def basemap_tiles(lat, lon, zoom=11):
+    """Light map tiles (Esri World Light Gray Canvas) covering lat/lon, stitched; returns (image, extent in Web Mercator)"""
+    import math, urllib.request
+    from PIL import Image
+    n = 2 ** zoom; R = 6378137.0
+    tx = lambda lo: int((lo + 180) / 360 * n)
+    ty = lambda la: int((1 - math.asinh(math.tan(math.radians(la))) / math.pi) / 2 * n)
+    x0, x1, y0, y1 = tx(min(lon)), tx(max(lon)), ty(max(lat)), ty(min(lat))
+    img = Image.new("RGB", ((x1 - x0 + 1) * 256, (y1 - y0 + 1) * 256))
+    for x in range(x0, x1 + 1):
+        for y in range(y0, y1 + 1):
+            path = os.path.join(D, "tiles", f"esri_{zoom}_{x}_{y}.jpg")
+            if not os.path.exists(path):
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                req = urllib.request.Request(f"https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{zoom}/{y}/{x}", headers={"User-Agent": "ML course datashop"})
+                open(path, "wb").write(urllib.request.urlopen(req, timeout=60).read())
+            img.paste(Image.open(path).convert("RGB"), ((x - x0) * 256, (y - y0) * 256))
+    size = 2 * math.pi * R / n; left, top = -math.pi * R + x0 * size, math.pi * R - y0 * size
+    return img, (left, left + img.width / 256 * size, top - img.height / 256 * size, top)
+
+
+def to_merc(lat, lon):
+    R = 6378137.0
+    return R * np.radians(lon), R * np.log(np.tan(np.pi / 4 + np.radians(lat) / 2))
+
+
 def traffic_speed(thumb):
-    df = pd.read_parquet(os.path.join(D, "metrla_test.parquet"), columns=["node_id", "t0_timestamp", "x_t+0_d0"])
-    loc = pd.read_csv(os.path.join(D, "metrla_locations.csv")); df["time"] = pd.to_datetime(df["t0_timestamp"])
+    df = pd.read_parquet(os.path.join(D, "pemsbay_test.parquet"), columns=["node_id", "t0_timestamp", "x_t+0_d0"])
+    loc = pd.read_csv(os.path.join(D, "pemsbay_locations.csv")); df["time"] = pd.to_datetime(df["t0_timestamp"])
     piv = df.pivot(index="time", columns="node_id", values="x_t+0_d0").replace(0, np.nan)
-    day = piv.loc["2012-06-05"].iloc[::3]
-    lat, lon = loc.iloc[:, -2].values, loc.iloc[:, -1].values
+    day = piv.loc["2017-06-06"].iloc[::3]
+    mx, my = to_merc(loc["latitude"].values, loc["longitude"].values)
+    padx, pady = (mx.max() - mx.min()) * 0.06, (my.max() - my.min()) * 0.06
+    xlim, ylim = (mx.min() - padx, mx.max() + padx), (my.min() - pady, my.max() + pady)
+    img, ext = basemap_tiles(loc["latitude"], loc["longitude"])
     def frame(k):
         fig, ax = plt.subplots(figsize=(4.8, 3)); row = day.iloc[k].reindex(range(len(loc))).values
-        ax.scatter(lon, lat, c=row, cmap="RdYlGn", vmin=20, vmax=70, s=14); ax.set_xticks([]); ax.set_yticks([])
-        ax.text(0.02, 0.92, day.index[k].strftime("%H:%M"), transform=ax.transAxes, fontsize=13, fontweight="bold", color=C1)
+        ax.imshow(img, extent=ext, alpha=0.85, zorder=0)
+        ax.scatter(mx, my, c=row, cmap="RdYlGn", vmin=20, vmax=70, s=16, edgecolors="black", linewidths=0.25, zorder=2)
+        ax.set_xlim(xlim); ax.set_ylim(ylim); ax.set_aspect("auto"); ax.set_xticks([]); ax.set_yticks([])
+        ax.text(0.02, 0.9, day.index[k].strftime("%H:%M"), transform=ax.transAxes, fontsize=13, fontweight="bold", color=C1)
+        ax.text(0.99, 0.01, "Tiles © Esri", transform=ax.transAxes, ha="right", fontsize=5, color="#666666")
         for sp in ax.spines.values(): sp.set_visible(False)
         fig.subplots_adjust(0, 0, 1, 1); return fig
     save_gif(frame, len(day), thumb.replace(".png", ".gif"), fps=8)
-    one = piv[5].loc["2012-06-04":"2012-06-10"]
+    node = piv.groupby(piv.index.hour).mean().std().idxmax()
+    one = piv[node].loc["2017-06-05":"2017-06-11"]
     avg = piv.mean(1); byt = avg.groupby(avg.index.strftime("%H:%M")).mean().iloc[::6]
     return dict(thumb="thumb.gif", stats=stats(df[["node_id", "time", "x_t+0_d0"]].rename(columns={"x_t+0_d0": "speed_mph"})),
                 sample=table(df[["node_id", "t0_timestamp", "x_t+0_d0"]].rename(columns={"x_t+0_d0": "speed_mph"})),
-                charts=[chart("센서 5번, 일주일 속도 (mph)", [dict(type="scatter", mode="lines", x=[str(t) for t in one.index], y=one.round(1).tolist(), line=dict(color=S1, width=1), name="")], "", "mph", "출퇴근 시간에 푹 꺼진다 (빈 곳은 센서 고장)"),
+                charts=[chart(f"센서 {node}번, 일주일 속도 (mph)", [dict(type="scatter", mode="lines", x=[str(t) for t in one.index], y=one.round(1).tolist(), line=dict(color=S1, width=1), name="")], "", "mph", "하루 속도가 가장 크게 출렁이는 센서. 출퇴근 시간에 푹 꺼진다"),
                         chart("하루 중 시각별 전체 평균 속도", [line(byt.index, byt.values.round(1))], "시각", "mph")])
 
 

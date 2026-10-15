@@ -19,11 +19,12 @@ Wide cinematic banner, 16:5 aspect ratio, photorealistic editorial photography, 
 1. **비슷한 옷 추천** (`fashion_commerce`)
    `A bright modern clothing boutique with colorful shirts and dresses neatly arranged on racks, a few items highlighted as if being recommended, warm store lighting`
 2. **영화 추천** (`movie_ratings`)
-   `A cozy living room at night with a large TV showing a grid of blurred movie posters, a hand holding a remote, popcorn bowl on a sofa, soft blue screen glow`
+   `A cozy living room at night, a large TV showing a grid of clearly different video thumbnails without text (animated film, whale documentary, football match, space movie, beach romance, cooking show, concert, horror film, cartoon, car chase, mountains), a hand holding a remote, popcorn bowl, soft blue glow`
+   TV 화면의 포스터 14장은 생성 그림 위에 합성한 실제 영화 포스터입니다 (모두 Wikimedia Commons 의 퍼블릭 도메인): [Boris Bilinski (1900-1948) Plakat für den Film Metropolis (1)](https://commons.wikimedia.org/wiki/File:Boris_Bilinski_%281900-1948%29_Plakat_f%C3%BCr_den_Film_Metropolis_%281%29.jpg), [Night Of The Living Dead (1968) - Poster](https://commons.wikimedia.org/wiki/File:Night_Of_The_Living_Dead_%281968%29_-_Poster.jpg), [Charade (1963 poster)](https://commons.wikimedia.org/wiki/File:Charade_%281963_poster%29.jpg), [The General (1926) - Movie Poster 2](https://commons.wikimedia.org/wiki/File:The_General_%281926%29_-_Movie_Poster_2.png), [Safety last poster](https://commons.wikimedia.org/wiki/File:Safety_last_poster.jpg), [The Kid (1921) poster](https://commons.wikimedia.org/wiki/File:The_Kid_%281921%29_poster.jpg), [Voyage dans la Lune affiche](https://commons.wikimedia.org/wiki/File:Voyage_dans_la_Lune_affiche.jpg), [The Thief of Bagdad (1924) - film poster](https://commons.wikimedia.org/wiki/File:The_Thief_of_Bagdad_%281924%29_-_film_poster.jpg), [The Cabinet of Doctor Caligari Movie poster](https://commons.wikimedia.org/wiki/File:The_Cabinet_of_Doctor_Caligari_Movie_poster.jpg), [Wings (1927) poster](https://commons.wikimedia.org/wiki/File:Wings_%281927%29_poster.jpg), [Detour (poster)](https://commons.wikimedia.org/wiki/File:Detour_%28poster%29.jpg), [D.O.A. (1950 poster)](https://commons.wikimedia.org/wiki/File:D.O.A._%281950_poster%29.jpg), [His Girl Friday (1940 poster)](https://commons.wikimedia.org/wiki/File:His_Girl_Friday_%281940_poster%29.jpg), [Phantom of the opera 1925 poster](https://commons.wikimedia.org/wiki/File:Phantom_of_the_opera_1925_poster.jpg)
 3. **쇼핑몰 구매 전환** (`shop_conversion`)
    `A person's hands holding a smartphone showing an online shopping cart screen (blurred, no text), cosmetics products softly blurred on a desk in the background`
 4. **한국어 리뷰 감성** (`korean_reviews`)
-   `A Korean movie theater lobby at night with colorful posters and neon signs, people writing reviews on their phones, Seoul city atmosphere`
+   `The outdoor plaza of the Busan Cinema Center at early evening, its huge wavy cantilevered roof with soft warm lights, blue-hour sky, a few moviegoers on benches writing short reviews on their phones, natural colors, no neon`
 5. **광고 클릭률 (CTR)** (`ad_ctr`)
    `A busy city square at dusk covered with large colorful digital billboards, abstract shapes on the screens, crowds walking by, motion blur`
 
@@ -32,7 +33,7 @@ Wide cinematic banner, 16:5 aspect ratio, photorealistic editorial photography, 
 6. **카드 이상거래 (보이스피싱 등)** (`card_fraud`)
    `Close-up of a contactless card payment terminal at a shop counter, a red warning glow on the terminal screen, a shadowy hand in the background, tense mood`
 7. **자금세탁 거래 탐지** (`aml_transactions`)
-   `Abstract visualization of money flowing between bank icons and people icons as glowing lines in a network, some loops highlighted in red, dark navy background`
+   `Dark navy network illustration of bank, person, crypto coin and wallet icons; most edges calm blue, one suspicious part in red and orange: a red account with many edges fanning in, money scattering and gathering again, a closed red cycle of four accounts, and a chain hopping through a coin to hide the trail`
 8. **주가 지수: 내일 오를까?** (`stock_index`)
    `A trading desk with several monitors showing green and red line charts and candlesticks (no numbers), city skyline through the window at sunrise`
 9. **대출 상환 · 신용평가** (`credit_default`)
@@ -56,13 +57,13 @@ Wide cinematic banner, 16:5 aspect ratio, photorealistic editorial photography, 
 ## 도시 · 공간
 
 16. **뉴욕 택시 수요 (시공간)** (`taxi_demand`)
-    `Aerial view of Manhattan avenues at dusk filled with yellow taxis, a semi-transparent heat map glowing over the city blocks`
+    `Top-down aerial photo of Manhattan avenues at dusk with taxis on the streets, a thin semi-transparent grid of square zones over the blocks, some cells softly tinted yellow to orange where many taxis gather, like a data overlay`
 17. **자율주행: 옆 차 궤적 예측** (`vehicle_trajectory`)
-    `Bird's-eye view of a multi-lane highway with cars, each car leaving a glowing predicted path line ahead of it, one car's path curving into the next lane`
+    `Realistic top-down drone photo of one direction of a four-lane highway, all cars driving left to right, a short dotted predicted path ahead of each car, one car's orange path curving smoothly into the next lane`
 18. **집값 예측** (`real_estate`)
     `Aerial view of a sunny California suburb with colorful roofs and palm trees near the coast, a soft gradient overlay from cool to warm colors`
 19. **지진: 시공간 데이터** (`earthquakes`)
-    `A world map seen from above with glowing dots along the Pacific Ring of Fire, ripples spreading from a few points, dark ocean and teal land`
+    `Accurate dark world map with the Pacific Ocean in the center, muted teal land, small glowing orange dots along the real Pacific Ring of Fire, soft ripple circles around three or four of them`
 20. **도로 교통 속도 (내비)** (`traffic_speed`)
     `Los Angeles freeway interchange at sunset with streams of car headlights and taillights, road segments colored green, yellow and red like a navigation app`
 21. **미세먼지 예보** (`air_quality`)
@@ -99,7 +100,7 @@ Wide cinematic banner, 16:5 aspect ratio, photorealistic editorial photography, 
 32. **축구: 이 슛은 골일까?** (`football`)
     `A football striker taking a shot toward the goal in a packed stadium at night, a glowing arc showing the ball's path, dramatic floodlights`
 33. **체스: 누가 이길까?** (`chess`)
-    `A wooden chess board mid-game in a park, two players' hands about to move pieces, warm afternoon light, shallow depth of field`
+    `A real wooden 8 x 8 chess board in a park seen from one player's side, a believable middle-game position with each piece on its own square, one hand about to move a knight, warm afternoon light, shallow depth of field`
 
 ## 전문 서비스
 

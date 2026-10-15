@@ -26,12 +26,12 @@ for c in cands:
     elif i in covers:
         cv = covers[i]
         credits[i] = dict(title=cv["title"].replace("File:", ""), artist=cv["artist"] or "작자 미상", license=cv["license"], page=cv["page"])
-        if not os.path.exists(path):
-            raw = urllib.request.urlopen(urllib.request.Request(cv["thumb"], headers={"User-Agent": "ML course datashop"}), timeout=120).read()
-            im = Image.open(io.BytesIO(raw)).convert("RGB"); w, h = 480, 300
-            r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
-            l, t = (im.width - w) // 2, (im.height - h) // 2; im.crop((l, t, l + w, t + h)).save(path, quality=72)
-            print("image", i)
+        cache = os.path.join(HERE, "..", "data", "covers", i + ".jpg")
+        raw = open(cache, "rb").read() if os.path.exists(cache) else urllib.request.urlopen(urllib.request.Request(cv["thumb"], headers={"User-Agent": "ML course datashop"}), timeout=120).read()
+        im = Image.open(io.BytesIO(raw)).convert("RGB"); w, h = 960, 300     # 16:5 like the card
+        r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
+        l, t = (im.width - w) // 2, round((im.height - h) * cv.get("valign", 0.5)); im.crop((l, t, l + w, t + h)).save(path, quality=80)
+        print("image", i)
     else:
         credits[i] = None          # drawn from the data (자금세탁 패턴 · 법인카드 지출 그래프)
 s = open(PAGE, encoding="utf-8").read()
