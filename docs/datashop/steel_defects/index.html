@@ -43,6 +43,10 @@
 random forest                   : accuracy 80.3%</pre></section>
 </div>
 <div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.kaggle.com/competitions/severstal-steel-defect-detection" target="_blank" rel="noopener">Severstal Steel Defect (Kaggle)</a> <span>· 강판 사진에서 결함 위치 찾기</span></li><li><a href="https://www.mvtec.com/company/research/datasets/mvtec-ad" target="_blank" rel="noopener">MVTec AD</a> <span>· 공장 부품 15종의 이상 (결함) 사진</span></li><li><a href="https://huggingface.co/datasets?search=surface%20defect" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://archive.ics.uci.edu/dataset/198/steel+plates+faults" target="_blank" rel="noopener">UCI Steel Plates Faults 데이터 설명 (Semeion Research Center)</a></li></ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>철강 · 금속, 자동차 부품, 비전 검사 장비</dd><dt>직무</dt><dd>비전 검사 AI 엔지니어, 품질 엔지니어</dd></dl>
@@ -51,6 +55,9 @@ random forest                   : accuracy 80.3%</pre></section>
 <nav class="pager"><a href="../predictive_maintenance/">← 15 설비 고장 예측 (예지보전)</a><a href="../bearing_vibration/">17 베어링 진동으로 고장 진단 →</a></nav>
 <footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>
 const CHARTS = [{"title": "결함 종류별 개수", "note": "'Other_Faults' (기타) 가 가장 많다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["Other_Faults", "Bumps", "K_Scatch", "Z_Scratch", "Pastry", "Stains", "Dirtiness"], "y": [673, 402, 391, 190, 158, 72, 55]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "개수"}}}, {"title": "결함 종류별 결함 넓이 (중앙값)", "note": "종류마다 크기가 수십 배 다르다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["Stains", "Bumps", "Dirtiness", "Other_Faults", "Z_Scratch", "Pastry", "K_Scatch"], "y": [16.5, 120.5, 145.0, 146.0, 146.0, 209.0, 6281.0]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"type": "log", "title": "픽셀 수 (로그 눈금)"}}}];

@@ -43,6 +43,10 @@
 rule: ACH        accuracy 88.244%  precision 0.7%  recall 86.6%</pre></section>
 </div>
 <div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정밀도 (precision)</b><span>&#x27;양성&#x27; 이라고 한 것 중 진짜 양성의 비율 (헛짚지 않았나)</span></div><div class="tex" data-tex="\text{Precision} = \frac{TP}{TP + FP}">\text{Precision} = \frac{TP}{TP + FP}</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml" target="_blank" rel="noopener">IBM AML 원본 (Kaggle)</a> <span>· HI · LI × Small · Medium · Large 6가지 크기</span></li><li><a href="https://www.kaggle.com/datasets/ellipticco/elliptic-data-set" target="_blank" rel="noopener">Elliptic (Kaggle)</a> <span>· 비트코인 거래 그래프의 불법 거래 표시</span></li><li><a href="https://huggingface.co/datasets?search=anti%20money%20laundering" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/2306.16424" target="_blank" rel="noopener">Altman et al. (2023) Realistic Synthetic Financial Transactions for Anti-Money Laundering Models, NeurIPS Datasets and Benchmarks</a></li></ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>은행 · 증권 · 카드사, 핀테크 · 가상자산 거래소, 금융 감독 · 규제</dd><dt>직무</dt><dd>자금세탁방지 (AML) 분석가, 그래프 ML 엔지니어, 컴플라이언스</dd></dl>
@@ -51,6 +55,9 @@ rule: ACH        accuracy 88.244%  precision 0.7%  recall 86.6%</pre></section>
 <nav class="pager"><a href="../card_fraud/">← 05 카드 이상거래 탐지 (보이스피싱 · 자금세탁 등)</a><a href="../stock_index/">07 주가 지수: 내일 오를까? →</a></nav>
 <footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>
 const CHARTS = [{"title": "결제 형식별 세탁 비율", "note": "ACH (자동 이체) 에서 가장 높다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["ACH", "Bitcoin", "Cash", "Cheque", "Credit Card", "Reinvestment", "Wire"], "y": [0.746, 0.038, 0.022, 0.017, 0.016, 0.0, 0.0]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "세탁 비율 (%)"}}}, {"title": "날짜별 세탁 거래 수", "note": "처음 열흘 남짓에 몰려 있고 뒤로 갈수록 적다: 시간 순서로 나누면 시험 기간의 세탁 비율이 달라진다", "traces": [{"type": "scatter", "mode": "lines+markers", "x": ["2022-09-01", "2022-09-02", "2022-09-03", "2022-09-04", "2022-09-05", "2022-09-06", "2022-09-07", "2022-09-08", "2022-09-09", "2022-09-10", "2022-09-11", "2022-09-12", "2022-09-13", "2022-09-14", "2022-09-15", "2022-09-16", "2022-09-17", "2022-09-18"], "y": [322, 408, 391, 407, 471, 531, 497, 539, 514, 442, 232, 170, 106, 70, 28, 26, 15, 8], "line": {"color": "var:series-2", "width": 2}, "name": ""}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "세탁 거래 수"}}}];

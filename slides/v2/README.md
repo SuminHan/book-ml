@@ -58,54 +58,55 @@ python3 slides/v2/tools/deck.py sheet  <덱폴더>        # 전체를 12장씩 �
 | 주 | 주제 폴더 | 내용 | 상태 |
 |---|---|---|---|
 | 1 | `week01/course_intro` | 첫 강의: AI는 과학인가 공학인가 · 역사 · 이 수업의 방식 (50분, 이 덱은 그대로 둔다) | 29쪽 (표지 + 28) |
-| 1 | `week01/overfitting` | 과대적합과 과소적합 | — |
-| 1 | `week01/dirty_data` | 더티 데이터 (1주 3차시) | 14쪽 · 실습: 더럽힌 iris 청소 |
+| 1 | `week01/problem_formulation` | 문제 정형화와 평가지표 (1주 2차시): 같은 데이터, 다른 문제 정의 · 기준선 · 지표 | 21쪽 · 실습: 와인 두 문제 + 항공 승객 기준선 + IBM AML (거래 vs 계좌) + AlphaFold |
+| 1 | `week01/data_handling` | 데이터 직접 다루기 (1주 3차시): 더티 데이터 + 정규화 · 표준화 (옛 dirty_data + feature_scaling) | 30쪽 · 실습: iris 청소 + 표 · 흑백/컬러 이미지 · 언어 · 시계열 · 소리 · 비디오 |
+| 2 | `week02/overfitting` | 과대적합과 과소적합 | 16쪽 · 실습: 성적표 재현 + 5겹 CV 직접 구현 + cars 차수 고르기 |
 | 2 | `week02/linear_regression` | 선형회귀 | 16쪽 · 실습: 경사하강법 구현 + Auto MPG |
 | 2 | `week02/sgd` | SGD 확률적 경사하강법 | 23쪽 · 실습: diabetes SGD + PyTorch MNIST |
 | 2 | `week02/logistic_regression` | 로지스틱회귀 (쇼츠 없음) | 14쪽 · 실습: 한 줄 바꿔 구현 + 타이타닉 + PR 곡선 |
 | 2 | `week02/cross_entropy` | 교차 엔트로피 | 15쪽 · 실습: 유방암 CE vs MSE + 셰익스피어 다음 글자 |
-| 2 | `week02/precision_recall` | 정밀도와 재현율 | — |
-| 2 | `week02/pr_auc` | PR-AUC | — |
-| 3 | `week03/gaussian` | 가우시안 분포 | — |
+| 2 | `week02/precision_recall` | 정밀도와 재현율 | 15쪽 · 실습: 혼동 행렬·F1 구현 + 기준선 + Pima 당뇨병 |
+| 2 | `week02/pr_auc` | ROC-AUC와 PR-AUC | 14쪽 · 실습: 짝 세기·줄 세우기 구현 + 음성 10배 + 오존 경보 |
+| 3 | `week03/gaussian` | 가우시안 분포 | 15쪽 · 실습: 골턴 보드 + 펭귄 종 맞추기·분류 |
 | 3 | `week03/naive_bayes` | 나이브 베이즈 | 25쪽 · 실습: UCI SMS Spam |
-| 4 | `week04/knn` | kNN 최근접 이웃 | — |
-| 4 | `week04/kmeans` | k-means 클러스터링 | — |
-| 4 | `week04/em_algorithm` | EM 알고리즘 | — |
-| 5 | `week05/svm` | 서포트 벡터 머신 | — |
-| 6 | `week06/regularization` | 정규화: L1 · L2 (Ridge · Lasso) — 쇼츠 없음, 실습 위주 | — |
-| 6 | `week06/cross_validation` | 교차검증: λ 를 데이터로 — 쇼츠 없음, 실습 위주 | — |
-| 6 | `week06/train_val_test` | train / val / test 분리와 데이터 누수 — 쇼츠 없음, 실습 위주 | — |
-| 6 | `week06/early_stopping` | Early Stopping 조기 종료 | — |
-| 7 | `week07/decision_tree` | 결정 트리 | — |
-| 7 | `week07/entropy` | 섀넌 엔트로피 | — |
-| 7 | `week07/random_forest` | 랜덤 포레스트 | — |
-| 7 | `week07/gbdt_shap` | GBDT와 SHAP | — |
+| 4 | `week04/knn` | kNN 최근접 이웃 | 13쪽 · 실습: kNN 구현 + 와인 표준화 + 차원의 저주 |
+| 4 | `week04/kmeans` | k-means 클러스터링 | 14쪽 · 실습: k-means 구현 + 펭귄 라벨 없이 3무리 + 엘보우 |
+| 4 | `week04/em_algorithm` | EM 알고리즘 | 13쪽 · 실습: E·M 구현 + 올드 페이스풀 + GMM vs k-means |
+| 5 | `week05/svm` | 서포트 벡터 머신 | 12쪽 · 실습: 마진·서포트 벡터 + 지폐 위조 + C·γ 고르기 |
+| 6 | `week06/regularization` | 정규화: L1 · L2 (Ridge · Lasso) — 쇼츠 없음, 실습 위주 | 13쪽 · 실습: 릿지 정답 식 + 계수 경로 + diabetes 라쏘 |
+| 6 | `week06/cross_validation` | 교차검증: λ 를 데이터로 — 쇼츠 없음, 실습 위주 | 14쪽 · 실습: k겹 구현 + 한 번 나누기 비교 + 붓꽃 정렬 함정 + LassoCV |
+| 6 | `week06/train_val_test` | train / val / test 분리와 데이터 누수 — 쇼츠 없음, 실습 위주 | 13쪽 · 실습: 동전 실험 Pipeline + GroupKFold · TimeSeriesSplit + 3분할 |
+| 6 | `week06/early_stopping` | Early Stopping 조기 종료 | 13쪽 · 실습: 학습 곡선 + 참을성 구현 + sklearn early_stopping |
+| 7 | `week07/decision_tree` | 결정 트리 | 13쪽 · 실습: 지니·best_split 구현 + plot_tree + 타이타닉 깊이 |
+| 7 | `week07/entropy` | 섀넌 엔트로피 | 13쪽 · 실습: 엔트로피 구현 + 정보 이득 + 셜록 홈스 글자 엔트로피 |
+| 7 | `week07/random_forest` | 랜덤 포레스트 | 13쪽 · 실습: 숲 직접 만들기 + OOB + 타이타닉 |
+| 7 | `week07/gbdt_shap` | GBDT와 SHAP | 15쪽 · 실습: 부스팅 구현 + 타이타닉 GBDT + 섀플리 값 직접 계산 |
 | 8 | `week08/ablation` | Ablation 테스트 | — |
 | 8 | `week08/good_researcher` | 좋은연구자가되려면 | — |
 | 8 | `week08/peer_review` | AI 논문 리뷰 | — |
-| 9 | `week09/xor_backprop` | XOR과 역전파 | — |
-| 9 | `week09/vanishing_gradient` | 기울기 소실 Vanishing Gradient | — |
-| 9 | `week09/dropout` | Dropout 드롭아웃 | — |
-| 9 | `week09/batchnorm` | BatchNorm 배치 정규화 | — |
-| 9 | `week09/momentum_adam` | 모멘텀과 Adam | — |
-| 10 | `week10/cnn` | CNN 합성곱 신경망 | — |
-| 10 | `week10/resnet` | ResNet 잔차 신경망 | — |
-| 10 | `week10/data_augmentation` | 데이터 증강 Data Augmentation | — |
-| 11 | `week11/rnn` | RNN 순환 신경망 | — |
-| 11 | `week11/lstm` | LSTM 장단기 메모리 | — |
-| 12 | `week12/attention` | 어텐션 | — |
-| 12 | `week12/seq2seq` | Seq2Seq 시퀀스투시퀀스 | — |
-| 12 | `week12/transformer` | 트랜스포머 | — |
-| 13 | `week13/gcn` | GCN 그래프 신경망 | — |
-| 14 | `week14/pca` | PCA 주성분 분석 | — |
-| 14 | `week14/tsne` | t-SNE 데이터 지도 | — |
-| 14 | `week14/word2vec` | word2vec | — |
-| 14 | `week14/embedding` | 표상과 임베딩 | — |
-| 14 | `week14/bert` | BERT 빈칸 채우기 | — |
-| 15 | `week15/vae` | VAE 변분 오토인코더 | — |
-| 15 | `week15/kl_divergence` | KL 발산 | — |
-| 15 | `week15/gan` | GAN 생성적 적대 신경망 | — |
-| 15 | `week15/diffusion` | Diffusion 확산 모델 | — |
+| 9 | `week09/xor_backprop` | XOR과 역전파 | 15쪽 · 실습: numpy 역전파 + 기울기 확인 + PyTorch |
+| 9 | `week09/vanishing_gradient` | 기울기 소실 Vanishing Gradient | 12쪽 · 실습: 초기화 + MNIST 층별 기울기 + 활성 함수 비교 |
+| 9 | `week09/dropout` | Dropout 드롭아웃 | 12쪽 · 실습: 드롭아웃 구현 + MNIST 2,000장 + eval 함정 |
+| 9 | `week09/batchnorm` | BatchNorm 배치 정규화 | 11쪽 · 실습: BN 구현 + 시그모이드 8층 + eval |
+| 9 | `week09/momentum_adam` | 모멘텀과 Adam | 12쪽 · 실습: 세 방법 구현 + 학습률 격자 + torch.optim |
+| 10 | `week10/cnn` | CNN 합성곱 신경망 | 13쪽 · 실습: 합성곱 구현 + 크기/가중치 + CNN vs MLP |
+| 10 | `week10/resnet` | ResNet 잔차 신경망 | 11쪽 · 실습: 잔차 블록 + 깊이 실험 + 기울기 · resnet18 |
+| 10 | `week10/data_augmentation` | 데이터 증강 Data Augmentation | 13쪽 · 실습: 증강 구현 + 100장 실험 + 너무 센 증강 |
+| 11 | `week11/rnn` | RNN 순환 신경망 | 14쪽 · 실습: RNN 한 칸 + 셰익스피어 글자 모델 + 온도 |
+| 11 | `week11/lstm` | LSTM 장단기 메모리 | 13쪽 · 실습: LSTM 한 칸 + RNN/LSTM/GRU 비교 + 가중치 수 |
+| 12 | `week12/attention` | 어텐션 | 13쪽 · 실습: 어텐션 손 계산 + √d + 베끼기 + 지도 |
+| 12 | `week12/seq2seq` | Seq2Seq 시퀀스투시퀀스 | 13쪽 · 실습: 숫자 말 번역 + 베끼기 병목 + 거꾸로 넣기 |
+| 12 | `week12/transformer` | 트랜스포머 | 14쪽 · 실습: 위치 정보 + 마스크 + 블록 + 작은 GPT |
+| 13 | `week13/gcn` | GCN 그래프 신경망 | 12쪽 · 실습: 평균 손 계산 + 가라테 GCN + 과평활 |
+| 14 | `week14/pca` | PCA 주성분 분석 | 13쪽 · 실습: 각도별 퍼짐 + 고유분해 + 붓꽃 + 숫자 압축 |
+| 14 | `week14/tsne` | t-SNE 데이터 지도 | 13쪽 · 실습: 유사도 손 계산 + 숫자 지도 + perplexity + 섬 크기 |
+| 14 | `week14/word2vec` | word2vec | 13쪽 · 실습: 쌍 + 손 계산 + Skip-gram 직접 학습 + 비유 |
+| 14 | `week14/embedding` | 표상과 임베딩 | 14쪽 · 실습: nn.Embedding + 고양이 · 개 CNN 임베딩 + 문장 검색 |
+| 14 | `week14/bert` | BERT 빈칸 채우기 | 13쪽 · 실습: 가리기 + 실제 BERT 빈칸 + 문맥 벡터 |
+| 15 | `week15/vae` | VAE 변분 오토인코더 | 12쪽 · 실습: KL + 재매개변수화 + AE vs VAE + 뽑기 |
+| 15 | `week15/kl_divergence` | KL 발산 | 11쪽 · 실습: 엔트로피 · KL 함수 + 뽑기 + 다 덮기 vs 하나 고르기 |
+| 15 | `week15/gan` | GAN 생성적 적대 신경망 | 12쪽 · 실습: 손실 + 봉우리 8개 + 숫자 GAN |
+| 15 | `week15/diffusion` | Diffusion 확산 모델 | 14쪽 · 실습: 스케줄 + DDPM 학습 + DDPM vs DDIM |
 | 16 | `week16/review_validity` | 리뷰어 팩트체크 | — |
 | 16 | `week16/review_cutoff` | ICLR 커트라인 | — |
 | 17 | `week17/gpt` | GPT 다음 단어 맞히기 | — |

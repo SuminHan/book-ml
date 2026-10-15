@@ -46,6 +46,10 @@ baseline (hotel x month mean): MAE 30.4 EUR
 gradient boosting            : MAE 22.6 EUR</pre></section>
 </div>
 <div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정밀도 (precision)</b><span>&#x27;양성&#x27; 이라고 한 것 중 진짜 양성의 비율 (헛짚지 않았나)</span></div><div class="tex" data-tex="\text{Precision} = \frac{TP}{TP + FP}">\text{Precision} = \frac{TP}{TP + FP}</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div><div class="metric"><div class="what"><b>MAE</b><span>평균적으로 얼마나 틀렸나 (y 와 같은 단위)</span></div><div class="tex" data-tex="\text{MAE} = \frac{1}{n}\sum_{i=1}^{n} \lvert y_i - \hat y_i \rvert">\text{MAE} = \frac{1}{n}\sum_{i=1}^{n} \lvert y_i - \hat y_i \rvert</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://insideairbnb.com/get-the-data/" target="_blank" rel="noopener">Inside Airbnb</a> <span>· 도시별 숙소 · 날짜별 가격 달력</span></li><li><a href="https://www.kaggle.com/competitions/expedia-hotel-recommendations" target="_blank" rel="noopener">Expedia Hotel Recommendations (Kaggle)</a> <span>· 검색 → 예약할 호텔 묶음 맞히기</span></li><li><a href="https://huggingface.co/datasets?search=hotel%20booking" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://doi.org/10.1016/j.dib.2018.11.126" target="_blank" rel="noopener">Antonio, Almeida &amp; Nunes (2019) Hotel booking demand datasets, Data in Brief</a></li></ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>여행 · 숙박 플랫폼, 항공 · 호텔, 모빌리티</dd><dt>직무</dt><dd>가격 (레비뉴) 매니지먼트 분석가, 수요예측 데이터 사이언티스트</dd></dl>
@@ -54,6 +58,9 @@ gradient boosting            : MAE 22.6 EUR</pre></section>
 <nav class="pager"><a href="../support_routing/">← 08 고객 문의 자동 분류</a><a href="../link_prediction/">10 연결 예측: 사람 · 친구 추천 →</a></nav>
 <footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>
 const CHARTS = [{"title": "달마다 평균 1박 가격 (취소 안 된 예약)", "note": "리조트는 여름에 크게 오른다", "traces": [{"type": "scatter", "mode": "lines+markers", "x": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], "y": [48.7, 54.1, 57.0, 75.9, 76.7, 107.9, 150.1, 181.2, 96.4, 61.7, 48.7, 68.3], "name": "리조트 호텔", "line": {"color": "var:series-1", "width": 2}, "marker": {"size": 6}}, {"type": "scatter", "mode": "lines+markers", "x": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], "y": [82.2, 86.2, 90.2, 111.9, 120.4, 117.7, 115.6, 118.4, 112.6, 101.7, 86.5, 87.9], "name": "도시 호텔", "line": {"color": "var:series-2", "width": 2}, "marker": {"size": 6}}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "EUR"}}}, {"title": "며칠 전에 예약했나 → 취소율", "note": "일찍 예약할수록 많이 취소한다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["0~7일", "8~30일", "31~90일", "91~180일", "181~365일", "366일~"], "y": [9.6, 27.9, 37.7, 44.7, 55.5, 67.7]}], "layout": {"xaxis": {"title": "체크인까지 남은 날"}, "yaxis": {"title": "취소율 (%)"}}}];

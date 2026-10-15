@@ -31,6 +31,10 @@
 <section class="block"><h2>데이터</h2><div class="data-name">StatsBomb Open Data</div><p class="src">StatsBomb 이 공개한 경기 이벤트 데이터 (패스 · 슛 · 태클마다 위치 · 시각 · 선수). 월드컵 · 여러 리그의 일부 경기 (JSON, GitHub)</p></section>
 <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>슛 한 번</td></tr><tr><td>② 입력 X</td><td>슛 위치 · 골대까지 거리 · 각도 · 몸의 부위 · 수비 수</td></tr><tr><td>③ 출력 y</td><td>골인가 (확률)</td></tr><tr><td>④ 평가지표</td><td>로그 손실 · 보정 (확률이 맞나)</td></tr><tr><td>⑤ 기준선</td><td>전체 슛의 골 비율</td></tr></tbody></table></section>
 <div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>로그 손실 (log loss)</b><span>확률을 얼마나 잘 맞혔나 (작을수록 좋다)</span></div><div class="tex" data-tex="-\frac{1}{n}\sum_{i=1}^{n}\big[y_i \log p_i + (1 - y_i)\log(1 - p_i)\big]">-\frac{1}{n}\sum_{i=1}^{n}\big[y_i \log p_i + (1 - y_i)\log(1 - p_i)\big]</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://huggingface.co/datasets?search=soccer%20events" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/1802.07127" target="_blank" rel="noopener">Decroos et al. (2019) Actions Speak Louder Than Goals: Valuing Player Actions in Soccer, KDD</a></li></ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>프로 구단 · 스포츠 데이터 회사, 스포츠 중계 · 미디어, 게임 (스포츠)</dd><dt>직무</dt><dd>스포츠 데이터 분석가, 게임 데이터 사이언티스트</dd></dl>
@@ -38,5 +42,8 @@
 </div>
 <footer><a href="../">← 전체 목록</a></footer>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
 </body>
 </html>

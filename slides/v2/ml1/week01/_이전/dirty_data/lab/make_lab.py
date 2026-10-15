@@ -25,9 +25,11 @@ CELLS = [
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_iris"""),
+("md", """## 더러운 데이터 만들기
 
-# ---- Make the data dirty on purpose (just run this cell, don't edit) ----
+깨끗한 iris 에 일부러 결측치 · 중복 · 이상치 · 표기 오류를 섞는다. 이 칸은 고치지 말고 실행만 한다."""),
+("code", """# ---- Make the data dirty on purpose (just run this cell, don't edit) ----
 iris = load_iris(as_frame=True)
 clean = iris.frame.rename(columns={"sepal length (cm)": "sepal_length", "sepal width (cm)": "sepal_width",
                                    "petal length (cm)": "petal_length", "petal width (cm)": "petal_width"})

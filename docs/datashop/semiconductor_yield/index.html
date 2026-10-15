@@ -45,6 +45,10 @@ re-inspect the top 20%: caught 6 of 26 fails (re-inspecting a random 20% would c
 ROC-AUC 0.59  (0.5 = coin flip)</pre></section>
 </div>
 <div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정밀도 (precision)</b><span>&#x27;양성&#x27; 이라고 한 것 중 진짜 양성의 비율 (헛짚지 않았나)</span></div><div class="tex" data-tex="\text{Precision} = \frac{TP}{TP + FP}">\text{Precision} = \frac{TP}{TP + FP}</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div><div class="metric"><div class="what"><b>ROC-AUC</b><span>양성 하나 · 음성 하나를 뽑았을 때 양성 점수가 더 높을 확률. 0.5 = 동전 던지기</span></div><div class="tex" data-tex="\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)">\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.kaggle.com/datasets/qingyi/wm811k-wafer-map" target="_blank" rel="noopener">WM-811K 웨이퍼 맵 (Kaggle)</a> <span>· 웨이퍼 불량 무늬 사진 81만 장, 9종류</span></li><li><a href="https://www.kaggle.com/competitions/bosch-production-line-performance" target="_blank" rel="noopener">Bosch Production Line (Kaggle)</a> <span>· 생산 라인 측정값 · 불량, 아주 드문 불량</span></li><li><a href="https://huggingface.co/datasets?search=semiconductor%20manufacturing" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://archive.ics.uci.edu/dataset/179/secom" target="_blank" rel="noopener">UCI SECOM 데이터 설명 (McCann &amp; Johnston, 2008)</a></li></ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>반도체 · 디스플레이 제조, 배터리 · 소재, 스마트팩토리 솔루션</dd><dt>직무</dt><dd>공정 데이터 엔지니어, 수율 · 품질 분석가, 제조 AI 엔지니어</dd></dl>
@@ -53,6 +57,9 @@ ROC-AUC 0.59  (0.5 = coin flip)</pre></section>
 <nav class="pager"><a href="../earthquakes/">← 13 지진: 시공간 데이터</a><a href="../predictive_maintenance/">15 설비 고장 예측 (예지보전) →</a></nav>
 <footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>
 const CHARTS = [{"title": "센서마다 빈칸 비율", "note": "대부분 거의 다 차 있지만, 반 이상 빈 센서도 있다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], "y": [538, 0, 0, 20, 0, 0, 0, 0, 0, 4, 4, 0, 16, 0, 0, 0, 0, 4, 4, 0]}], "layout": {"xaxis": {"title": "빈칸 비율 (%)"}, "yaxis": {"title": "센서 수"}}}, {"title": "달마다 불량률", "note": "달마다 다르다: 시간 순서로 나눠야 하는 이유", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["2008-07", "2008-08", "2008-09", "2008-10"], "y": [22.2, 9.2, 2.9, 6.1]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "불량률 (%)"}}}];

@@ -31,6 +31,10 @@
 <section class="block"><h2>데이터</h2><div class="data-name">MedMNIST (PneumoniaMNIST)</div><p class="src">Yang et al. (2023). 의료 영상 데이터를 28×28 등 작은 크기로 맞춘 모음. PneumoniaMNIST 는 소아 흉부 X-ray 5,856장, 정상 / 폐렴. pip install medmnist 로 받는다</p></section>
 <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>X-ray 사진 한 장</td></tr><tr><td>② 입력 X</td><td>흑백 사진 (28×28 또는 더 큰 크기)</td></tr><tr><td>③ 출력 y</td><td>정상 / 폐렴</td></tr><tr><td>④ 평가지표</td><td>재현율 (놓친 환자) · ROC-AUC</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 쪽</td></tr></tbody></table></section>
 <div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div><div class="metric"><div class="what"><b>ROC-AUC</b><span>양성 하나 · 음성 하나를 뽑았을 때 양성 점수가 더 높을 확률. 0.5 = 동전 던지기</span></div><div class="tex" data-tex="\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)">\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://huggingface.co/datasets?search=chest%20x-ray" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/2110.14795" target="_blank" rel="noopener">Yang et al. (2023) MedMNIST v2: A large-scale lightweight benchmark for 2D and 3D biomedical image classification, Scientific Data</a></li></ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>의료 AI · 병원, 의료기기, 보험 (심사)</dd><dt>직무</dt><dd>의료 영상 AI 엔지니어, 임상 데이터 사이언티스트</dd></dl>
@@ -38,5 +42,8 @@
 </div>
 <footer><a href="../">← 전체 목록</a></footer>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
 </body>
 </html>

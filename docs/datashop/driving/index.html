@@ -31,6 +31,10 @@
 <section class="block"><h2>데이터</h2><div class="data-name">NGSIM 차량 궤적 · Waymo Open Motion Dataset</div><p class="src">NGSIM: 미국 교통부가 고속도로 (US-101 등) 를 카메라로 찍어 차량마다 0.1초 간격 위치를 기록한 공개 데이터. Waymo Open Motion: 실제 자율주행차가 본 주변 차량 · 보행자 궤적 (Google 계정 · 이용 동의 필요)</p></section>
 <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>차 한 대의 지난 몇 초 (0.1초 간격 위치)</td></tr><tr><td>② 입력 X</td><td>지난 궤적 + 주변 차들의 위치 · 차선</td></tr><tr><td>③ 출력 y</td><td>앞으로 3초의 위치 (x, y) 30개</td></tr><tr><td>④ 평가지표</td><td>평균 · 마지막 위치 오차 (ADE · FDE, 미터)</td></tr><tr><td>⑤ 기준선</td><td>지금 속도 그대로 직진</td></tr></tbody></table></section>
 <div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>평균 위치 오차 (ADE)</b><span>앞으로 T 걸음 동안 예측 위치와 실제 위치의 거리 평균 (미터)</span></div><div class="tex" data-tex="\text{ADE} = \frac{1}{T}\sum_{t=1}^{T} \lVert \hat{\mathbf p}_t - \mathbf p_t \rVert_2">\text{ADE} = \frac{1}{T}\sum_{t=1}^{T} \lVert \hat{\mathbf p}_t - \mathbf p_t \rVert_2</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://huggingface.co/datasets?search=autonomous%20driving" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/2104.10133" target="_blank" rel="noopener">Ettinger et al. (2021) Large Scale Interactive Motion Forecasting for Autonomous Driving: The Waymo Open Motion Dataset, ICCV</a></li></ul>
     <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>자율주행 · 모빌리티, 완성차 · 전장, 교통 관제</dd><dt>직무</dt><dd>예측 (prediction) 엔지니어, 자율주행 소프트웨어 엔지니어</dd></dl>
@@ -38,5 +42,8 @@
 </div>
 <footer><a href="../">← 전체 목록</a></footer>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
 </body>
 </html>

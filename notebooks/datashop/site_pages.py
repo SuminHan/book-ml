@@ -3,6 +3,9 @@ make_shop.py 가 불러 쓴다. 그래프는 Plotly (jsdelivr plotly.js-dist-min
 import html, json
 
 PLOTLY = "https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"
+KATEX = """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>"""
 FONT = '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">'
 E = html.escape
 
@@ -103,6 +106,14 @@ ul.papers li { margin: 4px 0; }
 .stat-head { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 8px; }
 .stat-head b { font-size: 1.4rem; font-variant-numeric: tabular-nums; }
 .stat-head span { color: var(--muted-ink); font-size: .85rem; display: block; }
+.metric { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 4px 16px; align-items: center; border-top: 1px solid var(--line); padding: 8px 0; }
+.metric:first-of-type { border-top: none; }
+.metric .tex { overflow-x: auto; }
+.metric .what b { display: block; }
+.metric .what span { color: var(--muted-ink); font-size: .86rem; }
+ul.related { margin: 0; padding-left: 18px; }
+ul.related li { margin: 5px 0; }
+ul.related span { color: var(--muted-ink); font-size: .86rem; }
 .soon { background: var(--gold-soft); border-radius: 10px; padding: 12px 14px; }
 @media (max-width: 760px) { .blackbox { grid-template-columns: 1fr; } .blackbox .model { justify-self: start; } .cover { aspect-ratio: 5 / 2; } }
 @media (max-width: 760px) {
@@ -225,6 +236,21 @@ def papers_fit_html(i):
 </div>"""
 
 
+def metrics_related_html(i):
+    import extras
+    ms = extras.METRICS.get(i["slug"], [])
+    mhtml = "".join(f'<div class="metric"><div class="what"><b>{E(extras.F[m][0])}</b><span>{E(extras.F[m][2])}</span></div><div class="tex" data-tex="{E(extras.F[m][1])}">{E(extras.F[m][1])}</div></div>' for m in ms)
+    if not ms:
+        mhtml = '<p class="src">이 데이터는 하나의 정답 지표보다 분석 · 순위로 쓴다. 노트북의 \'다른 문제로 바꿔 보기\' 에서 지표를 직접 정해 보세요.</p>'
+    rel = extras.RELATED.get(i["slug"], ([], ""))[0]
+    rhtml = "".join(f'<li><a href="{E(u)}" target="_blank" rel="noopener">{E(t)}</a> <span>· {E(d)}</span></li>' for t, u, d in rel)
+    rhtml += f'<li><a href="{E(extras.hf_search(i["slug"]))}" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li>'
+    return f"""<div class="two">
+  <section class="block"><h2>평가지표 수식</h2>{mhtml}</section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related">{rhtml}</ul></section>
+</div>"""
+
+
 def hero_html(i, actions):
     return f"""<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
 <div class="cover"><img src="cover.jpg" alt="">{credit_html(i.get("credit"))}</div>
@@ -276,10 +302,12 @@ def render_item(i, prev, nxt, preview, results):
     <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">{res}</pre></section>
 </div>
+{metrics_related_html(i)}
 {papers_fit_html(i)}
 <nav class="pager">{pager}</nav>
 <footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
+{KATEX}
 {PLOT_JS % (PLOTLY, json.dumps(charts, ensure_ascii=False, default=lambda o: o.item() if hasattr(o, "item") else str(o)))}
 </body>
 </html>
@@ -298,9 +326,11 @@ def render_stub(i):
 <section class="block"><h2>어떤 문제인가</h2>{blackbox_html(i)}</section>
 <section class="block"><h2>데이터</h2><div class="data-name">{E(i['data'])}</div><p class="src">{E(i['data_src'])}</p></section>
 <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody>{five}</tbody></table></section>
+{metrics_related_html(i)}
 {papers_fit_html(i)}
 <footer><a href="../">← 전체 목록</a></footer>
 </div>
+{KATEX}
 </body>
 </html>
 """
