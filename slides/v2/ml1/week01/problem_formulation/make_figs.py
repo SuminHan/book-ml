@@ -38,23 +38,23 @@ bars(ax, labs, vals, [GRAY, BLUE, BLUE, RED], lambda v: f"{v}", "시험 MAE (천
 ax.axhline(AIR_MAE["last"], color=BLUE, ls=":", lw=1.5)
 fig.tight_layout(); fig.savefig(O + "pf_air.png"); plt.close(fig)
 
-# 3. AlphaFold: 두 단백질의 예측 구조 (Cα 사슬, pLDDT 색) + 잔기별 pLDDT
-fig = plt.figure(figsize=(13, 4.6))
-cmap = matplotlib.colors.ListedColormap(["#FF7D45", "#FFDB13", "#65CBF3", "#0053D6"])     # AlphaFold DB 색 (<50, 50-70, 70-90, >90)
-norm = matplotlib.colors.BoundaryNorm([0, 50, 70, 90, 100], 4)
-for k, uid in enumerate(("P69905", "P37840")):
-    a = AF[uid]; xyz = np.array(a["xyz"]); pl = np.array(a["plddt"]); xyz = xyz - xyz.mean(0)
-    ax = fig.add_subplot(1, 3, k + 1, projection="3d")
-    ax.plot(*xyz.T, color="#bbbbbb", lw=1)
-    ax.scatter(*xyz.T, c=pl, cmap=cmap, norm=norm, s=16, depthshade=False)
-    ax.text2D(0.5, 1.0, f"{AF_KO[uid]}\n아미노산 {len(a['seq'])}개, 평균 pLDDT {a['mean_plddt']:.0f}", transform=ax.transAxes, ha="center", va="top", fontsize=13)
-    ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([]); ax.set_box_aspect((1, 1, 1))
-ax = fig.add_subplot(1, 3, 3)
-for uid, c in (("P69905", BLUE), ("P37840", "#FF7D45")):
-    ax.plot(np.arange(1, len(AF[uid]["plddt"]) + 1), AF[uid]["plddt"], color=c, lw=2, label=AF_KO[uid])
-ax.axhline(70, color=GRAY, ls=":"); ax.text(2, 72, "70: 믿을 만함", color=GRAY, fontsize=11)
-ax.set_xlabel("아미노산 위치"); ax.set_ylabel("pLDDT (예측 신뢰도)"); ax.set_ylim(0, 102); ax.legend(frameon=False, fontsize=11, loc="lower left")
-fig.tight_layout(); fig.savefig(O + "pf_af.png"); plt.close(fig)
+# 3. 넷플릭스 프라이즈: 숨긴 시험 (왼쪽) + RMSE (오른쪽)
+from matplotlib.patches import FancyBboxPatch
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(10.5, 4.2), gridspec_kw={"width_ratios": [1.3, 1]})
+def box(ax, x, y, w, h, c, t, tc="white"):
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02", fc=c, ec="none")); ax.text(x + w / 2, y + h / 2, t, ha="center", va="center", color=tc, fontsize=15, fontweight="bold")
+box(a1, 0, 2.2, 6.0, 1.2, BLUE, "공개: 별점 1억 개\n(학습)")
+box(a1, 6.2, 2.2, 3.8, 1.2, GRAY, "숨김: 사용자마다\n가장 최근 300만 개")
+box(a1, 6.2, 0.6, 1.8, 1.2, GOLD, "quiz\n공개 점수판")
+box(a1, 8.2, 0.6, 1.8, 1.2, RED, "test\n우승 판정")
+a1.annotate("", (8.1, 1.85), (8.1, 2.15), arrowprops=dict(arrowstyle="->", color="black"))
+a1.annotate("", (10, 3.6), (0, 3.6), arrowprops=dict(arrowstyle="->", color=GRAY)); a1.text(0, 3.7, "시간 (1998 → 2005)", fontsize=13, color=GRAY)
+a1.set_xlim(-0.2, 10.2); a1.set_ylim(0.3, 4.1); a1.axis("off")
+vals = [("Cinematch\n(기준선)", NETFLIX["cinematch_test"], GRAY), ("목표\n(10% 개선)", NETFLIX["target_test"], GOLD), ("2009\n우승 팀", NETFLIX["winner_test"], BLUE)]
+a2.bar(range(3), [v for _, v, _ in vals], color=[c for _, _, c in vals], width=0.6)
+for k, (_, v, c) in enumerate(vals): a2.text(k, v + 0.004, f"{v:.4f}", ha="center", fontsize=14, fontweight="bold", color=c)
+a2.set_xticks(range(3), [t for t, _, _ in vals], fontsize=13); a2.set_ylim(0.8, 0.98); a2.set_ylabel("숨긴 test 의 RMSE (작을수록 좋다)")
+fig.tight_layout(); fig.savefig(O + "pf_netflix.png"); plt.close(fig)
 
 # 4. AML (assets/aml.json 이 있을 때만)
 if HAVE_AML:

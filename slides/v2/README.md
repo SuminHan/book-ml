@@ -58,7 +58,7 @@ python3 slides/v2/tools/deck.py sheet  <덱폴더>        # 전체를 12장씩 �
 | 주 | 주제 폴더 | 내용 | 상태 |
 |---|---|---|---|
 | 1 | `week01/course_intro` | 첫 강의: AI는 과학인가 공학인가 · 역사 · 이 수업의 방식 (50분, 이 덱은 그대로 둔다) | 29쪽 (표지 + 28) |
-| 1 | `week01/problem_formulation` | 문제 정형화와 평가지표 (1주 2차시): 같은 데이터, 다른 문제 정의 · 기준선 · 지표 | 21쪽 · 실습: 와인 두 문제 + 항공 승객 기준선 + IBM AML (거래 vs 계좌) + AlphaFold |
+| 1 | `week01/problem_formulation` | 문제 정형화와 평가지표 (1주 2차시): 같은 데이터, 다른 문제 정의 · 기준선 · 지표 | 21쪽 · 실습: 와인 두 문제 + 항공 승객 기준선 + IBM AML (거래 vs 계좌) + 넷플릭스 프라이즈 축소판 |
 | 1 | `week01/data_handling` | 데이터 직접 다루기 (1주 3차시): 더티 데이터 + 정규화 · 표준화 (옛 dirty_data + feature_scaling) | 30쪽 · 실습: iris 청소 + 표 · 흑백/컬러 이미지 · 언어 · 시계열 · 소리 · 비디오 |
 | 2 | `week02/overfitting` | 과대적합과 과소적합 | 16쪽 · 실습: 성적표 재현 + 5겹 CV 직접 구현 + cars 차수 고르기 |
 | 2 | `week02/linear_regression` | 선형회귀 | 16쪽 · 실습: 경사하강법 구현 + Auto MPG |

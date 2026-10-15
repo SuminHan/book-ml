@@ -2,7 +2,7 @@
    ~/Documents/manim_shorts/_env/v/bin/python make_lab.py
 코드 줄 끝의 '#@ANS 빈칸버전' = solution 노트북엔 앞부분, student 노트북엔 빈칸버전이 들어간다.
 데이터: UCI Wine (scikit-learn 내장) · 항공 승객 (jbrownlee/Datasets) · IBM AML HI-Small (Hugging Face 사본, 로그인 없이, 압축 약 90MB)
-· AlphaFold DB (EMBL-EBI API). 슬라이드 숫자 (exp_formulation.py · exp_aml.py) 와 같은 설정."""
+· MovieLens (GroupLens). 슬라이드 숫자 (exp_formulation.py · exp_aml.py) 와 같은 설정."""
 import os, sys
 sys.path.insert(0, os.path.expanduser("~/book-ml/lessons/_tools"))
 import lab
@@ -18,7 +18,7 @@ CELLS = [
 - **파트 1**: 와인: 같은 데이터로 두 문제 (품종 분류 · 알코올 도수 회귀), 정확도 · MAE · 기준선 직접 만들기
 - **파트 2**: 항공 승객: 기준선 (지난달 그대로 · 작년 같은 달) vs kNN 모델
 - **파트 3**: IBM AML 자금세탁 거래: 정확도의 함정, 정밀도 · 재현율, 한 행을 거래 → 계좌로
-- **파트 4**: AlphaFold: 단백질 서열 X → 3D 좌표 y, 예측 신뢰도 pLDDT
+- **파트 4**: 넷플릭스 프라이즈 축소판: 사람마다 최근 별점을 숨기고 RMSE, '10% 개선' 목표
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요. 코드 칸 아래의 **예상 결과** 와 비교하면 맞았는지 바로 알 수 있습니다."""),
 ("code", """import io, json, os, zipfile, urllib.request
@@ -173,72 +173,60 @@ print(f"transaction-level rate {y.mean():.3%}  ->  account-level rate {account_y
 
 **생각해 보기**: 시험 데이터는 어떻게 나눠야 할까? `Timestamp` 열을 보고, 무작위로 섞으면 왜 안 되는지 말해 보자."""),
 
-# ---------------- 파트 4. AlphaFold
-("md", """## 파트 4. AlphaFold: 서열 → 3D 구조
+# ---------------- 파트 4. 넷플릭스 프라이즈 축소판
+("md", """## 파트 4. 넷플릭스 프라이즈 축소판: 영화 별점
 
-AlphaFold DB 의 API 에 UniProt 번호를 주면 예측 구조 파일 주소가 온다. 헤모글로빈 알파 (P69905) 와 알파-시누클레인 (P37840) 을 받자."""),
-("code", """def alphafold_pdb(uniprot_id):
-    \"\"\"Ask the AlphaFold DB API for the predicted structure and return the PDB file as text\"\"\"
-    headers = {"User-Agent": "Mozilla/5.0 (ML course lab)"}
-    meta_url = f"https://alphafold.ebi.ac.uk/api/prediction/{uniprot_id}"
-    meta = json.loads(urllib.request.urlopen(urllib.request.Request(meta_url, headers=headers), timeout=60).read())[0]
-    pdb = urllib.request.urlopen(urllib.request.Request(meta["pdbUrl"], headers=headers), timeout=60).read().decode()
-    return meta, pdb
+넷플릭스 프라이즈 (2006) 는 '사용자마다 **가장 최근** 별점을 숨기고, RMSE 로 채점, 기준선보다 10% 나으면 우승' 이었다. 같은 규칙을 MovieLens (610명 · 별점 10만 개) 로 작게 해 보자."""),
+("code", """URL = "https://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
+os.makedirs("data", exist_ok=True)
+if not os.path.exists("data/ml-latest-small.zip"):
+    urllib.request.urlretrieve(URL, "data/ml-latest-small.zip")
+with zipfile.ZipFile("data/ml-latest-small.zip") as z:
+    ratings = pd.read_csv(z.open("ml-latest-small/ratings.csv"))
+print(ratings.shape, "users", ratings["userId"].nunique(), "movies", ratings["movieId"].nunique())
 
-proteins = {}
-for uid in ["P69905", "P37840"]:
-    meta, pdb = alphafold_pdb(uid)
-    proteins[uid] = pdb
-    print(uid, meta["uniprotDescription"], "|", meta["pdbUrl"])
-print("\\n".join(proteins["P69905"].split("\\n")[:3]))
-print([l for l in proteins["P69905"].split("\\n") if l.startswith("ATOM")][:2])"""),
-("md", """PDB 파일은 원자 하나가 한 줄 (`ATOM ...`). 칸의 위치가 정해져 있다:
-- 18~20번째 글자: 아미노산 이름 (예: `MET`)
-- 13~16번째: 원자 이름. 아미노산의 중심 원자는 `CA`
-- 31~38 / 39~46 / 47~54번째: x, y, z 좌표 (Å)
-- 61~66번째: 예측 신뢰도 pLDDT (AlphaFold 는 이 칸에 넣는다)
+# hide each user's most recent 10% of ratings (like the Netflix Prize qualifying set)
+ratings = ratings.sort_values(["userId", "timestamp"])
+rank = ratings.groupby("userId").cumcount(ascending=False)            # 0 = newest
+n_user = ratings.groupby("userId")["rating"].transform("size")
+hidden = rank < np.maximum(1, (n_user * 0.1).astype(int))
+train, test = ratings[~hidden], ratings[hidden]
+print("train", len(train), "hidden test", len(test))"""),
+("md", """세 가지 예측의 RMSE 를 비교한다.
+- 기준선 1: 늘 전체 평균 별점
+- 기준선 2: 영화마다 평균 별점 (넷플릭스 이전의 단순한 방법)
+- 모델: 평균 + 사용자 치우침 + 영화 치우침 (후하게 주는 사람, 다들 좋아하는 영화)
 
-파이썬 문자열은 0부터 세니까 `line[17:20]`, `line[12:16]`, `line[30:38]` … 처럼 자른다. `CA` 원자 줄만 골라 서열 · 좌표 · pLDDT 를 꺼내자."""),
-("code", """AA = dict(ALA="A", ARG="R", ASN="N", ASP="D", CYS="C", GLN="Q", GLU="E", GLY="G", HIS="H", ILE="I",
-          LEU="L", LYS="K", MET="M", PHE="F", PRO="P", SER="S", THR="T", TRP="W", TYR="Y", VAL="V")
+그리고 '영화 평균보다 10% 나은가?' 를 확인한다."""),
+("code", """def fit_biases(train, reg=5.0):
+    \"\"\"Global mean + movie bias + user bias, shrunk toward 0 for movies/users with few ratings\"\"\"
+    mu = train["rating"].mean()
+    r = train.assign(res=train["rating"] - mu)
+    b_movie = r.groupby("movieId")["res"].agg(lambda v: v.sum() / (len(v) + reg))
+    r = r.assign(res=r["res"] - r["movieId"].map(b_movie))
+    b_user = r.groupby("userId")["res"].agg(lambda v: v.sum() / (len(v) + reg))
+    return mu, b_user, b_movie
 
-def read_ca(pdb_text):
-    \"\"\"Return (sequence string, CA coordinates (n, 3), pLDDT (n,)) from a PDB file\"\"\"
-    seq, xyz, plddt = [], [], []
-    for line in pdb_text.split("\\n"):
-        if line.startswith("ATOM") and line[12:16].strip() == "CA":      #@ANS if None:   # TODO: an ATOM line whose atom name (line[12:16]) is CA
-            seq.append(AA[line[17:20]])
-            xyz.append([float(line[30:38]), float(line[38:46]), float(line[46:54])])
-            plddt.append(float(line[60:66]))
-    return "".join(seq), np.array(xyz), np.array(plddt)
-
-seq, xyz, plddt = read_ca(proteins["P69905"])
-print("X (sequence):", len(seq), "letters:", seq[:40], "...")
-print("y (CA coordinates):", xyz.shape)
-print(f"pLDDT mean {plddt.mean():.1f}, share above 70: {(plddt > 70).mean():.0%}")"""),
-("code", """fig = plt.figure(figsize=(11, 4))
-for k, uid in enumerate(["P69905", "P37840"]):
-    seq, xyz, plddt = read_ca(proteins[uid])
-    ax = fig.add_subplot(1, 3, k + 1, projection="3d")
-    ax.plot(*xyz.T, color="lightgray", lw=1)
-    ax.scatter(*xyz.T, c=plddt, cmap="RdYlBu", vmin=30, vmax=100, s=12)
-    ax.set_title(f"{uid}: {len(seq)} aa, mean pLDDT {plddt.mean():.0f}", fontsize=10)
-    ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
-ax = fig.add_subplot(1, 3, 3)
-for uid in ["P69905", "P37840"]:
-    ax.plot(read_ca(proteins[uid])[2], label=uid)
-ax.axhline(70, color="gray", ls=":"); ax.set_xlabel("residue"); ax.set_ylabel("pLDDT"); ax.legend()
-plt.tight_layout(); plt.show()"""),
-("md", """**관찰**: 헤모글로빈 알파는 거의 전부 pLDDT 90 이상. 알파-시누클레인은 뒤쪽 (약 100번 이후) 이 70 아래로 떨어진다. 이 부분은 실제로도 정해진 모양 없이 흐느적거린다. 출력에 '얼마나 자신 있는지' 까지 넣은 것도 문제 정의의 일부다.
+mu, b_user, b_movie = fit_biases(train)
+movie_mean = train.groupby("movieId")["rating"].mean()
+preds = {"global mean": np.full(len(test), mu),
+         "movie mean": test["movieId"].map(movie_mean).fillna(mu).values,
+         "mean + user + movie bias": (mu + test["userId"].map(b_user).fillna(0) + test["movieId"].map(b_movie).fillna(0)).clip(0.5, 5).values}
+scores = {k: rmse(test["rating"].values, v) for k, v in preds.items()}      #@ANS scores = None   # TODO: RMSE of each prediction (use your rmse function)
+for k, v in scores.items():
+    print(f"{k:26s} RMSE {v:.4f}")
+goal = scores["movie mean"] * 0.9
+print(f"10% better than movie mean = {goal:.4f} -> reached: {scores['mean + user + movie bias'] < goal}")"""),
+("md", """**관찰**: '영화마다 평균' 은 전체 평균보다 조금 낫다. 여기에 사람마다 후하게 · 짜게 주는 치우침을 더하면 RMSE 가 크게 내려가 '10% 개선' 을 넘긴다. 진짜 넷플릭스 데이터에서는 기준선 (Cinematch) 이 훨씬 강해서, 우승 팀은 100개가 넘는 모델을 섞어 3년 만에 10% 를 넘겼다.
 
 **확인 질문**
 1. 파트 1 문제 B 에서 입력에 `alcohol` 을 남기면 MAE 는? 그 점수가 의미 없는 이유는?
 2. 파트 2 에서 kNN 이 '지난달 그대로' 에 진 이유는 무엇일까? (힌트: 학습 기간 최댓값과 시험 기간 값을 비교해 보자)
 3. 파트 3 에서 정확도 · 정밀도 · 재현율 중 은행이 가장 중요하게 볼 것은? 놓친 세탁 한 건과 헛짚은 정상 고객 한 명의 손해를 비교해 말해 보자.
 4. 파트 3 에서 '전부 세탁' 이라고 답하면 재현율과 정밀도는 각각 얼마가 될까?
-5. 파트 4 의 문제를 다섯 칸 (한 행 · 입력 · 출력 · 평가지표 · 기준선) 으로 써 보자. 시험 데이터는 어떻게 골라야 공정할까?
+5. 파트 4 에서 숨길 별점을 '사람마다 가장 최근' 이 아니라 무작위로 고르면 RMSE 가 어떻게 바뀔까? 어느 쪽이 실제 서비스와 닮았을까?
 
-데이터 출처: UCI Wine (Aeberhard & Forina, 1991) · Box & Jenkins (1976) 항공 승객 · IBM Transactions for Anti Money Laundering (Altman et al., NeurIPS 2023, Kaggle) · AlphaFold Protein Structure Database (EMBL-EBI, CC BY 4.0; Jumper et al., Nature 2021)."""),
+데이터 출처: UCI Wine (Aeberhard & Forina, 1991) · Box & Jenkins (1976) 항공 승객 · IBM Transactions for Anti Money Laundering (Altman et al., NeurIPS 2023, Kaggle) · MovieLens (Harper & Konstan, 2015) · Netflix Prize (Bennett & Lanning, 2007)."""),
 ]
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 """문제 정형화와 평가지표 차시 공유 숫자 (슬라이드 · 그림 · 실습이 같은 값을 쓴다).
-exp_formulation.py → assets/formulation.json (와인 두 문제 · 항공 승객 기준선 · AlphaFold 두 단백질)
+exp_formulation.py → assets/formulation.json (와인 두 문제 · 항공 승객 기준선)
 exp_aml.py → assets/aml.json (IBM AML HI-Small, Kaggle 로그인 필요)"""
 import os, json
 _H = os.path.dirname(os.path.abspath(__file__))
@@ -16,11 +16,9 @@ assert WINE_MAE == {"model": 0.45, "base": 0.66} and (WINE["alc_lo"], WINE["alc_
 AIR_MAE = {k.replace("mae_", ""): round(v) for k, v in F["air"].items()}
 assert AIR_MAE == {"last": 44, "season": 48, "knn": 74, "mean": 206}, AIR_MAE
 
-# ---- AlphaFold
-AF = F["af"]; AF_KO = {"P69905": "헤모글로빈 알파", "P37840": "알파-시누클레인"}
-assert len(AF["P69905"]["seq"]) == 142 and round(AF["P69905"]["mean_plddt"]) == 98
-assert len(AF["P37840"]["seq"]) == 140 and round(AF["P37840"]["mean_plddt"]) == 75
-CASP14_GDT = 92.4          # AlphaFold2, CASP14 (2020) 전체 표적 중앙값 GDT (DeepMind 발표)
+# ---- 넷플릭스 프라이즈 (Bennett & Lanning 2007 · 2009 결과)
+NETFLIX = dict(users=480_000, movies=18_000, ratings=100_000_000, withheld=3_000_000, cinematch_quiz=0.9514, cinematch_test=0.9525,
+               target_test=0.8572, winner_test=0.8567)   # target = 0.9525 × 0.9 (대회 규칙), 우승 2009-09
 
 # ---- 회귀 지표 손 계산: 오차 [1, 1, 1, 9]
 TOY = F["toy"]; assert TOY["mae"] == 3 and round(TOY["rmse"], 2) == 4.58
