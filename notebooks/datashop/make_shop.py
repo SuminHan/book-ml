@@ -2335,7 +2335,10 @@ def fetch_cover(slug, out_path):
         req = urllib.request.Request(c["thumb"], headers={"User-Agent": "ML course datashop"})
         open(cache, "wb").write(urllib.request.urlopen(req, timeout=120).read())
     im = Image.open(cache).convert("RGB")
-    card_cover(im, os.path.join(os.path.dirname(out_path), "card.jpg"), fit=bool(c.get("local") and not c.get("crop")))
+    card_src = next((os.path.join(HERE, "assets", "covers_ai", f"{slug}_card{e}") for e in (".png", ".jpg", ".jpeg", ".webp")
+                     if os.path.exists(os.path.join(HERE, "assets", "covers_ai", f"{slug}_card{e}"))), None)   # optional 16:9 thumbnail
+    card_cover(Image.open(card_src).convert("RGB") if card_src else im, os.path.join(os.path.dirname(out_path), "card.jpg"),
+               fit=bool(c.get("local") and not c.get("crop")) and not card_src)
     w, h = 1200, 340
     if c.get("local") and not c.get("crop"):           # a diagram: fit it inside (no cropping), white margins
         r = min(w / im.width, h / im.height) * 0.96; im = im.resize((round(im.width * r), round(im.height * r)))
