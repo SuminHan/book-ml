@@ -10,8 +10,8 @@ for c in cands:
     i = c["id"]; path = os.path.join(IMG, i + ".jpg")
     ai = next((os.path.join(HERE, "..", "assets", "covers_ai", i + suf + e) for suf in ("_card", "") for e in (".png", ".jpg", ".jpeg", ".webp")
                if os.path.exists(os.path.join(HERE, "..", "assets", "covers_ai", i + suf + e))), None)   # 16:9 thumbnail first
-    if ai:                                         # AI-generated cover (assets/covers_ai/) wins, centre-cropped to 8:5
-        im = Image.open(ai).convert("RGB"); w, h = 480, 300
+    if ai:                                         # AI-generated cover (assets/covers_ai/) wins, kept whole at 16:5
+        im = Image.open(ai).convert("RGB"); w, h = 960, 300          # whole 16:5 banner, no side crop
         r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
         l, t = (im.width - w) // 2, (im.height - h) // 2; im.crop((l, t, l + w, t + h)).save(path, quality=80)
         credits[i] = dict(title="AI 생성 이미지", artist="AI 생성 이미지", license="프롬프트 공개",
