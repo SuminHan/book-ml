@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>데이터 월드컵</title>
+<meta name="description" content="산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 32개 중 하나를 고르는 이상형 월드컵">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: one scoreboard column; a match is two cards facing each other across a VS line. Single dark look, like a stadium screen. */
+:root {
+  color-scheme: dark;
+  --ground: #121722;      /* night pitch */
+  --panel: #1b2232;
+  --line: #2c3548;
+  --ink: #eef1f6;
+  --muted: #9aa4b6;
+  --gold: #f4c542;        /* trophy */
+  --red: #ff6b5b;         /* the other corner */
+  --blue: #6fa8ff;
+  --display: "Black Han Sans", "Noto Sans KR", sans-serif;
+  --body: "Noto Sans KR", -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--ground); color: var(--ink); }
+body { font-family: var(--body); line-height: 1.55; font-size: 15px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: env(safe-area-inset-top, 0px) 40px; margin: 0; }
+.wrap { max-width: 1040px; margin: 0 auto; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+header { padding: 34px 0 10px; display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+.logo { font-family: var(--display); font-size: clamp(2.2rem, 7vw, 3.6rem); line-height: 1; letter-spacing: .01em; margin: 0; }
+.logo span { color: var(--gold); }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 560px; text-wrap: balance; }
+.round-tag { font-family: var(--display); font-size: 1.4rem; color: var(--gold); white-space: nowrap; }
+/* start */
+.start { display: grid; gap: 18px; padding: 18px 0; }
+.modes { display: flex; flex-wrap: wrap; gap: 10px; }
+.mode { border: 2px solid var(--line); background: var(--panel); border-radius: 12px; padding: 12px 18px; cursor: pointer; text-align: left; min-width: 160px; }
+.mode b { display: block; font-family: var(--display); font-size: 1.5rem; font-weight: 400; }
+.mode small { color: var(--muted); }
+.mode[aria-pressed="true"] { border-color: var(--gold); }
+.go { font-family: var(--display); font-size: 1.5rem; background: var(--gold); color: #1a1406; border: 0; border-radius: 12px; padding: 12px 34px; cursor: pointer; justify-self: start; }
+.go:hover { filter: brightness(1.08); }
+.mosaic { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 4px; }
+.mosaic img { width: 100%; aspect-ratio: 8 / 5; object-fit: cover; border-radius: 4px; display: block; opacity: .85; }
+/* match */
+.progress { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 6px 0 18px; }
+.progress i { display: block; height: 100%; background: var(--gold); transition: width .25s ease; }
+.match { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 14px; }
+.vs { align-self: center; font-family: var(--display); font-size: 2rem; color: var(--gold); }
+.card { display: flex; flex-direction: column; text-align: left; background: var(--panel); border: 2px solid var(--line); border-radius: 16px; overflow: hidden; cursor: pointer; padding: 0; min-width: 0;
+  transition: transform .15s ease, border-color .15s ease; }
+.card:hover { transform: translateY(-4px); border-color: var(--gold); }
+.card.win { border-color: var(--gold); transform: scale(1.02); }
+.card.lose { opacity: .35; }
+.card img { width: 100%; aspect-ratio: 8 / 5; object-fit: cover; display: block; }
+.card .body { padding: 14px 16px 18px; display: grid; gap: 6px; }
+.domain { font-size: .8rem; color: var(--muted); letter-spacing: .04em; }
+.card h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.3rem, 3.2vw, 1.75rem); line-height: 1.2; margin: 0; text-wrap: balance; }
+.q { margin: 0; font-size: 1rem; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.chip { font-size: .78rem; border: 1px solid var(--line); border-radius: 99px; padding: 2px 9px; color: var(--muted); }
+.chip.type { border-color: var(--blue); color: var(--blue); }
+.hint { color: var(--muted); font-size: .85rem; text-align: center; margin: 14px 0 0; }
+.undo { background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; }
+/* result */
+.champ { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 22px; align-items: center; padding: 10px 0 6px; }
+.champ img { width: 100%; border-radius: 16px; border: 3px solid var(--gold); display: block; }
+.trophy { font-family: var(--display); color: var(--gold); font-size: 1.2rem; }
+.champ h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2rem, 6vw, 3rem); line-height: 1.1; margin: 4px 0 8px; }
+.podium { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 6px; }
+.podium li { display: flex; gap: 10px; align-items: baseline; }
+.podium .rank { font-family: var(--display); color: var(--gold); min-width: 3.2em; }
+.saved { font-size: .85rem; color: var(--muted); margin-top: 10px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.ghost { background: none; border: 2px solid var(--line); border-radius: 12px; padding: 10px 18px; cursor: pointer; font-weight: 700; }
+/* board */
+section.board { margin-top: 30px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+.board h3 { font-family: var(--display); font-weight: 400; font-size: 1.4rem; margin: 0 0 4px; }
+.board p.note { color: var(--muted); margin: 0 0 12px; font-size: .88rem; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.cols h4 { margin: 0 0 8px; font-size: .9rem; color: var(--muted); font-weight: 500; }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: minmax(0, 1fr) 4.2em; gap: 8px; align-items: center; font-size: .9rem; }
+.bar .track { position: relative; background: var(--ground); border-radius: 6px; overflow: hidden; height: 26px; }
+.bar .fill { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--gold) 70%, transparent); border-radius: 6px; }
+.bar .label { position: relative; padding: 0 8px; line-height: 26px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.bar .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.empty { color: var(--muted); font-size: .9rem; }
+details.credits { margin-top: 26px; color: var(--muted); font-size: .8rem; }
+details.credits summary { cursor: pointer; }
+details.credits ul { padding-left: 18px; }
+details.credits a { color: var(--muted); }
+@media (max-width: 720px) {
+  .match { grid-template-columns: 1fr; }
+  .vs { justify-self: center; font-size: 1.4rem; margin: -4px 0; }
+  .champ, .cols { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .card, .progress i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 class="logo">데이터 <span>월드컵</span></h1>
+      <p class="sub">산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 32개. 둘 중 더 해 보고 싶은 데이터를 고르세요. 마지막에 남는 하나가 나의 데이터입니다.</p>
+    </div>
+    <div class="round-tag" id="roundTag" aria-live="polite"></div>
+  </header>
+
+  <main id="screen"></main>
+
+  <section class="board" aria-labelledby="boardTitle">
+    <h3 id="boardTitle">내 기록</h3>
+    <p class="note" id="boardNote">이 브라우저에서 끝낸 월드컵 결과가 여기에 모입니다.</p>
+    <div class="cols">
+      <div><h4>우승 횟수</h4><div class="bars" id="champBars"><p class="empty">아직 끝낸 월드컵이 없습니다.</p></div></div>
+      <div><h4>1:1 승률 (3경기 이상)</h4><div class="bars" id="rateBars"><p class="empty">경기 기록이 쌓이면 승률이 보입니다.</p></div></div>
+    </div>
+  </section>
+
+  <details class="credits"><summary>사진 출처 (Wikimedia Commons)</summary><ul id="credits"></ul></details>
+</div>
+
+<script>
+const CANDS = [{"id": "fashion_commerce", "title": "비슷한 옷 추천", "domain": "패션 커머스", "q": "옷 사진 4만 장. 이 옷과 비슷한 옷을 골라 줄 수 있을까?", "data": "Fashion Product Images", "type": "추천 (유사도)"}, {"id": "movie_ratings", "title": "영화 추천", "domain": "OTT · 콘텐츠", "q": "넷플릭스 프라이즈의 그 문제. 아직 안 본 영화에 몇 점을 줄까?", "data": "MovieLens (별점 10만 개) · Netflix Prize", "type": "추천 · 회귀"}, {"id": "shop_conversion", "title": "쇼핑몰 구매 전환", "domain": "커머스 · 마케팅", "q": "이 방문자는 살까, 그냥 나갈까?", "data": "UCI Online Shoppers (방문 12,330건)", "type": "이진 분류"}, {"id": "korean_reviews", "title": "한국어 리뷰 감성", "domain": "자연어 · 콘텐츠", "q": "한국어 영화 리뷰 20만 개. 칭찬일까, 불평일까?", "data": "NSMC", "type": "이진 분류"}, {"id": "card_fraud", "title": "카드 이상거래 (보이스피싱 · 자금세탁 등)", "domain": "금융 · 핀테크", "q": "거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?", "data": "Credit Card Fraud (ULB)", "type": "이진 분류 (불균형)"}, {"id": "aml_transactions", "title": "자금세탁 거래 탐지", "domain": "금융 · 핀테크", "q": "은행 거래 508만 건, 세탁은 0.1%. 돈은 어떤 모양으로 돌고 돌까?", "data": "IBM AML (HI-Small)", "type": "분류 · 그래프"}, {"id": "stock_index", "title": "주가 지수: 내일 오를까?", "domain": "금융 · 투자", "q": "코스피 10년치 종가. 내일 오를지 맞힐 수 있을까?", "data": "KOSPI 일별 지수", "type": "시계열 분류 · 회귀"}, {"id": "support_routing", "title": "고객 문의 자동 분류", "domain": "고객 상담 AI", "q": "은행 고객 문의 1만 3천 개. 77개 팀 중 어디로 보낼까?", "data": "Banking77", "type": "다중 분류 (77가지)"}, {"id": "hotel_booking", "title": "호텔 예약: 취소와 가격", "domain": "여행 · 숙박", "q": "예약 12만 건. 이 예약은 취소될까? 1박에 얼마가 맞을까?", "data": "Hotel Booking Demand", "type": "분류 + 회귀"}, {"id": "link_prediction", "title": "연결 예측: 친구 추천", "domain": "SNS · 그래프", "q": "아직 연결 안 된 두 사람, 곧 연락하게 될까?", "data": "email-Eu-core (SNAP)", "type": "링크 예측"}, {"id": "bike_demand", "title": "서울 공유 자전거 수요", "domain": "도시 · 모빌리티", "q": "내일 아침 8시엔 자전거가 몇 대 필요할까?", "data": "Seoul Bike Sharing Demand", "type": "회귀 (시계열)"}, {"id": "real_estate", "title": "집값 예측", "domain": "부동산", "q": "동네 2만 곳의 소득 · 방 수 · 위치. 이 동네 집값은 얼마일까?", "data": "California Housing", "type": "회귀 (공간)"}, {"id": "earthquakes", "title": "지진: 시공간 데이터", "domain": "재난 · 안전", "q": "전 세계 지진 1만 4천 개. 다음 주 어느 지역에서 날까?", "data": "USGS 지진 목록", "type": "시공간 분류"}, {"id": "semiconductor_yield", "title": "반도체 공정 불량", "domain": "제조 · 반도체", "q": "센서 590개, 제품 1,567개. 불량을 미리 알 수 있을까?", "data": "SECOM", "type": "이진 분류"}, {"id": "predictive_maintenance", "title": "설비 고장 예측 (예지보전)", "domain": "제조 · 설비", "q": "온도 · 회전 속도 · 공구 마모로 고장을 미리 알 수 있을까?", "data": "AI4I 2020", "type": "이진 분류"}, {"id": "steel_defects", "title": "강판 결함 분류", "domain": "제조 · 품질", "q": "철강 판 결함 1,941개. 7가지 중 어떤 결함일까?", "data": "UCI Steel Plates Faults", "type": "다중 분류"}, {"id": "bearing_vibration", "title": "베어링 진동 진단", "domain": "제조 · 신호", "q": "진동 소리만 듣고 어디가 망가졌는지 알 수 있을까?", "data": "CWRU Bearing Data", "type": "신호 분류"}, {"id": "form_understanding", "title": "서식 문서 이해", "domain": "문서 AI · 회계", "q": "스캔한 서식 199장. 어느 글이 질문이고 어느 글이 답일까?", "data": "FUNSD", "type": "분류 (레이아웃)"}, {"id": "ai_usecases", "title": "AI 활용사례 찾기", "domain": "AI 전환 전략", "q": "사람들은 AI 를 어떤 일에 가장 많이 쓸까?", "data": "Anthropic Economic Index", "type": "분석 · 순위"}, {"id": "point_cloud", "title": "3D 포인트 클라우드", "domain": "3D 비전", "q": "점 2,048개만 보고 의자인지 비행기인지 맞힐 수 있을까?", "data": "ModelNet40 (40종류)", "type": "다중 분류 (3D)"}, {"id": "driving", "title": "자율주행: 옆 차 궤적 예측", "domain": "자율주행", "q": "옆 차는 3초 뒤 어디에 있을까?", "data": "NGSIM 고속도로 차량 궤적 · Waymo Open Motion (신청)", "type": "회귀 (궤적)"}, {"id": "robot", "title": "로봇 모방학습", "domain": "로봇", "q": "사람의 시범을 보고 로봇이 블록을 T 자리에 밀어 넣을 수 있을까?", "data": "LeRobot PushT", "type": "회귀 (행동)"}, {"id": "medical", "title": "흉부 X-ray 폐렴 찾기", "domain": "의료 영상", "q": "X-ray 사진 한 장에서 폐렴을 찾을 수 있을까?", "data": "MedMNIST (PneumoniaMNIST)", "type": "이진 분류 (이미지)"}, {"id": "satellite", "title": "위성 사진 토지 분류", "domain": "우주 · 환경", "q": "위성 사진 한 칸이 숲일까, 밭일까, 도시일까?", "data": "EuroSAT (27,000장, 10종)", "type": "다중 분류 (이미지)"}, {"id": "air_quality", "title": "미세먼지 예보", "domain": "환경 · 기상", "q": "내일 이 시각 초미세먼지(PM2.5)는 얼마일까?", "data": "UCI Beijing PM2.5 · 에어코리아 (신청)", "type": "회귀 (시계열)"}, {"id": "electricity", "title": "전력 수요 예측", "domain": "에너지", "q": "다음 한 시간, 이 집은 전기를 얼마나 쓸까?", "data": "UCI Household Power (4년, 1분 간격)", "type": "회귀 (시계열)"}, {"id": "football", "title": "축구: 이 슛은 골일까?", "domain": "스포츠 분석", "q": "슛 위치와 각도만 보고 골이 될 확률은? (기대 득점 xG)", "data": "StatsBomb Open Data", "type": "확률 분류"}, {"id": "chess", "title": "체스: 누가 이길까?", "domain": "게임", "q": "몇 수만 보고 누가 이길지 알 수 있을까?", "data": "Lichess 공개 대국", "type": "분류"}, {"id": "speech", "title": "음성 명령 인식", "domain": "음성 AI", "q": "1초짜리 소리. 'yes' 일까 'no' 일까?", "data": "Speech Commands (35단어, 10만 개)", "type": "다중 분류 (소리)"}, {"id": "drug", "title": "신약 후보 독성 예측", "domain": "바이오 · 제약", "q": "이 분자는 몸에 독일까?", "data": "Tox21 (분자 약 8천 개, 독성 실험 12종)", "type": "다중 라벨 분류"}, {"id": "protein", "title": "단백질 구조 (AlphaFold)", "domain": "바이오 · 과학", "q": "아미노산 서열만 보고 3D 구조를 맞힐 수 있을까?", "data": "AlphaFold DB (예측 2억 개 이상)", "type": "구조 예측"}, {"id": "crop", "title": "작물 병해 진단", "domain": "농업", "q": "잎 사진 한 장으로 어떤 병인지 알 수 있을까?", "data": "PlantVillage (약 5만 장, 38종)", "type": "다중 분류 (이미지)"}];
+const IMAGES = Object.fromEntries(CANDS.map((c) => [c.id, "img/" + c.id + ".jpg"]));
+const CREDITS = {"fashion_commerce": {"title": "Interior sports clothing store Cala Millor.jpg", "artist": "Steffen Mokosch", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Interior_sports_clothing_store_Cala_Millor.jpg"}, "movie_ratings": {"title": "Tengis Movie Theater - Screen.jpg", "artist": "Fred Cherrygarden", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Tengis_Movie_Theater_-_Screen.jpg"}, "shop_conversion": {"title": "Close-up of a woman looking at a credit card while working on her laptop.jpg", "artist": "Shixart1985", "license": "CC BY 2.0", "page": "https://commons.wikimedia.org/wiki/File:Close-up_of_a_woman_looking_at_a_credit_card_while_working_on_her_laptop.jpg"}, "korean_reviews": {"title": "Popcorn!! (2521342015).jpg", "artist": "Joelle Nebbe-Mornod from Bradford, UK", "license": "CC BY 2.0", "page": "https://commons.wikimedia.org/wiki/File:Popcorn!!_(2521342015).jpg"}, "card_fraud": {"title": "Credit card terminal in Laos.jpg", "artist": "Basile Morin", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Credit_card_terminal_in_Laos.jpg"}, "aml_transactions": null, "stock_index": {"title": "Stock market charts illustration.jpg", "artist": "Unknown authorUnknown author", "license": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Stock_market_charts_illustration.jpg"}, "support_routing": {"title": "Call Centre.jpg", "artist": "Singhira", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Call_Centre.jpg"}, "hotel_booking": {"title": "Bed in hotel room 5.jpg", "artist": "Kurt Kaiser", "license": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Bed_in_hotel_room_5.jpg"}, "link_prediction": {"title": "Social Network Visualization.png", "artist": "Martin Grandjean", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Social_Network_Visualization.png"}, "bike_demand": {"title": "Bicycle-sharing station at Hangang bikeway 6.jpg", "artist": "Sarang", "license": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Bicycle-sharing_station_at_Hangang_bikeway_6.jpg"}, "real_estate": {"title": "Banlieue suburban Quebec.jpg", "artist": "Gabriel Picard", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Banlieue_suburban_Quebec.jpg"}, "earthquakes": {"title": "Seismogram at Weston Observatory.JPG", "artist": "Z22", "license": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Seismogram_at_Weston_Observatory.JPG"}, "semiconductor_yield": {"title": "IMaGe 31072R – Silicon Wafer 20120926.jpg", "artist": "Rob Bulmahn", "license": "CC BY 2.0", "page": "https://commons.wikimedia.org/wiki/File:IMaGe_31072R_%E2%80%93_Silicon_Wafer_20120926.jpg"}, "predictive_maintenance": {"title": "Fabriko de Sichuan Jinxing Compressor Manufacturing Co., Ltd 03.jpg", "artist": "RG72", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Fabriko_de_Sichuan_Jinxing_Compressor_Manufacturing_Co.,_Ltd_03.jpg"}, "steel_defects": {"title": "DETAIL, END OF THE LINE AT THE 84-INCH STRIP MILL, WHERE THE HOT STRIP IS WATER-COOLED AND ROLLED ONTO COILS. - Corrigan, McKinney Steel Company, 3100 East Forty-fifth Street, HAER OHIO,18-CLEV,34-49.tif", "artist": "작자 미상", "license": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:DETAIL,_END_OF_THE_LINE_AT_THE_84-INCH_STRIP_MILL,_WHERE_THE_HOT_STRIP_IS_WATER-COOLED_AND_ROLLED_ONTO_COILS._-_Corrigan,_McKinney_Steel_Company,_3100_East_Forty-fifth_Street,_HAER_OHIO,18-CLEV,34-49.tif"}, "bearing_vibration": {"title": "1984 deep groove ball bearing UR 6304 made in Czechoslovakia by ZKL.jpg", "artist": "R. Henrik Nilsson", "license": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:1984_deep_groove_ball_bearing_UR_6304_made_in_Czechoslovakia_by_ZKL.jpg"}, "form_understanding": {"title": "2013-10-14 12 41 47 National Weather Service mostly obsolete paper form B-91 Record of Climatological Observations for Cooperative Observers.JPG", "artist": "Famartin", "license": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:2013-10-14_12_41_47_National_Weather_Service_mostly_obsolete_paper_form_B-91_Record_of_Climatological_Observations_for_Cooperative_Observers.JPG"}, "ai_usecases": {"title": "Bookmark-inside-office.jpg", "artist": "Bookmark Content", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Bookmark-inside-office.jpg"}, "point_cloud": {"title": "Ouster OS1-64 lidar point cloud of intersection of Folsom and Dore St, San Francisco.png", "artist": "Daniel L. Lu", "license": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Ouster_OS1-64_lidar_point_cloud_of_intersection_of_Folsom_and_Dore_St,_San_Francisco.png"}, "driving": {"title": "Moscow, Yandex self-driving Hyundai Sonata, Aug 2025 roof unit 03.jpg", "artist": "Retired electrician", "license": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Moscow,_Yandex_self-driving_Hyundai_Sonata,_Aug_2025_roof_unit_03.jpg"}, "robot": {"title": "Hydraulic toy robot arm gripper.jpg", "artist": "Scoid", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Hydraulic_toy_robot_arm_gripper.jpg"}, "medical": {"title": "Chest X-ray 1300275.JPG", "artist": "Nevit Dilmen (talk)", "license": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Chest_X-ray_1300275.JPG"}, "satellite": {"title": "Crimea Sentinel-2A MSIL2A 26June2019 843 MM v2.tif", "artist": "contains modified Copernicus Sentinel data (2019), processed by ESA", "license": "CC BY-SA 3.0 igo", "page": "https://commons.wikimedia.org/wiki/File:Crimea_Sentinel-2A_MSIL2A_26June2019_843_MM_v2.tif"}, "air_quality": {"title": "Smoggy Seoul (6907570245).jpg", "artist": "Jimmy McIntyre - Editor HDR One Magazine", "license": "CC BY-SA 2.0", "page": "https://commons.wikimedia.org/wiki/File:Smoggy_Seoul_(6907570245).jpg"}, "electricity": {"title": "Switchyard of electric substation 750kV.png", "artist": "Novoklimov", "license": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Switchyard_of_electric_substation_750kV.png"}, "football": {"title": "Wembley Stadium - The first football match - geograph.org.uk - 3869535.jpg", "artist": "Richard Humphrey", "license": "CC BY-SA 2.0", "page": "https://commons.wikimedia.org/wiki/File:Wembley_Stadium_-_The_first_football_match_-_geograph.org.uk_-_3869535.jpg"}, "chess": {"title": "Paris - Playing chess at the Jardins du Luxembourg - 2966.jpg", "artist": "Jorge Royan", "license": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Paris_-_Playing_chess_at_the_Jardins_du_Luxembourg_-_2966.jpg"}, "speech": {"title": "XLR-microphone.jpg", "artist": "Kreuzschnabel", "license": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:XLR-microphone.jpg"}, "drug": {"title": "Generic Drug Research (5896) (8493711422).jpg", "artist": "The U.S. Food and Drug Administration", "license": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Generic_Drug_Research_(5896)_(8493711422).jpg"}, "protein": {"title": "ADAR Protein.png", "artist": "Csully222", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:ADAR_Protein.png"}, "crop": {"title": "Sweet potato plant with leaf miner damage.jpg", "artist": "Phytorealism", "license": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Sweet_potato_plant_with_leaf_miner_damage.jpg"}};
+const byId = Object.fromEntries(CANDS.map((c) => [c.id, c]));
+const ROUND = { 32: "32강", 16: "16강", 8: "8강", 4: "준결승", 2: "결승" };
+const $ = (id) => document.getElementById(id);
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+let state = null;   // {size, round:[ids], next:[ids], k, history:[{a,b,w,size}], done}
+let mode = 32;
+
+function startScreen() {
+  $("roundTag").textContent = "";
+  const s = $("screen"); s.replaceChildren();
+  const box = el("div", "start");
+  const modes = el("div", "modes"); modes.setAttribute("role", "group"); modes.setAttribute("aria-label", "몇 강으로 할까요");
+  [[32, "32강", "전부 · 31경기"], [16, "16강", "무작위 16개 · 15경기"]].forEach(([n, t, d]) => {
+    const b = el("button", "mode"); b.type = "button"; b.setAttribute("aria-pressed", String(mode === n));
+    b.append(el("b", "", t), el("small", "", d));
+    b.addEventListener("click", () => { mode = n; startScreen(); });
+    modes.append(b);
+  });
+  const go = el("button", "go", "시작하기"); go.type = "button"; go.addEventListener("click", newGame);
+  const mosaic = el("div", "mosaic");
+  CANDS.forEach((c) => { const im = el("img"); im.src = IMAGES[c.id]; im.alt = c.title; im.title = c.title; mosaic.append(im); });
+  box.append(modes, go, mosaic);
+  s.append(box);
+}
+
+function newGame() {
+  const ids = shuffle(CANDS.map((c) => c.id)).slice(0, mode);
+  state = { size: mode, round: ids, next: [], k: 0, history: [], done: false };
+  renderMatch();
+}
+
+function cardFor(id, side) {
+  const c = byId[id];
+  const b = el("button", "card"); b.type = "button"; b.dataset.side = side;
+  const img = el("img"); img.src = IMAGES[id]; img.alt = ""; img.width = 480; img.height = 300;
+  const body = el("div", "body");
+  const meta = el("div", "meta"); meta.append(el("span", "chip type", c.type), el("span", "chip", c.data));
+  body.append(el("div", "domain", c.domain), el("h2", "", c.title), el("p", "q", c.q), meta);
+  b.append(img, body);
+  b.setAttribute("aria-label", `${c.title}: ${c.q} 고르기`);
+  return b;
+}
+
+function renderMatch() {
+  const n = state.round.length;
+  const a = state.round[state.k * 2], b = state.round[state.k * 2 + 1];
+  const total = n / 2;
+  $("roundTag").textContent = `${ROUND[n]} ${state.k + 1} / ${total}`;
+  const s = $("screen"); s.replaceChildren();
+  const prog = el("div", "progress"); const fill = el("i"); prog.append(fill);
+  const played = state.history.length, all = state.size - 1;
+  fill.style.width = `${(played / all) * 100}%`;
+  const m = el("div", "match");
+  const ca = cardFor(a, "a"), cb = cardFor(b, "b");
+  m.append(ca, el("div", "vs", "VS"), cb);
+  const hint = el("p", "hint", "더 해 보고 싶은 쪽을 누르세요. 키보드: ← 왼쪽, → 오른쪽 ");
+  if (state.history.length) { const u = el("button", "undo", "한 경기 되돌리기"); u.type = "button"; u.addEventListener("click", undo); hint.append(u); }
+  s.append(prog, m, hint);
+  [ca, cb].forEach((card) => card.addEventListener("click", () => pick(card.dataset.side === "a" ? a : b, a, b, ca, cb)));
+}
+
+let locked = false;
+function pick(w, a, b, ca, cb) {
+  if (locked) return; locked = true;
+  (w === a ? ca : cb).classList.add("win"); (w === a ? cb : ca).classList.add("lose");
+  setTimeout(() => {
+    locked = false;
+    state.history.push({ a, b, w, n: state.round.length });
+    state.next.push(w); state.k += 1;
+    if (state.k * 2 >= state.round.length) {
+      if (state.next.length === 1) { state.done = true; finish(); return; }
+      state.round = state.next; state.next = []; state.k = 0;
+    }
+    renderMatch();
+  }, 320);
+}
+
+function undo() {
+  if (!state.history.pop()) return;
+  replay();
+}
+function replay() {
+  // rebuild the bracket from the first-round order and the remaining picks
+  const hist = state.history;
+  state.round = state.initial; state.next = []; state.k = 0;
+  for (const h of hist) {
+    state.next.push(h.w); state.k += 1;
+    if (state.k * 2 >= state.round.length) { state.round = state.next; state.next = []; state.k = 0; }
+  }
+  renderMatch();
+}
+
+function ranking() {
+  // champion, finalist, semi-finalists by the round they lost in
+  const lostAt = {};
+  state.history.forEach((h) => { lostAt[h.w === h.a ? h.b : h.a] = h.n; });
+  const champ = state.history[state.history.length - 1].w;
+  const order = Object.entries(lostAt).sort((x, y) => x[1] - y[1]).map(([id]) => id);
+  return { champ, finalist: order[0], semis: order.slice(1, 3) };
+}
+
+async function finish() {
+  $("roundTag").textContent = "우승";
+  const r = ranking(); const c = byId[r.champ];
+  const s = $("screen"); s.replaceChildren();
+  const box = el("div", "champ");
+  const img = el("img"); img.src = IMAGES[r.champ]; img.alt = c.title;
+  const right = el("div");
+  right.append(el("div", "trophy", "나의 데이터"), el("h2", "", c.title), el("p", "q", c.q));
+  const meta = el("div", "meta"); meta.append(el("span", "chip type", c.type), el("span", "chip", c.data)); right.append(meta);
+  const pod = el("ol", "podium");
+  [["준우승", r.finalist], ["4강", r.semis[0]], ["4강", r.semis[1]]].forEach(([t, id]) => {
+    if (!id) return; const li = el("li"); li.append(el("span", "rank", t), el("span", "", byId[id].title)); pod.append(li);
+  });
+  right.append(pod);
+  const saved = el("p", "saved", "결과를 저장하는 중…"); right.append(saved);
+  const act = el("div", "actions");
+  const again = el("button", "go", "다시 하기"); again.type = "button"; again.addEventListener("click", newGame);
+  const home = el("button", "ghost", "처음으로"); home.type = "button"; home.addEventListener("click", startScreen);
+  const copy = el("button", "ghost", "결과 복사"); copy.type = "button"; copy.addEventListener("click", () => copyResult(copy));
+  act.append(again, copy, home); right.append(act);
+  box.append(img, right); s.append(box);
+  saved.textContent = await save(r);
+}
+
+// ---------- my records (this browser only) ----------
+const KEY = "data-worldcup-results";
+function loadAll() { try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { return []; } }
+let lastText = "";
+async function save(r) {
+  const wins = {}, played = {};
+  state.history.forEach((h) => { wins[h.w] = (wins[h.w] || 0) + 1; played[h.a] = (played[h.a] || 0) + 1; played[h.b] = (played[h.b] || 0) + 1; });
+  const all = loadAll(); all.push({ size: state.size, champion: r.champ, finalist: r.finalist || "", semis: r.semis, wins, played, at: Date.now() });
+  let ok = true;
+  try { localStorage.setItem(KEY, JSON.stringify(all)); } catch (e) { ok = false; }
+  renderBoard(ok ? all : [all[all.length - 1]]);
+  lastText = `[데이터 월드컵 ${ROUND[state.size]}] 우승: ${byId[r.champ].title} / 준우승: ${byId[r.finalist] ? byId[r.finalist].title : "-"} / 4강: ${r.semis.map((i) => byId[i].title).join(", ")}`;
+  return ok ? "결과를 '내 기록' 에 더했습니다. 아래 버튼으로 결과를 복사해 공유할 수 있습니다." : "이 브라우저는 기록을 저장할 수 없습니다. 결과를 복사해 두세요.";
+}
+async function copyResult(btn) {
+  try { await navigator.clipboard.writeText(lastText); btn.textContent = "복사했습니다"; }
+  catch (e) { prompt("결과를 복사하세요", lastText); }
+}
+function bars(target, rows, fmt) {
+  const box = $(target); box.replaceChildren();
+  if (!rows.length) return false;
+  const max = Math.max(...rows.map((r) => r[1]));
+  rows.forEach(([id, v, extra]) => {
+    const row = el("div", "bar"); const track = el("div", "track"); const fill = el("i", "fill");
+    fill.style.width = `${(v / max) * 100}%`;
+    const label = el("span", "label", byId[id] ? byId[id].title : id);
+    track.append(fill, label); row.append(track, el("span", "val", fmt(v, extra))); box.append(row);
+  });
+  return true;
+}
+
+function renderBoard(docs) {
+  const champ = {}, wins = {}, played = {};
+  docs.forEach((d) => {
+    if (d.champion) champ[d.champion] = (champ[d.champion] || 0) + 1;
+    Object.entries(d.wins || {}).forEach(([k, v]) => { wins[k] = (wins[k] || 0) + v; });
+    Object.entries(d.played || {}).forEach(([k, v]) => { played[k] = (played[k] || 0) + v; });
+  });
+  $("boardNote").textContent = docs.length ? `이 브라우저에서 월드컵을 ${docs.length}번 끝냈습니다.` : "이 브라우저에서 끝낸 월드컵 결과가 여기에 모입니다.";
+  const c = Object.entries(champ).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  if (!bars("champBars", c, (v) => `${v}번`)) $("champBars").replaceChildren(el("p", "empty", "아직 끝낸 월드컵이 없습니다."));
+  const r = Object.keys(played).filter((k) => played[k] >= 3).map((k) => [k, (wins[k] || 0) / played[k], played[k]]).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  if (!bars("rateBars", r, (v, n) => `${Math.round(v * 100)}%`)) $("rateBars").replaceChildren(el("p", "empty", "경기 기록이 쌓이면 승률이 보입니다."));
+}
+
+// keyboard: left / right
+document.addEventListener("keydown", (e) => {
+  if (!state || state.done || locked) return;
+  const cards = document.querySelectorAll(".card");
+  if (cards.length !== 2) return;
+  if (e.key === "ArrowLeft") cards[0].click();
+  if (e.key === "ArrowRight") cards[1].click();
+});
+
+// credits
+Object.entries(CREDITS).forEach(([id, c]) => {
+  const li = el("li");
+  if (!c) { li.textContent = `${byId[id].title}: 직접 그린 패턴 그림 (원형 · 쪼개기와 모으기 · 한곳에 모으기)`; }
+  else { const a = el("a", "", c.title); a.href = c.page; a.target = "_blank"; a.rel = "noopener"; li.append(`${byId[id].title}: `, a, ` · ${c.artist} · ${c.license}`); }
+  $("credits").append(li);
+});
+
+// keep the first-round order for undo
+const _newGame = newGame;
+newGame = function () { _newGame(); state.initial = state.round.slice(); };
+startScreen();
+renderBoard(loadAll());
+</script>
+</body>
+</html>
