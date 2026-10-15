@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>카드 이상거래 탐지 (보이스피싱 등) · 현실의 데이터</title>
+<title>카드 이상거래 탐지 (보이스피싱 · 자금세탁 등) · 현실의 데이터</title>
 <meta name="description" content="카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shop.css">
@@ -11,26 +11,34 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
-<div class="hero">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Credit_card_terminal_in_Laos.jpg" target="_blank" rel="noopener">Basile Morin</a> · CC BY-SA 4.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
   <div>
     <div class="tag"><span class="num">05</span><span>금융 · 핀테크</span></div>
-    <h1>카드 이상거래 탐지 (보이스피싱 등)</h1>
+    <h1>카드 이상거래 탐지 (보이스피싱 · 자금세탁 등)</h1>
     <div class="chips"><span class="chip">이상거래탐지 (FDS)</span><span class="chip">보이스피싱 · 송금 사기</span><span class="chip">자금세탁방지 · 설명가능성</span></div>
     <p class="teaser-big">카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?</p>
-    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/05_card_fraud.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
-      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/05_card_fraud.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/05_card_fraud.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="05_card_fraud.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
-  <img src="thumb.png" alt="카드 이상거래 탐지 (보이스피싱 등) 데이터 샘플" width="480" height="300">
 </div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>금액 · V1~V28</div>
+  <div class="model">→ 모델 →<small>이진 분류 (불균형)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>사기인가 (Class 0/1)</div>
+</div></section>
 <section class="block"><h2>데이터</h2>
-  <div class="data-name">Credit Card Fraud Detection (ULB) · 약 150MB</div><p class="src">유럽 카드 소지자의 2013년 9월 이틀치 거래, OpenML 1597 (원본 Kaggle mlg-ulb). 성분은 개인정보 때문에 PCA 로 바꾼 V1~V28. OpenML 판에는 시각 열이 없지만 행이 시간 순서대로 놓여 있다</p>
-  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>V1</th><th>V2</th><th>V3</th><th>V14</th><th>V17</th><th>Amount</th><th>Class</th></tr></thead><tbody><tr><td title="-1.36">-1.36</td><td title="-0.0728">-0.0728</td><td title="2.54">2.54</td><td title="-0.311">-0.311</td><td title="0.208">0.208</td><td title="150">150</td><td title="0">0</td></tr><tr><td title="1.19">1.19</td><td title="0.266">0.266</td><td title="0.166">0.166</td><td title="-0.144">-0.144</td><td title="-0.115">-0.115</td><td title="2.69">2.69</td><td title="0">0</td></tr><tr><td title="-1.36">-1.36</td><td title="-1.34">-1.34</td><td title="1.77">1.77</td><td title="-0.166">-0.166</td><td title="1.11">1.11</td><td title="379">379</td><td title="0">0</td></tr><tr><td title="-0.966">-0.966</td><td title="-0.185">-0.185</td><td title="1.79">1.79</td><td title="-0.288">-0.288</td><td title="-0.684">-0.684</td><td title="124">124</td><td title="0">0</td></tr><tr><td title="-1.16">-1.16</td><td title="0.878">0.878</td><td title="1.55">1.55</td><td title="-1.12">-1.12</td><td title="-0.237">-0.237</td><td title="70">70</td><td title="0">0</td></tr></tbody></table></div>
+  <div class="two" style="align-items:center"><div><div class="data-name">Credit Card Fraud Detection (ULB) · 약 150MB</div><p class="src">유럽 카드 소지자의 2013년 9월 이틀치 거래, OpenML 1597 (원본 Kaggle mlg-ulb). 성분은 개인정보 때문에 PCA 로 바꾼 V1~V28. OpenML 판에는 시각 열이 없지만 행이 시간 순서대로 놓여 있다</p></div>
+  <img src="thumb.png" alt="카드 이상거래 탐지 (보이스피싱 · 자금세탁 등) 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>V1</th><th>V2</th><th>V3</th><th>V14</th><th>V17</th><th>Amount</th><th>Class</th></tr></thead><tbody><tr><td title="-0.3233">-0.3233</td><td title="1.057">1.057</td><td title="-0.04834">-0.04834</td><td title="-1.802">-1.802</td><td title="0.8466">0.8466</td><td title="40">40</td><td title="0">0</td></tr><tr><td title="-0.3497">-0.3497</td><td title="0.9326">0.9326</td><td title="0.143">0.143</td><td title="-0.7708">-0.7708</td><td title="0.4921">0.4921</td><td title="1.98">1.98</td><td title="0">0</td></tr><tr><td title="-1.615">-1.615</td><td title="-2.407">-2.407</td><td title="0.3262">0.3262</td><td title="0.3483">0.3483</td><td title="-1.137">-1.137</td><td title="96">96</td><td title="0">0</td></tr><tr><td title="-2.477">-2.477</td><td title="0.8606">0.8606</td><td title="1.442">1.442</td><td title="0.279">0.279</td><td title="0.1163">0.1163</td><td title="308">308</td><td title="0">0</td></tr><tr><td title="1.339">1.339</td><td title="-0.5473">-0.5473</td><td title="0.7374">0.7374</td><td title="1.252">1.252</td><td title="1.878">1.878</td><td title="5">5</td><td title="0">0</td></tr><tr><td title="0.03988">0.03988</td><td title="2.171">2.171</td><td title="-2.013">-2.013</td><td title="-3.478">-3.478</td><td title="3.35">3.35</td><td title="1.51">1.51</td><td title="0">0</td></tr></tbody></table></div>
 </section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>284,807</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>30</b><span>열 (앞의 16개 열만, 나머지 14개 열은 노트북에서)</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="V1">V1</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-56.41 ~ 2.455 (평균 0)">-56.41 ~ 2.455 (평균 0)</td></tr><tr><td title="V2">V2</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-72.72 ~ 22.06 (평균 0)">-72.72 ~ 22.06 (평균 0)</td></tr><tr><td title="V3">V3</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-48.33 ~ 9.383 (평균 0)">-48.33 ~ 9.383 (평균 0)</td></tr><tr><td title="V4">V4</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-5.683 ~ 16.88 (평균 0)">-5.683 ~ 16.88 (평균 0)</td></tr><tr><td title="V5">V5</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-113.7 ~ 34.8 (평균 0)">-113.7 ~ 34.8 (평균 0)</td></tr><tr><td title="V6">V6</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-26.16 ~ 73.3 (평균 0)">-26.16 ~ 73.3 (평균 0)</td></tr><tr><td title="V7">V7</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-43.56 ~ 120.6 (평균 0)">-43.56 ~ 120.6 (평균 0)</td></tr><tr><td title="V8">V8</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-73.22 ~ 20.01 (평균 0)">-73.22 ~ 20.01 (평균 0)</td></tr><tr><td title="V9">V9</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-13.43 ~ 15.59 (평균 0)">-13.43 ~ 15.59 (평균 0)</td></tr><tr><td title="V10">V10</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-24.59 ~ 23.75 (평균 0)">-24.59 ~ 23.75 (평균 0)</td></tr><tr><td title="V11">V11</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-4.797 ~ 12.02 (평균 0)">-4.797 ~ 12.02 (평균 0)</td></tr><tr><td title="V12">V12</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-18.68 ~ 7.848 (평균 0)">-18.68 ~ 7.848 (평균 0)</td></tr><tr><td title="V13">V13</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-5.792 ~ 7.127 (평균 0)">-5.792 ~ 7.127 (평균 0)</td></tr><tr><td title="V14">V14</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-19.21 ~ 10.53 (평균 0)">-19.21 ~ 10.53 (평균 0)</td></tr><tr><td title="V15">V15</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-4.499 ~ 8.878 (평균 0)">-4.499 ~ 8.878 (평균 0)</td></tr><tr><td title="V16">V16</td><td title="숫자">숫자</td><td title="0">0</td><td title="275,663">275,663</td><td title="-14.13 ~ 17.32 (평균 0)">-14.13 ~ 17.32 (평균 0)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>정상 vs 사기 거래 수</h3><p class="note">284,315 대 492. 로그 눈금이라 막대 높이가 비슷해 보인다</p><div class="plot" id="plot-0" role="img" aria-label="정상 vs 사기 거래 수"></div></div><div class="chart"><h3>거래 금액: 정상 vs 사기</h3><p class="note">사기는 아주 작은 금액 (시험 결제) 이 많다</p><div class="plot" id="plot-1" role="img" aria-label="거래 금액: 정상 vs 사기"></div></div></div></section>
 <div class="two">
-  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>카드 거래 한 건</td></tr><tr><td>② 입력 X</td><td>금액 · V1~V28</td></tr><tr><td>③ 출력 y</td><td>사기인가 (Class 0/1)</td></tr><tr><td>④ 평가지표</td><td>정밀도 · 재현율 (정확도는 함정)</td></tr><tr><td>⑤ 기준선</td><td>전부 &#x27;정상&#x27;</td></tr></tbody></table>
-    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>카드 거래 한 건</td></tr><tr><td>② 입력 X</td><td>금액 · V1~V28</td></tr><tr><td>③ 출력 y</td><td>사기인가 (Class 0/1)</td></tr><tr><td>④ 평가지표</td><td>정밀도 · 재현율 (정확도는 함정)</td></tr><tr><td>⑤ 기준선</td><td>전부 &#x27;정상&#x27;</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">always normal        accuracy 99.874%  precision 0%  recall 0%
 logistic regression  accuracy 99.917%  precision 77%  recall 49%</pre></section>
 </div>
@@ -40,8 +48,8 @@ logistic regression  accuracy 99.917%  precision 77%  recall 49%</pre></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>카드사 · 은행 · 증권, 간편결제 · 핀테크, 금융보안</dd><dt>직무</dt><dd>FDS (이상거래탐지) 분석가, 리스크 모델러, 자금세탁방지 (AML) 컴플라이언스</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<nav class="pager"><a href="../korean_reviews/">← 04 한국어 리뷰 감성 분석</a><a href="../support_routing/">06 고객 문의 자동 분류 →</a></nav>
-<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+<nav class="pager"><a href="../korean_reviews/">← 04 한국어 리뷰 감성 분석</a><a href="../aml_transactions/">06 자금세탁 거래 탐지 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>

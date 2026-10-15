@@ -11,26 +11,34 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
-<div class="hero">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Social_Network_Visualization.png" target="_blank" rel="noopener">Martin Grandjean</a> · CC BY-SA 4.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
   <div>
-    <div class="tag"><span class="num">08</span><span>플랫폼 · 서비스</span></div>
+    <div class="tag"><span class="num">10</span><span>플랫폼 · 서비스</span></div>
     <h1>연결 예측: 사람 · 친구 추천</h1>
     <div class="chips"><span class="chip">링크 예측 (Link Prediction)</span><span class="chip">친구 · 연결 추천</span><span class="chip">그래프 데이터</span></div>
     <p class="teaser-big">연구기관 1,005명이 주고받은 이메일 연결망. 아직 연결 안 된 두 사람, 곧 연락하게 될까?</p>
-    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/08_link_prediction.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
-      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/08_link_prediction.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/10_link_prediction.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="10_link_prediction.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
-  <img src="thumb.png" alt="연결 예측: 사람 · 친구 추천 데이터 샘플" width="480" height="300">
 </div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>지금까지의 연결망 (공통 지인 수, 같은 부서인가 …)</div>
+  <div class="model">→ 모델 →<small>링크 예측</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>둘이 연결되는가</div>
+</div></section>
 <section class="block"><h2>데이터</h2>
-  <div class="data-name">email-Eu-core · 약 0.1MB</div><p class="src">SNAP, Stanford (Leskovec, Kleinberg &amp; Faloutsos, 2007; Yin et al., 2017). 유럽 한 연구기관 구성원 1,005명 사이의 이메일 연결 25,571개 + 소속 부서 42개</p>
-  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>사람 a</th><th>사람 b</th><th>a 의 부서</th><th>b 의 부서</th></tr></thead><tbody><tr><td title="0">0</td><td title="1">1</td><td title="1">1</td><td title="1">1</td></tr><tr><td title="0">0</td><td title="5">5</td><td title="1">1</td><td title="25">25</td></tr><tr><td title="0">0</td><td title="6">6</td><td title="1">1</td><td title="25">25</td></tr><tr><td title="0">0</td><td title="17">17</td><td title="1">1</td><td title="1">1</td></tr><tr><td title="0">0</td><td title="18">18</td><td title="1">1</td><td title="1">1</td></tr></tbody></table></div>
+  <div class="two" style="align-items:center"><div><div class="data-name">email-Eu-core · 약 0.1MB</div><p class="src">SNAP, Stanford (Leskovec, Kleinberg &amp; Faloutsos, 2007; Yin et al., 2017). 유럽 한 연구기관 구성원 1,005명 사이의 이메일 연결 25,571개 + 소속 부서 42개</p></div>
+  <img src="thumb.png" alt="연결 예측: 사람 · 친구 추천 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>사람 a</th><th>사람 b</th><th>a 의 부서</th><th>b 의 부서</th></tr></thead><tbody><tr><td title="0">0</td><td title="1">1</td><td title="1">1</td><td title="1">1</td></tr><tr><td title="0">0</td><td title="5">5</td><td title="1">1</td><td title="25">25</td></tr><tr><td title="0">0</td><td title="6">6</td><td title="1">1</td><td title="25">25</td></tr><tr><td title="0">0</td><td title="17">17</td><td title="1">1</td><td title="1">1</td></tr><tr><td title="0">0</td><td title="18">18</td><td title="1">1</td><td title="1">1</td></tr></tbody></table></div>
 </section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>25,571</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>4</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="a">a</td><td title="숫자">숫자</td><td title="0">0</td><td title="868">868</td><td title="0 ~ 1003 (평균 304.4)">0 ~ 1003 (평균 304.4)</td></tr><tr><td title="b">b</td><td title="숫자">숫자</td><td title="0">0</td><td title="991">991</td><td title="0 ~ 1004 (평균 317.2)">0 ~ 1004 (평균 317.2)</td></tr><tr><td title="dept_a">dept_a</td><td title="숫자">숫자</td><td title="0">0</td><td title="40">40</td><td title="0 ~ 41 (평균 16.75)">0 ~ 41 (평균 16.75)</td></tr><tr><td title="dept_b">dept_b</td><td title="숫자">숫자</td><td title="0">0</td><td title="42">42</td><td title="0 ~ 41 (평균 15.83)">0 ~ 41 (평균 15.83)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>사람마다 연결 수</h3><p class="note">몇 명에게 연결이 몰려 있다</p><div class="plot" id="plot-0" role="img" aria-label="사람마다 연결 수"></div></div><div class="chart"><h3>연결된 쌍 중 같은 부서 비율</h3><p class="note">연결의 34% 가 같은 부서 안. 부서가 42개라 무작위라면 훨씬 낮을 것</p><div class="plot" id="plot-1" role="img" aria-label="연결된 쌍 중 같은 부서 비율"></div></div></div></section>
 <div class="two">
-  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>두 사람의 쌍</td></tr><tr><td>② 입력 X</td><td>지금까지의 연결망 (공통 지인 수, 같은 부서인가 …)</td></tr><tr><td>③ 출력 y</td><td>둘이 연결되는가</td></tr><tr><td>④ 평가지표</td><td>ROC-AUC (진짜 연결을 더 높게 매겼나)</td></tr><tr><td>⑤ 기준선</td><td>무작위 점수 (AUC 0.5)</td></tr></tbody></table>
-    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>두 사람의 쌍</td></tr><tr><td>② 입력 X</td><td>지금까지의 연결망 (공통 지인 수, 같은 부서인가 …)</td></tr><tr><td>③ 출력 y</td><td>둘이 연결되는가</td></tr><tr><td>④ 평가지표</td><td>ROC-AUC (진짜 연결을 더 높게 매겼나)</td></tr><tr><td>⑤ 기준선</td><td>무작위 점수 (AUC 0.5)</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">random score           : AUC 0.49
 same department        : AUC 0.65
 number of common friends: AUC 0.94</pre></section>
@@ -41,8 +49,8 @@ number of common friends: AUC 0.94</pre></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>SNS · 메신저, 커리어 네트워크, 커머스 (함께 산 상품), 금융 (거래 연결망)</dd><dt>직무</dt><dd>그래프 ML 엔지니어, 추천 엔지니어</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<nav class="pager"><a href="../hotel_booking/">← 07 여행 예약: 취소와 가격</a><a href="../bike_demand/">09 공유 자전거 수요 예측 →</a></nav>
-<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+<nav class="pager"><a href="../hotel_booking/">← 09 여행 예약: 취소와 가격</a><a href="../bike_demand/">11 공유 자전거 수요 예측 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>

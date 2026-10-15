@@ -63,6 +63,10 @@ header { padding: 34px 0 10px; display: flex; flex-wrap: wrap; align-items: end;
 .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .chip { font-size: .78rem; border: 1px solid var(--line); border-radius: 99px; padding: 2px 9px; color: var(--muted); }
 .chip.type { border-color: var(--blue); color: var(--blue); }
+.slot { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.slot .card { flex: 1; }
+.more { color: var(--muted); font-size: .85rem; text-decoration: underline; align-self: flex-start; }
+.more:hover { color: var(--gold); }
 .hint { color: var(--muted); font-size: .85rem; text-align: center; margin: 14px 0 0; }
 .undo { background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; }
 /* result */
@@ -171,7 +175,10 @@ function cardFor(id, side) {
   body.append(el("div", "domain", c.domain), el("h2", "", c.title), el("p", "q", c.q), meta);
   b.append(img, body);
   b.setAttribute("aria-label", `${c.title}: ${c.q} 고르기`);
-  return b;
+  const wrap = el("div", "slot");
+  const more = el("a", "more", "데이터 자세히 보기 ↗"); more.href = `../${id}/`; more.target = "_blank"; more.rel = "noopener";
+  wrap.append(b, more);
+  return wrap;
 }
 
 function renderMatch() {
@@ -189,7 +196,7 @@ function renderMatch() {
   const hint = el("p", "hint", "더 해 보고 싶은 쪽을 누르세요. 키보드: ← 왼쪽, → 오른쪽 ");
   if (state.history.length) { const u = el("button", "undo", "한 경기 되돌리기"); u.type = "button"; u.addEventListener("click", undo); hint.append(u); }
   s.append(prog, m, hint);
-  [ca, cb].forEach((card) => card.addEventListener("click", () => pick(card.dataset.side === "a" ? a : b, a, b, ca, cb)));
+  [ca, cb].forEach((slot) => { const card = slot.querySelector(".card"); card.addEventListener("click", () => pick(card.dataset.side === "a" ? a : b, a, b, ca.querySelector(".card"), cb.querySelector(".card"))); });
 }
 
 let locked = false;
@@ -246,6 +253,7 @@ async function finish() {
     if (!id) return; const li = el("li"); li.append(el("span", "rank", t), el("span", "", byId[id].title)); pod.append(li);
   });
   right.append(pod);
+  const champLink = el("a", "more", "우승 데이터 자세히 보기 ↗"); champLink.href = `../${r.champ}/`; champLink.target = "_blank"; champLink.rel = "noopener"; right.append(champLink);
   const saved = el("p", "saved", "결과를 저장하는 중…"); right.append(saved);
   const act = el("div", "actions");
   const again = el("button", "go", "다시 하기"); again.type = "button"; again.addEventListener("click", newGame);
@@ -304,7 +312,7 @@ function renderBoard(docs) {
 // keyboard: left / right
 document.addEventListener("keydown", (e) => {
   if (!state || state.done || locked) return;
-  const cards = document.querySelectorAll(".card");
+  const cards = document.querySelectorAll(".match .card");
   if (cards.length !== 2) return;
   if (e.key === "ArrowLeft") cards[0].click();
   if (e.key === "ArrowRight") cards[1].click();

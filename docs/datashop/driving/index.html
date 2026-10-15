@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자율주행: 옆 차 궤적 예측 · 현실의 데이터</title>
+<meta name="description" content="옆 차는 3초 뒤 어디에 있을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Moscow,_Yandex_self-driving_Hyundai_Sonata,_Aug_2025_roof_unit_03.jpg" target="_blank" rel="noopener">Retired electrician</a> · CC0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">21</span><span>3D · 로봇 · 자율주행</span></div>
+    <h1>자율주행: 옆 차 궤적 예측</h1>
+    <div class="chips"><span class="chip">궤적 예측 (motion forecasting)</span><span class="chip">자율주행</span><span class="chip">시공간 데이터</span></div>
+    <p class="teaser-big">옆 차는 3초 뒤 어디에 있을까?</p>
+    <div class="actions"><a class="btn primary" href="https://data.transportation.gov/Automobiles/Next-Generation-Simulation-NGSIM-Vehicle-Trajector/8ect-6jqj" target="_blank" rel="noopener">NGSIM (미국 교통부, 공개)</a><a class="btn ghost" href="https://waymo.com/open/" target="_blank" rel="noopener">Waymo Open Dataset (신청 필요)</a></div>
+  </div>
+</div>
+<section class="block soon"><b>노트북 준비 중</b> · 데이터 월드컵에서 많이 뽑힌 데이터부터 노트북 · 통계 · 그래프를 만듭니다. 지금은 위 공식 페이지에서 데이터를 직접 볼 수 있습니다.</section>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>지난 궤적 + 주변 차들의 위치 · 차선</div>
+  <div class="model">→ 모델 →<small>회귀 (궤적)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>앞으로 3초의 위치 (x, y) 30개</div>
+</div></section>
+<section class="block"><h2>데이터</h2><div class="data-name">NGSIM 차량 궤적 · Waymo Open Motion Dataset</div><p class="src">NGSIM: 미국 교통부가 고속도로 (US-101 등) 를 카메라로 찍어 차량마다 0.1초 간격 위치를 기록한 공개 데이터. Waymo Open Motion: 실제 자율주행차가 본 주변 차량 · 보행자 궤적 (Google 계정 · 이용 동의 필요)</p></section>
+<section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>차 한 대의 지난 몇 초 (0.1초 간격 위치)</td></tr><tr><td>② 입력 X</td><td>지난 궤적 + 주변 차들의 위치 · 차선</td></tr><tr><td>③ 출력 y</td><td>앞으로 3초의 위치 (x, y) 30개</td></tr><tr><td>④ 평가지표</td><td>평균 · 마지막 위치 오차 (ADE · FDE, 미터)</td></tr><tr><td>⑤ 기준선</td><td>지금 속도 그대로 직진</td></tr></tbody></table></section>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/2104.10133" target="_blank" rel="noopener">Ettinger et al. (2021) Large Scale Interactive Motion Forecasting for Autonomous Driving: The Waymo Open Motion Dataset, ICCV</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>자율주행 · 모빌리티, 완성차 · 전장, 교통 관제</dd><dt>직무</dt><dd>예측 (prediction) 엔지니어, 자율주행 소프트웨어 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<footer><a href="../">← 전체 목록</a></footer>
+</div>
+</body>
+</html>

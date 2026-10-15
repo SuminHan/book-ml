@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>자금세탁 거래 탐지 · 현실의 데이터</title>
+<meta name="description" content="은행 거래 508만 건 중 세탁은 0.1%. 거래를 볼까, 계좌를 볼까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">06</span><span>금융 · 핀테크</span></div>
+    <h1>자금세탁 거래 탐지</h1>
+    <div class="chips"><span class="chip">자금세탁방지 (AML)</span><span class="chip">거래 모니터링</span><span class="chip">계좌 단위 조사</span></div>
+    <p class="teaser-big">은행 거래 508만 건 중 세탁은 0.1%. 거래를 볼까, 계좌를 볼까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/06_aml_transactions.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="06_aml_transactions.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>시각 · 보낸/받는 은행 · 계좌 · 금액 · 통화 · 결제 형식</div>
+  <div class="model">→ 모델 →<small>분류 · 그래프</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>세탁인가 (Is Laundering)</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">IBM Transactions for Anti Money Laundering (HI-Small) · 약 90MB (압축)</div><p class="src">IBM (Altman et al., NeurIPS 2023). 사람 · 회사 · 은행이 있는 가상 세계를 시뮬레이션한 합성 거래 5,078,345건, 세탁 표시 포함 (Kaggle 원본, 여기서는 Hugging Face 사본으로 로그인 없이 받는다)</p></div>
+  <img src="thumb.png" alt="자금세탁 거래 탐지 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>Timestamp</th><th>From Bank</th><th>Account</th><th>To Bank</th><th>Account.1</th><th>Amount Received</th><th>Receiving Currency</th><th>Amount Paid</th><th>Payment Currency</th><th>Payment Format</th><th>Is Laundering</th></tr></thead><tbody><tr><td title="2022-09-06 11:30:00">2022-09-06 11:30:00</td><td title="18,196">18,196</td><td title="803625250">803625250</td><td title="19,723">19,723</td><td title="80397E700">80397E700</td><td title="17,221.1">17,221.1</td><td title="Yuan">Yuan</td><td title="17,221.1">17,221.1</td><td title="Yuan">Yuan</td><td title="Cheque">Cheque</td><td title="0">0</td></tr><tr><td title="2022-09-04 06:47:00">2022-09-04 06:47:00</td><td title="211">211</td><td title="80A722860">80A722860</td><td title="28,416">28,416</td><td title="80A6BA170">80A6BA170</td><td title="0.01">0.01</td><td title="Australian Dollar">Australian Dollar</td><td title="0.01">0.01</td><td title="Australian Dollar">Australian Dollar</td><td title="Wire">Wire</td><td title="0">0</td></tr><tr><td title="2022-09-08 15:22:00">2022-09-08 15:22:00</td><td title="24,144">24,144</td><td title="80258F390">80258F390</td><td title="1655">1655</td><td title="80DE48C90">80DE48C90</td><td title="1,446.9">1,446.9</td><td title="Euro">Euro</td><td title="1,446.9">1,446.9</td><td title="Euro">Euro</td><td title="Credit Card">Credit Card</td><td title="0">0</td></tr><tr><td title="2022-09-08 04:37:00">2022-09-08 04:37:00</td><td title="1">1</td><td title="80D4327D0">80D4327D0</td><td title="146,265">146,265</td><td title="81322BCE0">81322BCE0</td><td title="33.29">33.29</td><td title="US Dollar">US Dollar</td><td title="33.29">33.29</td><td title="US Dollar">US Dollar</td><td title="ACH">ACH</td><td title="0">0</td></tr><tr><td title="2022-09-07 15:55:00">2022-09-07 15:55:00</td><td title="29,467">29,467</td><td title="8039B33D0">8039B33D0</td><td title="210,261">210,261</td><td title="80457A8D0">80457A8D0</td><td title="37,731.6">37,731.6</td><td title="Yen">Yen</td><td title="37,731.6">37,731.6</td><td title="Yen">Yen</td><td title="Cheque">Cheque</td><td title="0">0</td></tr><tr><td title="2022-09-07 07:17:00">2022-09-07 07:17:00</td><td title="70">70</td><td title="100428660">100428660</td><td title="7478">7478</td><td title="80B38ED00">80B38ED00</td><td title="14,199.8">14,199.8</td><td title="US Dollar">US Dollar</td><td title="14,199.8">14,199.8</td><td title="US Dollar">US Dollar</td><td title="Cheque">Cheque</td><td title="0">0</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>5,078,345</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>11</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="Timestamp">Timestamp</td><td title="날짜">날짜</td><td title="0">0</td><td title="15,018">15,018</td><td title="2022-09-01 00:00:00 ~ 2022-09-18 16:18:00">2022-09-01 00:00:00 ~ 2022-09-18 16:18:00</td></tr><tr><td title="From Bank">From Bank</td><td title="숫자">숫자</td><td title="0">0</td><td title="30,470">30,470</td><td title="1 ~ 356,303 (평균 45,730.6)">1 ~ 356,303 (평균 45,730.6)</td></tr><tr><td title="Account">Account</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="496,995">496,995</td><td title="가장 흔한 값: 100428660 (3.3%)">가장 흔한 값: 100428660 (3.3%)</td></tr><tr><td title="To Bank">To Bank</td><td title="숫자">숫자</td><td title="0">0</td><td title="15,811">15,811</td><td title="1 ~ 356,294 (평균 65,744.6)">1 ~ 356,294 (평균 65,744.6)</td></tr><tr><td title="Account.1">Account.1</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="420,636">420,636</td><td title="가장 흔한 값: 100428660 (0.0%)">가장 흔한 값: 100428660 (0.0%)</td></tr><tr><td title="Amount Received">Amount Received</td><td title="숫자">숫자</td><td title="0">0</td><td title="915,161">915,161</td><td title="0.000001 ~ 1,046,302,363,293.5 (평균 5,988,726.1)">0.000001 ~ 1,046,302,363,293.5 (평균 5,988,726.1)</td></tr><tr><td title="Receiving Currency">Receiving Currency</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="15">15</td><td title="가장 흔한 값: US Dollar (37.0%)">가장 흔한 값: US Dollar (37.0%)</td></tr><tr><td title="Amount Paid">Amount Paid</td><td title="숫자">숫자</td><td title="0">0</td><td title="923,873">923,873</td><td title="0.000001 ~ 1,046,302,363,293.5 (평균 4,509,273.4)">0.000001 ~ 1,046,302,363,293.5 (평균 4,509,273.4)</td></tr><tr><td title="Payment Currency">Payment Currency</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="15">15</td><td title="가장 흔한 값: US Dollar (37.3%)">가장 흔한 값: US Dollar (37.3%)</td></tr><tr><td title="Payment Format">Payment Format</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="7">7</td><td title="가장 흔한 값: Cheque (36.7%)">가장 흔한 값: Cheque (36.7%)</td></tr><tr><td title="Is Laundering">Is Laundering</td><td title="숫자">숫자</td><td title="0">0</td><td title="2">2</td><td title="0 ~ 1 (평균 0.001)">0 ~ 1 (평균 0.001)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>결제 형식별 세탁 비율</h3><p class="note">ACH (자동 이체) 에서 가장 높다</p><div class="plot" id="plot-0" role="img" aria-label="결제 형식별 세탁 비율"></div></div><div class="chart"><h3>날짜별 세탁 거래 수</h3><p class="note">처음 열흘 남짓에 몰려 있고 뒤로 갈수록 적다: 시간 순서로 나누면 시험 기간의 세탁 비율이 달라진다</p><div class="plot" id="plot-1" role="img" aria-label="날짜별 세탁 거래 수"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>거래 한 건 (또는 계좌 하나)</td></tr><tr><td>② 입력 X</td><td>시각 · 보낸/받는 은행 · 계좌 · 금액 · 통화 · 결제 형식</td></tr><tr><td>③ 출력 y</td><td>세탁인가 (Is Laundering)</td></tr><tr><td>④ 평가지표</td><td>정밀도 · 재현율</td></tr><tr><td>⑤ 기준선</td><td>전부 &#x27;정상&#x27;</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">always normal    accuracy 99.898%  precision 0.0%  recall 0.0%
+rule: ACH        accuracy 88.244%  precision 0.7%  recall 86.6%</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/2306.16424" target="_blank" rel="noopener">Altman et al. (2023) Realistic Synthetic Financial Transactions for Anti-Money Laundering Models, NeurIPS Datasets and Benchmarks</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>은행 · 증권 · 카드사, 핀테크 · 가상자산 거래소, 금융 감독 · 규제</dd><dt>직무</dt><dd>자금세탁방지 (AML) 분석가, 그래프 ML 엔지니어, 컴플라이언스</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../card_fraud/">← 05 카드 이상거래 탐지 (보이스피싱 · 자금세탁 등)</a><a href="../stock_index/">07 주가 지수: 내일 오를까? →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "결제 형식별 세탁 비율", "note": "ACH (자동 이체) 에서 가장 높다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["ACH", "Bitcoin", "Cash", "Cheque", "Credit Card", "Reinvestment", "Wire"], "y": [0.746, 0.038, 0.022, 0.017, 0.016, 0.0, 0.0]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "세탁 비율 (%)"}}}, {"title": "날짜별 세탁 거래 수", "note": "처음 열흘 남짓에 몰려 있고 뒤로 갈수록 적다: 시간 순서로 나누면 시험 기간의 세탁 비율이 달라진다", "traces": [{"type": "scatter", "mode": "lines+markers", "x": ["2022-09-01", "2022-09-02", "2022-09-03", "2022-09-04", "2022-09-05", "2022-09-06", "2022-09-07", "2022-09-08", "2022-09-09", "2022-09-10", "2022-09-11", "2022-09-12", "2022-09-13", "2022-09-14", "2022-09-15", "2022-09-16", "2022-09-17", "2022-09-18"], "y": [322, 408, 391, 407, 471, 531, 497, 539, 514, 442, 232, 170, 106, 70, 28, 26, 15, 8], "line": {"color": "var:series-2", "width": 2}, "name": ""}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "세탁 거래 수"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

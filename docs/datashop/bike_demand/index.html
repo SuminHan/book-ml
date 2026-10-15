@@ -11,26 +11,34 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
-<div class="hero">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Bicycle-sharing_station_at_Hangang_bikeway_6.jpg" target="_blank" rel="noopener">Sarang</a> · Public domain</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
   <div>
-    <div class="tag"><span class="num">09</span><span>플랫폼 · 서비스</span></div>
+    <div class="tag"><span class="num">11</span><span>도시 · 공간</span></div>
     <h1>공유 자전거 수요 예측</h1>
     <div class="chips"><span class="chip">수요예측</span><span class="chip">모빌리티 · 공유 서비스</span><span class="chip">재배치 운영</span></div>
     <p class="teaser-big">서울 공유 자전거 1년치 시간별 대여 수. 내일 아침 8시엔 몇 대가 필요할까?</p>
-    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/09_bike_demand.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
-      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/09_bike_demand.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/11_bike_demand.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="11_bike_demand.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
-  <img src="thumb.png" alt="공유 자전거 수요 예측 데이터 샘플" width="480" height="300">
 </div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>시각 · 요일 · 기온 · 습도 · 비 · 휴일 …</div>
+  <div class="model">→ 모델 →<small>회귀 (시계열)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>그 시간의 대여 수</div>
+</div></section>
 <section class="block"><h2>데이터</h2>
-  <div class="data-name">Seoul Bike Sharing Demand · 약 0.6MB</div><p class="src">UCI (Sathishkumar V E &amp; Cho, 2020), 서울 공공자전거 2017.12~2018.11 시간별 대여 수 8,760개 + 날씨</p>
-  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>date</th><th>hour</th><th>count</th><th>temp</th><th>humidity</th><th>rain</th><th>season</th><th>holiday</th></tr></thead><tbody><tr><td title="2017-12-01">2017-12-01</td><td title="0">0</td><td title="254">254</td><td title="-5.2">-5.2</td><td title="37">37</td><td title="0">0</td><td title="Winter">Winter</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2017-12-01">2017-12-01</td><td title="1">1</td><td title="204">204</td><td title="-5.5">-5.5</td><td title="38">38</td><td title="0">0</td><td title="Winter">Winter</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2017-12-01">2017-12-01</td><td title="2">2</td><td title="173">173</td><td title="-6">-6</td><td title="39">39</td><td title="0">0</td><td title="Winter">Winter</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2017-12-01">2017-12-01</td><td title="3">3</td><td title="107">107</td><td title="-6.2">-6.2</td><td title="40">40</td><td title="0">0</td><td title="Winter">Winter</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2017-12-01">2017-12-01</td><td title="4">4</td><td title="78">78</td><td title="-6">-6</td><td title="36">36</td><td title="0">0</td><td title="Winter">Winter</td><td title="No Holiday">No Holiday</td></tr></tbody></table></div>
+  <div class="two" style="align-items:center"><div><div class="data-name">Seoul Bike Sharing Demand · 약 0.6MB</div><p class="src">UCI (Sathishkumar V E &amp; Cho, 2020), 서울 공공자전거 2017.12~2018.11 시간별 대여 수 8,760개 + 날씨</p></div>
+  <img src="thumb.png" alt="공유 자전거 수요 예측 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>date</th><th>hour</th><th>count</th><th>temp</th><th>humidity</th><th>rain</th><th>season</th><th>holiday</th></tr></thead><tbody><tr><td title="2018-05-19">2018-05-19</td><td title="3">3</td><td title="320">320</td><td title="10.7">10.7</td><td title="73">73</td><td title="0">0</td><td title="Spring">Spring</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2018-09-15">2018-09-15</td><td title="2">2</td><td title="580">580</td><td title="21.7">21.7</td><td title="78">78</td><td title="0">0</td><td title="Autumn">Autumn</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2017-12-10">2017-12-10</td><td title="17">17</td><td title="226">226</td><td title="3.6">3.6</td><td title="65">65</td><td title="0">0</td><td title="Winter">Winter</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2018-01-10">2018-01-10</td><td title="22">22</td><td title="165">165</td><td title="-9.7">-9.7</td><td title="51">51</td><td title="0">0</td><td title="Winter">Winter</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2018-08-06">2018-08-06</td><td title="15">15</td><td title="646">646</td><td title="33.6">33.6</td><td title="58">58</td><td title="0">0</td><td title="Summer">Summer</td><td title="No Holiday">No Holiday</td></tr><tr><td title="2018-03-01">2018-03-01</td><td title="22">22</td><td title="190">190</td><td title="-3.6">-3.6</td><td title="52">52</td><td title="0">0</td><td title="Spring">Spring</td><td title="Holiday">Holiday</td></tr></tbody></table></div>
 </section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>8,760</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>15</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="date">date</td><td title="날짜">날짜</td><td title="0">0</td><td title="365">365</td><td title="2017-12-01 00:00:00 ~ 2018-11-30 00:00:00">2017-12-01 00:00:00 ~ 2018-11-30 00:00:00</td></tr><tr><td title="count">count</td><td title="숫자">숫자</td><td title="0">0</td><td title="2166">2166</td><td title="0 ~ 3556 (평균 704.6)">0 ~ 3556 (평균 704.6)</td></tr><tr><td title="hour">hour</td><td title="숫자">숫자</td><td title="0">0</td><td title="24">24</td><td title="0 ~ 23 (평균 11.5)">0 ~ 23 (평균 11.5)</td></tr><tr><td title="temp">temp</td><td title="숫자">숫자</td><td title="0">0</td><td title="546">546</td><td title="-17.8 ~ 39.4 (평균 12.88)">-17.8 ~ 39.4 (평균 12.88)</td></tr><tr><td title="humidity">humidity</td><td title="숫자">숫자</td><td title="0">0</td><td title="90">90</td><td title="0 ~ 98 (평균 58.23)">0 ~ 98 (평균 58.23)</td></tr><tr><td title="wind">wind</td><td title="숫자">숫자</td><td title="0">0</td><td title="65">65</td><td title="0 ~ 7.4 (평균 1.725)">0 ~ 7.4 (평균 1.725)</td></tr><tr><td title="visibility">visibility</td><td title="숫자">숫자</td><td title="0">0</td><td title="1789">1789</td><td title="27 ~ 2000 (평균 1,436.8)">27 ~ 2000 (평균 1,436.8)</td></tr><tr><td title="dew">dew</td><td title="숫자">숫자</td><td title="0">0</td><td title="556">556</td><td title="-30.6 ~ 27.2 (평균 4.074)">-30.6 ~ 27.2 (평균 4.074)</td></tr><tr><td title="solar">solar</td><td title="숫자">숫자</td><td title="0">0</td><td title="345">345</td><td title="0 ~ 3.52 (평균 0.5691)">0 ~ 3.52 (평균 0.5691)</td></tr><tr><td title="rain">rain</td><td title="숫자">숫자</td><td title="0">0</td><td title="61">61</td><td title="0 ~ 35 (평균 0.1487)">0 ~ 35 (평균 0.1487)</td></tr><tr><td title="snow">snow</td><td title="숫자">숫자</td><td title="0">0</td><td title="51">51</td><td title="0 ~ 8.8 (평균 0.0751)">0 ~ 8.8 (평균 0.0751)</td></tr><tr><td title="season">season</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="4">4</td><td title="가장 흔한 값: Spring (25.2%)">가장 흔한 값: Spring (25.2%)</td></tr><tr><td title="holiday">holiday</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: No Holiday (95.1%)">가장 흔한 값: No Holiday (95.1%)</td></tr><tr><td title="functioning">functioning</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: Yes (96.6%)">가장 흔한 값: Yes (96.6%)</td></tr><tr><td title="weekend">weekend</td><td title="참/거짓">참/거짓</td><td title="0">0</td><td title="2">2</td><td title="참 28.5%">참 28.5%</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>시각별 평균 대여 수</h3><p class="note">평일은 출근 8시 · 퇴근 18시에 두 봉우리</p><div class="plot" id="plot-0" role="img" aria-label="시각별 평균 대여 수"></div></div><div class="chart"><h3>하루 대여 수 (2017.12 ~ 2018.11)</h3><p class="note">겨울엔 적고 여름 · 가을에 많다. 0 인 날은 서비스를 쉰 날</p><div class="plot" id="plot-1" role="img" aria-label="하루 대여 수 (2017.12 ~ 2018.11)"></div></div></div></section>
 <div class="two">
-  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>한 시간</td></tr><tr><td>② 입력 X</td><td>시각 · 요일 · 기온 · 습도 · 비 · 휴일 …</td></tr><tr><td>③ 출력 y</td><td>그 시간의 대여 수</td></tr><tr><td>④ 평가지표</td><td>MAE (대)</td></tr><tr><td>⑤ 기준선</td><td>학습 기간의 &#x27;같은 시각&#x27; 평균</td></tr></tbody></table>
-    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>한 시간</td></tr><tr><td>② 입력 X</td><td>시각 · 요일 · 기온 · 습도 · 비 · 휴일 …</td></tr><tr><td>③ 출력 y</td><td>그 시간의 대여 수</td></tr><tr><td>④ 평가지표</td><td>MAE (대)</td></tr><tr><td>⑤ 기준선</td><td>학습 기간의 &#x27;같은 시각&#x27; 평균</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">hours when the service was off: 295 (count is always 0 )
 baseline (same hour mean): MAE 355 bikes
 gradient boosting        : MAE 234 bikes</pre></section>
@@ -41,8 +49,8 @@ gradient boosting        : MAE 234 bikes</pre></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>모빌리티 · 공유 서비스, 물류 · 배달, 지자체 · 공공 데이터</dd><dt>직무</dt><dd>수요예측 데이터 사이언티스트, 운영 최적화 (OR) 엔지니어</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<nav class="pager"><a href="../link_prediction/">← 08 연결 예측: 사람 · 친구 추천</a><a href="../semiconductor_yield/">10 반도체 공정 불량 예측 →</a></nav>
-<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+<nav class="pager"><a href="../link_prediction/">← 10 연결 예측: 사람 · 친구 추천</a><a href="../real_estate/">12 부동산: 집값 예측 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>

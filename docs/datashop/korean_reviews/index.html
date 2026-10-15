@@ -11,26 +11,34 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
-<div class="hero">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Popcorn!!_(2521342015).jpg" target="_blank" rel="noopener">Joelle Nebbe-Mornod from Bradford, UK</a> · CC BY 2.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
   <div>
     <div class="tag"><span class="num">04</span><span>커머스 · 콘텐츠</span></div>
     <h1>한국어 리뷰 감성 분석</h1>
     <div class="chips"><span class="chip">리뷰 분석</span><span class="chip">브랜드 모니터링</span><span class="chip">한국어 자연어처리</span></div>
     <p class="teaser-big">한국어 영화 리뷰 20만 개. 이 리뷰는 칭찬일까, 불평일까?</p>
-    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/04_korean_reviews.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
-      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/04_korean_reviews.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/04_korean_reviews.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="04_korean_reviews.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
-  <img src="thumb.png" alt="한국어 리뷰 감성 분석 데이터 샘플" width="480" height="300">
 </div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>리뷰 글</div>
+  <div class="model">→ 모델 →<small>이진 분류</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>긍정 1 / 부정 0</div>
+</div></section>
 <section class="block"><h2>데이터</h2>
-  <div class="data-name">NSMC (Naver Sentiment Movie Corpus) · 약 20MB</div><p class="src">Lucy Park (2015), github.com/e9t/nsmc. 한국어 영화 리뷰 20만 개 (학습 15만 · 시험 5만), 긍정 · 부정 반반</p>
-  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>document</th><th>label</th></tr></thead><tbody><tr><td title="(평점조절용 1) 애니인데 분위기가 좀 음산? 그로테스크하고, 캐릭터들이 무민가족 빼고 인간인지 뭔지 다른 종족은 기괴해요. 괴팍한, 우울한, 종말론적인 캐릭터들이 많이 나오고 무민가족 외에 다른 캐릭터간에는 정상적인 의사소통(대화)아닌 일방적..">(평점조절용 1) 애니인데 분위기가 좀 음산? 그로테스크하고, 캐릭터들이 무민가족 빼고 인간인지 뭔지 다른 종족은 기괴해요. 괴팍한, 우울한, 종말론적인 캐릭터들이 많이 나오고 무민가족 외에 다른 캐릭터간에는 정상적인 의사소통(대화)아닌 일방적..</td><td title="0">0</td></tr><tr><td title="성우님들의 열연이 마음에 들었습니다">성우님들의 열연이 마음에 들었습니다</td><td title="1">1</td></tr><tr><td title="무지막지하게 지루함. 배우들이 아까움. 내용도 앞뒤없고 별로 들어오는 내용도 없고 답답함. 이야기를 좀더 쉽게 보여주던지.... 이도 저도 아니고 내가 수목장이 되어서 나무가 되어버린 느낌... 답답하다..">무지막지하게 지루함. 배우들이 아까움. 내용도 앞뒤없고 별로 들어오는 내용도 없고 답답함. 이야기를 좀더 쉽게 보여주던지.... 이도 저도 아니고 내가 수목장이 되어서 나무가 되어버린 느낌... 답답하다..</td><td title="0">0</td></tr><tr><td title="대통령마누라의 어이없는 죽음, 알아듣기 힘든 한국말 차라리 영어만 하등가, 북한놈이라는 세끼가 씨오브재팬이라질 않나, 동해에 칠함대가 철수하면 한국 망한다고 미친 존나 한국을 OO으로 생각하는 감독, 백악관이 이렇게 쉽게 털리면 누가 테러안하겠냐 앙?">대통령마누라의 어이없는 죽음, 알아듣기 힘든 한국말 차라리 영어만 하등가, 북한놈이라는 세끼가 씨오브재팬이라질 않나, 동해에 칠함대가 철수하면 한국 망한다고 미친 존나 한국을 OO으로 생각하는 감독, 백악관이 이렇게 쉽게 털리면 누가 테러안하겠냐 앙?</td><td title="0">0</td></tr><tr><td title="모이따구 영화를?">모이따구 영화를?</td><td title="0">0</td></tr><tr><td title="한국 개신교의 교만이 도를 넘어서고 있음을 보여주는 영화 고개 숙이고 바짝 엎드려 낮은 곳을 지향해도 모자랄 판에 뭐 잘했다고 이따위 쓰레기나 만들어 내놓는지 당췌 이해가 안된다 독실한 개신교 집안에서 성장한 내가 교회를 떠난 이유도 바로 이거다">한국 개신교의 교만이 도를 넘어서고 있음을 보여주는 영화 고개 숙이고 바짝 엎드려 낮은 곳을 지향해도 모자랄 판에 뭐 잘했다고 이따위 쓰레기나 만들어 내놓는지 당췌 이해가 안된다 독실한 개신교 집안에서 성장한 내가 교회를 떠난 이유도 바로 이거다</td><td title="0">0</td></tr></tbody></table></div>
+  <div class="two" style="align-items:center"><div><div class="data-name">NSMC (Naver Sentiment Movie Corpus) · 약 20MB</div><p class="src">Lucy Park (2015), github.com/e9t/nsmc. 한국어 영화 리뷰 20만 개 (학습 15만 · 시험 5만), 긍정 · 부정 반반</p></div>
+  <img src="thumb.png" alt="한국어 리뷰 감성 분석 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>document</th><th>label</th></tr></thead><tbody><tr><td title="한국 개신교의 교만이 도를 넘어서고 있음을 보여주는 영화 고개 숙이고 바짝 엎드려 낮은 곳을 지향해도 모자랄 판에 뭐 잘했다고 이따위 쓰레기나 만들어 내놓는지 당췌 이해가 안된다 독실한 개신교 집안에서 성장한 내가 교회를 떠난 이유도 바로 이거다">한국 개신교의 교만이 도를 넘어서고 있음을 보여주는 영화 고개 숙이고 바짝 엎드려 낮은 곳을 지향해도 모자랄 판에 뭐 잘했다고 이따위 쓰레기나 만들어 내놓는지 당췌 이해가 안된다 독실한 개신교 집안에서 성장한 내가 교회를 떠난 이유도 바로 이거다</td><td title="0">0</td></tr><tr><td title="무지막지하게 지루함. 배우들이 아까움. 내용도 앞뒤없고 별로 들어오는 내용도 없고 답답함. 이야기를 좀더 쉽게 보여주던지.... 이도 저도 아니고 내가 수목장이 되어서 나무가 되어버린 느낌... 답답하다..">무지막지하게 지루함. 배우들이 아까움. 내용도 앞뒤없고 별로 들어오는 내용도 없고 답답함. 이야기를 좀더 쉽게 보여주던지.... 이도 저도 아니고 내가 수목장이 되어서 나무가 되어버린 느낌... 답답하다..</td><td title="0">0</td></tr><tr><td title="성우님들의 열연이 마음에 들었습니다">성우님들의 열연이 마음에 들었습니다</td><td title="1">1</td></tr><tr><td title="대통령마누라의 어이없는 죽음, 알아듣기 힘든 한국말 차라리 영어만 하등가, 북한놈이라는 세끼가 씨오브재팬이라질 않나, 동해에 칠함대가 철수하면 한국 망한다고 미친 존나 한국을 OO으로 생각하는 감독, 백악관이 이렇게 쉽게 털리면 누가 테러안하겠냐 앙?">대통령마누라의 어이없는 죽음, 알아듣기 힘든 한국말 차라리 영어만 하등가, 북한놈이라는 세끼가 씨오브재팬이라질 않나, 동해에 칠함대가 철수하면 한국 망한다고 미친 존나 한국을 OO으로 생각하는 감독, 백악관이 이렇게 쉽게 털리면 누가 테러안하겠냐 앙?</td><td title="0">0</td></tr><tr><td title="(평점조절용 1) 애니인데 분위기가 좀 음산? 그로테스크하고, 캐릭터들이 무민가족 빼고 인간인지 뭔지 다른 종족은 기괴해요. 괴팍한, 우울한, 종말론적인 캐릭터들이 많이 나오고 무민가족 외에 다른 캐릭터간에는 정상적인 의사소통(대화)아닌 일방적..">(평점조절용 1) 애니인데 분위기가 좀 음산? 그로테스크하고, 캐릭터들이 무민가족 빼고 인간인지 뭔지 다른 종족은 기괴해요. 괴팍한, 우울한, 종말론적인 캐릭터들이 많이 나오고 무민가족 외에 다른 캐릭터간에는 정상적인 의사소통(대화)아닌 일방적..</td><td title="0">0</td></tr><tr><td title="모이따구 영화를?">모이따구 영화를?</td><td title="0">0</td></tr></tbody></table></div>
 </section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>149,995</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>3</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="id">id</td><td title="숫자">숫자</td><td title="0">0</td><td title="149,995">149,995</td><td title="33 ~ 10,278,149 (평균 6,743,647.7)">33 ~ 10,278,149 (평균 6,743,647.7)</td></tr><tr><td title="document">document</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="146,182">146,182</td><td title="가장 흔한 값: 굿 (0.1%)">가장 흔한 값: 굿 (0.1%)</td></tr><tr><td title="label">label</td><td title="숫자">숫자</td><td title="0">0</td><td title="2">2</td><td title="0 ~ 1 (평균 0.4988)">0 ~ 1 (평균 0.4988)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>리뷰 길이 (글자 수)</h3><p class="note">140자 제한 때문에 끝이 잘린다</p><div class="plot" id="plot-0" role="img" aria-label="리뷰 길이 (글자 수)"></div></div></div></section>
 <div class="two">
-  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>리뷰 한 문장</td></tr><tr><td>② 입력 X</td><td>리뷰 글</td></tr><tr><td>③ 출력 y</td><td>긍정 1 / 부정 0</td></tr><tr><td>④ 평가지표</td><td>정확도 (반반이라 쓸 만하다)</td></tr><tr><td>⑤ 기준선</td><td>늘 &#x27;긍정&#x27; (50%)</td></tr></tbody></table>
-    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>리뷰 한 문장</td></tr><tr><td>② 입력 X</td><td>리뷰 글</td></tr><tr><td>③ 출력 y</td><td>긍정 1 / 부정 0</td></tr><tr><td>④ 평가지표</td><td>정확도 (반반이라 쓸 만하다)</td></tr><tr><td>⑤ 기준선</td><td>늘 &#x27;긍정&#x27; (50%)</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (always positive): accuracy 50.3%
 char 1-3 grams + logistic : accuracy 84.8%</pre></section>
 </div>
@@ -40,8 +48,8 @@ char 1-3 grams + logistic : accuracy 84.8%</pre></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>포털 · 검색, 커머스 리뷰 서비스, 브랜드 모니터링 · 마케팅 에이전시</dd><dt>직무</dt><dd>NLP 엔지니어, VOC (고객의 소리) 데이터 분석가</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<nav class="pager"><a href="../movie_ratings/">← 03 영화 · 동영상 추천</a><a href="../card_fraud/">05 카드 이상거래 탐지 (보이스피싱 등) →</a></nav>
-<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+<nav class="pager"><a href="../movie_ratings/">← 03 영화 · 동영상 추천</a><a href="../card_fraud/">05 카드 이상거래 탐지 (보이스피싱 · 자금세탁 등) →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>

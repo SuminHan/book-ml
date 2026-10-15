@@ -11,26 +11,34 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
-<div class="hero">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:2013-10-14_12_41_47_National_Weather_Service_mostly_obsolete_paper_form_B-91_Record_of_Climatological_Observations_for_Cooperative_Observers.JPG" target="_blank" rel="noopener">Famartin</a> · CC BY-SA 3.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
   <div>
-    <div class="tag"><span class="num">14</span><span>전문 서비스</span></div>
+    <div class="tag"><span class="num">18</span><span>전문 서비스</span></div>
     <h1>서식 문서 이해</h1>
     <div class="chips"><span class="chip">감사 자동화</span><span class="chip">문서지능 처리</span><span class="chip">리스크 · 내부통제</span></div>
     <p class="teaser-big">스캔한 서식 199장, 글 덩어리 9천여 개. 어느 것이 &#x27;질문&#x27; 이고 어느 것이 &#x27;답&#x27; 일까?</p>
-    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/14_form_understanding.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
-      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/14_form_understanding.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/18_form_understanding.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="18_form_understanding.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
-  <img src="thumb.png" alt="서식 문서 이해 데이터 샘플" width="480" height="300">
 </div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>위치 · 크기 · 글자 (콜론으로 끝나나, 숫자인가 …)</div>
+  <div class="model">→ 모델 →<small>분류 (레이아웃)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>header / question / answer / other</div>
+</div></section>
 <section class="block"><h2>데이터</h2>
-  <div class="data-name">FUNSD · 약 17MB</div><p class="src">Jaume, Ekenel &amp; Thiran (2019), Form Understanding in Noisy Scanned Documents. 스캔 서식 199장 (학습 149 · 시험 50), 글 덩어리마다 header · question · answer · other 표시</p>
-  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>종류 (label)</th><th>글</th></tr></thead><tbody><tr><td title="answer">answer</td><td title="17">17</td></tr><tr><td title="question">question</td><td title="cc:">cc:</td></tr><tr><td title="question">question</td><td title=":">:</td></tr><tr><td title="question">question</td><td title="From:">From:</td></tr><tr><td title="question">question</td><td title="Area:">Area:</td></tr><tr><td title="question">question</td><td title="Region:">Region:</td></tr><tr><td title="answer">answer</td><td title="5">5</td></tr></tbody></table></div>
+  <div class="two" style="align-items:center"><div><div class="data-name">FUNSD · 약 17MB</div><p class="src">Jaume, Ekenel &amp; Thiran (2019), Form Understanding in Noisy Scanned Documents. 스캔 서식 199장 (학습 149 · 시험 50), 글 덩어리마다 header · question · answer · other 표시</p></div>
+  <img src="thumb.png" alt="서식 문서 이해 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>종류 (label)</th><th>글</th></tr></thead><tbody><tr><td title="answer">answer</td><td title="17">17</td></tr><tr><td title="question">question</td><td title="cc:">cc:</td></tr><tr><td title="question">question</td><td title=":">:</td></tr><tr><td title="question">question</td><td title="From:">From:</td></tr><tr><td title="question">question</td><td title="Area:">Area:</td></tr><tr><td title="question">question</td><td title="Region:">Region:</td></tr><tr><td title="answer">answer</td><td title="5">5</td></tr></tbody></table></div>
 </section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>9,529</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>2</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="label">label</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="4">4</td><td title="가장 흔한 값: question (45.4%)">가장 흔한 값: question (45.4%)</td></tr><tr><td title="split">split</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: train (76.2%)">가장 흔한 값: train (76.2%)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>글 덩어리 종류별 개수 (199장 전체)</h3><p class="note">질문 · 답이 대부분. 제목 (header) 은 적어서 맞히기 어렵다</p><div class="plot" id="plot-0" role="img" aria-label="글 덩어리 종류별 개수 (199장 전체)"></div></div></div></section>
 <div class="two">
-  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>서식 속 글 덩어리 하나 (상자 + 글자)</td></tr><tr><td>② 입력 X</td><td>위치 · 크기 · 글자 (콜론으로 끝나나, 숫자인가 …)</td></tr><tr><td>③ 출력 y</td><td>header / question / answer / other</td></tr><tr><td>④ 평가지표</td><td>정확도 + 종류별 재현율</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 종류</td></tr></tbody></table>
-    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>서식 속 글 덩어리 하나 (상자 + 글자)</td></tr><tr><td>② 입력 X</td><td>위치 · 크기 · 글자 (콜론으로 끝나나, 숫자인가 …)</td></tr><tr><td>③ 출력 y</td><td>header / question / answer / other</td></tr><tr><td>④ 평가지표</td><td>정확도 + 종류별 재현율</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 종류</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (always &#x27;question&#x27;): accuracy 47.1%
 random forest on 8 clues       : accuracy 75.2%</pre></section>
 </div>
@@ -40,8 +48,8 @@ random forest on 8 clues       : accuracy 75.2%</pre></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>회계 · 감사 법인, 은행 · 보험 (서류 심사), 문서 AI · OCR 솔루션</dd><dt>직무</dt><dd>문서 AI 엔지니어, OCR · 비전 엔지니어, 감사 데이터 분석가</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<nav class="pager"><a href="../bearing_vibration/">← 13 베어링 진동으로 고장 진단</a><a href="../ai_usecases/">15 AI 활용사례 찾기 →</a></nav>
-<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+<nav class="pager"><a href="../bearing_vibration/">← 17 베어링 진동으로 고장 진단</a><a href="../ai_usecases/">19 AI 활용사례 찾기 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>

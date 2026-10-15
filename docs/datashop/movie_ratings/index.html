@@ -11,26 +11,34 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
-<div class="hero">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Tengis_Movie_Theater_-_Screen.jpg" target="_blank" rel="noopener">Fred Cherrygarden</a> · CC BY-SA 4.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
   <div>
     <div class="tag"><span class="num">03</span><span>커머스 · 콘텐츠</span></div>
     <h1>영화 · 동영상 추천</h1>
     <div class="chips"><span class="chip">개인화 추천</span><span class="chip">평점 예측</span><span class="chip">콜드 스타트</span></div>
     <p class="teaser-big">610명이 영화 9천 편에 남긴 별점 10만 개. 아직 안 본 영화에 몇 점을 줄까?</p>
-    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/03_movie_ratings.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
-      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/03_movie_ratings.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/03_movie_ratings.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="03_movie_ratings.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
-  <img src="thumb.png" alt="영화 · 동영상 추천 데이터 샘플" width="480" height="300">
 </div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>사용자 번호 · 영화 번호 (+ 장르)</div>
+  <div class="model">→ 모델 →<small>추천 · 회귀</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>별점 (0.5~5)</div>
+</div></section>
 <section class="block"><h2>데이터</h2>
-  <div class="data-name">MovieLens (ml-latest-small) · 약 1MB</div><p class="src">GroupLens Research, University of Minnesota (Harper &amp; Konstan, 2015). 610명 · 9,742편 · 별점 100,836개 (0.5~5점)</p>
-  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>userId</th><th>title</th><th>genres</th><th>rating</th></tr></thead><tbody><tr><td title="1">1</td><td title="Toy Story (1995)">Toy Story (1995)</td><td title="Adventure|Animation|Children|Comedy|Fantasy">Adventure|Animation|Children|Comedy|Fantasy</td><td title="4">4</td></tr><tr><td title="1">1</td><td title="Grumpier Old Men (1995)">Grumpier Old Men (1995)</td><td title="Comedy|Romance">Comedy|Romance</td><td title="4">4</td></tr><tr><td title="1">1</td><td title="Heat (1995)">Heat (1995)</td><td title="Action|Crime|Thriller">Action|Crime|Thriller</td><td title="4">4</td></tr><tr><td title="1">1</td><td title="Seven (a.k.a. Se7en) (1995)">Seven (a.k.a. Se7en) (1995)</td><td title="Mystery|Thriller">Mystery|Thriller</td><td title="5">5</td></tr><tr><td title="1">1</td><td title="Usual Suspects, The (1995)">Usual Suspects, The (1995)</td><td title="Crime|Mystery|Thriller">Crime|Mystery|Thriller</td><td title="5">5</td></tr></tbody></table></div>
+  <div class="two" style="align-items:center"><div><div class="data-name">MovieLens (ml-latest-small) · 약 1MB</div><p class="src">GroupLens Research, University of Minnesota (Harper &amp; Konstan, 2015). 610명 · 9,742편 · 별점 100,836개 (0.5~5점)</p></div>
+  <img src="thumb.png" alt="영화 · 동영상 추천 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>userId</th><th>title</th><th>genres</th><th>rating</th></tr></thead><tbody><tr><td title="276">276</td><td title="Independence Day (a.k.a. ID4) (1996)">Independence Day (a.k.a. ID4) (1996)</td><td title="Action|Adventure|Sci-Fi|Thriller">Action|Adventure|Sci-Fi|Thriller</td><td title="5">5</td></tr><tr><td title="599">599</td><td title="School Ties (1992)">School Ties (1992)</td><td title="Drama">Drama</td><td title="2.5">2.5</td></tr><tr><td title="483">483</td><td title="Alien³ (a.k.a. Alien 3) (1992)">Alien³ (a.k.a. Alien 3) (1992)</td><td title="Action|Horror|Sci-Fi|Thriller">Action|Horror|Sci-Fi|Thriller</td><td title="2.5">2.5</td></tr><tr><td title="202">202</td><td title="Good Morning, Vietnam (1987)">Good Morning, Vietnam (1987)</td><td title="Comedy|Drama|War">Comedy|Drama|War</td><td title="3">3</td></tr><tr><td title="274">274</td><td title="Gonzo: The Life and Work of Dr. Hunter S. Thompson (2008)">Gonzo: The Life and Work of Dr. Hunter S. Thompson (2008)</td><td title="Documentary">Documentary</td><td title="4">4</td></tr><tr><td title="458">458</td><td title="Net, The (1995)">Net, The (1995)</td><td title="Action|Crime|Thriller">Action|Crime|Thriller</td><td title="5">5</td></tr></tbody></table></div>
 </section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>100,836</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>6</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="userId">userId</td><td title="숫자">숫자</td><td title="0">0</td><td title="610">610</td><td title="1 ~ 610 (평균 326.1)">1 ~ 610 (평균 326.1)</td></tr><tr><td title="movieId">movieId</td><td title="숫자">숫자</td><td title="0">0</td><td title="9724">9724</td><td title="1 ~ 193,609 (평균 19,435.3)">1 ~ 193,609 (평균 19,435.3)</td></tr><tr><td title="rating">rating</td><td title="숫자">숫자</td><td title="0">0</td><td title="10">10</td><td title="0.5 ~ 5 (평균 3.502)">0.5 ~ 5 (평균 3.502)</td></tr><tr><td title="timestamp">timestamp</td><td title="숫자">숫자</td><td title="0">0</td><td title="85,043">85,043</td><td title="828,124,615 ~ 1,537,799,250 (평균 1,205,946,087.4)">828,124,615 ~ 1,537,799,250 (평균 1,205,946,087.4)</td></tr><tr><td title="title">title</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="9719">9719</td><td title="가장 흔한 값: Forrest Gump (1994) (0.3%)">가장 흔한 값: Forrest Gump (1994) (0.3%)</td></tr><tr><td title="genres">genres</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="951">951</td><td title="가장 흔한 값: Comedy (7.1%)">가장 흔한 값: Comedy (7.1%)</td></tr></tbody></table></div></section>
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>별점 분포</h3><p class="note">4점이 가장 많다. 0.5점 단위</p><div class="plot" id="plot-0" role="img" aria-label="별점 분포"></div></div><div class="chart"><h3>영화마다 받은 별점 수</h3><p class="note">대부분의 영화는 별점이 몇 개뿐이다 (긴 꼬리)</p><div class="plot" id="plot-1" role="img" aria-label="영화마다 받은 별점 수"></div></div></div></section>
 <div class="two">
-  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>(사용자, 영화) 쌍 하나</td></tr><tr><td>② 입력 X</td><td>사용자 번호 · 영화 번호 (+ 장르)</td></tr><tr><td>③ 출력 y</td><td>별점 (0.5~5)</td></tr><tr><td>④ 평가지표</td><td>RMSE (별 몇 개만큼 틀리나)</td></tr><tr><td>⑤ 기준선</td><td>전체 평균 별점</td></tr></tbody></table>
-    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>(사용자, 영화) 쌍 하나</td></tr><tr><td>② 입력 X</td><td>사용자 번호 · 영화 번호 (+ 장르)</td></tr><tr><td>③ 출력 y</td><td>별점 (0.5~5)</td></tr><tr><td>④ 평가지표</td><td>RMSE (별 몇 개만큼 틀리나)</td></tr><tr><td>⑤ 기준선</td><td>전체 평균 별점</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (global mean 3.50): RMSE 1.051
 mean + user bias + movie bias : RMSE 0.878</pre></section>
 </div>
@@ -41,7 +49,7 @@ mean + user bias + movie bias : RMSE 0.878</pre></section>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
 <nav class="pager"><a href="../shop_conversion/">← 02 쇼핑몰 구매 전환 예측</a><a href="../korean_reviews/">04 한국어 리뷰 감성 분석 →</a></nav>
-<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>

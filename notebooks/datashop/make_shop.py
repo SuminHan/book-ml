@@ -113,7 +113,7 @@ plt.tight_layout(); plt.show()"""),
 - **옷 사진 생성**: StyleGAN 으로 옷 입은 사람을 만든 연구 (StyleGAN-Human) 는 전신 사진 23만 장 SHHQ 를 썼다 (신청 필요)."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="card_fraud", title="카드 이상거래 탐지 (보이스피싱 등)", sector="금융 · 핀테크",
+dict(slug="card_fraud", title="카드 이상거래 탐지 (보이스피싱 · 자금세탁 등)", sector="금융 · 핀테크",
      keywords=["이상거래탐지 (FDS)", "보이스피싱 · 송금 사기", "자금세탁방지 · 설명가능성"],
      teaser="카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?",
      data="Credit Card Fraud Detection (ULB)", data_src="유럽 카드 소지자의 2013년 9월 이틀치 거래, OpenML 1597 (원본 Kaggle mlg-ulb). 성분은 개인정보 때문에 PCA 로 바꾼 V1~V28. OpenML 판에는 시각 열이 없지만 행이 시간 순서대로 놓여 있다",
@@ -165,7 +165,7 @@ for name, pred in [("always normal", np.zeros(len(y), dtype=int)), ("logistic re
 ## 다른 문제로 바꿔 보기
 
 - **보이스피싱**: 피해자가 직접 송금하는 사기라 카드 도용과 모양이 다르다. 한 행 = 송금 한 건, 입력에 '처음 보내는 계좌인가 · 평소보다 큰 금액인가 · 이체 직후 현금 인출이 있었나' 같은 **맥락** 이 필요하다. 이 데이터에는 그런 열이 없다 (송금 사기를 시뮬레이션한 PaySim 데이터가 있다, Kaggle).
-- **자금세탁방지**: 한 행이 '거래' 가 아니라 '계좌' 라면? IBM AML 데이터 (Kaggle, 1주 2차시 실습) 로 해 볼 수 있다.
+- **자금세탁방지**: 한 행이 '거래' 가 아니라 '계좌' 라면? 이 가게의 '자금세탁 거래 탐지' (IBM AML) 노트북에서 해 볼 수 있다.
 - **설명가능성**: V1~V28 은 개인정보 때문에 원래 뜻을 지운 숫자다. 이 모델이 '왜' 사기라고 했는지 고객에게 설명할 수 있을까? (7주차 SHAP)
 - **컴플라이언스**: 놓친 사기 한 건과, 정상 고객의 카드를 잘못 막은 한 건. 어느 손해가 더 큰가에 따라 지표가 달라진다."""),
 ]),
@@ -616,7 +616,7 @@ print(f"number of common friends: AUC {roc_auc_score(y, common):.2f}")"""),
 - 그래프 신경망 (13주차 GCN) 은 공통 지인 같은 규칙을 직접 정하지 않고 배운다."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="bike_demand", title="공유 자전거 수요 예측", sector="플랫폼 · 서비스",
+dict(slug="bike_demand", title="공유 자전거 수요 예측", sector="도시 · 공간",
      keywords=["수요예측", "모빌리티 · 공유 서비스", "재배치 운영"],
      teaser="서울 공유 자전거 1년치 시간별 대여 수. 내일 아침 8시엔 몇 대가 필요할까?",
      data="Seoul Bike Sharing Demand", data_src="UCI (Sathishkumar V E & Cho, 2020), 서울 공공자전거 2017.12~2018.11 시간별 대여 수 8,760개 + 날씨",
@@ -898,6 +898,224 @@ print(data.groupby("state")[["rms", "kurtosis"]].mean().round(2))"""),
 - **상태 기반 정비**: '어디가 망가졌나' 대신 '결함이 얼마나 큰가 (0.007 / 0.014 / 0.021 인치)' 를 맞히면 회귀 문제가 된다.
 - 결함 데이터가 없는 새 설비라면? 정상 진동만으로 '평소와 다르다' 를 찾는 이상 탐지로 바꾼다."""),
 ]),
+# ------------------------------------------------------------------
+dict(slug="aml_transactions", title="자금세탁 거래 탐지", sector="금융 · 핀테크",
+     keywords=["자금세탁방지 (AML)", "거래 모니터링", "계좌 단위 조사"],
+     teaser="은행 거래 508만 건 중 세탁은 0.1%. 거래를 볼까, 계좌를 볼까?",
+     data="IBM Transactions for Anti Money Laundering (HI-Small)", data_src="IBM (Altman et al., NeurIPS 2023). 사람 · 회사 · 은행이 있는 가상 세계를 시뮬레이션한 합성 거래 5,078,345건, 세탁 표시 포함 (Kaggle 원본, 여기서는 Hugging Face 사본으로 로그인 없이 받는다)",
+     size="약 90MB (압축)",
+     five=[("① 한 행", "거래 한 건 (또는 계좌 하나)"), ("② 입력 X", "시각 · 보낸/받는 은행 · 계좌 · 금액 · 통화 · 결제 형식"),
+           ("③ 출력 y", "세탁인가 (Is Laundering)"), ("④ 평가지표", "정밀도 · 재현율"), ("⑤ 기준선", "전부 '정상'")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+압축 파일 약 90MB, 풀면 약 480MB. 처음엔 몇 분 걸린다 (Colab 메모리로 충분하다)."""),
+("code", """URL = "https://huggingface.co/datasets/eexzzm/IBM-Transactions-for-Anti-Money-Laundering-HI-Small-Trans/resolve/main/HI-Small_Trans.csv.zip"
+with zipfile.ZipFile(download(URL, "data/HI-Small_Trans.csv.zip")) as z:
+    df = pd.read_csv(z.open("HI-Small_Trans.csv"))
+df["Timestamp"] = pd.to_datetime(df["Timestamp"])
+print(df.shape, df["Timestamp"].min(), "~", df["Timestamp"].max())
+df.sample(5, random_state=0)"""),
+("md", """## 열어 보기
+
+세탁 비율, 결제 형식 · 통화별 세탁 비율. 날짜마다 거래 수는?"""),
+("code", """y = df["Is Laundering"].values
+print(f"transactions {len(df):,}, laundering {y.sum():,} ({y.mean():.3%})")
+print(df.groupby("Payment Format")["Is Laundering"].agg(["mean", "sum", "size"]).sort_values("mean", ascending=False))
+daily = df.groupby(df["Timestamp"].dt.date)["Is Laundering"].agg(["size", "sum"])
+daily.plot(subplots=True, figsize=(9, 4), title=["transactions per day", "laundering per day"]); plt.tight_layout(); plt.show()"""),
+("md", """## 문제 1: 한 행 = 거래 한 건
+
+기준선 = 전부 '정상'. 규칙 하나 = 세탁 비율이 가장 높은 결제 형식이면 '세탁'."""),
+("code", """def precision_recall(y_true, y_pred):
+    tp = np.sum((y_pred == 1) & (y_true == 1)); fp = np.sum((y_pred == 1) & (y_true == 0)); fn = np.sum((y_pred == 0) & (y_true == 1))
+    return (tp / (tp + fp) if tp + fp else 0.0), tp / (tp + fn)
+
+fmt = df.groupby("Payment Format")["Is Laundering"].mean().idxmax()
+for name, pred in [("always normal", np.zeros(len(y), dtype=int)), (f"rule: {fmt}", (df["Payment Format"] == fmt).values.astype(int))]:
+    p, r = precision_recall(y, pred)
+    print(f"{name:16s} accuracy {np.mean(pred == y):.3%}  precision {p:.1%}  recall {r:.1%}")"""),
+("md", """## 문제 2: 같은 파일, 한 행 = 보낸 계좌 하나
+
+은행은 거래 하나하나를 막기보다 수상한 **계좌** 를 조사한다. 세탁 거래를 한 번이라도 보냈으면 1."""),
+("code", """sender = df["From Bank"].astype(str) + "_" + df["Account"].astype(str)
+acct = df.groupby(sender).agg(n_tx=("Is Laundering", "size"), y=("Is Laundering", "max"),
+                              total=("Amount Paid", "sum"), n_formats=("Payment Format", "nunique"))
+print(f"accounts {len(acct):,}, laundering accounts {acct['y'].sum():,} ({acct['y'].mean():.2%})")
+print(f"rate: transaction level {y.mean():.3%}  ->  account level {acct['y'].mean():.2%}")
+print(acct.groupby("y")[["n_tx", "n_formats"]].median())"""),
+("md", """**관찰**: 같은 파일인데 한 행을 무엇으로 정하느냐에 따라 세탁 비율이 달라진다. 논문마다 '세탁 비율' 이 다르게 적힌 이유다.
+
+## 다른 문제로 바꿔 보기
+
+- **시간 순서**: 앞 날짜로 학습, 뒤 날짜로 시험해야 한다. 같은 계좌의 거래가 학습 · 시험 양쪽에 있으면?
+- **그래프**: 세탁은 '돈이 계좌 여러 개를 돌아 다시 모이는' 모양 (원형, 부채꼴) 으로 나타난다. 한 행을 '거래' 가 아니라 '연결망의 모양' 으로 보면 그래프 신경망 (13주차) 문제가 된다. 원 논문이 이렇게 했다."""),
+]),
+# ------------------------------------------------------------------
+dict(slug="real_estate", title="부동산: 집값 예측", sector="도시 · 공간",
+     keywords=["부동산 시세 추정", "공간 데이터", "자동 가치 평가 (AVM)"],
+     teaser="캘리포니아 2만 640개 동네의 소득 · 방 수 · 위치. 이 동네 집값은 얼마일까?",
+     data="California Housing", data_src="Pace & Barry (1997), 1990년 미국 인구조사의 캘리포니아 블록 그룹 20,640개: 소득 중앙값 · 집 나이 · 방 수 · 인구 · 위도 · 경도 → 집값 중앙값 (10만 달러 단위, 5.0 에서 잘림). scikit-learn 이 내려받는다",
+     size="약 0.5MB",
+     five=[("① 한 행", "동네 (블록 그룹) 하나"), ("② 입력 X", "소득 · 집 나이 · 방 수 · 인구 · 위도 · 경도"), ("③ 출력 y", "집값 중앙값 (10만 달러)"),
+           ("④ 평가지표", "MAE (10만 달러)"), ("⑤ 기준선", "전체 평균 집값")],
+     cells=[
+("md", """## 입장: 데이터 받기"""),
+("code", """from sklearn.datasets import fetch_california_housing
+house = fetch_california_housing(as_frame=True, data_home="data")
+df = house.frame
+print(df.shape)
+df.sample(5, random_state=0)"""),
+("md", """## 열어 보기: 지도로 그리기
+
+위도 · 경도로 점을 찍고 색 = 집값. 해안가 (샌프란시스코 · 로스앤젤레스) 가 비싸다. 집값 5.0 에 몰린 점들은 무엇일까?"""),
+("code", """fig, axs = plt.subplots(1, 2, figsize=(12, 4.5))
+sc = axs[0].scatter(df["Longitude"], df["Latitude"], c=df["MedHouseVal"], s=2, cmap="viridis")
+plt.colorbar(sc, ax=axs[0], label="median house value ($100k)"); axs[0].set_xlabel("longitude"); axs[0].set_ylabel("latitude")
+axs[1].hist(df["MedHouseVal"], bins=50); axs[1].set_xlabel("median house value ($100k)")
+plt.tight_layout(); plt.show()
+print("blocks at the cap 5.0:", (df["MedHouseVal"] >= 5.0).sum())"""),
+("md", """## 문제 하나 골라 보기: 동네 → 집값 (회귀)
+
+**나누는 방법 두 가지** 를 비교한다.
+- 무작위로 80 / 20
+- **지역으로**: 경도 −121 보다 서쪽 (북부 해안) 을 시험으로. 모델이 '처음 보는 지역' 에서도 맞힐까?"""),
+("code", """from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.model_selection import train_test_split
+
+def mae(y_true, y_pred):
+    return np.mean(np.abs(np.asarray(y_true) - np.asarray(y_pred)))
+
+X, y = df.drop(columns="MedHouseVal"), df["MedHouseVal"]
+splits = {"random 80/20": train_test_split(X.index, test_size=0.2, random_state=0),
+          "by region (west of -121 = test)": (X.index[X["Longitude"] >= -121], X.index[X["Longitude"] < -121])}
+for name, (tr, te) in splits.items():
+    m = HistGradientBoostingRegressor(random_state=0).fit(X.loc[tr], y.loc[tr])
+    print(f"{name:32s} baseline MAE {mae(y.loc[te], np.full(len(te), y.loc[tr].mean())):.2f}   model MAE {mae(y.loc[te], m.predict(X.loc[te])):.2f}  (x $100k)")"""),
+("md", """**관찰**: 무작위로 나누면 이웃 동네가 학습에 있어서 쉽다. 처음 보는 지역에서는 오차가 커진다. 부동산 · 지도 데이터는 **어떻게 나누느냐** 가 점수를 바꾼다.
+
+## 다른 문제로 바꿔 보기
+
+- 한국 아파트라면? 국토교통부 실거래가 (API 신청 필요): 한 행 = 거래 한 건, y = 거래 가격, 입력 = 면적 · 층 · 건축 연도 · 위치 · **거래 날짜**. 시간 순서로 나눠야 한다.
+- 집값 5.0 에서 잘린 동네는 '5.0 이상' 이라는 뜻이다. 이걸 그대로 정답으로 쓰면 무엇이 문제일까?"""),
+]),
+# ------------------------------------------------------------------
+dict(slug="earthquakes", title="지진: 시공간 데이터", sector="도시 · 공간",
+     keywords=["시공간 (spatiotemporal) 데이터", "재난 · 안전", "위험 지도"],
+     teaser="2023~2024년 전 세계 규모 4.5 이상 지진 1만 4천 개. 다음 주, 어느 지역에서 지진이 날까?",
+     data="USGS Earthquake Catalog (ComCat)", data_src="미국 지질조사국 (USGS) ANSS 통합 지진 목록, FDSN API 로 2023-01-01 ~ 2024-12-31 규모 4.5 이상 14,048개: 시각 · 위도 · 경도 · 깊이 · 규모",
+     size="약 3MB",
+     five=[("① 한 행", "격자 칸 (위도 10° × 경도 10°) × 한 주"), ("② 입력 X", "그 칸의 지난 지진 수 (지난주 · 지난 4주 · 지난해)"),
+           ("③ 출력 y", "다음 주에 규모 4.5 이상 지진이 있나"), ("④ 평가지표", "정밀도 · 재현율, ROC-AUC"), ("⑤ 기준선", "'지난주에 있었으면 이번 주도'")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+USGS 의 공개 API 로 바로 받는다 (2년, 규모 4.5 이상)."""),
+("code", """URL = ("https://earthquake.usgs.gov/fdsnws/event/1/query?format=csv&starttime=2023-01-01&endtime=2025-01-01"
+       "&minmagnitude=4.5&orderby=time-asc")
+df = pd.read_csv(download(URL, "data/usgs_2023_2025.csv"), parse_dates=["time"])
+print(df.shape)
+df[["time", "latitude", "longitude", "depth", "mag", "place"]].sample(5, random_state=0)"""),
+("md", """## 열어 보기: 지도 위의 점 (시간 = 색)
+
+지구의 판 경계 (불의 고리) 가 보인다. 한 달씩 넘겨 보면 점이 어떻게 움직일까? (웹 페이지의 움직이는 그림)"""),
+("code", """fig, axs = plt.subplots(1, 2, figsize=(13, 4))
+t = (df["time"] - df["time"].min()).dt.days
+sc = axs[0].scatter(df["longitude"], df["latitude"], c=t, s=(df["mag"] - 4) ** 2 * 6, cmap="viridis", alpha=0.6)
+plt.colorbar(sc, ax=axs[0], label="days since 2023-01-01"); axs[0].set_xlabel("longitude"); axs[0].set_ylabel("latitude")
+axs[1].hist(df["mag"], bins=np.arange(4.5, 8.2, 0.1)); axs[1].set_yscale("log"); axs[1].set_xlabel("magnitude")
+plt.tight_layout(); plt.show()"""),
+("md", """## 문제 하나 골라 보기: (격자 칸, 주) → 다음 주에 지진이 있나
+
+지구를 10° × 10° 칸으로 나누고, 칸 × 주마다 지진 수를 센다. **2023년으로 학습, 2024년으로 시험** (시간 순서).
+- 기준선 1: 전부 '없음'
+- 기준선 2: 지난주에 있었으면 '있음'
+- 점수: 2023년에 그 칸에서 지진이 난 주의 비율 (자주 나는 곳일수록 높게)"""),
+("code", """from sklearn.metrics import roc_auc_score
+
+def precision_recall(y_true, y_pred):
+    tp = np.sum((y_pred == 1) & (y_true == 1)); fp = np.sum((y_pred == 1) & (y_true == 0)); fn = np.sum((y_pred == 0) & (y_true == 1))
+    return (tp / (tp + fp) if tp + fp else 0.0), tp / (tp + fn)
+
+df["cell"] = ((df["latitude"] + 90) // 10).astype(int) * 36 + ((df["longitude"] + 180) // 10).astype(int)
+df["week"] = ((df["time"] - pd.Timestamp("2023-01-02", tz="UTC")).dt.days // 7).clip(lower=0)
+counts = df.groupby(["cell", "week"]).size().unstack(fill_value=0).reindex(columns=range(df["week"].max() + 1), fill_value=0)
+has = (counts > 0).astype(int)
+print("cells with at least one quake:", len(has), "| weeks:", has.shape[1])
+
+train_weeks, test_weeks = range(1, 52), range(53, has.shape[1])
+rate_2023 = has[list(range(52))].mean(axis=1)                     # share of 2023 weeks with a quake
+y_test = np.concatenate([has[w].values for w in test_weeks])
+last_week = np.concatenate([has[w - 1].values for w in test_weeks])
+score = np.concatenate([rate_2023.values for w in test_weeks])
+for name, pred in [("always none", np.zeros_like(y_test)), ("same as last week", last_week), ("2023 rate > 0.5", (score > 0.5).astype(int))]:
+    p, r = precision_recall(y_test, pred)
+    print(f"{name:18s} accuracy {np.mean(pred == y_test):.1%}  precision {p:.0%}  recall {r:.0%}")
+print(f"2023 rate as a score: ROC-AUC {roc_auc_score(y_test, score):.2f}")"""),
+("md", """**관찰**: '어디서 자주 나는가' 는 꽤 맞힌다. 하지만 이건 **언제** 큰 지진이 날지를 맞히는 게 아니다. 큰 지진의 시각을 미리 맞히는 방법은 아직 없다. 문제를 무엇으로 정했는지 정확히 말해야 하는 이유다.
+
+## 다른 문제로 바꿔 보기
+
+- **조기 경보**: 한 행 = 지진파가 처음 잡힌 몇 초, y = 몇 초 뒤 큰 흔들림이 올 지역. 실제 지진 조기 경보가 이 문제다 (지진파 데이터 STEAD 등).
+- 격자를 1° 로 줄이면? 한 행이 늘고 '있음' 은 더 드물어진다. 지표는 어떻게 바뀔까?
+- 다른 시공간 데이터: 교통 속도 (도로 × 5분), 미세먼지 (측정소 × 시간), 공유 자전거 (대여소 × 시간)."""),
+]),
+# ------------------------------------------------------------------
+dict(slug="stock_index", title="주가 지수: 내일 오를까?", sector="금융 · 핀테크",
+     keywords=["시계열 예측", "퀀트 · 투자", "리스크 관리"],
+     teaser="코스피 10년치 매일 종가. 오늘까지의 움직임으로 내일 오를지 맞힐 수 있을까?",
+     data="KOSPI 일별 지수 (^KS11)", data_src="Yahoo Finance 의 공개 차트 API 로 받은 코스피 지수 10년치 일별 시가 · 고가 · 저가 · 종가 · 거래량 (데이터 제공 조건은 Yahoo 이용 약관을 따른다)",
+     size="약 0.3MB",
+     five=[("① 한 행", "거래일 하루"), ("② 입력 X", "지난 5일의 수익률 (그날까지 알 수 있는 것만)"), ("③ 출력 y", "다음 거래일에 오르나 (분류) / 수익률 (회귀)"),
+           ("④ 평가지표", "정확도 · MAE"), ("⑤ 기준선", "늘 '오른다' / 늘 0%")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+Yahoo Finance 의 공개 차트 주소에서 JSON 으로 받는다. 받기에 실패하면 잠시 뒤 다시 실행한다."""),
+("code", """import json
+URL = "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?range=10y&interval=1d"
+raw = json.load(open(download(URL, "data/yahoo_KS11.json")))["chart"]["result"][0]
+q = raw["indicators"]["quote"][0]
+df = pd.DataFrame({"date": pd.to_datetime(raw["timestamp"], unit="s").normalize(), "close": q["close"], "volume": q["volume"]}).dropna()
+df = df.drop_duplicates("date").set_index("date")
+print(df.shape, df.index.min().date(), "~", df.index.max().date())
+df.sample(5, random_state=0).sort_index()"""),
+("md", """## 열어 보기
+
+종가와 **하루 수익률** (오늘 종가 ÷ 어제 종가 − 1). 수익률은 0 근처에서 위아래로 흔들린다."""),
+("code", """df["ret"] = df["close"].pct_change()
+fig, axs = plt.subplots(1, 2, figsize=(12, 3.5))
+df["close"].plot(ax=axs[0], title="KOSPI close")
+axs[1].hist(df["ret"].dropna() * 100, bins=80); axs[1].set_xlabel("daily return (%)")
+plt.tight_layout(); plt.show()
+print(f"up days: {(df['ret'] > 0).mean():.1%}")"""),
+("md", """## 문제 하나 골라 보기: 지난 5일 → 내일 오를까
+
+**시간 순서** 로 나눈다: 마지막 2년이 시험. 입력은 **그날까지 알 수 있는 것만** (내일 값을 쓰면 누수).
+기준선: 늘 '오른다' (학습 기간에 오른 날이 더 많았다면)."""),
+("code", """from sklearn.linear_model import LogisticRegression
+
+lags = pd.concat({f"ret_lag{k}": df["ret"].shift(k - 1) for k in range(1, 6)}, axis=1)      # lag1 = today's return
+data = lags.assign(up_next=(df["ret"].shift(-1) > 0).astype(int), ret_next=df["ret"].shift(-1)).dropna()
+cut = data.index.max() - pd.DateOffset(years=2)
+tr, te = data[data.index <= cut], data[data.index > cut]
+feats = list(lags.columns)
+
+m = LogisticRegression().fit(tr[feats], tr["up_next"])
+always_up = int(tr["up_next"].mean() > 0.5)
+same_as_today = (te["ret_lag1"] > 0).astype(int)
+for name, pred in [(f"always {'up' if always_up else 'down'}", np.full(len(te), always_up)), ("same as today", same_as_today),
+                   ("logistic on 5 days", m.predict(te[feats]))]:
+    print(f"{name:20s} accuracy {np.mean(pred == te['up_next']):.1%}")
+print(f"regression baseline (predict 0%): MAE {np.mean(np.abs(te['ret_next'])) * 100:.2f}%p")"""),
+("md", """**관찰**: 지난 5일을 본 모델은 '늘 오른다' 기준선을 넘지 못한다 (모델이 사실상 늘 '오른다' 고 답한다). 그 기준선의 점수도 시험 기간 2년 동안 지수가 많이 올라서 높게 나온 것이라, 다른 기간이면 달라진다. 누구나 쓸 수 있는 과거 가격만으로는 내일을 맞히기 어렵다 (효율적 시장 가설). 기준선과 비교하지 않으면 '정확도 58%' 를 대단한 결과로 착각하기 쉽다.
+
+## 다른 문제로 바꿔 보기
+
+- **리스크 관리**: '오를까' 대신 '내일 얼마나 크게 흔들릴까 (변동성)' 는 꽤 잘 맞힌다. 큰 하루 뒤에는 큰 하루가 오기 쉽다.
+- 다른 지수: `%5EIXIC` (나스닥 종합) 로 바꿔 보자. 결과가 비슷할까?
+- **주의**: 시험 기간을 여러 번 바꿔 가며 가장 좋은 결과만 고르면, 그것도 미래를 엿본 셈이다."""),
+]),
 ]
 
 # 학생이 직접 확인해 볼 논문 · 출처 (DOI · arXiv 는 2026-10-15 에 제목까지 확인)
@@ -919,6 +1137,10 @@ PAPERS = {
     "steel_defects": [("UCI Steel Plates Faults 데이터 설명 (Semeion Research Center)", "https://archive.ics.uci.edu/dataset/198/steel+plates+faults")],
     "bearing_vibration": [("Smith & Randall (2015) Rolling element bearing diagnostics using the CWRU data: A benchmark study, MSSP", "https://doi.org/10.1016/j.ymssp.2015.04.021"),
                           ("CWRU Bearing Data Center (데이터 원본 · 실험 장치 설명)", "https://engineering.case.edu/bearingdatacenter")],
+    "aml_transactions": [("Altman et al. (2023) Realistic Synthetic Financial Transactions for Anti-Money Laundering Models, NeurIPS Datasets and Benchmarks", "https://arxiv.org/abs/2306.16424")],
+    "real_estate": [("Pace & Barry (1997) Sparse spatial autoregressions, Statistics & Probability Letters", "https://doi.org/10.1016/S0167-7152(96)00140-X")],
+    "earthquakes": [("U.S. Geological Survey (2017) Advanced National Seismic System (ANSS) Comprehensive Catalog", "https://doi.org/10.5066/F7MS3QZH")],
+    "stock_index": [("Fama (1970) Efficient Capital Markets: A Review of Theory and Empirical Work, Journal of Finance", "https://doi.org/10.2307/2325486")],
     "semiconductor_yield": [("UCI SECOM 데이터 설명 (McCann & Johnston, 2008)", "https://archive.ics.uci.edu/dataset/179/secom")],
 }
 
@@ -933,6 +1155,10 @@ FIT = {
     "hotel_booking": ("여행 · 숙박 플랫폼, 항공 · 호텔, 모빌리티", "가격 (레비뉴) 매니지먼트 분석가, 수요예측 데이터 사이언티스트"),
     "link_prediction": ("SNS · 메신저, 커리어 네트워크, 커머스 (함께 산 상품), 금융 (거래 연결망)", "그래프 ML 엔지니어, 추천 엔지니어"),
     "bike_demand": ("모빌리티 · 공유 서비스, 물류 · 배달, 지자체 · 공공 데이터", "수요예측 데이터 사이언티스트, 운영 최적화 (OR) 엔지니어"),
+    "aml_transactions": ("은행 · 증권 · 카드사, 핀테크 · 가상자산 거래소, 금융 감독 · 규제", "자금세탁방지 (AML) 분석가, 그래프 ML 엔지니어, 컴플라이언스"),
+    "real_estate": ("부동산 플랫폼 · 프롭테크, 은행 (담보 평가), 건설 · 도시계획", "부동산 데이터 분석가, 공간 데이터 사이언티스트, 자동 가치 평가 (AVM) 모델러"),
+    "earthquakes": ("재난 · 안전 (기상 · 지질 기관), 보험 · 재보험, 건설 · 인프라", "시공간 데이터 사이언티스트, 재난 위험 모델러, 지구물리 데이터 분석가"),
+    "stock_index": ("증권 · 자산운용, 퀀트 · 핀테크 투자, 금융 데이터 서비스", "퀀트 리서처, 리스크 매니저, 금융 데이터 엔지니어"),
     "semiconductor_yield": ("반도체 · 디스플레이 제조, 배터리 · 소재, 스마트팩토리 솔루션", "공정 데이터 엔지니어, 수율 · 품질 분석가, 제조 AI 엔지니어"),
     "predictive_maintenance": ("중공업 · 조선 · 자동차, 발전 · 플랜트, 산업 IoT 솔루션", "예지보전 데이터 사이언티스트, 설비 · 신뢰성 엔지니어"),
     "steel_defects": ("철강 · 금속, 자동차 부품, 비전 검사 장비", "비전 검사 AI 엔지니어, 품질 엔지니어"),
@@ -941,7 +1167,7 @@ FIT = {
     "ai_usecases": ("AI 전환 (AX) 컨설팅, 기업 디지털 전략 · 혁신 조직, 공공 정책 연구", "AI 전략 컨설턴트, 데이터 기반 기획 · 정책 분석가"),
 }
 
-SECTIONS = ["커머스 · 콘텐츠", "금융 · 핀테크", "플랫폼 · 서비스", "제조", "전문 서비스"]
+SECTIONS = ["커머스 · 콘텐츠", "금융 · 핀테크", "플랫폼 · 서비스", "도시 · 공간", "제조", "전문 서비스"]
 assert set(PAPERS) == set(FIT) == {it["slug"] for it in SHOP}
 SHOP.sort(key=lambda it: SECTIONS.index(it["sector"]))          # 진열 순서 = 분야 순서 (같은 분야는 적은 순서)
 for k, it in enumerate(SHOP):
@@ -977,25 +1203,54 @@ def notebook(item):
     return nb
 
 
+def fetch_cover(slug, out_path):
+    """커버 사진 (Wikimedia Commons, covers.json) 을 960x300 쯤으로 잘라 저장. 받은 원본은 data/covers/ 에 남긴다"""
+    import io, shutil, urllib.request
+    from PIL import Image
+    covers = json.load(open(os.path.join(HERE, "covers.json")))
+    if slug not in covers:                       # 자금세탁: 직접 그린 패턴 그림
+        shutil.copy(os.path.join(ROOT, "docs", "datashop", "worldcup", "img", f"{slug}.jpg"), out_path); return None
+    c = covers[slug]; cache = os.path.join(HERE, "data", "covers", slug + ".jpg")
+    if not os.path.exists(cache):
+        os.makedirs(os.path.dirname(cache), exist_ok=True)
+        req = urllib.request.Request(c["thumb"], headers={"User-Agent": "ML course datashop"})
+        open(cache, "wb").write(urllib.request.urlopen(req, timeout=120).read())
+    im = Image.open(cache).convert("RGB"); w, h = 1200, 340
+    r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
+    l, t = (im.width - w) // 2, (im.height - h) // 2
+    im.crop((l, t, l + w, t + h)).save(out_path, quality=78)
+    return dict(page=c["page"], artist=c["artist"], license=c["license"])
+
+
 def build_site(items):
-    """docs/datashop/: 목록 + 데이터마다 페이지 (썸네일 · 샘플 · 그래프 · 결과 · 논문 · 관심 업종)"""
-    import previews, site_pages
+    """docs/datashop/: 목록 + 데이터마다 페이지 (커버 · 문제 그림 · 샘플 · 통계 · 그래프 · 결과 · 논문 · 관심 업종) + 준비 중 페이지"""
+    import shutil, previews, site_pages, stubs
     out = os.path.join(ROOT, "docs", "datashop")
     os.makedirs(out, exist_ok=True)
     open(os.path.join(out, "shop.css"), "w", encoding="utf-8").write(site_pages.CSS)
+    types = {c["id"]: c["type"] for c in json.load(open(os.path.join(HERE, "worldcup", "candidates.json")))}
     page_items = []
     for it in items:
-        page_items.append(dict(it, papers=PAPERS[it["slug"]], fit=FIT[it["slug"]], total=len(items),
+        page_items.append(dict(it, papers=PAPERS[it["slug"]], fit=FIT[it["slug"]], total=len(items), type=types.get(it["slug"], ""),
                                colab=COLAB.format(it["file"]), github=GITHUB.format(it["file"])))
     for k, it in enumerate(page_items):
         d = os.path.join(out, it["slug"]); os.makedirs(d, exist_ok=True)
+        it["credit"] = fetch_cover(it["slug"], os.path.join(d, "cover.jpg"))
+        shutil.copy(os.path.join(HERE, it["file"] + ".ipynb"), os.path.join(d, it["file"] + ".ipynb"))
         pv = getattr(previews, it["slug"])(os.path.join(d, "thumb.png"))
         res = previews.result_lines(os.path.join(HERE, it["file"] + ".ipynb"))
         prev = page_items[k - 1] if k > 0 else None
         nxt = page_items[k + 1] if k + 1 < len(page_items) else None
         open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(site_pages.render_item(it, prev, nxt, pv, res))
         print("page", it["slug"], len(pv["charts"]), "charts,", len(res), "result lines")
-    open(os.path.join(out, "index.html"), "w", encoding="utf-8").write(site_pages.render_index(page_items, SECTIONS))
+    stub_items = []
+    for k, st in enumerate(stubs.STUBS):
+        it = dict(st, num=f"{len(items) + k + 1:02d}", type=types.get(st["slug"], ""))
+        d = os.path.join(out, it["slug"]); os.makedirs(d, exist_ok=True)
+        it["credit"] = fetch_cover(it["slug"], os.path.join(d, "cover.jpg"))
+        open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(site_pages.render_stub(it))
+        stub_items.append(it); print("stub", it["slug"])
+    open(os.path.join(out, "index.html"), "w", encoding="utf-8").write(site_pages.render_index(page_items, SECTIONS, stub_items))
     print("wrote", out)
 
 

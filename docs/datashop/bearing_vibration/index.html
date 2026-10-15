@@ -11,26 +11,32 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
-<div class="hero">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:1984_deep_groove_ball_bearing_UR_6304_made_in_Czechoslovakia_by_ZKL.jpg" target="_blank" rel="noopener">R. Henrik Nilsson</a> · CC BY 4.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
   <div>
-    <div class="tag"><span class="num">13</span><span>제조</span></div>
+    <div class="tag"><span class="num">17</span><span>제조</span></div>
     <h1>베어링 진동으로 고장 진단</h1>
     <div class="chips"><span class="chip">진동 · 센서 신호</span><span class="chip">고장 진단</span><span class="chip">상태 기반 정비</span></div>
     <p class="teaser-big">모터 베어링에 붙인 진동 센서, 1초에 1만 2천 번. 소리만 듣고 어디가 망가졌는지 알 수 있을까?</p>
-    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/13_bearing_vibration.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
-      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/13_bearing_vibration.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/17_bearing_vibration.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="17_bearing_vibration.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
-  <img src="thumb.png" alt="베어링 진동으로 고장 진단 데이터 샘플" width="480" height="300">
 </div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>조각의 통계 (RMS · 첨도 · 최댓값 …) 또는 파형 그대로</div>
+  <div class="model">→ 모델 →<small>신호 분류</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>정상 / 내륜 / 볼 / 외륜</div>
+</div></section>
 <section class="block"><h2>데이터</h2>
-  <div class="data-name">CWRU Bearing Data · 약 13MB</div><p class="src">Case Western Reserve University Bearing Data Center. 모터 베어링 진동 (12 kHz) 녹음: 정상 · 내륜 · 볼 · 외륜 결함 (지름 0.007인치, 부하 0) 4개 파일</p>
-  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>상태</th><th>파일</th><th>샘플 수</th><th>길이 (초)</th></tr></thead><tbody><tr><td title="정상">정상</td><td title="97.mat">97.mat</td><td title="243,938">243,938</td><td title="20.3">20.3</td></tr><tr><td title="내륜 결함">내륜 결함</td><td title="105.mat">105.mat</td><td title="121,265">121,265</td><td title="10.1">10.1</td></tr><tr><td title="볼 결함">볼 결함</td><td title="118.mat">118.mat</td><td title="122,571">122,571</td><td title="10.2">10.2</td></tr><tr><td title="외륜 결함">외륜 결함</td><td title="130.mat">130.mat</td><td title="121,991">121,991</td><td title="10.2">10.2</td></tr></tbody></table></div>
+  <div class="two" style="align-items:center"><div><div class="data-name">CWRU Bearing Data · 약 13MB</div><p class="src">Case Western Reserve University Bearing Data Center. 모터 베어링 진동 (12 kHz) 녹음: 정상 · 내륜 · 볼 · 외륜 결함 (지름 0.007인치, 부하 0) 4개 파일</p></div>
+  <img src="thumb.png" alt="베어링 진동으로 고장 진단 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>상태</th><th>파일</th><th>샘플 수</th><th>길이 (초)</th></tr></thead><tbody><tr><td title="정상">정상</td><td title="97.mat">97.mat</td><td title="243,938">243,938</td><td title="20.3">20.3</td></tr><tr><td title="내륜 결함">내륜 결함</td><td title="105.mat">105.mat</td><td title="121,265">121,265</td><td title="10.1">10.1</td></tr><tr><td title="볼 결함">볼 결함</td><td title="118.mat">118.mat</td><td title="122,571">122,571</td><td title="10.2">10.2</td></tr><tr><td title="외륜 결함">외륜 결함</td><td title="130.mat">130.mat</td><td title="121,991">121,991</td><td title="10.2">10.2</td></tr></tbody></table></div>
 </section>
+
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart small"><h3>정상: 0.05초</h3><div class="plot" id="plot-0" role="img" aria-label="정상: 0.05초"></div></div><div class="chart small"><h3>내륜 결함: 0.05초</h3><div class="plot" id="plot-1" role="img" aria-label="내륜 결함: 0.05초"></div></div><div class="chart small"><h3>볼 결함: 0.05초</h3><div class="plot" id="plot-2" role="img" aria-label="볼 결함: 0.05초"></div></div><div class="chart small"><h3>외륜 결함: 0.05초</h3><div class="plot" id="plot-3" role="img" aria-label="외륜 결함: 0.05초"></div></div><div class="chart"><h3>조각(1,024 샘플)의 평균 첨도</h3><p class="note">결함이 있으면 뾰족한 충격 → 첨도가 커진다</p><div class="plot" id="plot-4" role="img" aria-label="조각(1,024 샘플)의 평균 첨도"></div></div></div></section>
 <div class="two">
-  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>진동 조각 하나 (1,024 샘플 ≈ 0.085초)</td></tr><tr><td>② 입력 X</td><td>조각의 통계 (RMS · 첨도 · 최댓값 …) 또는 파형 그대로</td></tr><tr><td>③ 출력 y</td><td>정상 / 내륜 / 볼 / 외륜</td></tr><tr><td>④ 평가지표</td><td>정확도 (네 종류 조각 수가 비슷하다)</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 종류</td></tr></tbody></table>
-    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>진동 조각 하나 (1,024 샘플 ≈ 0.085초)</td></tr><tr><td>② 입력 X</td><td>조각의 통계 (RMS · 첨도 · 최댓값 …) 또는 파형 그대로</td></tr><tr><td>③ 출력 y</td><td>정상 / 내륜 / 볼 / 외륜</td></tr><tr><td>④ 평가지표</td><td>정확도 (네 종류 조각 수가 비슷하다)</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 종류</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (always &#x27;normal&#x27;): accuracy 40.3%
 random forest on 6 statistics : accuracy 100.0%</pre></section>
 </div>
@@ -40,8 +46,8 @@ random forest on 6 statistics : accuracy 100.0%</pre></section>
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>모터 · 기계 · 풍력, 철도 · 항공 정비, 산업 센서 · 진단 솔루션</dd><dt>직무</dt><dd>신호처리 · 진단 엔지니어, 예지보전 엔지니어</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<nav class="pager"><a href="../steel_defects/">← 12 강판 표면 결함 분류</a><a href="../form_understanding/">14 서식 문서 이해 →</a></nav>
-<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+<nav class="pager"><a href="../steel_defects/">← 16 강판 표면 결함 분류</a><a href="../form_understanding/">18 서식 문서 이해 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script>

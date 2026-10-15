@@ -89,6 +89,22 @@ ul.papers li { margin: 4px 0; }
 .fit dd { margin: 2px 0 0; }
 .pager { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0 0; font-size: .92rem; }
 .pager a { text-decoration: none; }
+.cover { position: relative; border-radius: 16px; overflow: hidden; margin-top: 14px; aspect-ratio: 5 / 1.4; background: #222; }
+.cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover .credit { position: absolute; right: 8px; bottom: 6px; font-size: .7rem; color: #fff; background: rgba(0,0,0,.45); padding: 1px 6px; border-radius: 4px; }
+.cover .credit a { color: #fff; }
+.item .cov { position: relative; }
+.item .cov .badge { position: absolute; left: 10px; top: 10px; font-size: .72rem; background: rgba(0,0,0,.6); color: #fff; padding: 2px 8px; border-radius: 99px; }
+.blackbox { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.blackbox .io { background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+.blackbox .io b { display: block; font-size: .78rem; color: var(--muted-ink); font-weight: 500; }
+.blackbox .model { background: var(--ink); color: var(--paper); border-radius: 10px; padding: 12px 14px; text-align: center; font-weight: 700; white-space: nowrap; }
+.blackbox .model small { display: block; font-weight: 400; opacity: .8; }
+.stat-head { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 8px; }
+.stat-head b { font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+.stat-head span { color: var(--muted-ink); font-size: .85rem; display: block; }
+.soon { background: var(--gold-soft); border-radius: 10px; padding: 12px 14px; }
+@media (max-width: 760px) { .blackbox { grid-template-columns: 1fr; } .blackbox .model { justify-self: start; } .cover { aspect-ratio: 5 / 2; } }
 @media (max-width: 760px) {
   .hero, .two { grid-template-columns: 1fr; }
   .charts { grid-template-columns: 1fr; }
@@ -143,30 +159,39 @@ def head(title, desc, css_href):
 """
 
 
-def render_index(items, sections):
+def credit_html(c):
+    if not c:
+        return ""
+    return f'<span class="credit">사진: <a href="{E(c["page"])}" target="_blank" rel="noopener">{E(c["artist"] or "Wikimedia Commons")}</a> · {E(c["license"])}</span>'
+
+
+def card(i, stub=False):
+    badge = '<span class="badge">노트북 준비 중</span>' if stub else ""
+    return f"""<a class="item" href="{i['slug']}/">
+  <div class="cov"><img src="{i['slug']}/cover.jpg" alt="" loading="lazy" width="480" height="300">{badge}</div>
+  <div class="body"><div class="tag"><span class="num">{i['num']}</span><span>{E(i['keywords'][0])}</span></div>
+  <p class="title">{E(i['title'])}</p><p class="teaser">{E(i['teaser'])}</p><span class="enter">들어가 보기</span></div>
+</a>"""
+
+
+def render_index(items, sections, stubs):
     out = [head("현실의 데이터 · Machine Learning 1", "산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터. 데이터를 열어 보고 문제를 직접 정해 보는 Colab 노트북", "shop.css")]
     out.append(f"""<div class="wrap">
 <header class="top">
   <div class="eyebrow">Machine Learning 1 · 데이터 가게</div>
   <h1>현실의 데이터</h1>
-  <p class="lead">추천, 이상거래 탐지, 수요예측, 불량 예측, 문서 이해 … 산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 {len(items)}가지를 모았습니다. 인턴이나 산학협력 과제에서 처음 받게 될 데이터도 대개 이런 모양입니다. 하나를 골라 들어가 데이터를 보고, Colab 노트북으로 열어 문제를 직접 정해 보세요.</p>
-  <ul class="five-strip" aria-label="문제를 정하는 다섯 칸"><li><b>①</b>한 행</li><li><b>②</b>입력 X</li><li><b>③</b>출력 y</li><li><b>④</b>평가지표</li><li><b>⑤</b>기준선</li></ul>
+  <p class="lead">추천, 이상거래 탐지, 수요예측, 불량 예측, 문서 이해 … 산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 {len(items) + len(stubs)}가지를 모았습니다. 인턴이나 산학협력 과제에서 처음 받게 될 데이터도 대개 이런 모양입니다. 하나를 골라 들어가 데이터를 보고, 노트북을 받아 문제를 직접 정해 보세요.</p>
+  <p class="lead" style="margin-top:10px"><a href="worldcup/">데이터 월드컵 하러 가기 →</a> 32개 중 가장 해 보고 싶은 데이터를 골라 보세요.</p>
 </header>
 <main>""")
     for sec in sections:
         its = [i for i in items if i["sector"] == sec]
-        if not its:
-            continue
-        out.append(f'<h2 class="section-title">{E(sec)}</h2>\n<div class="shelf">')
-        for i in its:
-            out.append(f"""<a class="item" href="{i['slug']}/">
-  <img src="{i['slug']}/thumb.png" alt="{E(i['title'])} 데이터 샘플" loading="lazy" width="480" height="300">
-  <div class="body"><div class="tag"><span class="num">{i['num']}</span><span>{E(i['keywords'][0])}</span></div>
-  <p class="title">{E(i['title'])}</p><p class="teaser">{E(i['teaser'])}</p><span class="enter">들어가 보기</span></div>
-</a>""")
-        out.append("</div>")
+        if its:
+            out.append(f'<h2 class="section-title">{E(sec)}</h2>\n<div class="shelf">' + "".join(card(i) for i in its) + "</div>")
+    if stubs:
+        out.append('<h2 class="section-title">다음에 열 데이터 (노트북 준비 중)</h2>\n<div class="shelf">' + "".join(card(i, True) for i in stubs) + "</div>")
     out.append("""</main>
-<footer>데이터는 모두 로그인 없이 받을 수 있는 공개 데이터이며, 데이터마다 논문 · 출처를 함께 적었습니다. 분야별 문제와 관심 업종은 일반적인 예시이고 특정 회사의 과제가 아닙니다.
+<footer>데이터마다 논문 · 출처를 함께 적었습니다. 분야별 문제와 관심 업종은 일반적인 예시이고 특정 회사의 과제가 아닙니다. 사진은 Wikimedia Commons 의 자유 라이선스 사진이며 각 페이지에 출처를 적었습니다.
  · <a href="https://github.com/SuminHan/book-ml/tree/main/notebooks/datashop">노트북 원본 (GitHub)</a></footer>
 </div>
 </body>
@@ -175,56 +200,107 @@ def render_index(items, sections):
     return "\n".join(out)
 
 
+def table_html(t, cls="sample"):
+    rows = "".join("<tr>" + "".join(f"<td title=\"{E(v)}\">{E(v)}</td>" for v in r) + "</tr>" for r in t["rows"])
+    return f'<div class="scroll"><table class="{cls}"><thead><tr>{"".join(f"<th>{E(c)}</th>" for c in t["columns"])}</tr></thead><tbody>{rows}</tbody></table></div>'
+
+
+def blackbox_html(i):
+    five = dict(i["five"])
+    return f"""<div class="blackbox">
+  <div class="io"><b>입력 X</b>{E(five.get("② 입력 X", ""))}</div>
+  <div class="model">→ 모델 →<small>{E(i.get("type", ""))}</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>{E(five.get("③ 출력 y", ""))}</div>
+</div>"""
+
+
+def papers_fit_html(i):
+    papers = "".join(f'<li><a href="{E(u)}" target="_blank" rel="noopener">{E(t)}</a></li>' for t, u in i["papers"])
+    fit = i["fit"]
+    return f"""<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers">{papers}</ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>{E(fit[0])}</dd><dt>직무</dt><dd>{E(fit[1])}</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>"""
+
+
+def hero_html(i, actions):
+    return f"""<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt="">{credit_html(i.get("credit"))}</div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">{i['num']}</span><span>{E(i['sector'])}</span></div>
+    <h1>{E(i['title'])}</h1>
+    <div class="chips">{"".join(f'<span class="chip">{E(k)}</span>' for k in i['keywords'])}</div>
+    <p class="teaser-big">{E(i['teaser'])}</p>
+    <div class="actions">{actions}</div>
+  </div>
+</div>"""
+
+
 def render_item(i, prev, nxt, preview, results):
-    sample = preview["sample"]
-    rows = "".join("<tr>" + "".join(f"<td title=\"{E(v)}\">{E(v)}</td>" for v in r) + "</tr>" for r in sample["rows"])
-    sample_html = f'<div class="scroll"><table class="sample"><thead><tr>{"".join(f"<th>{E(c)}</th>" for c in sample["columns"])}</tr></thead><tbody>{rows}</tbody></table></div>'
     charts = preview["charts"]
     chart_html = "".join(
         f'<div class="chart{" small" if c["layout"].get("height", 300) < 250 else ""}"><h3>{E(c["title"])}</h3>'
         + (f'<p class="note">{E(c["note"])}</p>' if c["note"] else "")
         + f'<div class="plot" id="plot-{k}" role="img" aria-label="{E(c["title"])}"></div></div>'
         for k, c in enumerate(charts))
+    st = preview.get("stats")
+    stats_html = ""
+    if st:
+        more = f' (앞의 16개 열만, 나머지 {st["more"]}개 열은 노트북에서)' if st["more"] else ""
+        stats_html = f"""<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>{st["n_rows"]:,}</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>{st["n_cols"]}</b><span>열{E(more)}</span></div></div>
+  {table_html(st, "sample")}</section>"""
     five = "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in i["five"])
-    papers = "".join(f'<li><a href="{E(u)}" target="_blank" rel="noopener">{E(t)}</a></li>' for t, u in i["papers"])
-    fit = i["fit"]
     res = E("\n".join(results)) if results else "(노트북을 실행하면 여기에 결과가 나온다)"
     pager = (f'<a href="../{prev["slug"]}/">← {prev["num"]} {E(prev["title"])}</a>' if prev else "<span></span>") + \
             (f'<a href="../{nxt["slug"]}/">{nxt["num"]} {E(nxt["title"])} →</a>' if nxt else "<span></span>")
+    thumb = preview.get("thumb", "thumb.png")
+    actions = (f'<a class="btn primary" href="{E(i["colab"])}" target="_blank" rel="noopener">Colab 에서 열기</a>'
+               f'<a class="btn ghost" href="{E(i["file"])}.ipynb" download>노트북 받기 (.ipynb)</a>')
     out = head(f"{i['title']} · 현실의 데이터", i["teaser"], "../shop.css")
     out += f"""<div class="wrap">
-<nav class="crumb"><a href="../">← 현실의 데이터 (전체 {i['total']}개)</a></nav>
-<div class="hero">
-  <div>
-    <div class="tag"><span class="num">{i['num']}</span><span>{E(i['sector'])}</span></div>
-    <h1>{E(i['title'])}</h1>
-    <div class="chips">{"".join(f'<span class="chip">{E(k)}</span>' for k in i['keywords'])}</div>
-    <p class="teaser-big">{E(i['teaser'])}</p>
-    <div class="actions"><a class="btn primary" href="{E(i['colab'])}" target="_blank" rel="noopener">Colab 에서 열기</a>
-      <a class="btn ghost" href="{E(i['github'])}" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
-  </div>
-  <img src="thumb.png" alt="{E(i['title'])} 데이터 샘플" width="480" height="300">
-</div>
+{hero_html(i, actions)}
+<section class="block"><h2>어떤 문제인가</h2>{blackbox_html(i)}</section>
 <section class="block"><h2>데이터</h2>
-  <div class="data-name">{E(i['data'])} · {E(i['size'])}</div><p class="src">{E(i['data_src'])}</p>
-  <h2 style="margin-top:16px">처음 몇 줄</h2>{sample_html}
+  <div class="two" style="align-items:center"><div><div class="data-name">{E(i['data'])} · {E(i['size'])}</div><p class="src">{E(i['data_src'])}</p></div>
+  <img src="{thumb}" alt="{E(i['title'])} 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2>{table_html(preview["sample"])}
 </section>
+{stats_html}
 <section class="block"><h2>데이터 모양 보기</h2><div class="charts">{chart_html}</div></section>
 <div class="two">
-  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody>{five}</tbody></table>
-    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody>{five}</tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
   <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">{res}</pre></section>
 </div>
-<div class="two">
-  <section class="block"><h2>논문 · 출처</h2><ul class="papers">{papers}</ul>
-    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
-  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>{E(fit[0])}</dd><dt>직무</dt><dd>{E(fit[1])}</dd></dl>
-    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
-</div>
+{papers_fit_html(i)}
 <nav class="pager">{pager}</nav>
-<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 {PLOT_JS % (PLOTLY, json.dumps(charts, ensure_ascii=False, default=lambda o: o.item() if hasattr(o, "item") else str(o)))}
+</body>
+</html>
+"""
+    return out
+
+
+def render_stub(i):
+    """노트북이 아직 없는 데이터: 소개 · 공식 링크 · 논문 · 관심 업종"""
+    links = "".join(f'<a class="btn {"primary" if k == 0 else "ghost"}" href="{E(u)}" target="_blank" rel="noopener">{E(t)}</a>' for k, (t, u) in enumerate(i["links"]))
+    out = head(f"{i['title']} · 현실의 데이터", i["teaser"], "../shop.css")
+    five = "".join(f"<tr><td>{E(a)}</td><td>{E(b)}</td></tr>" for a, b in i["five"])
+    out += f"""<div class="wrap">
+{hero_html(i, links)}
+<section class="block soon"><b>노트북 준비 중</b> · 데이터 월드컵에서 많이 뽑힌 데이터부터 노트북 · 통계 · 그래프를 만듭니다. 지금은 위 공식 페이지에서 데이터를 직접 볼 수 있습니다.</section>
+<section class="block"><h2>어떤 문제인가</h2>{blackbox_html(i)}</section>
+<section class="block"><h2>데이터</h2><div class="data-name">{E(i['data'])}</div><p class="src">{E(i['data_src'])}</p></section>
+<section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody>{five}</tbody></table></section>
+{papers_fit_html(i)}
+<footer><a href="../">← 전체 목록</a></footer>
+</div>
 </body>
 </html>
 """
