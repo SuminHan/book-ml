@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대출 상환 · 신용평가 · 현실의 데이터</title>
+<meta name="description" content="카드 고객 3만 명. 다음 달 연체할 사람을 미리 알 수 있을까? 성별 · 나이를 써도 될까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:StateLibQld_1_151711_Teller%27s_counter_at_the_Queensland_National_Bank,_Brisbane,_1922.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> · Public domain</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">09</span><span>금융 · 핀테크</span></div>
+    <h1>대출 상환 · 신용평가</h1>
+    <div class="chips"><span class="chip">신용평가 (CSS)</span><span class="chip">대출 심사</span><span class="chip">공정성 · 설명가능성</span></div>
+    <p class="teaser-big">카드 고객 3만 명. 다음 달 연체할 사람을 미리 알 수 있을까? 성별 · 나이를 써도 될까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/09_credit_default.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="09_credit_default.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>한도 · 지난 6달 상환 상태 · 청구액 · 납부액 (+ 성별 · 나이 · 학력?)</div>
+  <div class="model">→ 모델 →<small>이진 분류 (공정성)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>다음 달 연체할까</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">UCI Default of Credit Card Clients · 약 4MB</div><p class="src">Yeh &amp; Lien (2009). 대만 카드 고객 30,000명의 2005년 4~9월 기록: 한도 · 성별 · 학력 · 혼인 · 나이 · 6달 상환 상태 · 청구액 · 납부액 → 다음 달 연체 여부 (Hugging Face 의 CSV 사본)</p></div>
+  <img src="thumb.png" alt="대출 상환 · 신용평가 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>LIMIT_BAL</th><th>SEX</th><th>EDUCATION</th><th>MARRIAGE</th><th>AGE</th><th>PAY_1</th><th>PAY_2</th><th>PAY_3</th><th>PAY_4</th><th>PAY_5</th><th>PAY_6</th><th>BILL_AMT1</th></tr></thead><tbody><tr><td title="20,000">20,000</td><td title="1">1</td><td title="1">1</td><td title="2">2</td><td title="33">33</td><td title="1">1</td><td title="2">2</td><td title="2">2</td><td title="2">2</td><td title="2">2</td><td title="2">2</td><td title="17,971">17,971</td></tr><tr><td title="20,000">20,000</td><td title="2">2</td><td title="2">2</td><td title="2">2</td><td title="35">35</td><td title="0">0</td><td title="0">0</td><td title="2">2</td><td title="0">0</td><td title="0">0</td><td title="0">0</td><td title="16,528">16,528</td></tr><tr><td title="230,000">230,000</td><td title="2">2</td><td title="1">1</td><td title="1">1</td><td title="44">44</td><td title="1">1</td><td title="-1">-1</td><td title="-1">-1</td><td title="-1">-1</td><td title="-1">-1</td><td title="-2">-2</td><td title="3884">3884</td></tr><tr><td title="100,000">100,000</td><td title="1">1</td><td title="2">2</td><td title="1">1</td><td title="42">42</td><td title="0">0</td><td title="0">0</td><td title="0">0</td><td title="0">0</td><td title="0">0</td><td title="0">0</td><td title="98,430">98,430</td></tr><tr><td title="150,000">150,000</td><td title="1">1</td><td title="1">1</td><td title="2">2</td><td title="29">29</td><td title="-2">-2</td><td title="-2">-2</td><td title="-2">-2</td><td title="-2">-2</td><td title="-2">-2</td><td title="-2">-2</td><td title="4583">4583</td></tr><tr><td title="50,000">50,000</td><td title="1">1</td><td title="2">2</td><td title="2">2</td><td title="25">25</td><td title="-1">-1</td><td title="3">3</td><td title="2">2</td><td title="0">0</td><td title="0">0</td><td title="0">0</td><td title="10,695">10,695</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>30,000</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>24</b><span>열 (앞의 16개 열만, 나머지 8개 열은 노트북에서)</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="LIMIT_BAL">LIMIT_BAL</td><td title="숫자">숫자</td><td title="0">0</td><td title="81">81</td><td title="10,000 ~ 1,000,000 (평균 167,484.3)">10,000 ~ 1,000,000 (평균 167,484.3)</td></tr><tr><td title="SEX">SEX</td><td title="숫자">숫자</td><td title="0">0</td><td title="2">2</td><td title="1 ~ 2 (평균 1.604)">1 ~ 2 (평균 1.604)</td></tr><tr><td title="EDUCATION">EDUCATION</td><td title="숫자">숫자</td><td title="0">0</td><td title="7">7</td><td title="0 ~ 6 (평균 1.853)">0 ~ 6 (평균 1.853)</td></tr><tr><td title="MARRIAGE">MARRIAGE</td><td title="숫자">숫자</td><td title="0">0</td><td title="4">4</td><td title="0 ~ 3 (평균 1.552)">0 ~ 3 (평균 1.552)</td></tr><tr><td title="AGE">AGE</td><td title="숫자">숫자</td><td title="0">0</td><td title="56">56</td><td title="21 ~ 79 (평균 35.49)">21 ~ 79 (평균 35.49)</td></tr><tr><td title="PAY_1">PAY_1</td><td title="숫자">숫자</td><td title="0">0</td><td title="11">11</td><td title="-2 ~ 8 (평균 -0.0167)">-2 ~ 8 (평균 -0.0167)</td></tr><tr><td title="PAY_2">PAY_2</td><td title="숫자">숫자</td><td title="0">0</td><td title="11">11</td><td title="-2 ~ 8 (평균 -0.1338)">-2 ~ 8 (평균 -0.1338)</td></tr><tr><td title="PAY_3">PAY_3</td><td title="숫자">숫자</td><td title="0">0</td><td title="11">11</td><td title="-2 ~ 8 (평균 -0.1662)">-2 ~ 8 (평균 -0.1662)</td></tr><tr><td title="PAY_4">PAY_4</td><td title="숫자">숫자</td><td title="0">0</td><td title="11">11</td><td title="-2 ~ 8 (평균 -0.2207)">-2 ~ 8 (평균 -0.2207)</td></tr><tr><td title="PAY_5">PAY_5</td><td title="숫자">숫자</td><td title="0">0</td><td title="10">10</td><td title="-2 ~ 8 (평균 -0.2662)">-2 ~ 8 (평균 -0.2662)</td></tr><tr><td title="PAY_6">PAY_6</td><td title="숫자">숫자</td><td title="0">0</td><td title="10">10</td><td title="-2 ~ 8 (평균 -0.2911)">-2 ~ 8 (평균 -0.2911)</td></tr><tr><td title="BILL_AMT1">BILL_AMT1</td><td title="숫자">숫자</td><td title="0">0</td><td title="22,723">22,723</td><td title="-165,580 ~ 964,511 (평균 51,223.3)">-165,580 ~ 964,511 (평균 51,223.3)</td></tr><tr><td title="BILL_AMT2">BILL_AMT2</td><td title="숫자">숫자</td><td title="0">0</td><td title="22,346">22,346</td><td title="-69,777 ~ 983,931 (평균 49,179.1)">-69,777 ~ 983,931 (평균 49,179.1)</td></tr><tr><td title="BILL_AMT3">BILL_AMT3</td><td title="숫자">숫자</td><td title="0">0</td><td title="22,026">22,026</td><td title="-157,264 ~ 1,664,089 (평균 47,013.2)">-157,264 ~ 1,664,089 (평균 47,013.2)</td></tr><tr><td title="BILL_AMT4">BILL_AMT4</td><td title="숫자">숫자</td><td title="0">0</td><td title="21,548">21,548</td><td title="-170,000 ~ 891,586 (평균 43,262.9)">-170,000 ~ 891,586 (평균 43,262.9)</td></tr><tr><td title="BILL_AMT5">BILL_AMT5</td><td title="숫자">숫자</td><td title="0">0</td><td title="21,010">21,010</td><td title="-81,334 ~ 927,171 (평균 40,311.4)">-81,334 ~ 927,171 (평균 40,311.4)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>지난달 상환 상태별 다음 달 연체율</h3><p class="note">두 달 이상 밀린 사람은 70% 가까이 다시 연체한다</p><div class="plot" id="plot-0" role="img" aria-label="지난달 상환 상태별 다음 달 연체율"></div></div><div class="chart"><h3>나이대별 연체율</h3><p class="note">나이 차이는 상환 기록에 비하면 작다</p><div class="plot" id="plot-1" role="img" aria-label="나이대별 연체율"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>카드 고객 한 명</td></tr><tr><td>② 입력 X</td><td>한도 · 지난 6달 상환 상태 · 청구액 · 납부액 (+ 성별 · 나이 · 학력?)</td></tr><tr><td>③ 출력 y</td><td>다음 달 연체할까</td></tr><tr><td>④ 평가지표</td><td>ROC-AUC · 재현율, 집단별 차이</td></tr><tr><td>⑤ 기준선</td><td>아무도 연체 안 한다</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">nobody defaults: accuracy 77.9%
+all features                         ROC-AUC 0.775  recall 35.8%  flagged by sex {1: &#x27;12.4%&#x27;, 2: &#x27;11.1%&#x27;}
+without sex/age/marriage/education   ROC-AUC 0.775  recall 36.1%  flagged by sex {1: &#x27;12.1%&#x27;, 2: &#x27;11.3%&#x27;}</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>ROC-AUC</b><span>양성 하나 · 음성 하나를 뽑았을 때 양성 점수가 더 높을 확률. 0.5 = 동전 던지기</span></div><div class="tex" data-tex="\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)">\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.kaggle.com/competitions/home-credit-default-risk" target="_blank" rel="noopener">Home Credit Default Risk (Kaggle)</a> <span>· 신용 기록이 적은 사람의 대출 상환</span></li><li><a href="https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data" target="_blank" rel="noopener">UCI German Credit</a> <span>· 1,000명, 오분류 비용표가 함께 있다</span></li><li><a href="https://huggingface.co/datasets?search=credit%20risk" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://doi.org/10.1016/j.eswa.2007.12.020" target="_blank" rel="noopener">Yeh &amp; Lien (2009) The comparisons of data mining techniques for the predictive accuracy of probability of default of credit card clients, Expert Systems with Applications</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>은행 · 카드 · 인터넷전문은행, 핀테크 대출, 신용평가사</dd><dt>직무</dt><dd>신용 리스크 모델러, 금융 데이터 사이언티스트</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../stock_index/">← 08 주가 지수: 내일 오를까?</a><a href="../corporate_card/">10 법인카드 지출 관리 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "지난달 상환 상태별 다음 달 연체율", "note": "두 달 이상 밀린 사람은 70% 가까이 다시 연체한다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["-2", "-1", "0", "1", "2", "3"], "y": [13.2, 16.8, 12.8, 33.9, 69.1, 75.8]}], "layout": {"xaxis": {"title": "PAY_1"}, "yaxis": {"title": "%"}}}, {"title": "나이대별 연체율", "note": "나이 차이는 상환 기록에 비하면 작다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["(20, 25]", "(25, 30]", "(30, 35]", "(35, 40]", "(40, 45]", "(45, 50]", "(50, 60]", "(60, 80]"], "y": [26.7, 20.1, 19.4, 21.6, 22.1, 25.0, 25.2, 26.8]}], "layout": {"xaxis": {"title": "나이"}, "yaxis": {"title": "%"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

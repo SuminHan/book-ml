@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>채용: 이력서 · 공고 매칭 · 현실의 데이터</title>
+<meta name="description" content="이력서와 채용 공고 한 쌍. 이 사람은 이 자리에 맞을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Young_Man_on_a_Job_Interview_(26931177139).jpg" target="_blank" rel="noopener">Amtec Photos</a> · CC BY-SA 2.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">35</span><span>전문 서비스</span></div>
+    <h1>채용: 이력서 · 공고 매칭</h1>
+    <div class="chips"><span class="chip">HR 테크</span><span class="chip">텍스트 매칭</span><span class="chip">공정성</span></div>
+    <p class="teaser-big">이력서와 채용 공고 한 쌍. 이 사람은 이 자리에 맞을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/35_hiring_match.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="35_hiring_match.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>이력서 글 · 공고 글 (단어 빈도, 두 글의 겹침)</div>
+  <div class="model">→ 모델 →<small>다중 분류 (텍스트 쌍)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>맞음 / 가능 / 안 맞음</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">Resume - Job Description Fit · 약 12MB</div><p class="src">Hugging Face cnamuangtoun/resume-job-description-fit: 영어 이력서 글 + 채용 공고 글 쌍 약 8천 개, 맞음 (Good Fit) · 가능 (Potential Fit) · 안 맞음 (No Fit) 세 단계</p></div>
+  <img src="thumb.png" alt="채용: 이력서 · 공고 매칭 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>resume_text</th><th>job_description_text</th><th>label</th></tr></thead><tbody><tr><td title="Professional SummaryOver 10 years of combined experience in the financial, autom">Professional SummaryOver 10 years of combined experience in the financial, autom</td><td title="Who we are:Founded in 2017, Gatik is the leader in autonomous middle mile logist">Who we are:Founded in 2017, Gatik is the leader in autonomous middle mile logist</td><td title="Good Fit">Good Fit</td></tr><tr><td title="Professional ProfileExpert in Functional Testing .6-Year Record of Proven Result">Professional ProfileExpert in Functional Testing .6-Year Record of Proven Result</td><td title="Role: Java Developer Duration: 12 months Required Skills Developed web applicati">Role: Java Developer Duration: 12 months Required Skills Developed web applicati</td><td title="No Fit">No Fit</td></tr><tr><td title="SummaryHighly motivated Sales Associate with extensive customer service and sale">SummaryHighly motivated Sales Associate with extensive customer service and sale</td><td title="Primary Location: Melbourne, Florida
+V-Soft Consulting is currently hiring for a">Primary Location: Melbourne, Florida
+V-Soft Consulting is currently hiring for a</td><td title="No Fit">No Fit</td></tr><tr><td title="HighlightsProficient inObjective - CJavaC/C++Prior experienced inJavaScriptHTMLP">HighlightsProficient inObjective - CJavaC/C++Prior experienced inJavaScriptHTMLP</td><td title="Location: Tampa, FL
+Exp: 7-10 Yrs
+SPOC: Tushar Kshirsagar
+Key Skills: Angular 10">Location: Tampa, FL
+Exp: 7-10 Yrs
+SPOC: Tushar Kshirsagar
+Key Skills: Angular 10</td><td title="No Fit">No Fit</td></tr><tr><td title="SummaryQuality Assurance - Analyst9+ years Tandem based testing/implementation e">SummaryQuality Assurance - Analyst9+ years Tandem based testing/implementation e</td><td title="About Grainger
+Grainger is a leading broad line distributor with operations prim">About Grainger
+Grainger is a leading broad line distributor with operations prim</td><td title="Good Fit">Good Fit</td></tr><tr><td title="Professional SummaryHighly skilled software development professional bringing mo">Professional SummaryHighly skilled software development professional bringing mo</td><td title="Position Type
+
+Full time
+
+Type Of Hire
+
+Experienced (relevant combo of work and ">Position Type
+
+Full time
+
+Type Of Hire
+
+Experienced (relevant combo of work and </td><td title="Good Fit">Good Fit</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>1,759</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>3</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="label">label</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: No Fit (48.7%)">가장 흔한 값: No Fit (48.7%)</td></tr><tr><td title="resume_words">resume_words</td><td title="숫자">숫자</td><td title="0">0</td><td title="348">348</td><td title="84 ~ 2738 (평균 691.4)">84 ~ 2738 (평균 691.4)</td></tr><tr><td title="job_words">job_words</td><td title="숫자">숫자</td><td title="0">0</td><td title="67">67</td><td title="33 ~ 1254 (평균 402.9)">33 ~ 1254 (평균 402.9)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>단계별 쌍의 수 (시험)</h3><div class="plot" id="plot-0" role="img" aria-label="단계별 쌍의 수 (시험)"></div></div><div class="chart"><h3>이력서 길이 (단어 수)</h3><div class="plot" id="plot-1" role="img" aria-label="이력서 길이 (단어 수)"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>(이력서, 공고) 한 쌍</td></tr><tr><td>② 입력 X</td><td>이력서 글 · 공고 글 (단어 빈도, 두 글의 겹침)</td></tr><tr><td>③ 출력 y</td><td>맞음 / 가능 / 안 맞음</td></tr><tr><td>④ 평가지표</td><td>정확도 + 단계별 재현율</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 단계</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (always &#x27;No Fit&#x27;): accuracy 48.7%
+TF-IDF pair + logistic : accuracy 53.4%</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.onetonline.org/" target="_blank" rel="noopener">O*NET OnLine</a> <span>· 직업마다 필요한 기술 · 업무 목록 (공고를 정리하는 기준)</span></li><li><a href="https://huggingface.co/datasets?search=resume%20job%20matching" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://huggingface.co/datasets/cnamuangtoun/resume-job-description-fit" target="_blank" rel="noopener">Hugging Face 데이터 설명 (resume-job-description-fit)</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>채용 플랫폼 · HR 테크, 대기업 인사팀, 헤드헌팅</dd><dt>직무</dt><dd>HR 데이터 분석가, 검색 · 매칭 (NLP) 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../ai_usecases/">← 34 AI 활용사례 찾기</a><span></span></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "단계별 쌍의 수 (시험)", "note": "", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["No Fit", "Good Fit", "Potential Fit"], "y": [857, 458, 444]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "쌍"}}}, {"title": "이력서 길이 (단어 수)", "note": "", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": [25.0, 75.0, 125.0, 175.0, 225.0, 275.0, 325.0, 375.0, 425.0, 475.0, 525.0, 575.0, 625.0, 675.0, 725.0, 775.0, 825.0, 875.0, 925.0, 975.0, 1025.0, 1075.0, 1125.0, 1175.0, 1225.0, 1275.0, 1325.0, 1375.0, 1425.0, 1475.0], "y": [0, 1, 0, 36, 49, 91, 53, 67, 84, 73, 158, 162, 261, 131, 82, 72, 81, 52, 28, 28, 32, 23, 19, 28, 23, 4, 18, 11, 5, 87]}], "layout": {"xaxis": {"title": "단어 수"}, "yaxis": {"title": "이력서 수"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

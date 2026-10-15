@@ -15,24 +15,38 @@
 <div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Chest_X-ray_1300275.JPG" target="_blank" rel="noopener">Nevit Dilmen (talk)</a> · CC BY-SA 3.0</span></div>
 <div class="hero" style="grid-template-columns: 1fr">
   <div>
-    <div class="tag"><span class="num">23</span><span>바이오 · 헬스케어</span></div>
+    <div class="tag"><span class="num">27</span><span>이미지 · 소리 · 3D</span></div>
     <h1>흉부 X-ray 폐렴 찾기</h1>
-    <div class="chips"><span class="chip">의료 영상</span><span class="chip">질병 진단 보조</span><span class="chip">이미지 분류</span></div>
+    <div class="chips"><span class="chip">의료 영상</span><span class="chip">진단 보조</span><span class="chip">놓치면 안 되는 문제</span></div>
     <p class="teaser-big">X-ray 사진 한 장에서 폐렴을 찾을 수 있을까?</p>
-    <div class="actions"><a class="btn primary" href="https://medmnist.com/" target="_blank" rel="noopener">MedMNIST 공식 페이지</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/27_medical.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="27_medical.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
 </div>
-<section class="block soon"><b>노트북 준비 중</b> · 데이터 월드컵에서 많이 뽑힌 데이터부터 노트북 · 통계 · 그래프를 만듭니다. 지금은 위 공식 페이지에서 데이터를 직접 볼 수 있습니다.</section>
 <section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
-  <div class="io"><b>입력 X</b>흑백 사진 (28×28 또는 더 큰 크기)</div>
+  <div class="io"><b>입력 X</b>흑백 픽셀 784개</div>
   <div class="model">→ 모델 →<small>이진 분류 (이미지)</small></div>
-  <div class="io"><b>출력 y (기대하는 답)</b>정상 / 폐렴</div>
+  <div class="io"><b>출력 y (기대하는 답)</b>정상 0 / 폐렴 1</div>
 </div></section>
-<section class="block"><h2>데이터</h2><div class="data-name">MedMNIST (PneumoniaMNIST)</div><p class="src">Yang et al. (2023). 의료 영상 데이터를 28×28 등 작은 크기로 맞춘 모음. PneumoniaMNIST 는 소아 흉부 X-ray 5,856장, 정상 / 폐렴. pip install medmnist 로 받는다</p></section>
-<section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>X-ray 사진 한 장</td></tr><tr><td>② 입력 X</td><td>흑백 사진 (28×28 또는 더 큰 크기)</td></tr><tr><td>③ 출력 y</td><td>정상 / 폐렴</td></tr><tr><td>④ 평가지표</td><td>재현율 (놓친 환자) · ROC-AUC</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 쪽</td></tr></tbody></table></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">MedMNIST · PneumoniaMNIST · 약 4MB</div><p class="src">Yang et al. (2023). 소아 흉부 X-ray 5,856장을 28×28 로 줄인 판 (학습 4,708 · 검증 524 · 시험 624), 정상 / 폐렴. Hugging Face 사본에서 받는다</p></div>
+  <img src="thumb.png" alt="흉부 X-ray 폐렴 찾기 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>label</th><th>mean_pixel</th></tr></thead><tbody><tr><td title="pneumonia">pneumonia</td><td title="152">152</td></tr><tr><td title="pneumonia">pneumonia</td><td title="131">131</td></tr><tr><td title="pneumonia">pneumonia</td><td title="146.3">146.3</td></tr><tr><td title="pneumonia">pneumonia</td><td title="166.5">166.5</td></tr><tr><td title="pneumonia">pneumonia</td><td title="137.7">137.7</td></tr><tr><td title="pneumonia">pneumonia</td><td title="145.9">145.9</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>4,708</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>2</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="label">label</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: pneumonia (74.2%)">가장 흔한 값: pneumonia (74.2%)</td></tr><tr><td title="mean_pixel">mean_pixel</td><td title="숫자">숫자</td><td title="0">0</td><td title="4484">4484</td><td title="70.57 ~ 225.5 (평균 145.8)">70.57 ~ 225.5 (평균 145.8)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>정상 vs 폐렴 수 (학습)</h3><p class="note">폐렴이 3배쯤 많다 (병원 데이터는 아픈 사람이 많다)</p><div class="plot" id="plot-0" role="img" aria-label="정상 vs 폐렴 수 (학습)"></div></div><div class="chart"><h3>사진 평균 밝기</h3><p class="note">폐렴 사진이 조금 더 하얗다 (폐에 하얀 그림자)</p><div class="plot" id="plot-1" role="img" aria-label="사진 평균 밝기"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>X-ray 사진 한 장 (28×28)</td></tr><tr><td>② 입력 X</td><td>흑백 픽셀 784개</td></tr><tr><td>③ 출력 y</td><td>정상 0 / 폐렴 1</td></tr><tr><td>④ 평가지표</td><td>재현율 (놓친 환자) · ROC-AUC</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 쪽 (폐렴)</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">always pneumonia           accuracy 62.5%  precision 62%  recall 100%
+logistic (threshold 0.5)   accuracy 82.9%  precision 79%  recall 98%
+logistic (threshold 0.9)   accuracy 85.3%  precision 89%  recall 87%
+ROC-AUC 0.92</pre></section>
+</div>
 <div class="two">
   <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div><div class="metric"><div class="what"><b>ROC-AUC</b><span>양성 하나 · 음성 하나를 뽑았을 때 양성 점수가 더 높을 확률. 0.5 = 동전 던지기</span></div><div class="tex" data-tex="\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)">\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)</div></div></section>
-  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://huggingface.co/datasets?search=chest%20x-ray" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://nihcc.app.box.com/v/ChestXray-NIHCC" target="_blank" rel="noopener">NIH ChestX-ray14</a> <span>· 흉부 X-ray 11만 장, 14가지 소견</span></li><li><a href="https://stanfordmlgroup.github.io/competitions/chexpert/" target="_blank" rel="noopener">CheXpert</a> <span>· 흉부 X-ray 22만 장 (신청 필요)</span></li><li><a href="https://huggingface.co/datasets?search=chest%20x-ray" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
 </div>
 <div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/2110.14795" target="_blank" rel="noopener">Yang et al. (2023) MedMNIST v2: A large-scale lightweight benchmark for 2D and 3D biomedical image classification, Scientific Data</a></li></ul>
@@ -40,10 +54,40 @@
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>의료 AI · 병원, 의료기기, 보험 (심사)</dd><dt>직무</dt><dd>의료 영상 AI 엔지니어, 임상 데이터 사이언티스트</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<footer><a href="../">← 전체 목록</a></footer>
+<nav class="pager"><a href="../point_cloud/">← 26 3D 포인트 클라우드</a><a href="../satellite/">28 위성 사진 토지 분류 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "정상 vs 폐렴 수 (학습)", "note": "폐렴이 3배쯤 많다 (병원 데이터는 아픈 사람이 많다)", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["정상", "폐렴"], "y": [1214, 3494]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "장 수"}}}, {"title": "사진 평균 밝기", "note": "폐렴 사진이 조금 더 하얗다 (폐에 하얀 그림자)", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "정상", "x": [42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5, 102.5, 107.5, 112.5, 117.5, 122.5, 127.5, 132.5, 137.5, 142.5, 147.5, 152.5, 157.5, 162.5, 167.5, 172.5, 177.5, 182.5, 187.5, 192.5], "y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.00016, 0.00016, 0.00066, 0.00016, 0.00066, 0.00329, 0.00395, 0.0056, 0.01219, 0.01763, 0.02323, 0.03015, 0.029, 0.02817, 0.01993, 0.01153, 0.00725, 0.00412, 0.00148, 0.00049, 0.0, 0.00016, 0.0]}, {"type": "bar", "marker": {"color": "var:series-2"}, "name": "폐렴", "x": [42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5, 102.5, 107.5, 112.5, 117.5, 122.5, 127.5, 132.5, 137.5, 142.5, 147.5, 152.5, 157.5, 162.5, 167.5, 172.5, 177.5, 182.5, 187.5, 192.5], "y": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.00023, 0.00017, 0.00058, 0.0015, 0.0019, 0.00207, 0.0023, 0.00247, 0.00368, 0.00546, 0.00702, 0.00909, 0.01242, 0.01438, 0.01777, 0.01979, 0.01915, 0.01892, 0.01887, 0.01622, 0.01185, 0.00759, 0.00339, 0.00178, 0.00138]}], "layout": {"xaxis": {"title": "픽셀 평균 (0~255)"}, "yaxis": {"title": "비율"}, "barmode": "overlay"}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
 </body>
 </html>

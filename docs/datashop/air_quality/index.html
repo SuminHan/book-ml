@@ -15,24 +15,37 @@
 <div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Smoggy_Seoul_(6907570245).jpg" target="_blank" rel="noopener">Jimmy McIntyre - Editor HDR One Magazine</a> · CC BY-SA 2.0</span></div>
 <div class="hero" style="grid-template-columns: 1fr">
   <div>
-    <div class="tag"><span class="num">25</span><span>도시 · 공간</span></div>
+    <div class="tag"><span class="num">19</span><span>도시 · 공간</span></div>
     <h1>미세먼지 예보</h1>
-    <div class="chips"><span class="chip">환경 · 기상</span><span class="chip">시계열 예측</span><span class="chip">공공 데이터</span></div>
+    <div class="chips"><span class="chip">환경 · 기상 서비스</span><span class="chip">시계열 예측</span><span class="chip">경보</span></div>
     <p class="teaser-big">내일 이 시각 초미세먼지 (PM2.5) 는 얼마일까?</p>
-    <div class="actions"><a class="btn primary" href="https://archive.ics.uci.edu/dataset/381/beijing+pm2+5+data" target="_blank" rel="noopener">UCI Beijing PM2.5</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/19_air_quality.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="19_air_quality.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
 </div>
-<section class="block soon"><b>노트북 준비 중</b> · 데이터 월드컵에서 많이 뽑힌 데이터부터 노트북 · 통계 · 그래프를 만듭니다. 지금은 위 공식 페이지에서 데이터를 직접 볼 수 있습니다.</section>
 <section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
-  <div class="io"><b>입력 X</b>지난 24시간 PM2.5 · 기온 · 바람 · 습도</div>
+  <div class="io"><b>입력 X</b>지금 PM2.5 · 지난 몇 시간 · 기온 · 바람 · 습도 · 달 · 시각</div>
   <div class="model">→ 모델 →<small>회귀 (시계열)</small></div>
   <div class="io"><b>출력 y (기대하는 답)</b>24시간 뒤 PM2.5 (㎍/㎥)</div>
 </div></section>
-<section class="block"><h2>데이터</h2><div class="data-name">UCI Beijing PM2.5 · 에어코리아</div><p class="src">UCI: 베이징 미국 대사관 측정소의 2010~2014 시간별 PM2.5 + 날씨 (기온 · 바람 · 비). 한국은 에어코리아 측정소 데이터 (공공데이터포털 API 신청)</p></section>
-<section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>측정소 × 한 시간</td></tr><tr><td>② 입력 X</td><td>지난 24시간 PM2.5 · 기온 · 바람 · 습도</td></tr><tr><td>③ 출력 y</td><td>24시간 뒤 PM2.5 (㎍/㎥)</td></tr><tr><td>④ 평가지표</td><td>MAE, &#x27;나쁨&#x27; 이상 재현율</td></tr><tr><td>⑤ 기준선</td><td>어제 같은 시각 값</td></tr></tbody></table></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">UCI Beijing PM2.5 · 약 2MB</div><p class="src">Liang et al. (2015). 베이징 미국 대사관 측정소의 2010~2014 시간별 PM2.5 (㎍/㎥) + 이슬점 · 기온 · 기압 · 풍향 · 풍속 · 눈 · 비 (43,824시간)</p></div>
+  <img src="thumb.gif" alt="미세먼지 예보 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>year</th><th>month</th><th>day</th><th>hour</th><th>pm2.5</th><th>DEWP</th><th>TEMP</th><th>PRES</th><th>cbwd</th><th>Iws</th><th>Is</th><th>Ir</th></tr></thead><tbody><tr><td title="2010">2010</td><td title="11">11</td><td title="25">25</td><td title="23">23</td><td title="168">168</td><td title="-10">-10</td><td title="-3">-3</td><td title="1024">1024</td><td title="NW">NW</td><td title="1.79">1.79</td><td title="0">0</td><td title="0">0</td></tr><tr><td title="2013">2013</td><td title="1">1</td><td title="18">18</td><td title="9">9</td><td title="82">82</td><td title="-12">-12</td><td title="-8">-8</td><td title="1029">1029</td><td title="NW">NW</td><td title="6.26">6.26</td><td title="0">0</td><td title="0">0</td></tr><tr><td title="2013">2013</td><td title="1">1</td><td title="27">27</td><td title="1">1</td><td title="307">307</td><td title="-8">-8</td><td title="-5">-5</td><td title="1030">1030</td><td title="NE">NE</td><td title="0.89">0.89</td><td title="0">0</td><td title="0">0</td></tr><tr><td title="2014">2014</td><td title="11">11</td><td title="6">6</td><td title="17">17</td><td title="6">6</td><td title="-13">-13</td><td title="9">9</td><td title="1030">1030</td><td title="NE">NE</td><td title="59.9">59.9</td><td title="0">0</td><td title="0">0</td></tr><tr><td title="2014">2014</td><td title="5">5</td><td title="20">20</td><td title="4">4</td><td title="197">197</td><td title="15">15</td><td title="18">18</td><td title="1003">1003</td><td title="NW">NW</td><td title="1.79">1.79</td><td title="0">0</td><td title="0">0</td></tr><tr><td title="2013">2013</td><td title="3">3</td><td title="13">13</td><td title="18">18</td><td title="23">23</td><td title="-15">-15</td><td title="6">6</td><td title="1028">1028</td><td title="SE">SE</td><td title="4.92">4.92</td><td title="0">0</td><td title="0">0</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>43,824</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>12</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="year">year</td><td title="숫자">숫자</td><td title="0">0</td><td title="5">5</td><td title="2010 ~ 2014 (평균 2012)">2010 ~ 2014 (평균 2012)</td></tr><tr><td title="month">month</td><td title="숫자">숫자</td><td title="0">0</td><td title="12">12</td><td title="1 ~ 12 (평균 6.524)">1 ~ 12 (평균 6.524)</td></tr><tr><td title="day">day</td><td title="숫자">숫자</td><td title="0">0</td><td title="31">31</td><td title="1 ~ 31 (평균 15.73)">1 ~ 31 (평균 15.73)</td></tr><tr><td title="hour">hour</td><td title="숫자">숫자</td><td title="0">0</td><td title="24">24</td><td title="0 ~ 23 (평균 11.5)">0 ~ 23 (평균 11.5)</td></tr><tr><td title="pm2.5">pm2.5</td><td title="숫자">숫자</td><td title="4.7%">4.7%</td><td title="581">581</td><td title="0 ~ 994 (평균 98.61)">0 ~ 994 (평균 98.61)</td></tr><tr><td title="DEWP">DEWP</td><td title="숫자">숫자</td><td title="0">0</td><td title="69">69</td><td title="-40 ~ 28 (평균 1.817)">-40 ~ 28 (평균 1.817)</td></tr><tr><td title="TEMP">TEMP</td><td title="숫자">숫자</td><td title="0">0</td><td title="64">64</td><td title="-19 ~ 42 (평균 12.45)">-19 ~ 42 (평균 12.45)</td></tr><tr><td title="PRES">PRES</td><td title="숫자">숫자</td><td title="0">0</td><td title="60">60</td><td title="991 ~ 1046 (평균 1,016.4)">991 ~ 1046 (평균 1,016.4)</td></tr><tr><td title="cbwd">cbwd</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="4">4</td><td title="가장 흔한 값: SE (34.9%)">가장 흔한 값: SE (34.9%)</td></tr><tr><td title="Iws">Iws</td><td title="숫자">숫자</td><td title="0">0</td><td title="2788">2788</td><td title="0.45 ~ 585.6 (평균 23.89)">0.45 ~ 585.6 (평균 23.89)</td></tr><tr><td title="Is">Is</td><td title="숫자">숫자</td><td title="0">0</td><td title="28">28</td><td title="0 ~ 27 (평균 0.0527)">0 ~ 27 (평균 0.0527)</td></tr><tr><td title="Ir">Ir</td><td title="숫자">숫자</td><td title="0">0</td><td title="37">37</td><td title="0 ~ 36 (평균 0.1949)">0 ~ 36 (평균 0.1949)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>달별 평균 PM2.5</h3><p class="note">겨울 (난방철) 에 높다</p><div class="plot" id="plot-0" role="img" aria-label="달별 평균 PM2.5"></div></div><div class="chart"><h3>시각별 평균 PM2.5</h3><p class="note">밤에 높고 오후에 낮다</p><div class="plot" id="plot-1" role="img" aria-label="시각별 평균 PM2.5"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>한 시간</td></tr><tr><td>② 입력 X</td><td>지금 PM2.5 · 지난 몇 시간 · 기온 · 바람 · 습도 · 달 · 시각</td></tr><tr><td>③ 출력 y</td><td>24시간 뒤 PM2.5 (㎍/㎥)</td></tr><tr><td>④ 평가지표</td><td>MAE, &#x27;매우 나쁨&#x27; (76 이상) 재현율</td></tr><tr><td>⑤ 기준선</td><td>지금 값 그대로</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">same as now        MAE 67.4  recall of &#x27;very bad&#x27; 61%
+train mean         MAE 69.0  recall of &#x27;very bad&#x27; 100%
+gradient boosting  MAE 59.9  recall of &#x27;very bad&#x27; 84%</pre></section>
+</div>
 <div class="two">
   <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>MAE</b><span>평균적으로 얼마나 틀렸나 (y 와 같은 단위)</span></div><div class="tex" data-tex="\text{MAE} = \frac{1}{n}\sum_{i=1}^{n} \lvert y_i - \hat y_i \rvert">\text{MAE} = \frac{1}{n}\sum_{i=1}^{n} \lvert y_i - \hat y_i \rvert</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div></section>
-  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://huggingface.co/datasets?search=air%20quality" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.airkorea.or.kr/" target="_blank" rel="noopener">에어코리아</a> <span>· 한국 대기질 측정소 실시간 · 과거 자료</span></li><li><a href="https://huggingface.co/datasets?search=air%20quality" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
 </div>
 <div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://doi.org/10.1098/rspa.2015.0257" target="_blank" rel="noopener">Liang et al. (2015) Assessing Beijing&#x27;s PM2.5 pollution: severity, weather impact, APEC and winter heating, Proc. R. Soc. A</a></li></ul>
@@ -40,10 +53,40 @@
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>기상 · 환경 기관, 지자체, 공기청정 · 가전</dd><dt>직무</dt><dd>환경 데이터 분석가, 시계열 예측 데이터 사이언티스트</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<footer><a href="../">← 전체 목록</a></footer>
+<nav class="pager"><a href="../earthquakes/">← 18 지진: 시공간 데이터</a><a href="../electricity/">20 전력 수요 예측 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "달별 평균 PM2.5", "note": "겨울 (난방철) 에 높다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], "y": [115.1, 125.7, 97.8, 83.7, 80.1, 96.5, 94.3, 80.0, 85.2, 120.4, 105.8, 98.2]}], "layout": {"xaxis": {"title": "월"}, "yaxis": {"title": "㎍/㎥"}}}, {"title": "시각별 평균 PM2.5", "note": "밤에 높고 오후에 낮다", "traces": [{"type": "scatter", "mode": "lines+markers", "x": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "y": [113.4, 113.7, 110.3, 108.0, 104.1, 100.0, 96.9, 96.0, 95.9, 94.7, 93.4, 91.7, 89.4, 88.0, 86.3, 85.5, 85.9, 87.6, 91.5, 97.4, 104.6, 109.2, 111.0, 111.9], "name": "", "line": {"color": "var:series-1", "width": 2}, "marker": {"size": 6}}], "layout": {"xaxis": {"title": "시"}, "yaxis": {"title": "㎍/㎥"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
 </body>
 </html>

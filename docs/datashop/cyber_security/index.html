@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>네트워크 침입 탐지 · 현실의 데이터</title>
+<meta name="description" content="네트워크 연결 15만 건. 처음 보는 공격도 잡아낼 수 있을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Network_switches.jpg" target="_blank" rel="noopener">ShakataGaNai</a> · CC BY-SA 3.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">14</span><span>플랫폼 · 서비스</span></div>
+    <h1>네트워크 침입 탐지</h1>
+    <div class="chips"><span class="chip">보안관제</span><span class="chip">침입 탐지 (IDS)</span><span class="chip">처음 보는 공격</span></div>
+    <p class="teaser-big">네트워크 연결 15만 건. 처음 보는 공격도 잡아낼 수 있을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/14_cyber_security.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="14_cyber_security.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>41개 숫자 · 범주 (프로토콜 · 서비스 · 바이트 수 · 실패 비율 …)</div>
+  <div class="model">→ 모델 →<small>이진 분류 (불균형)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>정상 / 공격</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">NSL-KDD · 약 22MB</div><p class="src">Tavallaee et al. (2009). KDD Cup 99 를 정리한 침입 탐지 데이터: 연결 한 건마다 41개 숫자 (길이 · 프로토콜 · 서비스 · 바이트 수 · 오류 비율 …) + 정상 / 공격 이름. 학습 125,973건 · 시험 22,544건 (시험에만 있는 공격 포함)</p></div>
+  <img src="thumb.png" alt="네트워크 침입 탐지 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>duration</th><th>protocol_type</th><th>service</th><th>flag</th><th>src_bytes</th><th>dst_bytes</th><th>attack</th></tr></thead><tbody><tr><td title="0">0</td><td title="tcp">tcp</td><td title="http">http</td><td title="SF">SF</td><td title="206">206</td><td title="3581">3581</td><td title="normal">normal</td></tr><tr><td title="0">0</td><td title="tcp">tcp</td><td title="http">http</td><td title="SF">SF</td><td title="239">239</td><td title="2239">2239</td><td title="normal">normal</td></tr><tr><td title="0">0</td><td title="tcp">tcp</td><td title="smtp">smtp</td><td title="SF">SF</td><td title="1271">1271</td><td title="442">442</td><td title="normal">normal</td></tr><tr><td title="0">0</td><td title="tcp">tcp</td><td title="courier">courier</td><td title="REJ">REJ</td><td title="0">0</td><td title="0">0</td><td title="neptune">neptune</td></tr><tr><td title="0">0</td><td title="udp">udp</td><td title="private">private</td><td title="SF">SF</td><td title="1">1</td><td title="0">0</td><td title="satan">satan</td></tr><tr><td title="0">0</td><td title="udp">udp</td><td title="domain_u">domain_u</td><td title="SF">SF</td><td title="43">43</td><td title="74">74</td><td title="normal">normal</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>125,973</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>7</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="duration">duration</td><td title="숫자">숫자</td><td title="0">0</td><td title="2981">2981</td><td title="0 ~ 42,908 (평균 287.1)">0 ~ 42,908 (평균 287.1)</td></tr><tr><td title="protocol_type">protocol_type</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: tcp (81.5%)">가장 흔한 값: tcp (81.5%)</td></tr><tr><td title="service">service</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="70">70</td><td title="가장 흔한 값: http (32.0%)">가장 흔한 값: http (32.0%)</td></tr><tr><td title="flag">flag</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="11">11</td><td title="가장 흔한 값: SF (59.5%)">가장 흔한 값: SF (59.5%)</td></tr><tr><td title="src_bytes">src_bytes</td><td title="숫자">숫자</td><td title="0">0</td><td title="3341">3341</td><td title="0 ~ 1,379,963,888 (평균 45,566.7)">0 ~ 1,379,963,888 (평균 45,566.7)</td></tr><tr><td title="dst_bytes">dst_bytes</td><td title="숫자">숫자</td><td title="0">0</td><td title="9326">9326</td><td title="0 ~ 1,309,937,401 (평균 19,779.1)">0 ~ 1,309,937,401 (평균 19,779.1)</td></tr><tr><td title="attack">attack</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="23">23</td><td title="가장 흔한 값: normal (53.5%)">가장 흔한 값: normal (53.5%)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>학습 데이터의 연결 종류 (상위 8)</h3><p class="note">neptune (SYN flood, DoS) 이 정상 다음으로 많다</p><div class="plot" id="plot-0" role="img" aria-label="학습 데이터의 연결 종류 (상위 8)"></div></div><div class="chart"><h3>시험에만 있는 공격 17종 (상위 10)</h3><p class="note">학습 때 본 적 없는 공격: 진짜 실력을 재는 부분</p><div class="plot" id="plot-1" role="img" aria-label="시험에만 있는 공격 17종 (상위 10)"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>네트워크 연결 한 건</td></tr><tr><td>② 입력 X</td><td>41개 숫자 · 범주 (프로토콜 · 서비스 · 바이트 수 · 실패 비율 …)</td></tr><tr><td>③ 출력 y</td><td>정상 / 공격</td></tr><tr><td>④ 평가지표</td><td>재현율 (놓친 공격) · 정밀도 (헛경보)</td></tr><tr><td>⑤ 기준선</td><td>전부 &#x27;정상&#x27;</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">random split of train        accuracy 99.9%  precision 99.9%  recall 99.8%
+official test (new attacks)  accuracy 77.0%  precision 96.8%  recall 61.6%</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div><div class="metric"><div class="what"><b>정밀도 (precision)</b><span>&#x27;양성&#x27; 이라고 한 것 중 진짜 양성의 비율 (헛짚지 않았나)</span></div><div class="tex" data-tex="\text{Precision} = \frac{TP}{TP + FP}">\text{Precision} = \frac{TP}{TP + FP}</div></div><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.unb.ca/cic/datasets/ids-2017.html" target="_blank" rel="noopener">CIC-IDS2017</a> <span>· 실제 네트워크 흐름 + 최신 공격 (신청 필요)</span></li><li><a href="https://research.unsw.edu.au/projects/unsw-nb15-dataset" target="_blank" rel="noopener">UNSW-NB15</a> <span>· 현대 공격 9종류가 섞인 네트워크 기록</span></li><li><a href="https://huggingface.co/datasets?search=intrusion%20detection" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://doi.org/10.1109/CISDA.2009.5356528" target="_blank" rel="noopener">Tavallaee et al. (2009) A detailed analysis of the KDD CUP 99 data set, IEEE CISDA (NSL-KDD)</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>보안 · 통신 · 클라우드, 금융 · 공공 보안관제, 보안 솔루션</dd><dt>직무</dt><dd>보안관제 (SOC) 분석가, 침입 탐지 · 위협 탐지 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../link_prediction/">← 13 연결 예측: 사람 · 친구 추천</a><a href="../telco_churn/">15 통신사 고객 이탈 예측 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "학습 데이터의 연결 종류 (상위 8)", "note": "neptune (SYN flood, DoS) 이 정상 다음으로 많다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["normal", "neptune", "satan", "ipsweep", "portsweep", "smurf", "nmap", "back"], "y": [67343, 41214, 3633, 3599, 2931, 2646, 1493, 956]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"type": "log", "title": "연결 수 (로그 눈금)"}}}, {"title": "시험에만 있는 공격 17종 (상위 10)", "note": "학습 때 본 적 없는 공격: 진짜 실력을 재는 부분", "traces": [{"type": "bar", "marker": {"color": "var:series-2"}, "name": "", "x": ["mscan", "apache2", "processtable", "snmpguess", "saint", "mailbomb", "snmpgetattack", "httptunnel", "named", "ps"], "y": [996, 737, 685, 331, 319, 293, 178, 133, 17, 15]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "연결 수"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

@@ -134,14 +134,14 @@ function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 let state = null;   // {size, round:[ids], next:[ids], k, history:[{a,b,w,size}], done}
-let mode = 32;
+let mode = 16;
 
 function startScreen() {
   $("roundTag").textContent = "";
   const s = $("screen"); s.replaceChildren();
   const box = el("div", "start");
   const modes = el("div", "modes"); modes.setAttribute("role", "group"); modes.setAttribute("aria-label", "몇 강으로 할까요");
-  [[32, "32강", "전부 · 31경기"], [16, "16강", "무작위 16개 · 15경기"]].forEach(([n, t, d]) => {
+  [[16, "16강", "무작위 16개 · 15경기"], [32, "32강", "전부 · 31경기"]].forEach(([n, t, d]) => {
     const b = el("button", "mode"); b.type = "button"; b.setAttribute("aria-pressed", String(mode === n));
     b.append(el("b", "", t), el("small", "", d));
     b.addEventListener("click", () => { mode = n; startScreen(); });

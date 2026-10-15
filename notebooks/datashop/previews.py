@@ -455,3 +455,248 @@ def earthquakes(thumb):
                 charts=[chart("지도: 2년 동안의 지진 (색 · 크기 = 규모)", [mp], "경도", "위도", "판의 경계 (불의 고리) 를 따라 늘어선다"),
                         chart("규모 분포", [bar(xs, ys)], "규모", "개수 (로그 눈금)", "규모가 0.1 커질 때마다 개수가 일정한 비율로 준다 (구텐베르크-리히터 법칙)", yaxis=dict(type="log", title="개수 (로그 눈금)")),
                         chart("달마다 지진 수", [bar([str(m) for m in per.index], per.values)], "", "개수")])
+
+
+# ------------------------------------------------------------------ 2차 추가 16개
+def point_cloud(thumb):
+    df = pd.read_parquet(os.path.join(D, "modelnet40_test.parquet"))
+    names = ["airplane", "bathtub", "bed", "bench", "bookshelf", "bottle", "bowl", "car", "chair", "cone", "cup", "curtain", "desk", "door", "dresser",
+             "flower_pot", "glass_box", "guitar", "keyboard", "lamp", "laptop", "mantel", "monitor", "night_stand", "person", "piano", "plant", "radio",
+             "range_hood", "sink", "sofa", "stairs", "stool", "table", "tent", "toilet", "tv_stand", "vase", "wardrobe", "xbox"]
+    fig = plt.figure(figsize=(4.8, 3))
+    for k, i in enumerate([0, 700, 1500, 2000, 1100, 300]):
+        ax = fig.add_subplot(2, 3, k + 1, projection="3d"); p = np.stack(df["inputs"][i])
+        ax.scatter(p[:, 0], p[:, 2], p[:, 1], s=0.3, c=p[:, 1], cmap="viridis"); ax.set_axis_off(); ax.set_title(names[df["label"][i]], fontsize=8)
+    fig.subplots_adjust(0, 0, 1, 0.95, 0, 0.1); save_thumb(fig, thumb)
+    p = np.stack(df["inputs"][0]); s = p[np.random.default_rng(0).choice(len(p), 800, replace=False)]
+    sc = dict(type="scatter3d", mode="markers", x=s[:, 0].round(3).tolist(), y=s[:, 2].round(3).tolist(), z=s[:, 1].round(3).tolist(), marker=dict(size=2, color=S1), name="")
+    cnt = pd.Series([names[i] for i in df["label"]]).value_counts()
+    meta = pd.DataFrame({"label": [names[i] for i in df["label"]], "n_points": 2048,
+                         "x_range": [float(np.ptp(np.stack(v)[:, 0])) for v in df["inputs"][:300]] + [np.nan] * (len(df) - 300)})
+    return dict(stats=stats(meta.drop(columns="x_range")), sample=dict(columns=["점 번호", "x", "y", "z"], rows=[[str(i), fmt(round(float(a), 4)), fmt(round(float(b), 4)), fmt(round(float(c), 4))] for i, (a, b, c) in enumerate(p[:6])]),
+                charts=[chart(f"점 구름 하나 ({names[df['label'][0]]}, 점 800개만) — 마우스로 돌려 보기", [sc], "", "", "", height=360, margin=dict(l=0, r=0, t=0, b=0)),
+                        chart("종류별 물체 수 (시험 묶음)", [bar(cnt.index, cnt.values)], "", "개수", "100개짜리와 20개짜리가 섞여 있다", xaxis=dict(tickangle=-60, title=""))])
+
+
+def medical(thumb):
+    z = np.load(os.path.join(D, "pneumoniamnist.npz")); X, y = z["train_images"], z["train_labels"].ravel()
+    fig, axs = plt.subplots(2, 4, figsize=(4.8, 3))
+    for r, lab in enumerate([0, 1]):
+        for c, i in enumerate(np.where(y == lab)[0][:4]): axs[r, c].imshow(X[i], cmap="gray"); axs[r, c].axis("off")
+        axs[r, 0].set_title(["정상", "폐렴"][lab], fontsize=9, loc="left")
+    fig.subplots_adjust(0, 0, 1, 0.92, 0.03, 0.15); save_thumb(fig, thumb)
+    meta = pd.DataFrame({"label": np.where(y == 1, "pneumonia", "normal"), "mean_pixel": X.reshape(len(X), -1).mean(1)})
+    x0, y0 = hist_bins(meta.loc[y == 0, "mean_pixel"], np.arange(40, 200, 5), True); x1, y1 = hist_bins(meta.loc[y == 1, "mean_pixel"], np.arange(40, 200, 5), True)
+    return dict(stats=stats(meta), sample=table(meta),
+                charts=[chart("정상 vs 폐렴 수 (학습)", [bar(["정상", "폐렴"], [int((y == 0).sum()), int((y == 1).sum())])], "", "장 수", "폐렴이 3배쯤 많다 (병원 데이터는 아픈 사람이 많다)"),
+                        chart("사진 평균 밝기", [bar(x0, y0, S1, name="정상"), bar(x1, y1, S2, name="폐렴")], "픽셀 평균 (0~255)", "비율", "폐렴 사진이 조금 더 하얗다 (폐에 하얀 그림자)", barmode="overlay")])
+
+
+def satellite(thumb):
+    df = pd.read_parquet(os.path.join(D, "eurosat_test.parquet"))
+    names = ["AnnualCrop", "Forest", "HerbaceousVegetation", "Highway", "Industrial", "Pasture", "PermanentCrop", "Residential", "River", "SeaLake"]
+    fig, axs = plt.subplots(2, 5, figsize=(4.8, 3))
+    for c in range(10):
+        i = np.where(df["label"].values == c)[0][0]; ax = axs.ravel()[c]
+        ax.imshow(Image.open(io.BytesIO(df["image"][i]["bytes"]))); ax.axis("off"); ax.set_title(names[c][:10], fontsize=6.5)
+    fig.subplots_adjust(0, 0, 1, 0.93, 0.03, 0.2); save_thumb(fig, thumb)
+    imgs = [np.asarray(Image.open(io.BytesIO(b["bytes"])).convert("RGB"), dtype=float) for b in df["image"][:2000]]
+    meta = pd.DataFrame({"label": [names[i] for i in df["label"][:2000]], "R": [im[..., 0].mean() for im in imgs], "G": [im[..., 1].mean() for im in imgs], "B": [im[..., 2].mean() for im in imgs]})
+    g = meta.groupby("label")[["R", "G", "B"]].mean()
+    return dict(stats=stats(meta), sample=table(meta.round(1)),
+                charts=[chart("종류별 평균 색 (R · G · B)", [bar(g.index, g["R"].round(1), "#d62728", name="R"), bar(g.index, g["G"].round(1), "#2ca02c", name="G"), bar(g.index, g["B"].round(1), "#1f77b4", name="B")],
+                              "", "평균 값 (0~255)", "숲은 어둡고 초록, 바다는 파랑, 고속도로 · 주거지는 회색", barmode="group", xaxis=dict(tickangle=-40, title=""))])
+
+
+def crop(thumb):
+    df = pd.read_parquet(os.path.join(D, "plantvillage_tiny.parquet"))
+    s = df.sample(8, random_state=2)
+    fig, axs = plt.subplots(2, 4, figsize=(4.8, 3))
+    for ax, (_, r) in zip(axs.ravel(), s.iterrows()):
+        ax.imshow(Image.open(io.BytesIO(r["image"]["bytes"]))); ax.axis("off"); ax.set_title(r["disease"][:16], fontsize=6.5)
+    fig.subplots_adjust(0, 0, 1, 0.94, 0.03, 0.2); save_thumb(fig, thumb)
+    meta = df.drop(columns="image").assign(healthy=lambda d: d["disease"].str.contains("healthy"))
+    h = meta.groupby("host")["healthy"].agg(["sum", "size"])
+    return dict(stats=stats(meta.drop(columns=["leaf_id"])), sample=table(meta[["host", "disease", "class_label", "split", "leaf_grouped"]]),
+                charts=[chart("작물별 사진 수 (건강 / 병)", [bar(h.index, h["sum"], S3, name="건강"), bar(h.index, h["size"] - h["sum"], S2, name="병")], "", "장 수", "", barmode="stack", xaxis=dict(tickangle=-40, title=""))])
+
+
+def speech(thumb):
+    import tarfile
+    from scipy.io import wavfile
+    tar = tarfile.open(os.path.join(D, "speech_commands_test.tar.gz"))
+    mems = [m for m in tar.getmembers() if m.name.endswith(".wav")]
+    labels = [m.name.split("/")[-2] for m in mems]; spk = [m.name.split("/")[-1].split("_")[0] for m in mems]
+    def wave(word):
+        m = mems[labels.index(word)]; r, w = wavfile.read(io.BytesIO(tar.extractfile(m).read())); return w.astype(float) / 32768
+    fig, axs = plt.subplots(2, 2, figsize=(4.8, 3))
+    for ax, wd in zip(axs.ravel(), ["yes", "no", "up", "stop"]):
+        from scipy.signal import spectrogram
+        f, t, S = spectrogram(wave(wd), fs=16000, nperseg=400, noverlap=240)
+        ax.pcolormesh(t, f, 10 * np.log10(S + 1e-10), cmap="magma", shading="auto"); ax.set_ylim(0, 6000); ax.axis("off"); ax.set_title(f'"{wd}"', fontsize=9)
+    fig.subplots_adjust(0, 0, 1, 0.92, 0.03, 0.22); save_thumb(fig, thumb)
+    meta = pd.DataFrame({"label": labels, "speaker": spk})
+    cnt = meta["label"].value_counts(); per = meta.groupby("speaker").size()
+    w = wave("yes"); t = (np.arange(0, 16000, 8) / 16000).round(4).tolist()
+    return dict(stats=stats(meta), sample=table(meta),
+                charts=[chart('"yes" 의 파형 (1초)', [dict(type="scatter", mode="lines", x=t, y=w[::8].round(4).tolist(), line=dict(color=S1, width=1), name="")], "초", "진폭"),
+                        chart("단어별 녹음 수", [bar(cnt.index, cnt.values)], "", "개수", f"녹음한 사람 {len(per)}명: 한 사람이 여러 단어를 녹음했다 → 사람 단위로 나눠야 한다")])
+
+
+def air_quality(thumb):
+    with zipfile.ZipFile(os.path.join(D, "beijing_pm25.zip")) as z:
+        df = pd.read_csv(z.open(z.namelist()[0]))
+    df["time"] = pd.to_datetime(df[["year", "month", "day", "hour"]]); daily = df.set_index("time")["pm2.5"].resample("D").mean()
+    def frame(k):
+        n = max(2, int(len(daily) * (k + 1) / 30))
+        fig, ax = plt.subplots(figsize=(4.8, 3)); ax.plot(daily.index[:n], daily.values[:n], color=C2, lw=0.6)
+        ax.axhline(76, color="gray", ls=":", lw=1); ax.set_xlim(daily.index[0], daily.index[-1]); ax.set_ylim(0, 600); ax.set_ylabel("PM2.5 (일 평균)")
+        ax.text(0.02, 0.9, str(daily.index[n - 1].date())[:7], transform=ax.transAxes, fontsize=12, fontweight="bold", color=C1); fig.tight_layout(); return fig
+    save_gif(frame, 30, thumb.replace(".png", ".gif"), fps=6)
+    bym = df.groupby("month")["pm2.5"].mean(); byh = df.groupby("hour")["pm2.5"].mean()
+    return dict(thumb="thumb.gif", stats=stats(df.drop(columns=["No", "time"])), sample=table(df.drop(columns=["No", "time"])),
+                charts=[chart("달별 평균 PM2.5", [bar([str(m) for m in bym.index], bym.values.round(1))], "월", "㎍/㎥", "겨울 (난방철) 에 높다"),
+                        chart("시각별 평균 PM2.5", [line(byh.index, byh.values.round(1))], "시", "㎍/㎥", "밤에 높고 오후에 낮다")])
+
+
+def electricity(thumb):
+    with zipfile.ZipFile(os.path.join(D, "household_power.zip")) as z:
+        raw = pd.read_csv(z.open("household_power_consumption.txt"), sep=";", na_values="?", low_memory=False)
+    raw["time"] = pd.to_datetime(raw["Date"] + " " + raw["Time"], format="%d/%m/%Y %H:%M:%S")
+    h = raw.set_index("time")["Global_active_power"].resample("h").mean()
+    wk = h["2008-01-07":"2008-01-13"]
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.plot(wk.index, wk.values, color=C1, lw=1); ax.set_ylabel("kW (시간 평균)"); ax.tick_params(axis="x", labelsize=7, rotation=30); fig.tight_layout(); save_thumb(fig, thumb)
+    byh = h.groupby(h.index.hour).mean(); weekly = h.resample("W").mean()
+    return dict(stats=stats(raw.drop(columns=["Date", "Time"]).sample(200000, random_state=0)), sample=table(raw.drop(columns=["time"])),
+                charts=[chart("주별 평균 사용량", [dict(type="scatter", mode="lines", x=[str(t.date()) for t in weekly.index], y=weekly.round(3).tolist(), line=dict(color=S1), name="")], "", "kW", "여름에 적고 겨울에 많다 (8월엔 휴가로 거의 비어 있다)"),
+                        chart("시각별 평균", [line(byh.index, byh.values.round(3))], "시", "kW", "아침 · 저녁에 봉우리")])
+
+
+def football(thumb):
+    import json as js
+    ms = sorted(js.load(open(os.path.join(D, "statsbomb_matches_43_106.json"))), key=lambda m: m["match_date"])
+    rows = []
+    for k, m in enumerate(ms):
+        for e in js.load(open(os.path.join(D, f"sb_events_{m['match_id']}.json"))):
+            if e["type"]["name"] == "Shot":
+                s = e["shot"]; rows.append(dict(match=k, x=e["location"][0], y=e["location"][1], body=s["body_part"]["name"], kind=s["type"]["name"],
+                                                goal=int(s["outcome"]["name"] == "Goal"), sb_xg=round(s["statsbomb_xg"], 3), team=e["team"]["name"]))
+    sh = pd.DataFrame(rows)
+    fig, ax = plt.subplots(figsize=(4.8, 3))
+    ax.plot([60, 120, 120, 60, 60], [0, 0, 80, 80, 0], color="gray", lw=1); ax.plot([102, 120, 120, 102], [18, 18, 62, 62], color="gray", lw=1)
+    ax.scatter(sh.loc[sh.goal == 0, "x"], sh.loc[sh.goal == 0, "y"], s=3, color="#bbbbbb"); ax.scatter(sh.loc[sh.goal == 1, "x"], sh.loc[sh.goal == 1, "y"], s=10, color=C2)
+    ax.set_xlim(58, 122); ax.set_aspect("equal"); ax.axis("off"); fig.subplots_adjust(0, 0, 1, 1); save_thumb(fig, thumb)
+    sc = lambda d, c, n: dict(type="scatter", mode="markers", x=d["x"].tolist(), y=d["y"].tolist(), marker=dict(color=c, size=5, opacity=0.7), name=n, text=d["sb_xg"].astype(str).tolist(),
+                              hovertemplate="xG %{text}<extra></extra>")
+    k = sh.groupby("kind")["goal"].agg(["mean", "size"])
+    return dict(stats=stats(sh), sample=table(sh),
+                charts=[chart("슛 위치 (주황 = 골)", [sc(sh[sh.goal == 0], "var:muted", "골 아님"), sc(sh[sh.goal == 1], S2, "골")], "x (골대 = 120)", "y", "", xaxis=dict(range=[58, 122], title="x (골대 = 120)"), yaxis=dict(range=[0, 80], title="y", scaleanchor="x")),
+                        chart("슛 종류별 골 비율", [bar(k.index, (k["mean"] * 100).round(1))], "", "%", "페널티킥은 약 70%, 일반 슛은 10% 남짓")])
+
+
+def chess(thumb):
+    df = pd.read_parquet(os.path.join(D, "lichess_2013_01.parquet"), columns=["Result", "WhiteElo", "BlackElo", "TimeControl", "Termination", "Opening", "ECO"])
+    df["WhiteElo"] = pd.to_numeric(df["WhiteElo"], errors="coerce"); df["BlackElo"] = pd.to_numeric(df["BlackElo"], errors="coerce")
+    df = df[df["Result"].isin(["1-0", "0-1", "1/2-1/2"])].dropna(subset=["WhiteElo", "BlackElo"]); df["diff"] = df["WhiteElo"] - df["BlackElo"]
+    b = pd.cut(df["diff"], np.arange(-600, 601, 100)); win = df.groupby(b, observed=True)["Result"].apply(lambda r: (r == "1-0").mean() * 100)
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.plot(np.arange(-550, 551, 100)[:len(win)], win.values, "o-", color=C1); ax.axhline(50, color="gray", ls=":")
+    ax.set_xlabel("레이팅 차 (백 − 흑)"); ax.set_ylabel("백 승률 (%)"); fig.tight_layout(); save_thumb(fig, thumb)
+    op = df["Opening"].str.split(":").str[0].value_counts().head(10)
+    return dict(stats=stats(df), sample=table(df),
+                charts=[chart("레이팅 차에 따른 백 승률", [line([str(i) for i in win.index], win.values.round(1))], "레이팅 차 (백 − 흑)", "%", "차가 클수록 높은 쪽이 이긴다 (Elo 의 설계대로)"),
+                        chart("가장 많이 둔 오프닝 10개", [bar(op.index[::-1], op.values[::-1], horizontal=True)], "판 수", "", "", margin=dict(l=200))])
+
+
+def cyber_security(thumb):
+    cols = ["duration", "protocol_type", "service", "flag", "src_bytes", "dst_bytes"] + [f"f{i}" for i in range(6, 41)] + ["attack", "difficulty"]
+    tr = pd.read_csv(os.path.join(D, "nslkdd_train.txt"), header=None, names=cols); te = pd.read_csv(os.path.join(D, "nslkdd_test.txt"), header=None, names=cols)
+    a = tr["attack"].value_counts().head(8)
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.barh(a.index[::-1], a.values[::-1], color=[C1 if x == "normal" else C2 for x in a.index[::-1]]); ax.set_xscale("log"); ax.set_xlabel("연결 수 (로그 눈금)"); fig.tight_layout(); save_thumb(fig, thumb)
+    new = sorted(set(te["attack"]) - set(tr["attack"]))
+    nt = te[te["attack"].isin(new)]["attack"].value_counts().head(10)
+    return dict(stats=stats(tr[["duration", "protocol_type", "service", "flag", "src_bytes", "dst_bytes", "attack"]]), sample=table(tr[["duration", "protocol_type", "service", "flag", "src_bytes", "dst_bytes", "attack"]]),
+                charts=[chart("학습 데이터의 연결 종류 (상위 8)", [bar(a.index, a.values)], "", "연결 수 (로그 눈금)", "neptune (SYN flood, DoS) 이 정상 다음으로 많다", yaxis=dict(type="log", title="연결 수 (로그 눈금)")),
+                        chart(f"시험에만 있는 공격 {len(new)}종 (상위 10)", [bar(nt.index, nt.values, S2)], "", "연결 수", "학습 때 본 적 없는 공격: 진짜 실력을 재는 부분")])
+
+
+def telco_churn(thumb):
+    df = pd.read_csv(os.path.join(D, "telco_churn.csv")); df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
+    c = df.groupby("Contract")["Churn"].apply(lambda v: (v == "Yes").mean() * 100)
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.bar(["월 단위", "1년", "2년"], c.reindex(["Month-to-month", "One year", "Two year"]).values, color=[C2, C1, C1]); ax.set_ylabel("해지율 (%)"); fig.tight_layout(); save_thumb(fig, thumb)
+    bins = np.arange(0, 75, 3); x0, y0 = hist_bins(df.loc[df.Churn == "No", "tenure"], bins, True); x1, y1 = hist_bins(df.loc[df.Churn == "Yes", "tenure"], bins, True)
+    return dict(stats=stats(df.drop(columns="customerID")), sample=table(df.drop(columns="customerID").iloc[:, :12]),
+                charts=[chart("계약 종류별 해지율", [bar(c.index, c.values.round(1))], "", "%", "월 단위 계약의 해지율이 압도적으로 높다"),
+                        chart("가입 기간: 남은 사람 vs 떠난 사람", [bar(x0, y0, S1, name="남음"), bar(x1, y1, S2, name="떠남")], "가입 기간 (개월)", "비율", "가입 초반에 많이 떠난다", barmode="overlay")])
+
+
+def credit_default(thumb):
+    df = pd.read_csv(os.path.join(D, "uci_credit_card.csv")).rename(columns={"default.payment.next.month": "default", "PAY_0": "PAY_1"})
+    g = df.groupby("PAY_1")["default"].agg(["mean", "size"]).query("size > 100")
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.bar([str(i) for i in g.index], g["mean"] * 100, color=C1); ax.set_xlabel("지난달 상환 상태 (−1 = 제때, 1 = 한 달 밀림 …)"); ax.set_ylabel("다음 달 연체율 (%)"); fig.tight_layout(); save_thumb(fig, thumb)
+    a = df.groupby(pd.cut(df["AGE"], [20, 25, 30, 35, 40, 45, 50, 60, 80]), observed=True)["default"].mean() * 100
+    return dict(stats=stats(df.drop(columns="ID")), sample=table(df.drop(columns="ID").iloc[:, :12]),
+                charts=[chart("지난달 상환 상태별 다음 달 연체율", [bar([str(i) for i in g.index], (g["mean"] * 100).round(1))], "PAY_1", "%", "두 달 이상 밀린 사람은 70% 가까이 다시 연체한다"),
+                        chart("나이대별 연체율", [bar([str(i) for i in a.index], a.values.round(1))], "나이", "%", "나이 차이는 상환 기록에 비하면 작다")])
+
+
+def ad_ctr(thumb):
+    df = pd.read_parquet(os.path.join(D, "avazu_x4_0.parquet"), columns=["click", "hour", "banner_pos", "site_category", "app_category", "device_type", "device_conn_type", "C1", "C15", "C16"]).sample(300000, random_state=0)
+    df["hod"] = df["hour"] % 100
+    h = df.groupby("hod")["click"].mean() * 100
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.plot(h.index, h.values, "o-", color=C2); ax.set_xlabel("시각"); ax.set_ylabel("클릭률 (%)"); fig.tight_layout(); save_thumb(fig, thumb)
+    sz = df.assign(size=df["C15"].astype(str) + "×" + df["C16"].astype(str)).groupby("size")["click"].agg(["mean", "size"]).query("size > 1000")
+    return dict(stats=stats(df.drop(columns=["hod"])), sample=table(df.drop(columns=["hod"])),
+                charts=[chart("시각별 클릭률", [line(h.index, h.values.round(2))], "시", "%"),
+                        chart("광고 크기 (C15 × C16) 별 클릭률", [bar(sz.index, (sz["mean"] * 100).round(2))], "", "%", "같은 광고라도 크기 · 위치에 따라 클릭률이 다르다")])
+
+
+def hiring_match(thumb):
+    tr = pd.read_parquet(os.path.join(D, "resume_fit_test.parquet"))
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.axis("off")
+    r = tr.iloc[3]
+    ax.text(0.02, 0.95, "이력서", fontsize=10, fontweight="bold", color=C1, transform=ax.transAxes, va="top")
+    ax.text(0.02, 0.86, r["resume_text"][:170].replace("\n", " "), fontsize=7, wrap=True, transform=ax.transAxes, va="top")
+    ax.text(0.02, 0.5, "채용 공고", fontsize=10, fontweight="bold", color=C2, transform=ax.transAxes, va="top")
+    ax.text(0.02, 0.41, r["job_description_text"][:170].replace("\n", " "), fontsize=7, wrap=True, transform=ax.transAxes, va="top")
+    ax.text(0.98, 0.04, "→ " + r["label"], ha="right", fontsize=11, fontweight="bold", transform=ax.transAxes)
+    save_thumb(fig, thumb)
+    meta = pd.DataFrame({"label": tr["label"], "resume_words": tr["resume_text"].str.split().str.len(), "job_words": tr["job_description_text"].str.split().str.len()})
+    cnt = tr["label"].value_counts()
+    return dict(stats=stats(meta), sample=table(tr.assign(resume_text=tr["resume_text"].str[:80], job_description_text=tr["job_description_text"].str[:80])),
+                charts=[chart("단계별 쌍의 수 (시험)", [bar(cnt.index, cnt.values)], "", "쌍"),
+                        chart("이력서 길이 (단어 수)", [bar(*hist_bins(meta["resume_words"].clip(0, 1500), np.arange(0, 1550, 50)))], "단어 수", "이력서 수")])
+
+
+def traffic_speed(thumb):
+    df = pd.read_parquet(os.path.join(D, "metrla_test.parquet"), columns=["node_id", "t0_timestamp", "x_t+0_d0"])
+    loc = pd.read_csv(os.path.join(D, "metrla_locations.csv")); df["time"] = pd.to_datetime(df["t0_timestamp"])
+    piv = df.pivot(index="time", columns="node_id", values="x_t+0_d0").replace(0, np.nan)
+    day = piv.loc["2012-06-05"].iloc[::3]
+    lat, lon = loc.iloc[:, -2].values, loc.iloc[:, -1].values
+    def frame(k):
+        fig, ax = plt.subplots(figsize=(4.8, 3)); row = day.iloc[k].reindex(range(len(loc))).values
+        ax.scatter(lon, lat, c=row, cmap="RdYlGn", vmin=20, vmax=70, s=14); ax.set_xticks([]); ax.set_yticks([])
+        ax.text(0.02, 0.92, day.index[k].strftime("%H:%M"), transform=ax.transAxes, fontsize=13, fontweight="bold", color=C1)
+        for sp in ax.spines.values(): sp.set_visible(False)
+        fig.subplots_adjust(0, 0, 1, 1); return fig
+    save_gif(frame, len(day), thumb.replace(".png", ".gif"), fps=8)
+    one = piv[5].loc["2012-06-04":"2012-06-10"]
+    avg = piv.mean(1); byt = avg.groupby(avg.index.strftime("%H:%M")).mean().iloc[::6]
+    return dict(thumb="thumb.gif", stats=stats(df[["node_id", "time", "x_t+0_d0"]].rename(columns={"x_t+0_d0": "speed_mph"})),
+                sample=table(df[["node_id", "t0_timestamp", "x_t+0_d0"]].rename(columns={"x_t+0_d0": "speed_mph"})),
+                charts=[chart("센서 5번, 일주일 속도 (mph)", [dict(type="scatter", mode="lines", x=[str(t) for t in one.index], y=one.round(1).tolist(), line=dict(color=S1, width=1), name="")], "", "mph", "출퇴근 시간에 푹 꺼진다 (빈 곳은 센서 고장)"),
+                        chart("하루 중 시각별 전체 평균 속도", [line(byt.index, byt.values.round(1))], "시각", "mph")])
+
+
+def corporate_card(thumb):
+    df = pd.read_csv(os.path.join(D, "ok_pcard_2014.csv"), low_memory=False).drop(columns=["Cardholder Last Name", "Cardholder First Initial"])
+    df = df.rename(columns={"Agency Name": "agency", "Description": "memo", "Amount": "amount", "Vendor": "vendor", "Transaction Date": "date", "Merchant Category Code (MCC)": "mcc"})
+    df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y %I:%M:%S %p")
+    top = df.groupby("mcc")["amount"].sum().sort_values(ascending=False).head(8) / 1e6
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.barh([m[:26].title() for m in top.index[::-1]], top.values[::-1], color=C1); ax.set_xlabel("결제 금액 합계 (백만 달러)"); ax.tick_params(labelsize=7)
+    fig.tight_layout(); save_thumb(fig, thumb)
+    mon = df.groupby(df["date"].dt.to_period("M"))["amount"].sum() / 1e6
+    xs, ys = hist_bins(np.log10(df.loc[df["amount"] > 0, "amount"]), np.arange(-1, 6.1, 0.2))
+    return dict(stats=stats(df.drop(columns=["Year-Month", "Agency Number", "Posted Date"])), sample=table(df[["agency", "memo", "amount", "vendor", "date", "mcc"]].assign(date=lambda d: d["date"].dt.date)),
+                charts=[chart("달마다 법인카드 지출 (백만 달러)", [bar([str(m) for m in mon.index], mon.values.round(2))], "", "백만 달러"),
+                        chart("결제 금액 분포", [bar(xs, ys)], "log10(금액, 달러)", "결제 수", "대부분 10~1,000달러, 가끔 아주 큰 결제")])

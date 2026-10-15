@@ -15,24 +15,36 @@
 <div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Crimea_Sentinel-2A_MSIL2A_26June2019_843_MM_v2.tif" target="_blank" rel="noopener">contains modified Copernicus Sentinel data (2019), processed by ESA</a> · CC BY-SA 3.0 igo</span></div>
 <div class="hero" style="grid-template-columns: 1fr">
   <div>
-    <div class="tag"><span class="num">24</span><span>도시 · 공간</span></div>
+    <div class="tag"><span class="num">28</span><span>이미지 · 소리 · 3D</span></div>
     <h1>위성 사진 토지 분류</h1>
-    <div class="chips"><span class="chip">원격 탐사 (remote sensing)</span><span class="chip">토지 이용</span><span class="chip">환경 감시</span></div>
+    <div class="chips"><span class="chip">위성 영상</span><span class="chip">토지 이용 지도</span><span class="chip">환경 감시</span></div>
     <p class="teaser-big">위성 사진 한 칸이 숲일까, 밭일까, 도시일까?</p>
-    <div class="actions"><a class="btn primary" href="https://github.com/phelber/EuroSAT" target="_blank" rel="noopener">EuroSAT (GitHub)</a></div>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/28_satellite.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="28_satellite.ipynb" download>노트북 받기 (.ipynb)</a></div>
   </div>
 </div>
-<section class="block soon"><b>노트북 준비 중</b> · 데이터 월드컵에서 많이 뽑힌 데이터부터 노트북 · 통계 · 그래프를 만듭니다. 지금은 위 공식 페이지에서 데이터를 직접 볼 수 있습니다.</section>
 <section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
-  <div class="io"><b>입력 X</b>컬러 사진 (또는 13개 파장 대역)</div>
+  <div class="io"><b>입력 X</b>색 분포 (채널별 평균 · 히스토그램)</div>
   <div class="model">→ 모델 →<small>다중 분류 (이미지)</small></div>
   <div class="io"><b>출력 y (기대하는 답)</b>10가지 토지 종류</div>
 </div></section>
-<section class="block"><h2>데이터</h2><div class="data-name">EuroSAT</div><p class="src">Helber et al. (2019). 유럽우주국 Sentinel-2 위성 사진 27,000장 (64×64), 10종류 (숲 · 강 · 주거지 · 고속도로 …)</p></section>
-<section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>위성 사진 한 칸 (64×64)</td></tr><tr><td>② 입력 X</td><td>컬러 사진 (또는 13개 파장 대역)</td></tr><tr><td>③ 출력 y</td><td>10가지 토지 종류</td></tr><tr><td>④ 평가지표</td><td>정확도</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 종류</td></tr></tbody></table></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">EuroSAT (RGB, 시험 묶음 5,400장) · 약 18MB</div><p class="src">Helber et al. (2019). 유럽우주국 Sentinel-2 위성 사진 64×64, 10종류 (밭 · 숲 · 풀밭 · 고속도로 · 산업 · 목초지 · 과수원 · 주거지 · 강 · 바다/호수). Hugging Face timm/eurosat-rgb 의 시험 묶음</p></div>
+  <img src="thumb.png" alt="위성 사진 토지 분류 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>label</th><th>R</th><th>G</th><th>B</th></tr></thead><tbody><tr><td title="PermanentCrop">PermanentCrop</td><td title="65.2">65.2</td><td title="83.6">83.6</td><td title="85.8">85.8</td></tr><tr><td title="HerbaceousVegetation">HerbaceousVegetation</td><td title="75.6">75.6</td><td title="82.1">82.1</td><td title="86.2">86.2</td></tr><tr><td title="SeaLake">SeaLake</td><td title="41.5">41.5</td><td title="64.1">64.1</td><td title="84.2">84.2</td></tr><tr><td title="SeaLake">SeaLake</td><td title="45">45</td><td title="81.7">81.7</td><td title="92.8">92.8</td></tr><tr><td title="Pasture">Pasture</td><td title="54.1">54.1</td><td title="84.7">84.7</td><td title="83.6">83.6</td></tr><tr><td title="Forest">Forest</td><td title="36.4">36.4</td><td title="66.1">66.1</td><td title="71.9">71.9</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>2,000</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>4</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="label">label</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="10">10</td><td title="가장 흔한 값: River (11.4%)">가장 흔한 값: River (11.4%)</td></tr><tr><td title="R">R</td><td title="숫자">숫자</td><td title="0">0</td><td title="1995">1995</td><td title="22.84 ~ 246.8 (평균 87.11)">22.84 ~ 246.8 (평균 87.11)</td></tr><tr><td title="G">G</td><td title="숫자">숫자</td><td title="0">0</td><td title="1996">1996</td><td title="40.62 ~ 209.3 (평균 96.54)">40.62 ~ 209.3 (평균 96.54)</td></tr><tr><td title="B">B</td><td title="숫자">숫자</td><td title="0">0</td><td title="1996">1996</td><td title="58.04 ~ 204.5 (평균 103.7)">58.04 ~ 204.5 (평균 103.7)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>종류별 평균 색 (R · G · B)</h3><p class="note">숲은 어둡고 초록, 바다는 파랑, 고속도로 · 주거지는 회색</p><div class="plot" id="plot-0" role="img" aria-label="종류별 평균 색 (R · G · B)"></div></div></div></section>
 <div class="two">
-  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div></section>
-  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://huggingface.co/datasets?search=satellite%20land%20cover" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>위성 사진 한 칸 (64×64)</td></tr><tr><td>② 입력 X</td><td>색 분포 (채널별 평균 · 히스토그램)</td></tr><tr><td>③ 출력 y</td><td>10가지 토지 종류</td></tr><tr><td>④ 평가지표</td><td>정확도 + 종류별 재현율</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 종류</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (always Forest): accuracy 11.2%
+random forest on colors : accuracy 74.3%</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://bigearth.net/" target="_blank" rel="noopener">BigEarthNet</a> <span>· Sentinel-1/2 위성 패치 50만 개, 여러 토지 라벨</span></li><li><a href="https://huggingface.co/datasets?search=satellite%20land%20cover" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
 </div>
 <div class="two">
   <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/1709.00029" target="_blank" rel="noopener">Helber et al. (2019) EuroSAT: A Novel Dataset and Deep Learning Benchmark for Land Use and Land Cover Classification, IEEE JSTARS</a></li></ul>
@@ -40,10 +52,40 @@
   <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>우주 · 위성 서비스, 농업 · 환경, 지도 · 도시계획</dd><dt>직무</dt><dd>원격 탐사 데이터 사이언티스트, 지리공간 (GIS) 엔지니어</dd></dl>
     <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
 </div>
-<footer><a href="../">← 전체 목록</a></footer>
+<nav class="pager"><a href="../medical/">← 27 흉부 X-ray 폐렴 찾기</a><a href="../crop/">29 작물 병해 진단 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
 </div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "종류별 평균 색 (R · G · B)", "note": "숲은 어둡고 초록, 바다는 파랑, 고속도로 · 주거지는 회색", "traces": [{"type": "bar", "marker": {"color": "#d62728"}, "name": "R", "x": ["AnnualCrop", "Forest", "HerbaceousVegetation", "Highway", "Industrial", "Pasture", "PermanentCrop", "Residential", "River", "SeaLake"], "y": [128.4, 39.5, 96.8, 86.5, 127.4, 63.9, 120.7, 97.0, 67.0, 47.6]}, {"type": "bar", "marker": {"color": "#2ca02c"}, "name": "G", "x": ["AnnualCrop", "Forest", "HerbaceousVegetation", "Highway", "Industrial", "Pasture", "PermanentCrop", "Residential", "River", "SeaLake"], "y": [119.3, 65.1, 97.8, 96.0, 128.4, 90.5, 115.0, 101.6, 86.5, 71.9]}, {"type": "bar", "marker": {"color": "#1f77b4"}, "name": "B", "x": ["AnnualCrop", "Forest", "HerbaceousVegetation", "Highway", "Industrial", "Pasture", "PermanentCrop", "Residential", "River", "SeaLake"], "y": [116.7, 75.9, 103.7, 102.4, 137.4, 97.5, 113.0, 110.9, 96.9, 88.8]}], "layout": {"xaxis": {"tickangle": -40, "title": ""}, "yaxis": {"title": "평균 값 (0~255)"}, "barmode": "group"}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
 </body>
 </html>

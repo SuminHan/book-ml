@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>통신사 고객 이탈 예측 · 현실의 데이터</title>
+<meta name="description" content="통신사 가입자 7천 명. 다음 달 떠날 사람을 미리 알 수 있을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:HK_%E6%A8%82%E5%AF%8C_Lok_Fu_Place_Plaza_%E6%A9%AB%E9%A0%AD%E7%A3%A1_Wang_Tau_Hom_mall_shop_Telecom_Digital_smartphones_display_December_2021_SS2_02.jpg" target="_blank" rel="noopener">AahseemlAU 300</a> · CC BY-SA 4.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">15</span><span>플랫폼 · 서비스</span></div>
+    <h1>통신사 고객 이탈 예측</h1>
+    <div class="chips"><span class="chip">고객 이탈 (churn)</span><span class="chip">구독 서비스</span><span class="chip">리텐션 마케팅</span></div>
+    <p class="teaser-big">통신사 가입자 7천 명. 다음 달 떠날 사람을 미리 알 수 있을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/15_telco_churn.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="15_telco_churn.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>가입 기간 · 계약 종류 · 인터넷 · 부가 서비스 · 결제 방법 · 월 요금</div>
+  <div class="model">→ 모델 →<small>이진 분류</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>해지했나 (Churn)</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">IBM Telco Customer Churn · 약 1MB</div><p class="src">IBM 샘플 데이터: 가상의 통신사 가입자 7,043명. 가입 기간 · 요금제 · 부가 서비스 · 결제 방법 · 월 요금 · 지난달 해지 여부</p></div>
+  <img src="thumb.png" alt="통신사 고객 이탈 예측 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>gender</th><th>SeniorCitizen</th><th>Partner</th><th>Dependents</th><th>tenure</th><th>PhoneService</th><th>MultipleLines</th><th>InternetService</th><th>OnlineSecurity</th><th>OnlineBackup</th><th>DeviceProtection</th><th>TechSupport</th></tr></thead><tbody><tr><td title="Female">Female</td><td title="0">0</td><td title="No">No</td><td title="No">No</td><td title="19">19</td><td title="Yes">Yes</td><td title="No">No</td><td title="DSL">DSL</td><td title="No">No</td><td title="Yes">Yes</td><td title="No">No</td><td title="No">No</td></tr><tr><td title="Male">Male</td><td title="0">0</td><td title="No">No</td><td title="No">No</td><td title="60">60</td><td title="Yes">Yes</td><td title="Yes">Yes</td><td title="Fiber optic">Fiber optic</td><td title="Yes">Yes</td><td title="Yes">Yes</td><td title="Yes">Yes</td><td title="Yes">Yes</td></tr><tr><td title="Female">Female</td><td title="0">0</td><td title="No">No</td><td title="No">No</td><td title="13">13</td><td title="Yes">Yes</td><td title="No">No</td><td title="DSL">DSL</td><td title="Yes">Yes</td><td title="No">No</td><td title="No">No</td><td title="No">No</td></tr><tr><td title="Male">Male</td><td title="0">0</td><td title="No">No</td><td title="No">No</td><td title="1">1</td><td title="Yes">Yes</td><td title="No">No</td><td title="No">No</td><td title="No internet service">No internet service</td><td title="No internet service">No internet service</td><td title="No internet service">No internet service</td><td title="No internet service">No internet service</td></tr><tr><td title="Female">Female</td><td title="0">0</td><td title="Yes">Yes</td><td title="No">No</td><td title="55">55</td><td title="Yes">Yes</td><td title="Yes">Yes</td><td title="Fiber optic">Fiber optic</td><td title="No">No</td><td title="Yes">Yes</td><td title="No">No</td><td title="No">No</td></tr><tr><td title="Male">Male</td><td title="1">1</td><td title="No">No</td><td title="No">No</td><td title="3">3</td><td title="Yes">Yes</td><td title="No">No</td><td title="Fiber optic">Fiber optic</td><td title="No">No</td><td title="No">No</td><td title="No">No</td><td title="No">No</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>7,043</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>20</b><span>열 (앞의 16개 열만, 나머지 4개 열은 노트북에서)</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="gender">gender</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: Male (50.5%)">가장 흔한 값: Male (50.5%)</td></tr><tr><td title="SeniorCitizen">SeniorCitizen</td><td title="숫자">숫자</td><td title="0">0</td><td title="2">2</td><td title="0 ~ 1 (평균 0.1621)">0 ~ 1 (평균 0.1621)</td></tr><tr><td title="Partner">Partner</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: No (51.7%)">가장 흔한 값: No (51.7%)</td></tr><tr><td title="Dependents">Dependents</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: No (70.0%)">가장 흔한 값: No (70.0%)</td></tr><tr><td title="tenure">tenure</td><td title="숫자">숫자</td><td title="0">0</td><td title="73">73</td><td title="0 ~ 72 (평균 32.37)">0 ~ 72 (평균 32.37)</td></tr><tr><td title="PhoneService">PhoneService</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: Yes (90.3%)">가장 흔한 값: Yes (90.3%)</td></tr><tr><td title="MultipleLines">MultipleLines</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: No (48.1%)">가장 흔한 값: No (48.1%)</td></tr><tr><td title="InternetService">InternetService</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: Fiber optic (44.0%)">가장 흔한 값: Fiber optic (44.0%)</td></tr><tr><td title="OnlineSecurity">OnlineSecurity</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: No (49.7%)">가장 흔한 값: No (49.7%)</td></tr><tr><td title="OnlineBackup">OnlineBackup</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: No (43.8%)">가장 흔한 값: No (43.8%)</td></tr><tr><td title="DeviceProtection">DeviceProtection</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: No (43.9%)">가장 흔한 값: No (43.9%)</td></tr><tr><td title="TechSupport">TechSupport</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: No (49.3%)">가장 흔한 값: No (49.3%)</td></tr><tr><td title="StreamingTV">StreamingTV</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: No (39.9%)">가장 흔한 값: No (39.9%)</td></tr><tr><td title="StreamingMovies">StreamingMovies</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: No (39.5%)">가장 흔한 값: No (39.5%)</td></tr><tr><td title="Contract">Contract</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="3">3</td><td title="가장 흔한 값: Month-to-month (55.0%)">가장 흔한 값: Month-to-month (55.0%)</td></tr><tr><td title="PaperlessBilling">PaperlessBilling</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: Yes (59.2%)">가장 흔한 값: Yes (59.2%)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>계약 종류별 해지율</h3><p class="note">월 단위 계약의 해지율이 압도적으로 높다</p><div class="plot" id="plot-0" role="img" aria-label="계약 종류별 해지율"></div></div><div class="chart"><h3>가입 기간: 남은 사람 vs 떠난 사람</h3><p class="note">가입 초반에 많이 떠난다</p><div class="plot" id="plot-1" role="img" aria-label="가입 기간: 남은 사람 vs 떠난 사람"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>가입자 한 명</td></tr><tr><td>② 입력 X</td><td>가입 기간 · 계약 종류 · 인터넷 · 부가 서비스 · 결제 방법 · 월 요금</td></tr><tr><td>③ 출력 y</td><td>해지했나 (Churn)</td></tr><tr><td>④ 평가지표</td><td>재현율 · 정밀도 (붙잡을 사람 고르기)</td></tr><tr><td>⑤ 기준선</td><td>아무도 안 떠난다</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">nobody leaves: accuracy 73.5%
+model: accuracy 78.8%, ROC-AUC 0.83</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div><div class="metric"><div class="what"><b>정밀도 (precision)</b><span>&#x27;양성&#x27; 이라고 한 것 중 진짜 양성의 비율 (헛짚지 않았나)</span></div><div class="tex" data-tex="\text{Precision} = \frac{TP}{TP + FP}">\text{Precision} = \frac{TP}{TP + FP}</div></div><div class="metric"><div class="what"><b>ROC-AUC</b><span>양성 하나 · 음성 하나를 뽑았을 때 양성 점수가 더 높을 확률. 0.5 = 동전 던지기</span></div><div class="tex" data-tex="\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)">\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.kaggle.com/competitions/kkbox-churn-prediction-challenge" target="_blank" rel="noopener">KKBox Churn (Kaggle)</a> <span>· 음원 구독 서비스 이탈, 이용 기록 포함</span></li><li><a href="https://huggingface.co/datasets?search=customer%20churn" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://github.com/IBM/telco-customer-churn-on-icp4d" target="_blank" rel="noopener">IBM 샘플 데이터 저장소 (Telco Customer Churn)</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>통신사 · 구독 서비스 (OTT · 음원 · SaaS), 보험 · 카드</dd><dt>직무</dt><dd>CRM · 고객 분석가, 리텐션 마케팅 데이터 사이언티스트</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../cyber_security/">← 14 네트워크 침입 탐지</a><a href="../bike_demand/">16 공유 자전거 수요 예측 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "계약 종류별 해지율", "note": "월 단위 계약의 해지율이 압도적으로 높다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["Month-to-month", "One year", "Two year"], "y": [42.7, 11.3, 2.8]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "%"}}}, {"title": "가입 기간: 남은 사람 vs 떠난 사람", "note": "가입 초반에 많이 떠난다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "남음", "x": [1.5, 4.5, 7.5, 10.5, 13.5, 16.5, 19.5, 22.5, 25.5, 28.5, 31.5, 34.5, 37.5, 40.5, 43.5, 46.5, 49.5, 52.5, 55.5, 58.5, 61.5, 64.5, 67.5, 70.5], "y": [0.02313, 0.01727, 0.01488, 0.01366, 0.01301, 0.01127, 0.0116, 0.01166, 0.01231, 0.01037, 0.00999, 0.01134, 0.00876, 0.0096, 0.00941, 0.01102, 0.01057, 0.01211, 0.0116, 0.01063, 0.01308, 0.01359, 0.01643, 0.04606]}, {"type": "bar", "marker": {"color": "var:series-2"}, "name": "떠남", "x": [1.5, 4.5, 7.5, 10.5, 13.5, 16.5, 19.5, 22.5, 25.5, 28.5, 31.5, 34.5, 37.5, 40.5, 43.5, 46.5, 49.5, 52.5, 55.5, 58.5, 61.5, 64.5, 67.5, 70.5], "y": [0.08971, 0.04298, 0.02372, 0.02176, 0.01783, 0.01623, 0.01088, 0.01017, 0.01088, 0.00713, 0.0091, 0.00731, 0.00678, 0.00731, 0.00624, 0.00571, 0.00606, 0.00535, 0.00571, 0.00482, 0.00339, 0.00303, 0.00571, 0.00553]}], "layout": {"xaxis": {"title": "가입 기간 (개월)"}, "yaxis": {"title": "비율"}, "barmode": "overlay"}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

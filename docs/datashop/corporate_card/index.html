@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>법인카드 지출 관리 · 현실의 데이터</title>
+<meta name="description" content="공공기관 법인카드 결제 44만 건. 가맹점 이름만 보고 무슨 비용인지 자동으로 나눌 수 있을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터</a> · <a href="../worldcup/">데이터 월드컵</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">10</span><span>금융 · 핀테크</span></div>
+    <h1>법인카드 지출 관리</h1>
+    <div class="chips"><span class="chip">지출 관리 (spend management)</span><span class="chip">비용 자동 분류</span><span class="chip">이상 지출 찾기</span></div>
+    <p class="teaser-big">공공기관 법인카드 결제 44만 건. 가맹점 이름만 보고 무슨 비용인지 자동으로 나눌 수 있을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/10_corporate_card.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="10_corporate_card.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>가맹점 이름 (글자)</div>
+  <div class="model">→ 모델 →<small>다중 분류 (텍스트)</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>비용 항목 (사무용품 · 출장 · 장비 · 통신 …)</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">Oklahoma Purchase Card (P-card) FY2014 · 약 80MB</div><p class="src">미국 오클라호마 주정부 공개 데이터: 주 정부 기관 · 대학 124곳의 2013-07 ~ 2014-06 법인카드 결제 442,458건 (기관 · 적요 · 금액 · 가맹점 · 날짜 · 가맹점 업종 코드 MCC). 카드 소지자 이름 열은 노트북에서 바로 지운다</p></div>
+  <img src="thumb.png" alt="법인카드 지출 관리 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>agency</th><th>memo</th><th>amount</th><th>vendor</th><th>date</th><th>mcc</th></tr></thead><tbody><tr><td title="UNIV. OF OKLA. HEALTH SCIENCES CENTER">UNIV. OF OKLA. HEALTH SCIENCES CENTER</td><td title="SEE INVOICE # YXMP0601 EA">SEE INVOICE # YXMP0601 EA</td><td title="123.5">123.5</td><td title="ADI SECURITY PRD OK">ADI SECURITY PRD OK</td><td title="2013-09-17">2013-09-17</td><td title="ELECTRICAL PARTS AND EQUIPMENT">ELECTRICAL PARTS AND EQUIPMENT</td></tr><tr><td title="OKLAHOMA STATE UNIVERSITY">OKLAHOMA STATE UNIVERSITY</td><td title="GENERAL PURCHASE">GENERAL PURCHASE</td><td title="749.5">749.5</td><td title="BLS Conduit">BLS Conduit</td><td title="2013-12-12">2013-12-12</td><td title="COMPUTER SOFTWARE STORES">COMPUTER SOFTWARE STORES</td></tr><tr><td title="OKLA. CAREER AND TECHNOLOGY EDUCATION">OKLA. CAREER AND TECHNOLOGY EDUCATION</td><td title="ROOM CHARGES">ROOM CHARGES</td><td title="154">154</td><td title="COMFORT INN &amp; SUITES">COMFORT INN &amp; SUITES</td><td title="2014-03-25">2014-03-25</td><td title="COMFORT HOTEL INTERNATIONAL">COMFORT HOTEL INTERNATIONAL</td></tr><tr><td title="OKLAHOMA STATE UNIVERSITY">OKLAHOMA STATE UNIVERSITY</td><td title="7 1/8X4.5X13.75 #12 GROCER BD">7 1/8X4.5X13.75 #12 GROCER BD</td><td title="74.83">74.83</td><td title="ULINE   SHIP SUPPLIES">ULINE   SHIP SUPPLIES</td><td title="2014-06-04">2014-06-04</td><td title="CATALOG MERCHANTS">CATALOG MERCHANTS</td></tr><tr><td title="OKLA. PANHANDLE STATE UNIV.">OKLA. PANHANDLE STATE UNIV.</td><td title="Medical Terminology for He PCE">Medical Terminology for He PCE</td><td title="13.16">13.16</td><td title="AMAZON MKTPLACE PMTS">AMAZON MKTPLACE PMTS</td><td title="2014-01-16">2014-01-16</td><td title="BOOK STORES">BOOK STORES</td></tr><tr><td title="UNIV. OF OKLA. HEALTH SCIENCES CENTER">UNIV. OF OKLA. HEALTH SCIENCES CENTER</td><td title="GENERAL PURCHASE">GENERAL PURCHASE</td><td title="11.97">11.97</td><td title="WAL-MART #0269">WAL-MART #0269</td><td title="2013-08-27">2013-08-27</td><td title="GROCERY STORES,AND SUPERMARKETS">GROCERY STORES,AND SUPERMARKETS</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>442,458</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>6</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="agency">agency</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="124">124</td><td title="가장 흔한 값: OKLAHOMA STATE UNIVERSITY (26.2%)">가장 흔한 값: OKLAHOMA STATE UNIVERSITY (26.2%)</td></tr><tr><td title="memo">memo</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="88,749">88,749</td><td title="가장 흔한 값: GENERAL PURCHASE (55.9%)">가장 흔한 값: GENERAL PURCHASE (55.9%)</td></tr><tr><td title="amount">amount</td><td title="숫자">숫자</td><td title="0">0</td><td title="90,447">90,447</td><td title="-42,863.0 ~ 1,903,858.4 (평균 425)">-42,863.0 ~ 1,903,858.4 (평균 425)</td></tr><tr><td title="vendor">vendor</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="86,729">86,729</td><td title="가장 흔한 값: STAPLES (3.4%)">가장 흔한 값: STAPLES (3.4%)</td></tr><tr><td title="date">date</td><td title="날짜">날짜</td><td title="0">0</td><td title="392">392</td><td title="2013-04-17 00:00:00 ~ 2014-06-30 00:00:00">2013-04-17 00:00:00 ~ 2014-06-30 00:00:00</td></tr><tr><td title="mcc">mcc</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="435">435</td><td title="가장 흔한 값: STATIONERY, OFFICE SUPPLIES, P (5.6%)">가장 흔한 값: STATIONERY, OFFICE SUPPLIES, P (5.6%)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>달마다 법인카드 지출 (백만 달러)</h3><div class="plot" id="plot-0" role="img" aria-label="달마다 법인카드 지출 (백만 달러)"></div></div><div class="chart"><h3>결제 금액 분포</h3><p class="note">대부분 10~1,000달러, 가끔 아주 큰 결제</p><div class="plot" id="plot-1" role="img" aria-label="결제 금액 분포"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>법인카드 결제 한 건</td></tr><tr><td>② 입력 X</td><td>가맹점 이름 (글자)</td></tr><tr><td>③ 출력 y</td><td>비용 항목 (사무용품 · 출장 · 장비 · 통신 …)</td></tr><tr><td>④ 평가지표</td><td>정확도 + 항목별 재현율</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 항목</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (always &#x27;other&#x27;): accuracy 21.2%
+vendor-name character n-grams: accuracy 92.2%
+vendors never seen in training: 23% of test, accuracy on them 81.7%</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.data.gov.uk/search?q=procurement+card" target="_blank" rel="noopener">영국 지자체 법인카드 사용 내역 (data.gov.uk)</a> <span>· 여러 지자체가 분기마다 공개</span></li><li><a href="https://huggingface.co/datasets?search=transactions%20expense" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://data.ok.gov/dataset/purchase-card-pcard-fiscal-year-2014" target="_blank" rel="noopener">Oklahoma Open Data: Purchase Card (PCard) Fiscal Year 2014</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>지출 관리 · 법인카드 핀테크, 회계 · 감사, 기업 재무팀 · ERP</dd><dt>직무</dt><dd>핀테크 데이터 사이언티스트, 재무 · 감사 데이터 분석가</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../credit_default/">← 09 대출 상환 · 신용평가</a><a href="../support_routing/">11 고객 문의 자동 분류 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "달마다 법인카드 지출 (백만 달러)", "note": "", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["2013-04", "2013-05", "2013-06", "2013-07", "2013-08", "2013-09", "2013-10", "2013-11", "2013-12", "2014-01", "2014-02", "2014-03", "2014-04", "2014-05", "2014-06"], "y": [-0.0, 0.01, 1.59, 16.73, 18.36, 15.02, 17.68, 12.48, 12.02, 15.28, 14.74, 16.68, 16.87, 14.89, 15.68]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "백만 달러"}}}, {"title": "결제 금액 분포", "note": "대부분 10~1,000달러, 가끔 아주 큰 결제", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": [-0.9, -0.7, -0.5, -0.3, -0.1, 0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1, 2.3, 2.5, 2.7, 2.9, 3.1, 3.3, 3.5, 3.7, 3.9, 4.1, 4.3, 4.5, 4.7, 4.9, 5.1, 5.3, 5.5, 5.7, 5.9], "y": [29, 65, 100, 192, 290, 539, 1040, 2164, 6674, 10839, 17426, 41309, 33772, 39359, 47589, 43449, 43923, 41308, 38355, 24343, 14719, 9620, 5588, 3086, 852, 536, 281, 175, 126, 46, 18, 5, 11, 1, 2]}], "layout": {"xaxis": {"title": "log10(금액, 달러)"}, "yaxis": {"title": "결제 수"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>
