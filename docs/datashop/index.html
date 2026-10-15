@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>현실의 데이터 · Machine Learning 1</title>
+<meta name="description" content="산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 12가지. 데이터를 열어 보고 문제를 직접 정해 보는 Colab 노트북">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- 이 파일은 notebooks/datashop/make_shop.py 가 page_template.html 로 만든다. 고칠 때는 템플릿을 고치고 다시 실행 -->
+<style>
+:root {
+  --bg: #f6f4ef; --paper: #ffffff; --ink: #1d1d22; --muted: #6b6a66; --line: #e3dfd5;
+  --navy: #2e3192; --gold: #a9976b; --gold-soft: #efe9da; --shadow: 0 1px 2px rgba(0,0,0,.05), 0 6px 18px rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151517; --paper: #1f1f23; --ink: #ececea; --muted: #a2a09a; --line: #34343a;
+    --navy: #8f93ff; --gold: #cdb98a; --gold-soft: #2c2a24; --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151517; --paper: #1f1f23; --ink: #ececea; --muted: #a2a09a; --line: #34343a;
+  --navy: #8f93ff; --gold: #cdb98a; --gold-soft: #2c2a24; --shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: "Noto Sans KR", -apple-system, "Segoe UI", sans-serif; line-height: 1.6; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+header { padding: 56px 0 28px; }
+.eyebrow { color: var(--gold); font-weight: 700; letter-spacing: .08em; font-size: .8rem; text-transform: uppercase; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: .2em 0 .3em; letter-spacing: -.02em; }
+.lead { color: var(--muted); max-width: 640px; margin: 0; }
+.five-strip { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+.five-strip li { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: .85rem; }
+.five-strip b { color: var(--navy); margin-right: 4px; }
+.section-title { font-size: .95rem; font-weight: 700; color: var(--muted); margin: 28px 0 10px; display: flex; align-items: center; gap: 10px; }
+.section-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.d-teaser { margin: 4px 0 0; font-size: 1.05rem; }
+.papers { margin: 0; padding-left: 18px; font-size: .92rem; }
+.papers li { margin: 4px 0; }
+.papers a { color: var(--navy); }
+.shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+#shelf { padding: 0 0 56px; }
+.item { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 10px; background: var(--paper); border: 1px solid var(--line);
+        border-radius: 14px; padding: 20px; box-shadow: var(--shadow); transition: transform .15s ease, border-color .15s ease; min-height: 180px; }
+.item:hover, .item:focus-visible { transform: translateY(-3px); border-color: var(--gold); }
+.item:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.tag { display: inline-flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--muted); }
+.num { font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; }
+.company { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.teaser { margin: 0; color: var(--ink); flex: 1; }
+.enter { font-size: .85rem; font-weight: 700; color: var(--navy); }
+.enter::after { content: " →"; }
+/* detail */
+dialog { border: none; padding: 0; border-radius: 16px; width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 32px);
+         background: var(--paper); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+dialog::backdrop { background: rgba(15, 15, 20, .55); }
+.d-head { padding: 26px 28px 8px; position: relative; }
+.d-close { all: unset; cursor: pointer; position: absolute; right: 16px; top: 14px; font-size: 1.6rem; color: var(--muted); line-height: 1; padding: 6px; }
+.d-close:focus-visible { outline: 2px solid var(--navy); border-radius: 6px; }
+.d-head h2 { margin: .1em 0; font-size: 1.6rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+.chip { background: var(--gold-soft); color: var(--ink); border-radius: 999px; padding: 3px 10px; font-size: .82rem; }
+.d-body { padding: 8px 28px 26px; }
+.d-body h3 { font-size: .8rem; letter-spacing: .08em; color: var(--gold); text-transform: uppercase; margin: 20px 0 6px; }
+.data-name { font-weight: 700; font-size: 1.05rem; }
+.src { color: var(--muted); font-size: .9rem; margin: 2px 0 0; }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+td { border-top: 1px solid var(--line); padding: 8px 6px; vertical-align: top; }
+td:first-child { width: 110px; color: var(--navy); font-weight: 700; white-space: nowrap; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.btn { display: inline-block; text-decoration: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: .95rem; }
+.btn.primary { background: var(--navy); color: #fff; }
+:root[data-theme="dark"] .btn.primary { color: #111; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #111; } }
+.btn.ghost { border: 1px solid var(--line); color: var(--ink); }
+.note { color: var(--muted); font-size: .82rem; margin-top: 16px; }
+footer { color: var(--muted); font-size: .82rem; padding: 0 0 40px; }
+footer a { color: var(--muted); }
+@media (max-width: 520px) { td:first-child { width: 84px; white-space: normal; } .d-head, .d-body { padding-left: 18px; padding-right: 18px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Machine Learning 1 · 데이터 가게</div>
+    <h1>현실의 데이터</h1>
+    <p class="lead">추천, 이상거래 탐지, 수요예측, 불량 예측, 문서 이해 … 산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터를 모았습니다. 인턴이나 산학협력 과제에서 처음 받게 될 데이터도 대개 이런 모양입니다. 진열대에서 하나를 골라 들어가 데이터를 열어 보고, 문제를 직접 정해 보세요.</p>
+    <ul class="five-strip" aria-label="문제를 정하는 다섯 칸">
+      <li><b>①</b>한 행</li><li><b>②</b>입력 X</li><li><b>③</b>출력 y</li><li><b>④</b>평가지표</li><li><b>⑤</b>기준선</li>
+    </ul>
+  </header>
+  <main id="shelf" aria-label="데이터 진열대"></main>
+  <footer>
+    데이터는 모두 로그인 없이 받을 수 있는 공개 데이터이며, 각 데이터를 만든 논문 · 출처를 함께 적었습니다. 분야별 문제는 일반적인 예시이고 특정 회사의 과제가 아닙니다.
+    · <a href="https://github.com/SuminHan/book-ml/tree/main/notebooks/datashop">노트북 원본 (GitHub)</a>
+  </footer>
+</div>
+
+<dialog id="detail" aria-labelledby="d-title">
+  <div class="d-head">
+    <button class="d-close" id="d-close" aria-label="닫기">×</button>
+    <div class="tag"><span class="num" id="d-num"></span><span id="d-sector"></span></div>
+    <h2 id="d-title"></h2>
+    <div class="chips" id="d-chips"></div>
+  </div>
+  <div class="d-body">
+    <p class="d-teaser" id="d-teaser"></p>
+    <h3>데이터</h3>
+    <div class="data-name" id="d-data"></div>
+    <p class="src" id="d-src"></p>
+    <h3>문제를 정해 본 예시 (다섯 칸)</h3>
+    <table><tbody id="d-five"></tbody></table>
+    <h3>논문 · 출처</h3>
+    <ul class="papers" id="d-papers"></ul>
+    <div class="actions">
+      <a class="btn primary" id="d-colab" target="_blank" rel="noopener">Colab 에서 열기</a>
+      <a class="btn ghost" id="d-github" target="_blank" rel="noopener">GitHub 에서 보기</a>
+    </div>
+    <p class="note">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p>
+  </div>
+</dialog>
+
+<script>
+const SHOP = [{"num": "01", "slug": "fashion_commerce", "title": "패션 커머스: 비슷한 옷 추천", "sector": "커머스 · 콘텐츠", "keywords": ["개인화 추천", "수요예측 · 재고관리", "고객생애가치"], "teaser": "옷 사진 2만 2천 장. 비슷한 옷을 골라 줄 수 있을까?", "data": "Fashion Product Images (Small)", "src": "Kaggle 'Fashion Product Images' 의 축소판, Hugging Face ashraq/fashion-product-images-small (첫 묶음 22,036장)", "size": "약 140MB", "five": [["① 한 행", "상품 하나 (사진 60×80 + 성별 · 종류 · 색 · 계절)"], ["② 입력 X", "상품 사진"], ["③ 출력 y", "비슷한 상품 5개 (추천)"], ["④ 평가지표", "추천 5개 중 같은 종류(articleType) 비율"], ["⑤ 기준선", "무작위로 5개 고르기"]], "papers": [["Fu et al. (2022) StyleGAN-Human: A Data-Centric Odyssey of Human Generation, ECCV", "https://arxiv.org/abs/2204.11823"], ["데이터 원본: Fashion Product Images (Kaggle, P. Aggarwal)", "https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/01_fashion_commerce.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/01_fashion_commerce.ipynb"}, {"num": "02", "slug": "shop_conversion", "title": "쇼핑몰 구매 전환 예측", "sector": "커머스 · 콘텐츠", "keywords": ["브랜드 · 콘텐츠 마케팅", "직접판매 전환율 최적화", "해외직구 커머스"], "teaser": "쇼핑몰 방문 1만 2천 건. 이 방문자는 살까, 그냥 나갈까?", "data": "Online Shoppers Purchasing Intention", "src": "UCI (Sakar et al., 2019), 온라인 쇼핑몰 방문 세션 12,330건 (1년, 사용자당 1세션)", "size": "약 1MB", "five": [["① 한 행", "방문 세션 하나"], ["② 입력 X", "본 페이지 수 · 머문 시간 · 이탈률 · 월 · 방문자 유형 …"], ["③ 출력 y", "구매했나 (Revenue)"], ["④ 평가지표", "정밀도 · 재현율"], ["⑤ 기준선", "아무도 안 산다"]], "papers": [["Sakar et al. (2019) Real-time prediction of online shoppers' purchasing intention using MLP and LSTM, Neural Computing and Applications", "https://doi.org/10.1007/s00521-018-3523-0"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/02_shop_conversion.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/02_shop_conversion.ipynb"}, {"num": "03", "slug": "movie_ratings", "title": "영화 · 동영상 추천", "sector": "커머스 · 콘텐츠", "keywords": ["개인화 추천", "평점 예측", "콜드 스타트"], "teaser": "610명이 영화 9천 편에 남긴 별점 10만 개. 아직 안 본 영화에 몇 점을 줄까?", "data": "MovieLens (ml-latest-small)", "src": "GroupLens Research, University of Minnesota (Harper & Konstan, 2015). 610명 · 9,742편 · 별점 100,836개 (0.5~5점)", "size": "약 1MB", "five": [["① 한 행", "(사용자, 영화) 쌍 하나"], ["② 입력 X", "사용자 번호 · 영화 번호 (+ 장르)"], ["③ 출력 y", "별점 (0.5~5)"], ["④ 평가지표", "RMSE (별 몇 개만큼 틀리나)"], ["⑤ 기준선", "전체 평균 별점"]], "papers": [["Harper & Konstan (2015) The MovieLens Datasets: History and Context, ACM TiiS", "https://doi.org/10.1145/2827872"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/03_movie_ratings.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/03_movie_ratings.ipynb"}, {"num": "04", "slug": "korean_reviews", "title": "한국어 리뷰 감성 분석", "sector": "커머스 · 콘텐츠", "keywords": ["리뷰 분석", "브랜드 모니터링", "한국어 자연어처리"], "teaser": "한국어 영화 리뷰 20만 개. 이 리뷰는 칭찬일까, 불평일까?", "data": "NSMC (Naver Sentiment Movie Corpus)", "src": "Lucy Park (2015), github.com/e9t/nsmc. 한국어 영화 리뷰 20만 개 (학습 15만 · 시험 5만), 긍정 · 부정 반반", "size": "약 20MB", "five": [["① 한 행", "리뷰 한 문장"], ["② 입력 X", "리뷰 글"], ["③ 출력 y", "긍정 1 / 부정 0"], ["④ 평가지표", "정확도 (반반이라 쓸 만하다)"], ["⑤ 기준선", "늘 '긍정' (50%)"]], "papers": [["NSMC 저장소 (Lucy Park, 2015): 데이터 설명 · 만든 방법", "https://github.com/e9t/nsmc"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/04_korean_reviews.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/04_korean_reviews.ipynb"}, {"num": "05", "slug": "card_fraud", "title": "카드 이상거래 탐지", "sector": "금융 · 핀테크", "keywords": ["컴플라이언스", "이상거래탐지 · 자금세탁방지", "신뢰성 · 설명가능성"], "teaser": "카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?", "data": "Credit Card Fraud Detection (ULB)", "src": "유럽 카드 소지자의 2013년 9월 이틀치 거래, OpenML 1597 (원본 Kaggle mlg-ulb). 성분은 개인정보 때문에 PCA 로 바꾼 V1~V28. OpenML 판에는 시각 열이 없지만 행이 시간 순서대로 놓여 있다", "size": "약 150MB", "five": [["① 한 행", "카드 거래 한 건"], ["② 입력 X", "금액 · V1~V28"], ["③ 출력 y", "사기인가 (Class 0/1)"], ["④ 평가지표", "정밀도 · 재현율 (정확도는 함정)"], ["⑤ 기준선", "전부 '정상'"]], "papers": [["Dal Pozzolo et al. (2015) Calibrating Probability with Undersampling for Unbalanced Classification, IEEE SSCI", "https://doi.org/10.1109/SSCI.2015.33"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/05_card_fraud.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/05_card_fraud.ipynb"}, {"num": "06", "slug": "support_routing", "title": "고객 문의 자동 분류", "sector": "플랫폼 · 서비스", "keywords": ["대화형 인공지능", "고객응대 자동화", "상담 보조 · 문의 분산처리"], "teaser": "은행 고객 문의 1만 3천 개, 담당 77곳. 문의를 맞는 팀에 보낼 수 있을까?", "data": "Banking77", "src": "PolyAI (Casanueva et al., 2020), 온라인 은행 고객 문의 13,083개를 의도 77가지로 나눈 영어 데이터 (GitHub PolyAI-LDN/task-specific-datasets)", "size": "약 1MB", "five": [["① 한 행", "고객 문의 한 문장"], ["② 입력 X", "문장"], ["③ 출력 y", "의도 77가지 중 하나 (보낼 팀)"], ["④ 평가지표", "정확도 + 의도별 정확도"], ["⑤ 기준선", "가장 흔한 의도로 보내기"]], "papers": [["Casanueva et al. (2020) Efficient Intent Detection with Dual Sentence Encoders (Banking77)", "https://arxiv.org/abs/2003.04807"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/06_support_routing.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/06_support_routing.ipynb"}, {"num": "07", "slug": "hotel_booking", "title": "여행 예약: 취소와 가격", "sector": "플랫폼 · 서비스", "keywords": ["실시간 가격책정", "여행일정 개인화", "수요-공급 매칭"], "teaser": "포르투갈 호텔 예약 12만 건. 이 예약은 취소될까? 1박에 얼마가 맞을까?", "data": "Hotel Booking Demand", "src": "Antonio, Almeida & Nunes (2019), Data in Brief. 포르투갈 리조트 호텔 · 도시 호텔 2곳의 2015~2017 예약 119,390건 (TidyTuesday 2020-02-11)", "size": "약 17MB", "five": [["① 한 행", "예약 한 건"], ["② 입력 X", "예약 시점에 아는 것: 며칠 전 예약 · 인원 · 박 수 · 고객 유형 …"], ["③ 출력 y", "취소할까 (분류) / 1박 가격 adr (회귀)"], ["④ 평가지표", "정밀도 · 재현율 / MAE (유로)"], ["⑤ 기준선", "아무도 취소 안 함 / 같은 달 평균 가격"]], "papers": [["Antonio, Almeida & Nunes (2019) Hotel booking demand datasets, Data in Brief", "https://doi.org/10.1016/j.dib.2018.11.126"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/07_hotel_booking.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/07_hotel_booking.ipynb"}, {"num": "08", "slug": "link_prediction", "title": "연결 예측: 사람 · 친구 추천", "sector": "플랫폼 · 서비스", "keywords": ["링크 예측 (Link Prediction)", "친구 · 연결 추천", "그래프 데이터"], "teaser": "연구기관 1,005명이 주고받은 이메일 연결망. 아직 연결 안 된 두 사람, 곧 연락하게 될까?", "data": "email-Eu-core", "src": "SNAP, Stanford (Leskovec, Kleinberg & Faloutsos, 2007; Yin et al., 2017). 유럽 한 연구기관 구성원 1,005명 사이의 이메일 연결 25,571개 + 소속 부서 42개", "size": "약 0.1MB", "five": [["① 한 행", "두 사람의 쌍"], ["② 입력 X", "지금까지의 연결망 (공통 지인 수, 같은 부서인가 …)"], ["③ 출력 y", "둘이 연결되는가"], ["④ 평가지표", "ROC-AUC (진짜 연결을 더 높게 매겼나)"], ["⑤ 기준선", "무작위 점수 (AUC 0.5)"]], "papers": [["Liben-Nowell & Kleinberg (2007) The link-prediction problem for social networks, JASIST", "https://doi.org/10.1002/asi.20591"], ["Yin, Benson, Leskovec & Gleich (2017) Local Higher-Order Graph Clustering, KDD (email-Eu-core)", "https://doi.org/10.1145/3097983.3098069"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/08_link_prediction.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/08_link_prediction.ipynb"}, {"num": "09", "slug": "bike_demand", "title": "공유 자전거 수요 예측", "sector": "플랫폼 · 서비스", "keywords": ["수요예측", "모빌리티 · 공유 서비스", "재배치 운영"], "teaser": "서울 공유 자전거 1년치 시간별 대여 수. 내일 아침 8시엔 몇 대가 필요할까?", "data": "Seoul Bike Sharing Demand", "src": "UCI (Sathishkumar V E & Cho, 2020), 서울 공공자전거 2017.12~2018.11 시간별 대여 수 8,760개 + 날씨", "size": "약 0.6MB", "five": [["① 한 행", "한 시간"], ["② 입력 X", "시각 · 요일 · 기온 · 습도 · 비 · 휴일 …"], ["③ 출력 y", "그 시간의 대여 수"], ["④ 평가지표", "MAE (대)"], ["⑤ 기준선", "학습 기간의 '같은 시각' 평균"]], "papers": [["Sathishkumar V E, Park & Cho (2020) Using data mining techniques for bike sharing demand prediction in metropolitan city, Computer Communications", "https://doi.org/10.1016/j.comcom.2020.02.007"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/09_bike_demand.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/09_bike_demand.ipynb"}, {"num": "10", "slug": "semiconductor_yield", "title": "반도체 공정 불량 예측", "sector": "제조", "keywords": ["수율 · 불량 예측", "센서 데이터", "공정 이상 탐지"], "teaser": "반도체 생산 라인 센서 590개, 제품 1,567개. 센서만 보고 불량을 미리 알 수 있을까?", "data": "SECOM", "src": "UCI (McCann & Johnston, 2008), 반도체 제조 공정 센서 590개 × 1,567개 제품, 불량 104개. 센서 이름은 공개되지 않음", "size": "약 2MB", "five": [["① 한 행", "제품 (웨이퍼) 하나"], ["② 입력 X", "센서 값 590개 (빈칸 많음)"], ["③ 출력 y", "최종 검사 불량인가"], ["④ 평가지표", "재현율 · 정밀도 (불량을 놓치지 않기)"], ["⑤ 기준선", "전부 '양품'"]], "papers": [["UCI SECOM 데이터 설명 (McCann & Johnston, 2008)", "https://archive.ics.uci.edu/dataset/179/secom"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/10_semiconductor_yield.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/10_semiconductor_yield.ipynb"}, {"num": "11", "slug": "form_understanding", "title": "서식 문서 이해", "sector": "전문 서비스", "keywords": ["감사 자동화", "문서지능 처리", "리스크 · 내부통제"], "teaser": "스캔한 서식 199장, 글 덩어리 9천여 개. 어느 것이 '질문' 이고 어느 것이 '답' 일까?", "data": "FUNSD", "src": "Jaume, Ekenel & Thiran (2019), Form Understanding in Noisy Scanned Documents. 스캔 서식 199장 (학습 149 · 시험 50), 글 덩어리마다 header · question · answer · other 표시", "size": "약 17MB", "five": [["① 한 행", "서식 속 글 덩어리 하나 (상자 + 글자)"], ["② 입력 X", "위치 · 크기 · 글자 (콜론으로 끝나나, 숫자인가 …)"], ["③ 출력 y", "header / question / answer / other"], ["④ 평가지표", "정확도 + 종류별 재현율"], ["⑤ 기준선", "가장 흔한 종류"]], "papers": [["Jaume, Ekenel & Thiran (2019) FUNSD: A Dataset for Form Understanding in Noisy Scanned Documents", "https://arxiv.org/abs/1905.13538"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/11_form_understanding.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/11_form_understanding.ipynb"}, {"num": "12", "slug": "ai_usecases", "title": "AI 활용사례 찾기", "sector": "전문 서비스", "keywords": ["인공지능 전환 전략", "활용사례 발굴 · 검증", "인공지능 거버넌스"], "teaser": "사람들은 AI 를 어떤 일에 쓰고 있을까? 업무 1만 9천 가지로 찾는 AI 활용사례.", "data": "Anthropic Economic Index (2025-02)", "src": "Anthropic (2025), Claude.ai 대화를 미국 O*NET 업무 목록에 대응시킨 공개 데이터 (Hugging Face Anthropic/EconomicIndex). O*NET 업무 설명 19,530개 포함", "size": "약 4MB", "five": [["① 한 행", "업무 하나 (O*NET task) 또는 직업 하나"], ["② 입력 X", "업무 설명 · 직업"], ["③ 출력 y", "AI 대화 중 이 업무의 비율 (%)"], ["④ 평가지표", "순위가 맞나 (상위 몇 개가 실제로 겹치나)"], ["⑤ 기준선", "그 직업의 종사자 수 순서"]], "papers": [["Handa et al. (2025) Which Economic Tasks are Performed with AI? Evidence from Millions of Claude Conversations", "https://arxiv.org/abs/2503.04761"]], "colab": "https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/12_ai_usecases.ipynb", "github": "https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/12_ai_usecases.ipynb"}];
+const SECTIONS = ["커머스 · 콘텐츠", "금융 · 핀테크", "플랫폼 · 서비스", "제조", "전문 서비스"];
+const $ = (id) => document.getElementById(id);
+const dlg = $("detail");
+function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
+SECTIONS.forEach((sec) => {
+  const items = SHOP.filter((it) => it.sector === sec);
+  if (!items.length) return;
+  const grid = el("div", "shelf");
+  items.forEach((it) => {
+    const b = el("button", "item"); b.type = "button"; b.setAttribute("aria-haspopup", "dialog");
+    const tag = el("div", "tag"); tag.append(el("span", "num", it.num), el("span", "", it.keywords[0]));
+    b.append(tag, el("p", "company", it.title), el("p", "teaser", it.teaser), el("span", "enter", "들어가 보기"));
+    b.addEventListener("click", () => openItem(it));
+    grid.append(b);
+  });
+  $("shelf").append(el("h2", "section-title", sec), grid);
+});
+function openItem(it) {
+  $("d-num").textContent = it.num; $("d-sector").textContent = it.sector; $("d-title").textContent = it.title;
+  $("d-chips").replaceChildren(...it.keywords.map((w) => el("span", "chip", w)));
+  $("d-teaser").textContent = it.teaser;
+  $("d-data").textContent = `${it.data} · ${it.size}`; $("d-src").textContent = it.src;
+  $("d-five").replaceChildren(...it.five.map(([a, v]) => { const tr = el("tr"); tr.append(el("td", "", a), el("td", "", v)); return tr; }));
+  $("d-papers").replaceChildren(...it.papers.map(([t, u]) => {
+    const li = el("li"); const a = el("a", "", t); a.href = u; a.target = "_blank"; a.rel = "noopener"; li.append(a); return li;
+  }));
+  $("d-colab").href = it.colab; $("d-github").href = it.github;
+  try { history.replaceState(null, "", "#" + it.slug); } catch (e) {}
+  dlg.showModal();
+}
+$("d-close").addEventListener("click", () => dlg.close());
+dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+dlg.addEventListener("close", () => { try { history.replaceState(null, "", location.pathname); } catch (e) {} });
+const start = SHOP.find((it) => "#" + it.slug === location.hash);
+if (start) openItem(start);
+</script>
+</body>
+</html>
