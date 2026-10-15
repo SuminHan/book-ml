@@ -722,6 +722,88 @@ for name, pred in [("last hour", te["lag1"]), ("same hour last week", te["lag168
 - **그래프로**: 구역을 점, 이웃을 선으로 두면 13주차 그래프 신경망 문제가 된다."""),
 ]),
 # ------------------------------------------------------------------
+dict(slug="vehicle_trajectory", title="자율주행: 옆 차 궤적 예측", sector="도시 · 공간", keywords=["자율주행 · 예측 (prediction)", "궤적 데이터", "시공간"],
+     teaser="고속도로 차들의 0.1초 간격 위치. 옆 차는 3초 뒤 어디에 있을까?",
+     data="NGSIM US-101 Vehicle Trajectories", data_src="미국 교통부 NGSIM: 로스앤젤레스 US-101 고속도로 약 640m 구간을 건물 위 카메라로 찍어 차량마다 0.1초 간격으로 위치 · 속도 · 차선을 기록한 공개 데이터. 여기서는 차량 번호 600 미만의 60만 줄만 받는다",
+     size="약 45MB",
+     five=[("① 한 행", "차 한 대의 한 순간 (지난 2초를 보고)"), ("② 입력 X", "지난 2초 동안의 위치 (0.5초 간격 5개, 지금 위치 기준)"),
+           ("③ 출력 y", "앞으로 3초의 위치 (0.5초 간격 6개, x · y)"), ("④ 평가지표", "ADE · FDE (미터)"), ("⑤ 기준선", "지금 속도 그대로 직진")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+미국 교통부 공개 API 에서 필요한 열만, 차량 · 시각 순서로 받는다 (약 45MB, 1~2분)."""),
+("code", """URL = ("https://data.transportation.gov/resource/8ect-6jqj.csv?$select=vehicle_id,frame_id,global_time,local_x,local_y,v_vel,v_acc,lane_id,v_class,v_length"
+       "&$where=location%3D%27us-101%27%20AND%20vehicle_id%3C600&$order=vehicle_id,global_time&$limit=600000")
+df = pd.read_csv(download(URL, "data/ngsim_us101_v.csv")).drop_duplicates(["vehicle_id", "global_time"])
+FT = 0.3048                                    # feet -> meters
+df["x"], df["y"] = df["local_x"] * FT, df["local_y"] * FT        # x = across lanes, y = along the road
+print(df.shape)
+df.sample(5, random_state=0)"""),
+("md", """## 열어 보기: 같은 번호, 다른 차?
+
+같은 `vehicle_id` 가 다른 시간대에 다시 나온다 (촬영 구간마다 번호를 새로 매겼다). 시간이 0.1초보다 크게 끊기면 다른 궤적으로 나눈다 (1주 3차시 '같다의 기준은 사람이 정한다')."""),
+("code", """df = df.sort_values(["vehicle_id", "global_time"])
+df["track"] = (df.groupby("vehicle_id")["global_time"].diff() != 100).cumsum()
+lengths = df.groupby("track").size() / 10
+print("trajectories:", df["track"].nunique(), "| seconds per trajectory: median", lengths.median())
+fig, axs = plt.subplots(1, 2, figsize=(13, 4))
+for tid in df["track"].unique()[:60]:
+    g = df[df["track"] == tid]; axs[0].plot(g["y"], g["x"], lw=0.8)
+axs[0].set_xlabel("along the road (m)"); axs[0].set_ylabel("across lanes (m)"); axs[0].set_title("60 trajectories")
+axs[1].hist(df["v_vel"] * FT * 3.6, bins=60); axs[1].set_xlabel("speed (km/h)")
+plt.tight_layout(); plt.show()"""),
+("md", """## 문제로 만들기: 지난 2초 → 앞으로 3초
+
+궤적마다 1초 간격으로 순간을 잡고, **지금 위치를 원점으로** 지난 2초의 위치 5개 (0.5초 간격) 와 앞으로 3초의 위치 6개를 뽑는다 (1주 3차시: 창마다 기준 맞추기)."""),
+("code", """def make_windows(df):
+    \"\"\"Past 2 s (every 0.5 s) and future 3 s (every 0.5 s) positions, relative to the current position\"\"\"
+    rows = []
+    for tid, g in df.groupby("track"):
+        if len(g) < 60:
+            continue
+        x, y, lane = g["x"].values, g["y"].values, g["lane_id"].values
+        for s in range(20, len(g) - 30, 10):
+            px, py, fx, fy = x[s - 20:s + 1:5], y[s - 20:s + 1:5], x[s + 5:s + 31:5], y[s + 5:s + 31:5]
+            rows.append(dict(track=tid, **{f"px{k}": px[k] - px[-1] for k in range(4)}, **{f"py{k}": py[k] - py[-1] for k in range(4)},
+                             **{f"fx{k}": fx[k] - px[-1] for k in range(6)}, **{f"fy{k}": fy[k] - py[-1] for k in range(6)},
+                             lane_change=int(lane[s + 30] != lane[s])))
+    return pd.DataFrame(rows)
+
+W = make_windows(df)
+print(W.shape, f"windows with a lane change in the next 3 s: {W['lane_change'].mean():.1%}")"""),
+("md", """## 기준선과 모델
+
+**궤적 단위** 로 나눈다 (같은 차의 이웃한 순간이 학습 · 시험 양쪽에 있으면 쉬워진다). 지표:
+- ADE = 6개 미래 위치의 평균 거리 오차, FDE = 3초 뒤 마지막 위치의 거리 오차 (미터)
+- 기준선 1: 가만히 있다, 기준선 2: 지난 0.5초 속도 그대로"""),
+("code", """from sklearn.linear_model import Ridge
+
+def ade_fde(pred_x, pred_y, W):
+    d = np.hypot(pred_x - W[[f"fx{k}" for k in range(6)]].values, pred_y - W[[f"fy{k}" for k in range(6)]].values)
+    return d.mean(), d[:, -1].mean()
+
+rng = np.random.default_rng(0); tracks = W["track"].unique()
+test_tracks = set(rng.choice(tracks, len(tracks) // 4, replace=False))
+tr, te = W[~W["track"].isin(test_tracks)], W[W["track"].isin(test_tracks)]
+steps = np.arange(1, 7)
+cv_x, cv_y = np.outer(-te["px3"].values, steps), np.outer(-te["py3"].values, steps)      # last 0.5 s displacement, repeated
+past = [f"px{k}" for k in range(4)] + [f"py{k}" for k in range(4)]
+future = [f"fx{k}" for k in range(6)] + [f"fy{k}" for k in range(6)]
+lin = Ridge(1.0).fit(tr[past], tr[future]).predict(te[past])
+for name, (a, b) in [("stand still", (np.zeros((len(te), 6)), np.zeros((len(te), 6)))), ("constant velocity", (cv_x, cv_y)), ("linear model", (lin[:, :6], lin[:, 6:]))]:
+    ade, fde = ade_fde(a, b, te)
+    print(f"{name:18s} ADE {ade:.2f} m   FDE {fde:.2f} m")
+lc = te["lane_change"].values == 1
+print(f"only lane-change windows: constant velocity FDE {ade_fde(cv_x[lc], cv_y[lc], te[lc])[1]:.2f} m, linear FDE {ade_fde(lin[lc, :6], lin[lc, 6:], te[lc])[1]:.2f} m")"""),
+("md", """**관찰**: '지금 속도 그대로' 가 아주 강한 기준선이다. 고속도로 차는 대부분 그대로 달리기 때문이다. 어려운 건 **차선 변경 · 끼어들기** 처럼 드문 순간이고, 자율주행에서 정말 중요한 것도 그 순간이다. 실제 예측 모델은 주변 차 · 차선 지도까지 입력에 넣는다 (아래 논문).
+
+## 다른 문제로 바꿔 보기
+
+- **차선 변경 예측 (분류)**: 출력을 '3초 안에 차선을 바꿀까' 로 바꾸면? 양성은 2% 정도라 정확도는 함정이다.
+- **여러 미래**: 같은 순간에도 직진 · 차선 변경 두 미래가 가능하다. 예측을 하나가 아니라 여러 개 (확률과 함께) 내면 지표는? (Waymo Open Motion 의 minADE)
+- **장면 인식**: 카메라 · LiDAR 로 주변 차를 찾는 단계는 포인트 클라우드 노트북과 이어진다."""),
+]),
+# ------------------------------------------------------------------
 dict(slug="semiconductor_yield", title="반도체 공정 불량 예측", sector="제조",
      keywords=["수율 · 불량 예측", "센서 데이터", "공정 이상 탐지"],
      teaser="반도체 생산 라인 센서 590개, 제품 1,567개. 센서만 보고 불량을 미리 알 수 있을까?",
@@ -2115,6 +2197,8 @@ PAPERS = {
     "korean_reviews": [("NSMC 저장소 (Lucy Park, 2015): 데이터 설명 · 만든 방법", "https://github.com/e9t/nsmc")],
     "link_prediction": [("Liben-Nowell & Kleinberg (2007) The link-prediction problem for social networks, JASIST", "https://doi.org/10.1002/asi.20591"),
                         ("Yin, Benson, Leskovec & Gleich (2017) Local Higher-Order Graph Clustering, KDD (email-Eu-core)", "https://doi.org/10.1145/3097983.3098069")],
+    "vehicle_trajectory": [("Deo & Trivedi (2018) Convolutional Social Pooling for Vehicle Trajectory Prediction, CVPRW (NGSIM US-101 · I-80)", "https://doi.org/10.1109/CVPRW.2018.00196"),
+                           ("Ettinger et al. (2021) Large Scale Interactive Motion Forecasting for Autonomous Driving: The Waymo Open Motion Dataset, ICCV", "https://arxiv.org/abs/2104.10133")],
     "taxi_demand": [("Yao et al. (2018) Deep Multi-View Spatial-Temporal Network for Taxi Demand Prediction, AAAI", "https://arxiv.org/abs/1802.08714"),
                     ("NYC TLC Trip Record Data (데이터 원본 · 설명)", "https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page")],
     "predictive_maintenance": [("Matzka (2020) Explainable Artificial Intelligence for Predictive Maintenance Applications, AI4I", "https://doi.org/10.1109/AI4I49448.2020.00023")],
@@ -2154,6 +2238,7 @@ FIT = {
     "support_routing": ("고객 상담 · CX 소프트웨어, 콜센터, 금융 · 통신 고객센터", "대화형 AI · LLM 엔지니어, NLP 엔지니어, CX 데이터 분석가"),
     "hotel_booking": ("여행 · 숙박 플랫폼, 항공 · 호텔, 모빌리티", "가격 (레비뉴) 매니지먼트 분석가, 수요예측 데이터 사이언티스트"),
     "link_prediction": ("SNS · 메신저, 커리어 네트워크, 커머스 (함께 산 상품), 금융 (거래 연결망)", "그래프 ML 엔지니어, 추천 엔지니어"),
+    "vehicle_trajectory": ("자율주행 · ADAS (완성차 · 전장), 모빌리티, 교통 관제 · 시뮬레이션", "예측 (prediction) 엔지니어, 자율주행 소프트웨어 엔지니어, 교통 데이터 분석가"),
     "taxi_demand": ("모빌리티 · 택시 · 배차 플랫폼, 배달 · 물류, 지도 · 내비게이션", "시공간 수요예측 데이터 사이언티스트, 배차 · 운영 최적화 엔지니어"),
     "aml_transactions": ("은행 · 증권 · 카드사, 핀테크 · 가상자산 거래소, 금융 감독 · 규제", "자금세탁방지 (AML) 분석가, 그래프 ML 엔지니어, 컴플라이언스"),
     "real_estate": ("부동산 플랫폼 · 프롭테크, 은행 (담보 평가), 건설 · 도시계획", "부동산 데이터 분석가, 공간 데이터 사이언티스트, 자동 가치 평가 (AVM) 모델러"),
@@ -2224,6 +2309,11 @@ def fetch_cover(slug, out_path):
     import io, shutil, urllib.request
     from PIL import Image
     covers = json.load(open(os.path.join(HERE, "covers.json")))
+    for ext in (".png", ".jpg", ".jpeg", ".webp"):          # an AI-generated cover dropped into assets/covers_ai/ wins
+        ai = os.path.join(HERE, "assets", "covers_ai", slug + ext)
+        if os.path.exists(ai):
+            covers[slug] = dict(local=os.path.relpath(ai, HERE), page="", artist="", license="", title="AI 생성 이미지", crop=True)
+            break
     if slug not in covers:                       # 자금세탁: 직접 그린 패턴 그림
         shutil.copy(os.path.join(ROOT, "docs", "datashop", "worldcup", "img", f"{slug}.jpg"), out_path); return None
     c = covers[slug]; cache = os.path.join(HERE, c["local"]) if c.get("local") else os.path.join(HERE, "data", "covers", slug + ".jpg")
@@ -2232,13 +2322,15 @@ def fetch_cover(slug, out_path):
         req = urllib.request.Request(c["thumb"], headers={"User-Agent": "ML course datashop"})
         open(cache, "wb").write(urllib.request.urlopen(req, timeout=120).read())
     im = Image.open(cache).convert("RGB"); w, h = 1200, 340
-    if c.get("local"):                                 # a diagram: fit it inside (no cropping), white margins
+    if c.get("local") and not c.get("crop"):           # a diagram: fit it inside (no cropping), white margins
         r = min(w / im.width, h / im.height) * 0.96; im = im.resize((round(im.width * r), round(im.height * r)))
         canvas = Image.new("RGB", (w, h), "white"); canvas.paste(im, ((w - im.width) // 2, (h - im.height) // 2)); canvas.save(out_path, quality=85)
     else:
         r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
         l, t = (im.width - w) // 2, (im.height - h) // 2
         im.crop((l, t, l + w, t + h)).save(out_path, quality=78)
+    if c.get("title") == "AI 생성 이미지":
+        return dict(page="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/assets/genspark_prompts.md", artist="AI 생성 이미지", license="프롬프트 공개")
     if not c.get("page"):
         return None                                   # drawn by us, no credit line
     return dict(page=c["page"], artist=c["artist"], license=c["license"])

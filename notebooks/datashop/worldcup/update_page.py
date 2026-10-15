@@ -8,6 +8,15 @@ cands = json.load(open(os.path.join(HERE, "candidates.json"))); covers = json.lo
 credits = {}
 for c in cands:
     i = c["id"]; path = os.path.join(IMG, i + ".jpg")
+    ai = next((os.path.join(HERE, "..", "assets", "covers_ai", i + e) for e in (".png", ".jpg", ".jpeg", ".webp")
+               if os.path.exists(os.path.join(HERE, "..", "assets", "covers_ai", i + e))), None)
+    if ai:                                         # AI-generated cover (assets/covers_ai/) wins, centre-cropped to 8:5
+        im = Image.open(ai).convert("RGB"); w, h = 480, 300
+        r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
+        l, t = (im.width - w) // 2, (im.height - h) // 2; im.crop((l, t, l + w, t + h)).save(path, quality=80)
+        credits[i] = dict(title="AI 생성 이미지", artist="AI 생성 이미지", license="프롬프트 공개",
+                          page="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/assets/genspark_prompts.md")
+        continue
     if i in covers and covers[i].get("local"):
         cv = covers[i]
         credits[i] = dict(title=cv["title"], artist=cv["artist"], license=cv["license"], page=cv["page"]) if cv.get("page") else None

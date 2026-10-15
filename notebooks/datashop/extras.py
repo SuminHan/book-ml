@@ -17,7 +17,7 @@ F = {
 METRICS = {
     "fashion_commerce": ["same5"], "shop_conversion": ["prec", "rec", "acc"], "movie_ratings": ["rmse", "mae"], "korean_reviews": ["acc"],
     "card_fraud": ["prec", "rec", "acc"], "aml_transactions": ["prec", "rec", "acc"], "stock_index": ["acc", "mae"], "support_routing": ["acc"],
-    "hotel_booking": ["prec", "rec", "mae"], "link_prediction": ["auc"], "taxi_demand": ["mae"], "real_estate": ["mae"],
+    "hotel_booking": ["prec", "rec", "mae"], "link_prediction": ["auc"], "taxi_demand": ["mae"], "vehicle_trajectory": ["ade"], "real_estate": ["mae"],
     "earthquakes": ["prec", "rec", "auc"], "semiconductor_yield": ["prec", "rec", "auc"], "predictive_maintenance": ["prec", "rec"],
     "steel_defects": ["acc", "rec"], "bearing_vibration": ["acc"], "document_types": ["acc", "rec"], "ai_usecases": [],
     "point_cloud": ["acc"], "medical": ["rec", "auc"], "satellite": ["acc", "rec"],
@@ -50,6 +50,8 @@ RELATED = {
                        ("Expedia Hotel Recommendations (Kaggle)", "https://www.kaggle.com/competitions/expedia-hotel-recommendations", "검색 → 예약할 호텔 묶음 맞히기")], "hotel booking"),
     "link_prediction": ([("SNAP 데이터 모음", "https://snap.stanford.edu/data/", "SNS · 인용 · 도로 등 연결망 수백 개"),
                          ("OGB 링크 예측 (ogbl)", "https://ogb.stanford.edu/docs/linkprop/", "연구 공동 저자 · 약물 상호작용 · 인용 연결 예측 벤치마크")], "link prediction"),
+    "vehicle_trajectory": ([("Waymo Open Motion Dataset", "https://waymo.com/open/", "실제 자율주행차가 본 주변 차 · 사람 궤적 (신청 필요)"),
+                            ("NGSIM 전체 (미국 교통부)", "https://data.transportation.gov/Automobiles/Next-Generation-Simulation-NGSIM-Vehicle-Trajector/8ect-6jqj", "US-101 · I-80 · 시내 도로 궤적")], "trajectory prediction"),
     "taxi_demand": ([("NYC TLC 전체 기록 (택시 · 우버 등)", "https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page", "2009년부터 달마다 공개, 우버 · 리프트 기록도 있다"),
                      ("Citi Bike 이용 기록 (뉴욕)", "https://citibikenyc.com/system-data", "대여소 위치가 있는 공유 자전거 기록 (대여소 × 시간)"),
                      ("서울 열린데이터광장", "https://data.seoul.go.kr/", "따릉이 대여소별 대여 이력")], "taxi demand"),

@@ -717,3 +717,30 @@ def corporate_card(thumb):
     return dict(stats=stats(df.drop(columns=["Year-Month", "Agency Number", "Posted Date"])), sample=table(df[["agency", "memo", "amount", "vendor", "date", "mcc"]].assign(date=lambda d: d["date"].dt.date)),
                 charts=[chart("달마다 법인카드 지출 (백만 달러)", [bar([str(m) for m in mon.index], mon.values.round(2))], "", "백만 달러"),
                         chart("결제 금액 분포", [bar(xs, ys)], "log10(금액, 달러)", "결제 수", "대부분 10~1,000달러, 가끔 아주 큰 결제")])
+
+
+def vehicle_trajectory(thumb):
+    df = pd.read_csv(os.path.join(D, "ngsim_us101_v.csv")).drop_duplicates(["vehicle_id", "global_time"]).sort_values(["vehicle_id", "global_time"])
+    FT = 0.3048; df["x"], df["y"] = df["local_x"] * FT, df["local_y"] * FT; df["kmh"] = df["v_vel"] * FT * 3.6
+    df["track"] = (df.groupby("vehicle_id")["global_time"].diff() != 100).cumsum()
+    t0 = df["global_time"].value_counts().index[0]
+    win = df[(df["global_time"] >= t0) & (df["global_time"] < t0 + 8000)]
+    times = sorted(win["global_time"].unique())[::4]
+    ymax = df["y"].quantile(0.98)
+    def frame(k):
+        fig, ax = plt.subplots(figsize=(4.8, 3)); now = win[win["global_time"] == times[k]]
+        for tid in now["track"].unique():
+            g = win[(win["track"] == tid) & (win["global_time"] <= times[k])]; ax.plot(g["y"], g["x"], color="#cccccc", lw=0.8)
+        ax.scatter(now["y"], now["x"], c=now["kmh"], cmap="RdYlGn", vmin=0, vmax=100, s=18, marker="s", zorder=3)
+        for lx in np.arange(0, 6) * 3.66: ax.axhline(lx, color="#dddddd", lw=0.6, ls="--")
+        ax.set_xlim(0, ymax); ax.set_ylim(-1, 22); ax.set_xticks([]); ax.set_yticks([])
+        ax.text(0.01, 0.92, f"{(times[k] - times[0]) / 1000:.1f} s", transform=ax.transAxes, fontsize=12, fontweight="bold", color=C1)
+        for sp in ax.spines.values(): sp.set_visible(False)
+        fig.subplots_adjust(0, 0, 1, 1); return fig
+    save_gif(frame, len(times), thumb.replace(".png", ".gif"), fps=8)
+    sp = df.groupby(pd.cut(df["y"], np.arange(0, ymax + 40, 40)), observed=True)["kmh"].mean()
+    lane = df.groupby("lane_id")["kmh"].mean()
+    return dict(thumb="thumb.gif", stats=stats(df[["vehicle_id", "lane_id", "x", "y", "kmh", "v_class", "v_length"]]),
+                sample=table(df[["vehicle_id", "global_time", "lane_id", "x", "y", "kmh"]].round(2)),
+                charts=[chart("도로 위치별 평균 속도", [line([str(int(i.left)) for i in sp.index], sp.values.round(1))], "도로를 따라 (m)", "km/h", "합류 구간 근처에서 느려진다"),
+                        chart("차선별 평균 속도", [bar([str(i) for i in lane.index], lane.values.round(1))], "차선 (1 = 가장 왼쪽)", "km/h", "왼쪽 차선이 더 빠르다. 6 · 7 = 진입 · 진출 차선")])
