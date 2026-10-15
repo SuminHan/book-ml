@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>카드 이상거래 탐지 (보이스피싱 등) · 현실의 데이터</title>
+<meta name="description" content="카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
+<div class="hero">
+  <div>
+    <div class="tag"><span class="num">05</span><span>금융 · 핀테크</span></div>
+    <h1>카드 이상거래 탐지 (보이스피싱 등)</h1>
+    <div class="chips"><span class="chip">이상거래탐지 (FDS)</span><span class="chip">보이스피싱 · 송금 사기</span><span class="chip">자금세탁방지 · 설명가능성</span></div>
+    <p class="teaser-big">카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/05_card_fraud.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
+      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/05_card_fraud.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+  </div>
+  <img src="thumb.png" alt="카드 이상거래 탐지 (보이스피싱 등) 데이터 샘플" width="480" height="300">
+</div>
+<section class="block"><h2>데이터</h2>
+  <div class="data-name">Credit Card Fraud Detection (ULB) · 약 150MB</div><p class="src">유럽 카드 소지자의 2013년 9월 이틀치 거래, OpenML 1597 (원본 Kaggle mlg-ulb). 성분은 개인정보 때문에 PCA 로 바꾼 V1~V28. OpenML 판에는 시각 열이 없지만 행이 시간 순서대로 놓여 있다</p>
+  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>V1</th><th>V2</th><th>V3</th><th>V14</th><th>V17</th><th>Amount</th><th>Class</th></tr></thead><tbody><tr><td title="-1.36">-1.36</td><td title="-0.0728">-0.0728</td><td title="2.54">2.54</td><td title="-0.311">-0.311</td><td title="0.208">0.208</td><td title="150">150</td><td title="0">0</td></tr><tr><td title="1.19">1.19</td><td title="0.266">0.266</td><td title="0.166">0.166</td><td title="-0.144">-0.144</td><td title="-0.115">-0.115</td><td title="2.69">2.69</td><td title="0">0</td></tr><tr><td title="-1.36">-1.36</td><td title="-1.34">-1.34</td><td title="1.77">1.77</td><td title="-0.166">-0.166</td><td title="1.11">1.11</td><td title="379">379</td><td title="0">0</td></tr><tr><td title="-0.966">-0.966</td><td title="-0.185">-0.185</td><td title="1.79">1.79</td><td title="-0.288">-0.288</td><td title="-0.684">-0.684</td><td title="124">124</td><td title="0">0</td></tr><tr><td title="-1.16">-1.16</td><td title="0.878">0.878</td><td title="1.55">1.55</td><td title="-1.12">-1.12</td><td title="-0.237">-0.237</td><td title="70">70</td><td title="0">0</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>정상 vs 사기 거래 수</h3><p class="note">284,315 대 492. 로그 눈금이라 막대 높이가 비슷해 보인다</p><div class="plot" id="plot-0" role="img" aria-label="정상 vs 사기 거래 수"></div></div><div class="chart"><h3>거래 금액: 정상 vs 사기</h3><p class="note">사기는 아주 작은 금액 (시험 결제) 이 많다</p><div class="plot" id="plot-1" role="img" aria-label="거래 금액: 정상 vs 사기"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>카드 거래 한 건</td></tr><tr><td>② 입력 X</td><td>금액 · V1~V28</td></tr><tr><td>③ 출력 y</td><td>사기인가 (Class 0/1)</td></tr><tr><td>④ 평가지표</td><td>정밀도 · 재현율 (정확도는 함정)</td></tr><tr><td>⑤ 기준선</td><td>전부 &#x27;정상&#x27;</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">always normal        accuracy 99.874%  precision 0%  recall 0%
+logistic regression  accuracy 99.917%  precision 77%  recall 49%</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://doi.org/10.1109/SSCI.2015.33" target="_blank" rel="noopener">Dal Pozzolo et al. (2015) Calibrating Probability with Undersampling for Unbalanced Classification, IEEE SSCI</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>카드사 · 은행 · 증권, 간편결제 · 핀테크, 금융보안</dd><dt>직무</dt><dd>FDS (이상거래탐지) 분석가, 리스크 모델러, 자금세탁방지 (AML) 컴플라이언스</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../korean_reviews/">← 04 한국어 리뷰 감성 분석</a><a href="../support_routing/">06 고객 문의 자동 분류 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "정상 vs 사기 거래 수", "note": "284,315 대 492. 로그 눈금이라 막대 높이가 비슷해 보인다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["정상", "사기"], "y": [284315, 492]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"type": "log", "title": "거래 수 (로그 눈금)"}}}, {"title": "거래 금액: 정상 vs 사기", "note": "사기는 아주 작은 금액 (시험 결제) 이 많다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "정상", "x": [0.058, 0.173, 0.288, 0.404, 0.519, 0.635, 0.75, 0.865, 0.981, 1.096, 1.212, 1.327, 1.442, 1.558, 1.673, 1.788, 1.904, 2.019, 2.135, 2.25, 2.365, 2.481, 2.596, 2.712, 2.827, 2.942, 3.058, 3.173, 3.288, 3.404, 3.519, 3.635, 3.75, 3.865, 3.981, 4.096, 4.212, 4.327, 4.442], "y": [0.09629, 0.02015, 0.82919, 0.27693, 0.40612, 0.19171, 0.31748, 0.25544, 0.40539, 0.67678, 0.46017, 0.47721, 0.51418, 0.47349, 0.47361, 0.43764, 0.46373, 0.3767, 0.35021, 0.29602, 0.21859, 0.18262, 0.13726, 0.10681, 0.07645, 0.05286, 0.03966, 0.0228, 0.0142, 0.00741, 0.005, 0.00283, 0.00082, 0.00061, 0.00012, 9e-05, 0.0, 6e-05, 3e-05]}, {"type": "bar", "marker": {"color": "var:series-2"}, "name": "사기", "x": [0.058, 0.173, 0.288, 0.404, 0.519, 0.635, 0.75, 0.865, 0.981, 1.096, 1.212, 1.327, 1.442, 1.558, 1.673, 1.788, 1.904, 2.019, 2.135, 2.25, 2.365, 2.481, 2.596, 2.712, 2.827, 2.942, 3.058, 3.173, 3.288, 3.404, 3.519, 3.635, 3.75, 3.865, 3.981, 4.096, 4.212, 4.327, 4.442], "y": [0.5813, 0.08808, 2.62466, 0.14092, 0.17615, 0.15854, 0.17615, 0.12331, 0.29946, 0.15854, 0.07046, 0.21138, 0.17615, 0.229, 0.21138, 0.14092, 0.21138, 0.91599, 0.24661, 0.229, 0.28184, 0.31707, 0.19377, 0.19377, 0.229, 0.12331, 0.03523, 0.08808, 0.03523, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], "layout": {"xaxis": {"title": "log10(금액 + 1)"}, "yaxis": {"title": "비율 (밀도)"}, "barmode": "overlay"}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

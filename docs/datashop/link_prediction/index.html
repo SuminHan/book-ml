@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>연결 예측: 사람 · 친구 추천 · 현실의 데이터</title>
+<meta name="description" content="연구기관 1,005명이 주고받은 이메일 연결망. 아직 연결 안 된 두 사람, 곧 연락하게 될까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
+<div class="hero">
+  <div>
+    <div class="tag"><span class="num">08</span><span>플랫폼 · 서비스</span></div>
+    <h1>연결 예측: 사람 · 친구 추천</h1>
+    <div class="chips"><span class="chip">링크 예측 (Link Prediction)</span><span class="chip">친구 · 연결 추천</span><span class="chip">그래프 데이터</span></div>
+    <p class="teaser-big">연구기관 1,005명이 주고받은 이메일 연결망. 아직 연결 안 된 두 사람, 곧 연락하게 될까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/08_link_prediction.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
+      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/08_link_prediction.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+  </div>
+  <img src="thumb.png" alt="연결 예측: 사람 · 친구 추천 데이터 샘플" width="480" height="300">
+</div>
+<section class="block"><h2>데이터</h2>
+  <div class="data-name">email-Eu-core · 약 0.1MB</div><p class="src">SNAP, Stanford (Leskovec, Kleinberg &amp; Faloutsos, 2007; Yin et al., 2017). 유럽 한 연구기관 구성원 1,005명 사이의 이메일 연결 25,571개 + 소속 부서 42개</p>
+  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>사람 a</th><th>사람 b</th><th>a 의 부서</th><th>b 의 부서</th></tr></thead><tbody><tr><td title="0">0</td><td title="1">1</td><td title="1">1</td><td title="1">1</td></tr><tr><td title="0">0</td><td title="5">5</td><td title="1">1</td><td title="25">25</td></tr><tr><td title="0">0</td><td title="6">6</td><td title="1">1</td><td title="25">25</td></tr><tr><td title="0">0</td><td title="17">17</td><td title="1">1</td><td title="1">1</td></tr><tr><td title="0">0</td><td title="18">18</td><td title="1">1</td><td title="1">1</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>사람마다 연결 수</h3><p class="note">몇 명에게 연결이 몰려 있다</p><div class="plot" id="plot-0" role="img" aria-label="사람마다 연결 수"></div></div><div class="chart"><h3>연결된 쌍 중 같은 부서 비율</h3><p class="note">연결의 34% 가 같은 부서 안. 부서가 42개라 무작위라면 훨씬 낮을 것</p><div class="plot" id="plot-1" role="img" aria-label="연결된 쌍 중 같은 부서 비율"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>두 사람의 쌍</td></tr><tr><td>② 입력 X</td><td>지금까지의 연결망 (공통 지인 수, 같은 부서인가 …)</td></tr><tr><td>③ 출력 y</td><td>둘이 연결되는가</td></tr><tr><td>④ 평가지표</td><td>ROC-AUC (진짜 연결을 더 높게 매겼나)</td></tr><tr><td>⑤ 기준선</td><td>무작위 점수 (AUC 0.5)</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">random score           : AUC 0.49
+same department        : AUC 0.65
+number of common friends: AUC 0.94</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://doi.org/10.1002/asi.20591" target="_blank" rel="noopener">Liben-Nowell &amp; Kleinberg (2007) The link-prediction problem for social networks, JASIST</a></li><li><a href="https://doi.org/10.1145/3097983.3098069" target="_blank" rel="noopener">Yin, Benson, Leskovec &amp; Gleich (2017) Local Higher-Order Graph Clustering, KDD (email-Eu-core)</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>SNS · 메신저, 커리어 네트워크, 커머스 (함께 산 상품), 금융 (거래 연결망)</dd><dt>직무</dt><dd>그래프 ML 엔지니어, 추천 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../hotel_booking/">← 07 여행 예약: 취소와 가격</a><a href="../bike_demand/">09 공유 자전거 수요 예측 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "사람마다 연결 수", "note": "몇 명에게 연결이 몰려 있다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": [5.0, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0, 85.0, 95.0, 105.0, 115.0, 125.0, 135.0, 145.0, 155.0, 165.0, 175.0, 185.0, 195.0, 205.0, 215.0, 225.0, 235.0, 245.0, 255.0, 265.0, 275.0, 285.0, 295.0, 305.0, 315.0, 325.0, 335.0, 345.0], "y": [325, 150, 150, 92, 77, 54, 36, 27, 26, 12, 9, 8, 8, 10, 5, 2, 4, 3, 1, 0, 0, 3, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]}], "layout": {"xaxis": {"title": "연결 수 (10개 단위)"}, "yaxis": {"title": "사람 수"}}}, {"title": "연결된 쌍 중 같은 부서 비율", "note": "연결의 34% 가 같은 부서 안. 부서가 42개라 무작위라면 훨씬 낮을 것", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["같은 부서", "다른 부서"], "y": [33.6, 66.4]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "%"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

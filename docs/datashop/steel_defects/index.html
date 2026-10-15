@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>강판 표면 결함 분류 · 현실의 데이터</title>
+<meta name="description" content="철강 판 1,941장, 결함 7종류. 결함 모양을 잰 숫자 27개로 어떤 결함인지 맞힐 수 있을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
+<div class="hero">
+  <div>
+    <div class="tag"><span class="num">12</span><span>제조</span></div>
+    <h1>강판 표면 결함 분류</h1>
+    <div class="chips"><span class="chip">품질 검사</span><span class="chip">결함 종류 분류</span><span class="chip">검사 자동화</span></div>
+    <p class="teaser-big">철강 판 1,941장, 결함 7종류. 결함 모양을 잰 숫자 27개로 어떤 결함인지 맞힐 수 있을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/12_steel_defects.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
+      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/12_steel_defects.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+  </div>
+  <img src="thumb.png" alt="강판 표면 결함 분류 데이터 샘플" width="480" height="300">
+</div>
+<section class="block"><h2>데이터</h2>
+  <div class="data-name">Steel Plates Faults · 약 0.1MB</div><p class="src">UCI, Semeion 연구소 (Buscema, Terzi &amp; Tastle, 2010). 강판 결함 1,941개, 결함 영역의 위치 · 면적 · 둘레 · 밝기 · 강판 종류 · 두께 등 27개, 결함 7종류</p>
+  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>X_Minimum</th><th>Y_Minimum</th><th>Pixels_Areas</th><th>Sum_of_Luminosity</th><th>Steel_Plate_Thickness</th><th>TypeOfSteel_A300</th><th>fault</th></tr></thead><tbody><tr><td title="42">42</td><td title="270900">270900</td><td title="267">267</td><td title="24220">24220</td><td title="80">80</td><td title="1">1</td><td title="Pastry">Pastry</td></tr><tr><td title="645">645</td><td title="2538079">2538079</td><td title="108">108</td><td title="11397">11397</td><td title="80">80</td><td title="1">1</td><td title="Pastry">Pastry</td></tr><tr><td title="829">829</td><td title="1553913">1553913</td><td title="71">71</td><td title="7972">7972</td><td title="100">100</td><td title="1">1</td><td title="Pastry">Pastry</td></tr><tr><td title="853">853</td><td title="369370">369370</td><td title="176">176</td><td title="18996">18996</td><td title="290">290</td><td title="0">0</td><td title="Pastry">Pastry</td></tr><tr><td title="1289">1289</td><td title="498078">498078</td><td title="2409">2409</td><td title="246930">246930</td><td title="185">185</td><td title="0">0</td><td title="Pastry">Pastry</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>결함 종류별 개수</h3><p class="note">&#x27;Other_Faults&#x27; (기타) 가 가장 많다</p><div class="plot" id="plot-0" role="img" aria-label="결함 종류별 개수"></div></div><div class="chart"><h3>결함 종류별 결함 넓이 (중앙값)</h3><p class="note">종류마다 크기가 수십 배 다르다</p><div class="plot" id="plot-1" role="img" aria-label="결함 종류별 결함 넓이 (중앙값)"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>결함 하나</td></tr><tr><td>② 입력 X</td><td>결함 영역의 크기 · 모양 · 밝기 · 강판 종류 · 두께 (27개)</td></tr><tr><td>③ 출력 y</td><td>결함 종류 7가지</td></tr><tr><td>④ 평가지표</td><td>정확도 + 종류별 재현율</td></tr><tr><td>⑤ 기준선</td><td>가장 흔한 종류</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">baseline (always &#x27;Other_Faults&#x27;): accuracy 34.6%
+random forest                   : accuracy 80.3%</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://archive.ics.uci.edu/dataset/198/steel+plates+faults" target="_blank" rel="noopener">UCI Steel Plates Faults 데이터 설명 (Semeion Research Center)</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>철강 · 금속, 자동차 부품, 비전 검사 장비</dd><dt>직무</dt><dd>비전 검사 AI 엔지니어, 품질 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../predictive_maintenance/">← 11 설비 고장 예측 (예지보전)</a><a href="../bearing_vibration/">13 베어링 진동으로 고장 진단 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "결함 종류별 개수", "note": "'Other_Faults' (기타) 가 가장 많다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["Other_Faults", "Bumps", "K_Scatch", "Z_Scratch", "Pastry", "Stains", "Dirtiness"], "y": [673, 402, 391, 190, 158, 72, 55]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "개수"}}}, {"title": "결함 종류별 결함 넓이 (중앙값)", "note": "종류마다 크기가 수십 배 다르다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["Stains", "Bumps", "Dirtiness", "Other_Faults", "Z_Scratch", "Pastry", "K_Scatch"], "y": [16.5, 120.5, 145.0, 146.0, 146.0, 209.0, 6281.0]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"type": "log", "title": "픽셀 수 (로그 눈금)"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

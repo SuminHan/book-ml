@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반도체 공정 불량 예측 · 현실의 데이터</title>
+<meta name="description" content="반도체 생산 라인 센서 590개, 제품 1,567개. 센서만 보고 불량을 미리 알 수 있을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
+<div class="hero">
+  <div>
+    <div class="tag"><span class="num">10</span><span>제조</span></div>
+    <h1>반도체 공정 불량 예측</h1>
+    <div class="chips"><span class="chip">수율 · 불량 예측</span><span class="chip">센서 데이터</span><span class="chip">공정 이상 탐지</span></div>
+    <p class="teaser-big">반도체 생산 라인 센서 590개, 제품 1,567개. 센서만 보고 불량을 미리 알 수 있을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/10_semiconductor_yield.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
+      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/10_semiconductor_yield.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+  </div>
+  <img src="thumb.png" alt="반도체 공정 불량 예측 데이터 샘플" width="480" height="300">
+</div>
+<section class="block"><h2>데이터</h2>
+  <div class="data-name">SECOM · 약 2MB</div><p class="src">UCI (McCann &amp; Johnston, 2008), 반도체 제조 공정 센서 590개 × 1,567개 제품, 불량 104개. 센서 이름은 공개되지 않음</p>
+  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>label</th></tr></thead><tbody><tr><td title="3.03e+03">3.03e+03</td><td title="2.56e+03">2.56e+03</td><td title="2.19e+03">2.19e+03</td><td title="1.41e+03">1.41e+03</td><td title="1.36">1.36</td><td title="100">100</td><td title="97.6">97.6</td><td title="0.124">0.124</td><td title="pass">pass</td></tr><tr><td title="3.1e+03">3.1e+03</td><td title="2.47e+03">2.47e+03</td><td title="2.23e+03">2.23e+03</td><td title="1.46e+03">1.46e+03</td><td title="0.829">0.829</td><td title="100">100</td><td title="102">102</td><td title="0.125">0.125</td><td title="pass">pass</td></tr><tr><td title="2.93e+03">2.93e+03</td><td title="2.56e+03">2.56e+03</td><td title="2.19e+03">2.19e+03</td><td title="1.7e+03">1.7e+03</td><td title="1.51">1.51</td><td title="100">100</td><td title="95.5">95.5</td><td title="0.124">0.124</td><td title="fail">fail</td></tr><tr><td title="2.99e+03">2.99e+03</td><td title="2.48e+03">2.48e+03</td><td title="2.2e+03">2.2e+03</td><td title="910">910</td><td title="1.32">1.32</td><td title="100">100</td><td title="104">104</td><td title="0.122">0.122</td><td title="pass">pass</td></tr><tr><td title="3.03e+03">3.03e+03</td><td title="2.5e+03">2.5e+03</td><td title="2.23e+03">2.23e+03</td><td title="1.33e+03">1.33e+03</td><td title="1.53">1.53</td><td title="100">100</td><td title="100">100</td><td title="0.123">0.123</td><td title="pass">pass</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>센서마다 빈칸 비율</h3><p class="note">대부분 거의 다 차 있지만, 반 이상 빈 센서도 있다</p><div class="plot" id="plot-0" role="img" aria-label="센서마다 빈칸 비율"></div></div><div class="chart"><h3>달마다 불량률</h3><p class="note">달마다 다르다: 시간 순서로 나눠야 하는 이유</p><div class="plot" id="plot-1" role="img" aria-label="달마다 불량률"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>제품 (웨이퍼) 하나</td></tr><tr><td>② 입력 X</td><td>센서 값 590개 (빈칸 많음)</td></tr><tr><td>③ 출력 y</td><td>최종 검사 불량인가</td></tr><tr><td>④ 평가지표</td><td>재현율 · 정밀도 (불량을 놓치지 않기)</td></tr><tr><td>⑤ 기준선</td><td>전부 &#x27;양품&#x27;</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">all good             accuracy 94.5%  precision 0%  recall 0%
+logistic (balanced)  accuracy 90.7%  precision 0%  recall 0%
+re-inspect the top 20%: caught 6 of 26 fails (re-inspecting a random 20% would catch about 5)
+ROC-AUC 0.59  (0.5 = coin flip)</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://archive.ics.uci.edu/dataset/179/secom" target="_blank" rel="noopener">UCI SECOM 데이터 설명 (McCann &amp; Johnston, 2008)</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>반도체 · 디스플레이 제조, 배터리 · 소재, 스마트팩토리 솔루션</dd><dt>직무</dt><dd>공정 데이터 엔지니어, 수율 · 품질 분석가, 제조 AI 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../bike_demand/">← 09 공유 자전거 수요 예측</a><a href="../predictive_maintenance/">11 설비 고장 예측 (예지보전) →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "센서마다 빈칸 비율", "note": "대부분 거의 다 차 있지만, 반 이상 빈 센서도 있다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], "y": [538, 0, 0, 20, 0, 0, 0, 0, 0, 4, 4, 0, 16, 0, 0, 0, 0, 4, 4, 0]}], "layout": {"xaxis": {"title": "빈칸 비율 (%)"}, "yaxis": {"title": "센서 수"}}}, {"title": "달마다 불량률", "note": "달마다 다르다: 시간 순서로 나눠야 하는 이유", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["2008-07", "2008-08", "2008-09", "2008-10"], "y": [22.2, 9.2, 2.9, 6.1]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "불량률 (%)"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

@@ -1,7 +1,8 @@
 """데이터 가게 (Data Shop): 회사 문제 영역별 공개 데이터 노트북 + 웹 페이지 원본.
    ~/Documents/manim_shorts/_env/v/bin/python make_shop.py          # 노트북 7개를 만들고 실행해 출력까지 저장 + docs/datashop/index.html
    ~/Documents/manim_shorts/_env/v/bin/python make_shop.py --no-run # 실행 없이 만들기만
-노트북 = notebooks/datashop/<번호>_<slug>.ipynb (번호는 SECTIONS 순서대로 자동), 웹 = docs/datashop/index.html (smhanlab.com/book-ml/datashop/).
+노트북 = notebooks/datashop/<번호>_<slug>.ipynb (번호는 SECTIONS 순서대로 자동), 웹 = docs/datashop/ (smhanlab.com/book-ml/datashop/): 목록 + 데이터마다 페이지 (previews.py 그림 · 그래프, site_pages.py 틀).
+   --pages : 노트북은 그대로 두고 웹 페이지만 다시 만든다 (결과 줄은 저장된 노트북 출력에서 읽는다)
 1주 2차시 '문제 정형화와 평가지표' 의 다섯 칸 (한 행 · 입력 X · 출력 y · 평가지표 · 기준선) 을 회사 문제로 연습한다.
 주제는 산업 분야별로 '그 분야의 회사들이 실제로 푸는 문제' 로 잡았다 (특정 회사 이름은 쓰지 않는다). 데이터는 그와 닮은 공개 데이터.
 데이터는 모두 로그인 없이 받는다. 코드 칸은 영어, 설명은 한국어."""
@@ -112,8 +113,8 @@ plt.tight_layout(); plt.show()"""),
 - **옷 사진 생성**: StyleGAN 으로 옷 입은 사람을 만든 연구 (StyleGAN-Human) 는 전신 사진 23만 장 SHHQ 를 썼다 (신청 필요)."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="card_fraud", title="카드 이상거래 탐지", sector="금융 · 핀테크",
-     keywords=["컴플라이언스", "이상거래탐지 · 자금세탁방지", "신뢰성 · 설명가능성"],
+dict(slug="card_fraud", title="카드 이상거래 탐지 (보이스피싱 등)", sector="금융 · 핀테크",
+     keywords=["이상거래탐지 (FDS)", "보이스피싱 · 송금 사기", "자금세탁방지 · 설명가능성"],
      teaser="카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?",
      data="Credit Card Fraud Detection (ULB)", data_src="유럽 카드 소지자의 2013년 9월 이틀치 거래, OpenML 1597 (원본 Kaggle mlg-ulb). 성분은 개인정보 때문에 PCA 로 바꾼 V1~V28. OpenML 판에는 시각 열이 없지만 행이 시간 순서대로 놓여 있다",
      size="약 150MB",
@@ -163,6 +164,7 @@ for name, pred in [("always normal", np.zeros(len(y), dtype=int)), ("logistic re
 
 ## 다른 문제로 바꿔 보기
 
+- **보이스피싱**: 피해자가 직접 송금하는 사기라 카드 도용과 모양이 다르다. 한 행 = 송금 한 건, 입력에 '처음 보내는 계좌인가 · 평소보다 큰 금액인가 · 이체 직후 현금 인출이 있었나' 같은 **맥락** 이 필요하다. 이 데이터에는 그런 열이 없다 (송금 사기를 시뮬레이션한 PaySim 데이터가 있다, Kaggle).
 - **자금세탁방지**: 한 행이 '거래' 가 아니라 '계좌' 라면? IBM AML 데이터 (Kaggle, 1주 2차시 실습) 로 해 볼 수 있다.
 - **설명가능성**: V1~V28 은 개인정보 때문에 원래 뜻을 지운 숫자다. 이 모델이 '왜' 사기라고 했는지 고객에게 설명할 수 있을까? (7주차 SHAP)
 - **컴플라이언스**: 놓친 사기 한 건과, 정상 고객의 카드를 잘못 막은 한 건. 어느 손해가 더 큰가에 따라 지표가 달라진다."""),
@@ -727,6 +729,175 @@ print(f"ROC-AUC {roc_auc_score(y[te], score):.2f}  (0.5 = coin flip)")"""),
 - **원인 찾기**: '불량일까' 대신 '불량과 가장 관련 있는 센서 10개' 를 출력으로 정하면? 지표는 무엇일까? (엔지니어가 확인해 줘야 한다)
 - **이상 탐지**: 불량 라벨이 없다면? 평소와 다른 제품을 찾는 문제로 바꿀 수 있다 (4주차 k-means · 가우시안)."""),
 ]),
+# ------------------------------------------------------------------
+dict(slug="predictive_maintenance", title="설비 고장 예측 (예지보전)", sector="제조",
+     keywords=["예지보전", "설비 고장 예측", "다운타임 줄이기"],
+     teaser="밀링 설비 가동 기록 1만 건, 고장은 3.4%. 온도 · 회전 속도 · 공구 마모로 고장을 미리 알 수 있을까?",
+     data="AI4I 2020 Predictive Maintenance", data_src="UCI (Matzka, 2020). 실제 밀링 설비를 본떠 만든 합성 데이터 10,000건: 공기 · 공정 온도, 회전 속도, 토크, 공구 마모 시간, 고장 여부와 고장 종류 5가지",
+     size="약 0.5MB",
+     five=[("① 한 행", "가동 기록 한 건"), ("② 입력 X", "제품 등급 · 온도 · 회전 속도 · 토크 · 공구 마모"), ("③ 출력 y", "고장인가 (Machine failure)"),
+           ("④ 평가지표", "정밀도 · 재현율"), ("⑤ 기준선", "늘 '정상'")],
+     cells=[
+("md", """## 입장: 데이터 받기"""),
+("code", """URL = "https://archive.ics.uci.edu/static/public/601/ai4i+2020+predictive+maintenance+dataset.zip"
+with zipfile.ZipFile(download(URL, "data/ai4i2020.zip")) as z:
+    df = pd.read_csv(z.open("ai4i2020.csv"))
+print(df.shape)
+df.head()"""),
+("md", """## 열어 보기
+
+고장은 몇 %? 그리고 `TWF`, `HDF`, `PWF`, `OSF`, `RNF` 는 무엇일까? (공구 마모 · 열 방출 · 전력 · 과부하 · 무작위 고장, 즉 **고장의 종류**)"""),
+("code", """print(f"failure rate: {df['Machine failure'].mean():.1%}")
+modes = ["TWF", "HDF", "PWF", "OSF", "RNF"]
+print(df[modes].sum().rename("count"))
+fig, axs = plt.subplots(1, 3, figsize=(12, 3))
+for ax, col in zip(axs, ["Tool wear [min]", "Torque [Nm]", "Rotational speed [rpm]"]):
+    for f, name in [(0, "ok"), (1, "failure")]:
+        ax.hist(df.loc[df["Machine failure"] == f, col], bins=40, density=True, alpha=0.6, label=name)
+    ax.set_xlabel(col); ax.legend()
+plt.tight_layout(); plt.show()"""),
+("md", """## 문제 하나 골라 보기: 가동 기록 → 고장일까
+
+**함정**: 고장 종류 열 (`TWF` …) 은 고장이 **난 뒤에** 적히는 값이다. 입력에 넣으면 답을 보고 맞히는 셈이다. 넣을 때와 뺄 때를 비교한다."""),
+("code", """from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.model_selection import train_test_split
+
+def precision_recall(y_true, y_pred):
+    tp = np.sum((y_pred == 1) & (y_true == 1)); fp = np.sum((y_pred == 1) & (y_true == 0)); fn = np.sum((y_pred == 0) & (y_true == 1))
+    return (tp / (tp + fp) if tp + fp else 0.0), tp / (tp + fn)
+
+sensors = ["Air temperature [K]", "Process temperature [K]", "Rotational speed [rpm]", "Torque [Nm]", "Tool wear [min]"]
+X = pd.get_dummies(df[sensors + ["Type"] + modes], columns=["Type"], dtype=float)
+y = df["Machine failure"].values
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.3, stratify=y, random_state=0)
+
+p, r = precision_recall(yte, np.zeros(len(yte), dtype=int))
+print(f"{'always ok':24s} accuracy {np.mean(yte == 0):.1%}  precision {p:.0%}  recall {r:.0%}")
+for name, cols in [("sensors only", [c for c in X.columns if c not in modes]), ("+ failure-mode columns", list(X.columns))]:
+    m = HistGradientBoostingClassifier(random_state=0).fit(Xtr[cols], ytr)
+    pred = m.predict(Xte[cols]); p, r = precision_recall(yte, pred)
+    print(f"{name:24s} accuracy {np.mean(yte == pred):.1%}  precision {p:.0%}  recall {r:.0%}")"""),
+("md", """## 다른 문제로 바꿔 보기
+
+- **예지보전의 진짜 질문**: '지금 고장인가' 가 아니라 '**앞으로 몇 시간 안에** 고장 날까' 다. 그러려면 한 행이 '설비 × 시각' 이고, 미래의 고장을 y 로 붙여야 한다. 이 데이터는 시간 순서가 없는 합성 데이터라 그걸 할 수 없다.
+- **고장 종류 맞히기**: y 를 '고장 종류 5가지 중 무엇' 으로 바꾸면? 정비 팀이 무엇을 준비할지 정할 수 있다.
+- 이 데이터는 **합성** 이다. 실제 공장 데이터 (예: 반도체 SECOM) 보다 훨씬 깔끔하고 잘 맞는다는 점도 기억하자."""),
+]),
+# ------------------------------------------------------------------
+dict(slug="steel_defects", title="강판 표면 결함 분류", sector="제조",
+     keywords=["품질 검사", "결함 종류 분류", "검사 자동화"],
+     teaser="철강 판 1,941장, 결함 7종류. 결함 모양을 잰 숫자 27개로 어떤 결함인지 맞힐 수 있을까?",
+     data="Steel Plates Faults", data_src="UCI, Semeion 연구소 (Buscema, Terzi & Tastle, 2010). 강판 결함 1,941개, 결함 영역의 위치 · 면적 · 둘레 · 밝기 · 강판 종류 · 두께 등 27개, 결함 7종류",
+     size="약 0.1MB",
+     five=[("① 한 행", "결함 하나"), ("② 입력 X", "결함 영역의 크기 · 모양 · 밝기 · 강판 종류 · 두께 (27개)"),
+           ("③ 출력 y", "결함 종류 7가지"), ("④ 평가지표", "정확도 + 종류별 재현율"), ("⑤ 기준선", "가장 흔한 종류")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+숫자 표 (`Faults.NNA`) 와 열 이름 (`Faults27x7_var`) 이 따로 들어 있다. 마지막 7개 열이 결함 종류 (하나만 1)."""),
+("code", """URL = "https://archive.ics.uci.edu/static/public/198/steel+plates+faults.zip"
+with zipfile.ZipFile(download(URL, "data/steel_faults.zip")) as z:
+    names = z.read("Faults27x7_var").decode().split()
+    df = pd.read_csv(z.open("Faults.NNA"), sep=r"\\s+", header=None, names=names)
+faults = names[-7:]
+df["fault"] = df[faults].idxmax(axis=1)
+print(df.shape)
+print(df["fault"].value_counts())"""),
+("md", """## 열어 보기
+
+결함 종류마다 크기 (`Pixels_Areas`) 와 밝기 (`Sum_of_Luminosity`) 가 다를까?"""),
+("code", """print(df.groupby("fault")[["Pixels_Areas", "Steel_Plate_Thickness", "Maximum_of_Luminosity"]].median().round(0))
+plt.figure(figsize=(7, 4))
+for f in df["fault"].unique():
+    s = df[df["fault"] == f]
+    plt.scatter(np.log10(s["Pixels_Areas"]), s["Maximum_of_Luminosity"], s=8, alpha=0.6, label=f)
+plt.xlabel("log10(defect area in pixels)"); plt.ylabel("max luminosity"); plt.legend(fontsize=8); plt.show()"""),
+("md", """## 문제 하나 골라 보기: 결함 → 종류 (7가지 분류)
+
+기준선 = 가장 흔한 종류. 모델 = 랜덤 포레스트 (7주차). 무엇을 많이 틀릴까?"""),
+("code", """from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+
+X, y = df[names[:-7]], df["fault"]
+Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.3, stratify=y, random_state=0)
+most_common = ytr.value_counts().idxmax()
+m = RandomForestClassifier(500, random_state=0).fit(Xtr, ytr)
+pred = m.predict(Xte)
+print(f"baseline (always '{most_common}'): accuracy {np.mean(yte == most_common):.1%}")
+print(f"random forest                   : accuracy {np.mean(yte == pred):.1%}")
+print("recall per fault:", pd.Series(yte.values == pred).groupby(yte.values).mean().round(2).to_dict())"""),
+("md", """**관찰**: 'Pastry' 가 가장 많이 틀린다. 'Other_Faults' (기타 결함) 는 가장 많지만, '기타' 라는 라벨은 사람이 분류하기 애매했던 것들의 모음이라 경계가 흐리다. 라벨을 어떻게 나눴는지도 문제 정의의 일부다.
+
+## 다른 문제로 바꿔 보기
+
+- **검사 자동화**: 현장에서는 이 27개 숫자가 아니라 **카메라 사진** 이 들어온다. 한 행 = 사진, y = 결함 위치 (상자) + 종류로 바꾸면? (10주차 CNN)
+- '정상 강판' 이 이 데이터에는 없다. 결함 여부부터 가려야 한다면 어떤 데이터가 더 필요할까?
+- 결함 종류마다 비용이 다르다면 (예: 긁힘은 재가공, 얼룩은 폐기) 지표를 어떻게 바꿀까?"""),
+]),
+# ------------------------------------------------------------------
+dict(slug="bearing_vibration", title="베어링 진동으로 고장 진단", sector="제조",
+     keywords=["진동 · 센서 신호", "고장 진단", "상태 기반 정비"],
+     teaser="모터 베어링에 붙인 진동 센서, 1초에 1만 2천 번. 소리만 듣고 어디가 망가졌는지 알 수 있을까?",
+     data="CWRU Bearing Data", data_src="Case Western Reserve University Bearing Data Center. 모터 베어링 진동 (12 kHz) 녹음: 정상 · 내륜 · 볼 · 외륜 결함 (지름 0.007인치, 부하 0) 4개 파일",
+     size="약 13MB",
+     five=[("① 한 행", "진동 조각 하나 (1,024 샘플 ≈ 0.085초)"), ("② 입력 X", "조각의 통계 (RMS · 첨도 · 최댓값 …) 또는 파형 그대로"),
+           ("③ 출력 y", "정상 / 내륜 / 볼 / 외륜"), ("④ 평가지표", "정확도 (네 종류 조각 수가 비슷하다)"), ("⑤ 기준선", "가장 흔한 종류")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+`.mat` (MATLAB) 파일 4개. 각 파일 = 같은 모터를 한 상태로 10초 정도 돌린 진동 녹음. `DE` = 구동 쪽 (drive end) 센서."""),
+("code", """from scipy.io import loadmat
+FILES = {"normal": 97, "inner race": 105, "ball": 118, "outer race": 130}
+signals = {}
+for state, num in FILES.items():
+    mat = loadmat(download(f"https://engineering.case.edu/sites/default/files/{num}.mat", f"data/cwru_{num}.mat"))
+    key = [k for k in mat if k.endswith("DE_time")][0]
+    signals[state] = mat[key].ravel()
+    print(f"{state:11s} {len(signals[state]):7d} samples = {len(signals[state]) / 12000:.1f} s")"""),
+("md", """## 열어 보기
+
+같은 0.05초를 네 상태로 그려 보자. 눈으로 구분이 될까?"""),
+("code", """fig, axs = plt.subplots(4, 1, figsize=(10, 6), sharex=True, sharey=True)
+t = np.arange(600) / 12000
+for ax, (state, s) in zip(axs, signals.items()):
+    ax.plot(t, s[:600], lw=0.8); ax.set_ylabel(state, rotation=0, ha="right")
+axs[-1].set_xlabel("seconds"); plt.tight_layout(); plt.show()"""),
+("md", """## 문제 하나 골라 보기: 진동 조각 → 상태
+
+녹음을 1,024 샘플씩 잘라 한 행으로 만든다. 조각마다 통계 6개: RMS (세기), 최댓값, 첨도 (뾰족한 충격이 있나), 왜도, 파고율 (최댓값 ÷ RMS), 영점 교차 수.
+**나누기 주의**: 같은 녹음의 이웃한 조각은 거의 같다. 무작위로 섞으면 시험이 너무 쉬워진다. 그래서 녹음마다 **앞 70% 시간 → 학습, 뒤 30% → 시험**."""),
+("code", """from scipy.stats import kurtosis, skew
+from sklearn.ensemble import RandomForestClassifier
+
+def chunk_features(x):
+    \"\"\"Six simple statistics of one vibration chunk\"\"\"
+    rms = np.sqrt(np.mean(x ** 2))
+    return [rms, np.max(np.abs(x)), kurtosis(x), skew(x), np.max(np.abs(x)) / rms, np.sum(np.diff(np.sign(x)) != 0)]
+
+def make_rows(signals, size=1024, train_share=0.7):
+    rows = []
+    for state, s in signals.items():
+        n = len(s) // size
+        for k in range(n):
+            rows.append(chunk_features(s[k * size:(k + 1) * size]) + [state, "train" if k < n * train_share else "test"])
+    return pd.DataFrame(rows, columns=["rms", "peak", "kurtosis", "skew", "crest", "zero_cross", "state", "split"])
+
+data = make_rows(signals)
+print(data.groupby(["split", "state"]).size().unstack())
+tr, te = data[data["split"] == "train"], data[data["split"] == "test"]
+feats = ["rms", "peak", "kurtosis", "skew", "crest", "zero_cross"]
+most_common = tr["state"].value_counts().idxmax()
+m = RandomForestClassifier(300, random_state=0).fit(tr[feats], tr["state"])
+print(f"\\nbaseline (always '{most_common}'): accuracy {np.mean(te['state'] == most_common):.1%}")
+print(f"random forest on 6 statistics : accuracy {np.mean(te['state'] == m.predict(te[feats])):.1%}")
+print(data.groupby("state")[["rms", "kurtosis"]].mean().round(2))"""),
+("md", """**관찰**: 실험실에서 한 모터로 잰 깨끗한 데이터라 아주 잘 맞는다. 현실에서는 다른 모터, 다른 부하, 공장 소음이 섞인다. **학습한 설비와 다른 설비로 시험** 하면 점수가 어떻게 될까? (이 데이터의 부하 1~3 마력 파일로 해 볼 수 있다: Smith & Randall 2015 참고)
+
+## 다른 문제로 바꿔 보기
+
+- **상태 기반 정비**: '어디가 망가졌나' 대신 '결함이 얼마나 큰가 (0.007 / 0.014 / 0.021 인치)' 를 맞히면 회귀 문제가 된다.
+- 결함 데이터가 없는 새 설비라면? 정상 진동만으로 '평소와 다르다' 를 찾는 이상 탐지로 바꾼다."""),
+]),
 ]
 
 # 학생이 직접 확인해 볼 논문 · 출처 (DOI · arXiv 는 2026-10-15 에 제목까지 확인)
@@ -744,11 +915,34 @@ PAPERS = {
     "link_prediction": [("Liben-Nowell & Kleinberg (2007) The link-prediction problem for social networks, JASIST", "https://doi.org/10.1002/asi.20591"),
                         ("Yin, Benson, Leskovec & Gleich (2017) Local Higher-Order Graph Clustering, KDD (email-Eu-core)", "https://doi.org/10.1145/3097983.3098069")],
     "bike_demand": [("Sathishkumar V E, Park & Cho (2020) Using data mining techniques for bike sharing demand prediction in metropolitan city, Computer Communications", "https://doi.org/10.1016/j.comcom.2020.02.007")],
+    "predictive_maintenance": [("Matzka (2020) Explainable Artificial Intelligence for Predictive Maintenance Applications, AI4I", "https://doi.org/10.1109/AI4I49448.2020.00023")],
+    "steel_defects": [("UCI Steel Plates Faults 데이터 설명 (Semeion Research Center)", "https://archive.ics.uci.edu/dataset/198/steel+plates+faults")],
+    "bearing_vibration": [("Smith & Randall (2015) Rolling element bearing diagnostics using the CWRU data: A benchmark study, MSSP", "https://doi.org/10.1016/j.ymssp.2015.04.021"),
+                          ("CWRU Bearing Data Center (데이터 원본 · 실험 장치 설명)", "https://engineering.case.edu/bearingdatacenter")],
     "semiconductor_yield": [("UCI SECOM 데이터 설명 (McCann & Johnston, 2008)", "https://archive.ics.uci.edu/dataset/179/secom")],
 }
 
+# 이 데이터에 관심 있을 곳: (업종, 직무). 특정 회사 이름은 쓰지 않는다
+FIT = {
+    "fashion_commerce": ("온라인 패션 · 이커머스 플랫폼, 리테일 · 패션 브랜드", "추천 시스템 엔지니어, 비전 AI 엔지니어, 상품 · MD 데이터 분석가"),
+    "shop_conversion": ("이커머스 · D2C 브랜드 (뷰티 등), 광고 · 마케팅 테크", "그로스 · 마케팅 데이터 분석가, CRM 데이터 사이언티스트"),
+    "movie_ratings": ("OTT · 동영상 스트리밍, 음악 · 웹툰 · 콘텐츠 플랫폼", "추천 · 랭킹 엔지니어, 개인화 ML 엔지니어"),
+    "korean_reviews": ("포털 · 검색, 커머스 리뷰 서비스, 브랜드 모니터링 · 마케팅 에이전시", "NLP 엔지니어, VOC (고객의 소리) 데이터 분석가"),
+    "card_fraud": ("카드사 · 은행 · 증권, 간편결제 · 핀테크, 금융보안", "FDS (이상거래탐지) 분석가, 리스크 모델러, 자금세탁방지 (AML) 컴플라이언스"),
+    "support_routing": ("고객 상담 · CX 소프트웨어, 콜센터, 금융 · 통신 고객센터", "대화형 AI · LLM 엔지니어, NLP 엔지니어, CX 데이터 분석가"),
+    "hotel_booking": ("여행 · 숙박 플랫폼, 항공 · 호텔, 모빌리티", "가격 (레비뉴) 매니지먼트 분석가, 수요예측 데이터 사이언티스트"),
+    "link_prediction": ("SNS · 메신저, 커리어 네트워크, 커머스 (함께 산 상품), 금융 (거래 연결망)", "그래프 ML 엔지니어, 추천 엔지니어"),
+    "bike_demand": ("모빌리티 · 공유 서비스, 물류 · 배달, 지자체 · 공공 데이터", "수요예측 데이터 사이언티스트, 운영 최적화 (OR) 엔지니어"),
+    "semiconductor_yield": ("반도체 · 디스플레이 제조, 배터리 · 소재, 스마트팩토리 솔루션", "공정 데이터 엔지니어, 수율 · 품질 분석가, 제조 AI 엔지니어"),
+    "predictive_maintenance": ("중공업 · 조선 · 자동차, 발전 · 플랜트, 산업 IoT 솔루션", "예지보전 데이터 사이언티스트, 설비 · 신뢰성 엔지니어"),
+    "steel_defects": ("철강 · 금속, 자동차 부품, 비전 검사 장비", "비전 검사 AI 엔지니어, 품질 엔지니어"),
+    "bearing_vibration": ("모터 · 기계 · 풍력, 철도 · 항공 정비, 산업 센서 · 진단 솔루션", "신호처리 · 진단 엔지니어, 예지보전 엔지니어"),
+    "form_understanding": ("회계 · 감사 법인, 은행 · 보험 (서류 심사), 문서 AI · OCR 솔루션", "문서 AI 엔지니어, OCR · 비전 엔지니어, 감사 데이터 분석가"),
+    "ai_usecases": ("AI 전환 (AX) 컨설팅, 기업 디지털 전략 · 혁신 조직, 공공 정책 연구", "AI 전략 컨설턴트, 데이터 기반 기획 · 정책 분석가"),
+}
+
 SECTIONS = ["커머스 · 콘텐츠", "금융 · 핀테크", "플랫폼 · 서비스", "제조", "전문 서비스"]
-assert set(PAPERS) == {it["slug"] for it in SHOP}
+assert set(PAPERS) == set(FIT) == {it["slug"] for it in SHOP}
 SHOP.sort(key=lambda it: SECTIONS.index(it["sector"]))          # 진열 순서 = 분야 순서 (같은 분야는 적은 순서)
 for k, it in enumerate(SHOP):
     it["num"] = f"{k + 1:02d}"
@@ -783,31 +977,43 @@ def notebook(item):
     return nb
 
 
-def page(items):
-    """docs/datashop/index.html: 처음엔 진열대 (분야 · 주제 · 한 줄 질문만), 누르면 데이터 · 다섯 칸 · Colab"""
-    data = [dict(num=i["num"], slug=i["slug"], title=i["title"], sector=i["sector"], keywords=i["keywords"], teaser=i["teaser"],
-                 data=i["data"], src=i["data_src"], size=i["size"], five=i["five"], papers=PAPERS[i["slug"]],
-                 colab=COLAB.format(i["file"]), github=GITHUB.format(i["file"])) for i in items]
-    tpl = open(os.path.join(HERE, "page_template.html"), encoding="utf-8").read()
-    return tpl.replace("/*__SHOP_DATA__*/[]", json.dumps(data, ensure_ascii=False)).replace("/*__SECTIONS__*/[]", json.dumps(SECTIONS, ensure_ascii=False))
+def build_site(items):
+    """docs/datashop/: 목록 + 데이터마다 페이지 (썸네일 · 샘플 · 그래프 · 결과 · 논문 · 관심 업종)"""
+    import previews, site_pages
+    out = os.path.join(ROOT, "docs", "datashop")
+    os.makedirs(out, exist_ok=True)
+    open(os.path.join(out, "shop.css"), "w", encoding="utf-8").write(site_pages.CSS)
+    page_items = []
+    for it in items:
+        page_items.append(dict(it, papers=PAPERS[it["slug"]], fit=FIT[it["slug"]], total=len(items),
+                               colab=COLAB.format(it["file"]), github=GITHUB.format(it["file"])))
+    for k, it in enumerate(page_items):
+        d = os.path.join(out, it["slug"]); os.makedirs(d, exist_ok=True)
+        pv = getattr(previews, it["slug"])(os.path.join(d, "thumb.png"))
+        res = previews.result_lines(os.path.join(HERE, it["file"] + ".ipynb"))
+        prev = page_items[k - 1] if k > 0 else None
+        nxt = page_items[k + 1] if k + 1 < len(page_items) else None
+        open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(site_pages.render_item(it, prev, nxt, pv, res))
+        print("page", it["slug"], len(pv["charts"]), "charts,", len(res), "result lines")
+    open(os.path.join(out, "index.html"), "w", encoding="utf-8").write(site_pages.render_index(page_items, SECTIONS))
+    print("wrote", out)
 
 
 if __name__ == "__main__":
     os.chdir(HERE)
-    run = "--no-run" not in sys.argv
+    sys.path.insert(0, HERE)
+    run = "--no-run" not in sys.argv and "--pages" not in sys.argv
     only = [a for a in sys.argv[1:] if not a.startswith("--")]          # 이름 일부를 주면 그 노트북만
-    for item in SHOP:
-        if only and not any(o in item["slug"] for o in only):
-            continue
-        nb = notebook(item)
-        path = os.path.join(HERE, item["file"] + ".ipynb")
-        if run:
-            import nbclient
-            nbclient.NotebookClient(nb, timeout=1800, kernel_name="python3", resources={"metadata": {"path": HERE}}).execute()
-            outs = [o.get("text", "") for c in nb.cells if c.cell_type == "code" for o in c.get("outputs", []) if o.get("output_type") == "stream"]
-            print(f"== {item['file']}\n" + "\n".join(t.strip() for t in outs if t.strip())[-1500:])
-        nbf.write(nb, path)
-    out = os.path.join(ROOT, "docs", "datashop", "index.html")
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    open(out, "w", encoding="utf-8").write(page(SHOP))
-    print("wrote", out)
+    if "--pages" not in sys.argv:
+        for item in SHOP:
+            if only and not any(o in item["slug"] for o in only):
+                continue
+            nb = notebook(item)
+            path = os.path.join(HERE, item["file"] + ".ipynb")
+            if run:
+                import nbclient
+                nbclient.NotebookClient(nb, timeout=1800, kernel_name="python3", resources={"metadata": {"path": HERE}}).execute()
+                outs = [o.get("text", "") for c in nb.cells if c.cell_type == "code" for o in c.get("outputs", []) if o.get("output_type") == "stream"]
+                print(f"== {item['file']}\n" + "\n".join(t.strip() for t in outs if t.strip())[-1500:])
+            nbf.write(nb, path)
+    build_site(SHOP)

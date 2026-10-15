@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>여행 예약: 취소와 가격 · 현실의 데이터</title>
+<meta name="description" content="포르투갈 호텔 예약 12만 건. 이 예약은 취소될까? 1박에 얼마가 맞을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 현실의 데이터 (전체 15개)</a></nav>
+<div class="hero">
+  <div>
+    <div class="tag"><span class="num">07</span><span>플랫폼 · 서비스</span></div>
+    <h1>여행 예약: 취소와 가격</h1>
+    <div class="chips"><span class="chip">실시간 가격책정</span><span class="chip">여행일정 개인화</span><span class="chip">수요-공급 매칭</span></div>
+    <p class="teaser-big">포르투갈 호텔 예약 12만 건. 이 예약은 취소될까? 1박에 얼마가 맞을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/07_hotel_booking.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a>
+      <a class="btn ghost" href="https://github.com/SuminHan/book-ml/blob/main/notebooks/datashop/07_hotel_booking.ipynb" target="_blank" rel="noopener">GitHub 에서 보기</a></div>
+  </div>
+  <img src="thumb.png" alt="여행 예약: 취소와 가격 데이터 샘플" width="480" height="300">
+</div>
+<section class="block"><h2>데이터</h2>
+  <div class="data-name">Hotel Booking Demand · 약 17MB</div><p class="src">Antonio, Almeida &amp; Nunes (2019), Data in Brief. 포르투갈 리조트 호텔 · 도시 호텔 2곳의 2015~2017 예약 119,390건 (TidyTuesday 2020-02-11)</p>
+  <h2 style="margin-top:16px">처음 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>hotel</th><th>is_canceled</th><th>lead_time</th><th>arrival_date_month</th><th>adults</th><th>customer_type</th><th>adr</th><th>reservation_status</th></tr></thead><tbody><tr><td title="Resort Hotel">Resort Hotel</td><td title="0">0</td><td title="342">342</td><td title="July">July</td><td title="2">2</td><td title="Transient">Transient</td><td title="0">0</td><td title="Check-Out">Check-Out</td></tr><tr><td title="Resort Hotel">Resort Hotel</td><td title="0">0</td><td title="737">737</td><td title="July">July</td><td title="2">2</td><td title="Transient">Transient</td><td title="0">0</td><td title="Check-Out">Check-Out</td></tr><tr><td title="Resort Hotel">Resort Hotel</td><td title="0">0</td><td title="7">7</td><td title="July">July</td><td title="1">1</td><td title="Transient">Transient</td><td title="75">75</td><td title="Check-Out">Check-Out</td></tr><tr><td title="Resort Hotel">Resort Hotel</td><td title="0">0</td><td title="13">13</td><td title="July">July</td><td title="1">1</td><td title="Transient">Transient</td><td title="75">75</td><td title="Check-Out">Check-Out</td></tr><tr><td title="Resort Hotel">Resort Hotel</td><td title="0">0</td><td title="14">14</td><td title="July">July</td><td title="2">2</td><td title="Transient">Transient</td><td title="98">98</td><td title="Check-Out">Check-Out</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>달마다 평균 1박 가격 (취소 안 된 예약)</h3><p class="note">리조트는 여름에 크게 오른다</p><div class="plot" id="plot-0" role="img" aria-label="달마다 평균 1박 가격 (취소 안 된 예약)"></div></div><div class="chart"><h3>며칠 전에 예약했나 → 취소율</h3><p class="note">일찍 예약할수록 많이 취소한다</p><div class="plot" id="plot-1" role="img" aria-label="며칠 전에 예약했나 → 취소율"></div></div></div></section>
+<div class="two">
+  <section class="block"><h2>문제를 정해 본 예시 (다섯 칸)</h2><table class="five"><tbody><tr><td>① 한 행</td><td>예약 한 건</td></tr><tr><td>② 입력 X</td><td>예약 시점에 아는 것: 며칠 전 예약 · 인원 · 박 수 · 고객 유형 …</td></tr><tr><td>③ 출력 y</td><td>취소할까 (분류) / 1박 가격 adr (회귀)</td></tr><tr><td>④ 평가지표</td><td>정밀도 · 재현율 / MAE (유로)</td></tr><tr><td>⑤ 기준선</td><td>아무도 취소 안 함 / 같은 달 평균 가격</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">예시와 다르게 정해도 됩니다. 노트북 맨 끝의 '나의 다섯 칸' 을 채워 보세요.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">nobody cancels         accuracy 61.3%  precision 0%  recall 0%
+known at booking       accuracy 77.0%  precision 78%  recall 56%
++ reservation_status   accuracy 100.0%  precision 100%  recall 100%
+baseline (hotel x month mean): MAE 30.4 EUR
+gradient boosting            : MAE 22.6 EUR</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://doi.org/10.1016/j.dib.2018.11.126" target="_blank" rel="noopener">Antonio, Almeida &amp; Nunes (2019) Hotel booking demand datasets, Data in Brief</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>여행 · 숙박 플랫폼, 항공 · 호텔, 모빌리티</dd><dt>직무</dt><dd>가격 (레비뉴) 매니지먼트 분석가, 수요예측 데이터 사이언티스트</dd></dl>
+    <p class="src" style="margin-top:8px">인턴 · 산학협력 · 프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../support_routing/">← 06 고객 문의 자동 분류</a><a href="../link_prediction/">08 연결 예측: 사람 · 친구 추천 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터는 모두 공개 데이터이며 출처는 위에 적었습니다.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "달마다 평균 1박 가격 (취소 안 된 예약)", "note": "리조트는 여름에 크게 오른다", "traces": [{"type": "scatter", "mode": "lines+markers", "x": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], "y": [48.7, 54.1, 57.0, 75.9, 76.7, 107.9, 150.1, 181.2, 96.4, 61.7, 48.7, 68.3], "name": "리조트 호텔", "line": {"color": "var:series-1", "width": 2}, "marker": {"size": 6}}, {"type": "scatter", "mode": "lines+markers", "x": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], "y": [82.2, 86.2, 90.2, 111.9, 120.4, 117.7, 115.6, 118.4, 112.6, 101.7, 86.5, 87.9], "name": "도시 호텔", "line": {"color": "var:series-2", "width": 2}, "marker": {"size": 6}}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "EUR"}}}, {"title": "며칠 전에 예약했나 → 취소율", "note": "일찍 예약할수록 많이 취소한다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["0~7일", "8~30일", "31~90일", "91~180일", "181~365일", "366일~"], "y": [9.6, 27.9, 37.7, 44.7, 55.5, 67.7]}], "layout": {"xaxis": {"title": "체크인까지 남은 날"}, "yaxis": {"title": "취소율 (%)"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>
