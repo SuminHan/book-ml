@@ -2304,6 +2304,18 @@ def notebook(item):
     return nb
 
 
+def card_cover(im, out_path, fit=False, w=720, h=405):
+    """목록 카드용 16:9 그림 (원본에서 바로 잘라 선명하게). 다이어그램은 자르지 않고 흰 여백"""
+    from PIL import Image
+    if fit:
+        r = min(w / im.width, h / im.height) * 0.92; small = im.resize((round(im.width * r), round(im.height * r)))
+        canvas = Image.new("RGB", (w, h), "white"); canvas.paste(small, ((w - small.width) // 2, (h - small.height) // 2)); canvas.save(out_path, quality=82)
+        return
+    r = max(w / im.width, h / im.height); im = im.resize((round(im.width * r), round(im.height * r)))
+    l, t = (im.width - w) // 2, (im.height - h) // 2
+    im.crop((l, t, l + w, t + h)).save(out_path, quality=82, optimize=True, progressive=True)
+
+
 def fetch_cover(slug, out_path):
     """커버 사진 (Wikimedia Commons, covers.json) 을 960x300 쯤으로 잘라 저장. 받은 원본은 data/covers/ 에 남긴다"""
     import io, shutil, urllib.request
@@ -2315,13 +2327,16 @@ def fetch_cover(slug, out_path):
             covers[slug] = dict(local=os.path.relpath(ai, HERE), page="", artist="", license="", title="AI 생성 이미지", crop=True)
             break
     if slug not in covers:                       # 자금세탁: 직접 그린 패턴 그림
-        shutil.copy(os.path.join(ROOT, "docs", "datashop", "worldcup", "img", f"{slug}.jpg"), out_path); return None
+        shutil.copy(os.path.join(ROOT, "docs", "datashop", "worldcup", "img", f"{slug}.jpg"), out_path)
+        card_cover(Image.open(out_path).convert("RGB"), os.path.join(os.path.dirname(out_path), "card.jpg"), fit=True); return None
     c = covers[slug]; cache = os.path.join(HERE, c["local"]) if c.get("local") else os.path.join(HERE, "data", "covers", slug + ".jpg")
     if not os.path.exists(cache):
         os.makedirs(os.path.dirname(cache), exist_ok=True)
         req = urllib.request.Request(c["thumb"], headers={"User-Agent": "ML course datashop"})
         open(cache, "wb").write(urllib.request.urlopen(req, timeout=120).read())
-    im = Image.open(cache).convert("RGB"); w, h = 1200, 340
+    im = Image.open(cache).convert("RGB")
+    card_cover(im, os.path.join(os.path.dirname(out_path), "card.jpg"), fit=bool(c.get("local") and not c.get("crop")))
+    w, h = 1200, 340
     if c.get("local") and not c.get("crop"):           # a diagram: fit it inside (no cropping), white margins
         r = min(w / im.width, h / im.height) * 0.96; im = im.resize((round(im.width * r), round(im.height * r)))
         canvas = Image.new("RGB", (w, h), "white"); canvas.paste(im, ((w - im.width) // 2, (h - im.height) // 2)); canvas.save(out_path, quality=85)

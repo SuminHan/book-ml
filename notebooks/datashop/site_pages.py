@@ -45,7 +45,7 @@ h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: .15em 0 .3em; 
         box-shadow: var(--shadow); text-decoration: none; color: var(--ink); transition: transform .15s ease, border-color .15s ease; }
 .item:hover, .item:focus-visible { transform: translateY(-3px); border-color: var(--gold); }
 .item:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
-.item img { width: 100%; aspect-ratio: 8 / 5; object-fit: cover; display: block; background: #fff; border-bottom: 1px solid var(--line); }
+.item img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: #fff; border-bottom: 1px solid var(--line); }
 .item .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .tag { display: inline-flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--muted-ink); }
 .num { font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; }
@@ -180,7 +180,7 @@ def credit_html(c):
 def card(i, stub=False):
     badge = '<span class="badge">노트북 준비 중</span>' if stub else ""
     return f"""<a class="item" href="{i['slug']}/">
-  <div class="cov"><img src="{i['slug']}/cover.jpg" alt="" loading="lazy" width="480" height="300">{badge}</div>
+  <div class="cov"><img src="{i['slug']}/card.jpg" alt="" loading="lazy" width="720" height="405">{badge}</div>
   <div class="body"><div class="tag"><span class="num">{i['num']}</span><span>{E(i['keywords'][0])}</span></div>
   <p class="title">{E(i['title'])}</p><p class="teaser">{E(i['teaser'])}</p><span class="enter">들어가 보기</span></div>
 </a>"""
@@ -203,7 +203,7 @@ def render_index(items, sections, stubs):
     if stubs:
         out.append('<h2 class="section-title">다음에 열 데이터 (노트북 준비 중)</h2>\n<div class="shelf">' + "".join(card(i, True) for i in stubs) + "</div>")
     out.append("""</main>
-<footer>데이터마다 논문 · 출처를 함께 적었습니다. 분야별 문제와 관심 업종은 일반적인 예시이고 특정 회사의 과제가 아닙니다. 사진은 Wikimedia Commons 의 자유 라이선스 사진이며 각 페이지에 출처를 적었습니다.
+<footer>데이터마다 논문 · 출처를 함께 적었습니다. 분야별 문제와 관심 업종은 일반적인 예시이고 특정 회사의 과제가 아닙니다. 커버 그림은 AI 로 생성했고 (프롬프트 공개), 각 페이지에 출처를 적었습니다.
  · <a href="https://github.com/SuminHan/book-ml/tree/main/notebooks/datashop">노트북 원본 (GitHub)</a></footer>
 </div>
 </body>
