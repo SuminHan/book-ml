@@ -48,7 +48,11 @@ header { padding: 34px 0 10px; display: flex; flex-wrap: wrap; align-items: end;
 .go { font-family: var(--display); font-size: 1.5rem; background: var(--gold); color: #1a1406; border: 0; border-radius: 12px; padding: 12px 34px; cursor: pointer; justify-self: start; }
 .go:hover { filter: brightness(1.08); }
 .mosaic { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 4px; }
-.mosaic img { width: 100%; aspect-ratio: 8 / 5; object-fit: cover; border-radius: 4px; display: block; opacity: .85; }
+.mosaic img { width: 100%; aspect-ratio: 8 / 5; object-fit: cover; border-radius: 4px; display: block; opacity: .85; transition: opacity .15s, transform .15s; }
+.mosaic a { display: block; border-radius: 4px; }
+.mosaic a:hover img, .mosaic a:focus-visible img { opacity: 1; transform: scale(1.04); }
+.mosaic a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.mosaic-hint { margin: 18px 0 8px; font-size: .9rem; opacity: .7; }
 /* match */
 .progress { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin: 6px 0 18px; }
 .progress i { display: block; height: 100%; background: var(--gold); transition: width .25s ease; }
@@ -164,8 +168,13 @@ function startScreen() {
   });
   const go = el("button", "go", "시작하기"); go.type = "button"; go.addEventListener("click", newGame);
   const mosaic = el("div", "mosaic");
-  CANDS.forEach((c) => { const im = el("img"); im.src = IMAGES[c.id]; im.alt = c.title; im.title = c.title; mosaic.append(im); });
-  box.append(modes, go, mosaic);
+  CANDS.forEach((c) => {
+    const a = el("a"); a.href = `../${c.id}/`; a.title = `${c.title} (데이터 보기)`;
+    a.addEventListener("click", () => track("mosaic_open", { dataset: c.id }));
+    const im = el("img"); im.src = IMAGES[c.id]; im.alt = c.title; a.append(im); mosaic.append(a);
+  });
+  const hint = el("p", "mosaic-hint", "그림을 누르면 그 데이터의 소개 페이지로 갑니다.");
+  box.append(modes, go, hint, mosaic);
   s.append(box);
 }
 
@@ -217,7 +226,7 @@ function renderMatch() {
 let locked = false;
 function track(name, params) {   // Google Analytics (smhanlab.com 과 같은 ID) + GoatCounter event (worldcup_pick/<winner> 처럼 데이터별로 센다)
   try { gtag("event", name, params); } catch (e) {}
-  try { const id = params.winner || params.champion || ("size-" + params.size); window.goatcounter.count({ path: `${name}/${id}`, title: byId[id] ? byId[id].title : name, event: true }); } catch (e) {}
+  try { const id = params.winner || params.champion || params.dataset || ("size-" + params.size); window.goatcounter.count({ path: `${name}/${id}`, title: byId[id] ? byId[id].title : name, event: true }); } catch (e) {}
 }
 function pick(w, a, b, ca, cb) {
   if (locked) return; locked = true;
