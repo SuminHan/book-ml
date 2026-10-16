@@ -158,6 +158,9 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", dra
 </script>"""
 
 
+GA = """<script async src="https://www.googletagmanager.com/gtag/js?id=G-DT1RTEZ926"></script>
+<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag("js", new Date()); gtag("config", "G-DT1RTEZ926");</script>"""   # smhanlab.com 과 같은 Google Analytics
+
 def head(title, desc, css_href):
     return f"""<!doctype html>
 <html lang="ko">
@@ -169,6 +172,7 @@ def head(title, desc, css_href):
 {FONT}
 <link rel="stylesheet" href="{css_href}">
 <link rel="icon" href="{css_href.replace('shop.css', 'favicon.svg')}" type="image/svg+xml">
+{GA}
 <!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
 </head>
 <body>
@@ -289,8 +293,8 @@ def render_item(i, prev, nxt, preview, results):
     pager = (f'<a href="../{prev["slug"]}/">← {prev["num"]} {E(prev["title"])}</a>' if prev else "<span></span>") + \
             (f'<a href="../{nxt["slug"]}/">{nxt["num"]} {E(nxt["title"])} →</a>' if nxt else "<span></span>")
     thumb = preview.get("thumb", "thumb.png")
-    actions = (f'<a class="btn primary" href="{E(i["colab"])}" target="_blank" rel="noopener">Colab 에서 열기</a>'
-               f'<a class="btn ghost" href="{E(i["file"])}.ipynb" download>노트북 받기 (.ipynb)</a>')
+    actions = (f'<a class="btn primary" href="{E(i["colab"])}" target="_blank" rel="noopener" onclick="gtag(\'event\', \'notebook_open\', {{dataset: \'{i["slug"]}\', how: \'colab\'}})">Colab 에서 열기</a>'
+               f'<a class="btn ghost" href="{E(i["file"])}.ipynb" download onclick="gtag(\'event\', \'notebook_open\', {{dataset: \'{i["slug"]}\', how: \'download\'}})">노트북 받기 (.ipynb)</a>')
     out = head(f"{i['title']} · 현실의 데이터", i["teaser"], "../shop.css")
     out += f"""<div class="wrap">
 {hero_html(i, actions)}
