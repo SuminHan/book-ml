@@ -159,7 +159,8 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", dra
 
 
 GA = """<script async src="https://www.googletagmanager.com/gtag/js?id=G-DT1RTEZ926"></script>
-<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag("js", new Date()); gtag("config", "G-DT1RTEZ926");</script>"""   # smhanlab.com 과 같은 Google Analytics
+<script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag("js", new Date()); gtag("config", "G-DT1RTEZ926");</script>
+<script data-goatcounter="https://smhanlab.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>"""   # smhanlab.com 과 같은 Google Analytics + GoatCounter (smhanlab.goatcounter.com)
 
 def head(title, desc, css_href):
     return f"""<!doctype html>
@@ -293,8 +294,8 @@ def render_item(i, prev, nxt, preview, results):
     pager = (f'<a href="../{prev["slug"]}/">← {prev["num"]} {E(prev["title"])}</a>' if prev else "<span></span>") + \
             (f'<a href="../{nxt["slug"]}/">{nxt["num"]} {E(nxt["title"])} →</a>' if nxt else "<span></span>")
     thumb = preview.get("thumb", "thumb.png")
-    actions = (f'<a class="btn primary" href="{E(i["colab"])}" target="_blank" rel="noopener" onclick="gtag(\'event\', \'notebook_open\', {{dataset: \'{i["slug"]}\', how: \'colab\'}})">Colab 에서 열기</a>'
-               f'<a class="btn ghost" href="{E(i["file"])}.ipynb" download onclick="gtag(\'event\', \'notebook_open\', {{dataset: \'{i["slug"]}\', how: \'download\'}})">노트북 받기 (.ipynb)</a>')
+    actions = (f'<a class="btn primary" href="{E(i["colab"])}" target="_blank" rel="noopener" onclick="gtag(\'event\', \'notebook_open\', {{dataset: \'{i["slug"]}\', how: \'colab\'}})" data-goatcounter-click="notebook-colab-{i["slug"]}">Colab 에서 열기</a>'
+               f'<a class="btn ghost" href="{E(i["file"])}.ipynb" download onclick="gtag(\'event\', \'notebook_open\', {{dataset: \'{i["slug"]}\', how: \'download\'}})" data-goatcounter-click="notebook-download-{i["slug"]}">노트북 받기 (.ipynb)</a>')
     out = head(f"{i['title']} · 현실의 데이터", i["teaser"], "../shop.css")
     out += f"""<div class="wrap">
 {hero_html(i, actions)}

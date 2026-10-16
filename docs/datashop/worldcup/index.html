@@ -7,6 +7,7 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DT1RTEZ926"></script>
 <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag("js", new Date()); gtag("config", "G-DT1RTEZ926");</script>
+<script data-goatcounter="https://smhanlab.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <meta name="description" content="산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 35개 중 하나를 고르는 이상형 월드컵">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -214,7 +215,10 @@ function renderMatch() {
 }
 
 let locked = false;
-function track(name, params) { try { gtag("event", name, params); } catch (e) {} }   // Google Analytics (smhanlab.com 과 같은 ID)
+function track(name, params) {   // Google Analytics (smhanlab.com 과 같은 ID) + GoatCounter event (worldcup_pick/<winner> 처럼 데이터별로 센다)
+  try { gtag("event", name, params); } catch (e) {}
+  try { const id = params.winner || params.champion || ("size-" + params.size); window.goatcounter.count({ path: `${name}/${id}`, title: byId[id] ? byId[id].title : name, event: true }); } catch (e) {}
+}
 function pick(w, a, b, ca, cb) {
   if (locked) return; locked = true;
   track("worldcup_pick", { winner: w, loser: w === a ? b : a, round: state.round.length });
