@@ -196,7 +196,7 @@ def render_index(items, sections, stubs):
 <header class="top">
   <div class="eyebrow">Machine Learning 1 · 데이터 가게</div>
   <h1>현실의 데이터</h1>
-  <p class="lead">추천, 이상거래 탐지, 수요예측, 불량 예측, 문서 이해 … 산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 {len(items) + len(stubs)}가지를 모았습니다. 하나를 골라 들어가 데이터를 보고, 노트북을 받아 문제를 직접 정해 보세요.</p>
+  <p class="lead">추천, 수요예측, 불량 검사, 자금세탁 탐지, 문서 이해 … 산업 현장에서 실제로 푸는 문제와 닮은 공개 데이터 {len(items) + len(stubs)}가지를 모았습니다. 하나를 골라 들어가 데이터를 보고, 노트북을 받아 문제를 직접 정해 보세요.</p>
   <p class="lead" style="margin-top:10px"><a href="worldcup/">데이터 월드컵 하러 가기 →</a> 32개 중 가장 해 보고 싶은 데이터를 골라 보세요.</p>
 </header>
 <main>""")

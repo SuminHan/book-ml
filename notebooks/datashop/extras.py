@@ -16,15 +16,14 @@ F = {
 
 METRICS = {
     "fashion_commerce": ["same5"], "shop_conversion": ["prec", "rec", "acc"], "movie_ratings": ["rmse", "mae"], "korean_reviews": ["acc"],
-    "card_fraud": ["prec", "rec", "acc"], "aml_transactions": ["prec", "rec", "acc"], "stock_index": ["acc", "mae"], "support_routing": ["acc"],
+    "aml_transactions": ["prec", "rec", "acc"], "stock_index": ["acc", "mae"], "support_routing": ["acc"],
     "hotel_booking": ["prec", "rec", "mae"], "link_prediction": ["auc"], "taxi_demand": ["mae"], "vehicle_trajectory": ["ade"], "real_estate": ["mae"],
-    "earthquakes": ["prec", "rec", "auc"], "semiconductor_yield": ["prec", "rec", "auc"], "predictive_maintenance": ["prec", "rec"],
+    "semiconductor_yield": ["prec", "rec", "auc"], "predictive_maintenance": ["prec", "rec"],
     "steel_defects": ["acc", "rec"], "bearing_vibration": ["acc"], "document_types": ["acc", "rec"], "ai_usecases": [],
     "point_cloud": ["acc"], "medical": ["rec", "auc"], "satellite": ["acc", "rec"],
-    "air_quality": ["mae", "rec"], "electricity": ["mae", "rmse"], "football": ["logloss"], "baseball": ["acc", "logloss"], "chess": ["acc", "logloss"], "speech": ["acc", "rec"],
+    "air_quality": ["mae", "rec"], "electricity": ["mae", "rmse"], "football": ["logloss"], "baseball": ["acc", "logloss"], "lol_esports": ["acc", "logloss"], "visual_inspection": ["auc", "rec"], "speech": ["acc", "rec"],
     "crop": ["acc", "rec"], "cyber_security": ["rec", "prec", "acc"], "telco_churn": ["rec", "prec", "auc"],
     "credit_default": ["auc", "rec"], "ad_ctr": ["logloss", "auc"], "hiring_match": ["acc", "rec"], "traffic_speed": ["mae", "rec"],
-    "corporate_card": ["acc", "rec"],
 }
 
 # 관련 데이터 (이름, 주소, 한 줄) + 영어 검색어 (Hugging Face 데이터셋 검색)
@@ -50,6 +49,12 @@ RELATED = {
                        ("Expedia Hotel Recommendations (Kaggle)", "https://www.kaggle.com/competitions/expedia-hotel-recommendations", "검색 → 예약할 호텔 묶음 맞히기")], "hotel booking"),
     "link_prediction": ([("SNAP 데이터 모음", "https://snap.stanford.edu/data/", "SNS · 인용 · 도로 등 연결망 수백 개"),
                          ("OGB 링크 예측 (ogbl)", "https://ogb.stanford.edu/docs/linkprop/", "연구 공동 저자 · 약물 상호작용 · 인용 연결 예측 벤치마크")], "link prediction"),
+    "lol_esports": ([("Oracle's Elixir", "https://oracleselixir.com/tools/downloads", "프로 경기마다 선수별 골드 · 킬 · 15분 시점 기록 (CSV)"),
+                     ("Riot Developer Portal", "https://developer.riotgames.com/", "일반 랭크 경기 · 시간대별 기록 API (개발자 키 필요)"),
+                     ("GPTilt 챌린저 1만 판 (Hugging Face)", "https://huggingface.co/datasets/gptilt/lol-basic-matches-challenger-10k", "최상위 랭크 경기의 시간대별 이벤트")], "league of legends"),
+    "visual_inspection": ([("MVTec AD 원본", "https://www.mvtec.com/company/research/datasets/mvtec-ad", "부품 · 표면 15종, 불량 위치 마스크 포함"),
+                           ("VisA (Amazon)", "https://github.com/amazon-science/spot-diff", "PCB · 캡슐 · 캔디 등 12종 이상 탐지"),
+                           ("MVTec AD 2", "https://www.mvtec.com/company/research/datasets/mvtec-ad-2", "더 어려운 조명 · 투명 · 반사 부품")], "anomaly detection"),
     "baseball": ([("Lahman Baseball Database (SABR)", "https://sabr.org/lahman-database/", "1871년부터 선수 · 팀 시즌 기록 (타격 · 투구 · 수비)"),
                   ("Baseball Savant (Statcast)", "https://baseballsavant.mlb.com/", "공 하나하나의 속도 · 회전 · 타구 각도"),
                   ("KBO 기록실", "https://www.koreabaseball.com/Record/Player/HitterBasic/Basic1.aspx", "한국 프로야구 선수 · 팀 기록")], "baseball"),
@@ -81,7 +86,7 @@ RELATED = {
 
 SEARCH = {"point_cloud": "point cloud", "driving": "autonomous driving", "robot": "robot manipulation", "medical": "chest x-ray",
           "satellite": "satellite land cover", "air_quality": "air quality", "electricity": "electricity load", "football": "soccer events",
-          "chess": "chess games", "speech": "speech commands", "drug": "molecule toxicity", "protein": "protein structure", "crop": "plant disease"}
+          "speech": "speech commands", "drug": "molecule toxicity", "protein": "protein structure", "crop": "plant disease"}
 
 
 def hf_search(slug):

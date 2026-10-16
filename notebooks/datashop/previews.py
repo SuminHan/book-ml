@@ -801,3 +801,53 @@ def vehicle_trajectory(thumb):
                 sample=table(df[["vehicle_id", "global_time", "lane_id", "x", "y", "kmh"]].round(2)),
                 charts=[chart("도로 위치별 평균 속도", [line([str(int(i.left)) for i in sp.index], sp.values.round(1))], "도로를 따라 (m)", "km/h", "합류 구간 근처에서 느려진다"),
                         chart("차선별 평균 속도", [bar([str(i) for i in lane.index], lane.values.round(1))], "차선 (1 = 가장 왼쪽)", "km/h", "왼쪽 차선이 더 빠르다. 6 · 7 = 진입 · 진출 차선")])
+
+
+# ------------------------------------------------------------------ 2026-10-16: 부품 외관 검사 · LoL e스포츠
+def visual_inspection(thumb):
+    tr = pd.read_parquet(os.path.join(D, "mvtec", "metal_nut.train.parquet")); te = pd.read_parquet(os.path.join(D, "mvtec", "metal_nut.test.parquet"))
+    img = lambda b: Image.open(io.BytesIO(b["bytes"])).convert("RGB").resize((160, 160))
+    kinds = ["good", "bent", "color", "flip", "scratch"]; names = {"good": "정상", "bent": "휨", "color": "색", "flip": "뒤집힘", "scratch": "긁힘"}
+    fig, axs = plt.subplots(2, 5, figsize=(4.8, 3))
+    for c, k in enumerate(kinds):
+        rows = te[te["defect"] == k].head(2)
+        for r in range(2):
+            axs[r, c].imshow(img(rows["image_path"].iloc[r])); axs[r, c].axis("off")
+        axs[0, c].set_title(names[k], fontsize=9, color=C1 if k == "good" else C2)
+    fig.subplots_adjust(0, 0, 1, 0.9, 0.03, 0.05); save_thumb(fig, thumb)
+    meta = pd.concat([tr, te])[["split", "defect", "label"]].reset_index(drop=True)
+    meta["mean_brightness"] = [round(float(np.asarray(img(b), dtype=float).mean()), 1) for b in pd.concat([tr, te])["image_path"]]
+    cnt = meta.groupby(["split", "defect"]).size()
+    return dict(stats=stats(meta), sample=table(meta),
+                charts=[chart("학습 · 시험 사진 수", [bar(["학습: 정상"], [int(cnt["train"].sum())], S1, name="학습"),
+                                                    bar([f"시험: {names[k]}" for k in kinds], [int(cnt["test"].get(k, 0)) for k in kinds], S2, name="시험")],
+                              "", "장 수", "학습에는 정상 사진만 있다. 불량은 시험에서 처음 본다"),
+                        chart("방법별 ROC-AUC (시험 115장)", [bar(["무작위", "픽셀 + PCA", "ResNet-18 특징 + 3-NN"], [0.5, 0.586, 0.838])], "", "AUC",
+                              "1 = 불량을 모두 정상보다 높게, 0.5 = 동전 던지기", yaxis=dict(range=[0, 1], title="AUC"))])
+
+
+def lol_esports(thumb):
+    g = pd.read_parquet(os.path.join(D, "lol", "games.parquet")); t = pd.read_parquet(os.path.join(D, "lol", "tournaments.parquet"))
+    g = g.merge(t[["tournament_id", "region", "tier"]], left_on="tournament", right_on="tournament_id", how="left")
+    g = g[g["tier"].isin(["Primary", "Secondary"])].sort_values("datetime_utc").reset_index(drop=True)
+    g["blue_win"] = (g["winner"] == g["team_blue"]).astype(int); g["year"] = g["datetime_utc"].str[:4].astype(int)
+    rating, diff = {}, np.zeros(len(g))
+    for i, (b, r, w) in enumerate(zip(g["team_blue"], g["team_red"], g["blue_win"])):
+        rb, rr = rating.get(b, 1500), rating.get(r, 1500); diff[i] = rb - rr
+        e = 1 / (1 + 10 ** (-(rb - rr) / 400)); rating[b], rating[r] = rb + 32 * (w - e), rr - 32 * (w - e)
+    g["elo_diff"] = diff
+    late = g[g["year"] >= 2018]; bins = np.arange(-400, 401, 50)
+    w = late.groupby(pd.cut(late["elo_diff"], bins), observed=True)["blue_win"].mean() * 100
+    mids = [int((iv.left + iv.right) / 2) for iv in w.index]
+    fig, ax = plt.subplots(figsize=(4.8, 3)); ax.plot(mids, w.values, "o-", color=C1); ax.axhline(50, color="gray", ls=":")
+    ax.set_xlabel("경기 전 레이팅 차 (블루 − 레드)"); ax.set_ylabel("블루 승률 (%)"); fig.tight_layout(); save_thumb(fig, thumb)
+    by = g.groupby("year")["blue_win"].mean() * 100
+    pk = pd.concat([g.loc[g["year"] >= 2025, "picks_blue"].explode(), g.loc[g["year"] >= 2025, "picks_red"].explode()]).value_counts().head(12)
+    show = g[["datetime_utc", "region", "team_blue", "team_red", "winner", "picks_blue", "picks_red", "gamelength"]].copy()
+    show["picks_blue"] = show["picks_blue"].apply(", ".join); show["picks_red"] = show["picks_red"].apply(", ".join)
+    return dict(stats=stats(show), sample=table(show[show["datetime_utc"] >= "2025"]),
+                charts=[chart("해마다 블루 진영 승률 (%)", [bar([str(y) for y in by.index], by.values.round(1))], "", "%", "늘 50% 보다 조금 높다: 블루 진영 이점",
+                              xaxis=dict(type="category", title=""), yaxis=dict(range=[45, 62], title="%")),
+                        chart("경기 전 레이팅 차와 블루 승률 (2018년부터)", [line([str(m) for m in mids], w.values.round(1))], "레이팅 차 (블루 − 레드)", "%",
+                              "레이팅이 높은 팀이 더 자주 이긴다"),
+                        chart("2025 · 2026 가장 많이 고른 챔피언", [bar(pk.index[::-1], pk.values[::-1], horizontal=True)], "고른 횟수", "", "", margin=dict(l=110))])

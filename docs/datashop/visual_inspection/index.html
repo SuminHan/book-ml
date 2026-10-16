@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부품 외관 검사: 불량 사진 없이 불량 찾기 · 현실의 데이터</title>
+<meta name="description" content="금속 너트 사진. 학습용은 정상 220장뿐이다. 처음 보는 불량을 골라낼 수 있을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 데이터 목록</a><a href="../worldcup/">데이터 월드컵 하러 가기 →</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:Schrauben,_Muttern_und_Unterlegscheiben_--_2020_--_4150.jpg" target="_blank" rel="noopener">Dietmar Rabich</a> · CC BY-SA 4.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">24</span><span>제조</span></div>
+    <h1>부품 외관 검사: 불량 사진 없이 불량 찾기</h1>
+    <div class="chips"><span class="chip">비전 검사 (머신 비전)</span><span class="chip">이상 탐지 (anomaly detection)</span><span class="chip">정상만 있는 학습 데이터</span></div>
+    <p class="teaser-big">금속 너트 사진. 학습용은 정상 220장뿐이다. 처음 보는 불량을 골라낼 수 있을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/24_visual_inspection.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="24_visual_inspection.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>사진 (학습에는 정상 사진만)</div>
+  <div class="model">→ 모델 →<small>이상 탐지</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>이상 점수 (높을수록 불량 같음) → 기준을 넘으면 불량</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">MVTec AD (금속 너트) · 약 170MB (사진 335장, 700×700)</div><p class="src">MVTec Software GmbH 가 공개한 공장 부품 · 표면 15종의 이상 탐지 데이터 중 금속 너트 (Bergmann et al., CVPR 2019). Hugging Face 사본 (TheoM55/mvtec_all_objects_split) 에서 받는다. 라이선스 CC BY-NC-SA 4.0 (비상업 용도만)</p></div>
+  <img src="thumb.png" alt="부품 외관 검사: 불량 사진 없이 불량 찾기 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>split</th><th>defect</th><th>label</th><th>mean_brightness</th></tr></thead><tbody><tr><td title="train">train</td><td title="good">good</td><td title="0">0</td><td title="60.8">60.8</td></tr><tr><td title="train">train</td><td title="good">good</td><td title="0">0</td><td title="60.2">60.2</td></tr><tr><td title="train">train</td><td title="good">good</td><td title="0">0</td><td title="62.4">62.4</td></tr><tr><td title="test">test</td><td title="color">color</td><td title="1">1</td><td title="53.9">53.9</td></tr><tr><td title="train">train</td><td title="good">good</td><td title="0">0</td><td title="54.5">54.5</td></tr><tr><td title="test">test</td><td title="flip">flip</td><td title="1">1</td><td title="57.1">57.1</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>335</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>4</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="split">split</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2">2</td><td title="가장 흔한 값: train (65.7%)">가장 흔한 값: train (65.7%)</td></tr><tr><td title="defect">defect</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="5">5</td><td title="가장 흔한 값: good (72.2%)">가장 흔한 값: good (72.2%)</td></tr><tr><td title="label">label</td><td title="숫자">숫자</td><td title="0">0</td><td title="2">2</td><td title="0 ~ 1 (평균 0.2776)">0 ~ 1 (평균 0.2776)</td></tr><tr><td title="mean_brightness">mean_brightness</td><td title="숫자">숫자</td><td title="0">0</td><td title="132">132</td><td title="51.2 ~ 69.5 (평균 58.65)">51.2 ~ 69.5 (평균 58.65)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>학습 · 시험 사진 수</h3><p class="note">학습에는 정상 사진만 있다. 불량은 시험에서 처음 본다</p><div class="plot" id="plot-0" role="img" aria-label="학습 · 시험 사진 수"></div></div><div class="chart"><h3>방법별 ROC-AUC (시험 115장)</h3><p class="note">1 = 불량을 모두 정상보다 높게, 0.5 = 동전 던지기</p><div class="plot" id="plot-1" role="img" aria-label="방법별 ROC-AUC (시험 115장)"></div></div></div></section>
+<div class="stack">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>부품 사진 한 장</td></tr><tr><td>② 입력 X</td><td>사진 (학습에는 정상 사진만)</td></tr><tr><td>③ 출력 y</td><td>이상 점수 (높을수록 불량 같음) → 기준을 넘으면 불량</td></tr><tr><td>④ 평가지표</td><td>ROC-AUC, &#x27;불량 95% 를 잡을 때 정상을 몇 % 버리나&#x27;</td></tr><tr><td>⑤ 기준선</td><td>무작위 점수 (AUC 0.5) · 픽셀 그대로 비교</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">random score (500 draws)     AUC 0.501   good parts rejected at 95% recall 94%
+pixels + PCA reconstruction  AUC 0.586   good parts rejected at 95% recall 77%   AUC per defect {&#x27;bent&#x27;: 0.45, &#x27;color&#x27;: 0.46, &#x27;flip&#x27;: 1.0, &#x27;scratch&#x27;: 0.43}
+ResNet-18 features + 3-NN    AUC 0.838   good parts rejected at 95% recall 73%   AUC per defect {&#x27;bent&#x27;: 0.77, &#x27;color&#x27;: 0.71, &#x27;flip&#x27;: 1.0, &#x27;scratch&#x27;: 0.87}</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>ROC-AUC</b><span>양성 하나 · 음성 하나를 뽑았을 때 양성 점수가 더 높을 확률. 0.5 = 동전 던지기</span></div><div class="tex" data-tex="\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)">\text{AUC} = P\big(s(x^{+}) &gt; s(x^{-})\big)</div></div><div class="metric"><div class="what"><b>재현율 (recall)</b><span>진짜 양성 중 잡아낸 비율 (놓치지 않았나)</span></div><div class="tex" data-tex="\text{Recall} = \frac{TP}{TP + FN}">\text{Recall} = \frac{TP}{TP + FN}</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://www.mvtec.com/company/research/datasets/mvtec-ad" target="_blank" rel="noopener">MVTec AD 원본</a> <span>· 부품 · 표면 15종, 불량 위치 마스크 포함</span></li><li><a href="https://github.com/amazon-science/spot-diff" target="_blank" rel="noopener">VisA (Amazon)</a> <span>· PCB · 캡슐 · 캔디 등 12종 이상 탐지</span></li><li><a href="https://www.mvtec.com/company/research/datasets/mvtec-ad-2" target="_blank" rel="noopener">MVTec AD 2</a> <span>· 더 어려운 조명 · 투명 · 반사 부품</span></li><li><a href="https://huggingface.co/datasets?search=anomaly%20detection" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://doi.org/10.1109/CVPR.2019.00982" target="_blank" rel="noopener">Bergmann et al. (2019) MVTec AD: A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection, CVPR</a></li><li><a href="https://arxiv.org/abs/2106.08265" target="_blank" rel="noopener">Roth et al. (2022) Towards Total Recall in Industrial Anomaly Detection (PatchCore), CVPR</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>반도체 · 디스플레이 · 배터리 · 자동차 부품 제조, 머신 비전 검사 장비, 스마트팩토리 솔루션</dd><dt>직무</dt><dd>비전 검사 AI 엔지니어, 품질 엔지니어, 제조 AI 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../bearing_vibration/">← 23 베어링 진동으로 고장 진단</a><a href="../point_cloud/">25 3D 포인트 클라우드 →</a></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "학습 · 시험 사진 수", "note": "학습에는 정상 사진만 있다. 불량은 시험에서 처음 본다", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "학습", "x": ["학습: 정상"], "y": [220]}, {"type": "bar", "marker": {"color": "var:series-2"}, "name": "시험", "x": ["시험: 정상", "시험: 휨", "시험: 색", "시험: 뒤집힘", "시험: 긁힘"], "y": [22, 25, 22, 23, 23]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"title": "장 수"}}}, {"title": "방법별 ROC-AUC (시험 115장)", "note": "1 = 불량을 모두 정상보다 높게, 0.5 = 동전 던지기", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["무작위", "픽셀 + PCA", "ResNet-18 특징 + 3-NN"], "y": [0.5, 0.586, 0.838]}], "layout": {"xaxis": {"title": ""}, "yaxis": {"range": [0, 1], "title": "AUC"}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>

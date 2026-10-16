@@ -113,63 +113,6 @@ plt.tight_layout(); plt.show()"""),
 - **옷 사진 생성**: StyleGAN 으로 옷 입은 사람을 만든 연구 (StyleGAN-Human) 는 전신 사진 23만 장 SHHQ 를 썼다 (신청 필요)."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="card_fraud", title="카드 이상거래 탐지", sector="금융 · 핀테크",
-     keywords=["이상거래탐지 (FDS)", "보이스피싱 · 송금 사기", "설명가능성"],
-     teaser="카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?",
-     data="Credit Card Fraud Detection (ULB)", data_src="유럽 카드 소지자의 2013년 9월 이틀치 거래, OpenML 1597 (원본 Kaggle mlg-ulb). 성분은 개인정보 때문에 PCA 로 바꾼 V1~V28. OpenML 판에는 시각 열이 없지만 행이 시간 순서대로 놓여 있다",
-     size="약 150MB",
-     five=[("① 한 행", "카드 거래 한 건"), ("② 입력 X", "금액 · V1~V28"), ("③ 출력 y", "사기인가 (Class 0/1)"),
-           ("④ 평가지표", "정밀도 · 재현율 (정확도는 함정)"), ("⑤ 기준선", "전부 '정상'")],
-     cells=[
-("md", """## 입장: 데이터 받기
-
-OpenML 에서 받는다 (약 150MB, 처음엔 1~2분)."""),
-("code", """from sklearn.datasets import fetch_openml
-cc = fetch_openml(data_id=1597, as_frame=True, parser="auto", data_home="data")
-df = cc.frame
-df["Class"] = df["Class"].astype(int)
-print(df.shape)
-df.head()"""),
-("md", """## 열어 보기
-
-사기 (Class = 1) 는 몇 건일까? 금액은 어떻게 퍼져 있을까? 사기와 정상의 금액이 다를까?"""),
-("code", """print(df["Class"].value_counts())
-print(f"fraud rate: {df['Class'].mean():.3%}")
-print(df.groupby("Class")["Amount"].describe().round(1))
-plt.figure(figsize=(7, 3))
-for c, name in [(0, "normal"), (1, "fraud")]:
-    plt.hist(np.log10(df.loc[df["Class"] == c, "Amount"] + 1), bins=50, density=True, alpha=0.6, label=name)
-plt.xlabel("log10(amount + 1)"); plt.legend(); plt.show()"""),
-("md", """## 문제 하나 골라 보기: 거래 하나 → 사기인가
-
-**시간 순서대로** 나눈다: 앞 70% 행으로 학습, 뒤 30% 로 시험 (행이 시간 순서대로 놓여 있다. 미래의 사기를 잡는 게 목적이니까). 기준선 = 전부 '정상'."""),
-("code", """from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-
-def precision_recall(y_true, y_pred):
-    tp = np.sum((y_pred == 1) & (y_true == 1)); fp = np.sum((y_pred == 1) & (y_true == 0)); fn = np.sum((y_pred == 0) & (y_true == 1))
-    return (tp / (tp + fp) if tp + fp else 0.0), tp / (tp + fn)
-
-cut = int(len(df) * 0.7)
-train, test = df.iloc[:cut], df.iloc[cut:]
-X_cols = [c for c in df.columns if c != "Class"]
-model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000)).fit(train[X_cols], train["Class"])
-
-y = test["Class"].values
-for name, pred in [("always normal", np.zeros(len(y), dtype=int)), ("logistic regression", model.predict(test[X_cols]))]:
-    p, r = precision_recall(y, pred)
-    print(f"{name:20s} accuracy {np.mean(pred == y):.3%}  precision {p:.0%}  recall {r:.0%}")"""),
-("md", """**관찰**: 전부 '정상' 도 정확도가 99.8% 를 넘는다. 사기를 하나도 못 잡는데도. 그래서 이 문제는 정밀도 · 재현율로 채점한다.
-
-## 다른 문제로 바꿔 보기
-
-- **보이스피싱**: 피해자가 직접 송금하는 사기라 카드 도용과 모양이 다르다. 한 행 = 송금 한 건, 입력에 '처음 보내는 계좌인가 · 평소보다 큰 금액인가 · 이체 직후 현금 인출이 있었나' 같은 **맥락** 이 필요하다. 이 데이터에는 그런 열이 없다 (송금 사기를 시뮬레이션한 PaySim 데이터가 있다, Kaggle).
-- **자금세탁방지**: 한 행이 '거래' 가 아니라 '계좌' 라면? 이 가게의 '자금세탁 거래 탐지' (IBM AML) 노트북에서 해 볼 수 있다.
-- **설명가능성**: V1~V28 은 개인정보 때문에 원래 뜻을 지운 숫자다. 이 모델이 '왜' 사기라고 했는지 고객에게 설명할 수 있을까? (7주차 SHAP)
-- **컴플라이언스**: 놓친 사기 한 건과, 정상 고객의 카드를 잘못 막은 한 건. 어느 손해가 더 큰가에 따라 지표가 달라진다."""),
-]),
-# ------------------------------------------------------------------
 dict(slug="support_routing", title="고객 문의 자동 분류", sector="플랫폼 · 서비스",
      keywords=["대화형 인공지능", "고객응대 자동화", "상담 보조 · 문의 분산처리"],
      teaser="은행 고객 문의 1만 3천 개, 담당 77곳. 문의를 맞는 팀에 보낼 수 있을까?",
@@ -1038,6 +981,106 @@ print(data.groupby("state")[["rms", "kurtosis"]].mean().round(2))"""),
 - 결함 데이터가 없는 새 설비라면? 정상 진동만으로 '평소와 다르다' 를 찾는 이상 탐지로 바꾼다."""),
 ]),
 # ------------------------------------------------------------------
+dict(slug="visual_inspection", title="부품 외관 검사: 불량 사진 없이 불량 찾기", sector="제조",
+     keywords=["비전 검사 (머신 비전)", "이상 탐지 (anomaly detection)", "정상만 있는 학습 데이터"],
+     teaser="금속 너트 사진. 학습용은 정상 220장뿐이다. 처음 보는 불량을 골라낼 수 있을까?",
+     data="MVTec AD (금속 너트)", data_src="MVTec Software GmbH 가 공개한 공장 부품 · 표면 15종의 이상 탐지 데이터 중 금속 너트 (Bergmann et al., CVPR 2019). Hugging Face 사본 (TheoM55/mvtec_all_objects_split) 에서 받는다. 라이선스 CC BY-NC-SA 4.0 (비상업 용도만)",
+     size="약 170MB (사진 335장, 700×700)",
+     five=[("① 한 행", "부품 사진 한 장"), ("② 입력 X", "사진 (학습에는 정상 사진만)"), ("③ 출력 y", "이상 점수 (높을수록 불량 같음) → 기준을 넘으면 불량"),
+           ("④ 평가지표", "ROC-AUC, '불량 95% 를 잡을 때 정상을 몇 % 버리나'"), ("⑤ 기준선", "무작위 점수 (AUC 0.5) · 픽셀 그대로 비교")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+공장에서는 불량이 아주 드물고, 종류도 미리 다 알 수 없다. 그래서 이 데이터는 **학습용에 정상 사진만** 있다. 시험용에는 정상 22장과 불량 4종류 (휨 · 색 · 뒤집힘 · 긁힘) 가 섞여 있다.
+
+parquet 파일 두 개 (학습 · 시험) 에 사진 (png 바이트) 과 라벨이 들어 있다. 라이선스: CC BY-NC-SA 4.0 (수업 · 연구 같은 비상업 용도만)."""),
+("code", """from PIL import Image
+
+BASE = "https://huggingface.co/datasets/TheoM55/mvtec_all_objects_split/resolve/main/data/"
+train = pd.read_parquet(download(BASE + "metal_nut.train-00000-of-00001.parquet", "data/mvtec/metal_nut.train.parquet"))
+test = pd.read_parquet(download(BASE + "metal_nut.test-00000-of-00001.parquet", "data/mvtec/metal_nut.test.parquet"))
+
+def load_images(df, size):
+    \"\"\"Decode the png bytes in df['image_path'] into an array (n, size, size, 3) with values 0..1\"\"\"
+    return np.stack([np.asarray(Image.open(io.BytesIO(b["bytes"])).convert("RGB").resize((size, size)), dtype=np.float32) / 255
+                     for b in df["image_path"]])
+
+print("train:", train["defect"].value_counts().to_dict())
+print("test :", test["defect"].value_counts().to_dict())"""),
+("md", """## 열어 보기
+
+정상 너트와 불량 4종류를 나란히 보자. 사람 눈에도 바로 보이는 것 (휨) 과 잘 안 보이는 것 (긁힘) 이 있다. **뒤집힘 (flip)** 은 흠집이 아니라 너트가 뒤집혀 놓인 것이다."""),
+("code", """def show_examples(df, size=160):
+    \"\"\"One row per defect kind, 4 photos each\"\"\"
+    kinds = ["good"] + sorted(k for k in df["defect"].unique() if k != "good")
+    fig, axs = plt.subplots(len(kinds), 4, figsize=(8, 2 * len(kinds)))
+    for r, k in enumerate(kinds):
+        imgs = load_images(df[df["defect"] == k].head(4), size)
+        for c in range(4):
+            axs[r, c].imshow(imgs[c]); axs[r, c].axis("off")
+        axs[r, 0].set_title(k, loc="left", fontsize=10)
+    plt.tight_layout(); plt.show()
+
+show_examples(test)"""),
+("md", """## 문제 하나 골라 보기: 정상 사진만 보고 이상 점수 매기기
+
+분류기를 학습할 수 없다 (불량 사진이 없으니까). 대신 **'정상과 얼마나 다른가'** 를 점수로 만든다.
+- 기준선 1: 무작위 점수 → AUC 0.5
+- 기준선 2: 사진을 64×64 픽셀로 줄여 PCA (정상 사진으로 학습) → 다시 그렸을 때 틀린 정도가 점수
+- 모델: ImageNet 으로 미리 학습한 ResNet-18 (10주차) 의 중간 특징 → 가장 가까운 정상 사진 3장까지의 거리가 점수
+
+평가지표 두 가지: ROC-AUC (기준을 정하지 않은 점수의 실력), 그리고 현장에서 묻는 질문 **'불량을 95% 잡으려면 정상을 몇 % 나 불량으로 버려야 하나'**."""),
+("code", """from sklearn.decomposition import PCA
+from sklearn.metrics import roc_auc_score
+
+def false_alarm_at_recall(y, score, recall=0.95):
+    \"\"\"Share of good parts rejected when the threshold is set to catch `recall` of the defects\"\"\"
+    thr = np.quantile(score[y == 1], 1 - recall)
+    return np.mean(score[y == 0] >= thr)
+
+def report(name, y, score, defect):
+    per = {k: round(roc_auc_score(y[(defect == k) | (y == 0)], score[(defect == k) | (y == 0)]), 2) for k in sorted(set(defect[y == 1]))}
+    print(f"{name:28s} AUC {roc_auc_score(y, score):.3f}   good parts rejected at 95% recall {false_alarm_at_recall(y, score):.0%}   AUC per defect {per}")
+
+y, defect = test["label"].values, test["defect"].values
+rng = np.random.default_rng(0)
+draws = [rng.random(len(y)) for _ in range(500)]          # one random draw is noisy with 115 photos, so average 500
+print(f"{'random score (500 draws)':28s} AUC {np.mean([roc_auc_score(y, s) for s in draws]):.3f}   good parts rejected at 95% recall {np.mean([false_alarm_at_recall(y, s) for s in draws]):.0%}")
+
+A, B = load_images(train, 64).reshape(len(train), -1), load_images(test, 64).reshape(len(test), -1)
+pca = PCA(20, random_state=0).fit(A)
+report("pixels + PCA reconstruction", y, ((B - pca.inverse_transform(pca.transform(B))) ** 2).mean(1), defect)"""),
+("code", """import torch, torchvision
+
+def resnet_features(images, model, batch=32):
+    \"\"\"Average-pooled layer2 + layer3 features of an ImageNet ResNet-18 for images (n, 224, 224, 3)\"\"\"
+    mean, std = np.array([0.485, 0.456, 0.406]), np.array([0.229, 0.224, 0.225])
+    x = torch.tensor(((images - mean) / std).transpose(0, 3, 1, 2), dtype=torch.float32)
+    out = []
+    with torch.no_grad():
+        for i in range(0, len(x), batch):
+            h = model.maxpool(model.relu(model.bn1(model.conv1(x[i:i + batch]))))
+            h2 = model.layer2(model.layer1(h)); h3 = model.layer3(h2)
+            out.append(torch.cat([h2.mean((2, 3)), h3.mean((2, 3))], 1).numpy())
+    return np.concatenate(out)
+
+def knn_score(train_feats, test_feats, k=3):
+    \"\"\"Mean distance to the k nearest normal (training) images\"\"\"
+    d = np.sqrt(((test_feats[:, None] - train_feats[None]) ** 2).sum(2))
+    return np.sort(d, 1)[:, :k].mean(1)
+
+resnet = torchvision.models.resnet18(weights="IMAGENET1K_V1").eval()
+Ftr, Fte = resnet_features(load_images(train, 224), resnet), resnet_features(load_images(test, 224), resnet)
+report("ResNet-18 features + 3-NN", y, knn_score(Ftr, Fte), defect)"""),
+("md", """**관찰**: 픽셀을 그대로 비교하면 동전 던지기와 별 차이가 없다 (뒤집힌 너트만 잘 잡는다: 사진 전체가 달라 보이니까). 너트가 조금만 돌아가 있어도 픽셀이 전부 달라지기 때문이다. 고양이 · 자동차 사진으로 미리 학습한 신경망의 특징을 쓰면 **너트를 한 번도 배운 적이 없는데도** AUC 가 0.84 로 오른다. 그래도 불량을 95% 잡으려면 정상 너트를 넷 중 셋쯤 버려야 한다. 현장에서는 이 '버리는 정상품' 이 곧 비용이라서, 기준을 어디에 둘지가 문제 정의의 일부다. 휨 · 색 불량이 가장 어렵다.
+
+## 다른 문제로 바꿔 보기
+
+- **어디가 불량인가**: 사진 전체 점수 대신 칸 (patch) 마다 점수를 내면 불량 위치 지도가 된다. 이 데이터에는 불량 위치 마스크 (`mask_path`) 도 들어 있다.
+- **다른 부품**: 같은 저장소에 병 · 나사 · 알약 · 케이블 · 직물 등 14종이 더 있다 (`metal_nut` 대신 `screw` 등).
+- **현실의 비율**: 실제 라인의 불량률은 0.1% 쯤이다. 시험 데이터의 불량 비율 (81%) 을 그렇게 바꾸면 정밀도는 어떻게 될까?"""),
+]),
+# ------------------------------------------------------------------
 dict(slug="aml_transactions", title="자금세탁 거래 탐지", sector="금융 · 핀테크",
      keywords=["자금세탁방지 (AML)", "거래 모니터링", "계좌 단위 조사"],
      teaser="은행 거래 508만 건 중 세탁은 0.1%. 거래를 볼까, 계좌를 볼까?",
@@ -1137,67 +1180,6 @@ for name, (tr, te) in splits.items():
 
 - 한국 아파트라면? 국토교통부 실거래가 (API 신청 필요): 한 행 = 거래 한 건, y = 거래 가격, 입력 = 면적 · 층 · 건축 연도 · 위치 · **거래 날짜**. 시간 순서로 나눠야 한다.
 - 집값 5.0 에서 잘린 동네는 '5.0 이상' 이라는 뜻이다. 이걸 그대로 정답으로 쓰면 무엇이 문제일까?"""),
-]),
-# ------------------------------------------------------------------
-dict(slug="earthquakes", title="지진: 시공간 데이터", sector="도시 · 공간",
-     keywords=["시공간 (spatiotemporal) 데이터", "재난 · 안전", "위험 지도"],
-     teaser="2023~2024년 전 세계 규모 4.5 이상 지진 1만 4천 개. 다음 주, 어느 지역에서 지진이 날까?",
-     data="USGS Earthquake Catalog (ComCat)", data_src="미국 지질조사국 (USGS) ANSS 통합 지진 목록, FDSN API 로 2023-01-01 ~ 2024-12-31 규모 4.5 이상 14,048개: 시각 · 위도 · 경도 · 깊이 · 규모",
-     size="약 3MB",
-     five=[("① 한 행", "격자 칸 (위도 10° × 경도 10°) × 한 주"), ("② 입력 X", "그 칸의 지난 지진 수 (지난주 · 지난 4주 · 지난해)"),
-           ("③ 출력 y", "다음 주에 규모 4.5 이상 지진이 있나"), ("④ 평가지표", "정밀도 · 재현율, ROC-AUC"), ("⑤ 기준선", "'지난주에 있었으면 이번 주도'")],
-     cells=[
-("md", """## 입장: 데이터 받기
-
-USGS 의 공개 API 로 바로 받는다 (2년, 규모 4.5 이상)."""),
-("code", """URL = ("https://earthquake.usgs.gov/fdsnws/event/1/query?format=csv&starttime=2023-01-01&endtime=2025-01-01"
-       "&minmagnitude=4.5&orderby=time-asc")
-df = pd.read_csv(download(URL, "data/usgs_2023_2025.csv"), parse_dates=["time"])
-print(df.shape)
-df[["time", "latitude", "longitude", "depth", "mag", "place"]].sample(5, random_state=0)"""),
-("md", """## 열어 보기: 지도 위의 점 (시간 = 색)
-
-지구의 판 경계 (불의 고리) 가 보인다. 한 달씩 넘겨 보면 점이 어떻게 움직일까? (웹 페이지의 움직이는 그림)"""),
-("code", """fig, axs = plt.subplots(1, 2, figsize=(13, 4))
-t = (df["time"] - df["time"].min()).dt.days
-sc = axs[0].scatter(df["longitude"], df["latitude"], c=t, s=(df["mag"] - 4) ** 2 * 6, cmap="viridis", alpha=0.6)
-plt.colorbar(sc, ax=axs[0], label="days since 2023-01-01"); axs[0].set_xlabel("longitude"); axs[0].set_ylabel("latitude")
-axs[1].hist(df["mag"], bins=np.arange(4.5, 8.2, 0.1)); axs[1].set_yscale("log"); axs[1].set_xlabel("magnitude")
-plt.tight_layout(); plt.show()"""),
-("md", """## 문제 하나 골라 보기: (격자 칸, 주) → 다음 주에 지진이 있나
-
-지구를 10° × 10° 칸으로 나누고, 칸 × 주마다 지진 수를 센다. **2023년으로 학습, 2024년으로 시험** (시간 순서).
-- 기준선 1: 전부 '없음'
-- 기준선 2: 지난주에 있었으면 '있음'
-- 점수: 2023년에 그 칸에서 지진이 난 주의 비율 (자주 나는 곳일수록 높게)"""),
-("code", """from sklearn.metrics import roc_auc_score
-
-def precision_recall(y_true, y_pred):
-    tp = np.sum((y_pred == 1) & (y_true == 1)); fp = np.sum((y_pred == 1) & (y_true == 0)); fn = np.sum((y_pred == 0) & (y_true == 1))
-    return (tp / (tp + fp) if tp + fp else 0.0), tp / (tp + fn)
-
-df["cell"] = ((df["latitude"] + 90) // 10).astype(int) * 36 + ((df["longitude"] + 180) // 10).astype(int)
-df["week"] = ((df["time"] - pd.Timestamp("2023-01-02", tz="UTC")).dt.days // 7).clip(lower=0)
-counts = df.groupby(["cell", "week"]).size().unstack(fill_value=0).reindex(columns=range(df["week"].max() + 1), fill_value=0)
-has = (counts > 0).astype(int)
-print("cells with at least one quake:", len(has), "| weeks:", has.shape[1])
-
-train_weeks, test_weeks = range(1, 52), range(53, has.shape[1])
-rate_2023 = has[list(range(52))].mean(axis=1)                     # share of 2023 weeks with a quake
-y_test = np.concatenate([has[w].values for w in test_weeks])
-last_week = np.concatenate([has[w - 1].values for w in test_weeks])
-score = np.concatenate([rate_2023.values for w in test_weeks])
-for name, pred in [("always none", np.zeros_like(y_test)), ("same as last week", last_week), ("2023 rate > 0.5", (score > 0.5).astype(int))]:
-    p, r = precision_recall(y_test, pred)
-    print(f"{name:18s} accuracy {np.mean(pred == y_test):.1%}  precision {p:.0%}  recall {r:.0%}")
-print(f"2023 rate as a score: ROC-AUC {roc_auc_score(y_test, score):.2f}")"""),
-("md", """**관찰**: '어디서 자주 나는가' 는 꽤 맞힌다. 하지만 이건 **언제** 큰 지진이 날지를 맞히는 게 아니다. 큰 지진의 시각을 미리 맞히는 방법은 아직 없다. 문제를 무엇으로 정했는지 정확히 말해야 하는 이유다.
-
-## 다른 문제로 바꿔 보기
-
-- **조기 경보**: 한 행 = 지진파가 처음 잡힌 몇 초, y = 몇 초 뒤 큰 흔들림이 올 지역. 실제 지진 조기 경보가 이 문제다 (지진파 데이터 STEAD 등).
-- 격자를 1° 로 줄이면? 한 행이 늘고 '있음' 은 더 드물어진다. 지표는 어떻게 바뀔까?
-- 다른 시공간 데이터: 교통 속도 (도로 × 5분), 미세먼지 (측정소 × 시간), 공유 자전거 (대여소 × 시간)."""),
 ]),
 # ------------------------------------------------------------------
 dict(slug="stock_index", title="주가 지수: 내일 오를까?", sector="금융 · 핀테크",
@@ -1734,86 +1716,6 @@ print(pd.Series(m.coef_[0], index=X.columns).round(2).to_dict())"""),
 - **패스의 가치**: 한 행 = 패스, y = 이 패스 뒤 10초 안에 골이 났나 (VAEP, 아래 논문)."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="chess", title="체스: 누가 이길까?", sector="스포츠 · 게임", keywords=["게임 데이터", "실시간 승률 (중계)", "실력 측정 (레이팅)"],
-     teaser="두 사람의 레이팅과 지금까지 둔 수. 중계 화면처럼 '지금 누가 이기고 있나' 를 확률로 낼 수 있을까?",
-     data="Lichess 공개 대국 · 2013년 1월", data_src="온라인 체스 Lichess 의 모든 대국 기록 (CC0) 중 2013년 1월 121,332판 (Hugging Face Lichess/standard-chess-games): 결과 · 두 사람 레이팅 · 시간 규칙 · 수 기록",
-     size="약 37MB",
-     five=[("① 한 행", "대국 하나를 N수 둔 시점 (10 · 20 · 30수)"), ("② 입력 X", "레이팅 차 + 그 시점 판의 기물 점수 차 (폰 1 · 나이트/비숍 3 · 룩 5 · 퀸 9)"), ("③ 출력 y", "백 승 / 무승부 / 흑 승"),
-           ("④ 평가지표", "정확도 · 로그 손실"), ("⑤ 기준선", "레이팅만 보기")],
-     cells=[
-("md", """## 입장: 데이터 받기"""),
-("code", """URL = "https://huggingface.co/datasets/Lichess/standard-chess-games/resolve/main/data/year=2013/month=01/train-00000-of-00001.parquet"
-df = pd.read_parquet(download(URL, "data/lichess_2013_01.parquet"), columns=["Result", "WhiteElo", "BlackElo", "TimeControl", "Termination", "Opening", "movetext"])
-print(df.shape)
-print(df["Result"].value_counts().to_dict())
-df.drop(columns="movetext").sample(5, random_state=0)"""),
-("md", """## 열어 보기
-
-레이팅 차 (백 − 흑) 에 따라 백이 이긴 비율은? 레이팅 (Elo) 은 원래 '차이가 400 이면 높은 쪽이 약 91% 이긴다' 가 되도록 만든 숫자다."""),
-("code", """df = df[df["Result"].isin(["1-0", "0-1", "1/2-1/2"])].copy()
-df["WhiteElo"] = pd.to_numeric(df["WhiteElo"], errors="coerce"); df["BlackElo"] = pd.to_numeric(df["BlackElo"], errors="coerce")
-df["diff"] = df["WhiteElo"] - df["BlackElo"]
-df["base_sec"] = pd.to_numeric(df["TimeControl"].str.split("+").str[0], errors="coerce")
-bins = pd.cut(df["diff"], [-1000, -300, -200, -100, -50, 0, 50, 100, 200, 300, 1000])
-win = df.groupby(bins, observed=True)["Result"].apply(lambda r: (r == "1-0").mean() + 0.5 * (r == "1/2-1/2").mean())
-elo = 1 / (1 + 10 ** (-np.array([(-650), -250, -150, -75, -25, 25, 75, 150, 250, 650]) / 400))
-plt.figure(figsize=(8, 3.5)); plt.plot(range(len(win)), win.values, "o-", label="actual (white score)"); plt.plot(range(len(win)), elo, "s--", label="Elo formula")
-plt.xticks(range(len(win)), [str(i) for i in win.index], rotation=45, fontsize=8); plt.ylabel("white score"); plt.legend(); plt.tight_layout(); plt.show()"""),
-("md", """## 문제 하나 골라 보기: N수 둔 판 → 결과 (중계의 '실시간 승률')
-
-레이팅만 보면 첫 수를 두기 전에 이미 답이 정해진다. 실제 중계 화면의 승률 막대는 **지금 판** 을 본다. 그래서 한 행을 '대국 하나를 N수 둔 시점' 으로 바꾼다.
-- 판을 다시 두어 보려면 `python-chess` 가 필요하다 (아래 첫 줄).
-- 판에서 뽑는 값은 가장 단순한 것 하나: **기물 점수 차** (백 − 흑, 폰 1 · 나이트/비숍 3 · 룩 5 · 퀸 9).
-- N수까지 둔 값만 쓰니 누수가 아니다. 단, N수보다 일찍 끝난 대국은 그 시점이 없어서 빠진다.
-
-**날짜 순서** 로 앞 80% 학습, 뒤 20% 시험. 같은 대국들 위에서 '레이팅만' 과 '레이팅 + 판' 을 비교한다. 빨리 돌리려고 앞 5만 판만 쓴다."""),
-("code", """!pip -q install chess"""),
-("code", """import re
-import chess
-from sklearn.linear_model import LogisticRegression
-
-PIECE = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9}
-
-def material_after(movetext, plies):
-    \"\"\"White-minus-black material after `plies` half-moves, or None if the game ended earlier\"\"\"
-    text = re.sub(r"\\{[^}]*\\}", " ", movetext)                      # drop {comments}
-    sans = [t.rstrip("?!") for t in text.split() if not re.match(r"^\\d+\\.+$", t) and t not in ("1-0", "0-1", "1/2-1/2", "*")]
-    if len(sans) < plies:
-        return None
-    board = chess.Board()
-    for san in sans[:plies]:
-        board.push_san(san)
-    return sum(PIECE.get(p.piece_type, 0) * (1 if p.color == chess.WHITE else -1) for p in board.piece_map().values())
-
-def compare_at(games, plies):
-    \"\"\"Accuracy and log loss of rating-only vs rating + material, on games that reached `plies`\"\"\"
-    mat = games["movetext"].map(lambda m: material_after(m, plies))
-    g = games.assign(mat=mat).dropna(subset=["mat", "diff"])
-    y = g["Result"].map({"1-0": 0, "1/2-1/2": 1, "0-1": 2}).values
-    cut = int(len(g) * 0.8)
-    out = {}
-    for name, cols in [("rating only", ["diff"]), ("rating + material", ["diff", "mat"])]:
-        X = g[cols].values / np.array([100, 1][:len(cols)])
-        prob = LogisticRegression(max_iter=2000).fit(X[:cut], y[:cut]).predict_proba(X[cut:])
-        out[name] = (np.mean(prob.argmax(1) == y[cut:]), -np.mean(np.log(prob[np.arange(len(prob)), y[cut:]] + 1e-9)))
-    return len(g), out
-
-games = df.iloc[:50000]
-for moves in [10, 20, 30]:
-    n, res = compare_at(games, moves * 2)
-    for name, (acc, ll) in res.items():
-        print(f"after {moves:2d} moves ({n:,} games)  {name:18s} accuracy {acc:.1%}  log loss {ll:.3f}")"""),
-("md", """**관찰**: 10수 뒤에는 판을 봐도 거의 그대로다 (아직 기물을 거의 안 잃었다). 20수, 30수로 갈수록 기물 점수 차가 레이팅보다 더 많은 것을 알려 준다. 반대로 '레이팅만' 의 정확도는 뒤로 갈수록 떨어진다. 오래 버틴 대국일수록 실력이 비슷한 사람들끼리였기 때문이다 (같은 칸에서 비교해야 하는 이유).
-
-`Termination` (어떻게 끝났나) 이나 **둔 수 전체** 를 넣으면? 경기가 끝나야 알 수 있는 값이라 누수다.
-
-## 다른 문제로 바꿔 보기
-
-- **더 좋은 판 정보**: 기물 점수 말고 캐슬링 했나 · 킹 주변 폰 · 둘 수 있는 수의 개수. 아니면 체스 엔진의 평가값 (이 데이터의 `[%eval ...]` 이 붙은 대국).
-- **수 예측**: 한 행 = 한 수, 입력 = 지금 판, 출력 = 사람이 둘 다음 수. 레이팅마다 다르게 두는 '사람 같은 AI' (Maia, 아래 논문).
-- **부정행위 탐지**: 사람의 레이팅에 비해 너무 엔진 같은 수만 두는 계정 찾기."""),
-]),
-# ------------------------------------------------------------------
 dict(slug="baseball", title="야구: 오늘 경기, 홈팀이 이길까?", sector="스포츠 · 게임", keywords=["데이터 야구 (세이버메트릭스)", "승패 예측", "피타고리안 승률"],
      teaser="메이저리그 10시즌, 2만 4천 경기. 경기 전 성적만 보고 오늘 승패를 맞힐 수 있을까?",
      data="Retrosheet 경기 기록 (MLB 2015 ~ 2025)", data_src="Retrosheet 이 공개한 메이저리그 경기별 기록: 날짜 · 두 팀 · 점수 · 낮/밤 · 구장 · 관중 · 경기 시간 · 선발 투수. 2020 단축 시즌은 뺐다. The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at www.retrosheet.org.",
@@ -1905,6 +1807,100 @@ for feats in [["d_wpct"], ["d_wpct", "d_rd_pg"], ["d_wpct", "d_rd_pg", "d_last10
 - **관중 수 예측 (회귀)**: 한 행 = 경기, 출력 = 관중 수. 요일 · 낮/밤 · 두 팀 성적 · 구장. 구단 마케팅 · 티켓 가격 문제다.
 - **경기 시간 예측**: `minutes` 열. 2023년 피치 클록 도입 뒤 경기가 얼마나 짧아졌을까? (규칙 변경 = 데이터 분포가 바뀌는 순간)
 - **KBO 로**: 한국 프로야구 기록은 KBO 기록실 (koreabaseball.com) 에 있다. 같은 다섯 칸으로 문제를 다시 세워 보자."""),
+]),
+# ------------------------------------------------------------------
+dict(slug="lol_esports", title="리그 오브 레전드 e스포츠: 밴픽 끝, 누가 이길까?", sector="스포츠 · 게임", keywords=["e스포츠 데이터", "실시간 승률 예측 (중계)", "팀 실력 (Elo 레이팅)"],
+     teaser="프로 경기 13만 판. 밴픽이 끝난 순간, 블루 팀이 이길지 맞힐 수 있을까?",
+     data="LoL 프로 경기 기록 (2011 ~ 2026)", data_src="Leaguepedia (lol.fandom.com) 의 프로 경기 기록을 GPTilt 가 정리해 Hugging Face 에 올린 것 (gptilt/lol-esports-matches). 한 판마다 날짜 · 대회 · 두 팀 · 이긴 팀 · 양 팀 챔피언 5개 · 밴 · 경기 시간. 라이선스 CC BY-SA 3.0",
+     size="약 12MB",
+     five=[("① 한 행", "경기 한 판"), ("② 입력 X", "두 팀의 그 경기 전까지 실력 (Elo 레이팅) · 양 팀이 고른 챔피언 10개"), ("③ 출력 y", "블루 팀이 이기나 (확률)"),
+           ("④ 평가지표", "정확도, 로그 손실"), ("⑤ 기준선", "늘 블루 승 (약 53%)")],
+     cells=[
+("md", """## 입장: 데이터 받기
+
+표 두 개: 경기 한 판마다 한 줄 (`games`), 대회마다 한 줄 (`tournaments`, 지역 · 등급). 대회 등급이 Primary (각 지역 1부 리그 · 국제 대회) 또는 Secondary (2부 · 아카데미) 인 경기만 쓰고 이벤트 경기 (Showmatch) 는 뺀다.
+
+출처: Leaguepedia (lol.fandom.com), CC BY-SA 3.0."""),
+("code", """BASE = "https://huggingface.co/datasets/gptilt/lol-esports-matches/resolve/main/"
+games = pd.read_parquet(download(BASE + "games/games.parquet", "data/lol/games.parquet"))
+tours = pd.read_parquet(download(BASE + "tournaments/tournaments.parquet", "data/lol/tournaments.parquet"))
+
+games = games.merge(tours[["tournament_id", "region", "tier"]], left_on="tournament", right_on="tournament_id", how="left")
+games = games[games["tier"].isin(["Primary", "Secondary"])].sort_values("datetime_utc").reset_index(drop=True)
+games["blue_win"] = (games["winner"] == games["team_blue"]).astype(int)
+games["year"] = games["datetime_utc"].str[:4].astype(int)
+print(games.shape, "| teams", games["team_blue"].nunique(), "| blue side won", f"{games['blue_win'].mean():.1%}")
+games[["datetime_utc", "tournament", "team_blue", "team_red", "winner", "picks_blue", "picks_red", "gamelength"]].tail(5)"""),
+("md", """## 열어 보기: 블루 진영 이점과 인기 챔피언
+
+- 해마다 블루 진영 (맵 왼쪽 아래) 은 몇 % 이겼을까? 야구의 홈 이점과 비슷하다.
+- 최근 두 해에 가장 많이 고른 챔피언과, 그 챔피언을 고른 팀의 승률."""),
+("code", """def champion_table(games):
+    \"\"\"One row per champion: how often it was picked and how often the team that picked it won\"\"\"
+    blue = games[["picks_blue", "blue_win"]].explode("picks_blue").rename(columns={"picks_blue": "champ", "blue_win": "win"})
+    red = games[["picks_red", "blue_win"]].explode("picks_red").rename(columns={"picks_red": "champ"}).assign(win=lambda d: 1 - d["blue_win"])
+    both = pd.concat([blue, red[["champ", "win"]]])
+    return both.groupby("champ")["win"].agg(picks="size", win_rate="mean").sort_values("picks", ascending=False)
+
+fig, axs = plt.subplots(1, 2, figsize=(12, 4))
+by_year = games.groupby("year")["blue_win"].mean() * 100
+axs[0].bar(by_year.index.astype(str), by_year.values, color="tab:blue"); axs[0].axhline(50, color="gray", ls=":")
+axs[0].set_ylim(45, 60); axs[0].set_title("blue side win rate by year (%)"); axs[0].tick_params(axis="x", rotation=90)
+top = champion_table(games[games["year"] >= 2025]).head(15)
+axs[1].barh(top.index[::-1], top["picks"][::-1], color="tab:orange"); axs[1].set_title("most picked champions, 2025-2026")
+plt.tight_layout(); plt.show()
+print(top.assign(win_rate=lambda d: d["win_rate"].round(3)).head(10))"""),
+("md", """## 문제 하나 골라 보기: 밴픽이 끝난 순간 → 블루 팀 승리
+
+**팀 실력** 은 체스 · 바둑 랭킹에 쓰는 **Elo 레이팅** 으로 잰다: 모든 팀이 1500 에서 시작해, 이기면 오르고 지면 내려간다 (강팀을 이기면 많이, 약팀을 이기면 조금).
+**함정 조심**: 레이팅은 그 경기 **전** 값을 써야 한다. 경기를 날짜 순으로 한 판씩 보며, 먼저 예측에 쓸 값을 적어 두고 그다음에 결과로 레이팅을 고친다 (데이터 누수, 1주 3차시).
+
+**챔피언** 은 챔피언마다 칸 하나: 블루가 고르면 +1, 레드가 고르면 −1.
+
+**시간 순서**: 2024년까지 학습, 2025 · 2026 시험."""),
+("code", """from scipy import sparse
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import log_loss
+
+def elo_before_game(games, k=32):
+    \"\"\"Blue-minus-red Elo rating of the two teams just BEFORE each game (games sorted by time)\"\"\"
+    rating, diff = {}, np.zeros(len(games))
+    for i, (b, r, w) in enumerate(zip(games["team_blue"], games["team_red"], games["blue_win"])):
+        rb, rr = rating.get(b, 1500), rating.get(r, 1500)
+        diff[i] = rb - rr
+        expected = 1 / (1 + 10 ** (-(rb - rr) / 400))
+        rating[b], rating[r] = rb + k * (w - expected), rr - k * (w - expected)
+    return diff
+
+def champion_matrix(games, champs):
+    \"\"\"Sparse matrix: +1 if blue picked the champion, -1 if red picked it\"\"\"
+    idx = {c: j for j, c in enumerate(champs)}; rows, cols, vals = [], [], []
+    for i, (pb, pr) in enumerate(zip(games["picks_blue"], games["picks_red"])):
+        for c in pb: rows.append(i); cols.append(idx[c]); vals.append(1)
+        for c in pr: rows.append(i); cols.append(idx[c]); vals.append(-1)
+    return sparse.csr_matrix((vals, (rows, cols)), shape=(len(games), len(champs)))
+
+games["elo_diff"] = elo_before_game(games)
+champs = sorted(set(games["picks_blue"].explode()) | set(games["picks_red"].explode()))
+tr, te = games[games["year"] <= 2024], games[games["year"] >= 2025]; y = te["blue_win"].values
+print(f"train {len(tr):,} games | test {len(te):,} games | champions {len(champs)}")
+print(f"{'always blue':24s} accuracy {np.mean(y == 1):.1%}   log loss {log_loss(y, np.full(len(y), tr['blue_win'].mean())):.4f}")
+print(f"{'higher Elo wins':24s} accuracy {np.mean((te['elo_diff'] > 0).values == y):.1%}")
+inputs = {"champions only": lambda d: champion_matrix(d, champs),
+          "Elo only": lambda d: sparse.csr_matrix(d[["elo_diff"]].values / 400),
+          "Elo + champions": lambda d: sparse.hstack([sparse.csr_matrix(d[["elo_diff"]].values / 400), champion_matrix(d, champs)]).tocsr()}
+for name, make in inputs.items():
+    p = LogisticRegression(C=0.1, max_iter=2000).fit(make(tr), tr["blue_win"]).predict_proba(make(te))[:, 1]
+    print(f"{name:24s} accuracy {np.mean((p > 0.5) == y):.1%}   log loss {log_loss(y, p):.4f}")"""),
+("md", """**관찰**: 늘 블루라고만 해도 53% 쯤 맞힌다. **고른 챔피언 10개만으로는 그보다 거의 나아지지 않는다.** 프로 팀은 서로 비슷하게 강한 조합을 고르고, 메타 (패치) 가 바뀌면 챔피언의 힘도 바뀌기 때문이다. 반면 **팀 실력 (Elo)** 하나로 60% 를 넘긴다. 밴픽 화면에 띄우는 '승률 예측' 의 대부분은 사실 '어느 팀이 더 강한가' 다. 팀 이름이 바뀌면 (리브랜딩) 레이팅이 1500 으로 다시 시작되는 것도 이 방법의 약점이다.
+
+## 다른 문제로 바꿔 보기
+
+- **경기 시간 예측 (회귀)**: `gamelength` 열 ("32:15"). 어떤 조합이 긴 경기를 만들까?
+- **밴 추천**: 한 행 = 밴 차례, 출력 = 다음에 밴할 챔피언 (분류, 170가지). 지표는 top-5 정확도.
+- **실시간 승률**: 15분 시점의 골드 · 킬 · 타워 차이를 입력에 넣으면? 그런 시간대별 기록은 Riot 의 공개 API (개발자 키 필요) 나 Oracle's Elixir 에서 받을 수 있다.
+- **지역 차이**: LCK (한국) 경기만 골라도 같은 결과일까? `region == "Korea"`.
+- **선수 × 챔피언 숙련도**: 일반 랭크 게임에서는 '그 선수가 그 챔피언을 얼마나 해 봤나' 를 넣으면 밴픽 직후 75% 까지 맞혔다는 연구가 있다 (Do et al., 2021). 챔피언 자체보다 '누가 잡았나' 가 중요하다는 뜻이다."""),
 ]),
 # ------------------------------------------------------------------
 dict(slug="cyber_security", title="네트워크 침입 탐지", sector="플랫폼 · 서비스", keywords=["보안관제", "침입 탐지 (IDS)", "처음 보는 공격"],
@@ -2255,94 +2251,12 @@ for name, cols_ in [("now", None), ("own past hour + time", lags + ["x_t+0_d1"])
 - **도착 시간 (ETA)**: 한 행 = 출발지 → 도착지 길 하나, 출력 = 걸리는 분. 길 위 센서들의 예측 속도를 이어 붙인다.
 - 사고 · 공사 같은 '이벤트' 는 과거 속도에 없다. 무엇을 입력에 더해야 할까?"""),
 ]),
-# ------------------------------------------------------------------
-dict(slug="corporate_card", title="법인카드 지출 관리", sector="금융 · 핀테크", keywords=["지출 관리 (spend management)", "비용 자동 분류", "이상 지출 찾기"],
-     teaser="공공기관 법인카드 결제 44만 건. 가맹점 이름만 보고 무슨 비용인지 자동으로 나눌 수 있을까?",
-     data="Oklahoma Purchase Card (P-card) FY2014", data_src="미국 오클라호마 주정부 공개 데이터: 주 정부 기관 · 대학 124곳의 2013-07 ~ 2014-06 법인카드 결제 442,458건 (기관 · 적요 · 금액 · 가맹점 · 날짜 · 가맹점 업종 코드 MCC). 카드 소지자 이름 열은 노트북에서 바로 지운다",
-     size="약 80MB",
-     five=[("① 한 행", "법인카드 결제 한 건"), ("② 입력 X", "가맹점 이름 (글자)"), ("③ 출력 y", "비용 항목 (사무용품 · 출장 · 장비 · 통신 …)"),
-           ("④ 평가지표", "정확도 + 항목별 재현율"), ("⑤ 기준선", "가장 흔한 항목")],
-     cells=[
-("md", """## 입장: 데이터 받기
-
-약 80MB. 사람 이름 (카드 소지자) 은 분석에 필요 없으니 받자마자 지운다 (개인정보 최소화)."""),
-("code", """URL = ("https://data.ok.gov/dataset/5f1e52fa-670d-4bb6-9072-4801e8c9ba17/resource/506a16ef-fcb6-4b03-8122-57cec56eb1b9"
-       "/download/data-purchase-card-pcard-fiscal-year-2014.csv")
-df = pd.read_csv(download(URL, "data/ok_pcard_2014.csv"), low_memory=False)
-df = df.drop(columns=["Cardholder Last Name", "Cardholder First Initial"])
-df = df.rename(columns={"Agency Name": "agency", "Description": "memo", "Amount": "amount", "Vendor": "vendor",
-                        "Transaction Date": "date", "Merchant Category Code (MCC)": "mcc"})
-df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y %I:%M:%S %p")
-print(df.shape, df["date"].min().date(), "~", df["date"].max().date())
-df[["agency", "memo", "amount", "vendor", "date", "mcc"]].sample(6, random_state=0)"""),
-("md", """## 열어 보기
-
-금액 분포 (음수 = 환불), 업종 코드 (MCC) 가 몇 가지일까? 435가지는 너무 잘다. 회계 담당자가 쓰는 **비용 항목 10개 정도** 로 묶어 보자 (규칙은 업종 이름의 단어)."""),
-("code", """print(df["amount"].describe().round(1).to_dict())
-print(f"refunds (negative): {(df['amount'] < 0).mean():.1%} | distinct MCC: {df['mcc'].nunique()}")
-RULES = [("travel", ["AIRLINE", "AIR CARRIER", "HOTEL", "MOTEL", "LODGING", "TRAVEL AGENC", "CAR RENTAL", "MARRIOTT", "HILTON", "HOLIDAY INN", "SHERATON", "HYATT", "BEST WESTERN", "TAXI", "PARKING"]),
-         ("office & books", ["STATIONERY", "OFFICE", "BOOK", "PRINTING", "NEWSPAPER", "PERIODICAL"]),
-         ("food", ["GROCERY", "RESTAURANT", "EATING", "FAST FOOD", "CATERER", "BAKER", "DAIRY", "CANDY"]),
-         ("medical & lab", ["MEDICAL", "DENTAL", "DRUG", "OPHTHALMIC", "HOSPITAL", "LABORATOR"]),
-         ("IT & electronics", ["COMPUTER", "SOFTWARE", "ELECTRONIC", "TELECOMMUNICATION", "CABLE", "TELEPHONE"]),
-         ("tools & facilities", ["HARDWARE", "INDUSTRIAL", "PLUMBING", "ELECTRICAL", "HOME SUPPLY", "LUMBER", "PAINT", "EQUIPMENT", "AUTOMOTIVE", "TIRE"]),
-         ("shipping & services", ["COURIER", "POSTAL", "BUSINESS SERVICE", "PROFESSIONAL SERVICE", "ADVERTISING", "GOVERNMENT SERVICE", "CLEANING"]),
-         ("retail & catalog", ["RETAIL", "CATALOG", "DIRECT MARKET", "DIRCT MARKET", "DEPARTMENT STORE", "DISCOUNT STORE", "WHOLESALE"])]
-
-def expense_group(mcc):
-    m = str(mcc).upper()
-    for name, words in RULES:
-        if any(w in m for w in words):
-            return name
-    return "other"
-
-df["group"] = df["mcc"].map(expense_group)
-print(df["group"].value_counts(normalize=True).round(3).to_dict())"""),
-("md", """## 문제 하나 골라 보기: 가맹점 이름 → 비용 항목
-
-지출 관리 서비스는 결제가 들어오면 **비용 항목을 자동으로** 붙여 준다. 가맹점 이름의 글자 조각 (2~4글자) 으로 로지스틱회귀.
-**시간 순서**: 2014년 3월까지 학습, 4~6월 시험 (실제로는 미래의 결제를 분류하니까). 시간을 줄이려고 학습은 15만 건만."""),
-("code", """from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import make_pipeline
-
-tr = df[df["date"] < "2014-04-01"].sample(150000, random_state=0)
-te = df[df["date"] >= "2014-04-01"]
-model = make_pipeline(TfidfVectorizer(analyzer="char_wb", ngram_range=(2, 4), min_df=3, max_features=200000),
-                      LogisticRegression(C=3, max_iter=2000)).fit(tr["vendor"].astype(str), tr["group"])
-pred = model.predict(te["vendor"].astype(str))
-most = tr["group"].value_counts().idxmax()
-print(f"baseline (always '{most}'): accuracy {np.mean(te['group'] == most):.1%}")
-print(f"vendor-name character n-grams: accuracy {np.mean(te['group'] == pred):.1%}")
-print("recall per group:", pd.Series(te["group"].values == pred).groupby(te["group"].values).mean().round(2).to_dict())
-new_vendor = ~te["vendor"].isin(set(tr["vendor"]))
-print(f"vendors never seen in training: {new_vendor.mean():.0%} of test, accuracy on them {np.mean(te['group'][new_vendor] == pred[new_vendor]):.1%}")"""),
-("md", """### 이상 지출 찾기: 규칙으로 먼저
-
-라벨이 없는 문제다. 감사 담당자가 먼저 보는 규칙 몇 가지를 세어 보자.
-- 주말 결제
-- 같은 카드 소지자 · 같은 가맹점 · 같은 날 여러 번 (한도를 피하려는 **쪼개기 결제** 의심) — 여기서는 이름을 지웠으니 '같은 기관 · 같은 가맹점 · 같은 날 · 같은 금액' 으로 센다
-- 정확히 딱 떨어지는 큰 금액 (예: 5,000.00)"""),
-("code", """df["weekend"] = df["date"].dt.dayofweek >= 5
-dup = df.groupby(["agency", "vendor", "date", "amount"]).size()
-print(f"weekend payments: {df['weekend'].mean():.1%}")
-print(f"(agency, vendor, day, amount) repeated 3+ times: {(dup >= 3).sum():,} groups, {dup[dup >= 3].sum():,} payments")
-print(f"round amounts >= 1,000: {((df['amount'] >= 1000) & (df['amount'] % 100 == 0)).sum():,}")
-print(df[df["weekend"]].groupby("group").size().sort_values(ascending=False).head(5).to_dict())"""),
-("md", """**관찰**: 가맹점 이름만으로도 비용 항목을 꽤 맞히지만, **처음 보는 가맹점** 에서는 떨어진다. 실제 서비스는 가맹점 업종 코드 · 금액 · 적요 · 영수증 사진까지 함께 쓴다. 규칙으로 찾은 '의심 결제' 는 대부분 정상이다 (주말 출장 등). 그래서 이상 탐지의 지표는 '담당자가 하루에 검토할 수 있는 건수 중 진짜 문제의 비율' 이 된다.
-
-## 다른 문제로 바꿔 보기
-
-- **예산 예측**: 한 행 = 기관 × 달, 출력 = 다음 달 카드 지출 총액.
-- **영수증 읽기**: 영수증 사진 → 가맹점 · 금액 · 날짜 (문서 이해 노트북과 연결)."""),
-]),
 ]
 
 # 학생이 직접 확인해 볼 논문 · 출처 (DOI · arXiv 는 2026-10-15 에 제목까지 확인)
 PAPERS = {
     "fashion_commerce": [("Fu et al. (2022) StyleGAN-Human: A Data-Centric Odyssey of Human Generation, ECCV", "https://arxiv.org/abs/2204.11823"),
                          ("데이터 원본: Fashion Product Images (Kaggle, P. Aggarwal)", "https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset")],
-    "card_fraud": [("Dal Pozzolo et al. (2015) Calibrating Probability with Undersampling for Unbalanced Classification, IEEE SSCI", "https://doi.org/10.1109/SSCI.2015.33")],
     "support_routing": [("Casanueva et al. (2020) Efficient Intent Detection with Dual Sentence Encoders (Banking77)", "https://arxiv.org/abs/2003.04807")],
     "shop_conversion": [("Sakar et al. (2019) Real-time prediction of online shoppers' purchasing intention using MLP and LSTM, Neural Computing and Applications", "https://doi.org/10.1007/s00521-018-3523-0")],
     "hotel_booking": [("Antonio, Almeida & Nunes (2019) Hotel booking demand datasets, Data in Brief", "https://doi.org/10.1016/j.dib.2018.11.126")],
@@ -2362,7 +2276,6 @@ PAPERS = {
                           ("CWRU Bearing Data Center (데이터 원본 · 실험 장치 설명)", "https://engineering.case.edu/bearingdatacenter")],
     "aml_transactions": [("Altman et al. (2023) Realistic Synthetic Financial Transactions for Anti-Money Laundering Models, NeurIPS Datasets and Benchmarks", "https://arxiv.org/abs/2306.16424")],
     "real_estate": [("Pace & Barry (1997) Sparse spatial autoregressions, Statistics & Probability Letters", "https://doi.org/10.1016/S0167-7152(96)00140-X")],
-    "earthquakes": [("U.S. Geological Survey (2017) Advanced National Seismic System (ANSS) Comprehensive Catalog", "https://doi.org/10.5066/F7MS3QZH")],
     "stock_index": [("Fama (1970) Efficient Capital Markets: A Review of Theory and Empirical Work, Journal of Finance", "https://doi.org/10.2307/2325486")],
     "point_cloud": [('Wu et al. (2015) 3D ShapeNets: A Deep Representation for Volumetric Shapes, CVPR', 'https://arxiv.org/abs/1406.5670')],
     "medical": [('Yang et al. (2023) MedMNIST v2: A large-scale lightweight benchmark for 2D and 3D biomedical image classification, Scientific Data', 'https://arxiv.org/abs/2110.14795')],
@@ -2370,9 +2283,14 @@ PAPERS = {
     "air_quality": [("Liang et al. (2015) Assessing Beijing's PM2.5 pollution: severity, weather impact, APEC and winter heating, Proc. R. Soc. A", 'https://doi.org/10.1098/rspa.2015.0257')],
     "electricity": [('UCI 데이터 설명 (Hebrail & Berard, 2012)', 'https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption')],
     "football": [('Decroos et al. (2019) Actions Speak Louder Than Goals: Valuing Player Actions in Soccer, KDD', 'https://arxiv.org/abs/1802.07127')],
+    "lol_esports": [("Guan & Tung (2026) Pre-game paired-comparison modeling of professional League of Legends map outcomes", "https://arxiv.org/abs/2609.08060"),
+                    ("Do et al. (2021) Using Machine Learning to Predict Game Outcomes Based on Player-Champion Experience in League of Legends, FDG", "https://arxiv.org/abs/2108.02799"),
+                    ("Leaguepedia: 경기 기록 원본 (CC BY-SA 3.0)", "https://lol.fandom.com/"),
+                    ("Hugging Face 데이터 설명 (gptilt/lol-esports-matches)", "https://huggingface.co/datasets/gptilt/lol-esports-matches")],
+    "visual_inspection": [("Bergmann et al. (2019) MVTec AD: A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection, CVPR", "https://doi.org/10.1109/CVPR.2019.00982"),
+                          ("Roth et al. (2022) Towards Total Recall in Industrial Anomaly Detection (PatchCore), CVPR", "https://arxiv.org/abs/2106.08265")],
     "baseball": [("Miller (2007) A Derivation of the Pythagorean Won-Loss Formula in Baseball, Chance", "https://arxiv.org/abs/math/0509698"),
                  ("Retrosheet: 경기 기록 (game logs) 칸 설명", "https://www.retrosheet.org/gamelogs/glfields.txt")],
-    "chess": [('McIlroy-Young et al. (2020) Aligning Superhuman AI with Human Behavior: Chess as a Model System (Maia), KDD', 'https://arxiv.org/abs/2006.01855')],
     "speech": [('Warden (2018) Speech Commands: A Dataset for Limited-Vocabulary Speech Recognition', 'https://arxiv.org/abs/1804.03209')],
     "crop": [('Hughes & Salathé (2015) An open access repository of images on plant health to enable the development of mobile disease diagnostics', 'https://arxiv.org/abs/1511.08060')],
     "cyber_security": [("Tavallaee et al. (2009) A detailed analysis of the KDD CUP 99 data set, IEEE CISDA (NSL-KDD)", "https://doi.org/10.1109/CISDA.2009.5356528")],
@@ -2381,7 +2299,6 @@ PAPERS = {
     "credit_default": [("Yeh & Lien (2009) The comparisons of data mining techniques for the predictive accuracy of probability of default of credit card clients, Expert Systems with Applications", "https://doi.org/10.1016/j.eswa.2007.12.020")],
     "hiring_match": [("Hugging Face 데이터 설명 (resume-job-description-fit)", "https://huggingface.co/datasets/cnamuangtoun/resume-job-description-fit")],
     "traffic_speed": [("Li et al. (2018) Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting, ICLR (METR-LA · PEMS-BAY)", "https://arxiv.org/abs/1707.01926")],
-    "corporate_card": [("Oklahoma Open Data: Purchase Card (PCard) Fiscal Year 2014", "https://data.ok.gov/dataset/purchase-card-pcard-fiscal-year-2014")],
     "semiconductor_yield": [("UCI SECOM 데이터 설명 (McCann & Johnston, 2008)", "https://archive.ics.uci.edu/dataset/179/secom")],
 }
 
@@ -2391,7 +2308,6 @@ FIT = {
     "shop_conversion": ("이커머스 · D2C 브랜드 (뷰티 등), 광고 · 마케팅 테크", "그로스 · 마케팅 데이터 분석가, CRM 데이터 사이언티스트"),
     "movie_ratings": ("OTT · 동영상 스트리밍, 음악 · 웹툰 · 콘텐츠 플랫폼", "추천 · 랭킹 엔지니어, 개인화 ML 엔지니어"),
     "korean_reviews": ("포털 · 검색, 커머스 리뷰 서비스, 브랜드 모니터링 · 마케팅 에이전시", "NLP 엔지니어, VOC (고객의 소리) 데이터 분석가"),
-    "card_fraud": ("카드사 · 은행 · 증권, 간편결제 · 핀테크, 금융보안", "FDS (이상거래탐지) 분석가, 리스크 모델러, 자금세탁방지 (AML) 컴플라이언스"),
     "support_routing": ("고객 상담 · CX 소프트웨어, 콜센터, 금융 · 통신 고객센터", "대화형 AI · LLM 엔지니어, NLP 엔지니어, CX 데이터 분석가"),
     "hotel_booking": ("여행 · 숙박 플랫폼, 항공 · 호텔, 모빌리티", "가격 (레비뉴) 매니지먼트 분석가, 수요예측 데이터 사이언티스트"),
     "link_prediction": ("SNS · 메신저, 커리어 네트워크, 커머스 (함께 산 상품), 금융 (거래 연결망)", "그래프 ML 엔지니어, 추천 엔지니어"),
@@ -2399,7 +2315,6 @@ FIT = {
     "taxi_demand": ("모빌리티 · 택시 · 배차 플랫폼, 배달 · 물류, 지도 · 내비게이션", "시공간 수요예측 데이터 사이언티스트, 배차 · 운영 최적화 엔지니어"),
     "aml_transactions": ("은행 · 증권 · 카드사, 핀테크 · 가상자산 거래소, 금융 감독 · 규제", "자금세탁방지 (AML) 분석가, 그래프 ML 엔지니어, 컴플라이언스"),
     "real_estate": ("부동산 플랫폼 · 프롭테크, 은행 (담보 평가), 건설 · 도시계획", "부동산 데이터 분석가, 공간 데이터 사이언티스트, 자동 가치 평가 (AVM) 모델러"),
-    "earthquakes": ("재난 · 안전 (기상 · 지질 기관), 보험 · 재보험, 건설 · 인프라", "시공간 데이터 사이언티스트, 재난 위험 모델러, 지구물리 데이터 분석가"),
     "stock_index": ("증권 · 자산운용, 퀀트 · 핀테크 투자, 금융 데이터 서비스", "퀀트 리서처, 리스크 매니저, 금융 데이터 엔지니어"),
     "point_cloud": ('자율주행 · 로봇, 3D 스캐너 · 디지털 트윈, 건설 · 측량', '3D 비전 엔지니어, LiDAR 인식 엔지니어'),
     "medical": ('의료 AI · 병원, 의료기기, 보험 (심사)', '의료 영상 AI 엔지니어, 임상 데이터 사이언티스트'),
@@ -2407,8 +2322,9 @@ FIT = {
     "air_quality": ('기상 · 환경 기관, 지자체, 공기청정 · 가전', '환경 데이터 분석가, 시계열 예측 데이터 사이언티스트'),
     "electricity": ('전력 · 에너지 공기업, 스마트홈 · 가전, 에너지 거래 플랫폼', '에너지 데이터 분석가, 수요예측 데이터 사이언티스트'),
     "football": ('프로 구단 · 스포츠 데이터 회사, 스포츠 중계 · 미디어, 게임 (스포츠)', '스포츠 데이터 분석가, 게임 데이터 사이언티스트'),
+    "lol_esports": ("게임 회사 (매칭 · 밸런스), e스포츠 구단 · 리그 운영, 게임 중계 · 미디어", "게임 데이터 사이언티스트, e스포츠 데이터 분석가, 매칭 시스템 엔지니어"),
+    "visual_inspection": ("반도체 · 디스플레이 · 배터리 · 자동차 부품 제조, 머신 비전 검사 장비, 스마트팩토리 솔루션", "비전 검사 AI 엔지니어, 품질 엔지니어, 제조 AI 엔지니어"),
     "baseball": ("프로 구단 전력분석 · 스카우트, 스포츠 데이터 · 중계, 야구 게임 · 판타지 스포츠", "전력 분석원 (세이버메트릭스), 스포츠 데이터 사이언티스트"),
-    "chess": ('게임 회사, e스포츠 · 매칭 시스템, 교육용 AI', '게임 데이터 사이언티스트, 추천 · 매칭 엔지니어'),
     "speech": ('AI 스피커 · 가전, 자동차 (음성 제어), 통신사', '음성 인식 엔지니어, 온디바이스 AI 엔지니어'),
     "crop": ('스마트팜 · 농업 기술, 종자 · 비료, 공공 연구 (농촌진흥청 등)', '농업 AI 엔지니어, 비전 AI 엔지니어'),
     "cyber_security": ("보안 · 통신 · 클라우드, 금융 · 공공 보안관제, 보안 솔루션", "보안관제 (SOC) 분석가, 침입 탐지 · 위협 탐지 엔지니어"),
@@ -2417,7 +2333,6 @@ FIT = {
     "credit_default": ("은행 · 카드 · 인터넷전문은행, 핀테크 대출, 신용평가사", "신용 리스크 모델러, 금융 데이터 사이언티스트"),
     "hiring_match": ("채용 플랫폼 · HR 테크, 대기업 인사팀, 헤드헌팅", "HR 데이터 분석가, 검색 · 매칭 (NLP) 엔지니어"),
     "traffic_speed": ("지도 · 내비게이션, 모빌리티 · 물류, 지자체 교통 관제", "시공간 데이터 사이언티스트, 경로 · 도착시간 예측 엔지니어"),
-    "corporate_card": ("지출 관리 · 법인카드 핀테크, 회계 · 감사, 기업 재무팀 · ERP", "핀테크 데이터 사이언티스트, 재무 · 감사 데이터 분석가"),
     "semiconductor_yield": ("반도체 · 디스플레이 제조, 배터리 · 소재, 스마트팩토리 솔루션", "공정 데이터 엔지니어, 수율 · 품질 분석가, 제조 AI 엔지니어"),
     "predictive_maintenance": ("중공업 · 조선 · 자동차, 발전 · 플랜트, 산업 IoT 솔루션", "예지보전 데이터 사이언티스트, 설비 · 신뢰성 엔지니어"),
     "steel_defects": ("철강 · 금속, 자동차 부품, 비전 검사 장비", "비전 검사 AI 엔지니어, 품질 엔지니어"),
@@ -2426,7 +2341,7 @@ FIT = {
     "ai_usecases": ("AI 전환 (AX) 컨설팅, 기업 디지털 전략 · 혁신 조직, 공공 정책 연구", "AI 전략 컨설턴트, 데이터 기반 기획 · 정책 분석가"),
 }
 
-SECTIONS = ["커머스 · 콘텐츠", "금융 · 핀테크", "플랫폼 · 서비스", "도시 · 공간", "제조", "이미지 · 소리 · 3D", "스포츠 · 게임", "전문 서비스"]
+SECTIONS = ["커머스 · 콘텐츠", "금융 · 핀테크", "플랫폼 · 서비스", "도시 · 공간", "제조", "이미지 · 소리 · 3D", "전문 서비스", "스포츠 · 게임"]
 assert {it["slug"] for it in SHOP} <= set(PAPERS) and set(PAPERS) == set(FIT), set(PAPERS) ^ {it["slug"] for it in SHOP}
 SHOP.sort(key=lambda it: SECTIONS.index(it["sector"]))          # 진열 순서 = 분야 순서 (같은 분야는 적은 순서)
 for k, it in enumerate(SHOP):

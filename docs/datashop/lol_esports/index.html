@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>리그 오브 레전드 e스포츠: 밴픽 끝, 누가 이길까? · 현실의 데이터</title>
+<meta name="description" content="프로 경기 13만 판. 밴픽이 끝난 순간, 블루 팀이 이길지 맞힐 수 있을까?">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shop.css">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<!-- notebooks/datashop/make_shop.py 가 만든다. 고칠 때는 site_pages.py · make_shop.py 를 고치고 다시 실행 -->
+</head>
+<body>
+<div class="wrap">
+<nav class="crumb"><a href="../">← 데이터 목록</a><a href="../worldcup/">데이터 월드컵 하러 가기 →</a></nav>
+<div class="cover"><img src="cover.jpg" alt=""><span class="credit">사진: <a href="https://commons.wikimedia.org/wiki/File:LOL_Park_Stadium.jpg" target="_blank" rel="noopener">Altostratus</a> · CC BY-SA 4.0</span></div>
+<div class="hero" style="grid-template-columns: 1fr">
+  <div>
+    <div class="tag"><span class="num">35</span><span>스포츠 · 게임</span></div>
+    <h1>리그 오브 레전드 e스포츠: 밴픽 끝, 누가 이길까?</h1>
+    <div class="chips"><span class="chip">e스포츠 데이터</span><span class="chip">실시간 승률 예측 (중계)</span><span class="chip">팀 실력 (Elo 레이팅)</span></div>
+    <p class="teaser-big">프로 경기 13만 판. 밴픽이 끝난 순간, 블루 팀이 이길지 맞힐 수 있을까?</p>
+    <div class="actions"><a class="btn primary" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/notebooks/datashop/35_lol_esports.ipynb" target="_blank" rel="noopener">Colab 에서 열기</a><a class="btn ghost" href="35_lol_esports.ipynb" download>노트북 받기 (.ipynb)</a></div>
+  </div>
+</div>
+<section class="block"><h2>어떤 문제인가</h2><div class="blackbox">
+  <div class="io"><b>입력 X</b>두 팀의 그 경기 전까지 실력 (Elo 레이팅) · 양 팀이 고른 챔피언 10개</div>
+  <div class="model">→ 모델 →<small>확률 분류</small></div>
+  <div class="io"><b>출력 y (기대하는 답)</b>블루 팀이 이기나 (확률)</div>
+</div></section>
+<section class="block"><h2>데이터</h2>
+  <div class="two" style="align-items:center"><div><div class="data-name">LoL 프로 경기 기록 (2011 ~ 2026) · 약 12MB</div><p class="src">Leaguepedia (lol.fandom.com) 의 프로 경기 기록을 GPTilt 가 정리해 Hugging Face 에 올린 것 (gptilt/lol-esports-matches). 한 판마다 날짜 · 대회 · 두 팀 · 이긴 팀 · 양 팀 챔피언 5개 · 밴 · 경기 시간. 라이선스 CC BY-SA 3.0</p></div>
+  <img src="thumb.png" alt="리그 오브 레전드 e스포츠: 밴픽 끝, 누가 이길까? 데이터 샘플" style="width:100%;border-radius:10px;border:1px solid var(--line)"></div>
+  <h2 style="margin-top:16px">무작위로 뽑은 몇 줄</h2><div class="scroll"><table class="sample"><thead><tr><th>datetime_utc</th><th>region</th><th>team_blue</th><th>team_red</th><th>winner</th><th>picks_blue</th><th>picks_red</th><th>gamelength</th></tr></thead><tbody><tr><td title="2025-10-19 16:24:00">2025-10-19 16:24:00</td><td title="Americas">Americas</td><td title="ÉanDG">ÉanDG</td><td title="Oreiudos Esports">Oreiudos Esports</td><td title="ÉanDG">ÉanDG</td><td title="Renekton, Jarvan IV, Xerath, Draven, Rell">Renekton, Jarvan IV, Xerath, Draven, Rell</td><td title="Rumble, Xin Zhao, Hwei, Sivir, Poppy">Rumble, Xin Zhao, Hwei, Sivir, Poppy</td><td title="31:21">31:21</td></tr><tr><td title="2026-05-14 10:16:00">2026-05-14 10:16:00</td><td title="Korea">Korea</td><td title="Kiwoom DRX">Kiwoom DRX</td><td title="KT Rolster">KT Rolster</td><td title="KT Rolster">KT Rolster</td><td title="Renekton, Xin Zhao, Aurora, Ezreal, Bard">Renekton, Xin Zhao, Aurora, Ezreal, Bard</td><td title="Jayce, Pantheon, Annie, Sivir, Karma">Jayce, Pantheon, Annie, Sivir, Karma</td><td title="24:06">24:06</td></tr><tr><td title="2026-06-04 15:12:00">2026-06-04 15:12:00</td><td title="EMEA">EMEA</td><td title="Movistar KOI Fénix">Movistar KOI Fénix</td><td title="UCAM Esports">UCAM Esports</td><td title="Movistar KOI Fénix">Movistar KOI Fénix</td><td title="Sion, Wukong, Viktor, Lucian, Milio">Sion, Wukong, Viktor, Lucian, Milio</td><td title="Rumble, Pantheon, Orianna, Kalista, Renata Glasc">Rumble, Pantheon, Orianna, Kalista, Renata Glasc</td><td title="35:19">35:19</td></tr><tr><td title="2025-10-05 05:53:00">2025-10-05 05:53:00</td><td title="Korea">Korea</td><td title="OKSavingsBank BRION Academy">OKSavingsBank BRION Academy</td><td title="T1 Esports Academy Rookies">T1 Esports Academy Rookies</td><td title="OKSavingsBank BRION Academy">OKSavingsBank BRION Academy</td><td title="Rumble, Xin Zhao, Ryze, Xayah, Rakan">Rumble, Xin Zhao, Ryze, Xayah, Rakan</td><td title="Galio, Vi, Taliyah, Sivir, Alistar">Galio, Vi, Taliyah, Sivir, Alistar</td><td title="34:28">34:28</td></tr><tr><td title="2026-05-22 22:08:00">2026-05-22 22:08:00</td><td title="Brazil">Brazil</td><td title="RAMPAGE (Brazilian Team)">RAMPAGE (Brazilian Team)</td><td title="Vasco E-Sports">Vasco E-Sports</td><td title="Vasco E-Sports">Vasco E-Sports</td><td title="Sion, Xin Zhao, Ryze, Lucian, Milio">Sion, Xin Zhao, Ryze, Lucian, Milio</td><td title="Olaf, Nocturne, Aurora, Draven, Nautilus">Olaf, Nocturne, Aurora, Draven, Nautilus</td><td title="28:40">28:40</td></tr><tr><td title="2025-04-27 11:38:00">2025-04-27 11:38:00</td><td title="EMEA">EMEA</td><td title="Zero Tenacity">Zero Tenacity</td><td title="Fajnie Mieć Skład">Fajnie Mieć Skład</td><td title="Zero Tenacity">Zero Tenacity</td><td title="Camille, Maokai, Orianna, Tristana, Amumu">Camille, Maokai, Orianna, Tristana, Amumu</td><td title="Volibear, Sejuani, Ambessa, Jhin, Rakan">Volibear, Sejuani, Ambessa, Jhin, Rakan</td><td title="30:57">30:57</td></tr></tbody></table></div>
+</section>
+<section class="block"><h2>데이터 통계</h2>
+  <div class="stat-head"><div><b>137,493</b><span>줄 (데이터 파일의 줄 수. 문제의 '한 행' 은 아래 예시에서 따로 정한다)</span></div><div><b>8</b><span>열</span></div></div>
+  <div class="scroll"><table class="sample"><thead><tr><th>열</th><th>종류</th><th>빈칸</th><th>고유값 수</th><th>범위 · 대표값</th></tr></thead><tbody><tr><td title="datetime_utc">datetime_utc</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="130,624">130,624</td><td title="가장 흔한 값: 2013-08-20 07:00:00 (0.0%)">가장 흔한 값: 2013-08-20 07:00:00 (0.0%)</td></tr><tr><td title="region">region</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="23">23</td><td title="가장 흔한 값: EMEA (19.9%)">가장 흔한 값: EMEA (19.9%)</td></tr><tr><td title="team_blue">team_blue</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="4409">4409</td><td title="가장 흔한 값: Invictus Gaming (0.6%)">가장 흔한 값: Invictus Gaming (0.6%)</td></tr><tr><td title="team_red">team_red</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="4450">4450</td><td title="가장 흔한 값: Invictus Gaming (0.6%)">가장 흔한 값: Invictus Gaming (0.6%)</td></tr><tr><td title="winner">winner</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="4002">4002</td><td title="가장 흔한 값: EDward Gaming (0.6%)">가장 흔한 값: EDward Gaming (0.6%)</td></tr><tr><td title="picks_blue">picks_blue</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="130,349">130,349</td><td title="가장 흔한 값: Rumble, Sejuani, Yone, Xayah,  (0.0%)">가장 흔한 값: Rumble, Sejuani, Yone, Xayah,  (0.0%)</td></tr><tr><td title="picks_red">picks_red</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="131,825">131,825</td><td title="가장 흔한 값: Renekton, Sejuani, Azir, Xayah (0.0%)">가장 흔한 값: Renekton, Sejuani, Azir, Xayah (0.0%)</td></tr><tr><td title="gamelength">gamelength</td><td title="글자 · 범주">글자 · 범주</td><td title="0">0</td><td title="2840">2840</td><td title="가장 흔한 값: 29:08 (0.2%)">가장 흔한 값: 29:08 (0.2%)</td></tr></tbody></table></div></section>
+<section class="block"><h2>데이터 모양 보기</h2><div class="charts"><div class="chart"><h3>해마다 블루 진영 승률 (%)</h3><p class="note">늘 50% 보다 조금 높다: 블루 진영 이점</p><div class="plot" id="plot-0" role="img" aria-label="해마다 블루 진영 승률 (%)"></div></div><div class="chart"><h3>경기 전 레이팅 차와 블루 승률 (2018년부터)</h3><p class="note">레이팅이 높은 팀이 더 자주 이긴다</p><div class="plot" id="plot-1" role="img" aria-label="경기 전 레이팅 차와 블루 승률 (2018년부터)"></div></div><div class="chart"><h3>2025 · 2026 가장 많이 고른 챔피언</h3><div class="plot" id="plot-2" role="img" aria-label="2025 · 2026 가장 많이 고른 챔피언"></div></div></div></section>
+<div class="stack">
+  <section class="block"><h2>문제를 정해 본 예시</h2><table class="five"><tbody><tr><td>① 한 행</td><td>경기 한 판</td></tr><tr><td>② 입력 X</td><td>두 팀의 그 경기 전까지 실력 (Elo 레이팅) · 양 팀이 고른 챔피언 10개</td></tr><tr><td>③ 출력 y</td><td>블루 팀이 이기나 (확률)</td></tr><tr><td>④ 평가지표</td><td>정확도, 로그 손실</td></tr><tr><td>⑤ 기준선</td><td>늘 블루 승 (약 53%)</td></tr></tbody></table>
+    <p class="src" style="margin-top:10px">문제를 정할 때 처음 채워 보는 칸들입니다. 여기서 끝이 아니라, 시험 데이터를 어떻게 나눌지 · 틀렸을 때 손해가 얼마인지 · 예측 시점에 정말 알 수 있는 값인지 같은 칸을 더 붙일수록 좋은 문제가 됩니다.</p></section>
+  <section class="block"><h2>노트북에서 나온 결과 (기준선 vs 모델)</h2><pre class="result">always blue              accuracy 52.9%   log loss 0.6915
+higher Elo wins          accuracy 62.2%
+champions only           accuracy 53.2%   log loss 0.6905
+Elo only                 accuracy 62.7%   log loss 0.6442
+Elo + champions          accuracy 62.6%   log loss 0.6439</pre></section>
+</div>
+<div class="two">
+  <section class="block"><h2>평가지표 수식</h2><div class="metric"><div class="what"><b>정확도 (accuracy)</b><span>맞힌 비율. 한쪽이 아주 드물면 &#x27;전부 흔한 쪽&#x27; 만으로도 높게 나온다</span></div><div class="tex" data-tex="\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]">\text{Accuracy} = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}[\hat y_i = y_i]</div></div><div class="metric"><div class="what"><b>로그 손실 (log loss)</b><span>확률을 얼마나 잘 맞혔나 (작을수록 좋다)</span></div><div class="tex" data-tex="-\frac{1}{n}\sum_{i=1}^{n}\big[y_i \log p_i + (1 - y_i)\log(1 - p_i)\big]">-\frac{1}{n}\sum_{i=1}^{n}\big[y_i \log p_i + (1 - y_i)\log(1 - p_i)\big]</div></div></section>
+  <section class="block"><h2>관련 데이터</h2><ul class="related"><li><a href="https://oracleselixir.com/tools/downloads" target="_blank" rel="noopener">Oracle&#x27;s Elixir</a> <span>· 프로 경기마다 선수별 골드 · 킬 · 15분 시점 기록 (CSV)</span></li><li><a href="https://developer.riotgames.com/" target="_blank" rel="noopener">Riot Developer Portal</a> <span>· 일반 랭크 경기 · 시간대별 기록 API (개발자 키 필요)</span></li><li><a href="https://huggingface.co/datasets/gptilt/lol-basic-matches-challenger-10k" target="_blank" rel="noopener">GPTilt 챌린저 1만 판 (Hugging Face)</a> <span>· 최상위 랭크 경기의 시간대별 이벤트</span></li><li><a href="https://huggingface.co/datasets?search=league%20of%20legends" target="_blank" rel="noopener">Hugging Face 에서 비슷한 데이터 더 찾기</a> <span>· 데이터셋 검색 결과</span></li></ul></section>
+</div>
+<div class="two">
+  <section class="block"><h2>논문 · 출처</h2><ul class="papers"><li><a href="https://arxiv.org/abs/2609.08060" target="_blank" rel="noopener">Guan &amp; Tung (2026) Pre-game paired-comparison modeling of professional League of Legends map outcomes</a></li><li><a href="https://arxiv.org/abs/2108.02799" target="_blank" rel="noopener">Do et al. (2021) Using Machine Learning to Predict Game Outcomes Based on Player-Champion Experience in League of Legends, FDG</a></li><li><a href="https://lol.fandom.com/" target="_blank" rel="noopener">Leaguepedia: 경기 기록 원본 (CC BY-SA 3.0)</a></li><li><a href="https://huggingface.co/datasets/gptilt/lol-esports-matches" target="_blank" rel="noopener">Hugging Face 데이터 설명 (gptilt/lol-esports-matches)</a></li></ul>
+    <p class="src" style="margin-top:8px">누가, 왜, 어떻게 만든 데이터인지 직접 확인해 보세요.</p></section>
+  <section class="block fit"><h2>이 데이터에 관심 있을 곳</h2><dl><dt>업종</dt><dd>게임 회사 (매칭 · 밸런스), e스포츠 구단 · 리그 운영, 게임 중계 · 미디어</dd><dt>직무</dt><dd>게임 데이터 사이언티스트, e스포츠 데이터 분석가, 매칭 시스템 엔지니어</dd></dl>
+    <p class="src" style="margin-top:8px">프로젝트 주제를 고를 때 참고하세요 (일반적인 예시).</p></section>
+</div>
+<nav class="pager"><a href="../baseball/">← 34 야구: 오늘 경기, 홈팀이 이길까?</a><span></span></nav>
+<footer><a href="../">← 전체 목록</a> · 데이터 출처는 위에 적었습니다.</footer>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>document.querySelectorAll("[data-tex]").forEach((el) => { try { katex.render(el.dataset.tex, el, { displayMode: true, throwOnError: false, strict: false }); } catch (e) { el.textContent = el.dataset.tex; } });</script>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+const CHARTS = [{"title": "해마다 블루 진영 승률 (%)", "note": "늘 50% 보다 조금 높다: 블루 진영 이점", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": ["2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026"], "y": [60.7, 54.9, 55.7, 54.8, 54.5, 53.6, 54.9, 53.9, 53.3, 52.7, 52.9, 52.5, 53.0, 53.0, 52.7, 53.1]}], "layout": {"xaxis": {"type": "category", "title": ""}, "yaxis": {"range": [45, 62], "title": "%"}}}, {"title": "경기 전 레이팅 차와 블루 승률 (2018년부터)", "note": "레이팅이 높은 팀이 더 자주 이긴다", "traces": [{"type": "scatter", "mode": "lines+markers", "x": ["-375", "-325", "-275", "-225", "-175", "-125", "-75", "-25", "25", "75", "125", "175", "225", "275", "325", "375"], "y": [13.7, 21.9, 24.7, 27.2, 32.9, 36.8, 42.4, 49.4, 56.7, 62.9, 68.5, 72.7, 77.8, 80.3, 85.0, 87.0], "name": "", "line": {"color": "var:series-1", "width": 2}, "marker": {"size": 6}}], "layout": {"xaxis": {"title": "레이팅 차 (블루 − 레드)"}, "yaxis": {"title": "%"}}}, {"title": "2025 · 2026 가장 많이 고른 챔피언", "note": "", "traces": [{"type": "bar", "marker": {"color": "var:series-1"}, "name": "", "x": [4684, 4709, 4919, 4956, 4985, 5071, 5321, 5564, 5581, 5593, 5953, 6386], "y": ["Alistar", "Vi", "Corki", "K'Sante", "Varus", "Wukong", "Rumble", "Ambessa", "Rell", "Nautilus", "Ezreal", "Xin Zhao"], "orientation": "h"}], "layout": {"xaxis": {"title": "고른 횟수"}, "yaxis": {"title": ""}, "margin": {"l": 110}}}];
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function resolve(v) {
+  if (typeof v === "string" && v.startsWith("var:")) return cssVar("--" + v.slice(4));
+  if (Array.isArray(v)) return v.map(resolve);
+  if (v && typeof v === "object") { const o = {}; for (const k in v) o[k] = resolve(v[k]); return o; }
+  return v;
+}
+function draw() {
+  const ink = cssVar("--ink"), muted = cssVar("--muted-ink"), grid = cssVar("--grid");
+  CHARTS.forEach((c, i) => {
+    const el = document.getElementById("plot-" + i); if (!el || !window.Plotly) return;
+    const axis = { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: muted }, title: { font: { color: muted, size: 12 } }, automargin: true };
+    const lay = resolve(JSON.parse(JSON.stringify(c.layout)));
+    const xa = Object.assign({}, axis, lay.xaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.xaxis || {}).title || "" }) });
+    const ya = Object.assign({}, axis, lay.yaxis || {}, { title: Object.assign({}, axis.title, { text: (lay.yaxis || {}).title || "" }) });
+    const layout = Object.assign({ paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)", font: { family: "Noto Sans KR, sans-serif", color: ink, size: 12 },
+      margin: { l: 56, r: 12, t: 8, b: 44 }, showlegend: c.traces.length > 1, legend: { orientation: "h", y: 1.12, x: 0, font: { color: muted } },
+      bargap: 0.15, hoverlabel: { font: { family: "Noto Sans KR, sans-serif" } } }, lay, { xaxis: xa, yaxis: ya });
+    if (lay.margin) layout.margin = Object.assign({ l: 56, r: 12, t: 8, b: 44 }, lay.margin);
+    delete layout.height;
+    Plotly.react(el, resolve(c.traces), layout, { displayModeBar: false, responsive: true });
+  });
+}
+draw();
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+</script>
+</body>
+</html>
