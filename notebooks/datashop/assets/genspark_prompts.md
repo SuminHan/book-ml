@@ -30,7 +30,7 @@ Wide cinematic banner, 16:5 aspect ratio, photorealistic editorial photography, 
 
 ## 금융 · 핀테크
 
-6. **카드 이상거래 (보이스피싱 등)** (`card_fraud`)
+6. **카드 이상거래** (`card_fraud`)
    `Close-up of a contactless card payment terminal at a shop counter, a red warning glow on the terminal screen, a shadowy hand in the background, tense mood`
 7. **자금세탁 거래 탐지** (`aml_transactions`)
    `Dark navy network illustration of bank, person, crypto coin and wallet icons; most edges calm blue, one suspicious part in red and orange: a red account with many edges fanning in, money scattering and gathering again, a closed red cycle of four accounts, and a chain hopping through a coin to hide the trail`

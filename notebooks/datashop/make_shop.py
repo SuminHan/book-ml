@@ -113,7 +113,7 @@ plt.tight_layout(); plt.show()"""),
 - **옷 사진 생성**: StyleGAN 으로 옷 입은 사람을 만든 연구 (StyleGAN-Human) 는 전신 사진 23만 장 SHHQ 를 썼다 (신청 필요)."""),
 ]),
 # ------------------------------------------------------------------
-dict(slug="card_fraud", title="카드 이상거래 탐지 (보이스피싱 등)", sector="금융 · 핀테크",
+dict(slug="card_fraud", title="카드 이상거래 탐지", sector="금융 · 핀테크",
      keywords=["이상거래탐지 (FDS)", "보이스피싱 · 송금 사기", "설명가능성"],
      teaser="카드 거래 28만 건 중 사기는 0.17%. 정확도 99.8% 는 좋은 점수일까?",
      data="Credit Card Fraud Detection (ULB)", data_src="유럽 카드 소지자의 2013년 9월 이틀치 거래, OpenML 1597 (원본 Kaggle mlg-ulb). 성분은 개인정보 때문에 PCA 로 바꾼 V1~V28. OpenML 판에는 시각 열이 없지만 행이 시간 순서대로 놓여 있다",
