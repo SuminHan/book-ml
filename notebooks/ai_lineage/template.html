@@ -320,7 +320,7 @@ function build(relayout) {
     g.append("text").attr("x", xe[0] - 90).attr("y", -4).text(K(y + "년생", "b. " + y));
   }
   if (scope !== "biz") [["dl", K("← 딥러닝", "← Deep learning")], ["ml", K("고전 ML · 통계 · 기호 AI", "Classic ML · statistics · symbolic AI")], ["rl", K("강화학습 · 로봇 →", "Reinforcement learning · robotics →")]].forEach(([f, t]) =>
-    gAxis.append("text").attr("class", "field").attr("x", FX[f]).attr("y", Y(Y.domain()[0]) - 30).attr("text-anchor", "middle").text(t));
+    gAxis.append("text").attr("class", "field").attr("x", FX[f]).attr("y", Math.min(Y(Y.domain()[0]), d3.min(nodesNow, d => d.y)) - 75).attr("text-anchor", "middle").text(t));
   draw();
   lit = sel ? around(sel) : focusGroup != null ? new Set(DATA.collab[focusGroup].ids) : null;
   paint();
@@ -338,6 +338,7 @@ function end(d) {
 function fit() {
   const box = svg.node().getBoundingClientRect();
   const x = d3.extent(nodesNow, d => d.x), y = d3.extent(nodesNow, d => d.y);
+  y[0] -= 60;   // 위쪽 분야 이름 (Deep learning · Classic ML …) 자리
   const w = x[1] - x[0] + 260, h = y[1] - y[0] + 170;
   const s = Math.min(box.width / w, box.height / h);
   const cx = (x[0] - 90 + x[1] + 60) / 2;
@@ -555,7 +556,7 @@ function panel(n) {
     ${F(n, "books") && F(n, "books").length ? `<h3>${K("쓴 책 · 교과서", "Books · textbooks")}</h3><ul>${F(n, "books").map(b => `<li>${b}</li>`).join("")}</ul>` : ""}
     ${groups.length ? `<h3>${K("대표 공동 연구 · 공동 창업", "Key joint work · co-founded")}</h3><ul class="plain">${groups.map(g => `<li><button class="gbtn paper" style="font:inherit;font-weight:500;background:none;border:0;padding:0;color:var(--co);cursor:pointer;text-align:left" data-g="${DATA.collab.indexOf(g)}">${gname(g)}</button> <span class="pp">— ${g.ids.filter(i => i !== n.id).map(pbtn).join(", ")}</span></li>`).join("")}</ul>` : ""}
     <h3>${K("지도교수 · 스승", "Advisors")}</h3>${people(A)}
-    <h3>${K("제자", "Students")} ${S.length ? `(${S.length})` : ""}</h3>${people(S.slice(0, 25))}${S.length > 25 ? `<p class="src">${K(`… 외 ${S.length - 25}명 ('제자 전부'에서 보임)`, `… and ${S.length - 25} more (shown under "All students")`)}</p>` : ""}
+    <h3>${K("제자", "Students")} ${S.length ? `(${S.length})` : ""}</h3>${people(S.slice(0, 25))}${S.length > 25 ? `<p class="src">${K(`… 외 ${S.length - 25}명 ('제자 전부'에서 보임)`, `… and ${S.length - 25} more (shown under "Full lineage")`)}</p>` : ""}
     ${coTop.length ? `<h3>${K("같이 쓴 논문이 많은 사람", "Most frequent co-authors")}</h3><ul class="plain">${coTop.map(([id, c]) => `<li>${pbtn(id)} <span class="cnt">${K(c + "편", c + " papers")}</span></li>`).join("")}</ul>` : ""}
     ${citOut.length ? `<h3>${K("많이 인용한 사람", "Cites most")}</h3><ul class="plain">${citOut.map(c => `<li>${pbtn(c.b)} <span class="cnt">${K(`논문 ${c.n}편에서`, `in ${c.n} papers`)}</span></li>`).join("")}</ul>` : ""}
     ${citIn.length ? `<h3>${K("이 사람을 많이 인용한 사람", "Cited most by")}</h3><ul class="plain">${citIn.map(c => `<li>${pbtn(c.a)} <span class="cnt">${K(`논문 ${c.n}편에서`, `in ${c.n} papers`)}</span></li>`).join("")}</ul>` : ""}
@@ -598,7 +599,7 @@ document.getElementById("q").addEventListener("change", e => {
 const STATIC = {
   "t-h1": ["AI 연구자 계보도", "AI Researcher Family Tree"],
   "t-sub": ["세로 높이 = 태어난 해 (모르는 사람은 지도교수 · 제자로 어림). 사람을 누르면 그 사람과 이어진 줄만 켜지고, 오른쪽에 업적 · 교과서 · 대학이 나옵니다.", "Height = year of birth (estimated from advisors and students when unknown). Click a person to highlight their connections; their achievements, textbooks and universities appear on the right."],
-  "t-core": ["연구자", "Researchers"], "t-biz": ["기업가", "Founders"], "t-all": ["제자 전부", "All students"],
+  "t-core": ["연구자", "Researchers"], "t-biz": ["기업가", "Founders"], "t-all": ["계보 전체", "Full lineage"],
   "t-rel": ["관계", "Links"], "t-adv": ["지도교수 → 제자", "Advisor → student"], "t-collab": ["대표 공동 연구", "Key joint work"],
   "t-bizl": ["공동 창업", "Co-founded"], "t-co": ["같이 쓴 논문 (수)", "Co-authored papers (count)"], "t-cit": ["인용 (A → B)", "Citations (A → B)"], "t-comp": ["회사", "Companies"], "t-uni": ["대학 · 연구소", "Universities · institutes"],
   "t-hint": ["끌어서 이동 · 휠/두 손가락으로 확대", "Drag to pan · scroll / pinch to zoom"],
