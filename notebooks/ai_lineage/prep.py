@@ -112,9 +112,9 @@ if os.environ.get("PUBLIC_OUT"):
     import copy
     pub=copy.deepcopy(out)
     for n in pub["nodes"]:
-        if n.get("img") and PH.get(n["id"],{}).get("web"): n.pop("img",None); n.pop("imgPage",None)
+        if n.get("img") and PH.get(n["id"],{}).get("press"): n.pop("img",None); n.pop("imgPage",None)   # 언론 · 공정 이용 사진만 뺀다
     for g in pub["collab"]:
-        if g.get("fig") and g["fig"].get("og"): g.pop("fig")
+        pass   # 소개 페이지 대표 이미지는 공식 페이지 것이라 그대로 둔다
     body=t.replace("__DATA__",json.dumps(pub,ensure_ascii=False,separators=(",",":")))
     title=body[body.find("<title>")+7:body.find("</title>")]
     body=body.replace("<title>"+title+"</title>","",1)

@@ -298,8 +298,8 @@ function build(relayout) {
     .attr("stroke", d => d.aw.length ? css("--gold") : "none").attr("stroke-width", 2.5);
   nodeSel.select("text.n").attr("fill", d => d.org ? (isCompany(d) ? css("--biz") : css("--org")) : null);
   nodeSel.on("click", (e, d) => { e.stopPropagation(); select(d.id); })
-    .on("mouseenter", (e, d) => { hov = d; if (!sel) { lit = around(d.id); paint(); } })
-    .on("mouseleave", () => { hov = null; if (!sel) { lit = null; paint(); } });
+    .on("mouseenter", (e, d) => { hov = d; if (!sel && focusGroup == null) { lit = around(d.id); paint(); } })
+    .on("mouseleave", () => { hov = null; if (!sel && focusGroup == null) { lit = null; paint(); } });
   nodeSel.call(d3.drag().on("drag", (e, d) => { d.x = e.x; if (!d.b) d.y = e.y; draw(); }));
 
   const xe = d3.extent(nodes, d => d.x);
@@ -377,7 +377,12 @@ function edgeText(d) {
 function selectGroup(gi) {
   const g = DATA.collab[gi]; sel = null; focusGroup = gi;
   // 범위는 그대로 두고, 빠진 저자만 더해서 다시 그린다
-  if (g.ids.some(id => !nodesNow.some(n => n.id === id))) { build(true); fit(); }
+  if (g.ids.some(id => !nodesNow.some(n => n.id === id))) {
+    const here = g.ids.map(id => byId.get(id)).filter(n => n.x != null && nodesNow.includes(n));
+    const cx = here.length ? d3.mean(here, n => n.x) : 0;
+    g.ids.map(id => byId.get(id)).forEach((n, i) => { if (n.x == null || !nodesNow.includes(n)) { n.x = cx + 60 * (i + 1); n.y = n.b ? Y(n.b) : Y(n.y0); } });
+    build(false);
+  }
   focusGroup = gi; lit = g.ids.length ? new Set(g.ids) : null; if (!g.ids.length) focusGroup = null; paint(); panelPapers(gi);
   fitTo(g.ids);
 }
