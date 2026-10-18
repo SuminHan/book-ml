@@ -31,7 +31,7 @@ print(len(nodes),sum(n["core"] for n in nodes),len(links))
 # ---- 직접 추가한 사람 (위키데이터 지도 관계 데이터 밖) ----
 EXTRA={"Q107525448":{"en":"Dmitri Dolgov","ko":"","desc":"Russian American businessman","sl":2,"born":"","awards":[]}}
 for q_,v in json.load(open("extra_people.json")).items():
-    EXTRA[q_]={"en":v["en"],"ko":v["ko"],"desc":"","sl":5,"born":str(v["born"] or ""),"awards":[]}
+    EXTRA[q_]={"en":v["en"],"ko":v["ko"],"desc":"","sl":v.get("sl",5),"born":str(v["born"] or ""),"awards":[]}
 for q_,v in EXTRA.items():
     if q_ not in byname.values():
         out["nodes"].append({"id":q_,"ko":KO.get(v["en"],""),"en":v["en"],"d":v["desc"],"b":None,"aw":[],"seed":True,"core":True,"sl":v["sl"]})
