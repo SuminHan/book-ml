@@ -37,7 +37,7 @@ for q_,v in EXTRA.items():
         out["nodes"].append({"id":q_,"ko":KO.get(v["en"],""),"en":v["en"],"d":v["desc"],"b":None,"aw":[],"seed":True,"core":True,"sl":v["sl"]})
         byname[v["en"]]=q_; I[q_]=v
 # 위키데이터 지도 관계에 빠진 것 (위키백과 · 위키데이터 P184 기준)
-for a_,b_,t_,k_ in [("Tang Xiao'ou","Kaiming He","박사","manual"),("Raj Reddy","Kai-Fu Lee","박사","wd")]:
+for a_,b_,t_,k_ in [("Tang Xiao'ou","Kaiming He","박사","manual"),("Raj Reddy","Kai-Fu Lee","박사","wd"),("B. F. Skinner","William Kaye Estes","박사","wd")]:
     if a_ in byname and b_ in byname and not any(l["s"]==byname[a_] and l["t"]==byname[b_] for l in out["links"]):
         out["links"].append({"s":byname[a_],"t":byname[b_],"k":k_,**({"n":t_} if k_=="manual" else {})})
 # ---- v3: 유명 인물 · 사진 · 업적 · 공동 연구 · 논문 그래프 ----
