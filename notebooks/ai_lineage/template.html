@@ -1,0 +1,615 @@
+<title>AI 연구자 계보도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* layout: 위 = 제목·조작, 가운데 = 출생 연도 축이 세로로 흐르는 계보 그래프, 오른쪽(좁으면 아래) = 고른 사람 카드 */
+:root {
+  --bg: #f6f6f9;
+  --panel: #ffffff;
+  --fg: #1b1c33;
+  --muted: #6a6b85;
+  --line: #d4d5e2;
+  --navy: #262686;
+  --gold: #b8892b;
+  --red: #c0392b;
+  --co: #1f8a5b;
+  --cit: #8a5bd6;
+  --biz: #d9711c;
+  --org: #1f7f8a;
+  --f-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12131f; --panel: #1b1c2c; --fg: #e8e8f2; --muted: #9a9bb5; --line: #34354d;
+  --navy: #9a9bf5; --gold: #e0b357; --red: #ff7a6b; --co: #4cc98e; --cit: #b896f5; --biz: #f29a4a; --org: #4fc0cc; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #12131f; --panel: #1b1c2c; --fg: #e8e8f2; --muted: #9a9bb5; --line: #34354d;
+  --navy: #9a9bf5; --gold: #e0b357; --red: #ff7a6b; --co: #4cc98e; --cit: #b896f5; --biz: #f29a4a; --org: #4fc0cc; color-scheme: dark }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 14px; }
+.wrap { display: flex; flex-direction: column; gap: 10px; height: 100%; box-sizing: border-box;
+  padding-block: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 24px; }
+header .t { min-width: 0; flex: 1 1 320px; }
+h1 { margin: 0; font-size: 22px; font-weight: 700; text-wrap: balance; letter-spacing: -0.01em; }
+.sub { margin: 4px 0 0; color: var(--muted); line-height: 1.5; max-width: 66ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { font: inherit; background: var(--panel); color: var(--fg); border: 0; padding: 6px 10px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--navy); color: var(--panel); }
+.pbtn { font: inherit; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.pbtn[aria-pressed="true"] { background: var(--co); color: var(--panel); border-color: var(--co); }
+.plist li:hover { background: color-mix(in srgb, var(--co) 7%, transparent); }
+.plist li { cursor: pointer; margin: 0 -8px; padding-left: 8px !important; padding-right: 8px !important; border-radius: 6px;
+  display: grid; grid-template-columns: 3.2em minmax(0, 1fr); gap: 2px 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.plist .yr { font-family: var(--f-mono); color: var(--muted); font-size: 12px; padding-top: 2px; }
+.plist .gbtn { font: inherit; font-weight: 500; background: none; border: 0; padding: 0; color: var(--fg); cursor: pointer; text-align: left; }
+.plist .gbtn:hover { color: var(--co); text-decoration: underline; }
+.plist .who { grid-column: 2; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.kind { font-size: 11px; padding: 0 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); margin-left: 4px; white-space: nowrap; }
+.chk { color: var(--co); font-size: 11px; margin-left: 4px; white-space: nowrap; }
+input[type="search"] { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--fg); width: 200px; max-width: 100%; }
+.layers { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; }
+.layers label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.layers .sw { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
+.layers .lbl { color: var(--muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.main { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 12px; }
+.stage { position: relative; min-width: 0; min-height: 440px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+svg { display: block; width: 100%; height: 100%; touch-action: none; }
+.hint { position: absolute; right: 10px; bottom: 8px; font-size: 12px; color: var(--muted); pointer-events: none; }
+.tip { position: absolute; pointer-events: none; background: var(--fg); color: var(--panel); font-size: 12px; padding: 4px 8px; border-radius: 6px; max-width: 260px; }
+aside { min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow: auto; }
+.card-head { display: flex; gap: 12px; align-items: center; }
+.ph { width: 72px; height: 72px; border-radius: 50%; flex: none; object-fit: cover; background: var(--line); display: grid; place-items: center; font-size: 26px; font-weight: 700; color: var(--panel); }
+aside h2 { margin: 0; font-size: 19px; text-wrap: balance; }
+aside .en { color: var(--muted); font-size: 13px; margin-top: 2px; }
+aside .where { margin-top: 4px; font-size: 13px; }
+aside h3 { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 16px 0 6px; font-weight: 500; }
+aside ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; line-height: 1.45; }
+aside ul.plain { list-style: none; padding: 0; }
+aside li button, .pp button { font: inherit; background: none; border: 0; padding: 0; color: var(--navy); cursor: pointer; text-align: left; }
+aside li button:hover, .pp button:hover { text-decoration: underline; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tag { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--gold); color: var(--gold); }
+.tag.biz { border-color: var(--biz); color: var(--biz); }
+.paper { font-weight: 500; }
+.pp { color: var(--muted); }
+.cnt { font-family: var(--f-mono); color: var(--muted); font-size: 12px; }
+.note { font-size: 12px; color: var(--red); }
+.src { font-size: 12px; color: var(--muted); line-height: 1.55; }
+.src a { color: var(--navy); }
+.empty { color: var(--muted); line-height: 1.6; margin: 0; }
+.credit { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.credit a { color: var(--navy); }
+.node text { font-family: var(--f-body); paint-order: stroke; stroke: var(--panel); stroke-width: 3px; stroke-linejoin: round; fill: var(--fg); pointer-events: none; }
+.node text.u { fill: var(--muted); font-size: 10px; }
+.axis text { font-family: var(--f-mono); font-size: 11px; fill: var(--muted); }
+.axis line { stroke: var(--line); stroke-dasharray: 2 4; }
+.axis text.field { font-family: var(--f-body); font-size: 26px; font-weight: 700; fill: var(--muted); opacity: 0.6; }
+@media (max-width: 800px) {
+  .main { grid-template-columns: minmax(0, 1fr); grid-template-rows: 64vh auto; }
+  html, body { height: auto; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="t">
+      <h1 id="t-h1">AI 연구자 계보도</h1>
+      <p class="sub" id="t-sub">세로 높이 = 태어난 해 (모르는 사람은 지도교수 · 제자로 어림). 사람을 누르면 그 사람과 이어진 줄만 켜지고, 오른쪽에 업적 · 교과서 · 대학이 나옵니다.</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="보여 줄 범위">
+        <button id="scope-core" aria-pressed="true"><span id="t-core">연구자</span> <span id="n-core"></span></button>
+        <button id="scope-biz" aria-pressed="false"><span id="t-biz">기업가</span> <span id="n-biz"></span></button>
+        <button id="scope-all" aria-pressed="false"><span id="t-all">제자 전부</span> <span id="n-all"></span></button>
+      </div>
+      <div class="seg" role="group" aria-label="언어"><button id="lang-ko" aria-pressed="true">한글</button><button id="lang-en" aria-pressed="false">English</button></div>
+      <button id="papers-btn" class="pbtn">논문 · 프로젝트 목록</button>
+      <input type="search" id="q" list="names" placeholder="이름 찾기 (예: 힌턴, Bengio)" aria-label="이름 찾기">
+      <datalist id="names"></datalist>
+    </div>
+  </header>
+  <div class="layers" role="group" aria-label="보여 줄 관계">
+    <span class="lbl" id="t-rel">관계</span>
+    <label><input type="checkbox" id="L-adv" checked><span class="sw" style="border-color:var(--navy)"></span><span id="t-adv">지도교수 → 제자</span></label>
+    <label><input type="checkbox" id="L-collab" checked><span class="sw" style="border-color:var(--co)"></span><span id="t-collab">대표 공동 연구</span></label>
+    <label><input type="checkbox" id="L-biz" checked><span class="sw" style="border-color:var(--biz);border-top-style:dashed"></span><span id="t-bizl">공동 창업</span></label>
+    <label><input type="checkbox" id="L-co"><span class="sw" style="border-color:var(--co);border-top-style:dotted"></span><span id="t-co">같이 쓴 논문 (수)</span></label>
+    <label><input type="checkbox" id="L-cit"><span class="sw" style="border-color:var(--cit)"></span><span id="t-cit">인용 (A → B)</span></label>
+    <label><input type="checkbox" id="L-org"><span class="sw" style="border-color:var(--org);border-top-style:dotted"></span><span id="t-org">회사 · 대학</span></label>
+  </div>
+  <div class="main">
+    <div class="stage">
+      <svg id="g" aria-label="AI 연구자 관계 그래프"></svg>
+      <div class="hint" id="t-hint">끌어서 이동 · 휠/두 손가락으로 확대</div>
+      <div class="tip" id="tip" hidden></div>
+    </div>
+    <aside id="panel" aria-live="polite"></aside>
+  </div>
+  <footer class="credit" id="t-credit"></footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const DATA = __DATA__;
+// 한글 / English 전환 (사람 이름 · 논문 이름). 선택은 이 브라우저에 기억
+let LANG = "en"; try { LANG = localStorage.getItem("lang2") || "en"; } catch (e) {}   // 기본 = English
+const name = n => LANG === "en" ? (n.en || n.ko) : (n.ko || n.en);
+const gname = g => LANG === "en" ? g.p : g.pk;
+const K = (ko, en) => LANG === "en" ? en : ko;
+const AWE = { "튜링상": "Turing Award", "노벨 물리학상": "Nobel Prize in Physics", "노벨 화학상": "Nobel Prize in Chemistry" };
+const F = (n, k) => LANG === "en" && n[k + "_en"] !== undefined ? n[k + "_en"] : n[k];   // 사람 · 회사의 영어 필드
+const byId = new Map(DATA.nodes.map(n => [n.id, n]));
+DATA.orgs.forEach(o => byId.set(o.id, { ...o, org: true, aw: [] }));
+const adv = new Map(), stu = new Map();
+DATA.links.forEach(l => {
+  if (!adv.has(l.t)) adv.set(l.t, []); adv.get(l.t).push(l);
+  if (!stu.has(l.s)) stu.set(l.s, []); stu.get(l.s).push(l);
+});
+// 대표 공동 연구 · 공동 창업: 논문(회사) 하나에 사람 여럿 -> 둘씩 엣지
+const groupEdges = [], groupsOf = new Map();
+DATA.collab.forEach((g, gi) => {
+  for (let i = 0; i < g.ids.length; i++) for (let j = i + 1; j < g.ids.length; j++)
+    groupEdges.push({ s: g.ids[i], t: g.ids[j], k: g.biz ? "biz" : "collab", gi });
+  g.ids.forEach(id => { if (!groupsOf.has(id)) groupsOf.set(id, []); groupsOf.get(id).push(gi); });
+});
+
+// 출생 연도가 없는 사람: 스승 + 30 / 제자 - 30 으로 어림 (위치만)
+DATA.nodes.forEach(n => n.y0 = n.b || n.yEst);
+for (let it = 0; it < 6; it++) DATA.nodes.forEach(n => {
+  if (n.y0) return;
+  const a = (adv.get(n.id) || []).map(l => byId.get(l.s).y0).filter(Boolean).map(y => Math.min(y + 28, 1996));
+  const s = (stu.get(n.id) || []).map(l => byId.get(l.t).y0).filter(Boolean).map(y => y - 30);
+  const v = a.concat(s); if (v.length) n.y0 = d3.mean(v);
+});
+DATA.nodes.forEach(n => { if (!n.y0) n.y0 = 1975; });
+
+
+const dl = document.getElementById("names");
+DATA.nodes.filter(n => n.fam || n.core).forEach(n => {
+  const o = document.createElement("option"); o.value = n.ko ? `${n.ko} (${n.en})` : n.en; dl.appendChild(o);
+});
+
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const svg = d3.select("#g"), root = svg.append("g");
+svg.append("defs").html(`
+  <clipPath id="clip" clipPathUnits="objectBoundingBox"><circle cx="0.5" cy="0.5" r="0.5"></circle></clipPath>
+  <marker id="ar" viewBox="0 -4 8 8" refX="8" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-4L8,0L0,4" style="fill:var(--navy)"></path></marker>
+  <marker id="arr" viewBox="0 -4 8 8" refX="8" refY="0" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-4L8,0L0,4" style="fill:var(--red)"></path></marker>
+  <marker id="arc" viewBox="0 -4 8 8" refX="8" refY="0" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,-4L8,0L0,4" style="fill:var(--cit)"></path></marker>`);
+let k = 1;
+const zoom = d3.zoom().scaleExtent([0.15, 6]).on("zoom", e => { root.attr("transform", e.transform); k = e.transform.k; labels(); });
+svg.call(zoom);
+let scope = "core", sel = null, lit = null, hov = null, nodeSel, linkSel, nodesNow = [];
+const L = { adv: true, collab: true, biz: true, co: false, cit: false, org: false };
+const gAxis = root.append("g").attr("class", "axis"), gLink = root.append("g"), gNode = root.append("g");
+const Y = d3.scaleLinear();
+// 유명 인물 크기 = h-index (넓이가 h 에 비례하도록 sqrt). h 없는 사람(기업가 등)은 작은 고정 크기
+DATA.nodes.forEach(n => { if (n.fam) n.r = n.m ? 9 + 17 * Math.sqrt(n.m.h / 200) : 11; });
+const FX = { dl: -700, ml: 0, rl: 700 };
+const R = d => d.org ? 6 : d.fam ? d.r : d.core ? 4.5 : 2.6;
+
+// 연구자 = h-index 있는 유명 인물 (+ 사이를 잇는 중간 세대), 기업가 = 창업 · 경영한 사람 + 회사
+const isCompany = o => !/universit|college|institute|school|대학|연구소|labs?\b|research/i.test(o.en + " " + (o.ko || ""));
+function visibleIds() {
+  const extra = focusGroup != null ? DATA.collab[focusGroup].ids : [];
+  return new Set([...baseIds(), ...extra]);
+}
+function baseIds() {
+  if (scope === "all") return new Set(DATA.nodes.map(n => n.id));
+  if (scope === "biz") return new Set(DATA.nodes.filter(n => n.fam && n.ent).map(n => n.id));
+  return new Set(DATA.nodes.filter(n => (n.fam && n.m) || n.chain).map(n => n.id));
+}
+const orgOn = () => L.org || scope === "biz";
+const orgList = () => DATA.orgs.map(o => byId.get(o.id)).filter(o => scope !== "biz" || isCompany(o));
+function layout(ids, nodes) {
+  const ys = d3.extent(nodes.filter(n => !n.org), n => n.y0);
+  // 1940년 이후 (사람이 몰린 구간)를 세로로 더 넓게
+  const y0 = Math.floor(ys[0] / 10) * 10, y1 = Math.ceil(ys[1] / 10) * 10, f = scope === "all" ? 1.5 : 1;
+  Y.domain([y0, 1940, y1]).range([0, 420 * f, (420 + (y1 - 1940) * 27) * f]);
+  // 배치는 지도 관계 + 대표 공동 연구로만 정한다 (층을 켜고 꺼도 자리가 안 바뀌게)
+  const ll = DATA.links.filter(l => ids.has(l.s) && ids.has(l.t)).map(l => ({ source: l.s, target: l.t, w: 0.6 }))
+    .concat(groupEdges.filter(e => ids.has(e.s) && ids.has(e.t)).map(e => ({ source: e.s, target: e.t, w: e.k === "biz" ? 0.02 : 0.06 })))
+    .concat(orgOn() ? DATA.olinks.filter(l => ids.has(l.s) && ids.has(l.t)).map(l => ({ source: l.s, target: l.t, w: scope === "biz" ? 0.3 : 0.03 })) : []);
+  // 회사 · 대학: 이어진 사람들의 평균 세대 높이에 둔다
+  nodes.filter(n => n.org).forEach(o => { const ys = DATA.olinks.filter(l => l.t === o.id && ids.has(l.s)).map(l => byId.get(l.s).y0); o.y0 = ys.length ? d3.mean(ys) + 6 : Y.domain()[2]; });
+  // 출생 연도를 아는 사람은 그 높이에 고정 (fy), 모르는 사람만 위아래로 움직인다
+  nodes.forEach((n, i) => { const a = Math.sin((i + 1) * 12.9898) * 43758.5453; n.x = (a - Math.floor(a) - 0.5) * 1400; n.y = Y(n.y0); n.fy = n.b ? Y(n.b) : null; });
+  d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(ll).id(d => d.id).distance(60).strength(d => d.w))
+    .force("charge", d3.forceManyBody().strength(d => d.org ? -200 : d.fam ? -700 : -50).distanceMax(600))
+    .force("collide", d3.forceCollide(d => d.fam ? d.r + 24 : d.org ? 14 : d.core ? 10 : 5).strength(0.9))
+    .force("y", d3.forceY(d => Y(d.y0)).strength(d => d.org ? 0.4 : 0.85))
+    // 분야별 좌우: 딥러닝 왼쪽, 강화학습 오른쪽, 고전 ML · 통계 · 기호 AI 가운데
+    .force("x", d3.forceX(d => FX[d.field] || 0).strength(d => d.fam ? 0.12 : 0.03))
+    .stop().tick(360);
+  nodes.forEach(n => { if (n.fy != null) n.y = n.fy; });
+}
+function build(relayout) {
+  const ids = visibleIds();
+  const E = [];
+  if (L.adv) DATA.links.forEach(l => { if (ids.has(l.s) && ids.has(l.t)) E.push({ ...l, k: l.k === "manual" ? "manual" : "adv" }); });
+  groupEdges.forEach(e => { if (L[e.k] && ids.has(e.s) && ids.has(e.t)) E.push({ ...e }); });
+  if (L.co) DATA.co.forEach(c => { if (ids.has(c.a) && ids.has(c.b)) E.push({ s: c.a, t: c.b, k: "co", n: c.n }); });
+  if (L.cit) DATA.cit.forEach(c => { if (ids.has(c.a) && ids.has(c.b) && c.n >= 2) E.push({ s: c.a, t: c.b, k: "cit", n: c.n }); });
+  if (orgOn()) { const ok = new Set(orgList().map(o => o.id)); DATA.olinks.forEach(l => { if (ids.has(l.s) && ok.has(l.t)) E.push({ s: l.s, t: l.t, k: "org" }); }); }
+  E.forEach(e => { e.source = byId.get(e.s); e.target = byId.get(e.t); });
+  // 켜진 관계로 아무와도 이어지지 않은 사람은 그리지 않는다 (고른 사람은 예외)
+  // 따로 떨어진 작은 무리 (MIN_GROUP 명 미만)도 빼고 큰 덩어리에 이어진 사람만 남긴다
+  const MIN_GROUP = 4;
+  const nb = new Map();
+  E.filter(e => e.k !== "org" || scope === "biz").forEach(e => { [[e.s, e.t], [e.t, e.s]].forEach(([a, b]) => { if (!nb.has(a)) nb.set(a, []); nb.get(a).push(b); }); });
+  const comp = new Map();
+  [...nb.keys()].forEach(id => {
+    if (comp.has(id)) return;
+    const members = [id], st = [id]; comp.set(id, members);
+    while (st.length) { const x = st.pop(); nb.get(x).forEach(y => { if (!comp.has(y)) { comp.set(y, members); members.push(y); st.push(y); } }); }
+  });
+  // 작은 무리라도 아주 유명한 사람(튜링 · 섀넌 등)이 있으면 남긴다
+  const linked = new Set([...comp].filter(([id, m]) => m.length >= MIN_GROUP || m.some(x => byId.get(x).star && byId.get(x).fam)).map(([id]) => id));
+  if (sel) (comp.get(sel) || [sel]).forEach(id => linked.add(id));
+  // 고른 논문 · 프로젝트의 저자는 무리가 작아도 그린다
+  if (focusGroup != null) DATA.collab[focusGroup].ids.forEach(id => (comp.get(id) || [id]).forEach(x => linked.add(x)));
+  E.forEach(e => { if (e.k === "org" && linked.has(e.s)) linked.add(e.t); });
+  for (let i = E.length - 1; i >= 0; i--) if (!linked.has(E[i].s) || !linked.has(E[i].t)) E.splice(i, 1);
+  const keep = new Set([...ids].filter(id => linked.has(id)));
+  let nodes = DATA.nodes.filter(n => keep.has(n.id));
+  if (orgOn()) nodes = nodes.concat(orgList().filter(o => linked.has(o.id)));
+  if (relayout) layout(keep, nodes);
+  nodesNow = nodes;
+  const np = nodes.filter(n => !n.org).length;
+  ["core", "biz", "all"].forEach(k => document.getElementById("n-" + k).textContent = scope === k ? `(${np})` : "");
+
+  linkSel = gLink.selectAll("line").data(E, d => d.s + d.k + d.t).join("line")
+    .attr("stroke", d => ({ adv: css("--navy"), manual: css("--red"), collab: css("--co"), co: css("--co"), biz: css("--biz"), cit: css("--cit"), org: css("--org") })[d.k])
+    .attr("stroke-width", d => d.k === "co" ? Math.min(1 + d.n * 0.4, 5) : d.k === "cit" ? Math.min(0.6 + d.n * 0.15, 4) : d.k === "collab" ? 2 : d.k === "org" ? 1 : 1.4)
+    .attr("stroke-opacity", d => d.k === "org" ? 0.35 : d.k === "cit" ? 0.45 : 0.6)
+    .attr("stroke-dasharray", d => d.k === "manual" ? "5 4" : d.k === "biz" ? "6 4" : (d.k === "co" || d.k === "org") ? "2 3" : null)
+    .attr("marker-end", d => d.k === "adv" ? "url(#ar)" : d.k === "manual" ? "url(#arr)" : d.k === "cit" ? "url(#arc)" : null)
+    .on("mouseenter", (e, d) => tip(e, edgeText(d))).on("mousemove", e => moveTip(e)).on("mouseleave", () => tip(null));
+
+  nodeSel = gNode.selectAll("g.node").data(nodes, d => d.id).join(enter => {
+    const g = enter.append("g").attr("class", "node").style("cursor", "pointer");
+    g.each(function (d) {
+      const s = d3.select(this);
+      if (d.fam) {
+        s.append("circle").attr("class", "bgc").attr("r", d.r);
+        if (d.img) s.append("image").style("filter", d.died ? "grayscale(1)" : null).attr("href", d.img).attr("x", -d.r).attr("y", -d.r).attr("width", 2 * d.r).attr("height", 2 * d.r).attr("clip-path", "url(#clip)");
+        else s.append("text").attr("class", "ini").attr("text-anchor", "middle").attr("dy", "0.35em").attr("font-size", Math.max(10, d.r * 0.75)).attr("font-weight", 700).text(name(d).slice(0, 1));
+        s.append("circle").attr("class", "ring").attr("r", d.r).attr("fill", "none");
+        s.append("text").attr("class", "n").attr("text-anchor", "middle").attr("y", d.r + 13).attr("font-size", 12).attr("font-weight", 700).text(name(d));
+        if (F(d, "uni")) s.append("text").attr("class", "u").attr("text-anchor", "middle").attr("y", d.r + 26).text(F(d, "uni"));
+      } else {
+        s.append("circle").attr("class", "dot");
+        s.append("text").attr("class", "n").attr("x", d.org ? 9 : 7).attr("dy", "0.32em").attr("font-size", 11).text(name(d));
+      }
+    });
+    return g;
+  });
+  nodeSel.select("circle.bgc").attr("fill", d => d.ent ? css("--biz") : css("--navy"));
+  nodeSel.select("text.ini").style("fill", css("--panel")).style("stroke", "none");
+  nodeSel.select("circle.ring").attr("stroke", d => d.aw.length ? css("--gold") : d.ent ? css("--biz") : css("--line")).attr("stroke-width", d => d.aw.length ? 3.5 : 2);
+  nodeSel.select("circle.dot").attr("r", R).attr("fill", d => d.org ? css("--org") : css("--muted"))
+    .attr("stroke", d => d.aw.length ? css("--gold") : "none").attr("stroke-width", 2.5);
+  nodeSel.select("text.n").attr("fill", d => d.org ? css("--org") : null);
+  nodeSel.on("click", (e, d) => { e.stopPropagation(); select(d.id); })
+    .on("mouseenter", (e, d) => { hov = d; if (!sel) { lit = around(d.id); paint(); } })
+    .on("mouseleave", () => { hov = null; if (!sel) { lit = null; paint(); } });
+  nodeSel.call(d3.drag().on("drag", (e, d) => { d.x = e.x; if (!d.b) d.y = e.y; draw(); }));
+
+  const xe = d3.extent(nodes, d => d.x);
+  gAxis.selectAll("*").remove();
+  for (let y = Y.domain()[0]; y <= Y.domain()[2]; y += 10) {
+    const g = gAxis.append("g").attr("transform", `translate(0,${Y(y)})`);
+    g.append("line").attr("x1", xe[0] - 90).attr("x2", xe[1] + 60);
+    g.append("text").attr("x", xe[0] - 90).attr("y", -4).text(K(y + "년생", "b. " + y));
+  }
+  if (scope !== "biz") [["dl", K("← 딥러닝", "← Deep learning")], ["ml", K("고전 ML · 통계 · 기호 AI", "Classic ML · statistics · symbolic AI")], ["rl", K("강화학습 · 로봇 →", "Reinforcement learning · robotics →")]].forEach(([f, t]) =>
+    gAxis.append("text").attr("class", "field").attr("x", FX[f]).attr("y", Y(Y.domain()[0]) - 30).attr("text-anchor", "middle").text(t));
+  draw();
+  lit = sel ? around(sel) : focusGroup != null ? new Set(DATA.collab[focusGroup].ids) : null;
+  paint();
+}
+function draw() {
+  linkSel.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+    .attr("x2", d => end(d)[0]).attr("y2", d => end(d)[1]);
+  nodeSel.attr("transform", d => `translate(${d.x},${d.y})`);
+}
+function end(d) {
+  if (!["adv", "manual", "cit"].includes(d.k)) return [d.target.x, d.target.y];
+  const dx = d.target.x - d.source.x, dy = d.target.y - d.source.y, l = Math.hypot(dx, dy) || 1, r = R(d.target) + 4;
+  return [d.target.x - dx / l * r, d.target.y - dy / l * r];
+}
+function fit() {
+  const box = svg.node().getBoundingClientRect();
+  const x = d3.extent(nodesNow, d => d.x), y = d3.extent(nodesNow, d => d.y);
+  const w = x[1] - x[0] + 260, h = y[1] - y[0] + 170;
+  const s = Math.min(box.width / w, box.height / h);
+  const cx = (x[0] - 90 + x[1] + 60) / 2;
+  svg.call(zoom.transform, d3.zoomIdentity.translate(box.width / 2 - cx * s, box.height / 2 - ((y[0] + y[1]) / 2 - 5) * s).scale(s));
+}
+
+// 강조: 지도 관계는 스승 줄기 + 제자 줄기 전체, 다른 층은 바로 이웃만
+function around(id) {
+  const s = new Set([id]);
+  if (L.adv) {
+    const up = [id], dn = [id];
+    while (up.length) { const x = up.pop(); (adv.get(x) || []).forEach(l => { if (!s.has(l.s)) { s.add(l.s); up.push(l.s); } }); }
+    while (dn.length) { const x = dn.pop(); (stu.get(x) || []).forEach(l => { if (!s.has(l.t)) { s.add(l.t); dn.push(l.t); } }); }
+  }
+  linkSel.each(d => { if (d.s === id) s.add(d.t); if (d.t === id) s.add(d.s); });
+  return s;
+}
+function paint() {
+  if (!nodeSel) return;
+  const focus = sel || (hov && hov.id);
+  nodeSel.attr("opacity", d => !lit || lit.has(d.id) ? 1 : 0.13);
+  if (focusGroup != null) { nodeSel.attr("opacity", d => lit.has(d.id) ? 1 : 0.13); linkSel.attr("opacity", d => d.gi === focusGroup ? 1 : 0.04); labels(); return; }
+  linkSel.attr("opacity", d => !lit ? 1 : (lit.has(d.s) && lit.has(d.t) && (d.s === focus || d.t === focus || d.k === "adv" || d.k === "manual")) ? 1 : 0.04);
+  labels();
+}
+function labels() {
+  if (!nodeSel) return;
+  nodeSel.selectAll("text.n").attr("display", d => d.fam || d.org || (lit && lit.has(d.id)) || (d.core && k > 1.2) || k > 2.4 || d === hov ? null : "none");
+  nodeSel.selectAll("text.u").attr("display", d => k > 0.55 || (lit && lit.has(d.id)) ? null : "none");
+}
+svg.on("click", () => { sel = null; lit = null; focusGroup = null; paint(); panelPapers(); });
+
+const T = document.getElementById("tip");
+function tip(e, text) { if (!e || !text) { T.hidden = true; return; } T.textContent = text; T.hidden = false; moveTip(e); }
+function moveTip(e) { const b = svg.node().getBoundingClientRect(); T.style.left = (e.clientX - b.left + 12) + "px"; T.style.top = (e.clientY - b.top + 12) + "px"; }
+function edgeText(d) {
+  const a = name(d.source), b = name(d.target);
+  if (d.k === "adv") return `${a} → ${b} (${K("지도교수 → 제자", "advisor → student")})`;
+  if (d.k === "manual") return `${a} → ${b} (${K(d.n + ", 직접 추가", d.n === "포닥" ? "postdoc, added manually" : "PhD, added manually")})`;
+  if (d.k === "collab" || d.k === "biz") return `${gname(DATA.collab[d.gi])}: ${a} · ${b}`;
+  if (d.k === "co") return K(`${a} · ${b}: 같이 쓴 논문 ${d.n}편`, `${a} · ${b}: ${d.n} co-authored papers`);
+  if (d.k === "cit") return K(`${a} 의 논문 ${d.n}편이 ${b} 를 인용`, `${d.n} papers by ${a} cite ${b}`);
+  return `${a} — ${b}`;
+}
+
+// 논문 · 프로젝트 하나를 고르면 그 저자들만 켠다
+function selectGroup(gi) {
+  const g = DATA.collab[gi]; sel = null; focusGroup = gi;
+  // 범위는 그대로 두고, 빠진 저자만 더해서 다시 그린다
+  if (g.ids.some(id => !nodesNow.some(n => n.id === id))) { build(true); fit(); }
+  focusGroup = gi; lit = g.ids.length ? new Set(g.ids) : null; if (!g.ids.length) focusGroup = null; paint(); panelPapers(gi);
+  fitTo(g.ids);
+}
+let focusGroup = null, papersOrder = null, papersActive = null, lastPaper = null, papersScroll = 0;
+// 논문 목록이 열려 있을 때 ↑ / ↓ 로 이전 · 다음 항목
+document.addEventListener("keydown", e => {
+  if (!papersOrder || !P.querySelector(".plist") || e.target.closest("input")) return;
+  const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+  if (!step) return;
+  e.preventDefault();
+  const i = papersOrder.indexOf(papersActive);
+  const j = i < 0 ? (step > 0 ? 0 : papersOrder.length - 1) : Math.min(papersOrder.length - 1, Math.max(0, i + step));
+  selectGroup(papersOrder[j]);
+});
+const kindOf = g => g.biz ? K("스타트업 · 회사", "startup · company") : g.book ? K("책", "book") : g.proj ? K("프로젝트", "project") : K("논문", "paper");
+// 목록에서 바로 고른다: 고른 항목은 그 자리에서 펼쳐지고 (원제목 · 원문 링크), 다시 누르면 끈다
+const papersBtn = on => document.getElementById("papers-btn").setAttribute("aria-pressed", on);
+function panelPapers(active = null) {
+  papersBtn(true); lastPaper = active;
+  const L2 = DATA.collab.map((g, gi) => [g, gi]).sort((a, b) => a[0].y - b[0].y);
+  const keep = P.querySelector(".plist") ? P.scrollTop : papersScroll;
+  P.innerHTML = `<h2>${K("논문 · 프로젝트", "Papers & projects")}</h2>
+    <p class="empty" style="margin-top:6px">${K(`사람을 누르면 그 사람 카드가 나오고, 위의 버튼을 다시 누르면 안내 · 데이터 출처가 나옵니다. 대표 논문 · 교과서 · 스타트업 ${L2.length}개입니다. 누르면 그 사람들만 켜집니다 (↑ ↓ ← → 키로 이전 · 다음). <span class="chk">✓</span> 표시는 논문 데이터베이스(OpenAlex · Crossref)에서 저자까지 확인한 것입니다. 인용 수는 Semantic Scholar 기준이고, * 표시만 OpenAlex 값입니다.`, `${L2.length} key papers, textbooks and startups. Click one to highlight its people (↑ ↓ ← → for previous / next). Click a person for their card; click the button above again for the guide and data sources. <span class="chk">✓</span> = authors verified in a paper database (OpenAlex · Crossref). Citation counts are from Semantic Scholar; * marks OpenAlex counts.`)}</p>
+    <ul class="plain plist">${L2.map(([g, gi]) => `<li><span class="yr">${g.y}</span><span><button class="gbtn" data-g="${gi}" aria-expanded="${gi === active}"${g.biz ? ' style="color:var(--biz)"' : ""}><span style="color:var(--muted);font-size:11px">${gi === active ? "▾" : "▸"}</span> ${gname(g).replace(/\s*\(\d{4}[^)]*\)/, "")}</button><span class="kind"${g.biz ? ' style="border-color:var(--biz);color:var(--biz)"' : ""}>${kindOf(g)}</span>${g.c ? `<span class="kind" style="border-color:transparent" title="${g.csrc || "Semantic Scholar"}">${K("인용", "cited")} ${fmtN(g.c)}${g.csrc ? "*" : ""}</span>` : ""}${g.ok ? `<span class="chk">✓ ${K("저자 확인", "authors verified")}</span>` : ""}</span>
+      <span class="who">${[g.ids.map(id => name(byId.get(id))).join(" · "), g.others ? `<span style="opacity:.75">${LANG === "en" ? g.others.replace(/ 외$/, " et al.") : g.others}</span>` : ""].filter(Boolean).join(" · ")}${!g.ids.length ? ' <span class="kind">${K("그래프 밖", "not in graph")}</span>' : ""}</span>
+      ${gi === active && g.fig ? `<span class="who" style="margin-top:6px"><img src="${g.fig.img}" alt="" style="max-width:${g.fig.logo ? "160px" : "100%"};max-height:${g.fig.logo ? "44px" : "170px"};border-radius:6px;background:${g.fig.dark ? "#1b1c33" : "#fff"};${g.fig.logo ? "padding:6px 10px;" : ""}display:block"><span style="font-size:11px">${g.fig.og ? `<a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">${K("소개 페이지", "Project page")}</a> ${K("대표 이미지", "image")}` : `${g.fig.logo ? K("로고", "Logo") : K("예시 그림", "Illustration")} · <a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">Wikimedia Commons</a> (${g.fig.lic})`}</span></span>` : ""}
+      ${gi === active && g.val ? `<span class="who" style="color:var(--fg);font-weight:500"><span class="kind" style="border-color:var(--biz);color:var(--biz);margin:0 4px 0 0">${K("가치", "value")}</span>${F(g, "val")} <span style="font-weight:400;color:var(--muted)">(${g.valDate}${g.valSrc ? ` · <a href="${g.valSrc}" target="_blank" rel="noopener" style="color:inherit">${K("출처", "source")}</a>` : ""})</span></span>` : ""}
+      ${gi === active ? `${g.desc ? `<span class="who" style="color:var(--fg)">${F(g, "desc")}</span>` : ""}<span class="who" style="color:var(--fg)">${g.en || ""}</span>
+      <span class="who">${[
+        g.blog ? `<a href="${g.blog}" target="_blank" rel="noopener" style="color:var(--co);font-weight:500">${K("소개 페이지", "Project page")}</a>` : "",
+        g.url ? `<a href="${g.url}" target="_blank" rel="noopener" style="color:${g.biz ? "var(--biz)" : "var(--co)"}">${g.home ? K("홈페이지", "Website") : (g.url === g.arxiv ? K("논문 (arXiv)", "Paper (arXiv)") : K("논문 원문", "Paper"))}</a>` : "",
+        g.arxiv && g.arxiv !== g.url ? `<a href="${g.arxiv}" target="_blank" rel="noopener" style="color:var(--co)">arXiv</a>` : ""
+      ].filter(Boolean).join(" · ")}</span>` : ""}</li>`).join("")}</ul>`;
+  papersOrder = L2.map(([g, gi]) => gi); papersActive = active;
+  P.querySelectorAll("li").forEach(li => { const b = li.querySelector("button[data-g]"); if (b && +b.dataset.g === active) li.style.background = `color-mix(in srgb, ${DATA.collab[active].biz ? "var(--biz)" : "var(--co)"} 13%, transparent)`; });
+  // 줄 전체를 누를 수 있게 (원문 링크만 예외)
+  P.querySelectorAll(".plist li").forEach(li => li.onclick = e => {
+    if (e.target.closest("a")) return;
+    const gi = +li.querySelector("button[data-g]").dataset.g;
+    if (gi === active) { sel = null; lit = null; focusGroup = null; paint(); panelPapers(); } else selectGroup(gi);
+  });
+  P.scrollTop = keep;
+  // 펼친 칸 전체가 보이게 스크롤 (그림이 늦게 그려지면 그때 한 번 더)
+  if (active != null) {
+    const li = P.querySelector(`button[data-g="${active}"]`)?.closest("li");
+    const show = () => {
+      if (!li) return;
+      const r = li.getBoundingClientRect(), pr = P.getBoundingClientRect(), pad = 12;
+      if (r.height > pr.height - 2 * pad || r.top < pr.top + pad) P.scrollTop += r.top - pr.top - pad;
+      else if (r.bottom > pr.bottom - pad) P.scrollTop += r.bottom - pr.bottom + pad;
+    };
+    show(); li?.querySelector("img")?.addEventListener("load", show, { once: true });
+  }
+}
+function panelGroup(gi) {
+  const g = DATA.collab[gi];
+  P.innerHTML = `<p class="src" style="margin:0"><button class="pbtn" id="back-papers">← 목록</button></p>
+    <h2 style="margin-top:10px">${gname(g)}</h2>
+    ${g.en ? `<div class="en">${g.en}</div>` : ""}
+    <div class="tags"><span class="tag" style="border-color:var(--co);color:var(--co)">${kindOf(g)} · ${g.y}</span>${g.ok ? '<span class="tag" style="border-color:var(--co);color:var(--co)">✓ 저자 확인</span>' : ""}</div>
+    <h3>그래프에 있는 ${g.biz ? "공동 창업자" : "저자"} (${g.ids.length}명)</h3>${people(g.ids.map(id => [id]))}
+    ${g.url ? `<p class="src" style="margin-top:14px"><a href="${g.url}" target="_blank" rel="noopener">원문 보기</a></p>` : ""}
+    <p class="src">${g.ok ? "저자 목록을 논문 데이터베이스(OpenAlex · Crossref)와 대조했습니다." : "저자 목록은 직접 정리한 것으로, 아직 데이터베이스와 대조하지 못했습니다."} 그래프에 있는 사람만 적었습니다.</p>`;
+  document.getElementById("back-papers").onclick = () => { sel = null; lit = null; focusGroup = null; paint(); panelPapers(); };
+  bind();
+}
+function select(id) { focusGroup = null; sel = id; nodeSel && nodeSel.filter(d => d.id === id).raise(); if (!nodesNow.some(n => n.id === id)) { build(true); fit(); } lit = around(id); paint(); panel(byId.get(id)); }
+// 고른 사람들이 다 보이게 화면을 옮긴다 (너무 크게 확대하지는 않음)
+function fitTo(ids) {
+  const ns = nodesNow.filter(n => ids.includes(n.id)); if (!ns.length) return;
+  const box = svg.node().getBoundingClientRect();
+  const x = d3.extent(ns, d => d.x), y = d3.extent(ns, d => d.y);
+  const w = x[1] - x[0] + 260, h = y[1] - y[0] + 220;
+  const s = Math.max(0.3, Math.min(1.6, box.width / w, box.height / h));
+  svg.transition().duration(600).call(zoom.transform,
+    d3.zoomIdentity.translate(box.width / 2 - (x[0] + x[1]) / 2 * s, box.height / 2 - (y[0] + y[1]) / 2 * s).scale(s));
+}
+function center(id) {
+  const d = nodesNow.find(n => n.id === id); if (!d) return;
+  const box = svg.node().getBoundingClientRect(), s = Math.max(k, 1.3);
+  svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity.translate(box.width / 2 - d.x * s, box.height / 2 - d.y * s).scale(s));
+}
+
+const P = document.getElementById("panel");
+const fmtN = c => LANG === "en" ? (c >= 1e6 ? (c / 1e6).toFixed(1) + "M" : c >= 1000 ? Math.round(c / 1000) + "K" : String(c)) : (c >= 10000 ? (c / 10000).toFixed(c >= 100000 ? 0 : 1) + "만" : c.toLocaleString());
+const pbtn = id => `<button data-id="${id}">${name(byId.get(id))}</button>`;
+function people(list) {
+  if (!list.length) return `<p class="empty">${K("위키데이터에 없음", "Not in Wikidata")}</p>`;
+  return '<ul class="plain">' + list.map(([id, extra]) => {
+    const n = byId.get(id);
+    return `<li>${pbtn(id)}${n.b ? ` <span class="cnt">${n.b}</span>` : ""}${extra ? ` <span class="note">${extra}</span>` : ""}</li>`;
+  }).join("") + "</ul>";
+}
+function panel(n) {
+  if (P.querySelector(".plist")) papersScroll = P.scrollTop;
+  papersBtn(false);
+  if (!n) {
+    P.innerHTML = LANG === "en" ? `<h2>Pick a person</h2>
+      <p class="empty" style="margin-top:6px">Click a photo in the graph or search a name to see achievements, textbooks, universities, advisors, students and joint work here.</p>
+      <p style="margin:10px 0 0"><button class="pbtn" id="papers-btn2">Show papers & projects</button></p>
+      <h3>Good places to start</h3>${people(["Q7251", "Q92894", "Q3572699", "Q18686107", "Q3308285", "Q23770313", "Q305177"].filter(id => byId.has(id)).map(id => [id]))}
+      <h3>Legend</h3>
+      <ul class="plain src">
+        <li>Paper citation counts: Semantic Scholar</li>
+        <li>Photo size: h-index (bigger = more highly cited papers). People without one are small</li>
+        <li>Black-and-white photo: deceased</li>
+        <li>Gold ring: Turing Award · Nobel Prize</li>
+        <li>Orange ring: founder (started or led a company)</li>
+        <li>Small grey dot: in-between generation linking famous people</li>
+        <li>Groups of 2–3 people cut off from the rest are hidden (kept if very famous; search to show)</li>
+        <li>Initials instead of a photo: no openly licensed photo found</li>
+      </ul>
+      <h3>Data</h3>
+      <p class="src">Advisors · students: Wikidata doctoral advisor (P184) · doctoral student (P185) · student of (P1066), as of 2026-10-18. Four links missing from Wikidata (LeCun · Cho postdocs, Hamilton · Rex Ying PhDs) were added by hand as red dashed lines.<br>
+      Co-authored papers · citations between people: Wikidata's scholarly graph (WikiCite); only papers in Wikidata are counted, so numbers are low.<br>
+      Citations · h-index per person: OpenAlex. Counted differently from Google Scholar and usually lower; founders who are not researchers are left out.<br>Achievements · textbooks · universities · key joint work: curated by hand. Photos: Wikimedia Commons, otherwise the person's homepage or institutional profile (source linked on each card). Homepage photos are not openly licensed; check before reusing them publicly.</p>` : `<h2>사람을 골라 보세요</h2>
+      <p class="empty" style="margin-top:6px">그래프의 사진을 누르거나 위에서 이름을 찾으면 업적 · 교과서 · 대학 · 지도교수 · 제자 · 같이 한 연구가 여기에 나옵니다.</p>
+      <p style="margin:10px 0 0"><button class="pbtn" id="papers-btn2">논문 · 프로젝트 목록 보기</button></p>
+      <h3>먼저 눌러 볼 만한 사람</h3>${people(["Q7251", "Q92894", "Q3572699", "Q18686107", "Q3308285", "Q23770313", "Q305177"].filter(id => byId.has(id)).map(id => [id]))}
+      <h3>표시</h3>
+      <ul class="plain src">
+        <li>논문 인용 수: Semantic Scholar 기준</li>
+        <li>사진 크기: h-index (클수록 영향력 큰 논문을 많이 씀). 값이 없는 사람은 작게</li>
+        <li>흑백 사진: 세상을 떠난 사람</li>
+        <li>금색 테두리: 튜링상 · 노벨상</li>
+        <li>주황 테두리: 기업가 (회사를 세웠거나 이끈 사람)</li>
+        <li>작은 회색 점: 유명 인물 사이를 잇는 중간 세대</li>
+        <li>두세 명만 따로 떨어진 무리는 숨김 (아주 유명한 사람이 있으면 남김, 이름으로 찾으면 보임)</li>
+        <li>사진 없는 사람: 위키 쪽에 자유 라이선스 사진이 없음</li>
+      </ul>
+      <h3>데이터</h3>
+      <p class="src">지도교수 · 제자: 위키데이터 박사 지도교수(P184) · 박사 제자(P185) · 스승(P1066), 2026-10-18 기준. 위키데이터에 빠진 4개 (르쿤 · 조경현 포닥, 해밀턴 · 렉스 잉 박사)는 빨간 점선으로 직접 넣었습니다.<br>
+      같이 쓴 논문 · 인용 수: 위키데이터 논문 그래프 (WikiCite). 위키데이터에 올라온 논문만 세므로 실제보다 적습니다.<br>
+      인용 수 · h-index: OpenAlex (논문 데이터베이스). 구글 스칼라와 세는 방식이 달라 대체로 더 적게 나오고, 연구자가 아닌 기업가는 뺐습니다.<br>업적 · 교과서 · 대학 · 대표 공동 연구: 직접 정리. 사진: Wikimedia Commons, 없으면 본인 홈페이지 · 소속 기관 프로필 (사람마다 출처 링크). 홈페이지 사진은 자유 라이선스가 아니므로 공개 자료에 쓸 땐 따로 확인해야 합니다.</p>`;
+    bind(); return;
+  }
+  if (n.org) {
+    const ppl = DATA.olinks.filter(l => l.t === n.id).map(l => [l.s, l.r === "founder" ? K("창업", "founder") : ""]);
+    P.innerHTML = `<h2>${name(n)}</h2><div class="en">${n.en}</div><h3>${K("이 그래프의 사람들", "People in this graph")}</h3>${people(ppl)}
+      <p class="src" style="margin-top:12px"><a href="https://www.wikidata.org/wiki/${n.id}" target="_blank" rel="noopener">Wikidata ${n.id}</a></p>`;
+    bind(); return;
+  }
+  const A = (adv.get(n.id) || []).map(l => [l.s, l.k === "manual" ? K(l.n + " · 직접 추가", (l.n === "포닥" ? "postdoc" : "PhD") + " · added manually") : ""]);
+  const rank = id => (byId.get(id).fam ? 1e6 : 0) + (byId.get(id).sl || 0);
+  const S = (stu.get(n.id) || []).map(l => [l.t, l.k === "manual" ? K(l.n + " · 직접 추가", (l.n === "포닥" ? "postdoc" : "PhD") + " · added manually") : ""]).sort((a, b) => rank(b[0]) - rank(a[0]));
+  const groups = (groupsOf.get(n.id) || []).map(gi => DATA.collab[gi]);
+  const coTop = DATA.co.filter(c => c.a === n.id || c.b === n.id).map(c => [c.a === n.id ? c.b : c.a, c.n]).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const citOut = DATA.cit.filter(c => c.a === n.id).sort((a, b) => b.n - a.n).slice(0, 5);
+  const citIn = DATA.cit.filter(c => c.b === n.id).sort((a, b) => b.n - a.n).slice(0, 5);
+  const emp = (LANG === "en" ? DATA.emp_en : DATA.emp)[n.id] || [];
+  const ph = n.img ? `<img class="ph" src="${n.img}" alt=""${n.died ? ' style="filter:grayscale(1)"' : ""}>` : `<div class="ph" style="background:${n.ent ? "var(--biz)" : "var(--navy)"}">${name(n).slice(0, 1)}</div>`;
+  P.innerHTML = `<div class="card-head">${ph}<div style="min-width:0"><h2>${name(n)}</h2>
+      <div class="en">${n.en}${n.b ? ` · <span class="cnt">${n.b}${n.died ? `–${n.died}` : K("년생", "")}</span>` : (n.died ? ` · <span class="cnt">${K(n.died + "년 사망", "d. " + n.died)}</span>` : "")}</div>
+      ${F(n, "uni") ? `<div class="where">${F(n, "uni")}${F(n, "phd") ? ` <span class="pp">· ${K("박사", "PhD")}: ${F(n, "phd")}</span>` : ""}</div>` : ""}</div></div>
+    ${n.work && n.work.length ? `<h3>${K("소속 (현재 · 과거)", "Affiliations (current · past)")}</h3><ul class="plain" style="font-size:13px">${n.work.map(w => `<li>${w}</li>`).join("")}</ul>` : ""}
+    ${n.edu && n.edu.length ? `<h3>${K("학력 (출신 대학)", "Education")}</h3><ul class="plain" style="font-size:13px">${n.edu.map(w => `<li>${w}</li>`).join("")}</ul>` : ""}
+    ${n.m ? `<div class="where" style="margin-top:10px"><b>${K("인용", "Citations")} ${fmtN(n.m.c)}</b> · <b>h-index ${n.m.h}</b> <span class="pp">(<a href="https://openalex.org/${n.m.oa}" target="_blank" rel="noopener" style="color:inherit">OpenAlex</a>)</span></div>` : ""}
+    ${(n.aw.length || n.ent) ? `<div class="tags">${n.aw.map(a => `<span class="tag">${K(a, AWE[a] || a)}</span>`).join("")}${n.ent ? `<span class="tag biz">${K("기업가", "Founder")}</span>` : ""}</div>` : ""}
+    ${F(n, "ach") && F(n, "ach").length ? `<h3>${K("주요 업적", "Key achievements")}</h3><ul>${F(n, "ach").map(a => `<li>${a}</li>`).join("")}</ul>` : (n.d ? `<p class="empty" style="margin-top:10px">${n.d}</p>` : "")}
+    ${F(n, "books") && F(n, "books").length ? `<h3>${K("쓴 책 · 교과서", "Books · textbooks")}</h3><ul>${F(n, "books").map(b => `<li>${b}</li>`).join("")}</ul>` : ""}
+    ${groups.length ? `<h3>${K("대표 공동 연구 · 공동 창업", "Key joint work · co-founded")}</h3><ul class="plain">${groups.map(g => `<li><button class="gbtn paper" style="font:inherit;font-weight:500;background:none;border:0;padding:0;color:var(--co);cursor:pointer;text-align:left" data-g="${DATA.collab.indexOf(g)}">${gname(g)}</button> <span class="pp">— ${g.ids.filter(i => i !== n.id).map(pbtn).join(", ")}</span></li>`).join("")}</ul>` : ""}
+    <h3>${K("지도교수 · 스승", "Advisors")}</h3>${people(A)}
+    <h3>${K("제자", "Students")} ${S.length ? `(${S.length})` : ""}</h3>${people(S.slice(0, 25))}${S.length > 25 ? `<p class="src">${K(`… 외 ${S.length - 25}명 ('제자 전부'에서 보임)`, `… and ${S.length - 25} more (shown under "All students")`)}</p>` : ""}
+    ${coTop.length ? `<h3>${K("같이 쓴 논문이 많은 사람", "Most frequent co-authors")}</h3><ul class="plain">${coTop.map(([id, c]) => `<li>${pbtn(id)} <span class="cnt">${K(c + "편", c + " papers")}</span></li>`).join("")}</ul>` : ""}
+    ${citOut.length ? `<h3>${K("많이 인용한 사람", "Cites most")}</h3><ul class="plain">${citOut.map(c => `<li>${pbtn(c.b)} <span class="cnt">${K(`논문 ${c.n}편에서`, `in ${c.n} papers`)}</span></li>`).join("")}</ul>` : ""}
+    ${citIn.length ? `<h3>${K("이 사람을 많이 인용한 사람", "Cited most by")}</h3><ul class="plain">${citIn.map(c => `<li>${pbtn(c.a)} <span class="cnt">${K(`논문 ${c.n}편에서`, `in ${c.n} papers`)}</span></li>`).join("")}</ul>` : ""}
+    ${emp.length ? `<h3>${K("소속 · 창업 (위키데이터)", "Affiliations · founded (Wikidata)")}</h3><p class="empty" style="color:var(--fg)">${emp.join(" · ")}</p>` : ""}
+    <p class="src" style="margin-top:14px"><a href="https://www.wikidata.org/wiki/${n.id}" target="_blank" rel="noopener">Wikidata ${n.id}</a>${n.imgPage ? ` · <a href="${n.imgPage}" target="_blank" rel="noopener">${K("사진 출처", "Photo source")}</a>` : ""}</p>`;
+  bind();
+  P.scrollTop = 0;   // 인물 카드는 항상 맨 위부터
+}
+function bind() {
+  const pb = document.getElementById("papers-btn2"); if (pb) pb.onclick = () => panelPapers();
+  P.querySelectorAll("button[data-g]").forEach(b => b.onclick = () => selectGroup(+b.dataset.g));
+  P.querySelectorAll("button[data-id]").forEach(b => b.onclick = () => {
+    const id = b.dataset.id, n = byId.get(id);
+    if (!visibleIds().has(id) && !n.org) setScope(n.fam && n.ent && !n.m ? "biz" : "all");
+    select(id); center(id);
+  });
+}
+function setScope(s) {
+  scope = s;
+  ["core", "biz", "all"].forEach(k => document.getElementById("scope-" + k).setAttribute("aria-pressed", s === k));
+  build(true); fit();
+}
+document.getElementById("scope-core").onclick = () => setScope("core");
+document.getElementById("scope-all").onclick = () => setScope("all");
+document.getElementById("scope-biz").onclick = () => setScope("biz");
+["adv", "collab", "biz", "co", "cit", "org"].forEach(key => {
+  document.getElementById("L-" + key).onchange = e => {
+    L[key] = e.target.checked;
+    build(true); fit();
+  };
+});
+document.getElementById("q").addEventListener("change", e => {
+  const v = e.target.value.trim().toLowerCase(); if (!v) return;
+  const n = DATA.nodes.find(n => (n.ko ? `${n.ko} (${n.en})` : n.en).toLowerCase() === v)
+    || DATA.nodes.filter(n => ((n.ko || "") + " " + n.en).toLowerCase().includes(v)).sort((a, b) => (b.fam - a.fam) || (b.sl - a.sl))[0];
+  if (!n) return;
+  if (!visibleIds().has(n.id)) setScope(n.fam && n.ent && !n.m ? "biz" : "all");
+  select(n.id); setTimeout(() => center(n.id), 30);
+});
+const STATIC = {
+  "t-h1": ["AI 연구자 계보도", "AI Researcher Family Tree"],
+  "t-sub": ["세로 높이 = 태어난 해 (모르는 사람은 지도교수 · 제자로 어림). 사람을 누르면 그 사람과 이어진 줄만 켜지고, 오른쪽에 업적 · 교과서 · 대학이 나옵니다.", "Height = year of birth (estimated from advisors and students when unknown). Click a person to highlight their connections; their achievements, textbooks and universities appear on the right."],
+  "t-core": ["연구자", "Researchers"], "t-biz": ["기업가", "Founders"], "t-all": ["제자 전부", "All students"],
+  "t-rel": ["관계", "Links"], "t-adv": ["지도교수 → 제자", "Advisor → student"], "t-collab": ["대표 공동 연구", "Key joint work"],
+  "t-bizl": ["공동 창업", "Co-founded"], "t-co": ["같이 쓴 논문 (수)", "Co-authored papers (count)"], "t-cit": ["인용 (A → B)", "Citations (A → B)"], "t-org": ["회사 · 대학", "Companies · universities"],
+  "t-hint": ["끌어서 이동 · 휠/두 손가락으로 확대", "Drag to pan · scroll / pinch to zoom"],
+  "papers-btn": ["논문 · 프로젝트 목록", "Papers & projects"]
+};
+function applyStatic() {
+  Object.entries(STATIC).forEach(([id, v]) => { const e = document.getElementById(id); if (e) e.textContent = v[LANG === "en" ? 1 : 0]; });
+  document.getElementById("q").placeholder = K("이름 찾기 (예: 힌턴, Bengio)", "Find a person (e.g. Hinton)");
+  document.title = K("AI 연구자 계보도", "AI Researcher Family Tree");
+  document.getElementById("t-credit").innerHTML = K(
+    `만든 사람: <a href="https://smhanlab.com" target="_blank" rel="noopener">Sumin Han</a> (suminhan@ksa.kaist.ac.kr) · 데이터 기준 2026-10-18 · 틀린 곳이 있으면 메일로 알려 주세요`,
+    `Made by <a href="https://smhanlab.com" target="_blank" rel="noopener">Sumin Han</a> (suminhan@ksa.kaist.ac.kr) · Data as of 2026-10-18 · Corrections welcome by email`);
+}
+function setLang(l) {
+  LANG = l; try { localStorage.setItem("lang2", l); } catch (e) {}
+  document.getElementById("lang-ko").setAttribute("aria-pressed", l === "ko");
+  document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+  applyStatic();
+  if (nodeSel) { gNode.selectAll("*").remove(); build(false); }   // 그래프 글자 (이름 · 대학 · 연도 축) 다시 그리기
+  if (P.querySelector(".plist")) panelPapers(papersActive); else if (sel) panel(byId.get(sel)); else if (!P.querySelector(".plist")) panel(null);
+}
+document.getElementById("lang-ko").onclick = () => setLang("ko");
+document.getElementById("lang-en").onclick = () => setLang("en");
+document.getElementById("papers-btn").onclick = () => {
+  const on = document.getElementById("papers-btn").getAttribute("aria-pressed") === "true";
+  sel = null; lit = null; focusGroup = null;
+  if (on) { paint(); panel(null); } else if (lastPaper != null) selectGroup(lastPaper); else { paint(); panelPapers(); }
+};
+applyStatic(); build(true); fit(); panelPapers(); setLang(LANG);
+window.addEventListener("resize", () => fit());
+</script>
