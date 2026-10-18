@@ -26,6 +26,7 @@
 :root[data-theme="dark"] {
   --bg: #12131f; --panel: #1b1c2c; --fg: #e8e8f2; --muted: #9a9bb5; --line: #34354d;
   --navy: #9a9bf5; --gold: #e0b357; --red: #ff7a6b; --co: #4cc98e; --cit: #b896f5; --biz: #f29a4a; --org: #4fc0cc; color-scheme: dark }
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 14px; }
 .wrap { display: flex; flex-direction: column; gap: 10px; height: 100%; box-sizing: border-box;
@@ -33,8 +34,11 @@ body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font
 header { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 24px; }
 header .t { min-width: 0; flex: 1 1 320px; }
 .help { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); color: var(--muted); font-size: 12px; font-weight: 500; cursor: help; position: relative; vertical-align: 3px; }
-.help:hover::after, .help:focus::after { content: attr(data-tip); position: absolute; left: 0; top: 28px; z-index: 20; width: min(420px, 80vw); padding: 10px 12px; border-radius: 8px; background: var(--fg); color: var(--panel); font-size: 13px; font-weight: 400; line-height: 1.5; white-space: normal; text-align: left; }
+.help:hover::after, .help:focus::after { content: attr(data-tip); position: absolute; left: 0;  top: 28px; z-index: 20; width: min(420px, 80vw); padding: 10px 12px; border-radius: 8px; background: var(--fg); color: var(--panel); font-size: 13px; font-weight: 400; line-height: 1.5; white-space: normal; text-align: left; }
 header { align-items: center !important; }
+aside { position: relative; }
+aside .help { position: static; }
+aside .help:hover::after, aside .help:focus::after { left: 16px; right: 16px; top: 52px; width: auto; }
 h1 { margin: 0; font-size: 22px; font-weight: 700; text-wrap: balance; letter-spacing: -0.01em; }
 .sub { margin: 4px 0 0; color: var(--muted); line-height: 1.5; max-width: 66ch; }
 .controls { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
@@ -410,8 +414,7 @@ function panelPapers(active = null) {
   papersBtn(true); lastPaper = active;
   const L2 = DATA.collab.map((g, gi) => [g, gi]).sort((a, b) => a[0].y - b[0].y);
   const keep = P.querySelector(".plist") ? P.scrollTop : papersScroll;
-  P.innerHTML = `<h2>${K("논문 · 프로젝트", "Papers & projects")}</h2>
-    <p class="empty" style="margin-top:6px">${K(`사람을 누르면 그 사람 카드가 나오고, 위의 버튼을 다시 누르면 안내 · 데이터 출처가 나옵니다. 대표 논문 · 교과서 · 스타트업 ${L2.length}개입니다. 누르면 그 사람들만 켜집니다 (↑ ↓ ← → 키로 이전 · 다음). <span class="chk">✓</span> 표시는 논문 데이터베이스(OpenAlex · Crossref)에서 저자까지 확인한 것입니다. 인용 수는 Semantic Scholar 기준이고, * 표시만 OpenAlex 값입니다.`, `${L2.length} key papers, textbooks and startups. Click one to highlight its people (↑ ↓ ← → for previous / next). Click a person for their card; click the button above again for the guide and data sources. <span class="chk">✓</span> = authors verified in a paper database (OpenAlex · Crossref). Citation counts are from Semantic Scholar; * marks OpenAlex counts.`)}</p>
+  P.innerHTML = `<h2>${K("논문 · 프로젝트", "Papers & projects")} <span class="help" tabindex="0" aria-label="help" data-tip="${(K(`사람을 누르면 그 사람 카드가 나오고, 위의 버튼을 다시 누르면 안내 · 데이터 출처가 나옵니다. 대표 논문 · 교과서 · 스타트업 ${L2.length}개입니다. 누르면 그 사람들만 켜집니다 (↑ ↓ ← → 키로 이전 · 다음). ✓ 표시는 논문 데이터베이스(OpenAlex · Crossref)에서 저자까지 확인한 것입니다. 인용 수는 Semantic Scholar 기준이고, * 표시만 OpenAlex 값입니다.`, `${L2.length} key papers, textbooks and startups. Click one to highlight its people (↑ ↓ ← → for previous / next). Click a person for their card; click the button above again for the guide and data sources. ✓ = authors verified in a paper database (OpenAlex · Crossref). Citation counts are from Semantic Scholar; * marks OpenAlex counts.`)).replace(/"/g, "&quot;")}">?</span></h2>
     <ul class="plain plist">${L2.map(([g, gi]) => `<li><span class="yr">${g.y}</span><span><button class="gbtn" data-g="${gi}" aria-expanded="${gi === active}"${g.biz ? ' style="color:var(--biz)"' : ""}><span style="color:var(--muted);font-size:11px">${gi === active ? "▾" : "▸"}</span> ${gname(g).replace(/\s*\(\d{4}[^)]*\)/, "")}</button><span class="kind"${g.biz ? ' style="border-color:var(--biz);color:var(--biz)"' : ""}>${kindOf(g)}</span>${g.c ? `<span class="kind" style="border-color:transparent" title="${g.csrc || "Semantic Scholar"}">${K("인용", "cited")} ${fmtN(g.c)}${g.csrc ? "*" : ""}</span>` : ""}${g.ok ? `<span class="chk">✓ ${K("저자 확인", "authors verified")}</span>` : ""}</span>
       <span class="who">${[g.ids.map(id => name(byId.get(id))).join(" · "), g.others ? `<span style="opacity:.75">${LANG === "en" ? g.others.replace(/ 외$/, " et al.") : g.others}</span>` : ""].filter(Boolean).join(" · ")}${!g.ids.length ? ' <span class="kind">${K("그래프 밖", "not in graph")}</span>' : ""}</span>
       ${gi === active && g.fig ? `<span class="who" style="margin-top:6px"><img src="${g.fig.img}" alt="" style="max-width:${g.fig.logo ? "160px" : "100%"};max-height:${g.fig.logo ? "44px" : "170px"};border-radius:6px;background:${g.fig.dark ? "#1b1c33" : "#fff"};${g.fig.logo ? "padding:6px 10px;" : ""}display:block"><span style="font-size:11px">${g.fig.og ? `<a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">${K("소개 페이지", "Project page")}</a> ${K("대표 이미지", "image")}` : `${g.fig.logo ? K("로고", "Logo") : K("예시 그림", "Illustration")} · <a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">Wikimedia Commons</a> (${g.fig.lic})`}</span></span>` : ""}
