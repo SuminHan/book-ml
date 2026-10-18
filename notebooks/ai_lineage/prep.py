@@ -91,6 +91,9 @@ emp_en={}
 for pp,o,ol,olk,rel in orgs:
     if rel in ("employer","founder"): emp_en.setdefault(pp,set()).add((ol or olk)+(" (founder)" if rel=="founder" else ""))
 out["emp_en"]={k:sorted(v) for k,v in emp_en.items()}
+HP=json.load(open("homepages_ok.json"))
+for n in out["nodes"]:
+    if n["fam"] and n["en"] in HP: n["hp"]=HP[n["en"]]
 WE=json.load(open("work_edu.json"))
 for n in out["nodes"]:
     if n["fam"] and n["en"] in WE: n["work"]=WE[n["en"]]["work"]; n["edu"]=WE[n["en"]]["edu"]

@@ -545,6 +545,7 @@ function panel(n) {
   const ph = n.img ? `<img class="ph" src="${n.img}" alt=""${n.died ? ' style="filter:grayscale(1)"' : ""}>` : `<div class="ph" style="background:${n.ent ? "var(--biz)" : "var(--navy)"}">${name(n).slice(0, 1)}</div>`;
   P.innerHTML = `<div class="card-head">${ph}<div style="min-width:0"><h2>${name(n)}</h2>
       <div class="en">${n.en}${n.b ? ` · <span class="cnt">${n.b}${n.died ? `–${n.died}` : K("년생", "")}</span>` : (n.died ? ` · <span class="cnt">${K(n.died + "년 사망", "d. " + n.died)}</span>` : "")}</div>
+      ${n.hp ? `<div class="where"><a href="${n.hp}" target="_blank" rel="noopener" style="color:var(--navy)">${K("홈페이지", "Homepage")} ↗</a></div>` : ""}
       ${F(n, "uni") ? `<div class="where">${F(n, "uni")}${F(n, "phd") ? ` <span class="pp">· ${K("박사", "PhD")}: ${F(n, "phd")}</span>` : ""}</div>` : ""}</div></div>
     ${n.work && n.work.length ? `<h3>${K("소속 (현재 · 과거)", "Affiliations (current · past)")}</h3><ul class="plain" style="font-size:13px">${n.work.map(w => `<li>${w}</li>`).join("")}</ul>` : ""}
     ${n.edu && n.edu.length ? `<h3>${K("학력 (출신 대학)", "Education")}</h3><ul class="plain" style="font-size:13px">${n.edu.map(w => `<li>${w}</li>`).join("")}</ul>` : ""}
@@ -559,7 +560,7 @@ function panel(n) {
     ${citOut.length ? `<h3>${K("많이 인용한 사람", "Cites most")}</h3><ul class="plain">${citOut.map(c => `<li>${pbtn(c.b)} <span class="cnt">${K(`논문 ${c.n}편에서`, `in ${c.n} papers`)}</span></li>`).join("")}</ul>` : ""}
     ${citIn.length ? `<h3>${K("이 사람을 많이 인용한 사람", "Cited most by")}</h3><ul class="plain">${citIn.map(c => `<li>${pbtn(c.a)} <span class="cnt">${K(`논문 ${c.n}편에서`, `in ${c.n} papers`)}</span></li>`).join("")}</ul>` : ""}
     ${emp.length ? `<h3>${K("소속 · 창업 (위키데이터)", "Affiliations · founded (Wikidata)")}</h3><p class="empty" style="color:var(--fg)">${emp.join(" · ")}</p>` : ""}
-    <p class="src" style="margin-top:14px"><a href="https://www.wikidata.org/wiki/${n.id}" target="_blank" rel="noopener">Wikidata ${n.id}</a>${n.imgPage ? ` · <a href="${n.imgPage}" target="_blank" rel="noopener">${K("사진 출처", "Photo source")}</a>` : ""}</p>`;
+    <p class="src" style="margin-top:14px">${n.hp ? `<a href="${n.hp}" target="_blank" rel="noopener" style="font-weight:500">${K("홈페이지", "Homepage")}</a> · ` : ""}<a href="https://www.wikidata.org/wiki/${n.id}" target="_blank" rel="noopener">Wikidata ${n.id}</a>${n.imgPage ? ` · <a href="${n.imgPage}" target="_blank" rel="noopener">${K("사진 출처", "Photo source")}</a>` : ""}</p>`;
   bind();
   P.scrollTop = 0;   // 인물 카드는 항상 맨 위부터
 }
