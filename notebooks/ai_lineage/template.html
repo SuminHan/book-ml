@@ -108,7 +108,7 @@ aside li button:hover, .pp button:hover { text-decoration: underline; }
         <button id="scope-biz" aria-pressed="false"><span id="t-biz">기업가</span> <span id="n-biz"></span></button>
         <button id="scope-all" aria-pressed="false"><span id="t-all">제자 전부</span> <span id="n-all"></span></button>
       </div>
-      <div class="seg" role="group" aria-label="언어"><button id="lang-ko" aria-pressed="true">한글</button><button id="lang-en" aria-pressed="false">English</button></div>
+      <div class="seg" role="group" aria-label="언어" hidden><button id="lang-ko" aria-pressed="true">한글</button><button id="lang-en" aria-pressed="false">English</button></div>
       <button id="papers-btn" class="pbtn">논문 · 프로젝트 목록</button>
       <input type="search" id="q" list="names" placeholder="이름 찾기 (예: 힌턴, Bengio)" aria-label="이름 찾기">
       <datalist id="names"></datalist>
@@ -139,7 +139,7 @@ aside li button:hover, .pp button:hover { text-decoration: underline; }
 <script>
 const DATA = __DATA__;
 // 한글 / English 전환 (사람 이름 · 논문 이름). 선택은 이 브라우저에 기억
-let LANG = "en"; try { LANG = localStorage.getItem("lang2") || "en"; } catch (e) {}   // 기본 = English
+let LANG = "en";   // 지금은 English 만 (한글 전환 버튼은 숨겨 둠)
 const name = n => LANG === "en" ? (n.en || n.ko) : (n.ko || n.en);
 const gname = g => LANG === "en" ? g.p : g.pk;
 const K = (ko, en) => LANG === "en" ? en : ko;
@@ -172,9 +172,13 @@ DATA.nodes.forEach(n => { if (!n.y0) n.y0 = 1975; });
 
 
 const dl = document.getElementById("names");
-DATA.nodes.filter(n => n.fam || n.core).forEach(n => {
-  const o = document.createElement("option"); o.value = n.ko ? `${n.ko} (${n.en})` : n.en; dl.appendChild(o);
-});
+function fillNames() {
+  dl.innerHTML = "";
+  DATA.nodes.filter(n => n.fam || n.core).forEach(n => {
+    const o = document.createElement("option"); o.value = LANG === "en" ? n.en : (n.ko ? `${n.ko} (${n.en})` : n.en); dl.appendChild(o);
+  });
+}
+fillNames();
 
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const svg = d3.select("#g"), root = svg.append("g");
@@ -581,7 +585,7 @@ document.getElementById("scope-biz").onclick = () => setScope("biz");
 });
 document.getElementById("q").addEventListener("change", e => {
   const v = e.target.value.trim().toLowerCase(); if (!v) return;
-  const n = DATA.nodes.find(n => (n.ko ? `${n.ko} (${n.en})` : n.en).toLowerCase() === v)
+  const n = DATA.nodes.find(n => n.en.toLowerCase() === v || (n.ko ? `${n.ko} (${n.en})` : n.en).toLowerCase() === v)
     || DATA.nodes.filter(n => ((n.ko || "") + " " + n.en).toLowerCase().includes(v)).sort((a, b) => (b.fam - a.fam) || (b.sl - a.sl))[0];
   if (!n) return;
   if (!visibleIds().has(n.id)) setScope(n.fam && n.ent && !n.m ? "biz" : "all");
@@ -608,7 +612,7 @@ function setLang(l) {
   LANG = l; try { localStorage.setItem("lang2", l); } catch (e) {}
   document.getElementById("lang-ko").setAttribute("aria-pressed", l === "ko");
   document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
-  applyStatic();
+  applyStatic(); fillNames();
   if (nodeSel) { gNode.selectAll("*").remove(); build(false); }   // 그래프 글자 (이름 · 대학 · 연도 축) 다시 그리기
   if (P.querySelector(".plist")) panelPapers(papersActive); else if (sel) panel(byId.get(sel)); else if (!P.querySelector(".plist")) panel(null);
 }
