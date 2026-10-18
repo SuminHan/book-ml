@@ -133,7 +133,8 @@ aside li button:hover, .pp button:hover { text-decoration: underline; }
     <label><input type="checkbox" id="L-biz" checked><span class="sw" style="border-color:var(--biz);border-top-style:dashed"></span><span id="t-bizl">공동 창업</span></label>
     <label><input type="checkbox" id="L-co"><span class="sw" style="border-color:var(--co);border-top-style:dotted"></span><span id="t-co">같이 쓴 논문 (수)</span></label>
     <label><input type="checkbox" id="L-cit"><span class="sw" style="border-color:var(--cit)"></span><span id="t-cit">인용 (A → B)</span></label>
-    <label><input type="checkbox" id="L-org"><span class="sw" style="border-color:var(--org);border-top-style:dotted"></span><span id="t-org">회사 · 대학</span></label>
+    <label><input type="checkbox" id="L-comp"><span class="sw" style="border-color:var(--biz);border-top-style:dotted"></span><span id="t-comp">회사</span></label>
+    <label><input type="checkbox" id="L-uni"><span class="sw" style="border-color:var(--org);border-top-style:dotted"></span><span id="t-uni">대학 · 연구소</span></label>
   </div>
   <div class="main">
     <div class="stage">
@@ -198,7 +199,7 @@ let k = 1;
 const zoom = d3.zoom().scaleExtent([0.15, 6]).on("zoom", e => { root.attr("transform", e.transform); k = e.transform.k; labels(); });
 svg.call(zoom);
 let scope = "core", sel = null, lit = null, hov = null, nodeSel, linkSel, nodesNow = [];
-const L = { adv: true, collab: true, biz: true, co: false, cit: false, org: false };
+const L = { adv: true, collab: true, biz: true, co: false, cit: false, comp: false, uni: false };
 const gAxis = root.append("g").attr("class", "axis"), gLink = root.append("g"), gNode = root.append("g");
 const Y = d3.scaleLinear();
 // 유명 인물 크기 = h-index (넓이가 h 에 비례하도록 sqrt). h 없는 사람(기업가 등)은 작은 고정 크기
@@ -207,7 +208,7 @@ const FX = { dl: -700, ml: 0, rl: 700 };
 const R = d => d.org ? 6 : d.fam ? d.r : d.core ? 4.5 : 2.6;
 
 // 연구자 = h-index 있는 유명 인물 (+ 사이를 잇는 중간 세대), 기업가 = 창업 · 경영한 사람 + 회사
-const isCompany = o => !/universit|college|institute|school|대학|연구소|labs?\b|research/i.test(o.en + " " + (o.ko || ""));
+const isCompany = o => !(/universit|college|school|institute|polytechni|\bmila\b|idsia|max planck|inria|cnrs/i.test(o.en || "") || /대학|학교/.test(o.ko || ""));
 function visibleIds() {
   const extra = focusGroup != null ? DATA.collab[focusGroup].ids : [];
   return new Set([...baseIds(), ...extra]);
@@ -217,8 +218,9 @@ function baseIds() {
   if (scope === "biz") return new Set(DATA.nodes.filter(n => n.fam && n.ent).map(n => n.id));
   return new Set(DATA.nodes.filter(n => (n.fam && n.m) || n.chain).map(n => n.id));
 }
-const orgOn = () => L.org || scope === "biz";
-const orgList = () => DATA.orgs.map(o => byId.get(o.id)).filter(o => scope !== "biz" || isCompany(o));
+// 회사 / 대학 · 연구소를 따로 켠다 (기업가 범위에서는 회사가 늘 켜짐)
+const orgOn = () => L.comp || L.uni || scope === "biz";
+const orgList = () => DATA.orgs.map(o => byId.get(o.id)).filter(o => isCompany(o) ? (L.comp || scope === "biz") : L.uni);
 function layout(ids, nodes) {
   const ys = d3.extent(nodes.filter(n => !n.org), n => n.y0);
   // 1940년 이후 (사람이 몰린 구간)를 세로로 더 넓게
@@ -278,7 +280,7 @@ function build(relayout) {
   ["core", "biz", "all"].forEach(k => document.getElementById("n-" + k).textContent = scope === k ? `(${np})` : "");
 
   linkSel = gLink.selectAll("line").data(E, d => d.s + d.k + d.t).join("line")
-    .attr("stroke", d => ({ adv: css("--navy"), manual: css("--red"), collab: css("--co"), co: css("--co"), biz: css("--biz"), cit: css("--cit"), org: css("--org") })[d.k])
+    .attr("stroke", d => ({ adv: css("--navy"), manual: css("--red"), collab: css("--co"), co: css("--co"), biz: css("--biz"), cit: css("--cit"), org: isCompany(d.target) ? css("--biz") : css("--org") })[d.k])
     .attr("stroke-width", d => d.k === "co" ? Math.min(1 + d.n * 0.4, 5) : d.k === "cit" ? Math.min(0.6 + d.n * 0.15, 4) : d.k === "collab" ? 2 : d.k === "org" ? 1 : 1.4)
     .attr("stroke-opacity", d => d.k === "org" ? 0.35 : d.k === "cit" ? 0.45 : 0.6)
     .attr("stroke-dasharray", d => d.k === "manual" ? "5 4" : d.k === "biz" ? "6 4" : (d.k === "co" || d.k === "org") ? "2 3" : null)
@@ -306,9 +308,9 @@ function build(relayout) {
   nodeSel.select("circle.bgc").attr("fill", d => d.ent ? css("--biz") : css("--navy"));
   nodeSel.select("text.ini").style("fill", css("--panel")).style("stroke", "none");
   nodeSel.select("circle.ring").attr("stroke", d => d.aw.length ? css("--gold") : d.ent ? css("--biz") : css("--line")).attr("stroke-width", d => d.aw.length ? 3.5 : 2);
-  nodeSel.select("circle.dot").attr("r", R).attr("fill", d => d.org ? css("--org") : css("--muted"))
+  nodeSel.select("circle.dot").attr("r", R).attr("fill", d => d.org ? (isCompany(d) ? css("--biz") : css("--org")) : css("--muted"))
     .attr("stroke", d => d.aw.length ? css("--gold") : "none").attr("stroke-width", 2.5);
-  nodeSel.select("text.n").attr("fill", d => d.org ? css("--org") : null);
+  nodeSel.select("text.n").attr("fill", d => d.org ? (isCompany(d) ? css("--biz") : css("--org")) : null);
   nodeSel.on("click", (e, d) => { e.stopPropagation(); select(d.id); })
     .on("mouseenter", (e, d) => { hov = d; if (!sel) { lit = around(d.id); paint(); } })
     .on("mouseleave", () => { hov = null; if (!sel) { lit = null; paint(); } });
@@ -578,7 +580,7 @@ function setScope(s) {
 document.getElementById("scope-core").onclick = () => setScope("core");
 document.getElementById("scope-all").onclick = () => setScope("all");
 document.getElementById("scope-biz").onclick = () => setScope("biz");
-["adv", "collab", "biz", "co", "cit", "org"].forEach(key => {
+["adv", "collab", "biz", "co", "cit", "comp", "uni"].forEach(key => {
   document.getElementById("L-" + key).onchange = e => {
     L[key] = e.target.checked;
     build(true); fit();
@@ -597,7 +599,7 @@ const STATIC = {
   "t-sub": ["세로 높이 = 태어난 해 (모르는 사람은 지도교수 · 제자로 어림). 사람을 누르면 그 사람과 이어진 줄만 켜지고, 오른쪽에 업적 · 교과서 · 대학이 나옵니다.", "Height = year of birth (estimated from advisors and students when unknown). Click a person to highlight their connections; their achievements, textbooks and universities appear on the right."],
   "t-core": ["연구자", "Researchers"], "t-biz": ["기업가", "Founders"], "t-all": ["제자 전부", "All students"],
   "t-rel": ["관계", "Links"], "t-adv": ["지도교수 → 제자", "Advisor → student"], "t-collab": ["대표 공동 연구", "Key joint work"],
-  "t-bizl": ["공동 창업", "Co-founded"], "t-co": ["같이 쓴 논문 (수)", "Co-authored papers (count)"], "t-cit": ["인용 (A → B)", "Citations (A → B)"], "t-org": ["회사 · 대학", "Companies · universities"],
+  "t-bizl": ["공동 창업", "Co-founded"], "t-co": ["같이 쓴 논문 (수)", "Co-authored papers (count)"], "t-cit": ["인용 (A → B)", "Citations (A → B)"], "t-comp": ["회사", "Companies"], "t-uni": ["대학 · 연구소", "Universities · institutes"],
   "t-hint": ["끌어서 이동 · 휠/두 손가락으로 확대", "Drag to pan · scroll / pinch to zoom"],
   "papers-btn": ["논문 · 프로젝트 목록", "Papers & projects"]
 };
