@@ -32,6 +32,9 @@ body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font
   padding-block: 14px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 header { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 24px; }
 header .t { min-width: 0; flex: 1 1 320px; }
+.help { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); color: var(--muted); font-size: 12px; font-weight: 500; cursor: help; position: relative; vertical-align: 3px; }
+.help:hover::after, .help:focus::after { content: attr(data-tip); position: absolute; left: 0; top: 28px; z-index: 20; width: min(420px, 80vw); padding: 10px 12px; border-radius: 8px; background: var(--fg); color: var(--panel); font-size: 13px; font-weight: 400; line-height: 1.5; white-space: normal; text-align: left; }
+header { align-items: center !important; }
 h1 { margin: 0; font-size: 22px; font-weight: 700; text-wrap: balance; letter-spacing: -0.01em; }
 .sub { margin: 4px 0 0; color: var(--muted); line-height: 1.5; max-width: 66ch; }
 .controls { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
@@ -97,8 +100,7 @@ aside li button:hover, .pp button:hover { text-decoration: underline; }
 <div class="wrap">
   <header>
     <div class="t">
-      <h1 id="t-h1">AI 연구자 계보도</h1>
-      <p class="sub" id="t-sub">세로 높이 = 태어난 해 (모르는 사람은 지도교수 · 제자로 어림). 사람을 누르면 그 사람과 이어진 줄만 켜지고, 오른쪽에 업적 · 교과서 · 대학이 나옵니다.</p>
+      <h1><span id="t-h1">AI 연구자 계보도</span> <span class="help" tabindex="0" aria-label="help" id="t-sub" data-tip="">?</span></h1>
     </div>
     <div class="controls">
       <div class="seg" role="group" aria-label="보여 줄 범위">
@@ -595,7 +597,7 @@ const STATIC = {
   "papers-btn": ["논문 · 프로젝트 목록", "Papers & projects"]
 };
 function applyStatic() {
-  Object.entries(STATIC).forEach(([id, v]) => { const e = document.getElementById(id); if (e) e.textContent = v[LANG === "en" ? 1 : 0]; });
+  Object.entries(STATIC).forEach(([id, v]) => { const e = document.getElementById(id); if (!e) return; if (id === "t-sub") e.dataset.tip = v[LANG === "en" ? 1 : 0]; else e.textContent = v[LANG === "en" ? 1 : 0]; });
   document.getElementById("q").placeholder = K("이름 찾기 (예: 힌턴, Bengio)", "Find a person (e.g. Hinton)");
   document.title = K("AI 연구자 계보도", "AI Researcher Family Tree");
   document.getElementById("t-credit").innerHTML = K(
