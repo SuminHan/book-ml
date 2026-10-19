@@ -54,6 +54,10 @@ h1 { margin: 0; font-size: 22px; font-weight: 700; text-wrap: balance; letter-sp
 .plist .gbtn { font: inherit; font-weight: 500; background: none; border: 0; padding: 0; color: var(--fg); cursor: pointer; text-align: left; }
 .plist .gbtn:hover { color: var(--co); text-decoration: underline; }
 .plist .who { grid-column: 2; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.kfilter { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.kfilter button { font: inherit; font-size: 12px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer; }
+.kfilter button[aria-pressed="true"] { border-color: var(--co); color: var(--fg); background: color-mix(in srgb, var(--co) 12%, transparent); }
+.kfilter .cnt { opacity: .7; }
 .kind { font-size: 11px; padding: 0 6px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); margin-left: 4px; white-space: nowrap; }
 .chk { color: var(--co); font-size: 11px; margin-left: 4px; white-space: nowrap; }
 input[type="search"] { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--fg); width: 200px; max-width: 100%; }
@@ -408,15 +412,25 @@ document.addEventListener("keydown", e => {
   const j = i < 0 ? (step > 0 ? 0 : papersOrder.length - 1) : Math.min(papersOrder.length - 1, Math.max(0, i + step));
   selectGroup(papersOrder[j]);
 });
-const kindOf = g => g.biz ? K("스타트업 · 회사", "startup · company") : g.book ? K("책", "book") : g.proj ? K("프로젝트", "project") : K("논문", "paper");
+// 종류: 논문 · 책 · 데이터셋 · 프로젝트 · 회사 (칩 색으로도 나눈다)
+const kindKey = g => g.biz ? "biz" : g.book ? "book" : g.data ? "data" : g.proj ? "proj" : "paper";
+const KINDS = { paper: ["논문", "paper", "var(--co)"], book: ["책", "book", "var(--gold)"], data: ["데이터셋", "dataset", "var(--org)"], proj: ["프로젝트", "project", "var(--org)"], biz: ["스타트업 · 회사", "startup · company", "var(--biz)"] };
+const kindOf = g => K(KINDS[kindKey(g)][0], KINDS[kindKey(g)][1]);
+const kindCol = g => KINDS[kindKey(g)][2];
+// 목록 위 거르기 버튼 (전체 · 논문 · 책 · 데이터 · 프로젝트 · 회사)
+const FILTERS = [["all", "전체", "All"], ["paper", "논문", "Papers"], ["book", "책", "Books"], ["dp", "데이터 · 프로젝트", "Data · projects"], ["biz", "회사", "Companies"]];
+let paperKind = "all";
+const kindPass = g => paperKind === "all" || (paperKind === "dp" ? ["data", "proj"].includes(kindKey(g)) : kindKey(g) === paperKind);
 // 목록에서 바로 고른다: 고른 항목은 그 자리에서 펼쳐지고 (원제목 · 원문 링크), 다시 누르면 끈다
 const papersBtn = on => document.getElementById("papers-btn").setAttribute("aria-pressed", on);
 function panelPapers(active = null) {
   papersBtn(true); lastPaper = active;
-  const L2 = DATA.collab.map((g, gi) => [g, gi]).sort((a, b) => a[0].y - b[0].y);
+  const ALL2 = DATA.collab.map((g, gi) => [g, gi]).sort((a, b) => a[0].y - b[0].y);
+  const L2 = ALL2.filter(([g]) => kindPass(g));
   const keep = P.querySelector(".plist") ? P.scrollTop : papersScroll;
   P.innerHTML = `<h2>${K("논문 · 프로젝트", "Papers & projects")} <span class="help" tabindex="0" aria-label="help" data-tip="${(K(`사람을 누르면 그 사람 카드가 나오고, 위의 버튼을 다시 누르면 안내 · 데이터 출처가 나옵니다. 대표 논문 · 교과서 · 스타트업 ${L2.length}개입니다. 누르면 그 사람들만 켜집니다 (↑ ↓ ← → 키로 이전 · 다음). ✓ 표시는 논문 데이터베이스(OpenAlex · Crossref)에서 저자까지 확인한 것입니다. 인용 수는 Semantic Scholar 기준이고, * 표시만 OpenAlex 값입니다.`, `${L2.length} key papers, textbooks and startups. Click one to highlight its people (↑ ↓ ← → for previous / next). Click a person for their card; click the button above again for the guide and data sources. ✓ = authors verified in a paper database (OpenAlex · Crossref). Citation counts are from Semantic Scholar; * marks OpenAlex counts.`)).replace(/"/g, "&quot;")}">?</span></h2>
-    <ul class="plain plist">${L2.map(([g, gi]) => `<li><span class="yr">${g.y}</span><span><button class="gbtn" data-g="${gi}" aria-expanded="${gi === active}"${g.biz ? ' style="color:var(--biz)"' : ""}><span style="color:var(--muted);font-size:11px">${gi === active ? "▾" : "▸"}</span> ${gname(g).replace(/\s*\(\d{4}[^)]*\)/, "")}</button><span class="kind"${g.biz ? ' style="border-color:var(--biz);color:var(--biz)"' : ""}>${kindOf(g)}</span>${g.c ? `<span class="kind" style="border-color:transparent" title="${g.csrc || "Semantic Scholar"}">${K("인용", "cited")} ${fmtN(g.c)}${g.csrc ? "*" : ""}</span>` : ""}${g.ok ? `<span class="chk">✓ ${K("저자 확인", "authors verified")}</span>` : ""}</span>
+    <div class="kfilter">${FILTERS.map(([k, ko, en]) => `<button data-k="${k}" aria-pressed="${paperKind === k}">${K(ko, en)} <span class="cnt">${k === "all" ? ALL2.length : ALL2.filter(([g]) => k === "dp" ? ["data", "proj"].includes(kindKey(g)) : kindKey(g) === k).length}</span></button>`).join("")}</div>
+    <ul class="plain plist">${L2.map(([g, gi]) => `<li><span class="yr">${g.y}</span><span><button class="gbtn" data-g="${gi}" aria-expanded="${gi === active}"${g.biz ? ' style="color:var(--biz)"' : ""}><span style="color:var(--muted);font-size:11px">${gi === active ? "▾" : "▸"}</span> ${gname(g).replace(/\s*\(\d{4}[^)]*\)/, "")}</button><span class="kind" style="border-color:${kindCol(g)};color:${kindCol(g)}">${kindOf(g)}</span>${g.c ? `<span class="kind" style="border-color:transparent" title="${g.csrc || "Semantic Scholar"}">${K("인용", "cited")} ${fmtN(g.c)}${g.csrc ? "*" : ""}</span>` : ""}${g.ok ? `<span class="chk">✓ ${K("저자 확인", "authors verified")}</span>` : ""}</span>
       <span class="who">${[g.ids.map(id => name(byId.get(id))).join(" · "), g.others ? `<span style="opacity:.75">${LANG === "en" ? g.others.replace(/ 외$/, " et al.") : g.others}</span>` : ""].filter(Boolean).join(" · ")}${!g.ids.length ? ' <span class="kind">${K("그래프 밖", "not in graph")}</span>' : ""}</span>
       ${gi === active && g.fig ? `<span class="who" style="margin-top:6px"><img src="${g.fig.img}" alt="" style="max-width:${g.fig.logo ? "160px" : "100%"};max-height:${g.fig.logo ? "44px" : "170px"};border-radius:6px;background:${g.fig.dark ? "#1b1c33" : "#fff"};${g.fig.logo ? "padding:6px 10px;" : ""}display:block"><span style="font-size:11px">${g.fig.og ? `<a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">${K("소개 페이지", "Project page")}</a> ${K("대표 이미지", "image")}` : `${g.fig.logo ? K("로고", "Logo") : K("예시 그림", "Illustration")} · <a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">Wikimedia Commons</a> (${g.fig.lic})`}</span></span>` : ""}
       ${gi === active && g.val ? `<span class="who" style="color:var(--fg);font-weight:500"><span class="kind" style="border-color:var(--biz);color:var(--biz);margin:0 4px 0 0">${K("가치", "value")}</span>${F(g, "val")} <span style="font-weight:400;color:var(--muted)">(${g.valDate}${g.valSrc ? ` · <a href="${g.valSrc}" target="_blank" rel="noopener" style="color:inherit">${K("출처", "source")}</a>` : ""})</span></span>` : ""}
@@ -434,6 +448,7 @@ function panelPapers(active = null) {
     const gi = +li.querySelector("button[data-g]").dataset.g;
     if (gi === active) { sel = null; lit = null; focusGroup = null; paint(); panelPapers(); } else selectGroup(gi);
   });
+  P.querySelectorAll(".kfilter button").forEach(b => b.onclick = () => { paperKind = b.dataset.k; papersScroll = 0; P.scrollTop = 0; panelPapers(active != null && kindPass(DATA.collab[active]) ? active : null); });
   P.scrollTop = keep;
   // 펼친 칸 전체가 보이게 스크롤 (그림이 늦게 그려지면 그때 한 번 더)
   if (active != null) {
@@ -452,7 +467,7 @@ function panelGroup(gi) {
   P.innerHTML = `<p class="src" style="margin:0"><button class="pbtn" id="back-papers">← 목록</button></p>
     <h2 style="margin-top:10px">${gname(g)}</h2>
     ${g.en ? `<div class="en">${g.en}</div>` : ""}
-    <div class="tags"><span class="tag" style="border-color:var(--co);color:var(--co)">${kindOf(g)} · ${g.y}</span>${g.ok ? '<span class="tag" style="border-color:var(--co);color:var(--co)">✓ 저자 확인</span>' : ""}</div>
+    <div class="tags"><span class="tag" style="border-color:${kindCol(g)};color:${kindCol(g)}">${kindOf(g)} · ${g.y}</span>${g.ok ? '<span class="tag" style="border-color:var(--co);color:var(--co)">✓ 저자 확인</span>' : ""}</div>
     <h3>그래프에 있는 ${g.biz ? "공동 창업자" : "저자"} (${g.ids.length}명)</h3>${people(g.ids.map(id => [id]))}
     ${g.url ? `<p class="src" style="margin-top:14px"><a href="${g.url}" target="_blank" rel="noopener">원문 보기</a></p>` : ""}
     <p class="src">${g.ok ? "저자 목록을 논문 데이터베이스(OpenAlex · Crossref)와 대조했습니다." : "저자 목록은 직접 정리한 것으로, 아직 데이터베이스와 대조하지 못했습니다."} 그래프에 있는 사람만 적었습니다.</p>`;
