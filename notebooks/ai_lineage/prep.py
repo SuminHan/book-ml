@@ -1,6 +1,7 @@
 import json, collections, os
 D=json.load(open("full.json")); S=set(D["seeds"]); I=D["info"]; E=[tuple(e) for e in D["edges"]]
 orgs=json.load(open("orgs.json"))
+I["Q102291966"]["en"]="Carlos Guestrin"   # 위키데이터 지도 관계 쪽 이름이 중간 이름까지 붙어 있다
 byname={v["en"]:k for k,v in I.items()}
 manual=[("Geoffrey Hinton","Yann LeCun","포닥"),("Yoshua Bengio","Kyunghyun Cho","포닥"),("Jure Leskovec","William L. Hamilton","박사"),("Jure Leskovec","Rex Ying","박사")]
 ME=[(byname[a],byname[b],t) for a,b,t in manual]
@@ -37,7 +38,8 @@ for q_,v in EXTRA.items():
         out["nodes"].append({"id":q_,"ko":KO.get(v["en"],""),"en":v["en"],"d":v["desc"],"b":None,"aw":[],"seed":True,"core":True,"sl":v["sl"]})
         byname[v["en"]]=q_; I[q_]=v
 # 위키데이터 지도 관계에 빠진 것 (위키백과 · 위키데이터 P184 기준)
-for a_,b_,t_,k_ in [("Tang Xiao'ou","Kaiming He","박사","manual"),("Raj Reddy","Kai-Fu Lee","박사","wd"),("B. F. Skinner","William Kaye Estes","박사","wd")]:
+for a_,b_,t_,k_ in [("Tang Xiao'ou","Kaiming He","박사","manual"),("Raj Reddy","Kai-Fu Lee","박사","wd"),("B. F. Skinner","William Kaye Estes","박사","wd"),
+               ("Carlos Guestrin","Tianqi Chen","박사","wd"),("Leslie Valiant","Michael Kearns","박사","wd"),("Thomas M. Cover","Peter E. Hart","박사","wd")]:
     if a_ in byname and b_ in byname and not any(l["s"]==byname[a_] and l["t"]==byname[b_] for l in out["links"]):
         out["links"].append({"s":byname[a_],"t":byname[b_],"k":k_,**({"n":t_} if k_=="manual" else {})})
 # ---- v3: 유명 인물 · 사진 · 업적 · 공동 연구 · 논문 그래프 ----
@@ -48,7 +50,7 @@ for n in out["nodes"]:
     c=C.get(n["en"])
     n["fam"]=bool(c)
     if c:
-        n.update({k:c[k] for k in ("uni","phd","ach","books","field") if k in c}); n["ent"]=bool(c.get("ent"))
+        n.update({k:c[k] for k in ("uni","phd","ach","books","field","show") if k in c}); n["ent"]=bool(c.get("ent"))
     if n["id"] in PH: n["img"]=PH[n["id"]]["img"]; n["imgPage"]=PH[n["id"]]["page"]
 up=collections.defaultdict(set); dn=collections.defaultdict(set)
 for l in out["links"]: up[l["t"]].add(l["s"]); dn[l["s"]].add(l["t"])

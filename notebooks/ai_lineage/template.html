@@ -212,7 +212,7 @@ function visibleIds() {
 function baseIds() {
   if (scope === "all") return new Set(DATA.nodes.map(n => n.id));
   if (scope === "biz") return new Set(DATA.nodes.filter(n => n.fam && n.ent).map(n => n.id));
-  return new Set(DATA.nodes.filter(n => (n.fam && n.m) || n.chain).map(n => n.id));
+  return new Set(DATA.nodes.filter(n => (n.fam && (n.m || n.show)) || n.chain).map(n => n.id));
 }
 // 회사 / 대학 · 연구소를 따로 켠다 (기업가 범위에서는 회사가 늘 켜짐)
 const orgOn = () => L.comp || L.uni || scope === "biz";
