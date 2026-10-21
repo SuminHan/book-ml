@@ -40,7 +40,7 @@ for q_,v in EXTRA.items():
         byname[v["en"]]=q_; I[q_]=v
 # 위키데이터 지도 관계에 빠진 것 (위키백과 · 위키데이터 P184 기준)
 for a_,b_,t_,k_ in [("Tang Xiao'ou","Kaiming He","박사","manual"),("Raj Reddy","Kai-Fu Lee","박사","wd"),("B. F. Skinner","William Kaye Estes","박사","wd"),
-               ("Carlos Guestrin","Tianqi Chen","박사","wd"),("Leslie Valiant","Michael Kearns","박사","wd"),("Thomas M. Cover","Peter E. Hart","박사","wd"),("Berthold K. P. Horn","Marc Raibert","박사","wd")]:
+               ("Carlos Guestrin","Tianqi Chen","박사","wd"),("Leslie Valiant","Michael Kearns","박사","wd"),("Thomas M. Cover","Peter E. Hart","박사","wd"),("Berthold K. P. Horn","Marc Raibert","박사","wd"),("Albert W. Tucker","David Gale","박사","wd"),("Albert W. Tucker","Lloyd Shapley","박사","wd")]:
     if a_ in byname and b_ in byname and not any(l["s"]==byname[a_] and l["t"]==byname[b_] for l in out["links"]):
         out["links"].append({"s":byname[a_],"t":byname[b_],"k":k_,**({"n":t_} if k_=="manual" else {})})
 # ---- v3: 유명 인물 · 사진 · 업적 · 공동 연구 · 논문 그래프 ----
@@ -66,6 +66,8 @@ chain=(reach(fam,up)&reach(fam,dn))-fam
 # 유명 인물 둘 이상과 바로 이어진 사람 (공동 지도 등)도 중간 다리로 남긴다
 # 섀넌 · 민스키를 잇는 대니 힐리스만 예외로 남긴다 (공동 지도 제자를 다 넣으면 점이 너무 많아진다)
 chain.add(byname["William Daniel Hillis"])
+# 민스키 · 게일 · 섀플리의 지도교수 터커도 (위로는 유명 인물이 없어 위 규칙에 안 걸린다)
+chain.add(byname["Albert W. Tucker"])
 for n in out["nodes"]: n["chain"]=n["id"] in chain
 B=json.load(open("births.json")); MT=json.load(open("metrics.json"))
 # 출생 연도: 영어 위키백과 첫 문단 > 위키데이터(연도 정밀도, 값 하나일 때만) > 직접 확인한 값. 나머지는 표시 안 함
