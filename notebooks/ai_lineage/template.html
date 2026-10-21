@@ -425,9 +425,11 @@ const KINDS = { paper: ["논문", "paper", "var(--co)"], book: ["책", "book", "
 const kindOf = g => K(KINDS[kindKey(g)][0], KINDS[kindKey(g)][1]);
 const kindCol = g => KINDS[kindKey(g)][2];
 // 목록 위 거르기 버튼 (전체 · 논문 · 책 · 데이터셋 · 프로젝트 · 회사)
-const FILTERS = [["all", "전체", "All"], ["paper", "논문", "Papers"], ["book", "책", "Books"], ["data", "데이터셋", "Datasets"], ["proj", "프로젝트", "Projects"], ["biz", "회사", "Companies"], ["inst", "기관", "Institutions"], ["event", "사건", "Events"]];
+const FILTERS = [["all", "전체", "All"], ["paper", "논문", "Papers"], ["book", "책", "Books"], ["data", "데이터셋", "Datasets"], ["proj", "프로젝트", "Projects"], ["biz", "회사", "Companies"], ["kr", "🇰🇷 한국", "🇰🇷 Korea"]];
 let paperKind = "all";
-const kindPass = g => paperKind === "all" || kindKey(g) === paperKind;
+// 한국 은 종류와 겹치는 묶음 (삼성 · KAIST · 네이버 · 알파고 대 이세돌 등)
+const inKind = (g, k) => k === "kr" ? !!g.kr : kindKey(g) === k;
+const kindPass = g => paperKind === "all" || inKind(g, paperKind);
 // 목록에서 바로 고른다: 고른 항목은 그 자리에서 펼쳐지고 (원제목 · 원문 링크), 다시 누르면 끈다
 const papersBtn = on => document.getElementById("papers-btn").setAttribute("aria-pressed", on);
 function panelPapers(active = null) {
@@ -436,7 +438,7 @@ function panelPapers(active = null) {
   const L2 = ALL2.filter(([g]) => kindPass(g));
   const keep = P.querySelector(".plist") ? P.scrollTop : papersScroll;
   P.innerHTML = `<h2>${K("논문 · 프로젝트", "Papers & projects")} <span class="help" tabindex="0" aria-label="help" data-tip="${(K(`사람을 누르면 그 사람 카드가 나오고, 위의 버튼을 다시 누르면 안내 · 데이터 출처가 나옵니다. 대표 논문 · 교과서 · 스타트업 ${L2.length}개입니다. 누르면 그 사람들만 켜집니다 (↑ ↓ ← → 키로 이전 · 다음). ✓ 표시는 논문 데이터베이스(OpenAlex · Crossref)에서 저자까지 확인한 것입니다. 인용 수는 Semantic Scholar 기준이고, * 표시만 OpenAlex 값입니다.`, `${L2.length} key papers, textbooks and startups. Click one to highlight its people (↑ ↓ ← → for previous / next). Click a person for their card; click the button above again for the guide and data sources. ✓ = authors verified in a paper database (OpenAlex · Crossref). Citation counts are from Semantic Scholar; * marks OpenAlex counts.`)).replace(/"/g, "&quot;")}">?</span></h2>
-    <div class="kfilter">${FILTERS.map(([k, ko, en]) => `<button data-k="${k}" aria-pressed="${paperKind === k}">${K(ko, en)} <span class="cnt">${k === "all" ? ALL2.length : ALL2.filter(([g]) => kindKey(g) === k).length}</span></button>`).join("")}</div>
+    <div class="kfilter">${FILTERS.map(([k, ko, en]) => `<button data-k="${k}" aria-pressed="${paperKind === k}">${K(ko, en)} <span class="cnt">${k === "all" ? ALL2.length : ALL2.filter(([g]) => inKind(g, k)).length}</span></button>`).join("")}</div>
     <ul class="plain plist">${L2.map(([g, gi]) => `<li><span class="yr">${g.y}</span><span><button class="gbtn" data-g="${gi}" aria-expanded="${gi === active}"${g.biz ? ' style="color:var(--biz)"' : ""}><span style="color:var(--muted);font-size:11px">${gi === active ? "▾" : "▸"}</span> ${gname(g).replace(/\s*\(\d{4}[^)]*\)/, "")}</button><span class="kind" style="border-color:${kindCol(g)};color:${kindCol(g)}">${kindOf(g)}</span>${g.c ? `<span class="kind" style="border-color:transparent" title="${g.csrc || "Semantic Scholar"}">${K("인용", "cited")} ${fmtN(g.c)}${g.csrc ? "*" : ""}</span>` : ""}${g.ok ? `<span class="chk">✓ ${K("저자 확인", "authors verified")}</span>` : ""}</span>
       <span class="who">${[g.ids.map(id => name(byId.get(id))).join(" · "), g.others ? `<span style="opacity:.75">${LANG === "en" ? g.others.replace(/ 외$/, " et al.") : g.others}</span>` : ""].filter(Boolean).join(" · ")}${!g.ids.length ? ` <span class="kind">${K("그래프 밖", "not in graph")}</span>` : ""}</span>
       ${gi === active && g.fig ? `<span class="who" style="margin-top:6px"><img src="${g.fig.img}" alt="" style="max-width:${g.fig.logo ? "160px" : "100%"};max-height:${g.fig.logo ? "44px" : "170px"};border-radius:6px;background:${g.fig.dark ? "#1b1c33" : "#fff"};${g.fig.logo ? "padding:6px 10px;" : ""}display:block"><span style="font-size:11px">${g.fig.via ? `${K(g.fig.what[0], g.fig.what[1])} · <a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">${g.fig.via}</a>` : g.fig.og ? `<a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">${K("소개 페이지", "Project page")}</a> ${K("대표 이미지", "image")}` : `${g.fig.logo ? K("로고", "Logo") : K("예시 그림", "Illustration")} · <a href="${g.fig.page}" target="_blank" rel="noopener" style="color:inherit">Wikimedia Commons</a> (${g.fig.lic})`}</span></span>` : ""}
