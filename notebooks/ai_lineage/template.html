@@ -421,13 +421,13 @@ document.addEventListener("keydown", e => {
   selectGroup(papersOrder[j]);
 });
 // 종류: 논문 · 책 · 데이터셋 · 프로젝트 · 회사 (칩 색으로도 나눈다)
-const kindKey = g => g.event ? "event" : g.inst ? "inst" : g.biz ? "biz" : g.book ? "book" : g.data ? "data" : g.proj ? "proj" : "paper";
-const KINDS = { paper: ["논문", "paper", "var(--co)"], book: ["책", "book", "var(--gold)"], data: ["데이터셋", "dataset", "var(--org)"], proj: ["프로젝트", "project", "var(--navy)"], biz: ["스타트업 · 회사", "startup · company", "var(--biz)"], inst: ["기관", "institution", "var(--cit)"], event: ["사건", "event", "var(--red)"] };
+const kindKey = g => g.lang ? "lang" : g.event ? "event" : g.inst ? "inst" : g.biz ? "biz" : g.book ? "book" : g.data ? "data" : g.proj ? "proj" : "paper";
+const KINDS = { paper: ["논문", "paper", "var(--co)"], book: ["책", "book", "var(--gold)"], data: ["데이터셋", "dataset", "var(--org)"], proj: ["프로젝트", "project", "var(--navy)"], biz: ["스타트업 · 회사", "startup · company", "var(--biz)"], inst: ["기관", "institution", "var(--cit)"], event: ["사건", "event", "var(--red)"], lang: ["언어", "language", "var(--navy)"] };
 const kindOf = g => K(KINDS[kindKey(g)][0], KINDS[kindKey(g)][1]);
 // 한국 묶음은 종류와 상관없이 빨간색
 const kindCol = g => g.kr ? "var(--red)" : KINDS[kindKey(g)][2];
 // 목록 위 거르기 버튼 (전체 · 논문 · 책 · 데이터셋 · 프로젝트 · 회사)
-const FILTERS = [["all", "전체", "All"], ["paper", "논문", "Papers"], ["book", "책", "Books"], ["data", "데이터셋", "Datasets"], ["proj", "프로젝트", "Projects"], ["biz", "회사", "Companies"], ["kr", "🇰🇷 한국", "🇰🇷 Korea"]];
+const FILTERS = [["all", "전체", "All"], ["paper", "논문", "Papers"], ["book", "책", "Books"], ["data", "데이터셋", "Datasets"], ["proj", "프로젝트", "Projects"], ["lang", "언어", "Languages"], ["biz", "회사", "Companies"], ["kr", "🇰🇷 한국", "🇰🇷 Korea"]];
 let paperKind = "all";
 // 한국 은 종류와 겹치는 묶음 (삼성 · KAIST · 네이버 · 알파고 대 이세돌 등)
 const inKind = (g, k) => k === "kr" ? !!g.kr : kindKey(g) === k;
