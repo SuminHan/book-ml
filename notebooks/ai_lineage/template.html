@@ -565,7 +565,7 @@ function panel(n) {
     P.innerHTML = `<h2>${name(n)}</h2><div class="en">${n.en}</div>${K(n.desc || "", n.desc_en || "") ? `<p style="margin:8px 0">${K(n.desc || "", n.desc_en || "")}</p>` : ""}
       ${facts.length ? `<ul class="plain" style="margin:6px 0">${facts.map(([k, v]) => `<li><span class="cnt" style="display:inline-block;min-width:84px">${k}</span> ${v}</li>`).join("")}</ul>` : ""}
       <h3>${K("이 그래프의 사람들", "People in this graph")}</h3>${people(ppl)}
-      <p class="src" style="margin-top:12px"><a href="https://www.wikidata.org/wiki/${n.id}" target="_blank" rel="noopener">Wikidata ${n.id}</a></p>`;
+      <p class="src" style="margin-top:12px">${/^Q\d+$/.test(n.id) ? `<a href="https://www.wikidata.org/wiki/${n.id}" target="_blank" rel="noopener">Wikidata ${n.id}</a>` : K("위키데이터 항목 없음 · 직접 추가", "Not in Wikidata · added manually")}</p>`;
     bind(); return;
   }
   const A = (adv.get(n.id) || []).map(l => [l.s, l.k === "manual" ? K(l.n + " · 직접 추가", (l.n === "포닥" ? "postdoc" : "PhD") + " · added manually") : ""]);
@@ -594,7 +594,7 @@ function panel(n) {
     ${citOut.length ? `<h3>${K("많이 인용한 사람", "Cites most")}</h3><ul class="plain">${citOut.map(c => `<li>${pbtn(c.b)} <span class="cnt">${K(`논문 ${c.n}편에서`, `in ${c.n} papers`)}</span></li>`).join("")}</ul>` : ""}
     ${citIn.length ? `<h3>${K("이 사람을 많이 인용한 사람", "Cited most by")}</h3><ul class="plain">${citIn.map(c => `<li>${pbtn(c.a)} <span class="cnt">${K(`논문 ${c.n}편에서`, `in ${c.n} papers`)}</span></li>`).join("")}</ul>` : ""}
     ${emp.length ? `<h3>${K("소속 · 창업 (위키데이터)", "Affiliations · founded (Wikidata)")}</h3><p class="empty" style="color:var(--fg)">${emp.join(" · ")}</p>` : ""}
-    <p class="src" style="margin-top:14px">${n.hp ? `<a href="${n.hp}" target="_blank" rel="noopener" style="font-weight:500">${K("홈페이지", "Homepage")}</a> · ` : ""}<a href="https://www.wikidata.org/wiki/${n.id}" target="_blank" rel="noopener">Wikidata ${n.id}</a>${n.imgPage ? ` · <a href="${n.imgPage}" target="_blank" rel="noopener">${K("사진 출처", "Photo source")}</a>` : ""}</p>`;
+    <p class="src" style="margin-top:14px">${n.hp ? `<a href="${n.hp}" target="_blank" rel="noopener" style="font-weight:500">${K("홈페이지", "Homepage")}</a> · ` : ""}${/^Q\d+$/.test(n.id) ? `<a href="https://www.wikidata.org/wiki/${n.id}" target="_blank" rel="noopener">Wikidata ${n.id}</a>` : K("위키데이터 항목 없음 · 직접 추가", "Not in Wikidata · added manually")}${n.imgPage ? ` · <a href="${n.imgPage}" target="_blank" rel="noopener">${K("사진 출처", "Photo source")}</a>` : ""}</p>`;
   bind();
   P.scrollTop = 0;   // 인물 카드는 항상 맨 위부터
 }
