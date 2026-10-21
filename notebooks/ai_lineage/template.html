@@ -219,12 +219,10 @@ function baseIds() {
   return new Set(DATA.nodes.filter(n => (n.fam && (n.m || n.show)) || n.chain).map(n => n.id));
 }
 // 회사 / 대학 · 연구소를 따로 켠다 (기업가 범위에서는 회사가 늘 켜짐)
-const dated = n => n.org && n.inc && isCompany(n);
 const orgOn = () => L.comp || L.uni || scope === "biz";
 const orgList = () => DATA.orgs.map(o => byId.get(o.id)).filter(o => isCompany(o) ? (L.comp || scope === "biz") : L.uni);
 function layout(ids, nodes) {
-  // 회사는 세운 해 높이에 둔다 (사람은 태어난 해)
-  const ys = d3.extent(nodes.filter(n => !n.org || dated(n)), n => dated(n) ? n.inc : n.y0);
+  const ys = d3.extent(nodes.filter(n => !n.org), n => n.y0);
   // 1940년 이후 (사람이 몰린 구간)를 세로로 더 넓게
   const y0 = Math.floor(ys[0] / 10) * 10, y1 = Math.ceil(ys[1] / 10) * 10, f = scope === "all" ? 1.5 : 1;
   Y.domain([y0, 1940, y1]).range([0, 420 * f, (420 + (y1 - 1940) * 27) * f]);
@@ -233,9 +231,9 @@ function layout(ids, nodes) {
     .concat(groupEdges.filter(e => ids.has(e.s) && ids.has(e.t)).map(e => ({ source: e.s, target: e.t, w: e.k === "biz" ? 0.02 : 0.06 })))
     .concat(orgOn() ? DATA.olinks.filter(l => ids.has(l.s) && ids.has(l.t)).map(l => ({ source: l.s, target: l.t, w: scope === "biz" ? 0.3 : 0.03 })) : []);
   // 회사 · 대학: 이어진 사람들의 평균 세대 높이에 둔다
-  nodes.filter(n => n.org && !dated(n)).forEach(o => { const ys = DATA.olinks.filter(l => l.t === o.id && ids.has(l.s)).map(l => byId.get(l.s).y0); o.y0 = ys.length ? d3.mean(ys) + 6 : Y.domain()[2]; });
+  nodes.filter(n => n.org).forEach(o => { const ys = DATA.olinks.filter(l => l.t === o.id && ids.has(l.s)).map(l => byId.get(l.s).y0); o.y0 = ys.length ? d3.mean(ys) + 6 : Y.domain()[2]; });
   // 출생 연도를 아는 사람은 그 높이에 고정 (fy), 모르는 사람만 위아래로 움직인다
-  nodes.forEach((n, i) => { const a = Math.sin((i + 1) * 12.9898) * 43758.5453; n.x = (a - Math.floor(a) - 0.5) * 1400; n.y = Y(n.y0); if (dated(n)) n.y0 = n.inc; n.fy = n.b ? Y(n.b) : dated(n) ? Y(n.inc) : null; });
+  nodes.forEach((n, i) => { const a = Math.sin((i + 1) * 12.9898) * 43758.5453; n.x = (a - Math.floor(a) - 0.5) * 1400; n.y = Y(n.y0); n.fy = n.b ? Y(n.b) : null; });
   d3.forceSimulation(nodes)
     .force("link", d3.forceLink(ll).id(d => d.id).distance(60).strength(d => d.w))
     .force("charge", d3.forceManyBody().strength(d => d.org ? -200 : d.fam ? -700 : -50).distanceMax(600))
@@ -325,14 +323,13 @@ function build(relayout) {
     .on("mouseleave", () => { hov = null; if (!sel && focusGroup == null) { lit = null; paint(); } });
   nodeSel.call(d3.drag().on("drag", (e, d) => { d.x = e.x; if (!d.b) d.y = e.y; draw(); }));
 
-  const xe = d3.extent(nodes, d => d.x), withCo = nodes.some(dated);
+  const xe = d3.extent(nodes, d => d.x);
   gAxis.selectAll("*").remove();
   for (let y = Y.domain()[0]; y <= Y.domain()[2]; y += 10) {
     const g = gAxis.append("g").attr("transform", `translate(0,${Y(y)})`);
     g.append("line").attr("x1", xe[0] - 90).attr("x2", xe[1] + 60);
-    g.append("text").attr("x", xe[0] - 90).attr("y", -4).text(withCo ? K(y + "년", "" + y) : K(y + "년생", "b. " + y));
+    g.append("text").attr("x", xe[0] - 90).attr("y", -4).text(K(y + "년생", "b. " + y));
   }
-  if (withCo) gAxis.append("text").attr("x", xe[0] - 90).attr("y", Y(Y.domain()[0]) - 28).text(K("사람: 태어난 해 · 회사: 세운 해", "People: birth year · Companies: founding year"));
   if (scope !== "biz") [["dl", K("← 딥러닝", "← Deep learning")], ["ml", K("고전 ML · 통계 · 기호 AI", "Classic ML · statistics · symbolic AI")], ["rl", K("강화학습 · 로봇 →", "Reinforcement learning · robotics →")]].forEach(([f, t]) =>
     gAxis.append("text").attr("class", "field").attr("x", FX[f]).attr("y", Math.min(Y(Y.domain()[0]), d3.min(nodesNow, d => d.y)) - 75).attr("text-anchor", "middle").text(t));
   draw();
