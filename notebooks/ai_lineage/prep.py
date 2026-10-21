@@ -17,7 +17,8 @@ seedorg=collections.defaultdict(set); olab={}
 for p,o,ol,olk,rel in orgs:
     if p in S: seedorg[o].add(p); olab[o]=(ol,olk)
 keep={o for o,ps in seedorg.items() if len(ps)>=2 and "High School" not in olab[o][0]}|{o for p,o,ol,olk,rel in orgs if rel=="founder"}
-onodes=[{"id":o,"ko":olab[o][1],"en":olab[o][0]} for o in sorted(keep)]
+OI=json.load(open("org_info.json"))   # 세운 해 · 본사 · 홈페이지 · 설명 (위키데이터 + 직접 정리)
+onodes=[{"id":o,"ko":olab[o][1],"en":olab[o][0],**{k:v for k,v in OI.get(o,{}).items() if v}} for o in sorted(keep)]
 olinks=sorted({(p,o,rel) for p,o,ol,olk,rel in orgs if o in keep and p in S and rel in("employer","founder")})
 edu,emp={},{}
 for p,o,ol,olk,rel in orgs:
