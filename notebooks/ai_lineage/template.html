@@ -295,7 +295,7 @@ function build(relayout) {
   ["core", "biz", "all"].forEach(k => document.getElementById("n-" + k).textContent = scope === k ? `(${np})` : "");
 
   linkSel = gLink.selectAll("line").data(E, d => d.s + d.k + d.t).join("line")
-    .attr("stroke", d => ({ adv: css("--navy"), manual: css("--red"), collab: css("--co"), co: css("--co"), biz: css("--biz"), cit: css("--cit"), org: isCompany(d.target) ? css("--biz") : css("--org") })[d.k])
+    .attr("stroke", d => (d.gi != null && DATA.collab[d.gi].kr) ? css("--red") : ({ adv: css("--navy"), manual: css("--red"), collab: css("--co"), co: css("--co"), biz: css("--biz"), cit: css("--cit"), org: isCompany(d.target) ? css("--biz") : css("--org") })[d.k])
     .attr("stroke-width", d => d.k === "co" ? Math.min(1 + d.n * 0.4, 5) : d.k === "cit" ? Math.min(0.6 + d.n * 0.15, 4) : d.k === "collab" ? 2 : d.k === "org" ? 1 : 1.4)
     .attr("stroke-opacity", d => d.k === "org" ? 0.35 : d.k === "cit" ? 0.45 : 0.6)
     .attr("stroke-dasharray", d => d.k === "manual" ? "5 4" : d.k === "biz" ? "6 4" : (d.k === "co" || d.k === "org") ? "2 3" : null)
@@ -420,10 +420,17 @@ function selectGroup(gi) {
 let focusGroup = null, papersOrder = null, papersActive = null, lastPaper = null, papersScroll = 0;
 // 논문 목록이 열려 있을 때 ↑ / ↓ 로 이전 · 다음 항목
 document.addEventListener("keydown", e => {
-  if (!papersOrder || !P.querySelector(".plist") || e.target.closest("input")) return;
+  if (!papersOrder || !P.querySelector(".plist") || e.target.closest?.("input")) return;
   const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
   if (!step) return;
   e.preventDefault();
+  if (MOBILE) {   // 모바일: 그래프 없이 목록에서 다음 · 이전 항목으로 스크롤
+    const lis = [...P.querySelectorAll(".plist li")];
+    const cur = Math.max(0, lis.findIndex(li => li.getBoundingClientRect().bottom > 12));
+    const li = lis[Math.min(lis.length - 1, Math.max(0, cur + step))];
+    if (li) { li.scrollIntoView({ behavior: "smooth", block: "start" }); lis.forEach(x => x.style.background = ""); li.style.background = `color-mix(in srgb, ${DATA.collab[+li.querySelector("button[data-g]").dataset.g].kr ? "var(--red)" : "var(--co)"} 12%, transparent)`; mAnchor = +li.querySelector("button[data-g]").dataset.g; }
+    return;
+  }
   const i = papersOrder.indexOf(papersActive);
   const j = i < 0 ? (step > 0 ? 0 : papersOrder.length - 1) : Math.min(papersOrder.length - 1, Math.max(0, i + step));
   selectGroup(papersOrder[j]);
@@ -444,7 +451,15 @@ const kindPass = g => paperKind === "all" || inKind(g, paperKind);
 const papersBtn = on => document.getElementById("papers-btn").setAttribute("aria-pressed", on);
 // 모바일: 그래프 없이 역사 목록만, 항목은 모두 펼치고 사람은 얼굴 라벨로
 const MOBILE = matchMedia("(max-width: 700px)").matches;
-matchMedia("(max-width: 700px)").addEventListener("change", () => location.reload());   // 폭이 바뀌면 그래프 · 목록 모드를 다시 고른다
+// 모바일에서 지금 보고 있는 항목 (스크롤할 때마다 갱신, 폭이 바뀌어 다시 그릴 때 쓴다)
+let mAnchor = null;
+if (MOBILE) addEventListener("scroll", () => { const li = [...document.querySelectorAll(".plist li")].find(li => li.getBoundingClientRect().bottom > 12); if (li) mAnchor = +li.querySelector("button[data-g]").dataset.g; }, { passive: true });
+// 폭이 바뀌면 그래프 · 목록 모드를 다시 고른다. 보던 항목은 기억해 두었다가 다시 연다
+matchMedia("(max-width: 700px)").addEventListener("change", () => {
+  const gi = MOBILE ? mAnchor : papersActive;
+  try { if (gi != null) sessionStorage.setItem("ail-anchor", gi); } catch (e) {}
+  location.reload();
+});
 const face = n => `<span class="face">${n.img ? `<img src="${n.img}" alt=""${n.died ? ' style="filter:grayscale(1)"' : ""}>` : ""}${name(n)}</span>`;
 function panelPapers(active = null) {
   papersBtn(true); lastPaper = active;
@@ -675,5 +690,10 @@ document.getElementById("papers-btn").onclick = () => {
   if (on) { paint(); panel(null); } else if (lastPaper != null) selectGroup(lastPaper); else { paint(); panelPapers(); }
 };
 applyStatic(); if (!MOBILE) { build(true); fit(); } panelPapers(); setLang(LANG);
+{ let a = null; try { a = sessionStorage.getItem("ail-anchor"); sessionStorage.removeItem("ail-anchor"); } catch (e) {}
+  if (a != null && DATA.collab[+a]) {
+    if (MOBILE) { const go = () => P.querySelector(`button[data-g="${a}"]`)?.closest("li")?.scrollIntoView({ block: "start" }); go(); setTimeout(go, 300); addEventListener("load", go); mAnchor = +a; }
+    else selectGroup(+a);
+  } }
 window.addEventListener("resize", () => fit());
 </script>
