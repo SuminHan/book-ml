@@ -419,7 +419,8 @@ function selectGroup(gi) {
     g.ids.map(id => byId.get(id)).forEach((n, i) => { if (n.x == null || !nodesNow.includes(n)) { n.x = cx + 60 * (i + 1); n.y = n.b ? Y(n.b) : Y(n.y0); } });
     build(false);
   }
-  focusGroup = gi; lit = g.ids.length ? new Set(g.ids) : null; if (!g.ids.length) focusGroup = null; paint(); panelPapers(gi);
+  // 그래프 밖 항목 (사람 없음) 은 아무도 강조하지 않고 전부 흐리게
+  focusGroup = gi; lit = new Set(g.ids); paint(); panelPapers(gi);
   fitTo(g.ids);
 }
 let focusGroup = null, papersOrder = null, papersActive = null, lastPaper = null, papersScroll = 0;
