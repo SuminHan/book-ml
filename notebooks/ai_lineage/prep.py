@@ -40,7 +40,7 @@ for q_,v in EXTRA.items():
         byname[v["en"]]=q_; I[q_]=v
 # 위키데이터 지도 관계에 빠진 것 (위키백과 · 위키데이터 P184 기준)
 for a_,b_,t_,k_ in [("Tang Xiao'ou","Kaiming He","박사","manual"),("Raj Reddy","Kai-Fu Lee","박사","wd"),("B. F. Skinner","William Kaye Estes","박사","wd"),
-               ("Carlos Guestrin","Tianqi Chen","박사","wd"),("Leslie Valiant","Michael Kearns","박사","wd"),("Thomas M. Cover","Peter E. Hart","박사","wd"),("Berthold K. P. Horn","Marc Raibert","박사","wd"),("Albert W. Tucker","David Gale","박사","wd"),("Albert W. Tucker","Lloyd Shapley","박사","wd")]:
+               ("Carlos Guestrin","Tianqi Chen","박사","wd"),("Leslie Valiant","Michael Kearns","박사","wd"),("Thomas M. Cover","Peter E. Hart","박사","wd"),("Berthold K. P. Horn","Marc Raibert","박사","wd"),("Albert W. Tucker","David Gale","박사","wd"),("Albert W. Tucker","Lloyd Shapley","박사","wd"),("Vannevar Bush","Frederick Terman","박사","wd")]:
     if a_ in byname and b_ in byname and not any(l["s"]==byname[a_] and l["t"]==byname[b_] for l in out["links"]):
         out["links"].append({"s":byname[a_],"t":byname[b_],"k":k_,**({"n":t_} if k_=="manual" else {})})
 # ---- v3: 유명 인물 · 사진 · 업적 · 공동 연구 · 논문 그래프 ----
