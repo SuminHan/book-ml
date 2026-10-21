@@ -275,6 +275,13 @@ function build(relayout) {
   let nodes = DATA.nodes.filter(n => keep.has(n.id));
   if (orgOn()) nodes = nodes.concat(orgList().filter(o => linked.has(o.id)));
   if (relayout) layout(keep, nodes);
+  // 다시 배치하지 않고 더해진 사람 (고른 논문 저자의 지도교수 등)은 이어진 사람 옆에 둔다
+  else nodes.forEach(n => {
+    if (n.x != null && !isNaN(n.x)) return;
+    const e = E.find(e => (e.s === n.id && e.target.x != null) || (e.t === n.id && e.source.x != null));
+    const m = e ? (e.s === n.id ? e.target : e.source) : null;
+    n.x = m && !isNaN(m.x) ? m.x + 60 : 0; n.y = n.b ? Y(n.b) : Y(n.y0);
+  });
   nodesNow = nodes;
   const np = nodes.filter(n => !n.org).length;
   ["core", "biz", "all"].forEach(k => document.getElementById("n-" + k).textContent = scope === k ? `(${np})` : "");
@@ -436,6 +443,7 @@ function panelPapers(active = null) {
       ${gi === active && g.val ? `<span class="who" style="color:var(--fg);font-weight:500"><span class="kind" style="border-color:var(--biz);color:var(--biz);margin:0 4px 0 0">${K("가치", "value")}</span>${F(g, "val")} <span style="font-weight:400;color:var(--muted)">(${g.valDate}${g.valSrc ? ` · <a href="${g.valSrc}" target="_blank" rel="noopener" style="color:inherit">${K("출처", "source")}</a>` : ""})</span></span>` : ""}
       ${gi === active ? `${g.desc ? `<span class="who" style="color:var(--fg)">${F(g, "desc")}</span>` : ""}<span class="who" style="color:var(--fg)">${g.en || ""}</span>
       <span class="who">${[
+        g.video ? `<a href="https://www.youtube.com/watch?v=${g.video}" target="_blank" rel="noopener" style="color:var(--co);font-weight:500" title="${g.videoBy || ""}">▶ ${K("영상", "Video")}</a>` : "",
         g.blog ? `<a href="${g.blog}" target="_blank" rel="noopener" style="color:var(--co);font-weight:500">${K("소개 페이지", "Project page")}</a>` : "",
         g.url ? `<a href="${g.url}" target="_blank" rel="noopener" style="color:${g.biz ? "var(--biz)" : "var(--co)"}">${g.home ? K("홈페이지", "Website") : (g.url === g.arxiv ? K("논문 (arXiv)", "Paper (arXiv)") : K("논문 원문", "Paper"))}</a>` : "",
         g.arxiv && g.arxiv !== g.url ? `<a href="${g.arxiv}" target="_blank" rel="noopener" style="color:var(--co)">arXiv</a>` : ""
