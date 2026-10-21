@@ -444,6 +444,7 @@ const kindPass = g => paperKind === "all" || inKind(g, paperKind);
 const papersBtn = on => document.getElementById("papers-btn").setAttribute("aria-pressed", on);
 // 모바일: 그래프 없이 역사 목록만, 항목은 모두 펼치고 사람은 얼굴 라벨로
 const MOBILE = matchMedia("(max-width: 700px)").matches;
+matchMedia("(max-width: 700px)").addEventListener("change", () => location.reload());   // 폭이 바뀌면 그래프 · 목록 모드를 다시 고른다
 const face = n => `<span class="face">${n.img ? `<img src="${n.img}" alt=""${n.died ? ' style="filter:grayscale(1)"' : ""}>` : ""}${name(n)}</span>`;
 function panelPapers(active = null) {
   papersBtn(true); lastPaper = active;
