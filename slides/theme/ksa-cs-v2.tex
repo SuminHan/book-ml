@@ -1,0 +1,135 @@
+% ============================================================
+%  ksa-cs-v2: ksa-cs-lecture-template.tex 스타일 + 한글, v2 덱(16:9)용.
+%    - 짙은 네이비 헤드라인 (섹션 이름 + 프레임마다 점)
+%    - 꽉 찬 파란 제목 막대, 둥근 그림자 블록
+%    - 한글: Noto Sans CJK KR (fontspec)
+%  사용:
+%    \documentclass[aspectratio=169,11pt,t]{beamer}
+%    \input{<..>/theme/ksa-cs-v2.tex}
+%  ksa-theme.tex 의 매크로(\kb \kq, ksablue/ksared 등)도 같은 이름으로 둔다
+%  -> v2 덱 본문을 거의 그대로 옮길 수 있다.
+% ============================================================
+
+\usepackage{fontspec}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{varwidth}
+% enumitem 은 넣지 않는다 (beamer 글머리표가 사라진다)
+
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Noto Sans CJK KR}
+\setsansfont{Noto Sans CJK KR}
+\setmonofont{Noto Sans Mono CJK KR}[Scale=0.92]
+\usefonttheme{professionalfonts}
+
+% ---------- 기본 틀 ----------
+\usetheme{default}
+\useinnertheme[shadow=true]{rounded}
+\setbeamertemplate{navigation symbols}{}
+\setbeamersize{text margin left=1em,text margin right=1em}
+
+% ---------- 색 (템플릿 원본 값) ----------
+\definecolor{navydark}{HTML}{191959}
+\definecolor{navydim}{HTML}{8888B0}
+\definecolor{navytitle}{HTML}{262686}
+\definecolor{navyblue}{HTML}{3333B2}
+\definecolor{blockbodybg}{HTML}{E9E9F3}
+\definecolor{examplegreen}{HTML}{006000}
+\definecolor{examplebg}{HTML}{E5EFE5}
+\definecolor{alertred}{HTML}{BF0000}
+\definecolor{alertbg}{HTML}{F9E5E5}
+% ksa-theme.tex 와 같은 이름 (본문 호환)
+\colorlet{ksablue}{navytitle}
+\colorlet{ksabluedk}{navydark}
+\definecolor{ksagold}{HTML}{D6CBB1}
+\definecolor{ksagolddk}{HTML}{A9976B}
+\colorlet{ksared}{alertred}
+\definecolor{ksagray}{HTML}{5B5B5B}
+
+\setbeamercolor{structure}{fg=navyblue}
+\setbeamercolor{alerted text}{fg=alertred}
+\setbeamercolor{frametitle}{bg=navytitle,fg=white}
+\setbeamercolor{title}{fg=white,bg=navytitle}
+\setbeamercolor{block title}{bg=navytitle,fg=white}
+\setbeamercolor{block body}{bg=blockbodybg,fg=black}
+\setbeamercolor{block title example}{bg=examplegreen,fg=white}
+\setbeamercolor{block body example}{bg=examplebg,fg=black}
+\setbeamercolor{block title alerted}{bg=alertred,fg=white}
+\setbeamercolor{block body alerted}{bg=alertbg,fg=black}
+\setbeamercolor{item}{fg=navyblue}
+\setbeamertemplate{itemize item}[circle]
+\setbeamertemplate{itemize subitem}[triangle]
+
+% ---------- 헤드라인: miniframes (섹션 이름 + 점) ----------
+\useoutertheme[subsection=false]{miniframes}
+\setbeamerfont{section in head/foot}{size=\tiny}
+\setbeamercolor{section in head/foot}{bg=navydark,fg=white}
+\setbeamercolor{mini frame}{fg=white}
+\setbeamertemplate{mini frames}[circle]
+
+% ---------- 제목 막대: 폭 꽉 채움, 두 줄까지 ----------
+\setbeamerfont{frametitle}{size=\normalsize,series=\bfseries}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.7ex,dp=1.1ex,leftskip=.3cm,rightskip=.3cm]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}}
+
+% ---------- 쪽 번호: 오른쪽 아래 ----------
+\setbeamertemplate{footline}{%
+  \hfill
+  {\color{navydim}\scriptsize\insertframenumber\,/\,\inserttotalframenumber}%
+  \hspace{3mm}\vspace{2mm}%
+}
+
+% ---------- 표지: 템플릿처럼 헤드라인은 그대로, 가운데 둥근 그림자 상자에 제목 한 줄 ----------
+% 덱에서:  {\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
+\setbeamercolor{title}{fg=white,bg=navyblue}
+\makeatletter
+\setbeamertemplate{title page}{%
+  \vfill
+  \centering
+  \begin{minipage}{0.84\paperwidth}
+  \begin{beamercolorbox}[wd=\linewidth,sep=7pt,center,rounded=true,shadow=true]{title}
+    {\usebeamerfont{title}\inserttitle\par}%
+    \ifx\insertsubtitle\@empty\else\vskip0.4em{\usebeamerfont{subtitle}\insertsubtitle\par}\fi
+  \end{beamercolorbox}
+  \end{minipage}\par\vskip1.6em
+  {\usebeamerfont{author}\color{navytitle}\insertauthor\par}\vskip0.3em
+  {\usebeamerfont{institute}\color{ksagray}\insertinstitute\par}
+  \vfill
+}
+\makeatother
+\setbeamerfont{title}{series=\bfseries,size=\Large}
+\setbeamerfont{subtitle}{size=\normalsize}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+
+% ksa-theme 호환: 덱이 \renewcommand{\ksacredit}{..} 를 해도 되게 (꼬리말에는 안 쓴다)
+\newcommand{\ksacredit}{}
+
+% ---------- 강조 ----------
+\newcommand{\hl}[1]{\textcolor{alertred}{#1}}
+\newcommand{\hlb}[1]{\textcolor{navyblue}{#1}}
+\newcommand{\kb}[1]{\textbf{\color{ksablue}#1}}
+\newcommand{\kq}[1]{\textbf{\color{ksared}#1}}
+
+% ---------- 파이썬 코드 (템플릿과 같은 색) ----------
+\definecolor{codekw}{HTML}{0033B3}
+\definecolor{codebuiltin}{HTML}{BF0000}
+\definecolor{codestr}{HTML}{067D17}
+\definecolor{codecomment}{HTML}{8C8C8C}
+\definecolor{codenum}{HTML}{1750EB}
+\lstdefinestyle{py}{
+  language=Python, basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{codekw}\bfseries, stringstyle=\color{codestr},
+  commentstyle=\color{codecomment}\itshape, numberstyle=\color{codenum},
+  emph={print,len,range,sum,input,int,str,float,list,dict,append,remove,sorted,abs,min,max},
+  emphstyle=\color{codebuiltin}, showstringspaces=false, keepspaces=true,
+  columns=fixed, basewidth=0.52em, aboveskip=1mm, belowskip=1mm, xleftmargin=2mm,
+  breaklines=true
+}
+\lstset{style=py}
