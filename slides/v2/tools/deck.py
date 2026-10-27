@@ -18,7 +18,7 @@ OUT = "/tmp/deck"
 
 def deck_paths(d):
     d = os.path.abspath(d)
-    topic = os.path.basename(d)
+    topic = re.sub(r"^\d+_", "", os.path.basename(d))   # v2_cs: 1_course_intro/course_intro.tex
     tex = os.path.join(d, f"{topic}.tex")
     if not os.path.exists(tex):
         sys.exit(f"{tex} 가 없다 (폴더 이름 = 주제 = tex 이름이어야 한다)")

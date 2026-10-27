@@ -1,5 +1,6 @@
 # KL 발산
 
-- 대략 15주차 · 원본 쇼츠: [`lessons/ml1/kl_divergence/`](../../../../../lessons/ml1/kl_divergence/README.md) — KL Divergence · 교차 엔트로피 · 엔트로피
-- 구성: 강의 20~30분 (쇼츠의 숫자·장면을 그대로 살린다) + 문제풀이 / Colab 실습
-- 상태: 아직 없음
+- 원본 쇼츠: [`lessons/ml1/kl_divergence/`](../../../../../lessons/ml1/kl_divergence/README.md)
+- 구성: 뽑기 공지 20% vs 실제 4% (평균 5번 vs 25번) → 10만 명 흉내 (평균 24.9, 50번 넘게 13%) → 놀라움 −log₂p (4.64 · 0.06 vs 2.32 · 0.32) → 엔트로피 0.24 · 교차 엔트로피 0.40 → KL = 0.16 비트 (1,000번에 160비트) → 비대칭 (0.16 vs 0.25), 봉우리 둘 맞추기: 다 덮기 N(0, 2.06²) vs 하나 고르기 N(−2, 0.5²) → ML 속 KL (분류 · VAE · t-SNE · 증류 · RLHF) + 문제풀이
+- 상태: 11쪽. exp_kl.py → assets/kl.json
+- 실습: 네 함수 · 뽑기 흉내 · 기록 비트 · 앞 / 뒤 방향 KL 격자 탐색

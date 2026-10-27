@@ -23,12 +23,11 @@ $\\hat y = \\sigma(w_0 + w_1 x)$ = 1일 확률. 슬라이드의 숫자를 재현
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression"""),
+("md", """## 슬라이드의 예시 데이터
 
-def sigmoid(z):
-    return 1 / (1 + np.exp(-z))                         #@ANS return None             # TODO: σ(z) = 1 / (1 + e^{-z})
-
-# Same example as the slides: 40 students
+학생 40명의 공부 시간과 합격 여부 (1 = 합격, 0 = 불합격)."""),
+("code", """# Same example as the slides: 40 students
 x = np.array([1.7, 5.2, 6.2, 0.8, 1.9, 9.3, 1.2, 1.7, 9.5, 6.4,
               4.0, 5.4, 6.8, 3.1, 1.8, 8.0, 6.9, 5.4, 8.3, 5.7,
               9.8, 2.4, 5.8, 5.1, 3.9, 6.1, 2.7, 8.1, 8.7, 1.7,
@@ -37,11 +36,22 @@ y = np.array([0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
               0, 0, 1, 1, 0, 1, 1, 1, 1, 1,
               1, 0, 1, 1, 0, 1, 0, 1, 1, 0,
               0, 0, 0, 1, 1, 0, 1, 0, 1, 0])      # 1 = passed, 0 = failed
-print("passed", y.sum(), "/", len(y))"""),
-("md", """## 파트 1. 선형회귀 코드에서 한 줄만 바꾸기
+print("passed", y.sum(), "/", len(y))
+plt.scatter(x, y, c=y, cmap="coolwarm_r"); plt.xlabel("study hours"); plt.ylabel("passed (1) / failed (0)"); plt.show()"""),
+("md", """## 파트 1. 시그모이드를 만들고, 선형회귀 코드에서 한 줄만 바꾸기
 
 선형회귀의 기울기: $\\frac{1}{m}\\sum(\\hat y - y)\\,x$ (단 $\\hat y = w_0 + w_1 x$).
 로지스틱회귀도 **같은 식**이고 $\\hat y = \\sigma(w_0 + w_1 x)$ 만 다르다."""),
+("code", """def sigmoid(z):
+    return 1 / (1 + np.exp(-z))                         #@ANS return None             # TODO: σ(z) = 1 / (1 + e^{-z})
+
+for z in [-4, -1, 0, 1, 4]:
+    print(f"sigmoid({z:2d}) = {sigmoid(z):.3f}")
+zs = np.linspace(-8, 8, 200)
+plt.plot(zs, sigmoid(zs)); plt.axhline(0.5, ls="--", color="gray"); plt.xlabel("z"); plt.ylabel("sigmoid(z)"); plt.show()"""),
+("md", """**확인**: $z = 0$ 이면 정확히 0.5, $z$ 가 크면 1, 작으면 0 에 가까워진다. 어떤 실수든 0~1 사이 확률로 바꾼다.
+
+이제 이 함수로 경사하강법을 돌린다."""),
 ("code", """def gradient_descent(x, y, alpha=0.1, steps=20000):
     w0, w1 = 0.0, 0.0
     for _ in range(steps):

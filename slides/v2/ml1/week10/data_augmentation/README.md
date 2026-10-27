@@ -1,5 +1,6 @@
-# 데이터 증강 Data Augmentation
+# 데이터 증강
 
-- 대략 10주차 · 원본 쇼츠: [`lessons/ml1/data_augmentation/`](../../../../../lessons/ml1/data_augmentation/README.md) — 사진 1장을 10장으로
-- 구성: 강의 20~30분 (쇼츠의 숫자·장면을 그대로 살린다) + 문제풀이 / Colab 실습
-- 상태: 아직 없음
+- 원본 쇼츠: [`lessons/ml1/data_augmentation/`](../../../../../lessons/ml1/data_augmentation/README.md)
+- 구성: 고양이 1장 → 10장 (뒤집기 · 돌리기 · 자르기 · 밝기 · 색) → 불변성 가르치기 → 손글씨 100장 실험 78→87% (세트 5개 모두) → 뜻이 바뀌는 변형 (6↔9, b/d, 의료 좌우) → AlexNet 2048배 → 학습에만 · 매 에폭 · 분할 먼저 → 소리 · 글 · mixup + 문제풀이 + 이미지 출처
+- 상태: 13쪽. 고양이 사진 = AI 생성 (쇼츠에서 복사), 실험 assets/aug.json (exp_aug.py)
+- 실습: numpy 증강 · 100장 없음/있음 (77.5 → 89.9%) · 180도 (74.6%)

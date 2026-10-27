@@ -1,6 +1,7 @@
-# 정규화: L1 · L2 페널티 (Ridge · Lasso)
+# 정규화 L1 · L2
 
-- 대략 6주차 · 쇼츠 없음 → **실습 위주** 단위 (강의는 짧게, Colab 을 길게)
-- 원본: `slides/kor/ml1/week06` 의 "6.1 정규화: 편향-분산 복습과 L1/L2 페널티" 절 · 노트북 [`notebooks/ml1/chapter06_1_regularization.ipynb`](../../../../../notebooks/ml1/chapter06_1_regularization.ipynb)
-- 가중치를 작게 만들어 과적합을 줄인다. L1 은 가중치를 정확히 0 으로 (특징 선택), L2 는 매끄럽게 줄인다. λ 를 바꿔 가며 계수 경로를 그려 보는 실습 위주.
-- 상태: 아직 없음
+- 원본 쇼츠: [`lessons/ml1/regularization/`](../../../../../lessons/ml1/regularization/README.md)
+- 원본: 쇼츠 초안 lessons/ml1/regularization (기온 12개 9차 곡선, 2026-10-14 제작 중) + notebooks/ml1/chapter06_1 (릿지 손 계산, 원 vs 마름모, 계수 경로)
+- 구성: 9차 곡선 가중치 33,589 → 과대적합 0.57 vs 3.2도 → 손실 + λ 벌금 → 릿지 손 계산 (1,2)·(3,1)·(4.33,0.33) → 가중치 비교 → 릿지 1.2도 → 라쏘 5개 0 → 원 vs 마름모 → 계수 경로 (x2 λ≈0.13 에서 0) → λ U 자 (1.59·0.99·3.78) + 문제풀이
+- 상태: 13쪽
+- 실습: 릿지 정답 식 구현 + 기온 · 진짜/잡음 특징 계수 경로 · diabetes 라쏘 경로 + λ 별 CV

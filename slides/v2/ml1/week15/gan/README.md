@@ -1,5 +1,6 @@
 # GAN 생성적 적대 신경망
 
-- 대략 15주차 · 원본 쇼츠: [`lessons/ml1/gan/`](../../../../../lessons/ml1/gan/README.md) — Generative Adversarial Network · 생성자 · 판별자
-- 구성: 강의 20~30분 (쇼츠의 숫자·장면을 그대로 살린다) + 문제풀이 / Colab 실습
-- 상태: 아직 없음
+- 원본 쇼츠: [`lessons/ml1/gan/`](../../../../../lessons/ml1/gan/README.md)
+- 구성: '진짜 같다' 를 어떻게 손실로? → 위조범 (생성자) vs 경찰 (판별자) (Goodfellow 외 2014) → min-max 식 · 번갈아 학습, 끝 D = 1/2 → 손 계산 (D 0.33, G 1.61) → 실험 고리 (5,000걸음 D 0.50 · 0.50) → 봉우리 8개 시드 5개 (4개는 1,500걸음에 8개, 시드 3 은 4,500걸음까지 0 ~ 1개) → 숫자 (1,000걸음 전부 '5', 10,000걸음 10종류) → DCGAN · CycleGAN · StyleGAN · 확산 + 문제풀이
+- 상태: 12쪽. exp_gan.py → assets/gan.npz · gan.json
+- 실습: 손실 손 계산 · 봉우리 8개 GAN 덮은 수 · 숫자 GAN 10,000걸음 종류 수

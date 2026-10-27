@@ -1,6 +1,7 @@
-# train / val / test 분리와 데이터 누수
+# train / val / test 와 데이터 누수
 
-- 대략 6주차 · 쇼츠 없음 → **실습 위주** 단위 (강의는 짧게, Colab 을 길게)
-- 원본: `slides/kor/ml1/week06` 의 "6.3 train/val/test 분리 원칙 실전" 절 · 노트북 [`notebooks/ml1/chapter06_3_train_val_test.ipynb`](../../../../../notebooks/ml1/chapter06_3_train_val_test.ipynb)
-- train 은 배우고, val 은 고르고, test 는 딱 한 번. 전처리를 전체 데이터에 먼저 하는 식의 누수(leakage) 코드를 찾아 고치는 실습 위주.
-- 상태: 아직 없음
+- 원본 쇼츠: [`lessons/ml1/data_leakage/`](../../../../../lessons/ml1/data_leakage/README.md)
+- 원본: notebooks/ml1/chapter06_3 (E[max], 표준화 누수, 환자 · 시간 누수, diabetes 3분할) + 쇼츠 lessons/ml1/data_leakage 의 동전 실험 (87% vs 49%)
+- 구성: 동전 87% → 세 데이터 역할 → test 로 고르면 +1.16σ/+2.25σ → 누수 정의 → 특징 고르기 87 vs 49 → 표준화 z → 환자 1.04 vs 3.65 → 시간 0.79 vs 44.1 → 규칙 → diabetes 265/88/89, λ 0.1, test 53.79 + 문제풀이
+- 상태: 13쪽
+- 실습: 동전 실험 SelectKBest 누수 vs Pipeline · GroupKFold · TimeSeriesSplit · diabetes 3분할

@@ -21,9 +21,11 @@ CELLS = [
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요. 데이터는 처음 실행할 때 인터넷에서 내려받는다."""),
 ("code", """import io, re, urllib.request, zipfile
 import numpy as np
-from collections import Counter
+from collections import Counter"""),
+("md", """## 데이터: SMS 스팸
 
-URL = "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip"
+처음 실행하면 UCI 에서 내려받는다. 80% 학습 / 20% 시험으로 나눈다."""),
+("code", """URL = "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip"
 raw = zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(URL, timeout=60).read())).read("SMSSpamCollection").decode("utf-8")
 rows = [line.split("\\t", 1) for line in raw.strip().split("\\n")]
 is_spam = np.array([label == "spam" for label, _ in rows])      # True = spam

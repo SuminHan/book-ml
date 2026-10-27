@@ -23,9 +23,11 @@ CELLS = [
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import r2_score, mean_squared_error"""),
+("md", """## 슬라이드의 예시 데이터
 
-# Same example as the slides: study hours and scores of 30 students
+학생 30명의 공부 시간과 시험 점수."""),
+("code", """# Same example as the slides: study hours and scores of 30 students
 x = np.array([6.4, 9.0, 7.9, 2.6, 3.4, 8.8, 0.6, 8.3, 8.1, 4.9,
               3.4, 3.1, 2.9, 4.7, 5.3, 5.8, 10.0, 8.0, 6.4, 9.9,
               2.5, 2.0, 6.3, 0.9, 0.8, 5.4, 4.9, 9.2, 6.5, 5.4])      # study hours

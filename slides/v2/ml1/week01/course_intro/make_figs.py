@@ -46,9 +46,12 @@ fig.savefig(O + "intro_sci_eng.png", bbox_inches="tight"); plt.close(fig)
 # 2. 연표: 아이디어는 오래됐고, 터진 건 공학이 갖춰진 뒤
 def X(yr): return (yr - 1940) * 0.5 if yr < 2000 else 30 + (yr - 2000) * 2.2   # 2000년 이후를 넓게
 fig, ax = plt.subplots(figsize=(14, 4.8)); ax.axis("off")
-ax.set_xlim(-3, 92); ax.set_ylim(-3.4, 3.4)
+ax.set_xlim(-3, 92); ax.set_ylim(-3.4, 3.9)
 ax.plot([X(1940), X(2027)], [0, 0], color="#bbbbbb", lw=3, zorder=0)
 ax.plot([X(2000)] * 2, [-0.25, 0.25], color="#999999", lw=1.5)
+for a_, b_, lab in ((1974, 1980, "1차 AI 겨울\n1974~80"), (1987, 1993, "2차 AI 겨울\n1987~93")):   # AI 겨울 기간
+    ax.fill_between([X(a_), X(b_)], -2.7, 3.0, color="#cfe3f5", alpha=0.7, lw=0, zorder=-1)
+    ax.text(X(b_) if a_ < 1980 else X(a_), 3.05, lab, ha="right" if a_ < 1980 else "left", va="bottom", fontsize=11.5, color="#3a7bb5", linespacing=1.15)
 col = {"idea": BLUE, "engine": GOLD, "boom": RED}
 ups = {1943: 1, 1958: -1, 1986: 1, 1998: -1, 2005: 1, 2007: -1, 2009: 2.0, 2012: -2.0, 2016: 1, 2022: -1, 2024: 2.0}
 for yr, name, kind in TIMELINE:
@@ -80,9 +83,9 @@ fig.savefig(O + "intro_people.png", bbox_inches="tight"); plt.close(fig)
 # 4. 연구실에서 회사로
 rows = [("토론토 (힌턴)", "DNNresearch → Google (2013)", "Google 퇴사 (2023), AI 위험 경고"),
         ("NYU (르쿤)", "Facebook AI Research (2013)", "Meta 퇴사 → AMI Labs 창업 (2025)"),
-        ("Stanford (응)", "Google Brain · Coursera · Baidu", "AI Fund · DeepLearning.AI"),
+        ("Stanford (응)", "Google Brain · Coursera · Baidu", "DeepLearning.AI (2017) · AI Fund (2018)"),
         ("토론토 → Google (서츠케버)", "OpenAI 공동창업 (2015)", "OpenAI 퇴사 → SSI 창업 (2024)"),
-        ("UCL (허사비스)", "DeepMind (2010) → Google (2014)", "Google DeepMind CEO"),
+        ("UCL (허사비스)", "DeepMind (2010) → Google (2014)", "Google DeepMind CEO (2023)"),
         ("Stanford (페이페이 리)", "Google Cloud (2017)", "World Labs 창업 (2024)")]
 fig, ax = plt.subplots(figsize=(16.5, 4.6)); ax.axis("off"); ax.set_xlim(0, 16.5); ax.set_ylim(-0.6, len(rows))
 ax.text(2.4, len(rows) - 0.1, "연구실", ha="center", fontsize=17, fontweight="bold", color=BLUE)

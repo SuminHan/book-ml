@@ -22,9 +22,11 @@ CELLS = [
 ("code", """import os
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_diabetes
+from sklearn.datasets import load_diabetes"""),
+("md", """## 데이터: 당뇨병 진행도
 
-d = load_diabetes()
+환자 442명, 특징 10개. 비용 $J$ 와 전체 기울기 함수도 여기서 정의한다."""),
+("code", """d = load_diabetes()
 X = (d.data - d.data.mean(0)) / d.data.std(0)           # standardize 10 features
 y = (d.target - d.target.mean()) / d.target.std()       # disease progression one year later (standardized)
 m, n = X.shape

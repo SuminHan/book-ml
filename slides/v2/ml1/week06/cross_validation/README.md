@@ -1,6 +1,7 @@
-# 교차검증: λ 를 데이터로 고른다
+# 교차 검증
 
-- 대략 6주차 · 쇼츠 없음 → **실습 위주** 단위 (강의는 짧게, Colab 을 길게)
-- 원본: `slides/kor/ml1/week06` 의 "6.2 교차검증: λ를 데이터로 정한다" 절 · 노트북 [`notebooks/ml1/chapter06_2_cross_validation.ipynb`](../../../../../notebooks/ml1/chapter06_2_cross_validation.ipynb)
-- k-겹 교차검증으로 검증 오차의 U자 곡선을 그리고 λ 를 고른다. 1SE 규칙 · 검증 점수의 흔들림을 직접 확인하는 실습 위주.
-- 상태: 아직 없음
+- 원본 쇼츠: [`lessons/ml1/overfitting/`](../../../../../lessons/ml1/overfitting/README.md)
+- 원본: notebooks/ml1/chapter06_2 (손 계산 12.75, 1SE, 정렬 데이터 실수) + λ 고르기 예시는 이 덱용으로 새로 (60명 × 특징 30개, 진짜 3개, 시드 4)
+- 구성: 정답 곡선이 안 보인다 → 한 번 나누기 λ 2.5~158 → k겹 → 손 계산 12.75 → 5겹 λ*=12.6 (= 실제 최선, 11.56) → 조각 흩어짐 5.54 · 1SE 79.4 → 데이터 새로 뽑으면 6.3~50 → k 선택 → 붓꽃 안 섞으면 0,0,0 → 고른 뒤 시험 데이터 + 문제풀이
+- 상태: 14쪽
+- 실습: k겹 구현 (12.75, 12.6 재현) · 한 번 나누기 흔들림 · 붓꽃 KFold vs Stratified · diabetes LassoCV

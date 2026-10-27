@@ -65,7 +65,7 @@ a1.plot([0.7, 0.7], [6, 7.6], color="black", lw=1.4); a1.plot([0.55, 0.85], [7.6
 a1.plot([0.7, 0.7], [3, 1.6], color="black", lw=1.4); a1.plot([0.55, 0.85], [1.6, 1.6], color="black", lw=1.4)
 a1.scatter([0.7], [9.3], s=110, color=RED)
 for y, t, c in ((9.3, "이상치 후보: 수염보다 바깥", RED), (7.6, "수염 끝: 상자에서 상자 길이 × 1.5 안의 가장 먼 값", GRAY),
-                (6, "75% (Q3): 이보다 큰 값이 1/4", "black"), (4.3, "중앙값 (50%): 한가운데", RED),
+                (6, "75% (Q3): 이보다 큰 값이 1/4", "black"), (4.3, "중앙값 (median, 50%): 한가운데", RED),
                 (3, "25% (Q1): 이보다 작은 값이 1/4", "black"), (1.6, "수염 끝", GRAY)):
     a1.text(1.3, y, t, va="center", fontsize=13.5, color=c)
 a1.annotate("", (0.2, 6), (0.2, 3), arrowprops=dict(arrowstyle="<->", color=BLUE, lw=1.6))
@@ -77,7 +77,7 @@ a2.boxplot(vals, positions=[0], widths=0.45, medianprops=dict(color=RED, lw=2.5)
 a2.axhline(fence, color=GRAY, ls=":", lw=1.5); a2.text(0.32, fence + 2, f"Q3 + 1.5 × 상자 길이 = {fence:g}", color=GRAY, fontsize=12)
 for v in (TYPO_V, ATH_V):
     a2.text(0.32, v, f"{v} cm", color=RED, fontsize=14, va="center", fontweight="bold")
-a2.text(0.32, med, f"중앙값 {med:g}", color=RED, fontsize=12.5, va="center")
+a2.text(0.32, med, f"중앙값 (median) {med:g}", color=RED, fontsize=12.5, va="center")
 a2.set_xlim(-0.6, 1.6); a2.set_xticks([]); a2.set_ylabel("키 (cm)"); a2.spines["bottom"].set_visible(False)
 a2.set_title("우리 반 키 (10명)", fontsize=16, fontweight="bold")
 fig.tight_layout(); fig.savefig(O + "dd_box.png"); plt.close(fig)
