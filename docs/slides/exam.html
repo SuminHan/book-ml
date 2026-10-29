@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ML1 중간·기말 예상 문제</title>
+<style>
+:root{--ink:#1e1b33;--dim:#6a6580;--acc:#2E3192;--gold:#a9976b;--line:#e4e0d4;--bg:#f7f5f0;--card:#fff;--tint:#eceefb}
+@media(prefers-color-scheme:dark){:root{--ink:#e9e7f2;--dim:#9d99b4;--acc:#8f92e6;--gold:#d6cbb1;--line:#2f2b45;--bg:#141225;--card:#1d1a30;--tint:#262452}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "IBM Plex Sans KR",system-ui,"Noto Sans KR",sans-serif}
+.w{max-width:760px;margin:0 auto;padding:40px 18px 80px}
+h1{font-size:24px;margin:0 0 4px}.sub{color:var(--dim);font-size:13px;margin-bottom:22px}
+h2{font-size:15px;color:var(--acc);margin:34px 0 4px}
+a{color:var(--acc)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:0 0 8px;overflow:hidden}
+summary{cursor:pointer;padding:11px 16px;font-weight:600;list-style:none;display:flex;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary .n{color:var(--acc);flex:none;min-width:2.2em}
+summary .p{margin-left:auto;color:var(--dim);font:12px ui-monospace,monospace;white-space:nowrap}
+details[open]{border-color:var(--acc)}details[open]>summary{background:var(--tint)}
+.b{padding:4px 16px 14px;border-top:1px solid var(--line)}
+.q{margin:10px 0}.ans{margin-top:10px;padding:10px 12px;border-left:3px solid var(--gold);background:var(--bg);font-size:14px}
+.ans b{color:var(--acc)}code{font-family:ui-monospace,monospace;font-size:13px}
+</style></head><body><div class="w">
+<a href="./">← 강의 슬라이드</a>
+<h1>ML1 중간·기말 예상 문제</h1>
+<div class="sub">각 덱의 핵심 개념과 계산을 확인하는 연습용 문제입니다. 제목을 누르면 풀이가 펼쳐집니다. 실제 시험 문항이 아니며, 범위는 Syllabus의 주차 구성을 따릅니다.</div>
+
+<h2 id="mid">중간고사 예상 문제 · 1~7주차</h2>
+<div class="sub">고전 기계학습과 신경망 기초(역전파까지). 계산기 없이 풀 수 있게 숫자를 맞췄습니다.</div>
+
+<details><summary><span class="n">1</span>분류 지표 계산<span class="p">3주차</span></summary><div class="b">
+<div class="q">혼동행렬이 TP=40, FP=10, FN=20, TN=130 이다. 정확도, 정밀도, 재현율, F1 을 구하고, 질병 검사에서 재현율이 더 중요한 이유를 한 줄로 쓰시오.</div>
+<div class="ans"><b>풀이</b> 정확도 = 170/200 = 0.85. 정밀도 = 40/50 = 0.8. 재현율 = 40/60 ≈ 0.667. F1 = 2TP/(2TP+FP+FN) = 80/110 ≈ 0.727. 환자를 놓치는 것(FN)이 건강한 사람을 한 번 더 검사하는 것(FP)보다 훨씬 위험하기 때문이다.</div></div></details>
+
+<details><summary><span class="n">2</span>최소제곱 직선<span class="p">2주차</span></summary><div class="b">
+<div class="q">점 (1,2), (2,4), (3,5) 에 직선 y = wx + b 를 최소제곱으로 맞추시오.</div>
+<div class="ans"><b>풀이</b> x 평균 2, y 평균 11/3. Sxy = (−1)(−5/3)+0+(1)(4/3) = 3, Sxx = 2 이므로 w = 3/2 = 1.5, b = 11/3 − 1.5·2 = 2/3 ≈ 0.667.</div></div></details>
+
+<details><summary><span class="n">3</span>경사하강법 두 걸음<span class="p">2주차</span></summary><div class="b">
+<div class="q">L(w) = (w−3)² 을 w₀ = 0, 학습률 0.25 로 두 번 갱신한 w₂ 를 구하시오. 학습률을 1.5 로 키우면 어떻게 되는가?</div>
+<div class="ans"><b>풀이</b> L′ = 2(w−3). w₁ = 0 − 0.25·(−6) = 1.5. w₂ = 1.5 − 0.25·(−3) = 2.25. 학습률 1.5 이면 w₁ = 9 로 최솟값을 넘어가고, 매 걸음 오차가 2배씩 커져 발산한다. (학습률 1 이면 0 과 6 사이만 오가며 수렴하지 못한다.)</div></div></details>
+
+<details><summary><span class="n">4</span>교차 엔트로피<span class="p">2주차</span></summary><div class="b">
+<div class="q">정답 클래스에 모델이 확률 0.8 을 준 경우와 0.1 을 준 경우의 손실 −ln p 를 각각 구하고(ln 0.8 ≈ −0.223, ln 0.1 ≈ −2.303), 손실이 더 큰 쪽이 왜 학습에 더 센 신호가 되는지 설명하시오.</div>
+<div class="ans"><b>풀이</b> 0.223 과 2.303. 틀리게 확신할수록 손실이 크게 늘고(−ln p 는 p→0 에서 무한대), 소프트맥스와 함께 쓰면 기울기가 (예측 − 정답) 이 되어 많이 틀린 만큼 크게 고친다.</div></div></details>
+
+<details><summary><span class="n">5</span>과대적합 진단<span class="p">3주차</span></summary><div class="b">
+<div class="q">다항식 차수를 1, 3, 15 로 올렸더니 학습 오차는 0.9, 0.4, 0.01 이고 검증 오차는 1.0, 0.5, 2.3 이었다. 각 차수의 상태를 진단하고, 차수 15 모델을 고치는 방법 두 가지를 쓰시오.</div>
+<div class="ans"><b>풀이</b> 차수 1 은 과소적합(둘 다 큼), 3 은 적절, 15 는 과대적합(학습 ≪ 검증). 해결: 데이터 늘리기, 정규화(L1/L2), 모델 단순화, 조기 종료 중 둘.</div></div></details>
+
+<details><summary><span class="n">6</span>SVM 마진<span class="p">3주차</span></summary><div class="b">
+<div class="q">결정경계 w·x + b = 0 에서 w = (3, 4) 일 때 마진 폭(양쪽 서포트 벡터 사이 거리)은? 서포트 벡터가 아닌 점을 지워도 경계가 변하지 않는 이유는?</div>
+<div class="ans"><b>풀이</b> 폭 = 2/‖w‖ = 2/5 = 0.4. 경계는 마진 위에 놓인 서포트 벡터들만으로 정해지고, 나머지 점의 제약은 이미 여유 있게 만족되므로 해가 달라지지 않는다.</div></div></details>
+
+<details><summary><span class="n">7</span>엔트로피와 정보 이득<span class="p">4주차</span></summary><div class="b">
+<div class="q">양성 5, 음성 5 인 노드를 (양성 4, 음성 0) 과 (양성 1, 음성 5) 로 나눴다. 정보 이득을 구하시오. 같은 노드에서 (양성 6, 음성 2) 의 지니 불순도는? (log₂6 ≈ 2.585, log₂1.2 ≈ 0.263)</div>
+<div class="ans"><b>풀이</b> 부모 엔트로피 = 1. 왼쪽 0. 오른쪽 H = (1/6)(2.585) + (5/6)(0.263) ≈ 0.431+0.219 = 0.650. 가중평균 = 0.6·0.650 = 0.390. 정보 이득 ≈ 0.61. 지니 = 1 − (0.75² + 0.25²) = 0.375.</div></div></details>
+
+<details><summary><span class="n">8</span>랜덤 포레스트와 GBDT<span class="p">4주차</span></summary><div class="b">
+<div class="q">두 방법이 나무를 합치는 방식의 차이를 쓰고, 각각 어떤 오차(편향/분산)를 주로 줄이는지 쓰시오.</div>
+<div class="ans"><b>풀이</b> 랜덤 포레스트는 부트스트랩과 특징 무작위 선택으로 서로 다른 깊은 나무를 병렬로 만들어 평균내므로 분산을 줄인다. GBDT 는 얕은 나무를 순서대로 쌓으며 앞선 모델의 잔차(손실의 기울기)를 다음 나무가 맞추므로 편향을 줄인다.</div></div></details>
+
+<details><summary><span class="n">9</span>나이브 베이즈<span class="p">5주차</span></summary><div class="b">
+<div class="q">스팸 비율 0.4, 단어 w 가 스팸에 나올 확률 0.5, 정상 메일에 나올 확률 0.1 이다. w 가 있는 메일이 스팸일 확률은? 나이브 베이즈의 &lsquo;나이브&rsquo;는 무슨 가정인가?</div>
+<div class="ans"><b>풀이</b> (0.4·0.5)/(0.4·0.5 + 0.6·0.1) = 0.2/0.26 ≈ 0.769. 클래스가 주어지면 특징들이 서로 조건부 독립이라는 가정.</div></div></details>
+
+<details><summary><span class="n">10</span>정규화와 교차검증<span class="p">5주차</span></summary><div class="b">
+<div class="q">(a) L1 과 L2 정규화가 가중치에 주는 효과의 차이를 쓰시오. (b) 100 개 데이터에 5-겹 교차검증을 하면 한 번에 학습·검증에 쓰는 개수는? (c) 하이퍼파라미터를 검증 점수로 고른 뒤 같은 검증 점수를 최종 성능으로 보고하면 안 되는 이유는?</div>
+<div class="ans"><b>풀이</b> (a) L1 은 일부 가중치를 정확히 0 으로 만들어 특징을 고르고, L2 는 모든 가중치를 고르게 작게 줄인다. (b) 학습 80, 검증 20. (c) 검증 점수에 맞춰 골랐으니 낙관적으로 치우친다(누수). 건드리지 않은 테스트 세트에서 한 번만 재야 한다.</div></div></details>
+
+<details><summary><span class="n">11</span>k-means 한 번 돌리기<span class="p">6주차</span></summary><div class="b">
+<div class="q">1차원 점 1, 2, 9, 10 을 중심 1 과 2 에서 시작해 한 번 갱신하시오. 수렴할 때까지 돌리면 최종 중심은?</div>
+<div class="ans"><b>풀이</b> 할당: 1 → 중심 1, 나머지 2, 9, 10 → 중심 2. 갱신: 중심 1, 중심 (2+9+10)/3 = 7. 다시 할당하면 2 가 중심 1 쪽(거리 1 대 5)으로 옮겨져 {1,2} 와 {9,10} 이 되고, 최종 중심은 1.5 와 9.5.</div></div></details>
+
+<details><summary><span class="n">12</span>PCA<span class="p">6주차</span></summary><div class="b">
+<div class="q">공분산 행렬의 고유값이 6, 3, 1 이다. 첫 두 주성분이 설명하는 분산 비율은? PCA 전에 특징을 표준화하는 이유는?</div>
+<div class="ans"><b>풀이</b> (6+3)/10 = 90%. 단위가 큰 특징이 분산을 지배해 주성분이 그 방향으로만 쏠리는 것을 막기 위해.</div></div></details>
+
+<details><summary><span class="n">13</span>역전파 손으로 계산<span class="p">7주차</span></summary><div class="b">
+<div class="q">h = ReLU(w₁x), ŷ = w₂h, 손실 L = ½(ŷ − t)². x = 2, w₁ = 0.5, w₂ = 3, t = 4 일 때 ∂L/∂w₂ 와 ∂L/∂w₁ 을 구하시오.</div>
+<div class="ans"><b>풀이</b> 순전파: h = ReLU(1) = 1, ŷ = 3, L = 0.5. ∂L/∂ŷ = ŷ − t = −1. ∂L/∂w₂ = −1·h = −1. ∂L/∂h = −1·w₂ = −3, ReLU′(1) = 1 이므로 ∂L/∂w₁ = −3·1·x = −6.</div></div></details>
+
+<details><summary><span class="n">14</span>기울기 소실<span class="p">7주차</span></summary><div class="b">
+<div class="q">시그모이드의 도함수 최댓값은 0.25 이다. 10 층을 연쇄 법칙으로 거치면 기울기는 최대 얼마로 줄어드는가? ReLU 가 이를 어떻게 완화하는가?</div>
+<div class="ans"><b>풀이</b> 0.25¹⁰ ≈ 9.5×10⁻⁷. ReLU 는 양수 구간의 도함수가 1 이라 층을 지나도 기울기가 줄지 않는다(음수 구간은 0 이 되는 대가).</div></div></details>
+
+<details><summary><span class="n">15</span>SGD 와 Adam<span class="p">7주차</span></summary><div class="b">
+<div class="q">(a) 데이터 1000 개, 배치 50 이면 1 에폭에 파라미터를 몇 번 갱신하는가? (b) 모멘텀과 Adam 이 보통 경사하강법보다 나은 점을 각각 한 줄로 쓰시오.</div>
+<div class="ans"><b>풀이</b> (a) 20 번. (b) 모멘텀은 이전 방향을 누적해 골짜기에서 진동을 줄이고 평평한 구간을 빨리 지난다. Adam 은 기울기의 이동평균과 제곱의 이동평균으로 파라미터마다 학습률을 자동으로 조절한다.</div></div></details>
+
+<h2 id="fin">기말고사 예상 문제 · 9~15주차</h2>
+<div class="sub">CNN 에서 트랜스포머, 표현 학습, 생성 모델까지.</div>
+
+<details><summary><span class="n">1</span>합성곱 출력 크기와 파라미터<span class="p">9주차</span></summary><div class="b">
+<div class="q">입력 32×32×3 에 5×5 필터 16 개(스트라이드 1, 패딩 0)를 적용한 출력 크기와 파라미터 수(편향 포함)를 구하시오. 이어서 2×2 최대 풀링을 하면?</div>
+<div class="ans"><b>풀이</b> 출력 (32−5)/1+1 = 28 이므로 28×28×16. 파라미터 5·5·3·16 + 16 = 1216. 풀링 후 14×14×16. 풀링에는 학습 파라미터가 없다.</div></div></details>
+
+<details><summary><span class="n">2</span>패딩과 스트라이드<span class="p">9주차</span></summary><div class="b">
+<div class="q">입력 32, 필터 5, 패딩 2, 스트라이드 2 일 때 출력 한 변의 길이는? 입력과 같은 크기를 유지하려면 스트라이드 1 에서 패딩이 몇이어야 하는가?</div>
+<div class="ans"><b>풀이</b> ⌊(32 + 4 − 5)/2⌋ + 1 = 15 + 1 = 16. 같은 크기는 패딩 2 ((5−1)/2).</div></div></details>
+
+<details><summary><span class="n">3</span>ResNet 의 잔차 연결<span class="p">9주차</span></summary><div class="b">
+<div class="q">y = x + F(x) 일 때 ∂y/∂x 를 쓰고, 이것이 깊은 망의 학습을 쉽게 하는 이유를 설명하시오.</div>
+<div class="ans"><b>풀이</b> ∂y/∂x = 1 + ∂F/∂x. F 의 기울기가 작아져도 1 이 더해져 기울기가 입력까지 거의 그대로 전달된다. 또 F 가 0 이 되면 항등 함수이므로 층을 더해도 성능이 나빠지지 않게 학습하기 쉽다.</div></div></details>
+
+<details><summary><span class="n">4</span>배치 정규화<span class="p">9주차</span></summary><div class="b">
+<div class="q">한 배치의 한 채널 값이 2, 4, 6, 8 이다. 정규화한 값(ε 무시)을 구하시오. 추론 시에는 배치 평균·분산 대신 무엇을 쓰는가?</div>
+<div class="ans"><b>풀이</b> 평균 5, 분산 (9+1+1+9)/4 = 5, 표준편차 ≈ 2.236. 값은 ≈ −1.34, −0.45, 0.45, 1.34. 추론 시에는 학습 중 모아 둔 이동평균 통계를 쓴다.</div></div></details>
+
+<details><summary><span class="n">5</span>드롭아웃<span class="p">9주차</span></summary><div class="b">
+<div class="q">p = 0.5 드롭아웃에서 학습 때 살아남은 뉴런 출력에 2 를 곱하는(inverted dropout) 이유와, 추론 때의 처리를 쓰시오.</div>
+<div class="ans"><b>풀이</b> 절반이 꺼지므로 다음 층에 들어가는 합의 기댓값이 절반으로 줄어든다. 2 를 곱해 학습 때와 기댓값을 맞춘다. 추론 때는 드롭아웃을 끄고 모든 뉴런을 그대로 쓴다.</div></div></details>
+
+<details><summary><span class="n">6</span>임베딩과 시각화<span class="p">10주차</span></summary><div class="b">
+<div class="q">(a) 벡터 (1,0) 과 (1,1) 의 코사인 유사도는? (b) t-SNE 그림에서 군집 사이의 거리와 군집의 크기를 곧이곧대로 해석하면 안 되는 이유는? (c) word2vec 은 무엇을 맞히며 학습하는가?</div>
+<div class="ans"><b>풀이</b> (a) 1/√2 ≈ 0.707. (b) t-SNE 는 가까운 이웃 관계를 보존하도록 지도를 그려서 먼 거리와 크기는 의미가 없고, 매개변수(perplexity)에 따라 모양이 달라진다. (c) 주변 단어 (또는 가운데 단어).</div></div></details>
+
+<details><summary><span class="n">7</span>RNN 파라미터 수<span class="p">11주차</span></summary><div class="b">
+<div class="q">입력 2, 은닉 3 인 단순 RNN 의 파라미터 수(편향 포함)는? 같은 크기의 LSTM 은? LSTM 이 긴 문장에서 기울기 소실을 줄이는 이유는?</div>
+<div class="ans"><b>풀이</b> RNN: 3·2 + 3·3 + 3 = 18. LSTM 은 게이트 3개와 후보 1개로 4배, 72. 셀 상태가 덧셈으로 갱신되고 망각 게이트가 1 에 가까우면 기울기가 거의 그대로 흐르기 때문.</div></div></details>
+
+<details><summary><span class="n">8</span>어텐션 계산<span class="p">12주차</span></summary><div class="b">
+<div class="q">질의 q = (1,0), 키 k₁ = (1,0), k₂ = (0,1), 값 v₁ = (10,0), v₂ = (0,10), d_k = 2 이다. 스케일 점곱 어텐션의 가중치와 출력을 구하시오(e^0.707 ≈ 2.03).</div>
+<div class="ans"><b>풀이</b> 점수 = (1, 0)/√2 = (0.707, 0). 소프트맥스: 2.03/(2.03+1) ≈ 0.67, 0.33. 출력 = 0.67·(10,0) + 0.33·(0,10) ≈ (6.7, 3.3). √d_k 로 나누는 이유는 점곱이 차원에 따라 커져 소프트맥스가 포화되는 것을 막기 위해서다.</div></div></details>
+
+<details><summary><span class="n">9</span>트랜스포머의 구성<span class="p">12주차</span></summary><div class="b">
+<div class="q">(a) 셀프 어텐션에 위치 인코딩이 필요한 이유는? (b) 길이 n 인 입력에서 셀프 어텐션의 계산량은 n 에 대해 어떻게 늘어나는가? (c) BERT 와 GPT 의 학습 목표 차이는?</div>
+<div class="ans"><b>풀이</b> (a) 어텐션은 단어 순서를 모르는 집합 연산이라 &ldquo;Dog bites man&rdquo; 과 &ldquo;Man bites dog&rdquo; 를 구분하지 못한다. (b) n² 에 비례(모든 쌍의 점수). (c) BERT 는 가려진 단어 맞히기(양방향), GPT 는 다음 단어 맞히기(왼쪽에서 오른쪽).</div></div></details>
+
+<details><summary><span class="n">10</span>그래프 합성곱<span class="p">13주차</span></summary><div class="b">
+<div class="q">노드 A 의 특징이 2 이고 이웃 B, C 의 특징이 4, 6 이다. 자기 자신을 포함한 평균 집계를 한 층 한 뒤 A 의 값은? 층을 너무 많이 쌓으면 어떤 문제가 생기는가?</div>
+<div class="ans"><b>풀이</b> (2+4+6)/3 = 4. 층이 깊어지면 모든 노드의 값이 비슷해지는 과평활(over-smoothing)이 생긴다.</div></div></details>
+
+<details><summary><span class="n">11</span>VAE 와 KL 발산<span class="p">14주차</span></summary><div class="b">
+<div class="q">인코더가 N(μ, σ²) = N(1, 1) 을 내놓았다. N(0,1) 과의 KL 은? (KL = ½(σ² + μ² − 1 − ln σ²)) 이 항이 VAE 손실에서 하는 역할은?</div>
+<div class="ans"><b>풀이</b> ½(1 + 1 − 1 − 0) = 0.5. 잠재 공간이 표준 정규분포 근처에 모이게 해서, 무작위로 뽑은 z 도 디코더가 그럴듯한 그림으로 바꿔 주게 한다(재구성 항과의 균형).</div></div></details>
+
+<details><summary><span class="n">12</span>GAN 과 확산 모델<span class="p">14주차</span></summary><div class="b">
+<div class="q">(a) GAN 에서 생성자가 완벽할 때 판별자의 출력은? (b) 모드 붕괴란? (c) 확산 모델에서 ᾱₜ = 0.64 이면 xₜ = √ᾱₜ·x₀ + √(1−ᾱₜ)·ε 의 두 계수는?</div>
+<div class="ans"><b>풀이</b> (a) 진짜와 가짜를 구분할 수 없어 0.5. (b) 생성자가 판별자를 속이기 쉬운 몇 가지 결과만 반복해서 다양성을 잃는 현상. (c) 0.8 과 0.6 (0.8² + 0.6² = 1 이라 분산이 유지된다).</div></div></details>
+
+<details><summary><span class="n">13</span>사전학습 언어 모델<span class="p">15주차</span></summary><div class="b">
+<div class="q">BERT 를 감성 분류에 쓰는 두 단계(사전학습, 미세조정)를 설명하고, 미세조정에 데이터가 적어도 되는 이유를 쓰시오.</div>
+<div class="ans"><b>풀이</b> 사전학습: 라벨 없는 큰 글 모음에서 가려진 단어를 맞히며 언어 일반을 배운다. 미세조정: 적은 라벨 데이터로 분류 머리를 붙여 전체를 조금 다시 학습한다. 사전학습에서 이미 단어와 문장 구조의 표현을 얻었으므로 새로 배울 양이 적다.</div></div></details>
+
+</div></body></html>

@@ -7,7 +7,7 @@ from PIL import Image
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 os.makedirs("figs", exist_ok=True)
 plt.rcParams.update({"font.family": "Noto Sans CJK KR"})
-SRC = "../../../../v2/ml1/week01/course_intro/figs/"
+SRC = "../../../v2/ml1/week01/course_intro/figs/"
 WINTERS = ((1974, 1980, "1차 AI 겨울\n1974~80"), (1987, 1993, "2차 AI 겨울\n1987~93"))   # p.10 연표와 같은 기간
 
 
@@ -41,7 +41,7 @@ winters_fixed(SRC + "ai_winters_perceptron.jpg", "figs/ai_winters_fixed.png", WI
 
 
 def xor_lines(out, X, T):
-    """1969 XOR: 직선 하나로는 0 과 1 을 못 가르고, 직선 두 개(OR · NAND)면 가운데 띠로 가른다 (9주차 xor_backprop 그림과 같은 모양)."""
+    """1969 XOR: 직선 하나로는 0 과 1 을 못 가르고, 직선 두 개(OR · NAND)면 가운데 띠로 가른다 (7주차 xor_backprop 그림과 같은 모양)."""
     BLUE, RED, GREEN, GOLD = "#2E3192", "#d62728", "#2a9d8f", "#A9976B"
     xs = np.linspace(-0.4, 1.4, 2)
     fig, axs = plt.subplots(1, 2, figsize=(7.2, 3.9))
@@ -78,7 +78,7 @@ def strip_banner(src, out, frac):
     im.crop((0, int(im.size[1] * frac), im.size[0], im.size[1])).save(out, quality=92)
 
 
-PHOTOS = "../../../../v2/ml1/week01/course_intro/photos/"
+PHOTOS = "../../../v2/ml1/week01/course_intro/photos/"
 portrait(PHOTOS + "lecun.jpg", "figs/lecun_sq.jpg", 0.1)
 portrait(PHOTOS + "feifei.jpg", "figs/feifei_sq.jpg", 0.05)
 strip_banner(SRC + "alexnet_authors.jpg", "figs/alexnet_authors_crop.jpg", 0.07)

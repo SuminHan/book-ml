@@ -1,0 +1,216 @@
+\documentclass[aspectratio=169,11pt,t]{beamer}
+\input{../../../theme/ksa-cs-v2.tex}
+% 원본 덱 (ksa-theme): slides/v2/ml1/week09/batchnorm/ -- 그림은 거기 figs/ 를 그대로 쓴다
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+\graphicspath{{figs/}{../../../v2/ml1/week09/batchnorm/figs/}{../../../assets/}}
+\makeatletter
+\newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
+\newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
+\makeatother
+
+\renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 정규화 층 (BatchNorm · LayerNorm)}
+\title{정규화 층: BatchNorm · LayerNorm (Normalization)}
+\subtitle{층마다 값을 평균 0 · 표준편차 1 로 맞추기: 어느 방향으로 맞출까}
+\author{Machine Learning and Deep Learning}
+\institute{한국과학영재학교 (KSA)}
+\date{}
+\begin{document}
+{\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
+
+\section{질문}
+% --- 오늘의 질문
+\begin{frame}{오늘의 질문}
+\vfill
+\centering\includegraphics[width=0.6\linewidth]{bn_curve.png}\par\vskip0.2em
+{\large 시그모이드 8층: \kq{1,500번 학습해도 10\%} \quad BatchNorm 을 끼우면 \kb{250번에 96\%}}
+\vfill
+\note{손글씨 숫자를 시그모이드 층 8개짜리 신경망으로 학습했습니다. 1500번을 학습해도 정답률이 10퍼센트, 찍기 수준입니다. 지난 시간의 기울기 소실과 같은 증상입니다. 그런데 층마다 BatchNorm이라는 층을 하나씩 끼워 넣었더니 250번 만에 96퍼센트가 됐습니다. 활성 함수도 가중치 수도 그대로입니다. 오늘은 이 층이 무엇을 하는지 배웁니다.}
+\end{frame}
+
+\section{BatchNorm}
+% --- 무슨 일
+\begin{frame}{무슨 일이 일어났나: 층을 지날수록 그림들이 똑같아진다}
+\markpage{spread}
+\vfill
+\centering\includegraphics[width=0.58\linewidth]{bn_dist.png}\par\vskip0.2em
+{\large 그림 512장이 받는 값의 퍼짐 (학습 전): \quad 1층 0.15 $\to$ 8층 \kq{0.0000002}}\\[0.2em]
+{\small 8층에는 모든 그림이 거의 같은 값 $\to$ 구별할 정보가 없다 \quad BatchNorm: 층마다 다시 1 로}
+\vfill
+\note{BatchNorm이 없을 때 무슨 일이 일어나는지 봅니다. 학습 전에 서로 다른 그림 512장을 넣고, 각 층에서 그림마다 받는 값이 얼마나 다른지, 즉 그림 사이의 퍼짐을 쟀습니다. 1층에서는 0.15인데, 층을 지날 때마다 약 7분의 1로 줄어 8층에서는 0.0000002입니다. 시그모이드가 값을 0.5 근처로 눌러 버리기 때문입니다. 8번째 층 입장에서는 숫자 0 그림이든 9 그림이든 거의 같은 값이 들어오니 구별할 방법이 없고, 기울기도 사라집니다. BatchNorm을 넣으면 층마다 퍼짐을 다시 1로 맞춰 줍니다.}
+\end{frame}
+
+% --- 식
+\begin{frame}{BatchNorm: 미니배치마다 평균 0, 표준편차 1 로}
+\markpage{formula}
+\vfill
+\centering
+{\Large\[ \mu_B = \frac{1}{m}\sum_{i=1}^{m} x_i \qquad \sigma_B^2 = \frac{1}{m}\sum_{i=1}^{m}(x_i - \mu_B)^2 \]}
+{\LARGE\[ \hat{x}_i = \frac{x_i - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}} \qquad y_i = \textcolor{ksablue}{\gamma}\,\hat{x}_i + \textcolor{ksared}{\beta} \]}\vskip0.3em
+\renewcommand{\arraystretch}{1.25}
+{\normalsize\begin{tabular}{ll}
+$m$ & 미니배치 크기 \quad 뉴런마다 따로 계산한다\\
+$\epsilon$ & 0 으로 나누지 않게 더하는 아주 작은 수 (예: $10^{-5}$)\\
+\textcolor{ksablue}{$\gamma$}, \textcolor{ksared}{$\beta$} & \textbf{학습하는} 크기 · 위치 (처음엔 1, 0)
+\end{tabular}}
+\vfill
+\note{BatchNorm이 하는 일입니다. 뉴런 하나가 미니배치의 데이터 m개에게서 받은 값들로 평균과 분산을 구합니다. 각 값에서 평균을 빼고 표준편차로 나누면 평균 0, 표준편차 1이 됩니다. 가우시안 시간의 z 점수와 같은 식입니다. 엡실론은 분산이 0일 때 0으로 나누지 않게 더하는 아주 작은 수입니다. 그다음 감마를 곱하고 베타를 더합니다. 감마와 베타는 가중치처럼 역전파로 학습하는 숫자이고, 처음에는 1과 0으로 시작합니다. 이 계산은 뉴런마다 따로 합니다.}
+\end{frame}
+
+% --- 손 계산
+\begin{frame}{손으로 한 번}
+\vfill
+\centering\includegraphics[width=0.66\linewidth]{bn_hand.png}\par\vskip0.2em
+{\large 배치 4개에서 받은 값 2, 4, 6, 8 \quad $\mu_B = 5$, \; $\sigma_B^2 = \frac{9 + 1 + 1 + 9}{4} = 5$}\\[0.3em]
+{\large $\hat{x} = \frac{x - 5}{\sqrt5}$: $-1.34, -0.45, 0.45, 1.34$ \quad $\gamma = 2, \beta = 1$: \; $-1.68, 0.11, 1.89, 3.68$}
+\vfill
+\note{작은 예로 해 봅니다. 뉴런 하나가 배치 4개에서 2, 4, 6, 8을 받았습니다. 평균은 5, 평균에서 떨어진 거리의 제곱은 9, 1, 1, 9라서 분산은 5입니다. 평균을 빼고 루트 5로 나누면 마이너스 1.34, 마이너스 0.45, 0.45, 1.34가 됩니다. 평균 0, 표준편차 1입니다. 학습된 감마가 2, 베타가 1이라면 2를 곱하고 1을 더해 마이너스 1.68, 0.11, 1.89, 3.68을 다음 층으로 보냅니다.}
+\end{frame}
+
+% --- 감마 베타
+\begin{frame}{왜 $\gamma$, $\beta$ 를 다시 곱하고 더하나}
+\vfill
+\centering
+{\large 항상 평균 0 · 표준편차 1 로 묶어 두면 \quad 시그모이드의 \textbf{가운데 직선 부분}만 쓰게 된다}\\[0.8em]
+{\large $\gamma, \beta$ 를 학습하면 신경망이 \kb{알맞은 크기와 위치를 스스로} 고른다}\\[0.8em]
+{\Large 필요하면 \; $\gamma = \sigma_B$, \; $\beta = \mu_B$ \; $\to$ \; \textbf{원래 값으로 되돌릴 수도} 있다}\\[0.8em]
+{\small 그래서 BatchNorm 을 넣어도 신경망이 표현할 수 있는 것은 줄어들지 않는다}
+\vfill
+\note{정규화만 하면 되는데 왜 감마와 베타를 다시 곱하고 더할까요? 모든 층의 값을 항상 평균 0, 표준편차 1로 묶어 두면, 시그모이드에서는 0 근처의 거의 직선인 부분만 쓰게 되어 비선형성을 제대로 활용하지 못할 수 있습니다. 감마와 베타를 학습하게 하면 신경망이 층마다 알맞은 크기와 위치를 스스로 고릅니다. 극단적으로 감마를 원래 표준편차, 베타를 원래 평균으로 학습하면 정규화 전의 값으로 되돌릴 수도 있습니다. 그러니 BatchNorm을 넣어서 신경망이 표현할 수 있는 것이 줄어들지는 않습니다.}
+\end{frame}
+
+\section{효과}
+% --- 결과
+\begin{frame}{효과}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+{\large\begin{tabular}{ll}
+우리 실험 (시그모이드 8층) & \kq{10\%} $\to$ 250번에 \kb{96\%}\\
+논문 (2015, ImageNet) & 같은 정확도를 \kb{14배 적은} 학습으로\\
+덤 & 큰 학습률도 안정 · 초기화에 덜 민감 · 약간의 정규화
+\end{tabular}}\vskip0.8em
+{\small 왜 잘 되는지: 처음엔 ``층 입력 분포의 출렁임 (internal covariate shift) 을 줄인다''고 설명했지만,\\ 지금은 ``손실 지형을 매끄럽게 만들어 큰 걸음을 가능하게 한다''는 설명이 더 받아들여진다}
+\vfill
+\note{효과를 정리합니다. 우리 실험에서는 1500번에 10퍼센트였던 신경망이 250번에 96퍼센트가 됐습니다. 2015년 구글의 이오페와 세게디의 논문에서는 이미지넷에서 같은 정확도를 14배 적은 학습으로 얻었습니다. 덤으로 학습률을 크게 잡아도 안정적이고, 초기화를 덜 신경 써도 되고, 미니배치마다 평균이 조금씩 흔들리는 것이 약간의 정규화 효과도 줍니다. 왜 잘 되는지에 대해서는 논쟁이 있습니다. 논문은 층 입력 분포의 출렁임을 줄인다고 설명했지만, 이후 연구에서는 손실 지형을 매끄럽게 만들어 큰 걸음으로도 안정적으로 내려갈 수 있게 한다는 설명이 더 받아들여지고 있습니다.}
+\end{frame}
+
+\section{쓸 때}
+% --- 시험 때
+\begin{frame}{시험 때는 모아 둔 평균을 쓴다}
+\markpage{eval}
+\vfill
+\centering
+{\large 시험 때는 그림이 \textbf{한 장씩} 들어올 수도 있다 $\to$ 배치 평균을 구할 수 없다}\vskip0.6em
+{\Large\[ \mu_{\text{run}} \leftarrow 0.9\,\mu_{\text{run}} + 0.1\,\mu_B \qquad \sigma^2_{\text{run}} \leftarrow 0.9\,\sigma^2_{\text{run}} + 0.1\,\sigma_B^2 \]}\vskip0.3em
+{\large 학습하면서 배치 평균 · 분산을 \textbf{조금씩 모아} 두었다가 시험 때 그 값을 쓴다}\\[0.6em]
+{\large \texttt{model.train()} = 배치 통계 \quad \texttt{model.eval()} = \kb{모아 둔 통계}}
+\vfill
+\note{시험할 때는 문제가 하나 있습니다. 그림이 한 장씩 들어올 수도 있어서 배치 평균을 구할 수 없습니다. 한 장이면 평균을 빼면 항상 0이 되니까요. 그래서 학습하는 동안 배치 평균과 분산을 조금씩 모아 둡니다. 이전 값의 0.9와 이번 배치 값의 0.1을 섞는 식으로 계속 갱신합니다. 시험 때는 이 모아 둔 평균과 분산으로 정규화합니다. PyTorch에서는 드롭아웃과 같은 스위치입니다. train 모드에서는 배치 통계를, eval 모드에서는 모아 둔 통계를 씁니다. eval을 깜빡하면 시험 결과가 배치 구성에 따라 달라집니다.}
+\end{frame}
+
+% --- 어디에
+\begin{frame}{어디에 넣나, 그리고 약점}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+{\large\begin{tabular}{ll}
+위치 & \texttt{Linear} (합성곱) $\to$ \textbf{BatchNorm} $\to$ 활성 함수\\
+합성곱 (9주차) & 채널마다 평균 · 분산 (\texttt{BatchNorm2d}) \quad ResNet 의 기본 부품\\
+\kq{약점} & 배치가 작으면 평균이 불안정, 순서 데이터에 어색 \quad $\to$ 다음 쪽
+\end{tabular}}
+\vfill
+\note{어디에 넣을까요? 원 논문은 Linear 층이나 합성곱 층 다음, 활성 함수 앞에 넣었습니다. 9주차 합성곱 신경망에서는 채널마다 평균과 분산을 구하는 BatchNorm2d를 쓰고, ResNet의 기본 부품입니다. 약점도 있습니다. 배치가 2개처럼 아주 작으면 배치 평균이 너무 흔들리고, 문장처럼 길이가 다른 순서 데이터에는 어색합니다. 그래서 다른 방향으로 맞추는 방법들이 나왔습니다. 다음 쪽부터 봅니다.}
+\end{frame}
+
+\section{LayerNorm}
+% --- 방향
+\begin{frame}{같은 표, 다른 방향: BatchNorm vs LayerNorm}
+\markpage{dirs}
+\vfill
+\centering\includegraphics[width=0.86\linewidth]{norm_dirs.png}\par\vskip0.3em
+{\large \textcolor{ksablue}{BatchNorm}: \textbf{샘플들끼리} (세로) \qquad \textcolor{ksared}{LayerNorm}: \textbf{특징들끼리} (가로)}\\[0.4em]
+{\large A 의 LayerNorm: 평균 0.42, 표준편차 0.67 \quad $\to$ \quad $(1.0 - 0.42) / 0.67 = \kb{0.87}$}\\[0.2em]
+{\small Ba, Kiros \& Hinton (2016) ``Layer Normalization'' \quad 그다음 $\gamma \hat x + \beta$ 는 똑같다}
+\vfill
+\note{BatchNorm에는 배치 안의 이웃 샘플이 필요하다는 약점이 있었습니다. 2016년 바, 키로스, 힌턴은 방향을 바꿨습니다. 같은 표를 놓고 보면, BatchNorm은 세로로, 특징 하나를 배치 안 샘플 네 개끼리 평균 0, 표준편차 1로 맞춥니다. LayerNorm은 가로로, 샘플 하나 안에서 특징 여섯 개끼리 맞춥니다. 샘플 A를 LayerNorm하면 여섯 값의 평균이 0.42, 표준편차가 0.67이라 첫 값 1.0은 1.0 빼기 0.42를 0.67로 나눠 0.87이 됩니다. 그다음 감마를 곱하고 베타를 더하는 건 BatchNorm과 똑같습니다.}
+\end{frame}
+
+% --- 이웃을 바꾸면
+\begin{frame}{옆 샘플을 바꾸면?}
+\vfill
+\centering
+{\large 샘플 A 는 그대로 두고, 같은 배치의 B · C · D 만 다른 샘플로 바꿨다}\vskip0.6em
+\renewcommand{\arraystretch}{1.6}
+{\Large\begin{tabular}{lccc}
+A 의 첫 값 1.0 $\to$ & 원래 배치 & 옆 샘플만 바꾼 배치 & A 하나만\\\hline
+\textcolor{ksablue}{BatchNorm} & 0.50 & \kq{1.21} & \kq{에러}\\
+\textcolor{ksared}{LayerNorm} & 0.87 & \kb{0.87} & \kb{0.87}
+\end{tabular}}\vskip0.6em
+{\large BatchNorm: 결과가 \textbf{옆에 누가 있느냐}에 달렸다 \quad LayerNorm: 자기 혼자 정한다}\\[0.3em]
+{\small PyTorch \texttt{BatchNorm1d} 학습 모드에 샘플 1개 $\to$ ``Expected more than 1 value per channel''}
+\vfill
+\note{둘의 차이는 여기서 납니다. 샘플 A는 그대로 두고, 같은 배치에 있던 B, C, D만 다른 샘플로 바꿔 봤습니다. BatchNorm에서 A의 첫 값은 0.50에서 1.21로 바뀝니다. A는 그대로인데 옆에 누가 있느냐에 따라 결과가 달라지는 겁니다. 샘플 하나만 넣으면 평균 낼 이웃이 없어서 PyTorch가 에러를 냅니다. LayerNorm은 세 경우 모두 0.87입니다. 샘플 혼자서 정하니까요. 그래서 학습할 때와 시험할 때 계산이 같고, 앞에서 본 모아 둔 평균도 필요 없습니다.}
+\end{frame}
+
+% --- 가족
+\begin{frame}{정규화 층 가족: 무엇끼리 평균을 내나}
+\markpage{family}
+\vfill
+\centering\includegraphics[width=0.72\linewidth]{norm_family.png}\par\vskip0.1em
+\renewcommand{\arraystretch}{1.35}
+{\small\begin{tabular}{lll}
+BatchNorm (2015) & CNN · ResNet (9주차) & 사진을 많이 묶을 때\\
+LayerNorm (2016) & 트랜스포머 · GPT · BERT & 길이가 제각각인 문장\\
+InstanceNorm (2016) & 그림 스타일 바꾸기 & 그림마다 밝기 · 대비를 지운다\\
+GroupNorm (2018) & 물체 탐지 · 분할 & 배치가 2 장이어도 그대로\\
+RMSNorm (2019) & 최근 언어 모델 (LLaMA 등) & 평균 빼기 생략, 크기만 맞춘다
+\end{tabular}}
+\vfill
+\note{정규화 층은 무엇끼리 평균을 내느냐로 나뉩니다. 그림 데이터를 샘플과 채널의 표로 놓고, 칸 하나가 그 채널의 픽셀들이라고 하면, 노란 칸끼리 평균과 분산을 냅니다. BatchNorm은 채널 하나를 배치 전체에서, LayerNorm은 샘플 하나의 모든 채널에서, InstanceNorm은 샘플 하나의 채널 하나에서, GroupNorm은 샘플 하나의 채널 몇 개에서 냅니다. 쓰임새도 다릅니다. 사진을 많이 묶어 학습하는 CNN과 ResNet은 BatchNorm, 길이가 제각각인 문장을 다루고 단어를 하나씩 만드는 트랜스포머, GPT, BERT는 LayerNorm을 씁니다. InstanceNorm은 그림마다 밝기와 대비를 지워서 그림 스타일 바꾸기에, GroupNorm은 메모리 때문에 배치가 두 장밖에 안 되는 물체 탐지에 씁니다. 최근 언어 모델은 LayerNorm에서 평균 빼기를 생략하고 크기만 맞추는 RMSNorm을 많이 씁니다. 계산이 조금 더 싸고 성능은 비슷합니다.}
+\end{frame}
+
+\section{연습}
+% --- 문제풀이
+\begin{frame}{문제풀이}
+\vfill
+\begin{enumerate}
+\item 배치 값 1, 3, 5, 7 을 BatchNorm 하면? ($\epsilon$ 무시, $\gamma = 1$, $\beta = 0$)\vskip0.8em
+\item 위에서 $\gamma = 3$, $\beta = 10$ 이면 출력의 평균과 표준편차는?\vskip0.8em
+\item 학습이 끝난 모델로 그림 한 장을 예측했더니 이상한 답이 나왔다. \texttt{model.train()} 상태였다. 왜 문제인가?\vskip0.8em
+\item 배치 크기 1 로 학습하면 BatchNorm 은 어떻게 되나? LayerNorm 은?\vskip0.8em
+\item 표 $\begin{pmatrix} 1 & 3 \\ 5 & 7 \end{pmatrix}$ (행 = 샘플, 열 = 특징) 의 BatchNorm 결과와 LayerNorm 결과는?
+\end{enumerate}
+\vfill
+\note{1번 답. 평균 4, 거리 제곱 9, 1, 1, 9로 분산 5, 표준편차 루트 5입니다. 마이너스 1.34, 마이너스 0.45, 0.45, 1.34입니다. 2번 답. 평균 10, 표준편차 3입니다. 3번 답. 그림 한 장으로 배치 평균을 구하니 정규화하면 모든 값이 0이 되어 버립니다. eval 모드로 모아 둔 통계를 써야 합니다. 4번 답. 평균이 자기 자신이라 정규화한 값이 항상 0이고 분산도 0이라 학습이 안 됩니다. 실제로 PyTorch는 오류를 냅니다. LayerNorm은 샘플 하나 안의 특징끼리 맞추니 아무 문제 없습니다. 5번 답. BatchNorm은 열마다, 1과 5, 3과 7을 맞추니 위 행은 마이너스 1, 마이너스 1, 아래 행은 1, 1입니다. LayerNorm은 행마다, 1과 3, 5와 7을 맞추니 두 행 모두 마이너스 1, 1입니다. 같은 표, 다른 방향이죠.}
+\end{frame}
+
+% --- 실습
+\begin{frame}{실습}
+\vfill
+\centering\begin{tabular}{rl}
+\large 1 & BatchNorm 직접 구현 $\to$ 2, 4, 6, 8 손 계산 재현, \texttt{nn.BatchNorm1d} 와 비교\\[0.5em]
+\large 2 & 시그모이드 8층: 층별 퍼짐과 학습 곡선, BatchNorm 있음 vs 없음\\[0.5em]
+\large 3 & \texttt{train()} / \texttt{eval()}: 그림 한 장 예측과 모아 둔 평균 (\texttt{running\_mean})
+\end{tabular}\vskip1em
+Optical Recognition of Handwritten Digits (UCI; scikit-learn \texttt{load\_digits}) \\[0.4em]\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week09/batchnorm/lab/batchnorm.ipynb}{\textcolor{ksagolddk}{▶ Colab에서 실습 노트북 열기}}
+\vfill
+\note{실습은 세 부분입니다. 첫째, BatchNorm을 직접 구현해서 손 계산을 재현하고 PyTorch의 BatchNorm1d와 비교합니다. 둘째, 시그모이드 8층 신경망에서 층별 퍼짐과 학습 곡선을 BatchNorm이 있을 때와 없을 때 비교합니다. 셋째, train과 eval 모드에서 그림 한 장을 예측해 보고, 모아 둔 평균이 어떻게 쓰이는지 확인합니다.}
+\end{frame}
+
+\section{정리}
+% --- 정리
+\begin{frame}{정리}
+\vfill
+\centering\large\begin{tabular}{l}
+깊은 시그모이드: 층을 지날수록 그림들이 같은 값이 된다 (0.15 $\to$ 0.0000002)\\[0.5em]
+\textbf{BatchNorm} \quad 미니배치마다 뉴런별 평균 0 · 표준편차 1, 그다음 $\gamma \hat{x} + \beta$\\[0.5em]
+10\% $\to$ 250번에 96\% \quad 논문: 14배 적은 학습 \quad 큰 학습률도 안정\\[0.5em]
+시험 때는 모아 둔 평균 · 분산 (\texttt{eval()})\\[0.5em]
+\textbf{LayerNorm} \quad 샘플 하나 안에서: 옆 샘플과 무관 (0.87 그대로) $\to$ 트랜스포머\\[0.5em]
+무엇끼리 평균을 내나: Batch · Layer · Instance · Group · RMS
+\end{tabular}
+\vfill
+\note{정리합니다. 깊은 시그모이드 신경망에서는 층을 지날수록 서로 다른 그림들이 거의 같은 값을 받게 되어 학습이 멈춥니다. BatchNorm은 미니배치마다 뉴런별로 평균 0, 표준편차 1로 맞춘 뒤 학습하는 감마와 베타로 크기와 위치를 다시 조절합니다. 우리 실험에서 10퍼센트가 250번 만에 96퍼센트가 됐고, 논문에서는 14배 적은 학습으로 같은 정확도를 얻었습니다. 시험 때는 학습 중에 모아 둔 평균과 분산을 씁니다. LayerNorm은 방향을 바꿔 샘플 하나 안에서 맞추니, 옆 샘플이 바뀌어도 결과가 그대로이고 트랜스포머가 이걸 씁니다. 정규화 층의 가족은 무엇끼리 평균을 내느냐로 나뉩니다.}
+\end{frame}
+\end{document}
