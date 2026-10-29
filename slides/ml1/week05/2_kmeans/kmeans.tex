@@ -1,0 +1,213 @@
+\documentclass[aspectratio=169,11pt,t]{beamer}
+\input{../../../../theme/ksa-cs-v2.tex}
+% 원본 덱 (ksa-theme): slides/v2/ml1/week04/kmeans/ -- 그림은 거기 figs/ 를 그대로 쓴다
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+\graphicspath{{../../../../v2/ml1/week04/kmeans/figs/}{../../../../assets/}}
+\makeatletter
+\newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
+\newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
+\makeatother
+
+\renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, k-means 클러스터링}
+\title{k-means 클러스터링}
+\subtitle{라벨 없이 무리 나누기: 할당과 갱신의 반복}
+\author{Machine Learning and Deep Learning}
+\institute{한국과학영재학교 (KSA)}
+\date{}
+\begin{document}
+{\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
+
+\section{질문}
+% --- 오늘의 질문
+\begin{frame}{오늘의 질문}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.44\textwidth}\centering\includegraphics[width=0.95\linewidth]{km_hook_house.png}\end{column}
+\begin{column}{0.52\textwidth}
+{\Large 집 30곳에 배달 기지 3곳}\\[0.8em]
+{\large 집마다 가장 가까운 기지에서 배달한다}\\[0.8em]
+{\Large \kq{기지를 어디에 지어야}\\ \kq{배달 거리가 가장 짧을까?}}
+\end{column}
+\end{columns}
+\vfill
+\note{지도 위에 집 30곳이 있습니다. 배달 기지를 3곳 지으려고 하는데, 집마다 가장 가까운 기지에서 배달합니다. 기지를 어디에 지어야 전체 배달 거리가 가장 짧을까요? 눈으로 보면 집들이 세 동네에 모여 있으니 동네마다 하나씩 지으면 될 것 같습니다. 그런데 집이 100만 개이고 특징이 100개라면 눈으로 볼 수 없겠죠. 이 문제를 자동으로 푸는 방법이 오늘 배울 k-means입니다.}
+\end{frame}
+
+\section{목표}
+% --- 비지도
+\begin{frame}{정답 라벨이 없는 학습}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+{\large\begin{tabular}{lll}
+\textbf{지도 학습} & 데이터 + \kb{정답 라벨} & kNN: 이웃의 라벨로 다수결\\
+\textbf{비지도 학습} & 데이터만 & \kq{k-means}: 비슷한 것끼리 $k$ 개 무리로
+\end{tabular}}\vskip1.0em
+{\large k-means = $k$ 개의 평균 (mean) 으로 데이터를 대표한다}\\[0.4em]
+{\small 고객 나누기, 사진 색 줄이기, 문서 묶기 $\cdots$ 무리를 나누는 것 = 클러스터링 (clustering)}
+\vfill
+\note{지난주 kNN은 사과인지 귤인지 정답 라벨이 붙은 데이터가 있었습니다. 이런 학습을 지도 학습이라고 합니다. 오늘의 집들에는 라벨이 없습니다. 어느 동네인지 아무도 알려 주지 않았습니다. 데이터만 보고 비슷한 것끼리 묶는 것을 비지도 학습, 무리를 나누는 것을 클러스터링이라고 합니다. k-means는 k개의 평균, 즉 무리의 중심 k개로 데이터를 대표하는 방법입니다. 고객을 비슷한 그룹으로 나누거나, 사진의 수많은 색을 16가지로 줄이거나, 비슷한 문서를 묶을 때 씁니다.}
+\end{frame}
+
+% --- 목표
+\begin{frame}{목표: 거리 제곱의 합을 가장 작게}
+\markpage{sse}
+\vfill
+\centering
+{\LARGE\[ \text{SSE} = \sum_{i=1}^{m} \big\lVert \mathbf{x}^{(i)} - \mathbf{c}_{a(i)} \big\rVert^2 \]}\vskip0.6em
+\renewcommand{\arraystretch}{1.3}
+{\large\begin{tabular}{ll}
+$\mathbf{x}^{(i)}$ & $i$ 번째 집의 위치\\
+$\mathbf{c}_j$ & $j$ 번째 기지의 위치 ($j = 1, \dots, k$)\\
+$a(i)$ & $i$ 번째 집을 맡은 기지 번호\\
+SSE & sum of squared errors: 집과 맡은 기지 사이 거리 제곱의 합
+\end{tabular}}
+\vfill
+\note{목표를 식으로 쓰면 이렇습니다. 집마다 자기를 맡은 기지까지의 거리를 제곱해서 모두 더한 것, SSE를 가장 작게 만드는 겁니다. 정해야 할 것은 두 가지입니다. 기지의 위치 c, 그리고 어느 집을 어느 기지가 맡을지 a입니다. 두 개를 한꺼번에 정하는 건 어렵지만, 하나를 고정하면 다른 하나는 아주 쉽게 정할 수 있습니다. 이것이 k-means의 핵심 아이디어입니다.}
+\end{frame}
+
+\section{알고리즘}
+% --- 할당
+\begin{frame}{\textcircled{1} 할당: 집마다 가장 가까운 기지}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.44\textwidth}\centering\includegraphics[width=0.95\linewidth]{km_assign.png}\end{column}
+\begin{column}{0.52\textwidth}
+{\large 기지 3곳을 \textbf{아무 데나} 둔다}\\[0.6em]
+{\Large\[ a(i) = \arg\min_{j}\ \big\lVert \mathbf{x}^{(i)} - \mathbf{c}_j \big\rVert \]}
+{\large 기지 위치를 고정하면, 집마다 가장 가까운 기지를 고르는 게 최선}\\[0.6em]
+{\small 지금 SSE = 269}
+\end{column}
+\end{columns}
+\vfill
+\note{먼저 기지 3곳을 아무 데나 둡니다. 별 세 개입니다. 기지 위치를 고정하면, 각 집은 가장 가까운 기지를 고르는 게 SSE를 가장 작게 만드는 최선입니다. 집마다 세 기지와 거리를 재서 가장 가까운 곳에 색을 칠했습니다. 이 단계를 할당이라고 합니다. 지금 SSE는 269입니다. 기지가 엉뚱한 곳에 있어서 선이 깁니다.}
+\end{frame}
+
+% --- 갱신
+\begin{frame}{\textcircled{2} 갱신: 기지를 자기 집들의 평균으로}
+\markpage{update}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.44\textwidth}\centering\includegraphics[width=0.95\linewidth]{km_update.png}\end{column}
+\begin{column}{0.52\textwidth}
+{\Large\[ \mathbf{c}_j = \frac{1}{|S_j|}\sum_{i \in S_j} \mathbf{x}^{(i)} \]}
+{\small $S_j$: 기지 $j$ 가 맡은 집들}\\[0.6em]
+{\large 예: 집 $(2,6), (4,8), (6,7)$ $\to$ 기지 $(4,\ 7)$}\\[0.6em]
+{\large 맡은 집이 정해지면, \kb{평균 위치}가 거리 제곱 합을 가장 작게 한다}
+\end{column}
+\end{columns}
+\vfill
+\note{이번에는 반대로 어느 집을 어느 기지가 맡는지를 고정합니다. 그러면 각 기지는 자기 집들의 평균 위치로 가는 게 최선입니다. 예를 들어 집 세 채가 (2, 6), (4, 8), (6, 7)에 있으면 가로 평균 4, 세로 평균 7, 기지는 (4, 7)로 갑니다. 평균이 거리 제곱의 합을 가장 작게 만든다는 건 가우시안 시간의 평균 추정과 같은 이야기이고, 미분해서 0으로 놓으면 바로 나옵니다. 그림의 화살표가 기지가 이동한 방향입니다. 이 단계를 갱신이라고 합니다.}
+\end{frame}
+
+% --- 반복
+\begin{frame}{\textcircled{1}\textcircled{2} 를 반복하면}
+\markpage{iter}
+\vfill
+\centering\includegraphics[width=0.98\linewidth]{km_iter.png}\par\vskip0.3em
+{\Large SSE \quad 269 $\to$ 134 $\to$ 33 $\to$ \kb{29} \quad 더 움직이지 않으면 멈춘다}
+\vfill
+\note{할당과 갱신을 번갈아 반복합니다. 처음 269이던 SSE가 134, 33, 29로 줄어듭니다. 네 번째에는 할당을 다시 해도 맡은 집이 바뀌지 않아서 기지가 더 움직이지 않습니다. 여기서 멈춥니다. 세 동네에 기지가 하나씩, 집도 10채씩 나뉘었습니다.}
+\end{frame}
+
+% --- 왜 멈추나
+\begin{frame}{왜 반드시 멈출까}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+{\large\begin{tabular}{ll}
+\textcircled{1} 할당 & 기지를 고정하고 가장 가까운 곳을 고른다 $\to$ SSE \kb{줄거나 그대로}\\
+\textcircled{2} 갱신 & 집을 고정하고 평균으로 옮긴다 $\to$ SSE \kb{줄거나 그대로}
+\end{tabular}}\vskip1.0em
+{\large SSE 는 한 번도 늘지 않고, 집을 나누는 방법은 유한하다 $\to$ 언젠가 멈춘다}\\[0.4em]
+{\small 단, 멈춘 곳이 \kq{가장 좋은 답}이라는 보장은 없다}
+\vfill
+\note{k-means는 반드시 멈춥니다. 할당 단계는 기지를 고정한 채 각 집이 가장 가까운 곳을 고르니 SSE가 늘 수 없습니다. 갱신 단계는 집을 고정한 채 평균으로 옮기니 역시 늘 수 없습니다. SSE는 한 번도 늘지 않고, 30개 집을 3개로 나누는 방법은 유한하니 언젠가는 더 줄일 수 없는 곳에서 멈춥니다. 그런데 멈춘 곳이 가장 좋은 답이라는 보장은 없습니다. 다음 쪽에서 봅니다.}
+\end{frame}
+
+\section{시작과 k}
+% --- 나쁜 시작
+\begin{frame}{시작이 나쁘면}
+\vfill
+\centering\includegraphics[width=0.74\linewidth]{km_bad.png}\par\vskip0.2em
+{\large 두 기지가 아래 동네에서 시작 $\to$ SSE \kq{127} 에서 멈춤 (좋은 답은 29) \quad 집 6 · 4 · 20채}
+\vfill
+\note{기지 두 곳을 아래 동네에 몰아서 시작해 봤습니다. 그러면 아래 동네를 기지 둘이 나눠 갖고, 위의 두 동네 20채를 기지 하나가 맡은 채로 멈춥니다. SSE는 127로, 좋은 답 29보다 네 배 넘게 큽니다. 그런데 여기서 할당을 다시 해도 바뀌는 게 없어서 k-means는 더 움직이지 않습니다. 이렇게 주변보다는 낫지만 전체에서 가장 좋지는 않은 답을 지역 최솟값이라고 합니다.}
+\end{frame}
+
+% --- 해결
+\begin{frame}{해결: 여러 번 시작하고, 똑똑하게 시작하기}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+{\large\begin{tabular}{ll}
+\textbf{여러 번 시작} & 시작점을 바꿔 여러 번 돌리고 SSE 가 가장 작은 것\\
+\textbf{k-means++} & 첫 기지는 아무 집에, 다음은 \kb{기존 기지에서 먼 집}일수록\\
+ & 잘 뽑히게 (거리$^2$ 에 비례) $\to$ 한 동네에 몰려 시작하지 않는다
+\end{tabular}}\vskip0.8em
+{\small scikit-learn \texttt{KMeans} 의 기본값: k-means++ 시작, 여러 번 돌려 최선 (\texttt{n\_init})}
+\vfill
+\note{해결책은 두 가지입니다. 첫째, 시작점을 바꿔 여러 번 돌리고 SSE가 가장 작은 결과를 고릅니다. 둘째, 처음부터 똑똑하게 시작합니다. k-means 플러스플러스는 첫 기지를 아무 집에 두고, 다음 기지는 이미 있는 기지에서 멀리 떨어진 집일수록 뽑힐 확률이 크도록 고릅니다. 그러면 기지가 같은 동네에 몰려서 시작하는 일이 드물어집니다. scikit-learn의 KMeans는 기본으로 k-means 플러스플러스로 시작하고, 여러 번 돌려 가장 좋은 것을 씁니다.}
+\end{frame}
+
+% --- 엘보우
+\begin{frame}{$k$ 는 몇 개? 엘보우 방법}
+\vfill
+\centering\includegraphics[width=0.56\linewidth]{km_elbow.png}\par\vskip0.2em
+{\large $k$ 를 늘리면 SSE 는 계속 준다 (집마다 기지를 두면 0) \quad $\to$ \kb{꺾이는 곳}을 고른다}\\[0.2em]
+{\small 275 $\to$ 134 $\to$ 29 로 크게 줄다가, 그 뒤로는 22, 16, 11 로 조금씩. 팔꿈치(elbow) 모양}
+\vfill
+\note{기지를 몇 개 지을지는 어떻게 정할까요? k를 1부터 6까지 바꿔 가며 SSE를 재 봤습니다. k를 늘리면 SSE는 계속 줄어듭니다. 집마다 기지를 하나씩 지으면 0이 되니까요. 그래서 SSE가 가장 작은 k를 고르면 안 됩니다. 대신 꺾이는 곳을 봅니다. 275에서 134, 29까지는 크게 줄다가, 그 뒤로는 22, 16, 11로 조금씩 줄어듭니다. 3에서 팔꿈치처럼 꺾이니 k는 3입니다. 이걸 엘보우 방법이라고 합니다. 실제 데이터에서는 꺾이는 곳이 분명하지 않을 때도 많아서, 무리를 어디에 쓸지라는 목적도 함께 봅니다.}
+\end{frame}
+
+% --- 한계
+\begin{frame}{k-means 가 못 하는 것}
+\vfill
+\centering\includegraphics[width=0.74\linewidth]{km_moons.png}\par\vskip0.2em
+{\large 무리 = \kb{중심 하나 + 둥근 모양} $\to$ 휘어진 무리는 못 나눈다}\\[0.2em]
+{\small 거리로 나누니 kNN 처럼 \textbf{단위}도 문제 $\to$ 표준화 먼저 (실습)}
+\vfill
+\note{k-means가 잘 못하는 것도 알아 둡시다. k-means는 무리를 중심 하나와 그 주변의 둥근 모양으로 봅니다. 그래서 반달 두 개처럼 휘어진 무리는 못 나눕니다. 오른쪽처럼 두 중심 사이에 직선을 긋고 잘라 버립니다. 크기가 아주 다른 무리도 잘 못 나눕니다. 그리고 거리로 나누니까 kNN과 같은 단위 문제가 있습니다. 실습에서 펭귄 데이터로 표준화 전후를 비교합니다.}
+\end{frame}
+
+\section{연습}
+% --- 문제풀이
+\begin{frame}{문제풀이}
+\vfill
+\begin{enumerate}
+\item 1차원 점 1, 2, 3, 10, 11, 12 와 기지 $c_1 = 2$, $c_2 = 5$. \; (a) 할당은? \; (b) 갱신 후 기지는? \; (c) 한 번 더 하면?\vskip0.8em
+\item 집 4채 $(0,0), (2,0), (0,2), (2,2)$ 를 기지 하나가 맡는다. SSE 를 가장 작게 하는 기지 위치와 그때의 SSE 는?\vskip0.8em
+\item 엘보우 그래프에서 SSE 가 $k = 1 \sim 5$ 에 100, 60, 40, 30, 25 였다. 어떤 $k$ 를 고르겠나? 이 그래프만으로 정하기 어려운 이유는?
+\end{enumerate}
+\vfill
+\note{1번 답. 기지 2와 5이니, 1, 2, 3은 2에 가깝고, 10, 11, 12는 5에 가깝습니다. 갱신하면 첫 기지는 1, 2, 3의 평균 2, 둘째 기지는 10, 11, 12의 평균 11입니다. 한 번 더 할당해도 바뀌지 않으니 멈춥니다. 2번 답. 평균 (1, 1)이고, 집마다 거리 제곱이 2라서 SSE는 8입니다. 3번 답. 꺾임이 뚜렷하지 않습니다. 40퍼센트, 33퍼센트, 25퍼센트, 17퍼센트씩 줄어서 어느 한 곳에서 확 꺾이지 않으니, 2나 3 정도를 후보로 두고 무리를 어디에 쓸지로 정합니다.}
+\end{frame}
+
+% --- 실습
+\begin{frame}{실습}
+\vfill
+\centering\begin{tabular}{rl}
+\large 1 & 할당 · 갱신 직접 구현 $\to$ 슬라이드의 집 30곳으로 SSE 269 $\to$ 29, 나쁜 시작 127 재현\\[0.5em]
+\large 2 & 실제 데이터: 펭귄 333마리를 종 라벨 \textbf{없이} 3무리로 $\to$ 진짜 종과 비교\\[0.5em]
+\large 3 & 표준화 전후 비교 + 엘보우로 $k$ 고르기
+\end{tabular}\vskip1em
+Palmer Penguins (Gorman et al., 2014) \\[0.4em]\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week04/kmeans/lab/kmeans.ipynb}{\textcolor{ksagolddk}{▶ Colab에서 실습 노트북 열기}}
+\vfill
+\note{실습은 세 부분입니다. 첫째, 할당과 갱신을 직접 구현해서 슬라이드의 집 30곳으로 269에서 29까지, 그리고 나쁜 시작의 127을 재현합니다. 둘째, 펭귄 333마리를 종 라벨 없이 부리 길이와 몸무게만으로 세 무리로 나누고, 진짜 종과 얼마나 맞는지 봅니다. 셋째, 표준화를 하기 전과 후를 비교하고 엘보우로 k를 골라 봅니다.}
+\end{frame}
+
+\section{정리}
+% --- 정리
+\begin{frame}{정리}
+\vfill
+\centering\large\begin{tabular}{l}
+\textbf{k-means} \quad 라벨 없이 $k$ 개 무리로 \quad 목표: 거리 제곱 합 (SSE) 최소\\[0.5em]
+\textcircled{1} 할당 (가장 가까운 중심) \; \textcircled{2} 갱신 (평균으로) \; 을 멈출 때까지 반복\\[0.5em]
+SSE 는 늘지 않지만 \kq{지역 최솟값}에 멈출 수 있다 $\to$ 여러 번 · k-means++\\[0.5em]
+$k$ 는 엘보우로 \quad 둥근 무리 가정, 단위 문제 $\to$ 표준화
+\end{tabular}
+\vfill
+\note{정리합니다. k-means는 라벨 없이 데이터를 k개 무리로 나누는 방법이고, 목표는 거리 제곱의 합을 가장 작게 하는 것입니다. 가장 가까운 중심 정하기와 평균으로 옮기기를 멈출 때까지 반복합니다. SSE는 늘지 않지만 지역 최솟값에 멈출 수 있어서 여러 번 시작하거나 k-means 플러스플러스로 시작합니다. k는 엘보우로 고르고, 둥근 무리를 가정한다는 것과 단위 문제를 기억해 둡시다. 다음 시간의 EM 알고리즘은 이 할당과 갱신을 확률로 부드럽게 바꾼 것입니다.}
+\end{frame}
+\end{document}
