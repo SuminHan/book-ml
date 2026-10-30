@@ -1,0 +1,67 @@
+\documentclass[11pt]{article}
+\usepackage{problem_set_style}
+\usepackage{kotex}
+\usepackage{booktabs}
+\usepackage{array}
+\begin{document}
+\heading{16}{샘플}{}{Spring 2027}{기말 프로젝트 샘플 (Abstract · 보고서 · 동료평가)}
+
+\noindent{\small 아래는 \textbf{가상의 팀}이 쓴 샘플입니다. 수치는 형식을 보이기 위한 예시이며 실제 실험 결과가 아닙니다. 형식과 분량의 기준으로만 참고하세요.}
+
+\section*{① Abstract 샘플 (기말 2주차 제출, 1쪽)}
+\noindent\textbf{제목}: Fashion-MNIST에서 작은 CNN과 GBDT 비교: 딥러닝이 필요한가 \\
+\textbf{팀}: 김OO, 이OO, 박OO
+
+\vspace{4pt}
+\noindent\textbf{문제 정의.} 행 하나는 \textbf{옷 사진 한 장}(28$\times$28 흑백), 라벨은 10종류 중 하나이다. 클래스가 균형이라 주 지표는 정확도와 macro-F1이다.
+
+\noindent\textbf{왜 딥러닝인가 (초안).} 픽셀 784개를 그대로 표처럼 넣으면 이웃 픽셀의 구조를 모델이 모른다. 합성곱이 이 구조를 쓰는지가 가설이며, GBDT와의 차이로 검증한다.
+
+\noindent\textbf{데이터와 분할.} Fashion-MNIST 70{,}000장. 공식 train 60{,}000장을 50{,}000/10{,}000으로 나눠 train/validation으로 쓰고, 공식 test 10{,}000장은 마지막에 한 번만 쓴다.
+
+\noindent\textbf{베이스라인.} 픽셀 784개를 입력으로 한 \textbf{GBDT}. 같은 train/validation으로 튜닝한다.
+
+\noindent\textbf{계획.} 합성곱 2층의 작은 CNN을 만들고, 에포크 곡선으로 조기 종료 지점을 정한다. 데이터 증강(좌우 반전)과 드롭아웃의 효과를 구성 요소 제거 실험으로 확인한다.
+
+\newpage
+\section*{② 보고서 샘플 (기말 6주차 제출, 축약본)}
+\noindent\textbf{1. 문제 정의.} 사진 한 장이 행, 라벨은 10종류. 주 지표는 정확도와 macro-F1. 베이스라인은 GBDT(픽셀 입력).
+
+\noindent\textbf{2. 데이터와 전처리.} 공식 test는 한 번만 사용했다. 픽셀 값은 0--1로 스케일링(데이터 전체 상수 255로 나눔, 통계량 누수 없음).
+
+\noindent\textbf{3. 모델 선택과 이유.} 합성곱이 이웃 픽셀의 모양을 쓰는지 보기 위해 CNN을, 구조를 모르는 비교 대상으로 GBDT를 골랐다.
+
+\begin{center}\small
+\begin{tabular}{@{}lcc@{}}\toprule
+모델 (validation) & 정확도 & 비고 \\\midrule
+GBDT (픽셀 784) & 0.89 & 베이스라인 \\
+CNN 2층 & 0.91 & \\
+CNN 2층 + 데이터 증강 & 0.92 & \\
+CNN 2층 + 증강 + 드롭아웃 & 0.93 & 에포크 15에서 종료 \\\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{4. 결과.} 최종 test는 한 번만: CNN 0.92, GBDT 0.88. 학습 곡선(에포크 단위)에서 에포크 15 이후 validation이 내려가기 시작해 15에서 멈췄다.
+
+\noindent\textbf{5. 수식적 정당화와 왜 딥러닝인가.} 합성곱은 파라미터를 위치마다 공유해 3$\times$3 필터 하나로 어디서든 같은 모양을 찾는다. 같은 크기의 완전연결층보다 파라미터가 적다. 그 결과 GBDT보다 test 정확도가 4\%p 높았다. 다만 정확도 차이가 크지 않아, 표 데이터였다면 GBDT로 충분했을 것이다.
+
+\noindent\textbf{6. 잘 안 된 부분.} 배치 정규화를 넣었더니 validation이 오르락내리락해서 뺐다. 배치 크기가 작아(16) 통계가 불안정했다고 진단했다.
+
+\newpage
+\section*{③ 동료평가 샘플 (기말 8주차 제출)}
+\noindent\textbf{평가 대상}: 다른 팀의 ``영화 리뷰 감성 분류'' 보고서 \quad \textbf{작성자}: 이OO
+
+\begin{center}\small
+\begin{tabular}{@{}p{3cm}p{9.4cm}@{}}\toprule
+항목 & 평가 \\\midrule
+문제 정의 & 문장 한 건이 행, 라벨은 긍정/부정. 명확하다. \\
+방법론 적절성 & 순서가 있는 문장이라 LSTM을 고른 이유가 설명되었다. \\
+수식적 정당화 & 게이트가 기울기 소실을 줄인다는 설명은 맞지만, 실제 그라디언트 크기 비교가 없어 숫자와 연결되지 않는다. \\
+결과의 정직성 & 실패한 시도를 적었다. 좋다. \\
+\textbf{왜 딥러닝인가} & ``정확도가 높아서''라는 한 줄이다. TF-IDF + 로지스틱회귀 베이스라인과의 비교가 없어 근거가 부족하다. \\\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{반박 가능한 질문.} TF-IDF + 로지스틱회귀 같은 단순한 베이스라인을 돌렸나요? 그 정확도와 LSTM의 차이가 계산 비용을 감당할 만큼인가요?
+
+\end{document}
