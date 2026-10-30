@@ -1,0 +1,161 @@
+\documentclass[12pt]{article}
+
+\usepackage{problem_set_style}
+\usepackage{kotex}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+
+\begin{document}
+\heading{16}{2027. X. XX (예정)}{}{Fall 2027}{기말 프로젝트 공고 (샘플)}
+
+\section*{1. 프로젝트 개요}
+9$\sim$15주차에서 배운 심층강화학습 도구(함수근사와 DQN, 정책기반
+강화학습, PPO, 모방학습과 RLHF, 로봇 시뮬레이션, MCTS)를 \textbf{연속제어
+환경}에 직접 적용하는 학기 후반 8주에 걸쳐 진행하는 팀 프로젝트이다. 목표는 ``좋은 정책을
+만드는 것'' 자체가 아니라, \textbf{그 성능 숫자를 정직하게 얻는 절차}를
+실제로 수행하고 보고하는 것이다.
+
+\vspace{4pt}
+\noindent 진행 순서: \textbf{환경 고르기 $\to$ Abstract $\to$ 구현 $\to$ 평가 $\to$ 보고서 제출 $\to$ 동료평가}. 이 과정에서 ``시드 $\ge 3$ $\cdot$ 무작위 정책 베이스라인 $\cdot$
+학습/평가 분리''라는 실험 프로토콜을 지켜야 한다.
+
+\section*{2. 필수 요구사항}
+\begin{itemize}
+\item \textbf{환경}: PyBullet 또는 Gymnasium의 연속제어(또는 이산제어)
+  환경 중 하나 (아래 3절 후보 참고, 팀별로 다른 환경 선택 가능).
+\item \textbf{적용 알고리즘}: 9$\sim$15주차 중 \textbf{최소 1개}의
+  방법(DQN, PPO, 모방학습, MCTS 등)으로 정책을 학습한다.
+\item \textbf{수식적 정당화 최소 1개}: 배운 개념(예: PPO 클리핑의
+  안정성 효과, 모방학습의 복합 오차, 도메인 무작위화의 sim-to-real
+  격차 완화)으로 ``왜 이 결과가 나왔는지''를 설명해야 한다.
+\item \textbf{학습 곡선 필수 제시}: 에피소드별 누적 보상 곡선은 ``학습이
+  실제로 되고 있는가''를 보여주는 기본 증거이다.
+\item \textbf{베이스라인 필수}: 무작위 정책의 평균 리턴을 먼저 측정해,
+  ``배운 정책이 실제로 무작위보다 나은가''를 판정할 기준점을 마련한다.
+\item \textbf{시드 $\ge 3$}, 모든 시드에 \textbf{동일한 평가
+  프로토콜}(학습 후 결정적 정책 $a=\mu$, 동일 에피소드 수)을 적용한다.
+\end{itemize}
+
+\newpage
+\section*{3. 환경 후보 (예시)}
+\begin{center}
+\small
+\begin{tabular}{@{}lllp{4.2cm}@{}}
+\toprule
+환경 & 상태$\times$행동 & 보상 구조 & 잘 어울리는 개념 \\
+\midrule
+Pendulum-v1 & 3$\times$1 (연속) & 항상 음수, 0이 완벽 & PPO 클리핑 효과 \\
+CartPole-v1 & 4$\times$2 (이산) & 생존 시 $-1$, 쓰러지면 종료 & DQN vs PPO 비교 \\
+MountainCar-v0 & 2$\times$3 (이산) & 스텝당 $-1$ (희소) & GAE $\lambda$ 트레이드오프 \\
+HumanoidStandup-v5 & 348$\times$17 (연속) & 포텐셜 기반 shaping & 도메인 무작위화, MuJoCo \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+환경은 임의로 고르지 않는다. ``검증하고 싶은 개념이 돋보이는 무대가
+무엇인가''를 기준으로 알고리즘과 환경을 짝짓는다 --- 예를 들어 PPO
+클리핑의 효과를 보이고 싶다면 연속 행동 공간인 Pendulum이, 도메인
+무작위화 효과를 보이고 싶다면 물리적으로 더 풍부한 MuJoCo 환경이
+적합하다.
+
+\section*{4. 일정 (후반 8주)}
+\begin{center}
+\small
+\begin{tabular}{@{}p{3.6cm}p{5.4cm}p{3.7cm}@{}}
+\toprule
+\textbf{시기} & \textbf{해야 할 일} & \textbf{제출} \\
+\midrule
+\textbf{기말 1주(9주차)} & 팀 구성, 환경 후보 2$\sim$3개 조사 &  \\
+\textbf{기말 2주(10주차)} & 문제 정의(MDP 5요소, 주 지표), 환경, 무작위 정책 베이스라인, 적용할 심층 알고리즘 계획 & \textbf{Abstract} (1p) \\
+\textbf{기말 3$\sim$5주} & 알고리즘 구현, 시드 3개 이상 실행, 하이퍼파라미터 조정(모든 시드에 동일), 학습 곡선 &  \\
+\textbf{기말 6주(14주차)} & 보고서 완성 & \textbf{보고서 제출}: 보고서 PDF + 코드 + 학습 곡선 + 시드 비교표 \\
+\textbf{기말 7주(15주차)} & 제출된 다른 팀 보고서 읽기 &  \\
+\textbf{기말 8주(16주차, 기말고사 기간)} & 다른 팀 2개에 대한 peer-review 작성 & \textbf{동료평가} 제출 (리뷰 2건) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\section*{5. 보고서 구조}
+\begin{enumerate}
+\item \textbf{문제 정의} (0.5p): MDP 5요소, 상태·행동 차원과 범위,
+  전이·보상(이론적 리턴 범위 포함), 할인율, 주 지표(학습 후 결정적
+  평가의 평균 리턴), 베이스라인.
+\item \textbf{알고리즘 선택과 이유} (1p): 왜 이 환경에 이 알고리즘을
+  골랐는가, 하이퍼파라미터와 그 선택 근거.
+\item \textbf{실험 프로토콜} (1p): 시드 목록, 학습 예산, 평가
+  프로토콜(결정적 $a=\mu$, 에피소드 수, 모든 시드 동일) 명시.
+\item \textbf{결과} (1p): 시드 비교표, 학습 곡선 1장(여러 시드를 함께
+  표시), 같은 정책의 여러 측정치(학습 도중/결정적/베이스라인) 비교.
+\item \textbf{수식적 정당화} (1p): 배운 개념 1개 이상으로 ``왜 이
+  결과가 나왔는지'' 설명.
+\item \textbf{재현 방법} (0.5p): 환경 버전, 시드 목록, 에피소드 수, 하이퍼파라미터, 실행 명령. 다른 사람이 같은 곡선을 다시 얻을 수 있어야 한다.
+\item \textbf{한계와 잘 안 된 부분} (0.5p, \textbf{필수}): 안 된
+  부분이 없었다면 무엇을 시도했다가 잘 안 됐는지를 쓴다.
+\end{enumerate}
+
+\section*{6. 채점 기준 (Rubric)}
+다섯 항목을 각 20\%로 채점한다. 목적은 ``좋은 정책''이 아니라 \textbf{주장을 정직하고 재현 가능하게 입증}하는 것이다.
+\begin{center}
+\small
+\begin{tabular}{@{}p{3.3cm}cp{7.4cm}@{}}
+\toprule
+항목 & 비중 & 좋은 답 \\
+\midrule
+\textbf{1. 주장의 명확성} (clarity) & 20\% & 무엇을 주장하는지 첫 문단에서 한 문장으로 알 수 있고, MDP 5요소·주 지표가 명확하며, 결과가 주장과 이어짐 \\
+\textbf{2. 비교 대상} (baseline) & 20\% & 무작위 정책과 표 기반 또는 단순 알고리즘 베이스라인이 같은 시드·같은 평가 프로토콜로 비교되고, ``왜 심층 강화학습이 필요한가''에 숫자로 답함 \\
+\textbf{3. 확장성} (scalability) & 20\% & 다른 환경 하나(또는 환경 난이도 변경)에서도 결론이 유지되는지 확인하고, 구성 요소 제거·민감도 실험으로 어디까지 통하는지 보임 \\
+\textbf{4. 재현성} (reproducibility) & 20\% & 환경 버전·시드 목록·에피소드 수·평가 프로토콜·하이퍼파라미터·실행 방법이 적혀 있어 다른 사람이 같은 곡선을 다시 얻을 수 있음 \\
+\textbf{5. 한계의 솔직함} (limitations) & 20\% & 불안정했던 시드·구간, 약한 가정, 통하지 않을 환경 조건을 숨기지 않고 원인을 진단함. 성능이 낮아도 한계가 정직하면 높은 점수 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{4pt}
+시드 하나만 보여 주거나, 무작위 정책 비교가 없거나, 재현이 불가능하면 크게 감점받는다.
+
+\newpage
+\section*{7. 동료평가 (Peer-Review)}
+\begin{itemize}
+\item \textbf{Peer-Review}: 기말 8주차에 다른 두 팀의 보고서에 대해 작성 리뷰를 각 1통씩 제출한다. 각 리뷰는 아래 5항목 체크리스트와, 반박 가능한 질문을 1개 이상 포함해야 한다.
+\end{itemize}
+
+\vspace{4pt}
+\noindent\textbf{Peer-Review 체크리스트 (채점 기준과 같은 5항목)}
+\begin{center}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+항목 & 확인할 것 \\
+\midrule
+주장의 명확성 (clarity) & 무엇을 주장하는지 분명하게 썼는가 \\
+비교 대상 (baseline) & 비교 대상이 있는가 (무작위 정책과 단순 알고리즘 포함) \\
+확장성 (scalability) & 다른 환경에도 적용 가능한가 \\
+재현성 (reproducibility) & 다른 사람이 다시 해 볼 수 있는가 \\
+한계 (limitations) & 한계를 솔직하게 적었는가 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{8. 자주 하는 실수 (미리 확인할 것)}
+\begin{enumerate}
+\item 시드 1개만 돌리고 결론을 내리는 것 (시드 간 편차가 방법 간
+  차이보다 클 수 있다).
+\item 학습 도중의 리턴(탐험 포함)을 최종 정책 성능으로 보고하는 것.
+\item 최종 평가 수치가 예뻐질 때까지 하이퍼파라미터를 계속 조정하는
+  것(평가에 대한 과적합).
+\item 베이스라인 없이 ``잘 배웠다''고 주장하는 것.
+\item 결정적 평가가 샘플링 평가보다 낮게 나오는 것을 버그로 오해하는
+  것 (정상적인 현상일 수 있다).
+\end{enumerate}
+
+\section*{9. 팀 구성 및 제출 방식}
+\begin{itemize}
+\item \textbf{팀 구성}: 팀당 인원 및 팀 편성 방식은 추후 공지 (예:
+  팀당 1$\sim$3인, 자유 구성 또는 무작위 배정).
+\item \textbf{제출물}: Abstract(기말 2주), 보고서(PDF)와 코드(기말 6주), peer-review 2건(기말 8주).
+\item \textbf{제출 방법 및 마감}: 추후 공지 (LMS/과제 제출 시스템 및
+  마감 일시는 별도 안내 예정).
+\end{itemize}
+
+\end{document}
