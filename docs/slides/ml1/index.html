@@ -1,0 +1,129 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ML1 강의 슬라이드</title>
+<style>
+ :root{--ink:#1e1b33;--dim:#6a6580;--acc:#2E3192;--line:#e4e0d4;--bg:#f7f5f0;--card:#fff}
+ @media(prefers-color-scheme:dark){:root{--ink:#e9e7f2;--dim:#9d99b4;--acc:#8f92e6;
+   --line:#2f2b45;--bg:#141225;--card:#1d1a30}}
+ *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+   font:15px/1.6 "IBM Plex Sans KR",system-ui,"Noto Sans KR",sans-serif}
+ .w{max-width:760px;margin:0 auto;padding:48px 22px 80px}
+ h1{font-size:24px;margin:0 0 4px}.sub{color:var(--dim);font-size:13px;margin-bottom:28px}
+ h3{font-size:13px;margin:18px 0 6px;color:var(--dim)}h2{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--acc);
+   margin:32px 0 8px}
+ ul{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);
+   border-radius:12px;overflow:hidden}
+ li{padding:11px 16px;border-bottom:1px solid var(--line);display:flex;
+   justify-content:space-between;gap:12px}
+ li:last-child{border-bottom:none}
+ a{color:var(--ink);text-decoration:none;font-weight:600}a:hover{color:var(--acc)}
+ .pend{color:var(--dim)}a.m{color:var(--acc)}.m{color:var(--dim);font-size:12px;font-family:ui-monospace,monospace;
+   white-space:nowrap}
+details{margin:0 0 8px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}summary{cursor:pointer;padding:11px 16px;font-weight:600;display:flex;justify-content:space-between;list-style:none}summary::-webkit-details-marker{display:none}summary::before{content:"▸";margin-right:8px;color:var(--acc)}details[open] summary::before{content:"▾"}summary span{margin-left:auto}details ul{border:none;border-top:1px solid var(--line);border-radius:0}summary .wk,summary .t,summary .tag{margin-left:0}summary .tag{margin-left:8px}.wk{color:var(--acc);font-weight:700;min-width:3.4em}.t{flex:1}.tag{font-size:11px;font-weight:600;padding:1px 8px;border-radius:99px;margin-left:8px;white-space:nowrap}
+.tag.mid{background:#dfe3fb;color:#2E3192}.tag.fin{background:#f1e8cf;color:#7a6a3a}.tag.ex{background:#f9dcdc;color:#a33}
+@media(prefers-color-scheme:dark){.tag.mid{background:#2c2f6b;color:#c9cbff}.tag.fin{background:#4a4126;color:#e8dcb0}.tag.ex{background:#5a2a2a;color:#ffc9c9}}
+details.mid[open]>summary{background:#eceefb;box-shadow:inset 4px 0 #2E3192}details.fin[open]>summary{background:#f6f0de;box-shadow:inset 4px 0 #a9976b}details.exam[open]>summary{background:#fbe9e9;box-shadow:inset 4px 0 #c55}
+@media(prefers-color-scheme:dark){details.mid[open]>summary{background:#262452}details.fin[open]>summary{background:#352f1c}details.exam[open]>summary{background:#3a2020}}
+.tag.due{background:#fff1c9;color:#7a5200;border:1px solid #e3c466}@media(prefers-color-scheme:dark){.tag.due{background:#4a3a10;color:#ffe29a;border-color:#7a6220}}li.ms{background:rgba(169,151,107,.12)}li.ms a{color:var(--acc)}.wr{display:grid;grid-template-columns:1fr 200px;gap:0 14px}.wr>details{margin:0 0 8px}
+.lane{position:relative;min-height:46px}.lane .ln{position:absolute;left:9px;width:2px}
+.ln.mid,.dot.mid{background:#2E3192}.ln.fin,.dot.fin{background:#a9976b}
+.dot{position:absolute;left:4px;top:17px;width:12px;height:12px;border-radius:50%;border:2px solid var(--bg)}
+.dot.start{background:var(--bg)!important;border:2px solid #2E3192}.dot.fin.start{border-color:#a9976b}
+.dot.mid:not(.start)::before,.dot.fin:not(.start)::before{content:"";position:absolute;left:-1px;top:-14px;border:5px solid transparent;border-top:8px solid;border-bottom:0;color:inherit}
+.dot.mid::before{border-top-color:#2E3192}.dot.fin::before{border-top-color:#a9976b}
+.lb{position:absolute;left:26px;top:12px;font-size:12.5px;line-height:1.3;font-weight:600;color:var(--ink);text-decoration:none}
+.lb span{display:block;font-weight:400;color:var(--dim);font-size:11px}.lb.mid{color:#2E3192}.lb.fin{color:#8a7a45}
+@media(prefers-color-scheme:dark){.lb.mid{color:#aeb1f2}.lb.fin{color:#d6cbb1}.dot.mid,.ln.mid{background:#8f92e6}.dot.start{border-color:#8f92e6}.dot.mid::before{border-top-color:#8f92e6}}
+@media(max-width:760px){.wr{grid-template-columns:1fr}.lane{min-height:0;margin:-4px 0 8px}.lane .ln,.lane .dot{display:none}.lb{position:static;display:inline-block;margin:0 0 6px 4px;padding:2px 10px;border-radius:99px;background:var(--card);border:1px solid var(--line)}.lb span{display:inline;margin-left:6px}}
+.w{max-width:1000px!important}
+.lanehd{float:right;text-transform:none;letter-spacing:0}@media(max-width:760px){.lanehd{display:none}}</style></head><body><div class="w">
+<h1>Machine Learning 1 · 기계학습과 심층학습</h1><div class="sub"><a href="../">← 강의 슬라이드</a> · <a href="../ml2/">ML2</a></div>
+<h2>주차별 <span class="lanehd">수업 | 과제 (공지 → 제출)</span></h2>
+<div class="sub">주차를 누르면 그 주의 덱이 펼쳐집니다. <span class="tag mid">중간고사 범위</span> 1~7주차 · <span class="tag fin">기말고사 범위</span> 9~15주차 · 갱신 2026-10-30.</div>
+<div class="wr"><details class="mid" open><summary><span class="wk">1주차</span><span class="t">기계학습 소개 · kNN · 4개</span><span class="tag mid">중간</span><span class="tag due">공지</span></summary><ul>
+<li class="ms"><a href="ML1_중간프로젝트_공지.pdf">중간 프로젝트 시작 · 공지 (3주 Abstract · 6주 제출 · 8주 동료평가)</a><span class="m">프로젝트 공지</span></li>
+<li><a href="week01/1_course_intro.pdf">01-1 · 기계학습과 심층학습: 이 수업은 무엇을 하는가</a><span class="m">33쪽</span></li>
+<li><a href="week01/2_problem_formulation.pdf">01-2 · 문제 정형화와 평가지표</a><span class="m">21쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week01/problem_formulation/lab/problem_formulation.ipynb">Colab</a></span></li>
+<li><a href="week01/3_data_handling.pdf">01-3 · 데이터 직접 다루기</a><span class="m">30쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week01/data_handling/lab/data_handling.ipynb">Colab</a></span></li>
+<li><a href="week01/4_knn.pdf">01-4 · kNN 최근접 이웃 (k-Nearest Neighbors)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week04/knn/lab/knn.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln mid" style="top:23px;bottom:-8px"></i><i class="dot mid start"></i><a class="lb mid" href="ML1_중간프로젝트_공지.pdf">공지 · 중간 프로젝트 시작<span>1주차</span></a></div></div>
+<div class="wr"><details class="mid"><summary><span class="wk">2주차</span><span class="t">선형·로지스틱 회귀 · 3개</span><span class="tag mid">중간</span></summary><ul>
+<li><a href="week02/1_linear_regression.pdf">02-1 · 선형회귀 (Linear Regression)</a><span class="m">16쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week02/linear_regression/lab/linear_regression.ipynb">Colab</a></span></li>
+<li><a href="week02/2_logistic_regression.pdf">02-2 · 로지스틱회귀 (Logistic Regression)</a><span class="m">16쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week02/2_logistic_regression/lab/logistic_regression.ipynb">Colab</a></span></li>
+<li><a href="week02/3_cross_entropy.pdf">02-3 · 교차 엔트로피 (Cross-Entropy)</a><span class="m">17쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week02/cross_entropy/lab/cross_entropy.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln mid" style="top:-8px;bottom:-8px"></i></div></div>
+<div class="wr"><details class="mid"><summary><span class="wk">3주차</span><span class="t">모델 평가 · SVM · 4개</span><span class="tag mid">중간</span><span class="tag due">Due Abstract</span></summary><ul>
+<li class="ms"><a href="ML1_중간프로젝트_샘플.pdf#page=1">중간 프로젝트 Abstract 제출</a><span class="m">샘플 1쪽</span></li>
+<li><a href="week03/1_overfitting.pdf">03-1 · 과대적합과 과소적합 (Overfitting &amp; Underfitting)</a><span class="m">17쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week02/overfitting/lab/overfitting.ipynb">Colab</a></span></li>
+<li><a href="week03/2_precision_recall.pdf">03-2 · 정밀도와 재현율 (Precision &amp; Recall)</a><span class="m">16쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week02/precision_recall/lab/precision_recall.ipynb">Colab</a></span></li>
+<li><a href="week03/3_roc_pr_auc.pdf">03-3 · ROC-AUC와 PR-AUC</a><span class="m">15쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week02/pr_auc/lab/pr_auc.ipynb">Colab</a></span></li>
+<li><a href="week03/4_svm.pdf">03-4 · 서포트 벡터 머신 (Support Vector Machine)</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week05/svm/lab/svm.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln mid" style="top:-8px;bottom:-8px"></i><i class="dot mid mid"></i><a class="lb mid" href="ML1_중간프로젝트_샘플.pdf#page=1">Abstract 제출<span>3주차</span></a></div></div>
+<div class="wr"><details class="mid"><summary><span class="wk">4주차</span><span class="t">트리 모델 · 4개</span><span class="tag mid">중간</span></summary><ul>
+<li><a href="week04/1_decision_tree.pdf">04-1 · 결정 트리 (Decision Tree)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week07/decision_tree/lab/decision_tree.ipynb">Colab</a></span></li>
+<li><a href="week04/2_entropy.pdf">04-2 · 섀넌 엔트로피 (Shannon Entropy)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week07/entropy/lab/entropy.ipynb">Colab</a></span></li>
+<li><a href="week04/3_random_forest.pdf">04-3 · 랜덤 포레스트 (Random Forest)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week07/random_forest/lab/random_forest.ipynb">Colab</a></span></li>
+<li><a href="week04/4_gbdt_shap.pdf">04-4 · GBDT 와 SHAP</a><span class="m">22쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week07/gbdt_shap/lab/gbdt_shap.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln mid" style="top:-8px;bottom:-8px"></i></div></div>
+<div class="wr"><details class="mid"><summary><span class="wk">5주차</span><span class="t">나이브 베이즈 · 정규화 · 4개</span><span class="tag mid">중간</span></summary><ul>
+<li><a href="week05/1_naive_bayes.pdf">05-1 · 나이브 베이즈</a><span class="m">25쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week03/naive_bayes/lab/naive_bayes.ipynb">Colab</a></span></li>
+<li><a href="week05/2_distributions.pdf">05-2 · 분포 함수 (Distribution Functions)</a><span class="m">21쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week03/gaussian/lab/gaussian.ipynb">Colab</a></span></li>
+<li><a href="week05/3_regularization.pdf">05-3 · 정규화: L1 · L2 (Ridge · Lasso)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week06/regularization/lab/regularization.ipynb">Colab</a></span></li>
+<li><a href="week05/4_cross_validation.pdf">05-4 · 교차 검증 (Cross Validation)</a><span class="m">15쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week06/cross_validation/lab/cross_validation.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln mid" style="top:-8px;bottom:-8px"></i></div></div>
+<div class="wr"><details class="mid"><summary><span class="wk">6주차</span><span class="t">비지도 학습 · 모델 선택 · 5개</span><span class="tag mid">중간</span><span class="tag due">Due 보고서</span></summary><ul>
+<li class="ms"><a href="ML1_중간프로젝트_샘플.pdf#page=2">중간 프로젝트 보고서 제출 (중간고사 기간)</a><span class="m">샘플 2쪽</span></li>
+<li><a href="week06/1_kmeans.pdf">06-1 · k-means 클러스터링</a><span class="m">15쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week04/kmeans/lab/kmeans.ipynb">Colab</a></span></li>
+<li><a href="week06/2_em_algorithm.pdf">06-2 · EM 알고리즘 (Expectation-Maximization)</a><span class="m">16쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week04/em_algorithm/lab/em_algorithm.ipynb">Colab</a></span></li>
+<li><a href="week06/3_pca.pdf">06-3 · PCA 주성분 분석 (Principal Component Analysis)</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week14/pca/lab/pca.ipynb">Colab</a></span></li>
+<li><a href="week06/4_train_val_test.pdf">06-4 · train / val / test 와 데이터 누수</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week06/train_val_test/lab/train_val_test.ipynb">Colab</a></span></li>
+<li><a href="week06/5_early_stopping.pdf">06-5 · Early Stopping (조기 종료)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week06/early_stopping/lab/early_stopping.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln mid" style="top:-8px;bottom:-8px"></i><i class="dot mid mid"></i><a class="lb mid" href="ML1_중간프로젝트_샘플.pdf#page=2">보고서 제출<span>6주차</span></a></div></div>
+<div class="wr"><details class="mid"><summary><span class="wk">7주차</span><span class="t">신경망 · 역전파 · 4개</span><span class="tag mid">중간</span></summary><ul>
+<li><a href="week07/1_xor_backprop.pdf">07-1 · XOR 과 역전파 (Backpropagation)</a><span class="m">16쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week09/xor_backprop/lab/xor_backprop.ipynb">Colab</a></span></li>
+<li><a href="week07/2_vanishing_gradient.pdf">07-2 · 기울기 소실 (Vanishing Gradient)</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week09/vanishing_gradient/lab/vanishing_gradient.ipynb">Colab</a></span></li>
+<li><a href="week07/3_sgd.pdf">07-3 · 확률적 경사하강법 (SGD)</a><span class="m">23쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week02/sgd/lab/sgd.ipynb">Colab</a></span></li>
+<li><a href="week07/4_momentum_adam.pdf">07-4 · 모멘텀과 Adam</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week09/momentum_adam/lab/momentum_adam.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln mid" style="top:-8px;bottom:-8px"></i></div></div>
+<div class="wr"><details class="exam"><summary><span class="wk">8주차</span><span class="t">중간 프로젝트 · 중간고사</span><span class="tag ex">시험</span><span class="tag due">Due 동료평가</span></summary><ul>
+<li class="ms"><a href="ML1_중간프로젝트_샘플.pdf#page=3">중간 프로젝트 동료평가 (중간고사 기간)</a><span class="m">샘플 3쪽</span></li><li><a href="ML1_중간고사_예상문제.pdf">중간고사 예상 문제 (1~7주차)</a><span class="m">15문항 · <a class="m" href="ML1_중간고사_예상문제_풀이.pdf">풀이</a></span></li></ul></details><div class="lane"><i class="ln mid" style="top:-8px;height:31px"></i><i class="dot mid end"></i><a class="lb mid" href="ML1_중간프로젝트_샘플.pdf#page=3">동료평가 제출<span>8주차</span></a></div></div>
+<div class="wr"><details class="fin"><summary><span class="wk">9주차</span><span class="t">CNN · 학습 기법 · 5개</span><span class="tag fin">기말</span><span class="tag due">공지</span></summary><ul>
+<li class="ms"><a href="ML1_기말프로젝트_공지.pdf">기말 프로젝트 시작 · 공지 (2주 Abstract · 6주 제출 · 8주 동료평가)</a><span class="m">프로젝트 공지</span></li>
+<li><a href="week09/1_cnn.pdf">09-1 · CNN 합성곱 신경망 (Convolutional Neural Network)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week10/cnn/lab/cnn.ipynb">Colab</a></span></li>
+<li><a href="week09/2_resnet.pdf">09-2 · ResNet 잔차 신경망 (Residual Network)</a><span class="m">12쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week10/resnet/lab/resnet.ipynb">Colab</a></span></li>
+<li><a href="week09/3_data_augmentation.pdf">09-3 · 데이터 증강 (Data Augmentation)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week10/data_augmentation/lab/data_augmentation.ipynb">Colab</a></span></li>
+<li><a href="week09/4_normalization.pdf">09-4 · 정규화 층: BatchNorm · LayerNorm (Normalization)</a><span class="m">15쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week09/batchnorm/lab/batchnorm.ipynb">Colab</a></span></li>
+<li><a href="week09/5_dropout.pdf">09-5 · Dropout (드롭아웃)</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week09/dropout/lab/dropout.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln fin" style="top:23px;bottom:-8px"></i><i class="dot fin start"></i><a class="lb fin" href="ML1_기말프로젝트_공지.pdf">공지 · 기말 프로젝트 시작<span>9주차</span></a></div></div>
+<div class="wr"><details class="fin"><summary><span class="wk">10주차</span><span class="t">표현 학습 · 임베딩 · 3개</span><span class="tag fin">기말</span><span class="tag due">Due Abstract</span></summary><ul>
+<li class="ms"><a href="ML1_기말프로젝트_샘플.pdf#page=1">기말 프로젝트 Abstract 제출 (기말 2주)</a><span class="m">샘플 1쪽</span></li>
+<li><a href="week10/1_tsne.pdf">10-1 · t-SNE 데이터 지도</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week14/tsne/lab/tsne.ipynb">Colab</a></span></li>
+<li><a href="week10/2_word2vec.pdf">10-2 · word2vec 단어를 벡터로</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week14/word2vec/lab/word2vec.ipynb">Colab</a></span></li>
+<li><a href="week10/3_embedding.pdf">10-3 · 표상과 임베딩 (Representation · Embedding)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week14/embedding/lab/embedding.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln fin" style="top:-8px;bottom:-8px"></i><i class="dot fin mid"></i><a class="lb fin" href="ML1_기말프로젝트_샘플.pdf#page=1">Abstract 제출<span>10주차</span></a></div></div>
+<div class="wr"><details class="fin"><summary><span class="wk">11주차</span><span class="t">시퀀스 모델 · 4개</span><span class="tag fin">기말</span></summary><ul>
+<li><a href="week11/1_rnn.pdf">11-1 · RNN 순환 신경망 (Recurrent Neural Network)</a><span class="m">15쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week11/rnn/lab/rnn.ipynb">Colab</a></span></li>
+<li><a href="week11/2_lstm.pdf">11-2 · LSTM 장단기 메모리 (Long Short-Term Memory)</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week11/lstm/lab/lstm.ipynb">Colab</a></span></li>
+<li><a href="week11/3_gru.pdf">11-3 · GRU 게이트 순환 유닛 (Gated Recurrent Unit)</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week11/gru/lab/gru.ipynb">Colab</a></span></li>
+<li><a href="week11/4_seq2seq.pdf">11-4 · Seq2Seq 시퀀스투시퀀스 (Sequence to Sequence)</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week12/seq2seq/lab/seq2seq.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln fin" style="top:-8px;bottom:-8px"></i></div></div>
+<div class="wr"><details class="fin"><summary><span class="wk">12주차</span><span class="t">어텐션 · 트랜스포머 · 2개</span><span class="tag fin">기말</span></summary><ul>
+<li><a href="week12/1_attention.pdf">12-1 · 어텐션 (Attention)</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week12/attention/lab/attention.ipynb">Colab</a></span></li>
+<li><a href="week12/2_transformer_gnn.pdf">12-2 · 트랜스포머와 그래프 신경망 (Transformer · GNN)</a><span class="m">16쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week12/transformer/lab/transformer.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln fin" style="top:-8px;bottom:-8px"></i></div></div>
+<div class="wr"><details class="fin"><summary><span class="wk">13주차</span><span class="t">그래프 신경망 · 1개</span><span class="tag fin">기말</span></summary><ul>
+<li><a href="week13/1_gcn.pdf">13-1 · GCN 그래프 신경망 (Graph Convolutional Network)</a><span class="m">12쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week13/gcn/lab/gcn.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln fin" style="top:-8px;bottom:-8px"></i></div></div>
+<div class="wr"><details class="fin"><summary><span class="wk">14주차</span><span class="t">이미지 생성 모델 · 4개</span><span class="tag fin">기말</span><span class="tag due">Due 보고서</span></summary><ul>
+<li class="ms"><a href="ML1_기말프로젝트_샘플.pdf#page=2">기말 프로젝트 보고서 제출 (기말 6주)</a><span class="m">샘플 2쪽</span></li>
+<li><a href="week14/1_vae.pdf">14-1 · VAE 변분 오토인코더 (Variational Autoencoder)</a><span class="m">12쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week15/vae/lab/vae.ipynb">Colab</a></span></li>
+<li><a href="week14/2_kl_divergence.pdf">14-2 · KL 발산 (Kullback–Leibler Divergence)</a><span class="m">11쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week15/kl_divergence/lab/kl_divergence.ipynb">Colab</a></span></li>
+<li><a href="week14/3_gan.pdf">14-3 · GAN 생성적 적대 신경망 (Generative Adversarial Network)</a><span class="m">12쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week15/gan/lab/gan.ipynb">Colab</a></span></li>
+<li><a href="week14/4_diffusion.pdf">14-4 · Diffusion 확산 모델</a><span class="m">14쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week15/diffusion/lab/diffusion.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln fin" style="top:-8px;bottom:-8px"></i><i class="dot fin mid"></i><a class="lb fin" href="ML1_기말프로젝트_샘플.pdf#page=2">보고서 제출<span>14주차</span></a></div></div>
+<div class="wr"><details class="fin"><summary><span class="wk">15주차</span><span class="t">언어 모델 · 1개</span><span class="tag fin">기말</span></summary><ul>
+<li><a href="week15/1_bert.pdf">15-1 · BERT 빈칸 채우기</a><span class="m">13쪽 · <a class="m" href="https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/v2/ml1/week14/bert/lab/bert.ipynb">Colab</a></span></li>
+</ul></details><div class="lane"><i class="ln fin" style="top:-8px;bottom:-8px"></i></div></div>
+<div class="wr"><details class="exam"><summary><span class="wk">16주차</span><span class="t">기말 프로젝트 · 기말고사</span><span class="tag ex">시험</span><span class="tag due">Due 동료평가</span></summary><ul>
+<li class="ms"><a href="ML1_기말프로젝트_샘플.pdf#page=3">기말 프로젝트 동료평가 (기말고사 기간)</a><span class="m">샘플 3쪽</span></li><li><a href="ML1_기말고사_예상문제.pdf">기말고사 예상 문제 (9~15주차)</a><span class="m">13문항 · <a class="m" href="ML1_기말고사_예상문제_풀이.pdf">풀이</a></span></li></ul></details><div class="lane"><i class="ln fin" style="top:-8px;height:31px"></i><i class="dot fin end"></i><a class="lb fin" href="ML1_기말프로젝트_샘플.pdf#page=3">동료평가 제출<span>16주차</span></a></div></div>
+</div></body></html>
