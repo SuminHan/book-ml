@@ -75,6 +75,7 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parent.parent
 SLIDES_DIR = ROOT / "slides"
+SITE_ML1 = ROOT / "docs/slides/ml1/2027-spring/index.html"  # the review home page mirrors this site page
 CACHE_DIR = ROOT / ".review_cache"
 EXCLUDE_DIR_NAMES = {"exams", "quizzes"}  # sensitive drafts, skip in the review tool
 RENDER_DPI = 200
@@ -2056,7 +2057,12 @@ class Handler(BaseHTTPRequestHandler):
         qs = parse_qs(parsed.query)
         try:
             if parsed.path == "/":
-                return self.handle_index(qs.get("v", [None])[0])
+                v = qs.get("v", [None])[0]
+                if v in (None, "ml1") and SITE_ML1.is_file():
+                    return self.handle_site_index()
+                return self.handle_index(v)
+            if parsed.path.startswith("/site/"):
+                return self.handle_site_file(unquote(parsed.path[len("/site/"):]))
             if parsed.path == "/favicon.ico":
                 return self.handle_favicon()
             if parsed.path == "/deck":
@@ -2238,6 +2244,42 @@ class Handler(BaseHTTPRequestHandler):
             '<text y=".9em" font-size="90">\U0001F3AC</text></svg>'
         )
         self._send(200, svg.encode("utf-8"), "image/svg+xml")
+
+    def handle_site_index(self):
+        """The public site page (docs/slides/ml1/2027-spring/index.html), with each deck PDF link
+        pointed at this server's page viewer + a note-count badge, so review starts from the same week cards."""
+        html = SITE_ML1.read_text(encoding="utf-8")
+        decks = set(find_decks())
+
+        def deck_link(m):
+            week, name = m.group(1), m.group(2)
+            did = f"ml1/{week}/{name}/{re.sub(r'^[0-9]+_', '', name)}"
+            if did not in decks:
+                return m.group(0)
+            return f'href="/deck?id={quote(did)}" data-notes="{len(load_notes(did))}"'
+
+        html = re.sub(r'href="(week[0-9]{2})/([0-9]+_[A-Za-z0-9_]+)\.pdf"', deck_link, html)
+        # other relative links (handout PDFs, samples) are served from the site folder
+        html = re.sub(r'href="(?!https?:|/|#|\.\./)([^"]+)"', lambda m: f'href="/site/{m.group(1)}"', html)
+        html = html.replace('href="../../"', 'href="/?v=old"').replace("← 강의 슬라이드", "← 옛 덱 목록 (old)")
+        badge = (
+            "<style>a[data-notes]::after{content:attr(data-notes) '개 주석';margin-left:8px;font-size:11px;"
+            "font-weight:500;padding:1px 7px;border-radius:99px;background:#e8f0ff;color:#2354a5}"
+            "a[data-notes='0']::after{background:transparent;color:var(--dim)}"
+            ".rv{position:sticky;top:0;z-index:5;background:#2E3192;color:#fff;font-size:12px;padding:6px 14px}"
+            ".rv a{color:#fff;margin-left:10px}</style>"
+            '<div class="rv">리뷰 서버 · 덱을 누르면 쪽별 보기로 열립니다'
+            '<a href="/?v=old">옛 덱 (old)</a></div>'
+        )
+        html = html.replace("<body>", "<body>" + badge, 1)
+        self._send_html(html)
+
+    def handle_site_file(self, rel):
+        path = (SITE_ML1.parent / rel).resolve()
+        if SITE_ML1.parent.resolve() not in path.parents or not path.is_file():
+            raise FileNotFoundError()
+        ctype = {".pdf": "application/pdf", ".png": "image/png", ".jpg": "image/jpeg", ".html": "text/html; charset=utf-8"}.get(path.suffix.lower(), "application/octet-stream")
+        self._send(200, path.read_bytes(), ctype)
 
     def handle_index(self, version=None):
         # one tab per top-level folder under slides/ (kor, v2, v2_cs, …) --
