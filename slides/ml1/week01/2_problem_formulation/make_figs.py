@@ -74,4 +74,17 @@ def homerun_scene(shot, path):
 
 
 homerun_scene("photos/com2us_baseball_2021.png", O + "pf_homerun.png")
+# 6. 1쪽 답: 타석 100개 중 홈런 3개 (2024 MLB 2.99%) 를 격자로, AI 는 전부 '아님'
+fig, ax = plt.subplots(figsize=(5.2, 5.2))
+hr_cells = round(HR["mlb_hr"] / HR["mlb_pa"] * 100)          # 2.99% -> 3 칸
+for k in range(100):
+    r, c = divmod(k, 10)
+    is_hr = k in (23, 56, 88)[:hr_cells]
+    ax.add_patch(plt.Rectangle((c, 9 - r), 0.86, 0.86, fc=(RED if is_hr else "#d9dde5"), ec="none"))
+    ax.text(c + 0.43, 9 - r + 0.43, "×" if is_hr else "○", ha="center", va="center", fontsize=11,
+            color=("white" if is_hr else "#7a8496"), fontweight="bold")
+ax.set_xlim(-0.1, 10); ax.set_ylim(-0.1, 10); ax.set_aspect("equal"); ax.axis("off")
+fig.tight_layout(); fig.savefig(O + "pf_waffle.png"); plt.close(fig)
+
+
 print("figs done")

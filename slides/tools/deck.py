@@ -6,6 +6,7 @@
   deck.py show   DECK N [N..]    하단 번호 N 쪽을 png 로 렌더 (경로 출력 -> Read 로 본다)
   deck.py sheet  DECK            전체 쪽을 12장씩 한 장으로 모은 미리보기 (전체 훑어보기용)
   deck.py notes  DECK            발표자 노트 md 만 재생성
+  deck.py notespdf DECK          슬라이드 한 쪽 + 노트 한 쪽씩 번갈아 나오는 <주제>_with_notes.pdf (발표 연습 · 인쇄용, git 에는 안 올림)
 
 쪽 번호: 사용자가 말하는 "8/24" 는 하단 번호다. 표지는 번호가 없으므로 PDF 쪽 = 하단 번호 + 1.
 (\\pause 같은 오버레이를 쓰면 프레임과 쪽이 1:1 이 아니게 되니 v2 덱에서는 쓰지 않는다.)
@@ -122,9 +123,25 @@ def cmd_sheet(d):
         p = f"{OUT}/{topic}-sheet{part // 12}.png"; sheet.save(p); print(p)
 
 
+def cmd_notespdf(d):
+    """\\setbeameroption{show notes} 를 넣은 임시 tex 를 덱 폴더에서 빌드 (그림 경로가 같아야 해서) 하고 임시 tex 는 /tmp 로 옮긴다."""
+    import shutil
+    d, topic, tex, _ = deck_paths(d)
+    tmp = os.path.join(d, f"{topic}_with_notes.tex")
+    page = (r"\setbeameroption{show notes}\setbeamertemplate{note page}{\pagecolor{white}\vskip0.6em"
+            r"{\small\bfseries\insertframetitle}\par\vskip0.4em\begin{minipage}[t]{0.92\textwidth}\normalsize\raggedright\insertnote\end{minipage}}")
+    src = open(tex).read().replace(r"\begin{document}", page + "\n" + r"\begin{document}", 1)
+    open(tmp, "w").write(src)
+    r = subprocess.run(["tectonic", "-X", "compile", os.path.basename(tmp)], cwd=d, capture_output=True, text=True)
+    os.makedirs(OUT, exist_ok=True); shutil.move(tmp, os.path.join(OUT, os.path.basename(tmp)))
+    if r.returncode:
+        sys.exit("notespdf 빌드 실패\n" + r.stderr[-1500:])
+    print(os.path.join(d, f"{topic}_with_notes.pdf"))
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         sys.exit(__doc__)
     c, d, rest = sys.argv[1], sys.argv[2], sys.argv[3:]
     {"build": lambda: cmd_build(d), "where": lambda: cmd_where(d, rest), "show": lambda: cmd_show(d, rest),
-     "sheet": lambda: cmd_sheet(d), "notes": lambda: print(*write_notes(*deck_paths(d)[:3]))}.get(c, lambda: sys.exit(__doc__))()
+     "sheet": lambda: cmd_sheet(d), "notes": lambda: print(*write_notes(*deck_paths(d)[:3])), "notespdf": lambda: cmd_notespdf(d)}.get(c, lambda: sys.exit(__doc__))()
