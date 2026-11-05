@@ -24,6 +24,13 @@
 \newcommand{\amlDays}{18일 (2022-09-01 $\sim$ 09-18)}       % 기간
 \newcommand{\amlRowA}{2022/09/01 00:20 & 10, 8000EBD30 & 10, 8000EBD30 & 3,697.34 & US Dollar & Reinvestment & 0}   % 실제 첫 줄
 \newcommand{\amlRowB}{2022/09/01 00:20 & 3208, 8000F4580 & 1, 8000F5340 & 0.01 & US Dollar & Cheque & 0}
+% 2024 MLB 정규시즌 타석 · 홈런 (MLB Stats API, exp_hr.py → assets/hr.json, 1쪽 질문용)
+\newcommand{\hrN}{182{,}449}      % 타석 수 (30개 팀 합)
+\newcommand{\hrPos}{5{,}453}      % 홈런 수
+\newcommand{\hrRate}{2.99}        % 홈런 비율 (%)
+\newcommand{\hrAccZero}{97.01}    % 전부 '홈런 아님' 정확도 (%)
+\newcommand{\hrOhPA}{731}         % 오타니 타석
+\newcommand{\hrOhHR}{54}          % 오타니 홈런
 
 \renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 문제 정형화와 평가지표}
 \title{문제 정형화와 평가지표}
@@ -38,13 +45,21 @@
 % --- 오늘의 질문
 \begin{frame}{오늘의 질문}
 \vfill
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}
+\centering\includegraphics[width=\linewidth]{pf_homerun}
+\end{column}
+\begin{column}{0.48\textwidth}
 \centering
-{\Large 자금세탁 거래를 찾는 모델을 만들었다.}\vskip0.8em
-{\fontsize{40}{48}\selectfont\textbf{정확도 \kb{\amlAccZero\%}}}\vskip1em
-{\Large 좋은 모델일까?}\vskip1.4em
-{\small IBM AML 데이터 (합성 은행 거래 \amlN 건)}
+{\large 타석마다 \textbf{홈런일까?}를 맞히는\\ \textbf{AI}를 만들었다.}\vskip0.6em
+{\large 2024 MLB 모든 타석 \hrN 개에서}\vskip0.8em
+{\fontsize{28}{34}\selectfont\mbox{\textbf{정확도 \kb{\hrAccZero\%}}}}\vskip0.8em
+{\Large 좋은 모델일까?}\vskip1.2em
+{\small 2024 MLB 정규시즌 (MLB 공식 기록)}
+\end{column}
+\end{columns}
 \vfill
-\note{은행 거래 기록에서 자금세탁 거래를 찾는 모델을 만들었다고 해 봅시다. 정확도가 \amlAccZero 퍼센트입니다. 좋은 모델일까요? 답부터 말하면, 이 모델은 아무것도 하지 않습니다. 모든 거래에 정상이라고만 답합니다. 세탁 거래가 전체의 \amlRate 퍼센트뿐이라서, 그것만으로도 이 점수가 나옵니다. 문제를 어떻게 정의하고 무엇으로 채점하느냐를 정하지 않으면, 숫자가 아무리 좋아도 의미가 없습니다. 오늘은 모델을 만들기 전에 할 일, 문제를 정형화하는 법을 배웁니다.}
+\note{타석마다 이번에 홈런이 나올지 맞히는 AI를 만들었다고 해 봅시다. 2024년 메이저리그 정규시즌의 모든 타석, \hrN 개에 대해 예측했더니 정확도가 \hrAccZero 퍼센트입니다. 좋은 모델일까요? 답부터 말하면, 이 모델은 아무것도 하지 않습니다. 모든 타석에 홈런 아님이라고만 답합니다. 홈런은 \hrPos 개, 전체 타석의 \hrRate 퍼센트뿐이라서, 그것만으로도 이 점수가 나옵니다. 내셔널리그 홈런왕 오타니도 \hrOhPA 타석에서 홈런은 \hrOhHR 번뿐입니다. 그리고 이 모델은 오타니의 홈런을 하나도 맞히지 못합니다. 문제를 어떻게 정의하고 무엇으로 채점하느냐를 정하지 않으면, 숫자가 아무리 좋아도 의미가 없습니다. 이 함정은 뒤에서 자금세탁 데이터로 다시, 더 극단적으로 봅니다. 오늘은 모델을 만들기 전에 할 일, 문제를 정형화하는 법을 배웁니다.}
 \end{frame}
 
 \section{문제 정하기}
@@ -334,6 +349,7 @@ AML 은 Hugging Face 사본에서 받는다 (로그인 없이, 압축 약 90MB) 
 \vfill
 \small
 \begin{itemize}
+\item 홈런 (p.1): MLB Stats API (\texttt{statsapi.mlb.com}), 2024 정규시즌 30개 팀 타석 · 홈런 합계와 오타니 쇼헤이 개인 기록
 \item 자금세탁 거래: IBM Transactions for Anti Money Laundering (HI-Small), Kaggle \texttt{ealtman2019} (실습은 Hugging Face 사본); Altman et al., ``Realistic Synthetic Financial Transactions for Anti-Money Laundering Models'' (NeurIPS 2023 Datasets and Benchmarks)
 \item 넷플릭스 프라이즈: Bennett \& Lanning (2007) ``The Netflix Prize'', KDD Cup and Workshop; 우승 결과 (2009) 와 이후 사용은 넷플릭스 기술 블로그 (2012)
 \item 와인: UCI Wine (Aeberhard \& Forina, 1991) \quad 항공 승객: Box \& Jenkins, \textit{Time Series Analysis} (1976)

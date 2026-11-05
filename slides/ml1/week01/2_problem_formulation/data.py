@@ -1,9 +1,15 @@
 """문제 정형화와 평가지표 차시 공유 숫자 (슬라이드 · 그림 · 실습이 같은 값을 쓴다).
 exp_formulation.py → assets/formulation.json (와인 두 문제 · 항공 승객 기준선)
-exp_aml.py → assets/aml.json (IBM AML HI-Small, Kaggle 로그인 필요)"""
+exp_aml.py → assets/aml.json (IBM AML HI-Small, Kaggle 로그인 필요)
+exp_hr.py → assets/hr.json (2024 MLB 타석 · 홈런, MLB Stats API, 1쪽 질문용)"""
 import os, json
 _H = os.path.dirname(os.path.abspath(__file__))
 F = json.load(open(os.path.join(_H, "assets", "formulation.json")))
+
+# ---- 1쪽 질문: 2024 MLB 홈런 (전부 '홈런 아님' 이라 답하는 모델)
+HR = json.load(open(os.path.join(_H, "assets", "hr.json")))
+assert (HR["mlb_pa"], HR["mlb_hr"], HR["ohtani_pa"], HR["ohtani_hr"]) == (182449, 5453, 731, 54)
+assert (round(HR["mlb_acc_zero"] * 100, 2), round(HR["ohtani_acc_zero"] * 100, 2)) == (97.01, 92.61)
 
 # ---- 와인: 문제 A (분류) · 문제 B (회귀)
 WINE = F["wine"]

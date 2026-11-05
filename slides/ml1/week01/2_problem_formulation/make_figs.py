@@ -1,5 +1,5 @@
 """이 덱의 그림 원본. 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  (figs/*.png 를 다시 만든다)
-숫자는 data.py (assets/formulation.json · assets/aml.json)."""
+숫자는 data.py (assets/formulation.json · assets/aml.json · assets/hr.json)."""
 import os, sys, numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -62,4 +62,33 @@ if HAVE_AML:
     bars(ax, ["전부 '정상'", "규칙 하나"], [AML["acc_zero"] * 100, AML["acc_rule"] * 100], [GRAY, BLUE],
          lambda v: f"{v:.2f}%", "정확도 (%)", 115)
     fig.tight_layout(); fig.savefig(O + "pf_aml_acc.png"); plt.close(fig)
+
+# 5. 1쪽 질문: 타석마다 "홈런일까?" 를 맞히는 AI 전광판 (전부 '홈런 아님' 이라 답하는 모델)
+# 2024 MLB 정규시즌 (assets/hr.json, MLB Stats API)
+if True:
+    from matplotlib.patches import Arc, Circle, FancyBboxPatch as FB
+    BG, CY, CYD = "#0b1220", "#3ad7ff", "#1b6f8a"
+    N = HR["mlb_pa"]
+    fig = plt.figure(figsize=(7.2, 5.0), facecolor=BG)
+    ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 14.4); ax.set_ylim(0, 10); ax.axis("off"); ax.set_facecolor(BG)
+    cx, cy = 3.6, 5.3
+    for r, lw, segs in [(3.0, 2.0, [(10, 80), (100, 170), (190, 260), (280, 350)]), (2.5, 6, [(30, 150), (210, 330)])]:
+        for a, b in segs:
+            ax.add_patch(Arc((cx, cy), 2 * r, 2 * r, theta1=a, theta2=b, color=CY, lw=lw, alpha=0.9))
+    # 야구공: 흰 공 + 빨간 실밥 두 줄
+    R = 1.75
+    ax.add_patch(Circle((cx, cy), R, fc="white", ec="#d9d9d9", lw=2))
+    for sx in (-1, 1):
+        ax.add_patch(Arc((cx + sx * 2.35, cy), 3.0, 3.0, theta1=(140 if sx > 0 else -40), theta2=(220 if sx > 0 else 40),
+                         color="#d62728", lw=2.5))
+    ax.text(cx, 0.9, "홈런 예측 AI · 모든 타석", ha="center", color=CY, fontsize=13)
+    # 오른쪽: 타석 스트림 (모두 '홈런 아님')
+    ax.add_patch(FB((7.6, 1.6), 6.4, 7.4, boxstyle="round,pad=0.1", fc="#0f1b2d", ec=CY, lw=1.5))
+    ax.text(7.9, 8.4, "2024 MLB 타석 예측", color=CY, fontsize=13, fontweight="bold")
+    for k in range(6):
+        y = 7.5 - k * 0.85
+        ax.text(7.9, y, f"타석 #{N - 5 + k:,}", color="#cfe9f5", fontsize=12)
+        ax.text(13.7, y, "홈런 아님", color="#cfe9f5", fontsize=12, ha="right", fontweight="bold")
+    ax.text(10.8, 2.15, f"{N:,}타석 예측 완료", color="white", fontsize=12, ha="center")
+    fig.savefig(O + "pf_homerun.png", facecolor=BG); plt.close(fig)
 print("figs done", "(AML 포함)" if HAVE_AML else "(AML 없음)")
