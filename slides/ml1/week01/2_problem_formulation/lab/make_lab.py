@@ -1,7 +1,7 @@
 """실습 노트북 원본: 이 파일을 고치고 실행하면 <주제>.ipynb(학생용) / <주제>_solution.ipynb(정답) 이 다시 만들어진다.
    ~/Documents/manim_shorts/_env/v/bin/python make_lab.py
 코드 줄 끝의 '#@ANS 빈칸버전' = solution 노트북엔 앞부분, student 노트북엔 빈칸버전이 들어간다.
-데이터: Baseball Savant (2024-06 모든 투구 CSV, 타구는 그중 인플레이) · MLB Stats API (2021~2024 타자 기록).
+데이터: Baseball Savant (2024-06 모든 투구 CSV, 타구는 그중 인플레이).
 슬라이드 숫자 (../exp_baseball.py) 와 같은 데이터 · 같은 설정."""
 import os, sys
 sys.path.insert(0, os.path.expanduser("~/book-ml/lessons/_tools"))
@@ -16,8 +16,7 @@ CELLS = [
 모델보다 먼저 **다섯 칸** 을 채운다: ① 한 행은 무엇? ② 입력 X ③ 출력 y ④ 평가지표 ⑤ 기준선.
 
 - **파트 1**: 타구: 같은 데이터로 두 문제 (홈런인가 분류 · 비거리 회귀), 정확도 · MAE · 기준선 직접 만들기
-- **파트 2**: 다음 시즌 홈런 수: 기준선 (작년 그대로) vs kNN · 선형회귀, 시간 순서로 나누기
-- **파트 3**: 6월의 모든 공: 정확도의 함정, 볼카운트 규칙의 정밀도 · 재현율, 한 행을 공 → 타석 → 타자로
+- **파트 2**: 6월의 모든 공: 정확도의 함정, 볼카운트 규칙의 정밀도 · 재현율, 한 행을 공 → 타석 → 타자로
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요. 코드 칸 아래의 **예상 결과** 와 비교하면 맞았는지 바로 알 수 있습니다."""),
 ("code", """import json, os, urllib.request
@@ -26,7 +25,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler"""),
 
@@ -49,7 +47,7 @@ def rmse(y_true, y_pred):
 print("accuracy:", accuracy([0, 1, 2, 2], [0, 1, 1, 2]))          # 0.75
 print("MAE :", mae([0, 0, 0, 0], [1, 1, 1, 9]))                  # slide: 3
 print("RMSE:", round(rmse([0, 0, 0, 0], [1, 1, 1, 9]), 2))       # slide: 4.58"""),
-("md", """2024년 6월 MLB 정규시즌에 던진 **모든 공** 을 Baseball Savant (MLB Statcast) 에서 받는다. 한 행 = 공 하나 (투구). 한 번에 25,000줄까지만 주니 5일씩 6번 받는다. 로그인 없이 받을 수 있고, 처음엔 4~5분 걸린다. 파트 1 과 파트 3 이 이 데이터를 같이 쓴다.
+("md", """2024년 6월 MLB 정규시즌에 던진 **모든 공** 을 Baseball Savant (MLB Statcast) 에서 받는다. 한 행 = 공 하나 (투구). 한 번에 25,000줄까지만 주니 5일씩 6번 받는다. 로그인 없이 받을 수 있고, 처음엔 4~5분 걸린다. 파트 1 과 파트 2 가 이 데이터를 같이 쓴다.
 
 - `balls`, `strikes`: **던지기 직전** 볼카운트, `pitch_type`, `release_speed`: 구종 · 구속 (mph)
 - `description`: 그 공의 결과 (`ball`, `swinging_strike`, `hit_into_play` …), `events`: 타석이 끝났으면 그 결과 (`home_run`, `single`, `field_out` …)
@@ -107,66 +105,8 @@ print(f"baseline (always {y_b[idx_tr].mean():.1f} m): MAE {mae(y_b[idx_te], base
 print(f"linear regression        : MAE {mae(y_b[idx_te], reg.predict(X[idx_te])):.1f} m  RMSE {rmse(y_b[idx_te], reg.predict(X[idx_te])):.1f} m")"""),
 ("md", """**생각해 보기**: 문제 A 의 정확도 (96.8%) 와 기준선 (95.5%) 의 차이는 1.3%p 뿐이다. 그런데 모델은 시험의 홈런 275개 중 몇 개를 맞혔을까? `clf.predict(X[idx_te])` 로 세어 보자. 그리고 문제 B 의 입력에 `distance_m` 을 넣으면 MAE 가 얼마가 되는지, 그 점수가 왜 의미 없는지 말해 보자."""),
 
-# ---------------- 파트 2. 다음 시즌 홈런 수
-("md", """## 파트 2. 다음 시즌 홈런 수: 기준선이 모델을 이길 수 있다
-
-MLB 공식 기록 (MLB Stats API) 에서 2021~2024 정규시즌 타자 기록을 받는다. 한 행 = 타자의 한 시즌. 올해 기록으로 **내년 홈런 수** 를 맞힌다.
-
-**시간 순서대로** 나눈다: 2021→2022, 2022→2023 으로 학습, 2023→2024 로 시험. 두 해 모두 300타석 이상인 타자만 쓴다."""),
-("code", """STATS = "https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season={}&sportIds=1&playerPool=ALL&limit=3000&gameType=R"
-COLS = {"pa": "plateAppearances", "ab": "atBats", "h": "hits", "hr": "homeRuns", "bb": "baseOnBalls", "so": "strikeOuts"}
-
-def load_season(year):
-    path = f"data/hitting_{year}.json"
-    if not os.path.exists(path):
-        req = urllib.request.Request(STATS.format(year), headers={"User-Agent": "book-ml-course"})
-        with urllib.request.urlopen(req, timeout=60) as r, open(path, "wb") as f:
-            f.write(r.read())
-    splits = json.load(open(path))["stats"][0]["splits"]
-    rows = [dict(pid=s["player"]["id"], name=s["player"]["fullName"], **{k: s["stat"][v] for k, v in COLS.items()}) for s in splits]
-    return pd.DataFrame(rows).sort_values("pid").reset_index(drop=True)
-
-seasons = {year: load_season(year) for year in (2021, 2022, 2023, 2024)}
-for year, s in seasons.items():
-    print(year, "batters:", len(s), " PA:", s["pa"].sum(), " HR:", s["hr"].sum())"""),
-("code", """def make_pairs(this_year, next_year, min_pa=300):
-    \"\"\"One row per batter: this year's stats + next year's PA and HR (both years >= min_pa)\"\"\"
-    m = this_year.merge(next_year[["pid", "pa", "hr"]], on="pid", suffixes=("", "_next"))
-    return m[(m["pa"] >= min_pa) & (m["pa_next"] >= min_pa)].reset_index(drop=True)
-
-train = pd.concat([make_pairs(seasons[2021], seasons[2022]), make_pairs(seasons[2022], seasons[2023])], ignore_index=True)
-test = make_pairs(seasons[2023], seasons[2024])
-print("train", len(train), " test", len(test))
-test[["name", "pa", "hr", "hr_next"]].sort_values("hr", ascending=False).head(5)"""),
-("md", """기준선 두 개와 모델 두 개를 비교한다.
-- 기준선 1: 늘 학습 데이터의 평균 (내년 홈런 수)
-- 기준선 2: **작년 그대로** (올해 홈런 수를 내년에도 친다)
-- kNN 모델 (k = 3): 올해 기록 (타석 · 타수 · 안타 · 홈런 · 볼넷 · 삼진) 이 비슷한 타자 3명의 내년 홈런 평균
-- 선형회귀: 올해 홈런 하나만 입력"""),
-("code", """FEATURES = ["pa", "ab", "h", "hr", "bb", "so"]
-y_test = test["hr_next"].values
-
-pred_mean = np.full(len(test), train["hr_next"].mean())
-pred_last = test["hr"].values      #@ANS pred_last = None   # TODO: this year's HR, unchanged
-
-scaler = StandardScaler().fit(train[FEATURES])
-knn = KNeighborsRegressor(3).fit(scaler.transform(train[FEATURES]), train["hr_next"])
-pred_knn = knn.predict(scaler.transform(test[FEATURES]))
-lin = LinearRegression().fit(train[["hr"]], train["hr_next"])
-pred_lin = lin.predict(test[["hr"]])
-
-results = {"training mean": pred_mean, "same as last year": pred_last, "kNN (k=3)": pred_knn, "linear (HR only)": pred_lin}
-for name, pred in results.items():
-    print(f"{name:18s} MAE {mae(y_test, pred):.2f}")
-print(f"linear: next = {lin.coef_[0]:.2f} x this + {lin.intercept_:.1f}")
-plt.figure(figsize=(7, 3)); plt.bar(results.keys(), [mae(y_test, p) for p in results.values()], color=["gray", "navy", "red", "green"])
-plt.ylabel("test MAE (home runs)"); plt.xticks(fontsize=8); plt.show()"""),
-("md", """**관찰**: kNN 모델 (6.65) 이 '작년 그대로' (6.42) 보다 못하다. 기준선을 재 보지 않았다면 몰랐을 일이다. 선형회귀는 작년 홈런에 0.61 을 곱하고 6 을 더한다. 많이 친 타자는 조금 덜, 적게 친 타자는 조금 더 칠 거라고 **평균 쪽으로 당긴다**.
-
-**생각해 보기**: 예측에 '올해 홈런 비율 × **내년 실제 타석 수**' 를 쓰면 MAE 가 더 좋아진다 (해 보자). 그런데 왜 이 숫자는 믿으면 안 될까?"""),
-
-# ---------------- 파트 3. 공 하나 = 한 행
-("md", """## 파트 3. 6월의 모든 공: 정확도의 함정
+# ---------------- 파트 2. 공 하나 = 한 행
+("md", """## 파트 2. 6월의 모든 공: 정확도의 함정
 
 파트 1 에서 받은 `pitches` 를 그대로 쓴다. **한 행 = 공 하나**, 출력 `y` = 이 공이 홈런이 되었나 (0/1). 먼저 한 타석이 공 여러 개로 이루어진다는 걸 보자: 6월 오타니의 첫 홈런 타석을 공 단위로 펼친다."""),
 ("code", """OHTANI = 660271
@@ -217,12 +157,12 @@ print(f"batter: {len(batter_y):6d} rows  HR rate {batter_y.mean():.1%}")"""),
 
 **생각해 보기**: 한 행 = 타석 하나로 '이 타석이 홈런으로 끝날까?' 를 타석 시작 전에 맞힌다면, 입력으로 쓸 수 있는 것은 무엇일까?"""),
 ("md", """**확인 질문**
-1. 파트 1 문제 A 에서 정확도가 기준선보다 1.2%p 높다. 이 모델은 쓸 만한가? 홈런을 몇 개 잡았는지로 말해 보자.
-2. 파트 2 에서 kNN 이 '작년 그대로' 에 진 이유는 무엇일까? (힌트: 비슷한 타자 3명의 내년은 얼마나 들쭉날쭉할까?)
-3. 파트 3 에서 모든 공에 '홈런' 이라고 답하면 재현율과 정밀도는 각각 얼마가 될까?
-4. 파트 2 의 시험 데이터를 2023→2024 대신 모든 해를 섞어 무작위로 뽑으면 무엇이 문제일까?
+1. 파트 1 문제 A 에서 정확도가 기준선보다 1.3%p 높다. 이 모델은 쓸 만한가? 홈런을 몇 개 잡았는지로 말해 보자.
+2. 파트 2 에서 모든 공에 '홈런' 이라고 답하면 재현율과 정밀도는 각각 얼마가 될까?
+3. 파트 2 의 볼카운트 규칙에 '작년 30홈런 이상 타자' 같은 조건을 더하면 정밀도와 재현율은 어떻게 바뀔까?
+4. 공 하나를 한 행으로 학습 · 시험을 나눌 때, 무작위로 섞으면 무엇이 문제일까? (힌트: 같은 타석의 바로 앞뒤 공)
 
-데이터 출처: Baseball Savant (MLB Statcast) · MLB Stats API (statsapi.mlb.com)."""),
+데이터 출처: Baseball Savant (MLB Statcast)."""),
 ]
 
 if __name__ == "__main__":

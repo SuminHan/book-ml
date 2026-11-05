@@ -5,15 +5,11 @@
      문제 A = 타구 속도 · 발사각 → 홈런인가 (분류, 정확도), 문제 B = 같은 입력 → 비거리 m (회귀, MAE)
      학습 70% · 시험 30% (random_state=0, 홈런 층화), 입력 = 속도 · 각도 · 각도² , 표준화 + 로지스틱회귀 / 선형회귀
      기준선 = 늘 '홈런 아님' / 학습 평균 비거리
-  선수 시즌 (MLB Stats API, 2021~2024 정규시즌 타자 기록):
-     다음 시즌 홈런 수. 학습 = 2021→2022 · 2022→2023, 시험 = 2023→2024, 두 해 모두 300타석 이상
-     기준선 = 작년 그대로 · 학습 평균, 모델 = kNN (k=3, 작년 타석 · 타수 · 안타 · 홈런 · 볼넷 · 삼진 표준화) · 선형회귀 (작년 홈런)
 실행: python3 exp_baseball.py  (처음엔 투구 CSV 6개 받는 데 4~5분)"""
 import json, os, urllib.request
 import numpy as np, pandas as pd
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -24,7 +20,6 @@ SAVANT = ("https://baseballsavant.mlb.com/statcast_search/csv?all=true&type=deta
           "&hfGT=R%7C&hfSea=2024%7C&game_date_gt={}&game_date_lt={}")      # 한 번에 25,000줄까지라 5일씩
 CHUNKS = [("01", "05"), ("06", "10"), ("11", "15"), ("16", "20"), ("21", "25"), ("26", "30")]
 OHTANI = 660271
-STATS = "https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season={}&sportIds=1&playerPool=ALL&limit=3000&gameType=R"
 
 
 def fetch(url, path):
@@ -32,14 +27,6 @@ def fetch(url, path):
         with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=300) as r, open(path, "wb") as f:
             f.write(r.read())
     return path
-
-
-def season(year):
-    js = json.load(open(fetch(STATS.format(year), os.path.join(D, f"hitting_{year}.json"))))
-    rows = [dict(pid=s["player"]["id"], name=s["player"]["fullName"], **{k: s["stat"][v] for k, v in
-            [("pa", "plateAppearances"), ("ab", "atBats"), ("h", "hits"), ("hr", "homeRuns"), ("bb", "baseOnBalls"), ("so", "strikeOuts")]})
-            for s in js["stats"][0]["splits"]]
-    return pd.DataFrame(rows).sort_values("pid").reset_index(drop=True)
 
 
 J = {}
@@ -91,26 +78,6 @@ J["batted"] = dict(n=len(bb), hr=int(y_a.sum()), n_test=len(te), hr_test=int(y_a
                    mae_leak=mae(y_b[te], make_pipeline(StandardScaler(), LinearRegression()).fit(
                        np.c_[X, y_b][tr], y_b[tr]).predict(np.c_[X, y_b][te])),
                    rows=bb.head(3)[["game_date", "speed_kmh", "launch_angle", "distance_m", "events"]].round(1).values.tolist())
-
-# ---- 2. 선수 시즌: 다음 시즌 홈런 수
-S = {y: season(y) for y in (2021, 2022, 2023, 2024)}
-F = ["pa", "ab", "h", "hr", "bb", "so"]
-
-
-def pairs(y0, min_pa=300):
-    m = S[y0].merge(S[y0 + 1][["pid", "pa", "hr"]], on="pid", suffixes=("", "_next"))
-    return m[(m.pa >= min_pa) & (m.pa_next >= min_pa)].reset_index(drop=True)
-
-
-trp, tep = pd.concat([pairs(2021), pairs(2022)], ignore_index=True), pairs(2023)
-yt = tep["hr_next"].values
-sc = StandardScaler().fit(trp[F])
-knn = KNeighborsRegressor(3).fit(sc.transform(trp[F]), trp["hr_next"])
-lin = LinearRegression().fit(trp[["hr"]], trp["hr_next"])
-J["next"] = dict(n_train=len(trp), n_test=len(tep), mae_mean=mae(yt, np.full(len(yt), trp["hr_next"].mean())),
-                 mae_last=mae(yt, tep["hr"]), mae_knn=mae(yt, knn.predict(sc.transform(tep[F]))),
-                 mae_lin=mae(yt, lin.predict(tep[["hr"]])), lin_coef=float(lin.coef_[0]), lin_b=float(lin.intercept_),
-                 mae_leak=mae(yt, tep["hr"] / tep["pa"] * tep["pa_next"]))
 
 os.makedirs(os.path.join(HERE, "assets"), exist_ok=True)
 json.dump(J, open(os.path.join(HERE, "assets", "baseball.json"), "w"), indent=1, ensure_ascii=False, default=int)

@@ -30,14 +30,6 @@ bars(a2, ["기준선\n학습 평균", "선형회귀"], [BAT["mae_base"], BAT["ma
 a2.set_title("문제 B: 속도 · 발사각 → 비거리 (회귀)", fontsize=15)
 fig.tight_layout(); fig.savefig(O + "pf_batted.png"); plt.close(fig)
 
-# 2. 다음 시즌 홈런 수: 기준선 vs 모델 (2023 → 2024, 207명)
-fig, ax = plt.subplots(figsize=(10, 4.3))
-labs = ["학습 평균", "작년 그대로", "kNN 모델", "선형회귀\n(작년 × 0.61 + 6.0)"]
-vals = [NEXT["mae_mean"], NEXT["mae_last"], NEXT["mae_knn"], NEXT["mae_lin"]]
-bars(ax, labs, vals, [GRAY, BLUE, RED, GREEN], lambda v: f"{v:.2f}", "시험 MAE (홈런 개수) ↓", 9.2)
-ax.axhline(NEXT["mae_last"], color=BLUE, ls=":", lw=1.5)
-fig.tight_layout(); fig.savefig(O + "pf_nexthr.png"); plt.close(fig)
-
 # 5. 1쪽 질문: 모바일 야구 게임 화면 (컴투스프로야구2021, 사용자 제공 캡처) 위에 '치기 전 AI 예측' 자막 한 줄
 # 원본 photos/com2us_baseball_2021.png (1631x924) 에서 에뮬레이터 창 테두리 (위 40px · 오른쪽 사이드바) 만 잘라낸다
 def homerun_scene(shot, path):
