@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.expanduser("~/book-ml/lessons/_tools"))
 import lab
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TOPIC = os.path.basename(os.path.dirname(HERE))          # 폴더 이름 (예: naive_bayes) 이 파일명 앞에 붙는다
+TOPIC = __import__("re").sub(r"^\d+_", "", os.path.basename(os.path.dirname(HERE)))          # 폴더 이름 (예: naive_bayes) 이 파일명 앞에 붙는다
 
 CELLS = [
 ("md", """# 나이브 베이즈 실습: 진짜 스팸 문자 분류

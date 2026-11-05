@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.expanduser("~/book-ml/lessons/_tools"))
 import lab
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TOPIC = os.path.basename(os.path.dirname(HERE))          # 폴더 이름 (train_val_test) 이 파일명 앞에 붙는다
+TOPIC = __import__("re").sub(r"^\d+_", "", os.path.basename(os.path.dirname(HERE)))          # 폴더 이름 (train_val_test) 이 파일명 앞에 붙는다
 
 CELLS = [
 ("md", """# train / val / test 와 데이터 누수 실습
