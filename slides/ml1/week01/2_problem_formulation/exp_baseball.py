@@ -1,13 +1,14 @@
 """문제 정형화 덱의 야구 숫자 → assets/baseball.json. 실습 노트북 (lab/make_lab.py) 과 같은 데이터 · 같은 설정.
-  타구 (Baseball Savant / Statcast, 2024-06 정규시즌 인플레이 타구):
+  투구 (Baseball Savant / Statcast, 2024-06 정규시즌 모든 투구, 5일씩 6번 받는다): 한 행 = 공 하나
+     전부 '홈런 아님' vs 규칙 '3볼 (3-1 · 3-2) 이면 홈런', 볼카운트별 홈런 비율, 한 행 = 공 vs 타석 vs 타자, 오타니 홈런 타석 예시
+  타구 (같은 투구 데이터 중 인플레이 타구):
      문제 A = 타구 속도 · 발사각 → 홈런인가 (분류, 정확도), 문제 B = 같은 입력 → 비거리 m (회귀, MAE)
      학습 70% · 시험 30% (random_state=0, 홈런 층화), 입력 = 속도 · 각도 · 각도² , 표준화 + 로지스틱회귀 / 선형회귀
      기준선 = 늘 '홈런 아님' / 학습 평균 비거리
   선수 시즌 (MLB Stats API, 2021~2024 정규시즌 타자 기록):
      다음 시즌 홈런 수. 학습 = 2021→2022 · 2022→2023, 시험 = 2023→2024, 두 해 모두 300타석 이상
      기준선 = 작년 그대로 · 학습 평균, 모델 = kNN (k=3, 작년 타석 · 타수 · 안타 · 홈런 · 볼넷 · 삼진 표준화) · 선형회귀 (작년 홈런)
-  타석 (2024 정규시즌 182,449타석): 전부 '홈런 아님' vs 규칙 '2023년 30홈런 이상 타자면 홈런', 한 행 = 타석 vs 선수
-실행: python3 exp_baseball.py  (처음엔 타구 CSV 받는 데 1분쯤)"""
+실행: python3 exp_baseball.py  (처음엔 투구 CSV 6개 받는 데 4~5분)"""
 import json, os, urllib.request
 import numpy as np, pandas as pd
 from sklearn.linear_model import LinearRegression, LogisticRegression
@@ -20,7 +21,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 D = os.path.join(HERE, "lab", "data"); os.makedirs(D, exist_ok=True)
 UA = {"User-Agent": "book-ml-course"}
 SAVANT = ("https://baseballsavant.mlb.com/statcast_search/csv?all=true&type=details&player_type=batter"
-          "&hfGT=R%7C&hfSea=2024%7C&hfPR=hit%5C.%5C.into%5C.%5C.play%7C&game_date_gt=2024-06-01&game_date_lt=2024-06-30")
+          "&hfGT=R%7C&hfSea=2024%7C&game_date_gt={}&game_date_lt={}")      # 한 번에 25,000줄까지라 5일씩
+CHUNKS = [("01", "05"), ("06", "10"), ("11", "15"), ("16", "20"), ("21", "25"), ("26", "30")]
+OHTANI = 660271
 STATS = "https://statsapi.mlb.com/api/v1/stats?stats=season&group=hitting&season={}&sportIds=1&playerPool=ALL&limit=3000&gameType=R"
 
 
@@ -42,9 +45,35 @@ def season(year):
 J = {}
 mae = lambda a, b: float(np.mean(np.abs(np.asarray(a) - np.asarray(b))))
 
-# ---- 1. 타구: 같은 데이터, 두 문제
-bb = pd.read_csv(fetch(SAVANT, os.path.join(D, "statcast_2024_06_in_play.csv")))
-bb = bb[["game_date", "launch_speed", "launch_angle", "hit_distance_sc", "events"]].dropna().reset_index(drop=True)
+# ---- 0. 투구: 한 행 = 공 하나
+pt = pd.concat([pd.read_csv(fetch(SAVANT.format(f"2024-06-{a}", f"2024-06-{b}"), os.path.join(D, f"pitches_2024-06-{a}.csv")),
+                            usecols=["game_date", "game_pk", "at_bat_number", "pitch_number", "batter", "player_name", "balls", "strikes",
+                                     "pitch_type", "release_speed", "description", "events", "launch_speed", "launch_angle", "hit_distance_sc"])
+                for a, b in CHUNKS], ignore_index=True)
+pt["home_run"] = (pt["events"] == "home_run").astype(int)
+pt["count"] = pt["balls"].astype(str) + "-" + pt["strikes"].astype(str)
+N, H = len(pt), int(pt["home_run"].sum())
+by_count = pt.groupby("count")["home_run"].agg(["mean", "sum", "size"])
+rule = pt["count"].isin(["3-1", "3-2"]).values.astype(int)       # 3볼이면 '홈런'
+y = pt["home_run"].values
+tp = int(((rule == 1) & (y == 1)).sum()); fp = int(((rule == 1) & (y == 0)).sum()); fn = H - tp
+pa = pt.groupby(["game_pk", "at_bat_number"]).agg(hr=("home_run", "max"), batter=("batter", "first"))
+bat = pa.groupby("batter")["hr"].max()
+oh = pt[pt.batter == OHTANI]
+oh_hr = oh[oh.home_run == 1].sort_values(["game_date", "at_bat_number"])
+g, ab = oh_hr.iloc[0][["game_pk", "at_bat_number"]]                 # 6월 오타니의 첫 홈런 타석을 공 단위로
+seq = pt[(pt.game_pk == g) & (pt.at_bat_number == ab)].sort_values("pitch_number")
+J["pitch"] = dict(n=N, hr=H, rate=H / N, acc_zero=(N - H) / N,
+                  count_rate={c: float(r) for c, r in by_count["mean"].items()}, count_n={c: int(v) for c, v in by_count["size"].items()},
+                  rule_called=int(rule.sum()), tp=tp, fp=fp, fn=fn, acc_rule=(N - fp - fn) / N, precision=tp / rule.sum(), recall=tp / H,
+                  n_pa=len(pa), pa_hr=int(pa.hr.sum()), pa_rate=float(pa.hr.mean()), pitches_per_pa=N / len(pa),
+                  n_batters=len(bat), batters_hr=int(bat.sum()), batters_rate=float(bat.mean()),
+                  ohtani_pitches=len(oh), ohtani_hr=int(oh.home_run.sum()),
+                  example=dict(date=str(seq.game_date.iloc[0]), rows=[[int(r.pitch_number), f"{r.balls}-{r.strikes}", r.pitch_type,
+                               round(r.release_speed * 1.609), r.description, (r.events if isinstance(r.events, str) else "")] for r in seq.itertuples()]))
+
+# ---- 1. 타구: 같은 데이터, 두 문제 (투구 중 인플레이 타구)
+bb = pt[pt["description"] == "hit_into_play"][["game_date", "launch_speed", "launch_angle", "hit_distance_sc", "events"]].dropna().reset_index(drop=True)
 bb["speed_kmh"] = bb["launch_speed"] * 1.609
 bb["distance_m"] = bb["hit_distance_sc"] * 0.3048
 bb["home_run"] = (bb["events"] == "home_run").astype(int)
@@ -82,17 +111,6 @@ J["next"] = dict(n_train=len(trp), n_test=len(tep), mae_mean=mae(yt, np.full(len
                  mae_last=mae(yt, tep["hr"]), mae_knn=mae(yt, knn.predict(sc.transform(tep[F]))),
                  mae_lin=mae(yt, lin.predict(tep[["hr"]])), lin_coef=float(lin.coef_[0]), lin_b=float(lin.intercept_),
                  mae_leak=mae(yt, tep["hr"] / tep["pa"] * tep["pa_next"]))
-
-# ---- 3. 타석: 정확도의 함정 · 정밀도 · 재현율 · 한 행
-a, b = S[2023], S[2024]
-N, P = int(b.pa.sum()), int(b.hr.sum())
-slug = set(a.loc[a.hr >= 30, "pid"]); s = b[b.pid.isin(slug)]
-tp, called = int(s.hr.sum()), int(s.pa.sum()); fp, fn = called - tp, P - tp
-bat = b[b.pa > 0]
-J["pa"] = dict(n=N, hr=P, rate=P / N, acc_zero=(N - P) / N, sluggers=len(slug), sluggers_2024=len(s), called=called,
-               tp=tp, fp=fp, fn=fn, acc_rule=(N - fp - fn) / N, precision=tp / called, recall=tp / P,
-               players=len(bat), players_hr=int((bat.hr > 0).sum()), players_rate=float((bat.hr > 0).mean()),
-               top=b.sort_values("hr", ascending=False).head(3)[["name", "pa", "hr"]].values.tolist())
 
 os.makedirs(os.path.join(HERE, "assets"), exist_ok=True)
 json.dump(J, open(os.path.join(HERE, "assets", "baseball.json"), "w"), indent=1, ensure_ascii=False, default=int)

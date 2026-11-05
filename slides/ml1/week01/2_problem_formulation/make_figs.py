@@ -51,17 +51,17 @@ def homerun_scene(shot, path):
     # 아래 캐스터 자막 자리를 'AI 예측' 자막으로 덮는다
     ax.add_patch(FB((330, h - 62), 880, 48, boxstyle="round,pad=4,rounding_size=8", fc="#0b0f1a", ec="#3ad7ff", lw=2, alpha=0.96, zorder=5))
     ax.text(352, h - 38, "[AI 예측]", color="#3ad7ff", fontsize=12, fontweight="bold", va="center", zorder=6)
-    ax.text(500, h - 38, "공을 치기 전에 예측합니다.  이번 타석은 홈런 아님", color="white", fontsize=12, fontweight="bold", va="center", zorder=6)
+    ax.text(500, h - 38, "공을 던지기 전에 예측합니다.  이번 공은 홈런 아님", color="white", fontsize=12, fontweight="bold", va="center", zorder=6)
     fig.savefig(path, dpi=200); plt.close(fig)
 
 
 homerun_scene("photos/com2us_baseball_2021.png", O + "pf_homerun.png")
-# 6. 1쪽 답: 타석 100개 중 홈런 3개 (2024 MLB 2.99%) 를 격자로, AI 는 전부 '아님'
+# 6. 1쪽 답: 공 100개 중 홈런 1개 (2024-06 MLB 0.79%) 를 격자로, AI 는 전부 '아님'
 fig, ax = plt.subplots(figsize=(5.2, 5.2))
-hr_cells = round(HR["mlb_hr"] / HR["mlb_pa"] * 100)          # 2.99% -> 3 칸
+hr_cells = max(1, round(PT["rate"] * 100))                   # 0.79% -> 1 칸
 for k in range(100):
     r, c = divmod(k, 10)
-    is_hr = k in (23, 56, 88)[:hr_cells]
+    is_hr = k in (56, 23, 88)[:hr_cells]
     # AI 는 전부 '아님' → 홈런 아닌 칸은 맞음 (초록 ✓), 홈런 칸은 놓침 (빨강 ✗)
     ax.add_patch(plt.Rectangle((c, 9 - r), 0.86, 0.86, fc=(RED if is_hr else "#cfeae6"), ec="none"))
     ax.text(c + 0.43, 9 - r + 0.43, "✗" if is_hr else "✓", ha="center", va="center", fontsize=12,
@@ -69,5 +69,18 @@ for k in range(100):
 ax.set_xlim(-0.1, 10); ax.set_ylim(-0.1, 10); ax.set_aspect("equal"); ax.axis("off")
 fig.tight_layout(); fig.savefig(O + "pf_waffle.png"); plt.close(fig)
 
+
+# 7. 볼카운트별 홈런 비율 (공 하나 = 한 행, 2024-06)
+order = sorted(PT["count_rate"], key=PT["count_rate"].get)          # 홈런 비율이 낮은 카운트부터
+fig, ax = plt.subplots(figsize=(10, 4.0))
+vals = [PT["count_rate"][c] * 100 for c in order]
+cols = [GRAY if c not in ("3-1", "3-2") else RED for c in order]
+ax.bar(range(len(order)), vals, color=cols, width=0.65)
+for i, v in enumerate(vals):
+    ax.text(i, v + 0.03, f"{v:.2f}", ha="center", fontsize=12, color=cols[i], fontweight="bold")
+ax.axhline(PT["rate"] * 100, color=BLUE, ls=":", lw=1.5); ax.text(-0.4, PT["rate"] * 100 + 0.04, f"전체 {PT['rate'] * 100:.2f}%", color=BLUE, fontsize=12, ha="left")
+ax.set_xticks(range(len(order)), order, fontsize=13); ax.set_xlabel("던지기 직전 볼카운트 (볼-스트라이크)"); ax.set_ylabel("이 공이 홈런 (%)")
+ax.set_ylim(0, 1.85)
+fig.tight_layout(); fig.savefig(O + "pf_count.png"); plt.close(fig)
 
 print("figs done")
