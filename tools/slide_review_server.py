@@ -76,6 +76,18 @@ from urllib.parse import parse_qs, quote, unquote, urlparse
 ROOT = Path(__file__).resolve().parent.parent
 SLIDES_DIR = ROOT / "slides"
 SITE_ML1 = ROOT / "docs/slides/ml1/2027-spring/index.html"  # the review home page mirrors this site page
+# site PDFs that are not week decks -> their source deck (only these exam files are let through EXCLUDE_DIR_NAMES:
+# they are already public on the site; the real exams stay hidden)
+SITE_EXTRA_DECKS = {
+    "ML1_중간프로젝트_공지.pdf": "ml1/handouts/block_a_capstone_announcement",
+    "ML1_중간프로젝트_샘플.pdf": "ml1/handouts/block_a_sample",
+    "ML1_기말프로젝트_공지.pdf": "ml1/handouts/block_b_capstone_announcement",
+    "ML1_기말프로젝트_샘플.pdf": "ml1/handouts/block_b_sample",
+    "ML1_중간고사_예상문제.pdf": "old/kor/ml1/exams/midterm_practice",
+    "ML1_중간고사_예상문제_풀이.pdf": "old/kor/ml1/exams/midterm_practice_sol",
+    "ML1_기말고사_예상문제.pdf": "old/kor/ml1/exams/final_practice",
+    "ML1_기말고사_예상문제_풀이.pdf": "old/kor/ml1/exams/final_practice_sol",
+}
 CACHE_DIR = ROOT / ".review_cache"
 EXCLUDE_DIR_NAMES = {"exams", "quizzes"}  # sensitive drafts, skip in the review tool
 RENDER_DPI = 200
@@ -100,7 +112,7 @@ def find_decks() -> list[str]:
     decks = []
     for pdf in sorted(SLIDES_DIR.rglob("*.pdf")):
         rel = pdf.relative_to(SLIDES_DIR)
-        if EXCLUDE_DIR_NAMES & set(rel.parts):
+        if EXCLUDE_DIR_NAMES & set(rel.parts) and str(rel.with_suffix("")) not in SITE_EXTRA_DECKS.values():
             continue
         if "figs" in rel.parts or "assets" in rel.parts or "gen" in rel.parts:
             continue
@@ -2259,6 +2271,15 @@ class Handler(BaseHTTPRequestHandler):
             return f'href="/deck?id={quote(did)}" data-notes="{len(load_notes(did))}"'
 
         html = re.sub(r'href="(week[0-9]{2})/([0-9]+_[A-Za-z0-9_]+)\.pdf"', deck_link, html)
+
+        def extra_link(m):
+            did = SITE_EXTRA_DECKS.get(m.group(1))
+            if did not in decks:
+                return m.group(0)
+            start = f"&start={int(m.group(2))}" if m.group(2) else ""
+            return f'href="/deck?id={quote(did)}{start}" data-notes="{len(load_notes(did))}"'
+
+        html = re.sub(r'href="(ML1_[^"#/]+\.pdf)(?:#page=([0-9]+))?"', extra_link, html)
         # other relative links (handout PDFs, samples) are served from the site folder
         html = re.sub(r'href="(?!https?:|/|#|\.\./)([^"]+)"', lambda m: f'href="/site/{m.group(1)}"', html)
         html = html.replace('href="../../"', 'href="/?v=old"').replace("← 강의 슬라이드", "← 옛 덱 목록 (old)")
