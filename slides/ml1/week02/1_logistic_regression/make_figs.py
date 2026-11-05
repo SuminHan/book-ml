@@ -1,5 +1,5 @@
 """이 덱에만 있는 그림 원본. 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  (figs/*.png 를 다시 만든다)
-나머지 그림 (logit_sigmoid.png) 은 원본 덱 slides/v2/ml1/week02/logistic_regression/figs/ 를 그대로 쓴다.
+나머지 그림 (logit_sigmoid.png) 은 make_figs_base.py (옛 원본 덱의 그림 스크립트) 가 만든다.
 데이터: data/chess_2013_01.csv.gz (prep_chess.py) — lichess 2013년 1월, 승패가 난 117,003판, 레이팅 차이 ±800 안.
 예측: 레이팅 차이 x = 백 − 흑 일 때 백이 이길 (white_win = 1) 확률. 슬라이드 숫자는 맨 아래 print 로 확인.
 옛 판: _이전/ (호텔 예약: 구간별 비율이 S 자가 아님) · _이전/flight/ (항공편 지연)."""

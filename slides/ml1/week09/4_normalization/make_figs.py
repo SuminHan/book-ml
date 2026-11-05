@@ -1,5 +1,5 @@
 """이 덱에만 있는 그림 원본 (LayerNorm · 정규화 가족). 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py
-나머지 그림은 원본 덱 slides/v2/ml1/week09/batchnorm/figs/.
+나머지 그림은 make_figs_base.py (옛 원본 덱의 그림 스크립트)
 표 숫자는 쇼츠 lessons/ml1/layernorm (src/norm_exp.py, PyTorch BatchNorm1d · LayerNorm, γ=1 β=0) 과 같은 예시 값."""
 import os, numpy as np, matplotlib
 matplotlib.use("Agg")

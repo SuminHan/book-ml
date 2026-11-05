@@ -1,15 +1,15 @@
 # slides/ — 한글 beamer 슬라이드 작업 규칙
 
-> **새 버전 `slides/v2/` (차시별 덱, tex 한 파일)** 은 아래 규칙이 아니라 `slides/v2/README.md` 와 스킬 `slide-v2` 를 따른다.
-> 이 파일의 규칙은 주 단위 덱 `slides/kor/` 용이다.
+> **현재 덱은 `slides/ml1/` (차시별 덱, tex 한 파일)** 이고 스킬 `slide-v2` 를 따른다. 빌드 도구는 `slides/tools/deck.py`.
+> 옛 `v2`·`v2_cs`·`kor`·`gen`·`figs` 는 `slides/old/` 에 보관 (2026-11-05). 아래 규칙은 옛 주 단위 덱 `slides/old/kor/` 용이다.
 
 ## 구조
-- 덱 폴더: `slides/kor/<ml1|ml2>/weekNN/` (예: `slides/kor/ml1/week03/`)
+- 덱 폴더: `slides/old/kor/<ml1|ml2>/weekNN/` (예: `slides/old/kor/ml1/week03/`)
   - `ml1-week03.tex` — 본체. `\input{pages/p01}` … 순서만 들어 있다.
   - `pages/pNN.tex` — **프레임 하나 = 파일 하나**. 고칠 때는 이 파일을 연다.
   - `figs/` — 이 덱이 쓰는 그림. `ml1-week03.pdf` — 빌드 결과.
 - 공용 테마: `slides/theme/ksa-theme.tex` — 사용자가 시키지 않으면 건드리지 않는다.
-- 퀴즈·시험·유인물: `slides/kor/<ml1|ml2>/{quizzes,exams,handouts}/`.
+- 퀴즈·시험·유인물: `slides/old/kor/<ml1|ml2>/{quizzes,exams,handouts}/`.
 
 ## 고칠 프레임 찾기
 - 문구로: `grep -rn '찾을 문구' pages/`
@@ -18,7 +18,7 @@
 
 ## 빌드 (덱 폴더에서)
 ```
-cd ~/book-ml/slides/kor/ml1/week03 && tectonic -X compile ml1-week03.tex > /tmp/build.log 2>&1; echo exit=$?
+cd ~/book-ml/slides/old/kor/ml1/week03 && tectonic -X compile ml1-week03.tex > /tmp/build.log 2>&1; echo exit=$?
 grep -E '^(error|!)|Overfull|l\.[0-9]' /tmp/build.log | head -20
 pdfinfo ml1-week03.pdf | grep Pages
 ```

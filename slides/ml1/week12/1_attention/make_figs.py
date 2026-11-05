@@ -1,5 +1,5 @@
 """이 덱에만 있는 그림 원본: '나는 밤새 게임을 해서 피곤하다' 손 계산 (트랜스포머 덱 그래프 그림과 같은 숫자).
-실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  — 나머지 그림은 원본 덱 slides/v2/ml1/week12/attention/figs/.
+실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  — 나머지 그림은 make_figs_base.py (옛 원본 덱의 그림 스크립트)
 단어 벡터는 손 계산용 예시 (Q = K = V = 이 벡터, d = 3)."""
 import os, numpy as np, matplotlib
 matplotlib.use("Agg")

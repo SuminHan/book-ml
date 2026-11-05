@@ -1,5 +1,5 @@
-"""이 덱(v2_cs)에만 있는 스튜던트 t · 푸아송 분포 그림. 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  (figs/ga_t_*.png, ga_poisson*.png).
-나머지 그림은 원본 덱 slides/v2/ml1/week03/gaussian/make_figs.py 가 만든다."""
+"""이 덱에만 있는 스튜던트 t · 푸아송 분포 그림. 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  (figs/ga_t_*.png, ga_poisson*.png).
+나머지 그림은 make_figs_base.py (옛 원본 덱의 그림 스크립트) 가 만든다."""
 import os, numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt

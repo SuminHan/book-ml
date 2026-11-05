@@ -1,12 +1,13 @@
 ---
 name: slide-v2
-description: "book-ml/slides/v2 의 차시별(50분) 수업 덱을 새로 만들거나 고치는 스킬. 한 덱 = tex 한 파일 + 그림 원본(make_figs.py) + 실습 노트북(lab/make_lab.py) + 발표자 노트. 도구 slides/v2/tools/deck.py 로 빌드·쪽 찾기·렌더. 트리거: 'v2 슬라이드', '차시별 슬라이드', '새 차시 만들어줘', 'weekNN <주제> 덱', slides/v2 아래 tex/ipynb 수정, '8/24 쪽 이거 고쳐' 처럼 하단 번호로 지적하는 흐름. (kor/ 주 단위 덱 수정은 slide-fix)"
+description: "book-ml/slides/ml1 의 차시별(50분) 수업 덱 (옛 slides/v2·v2_cs 는 slides/old/ 로 보관)을 새로 만들거나 고치는 스킬. 한 덱 = tex 한 파일 + 그림 원본(make_figs.py) + 실습 노트북(lab/make_lab.py) + 발표자 노트. 도구 slides/tools/deck.py 로 빌드·쪽 찾기·렌더. 트리거: 'v2 슬라이드', '차시별 슬라이드', '새 차시 만들어줘', 'weekNN <주제> 덱', slides/ml1 아래 tex/ipynb 수정, '8/24 쪽 이거 고쳐' 처럼 하단 번호로 지적하는 흐름. (kor/ 주 단위 덱 수정은 slide-fix)"
 version: "v1.0 (2026-10-04)"
 ---
 
 # slide-v2 — 차시별 수업 덱 만들기·고치기
 
-먼저 `slides/v2/README.md` 를 읽는다 (폴더 규칙, 도구 사용법, 진행 현황). 첫 덱 예시: `slides/v2/ml1/week03/naive_bayes/`.
+**현재 덱은 `slides/ml1/weekNN/<N_주제>/`** (테마 `ksa-cs-v2`, 그림·실습·data.py 가 덱 폴더 안에 다 있다. 2026-11-05 에 v2 원본을 합침). 옛 `slides/v2`·`slides/v2_cs`·`slides/kor` 는 `slides/old/` 에 보관만 한다.
+먼저 `slides/old/v2/README.md` 를 읽는다 (폴더 규칙, 도구 사용법). 첫 덱 예시: `slides/ml1/week05/1_naive_bayes/`.
 새 차시는 이 예시 폴더를 복사해 시작한다 (`data.py`, `make_figs.py`, `lab/make_lab.py`, tex 머리말의 `\markpage`/`\pref` 매크로).
 
 ## 루프 (지적 1건당)
@@ -14,7 +15,7 @@ version: "v1.0 (2026-10-04)"
    "이거"·"그거"가 애매하면 IDE 선택 영역/열린 파일을 먼저 본다. 그래도 둘 이상으로 읽히면 짧게 묻는다
    (예: "제목 폰트" = 프레임 제목인지 표지 제목인지 → 실제로는 **표지**였다).
 2. 고친다. 슬라이드 내용이 바뀌면 그 프레임의 `\note{}` 도 같이 고친다. 숫자를 바꾸면 `data.py`·그림·노트·노트북까지 전부.
-3. `python3 slides/v2/tools/deck.py build <덱>` (노트 md 자동 갱신). Overfull 이 뜨면 **바로 고친다** (보고만 하지 않는다).
+3. `python3 slides/tools/deck.py build <덱>` (노트 md 자동 갱신). Overfull 이 뜨면 **바로 고친다** (보고만 하지 않는다).
 4. 바꾼 쪽만 `deck.py show <덱> N` 으로 렌더해 눈으로 확인. 큰 변경 뒤에는 `deck.py sheet` 로 전체 훑기.
 5. 보고는 짧게: 무엇을 바꿨는지(하단 번호로) + build OK + 쪽 수 + 남은 선택지 1개.
    사용자가 "반영 안 됐다"고 하면 디스크의 파일을 먼저 확인하고, 맞으면 IDE 탭이 옛 상태라고 알려 준다.
@@ -36,7 +37,7 @@ version: "v1.0 (2026-10-04)"
   나이브 가정이 들어가는 줄은 슬라이드 전체에서 `≈` 로 통일한다. 합·곱에는 한계 `\sum_{i=1}^{n}`. 앞쪽 근거를 쓸 땐 `\pref{이름}` 으로 "(p.N)" 자동 참조 (`\markpage{이름}` 을 그 프레임에).
 - 슬라이드와 노트북은 **같은 모델**이어야 한다 (naive_bayes 는 베르누이: "메일의 60% 에 '무료'" = 있다/없다 확률,
   스무딩 (n+1)/(M+2)). 다항 (count+1)/(N+V) 와 섞지 않는다.
-- 노트북 **코드 셀은 영어만** (주석 · print · 그래프 라벨 · TODO). 설명 마크다운 셀은 한국어 그대로. 그래프가 영어라 한글 글꼴 칸(`{FONT_CELL}`)은 쓰지 않고 첫 칸은 import 만. 첫 마크다운의 파트 안내는 표가 아니라 bullet (`- **파트 1**: …`), 걸리는 시간(몇 분)은 노트북에 적지 않는다. pandas 로 읽은 데이터 변수 이름은 `df`. 예시 데이터는 `np.random` 으로 만들지 말고 **값을 그대로 배열로 적는다** (`x = np.array([6.4, 9.0, …])  # study hours`), 일부러 망가뜨릴 때도 행 번호를 직접 적는다 — 코드만 보고 의도가 보이게. data.py 도 같은 배열을 쓴다. 학생용 노트북은 코드 칸마다 **예상 결과** 칸이 붙는다 (`slides/v2/tools/expected.py`, make_lab.py 끝에서 정답을 실제 실행해 자동 생성 — 출력 텍스트 + 그래프 그림 첨부, 손으로 적지 않는다). **함수는 데이터를 인자로 받는다** (`def gradient_descent(x, y, alpha, ...)`): 함수 안에서 바깥의 `x`, `y`, `df`, `X`, `device` 같은 전역 변수를 읽지 않는다 (상수 `T`, `ALPHA` 같은 대문자 설정값만 예외). make_figs.py 도 같다.
+- 노트북 **코드 셀은 영어만** (주석 · print · 그래프 라벨 · TODO). 설명 마크다운 셀은 한국어 그대로. 그래프가 영어라 한글 글꼴 칸(`{FONT_CELL}`)은 쓰지 않고 첫 칸은 import 만 (데이터 · 함수는 다음 칸부터). 빈칸(TODO)이 있는 함수는 **정의한 그 칸에서 바로 불러 결과를 찍는다** (예: `sigmoid` 를 만들면 같은 칸에서 `sigmoid(0)=0.5` 와 곡선) — 쓰지도 않는 함수를 미리 정의만 해 두지 않는다. 예상 결과 칸으로 학생이 바로 맞았는지 확인할 수 있어야 한다. 첫 마크다운의 파트 안내는 표가 아니라 bullet (`- **파트 1**: …`), 걸리는 시간(몇 분)은 노트북에 적지 않는다. pandas 로 읽은 데이터 변수 이름은 `df`. 예시 데이터는 `np.random` 으로 만들지 말고 **값을 그대로 배열로 적는다** (`x = np.array([6.4, 9.0, …])  # study hours`), 일부러 망가뜨릴 때도 행 번호를 직접 적는다 — 코드만 보고 의도가 보이게. data.py 도 같은 배열을 쓴다. 학생용 노트북은 코드 칸마다 **예상 결과** 칸이 붙는다 (`slides/tools/expected.py`, make_lab.py 끝에서 정답을 실제 실행해 자동 생성 — 출력 텍스트 + 그래프 그림 첨부, 손으로 적지 않는다). **함수는 데이터를 인자로 받는다** (`def gradient_descent(x, y, alpha, ...)`): 함수 안에서 바깥의 `x`, `y`, `df`, `X`, `device` 같은 전역 변수를 읽지 않는다 (상수 `T`, `ALPHA` 같은 대문자 설정값만 예외). make_figs.py 도 같다.
 - 실습은 **실제 공개 데이터(영어)**, 첫 셀에서 내려받기. 빈칸은 `return None  # TODO: …` / `x = None  # TODO: …` (`___` 금지: 문법 오류).
   `make_lab.py` 가 정답 노트북을 실제 실행해 검증한다. 학생용에 정답이 새지 않았는지 grep 으로 확인.
 - 크기 조정은 **한 단계씩**. 한 번에 두세 단계 키우면 "너무 크다"가 온다. "원래대로" = 정확히 이전 값으로.
@@ -55,7 +56,7 @@ version: "v1.0 (2026-10-04)"
 - 빌드 `tectonic` (VS Code LaTeX Workshop 도 `book-ml/.vscode/settings.json` 에서 tectonic 으로 설정됨, 저장 시 빌드).
 - 그림·노트북 파이썬: `~/Documents/manim_shorts/_env/v/bin/python` (matplotlib, PIL, nbformat, nbclient, sklearn).
 - 학생 환경 확인: conda `lab` (`~/miniconda3/envs/lab/bin/jupyter lab`). `conda init` 은 안 해 둠.
-- **커밋**: 사용자가 그날 하라고 할 때만. 정답 노트북(`*_solution.ipynb`)은 `slides/v2/.gitignore` 로 막혀 있다 —
-  옛 이름(`정답.ipynb` 등)으로 다시 생긴 정답 파일이 없는지 `git status --untracked-files=all slides/v2` 로 확인.
+- **커밋**: 사용자가 그날 하라고 할 때만. 정답 노트북(`*_solution.ipynb`)은 `slides/ml1/.gitignore` 로 막혀 있다 —
+  옛 이름(`정답.ipynb` 등)으로 다시 생긴 정답 파일이 없는지 `git status --untracked-files=all slides/ml1` 로 확인.
   `lessons/` 의 쇼츠·영상 작업물은 올리지 않는다. v2 는 `lessons/` 와 **별개**로 관리한다 (숫자를 맞추지 않는다).
 - `lq` (로컬 Qwen) 는 사용자가 시킬 때만. 원본 슬라이드 요약·노트 초안 같은 대량 초안에만, 수치는 반드시 대조.

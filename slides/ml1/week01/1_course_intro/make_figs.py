@@ -1,5 +1,5 @@
-"""이 덱(v2_cs)만 쓰는 그림. 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  (figs/*.png 를 다시 만든다)
-나머지 그림은 원본 덱 slides/v2/ml1/week01/course_intro/figs/ 를 그대로 쓴다."""
+"""이 덱만 쓰는 그림. 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  (figs/*.png 를 다시 만든다)
+나머지 그림은 make_figs_base.py (옛 원본 덱의 그림 스크립트) 를 그대로 쓴다."""
 import os, numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -7,7 +7,7 @@ from PIL import Image
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 os.makedirs("figs", exist_ok=True)
 plt.rcParams.update({"font.family": "Noto Sans CJK KR"})
-SRC = "../../../v2/ml1/week01/course_intro/figs/"
+SRC = "figs/"
 WINTERS = ((1974, 1980, "1차 AI 겨울\n1974~80"), (1987, 1993, "2차 AI 겨울\n1987~93"))   # p.10 연표와 같은 기간
 
 
@@ -78,7 +78,7 @@ def strip_banner(src, out, frac):
     im.crop((0, int(im.size[1] * frac), im.size[0], im.size[1])).save(out, quality=92)
 
 
-PHOTOS = "../../../v2/ml1/week01/course_intro/photos/"
+PHOTOS = "photos/"
 portrait(PHOTOS + "lecun.jpg", "figs/lecun_sq.jpg", 0.1)
 portrait(PHOTOS + "feifei.jpg", "figs/feifei_sq.jpg", 0.05)
 strip_banner(SRC + "alexnet_authors.jpg", "figs/alexnet_authors_crop.jpg", 0.07)

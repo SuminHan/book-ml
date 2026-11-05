@@ -1,5 +1,5 @@
 """이 덱에만 있는 그림 원본 (푸아송 혼합). 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py
-나머지 그림은 원본 덱 slides/v2/ml1/week04/em_algorithm/figs/ 를 그대로 쓴다.
+나머지 그림은 make_figs_base.py (옛 원본 덱의 그림 스크립트) 를 그대로 쓴다.
 데이터: data/taxi_gramercy_3am.csv (prep_taxi.py). EM 은 count 만 보고, weekend 는 확인에만 쓴다. 슬라이드 숫자는 print 로 확인."""
 import os, math, numpy as np, pandas as pd, matplotlib
 matplotlib.use("Agg")

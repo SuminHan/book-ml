@@ -11,7 +11,7 @@ version: "v1.0 (2026-09-07)"
 
 ## 대상 / 환경 (이미 세팅됨 — 재설치·재설명 금지)
 - 덱: 2026-09-11부터 각 덱이 **자기 폴더**를 가짐 —
-  `/Users/hansumin/book-ml/slides/kor/<deck>/<deck>.tex` (+ 같은 폴더에 `<deck>.pdf`,
+  `/Users/hansumin/book-ml/slides/old/kor/<deck>/<deck>.tex` (+ 같은 폴더에 `<deck>.pdf`,
   그 덱이 쓰는 이미지 전부). 공용 테마는 `slides/theme/ksa-theme.tex`
   (`\input{../../theme/ksa-theme.tex}`로 두 단계 위 참조).
 - 빌드: `tectonic -X compile`. 폰트(Noto Sans CJK KR + **Mono** CJK KR), `librsvg`,
@@ -28,7 +28,7 @@ version: "v1.0 (2026-09-07)"
    여러 건을 한꺼번에 지적하면 전부 Edit 후 빌드는 1회.
 2. **빌드한다.**
    ```bash
-   cd /Users/hansumin/book-ml/slides/kor/<deck> && tectonic -X compile <deck>.tex 2>&1 | tail -3; echo "exit=$?"
+   cd /Users/hansumin/book-ml/slides/old/kor/<deck> && tectonic -X compile <deck>.tex 2>&1 | tail -3; echo "exit=$?"
    ```
 3. **한 줄 보고.** 예: `✅ p.7 문구 교체 · build OK (72p)` / `✅ 3곳 수정 · build OK`.
    - PDF는 워크트리에 그대로 둔다. git 손대지 말 것(그림은 실제 파일이라 커밋 가능 상태).

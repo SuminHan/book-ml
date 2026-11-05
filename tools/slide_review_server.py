@@ -70,6 +70,7 @@ from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from string import Template
+from html import escape as html_escape
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -104,6 +105,39 @@ def find_decks() -> list[str]:
             continue
         decks.append(str(rel.with_suffix("")))
     return decks
+
+
+def deck_neighbors(did: str) -> tuple:
+    """(이전 덱, 다음 덱) in the sidebar order (same version), None at the ends --
+    the viewer's 이전 on page 1 / 다음 on the last page jump there."""
+    version = did.split("/", 1)[0]
+    same = [d for d in find_decks() if d.split("/", 1)[0] == version and d.count("/") >= 2]
+    if did not in same:
+        return None, None
+    i = same.index(did)
+    return (same[i - 1] if i > 0 else None), (same[i + 1] if i + 1 < len(same) else None)
+
+
+def decknav_html(did: str) -> str:
+    """Left sidebar on the deck viewer: every deck of the same version
+    (top folder: v2, v2_cs, kor, …) grouped by its week folder, so you can
+    jump to another deck without going back to the list."""
+    version = did.split("/", 1)[0]
+    busy = set(running_applies())
+    out, group = [], None
+    for d in find_decks():
+        parts = d.split("/")
+        if parts[0] != version or len(parts) < 3:
+            continue
+        g = "/".join(parts[1:-2]) or parts[1]
+        name = parts[-2] if len(parts) > 3 else parts[-1]
+        if g != group:
+            group = g
+            out.append(f'<div class="grp">{html_escape(g)}</div>')
+        cls = " ".join(c for c, yes in (("on", d == did), ("busy", d in busy)) if yes)
+        cls = f' class="{cls}"' if cls else ""
+        out.append(f'<a href="/deck?id={quote(d)}" data-did="{html_escape(d)}"{cls}>{html_escape(name)}</a>')
+    return "\n".join(out)
 
 
 def deck_pdf(did: str) -> Path:
@@ -241,9 +275,8 @@ def refresh_sections(did: str) -> list:
     \\sectionentry marks and cache {title, page} per section as
     <deck>.sections.json, next to the existing .review.json/.plan.json.
 
-    Each deck's 3 \\section{} calls in pages/ are its 3 차시 (class
-    sessions) -- this is how the viewer groups the jumplist by session
-    without any separate per-deck session config to maintain."""
+    The viewer groups the jumplist under each \\section{} title (the
+    deck's story parts), with no separate per-deck config to maintain."""
     nav = deck_tex(did).with_suffix(".nav")
     sections = []
     if nav.exists():
@@ -742,7 +775,7 @@ APPLY_ALLOWED_TOOLS = [
     # 그림(make_figs.py) · 노트북(make_lab.py) 을 다시 만드는 파이썬, v2 덱 빌드 도구
     "Bash(~/Documents/manim_shorts/_env/v/bin/python:*)",
     f"Bash({os.path.expanduser('~')}/Documents/manim_shorts/_env/v/bin/python:*)",
-    "Bash(python3 slides/v2/tools/deck.py:*)", f"Bash(python3 {ROOT}/slides/v2/tools/deck.py:*)",
+    "Bash(python3 slides/tools/deck.py:*)", f"Bash(python3 {ROOT}/slides/tools/deck.py:*)",
 ]
 # acceptEdits auto-approves some filesystem commands (mv was seen running), so
 # block the destructive ones explicitly.
@@ -835,10 +868,10 @@ def apply_prompt(did: str, extra: str = "") -> str:
         "## 쪽별 메모",
     ]
     if is_v2:
-        parts[1] = ("이 덱은 slides/v2 형식이다: 덱 전체가 tex 한 파일(pages/ 없음). 규칙은 스킬 slide-v2 와 slides/v2/README.md. "
+        parts[1] = ("이 덱은 slides/v2 형식이다: 덱 전체가 tex 한 파일(pages/ 없음). 규칙은 스킬 slide-v2 와 slides/old/v2/README.md. "
                     "그림은 손으로 고치지 말고 make_figs.py 를 고친 뒤 `~/Documents/manim_shorts/_env/v/bin/python make_figs.py` 로 다시 만든다. "
-                    f"빌드는 `python3 {ROOT}/slides/v2/tools/deck.py build {tex.parent}`, "
-                    f"쪽 확인은 `python3 {ROOT}/slides/v2/tools/deck.py show {tex.parent} N` (N = 하단 번호 = PDF 쪽 − 1). "
+                    f"빌드는 `python3 {ROOT}/slides/tools/deck.py build {tex.parent}`, "
+                    f"쪽 확인은 `python3 {ROOT}/slides/tools/deck.py show {tex.parent} N` (N = 하단 번호 = PDF 쪽 − 1). "
                     "아래 메모의 쪽 번호는 PDF 쪽 번호다. 슬라이드 내용을 바꾸면 그 프레임의 \\note{} 도 같이 고친다.")
         parts = [x for x in parts if not x.startswith("쪽 번호 → 파일 대응은")]
         if pp["deleted"] or pp["inserts"] or pp["moved"]:
@@ -876,7 +909,7 @@ def apply_prompt(did: str, extra: str = "") -> str:
     parts += [
         "",
         "## 끝내는 법",
-        (f"1. `python3 {ROOT}/slides/v2/tools/deck.py build {tex.parent}` 로 빌드하고 오류·Overfull 이 없을 때까지 고친다."
+        (f"1. `python3 {ROOT}/slides/tools/deck.py build {tex.parent}` 로 빌드하고 오류·Overfull 이 없을 때까지 고친다."
          if is_v2 else
          f"1. 덱 폴더에서 `tectonic -X compile --keep-intermediates {tex.name}` 로 빌드하고 오류가 없을 때까지 고친다."),
         "2. 반영한 항목마다 아래를 호출한다(action = 한 일 한 줄, 한국어):",
@@ -982,6 +1015,12 @@ def apply_preview(did: str) -> dict:
 def apply_parts(did: str) -> dict:
     return {"apply_html": APPLY_HTML, "apply_panel": APPLY_PANEL,
             "apply_js": APPLY_JS.replace("DID_JSON", json.dumps(did))}
+
+
+def running_applies() -> list:
+    """Decks whose 반영하기 (claude -p) job is still running -- the deck
+    viewer's sidebar marks them with ⏳."""
+    return [d for d, j in list(_apply_jobs.items()) if j.get("status") == "running"]
 
 
 def apply_status(did: str) -> dict:
@@ -1144,6 +1183,9 @@ header {
 header a { color: #2354a5; text-decoration: none; font-weight: 600; }
 header h1 { font-size: 15px; margin: 0; font-weight: 600; color: #444; }
 main { max-width: 1400px; margin: 0 auto; padding: 20px; }
+.version-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.version-tabs a { padding: 6px 14px; border-radius: 999px; border: 1px solid #d5d5d0; background: #fff; color: #444; text-decoration: none; font-size: 14px; font-family: ui-monospace, monospace; }
+.version-tabs a.on { background: #2354a5; border-color: #2354a5; color: #fff; }
 .deck-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 .deck-list li { border: 1px solid #e2e2df; border-radius: 8px; background: #fff; display: flex; align-items: stretch; }
 .deck-list li > a:first-child { flex: 1; display: flex; justify-content: space-between; padding: 12px 16px; text-decoration: none; color: #1c1c1c; }
@@ -1152,6 +1194,18 @@ main { max-width: 1400px; margin: 0 auto; padding: 20px; }
 .deck-id { font-family: ui-monospace, monospace; font-size: 13px; color: #555; }
 .badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #eef1fb; color: #2354a5; }
 .badge.zero { background: #f0f0ee; color: #999; }
+.with-decknav { display: flex; align-items: flex-start; }
+.with-decknav > main { flex: 1; min-width: 0; }
+.decknav {
+  flex: none; width: 210px; position: sticky; top: 60px; max-height: calc(100vh - 60px);
+  overflow-y: auto; padding: 16px 0 16px 12px; font-size: 13px;
+}
+.decknav .grp { margin: 12px 0 4px 8px; font-size: 11px; font-weight: 700; color: #2354a5; }
+.decknav a { display: block; padding: 4px 8px; border-radius: 6px; color: #333; text-decoration: none; overflow-wrap: anywhere; }
+.decknav a:hover { background: #f0f0ec; }
+.decknav a.on { background: #2354a5; color: #fff; }
+.decknav a.busy::after { content: " ⏳"; }
+@media (max-width: 1100px) { .decknav { display: none; } }
 .viewer { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
 .page-wrap { background: #fff; border: 1px solid #e2e2df; border-radius: 10px; padding: 14px; text-align: center; }
 .page-wrap img { max-width: 100%; border: 1px solid #ddd; border-radius: 4px; }
@@ -1271,6 +1325,7 @@ INDEX_TMPL = Template("""<!doctype html><html><head><meta charset="utf-8">
 <title>Slide Review</title><style>$css</style></head><body>
 <header><h1>Slide Review · book-ml</h1></header>
 <main>
+<nav class="version-tabs">$tabs</nav>
 <ul class="deck-list">
 $rows
 </ul>
@@ -1280,12 +1335,14 @@ VIEWER_TMPL = Template("""<!doctype html><html><head><meta charset="utf-8">
 """ + FAVICON_LINK + """
 <title>$did</title><style>$css</style></head><body>
 <header>
-  <a href="/">&larr; 목록</a>
+  <a href="/?v=$version_quoted">&larr; 목록</a>
   <a href="/board?id=$did_quoted">스토리보드</a>
   <h1>$did &nbsp;·&nbsp; <span id="pageLabel"></span> / $total</h1>
   $apply_html
 </header>
 $apply_panel
+<div class="with-decknav">
+<aside class="decknav">$decknav</aside>
 <main>
 <div class="viewer">
   <div class="page-wrap">
@@ -1329,12 +1386,23 @@ $apply_panel
   </div>
 </div>
 </main>
+</div>
 <script>
 const did = $did_json;
 const total = $total;
 const notes = $notes_json;
 const deletedPages = new Set($deleted_json);
-const sections = $sections_json;  // [{title, page}] -- one per 차시 (class session)
+const [prevDeck, nextDeck] = $neighbors_json;  // sidebar order; page 1 이전 / last page 다음 cross into these
+const sections = $sections_json;  // [{title, page}] -- one per \\section{}
+{ const cur = document.querySelector('.decknav a.on'); if (cur) cur.scrollIntoView({block: 'center'}); }
+// keep the sidebar's ⏳ (반영 중) marks current while this page stays open
+(function pollRunning() {
+  fetch('/api/apply/running').then(r => r.json()).then(d => {
+    const busy = new Set(d.running);
+    document.querySelectorAll('.decknav a[data-did]').forEach(a =>
+      a.classList.toggle('busy', busy.has(a.dataset.did)));
+  }).catch(() => {}).finally(() => setTimeout(pollRunning, 3000));
+})();
 let page = 1;
 
 const img = document.getElementById('pageImg');
@@ -1526,7 +1594,7 @@ deleteBtn.onclick = () => {
 
 function buildJumplist() {
   jumplist.innerHTML = '';
-  // sections.page marks where each 차시 starts; look up by page as we go
+  // sections.page marks where each \\section{} starts; look up by page as we go
   // instead of once up front, so a page also matching total+1 (none do,
   // but be defensive) never double-inserts a header.
   const startsSession = new Map(sections.map((s, i) => [s.page, i + 1]));
@@ -1534,8 +1602,11 @@ function buildJumplist() {
     if (startsSession.has(p)) {
       const label = document.createElement('div');
       label.className = 'jumplist-session';
-      label.textContent = `$${startsSession.get(p)}차시`;
-      label.title = sections.find(s => s.page === p).title;
+      // label by the \\section{} title (질문, 역사, …) -- sections are
+      // story parts of one deck, not separate 차시
+      const sec = sections.find(s => s.page === p);
+      label.textContent = sec.title || `$${startsSession.get(p)}`;
+      label.title = sec.title;
       jumplist.appendChild(label);
     }
     const b = document.createElement('button');
@@ -1549,9 +1620,22 @@ function buildJumplist() {
 }
 
 function refreshJumplistHighlight() {
+  let cur = null, curHead = null, head = null;
   [...jumplist.children].forEach(b => {
-    b.classList.toggle('current', Number(b.dataset.page) === page);
+    if (b.classList.contains('jumplist-session')) { head = b; return; }
+    const on = Number(b.dataset.page) === page;
+    b.classList.toggle('current', on);
+    if (on) { cur = b; curHead = head; }
   });
+  // the list is a short scroll box: keep the current page's section in view
+  // (scroll the box itself, not the window, so the slide doesn't jump)
+  if (!cur) return;
+  const box = jumplist.getBoundingClientRect();
+  const r = cur.getBoundingClientRect();
+  if (r.top < box.top || r.bottom > box.bottom) {
+    const top = (curHead || cur).getBoundingClientRect().top;
+    jumplist.scrollTop += Math.min(top, r.top) - box.top;
+  }
 }
 
 let saveTimer = null;
@@ -1601,6 +1685,9 @@ function scheduleAutosave() {
 function goTo(p) {
   flushPending();
   flushSourcePending();
+  // past either end: open the neighbouring deck (its last page when going back)
+  if (p < 1 && prevDeck) { location.href = '/deck?id=' + encodeURIComponent(prevDeck) + '&start=last'; return; }
+  if (p > total && nextDeck) { location.href = '/deck?id=' + encodeURIComponent(nextDeck) + '&start=1'; return; }
   p = Math.max(1, Math.min(total, p));
   page = p;
   img.src = `/img?id=$${encodeURIComponent(did)}&page=$${p}&t=$${Date.now()}`;
@@ -1613,8 +1700,12 @@ function goTo(p) {
   status.className = 'status';
   pastePreviews.innerHTML = '';
   pasteStatus.textContent = '';
-  prevBtn.disabled = p === 1;
-  nextBtn.disabled = p === total;
+  prevBtn.disabled = p === 1 && !prevDeck;
+  nextBtn.disabled = p === total && !nextDeck;
+  prevBtn.innerHTML = p === 1 && prevDeck ? '&larr; 이전 덱' : '&larr; 이전';
+  nextBtn.innerHTML = p === total && nextDeck ? '다음 덱 &rarr;' : '다음 &rarr;';
+  prevBtn.title = p === 1 && prevDeck ? prevDeck : '';
+  nextBtn.title = p === total && nextDeck ? nextDeck : '';
   refreshJumplistHighlight();
   refreshDeleteUI();
   sourceError.hidden = true;
@@ -1714,7 +1805,8 @@ function pollRender() {
 pollRender();
 
 buildJumplist();
-const startParam = Number(new URLSearchParams(location.search).get('start'));
+const startRaw = new URLSearchParams(location.search).get('start');
+const startParam = startRaw === 'last' ? total : Number(startRaw);
 goTo(startParam >= 1 && startParam <= total ? startParam : 1);
 </script>
 $apply_js
@@ -1724,7 +1816,7 @@ BOARD_TMPL = Template("""<!doctype html><html><head><meta charset="utf-8">
 """ + FAVICON_LINK + """
 <title>$did · 스토리보드</title><style>$css</style></head><body>
 <header>
-  <a href="/">&larr; 목록</a>
+  <a href="/?v=$version_quoted">&larr; 목록</a>
   <a href="/deck?id=$did_quoted">페이지별 보기</a>
   <h1>$did &nbsp;·&nbsp; 스토리보드</h1>
   $apply_html
@@ -1964,7 +2056,7 @@ class Handler(BaseHTTPRequestHandler):
         qs = parse_qs(parsed.query)
         try:
             if parsed.path == "/":
-                return self.handle_index()
+                return self.handle_index(qs.get("v", [None])[0])
             if parsed.path == "/favicon.ico":
                 return self.handle_favicon()
             if parsed.path == "/deck":
@@ -1986,6 +2078,8 @@ class Handler(BaseHTTPRequestHandler):
                 if did not in find_decks():
                     raise FileNotFoundError()
                 return self._send_json(render_status(did))
+            if parsed.path == "/api/apply/running":
+                return self._send_json({"running": running_applies()})
             if parsed.path in ("/api/apply/status", "/api/apply/preview"):
                 did = qs.get("id", [None])[0]
                 if did not in find_decks():
@@ -2145,10 +2239,21 @@ class Handler(BaseHTTPRequestHandler):
         )
         self._send(200, svg.encode("utf-8"), "image/svg+xml")
 
-    def handle_index(self):
+    def handle_index(self, version=None):
+        # one tab per top-level folder under slides/ (kor, v2, v2_cs, …) --
+        # listing every version together made it hard to tell decks apart
         decks = find_decks()
+        versions = sorted({d.split("/", 1)[0] for d in decks})
+        if version not in versions:
+            version = "v2" if "v2" in versions else (versions[0] if versions else "")
+        tabs = "".join(
+            f'<a href="/?v={quote(v)}"{" class=on" if v == version else ""}>{v}</a>'
+            for v in versions
+        )
         rows = []
         for did in decks:
+            if did.split("/", 1)[0] != version:
+                continue
             n = len(load_notes(did))
             badge = f'<span class="badge{" zero" if n == 0 else ""}">{n}개 주석</span>'
             rows.append(
@@ -2157,7 +2262,7 @@ class Handler(BaseHTTPRequestHandler):
                 f'<a href="/board?id={quote(did)}" style="border-left:1px solid #e2e2df;">스토리보드</a>'
                 f'<a href="/pdf?id={quote(did)}" target="_blank" rel="noopener" style="border-left:1px solid #e2e2df;">PDF</a></li>'
             )
-        html = INDEX_TMPL.substitute(css=PAGE_CSS, rows="\n".join(rows) or "<li>덱을 찾지 못했습니다.</li>")
+        html = INDEX_TMPL.substitute(css=PAGE_CSS, tabs=tabs, rows="\n".join(rows) or "<li>덱을 찾지 못했습니다.</li>")
         self._send_html(html)
 
     def handle_deck(self, did):
@@ -2177,10 +2282,13 @@ class Handler(BaseHTTPRequestHandler):
             did=did,
             did_quoted=quote(did),
             did_json=json.dumps(did),
+            version_quoted=quote(did.split("/", 1)[0]),
             total=total,
             notes_json=json.dumps(notes),
             deleted_json=json.dumps(deleted_pages),
             sections_json=json.dumps(load_sections(did)),
+            decknav=decknav_html(did),
+            neighbors_json=json.dumps(deck_neighbors(did)),
             **apply_parts(did),
         )
         self._send_html(html)
@@ -2199,6 +2307,7 @@ class Handler(BaseHTTPRequestHandler):
             did=did,
             did_quoted=quote(did),
             did_json=json.dumps(did),
+            version_quoted=quote(did.split("/", 1)[0]),
             notes_json=json.dumps(notes),
             plan_json=json.dumps(plan),
             **apply_parts(did),

@@ -1,4 +1,4 @@
-"""'트랜스포머 = 그래프 신경망' 쪽 그림 (나머지 그림은 원본 덱 slides/v2/ml1/week12/transformer/figs/).
+"""'트랜스포머 = 그래프 신경망' 쪽 그림 (나머지 그림은 make_figs_base.py (옛 원본 덱의 그림 스크립트)).
 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py
 친구 값은 쇼츠 lessons/ml1/transformer_gnn/src/data.py 와 같고, 어텐션 무게는 어텐션 덱 손 계산 (예시 벡터) 에서 나온 값."""
 import os, numpy as np, matplotlib

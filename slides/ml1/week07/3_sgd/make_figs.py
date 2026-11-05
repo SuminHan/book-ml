@@ -1,5 +1,5 @@
-"""이 덱(v2_cs)만 쓰는 그림. 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  (figs/*.png 를 다시 만든다)
-나머지 그림은 원본 덱 slides/v2/ml1/week02/sgd/figs/ 를 그대로 쓴다."""
+"""이 덱만 쓰는 그림. 실행: ~/Documents/manim_shorts/_env/v/bin/python make_figs.py  (figs/*.png 를 다시 만든다)
+나머지 그림은 make_figs_base.py (옛 원본 덱의 그림 스크립트) 를 그대로 쓴다."""
 import os, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt

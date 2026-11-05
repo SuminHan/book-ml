@@ -18,7 +18,7 @@ slides/
 
 ```bash
 cd slides && bash build_figs.sh          # 그림 먼저 (한 번, 또는 그림 바뀔 때)
-cd slides/kor && xelatex week01.tex       # 2회 돌리면 섹션 참조까지 갱신
+cd slides/old/kor && xelatex week01.tex       # 2회 돌리면 섹션 참조까지 갱신
 ```
 
 - **엔진: XeLaTeX** (한글). 이 서버엔 ctex/xeCJK/kotex 이 없어서 fontspec 만으로
