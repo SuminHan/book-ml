@@ -22,10 +22,6 @@ assert (PA["n"], PA["hr"], PA["sluggers"], PA["called"], PA["tp"], PA["fp"], PA[
        (182449, 5453, 29, 16792, 800, 15992, 4653, 651, 522)
 assert (round(PA["acc_rule"] * 100, 2), round(PA["precision"] * 100, 2), round(PA["recall"] * 100, 1), round(PA["players_rate"] * 100, 1)) == (88.68, 4.76, 14.7, 80.2)
 
-# ---- 넷플릭스 프라이즈 (Bennett & Lanning 2007 · 2009 결과)
-NETFLIX = dict(users=480_000, movies=18_000, ratings=100_000_000, withheld=3_000_000, cinematch_quiz=0.9514, cinematch_test=0.9525,
-               target_test=0.8572, winner_test=0.8567)   # target = 0.9525 × 0.9 (대회 규칙), 우승 2009-09
-
 # ---- 회귀 지표 손 계산: 오차 [1, 1, 1, 9]
 TOY = F["toy"]; assert TOY["mae"] == 3 and round(TOY["rmse"], 2) == 4.58
 

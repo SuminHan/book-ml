@@ -1,7 +1,7 @@
 """실습 노트북 원본: 이 파일을 고치고 실행하면 <주제>.ipynb(학생용) / <주제>_solution.ipynb(정답) 이 다시 만들어진다.
    ~/Documents/manim_shorts/_env/v/bin/python make_lab.py
 코드 줄 끝의 '#@ANS 빈칸버전' = solution 노트북엔 앞부분, student 노트북엔 빈칸버전이 들어간다.
-데이터: Baseball Savant (2024-06 인플레이 타구 CSV) · MLB Stats API (2021~2024 타자 기록) · MovieLens (GroupLens).
+데이터: Baseball Savant (2024-06 인플레이 타구 CSV) · MLB Stats API (2021~2024 타자 기록).
 슬라이드 숫자 (../exp_baseball.py) 와 같은 데이터 · 같은 설정."""
 import os, sys
 sys.path.insert(0, os.path.expanduser("~/book-ml/lessons/_tools"))
@@ -18,10 +18,9 @@ CELLS = [
 - **파트 1**: 타구: 같은 데이터로 두 문제 (홈런인가 분류 · 비거리 회귀), 정확도 · MAE · 기준선 직접 만들기
 - **파트 2**: 다음 시즌 홈런 수: 기준선 (작년 그대로) vs kNN · 선형회귀, 시간 순서로 나누기
 - **파트 3**: 2024년 모든 타석: 정확도의 함정, 정밀도 · 재현율, 한 행을 타석 → 타자로
-- **파트 4**: 넷플릭스 프라이즈 축소판: 사람마다 최근 별점을 숨기고 RMSE, '10% 개선' 목표
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요. 코드 칸 아래의 **예상 결과** 와 비교하면 맞았는지 바로 알 수 있습니다."""),
-("code", """import io, json, os, zipfile, urllib.request
+("code", """import json, os, urllib.request
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -201,60 +200,13 @@ print(f"plate-appearance rate {y.mean():.2%}  ->  batter rate {batter_y.mean():.
 
 **생각해 보기**: 타석에 서기 **전에** 예측한다면 볼카운트 (2볼 2스트라이크 …) 를 입력에 넣을 수 있을까? 한 행을 **투구 하나** 로 바꾸면 어떻게 될까?"""),
 
-# ---------------- 파트 4. 넷플릭스 프라이즈 축소판
-("md", """## 파트 4. 넷플릭스 프라이즈 축소판: 영화 별점
-
-넷플릭스 프라이즈 (2006) 는 '사용자마다 **가장 최근** 별점을 숨기고, RMSE 로 채점, 기준선보다 10% 나으면 우승' 이었다. 같은 규칙을 MovieLens (610명 · 별점 10만 개) 로 작게 해 보자."""),
-("code", """URL = "https://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
-os.makedirs("data", exist_ok=True)
-if not os.path.exists("data/ml-latest-small.zip"):
-    urllib.request.urlretrieve(URL, "data/ml-latest-small.zip")
-with zipfile.ZipFile("data/ml-latest-small.zip") as z:
-    ratings = pd.read_csv(z.open("ml-latest-small/ratings.csv"))
-print(ratings.shape, "users", ratings["userId"].nunique(), "movies", ratings["movieId"].nunique())
-
-# hide each user's most recent 10% of ratings (like the Netflix Prize qualifying set)
-ratings = ratings.sort_values(["userId", "timestamp"])
-rank = ratings.groupby("userId").cumcount(ascending=False)            # 0 = newest
-n_user = ratings.groupby("userId")["rating"].transform("size")
-hidden = rank < np.maximum(1, (n_user * 0.1).astype(int))
-train, test = ratings[~hidden], ratings[hidden]
-print("train", len(train), "hidden test", len(test))"""),
-("md", """세 가지 예측의 RMSE 를 비교한다.
-- 기준선 1: 늘 전체 평균 별점
-- 기준선 2: 영화마다 평균 별점 (넷플릭스 이전의 단순한 방법)
-- 모델: 평균 + 사용자 치우침 + 영화 치우침 (후하게 주는 사람, 다들 좋아하는 영화)
-
-그리고 '영화 평균보다 10% 나은가?' 를 확인한다."""),
-("code", """def fit_biases(train, reg=5.0):
-    \"\"\"Global mean + movie bias + user bias, shrunk toward 0 for movies/users with few ratings\"\"\"
-    mu = train["rating"].mean()
-    r = train.assign(res=train["rating"] - mu)
-    b_movie = r.groupby("movieId")["res"].agg(lambda v: v.sum() / (len(v) + reg))
-    r = r.assign(res=r["res"] - r["movieId"].map(b_movie))
-    b_user = r.groupby("userId")["res"].agg(lambda v: v.sum() / (len(v) + reg))
-    return mu, b_user, b_movie
-
-mu, b_user, b_movie = fit_biases(train)
-movie_mean = train.groupby("movieId")["rating"].mean()
-preds = {"global mean": np.full(len(test), mu),
-         "movie mean": test["movieId"].map(movie_mean).fillna(mu).values,
-         "mean + user + movie bias": (mu + test["userId"].map(b_user).fillna(0) + test["movieId"].map(b_movie).fillna(0)).clip(0.5, 5).values}
-scores = {k: rmse(test["rating"].values, v) for k, v in preds.items()}      #@ANS scores = None   # TODO: RMSE of each prediction (use your rmse function)
-for k, v in scores.items():
-    print(f"{k:26s} RMSE {v:.4f}")
-goal = scores["movie mean"] * 0.9
-print(f"10% better than movie mean = {goal:.4f} -> reached: {scores['mean + user + movie bias'] < goal}")"""),
-("md", """**관찰**: '영화마다 평균' 은 전체 평균보다 조금 낫다. 여기에 사람마다 후하게 · 짜게 주는 치우침을 더하면 RMSE 가 크게 내려가 '10% 개선' 을 넘긴다. 진짜 넷플릭스 데이터에서는 기준선 (Cinematch) 이 훨씬 강해서, 우승 팀은 100개가 넘는 모델을 섞어 3년 만에 10% 를 넘겼다.
-
-**확인 질문**
+("md", """**확인 질문**
 1. 파트 1 문제 A 에서 정확도가 기준선보다 1.2%p 높다. 이 모델은 쓸 만한가? 홈런을 몇 개 잡았는지로 말해 보자.
 2. 파트 2 에서 kNN 이 '작년 그대로' 에 진 이유는 무엇일까? (힌트: 비슷한 타자 3명의 내년은 얼마나 들쭉날쭉할까?)
 3. 파트 3 에서 '전부 홈런' 이라고 답하면 재현율과 정밀도는 각각 얼마가 될까?
 4. 파트 2 의 시험 데이터를 2023→2024 대신 모든 해를 섞어 무작위로 뽑으면 무엇이 문제일까?
-5. 파트 4 에서 숨길 별점을 '사람마다 가장 최근' 이 아니라 무작위로 고르면 RMSE 가 어떻게 바뀔까? 어느 쪽이 실제 서비스와 닮았을까?
 
-데이터 출처: Baseball Savant (MLB Statcast) · MLB Stats API (statsapi.mlb.com) · MovieLens (Harper & Konstan, 2015) · Netflix Prize (Bennett & Lanning, 2007)."""),
+데이터 출처: Baseball Savant (MLB Statcast) · MLB Stats API (statsapi.mlb.com)."""),
 ]
 
 if __name__ == "__main__":
