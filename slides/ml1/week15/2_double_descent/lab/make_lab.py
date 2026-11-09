@@ -1,7 +1,7 @@
 """실습 노트북 원본: 이 파일을 고치고 실행하면 <주제>.ipynb(학생용) / <주제>_solution.ipynb(정답) 이 다시 만들어진다.
    ~/Documents/manim_shorts/_env/v/bin/python make_lab.py
 코드 줄 끝의 '#@ANS 빈칸버전' = solution 노트북엔 앞부분, student 노트북엔 빈칸버전이 들어간다.
-데이터: 3주차 제동거리 점 10개 (data.py 와 같은 배열) · UCI optdigits (Alpaydin & Kaynak 1998, 첫 칸에서 내려받기)."""
+데이터: 2주차 제동거리 점 10개 (data.py 와 같은 배열) · UCI optdigits (Alpaydin & Kaynak 1998, 첫 칸에서 내려받기)."""
 import os, sys
 sys.path.insert(0, os.path.expanduser("~/book-ml/lessons/_tools"))
 import lab
@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 from numpy.polynomial import legendre"""),
 ("md", """## 파트 1. 제동거리 점 10개와 최소 노름 해
 
-3주차와 같은 데이터. 다항식은 르장드르 기저로 쓴다 (속도를 $(v - 55) / 50$ 으로 $[-1, 1]$ 에 맞춤). 계수가 점보다 많으면 모든 점을 지나는 해가 무수히 많고, 그중 크기가 가장 작은 해는
+2주차와 같은 데이터. 다항식은 르장드르 기저로 쓴다 (속도를 $(v - 55) / 50$ 으로 $[-1, 1]$ 에 맞춤). 계수가 점보다 많으면 모든 점을 지나는 해가 무수히 많고, 그중 크기가 가장 작은 해는
 
 $$w^{*} = X^\\top (X X^\\top)^{-1} y$$"""),
 ("code", """speed = np.array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100], dtype=float)     # km/h

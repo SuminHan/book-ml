@@ -24,7 +24,7 @@ def points(ax, new=True):
     ax.axhline(0, color=GRAY, lw=0.8)
 
 
-# 1. 3주차 마지막 그림 (같은 숫자)
+# 1. 2주차 마지막 그림 (같은 숫자)
 fig, ax = plt.subplots(figsize=(8.5, 4.4))
 ax.axvspan(9.5, 20.5, color=BLUE, alpha=0.06)
 ax.plot(DEGS, [BEYOND[d] for d in DEGS], "^-", color=RED, lw=2.5)
