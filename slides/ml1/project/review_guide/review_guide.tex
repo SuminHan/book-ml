@@ -1,0 +1,336 @@
+\documentclass[aspectratio=169,11pt,t]{beamer}
+\input{../../../theme/ksa-cs-v2.tex}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+\graphicspath{{figs/}{../../../assets/}}
+\usepackage{booktabs}
+\usepackage{array}
+\makeatletter
+\newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
+\newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
+\makeatother
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 리뷰 가이드}
+\title{리뷰(동료평가) 가이드}
+\subtitle{다른 팀 보고서를 학회 심사위원처럼 읽고 쓰는 법}
+\author{Machine Learning and Deep Learning}
+\institute{KSA 2027-Spring}
+\date{Sumin Han (suminhan@ksa.hs.kr)}
+\begin{document}
+{\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
+
+\section{목적}
+% --- 리뷰의 무게
+\begin{frame}{여러분의 리뷰가 그 팀이 받는 피드백의 전부입니다}
+\vfill
+\centering
+{\Large 몇 주 동안 만든 보고서를 판단하는 글입니다}\par\vskip0.6em
+{\Large \kb{내가 받고 싶은 리뷰}를 쓰세요}\par\vskip0.3em
+{\small ``review for others as you would have others review for you'' (McPeek et al., 2009)}\par\vskip1.4em
+\begin{tabular}{L{3.4cm}L{8.8cm}}
+\toprule
+\textbf{좋은 리뷰는} & \textbf{세 가지를 동시에 합니다} \\
+\midrule
+보고서를 평가한다 & 채점 기준 5항목(명확성 · 비교 대상 · 확장성 · 재현성 · 한계)에 비추어 공정하게 \\
+저자를 돕는다 & 정중하고 구체적으로, 점수와 상관없이 보고서가 나아지게 \\
+선생님께 근거를 준다 & 짧고 논리적인 판단 근거 \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{리뷰를 받는 팀 입장에서는 여러분 두 명의 리뷰가 받는 피드백의 전부입니다. 몇 주 동안 만든 보고서를 판단하는 글이니, 내가 받고 싶은 리뷰를 쓰세요. 학회에서는 이걸 리뷰의 황금률이라고 부릅니다. 좋은 리뷰는 세 가지를 동시에 합니다. 채점 기준 다섯 항목에 비추어 보고서를 공정하게 평가하고, 점수와 상관없이 보고서가 나아지도록 저자를 돕고, 선생님이 판단할 수 있도록 근거를 줍니다.}
+\end{frame}
+
+% --- 시작 전
+\begin{frame}{시작하기 전에 확인할 세 가지}
+\vfill
+\begin{itemize}
+\setlength\itemsep{1.1em}
+\item \kb{이해 충돌}: 내가 도와준 팀, 데이터나 코드를 같이 만든 팀이면\\ 바로 선생님께 알리고 바꿔 달라고 합니다
+\item \kb{익명 심사}: 저자가 누구인지 찾지 않습니다.\\ 파일에 이름이 보이면 선생님께 알리고 내용만 심사합니다
+\item \kb{비밀 유지}: 심사 중인 보고서를 다른 사람에게 보여 주거나 이야기하지 않습니다.\\ 그 팀의 아이디어 · 코드 · 결과를 \kq{내 프로젝트에 쓰지 않습니다}
+\end{itemize}
+\vskip1em
+\centering{\large 문제는 마감 직전이 아니라 \kb{배정받은 첫 주에} 알려 주세요}
+\vfill
+\note{리뷰를 시작하기 전에 세 가지를 확인합니다. 첫째, 이해 충돌. 내가 도와준 팀이나 같이 코드를 짠 팀이면 공정하게 심사할 수 없으니 바로 바꿔 달라고 하세요. 둘째, 익명 심사입니다. 저자가 누군지 찾지 마세요. 혹시 파일에 이름이 보이면 알려 주고 내용만 심사하면 됩니다. 셋째, 비밀 유지. 심사 중인 보고서를 다른 사람에게 보여 주면 안 되고, 그 팀의 아이디어나 코드를 내 프로젝트에 가져다 쓰면 안 됩니다. 이런 문제는 마감 직전이 아니라 배정받은 첫 주에 알려 주세요.}
+\end{frame}
+
+\section{AI}
+% --- AI
+\begin{frame}{AI는 써도 됩니다. 리뷰의 모든 문장은 내 책임입니다}
+\markpage{ai}
+\vfill
+\centering
+\begin{tabular}{L{6.2cm}L{6.2cm}}
+\toprule
+\textbf{이런 데 써도 됩니다} & \textbf{대신 이것만} \\
+\midrule
+모르는 개념 · 용어 물어보기 & 리뷰 양식에 \kb{AI 사용 내역}을 구체적으로 \\
+보고서의 어려운 부분 설명 듣기 & 썼다고 감점하지 않습니다 \\
+관련 연구 찾기 · 문장 다듬기 & 리뷰의 \kq{어느 문장이든 내 말로 설명}할 수 있어야 \\
+\bottomrule
+\end{tabular}\par\vskip1.2em
+{\small AI가 지어낸 문헌, 보고서에 없는 내용에 대한 지적, 틀린 사실이 들어가면 \kq{내 잘못}입니다.}\par\vskip1em
+\fbox{\parbox{12.2cm}{\small \textbf{요즘 학회는}\quad ICLR 2027은 리뷰 작성을 돕는 AI 사용을 허용하되 공개를 의무로 합니다. ICML 2026에서는 ``전면 금지''를 받은 리뷰어의 22.5\%가 그래도 AI를 썼다고 답했습니다. 금지보다 \textbf{결과에 대한 책임}이 실제로 작동합니다.}}
+\vfill
+\note{AI는 써도 됩니다. 모르는 개념을 묻고, 보고서의 어려운 부분을 설명받고, 관련 연구를 찾고, 문장을 다듬는 데 쓰세요. 대신 리뷰 양식에 AI를 어떤 도구로 무엇을 하는 데 썼는지 구체적으로 적습니다. 예를 들어 3절의 수식이 무슨 뜻인지 ChatGPT에 물어봤다, 약점 2번 문장을 Claude로 다듬었다, 이런 식입니다. 썼다고 감점하지 않습니다. 중요한 건 리뷰의 모든 문장이 내 책임이라는 점입니다. AI가 지어낸 문헌이나 보고서에 없는 내용을 지적한 문장이 들어가면 그건 내 잘못입니다. 학회들도 이 방향입니다. ICLR 2027은 AI 사용을 허용하고 공개를 의무로 합니다. ICML 2026은 AI를 전면 금지하는 정책도 써 봤는데, 그 정책을 받은 리뷰어 다섯 명 중 한 명 이상이 그래도 썼다고 답했습니다. 금지보다 결과에 책임을 지게 하는 쪽이 실제로 작동합니다.}
+\end{frame}
+
+% --- 필수 확인
+\begin{frame}{AI가 대신할 수 없는 필수 확인 두 가지}
+\markpage{checks}
+\vfill
+\begin{columns}[T]
+\begin{column}{0.47\textwidth}
+\centering{\Large \kb{\textcircled{1} 인용 확인}}\par\vskip0.6em
+\raggedright
+\begin{itemize}
+\item 보고서의 \kb{핵심 주장을 받치는 인용 하나}를 고릅니다
+\item 저자의 ``인용 근거 표''에서 링크를 엽니다
+\item 발췌문이 원문에 정말 있는지, 그 문헌이 정말 그 주장을 뒷받침하는지 확인합니다
+\end{itemize}
+\end{column}
+\begin{column}{0.47\textwidth}
+\centering{\Large \kb{\textcircled{2} 재현 확인}}\par\vskip0.6em
+\raggedright
+\begin{itemize}
+\item 저자의 \kb{Colab을 실행}합니다
+\item 표나 그림의 \kb{숫자 하나}가 그대로 나오는지 봅니다
+\item 시드 차이로 조금 다르면 얼마나 다른지 적습니다
+\end{itemize}
+\end{column}
+\end{columns}
+\vskip1.4em
+\centering{\large 이 보고서의 링크를 열고 이 팀의 코드를 돌려야만 쓸 수 있는 내용입니다}
+\vfill
+\note{리뷰마다 직접 해야 하는 확인이 두 가지 있습니다. 하나는 인용 확인입니다. 보고서에서 가장 중요한 주장을 받치는 인용 하나를 골라서, 저자가 부록에 붙인 인용 근거 표의 링크를 열고, 발췌문이 원문에 정말 있는지 확인합니다. 다른 하나는 재현 확인입니다. 저자의 Colab을 실행해서 표의 숫자 하나가 그대로 나오는지 봅니다. 이 두 가지는 이 보고서의 링크를 열고 이 팀의 코드를 돌려야만 쓸 수 있는 내용이라, AI가 대신 써 줄 수 없습니다. 어느 보고서에나 붙일 수 있는 일반론 리뷰는 여기서 걸러집니다.}
+\end{frame}
+
+% --- 확인 결과 적기
+\begin{frame}{확인 결과는 이렇게 적습니다}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{L{2.6cm}L{9.8cm}}
+\toprule
+\textbf{확인} & \textbf{리뷰 양식 ``필수 확인'' 칸에 적는 예} \\
+\midrule
+인용 (성공) & [4] Grinsztajn et al. (2022) p.1 발췌 확인, 주장과 일치. \\
+재현 (성공) & 표 2 GBDT PR-AUC 0.41 재현됨 (실행 결과 0.412). \\
+인용 (실패) & \textcolor{alertred}{[7] 링크가 열리지 않고, 제목으로 검색해도 찾을 수 없습니다.} \\
+재현 (실패) & \textcolor{alertred}{표 3의 0.88이 나오지 않습니다 (실행 결과 0.79, 셀 12에서 test로 튜닝).} \\
+\bottomrule
+\end{tabular}\par\vskip1em
+{\large 확인에 실패했다면 그것이 \kq{가장 중요한 약점}입니다}\par\vskip0.3em
+{\small 숫자는 형식을 보이기 위한 예시입니다.}
+\vfill
+\note{확인한 결과는 리뷰 양식의 필수 확인 칸에 이렇게 적습니다. 무엇을 골랐고 결과가 어땠는지 구체적으로 씁니다. 성공했으면 짧게 일치했다고 쓰면 되고, 실패했으면 무엇이 안 됐는지 사실만 적습니다. 링크가 안 열린다, 숫자가 안 나온다, 실행해 보니 이런 값이 나왔다. 확인에 실패했다면 그게 그 보고서의 가장 중요한 약점이니, 약점 칸에도 맨 앞에 적어 주세요.}
+\end{frame}
+
+% --- 평가
+\begin{frame}{리뷰는 이렇게 평가받습니다}
+\vfill
+\centering{\large 선생님이 AI 사용 여부를 일일이 판정하지 않습니다}\par\vskip1.2em
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{L{4.0cm}L{8.4cm}}
+\toprule
+\textbf{무엇으로} & \textbf{어떻게} \\
+\midrule
+\kb{저자의 도움 점수} & 리뷰를 받은 팀이 1$\sim$5점: ``보고서를 고치는 데 얼마나 도움이 됐나'' \\
+\kb{필수 확인} & 두 칸이 실제로 확인한 내용으로 채워졌는가 \pref{checks} \\
+\kb{수업 중 무작위 확인} & 리뷰 몇 개를 골라 ``이 약점을 1분 동안 설명해 보세요'' \\
+\bottomrule
+\end{tabular}\par\vskip1.2em
+{\large 0점: 없는 문헌 · 보고서에 없는 내용을 지적 · 하지 않은 확인을 했다고 쓰기 · 설명하지 못한 리뷰}
+\vfill
+\note{리뷰 점수는 세 가지로 매깁니다. 첫째, 리뷰를 받은 팀이 매기는 도움 점수입니다. 내 점수를 잘 줬는지가 아니라 보고서를 고치는 데 얼마나 도움이 됐는지를 1점에서 5점으로 매깁니다. 구체적이고 근거 있는 리뷰가 높은 점수를 받습니다. 둘째, 필수 확인 두 칸을 실제로 확인한 내용으로 채웠는지 봅니다. 셋째, 수업 시간에 리뷰 몇 개를 무작위로 골라 그 약점을 1분 동안 설명해 보라고 합니다. 설명하지 못하면 그 리뷰는 0점입니다. 없는 문헌을 들었거나, 보고서에 없는 내용을 지적했거나, 하지 않은 확인을 했다고 쓴 리뷰도 0점입니다.}
+\end{frame}
+
+\section{쓰는 법}
+% --- 순서
+\begin{frame}{리뷰 쓰는 순서}
+\vfill
+\renewcommand{\arraystretch}{1.6}
+\centering
+\begin{tabular}{L{3.4cm}L{9.0cm}}
+\toprule
+\textbf{단계} & \textbf{할 일} \\
+\midrule
+\kb{1. 훑어보기} {\small (20분)} & Abstract만 읽고 목표 · 데이터 · 결론이 보이는가? 치명적인 문제(test 누수, 비교 대상 없음)가 있는가? \\
+\kb{2. 꼼꼼히 읽기} {\small (1$\sim$2시간)} & 불분명한 곳, 사실 오류, 근거 없는 주장에 표시하며 읽기. \kb{필수 확인 두 가지}도 이때 \\
+\kb{3. 쓰기} & 요약 $\rightarrow$ 장점 $\rightarrow$ 약점 $\rightarrow$ 질문 $\rightarrow$ 점수 · 확신도 \\
+\kb{4. 다시 읽기} & 내 이름을 걸고 낼 수 있는가? 모든 문장을 설명할 수 있는가? \\
+\bottomrule
+\end{tabular}\par\vskip1em
+{\small 사소한 문제를 큰 문제로 부풀리지 마세요. 대부분의 보고서에는 치명적인 결함이 없습니다.}
+\vfill
+\note{리뷰는 네 단계로 씁니다. 먼저 20분 정도 훑어봅니다. Abstract만 읽고 무엇을 했는지 보이는지, 테스트 데이터가 새거나 비교 대상이 없는 것처럼 치명적인 문제가 있는지 봅니다. 다음은 꼼꼼히 읽기입니다. 한두 시간 걸립니다. 이해가 안 되는 곳, 틀린 곳, 근거 없는 주장에 표시하면서 읽고, 필수 확인 두 가지도 이때 합니다. 그다음에 씁니다. 마지막으로 다시 읽으면서, 내 이름을 걸고 낼 수 있는 글인지 확인합니다. 사소한 문제를 큰 문제처럼 부풀리지 마세요. 대부분의 보고서에는 치명적인 결함이 없습니다.}
+\end{frame}
+
+% --- 꼼꼼히 읽을 때
+\begin{frame}{꼼꼼히 읽을 때 확인할 것}
+\vfill
+\begin{enumerate}
+\setlength\itemsep{0.6em}
+\item 서론에서 약속한 기여가 결과에서 \kb{전부} 보였는가?
+\item 실험이 주장을 시험하는가, 아니면 \kb{더 쉬운 것}을 시험하는가?
+\item 베이스라인이 있고, \kb{같은 분할 · 같은 튜닝}으로 공정하게 비교했는가?
+\item 결과가 \kq{데이터 누수}나 test로 튜닝한 것으로 설명되지는 않는가?
+\item 한계를 인정했는가? 제목과 Abstract가 \kb{실제로 한 일}을 말하는가?
+\item ``빠졌다''고 쓰기 전에 \kb{부록과 코드}를 확인했는가?
+\end{enumerate}
+\vskip0.6em
+\centering{\small 보고서 작성 가이드의 ``심사하는 사람이 반드시 묻는 여섯 가지''와 같은 질문입니다}
+\vfill
+\note{꼼꼼히 읽을 때는 이 여섯 가지를 확인합니다. 약속한 기여를 다 보였는지, 실험이 정말 주장을 시험하는지, 베이스라인과 공정하게 비교했는지, 데이터 누수로 설명되지는 않는지, 한계를 인정했는지. 그리고 마지막이 중요합니다. 무언가 빠졌다고 쓰기 전에 부록과 코드를 꼭 확인하세요. 학회 리뷰에서 가장 흔한 실수가, 부록에 있는 내용을 없다고 지적하는 것입니다. 이 질문들은 보고서 작성 가이드에서 저자에게 미리 답해 보라고 한 질문과 같습니다.}
+\end{frame}
+
+% --- 양식
+\begin{frame}{리뷰 양식: 칸마다 쓸 것}
+\vskip0.2em
+\centering\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{2.4cm}L{11.0cm}}
+\toprule
+\textbf{칸} & \textbf{쓸 것} \\
+\midrule
+요약 & 무엇을 주장하고 어떻게 보였는지 \kb{내 말로} 3$\sim$4문장. 저자가 ``제대로 읽었구나'' 할 수 있게 \\
+장점 & 구체적으로 2$\sim$3개. 모든 보고서에는 장점이 있습니다 \\
+약점 & \kb{중요한 순서대로}. 무엇이 · 어디서(절 · 표 · 그림) · 왜 중요한지 · 얼마나 심각한지 · \kb{어떻게 고치면 되는지} \\
+질문 & 번호를 붙여, 1쪽 반박으로 답할 수 있게. 답에 따라 내 점수가 바뀔 질문, 근거를 대야 답할 수 있는 질문 1개 이상 \\
+점수 (1$\sim$5) & 글과 점수가 일치하게. 글이 먼저, 점수는 그 요약 \\
+확신도 (1$\sim$5) & 내가 이 보고서를 판단하기에 얼마나 적합한지, 솔직하게 \\
+필수 확인 & 인용 하나 · 숫자 하나를 확인한 결과 \pref{checks} \\
+AI 사용 & 어떤 도구로, 무엇을 하는 데 썼는지 구체적으로 (예: 3절 수식 뜻을 ChatGPT에 물어봄) \pref{ai} \\
+\bottomrule
+\end{tabular}\par\vskip0.6em
+{\small 분량은 보통 800$\sim$2,000자. 400자 아래는 대부분 부족하고, 3,000자를 넘으면 핵심이 흐려집니다.}
+\vfill
+\note{KSA Review의 리뷰 양식입니다. 요약은 내 말로 서너 문장, 저자가 읽고 제대로 읽었구나 할 수 있게 씁니다. 장점은 구체적으로 두세 개. 약점은 중요한 순서대로, 각각 무엇이 문제인지, 어디인지, 왜 중요한지, 얼마나 심각한지, 그리고 어떻게 고치면 되는지까지 씁니다. 질문은 번호를 붙여서 한 쪽 반박으로 답할 수 있게 씁니다. 점수는 글과 일치해야 합니다. 약점은 사소하다고 써 놓고 1점을 주면 안 됩니다. 확신도는 솔직하게. 그리고 필수 확인과 AI 사용 칸을 채웁니다. 분량은 보통 800자에서 2000자 정도입니다.}
+\end{frame}
+
+% --- 좋은 리뷰 나쁜 리뷰
+\begin{frame}{이렇게 쓰면 도움이 안 됩니다}
+\vfill
+\centering\small
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{L{4.6cm}L{8.6cm}}
+\toprule
+\textcolor{alertred}{\textbf{도움이 안 되는 리뷰}} & \textcolor{ksablue}{\textbf{도움이 되는 리뷰}} \\
+\midrule
+``새롭지 않다.'' & ``3절의 방법은 [문헌 X]의 방법과 같아 보입니다. 차이가 무엇인가요?'' \\
+``실험이 더 필요하다.'' & ``표 2에 항상 다수 클래스로 답하는 베이스라인을 넣으면 정확도 91\%가 높은 것인지 판단할 수 있습니다.'' \\
+``설명이 부족하다.'' & ``4절에서 스케일링을 분할 전에 했는지 후에 했는지 알 수 없습니다. 분할 전이라면 누수입니다.'' \\
+맞춤법 · 문장으로 점수를 깎음 & 고칠 수 있는 표현 문제는 따로 짧게, 점수는 내용으로 \\
+내가 했을 연구를 요구함 & 제출된 연구를 그 목표에 비추어 판단 \\
+약점은 사소한데 1점 & 약점의 심각도와 점수가 맞음 \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{왼쪽은 학회에서도 무시되는 리뷰입니다. 새롭지 않다고만 쓰면 무엇과 같은지 알 수 없습니다. 어떤 문헌의 어떤 방법과 같은지 적어야 합니다. 실험이 더 필요하다고만 쓰면 무슨 실험인지 모릅니다. 어떤 실험을 넣으면 무엇을 판단할 수 있는지 적으세요. 설명이 부족하다 대신, 어디에서 무엇을 알 수 없는지, 그게 왜 중요한지 적습니다. 맞춤법 같은 고칠 수 있는 문제로 점수를 깎지 말고, 내가 했으면 이렇게 했을 거라는 연구를 요구하지도 마세요. 제출된 연구를 그 목표에 비추어 판단합니다.}
+\end{frame}
+
+% --- 말투
+\begin{frame}{말투: 사람이 아니라 연구를 비판합니다}
+\vfill
+\centering
+{\Large 쉽고, 정중하고, \kb{구체적으로}}\par\vskip1.4em
+\begin{tabular}{L{6.2cm}L{6.2cm}}
+\toprule
+\textcolor{alertred}{\textbf{쓰지 않는 말}} & \textcolor{ksablue}{\textbf{이렇게 바꿔서}} \\
+\midrule
+``당연히 ~해야 한다'' & ``~하면 주장이 더 분명해집니다'' \\
+``저자들은 ~을 모르는 것 같다'' & ``~에 대한 설명이 보이지 않습니다'' \\
+``이건 의미가 없다'' & ``이 결과가 주장과 어떻게 연결되는지 궁금합니다'' \\
+비꼬기 · 저자 추측 & 쓰지 않습니다 \\
+\bottomrule
+\end{tabular}\par\vskip1.4em
+{\large \kb{내 이름을 걸고 낼 수 있는 글}이어야 합니다}
+\vfill
+\note{리뷰는 사람이 아니라 연구를 비판하는 글입니다. 당연히 이렇게 해야 한다, 저자들은 이걸 모르는 것 같다, 이런 말은 내용이 맞더라도 상대가 받아들이기 어렵습니다. 같은 지적을 이렇게 하면 주장이 더 분명해진다, 이 부분 설명이 보이지 않는다고 바꿔 쓰면 됩니다. 비꼬거나 저자가 누구인지 추측하는 말은 쓰지 않습니다. 익명이지만 내 이름을 걸고 낸다고 생각하고 쓰세요.}
+\end{frame}
+
+\section{토론}
+% --- 반박과 토론
+\begin{frame}{내고 끝이 아닙니다: 반박과 토론}
+\vfill
+\begin{itemize}
+\setlength\itemsep{1em}
+\item 반박이 올라오면 \kb{48시간 안에} 내 리뷰를 옆에 두고 읽습니다. 다른 리뷰도 읽습니다
+\item \kb{답글을 최소 한 번}: 내 우려가 해결됐는지, 무엇이 남았는지, 점수를 바꾸는지\\
+{\small 바꾸면 리뷰 끝에 ``반박 후'' 문단으로 이유를, 안 바꾸면 왜인지}
+\item 다른 리뷰어와 의견이 다르면 이유를 설명하고 구체적으로 묻습니다\\
+{\small ``R2님, 빠진 베이스라인이 무엇인가요?'' \quad 의견을 맞추려고 점수를 바꾸지 않습니다}
+\item 내가 묻지 않은 것에 답하지 않았다고 저자를 탓하지 않습니다
+\end{itemize}
+\vskip0.8em
+\centering{\large 필요한 것은 만장일치가 아니라 \kb{근거}입니다}
+\vfill
+\note{리뷰는 내고 끝이 아닙니다. 저자의 반박이 올라오면 이틀 안에 내 리뷰를 옆에 두고 읽고, 다른 리뷰어의 리뷰도 읽습니다. 그리고 최소 한 번은 답글을 남깁니다. 내 우려가 해결됐는지, 무엇이 남았는지, 점수를 바꾸는지. 점수를 바꾸면 리뷰 끝에 반박 후 문단을 붙여 이유를 적고, 안 바꾸면 왜 안 바꾸는지 적습니다. 다른 리뷰어와 의견이 다르면 구체적으로 물어보세요. 다만 의견을 맞추려고 점수를 바꿀 필요는 없습니다. 필요한 건 만장일치가 아니라 근거입니다.}
+\end{frame}
+
+% --- 점검표
+\begin{frame}{제출 전 점검표}
+\vfill
+\begin{itemize}
+\setlength\itemsep{0.45em}
+\item[$\square$] 보고서 전체(관련 부록 · 코드 포함)를 읽었다
+\item[$\square$] 요약을 내 말로 썼다
+\item[$\square$] 장점이 구체적이다 (2개 이상)
+\item[$\square$] 약점이 중요한 순서이고, 각각 위치 · 이유 · 고치는 방법이 있다
+\item[$\square$] 질문에 번호가 있고, 근거를 대야 답할 수 있는 질문이 1개 이상 있다
+\item[$\square$] 점수와 글이 일치하고, 확신도는 솔직하다
+\item[$\square$] 필수 확인 두 가지(인용 하나, 숫자 하나)를 직접 하고 결과를 적었다 \pref{checks}
+\item[$\square$] AI를 어디에 어떻게 썼는지 구체적으로 적었고, 어느 문장이든 내 말로 설명할 수 있다 \pref{ai}
+\item[$\square$] 정중하고 구체적이며, 내 이름을 걸 수 있다
+\end{itemize}
+\vfill
+\note{리뷰를 내기 전에 이 목록을 확인하세요. 특히 필수 확인 두 가지와, 내 리뷰의 어느 문장이든 설명할 수 있는지. 수업 시간에 무작위로 물어볼 때 이 두 가지를 봅니다.}
+\end{frame}
+
+\section{참고}
+% --- 학회 비교
+\begin{frame}{참고: 2026$\sim$2027 주요 학회의 AI 정책}
+\vfill
+\centering\scriptsize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{L{2.2cm}L{6.4cm}L{4.9cm}}
+\toprule
+\textbf{학회} & \textbf{리뷰어} & \textbf{저자} \\
+\midrule
+ICLR 2027 & 리뷰 작성을 돕는 제한적 사용 허용. \textbf{공개 의무}, 다듬기 전 원래 글과 AI 대화도 함께 제출 & 논문 안에 \textbf{AI 사용 절 필수}. 환각 · 왜곡은 거절 \\
+ICML 2026 & 리뷰어가 고름. A = 전면 금지, B = 이해 · 관련 연구 · 다듬기만, \textbf{판단 위임 금지}. PDF 숨은 지시문으로 A 위반 리뷰 795건 적발, 위반자 논문 497편 거절 & 사용 가능, 책임은 저자. 프롬프트 주입 금지 \\
+NeurIPS 2026 & 학회가 제공하는 LLM만, 무작위 배정 실험(미사용 · 자유 · 구조화) 안에서만 & 방법의 핵심에 쓴 AI는 기재. 지어낸 인용은 위반 \\
+ACL ARR & 첫 초안을 AI로 쓰기 금지. 영어 바꿔 쓰기 · 증명 확인은 가능 & 체크리스트에서 공개 \\
+WWW 2027 · CIKM 2026 & 리뷰에 AI 사용 금지 (원고를 AI에 넣는 것 자체가 비밀 유지 위반) & 언어 편집 허용, 실질적 사용은 공개 \\
+\midrule
+\textbf{우리 수업} & \textbf{자유 사용 + 구체적 공개. 필수 확인 두 가지, 도움 점수, 무작위 확인. 틀린 내용은 0점} & \textbf{자유 사용 + 구체적 공개. 읽은 문헌만 인용. 지어낸 문헌 · 숫자는 0점} \\
+\bottomrule
+\end{tabular}\par\vskip0.5em
+{\scriptsize ICML 2026 실험: 허용 정책은 논문 점수 · 결정에 거의 영향이 없었다 (Kim et al., 2026, arXiv:2609.19420).}
+\vfill
+\note{참고로 요즘 주요 학회들의 AI 정책을 정리했습니다. 학회마다 다릅니다. ICLR은 허용하고 공개를 의무로 하고, ICML은 리뷰어가 금지와 제한적 허용 중에 고르게 했습니다. NeurIPS는 학회가 제공하는 AI만 실험적으로 쓰게 했고, WWW와 CIKM 같은 ACM 학회는 리뷰에 AI를 금지합니다. 공통점은 하나입니다. AI를 썼든 안 썼든 틀린 내용에 대한 책임은 사람에게 있다는 것. 우리 수업은 AI를 자유롭게 쓰되, 직접 확인해야 하는 두 가지와 결과에 대한 책임으로 운영합니다.}
+\end{frame}
+
+% --- 출처
+\begin{frame}{참고한 자료}
+\vfill
+\small
+\begin{itemize}
+\setlength\itemsep{0.35em}
+\item The ACM Web Conference 2027, Reviewer Guidelines (Research Tracks)
+\item ICLR 2027, AI Policy for Reviewers · for Authors, Reviewer Guidelines (iclr.cc)
+\item ICML 2026, LLM Policy · Reviewer Instructions (icml.cc); ``On Violations of LLM Review Policies'' (blog.icml.cc, 2026.3.18)
+\item NeurIPS 2026, Main Track Handbook · AI Reviewing Experiment (neurips.cc)
+\item ACL Rolling Review, Reviewer Guidelines (2026.10); CIKM 2026, Submission Policies
+\item Kim, S. S. Y., et al. (2026). Use and Effects of LLMs in Peer Review: A Randomized Experiment and Survey at ICML 2026. arXiv:2609.19420
+\item McPeek, M. A., et al. (2009). The golden rule of reviewing. \textit{The American Naturalist}, 173(5), E155--E158
+\end{itemize}
+\vskip0.6em
+\centering{\small 저자 쪽 규칙은 \kb{보고서 작성 가이드}를 보세요.}
+\vfill
+\note{이 가이드는 WWW 2027 심사 지침을 뼈대로, 요즘 학회들의 AI 정책을 참고해서 우리 수업에 맞게 만든 것입니다. 보고서를 쓰는 쪽 규칙은 보고서 작성 가이드에 따로 있습니다.}
+\end{frame}
+
+\end{document}
