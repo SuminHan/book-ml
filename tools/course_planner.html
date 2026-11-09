@@ -34,7 +34,7 @@ dialog{border:1px solid var(--line);border-radius:12px;background:var(--card);co
 </style></head><body>
 <header><h1>ML1 수업 계획</h1>
 <button id="save" class="pri">저장</button><button id="prev">배포 미리보기</button><button id="deploy">배포</button><button id="pub">커밋 · 푸시</button><button id="reset" title="저장된 계획 대신 지금 사이트 · 폴더 상태에서 다시 불러오기">사이트에서 다시 불러오기</button>
-<a href="/files/docs/slides/ml1/2027-spring/index.html" target="_blank"><button>사이트 미리 보기</button></a>
+<button id="syl">강의계획서</button><a href="/files/docs/slides/ml1/2027-spring/index.html" target="_blank"><button>사이트 미리 보기</button></a>
 <span id="status"></span></header>
 <main><aside id="pool"><input id="q" placeholder="덱 찾기"><div class="legend"><span class="card lecture">수업</span><span class="card lab">실험</span><span class="card assignment">과제</span></div>
 <div class="sum" id="sum"></div><div class="slot" id="poolzone" data-pool="1"><div class="sh"><span>배치 안 된 덱 (여기로 끌어 빼기)</span></div></div>
@@ -99,6 +99,7 @@ async function showPreview(then){const r=await (await fetch("/api/preview",{meth
  s+="\n\n배포하면: 폴더 이동 → 경로 고치기 → 사이트 목록 다시 쓰기 → 옮긴 덱 다시 빌드 · 사이트 PDF 교체. 커밋은 따로.";
  $("#dp").textContent=s;$("#dok").style.display=then?"":"none";$("#dok").onclick=then;dlg.showModal()}
 $("#prev").onclick=()=>showPreview(null);
+$("#syl").onclick=async()=>{await fetch("/api/plan",{method:"POST",body:JSON.stringify(P)});dirty=false;status("저장함");window.open("/syllabus","_blank")};
 $("#deploy").onclick=()=>showPreview(async()=>{dlg.close();await fetch("/api/deploy",{method:"POST",body:JSON.stringify(P)});status("배포 중…");poll()});
 async function poll(){const r=await (await fetch("/api/log")).json();status((r.log.slice(-1)[0]||"")+(r.busy?" …":""));if(r.busy)setTimeout(poll,1500);else{$("#dt").textContent="배포 기록";$("#dp").textContent=r.log.join("\n");$("#dok").style.display="none";dlg.showModal();load()}}
 $("#pub").onclick=async()=>{const msg=prompt("커밋 메시지","ML1 수업 계획 반영 (course planner)");if(!msg)return;status("커밋 중…");const r=await (await fetch("/api/publish",{method:"POST",body:JSON.stringify({msg})})).json();status(r.msg)};

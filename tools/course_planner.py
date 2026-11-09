@@ -340,6 +340,45 @@ def publish(msg):
     return "커밋 · 푸시 완료" if p.returncode == 0 else "푸시 실패: " + p.stderr[-300:]
 
 
+
+# ---------------------------------------------------------------- syllabus
+def render_syllabus(plan, assets):
+    SK = {"holiday": "휴일", "exam": "시험", "makeup": "보강", "project": "프로젝트"}
+    rows, md = [], ["| 주차 | 날짜 | 1차시 | 2차시 | 3차시 | 프로젝트 | 비고 |", "|---|---|---|---|---|---|---|"]
+    for w in plan["weeks"]:
+        n, k = w["n"], 0
+        cells, mcells = [], []
+        for s in w["slots"]:
+            names = []
+            for i in s["items"]:
+                k += 1
+                a = assets.get(i)
+                if not a:
+                    continue
+                lab = " <b class=lab>실험</b>" if a["kind"] == "lab" else ""
+                names.append(f'<div>{n:02d}-{k} {html.escape(plan["labels"].get(i) or a["title"])}{lab}</div>')
+            if s["kind"] != "class" and not names:
+                names = [f'<div class=sk>{SK[s["kind"]]}</div>']
+            cells.append("".join(names))
+            mcells.append(" / ".join(html.unescape(re.sub("<[^>]+>", "", x)) for x in names) or "")
+        ms = [x for x in plan["milestones"] if x["week"] == n]
+        mtxt = "<br>".join(html.escape(x["label"]) for x in ms)
+        note = ", ".join(w["holidays"])
+        cls = {"exam": "exam", "mk": "mk"}.get(w["cls"], "")
+        rows.append(f'<tr class="{cls}"><td><b>{n}</b></td><td>{w["dates"]}</td>' + "".join(f"<td>{c}</td>" for c in cells)
+                    + f'<td class=ms>{mtxt}</td><td class=hol>{html.escape(note)}</td></tr>')
+        md.append(f"| {n} | {w['dates']} | " + " | ".join(mcells) + f" | {' / '.join(x['label'] for x in ms)} | {note} |")
+    mdtxt = "\n".join(md)
+    return f"""<!doctype html><html lang=ko><head><meta charset=utf-8><title>ML1 강의계획서</title><style>
+body{{font:13px/1.45 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;margin:24px;color:#222}}h1{{font-size:20px;margin:0 0 4px}}.sub{{color:#666;margin-bottom:14px}}
+table{{border-collapse:collapse;width:100%}}th,td{{border:1px solid #ccc;padding:5px 7px;vertical-align:top;text-align:left}}th{{background:#2e3192;color:#fff;font-weight:600}}
+tr.exam td{{background:#fbe9e9}}tr.mk td{{background:#eef5ee}}td.ms{{color:#7a1f3d;font-size:12px}}td.hol{{color:#1e7a34;font-size:12px}}.sk{{color:#999}}b.lab{{font-size:10.5px;background:#efe7f9;color:#5b2c99;padding:0 5px;border-radius:9px;font-weight:600}}
+.bar{{margin:10px 0 16px}}button{{font:inherit;padding:4px 10px}}textarea{{width:100%;height:140px;font:12px monospace;margin-top:8px}}@media print{{.bar,textarea{{display:none}}body{{margin:8mm}}}}
+</style></head><body><h1>Machine Learning and Deep Learning · 강의계획서</h1><div class=sub>2027학년도 1학기 · 주당 3차시 (1·2차시 이론, 3차시 실험) · 수업 계획 도구에서 만듦 {time.strftime("%Y-%m-%d %H:%M")}</div>
+<div class=bar><button onclick="print()">인쇄 / PDF로 저장</button> <button onclick="navigator.clipboard.writeText(document.querySelector('textarea').value)">Markdown 표 복사</button></div>
+<table><tr><th>주차</th><th>날짜</th><th>1차시</th><th>2차시</th><th>3차시</th><th>프로젝트</th><th>비고</th></tr>{"".join(rows)}</table>
+<textarea readonly>{html.escape(mdtxt)}</textarea></body></html>"""
+
 # ---------------------------------------------------------------- http
 class H(BaseHTTPRequestHandler):
     def log_message(self, *a):
@@ -363,6 +402,8 @@ class H(BaseHTTPRequestHandler):
             return self.send(UI.read_text(), "text/html; charset=utf-8")
         if u.path == "/api/state":
             return self.send(dict(assets=scan_assets(), plan=load_plan(), busy=BUSY["on"], log=LOG[-200:]))
+        if u.path == "/syllabus":
+            return self.send(render_syllabus(load_plan(), scan_assets()), "text/html; charset=utf-8")
         if u.path == "/api/log":
             return self.send(dict(busy=BUSY["on"], log=LOG[-200:]))
         if u.path.startswith("/files/"):
