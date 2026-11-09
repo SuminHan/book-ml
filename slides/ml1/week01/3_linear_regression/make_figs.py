@@ -19,6 +19,25 @@ def base(ax, x, y):
     ax.set_xlabel("공부 시간 (시간)"); ax.set_ylabel("점수"); ax.set_xlim(0, 10.5); ax.set_ylim(30, 105)
 
 
+# 0. 학습의 뼈대: 데이터 -> 모델 -> 손실 -> 최적화, 최적화가 모델의 파라미터를 고치는 고리 (Goodfellow et al. 2016, 5.10)
+from matplotlib.patches import FancyBboxPatch
+fig, ax = plt.subplots(figsize=(10.5, 3.9)); ax.axis("off"); ax.set_xlim(0, 10.5); ax.set_ylim(0, 3.9)
+boxes = [("① 데이터", "(공부 시간, 점수)\n30쌍", BLUE), ("② 모델", "직선\n$w_0 + w_1 x$", GOLD),
+         ("③ 손실함수", "오차 제곱 평균\n$J(w_0, w_1)$", RED), ("④ 최적화", "경사하강법\n$w$ 를 고친다", GREEN)]
+bw, gap = 2.25, 0.5
+for i, (title, sub, c) in enumerate(boxes):
+    x0 = i * (bw + gap)
+    ax.add_patch(FancyBboxPatch((x0, 1.2), bw, 2.0, boxstyle="round,pad=0.03", fc=c, ec="none"))
+    ax.text(x0 + bw / 2, 2.75, title, ha="center", va="center", color="white", fontsize=18, fontweight="bold")
+    ax.text(x0 + bw / 2, 1.85, sub, ha="center", va="center", color="white", fontsize=14, linespacing=1.4)
+    if i < 3:
+        ax.annotate("", (x0 + bw + gap - 0.05, 2.2), (x0 + bw + 0.05, 2.2), arrowprops=dict(arrowstyle="-|>", color="black", lw=2))
+x_mod, x_opt = 1 * (bw + gap) + bw / 2, 3 * (bw + gap) + bw / 2
+ax.plot([x_opt, x_opt, x_mod], [1.15, 0.8, 0.8], color=GRAY, lw=2)
+ax.annotate("", (x_mod, 1.15), (x_mod, 0.8), arrowprops=dict(arrowstyle="-|>", color=GRAY, lw=2))
+ax.text((x_mod + x_opt) / 2, 0.4, "손실이 줄어들 때까지 반복", ha="center", fontsize=14, color=GRAY)
+fig.savefig(O + "lr_recipe.png", bbox_inches="tight"); plt.close(fig)
+
 # 1. 질문
 fig, ax = plt.subplots(figsize=(8, 4.6)); base(ax, x, y)
 ax.axvline(7, color=RED, ls="--", lw=2); ax.text(7.15, 35, "7시간이면?", color=RED, fontsize=17, fontweight="bold")
