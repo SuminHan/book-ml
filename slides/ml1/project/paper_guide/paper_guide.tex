@@ -1,0 +1,297 @@
+\documentclass[aspectratio=169,11pt,t]{beamer}
+\input{../../../theme/ksa-cs-v2.tex}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+\graphicspath{{figs/}{../../../assets/}}
+\usepackage{booktabs}
+\usepackage{array}
+\makeatletter
+\newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
+\newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
+\makeatother
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 보고서 작성 가이드}
+\title{프로젝트 보고서 작성 가이드}
+\subtitle{학회 논문 형식으로 쓰고, 학회처럼 서로 심사합니다}
+\author{Machine Learning and Deep Learning}
+\institute{KSA 2027-Spring}
+\date{Sumin Han (suminhan@ksa.hs.kr)}
+\begin{document}
+{\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
+
+\section{형식}
+% --- 왜 학회 형식인가
+\begin{frame}{왜 학회 논문 형식인가}
+\vfill
+\centering
+{\Large 이 수업의 목표는 \kb{머신러닝 논문을 직접 써 보는 것}}\par\vskip1.2em
+\begin{tabular}{L{3.6cm}L{8.4cm}}
+\toprule
+\textbf{학회} & \textbf{우리 수업} \\
+\midrule
+논문 투고 & 보고서 제출 (중간 6주차 · 기말 14주차) \\
+OpenReview 심사 & KSA Review에서 다른 팀 보고서 2편 심사 \\
+반박 (rebuttal) & 받은 리뷰에 1쪽으로 답하기 \\
+학회의 AI 정책 & 같은 원칙: 써도 되지만 \kq{틀리면 책임} \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{이 수업의 목표는 머신러닝 논문을 직접 써 보는 것입니다. 그래서 프로젝트 보고서도 학회 논문과 같은 형식으로 쓰고, 제출한 뒤에는 학회처럼 서로 심사합니다. 학회에서는 논문을 내면 OpenReview에서 심사를 받고, 리뷰에 반박하고, 결과가 나옵니다. 우리도 KSA Review에서 다른 팀 보고서 두 편을 심사하고, 받은 리뷰에 한 쪽으로 답합니다. AI 사용 규칙도 요즘 학회들이 쓰는 원칙을 그대로 가져왔습니다. 써도 되지만, 틀리면 책임은 쓴 사람에게 있습니다.}
+\end{frame}
+
+% --- 일정
+\begin{frame}{일정 한눈에 보기 (중간 프로젝트)}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cL{4.2cm}L{6.6cm}}
+\toprule
+\textbf{주차} & \textbf{할 일} & \textbf{제출} \\
+\midrule
+1 & 팀 구성 · 데이터 후보 조사 & KSA Review 회원가입 \\
+2 & 문제 정의 · 베이스라인 계획 & \kb{Abstract} (1쪽) \\
+3 & 다른 팀 Abstract 읽고 고르기 & \kb{Bidding} \\
+4$\sim$5 & 구현 · 검증 · test 한 번 & \\
+6 & 보고서 완성 & \kb{보고서 + 코드} \\
+8 & 배정된 두 팀 심사 & \kb{리뷰 2건} \\
+\bottomrule
+\end{tabular}\par\vskip0.5em
+{\small 기말 프로젝트도 같은 순서로 9주차부터 진행합니다.}
+\vfill
+\note{중간 프로젝트 일정입니다. 1주차에 팀을 만들고 데이터 후보를 찾습니다. 2주차에 Abstract 한 쪽을 냅니다. 3주차에는 다른 팀 Abstract를 읽고 심사하고 싶은 보고서를 고릅니다. 이걸 Bidding이라고 합니다. 4주차와 5주차에 구현하고 검증하고, test는 마지막에 한 번만 씁니다. 6주차에 보고서와 코드를 내고, 8주차에 배정된 두 팀의 보고서를 심사합니다. 기말 프로젝트도 9주차부터 같은 순서로 갑니다.}
+\end{frame}
+
+\section{구성}
+% --- 첫 문단
+\begin{frame}{첫 문단에 주장 하나}
+\markpage{claim}
+\vfill
+\centering{\large 읽는 사람이 첫 문단만 보고 \kb{``이 팀이 무엇을 보였는지''} 한 문장으로 말할 수 있어야 합니다}\par\vskip1.2em
+\begin{tabular}{L{6.2cm}L{6.2cm}}
+\toprule
+\textcolor{alertred}{\textbf{알 수 없는 첫 문단}} & \textcolor{ksablue}{\textbf{주장이 보이는 첫 문단}} \\
+\midrule
+``신용카드 연체는 중요한 사회 문제이다. 본 연구에서는 다양한 머신러닝 모델을 적용하여 연체를 예측하고 성능을 분석하였다.'' &
+``고객 한 명 = 한 행으로 다음 달 연체를 예측한다. 연체는 22\%뿐이라 정확도 대신 PR-AUC를 쓴다. 정규화 로지스틱회귀(0.52)보다 GBDT(0.55)가 낫지만, 그 차이는 대부분 결제 이력 변수 하나에서 나온다.'' \\
+\bottomrule
+\end{tabular}\par\vskip0.4em
+{\scriptsize 숫자는 형식을 보이기 위한 예시입니다.}
+\vfill
+\note{보고서에서 가장 중요한 건 첫 문단입니다. 왼쪽처럼 쓰면 이 팀이 무엇을 했는지 알 수 없습니다. 다양한 모델을 적용해서 성능을 분석했다는 말은 어느 보고서에나 쓸 수 있습니다. 오른쪽은 행의 단위, 지표를 고른 이유, 비교 결과, 그리고 발견한 것이 다 들어 있습니다. 심사하는 사람이 첫 문단만 읽고 이 팀의 주장을 한 문장으로 말할 수 있어야 합니다. 오른쪽 숫자는 형식을 보여 주려는 예시입니다.}
+\end{frame}
+
+% --- 구성
+\begin{frame}{보고서의 각 부분에서 독자가 얻어야 할 것}
+\vfill
+\centering\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{L{3.0cm}L{10.4cm}}
+\toprule
+\textbf{부분} & \textbf{독자가 여기서 알아야 할 것} \\
+\midrule
+제목 · Abstract & 무엇을, 어떤 데이터로, 무엇과 비교해, 무엇을 발견했는가 \\
+서론 & 왜 이 문제인가 · 행의 단위 · 라벨 · 지표 · 베이스라인 · \kb{기여 목록} \\
+데이터와 방법 & 그대로 따라 할 수 있을 만큼: 분할 방식, train으로만 맞춘 전처리, 탐색한 하이퍼파라미터 \\
+결과 & 기여마다 그것을 뒷받침하는 실험. test는 한 번만, 어디서 썼는지 \\
+분석 · 한계 & 왜 이런 결과가 나왔는지, 무엇이 안 됐는지, 어디서는 통하지 않을지 \\
+재현 방법 & 데이터 출처 · 시드 · 실행 방법. \kb{Colab 링크} \\
+부록 & AI 사용 한 줄 \pref{ai} · 인용 근거 표 \pref{citetable} (쪽수에 넣지 않음) \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{보고서의 구성은 공지문에 있는 순서를 따릅니다. 이 표는 각 부분에서 읽는 사람이 무엇을 알아야 하는지 정리한 것입니다. 서론에는 꼭 기여 목록을 씁니다. 이 보고서가 보이는 것이 첫째 무엇, 둘째 무엇이라고 번호를 붙여 적습니다. 결과에서는 그 기여마다 뒷받침하는 실험이 있어야 합니다. 재현 방법에는 Colab 링크를 넣습니다. 부록에는 AI 사용 한 줄과 인용 근거 표를 붙이는데, 이 둘은 쪽수에 넣지 않습니다. 뒤에서 하나씩 설명합니다.}
+\end{frame}
+
+% --- 기여 목록
+\begin{frame}{기여 목록과 실험은 짝이 맞아야 한다}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{L{6.0cm}cL{5.2cm}}
+\toprule
+\textbf{서론의 기여 목록} & & \textbf{결과에서 보인 곳} \\
+\midrule
+\textcircled{1} PR-AUC로 보면 GBDT가 로지스틱회귀보다 낫다 & $\rightarrow$ & 표 2 (같은 분할 · 같은 지표) \\
+\textcircled{2} 차이는 결제 이력 변수에서 나온다 & $\rightarrow$ & 그림 3 (SHAP) \\
+\textcircled{3} 시간 순서로 나눠도 결론이 같다 & $\rightarrow$ & \textcolor{alertred}{\textbf{없음 $\Rightarrow$ 빼거나 실험 추가}} \\
+\bottomrule
+\end{tabular}\par\vskip1em
+{\large 서론에서 약속하고 결과에서 안 보이면 \kq{심사에서 가장 먼저 지적받습니다}}
+\vfill
+\note{서론의 기여 목록은 약속입니다. 결과에서 그 약속을 하나씩 지켜야 합니다. 첫째 기여는 표 2에서, 둘째는 그림 3에서 보였습니다. 그런데 셋째, 시간 순서로 나눠도 결론이 같다는 주장은 결과 어디에도 없습니다. 이러면 둘 중 하나를 해야 합니다. 주장을 빼거나, 실험을 추가하거나. 서론에서 약속하고 결과에서 안 보이는 것은 심사에서 가장 먼저 지적받는 부분입니다.}
+\end{frame}
+
+% --- 숫자
+\begin{frame}{모든 숫자는 코드에서 나와야 한다}
+\markpage{repro}
+\vfill
+\centering
+{\Large 보고서의 숫자는 \kb{Colab을 처음부터 실행하면 그대로 다시 나와야} 합니다}\par\vskip1.2em
+\begin{itemize}
+\item 리뷰어는 여러분의 Colab을 열어 \kb{표의 숫자 하나를 직접 재현}해 봅니다
+\item 시드를 고정하고, 데이터는 첫 칸에서 내려받게 합니다
+\item 실행해도 안 나오는 숫자, 하지 않은 실험의 결과는 \kq{0점}입니다 \pref{zero}
+\end{itemize}
+\vfill
+\note{보고서에 적힌 모든 숫자는 제출한 코드를 처음부터 실행하면 그대로 다시 나와야 합니다. 이번 학기에는 리뷰어가 실제로 여러분의 Colab을 열어서 표의 숫자 하나를 재현해 봅니다. 그러니 시드를 고정하고, 데이터는 첫 칸에서 내려받도록 만들어 두세요. 내 컴퓨터에만 있는 파일을 읽으면 리뷰어는 실행할 수 없습니다. 실행해도 나오지 않는 숫자나 하지 않은 실험의 결과를 적으면 0점입니다.}
+\end{frame}
+
+% --- 심사 질문
+\begin{frame}{심사하는 사람이 반드시 묻는 여섯 가지}
+\vfill
+\begin{enumerate}
+\setlength\itemsep{0.6em}
+\item 서론에서 약속한 기여가 결과에서 \kb{전부} 보였는가?
+\item 실험이 주장을 시험하는가, 아니면 \kb{더 쉬운 것}을 시험하는가?
+\item 베이스라인이 있고, \kb{같은 분할 · 같은 튜닝}으로 공정하게 비교했는가?
+\item 결과가 \kq{데이터 누수}나 test로 튜닝한 것으로 설명되지는 않는가?
+\item 제목과 Abstract가 \kb{실제로 한 일}을 과장 없이 말하는가?
+\item 한계를 숨기지 않았는가?
+\end{enumerate}
+\vskip0.6em
+\centering{\large 제출 전에 팀이 먼저 답해 보세요}
+\vfill
+\note{리뷰 가이드라인에서 심사하는 사람에게 확인하라고 한 질문들입니다. 학회 심사 지침에 나오는 질문을 우리 수업에 맞게 고른 것입니다. 약속한 기여를 다 보였는지, 실험이 정말 주장을 시험하는지, 베이스라인과 공정하게 비교했는지, 데이터 누수로 설명되지는 않는지, 제목과 Abstract가 과장하지 않는지, 한계를 숨기지 않았는지. 제출하기 전에 팀이 먼저 이 여섯 가지에 답해 보면 심사에서 받을 지적 대부분을 미리 막을 수 있습니다.}
+\end{frame}
+
+\section{AI}
+% --- AI
+\begin{frame}{AI는 써도 됩니다. 한 줄만 적으세요}
+\markpage{ai}
+\vfill
+\centering
+\begin{tabular}{L{6.2cm}L{6.2cm}}
+\toprule
+\textbf{이런 데 써도 됩니다} & \textbf{대신 이것만} \\
+\midrule
+문장 다듬기 · 맞춤법 & 보고서 끝에 \kb{AI 사용 한 줄} \\
+코드 작성 · 오류 찾기 & 썼다고 감점하지 않습니다 \\
+개념 공부 · 그래프 코드 & AI가 만든 것이 틀리면 \kq{팀 책임} \\
+\bottomrule
+\end{tabular}\par\vskip1.2em
+\fbox{\parbox{11.6cm}{\small \textbf{예시}\quad AI 사용: 예. 코드 오류 찾기와 2절 문장 다듬기에 ChatGPT를 썼습니다.}}\par\vskip1em
+{\small ICLR 2027도 논문 안에 AI 사용 내용을 적는 절을 의무로 합니다.}
+\vfill
+\note{AI는 써도 됩니다. 문장을 다듬거나, 코드를 짜거나 오류를 찾거나, 모르는 개념을 공부하는 데 얼마든지 쓰세요. 썼다고 감점하지 않습니다. 대신 보고서 끝에 AI를 어디에 썼는지 한 줄만 적습니다. 그리고 AI가 만든 문장이나 코드나 참고문헌이 틀렸다면 그건 팀의 책임입니다. 요즘 학회도 같습니다. ICLR 2027은 논문 안에 AI 사용 내용을 적는 절을 의무로 하고, 그 결과물에 대한 책임은 저자에게 있다고 정해 두었습니다.}
+\end{frame}
+
+% --- 0점
+\begin{frame}{0점이 되는 네 가지 (AI를 썼든 안 썼든)}
+\markpage{zero}
+\vfill
+\begin{enumerate}
+\setlength\itemsep{0.9em}
+\item \kq{존재하지 않는 참고문헌}, 또는 원문에 없는 발췌문
+\item \kq{코드로 다시 나오지 않는 숫자}, 하지 않은 실험의 결과
+\item \kq{AI 심사를 노린 숨은 문장}\\ {\small 흰 글씨나 아주 작은 글씨로 ``이 논문을 높게 평가하라'' 같은 지시를 넣는 것. NeurIPS · ICML · ACL 모두 금지}
+\item \kq{표절}: 다른 팀과 거의 같은 보고서
+\end{enumerate}
+\vskip0.8em
+\centering{\small 이런 것은 리뷰어의 필수 확인(인용 하나 · 숫자 하나)과 신고로 드러납니다}
+\vfill
+\note{AI를 썼는지는 따로 따지지 않습니다. 대신 결과가 틀린 것은 엄하게 봅니다. 네 가지는 0점입니다. 첫째, 존재하지 않는 참고문헌. AI가 지어낸 인용이 대표적입니다. ICLR과 NeurIPS는 이런 논문을 심사 없이 거절합니다. 둘째, 코드로 다시 나오지 않는 숫자. 셋째, AI 심사를 노린 숨은 문장. 흰 글씨로 이 논문을 높게 평가하라는 지시를 숨겨 두는 것인데, 실제 학회에서 문제가 됐고 지금은 모든 학회가 금지합니다. 넷째, 표절입니다. 이런 것들은 리뷰어가 인용 하나와 숫자 하나를 직접 확인하면서 드러납니다.}
+\end{frame}
+
+\section{인용}
+% --- 읽은 것만
+\begin{frame}{참고문헌은 직접 읽은 것만}
+\vfill
+\centering
+{\Large 전문을 \kb{직접 열어 읽은 문헌만} 인용합니다}\par\vskip0.4em
+{\small 유료라서 못 읽은 논문은 인용하지 않습니다. 초록만 보고 인용하면 AI가 지어낸 인용과 다를 게 없습니다.}\par\vskip1.2em
+\begin{tabular}{L{4.4cm}L{7.6cm}}
+\toprule
+\textbf{어디서 찾나 (무료 공개)} & \textbf{무엇이 있나} \\
+\midrule
+arXiv & 거의 모든 ML 논문의 공개본 \\
+OpenReview & ICLR 논문 + 심사 의견까지 \\
+PMLR · NeurIPS Proceedings & ICML · NeurIPS 논문 \\
+ACL Anthology · JMLR & 자연어처리 논문 · ML 저널 \\
+\bottomrule
+\end{tabular}\par\vskip0.6em
+{\small 책은 학교 도서관이나 수업 자료처럼 확인할 수 있는 것만, 쪽 번호를 달아 인용합니다.}
+\vfill
+\note{참고문헌은 전문을 직접 열어서 읽은 것만 인용합니다. 유료라서 못 읽은 논문은 인용하지 않습니다. 초록만 보고 그 논문이 이런 말을 했다고 쓰면, 사실은 AI가 지어낸 인용과 구조가 같습니다. 확인하지 않은 말을 남의 이름으로 쓰는 것이니까요. 다행히 머신러닝 분야는 핵심 논문이 거의 다 무료로 공개되어 있습니다. arXiv, ICLR 논문이 있는 OpenReview, ICML과 NeurIPS 논문집, ACL Anthology가 다 무료입니다. 책은 도서관처럼 확인할 수 있는 것만, 쪽 번호를 달아서 인용합니다.}
+\end{frame}
+
+% --- 인용 근거 표
+\begin{frame}{부록: 인용 근거 표}
+\markpage{citetable}
+\vfill
+\centering
+{\large 참고문헌마다 \kb{링크}와 \kb{원문 발췌 한 줄}}\par\vskip1em
+\footnotesize
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{cL{2.9cm}L{3.7cm}L{4.8cm}}
+\toprule
+\textbf{번호} & \textbf{링크} & \textbf{우리가 인용한 주장} & \textbf{원문 발췌 (쪽 · 절)} \\
+\midrule
+{[4]} & arxiv.org/abs/\allowbreak 2207.08815 & 중간 크기 표 데이터에서는 트리 모델이 딥러닝보다 강하다 & ``tree-based models remain state-of-the-art on medium-sized data'' (p.1, Abstract) \\
+\bottomrule
+\end{tabular}\par\vskip1.2em
+\normalsize
+\begin{itemize}
+\item 리뷰어는 이 표에서 \kb{핵심 인용 하나}를 골라 링크를 열고 발췌문을 찾아봅니다
+\item 표가 정확하면 확인은 30초면 끝납니다. 발췌문이 원문에 없으면 \kq{0점} \pref{zero}
+\end{itemize}
+\vfill
+\note{부록에는 인용 근거 표를 붙입니다. 참고문헌마다 한 줄씩, 링크, 우리가 인용한 주장, 그리고 원문에서 그 주장을 뒷받침하는 문장을 그대로 옮겨 적고 쪽 번호를 답니다. 예시는 실제 논문입니다. 2022년 Grinsztajn 등의 논문 초록에 이 문장이 그대로 있습니다. 이 표는 원문을 열어 본 사람만 채울 수 있습니다. 리뷰어는 이 표에서 핵심 인용 하나를 골라 링크를 열고 발췌문을 검색해 봅니다. 표가 정확하면 30초면 끝납니다.}
+\end{frame}
+
+\section{심사 후}
+% --- 리뷰 받은 뒤
+\begin{frame}{리뷰를 받은 뒤}
+\vfill
+\begin{itemize}
+\setlength\itemsep{1em}
+\item \kb{반박은 1쪽 이내}로. 리뷰의 질문 번호에 맞춰 답합니다\\
+{\small 고칠 수 있는 것은 고치고, 동의하지 않는 지적은 근거를 들어 정중하게}
+\item 받은 리뷰마다 \kb{도움 점수} (1$\sim$5)를 매깁니다\\
+{\small 점수가 높았는지가 아니라 ``보고서를 고치는 데 얼마나 도움이 됐나''}
+\item 이상한 리뷰는 \kb{선생님께 따로} 알립니다\\
+{\small 논문에 없는 내용을 지적함, 없는 문헌을 듦, 어느 보고서에나 붙는 일반론뿐. 리뷰어를 공개적으로 비난하지 않습니다.}
+\end{itemize}
+\vfill
+\note{리뷰를 받으면 한 쪽 이내로 반박을 씁니다. 리뷰의 질문 번호에 맞춰서 답하고, 고칠 수 있는 것은 고치고, 동의하지 않는 지적은 근거를 들어 정중하게 반박합니다. 그리고 받은 리뷰마다 도움 점수를 1점에서 5점으로 매깁니다. 나에게 점수를 잘 줬는지가 아니라 보고서를 고치는 데 얼마나 도움이 됐는지를 매기는 겁니다. 이 점수가 리뷰어의 점수가 됩니다. 논문에 없는 내용을 지적했거나, 없는 문헌을 들었거나, 아무 보고서에나 붙일 수 있는 말뿐인 리뷰는 선생님께 따로 알려 주세요.}
+\end{frame}
+
+% --- 점검표
+\begin{frame}{제출 전 점검표}
+\vfill
+\begin{itemize}
+\setlength\itemsep{0.35em}
+\item[$\square$] 첫 문단에서 주장이 한 문장으로 보인다 \pref{claim}
+\item[$\square$] 기여 목록의 모든 항목에 맞는 실험 · 그림 · 표가 있다
+\item[$\square$] 베이스라인과 모델 두 가지 이상을 같은 분할 · 같은 지표로 비교했다
+\item[$\square$] test는 한 번만 썼고, 전처리는 train으로만 맞췄다
+\item[$\square$] Colab을 처음부터 실행해 표의 숫자가 그대로 나온다 \pref{repro}
+\item[$\square$] 참고문헌을 모두 직접 읽었고, 인용 근거 표를 붙였다 \pref{citetable}
+\item[$\square$] 한계에 ``잘 안 된 것''을 하나 이상 적었다
+\item[$\square$] AI 사용 한 줄을 적었다 \pref{ai}
+\item[$\square$] 파일에 팀원 이름 · 학번, 이름이 보이는 저장소 링크가 없다 (익명 심사)
+\end{itemize}
+\vfill
+\note{제출하기 전에 이 목록을 한 번 확인하세요. 특히 마지막 항목, 익명 심사이기 때문에 파일 안에 이름이나 학번이 보이면 안 됩니다. GitHub 저장소 링크에 아이디가 보이는 것도 마찬가지입니다. 이 점검표는 보고서 공지와 리뷰 가이드라인에 나오는 기준을 한데 모은 것입니다.}
+\end{frame}
+
+% --- 출처
+\begin{frame}{참고한 자료}
+\vfill
+\small
+\begin{itemize}
+\setlength\itemsep{0.4em}
+\item ICLR 2027, AI Policy for Authors · for Reviewers (iclr.cc)
+\item ICLR 2026 Program Chairs, ``ICLR 2026 Response to LLM-Generated Papers and Reviews'' (blog.iclr.cc, 2025.11.19)
+\item NeurIPS 2026, Main Track Handbook (neurips.cc)
+\item ICML 2026, LLM Policy · Reviewer Instructions (icml.cc)
+\item The ACM Web Conference 2027, Reviewer Guidelines (Research Tracks)
+\item Grinsztajn, Oyallon \& Varoquaux (2022). Why do tree-based models still outperform deep learning on tabular data? NeurIPS Datasets and Benchmarks. arXiv:2207.08815
+\end{itemize}
+\vskip0.6em
+\centering{\small 심사하는 쪽 규칙은 \kb{리뷰(동료평가) 가이드라인}을 보세요.}
+\vfill
+\note{이 가이드는 요즘 학회들의 저자 정책과 심사 지침을 참고해서 우리 수업에 맞게 만든 것입니다. 심사하는 쪽 규칙, 그러니까 리뷰를 어떻게 쓰고 무엇을 직접 확인해야 하는지는 리뷰 가이드라인에 따로 있습니다.}
+\end{frame}
+
+\end{document}
