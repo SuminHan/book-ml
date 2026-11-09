@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ML1 수업 계획</title>
+<style>
+:root{--bg:#f6f5f0;--card:#fff;--ink:#22222e;--dim:#77778a;--line:#e3e1d8;--lec:#2e3192;--lecbg:#e8e9f8;--lab:#5b2c99;--labbg:#efe7f9;--asg:#7a1f3d;--asgbg:#f6e7ec;--warn:#b5520a;--warnbg:#fdf0e3;--hol:#1e7a34;--holbg:#d9f2dd}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15151b;--card:#1e1e27;--ink:#e9e9f1;--dim:#9a9ab0;--line:#2e2e3a;--lec:#aeb1f2;--lecbg:#262a55;--lab:#cdb4f2;--labbg:#33244d;--asg:#f0a9be;--asgbg:#47202e;--warn:#f3b07a;--warnbg:#45301c;--hol:#9fe0ae;--holbg:#1f4a2a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.4 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+header h1{font-size:16px;margin:0 12px 0 0}button{font:inherit;padding:5px 11px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button.pri{background:var(--lec);color:#fff;border-color:var(--lec)}button:disabled{opacity:.5;cursor:default}#status{color:var(--dim);margin-left:auto}
+main{display:grid;grid-template-columns:270px 1fr;gap:0;min-height:calc(100vh - 50px)}
+#pool{border-right:1px solid var(--line);padding:10px;position:sticky;top:50px;height:calc(100vh - 50px);overflow:auto}
+#pool input{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--ink);margin-bottom:8px}
+.legend{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;font-size:11px}.legend span{padding:1px 7px;border-radius:99px}
+#grid{padding:10px 14px 60px}
+.wk{display:grid;grid-template-columns:150px repeat(3,1fr) 190px;gap:8px;margin-bottom:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px}
+.wk.exam{box-shadow:inset 4px 0 #c55}.wk.mk{box-shadow:inset 4px 0 #7aa37a}.wk.fin{box-shadow:inset 4px 0 #a9976b}.wk.mid{box-shadow:inset 4px 0 #2e3192}
+.wi b{font-size:15px;color:var(--lec)}.wi .d{color:var(--dim);font-size:11.5px}.wi input{width:100%;margin-top:4px;border:1px solid var(--line);border-radius:6px;padding:3px 5px;font:inherit;font-size:11.5px;background:var(--bg);color:var(--ink)}
+.wi select{font:inherit;font-size:11px;margin-top:4px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px}
+.tag{display:inline-block;font-size:10.5px;padding:0 6px;border-radius:99px;margin:2px 3px 0 0}.tag.hol{background:var(--holbg);color:var(--hol)}
+.slot{border:1.5px dashed var(--line);border-radius:8px;min-height:62px;padding:4px;position:relative}
+.slot .sh{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim);margin-bottom:3px;cursor:pointer;user-select:none}
+.slot.holiday{background:repeating-linear-gradient(45deg,transparent 0 6px,rgba(30,122,52,.08) 6px 12px)}.slot.exam{background:rgba(197,85,85,.07)}.slot.makeup{background:rgba(122,163,122,.09)}.slot.project{background:rgba(122,31,61,.06)}
+.slot.over{border-color:var(--lec);background:var(--lecbg)}
+.card{border-radius:7px;padding:4px 7px;margin:3px 0;cursor:grab;border:1px solid transparent;font-size:12px}
+.card.lecture{background:var(--lecbg);color:var(--lec)}.card.lab{background:var(--labbg);color:var(--lab)}.card.assignment{background:var(--asgbg);color:var(--asg)}
+.card .m{font-size:10.5px;opacity:.8}.card a{color:inherit;text-decoration:none;opacity:.7;margin-left:4px}.card.dragging{opacity:.4}
+.warn{font-size:10.5px;color:var(--warn);background:var(--warnbg);border-radius:5px;padding:1px 5px;margin-top:3px}
+.msc{border-left:2px solid var(--line);padding-left:6px;min-height:62px}.ms{border-radius:7px;padding:3px 7px;margin:3px 0;cursor:grab;font-size:11.5px;background:var(--asgbg);color:var(--asg)}
+.ms.fin{background:#f1e8cf;color:#7a6a3a}@media (prefers-color-scheme:dark){.ms.fin{background:#4a4126;color:#e8dcb0}}
+.ms .t{font-size:10px;opacity:.8}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:720px;width:92vw}dialog pre{white-space:pre-wrap;font-size:12px;max-height:60vh;overflow:auto}
+.sum{font-size:11.5px;color:var(--dim);margin:0 0 8px}
+</style></head><body>
+<header><h1>ML1 수업 계획</h1>
+<button id="save" class="pri">저장</button><button id="prev">배포 미리보기</button><button id="deploy">배포</button><button id="pub">커밋 · 푸시</button><button id="reset" title="저장된 계획 대신 지금 사이트 · 폴더 상태에서 다시 불러오기">사이트에서 다시 불러오기</button>
+<a href="/files/docs/slides/ml1/2027-spring/index.html" target="_blank"><button>사이트 미리 보기</button></a>
+<span id="status"></span></header>
+<main><aside id="pool"><input id="q" placeholder="덱 찾기"><div class="legend"><span class="card lecture">수업</span><span class="card lab">실험</span><span class="card assignment">과제</span></div>
+<div class="sum" id="sum"></div><div class="slot" id="poolzone" data-pool="1"><div class="sh"><span>배치 안 된 덱 (여기로 끌어 빼기)</span></div></div>
+<div class="sum" style="margin-top:14px">프로젝트 자료 (오른쪽 칸 일정과 연결)</div><div id="proj"></div></aside>
+<section id="grid"></section></main>
+<dialog id="dlg"><h3 id="dt"></h3><pre id="dp"></pre><div style="text-align:right"><button id="dok" class="pri">확인</button> <button onclick="dlg.close()">닫기</button></div></dialog>
+<script>
+let A={},P=null,dirty=false,dragId=null,dragMs=null;
+const $=s=>document.querySelector(s), el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const SK={class:"수업",holiday:"휴일",exam:"시험",makeup:"보강",project:"프로젝트"}, SKO=["class","holiday","project","exam","makeup"];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function status(s){$("#status").textContent=s}
+function mark(){dirty=true;status("저장 안 됨");render()}
+async function load(){const r=await (await fetch("/api/state")).json();A=r.assets;P=r.plan;dirty=false;render();status(r.busy?"배포 중…":"불러옴")}
+function placed(){const s=new Set();P.weeks.forEach(w=>w.slots.forEach(sl=>sl.items.forEach(i=>s.add(i))));return s}
+function card(id){const a=A[id];if(!a)return el("div","card","(없는 덱) "+esc(id));
+ const c=el("div","card "+a.kind,`${esc(P.labels[id]||a.title)}<div class="m">${a.pages}쪽${a.notebook?" · 노트북":""} · ${esc(a.path)}<a href="/files/slides/ml1/${a.path}/${id}.pdf" target="_blank" title="PDF 열기">PDF↗</a></div>`);
+ c.draggable=true;c.ondragstart=e=>{dragId=id;dragMs=null;c.classList.add("dragging");e.dataTransfer.setData("text","x")};c.ondragend=()=>c.classList.remove("dragging");return c}
+function removeEverywhere(id){P.weeks.forEach(w=>w.slots.forEach(s=>s.items=s.items.filter(x=>x!==id)))}
+function dropZone(z,onDrop){z.ondragover=e=>{e.preventDefault();z.classList.add("over")};z.ondragleave=()=>z.classList.remove("over");z.ondrop=e=>{e.preventDefault();z.classList.remove("over");onDrop(e)}}
+function insertIndex(z,e){const cs=[...z.querySelectorAll(".card")];for(let k=0;k<cs.length;k++){const r=cs[k].getBoundingClientRect();if(e.clientY<r.top+r.height/2)return k}return cs.length}
+function warnings(w,si){const s=w.slots[si],out=[];const ks=s.items.map(i=>A[i]?.kind);
+ if(s.kind!=="class"&&s.items.length)out.push(SK[s.kind]+" 칸에 덱이 있음");
+ if(s.items.length>1)out.push(`덱 ${s.items.length}개 (50분)`);
+ const pg=s.items.reduce((a,i)=>a+(A[i]?.pages||0),0);if(pg>30&&s.items.length>1)out.push(`${pg}쪽`);
+ if(si===2&&s.kind==="class"&&s.items.length&&!ks.includes("lab"))out.push("3차시인데 실험 아님");
+ if(si<2&&ks.includes("lab"))out.push("실험이 1·2차시에");
+ return out}
+function render(){const g=$("#grid");g.innerHTML="";const pl=placed();const q=$("#q").value.trim();
+ // pool
+ const pz=$("#poolzone");pz.querySelectorAll(".card").forEach(c=>c.remove());
+ const free=Object.keys(A).filter(i=>!A[i].project&&!pl.has(i)&&(!q||(A[i].title+i+(P.labels[i]||"")).includes(q)));
+ free.forEach(i=>pz.appendChild(card(i)));
+ dropZone(pz,()=>{if(dragId){removeEverywhere(dragId);dragId=null;mark()}});
+ const nLec=Object.values(A).filter(a=>!a.project).length;
+ let cnt={class:0,lab:0};P.weeks.forEach(w=>w.slots.forEach(s=>{if(s.kind==="class")cnt.class++}));
+ $("#sum").textContent=`덱 ${nLec}개 · 배치 ${pl.size}개 · 수업 칸 ${cnt.class}개`;
+ const pj=$("#proj");pj.innerHTML="";Object.values(A).filter(a=>a.project).forEach(a=>{const c=card(a.id);c.draggable=false;c.style.cursor="default";pj.appendChild(c)});
+ P.weeks.forEach((w,wi)=>{const row=el("div","wk "+w.cls);
+  const info=el("div","wi",`<b>${w.n}주차</b> <span class="d">${esc(w.dates)}</span><div>${w.holidays.map(h=>`<span class="tag hol">${esc(h)}</span>`).join("")}</div>`);
+  const ti=el("input");ti.value=w.title;ti.title="사이트에 보이는 주차 제목";ti.oninput=()=>{w.title=ti.value;dirty=true;status("저장 안 됨")};info.appendChild(ti);
+  const sel=el("select");[["mid","중간 범위"],["fin","기말 범위"],["exam","시험 주"],["mk","보강 주"]].forEach(([v,t])=>{const o=el("option",null,t);o.value=v;if(w.cls===v)o.selected=true;sel.appendChild(o)});sel.onchange=()=>{w.cls=sel.value;mark()};info.appendChild(sel);
+  if(w.holidays.length&&!w.slots.some(s=>s.kind==="holiday"))info.appendChild(el("div","warn","공휴일: 빠지는 차시를 '휴일'로"));
+  row.appendChild(info);
+  w.slots.forEach((s,si)=>{const z=el("div","slot "+s.kind);const sh=el("div","sh",`<span>${si+1}차시</span><span title="눌러서 바꾸기">${SK[s.kind]} ▾</span>`);
+   sh.onclick=()=>{s.kind=SKO[(SKO.indexOf(s.kind)+1)%SKO.length];mark()};z.appendChild(sh);
+   s.items.forEach(i=>z.appendChild(card(i)));
+   warnings(w,si).forEach(t=>z.appendChild(el("div","warn",esc(t))));
+   dropZone(z,e=>{if(!dragId)return;const k=insertIndex(z,e);const same=s.items.indexOf(dragId);removeEverywhere(dragId);let kk=k;if(same>=0&&same<k)kk--;s.items.splice(kk,0,dragId);dragId=null;mark()});
+   row.appendChild(z)});
+  const mc=el("div","msc");P.milestones.filter(m=>m.week===w.n).forEach(m=>{const c=el("div","ms "+m.proj,`${esc(m.label)}${m.tag?`<div class="t">${esc(m.tag)}</div>`:""}`);c.draggable=true;c.title=m.file;c.ondragstart=e=>{dragMs=m.id;dragId=null;e.dataTransfer.setData("text","x")};mc.appendChild(c)});
+  dropZone(mc,()=>{if(!dragMs)return;const m=P.milestones.find(x=>x.id===dragMs);m.week=w.n;dragMs=null;mark()});
+  row.appendChild(mc);g.appendChild(row)})}
+$("#q").oninput=render;
+$("#save").onclick=async()=>{await fetch("/api/plan",{method:"POST",body:JSON.stringify(P)});dirty=false;status("저장함 "+new Date().toLocaleTimeString())};
+$("#reset").onclick=async()=>{if(!confirmBox)return;P=await (await fetch("/api/reset",{method:"POST",body:"{}"})).json();mark()};
+let confirmBox=true;
+async function showPreview(then){const r=await (await fetch("/api/preview",{method:"POST",body:JSON.stringify(P)})).json();
+ $("#dt").textContent=then?"이대로 배포할까요?":"배포 미리보기";
+ let s=r.moves.length?`옮길 덱 ${r.moves.length}개\n`+r.moves.map(([a,b])=>`  ${a}  →  ${b}`).join("\n"):"옮길 덱 없음 (사이트 목록 · 제목 · 일정만 다시 씀)";
+ if(r.unplaced.length)s+=`\n\n배치 안 된 덱 ${r.unplaced.length}개 (폴더는 그대로, 사이트 목록에서는 빠짐)\n  `+r.unplaced.join(", ");
+ s+="\n\n배포하면: 폴더 이동 → 경로 고치기 → 사이트 목록 다시 쓰기 → 옮긴 덱 다시 빌드 · 사이트 PDF 교체. 커밋은 따로.";
+ $("#dp").textContent=s;$("#dok").style.display=then?"":"none";$("#dok").onclick=then;dlg.showModal()}
+$("#prev").onclick=()=>showPreview(null);
+$("#deploy").onclick=()=>showPreview(async()=>{dlg.close();await fetch("/api/deploy",{method:"POST",body:JSON.stringify(P)});status("배포 중…");poll()});
+async function poll(){const r=await (await fetch("/api/log")).json();status((r.log.slice(-1)[0]||"")+(r.busy?" …":""));if(r.busy)setTimeout(poll,1500);else{$("#dt").textContent="배포 기록";$("#dp").textContent=r.log.join("\n");$("#dok").style.display="none";dlg.showModal();load()}}
+$("#pub").onclick=async()=>{const msg=prompt("커밋 메시지","ML1 수업 계획 반영 (course planner)");if(!msg)return;status("커밋 중…");const r=await (await fetch("/api/publish",{method:"POST",body:JSON.stringify({msg})})).json();status(r.msg)};
+window.onbeforeunload=()=>dirty?"저장 안 됨":undefined;
+load();
+</script></body></html>
