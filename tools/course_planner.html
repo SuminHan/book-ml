@@ -63,7 +63,8 @@ function warnings(w,si){const s=w.slots[si],out=[];const ks=s.items.map(i=>A[i]?
  if(si===2&&s.kind==="class"&&s.items.length&&!ks.includes("lab"))out.push("3차시인데 실험 아님");
  if(si<2&&ks.includes("lab"))out.push("실험이 1·2차시에");
  return out}
-function render(){const g=$("#grid");g.innerHTML="";const pl=placed();const q=$("#q").value.trim();
+function autoCls(w){const ks=w.slots.map(s=>s.kind);w.cls=ks.every(k=>k==="exam")?"exam":ks.every(k=>k==="makeup")?"mk":(w.n<=8?"mid":"fin")}
+function render(){P.weeks.forEach(autoCls);const g=$("#grid");g.innerHTML="";const pl=placed();const q=$("#q").value.trim();
  // pool
  const pz=$("#poolzone");pz.querySelectorAll(".card").forEach(c=>c.remove());
  const free=Object.keys(A).filter(i=>!A[i].project&&!pl.has(i)&&(!q||(A[i].title+i+(P.labels[i]||"")).includes(q)));
@@ -76,7 +77,6 @@ function render(){const g=$("#grid");g.innerHTML="";const pl=placed();const q=$(
  P.weeks.forEach((w,wi)=>{const row=el("div","wk "+w.cls);
   const info=el("div","wi",`<b>${w.n}주차</b> <span class="d">${esc(w.dates)}</span><div>${w.holidays.map(h=>`<span class="tag hol">${esc(h)}</span>`).join("")}</div>`);
   const ti=el("input");ti.value=w.title;ti.title="사이트에 보이는 주차 제목";ti.oninput=()=>{w.title=ti.value;dirty=true;status("저장 안 됨")};info.appendChild(ti);
-  const sel=el("select");[["mid","중간 범위"],["fin","기말 범위"],["exam","시험 주"],["mk","보강 주"]].forEach(([v,t])=>{const o=el("option",null,t);o.value=v;if(w.cls===v)o.selected=true;sel.appendChild(o)});sel.onchange=()=>{w.cls=sel.value;mark()};info.appendChild(sel);
   if(w.holidays.length&&!w.slots.some(s=>s.kind==="holiday"))info.appendChild(el("div","warn","공휴일: 빠지는 차시를 '휴일'로"));
   row.appendChild(info);
   w.slots.forEach((s,si)=>{const z=el("div","slot "+s.kind);const sh=el("div","sh",`<span>${si+1}차시</span><span title="눌러서 바꾸기">${SK[s.kind]} ▾</span>`);
