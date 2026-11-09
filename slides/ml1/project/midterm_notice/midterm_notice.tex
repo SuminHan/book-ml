@@ -1,0 +1,240 @@
+\documentclass[aspectratio=169,11pt,t]{beamer}
+\input{../../../theme/ksa-cs-v2.tex}
+\input{../../../theme/ksa-cs-v2-assignment.tex}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+\graphicspath{{figs/}{../../../assets/}}
+\usepackage{booktabs}
+\usepackage{array}
+\makeatletter
+\newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
+\newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
+\makeatother
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 중간 프로젝트 공지}
+\title{중간 프로젝트 공지}
+\subtitle{고전 머신러닝으로 실제 표 데이터 문제 풀기 (1$\sim$8주차)}
+\author{Machine Learning and Deep Learning}
+\institute{KSA 2027-Spring}
+\date{Sumin Han (suminhan@ksa.hs.kr)}
+\begin{document}
+{\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
+
+\section{개요}
+% --- 한눈에
+\begin{frame}{프로젝트 한눈에 보기}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{L{2.8cm}L{10.2cm}}
+\toprule
+\textbf{무엇을} & 실제 \kb{정형(표) 데이터} 하나에 고전 머신러닝 모델을 적용하고 비교하는 \kb{팀 프로젝트} \\
+\textbf{어떤 기법} & 회귀(선형 · 로지스틱), 분류(나이브 베이즈 · kNN · SVM · 결정 트리 · 랜덤 포레스트 · GBDT), 군집(k-means), 차원 축소(PCA) \\
+\textbf{도구} & \texttt{scikit-learn} 안에서 (MLP도 \texttt{MLPClassifier} · \texttt{MLPRegressor}까지는 가능) \\
+\textbf{목표} & 높은 성능이 아니라 \kq{``이 숫자를 믿어도 되는가''}를 스스로 따져 보는 힘 \\
+\bottomrule
+\end{tabular}\par\vskip1em
+{\large 데이터 선정 $\rightarrow$ Abstract $\rightarrow$ 구현 · 검증 $\rightarrow$ 보고서 $\rightarrow$ 동료평가}
+\vfill
+\note{중간 프로젝트를 공지합니다. 실제 표 데이터 하나를 골라서, 1주차부터 7주차까지 배우는 고전 머신러닝 모델을 적용하고 비교하는 팀 프로젝트입니다. 도구는 사이킷런 안에서 해결합니다. 신경망도 사이킷런의 MLP까지는 써도 됩니다. 목표는 높은 성능이 아닙니다. 성능 숫자를 정직하게 얻는 절차를 직접 해 보고, 이 숫자를 믿어도 되는지 스스로 따져 보는 것입니다. 진행은 데이터 선정, Abstract, 구현과 검증, 보고서, 동료평가 순서입니다.}
+\end{frame}
+
+% --- 일정
+\begin{frame}{일정과 마감}
+\markpage{schedule}
+\vfill
+\centering\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{L{2.6cm}L{6.4cm}L{4.0cm}}
+\toprule
+\textbf{주차} & \textbf{할 일} & \textbf{제출} \\
+\midrule
+1$\sim$2주 {\scriptsize (2/15--26)} & 팀 구성, \kb{KSA Review 회원가입}, 데이터 후보 2$\sim$3개 조사 & 회원가입 \\
+3주 {\scriptsize (3/1--5)} & 문제 정의(행의 단위 · 라벨 · 지표), 데이터, 베이스라인과 모델 계획 & \kb{Abstract} (1쪽) \\
+4$\sim$5주 & 3분할, train으로만 맞춘 전처리, 베이스라인, 모델 적용, validation 튜닝, \kq{test는 한 번만} & \\
+6주 {\scriptsize (3/22--26)} & 보고서 완성 & \kb{보고서 + 코드} \\
+7주 & 배정된 다른 팀 보고서 읽기 & \\
+8주 {\scriptsize (4/5--9)} & 배정된 두 팀 심사 (중간고사 기간) & \kb{리뷰 2건} \\
+\bottomrule
+\end{tabular}\par\vskip0.5em
+{\small 마감 시각과 제출 방법은 따로 안내합니다.}
+\vfill
+\note{일정입니다. 1, 2주차에 팀을 만들고 KSA Review에 회원가입하고, 데이터 후보를 두세 개 찾습니다. 3주차에 Abstract 한 쪽을 냅니다. 4주차와 5주차에 구현하고 검증하는데, test는 마지막에 딱 한 번만 씁니다. 6주차에 보고서와 코드를 내고, 7주차에 배정된 보고서를 읽고, 8주차에 두 팀의 보고서를 심사합니다. 마감 시각과 제출 방법은 따로 안내하겠습니다.}
+\end{frame}
+
+\section{요구사항}
+% --- 필수 요구사항
+\begin{frame}{꼭 지켜야 할 다섯 가지}
+\vfill
+\begin{enumerate}
+\setlength\itemsep{0.7em}
+\item \kb{데이터}: Kaggle · UCI · 데이터샵의 \kb{정형(행/열) 데이터} 하나 (이미지 · 텍스트 제외)
+\item \kb{모델 두 가지 이상}을 따로 학습시켜 \kb{같은 데이터 · 같은 분할 · 같은 지표}로 비교\\
+{\small 예: 로지스틱회귀와 GBDT. 모델을 합치거나 섞는 것이 아닙니다}
+\item \kb{수식적 정당화 하나 이상}\\
+{\small 정규화를 썼다면 편향-분산으로 왜 바뀌었는지 · GBDT라면 SHAP으로 예측 하나 분해 · 불균형이면 PR-AUC}
+\item \kb{검증 원칙}: train / validation / test 3분할, 전처리는 train으로만, \kq{test는 딱 한 번}
+\item \kb{학습 곡선}: validation 곡선으로 하이퍼파라미터를 골랐다는 것이 그림에서 보여야 합니다
+\end{enumerate}
+\vfill
+\note{꼭 지켜야 할 것이 다섯 가지 있습니다. 첫째, 정형 데이터 하나를 고릅니다. 이미지나 텍스트는 기말 프로젝트에서 합니다. 둘째, 서로 다른 모델 두 가지 이상을 같은 데이터, 같은 분할, 같은 지표로 비교합니다. 셋째, 결과를 수식으로 설명하는 부분이 하나 이상 있어야 합니다. 넷째, 데이터를 셋으로 나누고, 전처리는 학습 데이터로만 맞추고, test는 딱 한 번만 씁니다. 다섯째, 학습 곡선을 반드시 넣습니다. 최종 숫자만 있으면 하이퍼파라미터를 어떻게 골랐는지 확인할 수 없기 때문입니다.}
+\end{frame}
+
+% --- 데이터 고르기
+\begin{frame}{데이터 고르기: 다섯 가지 기준}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.45}
+\begin{tabular}{L{4.4cm}L{8.6cm}}
+\toprule
+\textbf{확인할 것} & \textbf{왜} \\
+\midrule
+\kb{행 하나}가 무엇인가 & 환자? 거래? 주문? 한 문장으로 말할 수 없으면 무엇을 예측하는지도 말할 수 없습니다 \\
+같은 대상이 \kb{여러 행}인가 & 한 사람의 행이 train과 test에 나뉘면 누수. 그룹 단위로 나눕니다 \\
+\kb{시간} 순서가 있는가 & 시계열이면 시간 순서로 나눕니다 \\
+\kb{클래스 비율}은? & 99:1처럼 치우쳤으면 정확도 대신 PR-AUC · 재현율 \\
+\kb{크기}는? & 100행 미만이면 숫자가 심하게 흔들립니다. 500$\sim$10,000행이 다루기 편합니다 \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{데이터를 고를 때 다섯 가지를 먼저 봅니다. 행 하나가 무엇인지 한 문장으로 말할 수 있어야 합니다. 같은 사람이나 같은 물건이 여러 행에 나오면, 무작위로 나눌 때 같은 대상이 학습과 시험에 함께 들어가서 누수가 생깁니다. 이때는 그룹 단위로 나눕니다. 시간 순서가 있으면 시간 순서대로 나눕니다. 클래스 비율이 한쪽으로 크게 치우쳤으면 정확도 대신 PR-AUC나 재현율을 씁니다. 크기는 500에서 1만 행 정도가 다루기 편합니다.}
+\end{frame}
+
+% --- 데이터 어디서
+\begin{frame}{데이터는 어디서 찾나: 데이터샵과 데이터 월드컵}
+\vfill
+\centering
+\begin{columns}[T]
+\begin{column}{0.47\textwidth}
+\centering{\Large \kb{데이터샵}}\par\vskip0.5em
+{\small\texttt{smhanlab.com/book-ml/datashop}}\par\vskip0.6em
+\raggedright
+\begin{itemize}
+\item 신용카드 연체, 통신사 이탈, 호텔 예약, 부동산, 전력, 택시 수요, 공정 불량 \dots
+\item 데이터마다 \kb{행의 단위 · 라벨 · 크기 · 클래스 비율 · 알려진 함정}이 적혀 있습니다
+\item 노트북(.ipynb)을 받아 직접 열어 봅니다
+\end{itemize}
+\end{column}
+\begin{column}{0.47\textwidth}
+\centering{\Large \kb{데이터 월드컵}}\par\vskip0.5em
+{\small\texttt{.../datashop/worldcup/}}\par\vskip0.6em
+\raggedright
+\begin{itemize}
+\item 32개 데이터를 이상형 월드컵으로 비교
+\item 우승 데이터와 4강을 \kb{팀 회의 후보 2$\sim$3개}로
+\item 데이터샵에 없는 데이터(Kaggle · UCI)도 같은 다섯 가지 기준으로 검사합니다
+\end{itemize}
+\end{column}
+\end{columns}
+\vfill
+\note{데이터는 데이터샵에서 찾는 걸 추천합니다. 신용카드 연체, 통신사 이탈, 호텔 예약 같은 산업 현장의 데이터가 있고, 데이터마다 행의 단위, 라벨, 크기, 클래스 비율, 알려진 함정이 정리되어 있습니다. 노트북을 받아서 직접 열어 보세요. 뭘 고를지 모르겠으면 데이터 월드컵에서 32개 데이터를 이상형 월드컵처럼 비교하고, 우승과 4강 데이터를 팀 회의 후보로 쓰면 됩니다. 캐글이나 UCI에서 찾은 데이터도 같은 다섯 가지 기준으로 직접 확인합니다.}
+\end{frame}
+
+\section{제출물}
+% --- Abstract
+\begin{frame}{3주차 Abstract (1쪽)에 들어갈 것}
+\vfill
+\begin{itemize}
+\setlength\itemsep{0.8em}
+\item \kb{문제 정의}: 행의 단위, 라벨, 주 지표 (그 지표를 고른 이유 한 문장)
+\item \kb{데이터}: 출처, 크기, 누수 위험, 분할 방식
+\item \kb{베이스라인}: 항상 다수 클래스로 답하는 모델 등 \\
+{\small 이 숫자가 있어야 ``모델을 만들었다''고 말할 수 있는지 판정할 수 있습니다}
+\item \kb{계획}: 비교할 모델 두 가지, 하이퍼파라미터를 고를 방법, 수식적 정당화 후보
+\item \kb{예상되는 위험}: 무엇이 잘 안 될 수 있는가
+\end{itemize}
+\vskip0.6em
+\centering{\small 익명 심사입니다. \kq{팀원 이름은 적지 않습니다.} \quad 형식은 중간 프로젝트 샘플 1쪽을 보세요.}
+\vfill
+\note{3주차에 내는 Abstract에는 다섯 가지가 들어갑니다. 문제 정의, 데이터, 베이스라인, 계획, 예상되는 위험입니다. 특히 베이스라인이 중요합니다. 항상 다수 클래스로 답하는 모델이 몇 점인지 알아야, 우리 모델이 의미 있는 일을 했는지 판정할 수 있습니다. 익명 심사이므로 팀원 이름은 적지 않습니다. 형식은 샘플을 참고하세요.}
+\end{frame}
+
+% --- 보고서 구조
+\begin{frame}{6주차 보고서의 구조}
+\markpage{report}
+\vfill
+\centering\small
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{cL{3.6cm}cL{7.4cm}}
+\toprule
+& \textbf{절} & \textbf{분량} & \textbf{쓸 것} \\
+\midrule
+1 & 문제 정의 & 0.5쪽 & 행의 단위 · 라벨 · 주 지표 · 베이스라인, 지표를 고른 이유 \\
+2 & 데이터와 전처리 & 1쪽 & 원본 통계(크기 · 결측 · 이상치), train으로만 맞춘 전처리, 분할 비율 \\
+3 & 모델 선택과 이유 & 1$\sim$2쪽 & 후보 두 개 이상과 그 이유, validation 비교표 \\
+4 & 결과 & 1쪽 & 최종 test 숫자(한 번), 학습 곡선, 비교표 \\
+5 & 수식적 정당화 & 1쪽 & 편향-분산 · 정규화 · SHAP · PR-AUC 중 하나 이상 \\
+6 & 재현 방법 & 0.5쪽 & 데이터 출처 · 분할 · 시드 · 하이퍼파라미터 · \kb{Colab 링크} \\
+7 & 한계와 잘 안 된 부분 & 0.5쪽 & \kq{필수}. 안 된 것이 없었다면 시도했다가 안 된 것 \\
+부록 & AI 사용 내역 · 인용 근거 표 & -- & 쪽수에 넣지 않음 (보고서 작성 가이드 참고) \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{6주차에 내는 보고서의 구조입니다. 일곱 개 절과 부록입니다. 각 절에 무엇을 쓰는지, 분량은 어느 정도인지 표에 정리했습니다. 7절 한계는 필수입니다. 잘 안 된 게 없었다면, 시도했다가 안 된 것을 적으세요. 부록에는 AI 사용 내역과 인용 근거 표를 붙이는데, 쪽수에는 넣지 않습니다. 자세한 작성법은 보고서 작성 가이드에 있습니다.}
+\end{frame}
+
+% --- 채점
+\begin{frame}{채점 기준: 다섯 항목 각 20\%}
+\markpage{rubric}
+\vfill
+\centering\small
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{L{3.4cm}L{9.8cm}}
+\toprule
+\textbf{항목} & \textbf{좋은 보고서} \\
+\midrule
+\kb{주장의 명확성} & 첫 문단에서 주장이 한 문장으로 보이고, 행의 단위 · 라벨 · 지표가 분명하고, 결과가 주장과 이어진다. 같은 내용을 되풀이하거나 기호를 불필요하게 늘리지 않는다 \\
+\kb{비교 대상} & 베이스라인(다수 클래스, 정규화 없는 모델)과 모델 두 개 이상을 같은 분할 · 같은 지표로 비교한다 \\
+\kb{확장성} & 다른 분할(그룹 · 시간 순서)이나 다른 데이터 하나에서도 같은 절차가 통하는지 확인하고, 안 통하는 조건을 적는다 \\
+\kb{재현성} & 다른 사람이 같은 숫자를 다시 얻을 수 있다. test를 한 번만 썼고 어디서 썼는지 보인다 \\
+\kb{한계의 솔직함} & 잘 안 된 부분과 약한 가정을 숨기지 않고 원인을 진단한다. \kb{성능이 낮아도 한계가 정직하면 높은 점수} \\
+\bottomrule
+\end{tabular}\par\vskip0.5em
+{\small 성능이 좋아 보여도 test를 두 번 썼거나, 비교 대상이 없거나, 재현이 안 되면 크게 감점합니다.}
+\vfill
+\note{채점은 다섯 항목을 20퍼센트씩 봅니다. 주장의 명확성, 비교 대상, 확장성, 재현성, 한계의 솔직함입니다. 성능 점수 항목은 없습니다. 오히려 성능이 낮아도 한계를 정직하게 진단하면 높은 점수를 받습니다. 반대로 숫자가 좋아 보여도 test를 두 번 썼거나, 비교 대상이 없거나, 재현이 안 되면 크게 감점합니다. 이 다섯 항목은 동료평가에서 리뷰어가 보는 기준과 같습니다.}
+\end{frame}
+
+% --- 동료평가
+\begin{frame}{8주차 동료평가}
+\vfill
+\begin{itemize}
+\setlength\itemsep{0.9em}
+\item 각자 배정된 \kb{다른 팀 보고서 2편}을 KSA Review에서 심사합니다
+\item 양식: 요약 · 장점 · 약점 · 질문 · 점수 · 확신도, 그리고 \kb{필수 확인 두 가지}\\
+{\small 핵심 인용 하나를 원문에서 확인하고, Colab을 실행해 숫자 하나를 재현합니다}
+\item 근거를 대야만 답할 수 있는 \kb{질문을 하나 이상} 넣습니다
+\item 리뷰 점수는 저자가 매기는 \kb{도움 점수}, 필수 확인, 수업 중 무작위 확인으로 정합니다
+\end{itemize}
+\vskip0.8em
+\centering{\large 자세한 방법은 \kb{리뷰(동료평가) 가이드}를 보세요}
+\vfill
+\note{8주차에는 동료평가를 합니다. 배정된 다른 팀 보고서 두 편을 KSA Review에서 심사합니다. 리뷰 양식은 요약, 장점, 약점, 질문, 점수, 확신도이고, 필수 확인 두 가지가 있습니다. 핵심 인용 하나를 원문에서 확인하고, 그 팀의 Colab을 실행해서 숫자 하나를 재현해 봅니다. 리뷰 점수는 리뷰를 받은 팀이 매기는 도움 점수와 필수 확인, 수업 중 무작위 확인으로 정합니다. 자세한 방법은 리뷰 가이드에 있습니다.}
+\end{frame}
+
+% --- 팀과 자료
+\begin{frame}{팀 구성 · 제출 방법 · 함께 볼 자료}
+\vfill
+\begin{itemize}
+\setlength\itemsep{0.7em}
+\item \kb{팀 구성}: 팀당 인원과 편성 방식은 따로 안내합니다
+\item \kb{제출}: Abstract(3주) · 보고서 PDF와 코드(6주) · 리뷰 2건(8주). 제출 방법과 마감 시각은 따로 안내합니다
+\end{itemize}
+\vskip1em
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{L{4.4cm}L{8.2cm}}
+\toprule
+\textbf{함께 볼 자료} & \textbf{무엇이 있나} \\
+\midrule
+보고서 작성 가이드 & 첫 문단 쓰는 법, AI 사용 규칙, 인용 근거 표, 제출 전 점검표 \\
+리뷰(동료평가) 가이드 & 리뷰 양식, 필수 확인 두 가지, 좋은 리뷰와 나쁜 리뷰 \\
+중간 프로젝트 샘플 & Abstract · 보고서 · 리뷰의 실제 형식 \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{팀 구성과 제출 방법, 마감 시각은 따로 안내하겠습니다. 이 공지와 함께 볼 자료가 세 가지 있습니다. 보고서 작성 가이드, 리뷰 가이드, 그리고 Abstract와 보고서, 리뷰를 어떤 형식으로 쓰는지 보여 주는 샘플입니다. 모두 수업 홈페이지 오른쪽 일정 줄에 있습니다.}
+\end{frame}
+
+\end{document}

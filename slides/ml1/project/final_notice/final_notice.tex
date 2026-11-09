@@ -1,0 +1,237 @@
+\documentclass[aspectratio=169,11pt,t]{beamer}
+\input{../../../theme/ksa-cs-v2.tex}
+\input{../../../theme/ksa-cs-v2-assignment.tex}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+\graphicspath{{figs/}{../../../assets/}}
+\usepackage{booktabs}
+\usepackage{array}
+\makeatletter
+\newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
+\newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
+\makeatother
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 기말 프로젝트 공지}
+\title{기말 프로젝트 공지}
+\subtitle{딥러닝으로 실제 데이터 문제 풀기 (9$\sim$17주차)}
+\author{Machine Learning and Deep Learning}
+\institute{KSA 2027-Spring}
+\date{Sumin Han (suminhan@ksa.hs.kr)}
+\begin{document}
+{\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
+
+\section{개요}
+% --- 한눈에
+\begin{frame}{프로젝트 한눈에 보기}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{L{2.8cm}L{10.2cm}}
+\toprule
+\textbf{무엇을} & 실제 데이터 하나에 \kb{딥러닝 기법}을 적용하는 \kb{팀 프로젝트}. 이미지 · 텍스트 · 시퀀스 같은 비정형 데이터도 됩니다 \\
+\textbf{어떤 기법} & CNN, RNN · LSTM · 트랜스포머, 그래프 신경망, 표현 학습 · 임베딩, VAE · GAN 같은 생성 모델 (9$\sim$15주차) \\
+\textbf{핵심 질문} & \kq{왜 고전 머신러닝이 아니라 딥러닝인가?} 이 질문에 숫자로 답해야 합니다 \\
+\textbf{목표} & 중간 프로젝트와 같습니다. ``이 숫자를 믿어도 되는가''를 스스로 따져 보는 힘 \\
+\bottomrule
+\end{tabular}\par\vskip1em
+{\large 데이터 선정 $\rightarrow$ Abstract $\rightarrow$ 구현 · 검증 $\rightarrow$ 보고서 + 영상 $\rightarrow$ 동료평가}
+\vfill
+\note{기말 프로젝트를 공지합니다. 9주차부터 15주차까지 배우는 딥러닝 기법을 실제 데이터에 적용하는 팀 프로젝트입니다. 이번에는 이미지, 텍스트, 시퀀스 같은 비정형 데이터도 됩니다. 중간 프로젝트와 가장 다른 점은 핵심 질문입니다. 왜 고전 머신러닝이 아니라 딥러닝이어야 하는가. 이 질문에 숫자로 답해야 합니다. 목표는 중간 프로젝트와 같습니다. 높은 성능이 아니라, 이 숫자를 믿어도 되는지 스스로 따져 보는 것입니다.}
+\end{frame}
+
+% --- 일정
+\begin{frame}{일정과 마감}
+\markpage{schedule}
+\vfill
+\centering\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{2.8cm}L{6.4cm}L{4.0cm}}
+\toprule
+\textbf{주차} & \textbf{할 일} & \textbf{제출} \\
+\midrule
+9$\sim$10주 {\scriptsize (4/12--23)} & 팀 구성, 데이터 후보 2$\sim$3개 조사, 정형 / 비정형 판정 & \\
+11주 {\scriptsize (4/26--30)} & 행 · 라벨 · 지표 · 베이스라인, ``왜 딥러닝인가'' 초안, 신경망 계획 & \kb{Abstract} (1쪽) \\
+12$\sim$13주 & 3분할, train으로만 맞춘 전처리, \kb{GBDT 베이스라인}, 신경망 학습, validation 튜닝, \kq{test는 한 번만} & \\
+14주 {\scriptsize (5/17--21)} & 보고서 완성, 영상 만들기 & \kb{보고서 + 코드 + 영상} \\
+15주 & 배정된 다른 팀 보고서 읽기 & \\
+17주 {\scriptsize (6/7--11)} & 배정된 두 팀 심사 (기말고사 기간) & \kb{리뷰 2건} \\
+\bottomrule
+\end{tabular}\par\vskip0.5em
+{\small 16주차는 보강주간입니다. 12 · 13주차에는 공휴일이 있으니 구현 일정을 미리 잡으세요. 마감 시각과 제출 방법은 따로 안내합니다.}
+\vfill
+\note{일정입니다. 9주차와 10주차에 팀을 만들고 데이터 후보를 찾고, 그 데이터가 정형인지 비정형인지 판정합니다. 11주차에 Abstract 한 쪽을 냅니다. 12주차와 13주차에 구현하는데, 반드시 GBDT 베이스라인도 함께 돌립니다. 14주차에 보고서와 코드, 그리고 영상을 냅니다. 15주차에 배정된 보고서를 읽고, 16주차 보강주간을 지나 17주차에 두 팀의 보고서를 심사합니다. 12주차와 13주차에는 공휴일이 있어서 수업이 빠지니 미리 계획하세요.}
+\end{frame}
+
+\section{요구사항}
+% --- 필수 요구사항
+\begin{frame}{꼭 지켜야 할 다섯 가지}
+\vfill
+\begin{enumerate}
+\setlength\itemsep{0.7em}
+\item \kb{데이터}: Kaggle · UCI · Hugging Face Datasets · 데이터샵 (비정형 데이터 가능)
+\item \kb{딥러닝 기법 하나 이상}을 실제 데이터에 적용\\
+{\small CNN, RNN · 트랜스포머, 그래프 신경망, VAE · GAN 계열 등}
+\item \kb{GBDT 비교 (필수)}: 같은 데이터에 GBDT(또는 랜덤 포레스트)를 베이스라인으로 돌려\\ 신경망이 정말 나은지 확인합니다. ``왜 딥러닝인가''의 출발점입니다
+\item \kb{수식적 정당화 하나 이상}\\
+{\small CNN이면 파라미터 수 · 연산량으로 설계 정당화, 드롭아웃 등 정규화의 효과, 생성 모델이면 ELBO나 min-max 목적함수}
+\item \kb{검증 원칙}: 3분할, 전처리는 train으로만, \kq{test는 딱 한 번}, \kb{에포크 단위 학습 곡선}
+\end{enumerate}
+\vfill
+\note{꼭 지켜야 할 다섯 가지입니다. 데이터는 캐글, UCI, 허깅페이스, 데이터샵에서 고르고 이미지나 텍스트도 됩니다. 딥러닝 기법을 하나 이상 적용합니다. 그리고 이번 프로젝트에서 가장 중요한 것, GBDT 비교가 필수입니다. 같은 데이터에 GBDT를 돌려서 신경망이 정말 나은지 확인해야 합니다. 이게 왜 딥러닝인가에 답하는 출발점입니다. 수식으로 설명하는 부분도 하나 이상 있어야 하고, 검증 원칙은 중간 프로젝트와 같습니다. 학습 곡선은 이번에는 에포크 단위로 그립니다.}
+\end{frame}
+
+% --- 정형 비정형
+\begin{frame}{정형인가, 비정형인가: 데이터 고르기에 하나 더}
+\vfill
+\centering
+{\normalsize 중간 프로젝트의 다섯 가지 기준(행의 단위 · 같은 대상의 여러 행 · 시간 · 클래스 비율 · 크기)은 그대로입니다}\par\vskip0.8em
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{L{3.6cm}L{3.2cm}L{6.2cm}}
+\toprule
+\textbf{경우} & \textbf{예} & \textbf{판정} \\
+\midrule
+수치 · 범주 열로만 된 표 & 매출표, 센서 로그 & \kb{정형}: GBDT와의 비교가 더 중요해집니다 \\
+픽셀 · 음파 · 토큰의 원시 배열 & 이미지, 오디오, 문장 & \kb{비정형}: 손으로 특징을 만들기 어려워 신경망이 특징을 뽑습니다 \\
+애매한 경우 & 이미 벡터로 바뀐 텍스트 & 원시 토큰으로 직접 다룰 수도 있습니다. \kq{그 이유를 Abstract에} \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{데이터를 고를 때 중간 프로젝트의 다섯 가지 기준은 그대로 적용하고, 하나를 더 봅니다. 이 데이터가 정형인가 비정형인가. 숫자와 범주 열로만 된 표라면 정형입니다. 이 경우 GBDT가 아주 강하기 때문에 신경망이 이기기 어렵고, 그 비교가 더 중요해집니다. 이미지의 픽셀, 오디오, 문장 같은 원시 데이터는 비정형입니다. 사람이 특징을 손으로 만들기 어려워서 신경망이 특징을 뽑는 역할을 합니다. 애매하면 어느 쪽으로 다룰지 정하고 그 이유를 Abstract에 적으세요.}
+\end{frame}
+
+% --- 데이터 어디서
+\begin{frame}{데이터는 어디서 찾나}
+\vfill
+\begin{columns}[T]
+\begin{column}{0.47\textwidth}
+\centering{\Large \kb{데이터샵}}\par\vskip0.5em
+{\small\texttt{smhanlab.com/book-ml/datashop}}\par\vskip0.6em
+\raggedright
+\begin{itemize}
+\item 품질 검사 영상, 한국어 리뷰, 음성, 위성 영상, 링크 예측, 차량 궤적 \dots
+\item 행의 단위 · 라벨 · 크기 · 함정을 먼저 점검합니다
+\item 후보가 많으면 \kb{데이터 월드컵}으로 2$\sim$3개로 좁힙니다
+\end{itemize}
+\end{column}
+\begin{column}{0.47\textwidth}
+\centering{\Large \kb{그 밖에}}\par\vskip0.5em
+{\small Kaggle · UCI · Hugging Face Datasets}\par\vskip0.6em
+\raggedright
+\begin{itemize}
+\item 같은 기준으로 직접 검사합니다
+\item 학습 시간도 확인합니다: \kb{Colab에서 한 번 학습이 몇 분인가}
+\item 너무 크면 일부만 써도 됩니다. 어떻게 줄였는지 보고서에 적습니다
+\end{itemize}
+\end{column}
+\end{columns}
+\vfill
+\note{데이터는 데이터샵에 딥러닝이 어울리는 데이터도 진열되어 있습니다. 품질 검사 영상, 한국어 리뷰, 음성, 위성 영상 같은 것들입니다. 캐글, UCI, 허깅페이스에서 찾아도 됩니다. 딥러닝 프로젝트에서는 학습 시간도 꼭 확인하세요. Colab에서 한 번 학습하는 데 몇 분이 걸리는지 봐야 튜닝을 몇 번 할 수 있을지 계획할 수 있습니다. 데이터가 너무 크면 일부만 써도 되는데, 어떻게 줄였는지는 보고서에 적습니다.}
+\end{frame}
+
+\section{제출물}
+% --- Abstract
+\begin{frame}{11주차 Abstract (1쪽)에 들어갈 것}
+\vfill
+\begin{itemize}
+\setlength\itemsep{0.8em}
+\item \kb{문제 정의}: 행의 단위, 라벨, 주 지표, \kb{정형 / 비정형 판정과 그 근거}
+\item \kb{``왜 딥러닝인가'' 초안}: 어떤 구조를 신경망이 쓸 것이라고 보는가 (가설)
+\item \kb{베이스라인 두 층}: 무작위 · 다수 클래스, 그리고 \kb{GBDT}
+\item \kb{계획}: 적용할 신경망 구조, 에포크를 정할 방법, 수식적 정당화 후보
+\item \kb{예상되는 위험}: 학습 시간, 데이터 크기, 과대적합
+\end{itemize}
+\vskip0.6em
+\centering{\small 익명 심사입니다. \kq{팀원 이름은 적지 않습니다.} \quad 형식은 기말 프로젝트 샘플을 보세요.}
+\vfill
+\note{11주차 Abstract에는 다섯 가지가 들어갑니다. 중간 프로젝트와 다른 점은 세 가지입니다. 문제 정의에 정형인지 비정형인지 판정과 그 근거를 넣고, 왜 딥러닝인가에 대한 초안, 그러니까 신경망이 데이터의 어떤 구조를 쓸 거라고 보는지 가설을 적고, 베이스라인을 두 층으로 잡습니다. 무작위나 다수 클래스, 그리고 GBDT입니다. 이번에도 팀원 이름은 적지 않습니다.}
+\end{frame}
+
+% --- 보고서 구조
+\begin{frame}{14주차 보고서의 구조}
+\vskip0.2em
+\centering\footnotesize
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{cL{3.4cm}cL{7.6cm}}
+\toprule
+& \textbf{절} & \textbf{분량} & \textbf{쓸 것} \\
+\midrule
+1 & 문제 정의 & 0.5쪽 & 행 · 라벨 · 지표, \kb{베이스라인 두 층(무작위 · GBDT)}, 정형 / 비정형 판정 \\
+2 & 데이터와 전처리 & 1쪽 & 원본 통계, train으로만 맞춘 전처리(스케일링 · 토크나이저 · 패딩), 분할 비율 \\
+3 & 모델 선택과 이유 & 1$\sim$2쪽 & 신경망 구조(층 · 크기)를 \kb{파라미터 수}로 정당화, 왜 GBDT가 아니라 이것인가 \\
+4 & 결과 & 1쪽 & 최종 test(한 번), \kb{에포크 학습 곡선}, GBDT · 무작위와의 비교표 \\
+5 & 수식적 정당화 & 1쪽 & 파라미터 수 · 정규화 효과 · ELBO 중 하나 이상 \\
+6 & 재현 방법 & 0.5쪽 & 데이터 출처 · 분할 · 시드 · 하이퍼파라미터 · \kb{Colab 링크} \\
+7 & 한계와 잘 안 된 부분 & 0.5쪽 & \kq{필수}. 학습이 안 되거나 과대적합된 부분을 배운 개념으로 진단 \\
+\bottomrule
+\end{tabular}\par\vskip0.5em
+{\small 부록: AI 사용 내역 · 인용 근거 표 (쪽수 제외). \quad 결론에서 \kq{``왜 딥러닝인가''}에 숫자로 답합니다.}
+\vfill
+\note{14주차 보고서의 구조는 중간 프로젝트와 같은 일곱 개 절인데, 몇 곳이 다릅니다. 문제 정의에 베이스라인을 두 층으로, 모델 선택에서는 신경망 구조를 파라미터 수로 정당화하고, 결과에는 에포크 단위 학습 곡선과 GBDT 비교표를 넣습니다. 그리고 결론에서 왜 딥러닝인가에 구체적인 숫자로 답합니다. GBDT보다 몇 퍼센트포인트 나았는지, 그만한 학습 비용을 들일 가치가 있는지.}
+\end{frame}
+
+% --- 영상
+\begin{frame}{14주차 영상}
+\vfill
+\centering
+{\Large 보고서와 함께 \kb{영상 1편}을 냅니다}\par\vskip1.2em
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{L{3.0cm}L{9.0cm}}
+\toprule
+\textbf{담을 것} & \textbf{문제 · 방법 · 결과 · 한계} \\
+\textbf{길이 · 형식} & 따로 안내합니다 \\
+\textbf{익명} & 얼굴 · 이름이 나오지 않게 (화면 녹화 + 목소리 또는 자막) \\
+\bottomrule
+\end{tabular}\par\vskip1em
+{\small 영상은 보고서를 읽기 전에 심사하는 사람이 전체 흐름을 잡는 데 씁니다.}
+\vfill
+\note{기말 프로젝트에서는 보고서와 함께 영상을 한 편 냅니다. 문제, 방법, 결과, 한계를 설명하는 영상입니다. 길이와 형식은 따로 안내하겠습니다. 동료평가가 익명이니까 얼굴이나 이름은 나오지 않게, 화면 녹화에 목소리나 자막을 입히는 방식으로 만드세요.}
+\end{frame}
+
+% --- 채점
+\begin{frame}{채점 기준: 다섯 항목 각 20\%}
+\vfill
+\centering\small
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{L{3.4cm}L{9.8cm}}
+\toprule
+\textbf{항목} & \textbf{좋은 보고서} \\
+\midrule
+\kb{주장의 명확성} & 첫 문단에서 주장이 한 문장으로 보이고, 행의 단위 · 라벨 · 지표가 분명하고, 결과가 주장과 이어진다 \\
+\kb{비교 대상} & \kb{GBDT 베이스라인}과 신경망을 같은 분할 · 같은 지표로 비교하고, ``왜 딥러닝인가''에 숫자로 답한다 \\
+\kb{확장성} & 다른 데이터 하나(또는 데이터를 줄인 실험)에서도 결론이 유지되는지, 구성 요소를 빼 보는 실험으로 어디까지 통하는지 보인다 \\
+\kb{재현성} & 다른 사람이 같은 숫자를 다시 얻을 수 있다. test를 한 번만 썼고 어디서 썼는지 보인다 \\
+\kb{한계의 솔직함} & 잘 안 된 부분을 숨기지 않고 원인을 진단한다. \kb{성능이 낮아도 한계가 정직하면 높은 점수} \\
+\bottomrule
+\end{tabular}\par\vskip0.5em
+{\small 성능이 좋아 보여도 test를 두 번 썼거나, GBDT 비교가 없거나, 재현이 안 되면 크게 감점합니다.}
+\vfill
+\note{채점 기준은 중간 프로젝트와 같은 다섯 항목입니다. 비교 대상에서는 GBDT 베이스라인과의 비교, 확장성에서는 구성 요소를 하나씩 빼 보는 실험이 기말 프로젝트에서 특히 중요합니다. 예를 들어 데이터 증강을 빼면 얼마나 떨어지는지. 성능이 좋아 보여도 GBDT 비교가 없으면 크게 감점합니다.}
+\end{frame}
+
+% --- 동료평가와 자료
+\begin{frame}{17주차 동료평가 · 제출 · 함께 볼 자료}
+\vfill
+\begin{itemize}
+\setlength\itemsep{0.6em}
+\item \kb{동료평가}: 배정된 다른 팀 보고서 2편을 KSA Review에서 심사 (기말고사 기간)\\
+{\small 필수 확인 두 가지(인용 하나 · 숫자 하나 재현)는 같습니다. 이번에는 GBDT 비교가 있는지도 꼭 봅니다}
+\item \kb{제출}: Abstract(11주) · 보고서 · 코드 · 영상(14주) · 리뷰 2건(17주). 팀 구성, 제출 방법, 마감 시각은 따로 안내합니다
+\end{itemize}
+\vskip0.8em
+\centering
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{L{4.4cm}L{8.2cm}}
+\toprule
+\textbf{함께 볼 자료} & \textbf{무엇이 있나} \\
+\midrule
+보고서 작성 가이드 & 첫 문단 쓰는 법, AI 사용 규칙, 인용 근거 표, 점검표 \\
+리뷰(동료평가) 가이드 & 리뷰 양식, 필수 확인 두 가지, 좋은 리뷰와 나쁜 리뷰 \\
+기말 프로젝트 샘플 & Abstract · 보고서 · 리뷰의 실제 형식 \\
+\bottomrule
+\end{tabular}
+\vfill
+\note{17주차에는 동료평가를 합니다. 배정된 다른 팀 보고서 두 편을 심사하고, 필수 확인 두 가지는 중간 프로젝트와 같습니다. 이번에는 GBDT 비교가 있는지를 꼭 봐 주세요. 제출물은 11주차 Abstract, 14주차 보고서와 코드와 영상, 17주차 리뷰 두 건입니다. 보고서 작성 가이드, 리뷰 가이드, 기말 프로젝트 샘플을 함께 보세요.}
+\end{frame}
+
+\end{document}
