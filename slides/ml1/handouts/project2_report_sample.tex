@@ -1,0 +1,35 @@
+\documentclass[11pt]{article}
+\usepackage{problem_set_style}
+\usepackage{kotex}
+\usepackage{booktabs}
+\usepackage{array}
+\begin{document}
+\heading{}{샘플}{}{Spring 2027}{프로젝트 2 · 보고서 샘플 (14주차 제출, 축약본)}
+
+\noindent{\small 아래는 \textbf{가상의 팀}이 쓴 샘플입니다. 수치는 형식을 보이기 위한 예시이며 실제 실험 결과가 아닙니다. 형식과 분량의 기준으로만 참고하세요.}
+
+\noindent\textbf{1. 문제 정의.} 사진 한 장이 행, 라벨은 10종류. 주 지표는 정확도와 macro-F1. 베이스라인은 GBDT(픽셀 입력).
+
+\noindent\textbf{2. 데이터와 전처리.} 공식 test는 한 번만 사용했다. 픽셀 값은 0--1로 스케일링(데이터 전체 상수 255로 나눔, 통계량 누수 없음).
+
+\noindent\textbf{3. 모델 선택과 이유.} 합성곱이 이웃 픽셀의 모양을 쓰는지 보기 위해 CNN을, 구조를 모르는 비교 대상으로 GBDT를 골랐다.
+
+\begin{center}\small
+\begin{tabular}{@{}lcc@{}}\toprule
+모델 (validation) & 정확도 & 비고 \\\midrule
+GBDT (픽셀 784) & 0.89 & 베이스라인 \\
+CNN 2층 & 0.91 & \\
+CNN 2층 + 데이터 증강 & 0.92 & \\
+CNN 2층 + 증강 + 드롭아웃 & 0.93 & 에포크 15에서 종료 \\\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{4. 결과.} 최종 test는 한 번만: CNN 0.92, GBDT 0.88. 학습 곡선(에포크 단위)에서 에포크 15 이후 validation이 내려가기 시작해 15에서 멈췄다.
+
+\noindent\textbf{5. 수식적 정당화와 왜 딥러닝인가.} 합성곱은 파라미터를 위치마다 공유해 3$\times$3 필터 하나로 어디서든 같은 모양을 찾는다. 같은 크기의 완전연결층보다 파라미터가 적다. 그 결과 GBDT보다 test 정확도가 4\%p 높았다. 다만 정확도 차이가 크지 않아, 표 데이터였다면 GBDT로 충분했을 것이다.
+
+\noindent\textbf{6. 재현 방법.} 공식 Fashion-MNIST, 시드 0, 배치 16, 에포크 15, 학습률 0.001. \texttt{run.sh} 한 줄로 다시 실행된다.
+
+\noindent\textbf{7. 한계와 잘 안 된 부분.} 배치 정규화를 넣었더니 validation이 오르락내리락해서 뺐다. 배치 크기가 작아(16) 통계가 불안정했다고 진단했다.
+
+\end{document}

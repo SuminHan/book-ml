@@ -1,0 +1,24 @@
+\documentclass[11pt]{article}
+\usepackage{problem_set_style}
+\usepackage{kotex}
+\usepackage{booktabs}
+\usepackage{array}
+\begin{document}
+\heading{}{샘플}{}{Spring 2027}{프로젝트 1 · Abstract 샘플 (3주차 제출, 1쪽)}
+
+\noindent{\small 아래는 \textbf{가상의 팀}이 쓴 샘플입니다. 수치는 형식을 보이기 위한 예시이며 실제 실험 결과가 아닙니다. 형식과 분량의 기준으로만 참고하세요.}
+
+\noindent\textbf{제목}: 신용카드 연체 예측에서 정규화 로지스틱회귀와 GBDT의 비교
+
+\vspace{4pt}
+\noindent\textbf{문제 정의.} 행 하나는 \textbf{카드 고객 한 명}이고, 라벨은 다음 달 연체 여부(1=연체)이다. 연체 비율이 약 22\%로 한쪽에 치우쳐 있어 정확도 대신 \textbf{PR-AUC}를 주 지표로 쓴다.
+
+\noindent\textbf{데이터.} UCI ``Default of Credit Card Clients'' (30{,}000행, 특성 23개). 같은 고객이 한 행씩만 있어 그룹 누수 위험은 없고, 시간 정보가 없어 무작위 stratified 분할(60/20/20)을 쓴다.
+
+\noindent\textbf{베이스라인.} (a) 항상 ``연체 아님''을 내놓는 모델(정확도 78\%, PR-AUC 0.22), (b) 정규화 없는 로지스틱회귀.
+
+\noindent\textbf{계획.} L2 정규화 로지스틱회귀와 GBDT를 비교한다. 정규화 세기와 트리 개수는 validation 곡선으로 고르고, test는 마지막에 한 번만 측정한다. 수식적 정당화로는 정규화에 따른 편향-분산 변화와 GBDT의 SHAP 분해 한 건을 쓴다.
+
+\noindent\textbf{예상되는 위험.} 청구 금액 특성들이 서로 강하게 연관되어 로지스틱회귀 계수가 불안정할 수 있다. 정규화로 계수가 어떻게 변하는지 함께 기록한다.
+
+\end{document}
