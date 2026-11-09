@@ -48,6 +48,19 @@ WIGGLE_AT_15 = 32.9                                          # 9차 곡선이 �
 SWEEP = {1: (5.5, 6.4, 6.8), 2: (2.3, 3.1, 3.3), 3: (1.6, 2.9, 2.5), 4: (1.7, 3.2, 4.6), 5: (1.7, 3.2, 10.5),
          6: (1.8, 3.4, 28.6), 7: (1.4, 5.0, 60.3), 8: (0.5, 7.3, 49.5), 9: (0.0, 9.1, 121.5)}   # 차수: (측정, 새 데이터, 교차검증) MAE
 
+# 9차를 넘어서 (15주차 이중 하강 맛보기). 점 10개보다 계수가 많으면 모든 점을 지나는 곡선이 무수히 많다.
+# 그중 계수 제곱합이 가장 작은 것 (최소 노름 해, np.linalg.lstsq) 을 고른다. 기저는 르장드르 다항식, 속도를 (v - 55) / 50 으로 [-1, 1] 에.
+# 9차 이하는 위의 fit 과 같은 곡선이다 (해가 하나뿐).
+def fit_minnorm(x, y, d):
+    from numpy.polynomial import legendre as L
+    s = lambda t: (np.atleast_1d(np.asarray(t, float)) - 55) / 50
+    c, *_ = np.linalg.lstsq(L.legvander(s(x), d), np.asarray(y, float), rcond=None)
+    return lambda t: L.legvander(s(t), d) @ c
+
+
+BEYOND = {1: 6.4, 2: 3.1, 3: 2.9, 4: 3.2, 5: 3.2, 6: 3.4, 7: 5.0, 8: 7.3, 9: 9.1, 10: 9.0, 11: 5.9, 12: 5.9, 13: 4.5,
+          14: 4.6, 15: 4.7, 16: 3.9, 17: 5.2, 18: 5.1, 19: 5.0, 20: 5.1}               # 차수: 새 데이터 MAE (m)
+
 if __name__ == "__main__":
     M = {k: fit(SPEED, DIST, d) for k, d in DEGS.items()}
     assert {k: round(mae(m, SPEED, DIST), 1) for k, m in M.items()} == ERR_TR
@@ -59,3 +72,7 @@ if __name__ == "__main__":
         assert (round(mae(m, SPEED, DIST), 1), round(mae(m, SPEED_NEW, DIST_NEW), 1), round(cv(SPEED, DIST, d), 1)) == (a, b, c), d
     assert round(float(truth(100) / truth(50)), 6) == 4 and (round(float(truth(50))), round(float(truth(100)))) == (14, 56)
     print("data ok")
+    for d, e in BEYOND.items():
+        m = fit_minnorm(SPEED, DIST, d)
+        assert round(mae(m, SPEED_NEW, DIST_NEW), 1) == e, d
+        assert d < 9 or round(mae(m, SPEED, DIST), 1) == 0.0

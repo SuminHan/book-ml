@@ -109,4 +109,20 @@ ax.annotate("교차 검증 최소: 3차 2.5 m", (3, 2.5), (4.2, 0.4), fontsize=1
             arrowprops=dict(arrowstyle="->", color=GOLD))
 ax.legend(frameon=False, loc="upper left")
 save(fig, "of_sweep.png")
+
+# 10. 9차를 넘어서: 새 데이터 오차 (15주차 이중 하강 맛보기)
+fig, ax = plt.subplots(figsize=(8.5, 4.4))
+ds = list(BEYOND)
+ax.axvspan(9.5, 20.5, color=BLUE, alpha=0.06)
+ax.plot(ds, [BEYOND[d] for d in ds], "^-", color=RED, lw=2.5, label="새 데이터 오차")
+ax.axvline(9, color=GRAY, lw=1, ls="--")
+ax.text(9.15, 9.6, "9차: 계수 10개 = 점 10개", fontsize=13, color=GRAY)
+ax.text(15, 1.2, "계수 > 점: 모든 점을 지나는 곡선이 무수히 많다\n→ 그중 계수가 가장 작은 곡선", ha="center", fontsize=13, color=BLUE)
+ax.annotate(f"9차 {BEYOND[9]} m", (9, BEYOND[9]), (5.6, 8.3), fontsize=14, color=RED, fontweight="bold",
+            arrowprops=dict(arrowstyle="->", color=RED))
+ax.annotate(f"16차 {BEYOND[16]} m", (16, BEYOND[16]), (16.6, 2.6), fontsize=14, color=RED, fontweight="bold",
+            arrowprops=dict(arrowstyle="->", color=RED))
+ax.set_xticks([1, 3, 5, 7, 9, 11, 13, 15, 17, 19]); ax.set_xlim(0.5, 20.5); ax.set_ylim(0, 10.5)
+ax.set_xlabel("다항식 차수"); ax.set_ylabel("평균 절대 오차 (m)")
+save(fig, "of_beyond.png")
 print("ok")
