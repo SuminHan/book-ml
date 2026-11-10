@@ -163,10 +163,27 @@ def week_order(w):
     return [i for s in w["slots"] for i in s["items"]]
 
 
+def units(plan):
+    """weeks with merge_next=True absorb the next week: one site row, one folder numbering (first week's folder)."""
+    out, ws, k = [], plan["weeks"], 0
+    while k < len(ws):
+        w = dict(ws[k]); group = [ws[k]]
+        while group[-1].get("merge_next") and k + 1 < len(ws):
+            k += 1; group.append(ws[k])
+        if len(group) > 1:
+            d0, d1 = group[0]["dates"].split("–")[0], group[-1]["dates"].split("–")[-1]
+            w.update(dates=f"{d0}–{d1}", holidays=[h for g in group for h in g["holidays"]],
+                     slots=[s for g in group for s in g["slots"]], extra=[e for g in group for e in g["extra"]])
+        w["ns"] = [g["n"] for g in group]
+        w["label"] = f'{group[0]["n"]}–{group[-1]["n"]}' if len(group) > 1 else str(group[0]["n"])
+        out.append(w); k += 1
+    return out
+
+
 def target_paths(plan, assets):
     """id -> new folder (weekNN/K_topic) from the plan's slot order."""
     out = {}
-    for w in plan["weeks"]:
+    for w in units(plan):
         for k, i in enumerate(week_order(w), 1):
             if i in assets and not assets[i]["project"]:
                 out[i] = f"week{w['n']:02d}/{k}_{i}"
@@ -183,16 +200,16 @@ def render_site(plan, assets, paths=None):
         if ws:
             span[proj] = (ws[0], ws[-1])
     out = []
-    for w in plan["weeks"]:
+    for w in units(plan):
         n = w["n"]
-        mine = [x for x in ms if x["week"] == n]
+        mine = [x for x in ms if x["week"] in w["ns"]]
         tags = "".join(f'<span class="tag hol">{html.escape(h)}</span>' for h in w["holidays"])
         if w["cls"] == "exam":
             tags += '<span class="tag ex">시험</span>'
         if w["cls"] == "mk":
             tags += '<span class="tag mk">보강</span>'
         tags += "".join(f'<span class="tag due">{html.escape(x["tag"])}</span>' for x in mine if x["tag"])
-        head = (f'<div class="wr"><details class="{w["cls"]}"><summary><span class="wk">{n}주차</span>'
+        head = (f'<div class="wr"><details class="{w["cls"]}"><summary><span class="wk">{w["label"]}주차</span>'
                 f'<span class="t">{html.escape(w["title"], quote=False)}</span>{tags}<span class="dt">{w["dates"]}</span></summary><ul>')
         rows = []
         for x in mine:
@@ -213,7 +230,7 @@ def render_site(plan, assets, paths=None):
         rows += w["extra"]
         lane = ""
         for proj, (a0, a1) in span.items():
-            if not (a0 <= n <= a1):
+            if not (a0 <= n <= a1 or a0 <= w["ns"][-1] <= a1):
                 continue
             here = [x for x in mine if x["proj"] == proj]
             if n == a0:
@@ -224,7 +241,7 @@ def render_site(plan, assets, paths=None):
                 lane += f'<i class="ln {proj}" style="top:-8px;bottom:-8px"></i>' + (f'<i class="dot {proj} mid"></i>' if here else "")
             for x in here:
                 lane += (f'<div class="lbs"><a class="lb {proj}" href="{x["file"]}">{html.escape(x["label"], quote=False)}'
-                         f'<b class="pf">PDF</b><span>{n}주차</span></a></div>')
+                         f'<b class="pf">PDF</b><span>{x["week"]}주차</span></a></div>')
         out.append(head + "\n" + "".join(r + "\n" for r in rows) + "</ul></details>"
                    + f'<div class="lane">{lane}</div></div>')
     return "\n".join(out)

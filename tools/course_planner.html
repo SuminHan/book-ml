@@ -77,6 +77,8 @@ function render(){P.weeks.forEach(autoCls);const g=$("#grid");g.innerHTML="";con
  P.weeks.forEach((w,wi)=>{const row=el("div","wk "+w.cls);
   const info=el("div","wi",`<b>${w.n}주차</b> <span class="d">${esc(w.dates)}</span><div>${w.holidays.map(h=>`<span class="tag hol">${esc(h)}</span>`).join("")}</div>`);
   const ti=el("input");ti.value=w.title;ti.title="사이트에 보이는 주차 제목";ti.oninput=()=>{w.title=ti.value;dirty=true;status("저장 안 됨")};info.appendChild(ti);
+  if(wi<P.weeks.length-1){const lb=el("label",null,"");lb.style.cssText="display:block;font-size:11px;margin-top:4px;color:var(--dim)";const cb=el("input");cb.type="checkbox";cb.style.width="auto";cb.checked=!!w.merge_next;cb.onchange=()=>{w.merge_next=cb.checked;mark()};lb.appendChild(cb);lb.appendChild(document.createTextNode(" 다음 주와 합치기 (사이트 한 줄)"));info.appendChild(lb)}
+  if(wi>0&&P.weeks[wi-1].merge_next){row.style.marginTop="-9px";row.style.borderTopLeftRadius=row.style.borderTopRightRadius="0";info.prepend(el("div","warn",`${P.weeks[wi-1].n}주차와 합침`))}
   if(w.holidays.length&&!w.slots.some(s=>s.kind==="holiday"))info.appendChild(el("div","warn","공휴일: 빠지는 차시를 '휴일'로"));
   row.appendChild(info);
   w.slots.forEach((s,si)=>{const z=el("div","slot "+s.kind);const sh=el("div","sh",`<span>${si+1}차시</span><span title="눌러서 바꾸기">${SK[s.kind]} ▾</span>`);
