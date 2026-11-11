@@ -17,6 +17,7 @@ CELLS = [
 - **파트 1**: 부스팅 직접 구현 (깊이 1 나무로 남은 오차 맞히기) → MSE 0.48 → 0.04
 - **파트 2**: 타이타닉 GBDT: 학습률 · 나무 수 · 조기 종료
 - **파트 3**: 두 26살 승객의 섀플리 값 직접 계산 + `shap` 으로 확인
+- **파트 4**: sklearn · XGBoost · LightGBM 을 같은 조건으로 비교
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요."""),
 ("code", """from itertools import permutations
@@ -108,13 +109,59 @@ sv = explainer.shap_values(X) * 100
 for i in [13, 609]:
     print(i, {c: float(v) for c, v in zip(X.columns, sv[i].round(1))})
 print("mean |SHAP| (%p):", {c: float(v) for c, v in zip(X.columns, np.abs(sv).mean(0).round(1))})"""),
+("md", """## 파트 4. sklearn · XGBoost · LightGBM 비교
+
+세 라이브러리를 **같은 조건** (나무 200그루, 깊이 3, 학습률 0.05, 한 스레드) 으로 돌린다. 먼저 작은 타이타닉, 다음은 큰 항공편 지연 데이터 (OpenML, 처음 실행하면 내려받는다). 학습 시간은 컴퓨터마다 다르니 **배수**를 보자."""),
+("code", """import time
+try:
+    from xgboost import XGBClassifier
+    from lightgbm import LGBMClassifier
+except ImportError:
+    import subprocess, sys; subprocess.run([sys.executable, "-m", "pip", "install", "-q", "xgboost", "lightgbm"])
+    from xgboost import XGBClassifier
+    from lightgbm import LGBMClassifier
+
+def make_models(n_trees, depth, lr):
+    return {
+        "sklearn": GradientBoostingClassifier(n_estimators=n_trees, max_depth=depth, learning_rate=lr, random_state=0),
+        "XGBoost": XGBClassifier(n_estimators=n_trees, max_depth=depth, learning_rate=lr, n_jobs=1, random_state=0),  #@ANS "XGBoost": None,  # TODO: XGBClassifier with n_estimators, max_depth, learning_rate, n_jobs=1, random_state=0
+        "LightGBM": LGBMClassifier(n_estimators=n_trees, max_depth=depth, num_leaves=2 ** depth, learning_rate=lr, n_jobs=1, random_state=0, verbose=-1),  #@ANS "LightGBM": None,  # TODO: LGBMClassifier with the same settings, plus num_leaves=2 ** depth and verbose=-1
+    }
+
+def compare_cv(models, X, y, cv):
+    for name, model in models.items():
+        start = time.perf_counter()
+        acc = cross_val_score(model, X, y, cv=cv).mean()
+        print(f"{name:9s} CV accuracy {acc:.3f}   {time.perf_counter() - start:6.2f} s")
+
+compare_cv(make_models(200, 3, 0.05), X, y, cv)"""),
+("code", """from sklearn.metrics import accuracy_score
+
+def load_airlines(n_train, n_test):
+    frame = fetch_openml(data_id=1169, as_frame=True).frame
+    features = pd.DataFrame({c: frame[c].cat.codes if frame[c].dtype.name == "category" else frame[c]
+                             for c in frame.columns if c != "Delay"})
+    target = (frame["Delay"].astype(str) == "1").astype(int).to_numpy()
+    return train_test_split(features, target, train_size=n_train, test_size=n_test, random_state=0, stratify=target)
+
+def compare_fit(models, X_train, y_train, X_test, y_test):
+    for name, model in models.items():
+        start = time.perf_counter()
+        model.fit(X_train, y_train)
+        seconds = time.perf_counter() - start
+        print(f"{name:9s} test accuracy {accuracy_score(y_test, model.predict(X_test)):.3f}   train {seconds:6.2f} s")
+
+X_train, X_test, y_train, y_test = load_airlines(100_000, 100_000)
+print(X_train.shape, {c: int(X_train[c].nunique()) for c in X_train})
+compare_fit(make_models(200, 3, 0.05), X_train, y_train, X_test, y_test)"""),
 ("md", """**확인 질문**
 1. 파트 1 에서 학습률을 1.0 과 0.05 로 바꾸면 50그루 뒤 MSE 는? 학습 데이터 MSE 만 보고 학습률을 고르면 어떤 문제가 생길까?
 2. 파트 2 에서 학습률 0.5 와 0.05 중 어느 쪽이 나았나? 나무를 2000그루로 늘리면?
 3. 파트 3 의 직접 계산 (팀 3개) 과 `shap` 의 값 (특징 5개) 을 비교하자. 성별 · 등급의 몫은 비슷한가?
 4. 요금(`fare`) 과 등급(`pclass`) 은 함께 움직인다. 이것이 SHAP 해석에 어떤 영향을 줄까?
+5. 파트 4 에서 타이타닉과 항공편의 시간 차이는 각각 몇 배인가? 정확도까지 보면 논문의 베이스라인으로 무엇을 먼저 돌리겠나?
 
-데이터 출처: Titanic (OpenML id 40945 / titanic v1; Vanderbilt Biostatistics titanic3)."""),
+데이터 출처: Titanic (OpenML id 40945 / titanic v1; Vanderbilt Biostatistics titanic3) · Airlines (OpenML id 1169)."""),
 ]
 
 if __name__ == "__main__":

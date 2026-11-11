@@ -6,7 +6,9 @@ GBDT: 나무 200그루, 깊이 3, 학습률 0.05. 섀플리 값은 '성별 · �
   배달비 구간 (예시) 0~2km 3,000원 · 2~4km 4,000원 · 4~6km 5,500원, 주문 30건 (0.1, 0.3, ..., 5.9 km).
   나무 = GradientBoostingRegressor (100그루, 깊이 2) · 신경망 = MLPRegressor (32-32 ReLU) · 구간 = 0.3km 칸 20개 one-hot.
   쓸모없는 열: 주문 400건 (학습 300 · 시험 100, 시드 0), 쓸모 있는 열 3개 (거리 · 시각 · 비) + 무작위 열 k 개.
-  캐글: Chen & Guestrin 2016 (KDD, arXiv 1603.02754) 1장 — 2015년 캐글 블로그 우승 해법 29개 중 XGBoost 17개, 딥러닝 11개."""
+  캐글: Chen & Guestrin 2016 (KDD, arXiv 1603.02754) 1장 — 2015년 캐글 블로그 우승 해법 29개 중 XGBoost 17개, 딥러닝 11개.
+라이브러리 비교: 200그루 · 깊이 3 · 학습률 0.05, 한 스레드 (n_jobs=1). 타이타닉 5겹 교차 검증 + 항공편 지연 (OpenML 1169, 539,383건, 학습 10만 · 시험 10만, 시드 0).
+  XGBoost 잎 값 예: 승객 셋, 지금 확률 0.4, 답 1 · 0 · 1 → g = p - y, h = p(1 - p), w = -G / (H + lambda) (Chen & Guestrin 2016 식 5)."""
 import os
 from itertools import combinations, permutations
 import numpy as np
@@ -104,6 +106,33 @@ def noise_errors(X, won, r, ks):
     return out
 
 
+def airlines():
+    from sklearn.datasets import fetch_openml
+    from sklearn.model_selection import train_test_split
+    f = fetch_openml(data_id=1169, as_frame=True).frame
+    X = pd.DataFrame({c: f[c].cat.codes if f[c].dtype.name == "category" else f[c] for c in f.columns if c != "Delay"})
+    y = (f["Delay"].astype(str) == "1").astype(int).to_numpy()
+    return train_test_split(X, y, train_size=100_000, test_size=100_000, random_state=0, stratify=y)
+
+
+def boost_models(n=200, d=3, lr=0.05):
+    from sklearn.ensemble import GradientBoostingClassifier
+    from xgboost import XGBClassifier
+    from lightgbm import LGBMClassifier
+    return {"sklearn": GradientBoostingClassifier(n_estimators=n, max_depth=d, learning_rate=lr, random_state=0),
+            "XGBoost": XGBClassifier(n_estimators=n, max_depth=d, learning_rate=lr, n_jobs=1, random_state=0),
+            "LightGBM": LGBMClassifier(n_estimators=n, max_depth=d, num_leaves=2 ** d, learning_rate=lr, n_jobs=1, random_state=0, verbose=-1)}
+
+
+LEAF_P, LEAF_Y = 0.4, np.array([1, 0, 1])                              # XGBoost 잎 값 예
+LEAF_G, LEAF_H = -0.8, 0.72                                            # g 합, h 합
+LEAF_W = {0: 1.11, 1: 0.47}                                            # lambda: 잎 값
+TITANIC_ACC = {"sklearn": 80.7, "XGBoost": 81.4, "LightGBM": 81.0}     # 5겹 교차 검증 정확도 (%)
+AIR_ACC = {"sklearn": 64.7, "XGBoost": 64.8, "LightGBM": 64.7}         # 항공편 시험 정확도 (%)
+AIR_SEC = {"sklearn": 10.8, "XGBoost": 0.2, "LightGBM": 0.4}           # 학습 시간 (초, 한 스레드, 컴퓨터마다 다름)
+AGE_UNIQUE, AGE_BINS = 98, 12                                          # 타이타닉 나이 고유값 수, 그림의 구간 수
+FLIGHT_UNIQUE, MAX_BIN = 6585, 255                                     # 항공편 번호 고유값 수, LightGBM 기본 구간 수
+
 IA, IB = 13, 609                                                      # 둘 다 26살: 1등석 여성 / 3등석 남성
 P_A, P_B, BASE = 96.0, 12.7, 38.2
 PHI_A = {"sex": 34.0, "class": 22.6, "rest": 1.3}
@@ -145,4 +174,19 @@ if __name__ == "__main__":
     grid = np.linspace(0, 6, 601); c = step_curves(DIST, fee(DIST).astype(float), grid)
     assert {k: round(float(np.abs(v - fee(grid)).mean())) for k, v in c.items()} == STEP_MAE
     Xo, won, r = orders(); assert noise_errors(Xo, won, r, NOISE_KS) == NOISE_MAE
+    G, H = float((LEAF_P - LEAF_Y).sum()), float((LEAF_P * (1 - LEAF_P) * np.ones(3)).sum())
+    assert (round(G, 2), round(H, 2)) == (LEAF_G, LEAF_H) and {l: round(-G / (H + l), 2) for l in LEAF_W} == LEAF_W
+    assert X.age.nunique() == AGE_UNIQUE
+    cv5 = StratifiedKFold(5, shuffle=True, random_state=0)
+    acc = {k: round(float(cross_val_score(m, X, y, cv=cv5).mean()) * 100, 1) for k, m in boost_models().items()}
+    assert acc == TITANIC_ACC, acc
+    import time
+    Xa, Xb, ya, yb = airlines(); air, sec = {}, {}
+    for k, m in boost_models().items():
+        runs = []
+        for _ in range(3):
+            t0 = time.perf_counter(); m.fit(Xa, ya); runs.append(time.perf_counter() - t0)
+        sec[k] = round(sorted(runs)[1], 2); air[k] = round(float((m.predict(Xb) == yb).mean()) * 100, 1)
+    print("airlines seconds (median of 3):", sec)
+    assert air == AIR_ACC, air
     print("data ok")

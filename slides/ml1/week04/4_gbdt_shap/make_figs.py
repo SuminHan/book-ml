@@ -103,4 +103,50 @@ for ax, Q, title in ((axs[0], P, "원래 열: 나이 > 30 같은 기준"), (axs[
     ax.set_title(f"{title}\n나무 잎 {t.get_n_leaves()}개", fontsize=14); ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal")
     ax.set_xlim(-1.5, 1.5); ax.set_ylim(-1.5, 1.5)
 save(fig, "gb_tab_rotate.png")
+
+
+# 8. XGBoost: 기울기 + 곡률, 잎 값 벌점
+def leaf_curves(w, p, y):
+    F0 = np.log(p / (1 - p))
+    true = np.array([np.sum(np.logaddexp(0, -(2 * y - 1) * (F0 + v))) for v in w])
+    G, H = (p - y).sum(), (p * (1 - p) * np.ones_like(y)).sum()
+    return true, true[np.argmin(np.abs(w))] + G * w + 0.5 * H * w ** 2, G, H
+
+
+w = np.linspace(-0.4, 2.0, 400)
+true, quad, G, H = leaf_curves(w, LEAF_P, LEAF_Y)
+fig, ax = plt.subplots(figsize=(6.6, 5.0))
+ax.plot(w, true, color="black", lw=2.6, label="실제 손실")
+ax.plot(w, quad, color=BLUE, lw=2.6, label="기울기 + 곡률 근사")
+ax.plot(w, quad + 0.5 * w ** 2, color=RED, lw=2.6, ls="--", label=r"근사 + 잎 값 벌점 ($\lambda=1$)")
+for lam, col in ((0, BLUE), (1, RED)):
+    v = -G / (H + lam); val = quad[np.argmin(np.abs(w - v))] + 0.5 * lam * v ** 2
+    ax.scatter([v], [val], color=col, s=90, zorder=4)
+    ax.annotate(f"$w$ = {LEAF_W[lam]}", (v, val), xytext=(0, -26), textcoords="offset points", ha="center", color=col, fontsize=15, fontweight="bold")
+ax.set_xlabel("이 잎이 더할 값 $w$"); ax.set_ylabel("승객 셋의 손실 합"); ax.set_ylim(1.4, 2.6); ax.legend(fontsize=13, frameon=False, loc="upper center")
+save(fig, "gb_xgb_leaf.png")
+
+
+# 9. LightGBM: 구간으로 묶기 + 층별 / 잎별 나무
+def draw_tree(ax, edges, leaves, splits, title):
+    pos = {**leaves, **splits}
+    for a, b in edges:
+        ax.plot([pos[a][0], pos[b][0]], [pos[a][1], pos[b][1]], color=GRAY, lw=2, zorder=1)
+    ax.scatter(*zip(*leaves.values()), s=420, color=GREEN, marker="s", zorder=2)
+    for k, (px, py) in splits.items():
+        ax.scatter([px], [py], s=780, color=BLUE, zorder=2)
+        ax.text(px, py, k[1:], color="white", ha="center", va="center", fontsize=16, fontweight="bold", zorder=3)
+    ax.set_title(title, fontsize=15); ax.set_xlim(-0.4, 4.4); ax.set_ylim(-0.5, 3.5); ax.axis("off")
+
+
+ages = titanic()[0]["age"].to_numpy()
+fig, axs = plt.subplots(1, 3, figsize=(14, 4.3), gridspec_kw={"width_ratios": [1.25, 1, 1]})
+axs[0].hist(ages, bins=AGE_BINS, color=GOLD, edgecolor="white")
+axs[0].set_xlabel("타이타닉 승객 나이"); axs[0].set_ylabel("승객 수")
+axs[0].set_title(f"고유값 {AGE_UNIQUE}개 → 구간 {AGE_BINS}개: 막대 사이만 확인", fontsize=15)
+draw_tree(axs[1], [("s1", "s2"), ("s1", "s3"), ("s2", "a"), ("s2", "b"), ("s3", "c"), ("s3", "d")],
+          {"a": (0.2, 0), "b": (1.4, 0), "c": (2.6, 0), "d": (3.8, 0)}, {"s1": (2, 3), "s2": (0.8, 1.5), "s3": (3.2, 1.5)}, "층별: 한 층을 다 채운다")
+draw_tree(axs[2], [("s1", "a"), ("s1", "s2"), ("s2", "b"), ("s2", "s3"), ("s3", "c"), ("s3", "d")],
+          {"a": (0.6, 1.5), "b": (1.6, 0.75), "c": (2.4, 0), "d": (3.8, 0)}, {"s1": (1.6, 3), "s2": (2.4, 2), "s3": (3.1, 1)}, "잎별: 오차가 큰 잎부터 판다")
+save(fig, "gb_lgbm.png")
 print("ok")
