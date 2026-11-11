@@ -274,14 +274,45 @@ $y$ & 2 & 4 & 5
 \note{작은 문제 하나를 두 가지 방법으로 풉니다. 점은 세 개, 1에 2, 2에 4, 3에 5입니다. 직선 h는 w0 더하기 w1 곱하기 x이고, 비용 J가 가장 작은 w0와 w1을 찾습니다. 하나는 방금 배운 경사하강법으로 한 걸음씩 걸어서, 다른 하나는 식을 세워서 바로 풉니다. 같은 답이 나오는지 보세요.}
 \end{frame}
 
-% --- 풀이 A
-\begin{frame}{풀이 A: 경사하강법 ($\eta = 0.1$, $w_0 = w_1 = 0$ 에서 출발)}
+% --- 풀이 A ①
+\begin{frame}{풀이 A ① 첫 걸음: 오차와 기울기 계산 ($\eta = 0.1$, $w_0 = w_1 = 0$ 에서 출발)}
+\markpage{solA}
 \vfill
 \centering
-{\small 첫 걸음: \; 오차 $h - y = -2,\ -4,\ -5$ \quad
-$\dfrac{\partial J}{\partial w_0} = \dfrac{-11}{3} \approx -3.67$ \quad
-$\dfrac{\partial J}{\partial w_1} = \dfrac{-2 - 8 - 15}{3} \approx -8.33$}\vskip0.3em
-{\small $w_0 \leftarrow 0 + 0.1 \times 3.67 = 0.37$ \qquad $w_1 \leftarrow 0 + 0.1 \times 8.33 = 0.83$}\vskip0.8em
+{\large\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|cc|c|c|c}
+$i$ & $x$ & $y$ & 예측 $h = 0 + 0 \cdot x$ & 오차 $e = h - y$ & $e \cdot x$\\\hline
+1 & 1 & 2 & 0 & $-2$ & $-2$\\
+2 & 2 & 4 & 0 & $-4$ & $-8$\\
+3 & 3 & 5 & 0 & $-5$ & $-15$\\\hline
+\multicolumn{4}{r|}{합} & $-11$ & $-25$
+\end{tabular}}\vskip0.8em
+{\large
+$\dfrac{\partial J}{\partial w_0} = \dfrac{1}{m}\sum e = \dfrac{-11}{3} = \kb{-3.67}$ \qquad
+$\dfrac{\partial J}{\partial w_1} = \dfrac{1}{m}\sum e\,x = \dfrac{-25}{3} = \kb{-8.33}$}\\[0.4em]
+{\small\color{gray} 기울기 식은 \pref{gd}, $m = 3$ (점 3개)}
+\vfill
+\note{경사하강법으로 풉니다. 학습률은 0.1, 출발점은 w0도 w1도 0입니다. 표를 만들어 한 줄씩 채우면 실수가 없습니다. 지금 직선은 0 더하기 0 곱하기 x라서 예측은 모두 0입니다. 오차는 예측 빼기 정답이니 마이너스 2, 마이너스 4, 마이너스 5입니다. 오차 곱하기 x는 마이너스 2, 마이너스 8, 마이너스 15입니다. 이제 앞에서 구한 기울기 식에 넣습니다. w0 기울기는 오차의 평균, 합 마이너스 11을 3으로 나눈 마이너스 3.67. w1 기울기는 오차 곱하기 x의 평균, 마이너스 25를 3으로 나눈 마이너스 8.33입니다.}
+\end{frame}
+
+% --- 풀이 A ②
+\begin{frame}{풀이 A ② 한 걸음 가고, 같은 계산을 반복}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.56\textwidth}
+{\small
+\begin{align*}
+w_0 &\leftarrow w_0 - \eta\,\tfrac{\partial J}{\partial w_0} = 0 - 0.1 \times (-3.67) = \textcolor{ksablue}{0.37}\\
+w_1 &\leftarrow w_1 - \eta\,\tfrac{\partial J}{\partial w_1} = 0 - 0.1 \times (-8.33) = \textcolor{ksablue}{0.83}\\[0.5em]
+\text{확인:}\ h &= 0.37 + 0.83\,x = 1.20,\ 2.03,\ 2.87\\
+e &= h - y = -0.80,\ -1.97,\ -2.13\\
+J &= \tfrac{1}{2 \cdot 3}\big(0.80^2 + 1.97^2 + 2.13^2\big) = \textcolor{ksablue}{1.51}
+\end{align*}}
+{\small $J$: 7.50 $\to$ 1.51. \; 둘째 걸음: 새 $w$ 로 \pref{solA} 의 표를 다시}
+\end{column}
+\begin{column}{0.44\textwidth}
+\centering
+{\normalsize\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{r|rrr}
 걸음 & $w_0$ & $w_1$ & $J$ \\ \hline
 0 & 0 & 0 & 7.50 \\
@@ -290,26 +321,93 @@ $\dfrac{\partial J}{\partial w_1} = \dfrac{-2 - 8 - 15}{3} \approx -8.33$}\vskip
 3 & 0.60 & 1.37 & 0.09 \\
 10 & 0.66 & 1.50 & 0.028 \\
 400 & 0.667 & 1.500 & 0.0278
-\end{tabular}\vskip0.5em
-{\large \kq{수백 걸음 뒤 $w_0 \approx 0.667,\ w_1 \approx 1.5$}}
+\end{tabular}}\par\vskip0.5em
+{\large \kq{수백 걸음 뒤}\\ $w_0 \approx 0.667,\ w_1 \approx 1.5$}
+\end{column}
+\end{columns}
 \vfill
-\note{경사하강법으로 풉니다. 학습률은 0.1, 출발점은 w0도 w1도 0입니다. 첫 걸음을 직접 계산해 보면, 예측이 모두 0이라 오차는 마이너스 2, 마이너스 4, 마이너스 5입니다. w0 기울기는 오차의 평균, 마이너스 11 나누기 3, 약 마이너스 3.67. w1 기울기는 오차 곱하기 x의 평균, 마이너스 2, 마이너스 8, 마이너스 15를 더해 3으로 나눈 마이너스 8.33입니다. 기울기 반대로 0.1만큼 가니 w0는 0.37, w1은 0.83이 되고 J는 7.5에서 1.51로 줄었습니다. 같은 계산을 반복하면 표처럼 J가 줄어듭니다. 10걸음에서 이미 거의 다 왔고, 400걸음 뒤에는 w0 0.667, w1 1.5에 도착합니다. 끝까지 가려면 반복이 필요하다는 점을 기억하세요.}
+\note{기울기의 반대 방향으로 학습률만큼 갑니다. w0는 0 빼기 0.1 곱하기 마이너스 3.67, 0.37입니다. 마이너스에 마이너스라 더해집니다. w1은 0 빼기 0.1 곱하기 마이너스 8.33, 0.83입니다. 잘 갔는지 확인해 봅시다. 새 직선으로 예측하면 1.20, 2.03, 2.87이고 오차는 마이너스 0.80, 마이너스 1.97, 마이너스 2.13입니다. 제곱해서 더하고 6으로 나누면 J는 1.51, 7.50에서 줄었습니다. 둘째 걸음은 새 w로 앞 쪽의 표를 다시 채우면 됩니다. 이렇게 반복하면 오른쪽 표처럼 J가 줄고, 10걸음에서 거의 다 왔고, 400걸음 뒤에는 w0 0.667, w1 1.5에 도착합니다.}
 \end{frame}
 
-% --- 풀이 B
-\begin{frame}{풀이 B: 기울기를 0 으로 놓고 바로 풀기}
+% --- 풀이 B ①
+\begin{frame}{풀이 B ① 바닥에서는 기울기가 0: 식 두 개 세우기}
+\markpage{solB}
 \vfill
+\begin{columns}[c]
+\begin{column}{0.66\textwidth}
+{\normalsize
+\begin{align*}
+\frac{\partial J}{\partial w_0} = \frac{1}{m}\sum (w_0 + w_1 x - y) &= 0 && \text{기울기 \pref{gd}}\\
+\sum w_0 + w_1 \sum x - \sum y &= 0 && \times m\text{, 합을 나눔}\\
+\textcolor{ksablue}{3\,w_0 + 6\,w_1} &\textcolor{ksablue}{= 11} && \textstyle\sum w_0 = m w_0 = 3 w_0\\[0.6em]
+\frac{\partial J}{\partial w_1} = \frac{1}{m}\sum (w_0 + w_1 x - y)\,x &= 0\\
+w_0 \sum x + w_1 \sum x^2 - \sum xy &= 0 && \times m\text{, } x \text{ 를 곱해 펼침}\\
+\textcolor{ksablue}{6\,w_0 + 14\,w_1} &\textcolor{ksablue}{= 25}
+\end{align*}}
+\end{column}
+\begin{column}{0.3\textwidth}
 \centering
-{\small 바닥에서는 기울기가 0 이다: \; $\dfrac{\partial J}{\partial w_0} = 0,\ \ \dfrac{\partial J}{\partial w_1} = 0$}\vskip0.5em
-{\large\[ \begin{aligned}
-3\,w_0 + 6\,w_1 &= 11 &&\leftarrow\ \textstyle\sum x = 6,\ \sum y = 11 \\
-6\,w_0 + 14\,w_1 &= 25 &&\leftarrow\ \textstyle\sum x^2 = 14,\ \sum xy = 25
-\end{aligned} \]}\vskip0.3em
-{\small 첫 식 $\times 2$ 를 빼면 \; $2\,w_1 = 3$ \; $\Rightarrow$ \; $w_1 = 1.5$, \quad $w_0 = (11 - 9)/3 = 2/3$}\vskip0.8em
-{\large\[ \mathbf{w} = (X^\top X)^{-1} X^\top \mathbf{y} \]}\vskip0.2em
-{\large \kq{한 번에 $w_0 = 0.667,\ w_1 = 1.5$}}
+{\normalsize\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{cc|cc}
+$x$ & $y$ & $x^2$ & $xy$\\\hline
+1 & 2 & 1 & 2\\
+2 & 4 & 4 & 8\\
+3 & 5 & 9 & 15\\\hline
+\kb{6} & \kb{11} & \kb{14} & \kb{25}
+\end{tabular}}\par\vskip0.3em
+{\small 마지막 줄 = 합 $\sum$}
+\end{column}
+\end{columns}
 \vfill
-\note{이번에는 걸어가지 않고 바닥의 조건을 바로 씁니다. 바닥에서는 두 기울기가 모두 0입니다. 기울기 식에 0을 놓고 정리하면 식이 두 개 나옵니다. 3 w0 더하기 6 w1은 11, 6 w0 더하기 14 w1은 25입니다. 숫자는 x의 합 6, y의 합 11, x 제곱의 합 14, x 곱하기 y의 합 25에서 나옵니다. 첫 식에 2를 곱해서 빼면 2 w1이 3, 그러니 w1은 1.5이고, w0는 11 빼기 9를 3으로 나눈 3분의 2입니다. 걸음 수 없이 한 번에 나왔습니다. 특징이 많을 때는 이 계산을 행렬로 쓴 정규방정식, w는 X 전치 X의 역행렬 곱하기 X 전치 y입니다.}
+\note{이번에는 걷지 않고 바닥의 조건을 바로 씁니다. 바닥에서는 두 기울기가 모두 0입니다. 첫 식, w0 기울기를 0으로 놓습니다. 양변에 m을 곱하고, 합을 항마다 나눠 쓰면 w0의 합 더하기 w1 곱하기 x의 합 빼기 y의 합이 0입니다. w0는 점마다 같으니 w0를 세 번 더한 3 w0입니다. 오른쪽 표에서 x의 합 6, y의 합 11을 넣으면 3 w0 더하기 6 w1은 11. 둘째 식, w1 기울기도 0으로 놓고 괄호에 x를 곱해 펼치면 w0 곱하기 x의 합, w1 곱하기 x 제곱의 합, xy의 합이 나옵니다. 표에서 6, 14, 25를 넣으면 6 w0 더하기 14 w1은 25입니다. 미지수 두 개, 식 두 개입니다.}
+\end{frame}
+
+% --- 풀이 B ②
+\begin{frame}{풀이 B ② 연립방정식 풀기}
+\vfill
+{\large
+\begin{align*}
+3\,w_0 + 6\,w_1 &= 11 && \cdots (1)\\
+6\,w_0 + 14\,w_1 &= 25 && \cdots (2)\\[0.4em]
+(6 w_0 + 14 w_1) - (6 w_0 + 12 w_1) &= 25 - 22 && (2) - 2 \times (1)\\
+2\,w_1 &= 3 \;\Rightarrow\; \textcolor{ksablue}{w_1 = 1.5}\\[0.4em]
+3\,w_0 + 6 \times 1.5 &= 11 && (1) \text{ 에 대입}\\
+3\,w_0 &= 2 \;\Rightarrow\; \textcolor{ksablue}{w_0 = 2/3 \approx 0.667}
+\end{align*}}
+\centering{\normalsize 확인: $h = 2.17,\ 3.67,\ 5.17$, \quad $J = 0.0278$ (풀이 A 400걸음과 같다)}\\[0.3em]{\small\color{gray} 같은 두 식을 행렬로 쓰면 정규방정식 $\mathbf{w} = (X^\top X)^{-1} X^\top \mathbf{y}$, 유도는 다음 쪽}
+
+\vfill
+\note{식 두 개를 풉니다. 1번 식에 2를 곱하면 6 w0 더하기 12 w1은 22입니다. 2번 식에서 이걸 빼면 w0가 지워지고 2 w1은 3, w1은 1.5입니다. 이 값을 1번 식에 넣으면 3 w0 더하기 9가 11, 3 w0는 2, w0는 3분의 2, 약 0.667입니다. 확인해 보면 예측은 2.17, 3.67, 5.17이고 J는 0.0278, 풀이 A가 400걸음 걸어서 도착한 값과 같습니다. 같은 두 식을 행렬로 쓰면 정규방정식이 됩니다. 다음 쪽에서 유도합니다.}
+\end{frame}
+
+% --- 정규방정식 유도
+\begin{frame}{정규방정식은 어디서 오나: 풀이 B 를 행렬로}
+\markpage{normal}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.64\textwidth}
+{\normalsize
+\begin{align*}
+X\mathbf{w} &= \begin{pmatrix} w_0 + w_1 \cdot 1\\ w_0 + w_1 \cdot 2\\ w_0 + w_1 \cdot 3\end{pmatrix} && \text{예측 세 개}\\
+\mathbf{e} &= X\mathbf{w} - \mathbf{y} && \text{오차}\\
+\begin{pmatrix} \partial J/\partial w_0\\ \partial J/\partial w_1\end{pmatrix}
+&= \frac{1}{m}\begin{pmatrix} \sum e \cdot \textcolor{ksablue}{1}\\ \sum e \cdot \textcolor{ksared}{x}\end{pmatrix} = \frac{1}{m}\,X^\top \mathbf{e} && \text{기울기 \pref{gd}}\\
+X^\top (X\mathbf{w} - \mathbf{y}) &= \mathbf{0} && \text{바닥}\\
+X^\top X\,\mathbf{w} &= X^\top \mathbf{y} && \text{괄호를 풂}\\
+\mathbf{w} &= (X^\top X)^{-1} X^\top \mathbf{y} && \text{역행렬}
+\end{align*}}
+\end{column}
+\begin{column}{0.33\textwidth}
+\centering
+{\small $X = \begin{pmatrix} \textcolor{ksablue}{1} & \textcolor{ksared}{1}\\ \textcolor{ksablue}{1} & \textcolor{ksared}{2}\\ \textcolor{ksablue}{1} & \textcolor{ksared}{3}\end{pmatrix}$ \; $\mathbf{y} = \begin{pmatrix} 2\\ 4\\ 5\end{pmatrix}$}\\[0.2em]
+{\scriptsize \textcolor{ksablue}{첫 열 = 1} ($w_0$ 몫), \textcolor{ksared}{둘째 열 = $x$}}\\[0.6em]
+{\small $X^\top X = \begin{pmatrix} 3 & 6\\ 6 & 14\end{pmatrix}$}\\[0.3em]
+{\small $X^\top \mathbf{y} = \begin{pmatrix} 11\\ 25\end{pmatrix}$}\\[0.3em]
+{\scriptsize 풀이 B 의 합 표 \pref{solB} 와 같은 숫자}
+\end{column}
+\end{columns}
+\vfill
+\note{풀이 B의 식 두 개가 왜 정규방정식이 되는지 봅시다. 오른쪽처럼 행렬 X를 만듭니다. 첫 열은 모두 1, w0에 곱해지는 자리이고, 둘째 열은 x입니다. X 곱하기 w를 하면 행마다 w0 더하기 w1 곱하기 x, 즉 예측 세 개가 한 번에 나옵니다. 여기서 정답 y를 빼면 오차 벡터 e입니다. 기울기를 보면 w0 쪽은 오차 곱하기 1의 합, w1 쪽은 오차 곱하기 x의 합입니다. X 전치의 첫 행이 1들, 둘째 행이 x들이라서, 이 둘을 쌓은 것이 정확히 X 전치 곱하기 e입니다. 바닥에서는 기울기가 0이니 X 전치 곱하기 Xw 빼기 y가 0. 괄호를 풀면 X 전치 X 곱하기 w가 X 전치 y. 양변 왼쪽에 X 전치 X의 역행렬을 곱하면 w는 X 전치 X의 역행렬 곱하기 X 전치 y입니다. 실제로 X 전치 X를 계산하면 3, 6, 6, 14, X 전치 y는 11, 25로, 풀이 B에서 합으로 세운 식의 숫자와 똑같습니다. 행렬은 그 합들을 한 번에 적는 방법일 뿐입니다.}
 \end{frame}
 
 % --- 비교
