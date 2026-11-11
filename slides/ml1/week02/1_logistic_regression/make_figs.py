@@ -80,7 +80,6 @@ def fit_fig(x, y, w):
     points(ax, x, y, 300, 1)
     ax.plot(mid, rate, "o", color=GRAY, ms=6, label="실제 백 승률 (100점 구간)")
     ax.plot(xs, sig(w[0] + w[1] * xs), color=BLUE, lw=3, label="로지스틱회귀")
-    ax.plot(xs, 1 / (1 + 10 ** (-xs / 400)), color=GOLD, lw=2, ls="--", label="Elo 공식")
     p200 = sig(w[0] + 200 * w[1])
     ax.annotate(f"200점 높으면 → {p200:.0%}", (200, p200), (330, 0.42), fontsize=15, color=RED, fontweight="bold", arrowprops=dict(arrowstyle="->", color=RED))
     yaxis(ax); ax.set_ylim(-0.08, 1.08); ax.legend(frameon=False, loc="upper left", fontsize=12)
