@@ -178,6 +178,21 @@ cudaMemcpy(y, d_y, N, cudaMemcpyDeviceToHost);
 \note{CUDA가 무엇을 바꿨는지 코드로 보겠습니다. 왼쪽은 보통 C 코드입니다. 두 벡터를 a배 해서 더하는 SAXPY라는 계산을, for 문으로 100만 번 하나씩 돌립니다. 오른쪽은 CUDA를 붙인 같은 계산입니다. for 문이 사라졌습니다. 대신 함수 앞에 global을 붙여 GPU에서 돌릴 함수라고 표시하고, 각 스레드가 자기 번호 i를 계산해서 딱 한 칸만 맡습니다. 아래 꺾쇠 세 개 안의 4096과 256은 스레드를 256개씩 4096묶음, 모두 100만 개 띄우라는 뜻입니다. 데이터를 GPU 메모리로 복사하고, 계산하고, 결과를 다시 가져옵니다. 신경망의 행렬 곱셈도 이렇게 칸마다 독립이라서 GPU에 딱 맞았습니다.}
 \end{frame}
 
+% --- 물감 대포 짧은 영상 (CUDA 코드 다음)
+\begin{frame}{스레드 1,100개가 한 번에: 80밀리초 모나리자}
+\vfill
+\centering
+\href{https://youtu.be/8_ZTvG1WQxM}{\begin{tikzpicture}
+\node[inner sep=0] (v) {\includegraphics[width=0.56\linewidth]{mythbusters_monalisa.jpg}};
+\fill[black,opacity=0.55] (v.center) circle (0.75);
+\fill[white] ([shift={(-0.25,-0.38)}]v.center) -- ([shift={(-0.25,0.38)}]v.center) -- ([shift={(0.42,0)}]v.center) -- cycle;
+\end{tikzpicture}}\par\vskip0.4em
+{\large 앞 쪽 코드의 \kq{스레드 하나 = 대포 하나}, 모두 동시에 한 칸씩}\par\vskip0.2em
+{\small 그림을 누르면 YouTube 영상 (약 4분) \quad \href{https://youtu.be/8_ZTvG1WQxM}{\textcolor{ksagolddk}{▶ youtu.be/8\_ZTvG1WQxM}}}
+\vfill
+\note{방금 본 CUDA 코드를 눈으로 보면 이렇습니다. 앞에서 본 물감 대포 실험의 짧은 영상입니다. 대포 하나하나가 앞 쪽 코드의 스레드 하나입니다. 각 대포는 자기 칸 하나에 물감 한 방만 쏘면 되고, 1100개가 동시에 쏘니까 모나리자가 순식간에 완성됩니다. for 문으로 한 칸씩 찍던 일을 칸마다 하나씩 나눠 맡긴 것입니다. 그림을 누르면 4분 정도의 영상이 열립니다.}
+\end{frame}
+
 % --- AlexNet
 \begin{frame}{2012: AlexNet}
 \vfill
@@ -517,6 +532,7 @@ AI는 탑다운으로 파고드는 도구\\
     \item 쓴 교훈 인용 --- Rich Sutton, ``The Bitter Lesson'' (2019), incompleteideas.net
     \item 인용 --- 헨더슨: L. J. Henderson이 한 말로 널리 인용되는 문장
     \item CPU 대 GPU 물감 대포 실험 --- NVIDIA NVISION 2008, Adam Savage \& Jamie Hyneman (YouTube 영상 썸네일, youtube.com/watch?v=ZrJeYFxpUyQ)
+    \item 물감 대포 모나리자 짧은 영상 --- NVIDIA NVISION 2008 (YouTube 영상 썸네일, youtu.be/8\_ZTvG1WQxM)
     % 출처 확인 필요: 서츠케버 사진 figs/pasted_p16_63bd65d7.png (리뷰 서버에 붙여넣은 사진)
     % 출처 확인 필요 (기존 slides/kor/ml1/week01 자료 재사용): neuron_history.jpg, mnist_demo.jpg, jensen_huang_snu_2008.jpg, gtx580.jpg, w01_p2.jpg
   \end{itemize}
