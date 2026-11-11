@@ -15,6 +15,39 @@
 \author{Machine Learning and Deep Learning}
 \institute{KSA 2027-Spring}
 \date{Sumin Han (suminhan@ksa.hs.kr)}
+% 학습의 뼈대 그림: \recipe{데이터}{모델}{손실}{최적화}
+\definecolor{rcpblue}{HTML}{2E3192}\definecolor{rcpred}{HTML}{D62728}\definecolor{rcpgreen}{HTML}{2A9D8F}
+\newcommand{\recipe}[4]{%
+\begin{tikzpicture}[box/.style={rounded corners=4pt, minimum width=2.95cm, minimum height=2.1cm, text=white, font=\color{white}, align=center, inner sep=3pt},
+  arr/.style={-latex, line width=1.4pt}]
+\node[box, fill=rcpblue]   (d) at (0,0)    {\large\textbf{① 데이터}\\[0.5em]#1};
+\node[box, fill=ksagolddk] (m) at (3.6,0) {\large\textbf{② 모델}\\[0.5em]#2};
+\node[box, fill=rcpred]    (l) at (7.2,0)  {\large\textbf{③ 손실함수}\\[0.5em]#3};
+\node[box, fill=rcpgreen]  (o) at (10.8,0){\large\textbf{④ 최적화}\\[0.5em]#4};
+\draw[arr] (d.east) -- (m.west); \draw[arr] (m.east) -- (l.west); \draw[arr] (l.east) -- (o.west);
+\draw[arr, gray] (o.south) -- ++(0,-0.45) -| (m.south);
+\node[gray, font=\small] at (7.2,-1.75) {손실이 줄어들 때까지 반복};
+% 아이콘 (상자 위)
+\begin{scope}[shift={(0,1.75)}, rcpblue, line width=1pt]   % 데이터: 표
+\draw[rounded corners=1pt] (-0.6,-0.45) rectangle (0.6,0.45);
+\fill (-0.6,0.22) rectangle (0.6,0.45);
+\foreach \yy in {0,-0.22} \draw (-0.6,\yy) -- (0.6,\yy);
+\draw (0,-0.45) -- (0,0.45);
+\end{scope}
+\begin{scope}[shift={(3.6,1.75)}, ksagolddk, line width=1pt]   % 모델: 점과 직선
+\draw[->] (-0.6,-0.45) -- (0.65,-0.45); \draw[->] (-0.6,-0.45) -- (-0.6,0.5);
+\foreach \xx/\yy in {-0.4/-0.3, -0.15/-0.05, 0.05/-0.12, 0.25/0.15, 0.45/0.28} \fill (\xx,\yy) circle (1.6pt);
+\draw[line width=1.4pt] (-0.5,-0.33) -- (0.55,0.36);
+\end{scope}
+\begin{scope}[shift={(7.2,1.75)}, rcpred, line width=1pt]   % 손실: 그릇
+\draw[line width=1.4pt] (-0.6,0.45) parabola bend (0,-0.4) (0.6,0.45);
+\fill (0.38,0.0) circle (2.2pt);
+\end{scope}
+\begin{scope}[shift={(10.8,1.75)}, rcpgreen, line width=1.3pt]   % 최적화: 한 걸음씩 내려간다
+\draw (-0.6,0.45) -- (-0.3,0.45) -- (-0.3,0.15) -- (0,0.15) -- (0,-0.15) -- (0.3,-0.15) -- (0.3,-0.45) -- (0.6,-0.45);
+\draw[-latex, line width=1.6pt] (-0.45,0.5) .. controls (0.1,0.4) and (0.3,0) .. (0.5,-0.3);
+\end{scope}
+\end{tikzpicture}}
 \begin{document}
 {\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
 
@@ -79,12 +112,13 @@
 \begin{frame}{학습의 뼈대: 네 가지만 정하면 된다}
 \markpage{recipe}
 \vfill
-\centering\includegraphics[width=0.78\linewidth]{lr_recipe.png}\par\vskip0.6em
+\centering
+\recipe{{\small 입력과 정답의 쌍}\\{\small $(x, y)$}}{{\small 예측 함수}\\{\small $h(x)$, 안에 $w$}}{{\small 얼마나 틀렸나}\\{\small 숫자 하나}}{{\small 손실이 줄도록}\\{\small $w$ 를 고친다}}\par\vskip0.6em
 {\large 거의 모든 머신러닝 알고리즘은 이 \kb{네 가지의 조합}이다}\\[0.3em]
-{\large 오늘은 \kb{모델 = 직선}, \kb{손실 = 오차 제곱 평균}, \kb{최적화 = 경사하강법}}\\[0.4em]
+{\large 오늘 수업이 끝나면 \kb{네 칸을 다 채운다}}\\[0.4em]
 {\scriptsize Goodfellow, Bengio \& Courville, \textit{Deep Learning} (2016), \S 5.10}
 \vfill
-\note{지도학습으로 모델을 학습시킬 때 정해야 할 것은 네 가지입니다. 첫째 학습 데이터, 입력과 정답의 쌍입니다. 오늘은 학생 30명의 공부 시간과 점수입니다. 둘째 예측 모델, 입력을 받아 예측값을 내놓는 함수이고 안에 고칠 수 있는 파라미터 w가 있습니다. 오늘은 직선, w0 더하기 w1 곱하기 x입니다. 셋째 손실함수, 예측이 정답에서 얼마나 틀렸는지를 숫자 하나로 재는 자입니다. 오늘은 오차를 제곱해서 평균 낸 J입니다. 넷째 최적화 알고리즘, 그 손실이 줄어들도록 w를 고치는 방법입니다. 오늘은 경사하강법입니다. 고치고, 다시 예측하고, 다시 재는 것을 반복합니다. 이건 Goodfellow의 딥러닝 책 5장에서 정리한 틀이고, 거의 모든 알고리즘이 이 네 가지의 조합입니다. 앞으로 배우는 로지스틱회귀, 신경망도 모델과 손실만 바꿔 끼운 것입니다. 오늘 이 네 칸을 하나씩 채워 봅니다.}
+\note{지도학습으로 모델을 학습시킬 때 정해야 할 것은 네 가지입니다. 첫째 학습 데이터, 입력과 정답의 쌍입니다. 둘째 예측 모델, 입력을 받아 예측값을 내놓는 함수이고 안에 고칠 수 있는 파라미터 w가 있습니다. 셋째 손실함수, 예측이 정답에서 얼마나 틀렸는지를 숫자 하나로 재는 자입니다. 넷째 최적화 알고리즘, 그 손실이 줄어들도록 w를 고치는 방법입니다. 고치고, 다시 예측하고, 다시 재는 것을 반복합니다. 이건 Goodfellow의 딥러닝 책 5장에서 정리한 틀이고, 거의 모든 알고리즘이 이 네 가지의 조합입니다. 앞으로 배우는 로지스틱회귀, 신경망도 모델과 손실만 바꿔 끼운 것입니다. 오늘 수업에서 이 네 칸을 하나씩 채우고, 끝에서 다시 봅니다.}
 \end{frame}
 
 
@@ -310,6 +344,16 @@ Auto MPG (자동차 398대, UCI) \\[0.4em]\href{https://colab.research.google.co
 \end{frame}
 
 \section{정리}
+% --- 뼈대 다시: 오늘 채운 네 칸
+\begin{frame}{오늘 채운 네 칸}
+\vfill
+\centering
+\recipe{{\small (공부 시간, 점수)}\\{\small 30쌍}}{{\small 직선}\\{\small $w_0 + w_1 x$}}{{\small 오차 제곱 평균}\\{\small $J(w_0, w_1)$}}{{\small 경사하강법}\\{\small $w$ 를 고친다}}\par\vskip0.8em
+{\large 다음은 \kb{모델과 손실만 바꿔 끼운다}: 로지스틱회귀, 신경망 \ldots \pref{recipe}}
+\vfill
+\note{처음에 본 학습의 뼈대 네 칸을 오늘 다 채웠습니다. 데이터는 학생 30명의 공부 시간과 점수, 모델은 직선 w0 더하기 w1 곱하기 x, 손실함수는 오차를 제곱해서 평균 낸 J, 최적화는 경사하강법입니다. 다음 주 로지스틱회귀와 뒤에서 배울 신경망도 이 뼈대는 그대로 두고 모델과 손실만 바꿔 끼웁니다.}
+\end{frame}
+
 % --- 정리
 \begin{frame}{정리}
 \vfill
