@@ -161,11 +161,25 @@
 
 \section{경사하강법}
 % --- 경사하강법
+% --- 미분 준비: 연쇄 법칙
+\begin{frame}{미분 준비: 연쇄 법칙 (chain rule)}
+\markpage{chain}
+\vfill
+\centering
+{\Large\[ \frac{d}{dw}\,f\big(u(w)\big) = f'(u)\cdot\textcolor{ksablue}{\frac{du}{dw}} \]}\vskip0.2em
+{\normalsize 바깥을 미분하고, \textcolor{ksablue}{안쪽을 미분한 값}을 곱한다}\vskip0.8em
+{\Large\[ \frac{d}{dw}\,u^{\textcolor{ksared}{2}} = \textcolor{ksared}{2}\,u\cdot\textcolor{ksablue}{\frac{du}{dw}} \]}\vskip0.2em
+{\normalsize 제곱이면 \textcolor{ksared}{지수 2 가 앞으로 내려온다}}\vskip0.8em
+{\large 예: \; $\dfrac{d}{dw}(3w+1)^{\textcolor{ksared}{2}} = \textcolor{ksared}{2}(3w+1)\cdot\textcolor{ksablue}{3}$ \quad {\normalsize\color{gray}(펼쳐서 $9w^2+6w+1$ 을 미분한 $18w+6$ 과 같다)}}
+\vfill
+\note{기울기를 구하기 전에 미분 규칙 하나만 준비합니다. 연쇄 법칙입니다. 함수 안에 또 함수가 들어 있으면, 바깥을 미분하고 안쪽을 미분한 값을 곱합니다. 우리가 쓸 건 제곱입니다. u의 제곱을 w로 미분하면, 빨간 지수 2가 앞으로 내려와 2u가 되고, 여기에 안쪽 u를 w로 미분한 값을 파란색으로 곱합니다. 예를 들어 3w 더하기 1의 제곱을 미분하면 2 곱하기 3w 더하기 1, 곱하기 안쪽의 미분 3입니다. 펼쳐서 9w 제곱 더하기 6w 더하기 1을 미분해도 18w 더하기 6으로 같습니다. 다음 쪽에서 이 규칙을 그대로 J에 씁니다.}
+\end{frame}
+
 \begin{frame}{경사하강법: 기울기 반대로 한 걸음}
 \markpage{gd}
 \centering
 {\Large\[ w_j \;\leftarrow\; w_j - \eta\,\frac{\partial J}{\partial w_j} \]}\vskip-0.6em
-{\small $\eta$: 학습률 (한 걸음의 크기), 예: $\eta = 0.1$ \qquad 기울기 $\partial J/\partial w_j$ 는 아래처럼 구한다}\vskip0.3em
+{\small $\eta$: 학습률 (한 걸음의 크기), 예: $\eta = 0.1$ \qquad 기울기 $\partial J/\partial w_j$ 는 연쇄 법칙 \pref{chain} 으로}\vskip0.3em
 \begin{columns}[T]
 \begin{column}{0.49\textwidth}
 \begin{align*}
