@@ -17,6 +17,9 @@ assert (PRE["n"], PRE["n_train"], PRE["n_test"]) == (115940, 88024, 27916)
 assert [f"{PRE[k] * 100:.1f}" for k in ("swing_rate", "acc_base", "acc_count", "acc_model")] == ["48.2", "51.4", "59.6", "60.3"]
 assert [f"{PRE[k]:.1f}" for k in ("mean_kmh", "mae_base", "mae_model", "mae_leak")] == ["143.6", "8.0", "7.3", "2.3"]
 
+CAN = BB["can"]
+assert (f"{CAN['rate_32'] * 100:.1f}", f"{CAN['top10_batter_rate'] * 100:.1f}", f"{CAN['max_p'] * 100:.1f}", CAN["n_over_half"]) == ("1.6", "2.1", "5.2", 0)
+
 # ---- 회귀 지표 손 계산: 오차 [1, 1, 1, 9]
 TOY = F["toy"]; assert TOY["mae"] == 3 and round(TOY["rmse"], 2) == 4.58
 

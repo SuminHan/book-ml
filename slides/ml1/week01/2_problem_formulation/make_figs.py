@@ -30,6 +30,17 @@ bars(a2, ["기준선\n학습 평균", "볼카운트\n+ 타자 + 투수", "+ 구�
 a2.set_title("문제 B: 이 공의 구속은 (회귀)", fontsize=15)
 fig.tight_layout(); fig.savefig(O + "pf_twoprob.png"); plt.close(fig)
 
+# 1b. 던지기 전 정보로 홈런을 맞힐 수 있나: 확률은 조금 오를 뿐, 50% 근처에도 못 간다
+fig, ax = plt.subplots(figsize=(10.5, 3.9))
+labs = ["모든 공\n평균", "3볼 2스트라이크", "홈런 타자\n(상위 10%)", "모델이 가장 높게\n본 공"]
+vals = [PT["rate"] * 100, CAN["rate_32"] * 100, CAN["top10_batter_rate"] * 100, CAN["max_p"] * 100]
+ax.bar(range(4), vals, color=[GRAY, BLUE, BLUE, RED], width=0.55)
+for i, v in enumerate(vals):
+    ax.text(i, v + 1.2, f"{v:.2f}%" if i == 0 else f"{v:.1f}%", ha="center", fontsize=17, fontweight="bold", color=[GRAY, BLUE, BLUE, RED][i])
+ax.axhline(50, color=RED, ls="--", lw=1.6); ax.text(3.45, 51.5, "50%: 이걸 넘어야 '홈런'이라고 찍는다", ha="right", color=RED, fontsize=13)
+ax.set_xticks(range(4), labs, fontsize=13.5); ax.set_ylim(0, 60); ax.set_ylabel("이 공이 홈런이 될 확률 (%)")
+fig.tight_layout(); fig.savefig(O + "pf_cant.png"); plt.close(fig)
+
 # 5. 1쪽 질문: 모바일 야구 게임 화면 (컴투스프로야구2021, 사용자 제공 캡처) 위에 '치기 전 AI 예측' 자막 한 줄
 # 원본 photos/com2us_baseball_2021.png (1631x924) 에서 에뮬레이터 창 테두리 (위 40px · 오른쪽 사이드바) 만 잘라낸다
 def homerun_scene(shot, path):

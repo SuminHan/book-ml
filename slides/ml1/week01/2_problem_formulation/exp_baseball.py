@@ -60,6 +60,17 @@ J["pitch"] = dict(n=N, hr=H, rate=H / N, acc_zero=(N - H) / N,
                   example=dict(date=str(seq.game_date.iloc[0]), rows=[[int(r.pitch_number), f"{r.balls}-{r.strikes}", r.pitch_type,
                                round(r.release_speed * 1.609), r.description, (r.events if isinstance(r.events, str) else "")] for r in seq.itertuples()]))
 
+# ---- 0b. 던지기 전 정보로 홈런을 맞힐 수 있나 (볼카운트 · 타자 · 투수, 원-핫 로지스틱, C=0.3, 날짜 순서 분할)
+from sklearn.preprocessing import OneHotEncoder as _OH
+_tr, _te = pt[pt.game_date <= "2024-06-23"], pt[pt.game_date >= "2024-06-24"]
+_IN = ["count", "batter", "pitcher"]
+_m = make_pipeline(_OH(handle_unknown="ignore"), LogisticRegression(max_iter=3000, C=0.3)).fit(_tr[_IN].astype(str), _tr.home_run)
+_p = _m.predict_proba(_te[_IN].astype(str))[:, 1]
+_br = _tr.groupby("batter").home_run.agg(["mean", "size"]); _br = _br[_br["size"] >= 150]
+J["can"] = dict(test_rate=float(_te.home_run.mean()), max_p=float(_p.max()), n_over_half=int((_p > 0.5).sum()),
+                top10_batter_rate=float(_br[_br["mean"] >= _br["mean"].quantile(0.9)]["mean"].mean()),
+                rate_32=float(pt[pt["count"] == "3-2"].home_run.mean()))
+
 # ---- 1. 던지기 전 두 문제: 같은 투구, 다른 y (스윙할까 · 구속)
 SWING = {"hit_into_play", "foul", "swinging_strike", "swinging_strike_blocked", "foul_tip", "foul_bunt", "missed_bunt", "bunt_foul_tip"}
 pp = pt.dropna(subset=["release_speed", "pitch_type"]).copy()

@@ -25,6 +25,7 @@
 % 던지기 전 두 문제: 같은 투구 (구속 · 구종 있는 공), 6/1~23 학습 · 6/24~30 시험, 입력 = 볼카운트 · 타자 · 투수
 \newcommand{\prN}{115{,}940}\newcommand{\prTrain}{88{,}024}\newcommand{\prTest}{27{,}916}\newcommand{\prSwing}{48.2}
 \newcommand{\prAccBase}{51.4}\newcommand{\prAccCount}{59.6}\newcommand{\prAccModel}{60.3}
+\newcommand{\canTwo}{1.6}\newcommand{\canTop}{2.1}\newcommand{\canMax}{5.2}   % 3-2 홈런 비율 · 홈런 타자 상위 10% · 모델 최대 확률 (%)
 \newcommand{\prMean}{143.6}\newcommand{\prMaeBase}{8.0}\newcommand{\prMaeModel}{7.3}\newcommand{\prMaeLeak}{2.3}
 
 \renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 문제 정형화와 평가지표}
@@ -223,6 +224,18 @@
 {\small 홈런이 드물어서, ``아님''을 맞힌 수가 점수를 거의 다 차지한다}
 \vfill
 \note{처음의 AI와 아주 단순한 규칙 하나를 비교합니다. 왼쪽이 처음 본 AI, 앞에서 본 대로 전부 홈런 아님이라고 답하는 모델입니다. 정확도 \hrAccZero 퍼센트, 잡아낸 홈런은 0개. 오른쪽 규칙은 방금 본 볼카운트를 씁니다. 던지기 직전 볼카운트가 3볼 1스트라이크나 3볼 2스트라이크면 홈런이라고 답합니다. 정확도는 \paAccRule 퍼센트로 오히려 낮은데, 홈런 \paTP 개를 잡아냅니다. 드문 것을 찾는 문제에서 정확도는 거의 아님을 맞힌 수로만 정해지기 때문에, 우리가 원하는 걸 재지 못합니다.}
+\end{frame}
+
+% --- 던지기 전에 홈런을 맞힐 수 있나
+\begin{frame}{던지기 전 정보로 홈런을 맞힐 수 있을까?}
+\markpage{cant}
+\vfill
+\centering\includegraphics[width=0.7\linewidth]{pf_cant.png}\par\vskip0.3em
+{\large 볼카운트 · 타자 · 투수를 다 넣어도 확률은 \kb{두세 배} 오를 뿐, \kq{50\%는 근처에도 못 간다}}\\[0.3em]
+{\normalsize 그래서 모델은 모든 공에 ``홈런 아님''. \quad 못 맞히는 문제도 있다 $\to$ \kb{정확도 대신 다른 잣대}로 봐야 한다}\\[0.2em]
+{\scriptsize 6/1$\sim$23 학습 · 6/24$\sim$30 시험, 입력 = 볼카운트 · 타자 · 투수 (원-핫), 로지스틱회귀. 홈런 타자 = 6월 1$\sim$23일 공 150개 이상 받은 타자 중 홈런 비율 상위 10\%}
+\vfill
+\note{학생들이 꼭 묻는 질문입니다. 그럼 볼카운트랑 타자랑 투수를 다 알면 홈런을 맞힐 수 있지 않나요? 실제로 해 봤습니다. 모든 공의 평균 홈런 확률은 0.79퍼센트입니다. 3볼 2스트라이크면 \canTwo 퍼센트, 홈런을 잘 치는 상위 10퍼센트 타자면 \canTop 퍼센트로 두세 배 오릅니다. 셋을 다 넣은 모델이 가장 높게 본 공도 \canMax 퍼센트입니다. 홈런이라고 찍으려면 50퍼센트는 넘어야 하는데 근처에도 못 갑니다. 그래서 모델은 모든 공에 홈런 아님이라고 답하고, 정확도는 99퍼센트가 됩니다. 던지기 전에는 홈런을 맞힐 수 없습니다. 이게 실패가 아니라, 이런 문제가 있다는 걸 알아보는 게 문제 정형화입니다. 맞힐 수 없는 문제에서는 확률이 조금 높은 공을 골라내는 것 자체가 의미가 있고, 그걸 채점하려면 정확도가 아닌 다른 잣대가 필요합니다. 다음 쪽에서 그 잣대를 봅니다. 실제로 잘 맞히는 모델은 다음 시간 선형회귀부터 만듭니다.}
 \end{frame}
 
 % --- 세는 법을 바꾼다
