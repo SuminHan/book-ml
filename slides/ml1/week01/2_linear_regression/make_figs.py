@@ -87,6 +87,31 @@ ax.set_aspect("equal"); ax.set_xlim(0, 45); ax.set_ylim(-1, 12)
 ax.set_xlabel("$w_0$ (절편)"); ax.set_ylabel("$w_1$ (기울기)")
 fig.tight_layout(); fig.savefig(O + "lr_bowl.png", bbox_inches="tight"); plt.close(fig)
 
+# 4b. 같은 그릇, 학습률 네 가지 (같은 출발점 (5, 0), 처음 300걸음; 눈금은 가로 · 세로 같게)
+def steps_to_bottom(x, y, lr, w=(5.0, 0.0), tol=1.01, cap=100000):
+    """steps until J is within 1% of the minimum (None if it blows up)."""
+    best = J(np.array(W0), np.array(W1), x, y).item(); a, b = w
+    for k in range(cap):
+        r = a + b * x - y
+        if np.mean(r ** 2) / 2 <= best * tol: return k
+        if abs(a) > 1e6: return None
+        a, b = a - lr * r.mean(), b - lr * (r * x).mean()
+fig, axs = plt.subplots(2, 2, figsize=(13, 4.9))
+for ax, lr in zip(axs.flat, (0.005, 0.02, 0.05, 0.055)):
+    ax.contour(Wa, Wb, Za, levels=np.geomspace(Za.min() * 1.02, Za.max(), 14), cmap="Blues_r", linewidths=0.8)
+    p = gd(x, y, lr, 300 if lr < 0.054 else 14)
+    ok = np.isfinite(p).all(axis=1) & (np.abs(p[:, 0]) < 1e4)
+    p = p[ok]
+    ax.plot(p[:, 0], p[:, 1], color=RED, lw=1.3)
+    ax.scatter(p[:12, 0], p[:12, 1], color=RED, s=14, zorder=4)
+    ax.scatter(W0, W1, marker="*", s=180, color=GOLD, zorder=5)
+    n = steps_to_bottom(x, y, lr)
+    ax.set_title(f"η = {lr}:  " + (f"바닥까지 {n:,}걸음" if n else "발산 (바닥을 건너뛰며 튕겨 나간다)"),
+                 fontsize=14, color=RED if n is None else BLUE)
+    ax.set_aspect("equal"); ax.set_xlim(0, 45); ax.set_ylim(-1, 12); ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlabel("$w_0$", fontsize=12, labelpad=1); ax.set_ylabel("$w_1$", fontsize=12, labelpad=1)
+fig.tight_layout(); fig.savefig(O + "lr_rates.png", bbox_inches="tight"); plt.close(fig)
+
 # 5. 학습률: 적당 vs 너무 큼 (w1 만 움직이는 1차원 단면)
 def J1(w1, x, y): return np.mean((W0 + w1 * x - y) ** 2) / 2
 def path1(x, y, lr, n=6, w1=0.0):
