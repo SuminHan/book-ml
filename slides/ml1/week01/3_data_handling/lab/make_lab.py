@@ -2,7 +2,7 @@
    ~/Documents/manim_shorts/_env/v/bin/python make_lab.py
 코드 줄 끝의 '#@ANS 빈칸버전' = solution 노트북엔 앞부분, student 노트북엔 빈칸버전이 들어간다.
 1주 3차시 = 옛 dirty_data + feature_scaling 실습을 합친 것.
-데이터 (첫 실행 때 data/ 에 내려받음, git 제외): Iris (scikit-learn 내장, 파트 1 이 일부러 더럽힌다) · UCI Wine (scikit-learn 내장) · MNIST (torchvision)
+데이터 (첫 실행 때 data/ 에 내려받음, git 제외): METR-LA 시험 기간 (Hugging Face witgaw/METR-LA) · UCI Wine (scikit-learn 내장) · MNIST (torchvision)
 · CIFAR-10 시험 1만 장 (Hugging Face uoft-cs parquet) · UCI SMS Spam · 항공 승객 (jbrownlee/Datasets) · Free Spoken Digit Dataset 6개 · Muybridge 말 GIF (Wikimedia Commons).
 슬라이드 숫자 (exp_scale.py · exp_modal.py) 와 같은 설정. MNIST 는 시간 때문에 시드 1개 (슬라이드는 3개 평균)."""
 import os, sys
@@ -17,7 +17,7 @@ CELLS = [
 
 모델을 만들기 전에 데이터부터 연다. 어떤 데이터든 순서는 같다. **① 열어서 모양 · 자료형 · 최솟값 · 최댓값을 본다 → ② 고칠 것 · 맞출 것을 정한다 → ③ 바꾼다 → ④ 바뀐 값을 다시 확인한다.**
 
-- **파트 1**: 더티 데이터: 일부러 더럽힌 iris 의 결측치 · 중복 · 이상치를 찾아 고치기, 청소 전 vs 후 정확도
+- **파트 1**: 더티 데이터 (LA 고속도로 센서 METR-LA): 0 mph 결측치, 빈칸의 모양, `fillna` 네 가지 채점, 이상치, 0 을 믿은 모델
 - **파트 2**: 표 (와인 13성분): Min-Max · Z-score 직접 만들기, 그대로 72% vs 정규화 98% 재현
 - **파트 3**: 흑백 이미지 (MNIST): uint8 함정, ÷255, 평균 · 표준편차
 - **파트 4**: 컬러 이미지 (CIFAR-10): 채널(R, G, B)마다, 축 순서 (H, W, C) → (C, H, W)
@@ -35,15 +35,16 @@ import torch
 from PIL import Image, ImageSequence
 from scipy.io import wavfile
 from scipy.signal import spectrogram
-from sklearn.datasets import load_iris"""),
+"""),
 ("md", """## 데이터 내려받기
 
-파트 2~8 의 데이터를 `data/` 폴더에 받는다 (MNIST · CIFAR-10 때문에 처음엔 1~2분). 이미 받은 파일은 건너뛴다."""),
+파트 1, 3~8 의 데이터를 `data/` 폴더에 받는다 (METR-LA · MNIST · CIFAR-10 때문에 처음엔 1~2분). 이미 받은 파일은 건너뛴다."""),
 ("code", """FILES = {
     "c10_test.parquet": "https://huggingface.co/datasets/uoft-cs/cifar10/resolve/main/plain_text/test-00000-of-00001.parquet",
     "sms.zip": "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip",
     "air.csv": "https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv",
     "horse.gif": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Muybridge_race_horse_animated.gif",
+    "metr_test.parquet": "https://huggingface.co/datasets/witgaw/METR-LA/resolve/main/test.parquet",
 }
 SPEAKERS = ["jackson", "lucas", "george", "nicolas", "yweweler", "theo"]
 for s in SPEAKERS:   # the digit 'zero' spoken by 6 people
@@ -68,93 +69,122 @@ print(sorted(os.listdir("data")))"""),
 
 look("example", np.array([2, 4, 4, 4, 5, 5, 7, 9]))"""),
 
-# ---------------- 파트 1. 표,
-("md", """## 파트 1. 더티 데이터: 지저분한 iris 청소하기
+# ---------------- 파트 1. 더티 데이터 (METR-LA)
+("md", """## 파트 1. 더티 데이터: LA 고속도로 교통 센서 (METR-LA)
 
-붓꽃(iris) 150송이 데이터에 **일부러** 더러운 값을 섞어 두었다. 결측치 · 중복 · 이상치를 찾아서 고치고, 고치기 전과 후에 모델 정확도가 얼마나 다른지 본다.
+로스앤젤레스 고속도로에 묻힌 센서 207개가 5분마다 잰 평균 속도 (mph) 다. 2012년 6월 4일 ~ 27일 (Li et al. 2018, DCRNN 논문의 시험 기간). **일부러 더럽히지 않은 원래 데이터** 다. 센서가 고장 나거나 통신이 끊기면 속도가 **0** 으로 적혀 있다.
 
-### 더러운 데이터 만들기
+### 1-0. 열어 보기: 한 행 = (센서, 시각)"""),
+("code", """raw = pd.read_parquet("data/metr_test.parquet", columns=["node_id", "t0_timestamp", "x_t+0_d0"])
+print(raw.shape)
+raw.head(3)"""),
+("md", """줄이 140만 개다. 센서 207개 x 시각 6,850개를 한 줄로 늘어놓은 것이다. `pivot` 으로 **시각 x 센서** 표로 펼친다."""),
+("code", """raw["time"] = pd.to_datetime(raw["t0_timestamp"])
+S_raw = raw.pivot(index="time", columns="node_id", values="x_t+0_d0")      #@ANS S_raw = None   # TODO: rows = time, columns = node_id, values = speed
+print(S_raw.shape, S_raw.index.min(), "~", S_raw.index.max())
+S_raw.iloc[:3, :6]"""),
+("code", """S_raw.stack().describe().round(2)"""),
+("md", """**관찰**: 최솟값이 0, 최댓값이 딱 70 이다. 고속도로 평균 속도 0 mph 가 정말 있을까?
 
-깨끗한 iris 에 일부러 결측치 · 중복 · 이상치 · 표기 오류를 섞는다. 이 칸은 고치지 말고 실행만 한다."""),
-("code", """# ---- Make the data dirty on purpose (just run this cell, don't edit) ----
-iris = load_iris(as_frame=True)
-clean = iris.frame.rename(columns={"sepal length (cm)": "sepal_length", "sepal width (cm)": "sepal_width",
-                                   "petal length (cm)": "petal_length", "petal width (cm)": "petal_width"})
-clean["species"] = iris.target_names[iris.target]
-clean = clean.drop(columns="target")
+### 1-1. 결측치: 0 mph 는 속도가 아니다"""),
+("code", """print(f"zeros: {(S_raw == 0).values.mean():.1%}")
+print(f"mean speed with zeros   : {S_raw.values.mean():.1f}")
+S = S_raw.replace(0, np.nan)          #@ANS S = None   # TODO: turn 0 into a real blank (np.nan)
+print(f"mean speed without zeros: {np.nanmean(S.values):.1f}")
+print(S.isna().sum().sort_values(ascending=False).head(3))       # sensors with the most blanks"""),
+("code", """SENSOR = 125
+week = S_raw.loc["2012-06-11":"2012-06-17", SENSOR]
+plt.figure(figsize=(10, 3)); plt.plot(week, lw=0.8)
+plt.scatter(week[week == 0].index, week[week == 0], color="r", s=6, label="0 (sensor down)")
+plt.ylabel("speed (mph)"); plt.legend(); plt.show()"""),
+("md", """### 1-2. 빈칸의 모양: 짧은 구멍, 긴 구멍, 전체 정전
 
-def make_dirty(clean):
-    \"\"\"Mix missing values, duplicates, outliers and inconsistent labels into clean iris\"\"\"
-    d = clean.copy()
-    d.loc[[3, 26, 54, 95, 124], "petal_length"] = np.nan             # real blanks
-    d.loc[[52, 105, 117, 122], "sepal_width"] = -999                   # 'missing' written as -999
-    d.loc[[59, 66, 79, 113, 132], "petal_width"] = 0                   # 'missing' written as 0
-    d.loc[[90, 94, 112], "sepal_length"] *= 10                         # typo: mm instead of cm (5.5 -> 55)
-    d.loc[97, "species"] = d.loc[97, "species"].capitalize()           # 'Versicolor'
-    d.loc[94, "species"] = " " + d.loc[94, "species"]                  # ' versicolor'
-    d.loc[67, "species"] = d.loc[67, "species"] + " "                  # 'versicolor '
-    d.loc[122, "species"] = d.loc[122, "species"].upper()              # 'VIRGINICA'
-    dups = d.loc[[124, 64, 77, 21, 32, 39, 40, 13]].copy()             # these 8 records appear twice
-    dups.loc[[124, 64, 77], "species"] = dups.loc[[124, 64, 77], "species"].str.upper()   # 3 copies differ only in case
-    return pd.concat([d, dups]).sample(frac=1, random_state=0).reset_index(drop=True)   # shuffle the rows
+센서 207개가 **한꺼번에** 빈 시각이 있다 (시스템 정전). 그 시각은 채울 수가 없으니 따로 센다. 나머지 빈칸은 얼마나 길게 이어질까?"""),
+("code", """all_down = S.isna().all(axis=1)
+print("times when all 207 sensors are blank:", all_down.sum())
 
-df = make_dirty(clean)
-print(df.shape); df.head()"""),
-("md", """### 1-0. 첫눈에 훑어보기
+def gap_lengths(is_blank):
+    \"\"\"Lengths (in 5-min steps) of each run of True in one boolean column\"\"\"
+    v = is_blank.values.astype(int)
+    d = np.diff(np.r_[0, v, 0])
+    return np.where(d == -1)[0] - np.where(d == 1)[0]
 
-`describe()` 로 각 열의 최솟값 · 최댓값 · 평균을 본다. 이상한 점이 몇 개 보이나?"""),
-("code", """df.describe().round(2)"""),
-("md", """### 1-1. 결측치: 빈칸 · 0 · -999
+runs = np.concatenate([gap_lengths(S[c].isna() & ~all_down) for c in S.columns])
+print(f"gaps: {len(runs)} | 5 min: {(runs == 1).sum()} | 1 hour or more: {(runs >= 12).sum()} | 1 day or more: {(runs >= 288).sum()}")"""),
+("md", """### 1-3. `fillna` 로 채우는 네 가지 방법
 
-빈칸(`NaN`)은 `isna()` 가 찾아 주지만, `0` 과 `-999` 는 숫자인 척한다. 꽃받침·꽃잎 길이가 0cm 이하일 수 있을까?"""),
-("code", """num_cols = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
-print("Blank (NaN) count:\\n", df[num_cols].isna().sum(), "\\n")
-print("Values <= 0:\\n", (df[num_cols] <= 0).sum())"""),
-("code", """# Turn 'missing' values pretending to be numbers (<= 0) into real blanks (NaN)
-df[num_cols] = df[num_cols].mask(df[num_cols] <= 0)        #@ANS df[num_cols] = None   # TODO: <= 0 -> NaN (hint: .mask)
-print(df[num_cols].isna().sum())"""),
-("md", """### 1-2. 중복과 라벨 표기
+- 센서 평균: `S.fillna(S.mean())`
+- 직전 값: `S.ffill()` (forward fill)
+- 선으로 잇기: `S.interpolate()`
+- 같은 시각 평균: 그 센서의 같은 시각 (예: 8:05) 평균으로. `groupby(S.index.time)` 로 구한다"""),
+("code", """def fill_four(S):
+    \"\"\"Fill blanks four ways. Returns {name: filled table}\"\"\"
+    tod_mean = S.groupby(S.index.time).transform("mean")          # same sensor, same time of day
+    return {"sensor mean": S.fillna(S.mean()),
+            "ffill": S.ffill(),
+            "interpolate": S.interpolate(limit_direction="both"),      #@ANS "interpolate": None,   # TODO: connect the gap with straight lines
+            "time-of-day mean": S.fillna(tod_mean)}
 
-`value_counts()` 로 꽃 종류를 세어 보자. 종류가 3개여야 하는데 몇 개인가?"""),
-("code", """print(df["species"].value_counts(), "\\n")
-print("Exact duplicate rows:", df.duplicated().sum())"""),
-("code", """# One spelling: strip spaces + lowercase
-df["species"] = df["species"].str.strip().str.lower()      #@ANS df["species"] = None    # TODO: strip + lowercase
-print(df["species"].value_counts(), "\\n")
-print("Duplicate rows after fixing labels:", df.duplicated().sum())
-df = df.drop_duplicates().reset_index(drop=True)
-print("After dropping duplicates:", df.shape)"""),
-("md", """**관찰**: 표기를 맞추기 전에는 컴퓨터가 찾은 중복 수가 실제보다 적다. 띄어쓰기나 대소문자 하나만 달라도 다른 줄로 본다. 무엇을 같은 것으로 볼지는 사람이 정한다."""),
-("md", """### 1-3. 이상치: 51cm 꽃받침?
+filled = fill_four(S)
+print({k: int(v.isna().sum().sum()) for k, v in filled.items()})      # blanks left after filling"""),
+("md", """### 1-4. 어느 방법이 맞을까: 진짜 값을 가려 놓고 채점
 
-붓꽃의 꽃받침 길이는 보통 4~8cm 다. 상자 그림으로 튀는 값을 찾아보자."""),
-("code", """df[num_cols].plot(kind="box", figsize=(8, 3.5)); plt.ylabel("cm"); plt.show()
-print(df.loc[df.sepal_length > 10, ["sepal_length", "species"]])"""),
-("code", """# Domain knowledge: a sepal longer than 10 cm is a typo in mm -> divide by 10 to get cm
-too_big = df.sepal_length > 10
-df.loc[too_big, "sepal_length"] = df.loc[too_big, "sepal_length"] / 10      #@ANS df.loc[too_big, "sepal_length"] = None   # TODO: mm → cm
-print(df.sepal_length.describe().round(2))"""),
-("md", """**생각해 보기**: 여기서는 '10 으로 나누기' 로 고쳤다. 만약 꽃받침이 9.5cm 라면? 오타인지 진짜 큰 꽃인지는 데이터만 봐서는 모른다. 지울지, 고칠지, 남길지는 그 분야를 아는 사람이 정한다."""),
-("md", """### 1-4. 청소 전 vs 후: 모델은 얼마나 달라질까?
+빈칸의 진짜 값은 아무도 모른다. 그래서 **관측된 진짜 값** 을 일부 가린 뒤 채워 보고, 가린 값과 비교한다 (오차 = 평균 몇 mph 틀렸나). 구멍 길이를 5분, 1시간, 12시간으로 바꿔 본다."""),
+("code", """def grade_fill(S, block, n, seed=0):
+    \"\"\"Hide n blocks of `block` observed steps, fill four ways, MAE on the hidden truth\"\"\"
+    rng = np.random.default_rng(seed)
+    obs = S.notna().values
+    T, N = obs.shape
+    hide = np.zeros_like(obs)
+    tries = 0
+    while hide.sum() < n * block and tries < n * 50:
+        tries += 1
+        t, c = rng.integers(1, T - block - 1), rng.integers(N)
+        if obs[t - 1:t + block + 1, c].all() and not hide[t - 1:t + block + 1, c].any():
+            hide[t:t + block, c] = True
+    truth = S.values[hide]
+    return {k: round(float(np.abs(v.values[hide] - truth).mean()), 2) for k, v in fill_four(S.mask(hide)).items()}
 
-남은 빈칸은 그 꽃 종류의 평균으로 채우고 (꽃 종류별 평균), 같은 모델(로지스틱회귀, 5-겹 교차검증) 로 정확도를 비교한다. 비교용 '청소 안 한' 데이터는 `make_dirty(clean)` 결과에서 빈칸만 0 으로 채운 것이다."""),
-("code", """from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import cross_val_score
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
+for name, block, n in [("5 min", 1, 3000), ("1 hour", 12, 300), ("12 hours", 144, 100)]:
+    print(f"{name:9s}", grade_fill(S, block, n))"""),
+("md", """**관찰**: 짧은 구멍은 앞뒤를 잇는 `interpolate` 가 가장 잘 맞고, 12시간처럼 긴 구멍은 **같은 시각 평균** 이 이긴다. 정답은 하나가 아니다. 구멍의 길이를 보고 고른다.
 
-# Cleaned data: fill the remaining blanks with the mean of each species
-filled = df.copy()
-filled[num_cols] = filled.groupby("species")[num_cols].transform(lambda c: c.fillna(c.mean()))   #@ANS filled[num_cols] = None   # TODO: fill with the per-species mean
+### 1-5. 중복과 이상치"""),
+("code", """print("duplicate (sensor, time) rows:", raw.duplicated(["node_id", "time"]).sum())
+print("max speed:", S.max().max(), "| share exactly 70:", f"{(S_raw == 70).values.mean():.1%}")
+print("speeds above 0 but below 5 mph:", int(((S_raw > 0) & (S_raw < 5)).values.sum()))
+S[SENSOR].groupby(S.index.hour).describe().loc[[3, 8, 17], ["min", "25%", "50%", "75%", "max"]].round(0)     # 3 am, 8 am, 5 pm"""),
+("md", """**생각해 보기**: 70 에서 딱 끝나는 건 센서가 70 넘는 값을 70 으로 적기 때문이다 (측정 상한). 5 mph 미만은 고장일까, 진짜 정체일까? 출퇴근 시간 (7~9시, 15~18시) 에 몰려 있다면?
 
-# Uncleaned data: same make_dirty(clean) as the first cell, only blanks filled with 0
-raw = make_dirty(clean).fillna(0)
+### 1-6. 모델도 속는다: 15분 뒤 속도 예측
 
-import warnings; warnings.filterwarnings("ignore")      # hide warnings caused by 1-member 'species'
-model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
-for name, data in [("not cleaned", raw), ("cleaned", filled), ("original clean iris", clean)]:
-    acc = cross_val_score(model, data[num_cols], data["species"], cv=5)
-    print(f"{name:20s}: {data.species.nunique()} species, accuracy {acc.mean():.1%}")"""),
+지난 1시간 (12칸) 속도로 15분 뒤 (3칸 뒤) 속도를 맞히는 선형회귀. 앞 70% 기간으로 학습, 뒤 30% 로 시험한다. 시험은 세 경우 모두 **입력과 정답이 진짜로 관측된 줄** 로만 채점한다."""),
+("code", """from sklearn.linear_model import LinearRegression
+
+def windows(S, lag=12, ahead=3):
+    \"\"\"Rows: past `lag` speeds of a sensor -> speed `ahead` steps later. Returns X, y, time index of y\"\"\"
+    A = S.values
+    X, y, t = [], [], []
+    for c in range(A.shape[1]):
+        a = A[:, c]
+        idx = np.arange(lag, len(a) - ahead + 1)
+        X.append(np.stack([a[i - lag:i] for i in idx])); y.append(a[idx + ahead - 1]); t.append(idx + ahead - 1)
+    return np.concatenate(X), np.concatenate(y), np.concatenate(t)
+
+cut = int(len(S_raw) * 0.7)
+Xr, yr, t = windows(S_raw)        # zeros kept as speeds
+Xn, yn, _ = windows(S)            # zeros turned into NaN
+train = t < cut
+test = (t >= cut) & np.isfinite(Xn).all(1) & np.isfinite(yn)
+
+m = LinearRegression().fit(Xr[train], yr[train])
+print("baseline (speed now)   :", round(np.abs(Xn[test, -1] - yn[test]).mean(), 2))
+print("zeros as speed         :", round(np.abs(m.predict(Xr[test]) - yn[test]).mean(), 2))
+ok = train & np.isfinite(Xn).all(1) & np.isfinite(yn)
+m = LinearRegression().fit(Xn[ok], yn[ok])                       #@ANS m = None   # TODO: fit only on rows with no blanks
+print("blanks dropped         :", round(np.abs(m.predict(Xn[test]) - yn[test]).mean(), 2))"""),
+("md", """**관찰**: 0 을 속도로 믿고 배운 모델은 '지금 속도 그대로' 라는 머리 안 쓴 답보다도 못하다. 0 을 빈칸으로 바꾸기만 해도 기준선을 이긴다."""),
+
 ("md", """## 파트 2. 표 데이터: 와인 13성분
 
 와인 178병, 성분 13가지, 품종 3개. 성분마다(열마다) 범위가 얼마나 다른지 보자."""),
@@ -522,10 +552,10 @@ plt.tight_layout(); plt.show()"""),
 ("code", """clip = per_clip_z(dark).transpose(3, 0, 1, 2)      #@ANS clip = None   # TODO: (T, H, W, C) -> (C, T, H, W)
 print("before:", dark.shape, " after:", clip.shape)"""),
 ("md", """**확인 질문**
-1. 파트 1-1 에서 `-999` 를 그대로 두고 꽃받침 너비의 평균을 내면 얼마가 되나? 실제 평균(약 3cm)과 비교해 보자.
-2. 파트 1-2 에서 표기를 맞추기 전과 후에 `duplicated()` 가 찾은 수가 다른 이유는?
-3. 파트 1-3 에서 꽃받침 9.5cm 는 오타일까 진짜일까? 무엇을 더 알아야 판단할 수 있을까?
-4. 파트 1-4 에서 '청소 안 함' 의 꽃 종류가 3개가 아닌 이유는? 모델은 무엇을 배우게 될까?
+1. 파트 1-1 에서 0 을 그대로 두면 평균 속도가 왜 낮게 나오나? 0 이 12% 일 때 대략 얼마나 낮아질지 어림해 보자.
+2. 파트 1-2 에서 센서 207개가 한꺼번에 빈 시각은 왜 생길까? 그 시각을 '같은 시각 평균' 으로 채워도 될까?
+3. 파트 1-4 에서 12시간 구멍에 `interpolate` 가 약한 이유는? 출퇴근 시간이 구멍 안에 들어 있다면?
+4. 파트 1-5 에서 5 mph 미만인 값이 고장인지 진짜 정체인지 판단하려면 무엇을 더 보면 좋을까? (힌트: 바로 옆 센서)
 5. 파트 2 에서 시험 데이터의 통계로 `z_score(Xte, Xte)` 를 하면 무엇이 문제일까? 실제 서비스에서 데이터가 한 개씩 들어온다면?
 6. 파트 3 에서 `X_train - mean` 을 uint8 그대로 계산하면 어떤 일이 생길까?
 7. 파트 4 에서 `axis=(0, 1, 2)` 대신 `axis=None` 으로 평균을 내면 숫자 몇 개가 나오나? 그게 왜 부족할까?

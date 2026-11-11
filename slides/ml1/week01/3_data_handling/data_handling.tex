@@ -28,13 +28,14 @@
 {\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
 
 \section{질문}
-% --- 오늘의 질문
+% --- 질문 (METR-LA)
 \begin{frame}{오늘의 질문}
 \vfill
-\centering\includegraphics[width=0.74\linewidth]{dd_hook.png}\par\vskip0.3em
-{\large 우리 반 10명의 키. \kq{평균 키가 131cm?} 뭔가 이상하다}
+\centering\includegraphics[width=0.86\linewidth]{mt_week.png}\par\vskip0.3em
+{\large LA 고속도로 센서 207개, 5분마다 잰 속도 3주. \kq{평균 속도 50.8 mph}, 믿어도 될까?}\\[0.3em]
+{\small\color{gray} METR-LA (Li et al., 2018): 2012-06-04 $\sim$ 06-27, 센서 \#125 의 한 주}
 \vfill
-\note{우리 반 10명의 키를 모아서 평균을 냈더니 131센티미터가 나왔습니다. 고등학생 평균 키로는 너무 작죠. 그래프를 보면 이유가 보입니다. 수아와 준호 칸이 0입니다. 키를 안 적은 두 칸에 0이 들어가서 평균을 끌어내린 겁니다. 실제 데이터에는 이런 지저분한 값이 늘 섞여 있습니다. 이걸 더티 데이터라고 합니다. 오늘은 모델을 만들기 전에 데이터를 직접 열어 봅니다. 앞부분은 더티 데이터의 세 가지 모양, 뒷부분은 값의 크기를 맞추는 정규화입니다.}
+\note{로스앤젤레스 고속도로 바닥에는 차가 지나가는 속도를 재는 센서가 묻혀 있습니다. 그중 207개가 5분마다 잰 평균 속도 3주 치입니다. 교통 예측 연구에서 가장 많이 쓰는 데이터 중 하나인 METR-LA입니다. 그림은 센서 하나의 한 주입니다. 출퇴근 시간마다 속도가 푹 꺼지는 게 보입니다. 그런데 빨간 점들은 속도가 딱 0입니다. 고속도로에서 몇 시간째 0 mph일 리는 없죠. 이 데이터 전체의 평균 속도를 내면 50.8 mph가 나옵니다. 이 숫자를 믿어도 될까요? 오늘은 모델을 만들기 전에 데이터를 직접 열어 봅니다. 앞부분은 더티 데이터, 뒷부분은 값의 크기를 맞추는 정규화입니다.}
 \end{frame}
 
 \section{더티 데이터}
@@ -51,39 +52,47 @@
 {\large 모델을 고르기 전에, 데이터부터 본다}\\[0.4em]
 {\small Garbage in, garbage out: 쓰레기를 넣으면 쓰레기가 나온다}
 \vfill
-\note{더티 데이터는 모양이 딱 세 가지입니다. 있어야 할 값이 없는 결측치, 같은 기록이 여러 번 들어간 중복, 혼자 크게 튀는 이상치. 아무리 좋은 모델을 써도 데이터가 더러우면 결과도 더럽습니다. 영어로 garbage in, garbage out이라고 합니다. 그래서 모델을 고르기 전에 데이터부터 봐야 합니다.}
+\note{더티 데이터는 모양이 딱 세 가지입니다. 있어야 할 값이 없는 결측치, 같은 기록이 여러 번 들어간 중복, 혼자 크게 튀는 이상치. 아무리 좋은 모델을 써도 데이터가 더러우면 결과도 더럽습니다. 영어로 garbage in, garbage out이라고 합니다. 오늘은 이 세 가지를 일부러 만든 예가 아니라, 연구자들이 실제로 쓰는 교통 데이터에서 찾아봅니다.}
 \end{frame}
 
 % --- 노트북에서 열어 보면
-\begin{frame}[fragile]{노트북에서 열어 보면: 더러운 iris}
+\begin{frame}[fragile]{노트북에서 열어 보면: METR-LA}
 \vfill
 \nbin
 \begin{lstlisting}[style=nbin]
-df = make_dirty(clean)        # iris 150 rows + dirt (just run)
-df.describe().round(2)
+raw = pd.read_parquet("data/metr_test.parquet", columns=["node_id", "t0_timestamp", "x_t+0_d0"])
+raw["time"] = pd.to_datetime(raw["t0_timestamp"])
+S_raw = raw.pivot(index="time", columns="node_id", values="x_t+0_d0")   # rows = time, columns = sensor
+print(S_raw.shape); S_raw.stack().describe().round(2)
 \end{lstlisting}
 \nbout
 \begin{lstlisting}[style=nbout]
-       sepal_length  sepal_width  petal_length  petal_width
-count        158.00       158.00        152.00       158.00
-mean           6.84       -22.30          3.69         1.13
-std            7.46       157.91          1.78         0.79
-min            4.30      -999.00          1.00         0.00
-max           68.00         4.40          6.90         2.50
+(6850, 207)
+count    1417950.00      mean    50.77      std    22.77
+min            0.00      25%     45.38      50%    61.62
+75%           65.89      max     70.00
 \end{lstlisting}
 \vskip0.3em
-{\normalsize 무엇이 이상한가: \kq{count 152} (빈칸 6), \kq{min $-999$}, \kq{min 0.00}, \kq{max 68.00} (꽃받침 68cm?), 줄 수 158 (원래 150)}
+{\normalsize 140만 줄 $\to$ \texttt{pivot} $\to$ \kb{시각 6,850 $\times$ 센서 207}. \quad 이상한 점: \kq{min 0}, \kq{max 딱 70}}
 \vfill
-\note{노트북 파트 1의 첫 칸입니다. 일부러 더럽힌 붓꽃 데이터를 describe로 훑으면 이렇게 나옵니다. 꽃잎 길이의 count가 152라서 빈칸이 6개, 꽃받침 너비의 최솟값이 마이너스 999, 꽃잎 너비 최솟값이 0, 꽃받침 길이 최댓값이 68입니다. 줄 수도 150이 아니라 158이라 중복이 섞였습니다. 실습에서는 이 숫자들을 보고 하나씩 고칩니다.}
+\note{노트북 파트 1의 첫 칸들입니다. 원래 파일은 한 줄이 센서 하나의 한 시각이라 140만 줄입니다. pivot으로 펼치면 행이 시각 6,850개, 열이 센서 207개인 표가 됩니다. describe로 훑으면 이상한 점이 두 개 보입니다. 최솟값이 0, 최댓값이 정확히 70입니다. 하나씩 봅니다. describe 출력은 원래 세로 한 줄인데 슬라이드에 맞게 세 줄로 접었습니다.}
 \end{frame}
 
-% --- 결측치
-\begin{frame}{① 결측치: 0을 빼면}
+% --- 결측치: 0 mph
+\begin{frame}{① 결측치: 0 mph 는 속도가 아니다}
+\markpage{zero}
 \vfill
-\centering\includegraphics[width=0.74\linewidth]{dd_clean.png}\par\vskip0.3em
-{\large 키를 안 적은 두 칸을 빼고 계산하면 \kb{평균 164cm}}
+\centering
+{\Large
+\begin{tabular}{lr}
+속도 0 인 칸 & \kq{12.1\%}\\[0.3em]
+0 을 그대로 두고 평균 & \kq{50.8 mph}\\[0.3em]
+0 을 빈칸으로 바꾸고 평균 & \kb{57.8 mph}
+\end{tabular}}\vskip1.0em
+{\large 0 은 ``멈춰 있었다''가 아니라 ``\kq{재지 못했다}'' (센서 고장 · 통신 끊김)}\\[0.4em]
+{\normalsize \texttt{S = S\_raw.replace(0, np.nan)} \quad 진짜 빈칸 (\texttt{NaN}) 으로 바꿔야 평균에서 빠진다}
 \vfill
-\note{첫째, 결측치입니다. 수아와 준호는 키를 안 적었는데 0이 들어갔습니다. 0은 키가 아니라 비었다는 표시입니다. 이 두 칸을 빼고 8명으로 계산하면 평균 164센티미터. 훨씬 그럴듯합니다.}
+\note{표의 12.1퍼센트가 정확히 0입니다. 고속도로 센서가 0을 적었다는 건 차가 멈춰 있었다는 뜻이 아니라, 재지 못했다는 뜻입니다. 센서가 고장 났거나 통신이 끊긴 겁니다. 이 0을 그대로 두고 평균을 내면 50.8, 빈칸으로 바꾸고 내면 57.8 mph입니다. 7 mph나 차이가 납니다. pandas에서는 replace로 0을 np.nan으로 바꿉니다. NaN은 진짜 빈칸이라 평균을 낼 때 자동으로 빠집니다.}
 \end{frame}
 
 % --- 숫자인 척하는 결측치
@@ -94,66 +103,124 @@ max           68.00         4.40          6.90         2.50
 {\Large
 \begin{tabular}{lll}
 \textbf{적힌 값} & \textbf{컴퓨터가 보기에} & \\[0.3em]\hline\\[-0.5em]
-(빈칸) & 비었음 & \kb{눈에 띈다}\\[0.4em]
+(빈칸), \texttt{NaN} & 비었음 & \kb{눈에 띈다}\\[0.4em]
 \texttt{NA}, \texttt{?} & 글자 & 계산하다 오류가 난다\\[0.4em]
 \texttt{0}, \texttt{-999} & \kq{진짜 숫자} & \kq{오류 없이 평균에 섞인다}
 \end{tabular}}\vskip1.0em
-{\small 키 0cm, 나이 $-999$세처럼 \textbf{말이 안 되는 값}을 찾아서 빈칸으로 바꾼다}
+{\small 속도 0 mph, 나이 $-999$세처럼 \textbf{그 분야에서 말이 안 되는 값}을 찾아서 빈칸으로 바꾼다}
 \vfill
-\note{빈칸은 눈에 띄니까 오히려 괜찮습니다. 문제는 비었다는 뜻을 숫자로 적은 경우입니다. 0이나 마이너스 999는 컴퓨터가 보기에 진짜 숫자라서 오류도 안 나고 평균에 조용히 섞입니다. 그래서 키 0센티, 나이 마이너스 999세처럼 말이 안 되는 값을 직접 찾아서 진짜 빈칸으로 바꿔야 합니다.}
+\note{빈칸은 눈에 띄니까 오히려 괜찮습니다. 문제는 비었다는 뜻을 숫자로 적은 경우입니다. METR-LA의 0이 바로 이것입니다. 0이나 마이너스 999는 컴퓨터가 보기에 진짜 숫자라서 오류도 안 나고 평균에 조용히 섞입니다. 그래서 고속도로 속도 0, 나이 마이너스 999세처럼 그 분야에서 말이 안 되는 값을 직접 찾아서 진짜 빈칸으로 바꿔야 합니다.}
+\end{frame}
+
+% --- 빈칸 지도
+\begin{frame}{빈칸은 어디에, 얼마나 길게}
+\vfill
+\centering\includegraphics[width=0.84\linewidth]{mt_map.png}\par\vskip0.2em
+{\small\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lll}
+\kq{세로 띠}: 207개가 \textbf{한꺼번에} 빔 & \kq{666 시각} & 시스템 정전, 채울 수 없다\\
+\textbf{가로 줄}: 한 센서가 오래 고장 & 1시간+ 434개, 하루+ 18개 & 채우기 어렵다\\
+\textbf{점}: 잠깐 끊김 & 5분짜리 349개 & 앞뒤로 쉽게 채운다
+\end{tabular}}
+\vfill
+\note{빨간 칸이 0, 즉 빈칸입니다. 가로가 시간, 세로가 센서 207개입니다. 세 가지 모양이 보입니다. 세로 띠는 207개가 한꺼번에 빈 시각입니다. 666개 시각, 약 55시간입니다. 센서가 아니라 수집 시스템이 멈춘 것이라 채울 방법이 없습니다. 가로 줄은 센서 하나가 몇 시간에서 며칠씩 고장 난 경우로, 1시간 이상 이어진 구멍이 434개, 하루 이상이 18개입니다. 점처럼 보이는 건 5분 한 칸만 비는 짧은 끊김으로 349개입니다. 구멍의 길이에 따라 다루는 방법이 달라야 합니다.}
+\end{frame}
+
+% --- fillna 네 가지
+\begin{frame}[fragile]{\texttt{fillna}: 빈칸을 채우는 네 가지 방법}
+\vfill
+\nbin
+\begin{lstlisting}[style=nbin]
+tod_mean = S.groupby(S.index.time).transform("mean")    # same sensor, same time of day
+filled = {"sensor mean":      S.fillna(S.mean()),      # 1. that sensor's overall mean
+          "ffill":            S.ffill(),               # 2. last value seen (forward fill)
+          "interpolate":      S.interpolate(),         # 3. straight line between before and after
+          "time-of-day mean": S.fillna(tod_mean)}      # 4. mean at the same time (e.g. 8:05) on other days
+\end{lstlisting}
+\vskip0.4em
+\centering\includegraphics[width=0.88\linewidth]{mt_fill_example.png}\par
+{\small 진짜 값 2시간 (06$\sim$08시) 을 가리고 채워 보면: 출근길 정체를 따라가는 건 \kb{같은 시각 평균}뿐}
+\vfill
+\note{빈칸을 채우는 방법 네 가지입니다. 첫째, 그 센서의 전체 평균으로 채우는 fillna. 둘째, 마지막으로 본 값을 그대로 이어 쓰는 ffill, forward fill. 셋째, 구멍 앞뒤 값을 직선으로 잇는 interpolate. 넷째, 다른 날 같은 시각의 평균으로 채우기. groupby로 시각별 평균을 구해서 fillna에 넣습니다. 아래 그림은 진짜로 관측된 2시간, 아침 6시부터 8시를 일부러 가리고 네 방법으로 채워 본 겁니다. 이 구간 끝에서 출근길 정체로 속도가 뚝 떨어지는데, 평균과 직전 값은 이걸 전혀 모르고, 직선 잇기는 구멍 뒤 값을 향해 비스듬히 내려갑니다. 정체가 오는 걸 따라간 건 같은 시각 평균뿐입니다. 출근 정체는 매일 같은 시각에 오니까요.}
+\end{frame}
+
+% --- 채점
+\begin{frame}{어느 방법이 맞을까: 진짜 값을 가려 놓고 채점}
+\vfill
+\centering\includegraphics[width=0.8\linewidth]{mt_fill.png}\par\vskip0.2em
+{\large 짧은 구멍은 \kb{선으로 잇기}, 긴 구멍은 \kb{같은 시각 평균}. \kq{정답은 구멍 길이에 따라 다르다}}\\[0.3em]
+{\small 관측된 값을 무작위로 가리고 채운 뒤 가린 값과 비교 (5분 구멍 3,000개 · 1시간 300개 · 12시간 100개). 오차 = 평균 몇 mph 틀렸나}
+\vfill
+\note{빈칸의 진짜 값은 아무도 모르니 채점할 수가 없습니다. 그래서 관측된 진짜 값을 일부 가려 놓고, 채운 값과 비교합니다. 5분짜리 구멍에서는 앞뒤를 잇는 interpolate가 평균 2.3 mph만 틀려 가장 정확합니다. 1시간 구멍에서도 3.2로 가장 낫습니다. 그런데 12시간 구멍에서는 순위가 뒤집힙니다. 직선 잇기는 7.2, 직전 값은 8.6까지 나빠지고, 같은 시각 평균이 5.0으로 가장 좋습니다. 하루의 리듬을 아는 방법이 이깁니다. 센서 전체 평균은 어느 경우든 7 mph 넘게 틀립니다. 결측치를 채우는 정답은 하나가 아니라, 구멍의 길이와 데이터의 리듬을 보고 고르는 겁니다.}
 \end{frame}
 
 % --- 중복
-\begin{frame}{② 중복: 같은 기록이 여러 번}
+\begin{frame}[fragile]{② 중복: 이 데이터에는 없다. 그래도 확인한다}
 \vfill
-\centering\includegraphics[width=0.76\linewidth]{dd_dup.png}\par\vskip0.3em
-{\large 민수 기록이 세 번 들어가면 \kq{평균 166cm} (원래 164cm)}
+\nbin
+\begin{lstlisting}[style=nbin]
+print("duplicate (sensor, time) rows:", raw.duplicated(["node_id", "time"]).sum())
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+duplicate (sensor, time) rows: 0
+\end{lstlisting}
+\vskip0.6em
+\centering
+{\large 같은 (센서, 시각) 이 두 번 있으면 그 시각이 \kq{두 표}를 행사한다}\\[0.4em]
+{\normalsize 파일을 합치거나 수집을 다시 돌리면 흔히 생긴다 $\to$ \texttt{pivot} 도 중복이 있으면 \kq{오류}를 낸다}\\[0.3em]
+{\small 무엇을 ``같은 기록''으로 볼지 (여기서는 센서 + 시각) 를 먼저 정한다}
 \vfill
-\note{둘째, 중복입니다. 설문을 여러 번 제출했거나 파일을 합치다가 같은 기록이 여러 번 들어가는 경우입니다. 키가 큰 민수 기록이 세 번 들어가면 평균이 164에서 166으로 올라갑니다. 한 사람이 세 표를 행사한 셈입니다.}
+\note{둘째, 중복입니다. 다행히 METR-LA에는 같은 센서, 같은 시각이 두 번 들어간 줄이 없습니다. 그래도 확인하는 습관이 중요합니다. 파일 여러 개를 합치거나 수집을 다시 돌리면 중복이 흔히 생깁니다. 같은 기록이 두 번 있으면 그 시각이 평균에 두 표를 행사합니다. 참고로 pivot은 같은 칸에 값이 두 개 들어오면 오류를 내서, 중복을 알려 주는 역할도 합니다. 무엇을 같은 기록으로 볼지, 여기서는 센서와 시각의 쌍을 먼저 정해야 합니다.}
 \end{frame}
 
-% --- 이상치
-\begin{frame}{③ 이상치: 혼자 크게 튀는 값}
+% --- 이상치: 분포
+\begin{frame}{③ 이상치: 분포를 그려 본다}
 \vfill
-\centering\includegraphics[width=0.76\linewidth]{dd_outlier.png}\par\vskip0.3em
-{\large 준호 250cm는 \kq{오타}, 태오 205cm는 \kb{농구 선수}일 수도}
+\centering\includegraphics[width=0.74\linewidth]{mt_hist.png}\par\vskip0.2em
+{\large 0 은 \kq{결측치}, 70 에서 끊긴 벽은 \kb{측정 상한} (70 넘으면 70 으로 적는다)}\\[0.3em]
+{\normalsize 0 보다 크고 5 mph 미만인 값 \textbf{596개}: 고장일까, 진짜 정체일까?}
 \vfill
-\note{셋째, 이상치입니다. 준호의 키가 250센티미터로 적혀 있습니다. 세계 최장신 기록에 가까운 값이니 오타일 가능성이 큽니다. 이런 오타는 결측치처럼 비워 둡니다. 그런데 태오의 205센티미터는 어떨까요? 농구 선수라면 진짜일 수 있습니다. 같은 튀는 값이라도 처리 방법이 다릅니다.}
+\note{셋째, 이상치입니다. 모든 속도의 분포를 그리면 두 군데가 튑니다. 맨 왼쪽 0의 기둥이 앞에서 본 결측치입니다. 오른쪽은 70에서 벽처럼 끊깁니다. 센서가 70 mph를 넘는 속도도 70으로 적기 때문입니다. 이건 지울 값이 아니라 측정 장비의 한계로 알아 두면 됩니다. 마지막으로 0보다 크지만 5 mph도 안 되는 값이 596개 있습니다. 고장일까요, 꽉 막힌 진짜 정체일까요?}
 \end{frame}
 
-% --- 그림으로 찾기
-\begin{frame}{그림으로 찾는다: 상자 그림}
+% --- 상자 그림
+\begin{frame}{그림으로 찾는다: 시각별 상자 그림}
 \vfill
-\centering\includegraphics[height=0.66\textheight]{dd_box.png}\par\vskip0.3em
-{\large \kq{수염 밖에 홀로 떨어진 점}이 이상치 후보} \quad {\small 후보를 찾는 건 그림이, 지울지 남길지는 사람이 정한다}
+\centering\includegraphics[width=0.84\linewidth]{mt_box.png}\par\vskip0.2em
+{\large \kq{수염 밖의 점} = 이상치 \textbf{후보}. 출퇴근 (7$\sim$9시, 15$\sim$18시) 에 몰려 있다 $\to$ \kb{진짜 정체}}\\[0.3em]
+{\small 상자 = 가운데 절반 (25$\sim$75\%), 빨간 선 = 중앙값, 수염 = 상자 길이의 1.5배까지. 센서 \#125, 0 은 빼고 그림}
 \vfill
-\note{이상치는 숫자 표만 봐서는 잘 안 보이고, 그림을 그리면 바로 보입니다. 왼쪽이 상자 그림 읽는 법입니다. 값을 작은 것부터 줄 세웠을 때 25퍼센트 지점이 상자의 아래 끝, 75퍼센트 지점이 위 끝이라서 상자 안에 가운데 절반이 들어 있습니다. 상자 속 빨간 선이 한가운데 값, 중앙값, 영어로 median입니다. 수염은 상자에서 상자 길이의 1.5배 안에 있는 가장 먼 값까지 그리고, 그보다 바깥에 있는 점을 따로 찍어 이상치 후보로 보여 줍니다. 오른쪽 우리 반 키를 보면 상자 길이가 12.5센티라서 기준선이 191.75이고, 205와 250이 그 위로 튀어나와 있습니다. 다만 그림은 후보를 알려 줄 뿐이고, 지울지 남길지는 사람이 정합니다.}
+\note{센서 하나의 속도를 시각별 상자 그림으로 그렸습니다. 상자는 값을 줄 세웠을 때 가운데 절반, 25퍼센트에서 75퍼센트 사이이고, 빨간 선이 중앙값입니다. 수염은 상자 길이의 1.5배까지 그리고, 그 밖의 점을 따로 찍어 이상치 후보로 보여 줍니다. 새벽에는 상자가 좁고 60 근처입니다. 그런데 빨간 점들이 아침 7시에서 9시, 오후 3시에서 6시에 몰려 있습니다. 출퇴근 정체입니다. 그림이 후보를 찾아 주지만, 지울지 남길지는 사람이 정합니다. 여기서는 지우면 안 됩니다. 교통 예측에서 가장 중요한 순간이 바로 이 정체니까요.}
 \end{frame}
 
 % --- 지울까 남길까
-\begin{frame}{지울까, 고칠까, 남길까}
+\begin{frame}{지울까, 채울까, 남길까}
 \vfill
 \centering
-{\large
+{\large\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{lll}
-\textbf{경우} & \textbf{예} & \textbf{처리}\\[0.3em]\hline\\[-0.5em]
-분명한 오타 & 키 250cm & 빈칸으로 (결측치처럼)\\[0.4em]
-단위 실수 & 꽃받침 51cm (mm 로 적음) & 고친다 ($\div 10$)\\[0.4em]
-진짜일 수 있음 & 농구 선수 205cm & \kb{남긴다}\\[0.4em]
-모르겠음 & ? & 표시해 두고, 지운 결과와 둘 다 보고
-\end{tabular}}\vskip1.0em
+\textbf{경우} & \textbf{METR-LA 에서} & \textbf{처리}\\[0.2em]\hline\\[-0.6em]
+숫자인 척하는 빈칸 & 속도 0 mph & \kb{빈칸으로} (\texttt{replace(0, np.nan)})\\[0.3em]
+짧은 구멍 & 5분 $\sim$ 1시간 끊김 & 채운다 (\texttt{interpolate})\\[0.3em]
+긴 구멍 & 반나절 이상 고장 & 같은 시각 평균, 또는 \kq{채우지 않고 표시}\\[0.3em]
+전체 정전 & 207개가 동시에 0 & 그 시각은 \kq{학습 · 채점에서 뺀다}\\[0.3em]
+측정 상한 & 딱 70 mph & 남긴다 (한계로 알아 둔다)\\[0.3em]
+진짜일 수 있음 & 출근길 5 mph & \kb{남긴다}
+\end{tabular}}\vskip0.8em
 \kq{판단의 근거는 그 분야를 아는 지식 (도메인 지식)}
 \vfill
-\note{튀는 값을 어떻게 할지 정리하면 이렇습니다. 분명한 오타는 결측치처럼 비웁니다. 단위를 잘못 적은 경우는 고칠 수 있습니다. 실습에서 보겠지만 꽃받침 길이 51은 센티미터가 아니라 밀리미터로 적은 겁니다. 진짜일 수 있는 값은 남깁니다. 정말 모르겠으면 표시해 두고 지운 결과와 안 지운 결과를 둘 다 보고합니다. 이 판단의 근거가 그 분야를 아는 지식, 도메인 지식입니다.}
+\note{METR-LA에서 본 것을 정리하면 이렇습니다. 숫자인 척하는 0은 진짜 빈칸으로 바꿉니다. 짧은 구멍은 앞뒤를 이어 채우고, 긴 구멍은 같은 시각 평균으로 채우거나 아예 채우지 않고 표시만 해 둡니다. 207개가 함께 빈 정전 시각은 채울 근거가 없으니 학습과 채점에서 뺍니다. 70에서 끊긴 값은 장비의 한계로 알고 남기고, 출근길의 아주 낮은 속도는 진짜 정체일 수 있으니 남깁니다. 이 판단은 수학이 아니라 교통을 아는 지식에서 나옵니다. 이걸 도메인 지식이라고 합니다.}
 \end{frame}
 
 % --- 모델도 속는다
 \begin{frame}{모델도 속는다}
 \vfill
-\centering\includegraphics[width=0.66\linewidth]{dd_iris.png}\par\vskip0.3em
-{\large 붓꽃 150송이 중 \kq{6송이}의 꽃잎 너비를 0으로 적었을 뿐인데, 직선이 끌려 내려간다}
+\centering\includegraphics[width=0.66\linewidth]{mt_model.png}\par\vskip0.3em
+{\large 0 을 속도로 믿고 배운 모델은 \kq{``지금 속도 그대로''보다도 못하다}}\\[0.3em]
+{\small 지난 1시간 (12칸) $\to$ 15분 뒤 속도, 선형회귀. 앞 70\% 기간 학습, 뒤 30\% 시험. 세 경우 모두 입력과 정답이 실제로 관측된 시험 줄 389,504개로 채점}
 \vfill
-\note{더러운 데이터는 평균만 망치는 게 아니라 모델도 속입니다. 붓꽃 150송이의 꽃잎 길이와 너비입니다. 그중 6송이의 너비를 비었다는 뜻으로 0이라고 적었습니다. 초록 선은 깨끗한 데이터로 그은 직선, 빨간 선은 0이 섞인 데이터로 그은 직선입니다. 150송이 중 6송이일 뿐인데 기울기가 0.42에서 0.37로 내려갔습니다. 모델은 0을 진짜 너비로 믿고 배웁니다.}
+\note{더러운 데이터는 평균만 망치는 게 아니라 모델도 속입니다. 지난 1시간 속도로 15분 뒤 속도를 맞히는 선형회귀입니다. 비교 기준은 머리를 안 쓴 답, 지금 속도가 15분 뒤에도 그대로라고 하는 것으로 평균 3.28 mph 틀립니다. 0을 진짜 속도로 믿고 학습한 모델은 3.35로, 이 기준선보다도 못합니다. 0을 빈칸으로 바꾸고 빈칸 있는 줄을 빼고 학습하면 3.15로 기준선을 이깁니다. 모델도, 데이터도 똑같고, 바뀐 건 0을 어떻게 다뤘느냐 하나뿐입니다.}
 \end{frame}
 
 \section{크기 맞추기}
@@ -542,21 +609,21 @@ video   shape=(15, 200, 300, 3)  dtype=uint8  min=0  max=245  mean=177.4  std=68
 \begin{frame}{문제풀이}
 \vfill
 \begin{enumerate}
-\item 키 기록 \texttt{[160, 0, 170, 0, 180]}. 평균은? 0을 결측치로 보고 빼면?\vskip0.6em
-\item 다음 값은 오타일까, 진짜일까? 무엇을 더 알아야 할까? \quad (a) 고등학생 몸무게 450kg \quad (b) 하루 공부 시간 25시간\vskip0.6em
+\item 센서 하나의 속도 \texttt{[60, 0, 0, 62, 64]} (mph). 그대로 평균은? 0 을 빈칸으로 보고 빼면? \texttt{interpolate} 로 채우면 두 빈칸은?\vskip0.6em
+\item 다음 값은 오류일까, 진짜일까? 무엇을 더 알아야 할까? \quad (a) 새벽 3시 속도 3 mph \quad (b) 오후 6시 속도 3 mph\vskip0.6em
 \item 8명의 하루 공부 시간 \texttt{[2, 4, 4, 4, 5, 5, 7, 9]}. 평균과 표준편차($n$ 으로 나눔)는? 9시간의 Z-score 는? 5시간의 Min-Max 값은?\vskip0.6em
 \item 학습 데이터의 키 최솟값 150, 최댓값 190 으로 Min-Max 를 만들었다. 시험 데이터에 키 200 이 나오면 값은? 시험 데이터로 min, max 를 다시 구해야 할까?\vskip0.6em
 \item \texttt{np.uint8(10) - np.uint8(20)} 은 얼마일까? 컬러 이미지 \texttt{X.shape == (10000, 32, 32, 3)} 의 채널별 평균은 \texttt{X.mean(axis=?)} ?
 \end{enumerate}
 \vfill
-\note{1번 답. 다섯 개 평균은 510 나누기 5, 102입니다. 0 두 개를 빼면 510 나누기 3, 170입니다. 2번 답. a는 45킬로그램에 0이 하나 더 붙은 오타일 가능성이 큽니다. b는 하루가 24시간이니 불가능한 값입니다. 3번 답. 합이 40이라 평균 5. 평균과의 차를 제곱하면 9, 1, 1, 1, 0, 0, 4, 16, 합 32, 8로 나누면 분산 4, 표준편차 2. 9시간은 9 빼기 5 나누기 2, Z-score 2입니다. 5시간의 Min-Max는 5 빼기 2 나누기 7, 7분의 3, 약 0.43. 4번 답. 200 빼기 150 나누기 40, 1.25입니다. 1을 넘어도 괜찮습니다. 시험 데이터로 다시 구하면 학습 때와 다른 자로 재는 셈이고 데이터 누수입니다. 5번 답. uint8은 0에서 255만 담을 수 있어서 246이 됩니다. 먼저 실수형으로 바꿉니다. 채널별 평균은 axis 0, 1, 2. 장, 높이, 너비 방향으로 평균을 내고 채널만 남기니 숫자 3개입니다.}
+\note{1번 답. 다섯 개 평균은 186 나누기 5, 37.2입니다. 0 두 개를 빼면 186 나누기 3, 62입니다. interpolate는 60과 62 사이를 직선으로 이어 60.67과 61.33으로 채웁니다. 2번 답. 새벽 3시는 길이 비어 있을 시간이라 고장이나 사고일 가능성이 큽니다. 오후 6시는 퇴근 정체일 수 있습니다. 옆 센서들도 같이 느려졌는지, 다른 날 같은 시각에도 느린지 보면 판단할 수 있습니다. 3번 답. 합이 40이라 평균 5. 평균과의 차를 제곱하면 9, 1, 1, 1, 0, 0, 4, 16, 합 32, 8로 나누면 분산 4, 표준편차 2. 9시간은 9 빼기 5 나누기 2, Z-score 2입니다. 5시간의 Min-Max는 5 빼기 2 나누기 7, 7분의 3, 약 0.43. 4번 답. 200 빼기 150 나누기 40, 1.25입니다. 1을 넘어도 괜찮습니다. 시험 데이터로 다시 구하면 학습 때와 다른 자로 재는 셈이고 데이터 누수입니다. 5번 답. uint8은 0에서 255만 담을 수 있어서 246이 됩니다. 먼저 실수형으로 바꿉니다. 채널별 평균은 axis 0, 1, 2. 장, 높이, 너비 방향으로 평균을 내고 채널만 남기니 숫자 3개입니다.}
 \end{frame}
 
 % --- 실습
 \begin{frame}[fragile]{실습: 데이터를 직접 열어 보기}
 \vfill
 \centering\begin{tabular}{rl}
-\large 1 & 더티 데이터: 일부러 더럽힌 iris 청소 (빈칸 · 0 · $-999$, 표기, 51cm 꽃받침) \kq{86\%} $\to$ \kb{96\%}\\[0.35em]
+\large 1 & 더티 데이터: LA 교통 센서 METR-LA, 0 mph $\to$ 빈칸, \texttt{fillna} 네 가지 채점, 0 을 믿은 모델 \kq{3.35} $\to$ \kb{3.15}\\[0.35em]
 \large 2 & 표: 와인 13성분, Min-Max · Z-score 구현 $\to$ \kq{72\%} vs \kb{98\%}\\[0.35em]
 \large 3 & 흑백 이미지: MNIST uint8 함정, $\div 255$, 평균 · 표준편차\\[0.35em]
 \large 4 & 컬러 이미지: CIFAR-10 채널별 평균 · 표준편차, (H, W, C) $\to$ (C, H, W)\\[0.35em]
@@ -567,7 +634,7 @@ video   shape=(15, 200, 300, 3)  dtype=uint8  min=0  max=245  mean=177.4  std=68
 \end{tabular}\vskip0.8em
 데이터는 첫 셀에서 내려받기 (MNIST · CIFAR-10 은 수십 MB) \\[0.3em]\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week01/3_data_handling/lab/data_handling.ipynb}{\textcolor{ksagolddk}{▶ Colab에서 실습 노트북 열기}}
 \vfill
-\note{실습은 두 부분입니다. 먼저 제가 일부러 더럽혀 둔 붓꽃 데이터를 청소합니다. 빈칸, 0, 마이너스 999, 대소문자와 공백이 섞인 꽃 이름, 중복된 줄, 밀리미터로 적은 꽃받침 길이를 하나씩 찾아 고치면 정확도가 86에서 96퍼센트가 됩니다. 그다음 일곱 가지 데이터를 열어 정규화합니다. 순서는 매번 같습니다. 모양, 자료형, 최솟값, 최댓값을 찍어 보고, 무엇마다 맞출지 정한 뒤, 함수를 직접 만들어 바꾸고, 바꾼 뒤의 값을 다시 확인합니다.}
+\note{실습은 두 부분입니다. 먼저 LA 고속도로 교통 센서 데이터 METR-LA를 직접 열어, 0으로 적힌 결측치를 빈칸으로 바꾸고, fillna 네 가지로 채운 뒤 진짜 값을 가려서 채점합니다. 0을 그대로 믿은 모델과 빈칸으로 바꾼 모델의 오차도 비교합니다. 그다음 일곱 가지 데이터를 열어 정규화합니다. 순서는 매번 같습니다. 모양, 자료형, 최솟값, 최댓값을 찍어 보고, 무엇마다 맞출지 정한 뒤, 함수를 직접 만들어 바꾸고, 바꾼 뒤의 값을 다시 확인합니다.}
 \end{frame}
 
 \section{정리}
@@ -575,7 +642,7 @@ video   shape=(15, 200, 300, 3)  dtype=uint8  min=0  max=245  mean=177.4  std=68
 \begin{frame}{정리}
 \vfill
 \centering\large\begin{tabular}{l}
-결측치는 \texttt{0}, \texttt{-999} 처럼 \kq{숫자인 척}한다. 이상치는 그림으로 찾고 판단은 사람이\\[0.45em]
+결측치는 \kq{숫자인 척}한다 (0 mph). 채우는 법은 \kb{구멍 길이}로, 이상치 판단은 사람이\\[0.45em]
 값의 크기가 제각각이면 뉴런이 \kq{막힌다} (tanh 출력 1.00, 기울기 0)\\[0.45em]
 Min-Max $\dfrac{x-\min}{\max-\min}$ \quad Z-score $\dfrac{x-\mu}{\sigma}$ \quad 통계는 \kb{학습 데이터로만}\\[0.7em]
 \kb{무엇마다} 맞출지는 데이터가 정한다: 열 · 채널 · 녹음 · 창 · 영상 전체\\[0.45em]
@@ -592,7 +659,7 @@ Min-Max $\dfrac{x-\min}{\max-\min}$ \quad Z-score $\dfrac{x-\mu}{\sigma}$ \quad 
 \begin{itemize}
 \item 뉴런 그림: Wikimedia Commons ``Neuron.svg'' (Dhp1080, CC BY-SA 3.0), 라벨 선을 지워 사용
 \item 달리는 말: Eadweard Muybridge, \textit{The Horse in Motion} (1878), 퍼블릭 도메인 (Wikimedia Commons)
-\item 붓꽃: Iris (Fisher, 1936; scikit-learn 내장) \quad 와인: UCI Wine (Aeberhard \& Forina, 1991) \quad 손글씨 숫자: MNIST (LeCun, Cortes, Burges)
+\item 교통 속도: METR-LA, Y. Li, R. Yu, C. Shahabi, Y. Liu, ``Diffusion Convolutional Recurrent Neural Network'' (ICLR 2018), Hugging Face witgaw/METR-LA\\ 와인: UCI Wine (Aeberhard \& Forina, 1991) \quad 손글씨 숫자: MNIST (LeCun, Cortes, Burges)
 \item 컬러 사진: CIFAR-10, A. Krizhevsky (2009) ``Learning Multiple Layers of Features from Tiny Images''
 \item 문자 메시지: UCI SMS Spam Collection (Almeida \& Hidalgo, 2011)
 \item 항공 승객: Box \& Jenkins, \textit{Time Series Analysis} (1976), 1949$\sim$1960 국제선 월별 승객
