@@ -145,8 +145,8 @@ def steps_to_bottom_w(x, y, lr, wb, w=(5.0, 0.0), tol=1.01):
 xc = x - x.mean(); xz = xc / x.std()
 fig, axs = plt.subplots(1, 3, figsize=(15, 4.6), gridspec_kw=dict(width_ratios=[45 / 13, 75 / 25, 75 / 25]))
 bowl_panel(axs[0], x, y, 0.05, (0, 45), (-1, 12), "원래 x (공부 시간)")
-bowl_panel(axs[1], xc, y, 0.2, (0, 75), (-6, 19), "평균 빼기: x − 5.45")
-bowl_panel(axs[2], xz, y, 1.0, (0, 75), (-6, 19), "표준화: (x − 5.45) / 2.74")
+bowl_panel(axs[1], xc, y, 0.2, (0, 75), (-6, 19), "평균 빼기: $x - \\mu$")
+bowl_panel(axs[2], xz, y, 1.0, (0, 75), (-6, 19), "표준화: $(x - \\mu)\\,/\\,\\sigma$")
 fig.tight_layout(); fig.savefig(O + "lr_scaling.png", bbox_inches="tight"); plt.close(fig)
 
 # 5. 학습률: 적당 vs 너무 큼 (w1 만 움직이는 1차원 단면)
