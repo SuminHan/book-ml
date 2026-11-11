@@ -101,3 +101,30 @@ for ax, g in zip(axs, (0.1, 2, 100)):
     ax.set_xticks([]); ax.set_yticks([]); ax.set_title(f"γ = {g}", fontsize=16)
 save(fig, "sv_gamma.png")
 print("ok")
+
+
+# 가장자리 ±1 은 약속: 같은 경계 x1 + x2 = 3 을 (w, b) = ((1,1), -3) 과 2배 ((2,2), -6) 로 쓸 때
+SP = np.array([(2, 2), (3, 2.4), (2.3, 3.3), (3.5, 3.4)], float)        # +1 (red)
+SN = np.array([(1, 1), (0.2, 0.3), (1.0, -0.1), (-0.2, 1.1)], float)    # -1 (blue)
+LAB = {(1, 1): (-0.55, 0.3), (2, 2): (0.2, -0.35), (0.2, 0.3): (-0.15, -0.42), (3.5, 3.4): (-0.05, -0.45)}
+fig, axs = plt.subplots(1, 2, figsize=(12, 5.4))
+for ax, (k, ttl) in zip(axs, ((1, "$\\mathbf{w} = (1, 1),\\ b = -3$\n가장 가까운 점에서 값이 딱 ±1"),
+                              (2, "2배: $\\mathbf{w} = (2, 2),\\ b = -6$ (같은 경계)\n값도 2배, ±1 선이 점에서 떨어진다"))):
+    g = np.linspace(-0.6, 4.6, 2)
+    ax.fill_between(g, -1, 3 - g, color=BLUE, alpha=0.06); ax.fill_between(g, 3 - g, 6, color=RED, alpha=0.06)
+    ax.plot(g, 3 - g, color="black", lw=2.5)
+    for c in (-1, 1):
+        ax.plot(g, (3 + c / k) - g, color=GRAY, lw=1.8, ls="--")
+    ax.scatter(SP[:, 0], SP[:, 1], s=90, color=RED, zorder=3); ax.scatter(SN[:, 0], SN[:, 1], s=90, color=BLUE, marker="s", zorder=3)
+    for (px, py), (dx, dy) in LAB.items():
+        v = k * (px + py - 3)
+        ax.text(px + dx, py + dy, f"{v:+g}", fontsize=16, fontweight="bold", color=RED if v > 0 else BLUE)
+    for c, lab, col in ((3, "값 0", "black"), (3 + 1 / k, "값 +1", GRAY), (3 - 1 / k, "값 −1", GRAY)):
+        ax.text(c / 2 - 1.3, c / 2 + 1.3 + 0.06, lab, fontsize=12, color=col, rotation=-45, ha="center", va="bottom")
+    ax.set_xlim(-0.5, 4.2); ax.set_ylim(-0.5, 4.2); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$"); ax.set_title(ttl, fontsize=15)
+axs[0].annotate("", (1.7, 2.3), (1.2, 1.8), arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3, mutation_scale=18))
+axs[0].text(1.05, 2.3, "$\\mathbf{w}$", fontsize=19, color=GOLD, fontweight="bold")
+axs[0].annotate("", (3.1, 0.9), (2.1, -0.1), arrowprops=dict(arrowstyle="<->", color="black", lw=1.8))
+axs[0].text(2.95, 1.0, "폭 $= 2/\\Vert\\mathbf{w}\\Vert = \\sqrt{2}$", fontsize=14, bbox=dict(fc="white", ec="none", pad=1.5))
+save(fig, "sv_scale.png")
