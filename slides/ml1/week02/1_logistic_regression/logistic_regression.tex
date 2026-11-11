@@ -143,15 +143,103 @@ $z = 0$ 이면 정확히 $0.5$
 \end{frame}
 
 \section{학습}
-% --- 손실
-\begin{frame}{손실: 교차 엔트로피}
+% --- 교차 엔트로피 (옛 03-1 교차 엔트로피 덱에서 옮김: 칩 걸기 · 벌점 · MSE 와 비교)
+\begin{frame}{칩 100개를 나눠 걸기}
+\vfill
+\centering\includegraphics[width=0.8\linewidth]{ce_chips.png}\par\vskip0.4em
+{\large AI는 칩 100개를 답마다 나눠 건다. \kq{정답 쪽에 건 칩만 남는다}}
+\vfill
+\note{AI의 예측을 게임으로 바꿔 봅시다. AI는 칩 100개를 고양이와 강아지에 나눠 겁니다. 고양이 90퍼센트라는 예측은 고양이에 90개, 강아지에 10개를 건 것입니다. 정답이 공개되면 정답 쪽에 건 칩만 남습니다. 정답이 고양이니까 A는 90개, 반반 건 B는 50개, 강아지 99퍼센트라고 한 C는 1개만 남습니다. 남은 칩이 적을수록 큰 벌점을 주면 됩니다.}
+\end{frame}
+
+\begin{frame}{남은 칩이 적을수록 큰 벌점}
+\markpage{curve}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.58\textwidth}\centering\includegraphics[width=\linewidth]{ce_curve.png}\end{column}
+\begin{column}{0.38\textwidth}
+{\Large\[ \text{벌점} = -\log_2 \frac{\text{남은 칩}}{100} \]}\vskip0.6em
+100개 $\to$ 0 \quad 50개 $\to$ 1 \quad 25개 $\to$ 2\\[0.3em]
+\kb{칩이 절반이 될 때마다 벌점 +1}\\[0.8em]
+90개 $\to$ \textbf{0.15} \qquad 1개 $\to$ \kq{6.64}\\[0.8em]
+{\small 밑은 아무거나: $\log_2$ $\to$ \textbf{비트}, \; $\ln$ $\to$ \textbf{냇}\\ ML 코드는 보통 $\ln$. 값만 상수배 \pref{celoss}}
+\end{column}
+\end{columns}
+\vfill
+\note{벌점은 남은 칩 비율에 마이너스 로그 2를 씌운 값입니다. 다 남으면 0점, 절반이 남으면 1점, 4분의 1이 남으면 2점입니다. 칩이 절반으로 줄 때마다 벌점이 1씩 오릅니다. 그래서 90개 남은 A는 0.15점, 1개 남은 C는 6.64점입니다. 100개에서 1개가 되려면 절반을 6.6번 해야 하니까요. 처음 질문의 답이 6.64점입니다. 한 가지 짚어 두면, 로그의 밑이 꼭 2일 필요는 없습니다. 밑을 바꾸면 값 전체에 같은 상수가 곱해질 뿐이라 어느 AI가 더 나쁜지 순서도, 학습 결과도 같습니다. 밑이 2이면 단위를 비트라고 부르고, 절반마다 1점이라 직관적이어서 오늘 비유에서는 2를 씁니다. 실제 머신러닝 코드는 보통 자연로그를 쓰고, 단위는 냇이라고 합니다.}
+\end{frame}
+
+\begin{frame}{정답에 0개를 걸었다면}
+\vfill
+\centering\includegraphics[width=0.8\linewidth]{ce_allin.png}\par\vskip0.6em
+{\large 정답에 하나도 안 걸면 \kq{파산: 벌점 $\infty$}. 모를 땐 반반이 낫다 (틀려도 1점)}
+\vfill
+\note{정답인 고양이에 하나도 안 걸고 강아지에 100개를 다 걸었다면 칩이 하나도 안 남습니다. 파산이고, 로그 0은 마이너스 무한대라서 벌점은 무한대입니다. 그래서 교차 엔트로피로 학습한 모델은 모를 때 함부로 확신하지 않습니다. 반반에 걸면 어느 쪽이 정답이든 1점만 잃기 때문입니다. 확신하고 틀리는 것을 아주 크게 벌하는 벌점입니다.}
+\end{frame}
+
+\begin{frame}{로지스틱회귀의 손실: 교차 엔트로피}
+\markpage{celoss}
+\vfill
+\centering
+{\Large\[ L = -\big[\, y \ln \hat y + (1-y) \ln (1-\hat y) \,\big] \]}\vskip0.4em
+$y$: 정답 (1 또는 0) \qquad $\hat y = \sigma(z)$: 1일 확률 (시그모이드 출력)\\[0.8em]
+\begin{tabular}{ll}
+$y = 1$ 이면 & $L = -\ln \hat y$ \quad (1에 건 칩)\\[0.3em]
+$y = 0$ 이면 & $L = -\ln (1-\hat y)$ \quad (0에 건 칩)
+\end{tabular}\vskip0.8em
+\kb{실제 코드는 $\log_2$ 대신 자연로그 $\ln$} \quad {\small 6.64 비트 $= 6.64 \times \ln 2 \approx 4.60$ (값만 상수배)}
+\vfill
+\note{로지스틱회귀에서 쓰는 손실이 바로 이 칩 걸기 벌점, 교차 엔트로피입니다. 답이 두 개뿐이라 y가 1이면 앞 항만, y가 0이면 뒤 항만 남습니다. 결국 정답 쪽에 건 칩에 마이너스 로그를 씌운 것과 같습니다. 한 가지 차이는 로그의 밑입니다. 비유에서는 절반마다 1점이 되도록 로그 2를 썼지만, PyTorch나 scikit-learn은 자연로그를 씁니다. 값이 상수배만 다르고 최솟값의 위치는 같습니다.}
+\end{frame}
+
+% --- 데이터 전체의 손실
+\begin{frame}{12만 판 전체의 손실: 평균}
 \vfill
 \centering
 {\Large\[ J(\boldsymbol w) = -\frac{1}{m}\sum_{i=1}^{m} \Big[\, y^{(i)} \ln \hat y^{(i)} + (1-y^{(i)}) \ln (1-\hat y^{(i)}) \,\Big] \]}\vskip0.6em
-{\large 정답 쪽에 준 확률에 $-\ln$ \quad (교차 엔트로피 차시의 ``칩 걸기'')}\\[0.5em]
-{\small 오차 제곱(MSE)을 쓰면 확신하고 틀렸을 때 기울기가 사라진다 $\to$ 교차 엔트로피를 쓴다}
+{\large 판마다 \kb{정답 쪽에 건 확률}에 $-\ln$, 그리고 평균}\\[0.5em]
+{\small 예: 백이 이긴 판 ($y=1$) 에 $\hat y = 0.74$ 였다면 $-\ln 0.74 = 0.30$, \; 졌다면 ($y = 0$) $-\ln 0.26 = 1.35$}
 \vfill
-\note{학습에는 교차 엔트로피를 손실로 씁니다. 정답이 1이면 1일 확률에, 정답이 0이면 0일 확률에 마이너스 로그를 씌운 값을 평균 냅니다. 교차 엔트로피 시간에 본 칩 걸기 벌점 그대로입니다. 선형회귀처럼 오차 제곱을 쓰면, 확신하고 틀린 학생에서 기울기가 0에 가까워져 학습이 멈춘다는 것도 그 시간에 봤습니다.}
+\note{데이터 전체의 손실은 판마다 벌점을 구해서 평균 낸 것입니다. 정답이 1이면 1에 건 확률, 0이면 0에 건 확률에 마이너스 로그를 씌웁니다. 예를 들어 모델이 백 승률을 0.74로 봤는데 백이 이겼으면 벌점은 마이너스 로그 0.74, 0.30입니다. 졌다면 0에 건 확률 0.26에 마이너스 로그, 1.35입니다. 이 평균 J를 가장 작게 만드는 w를 경사하강법으로 찾습니다.}
+\end{frame}
+
+\begin{frame}{왜 오차 제곱(MSE)이 아닐까: 벌점의 크기}
+\vfill
+\centering
+{\large
+\begin{tabular}{lcc}
+ & \textbf{MSE} $(1-\hat y)^2$ & \textbf{교차 엔트로피} $-\ln \hat y$\\[0.3em]\hline\\[-0.6em]
+정답에 0.9 & 0.01 & 0.11\\[0.3em]
+반반 0.5 & 0.25 & 0.69\\[0.3em]
+\kq{확신하고 틀림 0.01} & \kq{0.98} & \kq{4.60}\\[0.3em]
+정답에 0 & 1 (최대) & $\infty$
+\end{tabular}}\vskip1.0em
+\kq{MSE는 아무리 크게 틀려도 벌점이 1을 넘지 못한다}
+\vfill
+\note{회귀에서 쓰던 오차 제곱을 분류에도 쓰면 안 될까요? 정답이 1이고 확률 예측을 와이햇라 하면 MSE는 1 빼기 와이햇의 제곱입니다. 확률은 0과 1 사이라서 아무리 크게 틀려도 벌점이 1을 넘지 못합니다. 강아지 99퍼센트라고 확신하고 틀린 AI도 0.98점밖에 안 받습니다. 교차 엔트로피는 4.6점, 정답에 0을 줬다면 무한대입니다. 확신하고 틀린 것을 MSE는 충분히 벌하지 못합니다.}
+\end{frame}
+
+\begin{frame}{더 큰 이유: 기울기}
+\markpage{gradce}
+\vfill
+{\small 정답 $y=1$, \; $\hat y = \sigma(z)$, \; $\dfrac{\partial \hat y}{\partial z} = \hat y(1-\hat y)$ \; (시그모이드의 미분)}\vskip0.6em
+\centering
+{\large
+\begin{align*}
+\text{교차 엔트로피:}\quad \frac{\partial L}{\partial z} &= -\frac{1}{\hat y}\cdot \hat y(1-\hat y) = \boldsymbol{\textcolor{ksablue}{-(1-\hat y)}} && \text{약분}\\[0.4em]
+\text{MSE:}\quad \frac{\partial L}{\partial z} &= -2(1-\hat y)\cdot \hat y(1-\hat y) && \text{그대로}
+\end{align*}}\vskip0.4em
+\kq{확신하고 틀려서 $\hat y \approx 0$ 이면, MSE의 기울기는 $\hat y$ 가 곱해져 0에 가깝다}
+\vfill
+\note{더 큰 이유는 기울기입니다. 출력 와이햇는 z에 시그모이드를 씌운 값이고, 시그모이드의 미분은 와이햇 곱하기 1 빼기 와이햇입니다. 교차 엔트로피는 로그를 미분한 1/와이햇가 시그모이드 미분의 와이햇와 약분되어서, 기울기가 깔끔하게 마이너스 1 빼기 와이햇가 됩니다. 크게 틀릴수록 기울기도 큽니다. MSE는 약분이 안 되고 와이햇가 곱해진 채로 남습니다. 그래서 확신하고 틀려서 와이햇가 0에 가까우면 기울기도 0에 가까워지고, 가장 많이 고쳐야 할 때 학습이 거의 멈춥니다.}
+\end{frame}
+
+\begin{frame}{그림으로: 손실과 기울기}
+\vfill
+\centering\includegraphics[width=0.92\linewidth]{ce_vs_mse.png}\par\vskip0.3em
+{\small 오른쪽: 교차 엔트로피는 틀릴수록 기울기가 크고, MSE는 확신하고 틀린 왼쪽 끝에서 기울기가 사라진다 \pref{gradce}}
+\vfill
+\note{그림으로 보면 차이가 분명합니다. 왼쪽 손실을 보면 교차 엔트로피는 정답 확률이 0에 가까워질수록 끝없이 커지고, MSE는 1에서 멈춥니다. 오른쪽 기울기를 보면 교차 엔트로피는 틀릴수록 기울기가 커지는 직선입니다. MSE는 가운데서 잠깐 커졌다가, 가장 크게 틀린 왼쪽 끝에서 0으로 떨어집니다. 실습에서 이 차이를 실제 데이터로 확인합니다.}
 \end{frame}
 
 % --- 기울기
