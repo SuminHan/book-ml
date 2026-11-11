@@ -9,6 +9,14 @@
 \newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
 \newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
 \makeatother
+% 노트북 칸처럼: 코드 (In) 와 실행 결과 (Out). 결과는 정답 노트북을 실제로 실행한 출력 그대로
+\lstdefinestyle{nbin}{style=py, basicstyle=\ttfamily\scriptsize, frame=single, framerule=0.6pt, rulecolor=\color{ksablue!50},
+  backgroundcolor=\color{ksablue!4}, xleftmargin=1mm, xrightmargin=1mm, framesep=1.5mm}
+\lstdefinestyle{nbout}{language={}, basicstyle=\ttfamily\scriptsize\color{black!80}, emph={}, keywordstyle={}, stringstyle={},
+  frame=leftline, framerule=1.2pt, rulecolor=\color{gray!60}, xleftmargin=1mm, framesep=1.5mm, columns=fixed, basewidth=0.52em,
+  keepspaces=true, breaklines=false, aboveskip=0.5mm, belowskip=0.5mm}
+\newcommand{\nbin}{{\tiny\color{ksablue}\textbf{In}}\par\vskip-0.4em}
+\newcommand{\nbout}{{\tiny\color{gray}\textbf{Out}}\par\vskip-0.4em}
 
 \renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 데이터 직접 다루기}
 \title{데이터 직접 다루기}
@@ -44,6 +52,29 @@
 {\small Garbage in, garbage out: 쓰레기를 넣으면 쓰레기가 나온다}
 \vfill
 \note{더티 데이터는 모양이 딱 세 가지입니다. 있어야 할 값이 없는 결측치, 같은 기록이 여러 번 들어간 중복, 혼자 크게 튀는 이상치. 아무리 좋은 모델을 써도 데이터가 더러우면 결과도 더럽습니다. 영어로 garbage in, garbage out이라고 합니다. 그래서 모델을 고르기 전에 데이터부터 봐야 합니다.}
+\end{frame}
+
+% --- 노트북에서 열어 보면
+\begin{frame}[fragile]{노트북에서 열어 보면: 더러운 iris}
+\vfill
+\nbin
+\begin{lstlisting}[style=nbin]
+df = make_dirty(clean)        # iris 150 rows + dirt (just run)
+df.describe().round(2)
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+       sepal_length  sepal_width  petal_length  petal_width
+count        158.00       158.00        152.00       158.00
+mean           6.84       -22.30          3.69         1.13
+std            7.46       157.91          1.78         0.79
+min            4.30      -999.00          1.00         0.00
+max           68.00         4.40          6.90         2.50
+\end{lstlisting}
+\vskip0.3em
+{\normalsize 무엇이 이상한가: \kq{count 152} (빈칸 6), \kq{min $-999$}, \kq{min 0.00}, \kq{max 68.00} (꽃받침 68cm?), 줄 수 158 (원래 150)}
+\vfill
+\note{노트북 파트 1의 첫 칸입니다. 일부러 더럽힌 붓꽃 데이터를 describe로 훑으면 이렇게 나옵니다. 꽃잎 길이의 count가 152라서 빈칸이 6개, 꽃받침 너비의 최솟값이 마이너스 999, 꽃잎 너비 최솟값이 0, 꽃받침 길이 최댓값이 68입니다. 줄 수도 150이 아니라 158이라 중복이 섞였습니다. 실습에서는 이 숫자들을 보고 하나씩 고칩니다.}
 \end{frame}
 
 % --- 결측치
@@ -142,6 +173,31 @@
 {\large \kq{프롤린 278 $\sim$ 1,680}, \textcolor{ksagolddk}{\textbf{색조 0.48 $\sim$ 1.71}}: 천 배 넘게 차이 난다}
 \vfill
 \note{와인 한 병마다 알코올, 마그네슘, 프롤린, 색조 같은 성분 값이 13가지 있습니다. 가로축이 로그 눈금이라 한 칸이 10배입니다. 맨 위 빨간 막대 프롤린은 278에서 1,680, 아래쪽 색조는 0.48에서 1.71입니다. 단위가 다르니 크기도 제각각입니다. 사람은 단위를 보고 알아서 읽지만, 모델은 숫자만 봅니다.}
+\end{frame}
+
+% --- 노트북에서 열어 보면
+\begin{frame}[fragile]{노트북에서 열어 보면: 와인 13성분}
+\vfill
+\nbin
+\begin{lstlisting}[style=nbin]
+wine = load_wine(as_frame=True); df = wine.data
+print(df.shape)
+df.describe().T[["min", "max", "mean", "std"]].round(2)
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+(178, 13)
+                 min      max    mean     std
+alcohol        11.03    14.83   13.00    0.81
+magnesium      70.00   162.00   99.74   14.28
+hue             0.48     1.71    0.96    0.23
+proline       278.00  1680.00  746.89  314.91
+   ... (13 rows)
+\end{lstlisting}
+\vskip0.3em
+{\normalsize 한 행 = 와인 한 병, 열 = 성분. \kq{proline 의 std 315} vs \kb{hue 0.23}}
+\vfill
+\note{노트북 파트 2의 첫 칸입니다. 와인 178병, 성분 13개가 표로 들어옵니다. describe로 성분마다 최솟값, 최댓값, 평균, 표준편차를 보면, 프롤린은 표준편차가 315인데 색조는 0.23입니다. 슬라이드에는 13줄 중 네 줄만 옮겼습니다.}
 \end{frame}
 
 % --- 뉴런
@@ -276,6 +332,42 @@ PyTorch \texttt{nn.Linear(13, 16)} 의 $w$ 는 처음에\\
 \note{손글씨 숫자 MNIST입니다. 28 곱하기 28 픽셀, 값은 0에서 255 사이의 정수, 자료형은 uint8입니다. 모든 픽셀이 같은 단위라서 이미지 전체를 같은 수로 나눕니다. 그대로 넣으면 와인처럼 뉴런 95퍼센트가 막히고 정확도 63퍼센트. 255로 나누기만 해도 90퍼센트, 학습 데이터의 평균 0.1307과 표준편차 0.3081로 표준화하면 92퍼센트입니다. 한 가지 함정: uint8끼리 빼면 음수가 안 돼서, 10 빼기 20이 246이 됩니다. 계산 전에 반드시 실수형으로 바꿔야 합니다. 실습에서 직접 확인합니다.}
 \end{frame}
 
+% --- 노트북에서 열어 보면
+\begin{frame}[fragile]{노트북에서 열어 보면: MNIST}
+\vfill
+\begin{columns}[T]
+\begin{column}{0.72\textwidth}
+\nbin
+\begin{lstlisting}[style=nbin]
+tr = datasets.MNIST("data", train=True, download=True)
+X_train = tr.data.numpy()
+look("MNIST train", X_train)
+look("MNIST / 255", to_unit(X_train))
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+MNIST train shape=(60000,28,28) dtype=uint8   min=0 max=255 mean=33.32 std=78.57
+MNIST / 255 shape=(60000,28,28) dtype=float32 min=0 max=1 mean=0.1307 std=0.3081
+\end{lstlisting}
+\nbin
+\begin{lstlisting}[style=nbin]
+pixels = X_train[0, 14, 8:14]
+print(pixels - np.uint8(50))
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+[206 206 206 206 206  31]      # 0 - 50 = 206 !
+\end{lstlisting}
+\end{column}
+\begin{column}{0.25\textwidth}\centering
+\includegraphics[width=\linewidth]{nb_mnist.png}\par
+{\small \kq{uint8} 은 0 아래로 못 간다 $\to$ 먼저 실수형으로}
+\end{column}
+\end{columns}
+\vfill
+\note{노트북 파트 3입니다. MNIST를 열면 6만 장, 28 곱하기 28, 자료형이 uint8입니다. 0에서 255 사이 정수만 담는 자료형입니다. 255로 나누면 0에서 1, 평균 0.1307, 표준편차 0.3081이 됩니다. 아래 칸이 함정입니다. uint8 그대로 50을 빼면 0이 206이 됩니다. 0 아래로 내려갈 수 없어서 한 바퀴 돌아 버린 겁니다. 그래서 계산 전에 반드시 실수형으로 바꿉니다.}
+\end{frame}
+
 % --- 컬러 이미지
 \begin{frame}{컬러 이미지: 채널(R, G, B)마다 따로}
 \vfill
@@ -284,6 +376,28 @@ PyTorch \texttt{nn.Linear(13, 16)} 의 $w$ 는 처음에\\
 {\small 사진은 (H, W, C), PyTorch 는 \kb{(C, H, W)}: 축 순서부터 확인\\[0.2em] 남이 학습시킨 모델은 그 모델의 값을 그대로 (ImageNet: 0.485, 0.456, 0.406)}
 \vfill
 \note{컬러 이미지는 한 픽셀에 빨강, 초록, 파랑 세 값이 있습니다. CIFAR-10 시험 이미지 1만 장으로 채널별 평균을 내면 빨강 0.494, 초록 0.485, 파랑 0.450입니다. 하늘이나 바다처럼 파란 배경도 있지만 전체로는 파랑이 조금 어둡습니다. 그래서 채널마다 따로 평균을 빼고 표준편차로 나눕니다. 결과는 숫자 세 개씩입니다. 두 가지 주의할 점. 사진 파일을 열면 높이, 너비, 채널 순서인데 파이토치는 채널을 맨 앞에 둡니다. 그리고 남이 학습시킨 모델을 가져다 쓸 때는 그 모델이 학습할 때 쓴 값, 예를 들어 ImageNet의 0.485, 0.456, 0.406을 그대로 써야 합니다.}
+\end{frame}
+
+% --- 노트북에서 열어 보면
+\begin{frame}[fragile]{노트북에서 열어 보면: CIFAR-10}
+\vfill
+\nbin
+\begin{lstlisting}[style=nbin]
+cifar = pd.read_parquet("data/c10_test.parquet")
+C = np.stack([np.array(Image.open(io.BytesIO(b["bytes"])).convert("RGB")) for b in cifar["img"]])
+look("CIFAR-10", C)
+C01 = C / 255
+print("mean (R, G, B):", C01.mean(axis=(0, 1, 2)).round(3))
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+CIFAR-10   shape=(10000, 32, 32, 3) dtype=uint8  min=0  max=255  mean=121.5  std=64.06
+mean (R, G, B): [0.494 0.485 0.45 ]
+\end{lstlisting}
+\centering\includegraphics[width=0.62\linewidth]{nb_cifar.png}\par
+{\small 모양 = (장, 높이, 너비, \kb{채널}): 채널 축만 남기고 평균 $\to$ 숫자 3개}
+\vfill
+\note{노트북 파트 4입니다. CIFAR-10 시험 이미지 1만 장을 parquet 파일에서 읽어 배열로 쌓으면 모양이 1만, 32, 32, 3입니다. 마지막 3이 채널, R, G, B입니다. 0, 1, 2번 축으로 평균을 내면 채널마다 숫자 하나씩, 0.494, 0.485, 0.45가 나옵니다. 아래 그림은 노트북이 그린 한 장과 R, G, B 채널을 따로 본 것입니다.}
 \end{frame}
 
 % --- 언어
@@ -303,6 +417,31 @@ PyTorch \texttt{nn.Linear(13, 16)} 의 $w$ 는 처음에\\
 \note{언어 데이터는 다릅니다. 첫째, 숫자가 아니라 글자의 표기를 맞춥니다. 대문자 FREE, 첫 글자만 대문자 Free, 느낌표 붙은 free는 모두 같은 단어입니다. 영어 문자 메시지 5,574통을 공백으로만 자르면 단어 종류가 15,733개인데, 소문자로 바꾸고 문장부호를 떼면 8,713개로 줄어듭니다. 둘째, 단어마다 번호를 붙이지만 그 번호는 크기가 아닙니다. free가 3373번이고 call이 1828번이라고 free가 더 큰 단어가 아니죠. 그래서 번호는 표준화하지 않고, 임베딩이라는 벡터로 바꿉니다. 파이토치 임베딩은 처음에 평균 0, 표준편차 1인 난수로 시작합니다. 이미 표준화된 크기에서 출발하는 셈입니다. 셋째, 단어를 세어 벡터로 만들면 긴 글일수록 숫자가 커지니, 길이로 나눠 비율로 만듭니다.}
 \end{frame}
 
+% --- 노트북에서 열어 보면
+\begin{frame}[fragile]{노트북에서 열어 보면: SMS 문자}
+\vfill
+\nbin
+\begin{lstlisting}[style=nbin]
+df = pd.read_csv(z.open("SMSSpamCollection"), sep="\t", names=["label", "text"], quoting=3)
+print(df.shape); print(df.text.head(2).tolist())
+raw_words = " ".join(df.text).split()
+print("word types:", len(set(raw_words)))
+print([w for w in set(raw_words) if w.lower().strip("!.,?") == "free"])
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+(5574, 2)
+['Go until jurong point, crazy.. Available only in bugis n great world la e buffet...',
+ 'Ok lar... Joking wif u oni...']
+word types: 15733
+['free.', 'free..', 'Free!', 'FREE!', 'FREE.', 'free...', 'free,', 'free!', 'Free', ...] (13)
+\end{lstlisting}
+\vskip0.2em
+{\normalsize 한 행 = 문자 한 통 (\texttt{label}: ham / spam). \kq{``free'' 가 13가지}로 따로 센다 $\to$ 표기 맞추면 \kb{8,713}}
+\vfill
+\note{노트북 파트 5입니다. 문자 5,574통이 label과 text 두 열로 들어옵니다. 띄어쓰기로만 나누면 단어 종류가 15,733개인데, 그중 free 하나가 마침표, 느낌표, 대소문자에 따라 13가지로 따로 셉니다. 소문자로 바꾸고 문장부호를 떼면 8,713개로 줄어듭니다.}
+\end{frame}
+
 % --- 시계열
 \begin{frame}{시계열: 미래는 과거의 범위를 넘는다}
 \vfill
@@ -311,6 +450,27 @@ PyTorch \texttt{nn.Linear(13, 16)} 의 $w$ 는 처음에\\
 {\scriptsize 국제선 항공 승객 1949$\sim$1960, 앞 10년 학습 · 뒤 2년 시험, 지난 12달 $\to$ 다음 달, $k$-최근접 이웃 ($k = 3$)}
 \vfill
 \note{시계열은 시간 순서가 있는 데이터입니다. 1949년부터 1960년까지 한 달 국제선 승객 수입니다. 앞 10년으로 학습하고 뒤 2년을 예측합니다. 규칙대로 학습 기간으로만 평균과 표준편차를 구합니다. 그런데 승객은 계속 늘어서, 학습 기간 최대가 505인데 시험 기간에는 622까지 갑니다. Min-Max로 바꾸면 1.29, 1을 넘습니다. 과거에서 가장 비슷한 패턴을 찾아오는 최근접 이웃 모델은 본 적 없는 크기를 내놓지 못해서, 빨간 점선처럼 낮게 예측합니다. 오차가 평균 74천 명. 해결책은 12달 창마다 그 창의 평균과 표준편차로 표준화하는 겁니다. 그러면 모델은 크기가 아니라 모양, 여름에 오르고 겨울에 내리는 패턴을 배웁니다. 예측한 뒤 그 창의 평균과 표준편차로 되돌리면 오차가 10천 명으로 줄어듭니다.}
+\end{frame}
+
+% --- 노트북에서 열어 보면
+\begin{frame}[fragile]{노트북에서 열어 보면: 항공 승객}
+\vfill
+\nbin
+\begin{lstlisting}[style=nbin]
+air = pd.read_csv("data/air.csv")
+series = air["Passengers"].values.astype(float)
+look("train 1949-58", series[:120])
+look("test 1959-60", series[120:])
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+train 1949-58  shape=(120,)  dtype=float64  min=104  max=505  mean=245.9  std=94.55
+test 1959-60   shape=(24,)   dtype=float64  min=342  max=622  mean=452.2  std=74.68
+\end{lstlisting}
+\centering\includegraphics[width=0.44\linewidth]{nb_air.png}\par
+{\small 시험 기간 최댓값 \kq{622} $>$ 학습 기간 최댓값 505}
+\vfill
+\note{노트북 파트 6입니다. 한 달 승객 수가 144달, 12년 치입니다. 앞 120달을 학습, 뒤 24달을 시험으로 나눠 look으로 보면, 학습 기간 최댓값은 505인데 시험 기간 최댓값은 622입니다. 미래가 과거의 범위를 넘습니다. 그래서 학습 기간의 최솟값과 최댓값으로 맞추면 1을 넘는 값이 나옵니다.}
 \end{frame}
 
 % --- 소리
@@ -323,6 +483,31 @@ PyTorch \texttt{nn.Linear(13, 16)} 의 $w$ 는 처음에\\
 \note{소리 파일은 1초에 8,000번, 마이크가 받은 압력을 숫자로 적은 것입니다. 자료형은 16비트 정수 int16, 범위가 마이너스 32,768에서 32,767입니다. 먼저 32,768로 나눠 마이너스 1에서 1로 만듭니다. 그런데 같은 zero라는 말인데, 잭슨의 녹음은 가장 큰 값이 0.74, 테오는 0.02입니다. 37배 차이. 마이크와 거리 차이일 뿐 말의 내용은 같습니다. 그래서 녹음마다 가장 큰 값으로 나누면 둘 다 1이 되고 모양을 비교할 수 있습니다.}
 \end{frame}
 
+% --- 노트북에서 열어 보면
+\begin{frame}[fragile]{노트북에서 열어 보면: 숫자 말소리}
+\vfill
+\nbin
+\begin{lstlisting}[style=nbin]
+for s in SPEAKERS:
+    rate, w = wavfile.read(f"data/0_{s}_0.wav")
+    look(s, w)
+for s in SPEAKERS:
+    print(f"{s:9s} peak = {np.abs(to_float(waves[s])).max():.2f}")   # to_float: / 32768
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+jackson   shape=(5148,)  dtype=int16  min=-2.166e+04  max=2.416e+04  mean=-0.2374  std=4482
+theo      shape=(3142,)  dtype=int16  min=-606        max=655        mean=-0.2772  std=177
+   ... (6 speakers)
+jackson   peak = 0.74
+theo      peak = 0.02          loudest / quietest: 37
+\end{lstlisting}
+\vskip0.2em
+{\normalsize 한 행 = 1/8000초마다 잰 숫자. 같은 ``zero'' 인데 길이도 (5148 vs 3142) 음량도 (\kq{37배}) 다르다}
+\vfill
+\note{노트북 파트 7입니다. wav 파일을 읽으면 int16 숫자의 줄이 나옵니다. 1초에 8천 번 잰 값이라 jackson의 녹음은 5,148개, 약 0.64초입니다. theo는 3,142개입니다. 32768로 나눠 마이너스 1에서 1로 바꾸고 가장 큰 값을 보면 jackson은 0.74, theo는 0.02로 37배 차이가 납니다.}
+\end{frame}
+
 % --- 비디오
 \begin{frame}{비디오: 이미지 $\times$ 시간, \textbf{영상 전체}로 맞춘다}
 \vfill
@@ -331,6 +516,25 @@ PyTorch \texttt{nn.Linear(13, 16)} 의 $w$ 는 처음에\\
 {\scriptsize Muybridge, \textit{The Horse in Motion} (1878). 실습에서는 일부러 점점 어둡게 만든 영상으로 비교}
 \vfill
 \note{비디오는 이미지를 시간 순서로 쌓은 것입니다. 1878년 머이브리지가 찍은 달리는 말, 15프레임, 높이 200, 너비 300, 채널 3. 처리는 이미지와 같이 255로 나누고 채널별 평균과 표준편차로 맞춥니다. 다만 그 평균을 어디서 구하느냐가 중요합니다. 첫 줄은 일부러 점점 어둡게 만든 영상입니다. 둘째 줄처럼 프레임마다 따로 표준화하면 모든 프레임이 같은 밝기가 되어 해가 지는 변화가 사라집니다. 셋째 줄처럼 영상 전체, 더 정확히는 학습 데이터 전체의 값으로 맞추면 변화가 남습니다. 밝기 변화가 중요한 문제라면 프레임마다 따로 맞추면 안 됩니다.}
+\end{frame}
+
+% --- 노트북에서 열어 보면
+\begin{frame}[fragile]{노트북에서 열어 보면: 달리는 말 GIF}
+\vfill
+\nbin
+\begin{lstlisting}[style=nbin]
+gif = Image.open("data/horse.gif")
+video = np.stack([np.array(f.convert("RGB")) for f in ImageSequence.Iterator(gif)])
+look("video", video)
+\end{lstlisting}
+\nbout
+\begin{lstlisting}[style=nbout]
+video   shape=(15, 200, 300, 3)  dtype=uint8  min=0  max=245  mean=177.4  std=68.08
+\end{lstlisting}
+\centering\includegraphics[width=0.9\linewidth]{nb_video.png}\par
+{\small 모양 = (\kb{프레임}, 높이, 너비, 채널): 이미지가 시간 순서로 15장}
+\vfill
+\note{노트북 파트 8입니다. GIF의 프레임을 하나씩 배열로 바꿔 쌓으면 모양이 15, 200, 300, 3입니다. 프레임 15장, 높이 200, 너비 300, 채널 3입니다. 이미지 모양 앞에 시간 축 하나가 붙은 것입니다.}
 \end{frame}
 
 \section{연습}
