@@ -1,7 +1,7 @@
 """실습 노트북 원본: 이 파일을 고치고 실행하면 <주제>.ipynb(학생용) / <주제>_solution.ipynb(정답) 이 다시 만들어진다.
    ~/Documents/manim_shorts/_env/v/bin/python make_lab.py
 코드 줄 끝의 '#@ANS 빈칸버전' = solution 노트북엔 앞부분, student 노트북엔 빈칸버전이 들어간다.
-데이터: Baseball Savant (2024-06 모든 투구 CSV, 타구는 그중 인플레이).
+데이터: Baseball Savant (2024-06 모든 투구 CSV).
 슬라이드 숫자 (../exp_baseball.py) 와 같은 데이터 · 같은 설정."""
 import os, sys
 sys.path.insert(0, os.path.expanduser("~/book-ml/lessons/_tools"))
@@ -15,7 +15,7 @@ CELLS = [
 
 모델보다 먼저 **다섯 칸** 을 채운다: ① 한 행은 무엇? ② 입력 X ③ 출력 y ④ 평가지표 ⑤ 기준선.
 
-- **파트 1**: 타구: 같은 데이터로 두 문제 (홈런인가 분류 · 비거리 회귀), 정확도 · MAE · 기준선 직접 만들기
+- **파트 1**: 같은 공, 두 문제: 던지기 전에 타자가 스윙할까 (분류) · 이 공의 구속 (회귀), 정확도 · MAE · 기준선 직접 만들기
 - **파트 2**: 6월의 모든 공: 정확도의 함정, 볼카운트 규칙의 정밀도 · 재현율, 한 행을 공 → 타석 → 타자로
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요. 코드 칸 아래의 **예상 결과** 와 비교하면 맞았는지 바로 알 수 있습니다."""),
@@ -24,12 +24,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler"""),
+from sklearn.preprocessing import OneHotEncoder"""),
 
-# ---------------- 파트 1. 타구
-("md", """## 파트 1. 타구: 같은 데이터, 두 문제
+# ---------------- 파트 1. 같은 공, 두 문제
+("md", """## 파트 1. 같은 공, 두 문제
 
 먼저 채점 함수 세 개를 만든다. 정답 `y_true` 와 예측 `y_pred` 를 받는다.
 - 정확도 = 맞힌 개수 ÷ 전체
@@ -51,12 +51,12 @@ print("RMSE:", round(rmse([0, 0, 0, 0], [1, 1, 1, 9]), 2))       # slide: 4.58""
 
 - `balls`, `strikes`: **던지기 직전** 볼카운트, `pitch_type`, `release_speed`: 구종 · 구속 (mph)
 - `description`: 그 공의 결과 (`ball`, `swinging_strike`, `hit_into_play` …), `events`: 타석이 끝났으면 그 결과 (`home_run`, `single`, `field_out` …)
-- 인플레이 타구에는 `launch_speed` (타구 속도, mph), `launch_angle` (발사각), `hit_distance_sc` (비거리, 피트) 가 있다"""),
+- `batter`, `pitcher`: 타자 · 투수 번호. 인플레이 타구에는 `launch_speed` · `launch_angle` · `hit_distance_sc` (타구 속도 · 발사각 · 비거리) 도 있다"""),
 ("code", """os.makedirs("data", exist_ok=True)
 SAVANT = ("https://baseballsavant.mlb.com/statcast_search/csv?all=true&type=details&player_type=batter"
           "&hfGT=R%7C&hfSea=2024%7C&game_date_gt={}&game_date_lt={}")
 CHUNKS = [("01", "05"), ("06", "10"), ("11", "15"), ("16", "20"), ("21", "25"), ("26", "30")]
-COLS = ["game_date", "game_pk", "at_bat_number", "pitch_number", "batter", "player_name", "balls", "strikes",
+COLS = ["game_date", "game_pk", "at_bat_number", "pitch_number", "batter", "pitcher", "player_name", "balls", "strikes",
         "pitch_type", "release_speed", "description", "events", "launch_speed", "launch_angle", "hit_distance_sc"]
 
 def load_pitches(chunks):
@@ -74,36 +74,55 @@ pitches = load_pitches(CHUNKS)
 pitches["home_run"] = (pitches["events"] == "home_run").astype(int)
 print(pitches.shape, " home runs:", pitches["home_run"].sum())
 pitches[["game_date", "player_name", "balls", "strikes", "pitch_type", "description", "events"]].head(3)"""),
-("md", """파트 1 에서는 그중 **인플레이로 날아간 타구** (`description == "hit_into_play"`) 만 쓴다. 한 행 = 타구 하나. 속도는 km/h, 비거리는 m 로 바꾼다."""),
-("code", """df = pitches[pitches["description"] == "hit_into_play"][["game_date", "launch_speed", "launch_angle", "hit_distance_sc", "events"]].dropna().reset_index(drop=True)
-df["speed_kmh"] = df["launch_speed"] * 1.609
-df["distance_m"] = df["hit_distance_sc"] * 0.3048
-df["home_run"] = (df["events"] == "home_run").astype(int)
-print(df.shape, " home runs:", df["home_run"].sum())
-df.head(3)"""),
-("md", """### 문제 A: 타구 속도 · 발사각 → 홈런인가 (분류)
+("md", """파트 1 에서는 **공을 던지기 직전** 에 알 수 있는 것만 입력으로 쓴다: 볼카운트 (`count`), 타자 (`batter`), 투수 (`pitcher`). 한 행 = 공 하나. 구속 · 구종이 비어 있는 공은 뺀다.
 
-공이 방망이에 맞은 **순간** 알 수 있는 것만 입력으로 쓴다: 속도, 각도, 그리고 각도². (너무 낮게 뜨거나 너무 높이 뜨면 홈런이 안 되니, 각도의 제곱을 넣어 '가운데가 좋은' 모양을 만들 수 있게 한다.)
+- 출력 A: 타자가 이 공에 **스윙했나** (헛스윙 · 파울 · 인플레이 = 1, 그 밖 = 0)
+- 출력 B: 이 공의 **구속** (km/h)
 
-학습 70% · 시험 30% (홈런 비율을 맞춰서). **기준선** = 늘 '홈런 아님' 이라고 답하기."""),
-("code", """X = np.c_[df["speed_kmh"], df["launch_angle"], df["launch_angle"] ** 2]      #@ANS X = None   # TODO: columns speed_kmh, launch_angle, launch_angle**2
-y_a = df["home_run"].values                                                  #@ANS y_a = None   # TODO: the home_run column (0/1)
-idx_tr, idx_te = train_test_split(np.arange(len(df)), test_size=0.3, stratify=y_a, random_state=0)
+시험 데이터는 **날짜 순서** 로 나눈다: 6월 1~23일로 학습, 24~30일로 시험 (앞으로 열릴 경기를 맞히는 상황)."""),
+("code", """SWING = {"hit_into_play", "foul", "swinging_strike", "swinging_strike_blocked", "foul_tip", "foul_bunt", "missed_bunt", "bunt_foul_tip"}
+df = pitches.dropna(subset=["release_speed", "pitch_type"]).copy()
+df["count"] = df["balls"].astype(str) + "-" + df["strikes"].astype(str)
+df["swing"] = df["description"].isin(SWING).astype(int)
+df["kmh"] = df["release_speed"] * 1.609
+train = df[df["game_date"] <= "2024-06-23"]      #@ANS train = None   # TODO: pitches on or before 2024-06-23
+test = df[df["game_date"] >= "2024-06-24"]       #@ANS test = None    # TODO: pitches on or after 2024-06-24
+print("rows:", len(df), " train:", len(train), " test:", len(test))
+print("swing rate:", round(df["swing"].mean(), 3))
+df[["game_date", "count", "batter", "pitcher", "swing", "kmh"]].head(3)"""),
+("md", """### 문제 A: 던지기 전 정보 → 타자가 스윙할까 (분류)
 
-base_pred = np.zeros(len(idx_te), dtype=int)          # always 'not a home run'
-clf = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000)).fit(X[idx_tr], y_a[idx_tr])
-print(f"baseline (always 'no HR'): accuracy {accuracy(y_a[idx_te], base_pred):.1%}")
-print(f"logistic regression      : accuracy {accuracy(y_a[idx_te], clf.predict(X[idx_te])):.1%}")"""),
-("md", """### 문제 B: 같은 타구, 같은 입력 → 비거리 (회귀)
+입력은 숫자가 아니라 **이름표** (볼카운트 `3-2`, 타자 번호, 투수 번호) 라서 원-핫 (one-hot) 으로 바꿔 넣는다: 칸마다 '이 이름표인가' 를 0/1 로 적는 것. **기준선** = 늘 '안 친다' 라고 답하기."""),
+("code", """INPUTS = ["count", "batter", "pitcher"]
 
-이번엔 `y` 가 비거리 (m). 입력은 문제 A 와 같다. **비거리는 입력에 넣으면 안 된다** (답을 입력에 넣는 셈이다). 같은 행으로 학습 · 시험을 나눈다. **기준선** = 학습 데이터의 평균 비거리를 늘 답하기."""),
-("code", """y_b = df["distance_m"].values      #@ANS y_b = None   # TODO: the distance_m column
+def fit_classifier(train_df, cols):
+    model = make_pipeline(OneHotEncoder(handle_unknown="ignore"), LogisticRegression(max_iter=2000))
+    return model.fit(train_df[cols].astype(str), train_df["swing"])
 
-base_pred = np.full(len(idx_te), y_b[idx_tr].mean())
-reg = make_pipeline(StandardScaler(), LinearRegression()).fit(X[idx_tr], y_b[idx_tr])
-print(f"baseline (always {y_b[idx_tr].mean():.1f} m): MAE {mae(y_b[idx_te], base_pred):.1f} m  RMSE {rmse(y_b[idx_te], base_pred):.1f} m")
-print(f"linear regression        : MAE {mae(y_b[idx_te], reg.predict(X[idx_te])):.1f} m  RMSE {rmse(y_b[idx_te], reg.predict(X[idx_te])):.1f} m")"""),
-("md", """**생각해 보기**: 문제 A 의 정확도 (96.8%) 와 기준선 (95.5%) 의 차이는 1.3%p 뿐이다. 그런데 모델은 시험의 홈런 275개 중 몇 개를 맞혔을까? `clf.predict(X[idx_te])` 로 세어 보자. 그리고 문제 B 의 입력에 `distance_m` 을 넣으면 MAE 가 얼마가 되는지, 그 점수가 왜 의미 없는지 말해 보자."""),
+base_pred = np.zeros(len(test), dtype=int)          # always 'no swing'
+only_count = fit_classifier(train, ["count"])
+clf = fit_classifier(train, INPUTS)                 #@ANS clf = None   # TODO: fit_classifier with all three inputs
+print(f"baseline (always 'no swing'): accuracy {accuracy(test['swing'], base_pred):.1%}")
+print(f"count only                  : accuracy {accuracy(test['swing'], only_count.predict(test[['count']].astype(str))):.1%}")
+print(f"count + batter + pitcher    : accuracy {accuracy(test['swing'], clf.predict(test[INPUTS].astype(str))):.1%}")"""),
+("md", """### 문제 B: 같은 공, 같은 입력 → 구속 (회귀)
+
+이번엔 `y` 가 구속 (km/h). 입력은 문제 A 와 같다. **기준선** = 학습 데이터의 평균 구속을 늘 답하기."""),
+("code", """def fit_regressor(train_df, cols):
+    model = make_pipeline(OneHotEncoder(handle_unknown="ignore"), Ridge(alpha=1.0))
+    return model.fit(train_df[cols].astype(str), train_df["kmh"])
+
+mean_kmh = train["kmh"].mean()
+base_pred = np.full(len(test), mean_kmh)            #@ANS base_pred = None   # TODO: the training mean, repeated for every test pitch
+reg = fit_regressor(train, INPUTS)
+print(f"baseline (always {mean_kmh:.1f} km/h): MAE {mae(test['kmh'], base_pred):.1f}  RMSE {rmse(test['kmh'], base_pred):.1f}")
+print(f"count + batter + pitcher     : MAE {mae(test['kmh'], reg.predict(test[INPUTS].astype(str))):.1f}  RMSE {rmse(test['kmh'], reg.predict(test[INPUTS].astype(str))):.1f}")"""),
+("md", """### 반칙 하나: 구종을 입력에 넣으면?
+
+구종 (`pitch_type`: 직구 FF, 슬라이더 SL …) 은 **공을 던진 뒤에야** 안다. 그래도 넣어 보자."""),
+("code", """leak = fit_regressor(train, INPUTS + ["pitch_type"])
+print(f"+ pitch type (cheating): MAE {mae(test['kmh'], leak.predict(test[INPUTS + ['pitch_type']].astype(str))):.1f}")"""),
+("md", """**생각해 보기**: 구종을 넣으면 MAE 가 크게 줄어든다. 이 숫자를 보고서에 쓰면 안 되는 이유는? 그리고 문제 A 에서 볼카운트만으로 정확도가 많이 오른 이유를, 볼카운트별 스윙 비율 (`df.groupby("count")["swing"].mean()`) 을 찍어 보고 말해 보자."""),
 
 # ---------------- 파트 2. 공 하나 = 한 행
 ("md", """## 파트 2. 6월의 모든 공: 정확도의 함정

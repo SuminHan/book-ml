@@ -20,15 +20,15 @@ def bars(ax, labels, vals, colors, fmt, ylabel, ymax=None):
     ax.set_xticks(range(len(vals)), labels, fontsize=13.5); ax.set_ylim(0, top); ax.set_ylabel(ylabel)
 
 
-# 1. 타구: 같은 데이터, 두 문제 (2024-06 인플레이 타구, 시험 30%)
+# 1. 던지기 전 두 문제: 같은 투구, 다른 y (6/1~23 학습, 6/24~30 시험)
 fig, (a1, a2) = plt.subplots(1, 2, figsize=(11.5, 4.2))
-bars(a1, ["기준선\n늘 '홈런 아님'", "로지스틱회귀"], [BAT["acc_base"] * 100, BAT["acc_model"] * 100], [GRAY, BLUE],
-     lambda v: f"{v:.1f}%", "시험 정확도 (%) ↑", 118)
-a1.set_title("문제 A: 속도 · 발사각 → 홈런인가 (분류)", fontsize=15)
-bars(a2, ["기준선\n학습 평균", "선형회귀"], [BAT["mae_base"], BAT["mae_model"]], [GRAY, GREEN],
-     lambda v: f"{v:.1f} m", "시험 MAE (m) ↓", 47)
-a2.set_title("문제 B: 속도 · 발사각 → 비거리 (회귀)", fontsize=15)
-fig.tight_layout(); fig.savefig(O + "pf_batted.png"); plt.close(fig)
+bars(a1, ["기준선\n늘 '안 친다'", "볼카운트만", "볼카운트\n+ 타자 + 투수"], [PRE["acc_base"] * 100, PRE["acc_count"] * 100, PRE["acc_model"] * 100],
+     [GRAY, BLUE, BLUE], lambda v: f"{v:.1f}%", "시험 정확도 (%) ↑", 80)
+a1.set_title("문제 A: 타자가 이 공에 스윙할까 (분류)", fontsize=15)
+bars(a2, ["기준선\n학습 평균", "볼카운트\n+ 타자 + 투수", "+ 구종\n(반칙)"], [PRE["mae_base"], PRE["mae_model"], PRE["mae_leak"]],
+     [GRAY, GREEN, RED], lambda v: f"{v:.1f}", "시험 MAE (km/h) ↓", 10.5)
+a2.set_title("문제 B: 이 공의 구속은 (회귀)", fontsize=15)
+fig.tight_layout(); fig.savefig(O + "pf_twoprob.png"); plt.close(fig)
 
 # 5. 1쪽 질문: 모바일 야구 게임 화면 (컴투스프로야구2021, 사용자 제공 캡처) 위에 '치기 전 AI 예측' 자막 한 줄
 # 원본 photos/com2us_baseball_2021.png (1631x924) 에서 에뮬레이터 창 테두리 (위 40px · 오른쪽 사이드바) 만 잘라낸다

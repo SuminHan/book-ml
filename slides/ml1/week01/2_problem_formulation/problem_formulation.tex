@@ -22,10 +22,10 @@
 \newcommand{\paAccRule}{92.39}\newcommand{\paCalled}{8{,}189}
 \newcommand{\paTP}{126}\newcommand{\paFP}{8{,}063}\newcommand{\paFN}{795}
 \newcommand{\paPrec}{1.54}\newcommand{\paRec}{13.7}
-% 타구: 같은 투구 데이터 중 인플레이 타구, 시험 30%
-\newcommand{\bbN}{20{,}506}\newcommand{\bbHR}{915}\newcommand{\bbTest}{6{,}152}\newcommand{\bbTestHR}{275}
-\newcommand{\bbAccBase}{95.5}\newcommand{\bbAccModel}{96.8}\newcommand{\bbCaught}{115}
-\newcommand{\bbMaeBase}{37.4}\newcommand{\bbMaeModel}{24.8}\newcommand{\bbMeanDist}{50.6}
+% 던지기 전 두 문제: 같은 투구 (구속 · 구종 있는 공), 6/1~23 학습 · 6/24~30 시험, 입력 = 볼카운트 · 타자 · 투수
+\newcommand{\prN}{115{,}940}\newcommand{\prTrain}{88{,}024}\newcommand{\prTest}{27{,}916}\newcommand{\prSwing}{48.2}
+\newcommand{\prAccBase}{51.4}\newcommand{\prAccCount}{59.6}\newcommand{\prAccModel}{60.3}
+\newcommand{\prMean}{143.6}\newcommand{\prMaeBase}{8.0}\newcommand{\prMaeModel}{7.3}\newcommand{\prMaeLeak}{2.3}
 
 \renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, 문제 정형화와 평가지표}
 \title{문제 정형화와 평가지표}
@@ -92,15 +92,15 @@
 \centering
 {\large
 \begin{tabular}{rll}
-\kb{①} & \textbf{한 행은 무엇?} & 예시 하나의 단위: 공 하나 (투구), 타구 하나, 타석 하나\\[0.5em]
-\kb{②} & \textbf{입력 $X$} & \textbf{알 수 있는} 것만: 볼카운트 · 타자 · 투수 \kb{O}, 타구 비거리 \kq{X}\\[0.5em]
-\kb{③} & \textbf{출력 $y$} & 맞히려는 것: 이 공이 홈런? 타구 비거리?\\[0.5em]
+\kb{①} & \textbf{한 행은 무엇?} & 예시 하나의 단위: 공 하나 (투구), 타석 하나, 타자 한 명\\[0.5em]
+\kb{②} & \textbf{입력 $X$} & \textbf{던지기 전} 정보만: 볼카운트 · 타자 · 투수 \kb{O}, 구종 · 비거리 \kq{X}\\[0.5em]
+\kb{③} & \textbf{출력 $y$} & 맞히려는 것: 이 공이 홈런? 스윙할까? 구속은?\\[0.5em]
 \kb{④} & \textbf{평가지표} & 무엇으로 채점하나: 정확도, MAE, 정밀도 · 재현율 \ldots\\[0.5em]
 \kb{⑤} & \textbf{기준선} & 머리 안 쓰는 답의 점수: 가장 흔한 답 (``홈런 아님''), 평균
 \end{tabular}}\vskip1.2em
 {\large 다섯 칸이 정해져야 \kq{``잘했다''를 말할 수 있다}}
 \vfill
-\note{머신러닝 문제를 정한다는 건 다섯 칸을 채우는 일입니다. 첫째, 한 행, 즉 예시 하나가 무엇인지. 공 하나인지, 타구 하나인지, 타석 하나인지. 둘째, 입력. 예측하는 순간에 실제로 알 수 있는 것만 넣어야 합니다. 공을 던지기 직전에 예측한다면, 지금 볼카운트가 몇 볼 몇 스트라이크인지, 누가 치는지, 누가 던지는지는 알 수 있습니다. 하지만 이번 타구가 몇 미터 날아갔는지는 친 다음에야 압니다. 그걸 입력에 넣으면 답을 미리 보고 맞히는 셈입니다. 셋째, 출력, 맞히려는 것. 넷째, 평가지표, 무엇으로 채점할지. 다섯째, 기준선, 머리를 전혀 안 쓴 답이 몇 점인지. 이 다섯 칸이 정해져야 우리 모델이 잘했다, 못했다를 말할 수 있습니다.}
+\note{머신러닝 문제를 정한다는 건 다섯 칸을 채우는 일입니다. 첫째, 한 행, 즉 예시 하나가 무엇인지. 공 하나인지, 타석 하나인지, 타자 한 명인지. 둘째, 입력. 예측하는 순간에 실제로 알 수 있는 것만 넣어야 합니다. 공을 던지기 직전에 예측한다면, 지금 볼카운트가 몇 볼 몇 스트라이크인지, 누가 치는지, 누가 던지는지는 알 수 있습니다. 하지만 이번 공이 직구인지 변화구인지는 던진 뒤에야 알고, 타구가 몇 미터 날아갔는지는 친 다음에야 압니다. 그걸 입력에 넣으면 답을 미리 보고 맞히는 셈입니다. 셋째, 출력, 맞히려는 것. 넷째, 평가지표, 무엇으로 채점할지. 다섯째, 기준선, 머리를 전혀 안 쓴 답이 몇 점인지. 이 다섯 칸이 정해져야 우리 모델이 잘했다, 못했다를 말할 수 있습니다.}
 \end{frame}
 
 % --- 문제 종류
@@ -110,8 +110,8 @@
 {\large
 \begin{tabular}{lll}
 \textbf{출력 $y$} & \textbf{문제 종류} & \textbf{예}\\[0.2em]\hline\\[-0.6em]
-범주 하나 & \kb{분류} (classification) & 이 공이 홈런인가 (예/아니오), 구종\\[0.5em]
-숫자 하나 & \kb{회귀} (regression) & 타구 비거리, 공의 구속\\[0.5em]
+범주 하나 & \kb{분류} (classification) & 이 공이 홈런인가, 스윙할까 (예/아니오)\\[0.5em]
+숫자 하나 & \kb{회귀} (regression) & 공의 구속, 타구 비거리\\[0.5em]
 숫자 여러 개 & 물체 찾기 (detection) & 중계 화면에서 공을 감싼 상자 (좌표 4개)\\[0.5em]
 글 · 그림 & 생성 & 다음 단어, 그림 (14주차 이후)
 \end{tabular}}\vskip1.2em
@@ -120,15 +120,15 @@
 \note{출력의 모양이 문제의 종류를 정합니다. 범주 중 하나를 고르면 분류, 숫자 하나를 맞히면 회귀입니다. 사진 한 장에서 고양이가 어디 있는지 네모 상자로 표시하는 문제처럼, 상자의 좌표 숫자 4개를 한꺼번에 맞히는 문제도 있습니다. 움직이는 경로를 예측하는 게 아니라 한 장 안에서 자리를 찾는 겁니다. 그리고 글이나 그림을 만드는 생성 문제도 있습니다. 중요한 건, 데이터가 문제를 정하는 게 아니라 우리가 y를 무엇으로 정하느냐가 문제를 정한다는 겁니다. 실제로 해 봅시다.}
 \end{frame}
 
-% --- 타구 두 문제
-\begin{frame}{같은 타구 \bbN 개, 두 문제}
+% --- 던지기 전 두 문제
+\begin{frame}{같은 공, 두 문제: 스윙할까? 구속은?}
 \markpage{batted}
 \vfill
-\centering\includegraphics[width=0.84\linewidth]{pf_batted.png}\par\vskip0.3em
-{\large 문제 A: $y$ = 홈런인가 $\to$ \kb{정확도} \qquad 문제 B: $y$ = 비거리 (m) $\to$ \kb{MAE}}\\[0.3em]
-{\scriptsize 2024년 6월 MLB 인플레이 타구 (홈런 \bbHR 개), 학습 70\% · 시험 30\% (\bbTest 개), 입력 = 타구 속도 · 발사각 (+ 발사각$^2$), 표준화 + 로지스틱회귀 / 선형회귀.\\ 입력에 비거리를 넣으면 안 된다 (A 에서는 답과 거의 같고, B 에서는 답 그 자체)}
+\centering\includegraphics[width=0.84\linewidth]{pf_twoprob.png}\par\vskip0.3em
+{\large 문제 A: $y$ = 스윙할까 $\to$ \kb{정확도} \qquad 문제 B: $y$ = 구속 (km/h) $\to$ \kb{MAE}}\\[0.3em]
+{\scriptsize 2024년 6월 MLB 투구 \prN 개, 입력 = 던지기 직전 볼카운트 · 타자 · 투수, 6/1$\sim$23 학습 · 6/24$\sim$30 시험 (\prTest 개), 로지스틱회귀 / 선형회귀.\\ \kq{구종}은 던진 뒤에야 안다. 넣으면 구속 MAE 가 \prMaeLeak 로 확 줄지만 \kq{반칙}이다 (답과 거의 같은 정보)}
 \vfill
-\note{이번에는 공이 방망이에 맞은 순간을 한 행으로 봅니다. 2024년 6월 메이저리그에서 인플레이로 날아간 타구 \bbN 개입니다. 중계 화면에 맞자마자 홈런 확률이 뜨는 게 바로 이 문제입니다. 입력은 맞는 순간 재는 타구 속도와 발사각입니다. 문제 A는 홈런인가를 맞히는 분류, 채점은 정확도입니다. 로지스틱회귀가 \bbAccModel 퍼센트인데, 늘 홈런 아님이라고만 해도 \bbAccBase 퍼센트입니다. 문제 B는 같은 입력으로 비거리를 맞히는 회귀, 채점은 MAE, 평균 몇 미터 틀렸나입니다. 선형회귀가 \bbMaeModel 미터, 늘 평균 비거리라고 답하면 \bbMaeBase 미터입니다. 같은 데이터, 다른 y, 다른 지표입니다. 입력에 비거리를 넣으면 안 됩니다. 비거리는 공이 떨어진 뒤에야 알 수 있고, 문제 B에서는 답 그 자체입니다. 회색 막대가 기준선인데, 조금 뒤에 다시 봅니다.}
+\note{이번에는 같은 투구 데이터로 문제를 두 개 만듭니다. 한 행은 공 하나, 입력은 던지기 직전에 알 수 있는 볼카운트, 타자, 투수입니다. 문제 A는 타자가 이 공에 방망이를 휘두를까를 맞히는 분류, 채점은 정확도입니다. 늘 안 친다고 하면 \prAccBase 퍼센트, 볼카운트만 봐도 \prAccCount 퍼센트, 타자와 투수까지 넣으면 \prAccModel 퍼센트입니다. 3볼 0스트라이크면 거의 안 치고, 3볼 2스트라이크면 대부분 칩니다. 문제 B는 같은 입력으로 이 공의 구속을 맞히는 회귀, 채점은 MAE, 평균 몇 킬로미터 틀렸나입니다. 늘 평균 \prMean 킬로라고 하면 \prMaeBase, 모델은 \prMaeModel 입니다. 생각보다 어렵습니다. 같은 투수라도 직구를 던질지 변화구를 던질지 모르기 때문입니다. 그래서 구종을 입력에 넣으면 \prMaeLeak 로 확 좋아지는데, 이건 반칙입니다. 구종은 공을 던진 뒤에야 알고, 구속을 거의 정해 버리는 답과 같은 정보입니다. 같은 데이터, 다른 y, 다른 지표, 그리고 입력은 예측하는 순간 알 수 있는 것만.}
 \end{frame}
 
 \section{채점}
@@ -153,13 +153,13 @@
 {\large
 \begin{tabular}{lll}
 \textbf{문제} & \textbf{기준선} & \textbf{점수}\\[0.2em]\hline\\[-0.6em]
-홈런인가 (분류) & 늘 ``홈런 아님''이라고 답 & 정확도 \kq{\bbAccBase\%}\\[0.5em]
-타구 비거리 (회귀) & 늘 학습 데이터의 평균 비거리 (\bbMeanDist m) & MAE \kq{\bbMaeBase m}\\[0.5em]
+스윙할까 (분류) & 늘 ``안 친다''라고 답 & 정확도 \kq{\prAccBase\%}\\[0.5em]
+구속 (회귀) & 늘 학습 데이터의 평균 구속 (\prMean km/h) & MAE \kq{\prMaeBase km/h}\\[0.5em]
 모든 공 (분류) & 늘 ``홈런 아님''이라고 답 & 정확도 \kq{\hrAccZero\%}
 \end{tabular}}\vskip1.2em
 {\large 모델 점수는 \kb{기준선과 비교}해서 읽는다}
 \vfill
-\note{기준선은 머리를 전혀 쓰지 않은 답입니다. 분류면 늘 가장 흔한 답, 회귀면 늘 학습 데이터의 평균. 타구가 홈런인지 맞히는 문제는 기준선이 이미 \bbAccBase 퍼센트라서, 모델의 \bbAccModel 퍼센트는 겉보기만큼 대단하지 않습니다. 모든 공으로 넓히면 기준선이 \hrAccZero 퍼센트, 처음 본 그 AI의 점수입니다. 같은 높은 정확도라도 기준선에 따라 의미가 정반대입니다.}
+\note{기준선은 머리를 전혀 쓰지 않은 답입니다. 분류면 늘 가장 흔한 답, 회귀면 늘 학습 데이터의 평균. 스윙 문제는 기준선이 \prAccBase 퍼센트라서, 모델의 \prAccModel 퍼센트는 동전 던지기보다 꽤 낫습니다. 구속은 늘 평균이라고 해도 \prMaeBase 킬로밖에 안 틀려서, 모델의 \prMaeModel 은 조금 나을 뿐입니다. 모든 공에 홈런이냐를 물으면 기준선이 \hrAccZero 퍼센트, 처음 본 그 AI의 점수입니다. 같은 높은 정확도라도 기준선에 따라 의미가 정반대입니다.}
 \end{frame}
 
 % --- 시험은 미래
@@ -168,13 +168,13 @@
 \centering
 {\large
 \begin{tabular}{ll}
-\textbf{데이터} & \textbf{어떻게 나누나}\\[0.2em]\hline\\[-0.6em]
-타구 \bbN 개 & 무작위로 70\% 학습 · 30\% 시험 (홈런 비율은 맞춰서)\\[0.5em]
-투구로 다음 경기 예측 & \kb{날짜 순서대로}: 6월 1$\sim$23일로 학습, 24$\sim$30일로 시험
+\textbf{나누는 법} & \textbf{결과}\\[0.2em]\hline\\[-0.6em]
+무작위로 섞기 & \kq{X}: 같은 경기 · 같은 타석의 앞뒤 공이 학습과 시험에 나뉜다\\[0.5em]
+\kb{날짜 순서대로} & \kb{O}: 6월 1$\sim$23일로 학습, 24$\sim$30일로 시험 (오늘 쓰는 두 문제 모두)
 \end{tabular}}\vskip1.2em
 {\large 미래를 섞어 학습하면 \kq{시험 점수가 거짓말}을 한다}
 \vfill
-\note{평가지표만큼 중요한 게 어떤 데이터로 채점하느냐입니다. 시험 데이터는 모델이 실제로 쓰일 때 만날 데이터를 흉내 내야 합니다. 타구 하나하나는 서로 크게 얽혀 있지 않아서 무작위로 나눠도 됩니다. 하지만 앞으로 열릴 경기의 공을 예측하는 모델이라면 늘 과거로 미래를 맞힙니다. 그래서 6월 23일까지로 학습하고 그 뒤 일주일로 시험해야 합니다. 무작위로 섞으면 같은 경기, 같은 타석의 바로 앞뒤 공이 학습과 시험에 나뉘어 들어가서, 미래를 엿본 셈이 되고 시험 점수가 실제보다 좋게 나옵니다.}
+\note{평가지표만큼 중요한 게 어떤 데이터로 채점하느냐입니다. 시험 데이터는 모델이 실제로 쓰일 때 만날 데이터를 흉내 내야 합니다. 앞으로 열릴 경기의 공을 예측하는 모델이라면 늘 과거로 미래를 맞힙니다. 그래서 6월 23일까지로 학습하고 그 뒤 일주일로 시험해야 합니다. 무작위로 섞으면 같은 경기, 같은 타석의 바로 앞뒤 공이 학습과 시험에 나뉘어 들어가서, 미래를 엿본 셈이 되고 시험 점수가 실제보다 좋게 나옵니다.}
 \end{frame}
 
 \section{드문 것 찾기}
@@ -296,13 +296,13 @@ $y = 1$ 인 행 & \hrPos & \hrPos & \hrBatHR\\
 \begin{frame}[fragile]{실습: 문제를 직접 정해 보기}
 \vfill
 \centering\begin{tabular}{rl}
-\large 1 & 6월 타구 \bbN 개: 홈런인가 (분류) · 비거리 (회귀), 정확도 · MAE · 기준선 직접 구현\\[0.4em]
+\large 1 & 6월 투구: 스윙할까 (분류) · 구속 (회귀), 정확도 · MAE · 기준선 직접 구현\\[0.4em]
 \large 2 & 6월 투구 \hrN 개: 전부 ``아님'' \hrAccZero\%, 볼카운트 규칙의 정밀도 · 재현율,\\
 & 한 행 = 공 $\to$ 타석 $\to$ 타자 (\hrRate\% $\to$ \hrPArate\% $\to$ \hrBatRate\%)\\[0.4em]
 \end{tabular}\vskip0.8em
-투구 · 타구는 Baseball Savant 에서 받는다 (로그인 없이, 처음엔 5분쯤) \\[0.3em]\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week01/2_problem_formulation/lab/problem_formulation.ipynb}{\textcolor{ksagolddk}{▶ Colab에서 실습 노트북 열기}}
+투구 데이터는 Baseball Savant 에서 받는다 (로그인 없이, 처음엔 5분쯤) \\[0.3em]\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week01/2_problem_formulation/lab/problem_formulation.ipynb}{\textcolor{ksagolddk}{▶ Colab에서 실습 노트북 열기}}
 \vfill
-\note{실습에서는 야구 데이터로 직접 다섯 칸을 채웁니다. 타구 데이터로 분류와 회귀 두 문제를 만들고, 정확도, MAE, 기준선을 직접 함수로 만듭니다. 6월의 모든 투구로 정확도의 함정과 정밀도, 재현율을 계산하고, 한 행을 공에서 타석, 타자로 바꿔 봅니다.}
+\note{실습에서는 야구 데이터로 직접 다섯 칸을 채웁니다. 같은 투구로 스윙할까라는 분류와 구속이라는 회귀 두 문제를 만들고, 정확도, MAE, 기준선을 직접 함수로 만듭니다. 6월의 모든 투구로 정확도의 함정과 정밀도, 재현율을 계산하고, 한 행을 공에서 타석, 타자로 바꿔 봅니다.}
 \end{frame}
 
 \section{정리}
@@ -325,7 +325,7 @@ $y = 1$ 인 행 & \hrPos & \hrPos & \hrBatHR\\
 \vfill
 \small
 \begin{itemize}
-\item 투구 · 타구 (p.1, p.\ref{batted}): Baseball Savant (MLB Statcast), 2024-06 정규시즌 모든 투구 CSV; 게임 화면: 컴투스프로야구2021 (컴투스) 캡처, 아래 자막만 덧그림
+\item 투구 (p.1, p.\ref{batted}): Baseball Savant (MLB Statcast), 2024-06 정규시즌 모든 투구 CSV; 게임 화면: 컴투스프로야구2021 (컴투스) 캡처, 아래 자막만 덧그림
 \end{itemize}
 \vfill
 \note{이 덱에 쓴 데이터의 출처입니다.}
