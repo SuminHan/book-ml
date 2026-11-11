@@ -163,14 +163,30 @@
 % --- 경사하강법
 \begin{frame}{경사하강법: 기울기 반대로 한 걸음}
 \markpage{gd}
-\vfill
 \centering
-{\Large\[ w_j \;\leftarrow\; w_j - \alpha\,\frac{\partial J}{\partial w_j} \]}\vskip0.4em
-{\large\[ \frac{\partial J}{\partial w_0} = \frac{1}{m}\sum_{i=1}^{m}\big(h(x^{(i)}) - y^{(i)}\big) \qquad
-\frac{\partial J}{\partial w_1} = \frac{1}{m}\sum_{i=1}^{m}\big(h(x^{(i)}) - y^{(i)}\big)\,x^{(i)} \]}\vskip0.4em
-{\small $\alpha$: 학습률 (한 걸음의 크기) \qquad 오차 $\times$ 입력의 평균만큼 고친다}
-\vfill
-\note{바닥을 찾는 방법이 경사하강법입니다. 지금 위치에서 J가 늘어나는 방향, 즉 기울기를 구해서 그 반대로 학습률 알파만큼 걷습니다. 기울기는 아래 두 식입니다. w0 쪽은 오차의 평균, w1 쪽은 오차 곱하기 입력의 평균입니다. 예측이 크게 틀린 학생일수록, 그리고 공부 시간이 긴 학생일수록 w1을 크게 고칩니다. 실습에서 이 두 줄을 직접 구현합니다.}
+{\Large\[ w_j \;\leftarrow\; w_j - \alpha\,\frac{\partial J}{\partial w_j} \]}\vskip-0.6em
+{\small $\alpha$: 학습률 (한 걸음의 크기) \qquad 기울기 $\partial J/\partial w_j$ 는 아래처럼 구한다}\vskip0.3em
+\begin{columns}[T]
+\begin{column}{0.49\textwidth}
+\begin{align*}
+\frac{\partial J}{\partial w_0}
+&= \frac{1}{2m}\sum\nolimits_{i=1}^{m}\frac{\partial}{\partial w_0}\big(w_0 + w_1 x^{(i)} - y^{(i)}\big)^{\textcolor{ksared}{2}}\\
+&= \frac{1}{\textcolor{ksared}{2}m}\sum\nolimits_{i=1}^{m}\textcolor{ksared}{2}\big(w_0 + w_1 x^{(i)} - y^{(i)}\big)\cdot\textcolor{ksablue}{1}\\
+&= \frac{1}{m}\sum\nolimits_{i=1}^{m}\big(h(x^{(i)}) - y^{(i)}\big)
+\end{align*}
+\end{column}
+\begin{column}{0.49\textwidth}
+\begin{align*}
+\frac{\partial J}{\partial w_1}
+&= \frac{1}{2m}\sum\nolimits_{i=1}^{m}\frac{\partial}{\partial w_1}\big(w_0 + w_1 x^{(i)} - y^{(i)}\big)^{\textcolor{ksared}{2}}\\
+&= \frac{1}{\textcolor{ksared}{2}m}\sum\nolimits_{i=1}^{m}\textcolor{ksared}{2}\big(w_0 + w_1 x^{(i)} - y^{(i)}\big)\cdot\textcolor{ksablue}{x^{(i)}}\\
+&= \frac{1}{m}\sum\nolimits_{i=1}^{m}\big(h(x^{(i)}) - y^{(i)}\big)\,\textcolor{ksablue}{x^{(i)}}
+\end{align*}
+\end{column}
+\end{columns}\vskip0.2em
+{\small \textcolor{ksared}{\textbf{빨강}}: 지수 2 가 앞으로 내려와 $\frac12$ 과 약분 \pref{cost} \qquad
+\textcolor{ksablue}{\textbf{파랑}}: 괄호 안을 미분한 값 ($w_0$ 로는 $1$, $w_1$ 로는 $x^{(i)}$)}
+\note{바닥을 찾는 방법이 경사하강법입니다. 지금 위치에서 J가 늘어나는 방향, 즉 기울기를 구해서 그 반대로 학습률 알파만큼 걷습니다. 기울기를 직접 구해 봅시다. 왼쪽이 w0, 오른쪽이 w1입니다. 둘 다 같은 순서입니다. 제곱을 미분하면 빨간 지수 2가 앞으로 내려옵니다. 이 2가 J 앞에 붙여 둔 2분의 1과 약분됩니다. 2분의 1을 붙인 이유가 이것입니다. 그리고 괄호 안을 미분한 값을 곱합니다. 파란색입니다. 괄호 안을 w0로 미분하면 1, w1로 미분하면 x입니다. 그래서 w0 쪽 기울기는 오차의 평균, w1 쪽은 오차 곱하기 입력의 평균이 됩니다. 예측이 크게 틀린 학생일수록, 그리고 공부 시간이 긴 학생일수록 w1을 크게 고칩니다. 실습에서 이 두 줄을 직접 구현합니다.}
 \end{frame}
 
 % --- 학습률
