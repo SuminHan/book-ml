@@ -87,6 +87,17 @@ ax.set_aspect("equal"); ax.set_xlim(0, 45); ax.set_ylim(-1, 12)
 ax.set_xlabel("$w_0$ (절편)"); ax.set_ylabel("$w_1$ (기울기)")
 fig.tight_layout(); fig.savefig(O + "lr_bowl.png", bbox_inches="tight"); plt.close(fig)
 
+# 4a. 왜 w1 쪽만 가파른가: w0 를 2 올리면 직선이 2 만큼 위로, w1 을 2 올리면 x 배만큼 (x = 10 이면 20)
+fig, axs = plt.subplots(1, 2, figsize=(12, 4.0))
+for ax, (d0, d1), ttl in ((axs[0], (2, 0), "$w_0$ 를 2 올리면: 모든 학생 +2점"), (axs[1], (0, 2), "$w_1$ 을 2 올리면: 학생마다 $+2x$ 점 (10시간이면 +20)")):
+    base(ax, x, y)
+    ax.plot(xs, W0 + W1 * xs, color=GRAY, lw=2.5)
+    ax.plot(xs, (W0 + d0) + (W1 + d1) * xs, color=RED, lw=2.5)
+    for xi in (2, 6, 10):
+        ax.annotate("", (xi, (W0 + d0) + (W1 + d1) * xi), (xi, W0 + W1 * xi), arrowprops=dict(arrowstyle="-|>", color=RED, lw=1.8))
+    ax.set_title(ttl, fontsize=16, color=RED); ax.set_ylim(30, 125)
+fig.tight_layout(); fig.savefig(O + "lr_nudge.png"); plt.close(fig)
+
 # 4b. 같은 그릇, 학습률 네 가지 (같은 출발점 (5, 0), 처음 300걸음; 눈금은 가로 · 세로 같게)
 def steps_to_bottom(x, y, lr, w=(5.0, 0.0), tol=1.01, cap=100000):
     """steps until J is within 1% of the minimum (None if it blows up)."""
@@ -111,6 +122,32 @@ for ax, lr in zip(axs.flat, (0.005, 0.02, 0.05, 0.055)):
     ax.set_aspect("equal"); ax.set_xlim(0, 45); ax.set_ylim(-1, 12); ax.set_xticks([]); ax.set_yticks([])
     ax.set_xlabel("$w_0$", fontsize=12, labelpad=1); ax.set_ylabel("$w_1$", fontsize=12, labelpad=1)
 fig.tight_layout(); fig.savefig(O + "lr_rates.png", bbox_inches="tight"); plt.close(fig)
+
+# 4c. 입력 표준화: 원래 x / 평균 빼기 / 표준화 — 그릇 모양과 경사하강 경로 (출발점 (5, 0), 각자 가장 빠른 학습률 근처)
+def bowl_panel(ax, x, y, lr, xlim, ylim, title):
+    Wa_, Wb_ = np.meshgrid(np.linspace(*xlim, 300), np.linspace(*ylim, 200))
+    Z_ = J(Wa_, Wb_, x, y)
+    ax.contour(Wa_, Wb_, Z_, levels=np.geomspace(Z_.min() * 1.02, Z_.max(), 14), cmap="Blues_r", linewidths=0.8)
+    p = gd(x, y, lr, 2000)
+    A = np.c_[np.ones_like(x), x]; wb = np.linalg.lstsq(A, y, rcond=None)[0]
+    n = steps_to_bottom_w(x, y, lr, wb)
+    ax.plot(p[:, 0], p[:, 1], color=RED, lw=1.3); ax.scatter(p[:12, 0], p[:12, 1], color=RED, s=16, zorder=4)
+    ax.scatter(*wb, marker="*", s=200, color=GOLD, zorder=5)
+    ax.set_aspect("equal"); ax.set_xlim(*xlim); ax.set_ylim(*ylim); ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlabel("$w_0$", fontsize=12, labelpad=1); ax.set_ylabel("$w_1$", fontsize=12, labelpad=1)
+    ax.set_title(f"{title}\nη = {lr}: 바닥까지 {n:,}걸음", fontsize=19, color=BLUE)
+def steps_to_bottom_w(x, y, lr, wb, w=(5.0, 0.0), tol=1.01):
+    best = np.mean((wb[0] + wb[1] * x - y) ** 2) / 2; a, b = w
+    for k in range(100000):
+        r = a + b * x - y
+        if np.mean(r ** 2) / 2 <= best * tol: return k
+        a, b = a - lr * r.mean(), b - lr * (r * x).mean()
+xc = x - x.mean(); xz = xc / x.std()
+fig, axs = plt.subplots(1, 3, figsize=(15, 4.6), gridspec_kw=dict(width_ratios=[45 / 13, 75 / 25, 75 / 25]))
+bowl_panel(axs[0], x, y, 0.05, (0, 45), (-1, 12), "원래 x (공부 시간)")
+bowl_panel(axs[1], xc, y, 0.2, (0, 75), (-6, 19), "평균 빼기: x − 5.45")
+bowl_panel(axs[2], xz, y, 1.0, (0, 75), (-6, 19), "표준화: (x − 5.45) / 2.74")
+fig.tight_layout(); fig.savefig(O + "lr_scaling.png", bbox_inches="tight"); plt.close(fig)
 
 # 5. 학습률: 적당 vs 너무 큼 (w1 만 움직이는 1차원 단면)
 def J1(w1, x, y): return np.mean((W0 + w1 * x - y) ** 2) / 2
