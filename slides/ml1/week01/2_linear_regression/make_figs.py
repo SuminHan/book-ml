@@ -68,13 +68,24 @@ def gd(x, y, lr, steps, w=(5.0, 0.0)):
     for _ in range(steps):
         r = w0 + w1 * x - y; w0, w1 = w0 - lr * r.mean(), w1 - lr * (r * x).mean(); path.append((w0, w1))
     return np.array(path)
-fig, ax = plt.subplots(figsize=(8, 4.8))
-ax.contour(W0g, W1g, Z, levels=np.geomspace(Z.min() * 1.05, Z.max(), 18), cmap="Blues_r", linewidths=1.2)
+# 가로 · 세로 눈금을 같게 (aspect=1): 그래야 걸음 방향이 등고선에 수직 (가장 가파른 방향) 으로 보인다
+Wa, Wb = np.meshgrid(np.linspace(0, 45, 400), np.linspace(-1, 12, 200))
+Za = J(Wa, Wb, x, y)
+fig, ax = plt.subplots(figsize=(12, 4.0))
+ax.contour(Wa, Wb, Za, levels=np.geomspace(Za.min() * 1.02, Za.max(), 22), cmap="Blues_r", linewidths=1.0)
 p = gd(x, y, 0.02, 4000)
-ax.plot(p[:, 0], p[:, 1], color=RED, lw=2); ax.scatter(*p[0], color=RED, s=60); ax.scatter(W0, W1, marker="*", s=320, color=GOLD, zorder=4)
-ax.text(W0 + 3, W1 - 1.6, "바닥", fontsize=15, color=GOLD, fontweight="bold")
+ax.plot(p[:, 0], p[:, 1], color=RED, lw=1.5, alpha=0.6)
+for k in range(3):   # first steps: arrows
+    ax.annotate("", p[k + 1], p[k], arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.2, mutation_scale=16))
+for k in [0, 1, 2, 3, 100, 1000]:
+    ax.scatter(*p[k], color=RED, s=40, zorder=4)
+    dx, dy = {0: (0.6, -0.6), 1: (-1.6, 0.0), 2: (-1.6, 0.3), 3: (0.4, 0.6), 100: (0, 0.6), 1000: (-1.5, 0.7)}[k]
+    ax.text(p[k][0] + dx, p[k][1] + dy, f"{k}", fontsize=14, color=RED, fontweight="bold")
+ax.scatter(W0, W1, marker="*", s=320, color=GOLD, zorder=5)
+ax.text(W0 + 1.0, W1 - 1.3, "바닥", fontsize=15, color=GOLD, fontweight="bold")
+ax.set_aspect("equal"); ax.set_xlim(0, 45); ax.set_ylim(-1, 12)
 ax.set_xlabel("$w_0$ (절편)"); ax.set_ylabel("$w_1$ (기울기)")
-fig.tight_layout(); fig.savefig(O + "lr_bowl.png"); plt.close(fig)
+fig.tight_layout(); fig.savefig(O + "lr_bowl.png", bbox_inches="tight"); plt.close(fig)
 
 # 5. 학습률: 적당 vs 너무 큼 (w1 만 움직이는 1차원 단면)
 def J1(w1, x, y): return np.mean((W0 + w1 * x - y) ** 2) / 2
