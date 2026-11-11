@@ -63,10 +63,10 @@ fig.tight_layout(); fig.savefig(O + "lr_residuals.png"); plt.close(fig)
 def J(w0, w1, x, y): return np.mean((w0 + w1 * x[:, None, None] - y[:, None, None]) ** 2, axis=0) / 2
 W0g, W1g = np.meshgrid(np.linspace(0, 80, 200), np.linspace(-2, 12, 200))
 Z = J(W0g, W1g, x, y)
-def gd(x, y, alpha, steps, w=(5.0, 0.0)):
+def gd(x, y, lr, steps, w=(5.0, 0.0)):
     w0, w1 = w; path = [(w0, w1)]
     for _ in range(steps):
-        r = w0 + w1 * x - y; w0, w1 = w0 - alpha * r.mean(), w1 - alpha * (r * x).mean(); path.append((w0, w1))
+        r = w0 + w1 * x - y; w0, w1 = w0 - lr * r.mean(), w1 - lr * (r * x).mean(); path.append((w0, w1))
     return np.array(path)
 fig, ax = plt.subplots(figsize=(8, 4.8))
 ax.contour(W0g, W1g, Z, levels=np.geomspace(Z.min() * 1.05, Z.max(), 18), cmap="Blues_r", linewidths=1.2)
@@ -78,16 +78,16 @@ fig.tight_layout(); fig.savefig(O + "lr_bowl.png"); plt.close(fig)
 
 # 5. 학습률: 적당 vs 너무 큼 (w1 만 움직이는 1차원 단면)
 def J1(w1, x, y): return np.mean((W0 + w1 * x - y) ** 2) / 2
-def path1(x, y, alpha, n=6, w1=0.0):
+def path1(x, y, lr, n=6, w1=0.0):
     out = [w1]
     for _ in range(n):
-        w1 = w1 - alpha * np.mean((W0 + w1 * x - y) * x); out.append(w1)
+        w1 = w1 - lr * np.mean((W0 + w1 * x - y) * x); out.append(w1)
     return np.array(out)
 grid = np.linspace(-14, 24, 300)
 fig, axs = plt.subplots(1, 2, figsize=(12, 4.2))
-for ax, alpha, title, c in ((axs[0], 0.01, "학습률 적당", BLUE), (axs[1], 0.06, "학습률 너무 큼 → 발산", RED)):
+for ax, lr, title, c in ((axs[0], 0.01, "학습률 적당", BLUE), (axs[1], 0.06, "학습률 너무 큼 → 발산", RED)):
     ax.plot(grid, [J1(g, x, y) for g in grid], color=GRAY, lw=2)
-    pth = path1(x, y, alpha, 6 if alpha < 0.03 else 4)
+    pth = path1(x, y, lr, 6 if lr < 0.03 else 4)
     ax.plot(pth, [J1(g, x, y) for g in pth], "o-", color=c, lw=2)
     ax.set_title(title, fontsize=16, color=c); ax.set_xlabel("$w_1$"); ax.set_yticks([])
 axs[0].set_ylabel("비용 $J$")

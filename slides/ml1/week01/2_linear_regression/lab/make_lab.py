@@ -47,23 +47,23 @@ def gradient(w0, w1, x, y):
     g1 = (err * x).mean()                                #@ANS g1 = None               # TODO: ∂J/∂w1
     return g0, g1
 
-def gradient_descent(x, y, alpha, steps, w0=0.0, w1=0.0):
+def gradient_descent(x, y, lr, steps, w0=0.0, w1=0.0):
     history = []
     for _ in range(steps):
         g0, g1 = gradient(w0, w1, x, y)
-        w0, w1 = w0 - alpha * g0, w1 - alpha * g1        #@ANS w0, w1 = None, None     # TODO: one step
+        w0, w1 = w0 - lr * g0, w1 - lr * g1        #@ANS w0, w1 = None, None     # TODO: one step
         history.append(cost(w0, w1, x, y))
     return w0, w1, history
 
-w0, w1, hist = gradient_descent(x, y, alpha=0.02, steps=5000)
+w0, w1, hist = gradient_descent(x, y, lr=0.02, steps=5000)
 print(f"w0 = {w0:.2f}, w1 = {w1:.2f}  ->  7 hours gives {w0 + 7 * w1:.1f} points")
 m_ = LinearRegression().fit(x.reshape(-1, 1), y)
 print(f"sklearn: w0 = {m_.intercept_:.2f}, w1 = {m_.coef_[0]:.2f}")
 plt.plot(hist); plt.yscale("log"); plt.xlabel("step"); plt.ylabel("cost J"); plt.show()"""),
 ("code", """# Try larger learning rates: 0.05 and 0.06
-for alpha in [0.05, 0.06]:
-    _, _, h = gradient_descent(x, y, alpha, steps=30)
-    print(f"alpha={alpha}: first J={h[0]:.1f}  after 30 steps J={h[-1]:.3g}")"""),
+for lr in [0.05, 0.06]:
+    _, _, h = gradient_descent(x, y, lr, steps=30)
+    print(f"lr={lr}: first J={h[0]:.1f}  after 30 steps J={h[-1]:.3g}")"""),
 ("md", """**관찰**: 0.06 은 발산한다. 슬라이드의 오른쪽 그림처럼 바닥을 건너뛰며 매번 더 높이 튄다.
 
 $R^2$ 와 RMSE 도 확인하자 (슬라이드: RMSE 4.36, $R^2$ 0.916)."""),

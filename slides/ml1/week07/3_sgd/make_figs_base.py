@@ -92,7 +92,7 @@ for ep in range(3):
 W, Bb = np.meshgrid(np.linspace(-1.6, 1.5, 120), np.linspace(-1.0, 1.5, 120))
 Z = J(W, Bb, x, yv); wopt = np.polyfit(x, yv, 1)
 fig, axs = plt.subplots(1, 2, figsize=(11, 4.6), sharey=True)
-for ax, P, col, ttl in ((axs[0], path_gd, RED, f"전체 배치 ({m_}명) · 3에폭 = 3걸음 · α 0.05"), (axs[1], path_sgd, BLUE, f"미니배치 16명 · 3에폭 = {len(path_sgd) - 1}걸음 · α 0.05")):
+for ax, P, col, ttl in ((axs[0], path_gd, RED, f"전체 배치 ({m_}명) · 3에폭 = 3걸음 · η 0.05"), (axs[1], path_sgd, BLUE, f"미니배치 16명 · 3에폭 = {len(path_sgd) - 1}걸음 · η 0.05")):
     ax.contour(W, Bb, Z, levels=np.geomspace(0.39, 2.5, 9), colors=GRAY, linewidths=0.8)
     P = np.array(P); ax.plot(P[:, 0], P[:, 1], "-o", color=col, ms=3 if len(P) > 10 else 7, lw=1.6)
     ax.plot(*wopt, "*", color=GOLD, ms=18); ax.set_title(ttl, fontsize=14, color=col); ax.set_xlabel("w")

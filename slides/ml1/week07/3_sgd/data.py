@@ -4,14 +4,14 @@ MNIST 숫자: assets/mnist_epoch.json (쇼츠 lessons/ml1/sgd 의 실험 그대�
 import os, json, itertools, numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# --- 손 계산 예: 8명의 점수, 처음 추측 b = 40, 학습률 α = 0.5
+# --- 손 계산 예: 8명의 점수, 처음 추측 b = 40, 학습률 η = 0.5
 SCORES = [50, 56, 62, 66, 74, 78, 84, 90]
 M = len(SCORES)
-B0, ALPHA = 40, 0.5
+B0, LR = 40, 0.5
 MEAN = sum(SCORES) // M                                   # 70 = 최적의 b
 GRADS = [B0 - y for y in SCORES]                          # 학생별 기울기 (b − y_i)
 FULL_GRAD = sum(GRADS) // M                               # −30
-GD_ONE = B0 - ALPHA * FULL_GRAD                           # 전체 배치 한 걸음 → 55
+GD_ONE = B0 - LR * FULL_GRAD                           # 전체 배치 한 걸음 → 55
 PAIR = (50, 74)                                           # 처음 뽑은 두 명
 PAIR_GRAD = B0 - sum(PAIR) // 2                           # −22
 PAIR_GRADS = [B0 - (a + b) / 2 for a, b in itertools.combinations(SCORES, 2)]   # 28가지 쌍
@@ -20,7 +20,7 @@ EPOCH_BATCHES = [(50, 74), (84, 90), (56, 62), (66, 78)]
 def sgd_epoch(b=B0):
     path = [b]
     for p in EPOCH_BATCHES:
-        b = b - ALPHA * (b - sum(p) / 2); path.append(b)
+        b = b - LR * (b - sum(p) / 2); path.append(b)
     return path
 SGD_PATH = sgd_epoch()                                    # 40 → 51 → 69 → 64 → 68
 

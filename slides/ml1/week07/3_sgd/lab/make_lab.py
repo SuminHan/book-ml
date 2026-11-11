@@ -61,7 +61,7 @@ print("full gradient norm", round(np.linalg.norm(gw_full), 3))"""),
 ("md", """## 파트 2. SGD 직접 구현
 
 에폭마다 ① 섞고 ② 앞에서부터 $B$ 개씩 잘라 ③ 미니배치 기울기로 한 걸음."""),
-("code", """def sgd(X, y, B, alpha, epochs, seed=0):
+("code", """def sgd(X, y, B, lr, epochs, seed=0):
     m, n = X.shape
     rng = np.random.default_rng(seed)
     w, b = np.zeros(n), 0.0
@@ -71,20 +71,20 @@ print("full gradient norm", round(np.linalg.norm(gw_full), 3))"""),
         for i in range(0, m, B):
             idx = perm[i:i + B]                          #@ANS idx = None              # TODO: (2) B examples starting at i
             gw, gb = minibatch_grad(w, b, X, y, idx)
-            w, b = w - alpha * gw, b - alpha * gb        #@ANS w, b = None, None       # TODO: (3) one step
+            w, b = w - lr * gw, b - lr * gb        #@ANS w, b = None, None       # TODO: (3) one step
         history.append(cost(w, b, X, y))
     return w, b, history
 
-alpha, epochs = 0.02, 20
+lr, epochs = 0.02, 20
 plt.figure(figsize=(7, 4))
 for B in [1, 16, m]:
-    w, b, h = sgd(X, y, B, alpha, epochs)
+    w, b, h = sgd(X, y, B, lr, epochs)
     plt.plot(h, marker="o", ms=3, label=f"B={B} ({-(-m // B)} steps per epoch)")
     print(f"B={B:3d}: J after {epochs} epochs = {h[-1]:.3f}")
 w_ls = np.linalg.lstsq(np.c_[X, np.ones(m)], y, rcond=None)[0]
 print("minimum J =", round(cost(w_ls[:-1], w_ls[-1], X, y), 3))
-plt.xlabel("epoch"); plt.ylabel("cost J"); plt.legend(); plt.title(f"same learning rate {alpha}"); plt.show()"""),
-("md", """**해 보기**: `alpha` 를 0.2, 1.0 으로 바꿔 보자. 전체 배치(`B=m`)는 학습률을 키우면 빨라지지만, `B=1` 은 어떻게 될까?"""),
+plt.xlabel("epoch"); plt.ylabel("cost J"); plt.legend(); plt.title(f"same learning rate {lr}"); plt.show()"""),
+("md", """**해 보기**: `lr` 를 0.2, 1.0 으로 바꿔 보자. 전체 배치(`B=m`)는 학습률을 키우면 빨라지지만, `B=1` 은 어떻게 될까?"""),
 ("md", """## 파트 3. MNIST: 같은 6만 장, 54% vs 96%
 
 은닉층 하나(64개, ReLU)인 신경망을 1에폭만 학습시킨다. 바뀌는 건 배치 크기와 학습률뿐이다. 처음 실행하면 MNIST(약 11MB)를 내려받는다."""),

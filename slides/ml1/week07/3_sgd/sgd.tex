@@ -35,11 +35,11 @@
 % --- 복습: 경사하강법
 \begin{frame}{복습: 경사하강법}
 \vfill
-\centering{\LARGE\[ w \;\leftarrow\; w - \alpha\,\frac{\partial J}{\partial w}\]}\vskip0.6em
-$\alpha$: 학습률 (한 걸음의 크기) \qquad $\dfrac{\partial J}{\partial w}$: 비용이 늘어나는 방향\\[1.0em]
+\centering{\LARGE\[ w \;\leftarrow\; w - \eta\,\frac{\partial J}{\partial w}\]}\vskip0.6em
+$\eta$: 학습률 (한 걸음의 크기) \qquad $\dfrac{\partial J}{\partial w}$: 비용이 늘어나는 방향\\[1.0em]
 \kq{한 걸음마다 $\dfrac{\partial J}{\partial w}$ 를 새로 구한다}
 \vfill
-\note{1주차에 배운 경사하강법입니다. 비용 J가 늘어나는 방향, 즉 기울기를 구해서 그 반대 방향으로 학습률 알파만큼 걷습니다. 중요한 건 한 걸음마다 기울기를 새로 구해야 한다는 점입니다. 걸음을 옮기면 서 있는 위치가 바뀌고, 기울기도 바뀌기 때문입니다. 그러면 기울기 한 번을 구하는 데 얼마나 걸릴까요?}
+\note{1주차에 배운 경사하강법입니다. 비용 J가 늘어나는 방향, 즉 기울기를 구해서 그 반대 방향으로 학습률 에타만큼 걷습니다. 중요한 건 한 걸음마다 기울기를 새로 구해야 한다는 점입니다. 걸음을 옮기면 서 있는 위치가 바뀌고, 기울기도 바뀌기 때문입니다. 그러면 기울기 한 번을 구하는 데 얼마나 걸릴까요?}
 \end{frame}
 
 % --- 비용은 평균, 기울기도 평균
@@ -73,7 +73,7 @@ $\ell_i$: 데이터 $i$ 하나의 손실 \qquad $m$: 데이터 수\\[0.8em]
 \end{tabular}}\vskip1.0em
 {\Large $\dfrac{\partial J}{\partial b} = \dfrac{-10-16-22-26-34-38-44-50}{8} = \kq{-30}$}\vskip0.8em
 {\Large $b \;\leftarrow\; 40 - {\color{ksablue}0.5}\times(-30) = \kq{55}$}\vskip0.6em
-{\small 학습률 $\alpha = {\color{ksablue}0.5}$ \quad 최적값은 평균 점수 70}
+{\small 학습률 $\eta = {\color{ksablue}0.5}$ \quad 최적값은 평균 점수 70}
 \vfill
 \note{8명의 기울기를 모두 구해 평균하면 마이너스 30입니다. 학습률을 0.5로 두면 b는 40에서 0.5 곱하기 30, 15만큼 올라가 55가 됩니다. 참고로 이 모델의 최적값은 평균 점수 70입니다. 8명의 기울기를 다 구해야 한 걸음을 갈 수 있었습니다. 8명이면 금방이지만, 데이터가 많으면 어떨까요?}
 \end{frame}
@@ -175,7 +175,7 @@ g_{\mathcal B} &= \frac{1}{B}\sum_{i\in\mathcal B} g_i && \text{미니배치 기
 \begin{tabular}{l}
 \kb{에폭마다} 데이터 $m$ 개를 섞는다\\[0.3em]
 \quad 앞에서부터 $B$ 개씩 자른 미니배치 $\mathcal B$ 마다\\[0.3em]
-\qquad {\Large $w \;\leftarrow\; w - \alpha\, g_{\mathcal B}$}
+\qquad {\Large $w \;\leftarrow\; w - \eta\, g_{\mathcal B}$}
 \end{tabular}\vskip1.0em
 \renewcommand{\arraystretch}{1.3}
 {\normalsize\begin{tabular}{rll}
@@ -188,7 +188,7 @@ g_{\mathcal B} &= \frac{1}{B}\sum_{i\in\mathcal B} g_i && \text{미니배치 기
 \end{frame}
 
 % --- 1에폭 직접 해 보기
-\begin{frame}{1에폭 직접 해 보기 ($B=2$, $\alpha=0.5$)}
+\begin{frame}{1에폭 직접 해 보기 ($B=2$, $\eta=0.5$)}
 \vfill
 \centering\includegraphics[width=0.78\linewidth]{sgd_epoch.png}\par\vskip0.2em
 {\small 8명을 한 번씩 본 것은 같다. 전체 배치는 \kq{55}, SGD 는 4걸음 만에 \kb{68}}
@@ -200,7 +200,7 @@ g_{\mathcal B} &= \frac{1}{B}\sum_{i\in\mathcal B} g_i && \text{미니배치 기
 \begin{frame}{2차원에서 보면}
 \vfill
 \centering\includegraphics[width=0.8\linewidth]{sgd_paths.png}\par\vskip0.2em
-{\small diabetes: BMI 로 1년 뒤 진행 정도 예측, $\hat y = wx+b$ \quad 같은 학습률 $\alpha=0.05$, 같은 3에폭 뒤 비용 $J$: 전체 배치 2.03, SGD \kb{0.33} (최솟값 0.33)}
+{\small diabetes: BMI 로 1년 뒤 진행 정도 예측, $\hat y = wx+b$ \quad 같은 학습률 $\eta=0.05$, 같은 3에폭 뒤 비용 $J$: 전체 배치 2.03, SGD \kb{0.33} (최솟값 0.33)}
 \vfill
 \note{1주차 선형회귀 실습의 diabetes 데이터로 w와 b 두 개를 학습시킨 경로입니다. 등고선은 비용 J이고 별이 최솟값입니다. 두 방법 모두 학습률 0.05로 같고, 데이터를 세 바퀴 봤습니다. 왼쪽 전체 배치는 3걸음뿐이라 출발점 근처에 있습니다. 오른쪽 SGD는 16명씩 84걸음을 걸어 별에 도착했습니다. 경로가 삐뚤빼뚤한 건 미니배치마다 기울기가 조금씩 틀리기 때문입니다. 3에폭 뒤 비용은 전체 배치 2.03, SGD 0.33으로 최솟값과 거의 같습니다. 이 문제는 아주 쉬운 2차 함수라서 전체 배치도 학습률을 크게 하면 빨리 갈 수 있습니다. 걸음 수 차이를 보여 주려고 학습률을 같게 맞춘 비교입니다.}
 \end{frame}
@@ -252,7 +252,7 @@ g_{\mathcal B} &= \frac{1}{B}\sum_{i\in\mathcal B} g_i && \text{미니배치 기
 \vfill
 \begin{enumerate}
 \item 데이터 50,000개, 배치 크기 100. 1에폭은 몇 걸음인가? 10에폭은?\vskip0.8em
-\item 점수 60, 64, 80, 84 인 4명, 모델 $\hat y=b$, 지금 $b=50$.\\ (a) 전체 기울기는? \; (b) 미니배치 \{60, 64\} 의 기울기는? \; (c) $\alpha=0.5$ 로 (b) 한 걸음 가면 $b$ 는?\vskip0.8em
+\item 점수 60, 64, 80, 84 인 4명, 모델 $\hat y=b$, 지금 $b=50$.\\ (a) 전체 기울기는? \; (b) 미니배치 \{60, 64\} 의 기울기는? \; (c) $\eta=0.5$ 로 (b) 한 걸음 가면 $b$ 는?\vskip0.8em
 \item 4명에서 2명을 고르는 6가지 쌍의 기울기를 모두 구해 평균이 (a) 와 같은지 확인하라.
 \end{enumerate}
 \vfill

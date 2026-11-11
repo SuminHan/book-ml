@@ -20,11 +20,11 @@ def sig(z):
     return 1 / (1 + np.exp(-z))
 
 
-def fit_logistic(X, y, alpha=1.0, steps=3000):
+def fit_logistic(X, y, lr=1.0, steps=3000):
     """경사하강법 (교차 엔트로피), X 에 1 열 포함 (레이팅은 100 으로 나눠 넣고 계수를 되돌린다)."""
     w = np.zeros(X.shape[1])
     for _ in range(steps):
-        w -= alpha * X.T @ (sig(X @ w) - y) / len(y)
+        w -= lr * X.T @ (sig(X @ w) - y) / len(y)
     return w
 
 

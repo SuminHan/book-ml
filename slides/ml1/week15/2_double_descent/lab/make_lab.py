@@ -66,7 +66,7 @@ plt.show()
 print({d: round(float(e), 1) for d, (e, _) in res.items()})"""),
 ("md", """### 경사하강법은 어디에 도착하나
 
-$w \\leftarrow w - \\alpha X^\\top (Xw - y)$ 를 16차에서 1000번. 출발점을 모두 0 으로 할 때와 모두 3 으로 할 때를 비교한다. 학습률은 $\\alpha = 1 / \\sigma_{\\max}^2$ ($X$ 의 가장 큰 특잇값)."""),
+$w \\leftarrow w - \\eta X^\\top (Xw - y)$ 를 16차에서 1000번. 출발점을 모두 0 으로 할 때와 모두 3 으로 할 때를 비교한다. 학습률은 $\\eta = 1 / \\sigma_{\\max}^2$ ($X$ 의 가장 큰 특잇값)."""),
 ("code", """def gradient_descent(X, y, w0, steps):
     lr = 1 / np.linalg.norm(X, 2) ** 2
     w = w0.copy()

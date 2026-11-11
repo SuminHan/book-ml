@@ -64,12 +64,12 @@ plt.plot(zs, sigmoid(zs)); plt.axhline(0.5, ls="--", color="gray"); plt.xlabel("
 
 이제 이 함수로 경사하강법을 돌린다. 레이팅 차이는 수백 점이라 그대로 넣으면 학습률을 맞추기 어렵다.
 **100 으로 나눠** (단위: 100점) 넣고, 다 배운 뒤 $w_1$ 을 100 으로 나눠 1점당 값으로 되돌린다."""),
-("code", """def gradient_descent(x, y, alpha=1.0, steps=3000):
+("code", """def gradient_descent(x, y, lr=1.0, steps=3000):
     w0, w1 = 0.0, 0.0
     for _ in range(steps):
         y_hat = sigmoid(w0 + w1 * x)                     #@ANS y_hat = None            # TODO: the only line that differs from linear regression
         err = y_hat - y
-        w0, w1 = w0 - alpha * err.mean(), w1 - alpha * (err * x).mean()
+        w0, w1 = w0 - lr * err.mean(), w1 - lr * (err * x).mean()
     return w0, w1
 
 x = df["diff"].values / 100                               # unit: 100 rating points
@@ -131,7 +131,7 @@ plt.title(f"PR curve  (PR-AUC = {average_precision_score(df.white_win, p):.2f}; 
 plt.show()"""),
 ("md", """**확인 질문**
 1. 파트 1 에서 선형회귀와 다른 줄은 정확히 어디인가? 기울기 식은 왜 같은 모양일까? (슬라이드의 약분)
-2. 파트 1 에서 레이팅 차이를 100 으로 나누지 않고 그대로 넣으면 `alpha=1.0` 에서 무슨 일이 생길까? 직접 바꿔 보자.
+2. 파트 1 에서 레이팅 차이를 100 으로 나누지 않고 그대로 넣으면 `lr=1.0` 에서 무슨 일이 생길까? 직접 바꿔 보자.
 3. 파트 2 에서 `black` 의 오즈 배수가 1 보다 작다는 것은 무슨 뜻인가? 두 계수의 크기가 거의 같다는 것은?
 4. 레이팅이 같아도 백 승률이 50% 를 조금 넘는다. 왜일까? 결정 경계에서 어떻게 보이나?
 5. 임계값 0.9 로 "백이 확실히 이긴다" 고만 말하면 정밀도와 재현율은 어떻게 될까? PR-AUC 가 0.5 근처인 무작위 추측보다 얼마나 나은가?

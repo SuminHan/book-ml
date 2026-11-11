@@ -17,11 +17,11 @@ def study_sleep():
     y = (r.uniform(size=60) < sigmoid(-11 + 1.0 * h + 1.0 * s)).astype(int)
     return h, s, y
 
-def fit(X, y, alpha=0.1, steps=20000):
+def fit(X, y, lr=0.1, steps=20000):
     """경사하강법 (교차 엔트로피). X 에 1 열 포함"""
     w = np.zeros(X.shape[1])
     for _ in range(steps):
-        w -= alpha * X.T @ (sigmoid(X @ w) - y) / len(y)
+        w -= lr * X.T @ (sigmoid(X @ w) - y) / len(y)
     return w
 
 # 슬라이드에 적는 결과 (아래 확인)
