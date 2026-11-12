@@ -128,3 +128,41 @@ axs[0].text(1.05, 2.3, "$\\mathbf{w}$", fontsize=19, color=GOLD, fontweight="bol
 axs[0].annotate("", (3.1, 0.9), (2.1, -0.1), arrowprops=dict(arrowstyle="<->", color="black", lw=1.8))
 axs[0].text(2.95, 1.0, "폭 $= 2/\\Vert\\mathbf{w}\\Vert = \\sqrt{2}$", fontsize=14, bbox=dict(fc="white", ec="none", pad=1.5))
 save(fig, "sv_scale.png")
+
+
+# 방향을 돌려 가며 폭 재기 (서포트 벡터가 3개만 남는 과정)
+def sweep_street(ax, deg, R=RED_PTS, Bl=BLUE_PTS, width=True):
+    wd, cr, cb, tr, tb = sweep(deg, R, Bl)
+    t = np.radians(deg + 90); n = np.array([np.cos(t), np.sin(t)]); d = np.array([np.cos(np.radians(deg)), np.sin(np.radians(deg))])
+    s = np.linspace(-20, 20, 2)
+    seg = lambda c: c * n[:, None] + d[:, None] * s
+    a, b = seg(cr), seg(cb)
+    ax.fill(np.r_[a[0], b[0][::-1]], np.r_[a[1], b[1][::-1]], color=GOLD, alpha=0.18, lw=0)
+    ax.plot(*seg((cr + cb) / 2), color="black", lw=2.5); ax.plot(*a, "--", color=RED, lw=1.5); ax.plot(*b, "--", color=BLUE, lw=1.5)
+    tp = np.r_[tr, tb]; ax.scatter(tp[:, 0], tp[:, 1], s=320, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4)
+    if width:
+        ax.set_title(f"기울기 {deg}° · 폭 {wd:.2f}", fontsize=16)
+    return wd
+
+
+fig, axs = plt.subplots(1, 3, figsize=(13, 4.6))
+for ax, dg in zip(axs, (25, 45, 65)):
+    pts(ax); sweep_street(ax, dg)
+axs[1].title.set_color(RED); axs[1].title.set_fontweight("bold")
+save(fig, "sv_sweep3.png")
+
+fig, ax = plt.subplots(figsize=(8, 4.6))
+dd = np.linspace(5, 85, 801); ww = [sweep(v)[0] for v in dd]
+ax.plot(dd, ww, color="black", lw=2.5)
+for dg, wd in SWEEP.items():
+    ax.scatter(dg, wd, s=90, color=RED if dg == 45 else GRAY, zorder=3)
+    ax.text(dg, wd + 0.18, f"{wd:.2f}", ha="center", fontsize=14, color=RED if dg == 45 else "black", fontweight="bold" if dg == 45 else None)
+ax.set_xlabel("선의 기울기 (°)"); ax.set_ylabel("길의 폭"); ax.set_xticks([5, 25, 45, 65, 85]); ax.set_ylim(0, 3.8)
+save(fig, "sv_sweep_curve.png")
+
+fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+pts(axs[0]); sweep_street(axs[0], 45, width=False); axs[0].set_title("점 20개로 풀면", fontsize=16)
+S = np.array(SV, float); ys = np.array([1, 1, -1])
+pts(axs[1], S, ys); sweep_street(axs[1], 45, SV[:2], SV[2:], width=False); axs[1].set_title("점 3개만 남기고 풀어도", fontsize=16)
+save(fig, "sv_only3.png")
+print("ok sweep")

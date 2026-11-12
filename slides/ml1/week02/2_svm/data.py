@@ -11,6 +11,17 @@ SV = [(3.5, 6.0), (2.0, 4.5), (5.0, 3.0)]
 FAR_MOVE = ((1.0, 8.0), (0.3, 9.5))                      # 멀리 있는 빨강 점을 옮겨도 경계는 그대로
 OUTLIER = (3.0, 5.2)                                     # 소프트 마진 장면: 빨강 무리 안에 들어간 파랑 점
 SOFT = {100: (0.21, 3, 0), 0.05: (4.64, 8, 1)}               # C: (마진, 서포트 벡터 수, 틀린 학습 점 수) — 파랑 이상치 포함
+SWEEP = {25: 2.00, 45: 3.18, 65: 2.63}                   # 선의 기울기 각도(°): 그 방향으로 낼 수 있는 가장 넓은 길의 폭 (방향 돌리기 장면)
+
+
+def sweep(deg, R=None, Bl=None):
+    """선의 기울기가 deg° 일 때: (폭, 빨강 쪽 가장자리 값, 파랑 쪽 가장자리 값, 닿는 빨강 점, 닿는 파랑 점). 값 = 경계에 수직인 방향으로 잰 위치."""
+    R = np.array(RED_PTS if R is None else R, float); Bl = np.array(BLUE_PTS if Bl is None else Bl, float)
+    t = np.radians(deg + 90); n = np.array([np.cos(t), np.sin(t)])
+    pr, pb = R @ n, Bl @ n
+    return pr.min() - pb.max(), pr.min(), pb.max(), R[np.isclose(pr, pr.min())], Bl[np.isclose(pb, pb.max())]
+
+
 KX, KY = (1, 2), (3, 1)                                  # 커널 계산 예: (x·x')² = φ(x)·φ(x') = 25
 
 
@@ -31,4 +42,10 @@ if __name__ == "__main__":
         m3 = SVC(kernel="linear", C=C).fit(Xo, yo)
         assert (round(2 / np.linalg.norm(m3.coef_[0]), 2), len(m3.support_), int((m3.predict(Xo) != yo).sum())) == (mg, nsv, err)
     assert np.dot(KX, KY) ** 2 == 25 and round(float(phi(KX) @ phi(KY)), 6) == 25
+    for d, wd in SWEEP.items():
+        assert round(sweep(d)[0], 2) == wd
+    best = max(np.arange(0, 90.01, 0.05), key=lambda d: sweep(d)[0])
+    assert abs(best - 45) < 0.06 and len(sweep(45)[3]) + len(sweep(45)[4]) == 3      # 꼭대기 45° 에서 점 3개가 동시에 닿는다
+    S = np.array(SV, float); ys = np.array([1, 1, -1])
+    m3 = SVC(kernel="linear", C=1e6).fit(S, ys); assert np.allclose(m3.coef_[0], W, atol=1e-3) and abs(m3.intercept_[0] - B) < 1e-2   # 점 3개만으로 풀어도 같은 길
     print("data ok")
