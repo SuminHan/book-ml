@@ -43,3 +43,16 @@ assert CMP == {"cnn": (5258, 97.5), "mlp": (101770, 96.4)}, CMP
 OUT_SIZE = {(28, 3, 0, 1): 26, (28, 3, 1, 1): 28, (28, 3, 1, 2): 14}   # (n, k, p, s): 출력 크기
 for (n, k, p, s), o in OUT_SIZE.items():
     assert (n - k + 2 * p) // s + 1 == o
+
+# 1차원 합성곱 (s3): f = [0,1] 상자 (높이 1), g(s) = 1 - s on [0,1].  (f*g)(t) = ∫ f(τ) g(t-τ) dτ
+#   0 ≤ t ≤ 1: t - t²/2,  1 ≤ t ≤ 2: (2 - t)²/2  → 꼭대기 t = 1 에서 0.5
+TS = np.linspace(-1.1, 2.1, 800)
+CONV1D = np.where((TS >= 0) & (TS <= 1), TS - TS ** 2 / 2, np.where((TS > 1) & (TS <= 2), (2 - TS) ** 2 / 2, 0.0))
+T_SNAP = [0.5, 1, 1.5]
+V_SNAP = [0.375, 0.5, 0.125]
+_tau = np.linspace(-1, 3, 400001); _d = _tau[1] - _tau[0]
+for _t, _v in zip(T_SNAP, V_SNAP):
+    _num = (((_tau >= 0) & (_tau <= 1)) * np.where((_t - _tau >= 0) & (_t - _tau <= 1), 1 - (_t - _tau), 0)).sum() * _d
+    assert abs(_num - _v) < 1e-3, (_t, _num)
+KH_FLIP = KH[::-1, ::-1].copy()                        # 진짜 합성곱은 필터를 180° 돌려 쓴다 → 가로선 필터는 부호만 바뀜
+assert np.array_equal(KH_FLIP, -KH)

@@ -53,4 +53,35 @@ b = ax.barh(names, v, color=[RED, GREEN])
 for r, x, a in zip(b, v, (CMP["mlp"][1], CMP["cnn"][1])): ax.text(x + 1500, r.get_y() + r.get_height() / 2, f"{x:,}개 · 정확도 {a}%", va="center", fontsize=14)
 ax.set_xlabel("가중치 수 (MNIST, 2 에폭 학습)"); ax.set_xlim(0, 175000); ax.ticklabel_format(axis="x", style="plain")
 save(fig, "cn_compare.png")
+
+# 6. 1차원 합성곱 f * g (f = 상자, g = 내려가는 경사, 둘 다 [0, 1])
+def f_box(t): return ((t >= 0) & (t <= 1)).astype(float)
+def g_ramp(t): return np.where((t >= 0) & (t <= 1), 1 - t, 0.0)
+tau = np.linspace(-1.2, 2.6, 1500)
+fig = plt.figure(figsize=(13, 5.6))
+gs = fig.add_gridspec(2, 4, width_ratios=[0.8, 1, 1, 1], height_ratios=[1, 1.15], hspace=0.55, wspace=0.25)
+for r, (y, c, t) in enumerate(((f_box(tau), BLUE, "f(τ)"), (g_ramp(tau), RED, "g(τ)"))):
+    ax = fig.add_subplot(gs[r, 0]); ax.plot(tau, y, color=c, lw=3); ax.set_title(t, fontsize=16, color=c)
+    ax.set_ylim(-0.1, 1.25); ax.set_yticks([0, 1]); ax.set_xticks([0, 1]); ax.set_xlim(-0.6, 1.8)
+cs = [GOLD, GREEN, "#1f77b4"]
+axc = fig.add_subplot(gs[1, 1:]); axc.plot(TS, CONV1D, color="black", lw=3)
+for k, (t0, v0) in enumerate(zip(T_SNAP, V_SNAP)):
+    ax = fig.add_subplot(gs[0, k + 1]); fy, gy = f_box(tau), g_ramp(t0 - tau)
+    ax.fill_between(tau, np.minimum(fy, gy), color=cs[k], alpha=0.8, lw=0)
+    ax.plot(tau, fy, color=BLUE, lw=2.5); ax.plot(tau, gy, color=RED, lw=2.5)
+    ax.set_title(f"t = {t0}:  area = {v0}", fontsize=15, color=cs[k]); ax.set_ylim(-0.1, 1.25); ax.set_xlim(-1.1, 2.1)
+    ax.set_yticks([0, 1]); ax.set_xticks([0, 1]); ax.set_xlabel("τ", fontsize=14)
+    axc.plot([t0, t0], [0, v0], color=cs[k], lw=3); axc.plot(t0, v0, "o", color=cs[k], ms=10)
+    axc.text(t0 - 0.05 if k == 0 else t0 + 0.04, v0 + 0.03, f"{v0}", color=cs[k], fontsize=15, ha="right" if k == 0 else "left")
+axc.set_title("(f * g)(t) = shaded area", fontsize=16); axc.set_xlabel("t", fontsize=14)
+axc.set_xlim(-1.1, 2.1); axc.set_ylim(-0.03, 0.65); axc.set_yticks([0, 0.5]); axc.set_xticks([0, 1, 2])
+fig.savefig(O + "cn_conv1d.png", bbox_inches="tight"); plt.close(fig)
+
+# 7. 필터 뒤집기: K 와 180° 돌린 K
+fig, axs = plt.subplots(1, 2, figsize=(7.2, 3.4))
+for ax, M, t in ((axs[0], KH, "K"), (axs[1], KH_FLIP, "K flipped (180°)")):
+    ax.imshow(M, cmap="coolwarm", vmin=-1, vmax=1); ax.set_title(t, fontsize=16); ax.axis("off")
+    for i in range(3):
+        for j in range(3): ax.text(j, i, f"{int(M[i, j]):+d}", ha="center", va="center", fontsize=16)
+save(fig, "cn_flip.png")
 print("ok")

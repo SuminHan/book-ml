@@ -46,6 +46,40 @@
 \note{완전연결에는 두 가지 문제가 있습니다. 첫째, 가중치가 너무 많습니다. 손글씨는 작아서 그나마 괜찮지만 224 곱하기 224 컬러 사진이면 입력만 15만 개라서 가중치가 폭발합니다. 둘째, 그림의 구조를 쓰지 않습니다. 완전연결은 픽셀 784개를 그냥 숫자 784개로 보기 때문에, 같은 가로획이 한 칸 오른쪽으로 옮겨지면 완전히 다른 입력으로 봅니다. 하지만 그림에는 두 가지 성질이 있습니다. 가까운 픽셀끼리 모여 의미를 만들고, 같은 모양은 어디에 있든 같은 모양입니다. CNN은 이 두 성질을 그대로 쓴 구조입니다.}
 \end{frame}
 
+% --- 1차원 합성곱 f * g
+\begin{frame}{합성곱 $f * g$: 하나를 뒤집어 밀면서 겹친 넓이를 잰다}
+\markpage{conv1d}
+\vskip-0.2em
+\centering\includegraphics[width=0.64\linewidth]{cn_conv1d.png}\par
+{\large $\displaystyle (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\, g(t - \tau)\, d\tau$
+\qquad 이산: $\displaystyle (f * g)[n] = \sum_{k} f[k]\, g[n - k]$}\\[0.2em]
+{\small $g(t-\tau)$ = $g$ 를 \kb{뒤집어} $t$ 만큼 민 것 \quad 겹친 곳에서 곱한 넓이 = 그 위치의 출력}
+\vfill
+\note{합성곱이라는 이름은 원래 신호 처리 수학에서 왔습니다. 기호는 별표, f 별표 g 라고 씁니다. 파란 상자 f 와 빨간 경사 g 가 있을 때, g 를 좌우로 뒤집어서 t 만큼 옮긴 다음 f 와 곱해서 넓이를 잽니다. 위 세 칸이 t 가 0.5, 1, 1.5 일 때입니다. 0.5 일 때는 반쯤 겹쳐서 넓이 0.375, 1 일 때 빨간 삼각형이 상자 안에 다 들어와 0.5 로 가장 크고, 1.5 일 때는 조금만 겹쳐 0.125 입니다. 이 넓이를 t 마다 이어 그린 것이 아래 검은 곡선, f 별표 g 입니다. 식으로는 f 타우 곱하기 g 의 t 빼기 타우를 적분합니다. t 빼기 타우가 바로 뒤집어서 미는 부분입니다. 컴퓨터에서는 값이 띄엄띄엄 있으니 적분 대신 합을 씁니다. 이 합이 그림에서는 다음 쪽처럼 2차원이 됩니다.}
+\end{frame}
+
+% --- 2차원 합성곱 기호
+\begin{frame}{그림에서는 2차원: $\text{output} = I * K$}
+\markpage{conv2d}
+\vfill
+\centering
+{\large 수학의 합성곱 (필터를 뒤집는다)}\\[0.2em]
+{\large $\displaystyle (I * K)[i, j] = \sum_{m}\sum_{n} I[i - m,\, j - n]\; K[m, n]$}\\[0.4em]
+{\large CNN 이 실제로 하는 계산 (\kb{뒤집지 않는다}, 교차상관 $\star$)}\\[0.2em]
+{\large $\displaystyle (I \star K)[i, j] = \sum_{m=0}^{2}\sum_{n=0}^{2} I[i + m,\, j + n]\; K[m, n]$}\\[0.5em]
+\begin{columns}[c]
+\begin{column}{0.36\linewidth}\centering\includegraphics[width=\linewidth]{cn_flip.png}\end{column}
+\begin{column}{0.5\linewidth}
+$I$ = image (입력 그림), $K$ = kernel (필터)\\[0.3em]
+뒤집으면 가로선 필터는 \kq{부호만} 바뀐다\\[0.3em]
+필터 값은 \kb{학습}으로 정하니 뒤집든 말든 같은 일 \\
+$\Rightarrow$ 딥러닝은 $\star$ 를 그냥 \kb{합성곱}이라 부른다
+\end{column}
+\end{columns}
+\vfill
+\note{그림은 가로와 세로가 있으니 합이 두 번 들어갑니다. I 는 입력 그림, K 는 커널, 즉 필터입니다. 수학의 합성곱은 앞 쪽처럼 필터를 뒤집어서 씁니다. 그래서 i 빼기 m, j 빼기 n 이 들어갑니다. 그런데 CNN 라이브러리가 실제로 하는 계산은 뒤집지 않고 i 더하기 m, j 더하기 n, 필터를 그대로 겹쳐 곱하고 더합니다. 이것을 교차상관이라고 하고 기호로 별 모양을 씁니다. 오른쪽 그림처럼 가로선 필터를 180도 돌리면 부호만 바뀝니다. 어차피 필터 숫자 9개는 학습으로 정하니까, 뒤집힌 필터가 필요하면 뒤집힌 값을 배우면 됩니다. 그래서 딥러닝에서는 이 뒤집지 않는 계산을 그냥 합성곱이라고 부릅니다. 다음 쪽에서 실제 숫자로 해 봅니다.}
+\end{frame}
+
 % --- 합성곱
 \begin{frame}{합성곱: 3 × 3 필터를 겹쳐 곱하고 더한다}
 \markpage{conv}
