@@ -22,6 +22,27 @@ def sweep(deg, R=None, Bl=None):
     return pr.min() - pb.max(), pr.min(), pb.max(), R[np.isclose(pr, pr.min())], Bl[np.isclose(pb, pb.max())]
 
 
+TRAIN_T, TRAIN_LR = 20000, 0.02                         # 경사하강 학습 장면: 걸음 수, 학습률 0.02/√t (C = 1)
+TOUCH = {(3.5, 6.0): 176, (5.0, 3.0): 278, (2.0, 4.5): 7567}   # 1걸음 뒤 처음으로 '미는' 걸음 (나머지 17개는 1걸음 뒤로 한 번도 안 민다)
+SNAPS = (2, 176, 278, 20000)                              # 그림에 쓰는 걸음
+
+
+def train_svm(X, y, T=TRAIN_T, lr0=TRAIN_LR, C=1.0, snaps=()):
+    """여유 m_i = y_i (w·x_i + b) 가 1 보다 작은 점만 경계를 민다 (힌지 손실의 경사하강).
+    한 걸음: w ← w − η (w − C Σ_{m<1} y_i x_i),  b ← b + η C Σ_{m<1} y_i,  η = lr0/√t.
+    반환: 마지막 (w, b), 걸음마다 민 점 표시 (T × n), snaps 걸음 직전의 (w, b, 미는 점)."""
+    w, b = np.zeros(X.shape[1]), 0.0
+    pushed, shots = np.zeros((T, len(X)), bool), {}
+    for t in range(1, T + 1):
+        act = y * (X @ w + b) < 1
+        pushed[t - 1] = act
+        if t in snaps:
+            shots[t] = (w.copy(), b, act.copy())
+        eta = lr0 / np.sqrt(t)
+        w, b = w - eta * (w - C * (y[act, None] * X[act]).sum(0)), b + eta * C * y[act].sum()
+    return w, b, pushed, shots
+
+
 KX, KY = (1, 2), (3, 1)                                  # 커널 계산 예: (x·x')² = φ(x)·φ(x') = 25
 
 
@@ -48,4 +69,9 @@ if __name__ == "__main__":
     assert abs(best - 45) < 0.06 and len(sweep(45)[3]) + len(sweep(45)[4]) == 3      # 꼭대기 45° 에서 점 3개가 동시에 닿는다
     S = np.array(SV, float); ys = np.array([1, 1, -1])
     m3 = SVC(kernel="linear", C=1e6).fit(S, ys); assert np.allclose(m3.coef_[0], W, atol=1e-3) and abs(m3.intercept_[0] - B) < 1e-2   # 점 3개만으로 풀어도 같은 길
+    wt, bt, pushed, _ = train_svm(X, y)
+    assert np.allclose(wt, W, atol=3e-3) and abs(bt - B) < 1e-2 and round(2 / np.linalg.norm(wt), 2) == MARGIN
+    first = {tuple(X[i]): int(np.argmax(pushed[1:, i])) + 2 for i in range(len(X)) if pushed[1:, i].any()}
+    assert first == TOUCH and sorted(TOUCH) == sorted(SV)            # 1걸음 뒤로 민 점 = 서포트 벡터 3개뿐
+    mg = y * (X @ wt + bt); assert sorted(map(tuple, X[mg < 1.02])) == sorted(SV) and mg[mg >= 1.02].min() > 1.2
     print("data ok")

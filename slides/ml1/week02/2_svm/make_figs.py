@@ -258,3 +258,41 @@ ax.scatter(*P0, s=90, color="black", zorder=4); ax.text(P0[0] - 0.95, P0[1] - 0.
 ax.set_title("$\\mathbf{w}$ 는 경계에 수직인 오르막 방향", fontsize=15)
 save(fig, "sv_perp.png")
 print("ok read")
+
+
+# 학습: 여유 < 1 인 점만 민다 (경사하강)
+def street_wb(ax, w, b, ring=()):
+    s = np.linspace(-30, 30, 2); nrm = np.linalg.norm(w); u = w / nrm; d = np.array([-u[1], u[0]])
+    seg = lambda c: ((c - b) / nrm) * u[:, None] + d[:, None] * s
+    a, c = seg(1), seg(-1)
+    ax.fill(np.r_[a[0], c[0][::-1]], np.r_[a[1], c[1][::-1]], color=GOLD, alpha=0.18, lw=0)
+    ax.plot(*seg(0), color="black", lw=2.5); ax.plot(*a, "--", color=RED, lw=1.5); ax.plot(*c, "--", color=BLUE, lw=1.5)
+    if len(ring):
+        r = np.array(ring); ax.scatter(r[:, 0], r[:, 1], s=320, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4)
+
+
+wt, bt, pushed, shots = train_svm(X, y, snaps=SNAPS)
+fig, axs = plt.subplots(1, 4, figsize=(16, 4.6))
+for ax, t in zip(axs, SNAPS):
+    w_, b_, act = shots[t]; pts(ax)
+    if t == SNAPS[0]:
+        street_wb(ax, w_, b_, X); ttl = "1걸음: 20개 모두 밀어 첫 선"
+    elif t == SNAPS[-1]:
+        street_wb(ax, w_, b_, SV); ttl = f"{t:,}걸음: 폭 {2 / np.linalg.norm(w_):.2f}"
+    else:
+        new = [k for k, v in TOUCH.items() if v <= t]
+        street_wb(ax, w_, b_, new); ttl = f"{t}걸음: 폭 {2 / np.linalg.norm(w_):.2f}, 미는 점 {len(new)}개"
+    ax.set_title(ttl, fontsize=15)
+save(fig, "sv_train4.png")
+
+mg = y * (X @ wt + bt); o = np.argsort(mg)
+fig, ax = plt.subplots(figsize=(10, 4.2))
+cols = [GOLD if mg[i] < 1.02 else (RED if y[i] > 0 else BLUE) for i in o]
+ax.bar(range(20), mg[o], color=cols, alpha=0.9)
+ax.axhline(1, color="black", ls="--", lw=1.5); ax.text(-0.4, 2.8, "점선: 여유 1 = 길 가장자리", fontsize=14)
+ax.text(1, 1.32, "서포트 벡터", ha="center", fontsize=14, color="#7a6a3f", fontweight="bold")
+for k, i in enumerate(o[:3]):
+    ax.text(k, mg[i] + 0.08, f"{mg[i]:.2f}", ha="center", fontsize=12, fontweight="bold")
+ax.set_xticks([]); ax.set_ylabel("여유  $y_i(\\mathbf{w}\\cdot\\mathbf{x}_i + b)$"); ax.set_xlabel("점 20개 (여유 작은 순)")
+save(fig, "sv_slack_bars.png")
+print("ok train")
