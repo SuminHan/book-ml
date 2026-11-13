@@ -80,6 +80,17 @@ $\Rightarrow$ 딥러닝은 $\star$ 를 그냥 \kb{합성곱}이라 부른다
 \note{그림은 가로와 세로가 있으니 합이 두 번 들어갑니다. I 는 입력 그림, K 는 커널, 즉 필터입니다. 수학의 합성곱은 앞 쪽처럼 필터를 뒤집어서 씁니다. 그래서 i 빼기 m, j 빼기 n 이 들어갑니다. 그런데 CNN 라이브러리가 실제로 하는 계산은 뒤집지 않고 i 더하기 m, j 더하기 n, 필터를 그대로 겹쳐 곱하고 더합니다. 이것을 교차상관이라고 하고 기호로 별 모양을 씁니다. 오른쪽 그림처럼 가로선 필터를 180도 돌리면 부호만 바뀝니다. 어차피 필터 숫자 9개는 학습으로 정하니까, 뒤집힌 필터가 필요하면 뒤집힌 값을 배우면 됩니다. 그래서 딥러닝에서는 이 뒤집지 않는 계산을 그냥 합성곱이라고 부릅니다. 다음 쪽에서 실제 숫자로 해 봅니다.}
 \end{frame}
 
+% --- 실제 사진에 필터
+\begin{frame}{실제 사진에 필터를 바꿔 끼우면}
+\markpage{photo}
+\vskip-0.2em
+\centering\includegraphics[width=0.86\linewidth]{cn_photo.png}\par\vskip0.2em
+{\large 그림은 같고 \kb{필터 숫자 9개만} 바꿨다 \quad 흐리게 · 옮기기 · 선명하게 · 모서리}\\[0.2em]
+{\small 여기서 $*$ = CNN 의 합성곱 (뒤집지 않음 \pref{conv2d}) \quad 테두리는 0 으로 채워 크기 유지 (80 × 80)}
+\vfill
+\note{이제 실제 사진에 써 보겠습니다. 80 곱하기 80 흑백 사진에 필터만 바꿔 끼웠습니다. 첫째, 9칸이 모두 9분의 1이면 이웃 9칸의 평균이라 사진이 흐려집니다. 둘째, 오른쪽 칸만 1이면 각 픽셀이 오른쪽 이웃 값을 가져오니 사진이 왼쪽으로 한 칸 밀립니다. 오른쪽 끝은 빈 칸이라 검은 줄이 생깁니다. 수학의 합성곱처럼 필터를 뒤집으면 반대로 오른쪽으로 밀립니다. 셋째, 가운데 5, 상하좌우 마이너스 1이면 나와 이웃의 차이를 키워서 선명해집니다. 넷째, 앞으로 계속 볼 가로선 필터를 쓰면 위아래 밝기가 바뀌는 곳, 머리 윤곽과 카메라의 가로 모서리만 밝게 남습니다. 숫자 9개가 무엇을 볼지 정한다는 것, CNN은 이 9개를 학습으로 찾습니다.}
+\end{frame}
+
 % --- 합성곱
 \begin{frame}{합성곱: 3 × 3 필터를 겹쳐 곱하고 더한다}
 \markpage{conv}
@@ -224,5 +235,16 @@ MNIST (LeCun, Cortes, Burges; torchvision) \\[0.4em]\href{https://colab.research
 \end{tabular}
 \vfill
 \note{정리합니다. 합성곱은 작은 필터를 그림에 겹쳐 곱하고 더하는 계산이고, 그림 전체를 훑으면 특징 지도가 나옵니다. 어디서든 같은 필터를 쓰는 파라미터 공유 덕분에 같은 크기의 완전연결보다 835배 적은 가중치로 그림을 봅니다. 출력 크기와 가중치 수는 오늘의 두 식으로 계산합니다. 최대 풀링은 2 곱하기 2 중 최댓값만 남겨 크기를 4분의 1로 줄입니다. 그리고 필터 값은 학습으로 정해지며, 스스로 모서리를 찾는 모양이 됩니다.}
+\end{frame}
+% --- 이미지 출처
+\begin{frame}{이미지 출처}
+\vfill
+\small
+\begin{itemize}
+\item 사진 (p.\ref{photo}): \textit{Cameraman}, scikit-image \texttt{skimage.data.camera()} (Library of Congress, no known copyright restrictions)
+\item 손글씨: MNIST (LeCun, Cortes, Burges; torchvision)
+\end{itemize}
+\vfill
+\note{이미지 출처입니다.}
 \end{frame}
 \end{document}

@@ -56,3 +56,20 @@ for _t, _v in zip(T_SNAP, V_SNAP):
     assert abs(_num - _v) < 1e-3, (_t, _num)
 KH_FLIP = KH[::-1, ::-1].copy()                        # 진짜 합성곱은 필터를 180° 돌려 쓴다 → 가로선 필터는 부호만 바뀜
 assert np.array_equal(KH_FLIP, -KH)
+
+# 실제 사진 합성곱 (s5): skimage.data.camera() (cameraman, Library of Congress, 저작권 제한 없음) 얼굴 부분 [40:200, 170:330] → 2×2 평균 → 80×80
+PHOTO = np.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "cameraman80.npy")).astype(float) / 255
+
+def corr_same(im, k):
+    """CNN 식 합성곱 (뒤집지 않음, p.4 의 ⋆), 0 패딩 1 → 출력 크기 = 입력 크기"""
+    p = np.pad(im, 1)
+    n0, n1 = im.shape
+    return np.array([[(p[i:i + 3, j:j + 3] * k).sum() for j in range(n1)] for i in range(n0)])
+
+K_MEAN = np.ones((3, 3)) / 9                                   # 흐리게: 이웃 9칸 평균
+K_SHIFT = np.array([[0, 0, 0], [0, 0, 1], [0, 0, 0]], float)   # 오른쪽 이웃을 가져옴 → 그림이 왼쪽으로 1칸
+K_SHARP = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], float)  # 선명하게: 나 × 5 − 상하좌우 이웃
+PHOTO_OUT = {name: corr_same(PHOTO, k) for name, k in (("mean", K_MEAN), ("shift", K_SHIFT), ("sharp", K_SHARP), ("edge", KH))}
+assert PHOTO.shape == (80, 80)
+assert np.allclose(PHOTO_OUT["shift"][:, :-1], PHOTO[:, 1:]) and np.all(PHOTO_OUT["shift"][:, -1] == 0)
+assert np.isclose(K_MEAN.sum(), 1) and K_SHARP.sum() == 1 and KH.sum() == 0   # 합 1 = 밝기 유지, 합 0 = 평평한 곳은 0

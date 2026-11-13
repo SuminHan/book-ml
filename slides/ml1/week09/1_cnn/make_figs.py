@@ -84,4 +84,27 @@ for ax, M, t in ((axs[0], KH, "K"), (axs[1], KH_FLIP, "K flipped (180°)")):
     for i in range(3):
         for j in range(3): ax.text(j, i, f"{int(M[i, j]):+d}", ha="center", va="center", fontsize=16)
 save(fig, "cn_flip.png")
+
+# 8. 실제 사진 * 필터 = 결과 (2 × 2 칸)
+def kernel_box(ax, k):
+    ax.imshow(np.ones((3, 3, 3)) * np.array([0.99, 0.80, 0.60]))
+    for i in range(3):
+        for j in range(3): ax.text(j, i, f"{int(k[i, j])}", ha="center", va="center", fontsize=15)
+    for v in (0.5, 1.5): ax.axhline(v, color="white", lw=2); ax.axvline(v, color="white", lw=2)
+    ax.set_xticks([]); ax.set_yticks([])
+
+rows = (("mean", K_MEAN * 9, "1/9", "blur (mean)"), ("shift", K_SHIFT, None, "shifted left by 1 pixel"),
+        ("sharp", K_SHARP, None, "sharpen"), ("edge", KH, None, "horizontal edges (|value|)"))
+fig = plt.figure(figsize=(13, 5.2))
+gs = fig.add_gridspec(2, 11, width_ratios=[1, 0.45, 0.62, 0.22, 1, 0.35, 1, 0.45, 0.62, 0.22, 1], wspace=0.08, hspace=0.18)
+for r, (name, k, sc, title) in enumerate(rows):
+    R, c0 = r // 2, (r % 2) * 6
+    out = PHOTO_OUT[name]; out = np.abs(out) if name == "edge" else np.clip(out, 0, 1)
+    a = fig.add_subplot(gs[R, c0]); a.imshow(PHOTO, cmap="gray", vmin=0, vmax=1); a.axis("off"); a.set_title("original", fontsize=13)
+    s = fig.add_subplot(gs[R, c0 + 1]); s.axis("off"); s.text(0.22 if sc else 0.5, 0.5, "*", fontsize=34, ha="center", va="center")
+    if sc: s.text(1.0, 0.5, sc, fontsize=17, ha="right", va="center")
+    kernel_box(fig.add_subplot(gs[R, c0 + 2]), k)
+    e = fig.add_subplot(gs[R, c0 + 3]); e.axis("off"); e.text(0.5, 0.5, "=", fontsize=30, ha="center", va="center")
+    b = fig.add_subplot(gs[R, c0 + 4]); b.imshow(out, cmap="gray", vmin=0, vmax=1); b.axis("off"); b.set_title(title, fontsize=13)
+fig.savefig(O + "cn_photo.png", bbox_inches="tight"); plt.close(fig)
 print("ok")
