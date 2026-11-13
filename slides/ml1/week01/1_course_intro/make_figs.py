@@ -55,10 +55,8 @@ def xor_lines(out, X, T):
         for s in ("top", "right"): ax.spines[s].set_visible(False)
     axs[0].plot(xs, 0.5 - xs, color=GREEN, lw=3)
     axs[0].scatter(1, 1, s=1100, facecolor="none", edgecolor=RED, lw=2.5, zorder=4)   # 직선 하나면 늘 하나는 틀린다
-    axs[0].set_title("직선 하나: 못 가른다", fontsize=16, color=RED)
     axs[1].plot(xs, 0.5 - xs, color=GREEN, lw=3); axs[1].plot(xs, 1.5 - xs, color=GOLD, lw=3)
     axs[1].fill_between(xs, 0.5 - xs, 1.5 - xs, color=RED, alpha=0.1)
-    axs[1].set_title("직선 두 개: 가른다", fontsize=16, color=GREEN)
     fig.tight_layout(); fig.savefig(out, dpi=200); plt.close(fig)
 
 
