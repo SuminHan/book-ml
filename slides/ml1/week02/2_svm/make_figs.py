@@ -207,3 +207,54 @@ for ax, k in zip(axs, (1, 2)):
     ax.set_title(("$\\mathbf{w} = (1, 1)$,  $\\Vert\\mathbf{w}\\Vert = 1.41$" if k == 1 else "$\\mathbf{w} = (2, 2)$,  $\\Vert\\mathbf{w}\\Vert = 2.83$"), fontsize=15)
 save(fig, "sv_width.png")
 print("ok width")
+
+
+# 식 읽기 (벡터를 처음 보는 학생용): w = (1, 1), b = -3 같은 예
+def grid_ax(ax, lim=4.3):
+    ax.set_xlim(-0.3, lim); ax.set_ylim(-0.3, lim); ax.set_aspect("equal")
+    ax.set_xticks(range(5)); ax.set_yticks(range(5)); ax.grid(alpha=0.3)
+    ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0, labelpad=12)
+
+
+# ① 점 = 숫자 두 개 = 화살표, 길이 = 피타고라스
+fig, axs = plt.subplots(1, 2, figsize=(11, 5.2))
+ax = axs[0]; grid_ax(ax)
+ax.annotate("", (2, 3), (0, 0), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.5, mutation_scale=18))
+ax.scatter(2, 3, s=90, color=RED, zorder=4); ax.text(2.15, 3.1, "$\\mathbf{x} = (2, 3)$", fontsize=17, color=RED)
+ax.plot([2, 2], [0, 3], ":", color=GRAY); ax.plot([0, 2], [3, 3], ":", color=GRAY)
+ax.set_title("점 하나 = 숫자 두 개 = 화살표", fontsize=16)
+ax = axs[1]; grid_ax(ax, 2.3); ax.set_xticks(range(3)); ax.set_yticks(range(3))
+ax.annotate("", (1, 1), (0, 0), arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3, mutation_scale=20))
+ax.plot([0, 1], [0, 0], color=GRAY, lw=2); ax.plot([1, 1], [0, 1], color=GRAY, lw=2)
+ax.text(0.5, -0.2, "1", ha="center", fontsize=15); ax.text(1.08, 0.5, "1", fontsize=15)
+ax.text(0.0, 1.75, "길이 $= \\sqrt{1^2 + 1^2} = 1.41$", fontsize=16, color="#7a6a3f")
+ax.text(1.08, 1.12, "$\\mathbf{w} = (1, 1)$", fontsize=17, color=GOLD)
+ax.set_title("화살표의 길이 $\\Vert\\mathbf{w}\\Vert$ = 피타고라스", fontsize=16)
+save(fig, "sv_vec.png")
+
+# ③ 점수 지도: 격자점마다 x1 + x2 - 3
+fig, ax = plt.subplots(figsize=(6.0, 6.0)); grid_ax(ax)
+gg = np.linspace(-0.5, 4.5, 2)
+ax.fill_between(gg, -1, 3 - gg, color=BLUE, alpha=0.07); ax.fill_between(gg, 3 - gg, 6, color=RED, alpha=0.07)
+ax.plot(gg, 3 - gg, color="black", lw=2.5)
+for i in range(5):
+    for j in range(5):
+        v = i + j - 3; col = RED if v > 0 else BLUE if v < 0 else "black"
+        ax.text(i, j, f"{v:+d}" if v else "0", ha="center", va="center", fontsize=15, fontweight="bold", color=col,
+                bbox=dict(boxstyle="circle,pad=0.25", fc="white", ec=col, lw=1.2))
+ax.set_title("격자점마다 $x_1 + x_2 - 3$ 계산", fontsize=15)
+save(fig, "sv_scoremap.png")
+
+# ④ 선을 따라 걸으면 점수 그대로, w 방향으로 걸으면 오른다
+fig, ax = plt.subplots(figsize=(6.0, 6.0)); grid_ax(ax)
+ax.plot(gg, 3 - gg, color="black", lw=2.5)
+P0 = np.array([1.0, 2.0])
+for d, col, lab, off in (((1, -1), GRAY, "선을 따라 $(+1, -1)$\n점수 변화 $1{\\cdot}1 + 1{\\cdot}(-1) = 0$", (0.1, 0.25)),
+                         ((1, 1), GOLD, "$\\mathbf{w}$ 방향 $(+1, +1)$\n점수 변화 $1{\\cdot}1 + 1{\\cdot}1 = +2$", (0.15, 0.2))):
+    q = P0 + np.array(d)
+    ax.annotate("", q, P0, arrowprops=dict(arrowstyle="-|>", color=col, lw=3, mutation_scale=18))
+    ax.text(q[0] + off[0], q[1] + off[1], lab, fontsize=13, color="black" if col == GRAY else "#7a6a3f")
+ax.scatter(*P0, s=90, color="black", zorder=4); ax.text(P0[0] - 0.95, P0[1] - 0.05, "점수 0", fontsize=13)
+ax.set_title("$\\mathbf{w}$ 는 경계에 수직인 오르막 방향", fontsize=15)
+save(fig, "sv_perp.png")
+print("ok read")
