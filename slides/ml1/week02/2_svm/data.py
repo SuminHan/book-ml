@@ -24,7 +24,9 @@ def sweep(deg, R=None, Bl=None):
 
 TRAIN_T, TRAIN_LR = 20000, 0.02                         # 경사하강 학습 장면: 걸음 수, 학습률 0.02/√t (C = 1)
 TOUCH = {(3.5, 6.0): 176, (5.0, 3.0): 278, (2.0, 4.5): 7567}   # 1걸음 뒤 처음으로 '미는' 걸음 (나머지 17개는 1걸음 뒤로 한 번도 안 민다)
-SNAPS = (2, 176, 278, 20000)                              # 그림에 쓰는 걸음
+SNAPS = (2, 176, 278, 20000)
+STEPS = {1: (0, 0, 0, 20), 2: (-0.88, 0.78, 0, 0), 100: (-0.62, 0.55, 0, 0), 176: (-0.54, 0.48, 0, 1), 278: (-0.46, 0.45, 0, 1), 20000: (-0.45, 0.44, -0.10, 2)}   # 걸음: (w1, w2, b, 미는 점 수) — 표 쪽
+SUM_YX = (-44.1, 39.2)                                    # 1걸음: 모든 점이 밀 때 Σ y_i x_i                              # 그림에 쓰는 걸음
 
 
 def train_svm(X, y, T=TRAIN_T, lr0=TRAIN_LR, C=1.0, snaps=()):
@@ -73,5 +75,9 @@ if __name__ == "__main__":
     assert np.allclose(wt, W, atol=3e-3) and abs(bt - B) < 1e-2 and round(2 / np.linalg.norm(wt), 2) == MARGIN
     first = {tuple(X[i]): int(np.argmax(pushed[1:, i])) + 2 for i in range(len(X)) if pushed[1:, i].any()}
     assert first == TOUCH and sorted(TOUCH) == sorted(SV)            # 1걸음 뒤로 민 점 = 서포트 벡터 3개뿐
+    _, _, _, sh = train_svm(X, y, snaps=tuple(STEPS))
+    for t, (a1, a2, bb, k) in STEPS.items():
+        w_, b_, act = sh[t]; assert (round(w_[0], 2), round(w_[1], 2), round(b_, 2), int(act.sum())) == (a1, a2, bb, k), (t, w_, b_)
+    assert tuple(np.round((y[:, None] * X).sum(0), 1)) == SUM_YX
     mg = y * (X @ wt + bt); assert sorted(map(tuple, X[mg < 1.02])) == sorted(SV) and mg[mg >= 1.02].min() > 1.2
     print("data ok")
