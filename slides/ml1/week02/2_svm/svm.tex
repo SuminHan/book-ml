@@ -80,6 +80,34 @@
 \note{길을 식으로 쓰기 전에, 가장자리가 왜 플러스 마이너스 1인지 봅시다. 왼쪽 그림의 검은 선은 x1 더하기 x2 빼기 3이 0인 직선, w는 1, 1이고 b는 마이너스 3입니다. 점을 넣어 이 값을 계산하면 빨간 점은 양수, 파란 점은 음수입니다. 그래서 값의 부호로 분류합니다. w는 이 경계에 수직인 방향입니다. 그런데 오른쪽처럼 w와 b를 둘 다 2배 해도, 2 x1 더하기 2 x2 빼기 6이 0인 직선은 똑같은 선입니다. 값만 2배가 될 뿐입니다. 경계는 같은데 식을 쓰는 방법이 무수히 많은 겁니다. 그래서 하나로 정하는 약속을 합니다. 경계에 가장 가까운 점에서 값이 딱 플러스 1, 마이너스 1이 되도록 크기를 맞춘다. 왼쪽이 그렇게 맞춘 것이고, 그래서 가장자리 점선이 값 플러스 1, 마이너스 1인 선입니다. 오른쪽처럼 2배 하면 값 플러스 마이너스 1인 선이 점에서 떨어져 버립니다. 마지막으로 점에서 직선까지의 거리는 값의 절댓값을 w의 길이로 나눈 것입니다. 가장자리 위의 점은 값이 1이니 경계까지 1 나누기 w의 길이, 양쪽을 합친 길의 폭은 2 나누기 w의 길이입니다. 이 예에서는 w의 길이가 루트 2라서 폭이 루트 2, 두 점 1, 1과 2, 2 사이의 거리와 같습니다.}
 \end{frame}
 
+% --- 왜 폭이 2/||w|| 인가 (1): 걸어 보기
+\begin{frame}{가장자리까지 몇 걸음? $\mathbf{w}$ 방향으로 걸어 보면}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.40\textwidth}\centering\includegraphics[width=\linewidth]{sv_walk.png}\end{column}
+\begin{column}{0.58\textwidth}
+{\large \textbf{1.} 경계 위 점 $\mathbf{x}_0$ 에서 값 $= 0$}\\[0.6em]
+{\large \textbf{2.} $\mathbf{w}$ 방향 (길이 1: $\mathbf{u} = \mathbf{w}/\lVert\mathbf{w}\rVert$) 으로 $d$ 걸으면}\\[0.3em]
+{\normalsize $\mathbf{w}\cdot(\mathbf{x}_0 + d\,\mathbf{u}) + b \;=\; \underbrace{\mathbf{w}\cdot\mathbf{x}_0 + b}_{0} \;+\; d\,\underbrace{\mathbf{w}\cdot\mathbf{u}}_{\lVert\mathbf{w}\rVert} \;=\;$ \kb{$d\,\lVert\mathbf{w}\rVert$}}\\[0.6em]
+{\large \textbf{3.} 값이 $+1$ 이 되는 곳: \kb{$d = 1/\lVert\mathbf{w}\rVert$}}\\[0.3em]
+{\normalsize 예: $\lVert\mathbf{w}\rVert = \sqrt2$ $\to$ $d = 0.71$}
+\end{column}
+\end{columns}
+\vfill
+\note{가장자리 값을 플러스 마이너스 1로 정했는데, 그게 왜 폭 2 나누기 w의 길이가 되는지 걸어 보면서 확인합니다. 앞 쪽의 예, w가 1, 1이고 b가 마이너스 3인 경계입니다. 경계 위 점 1.5, 1.5에서 값은 0입니다. 여기서 w 방향, 즉 경계에 수직인 방향으로 걸어 봅니다. 0.5 걸으면 값이 0.71, 1 걸으면 1.41, 1.5 걸으면 2.12. 1 걸을 때마다 값이 1.41씩, 정확히 w의 길이 루트 2만큼 오릅니다. 식으로 보면, w를 자기 길이로 나눈 길이 1짜리 방향 u를 d배 해서 x0에 더하고 값을 계산하면, 앞부분은 경계 위라서 0이고, 뒷부분 w 점곱 u는 w 길이의 제곱을 w 길이로 나눈 것, 즉 w의 길이입니다. 그래서 d 곱하기 w의 길이가 남습니다. 그러면 값이 1이 되는 곳, 가장자리는 d가 1 나누기 w의 길이인 곳입니다. 이 예에서는 0.71 걸으면 가장자리입니다.}
+\end{frame}
+
+% --- 왜 폭이 2/||w|| 인가 (2)
+\begin{frame}{그래서 폭 $= 2/\lVert\mathbf{w}\rVert$}
+\markpage{width}
+\vfill
+\centering\includegraphics[width=0.74\linewidth]{sv_width.png}\par\vskip0.2em
+{\large 경계에서 값 $+1$ 선까지 $1/\lVert\mathbf{w}\rVert$, 값 $-1$ 선까지 $1/\lVert\mathbf{w}\rVert$ \;$\Rightarrow$\; 폭 \kb{$2/\lVert\mathbf{w}\rVert$}}\\[0.3em]
+{\large $\lVert\mathbf{w}\rVert$ 가 \kq{작을수록} 길이 넓다}
+\vfill
+\note{반대쪽도 똑같습니다. w 반대 방향으로 1 나누기 w의 길이만큼 걸으면 값이 마이너스 1입니다. 그래서 값 마이너스 1인 선과 플러스 1인 선 사이, 길의 폭은 2 나누기 w의 길이입니다. 왼쪽은 w가 1, 1, 길이 1.41이라 폭이 1.41입니다. 오른쪽처럼 w를 2, 2로 키우면 같은 경계인데 값이 두 배 빨리 오르니까 플러스 마이너스 1 선이 경계에 바짝 붙어서 폭이 0.71로 줄어듭니다. 거꾸로 말하면 w의 길이가 작을수록 플러스 마이너스 1 선이 멀리 떨어지고 길이 넓어집니다. 그런데 모든 점이 가장자리 바깥에 있어야 한다는 조건을 걸면, w를 아무리 작게 하고 싶어도 가장 가까운 점이 가장자리에 걸려서 멈춥니다. 그 멈춘 곳이 가장 넓은 길입니다. 다음 쪽이 이것을 식으로 쓴 것입니다.}
+\end{frame}
+
 % --- 식
 \begin{frame}{길을 식으로}
 \markpage{form}

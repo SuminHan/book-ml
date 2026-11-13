@@ -166,3 +166,44 @@ S = np.array(SV, float); ys = np.array([1, 1, -1])
 pts(axs[1], S, ys); sweep_street(axs[1], 45, SV[:2], SV[2:], width=False); axs[1].set_title("점 3개만 남기고 풀어도", fontsize=16)
 save(fig, "sv_only3.png")
 print("ok sweep")
+
+
+# 왜 폭 = 2/||w|| 인가: 같은 예 x1 + x2 = 3, w = (1, 1), b = -3
+WE, BE = np.array([1.0, 1.0]), -3.0
+NW = np.linalg.norm(WE); U = WE / NW; X0 = np.array([1.5, 1.5])
+val = lambda p: WE @ p + BE
+g = np.linspace(-0.6, 4.6, 2)
+
+
+def frame_ax(ax):
+    ax.set_xlim(-0.2, 4.0); ax.set_ylim(-0.2, 4.0); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$")
+
+
+# (가) w 방향으로 걸으면 값이 일정하게 오른다
+fig, ax = plt.subplots(figsize=(6.2, 6.0)); frame_ax(ax)
+ax.plot(g, 3 - g, color="black", lw=2.5); ax.text(0.15, 3.05, "값 0 (경계)", fontsize=13, rotation=-45)
+for d in (0, 0.5, 1.0, 1.5):
+    p = X0 + d * U; v = val(p); assert abs(v - d * NW) < 1e-12
+    ax.scatter(*p, s=90, color=GOLD if d else "black", zorder=4)
+    ax.text(p[0] + 0.12, p[1] - 0.28, f"d = {d:g}  →  값 {v:.2f}", fontsize=14, color=RED if d else "black", fontweight="bold" if d == 1 else None)
+ax.annotate("", X0 + 1.75 * U, X0, arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3, mutation_scale=18))
+ax.text(*(X0 + 1.8 * U + np.array([-0.35, 0.1])), "$\\mathbf{w}$ 방향", fontsize=15, color=GOLD, fontweight="bold")
+ax.set_title("$\\mathbf{w} = (1, 1),\\ b = -3$:  1 걸을 때마다 값이 $\\Vert\\mathbf{w}\\Vert = \\sqrt{2} = 1.41$ 오른다", fontsize=13)
+save(fig, "sv_walk.png")
+
+# (나) 값 -1, 0, +1 선 사이 간격 = 1/||w||
+fig, axs = plt.subplots(1, 2, figsize=(12, 5.6))
+for ax, k in zip(axs, (1, 2)):
+    frame_ax(ax); nw = k * NW
+    for c in (-1, 0, 1):
+        ax.plot(g, (3 + c / k) - g, color="black" if c == 0 else GRAY, lw=2.5 if c == 0 else 1.8, ls="-" if c == 0 else "--")
+        q = X0 + (c / nw + 0.04) * U - 1.3 * np.array([1, -1]) / np.sqrt(2)
+        ax.text(*q, f"값 {c:+d}" if c else "값 0", fontsize=13, rotation=-45, ha="center", va="bottom", rotation_mode="anchor",
+                color="black" if c == 0 else "#555555", fontweight="bold" if c == 0 else None)
+    a, b = X0 - U / nw, X0 + U / nw
+    ax.annotate("", b, a, arrowprops=dict(arrowstyle="<->", color=RED, lw=2.2))
+    ax.text(b[0] + 0.15, b[1] - 0.05, f"폭 $2/\\Vert\\mathbf{{w}}\\Vert$ = {2 / nw:.2f}", fontsize=15, color=RED, fontweight="bold")
+    ax.set_title(("$\\mathbf{w} = (1, 1)$,  $\\Vert\\mathbf{w}\\Vert = 1.41$" if k == 1 else "$\\mathbf{w} = (2, 2)$,  $\\Vert\\mathbf{w}\\Vert = 2.83$"), fontsize=15)
+save(fig, "sv_width.png")
+print("ok width")
