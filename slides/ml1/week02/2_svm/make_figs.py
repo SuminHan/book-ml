@@ -51,8 +51,10 @@ save(fig, "sv_risky.png")
 
 # 3. 가장 넓은 길
 fig, ax = plt.subplots(figsize=(5.8, 5.8)); pts(ax); street(ax, M)
-ax.annotate("", (2.0 + 1.59, 4.5 - 1.59), (2.0, 4.5), arrowprops=dict(arrowstyle="<->", lw=2))
-ax.text(3.2, 3.0, f"마진 {MARGIN}", fontsize=15, fontweight="bold", rotation=-45)
+_a = np.array([2.0, 4.5]); _b = _a + (2 / np.linalg.norm(M.coef_[0])) * np.array([1, -1]) / np.sqrt(2)   # 빨강 가장자리 위 서포트 벡터에서 파랑 가장자리까지
+assert abs(M.decision_function([_b])[0] + 1) < 1e-2
+ax.annotate("", _b, _a, arrowprops=dict(arrowstyle="<->", lw=2, shrinkA=0, shrinkB=0))
+ax.text(_b[0] + 0.15, _b[1] - 0.15, f"마진 {MARGIN}", fontsize=15, fontweight="bold", ha="left", va="top")
 save(fig, "sv_street.png")
 
 # 4. 멀리 있는 점 옮기기
