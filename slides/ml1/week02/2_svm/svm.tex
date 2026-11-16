@@ -152,7 +152,7 @@
 \vfill
 \centering
 {\large\begin{align*}
-\underset{w_1, \dots, w_p,\, b,\, m}{\text{maximize}} \quad & m\\
+\text{find} \quad & w_1, \dots, w_p,\, b \quad \text{that maximize } m\\
 \text{subject to} \quad & \sum_{j=1}^{p} w_j^2 = 1,\\
 & y_i(w_1 x_{i1} + w_2 x_{i2} + \cdots + w_p x_{ip} + b) \ge m \quad \text{for all } i = 1, \dots, n
 \end{align*}}
@@ -167,7 +167,7 @@
 \vfill
 \begin{minipage}{0.62\textwidth}
 {\Large\begin{align*}
-\underset{w_1, w_2,\, b,\, m}{\text{maximize}} \quad & \tikzmarknode{mm}{m}\\[0.4em]
+\text{find} \quad & w_1, w_2,\, b \quad \text{that maximize } \tikzmarknode{mm}{m}\\[0.4em]
 \text{subject to} \quad & \tikzmarknode{nb}{w_1^2 + w_2^2 = 1},\\[0.4em]
 & \tikzmarknode{cc}{y_i(w_1 x_{i1} + w_2 x_{i2} + b) \ge m}
 \end{align*}}
@@ -374,9 +374,9 @@ SVM 답 & $-0.44$ & $0.44$ & $-0.11$ & 3.18 &
 \begin{frame}{서포트 벡터 분류기 (소프트 마진) 찾기}
 \markpage{soft}
 \vfill
-\begin{minipage}{0.62\textwidth}
+\hspace*{1.2cm}\begin{minipage}{0.7\textwidth}
 {\large\begin{align*}
-\underset{w_1, \dots, w_p,\ b,\ \varepsilon_1, \dots, \varepsilon_n,\ m}{\text{maximize}} \quad & m\\[0.3em]
+\text{find} \quad & w_1, \dots, w_p,\ b,\ \varepsilon_1, \dots, \varepsilon_n \quad \text{that maximize } m\\[0.3em]
 \text{subject to} \quad & \sum_{j=1}^{p} w_j^2 = 1,\\[0.3em]
 & y_i(\mathbf{w} \cdot \mathbf{x}_i + b) \ge \tikzmarknode{me}{m(1 - \varepsilon_i)},\\[0.3em]
 & \tikzmarknode{ep}{\varepsilon_i \ge 0}, \quad \tikzmarknode{bb}{\sum_{i=1}^{n} \varepsilon_i \le B}
@@ -385,8 +385,8 @@ SVM 답 & $-0.44$ & $0.44$ & $-0.11$ & 3.18 &
 \begin{tikzpicture}[remember picture,overlay]
 \node[bub,anchor=west] (s1) at ([xshift=0.5cm,yshift=0.9cm]me.east) {$m$ 이상 떨어지거나,\\ 아니면 모자란 비율 $\varepsilon_i$ 만큼 벌점};
 \draw[bubarr] (s1.south west) -- (me.north east);
-\node[bub,anchor=east] (s2) at ([xshift=-0.5cm]ep.west) {\textbf{슬랙 변수} $\varepsilon_i$\\ 점마다 하나};
-\draw[bubarr] (s2.east) -- (ep.west);
+\node[bub,anchor=north] (s2) at ([yshift=-0.5cm]ep.south) {\textbf{슬랙 변수} $\varepsilon_i$: 점마다 하나};
+\draw[bubarr] (s2.north) -- (ep.south);
 \node[bub,anchor=west] (s3) at ([xshift=0.9cm,yshift=-0.5cm]bb.east) {넘어가도 되는 \textbf{총 예산}};
 \draw[bubarr] (s3.west) -- (bb.east);
 \end{tikzpicture}
