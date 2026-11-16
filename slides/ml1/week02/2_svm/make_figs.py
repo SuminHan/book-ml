@@ -415,22 +415,31 @@ sh, shb = Bu @ PX, -B0u                                     # 그림자 3.89, �
 dist = sh - shb; assert abs(dist - (Bu @ PX + B0u)) < 1e-12 and abs(dist - 1.13) < 0.01 and abs(sh - 3.25) < 0.01
 th = np.degrees(np.arccos(sh / np.linalg.norm(PX)))
 fig, ax = plt.subplots(figsize=(6.4, 6.0))
-ax.set_xlim(0, 4.3); ax.set_ylim(0, 4.3); ax.set_aspect("equal"); ax.set_xticks(range(5)); ax.set_yticks(range(5)); ax.grid(alpha=0.25)
-ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0)
-t = np.linspace(0, 4.3, 2); ax.plot(t, t, color=GOLD, lw=1.5, ls="--")             # β 방향 축
-ax.plot(t, 3 - t, color="black", lw=2.5)                                               # 경계
+ax.set_xlim(-0.9, 4.6); ax.set_ylim(-1.3, 4.3); ax.set_aspect("equal"); ax.grid(alpha=0.25)
+t = np.linspace(-0.9, 4.3, 2); ax.plot(t, t, color=GOLD, lw=1.5, ls="--")             # β 방향 축
+tt = np.linspace(-0.9, 4.3, 2); ax.plot(tt, 3 - tt, color="black", lw=2.5)                  # 경계
 F = sh * Bu; Fb = shb * Bu
 ax.annotate("", PX, (0, 0), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.5, mutation_scale=16))
 ax.annotate("", Bu, (0, 0), arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3.5, mutation_scale=18))
-ax.plot(*zip(PX, F), color=GRAY, lw=1.5, ls=":")
-ax.plot([0, F[0]], [0, F[1]], color=BLUE, lw=6, alpha=0.35, solid_capstyle="butt")
+# 치수선: β 축에서 오른쪽 아래로 띄워 그린다 (원점 · 경계 · x 의 그림자 끝에 눈금)
+nrm = np.array([1, -1]) / np.sqrt(2)
+def dim(a, b, off, col, lab, lw=2.5):
+    pa, pb = a * Bu + off * nrm, b * Bu + off * nrm
+    ax.annotate("", pb, pa, arrowprops=dict(arrowstyle="<->", color=col, lw=lw, shrinkA=0, shrinkB=0))
+    for q, base in ((pa, a * Bu), (pb, b * Bu)):
+        ax.plot(*zip(base, q + 0.08 * nrm), color=col, lw=1, ls=":")
+    mid = (pa + pb) / 2 + 0.22 * nrm
+    ax.text(*mid, lab, fontsize=13, color=col, rotation=45, ha="center", va="center", fontweight="bold",
+            bbox=dict(fc="white", ec="none", pad=0.5, alpha=0.9))
+dim(0, sh, 0.95, BLUE, f"x 의 β 방향 위치 $\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}")
+dim(0, shb, 0.45, "#555555", f"경계의 위치 {shb:.2f} = $-\\beta_0$")
 ax.annotate("", F, Fb, arrowprops=dict(arrowstyle="<->", color="#2b8a3e", lw=3, shrinkA=0, shrinkB=0))
-ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black", zorder=4)
+ax.plot(*zip(PX, F), color=GRAY, lw=1.5, ls=":")
+ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black", zorder=4); ax.scatter(0, 0, s=50, color="black", zorder=5); ax.text(-0.35, -0.3, "(0, 0)", fontsize=13)
 ax.text(PX[0] + 0.08, PX[1] + 0.1, "$\\mathbf{x} = (1, 3.6)$", fontsize=15, color=RED)
-ax.text(0.55, 0.12, "$\\beta$ (길이 1)", fontsize=15, color="#7a6a3f", fontweight="bold")
-ax.text(0.33, 0.62, "θ", fontsize=16)
-ax.text(3.08, 0.2, f"x 의 그림자\n$\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}", fontsize=14, color=BLUE)
-ax.annotate(f"경계의 그림자 {shb:.2f}", Fb, (2.45, 1.05), fontsize=14, color="#555555", arrowprops=dict(arrowstyle="->", color="#555555", lw=1.2))
-ax.text(2.45, 1.65, f"거리 {dist:.2f}", fontsize=15, color="#2b8a3e", fontweight="bold")
+ax.text(-0.15, 0.55, "$\\beta$", fontsize=16, color="#7a6a3f", fontweight="bold")
+ax.text(0.4, 0.6, "θ", fontsize=16)
+ax.text(0.95, 2.3, f"거리 {dist:.2f}", fontsize=15, color="#2b8a3e", fontweight="bold")
+origin_axes(ax); ax.set_xticks([1, 2, 3, 4]); ax.set_yticks([1, 2, 3, 4])
 save(fig, "sv_cos.png")
 print("ok cos", round(th, 1))
