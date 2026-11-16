@@ -54,7 +54,7 @@ fig, ax = plt.subplots(figsize=(5.8, 5.8)); pts(ax); street(ax, M)
 _a = np.array([2.0, 4.5]); _b = _a + (2 / np.linalg.norm(M.coef_[0])) * np.array([1, -1]) / np.sqrt(2)   # 빨강 가장자리 위 서포트 벡터에서 파랑 가장자리까지
 assert abs(M.decision_function([_b])[0] + 1) < 1e-2
 ax.annotate("", _b, _a, arrowprops=dict(arrowstyle="<->", lw=2, shrinkA=0, shrinkB=0))
-ax.text(_b[0] + 0.15, _b[1] - 0.15, f"길 폭 2M = {MARGIN}", fontsize=15, fontweight="bold", ha="left", va="top")
+ax.text(_b[0] + 0.15, _b[1] - 0.15, f"길 폭 2m = {MARGIN}", fontsize=15, fontweight="bold", ha="left", va="top")
 save(fig, "sv_street.png")
 
 # 4. 멀리 있는 점 옮기기
@@ -72,7 +72,7 @@ fig, axs = plt.subplots(1, 3, figsize=(14, 5.6))
 for ax, C in zip(axs, (100, 1, 0.05)):
     m = SVC(kernel="linear", C=C).fit(Xo, yo); pts(ax, Xo, yo); street(ax, m, Xo)
     bud, mg, nsv = BUDGET[C]
-    ax.set_title(f"예산 B = {bud:.2f}  (sklearn C = {C})\nM = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
+    ax.set_title(f"예산 B = {bud:.2f}  (sklearn C = {C})\nm = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
 save(fig, "sv_soft.png")
 
 # 6. 원 모양 데이터와 들어 올리기
@@ -350,7 +350,7 @@ Xn = np.r_[X, [NEWPT]]; yn = np.r_[y, -1]; Mn = SVC(kernel="linear", C=1e6).fit(
 pts(axs[1], Xn, yn); street(axs[1], Mn, Xn)
 w0_, b0_ = M.coef_[0], M.intercept_[0]; axs[1].plot(xs, -(b0_ + w0_[0] * xs) / w0_[1], color=GRAY, lw=2, ls=":")
 axs[1].scatter(*NEWPT, s=380, facecolors="none", edgecolors=RED, lw=2.5, zorder=5)
-axs[1].set_title(f"파란 점 하나 추가: M {M_HARD} → {M_NEW}", fontsize=16)
+axs[1].set_title(f"파란 점 하나 추가: m {M_HARD} → {M_NEW}", fontsize=16)
 save(fig, "sv_sensitive.png")
 
 # 슬랙 ε: 예산 안에서 가장자리를 넘는 점

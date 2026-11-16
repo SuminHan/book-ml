@@ -88,14 +88,14 @@
 \begin{column}{0.44\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_street.png}\end{column}
 \begin{column}{0.52\textwidth}
 {\large 두 무리 사이에 \textbf{길}을 낸다}\\[0.6em]
-{\large \kb{마진 $M$} = 경계에서 가장 가까운 점까지 거리}\\[0.6em]
+{\large \kb{마진 $m$} = 경계에서 가장 가까운 점까지 거리}\\[0.6em]
 {\large 마진이 \textbf{가장 큰} 초평면 = 길의 가운데 선}\\[0.8em]
-{\large 이 데이터: $M =$ \kb{1.59}, 길 폭 $2M = 3.18$}\\[0.4em]
-{\small 경계까지 거리가 딱 $M$ 인 점 (점선 위) = \textbf{서포트 벡터} (노란 동그라미)}
+{\large 이 데이터: $m =$ \kb{1.59}, 길 폭 $2m = 3.18$}\\[0.4em]
+{\small 경계까지 거리가 딱 $m$ 인 점 (점선 위) = \textbf{서포트 벡터} (노란 동그라미)}
 \end{column}
 \end{columns}
 \vfill
-\note{가장 자연스러운 선택은 양쪽 점에서 가장 멀리 떨어진 초평면입니다. 경계에서 가장 가까운 학습 점까지의 거리를 마진, 대문자 M이라고 부르고, 마진이 가장 큰 초평면을 최대 마진 초평면, 이것으로 분류하는 것을 최대 마진 분류기라고 합니다. 그림으로는 두 무리 사이에 점이 하나도 없는 가장 넓은 길을 내고 그 가운데 선을 경계로 쓰는 것입니다. 이 데이터에서 M은 1.59, 길 전체 폭은 그 두 배인 3.18입니다. 경계까지의 거리가 정확히 M인 점, 점선에 닿은 노란 동그라미 점들을 서포트 벡터라고 부릅니다.}
+\note{가장 자연스러운 선택은 양쪽 점에서 가장 멀리 떨어진 초평면입니다. 경계에서 가장 가까운 학습 점까지의 거리를 마진, 소문자 m이라고 부르고, 마진이 가장 큰 초평면을 최대 마진 초평면, 이것으로 분류하는 것을 최대 마진 분류기라고 합니다. 그림으로는 두 무리 사이에 점이 하나도 없는 가장 넓은 길을 내고 그 가운데 선을 경계로 쓰는 것입니다. 이 데이터에서 m은 1.59, 길 전체 폭은 그 두 배인 3.18입니다. 경계까지의 거리가 정확히 m인 점, 점선에 닿은 노란 동그라미 점들을 서포트 벡터라고 부릅니다.}
 \end{frame}
 
 % --- 서포트 벡터만
@@ -133,18 +133,18 @@
 \markpage{form}
 \vfill
 \centering
-{\Large $\displaystyle \max_{\beta_0, \beta_1, \beta_2,\, M}\ M$ \quad subject to}\\[0.2em]
-{\Large $\beta_1^2 + \beta_2^2 = 1, \quad y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \ge M$ \; (모든 $i$)}\\[0.6em]
+{\Large $\displaystyle \max_{\beta_0, \beta_1, \beta_2,\, m}\ m$ \quad subject to}\\[0.2em]
+{\Large $\beta_1^2 + \beta_2^2 = 1, \quad y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \ge m$ \; (모든 $i$)}\\[0.6em]
 \renewcommand{\arraystretch}{1.35}
 {\large\begin{tabular}{l|l}
-$\max M$ & 마진 (가장 가까운 점까지 거리) 을 최대로\\
+$\max m$ & 마진 (가장 가까운 점까지 거리) 을 최대로\\
 $\beta_1^2 + \beta_2^2 = 1$ & 길이 1 로 맞춤 $\to$ 값 = 경계까지 거리 (없으면 $\beta$ 를 키워 값만 커진다)\\
-$y_i(\cdots) \ge M$ & 모든 점이 자기 쪽으로 $M$ 이상 떨어져 있다\\ \hline
-이 데이터 & $\beta = (-0.71,\ 0.71)$, \; $\beta_0 = -0.18$, \; \kb{$M = 1.59$}
+$y_i(\cdots) \ge m$ & 모든 점이 자기 쪽으로 $m$ 이상 떨어져 있다\\ \hline
+이 데이터 & $\beta = (-0.71,\ 0.71)$, \; $\beta_0 = -0.18$, \; \kb{$m = 1.59$}
 \end{tabular}}\\[0.6em]
 {\normalsize 확인: 서포트 벡터 $(2, 4.5)$ \; $-0.71 \cdot 2 + 0.71 \cdot 4.5 - 0.18 \approx 1.59$ \qquad 볼록 최적화 $\to$ 답은 하나}
 \vfill
-\note{최대 마진 초평면을 식으로 쓰면 이렇습니다. 첫째, 마진 M을 최대로 합니다. 둘째, 베타1 제곱 더하기 베타2 제곱이 1, 즉 앞 쪽에서 본 길이를 1로 맞춥니다. 그러면 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 베타를 두 배, 세 배 키우기만 해도 값이 커져서 M을 끝없이 키울 수 있으니 문제가 성립하지 않습니다. 셋째, 모든 점에서 라벨 곱하기 값이 M 이상, 즉 모든 점이 자기 쪽으로 M 이상 떨어져 있어야 합니다. 이 데이터의 답은 베타가 마이너스 0.71, 0.71, 베타0이 마이너스 0.18, M이 1.59입니다. 서포트 벡터 2, 4.5를 넣으면 값이 1.59, 딱 M입니다. 이 문제는 볼록 최적화 문제라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
+\note{최대 마진 초평면을 식으로 쓰면 이렇습니다. 첫째, 마진 m을 최대로 합니다. 둘째, 베타1 제곱 더하기 베타2 제곱이 1, 즉 앞 쪽에서 본 길이를 1로 맞춥니다. 그러면 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 베타를 두 배, 세 배 키우기만 해도 값이 커져서 m을 끝없이 키울 수 있으니 문제가 성립하지 않습니다. 셋째, 모든 점에서 라벨 곱하기 값이 m 이상, 즉 모든 점이 자기 쪽으로 m 이상 떨어져 있어야 합니다. 이 데이터의 답은 베타가 마이너스 0.71, 0.71, 베타0이 마이너스 0.18, m이 1.59입니다. 서포트 벡터 2, 4.5를 넣으면 값이 1.59, 딱 m입니다. 이 문제는 볼록 최적화 문제라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
 \end{frame}
 
 % --- 같은 문제를 w 로
@@ -154,16 +154,16 @@ $y_i(\cdots) \ge M$ & 모든 점이 자기 쪽으로 $M$ 이상 떨어져 있다
 \begin{columns}[c]
 \begin{column}{0.50\textwidth}\centering\includegraphics[width=\linewidth]{sv_width.png}\end{column}
 \begin{column}{0.48\textwidth}
-{\large $\mathbf{w} = \beta / M$, \; $b = \beta_0 / M$ 로 나누면}\\[0.5em]
+{\large $\mathbf{w} = \beta / m$, \; $b = \beta_0 / m$ 로 나누면}\\[0.5em]
 {\large 조건: \; $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$}\\[0.3em]
-{\large 마진: \; $M = 1/\lVert\mathbf{w}\rVert$ \quad (폭 $2/\lVert\mathbf{w}\rVert$)}\\[0.6em]
-{\large $M$ 최대 $\Leftrightarrow$ $\lVert\mathbf{w}\rVert$ 최소}\\[0.3em]
+{\large 마진: \; $m = 1/\lVert\mathbf{w}\rVert$ \quad (폭 $2/\lVert\mathbf{w}\rVert$)}\\[0.6em]
+{\large $m$ 최대 $\Leftrightarrow$ $\lVert\mathbf{w}\rVert$ 최소}\\[0.3em]
 {\Large $\displaystyle \min_{\mathbf{w}, b} \tfrac12\lVert\mathbf{w}\rVert^2 \ \text{s.t.}\ y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$}\\[0.5em]
-{\normalsize 이 데이터: $\mathbf{w} = (-0.44,\ 0.44)$, $\lVert\mathbf{w}\rVert = 0.63$ $\to$ $M = 1.59$}
+{\normalsize 이 데이터: $\mathbf{w} = (-0.44,\ 0.44)$, $\lVert\mathbf{w}\rVert = 0.63$ $\to$ $m = 1.59$}
 \end{column}
 \end{columns}
 \vfill
-\note{같은 문제를 교과서와 라이브러리에서 더 자주 쓰는 꼴로 바꿔 봅시다. 베타와 베타0을 M으로 나눈 것을 w와 b라고 합니다. 그러면 모든 점에서 y 곱하기 값이 M 이상이라는 조건은, 양변을 M으로 나눠 y 곱하기 w x 더하기 b가 1 이상이 됩니다. 가장자리가 값 플러스 마이너스 1인 선이 되는 것이죠. 베타의 길이가 1이었으니 w의 길이는 1 나누기 M, 거꾸로 M은 1 나누기 w의 길이입니다. 왼쪽 그림처럼 w가 크면 길이 좁고, 작으면 넓습니다. 그래서 M을 최대로 하는 것은 w의 길이를 최소로 하는 것과 같고, 계산하기 편하게 w 길이 제곱의 절반을 최소로 하는 문제로 씁니다. 이 데이터에서 w는 마이너스 0.44, 0.44, 길이 0.63, 1 나누기 0.63은 1.59로 앞의 M과 같습니다. 다음 부분의 학습은 이 꼴에서 출발합니다.}
+\note{같은 문제를 교과서와 라이브러리에서 더 자주 쓰는 꼴로 바꿔 봅시다. 베타와 베타0을 m으로 나눈 것을 w와 b라고 합니다. 그러면 모든 점에서 y 곱하기 값이 m 이상이라는 조건은, 양변을 m으로 나눠 y 곱하기 w x 더하기 b가 1 이상이 됩니다. 가장자리가 값 플러스 마이너스 1인 선이 되는 것이죠. 베타의 길이가 1이었으니 w의 길이는 1 나누기 m, 거꾸로 m은 1 나누기 w의 길이입니다. 왼쪽 그림처럼 w가 크면 길이 좁고, 작으면 넓습니다. 그래서 m을 최대로 하는 것은 w의 길이를 최소로 하는 것과 같고, 계산하기 편하게 w 길이 제곱의 절반을 최소로 하는 문제로 씁니다. 이 데이터에서 w는 마이너스 0.44, 0.44, 길이 0.63, 1 나누기 0.63은 1.59로 앞의 m과 같습니다. 다음 부분의 학습은 이 꼴에서 출발합니다.}
 \end{frame}
 
 \section{학습}
@@ -269,7 +269,7 @@ SVM 답 & $-0.44$ & $0.44$ & $-0.11$ & 3.18 &
 \begin{frame}{최대 마진의 약점: 겹치면 불가능, 점 하나에 민감}
 \vfill
 \centering\includegraphics[width=0.66\linewidth]{sv_sensitive.png}\par\vskip0.2em
-{\large 왼쪽: 가르는 초평면이 \kq{없다} \quad 오른쪽: 점 하나에 $M$ $1.59 \to 0.46$, 경계가 기운다 (점선 = 원래)}\\[0.2em]
+{\large 왼쪽: 가르는 초평면이 \kq{없다} \quad 오른쪽: 점 하나에 $m$ $1.59 \to 0.46$, 경계가 기운다 (점선 = 원래)}\\[0.2em]
 {\large $\to$ 학습 데이터에 \kq{과대적합}하기 쉽다}
 \vfill
 \note{최대 마진 분류기에는 두 가지 약점이 있습니다. 첫째, 왼쪽처럼 파란 점 하나가 빨강 무리 안에 들어오면 두 무리를 완벽히 가르는 직선이 아예 없습니다. 그러면 문제의 답이 없습니다. 둘째, 가를 수 있더라도 점 하나에 아주 민감합니다. 오른쪽은 파란 점 하나를 2.6, 3.8에 더한 것입니다. 마진이 1.59에서 0.46으로 확 줄고, 경계도 점선이던 원래 경계에서 기울어집니다. 점 하나 때문에 경계가 크게 흔들리면 학습 데이터에 과대적합하기 쉽습니다.}
@@ -282,8 +282,8 @@ SVM 답 & $-0.44$ & $0.44$ & $-0.11$ & 3.18 &
 \begin{columns}[c]
 \begin{column}{0.40\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_slack.png}\end{column}
 \begin{column}{0.58\textwidth}
-{\large $\max M$ \; s.t. \; $\lVert\beta\rVert = 1$, \; $\varepsilon_i \ge 0$, \; $\sum_i \varepsilon_i \le B$}\\[0.2em]
-{\large \hspace{2.6em} $y_i f(\mathbf{x}_i) \ge M(1 - \varepsilon_i)$}\\[0.6em]
+{\large $\max m$ \; s.t. \; $\lVert\beta\rVert = 1$, \; $\varepsilon_i \ge 0$, \; $\sum_i \varepsilon_i \le B$}\\[0.2em]
+{\large \hspace{2.6em} $y_i f(\mathbf{x}_i) \ge m(1 - \varepsilon_i)$}\\[0.6em]
 \renewcommand{\arraystretch}{1.3}
 {\large\begin{tabular}{l|l}
 $\varepsilon_i = 0$ & 가장자리 바깥, 제자리\\
@@ -296,14 +296,14 @@ $B$ & 넘어가도 되는 \kb{총 예산}
 \end{column}
 \end{columns}
 \vfill
-\note{그래서 조금 넘어가는 것을 허락합니다. 이것을 서포트 벡터 분류기, 또는 소프트 마진이라고 합니다. 점마다 엡실론이라는 슬랙 변수를 두고, 조건을 M 대신 M 곱하기 1 빼기 엡실론 이상으로 느슨하게 합니다. 엡실론이 0이면 원래대로 가장자리 바깥, 0과 1 사이면 가장자리를 넘어 길 안에 들어온 것, 1보다 크면 경계까지 넘어 틀리게 분류된 것입니다. 대신 엡실론을 모두 더한 것이 예산 B를 넘으면 안 됩니다. 그림은 예산이 2.64일 때입니다. 빨강 무리 안의 파란 점은 엡실론 1.70으로 틀렸고, 나머지 몇 점은 0.04에서 0.45만큼 길 안에 들어와 있습니다. 서포트 벡터는 가장자리 위의 점과 가장자리를 넘은 점 모두입니다. 참고로 앞의 학습 식에서 본 힌지 손실 값이 바로 이 엡실론입니다.}
+\note{그래서 조금 넘어가는 것을 허락합니다. 이것을 서포트 벡터 분류기, 또는 소프트 마진이라고 합니다. 점마다 엡실론이라는 슬랙 변수를 두고, 조건을 m 대신 m 곱하기 1 빼기 엡실론 이상으로 느슨하게 합니다. 엡실론이 0이면 원래대로 가장자리 바깥, 0과 1 사이면 가장자리를 넘어 길 안에 들어온 것, 1보다 크면 경계까지 넘어 틀리게 분류된 것입니다. 대신 엡실론을 모두 더한 것이 예산 B를 넘으면 안 됩니다. 그림은 예산이 2.64일 때입니다. 빨강 무리 안의 파란 점은 엡실론 1.70으로 틀렸고, 나머지 몇 점은 0.04에서 0.45만큼 길 안에 들어와 있습니다. 서포트 벡터는 가장자리 위의 점과 가장자리를 넘은 점 모두입니다. 참고로 앞의 학습 식에서 본 힌지 손실 값이 바로 이 엡실론입니다.}
 \end{frame}
 
 % --- 예산 B
 \begin{frame}{예산 $B$: 크면 넓은 길, 작으면 좁은 길}
 \vfill
 \centering\includegraphics[width=0.8\linewidth]{sv_soft.png}\par\vskip0.1em
-{\large $B$ 크면 $M$ 커지고 서포트 벡터 많음 (\kb{편향}$\uparrow$ 분산$\downarrow$) \quad $B = 0$ 이면 최대 마진 \quad $B$ 는 교차 검증으로}\\[0.2em]
+{\large $B$ 크면 $m$ 커지고 서포트 벡터 많음 (\kb{편향}$\uparrow$ 분산$\downarrow$) \quad $B = 0$ 이면 최대 마진 \quad $B$ 는 교차 검증으로}\\[0.2em]
 {\small ISL · CME 250 은 이 예산을 $C$ 라고 쓴다. sklearn 과 앞 학습 식의 $C$ 는 \kq{벌점 무게}라 반대 (클수록 좁은 길)}
 \vfill
 \note{예산을 바꿔 봅시다. 예산이 0이면 하나도 넘어가면 안 되니 이상치를 피해 가느라 마진이 0.11로 아주 좁고, 서포트 벡터는 3개입니다. 예산이 1.87이면 이상치 하나만 틀리기로 하고, 원래 데이터와 같은 마진 1.59, 서포트 벡터 4개입니다. 예산이 2.64면 여러 점이 길 안에 들어오는 대신 마진이 2.32로 넓어지고 서포트 벡터가 8개로 늘어납니다. 예산이 크면 경계가 여러 점의 영향을 고루 받아 덜 흔들리니 분산은 작고 편향은 큽니다. 예산이 작으면 반대입니다. 예산 B도 교차 검증으로 고릅니다. 주의할 점이 있습니다. 교과서 ISL과 이 강의 원본은 이 예산을 C라고 부릅니다. 그런데 sklearn과 앞에서 본 학습 식의 C는 넘어간 만큼의 벌점에 곱하는 무게라서 뜻이 반대입니다. sklearn의 C가 크면 벌점이 무거워 좁은 길, 작으면 넓은 길입니다. 그림 제목에 두 숫자를 같이 적어 두었습니다.}
@@ -431,21 +431,21 @@ RBF & $K(\mathbf{x},\mathbf{x}') = \exp\!\big(-\gamma \lVert \mathbf{x}-\mathbf{
 \begin{frame}{문제풀이}
 \vfill
 \begin{enumerate}
-\item 1차원 점: 빨강 $x = 4, 5$, 파랑 $x = 1, 2$. (a) 최대 마진 경계와 마진 $M$ 은? \; (b) 서포트 벡터는?\vskip0.8em
-\item $\mathbf{w} = (3, 4)$ 인 SVM 의 마진 $M$ 과 길 폭은?\vskip0.8em
+\item 1차원 점: 빨강 $x = 4, 5$, 파랑 $x = 1, 2$. (a) 최대 마진 경계와 마진 $m$ 은? \; (b) 서포트 벡터는?\vskip0.8em
+\item $\mathbf{w} = (3, 4)$ 인 SVM 의 마진 $m$ 과 길 폭은?\vskip0.8em
 \item 학습 정확도 100\%, 검증 정확도 70\% 인 RBF SVM. sklearn 의 $C$ 와 $\gamma$ 를 어느 쪽으로 바꿔 보겠나?\vskip0.8em
 \item $\mathbf{x} = (2, 0)$, $\mathbf{x}' = (1, 3)$ 일 때 $(\mathbf{x}\cdot\mathbf{x}')^2$ 와 $\phi(\mathbf{x})\cdot\phi(\mathbf{x}')$ 를 각각 계산해 같은지 확인하라.\vskip0.8em
 \item 클래스 5개를 SVM 으로 분류한다. 일대일 · 일대다는 각각 SVM 이 몇 개 필요한가?
 \end{enumerate}
 \vfill
-\note{1번 답. 가장 가까운 두 점이 2와 4이니 경계는 가운데 3, 마진 M은 1, 길 폭은 2입니다. 서포트 벡터는 2와 4입니다. 2번 답. w의 길이가 5이니 마진 M은 1 나누기 5, 0.2, 길 폭은 0.4입니다. 3번 답. 과대적합이니 C와 감마를 둘 다 줄여 봅니다. 4번 답. 점곱이 2라서 제곱하면 4입니다. 파이 x는 (4, 0, 0), 파이 x 프라임은 (1, 3루트2, 9)이니 점곱은 4, 같습니다. 5번 답. 일대일은 5 곱하기 4 나누기 2, 10개, 일대다는 5개입니다.}
+\note{1번 답. 가장 가까운 두 점이 2와 4이니 경계는 가운데 3, 마진 m은 1, 길 폭은 2입니다. 서포트 벡터는 2와 4입니다. 2번 답. w의 길이가 5이니 마진 m은 1 나누기 5, 0.2, 길 폭은 0.4입니다. 3번 답. 과대적합이니 C와 감마를 둘 다 줄여 봅니다. 4번 답. 점곱이 2라서 제곱하면 4입니다. 파이 x는 (4, 0, 0), 파이 x 프라임은 (1, 3루트2, 9)이니 점곱은 4, 같습니다. 5번 답. 일대일은 5 곱하기 4 나누기 2, 10개, 일대다는 5개입니다.}
 \end{frame}
 
 % --- 실습
 \begin{frame}{실습}
 \vfill
 \centering\begin{tabular}{rl}
-\large 1 & 슬라이드의 점 20개로 선형 SVM: $M$ 1.59 (폭 3.18), 서포트 벡터 3개, 먼 점 옮기기 재현\\[0.5em]
+\large 1 & 슬라이드의 점 20개로 선형 SVM: $m$ 1.59 (폭 3.18), 서포트 벡터 3개, 먼 점 옮기기 재현\\[0.5em]
 \large 2 & 실제 데이터: 지폐 1,372장 진위 판별, 선형 vs RBF\\[0.5em]
 \large 3 & 원 · 반달 데이터에서 $C$ 와 $\gamma$ 를 교차 검증으로 고르기
 \end{tabular}\vskip1em
@@ -459,7 +459,7 @@ Banknote Authentication (Lohweg; UCI) \\[0.4em]\href{https://colab.research.goog
 \vfill
 \centering\normalsize\begin{tabular}{l}
 \textbf{초평면} $\beta_0 + \beta\cdot\mathbf{x} = 0$: 값의 부호로 양쪽을 나눈다\\[0.5em]
-\textbf{최대 마진}: 가장 가까운 점까지 거리 $M$ 최대 $\Leftrightarrow$ $\min \frac12\lVert\mathbf{w}\rVert^2$, 경계는 \kb{서포트 벡터}가 정한다\\[0.5em]
+\textbf{최대 마진}: 가장 가까운 점까지 거리 $m$ 최대 $\Leftrightarrow$ $\min \frac12\lVert\mathbf{w}\rVert^2$, 경계는 \kb{서포트 벡터}가 정한다\\[0.5em]
 \textbf{학습}: 힌지 손실 경사하강 (여유 $< 1$ 인 점만 민다) 또는 쌍대 문제 (SMO)\\[0.5em]
 \textbf{소프트 마진}: 슬랙 $\varepsilon_i$, 예산 $B$ 크면 넓은 길 (sklearn $C$ 는 반대)\\[0.5em]
 \textbf{커널}: $f(\mathbf{x}) = \beta_0 + \sum_{i\in S}\alpha_i K(\mathbf{x},\mathbf{x}_i)$ $\to$ 휘어진 경계 (다항 · RBF)\\[0.5em]
@@ -467,6 +467,6 @@ Banknote Authentication (Lohweg; UCI) \\[0.4em]\href{https://colab.research.goog
 \end{tabular}\par\vskip0.6em
 {\tiny\color{gray} 구성 참고: S. Wang, CME 250 Lecture 5: Support Vector Machines (Stanford, Winter 2019), \href{https://web.stanford.edu/class/cme250/files/cme250_lecture5.pdf}{\textcolor{ksagolddk}{web.stanford.edu/class/cme250/files/cme250\_lecture5.pdf}} · James et al., \textit{An Introduction to Statistical Learning}, 9장}
 \vfill
-\note{정리합니다. 초평면은 값의 부호로 공간을 둘로 나눕니다. 최대 마진 분류기는 가장 가까운 점까지의 거리 M을 최대로 하는 초평면이고, 같은 문제를 w 길이 제곱의 절반을 최소화하는 꼴로 쓸 수 있습니다. 경계는 서포트 벡터 몇 개가 정합니다. 학습은 조건을 힌지 손실로 바꿔 경사하강법으로 풀거나, 쌍대 문제로 바꿔 SMO로 풉니다. 깔끔하게 나뉘지 않으면 슬랙 엡실론과 예산 B를 두는 소프트 마진을 쓰고, 예산이 크면 넓은 길입니다. sklearn의 C는 뜻이 반대라는 데 주의합니다. 점곱을 커널로 바꾸면 휘어진 경계를 만들 수 있고, 클래스가 여러 개면 일대일이나 일대다로 SVM을 여러 개 만듭니다.}
+\note{정리합니다. 초평면은 값의 부호로 공간을 둘로 나눕니다. 최대 마진 분류기는 가장 가까운 점까지의 거리 m을 최대로 하는 초평면이고, 같은 문제를 w 길이 제곱의 절반을 최소화하는 꼴로 쓸 수 있습니다. 경계는 서포트 벡터 몇 개가 정합니다. 학습은 조건을 힌지 손실로 바꿔 경사하강법으로 풀거나, 쌍대 문제로 바꿔 SMO로 풉니다. 깔끔하게 나뉘지 않으면 슬랙 엡실론과 예산 B를 두는 소프트 마진을 쓰고, 예산이 크면 넓은 길입니다. sklearn의 C는 뜻이 반대라는 데 주의합니다. 점곱을 커널로 바꾸면 휘어진 경계를 만들 수 있고, 클래스가 여러 개면 일대일이나 일대다로 SVM을 여러 개 만듭니다.}
 \end{frame}
 \end{document}
