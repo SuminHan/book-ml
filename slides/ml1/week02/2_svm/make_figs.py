@@ -298,3 +298,17 @@ for k, i in enumerate(o[:3]):
 ax.set_xticks([]); ax.set_ylabel("여유  $y_i(\\mathbf{w}\\cdot\\mathbf{x}_i + b)$"); ax.set_xlabel("점 20개 (여유 작은 순)")
 save(fig, "sv_slack_bars.png")
 print("ok train")
+
+
+# 힌지 손실: 여유 m → 벌점 max(0, 1 - m)
+fig, ax = plt.subplots(figsize=(5.4, 4.3))
+m = np.linspace(-1.5, 3, 400)
+ax.fill_between([1, 3], 0, 2.7, color=GOLD, alpha=0.12); ax.fill_between([-1.5, 1], 0, 2.7, color=RED, alpha=0.06)
+ax.plot(m, np.maximum(0, 1 - m), color="black", lw=3)
+ax.axvline(1, color=GRAY, ls="--", lw=1.5)
+ax.text(2.0, 1.2, "여유 ≥ 1\n벌점 0\n→ 가만히", ha="center", fontsize=19, color="#7a6a3f", fontweight="bold")
+ax.text(-0.45, 0.25, "여유 < 1\n모자란 만큼\n벌점", ha="center", fontsize=18, color=RED, fontweight="bold")
+ax.set_xlim(-1.5, 3); ax.set_ylim(0, 2.7); ax.set_xticks([-1, 0, 1, 2, 3])
+ax.set_xlabel("여유", fontsize=18); ax.set_ylabel("벌점", fontsize=18)
+save(fig, "sv_hinge.png")
+print("ok hinge")
