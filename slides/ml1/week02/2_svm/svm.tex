@@ -54,16 +54,16 @@
 \begin{columns}[c]
 \begin{column}{0.44\textwidth}\centering\includegraphics[width=0.92\linewidth]{sv_half.png}\end{column}
 \begin{column}{0.54\textwidth}
-{\Large $\beta_0 + \beta_1 x_1 + \beta_2 x_2 = 0$}\\[0.3em]
+{\Large $w_1 x_1 + w_2 x_2 + b = 0$}\\[0.3em]
 {\normalsize 이 식을 만족하는 점 $(x_1, x_2)$ 를 모으면 직선}\\[0.8em]
 {\large 예: $1 + 2x_1 + 3x_2 = 0$}\\[0.5em]
 {\large 값 \textcolor{ksared}{$> 0$} 이면 한쪽, \textcolor{ksablue}{$< 0$} 이면 다른 쪽}\\[0.3em]
 {\normalsize 점 $(0.8, 0.6)$: $1 + 1.6 + 1.8 = +4.4$ \quad 점 $(-0.9, -0.7)$: $-2.9$}\\[0.8em]
-{\normalsize $p$ 차원: $\beta_0 + \beta_1 x_1 + \cdots + \beta_p x_p = 0$}
+{\normalsize $p$ 차원: $w_1 x_1 + \cdots + w_p x_p + b = 0$}
 \end{column}
 \end{columns}
 \vfill
-\note{2차원 초평면, 직선은 베타0 더하기 베타1 x1 더하기 베타2 x2가 0인 점들의 모임입니다. 예를 들어 1 더하기 2 x1 더하기 3 x2가 0인 직선을 그리면 왼쪽 검은 선입니다. 이 직선 위에 있지 않은 점을 넣으면 값이 0이 아니게 나오는데, 한쪽은 모두 양수, 다른 쪽은 모두 음수입니다. 점 0.8, 0.6을 넣으면 플러스 4.4, 점 마이너스 0.9, 마이너스 0.7은 마이너스 2.9입니다. 경계 가까이 있는 점은 0.2처럼 0에 가깝습니다. 그래서 초평면 하나가 공간을 반으로 나누고, 값의 부호만 보면 어느 쪽인지 압니다. 특징이 p개면 항이 p개로 늘어날 뿐 같습니다.}
+\note{2차원 초평면, 직선은 w1 x1 더하기 w2 x2 더하기 b가 0인 점들의 모임입니다. 예를 들어 1 더하기 2 x1 더하기 3 x2가 0인 직선을 그리면 왼쪽 검은 선입니다. 이 직선 위에 있지 않은 점을 넣으면 값이 0이 아니게 나오는데, 한쪽은 모두 양수, 다른 쪽은 모두 음수입니다. 점 0.8, 0.6을 넣으면 플러스 4.4, 점 마이너스 0.9, 마이너스 0.7은 마이너스 2.9입니다. 경계 가까이 있는 점은 0.2처럼 0에 가깝습니다. 그래서 초평면 하나가 공간을 반으로 나누고, 값의 부호만 보면 어느 쪽인지 압니다. 특징이 p개면 항이 p개로 늘어날 뿐 같습니다.}
 \end{frame}
 
 % --- 분리 초평면 분류기
@@ -72,7 +72,7 @@
 \begin{columns}[c]
 \begin{column}{0.42\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_hook.png}\end{column}
 \begin{column}{0.56\textwidth}
-{\large 라벨 $y_i = +1$ (빨강), $-1$ (파랑) \quad $f(\mathbf{x}) = \beta_0 + \beta_1 x_1 + \beta_2 x_2$}\\[0.6em]
+{\large 라벨 $y_i = +1$ (빨강), $-1$ (파랑) \quad $f(\mathbf{x}) = w_1 x_1 + w_2 x_2 + b$}\\[0.6em]
 {\large 잘 가른다 $\Leftrightarrow$ 모든 점에서 \kb{$y_i\, f(\mathbf{x}_i) > 0$}}\\[0.6em]
 {\large 새 점: $f$ 의 부호로 분류, $|f|$ 가 클수록 \textbf{확신}}\\[0.6em]
 {\normalsize 로지스틱회귀의 $z = 0$ 경계도 분리 초평면}\\[0.8em]
@@ -121,13 +121,13 @@
 \centering
 {\large 학습 데이터 $(\mathbf{x}_1, y_1), \dots, (\mathbf{x}_n, y_n)$, \; $y_i \in \{+1, -1\}$ 에 대해 다음을 푼다}\\[0.6em]
 {\large\begin{align*}
-\underset{\beta_0, \beta_1, \dots, \beta_p,\, m}{\text{maximize}} \quad & m\\
-\text{subject to} \quad & \sum_{j=1}^{p} \beta_j^2 = 1,\\
-& y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_p x_{ip}) \ge m \quad \text{for all } i = 1, \dots, n
+\underset{w_1, \dots, w_p,\, b,\, m}{\text{maximize}} \quad & m\\
+\text{subject to} \quad & \sum_{j=1}^{p} w_j^2 = 1,\\
+& y_i(w_1 x_{i1} + w_2 x_{i2} + \cdots + w_p x_{ip} + b) \ge m \quad \text{for all } i = 1, \dots, n
 \end{align*}}
-{\small\color{gray} James et al., ISL 식 (9.9)--(9.11) \quad CME 250 Lecture 5}
+{\small\color{gray} James et al., ISL 식 (9.9)--(9.11) \quad CME 250 Lecture 5 \quad (교과서의 $\beta_1, \dots, \beta_p$ 를 $\mathbf{w}$, $\beta_0$ 을 $b$ 로 씀)}
 \vfill
-\note{최대 마진 초평면을 찾는 문제를 교과서에 나오는 그대로 쓰면 이렇습니다. 학습 데이터가 n개, 특징이 p개이고 라벨은 플러스 1 아니면 마이너스 1입니다. 베타0부터 베타p, 그리고 마진 m을 골라서 m을 최대로 합니다. 조건은 두 가지입니다. 베타1부터 베타p까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 m 이상. 다음 쪽에서 한 줄씩 읽어 보겠습니다.}
+\note{최대 마진 초평면을 찾는 문제를 교과서에 나오는 그대로 쓰면 이렇습니다. 학습 데이터가 n개, 특징이 p개이고 라벨은 플러스 1 아니면 마이너스 1입니다. b부터 wp, 그리고 마진 m을 골라서 m을 최대로 합니다. 조건은 두 가지입니다. w1부터 wp까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 m 이상. 다음 쪽에서 한 줄씩 읽어 보겠습니다.}
 \end{frame}
 
 % --- 최대 마진 식 해설 (말풍선)
@@ -135,43 +135,42 @@
 \vfill
 \begin{minipage}{0.62\textwidth}
 {\Large\begin{align*}
-\underset{\beta_0, \beta_1, \beta_2,\, m}{\text{maximize}} \quad & \tikzmarknode{mm}{m}\\[0.4em]
-\text{subject to} \quad & \tikzmarknode{nb}{\beta_1^2 + \beta_2^2 = 1},\\[0.4em]
-& \tikzmarknode{cc}{y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \ge m}
+\underset{w_1, w_2,\, b,\, m}{\text{maximize}} \quad & \tikzmarknode{mm}{m}\\[0.4em]
+\text{subject to} \quad & \tikzmarknode{nb}{w_1^2 + w_2^2 = 1},\\[0.4em]
+& \tikzmarknode{cc}{y_i(w_1 x_{i1} + w_2 x_{i2} + b) \ge m}
 \end{align*}}
 \end{minipage}
 \begin{tikzpicture}[remember picture,overlay]
 \node[bub,anchor=west] (b1) at ([xshift=1.6cm,yshift=0.35cm]mm.east) {마진 $m$ (가장 가까운 점까지 거리) 을 최대로};
 \draw[bubarr] (b1.west) -- (mm.east);
-\node[bub,anchor=west] (b2) at ([xshift=1.2cm,yshift=0.2cm]nb.east) {$= \lVert\beta\rVert_2^2 = 1$, 즉 \textbf{L2 노름} $\lVert\beta\rVert_2 = 1$\\ $\to$ 값 = 경계까지 거리 {\small (다음 쪽: 점과 직선 거리)}};
+\node[bub,anchor=west] (b2) at ([xshift=1.2cm,yshift=0.2cm]nb.east) {$= \lVert\mathbf{w}\rVert_2^2 = 1$, 즉 \textbf{L2 노름} $\lVert\mathbf{w}\rVert_2 = 1$\\ $\to$ 값 = 경계까지 거리 {\small (다음 쪽: 점과 직선 거리)}};
 \draw[bubarr] (b2.west) -- (nb.east);
 \node[bub,anchor=west] (b3) at ([xshift=0.6cm,yshift=-0.1cm]cc.east) {모든 점이 자기 쪽으로\\ $m$ 이상 떨어져 있어야};
 \draw[bubarr] (b3.west) -- (cc.east);
 \end{tikzpicture}
 \vskip1.2em
 \centering
-{\large 이 데이터 ($p = 2$): \; $\beta = (-0.71,\ 0.71)$, \; $\beta_0 = -0.18$, \; \kb{$m = 1.59$}}\\[0.3em]
+{\large 이 데이터 ($p = 2$): \; $\mathbf{w} = (-0.71,\ 0.71)$, \; $b = -0.18$, \; \kb{$m = 1.59$}}\\[0.3em]
 {\normalsize 확인: 서포트 벡터 $(2, 4.5)$ \; $-0.71 \cdot 2 + 0.71 \cdot 4.5 - 0.18 \approx 1.59$ \qquad 볼록 최적화 $\to$ 답은 하나}
 \vfill
-\note{한 줄씩 읽어 봅시다. 첫 줄, 마진 m을 최대로 합니다. 마진은 경계에서 가장 가까운 점까지의 거리입니다. 둘째 줄, 베타1 제곱 더하기 베타2 제곱이 1, 즉 베타의 L2 노름 제곱이 1, 길이 L2 노름을 1로 맞춥니다. 베타0은 들어가지 않습니다. 그래야 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 베타를 두 배, 세 배 키우기만 해도 값이 커지니 m을 끝없이 키울 수 있어서 문제가 성립하지 않습니다. 왜 길이가 1이면 값이 거리인지는 다음 쪽에서 봅니다. 셋째 줄, 모든 점에서 라벨 곱하기 값이 m 이상, 즉 모든 점이 자기 쪽으로 경계에서 m 이상 떨어져 있어야 합니다. 이 데이터의 답은 베타가 마이너스 0.71, 0.71, 베타0이 마이너스 0.18, m이 1.59입니다. 서포트 벡터 2, 4.5를 넣으면 값이 1.59, 딱 m입니다. 이 문제는 볼록 최적화라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
+\note{한 줄씩 읽어 봅시다. 첫 줄, 마진 m을 최대로 합니다. 마진은 경계에서 가장 가까운 점까지의 거리입니다. 둘째 줄, w1 제곱 더하기 w2 제곱이 1, 즉 w의 L2 노름 제곱이 1, 길이 L2 노름을 1로 맞춥니다. b은 들어가지 않습니다. 그래야 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 w를 두 배, 세 배 키우기만 해도 값이 커지니 m을 끝없이 키울 수 있어서 문제가 성립하지 않습니다. 왜 길이가 1이면 값이 거리인지는 다음 쪽에서 봅니다. 셋째 줄, 모든 점에서 라벨 곱하기 값이 m 이상, 즉 모든 점이 자기 쪽으로 경계에서 m 이상 떨어져 있어야 합니다. 이 데이터의 답은 w가 마이너스 0.71, 0.71, b이 마이너스 0.18, m이 1.59입니다. 서포트 벡터 2, 4.5를 넣으면 값이 1.59, 딱 m입니다. 이 문제는 볼록 최적화라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
 \end{frame}
 
 % --- 값과 거리: 점과 직선 사이 거리 공식 (고1) → 분모 = 1 이면 거리 = |값|
-\begin{frame}{왜 $\beta_1^2 + \beta_2^2 = 1$ 인가: 점과 직선 사이 거리 공식}
+\begin{frame}{왜 $w_1^2 + w_2^2 = 1$ 인가: 점과 직선 사이 거리 공식}
 \vfill
 \begin{columns}[c]
 \begin{column}{0.42\textwidth}\centering\includegraphics[width=\linewidth]{sv_dist.png}\end{column}
 \begin{column}{0.56\textwidth}
-{\large 고1 수학: 점과 직선 $ax_1 + bx_2 + c = 0$ 사이 거리}\\[0.3em]
-{\Large $\displaystyle d = \frac{|a x_1 + b x_2 + c|}{\sqrt{a^2 + b^2}}$}\\[0.6em]
-{\large 초평면 식으로 쓰면}\\[0.2em]
-{\Large $\displaystyle d = \frac{|\beta_0 + \beta_1 x_1 + \beta_2 x_2|}{\textcolor{ksared}{\sqrt{\beta_1^2 + \beta_2^2}}}$}\\[0.6em]
+{\large 고1 수학: 점과 직선 사이 거리 공식을}\\[0.2em]
+{\large 직선 $w_1x_1 + w_2x_2 + b = 0$ 에 쓰면}\\[0.4em]
+{\Large $\displaystyle d = \frac{|w_1 x_1 + w_2 x_2 + b|}{\textcolor{ksared}{\sqrt{w_1^2 + w_2^2}}}$}\\[0.6em]
 {\large 분모를 1 로 맞추면 \;$\Rightarrow$\; \kb{$d$ = |식의 값|}}\\[0.3em]
-{\normalsize 그림: 값 1.41 $\div \sqrt2$ = 거리 1 \quad $\sqrt2$ 로 나눈 식은 값 1.00}
+{\normalsize 그림: 값 1.41 $\div \sqrt2$ = 거리 1}
 \end{column}
 \end{columns}
 \vfill
-\note{고등학교 1학년 때 배운 점과 직선 사이의 거리 공식을 떠올려 봅시다. 점과 직선 a x1 더하기 b x2 더하기 c가 0인 직선 사이 거리는, 점을 식에 넣은 값의 절댓값을 루트 a제곱 더하기 b제곱으로 나눈 것입니다. 초평면 식으로 쓰면 분자는 베타0 더하기 베타1 x1 더하기 베타2 x2의 절댓값, 분모는 루트 베타1제곱 더하기 베타2제곱입니다. 그러니 분모가 1이 되도록, 즉 베타1제곱 더하기 베타2제곱을 1로 맞춰 두면, 식에 점을 넣은 값이 그대로 거리가 됩니다. 앞 쪽 식의 둘째 줄 조건이 바로 이것입니다. 그림에서 x1 더하기 x2 빼기 3에 거리 1인 점을 넣으면 값이 1.41인데, 루트 2로 나누면 거리 1입니다. 처음부터 식을 루트 2로 나눠 0.71, 0.71, 마이너스 2.12로 쓰면 값이 바로 1.00, 거리와 같습니다. 이 공식이 왜 성립하는지는 다음 참고 쪽에 있습니다.}
+\note{고등학교 1학년 때 배운 점과 직선 사이의 거리 공식을 떠올려 봅시다. 점과 직선 a x1 더하기 b x2 더하기 c가 0인 직선 사이 거리는, 점을 식에 넣은 값의 절댓값을 루트 a제곱 더하기 b제곱으로 나눈 것입니다. 초평면 식으로 쓰면 분자는 w1 x1 더하기 w2 x2 더하기 b의 절댓값, 분모는 루트 w1제곱 더하기 w2제곱입니다. 그러니 분모가 1이 되도록, 즉 w1제곱 더하기 w2제곱을 1로 맞춰 두면, 식에 점을 넣은 값이 그대로 거리가 됩니다. 앞 쪽 식의 둘째 줄 조건이 바로 이것입니다. 그림에서 x1 더하기 x2 빼기 3에 거리 1인 점을 넣으면 값이 1.41인데, 루트 2로 나누면 거리 1입니다. 처음부터 식을 루트 2로 나눠 0.71, 0.71, 마이너스 2.12로 쓰면 값이 바로 1.00, 거리와 같습니다. 이 공식이 왜 성립하는지는 다음 참고 쪽에 있습니다.}
 \end{frame}
 
 % --- 참고: 점곱과 코사인 (값 = 그림자 - 경계의 그림자 = 거리)
@@ -180,36 +179,41 @@
 \begin{columns}[c]
 \begin{column}{0.44\textwidth}\centering\includegraphics[width=\linewidth]{sv_cos.png}\end{column}
 \begin{column}{0.54\textwidth}
-{\large 점곱 \; $\textcolor{fbeta}{\beta}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fbeta}{\beta}\rVert\,\lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.6em]
-{\large $\lVert\textcolor{fbeta}{\beta}\rVert_2 = 1$ 이면 \; $\textcolor{fbeta}{\beta}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.1em]{\small ($\textcolor{fbeta}{\beta} = (\beta_1, \beta_2)$ 만, $\beta_0$ 은 빼고 \; $\lVert\beta\rVert_2 = \sqrt{\beta_1^2 + \beta_2^2}$)}\\[0.2em]
-{\normalsize = \textcolor{fx}{$\mathbf{x}$} 의 \textbf{\textcolor{fsh}{$\beta$ 방향 위치}} (정사영 길이)}\\[0.6em]
-{\large 경계 위 점은 위치가 모두 \textcolor{fbd}{$-\beta_0$}}\\[0.1em]{\normalsize (이 예: $\beta_0 = -2.12$ $\to$ 경계의 위치 \textcolor{fbd}{2.12})}\\[0.6em]
-{\large 값 $\beta_0 + \beta\cdot\mathbf{x}$ = \textcolor{fsh}{$\mathbf{x}$ 의 위치} $-$ \textcolor{fbd}{경계의 위치} = \textbf{\textcolor{fdist}{거리}}}\\[0.2em]
+{\large 점곱 \; $\textcolor{fbeta}{\mathbf{w}}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fbeta}{\mathbf{w}}\rVert\,\lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.6em]
+{\large $\lVert\textcolor{fbeta}{\mathbf{w}}\rVert_2 = 1$ 이면 \; $\textcolor{fbeta}{\mathbf{w}}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.1em]{\small ($\textcolor{fbeta}{\mathbf{w}} = (w_1, w_2)$ 만, $b$ 은 빼고 \; $\lVert\mathbf{w}\rVert_2 = \sqrt{w_1^2 + w_2^2}$)}\\[0.2em]
+{\normalsize = \textcolor{fx}{$\mathbf{x}$} 의 \textbf{\textcolor{fsh}{$\mathbf{w}$ 방향 위치}} (정사영 길이)}\\[0.6em]
+{\large 경계 위 점은 위치가 모두 \textcolor{fbd}{$-b$}}\\[0.1em]{\normalsize (이 예: $b = -2.12$ $\to$ 경계의 위치 \textcolor{fbd}{2.12})}\\[0.6em]
+{\large 값 $\mathbf{w}\cdot\mathbf{x} + b$ = \textcolor{fsh}{$\mathbf{x}$ 의 위치} $-$ \textcolor{fbd}{경계의 위치} = \textbf{\textcolor{fdist}{거리}}}\\[0.2em]
 {\normalsize 예: \textcolor{fx}{$\mathbf{x} = (1, 3.6)$} \; $\to$ \; \textcolor{fsh}{3.25} $-$ \textcolor{fbd}{2.12} $=$ \textbf{\textcolor{fdist}{1.13}}}\\[0.6em]
-{\normalsize 일반 ($\lVert\beta\rVert \ne 1$): \; 거리 $= |\beta_0 + \beta\cdot\mathbf{x}| \,/\, \lVert\beta\rVert$}
+{\normalsize 일반 ($\lVert\mathbf{w}\rVert \ne 1$): \; 거리 $= |\mathbf{w}\cdot\mathbf{x} + b| \,/\, \lVert\mathbf{w}\rVert$}
 \end{column}
 \end{columns}
 \vfill
-\note{앞 쪽 거리 공식이 왜 성립하는지는 점곱과 코사인의 관계로 볼 수 있습니다. 두 벡터의 점곱은 두 길이를 곱하고 사이각의 코사인을 곱한 것과 같습니다. 베타의 길이가 1이면 베타 점곱 x는 x의 길이 곱하기 코사인 세타, 즉 점 x에서 베타 축으로 수직선을 내렸을 때 원점에서 그 발까지의 길이, 정사영 길이입니다. x가 베타 방향으로 얼마나 가 있는지, 베타 방향 위치라고 읽으면 됩니다. 그림에서 파란 치수선이 점 1, 3.6의 베타 방향 위치 3.25입니다. 경계는 베타에 수직인 직선이라, 경계 위의 점은 어디든 베타 방향 위치가 똑같고, 그 값이 마이너스 베타0입니다. 이 예에서 식은 0.71 x1 더하기 0.71 x2 빼기 2.12이니 베타0은 마이너스 2.12, 경계의 위치는 2.12입니다. 그러니 값 베타0 더하기 베타 점곱 x는 x의 위치에서 경계의 위치를 뺀 것, 3.25 빼기 2.12, 1.13이고, 이것이 베타 방향으로 잰 경계까지의 거리입니다. 길이가 1이 아니면 위치에 베타의 길이가 곱해지니, 거리 공식은 값의 절댓값을 베타의 길이로 나눈 것이 됩니다.}
+\note{앞 쪽 거리 공식이 왜 성립하는지는 점곱과 코사인의 관계로 볼 수 있습니다. 두 벡터의 점곱은 두 길이를 곱하고 사이각의 코사인을 곱한 것과 같습니다. w의 길이가 1이면 w 점곱 x는 x의 길이 곱하기 코사인 세타, 즉 점 x에서 w 축으로 수직선을 내렸을 때 원점에서 그 발까지의 길이, 정사영 길이입니다. x가 w 방향으로 얼마나 가 있는지, w 방향 위치라고 읽으면 됩니다. 그림에서 파란 치수선이 점 1, 3.6의 w 방향 위치 3.25입니다. 경계는 w에 수직인 직선이라, 경계 위의 점은 어디든 w 방향 위치가 똑같고, 그 값이 마이너스 b입니다. 이 예에서 식은 0.71 x1 더하기 0.71 x2 빼기 2.12이니 b은 마이너스 2.12, 경계의 위치는 2.12입니다. 그러니 값 b 더하기 w 점곱 x는 x의 위치에서 경계의 위치를 뺀 것, 3.25 빼기 2.12, 1.13이고, 이것이 w 방향으로 잰 경계까지의 거리입니다. 길이가 1이 아니면 위치에 w의 길이가 곱해지니, 거리 공식은 값의 절댓값을 w의 길이로 나눈 것이 됩니다.}
 \end{frame}
 
-% --- 같은 문제를 w 로
-\begin{frame}{같은 문제를 $\mathbf{w}$ 로: $\min \frac12\lVert\mathbf{w}\rVert^2$}
+% --- 같은 경계, 크기 약속 둘
+\begin{frame}{같은 경계, 크기 약속 두 가지: $\lVert\mathbf{w}\rVert = 1$ 또는 가장 가까운 값 $= 1$}
 \markpage{width}
 \vfill
 \begin{columns}[c]
-\begin{column}{0.50\textwidth}\centering\includegraphics[width=\linewidth]{sv_width.png}\end{column}
-\begin{column}{0.48\textwidth}
-{\large $\mathbf{w} = \beta / m$, \; $b = \beta_0 / m$ 로 나누면}\\[0.5em]
-{\large 조건: \; $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$}\\[0.3em]
-{\large 마진: \; $m = 1/\lVert\mathbf{w}\rVert$ \quad (폭 $2/\lVert\mathbf{w}\rVert$)}\\[0.6em]
-{\large $m$ 최대 $\Leftrightarrow$ $\lVert\mathbf{w}\rVert$ 최소}\\[0.3em]
-{\Large $\displaystyle \min_{\mathbf{w}, b} \tfrac12\lVert\mathbf{w}\rVert^2 \ \text{s.t.}\ y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$}\\[0.5em]
-{\normalsize 이 데이터: $\mathbf{w} = (-0.44,\ 0.44)$, $\lVert\mathbf{w}\rVert = 0.63$ $\to$ $m = 1.59$}
+\begin{column}{0.42\textwidth}\centering\includegraphics[width=\linewidth]{sv_width.png}\end{column}
+\begin{column}{0.56\textwidth}
+{\normalsize $(\mathbf{w}, b)$ 를 몇 배 해도 \textbf{같은 경계} $\to$ 크기는 약속으로 정한다}\\[0.6em]
+\renewcommand{\arraystretch}{1.35}
+{\small\begin{tabular}{l|l}
+\textbf{약속 A} (앞 쪽) & \textbf{약속 B} (학습에서 씀)\\ \hline
+$\lVert\mathbf{w}\rVert = 1$ & 가장 가까운 점의 값 $= 1$\\
+값 $\ge m$, \; $m$ 최대 & 값 $\ge 1$, \; $m = 1/\lVert\mathbf{w}\rVert$\\
+& $\to$ \kb{$\lVert\mathbf{w}\rVert$ 최소}\\
+$\mathbf{w} = (-0.71, 0.71)$ & $\mathbf{w} = (-0.44, 0.44)$\\
+$b = -0.18$, \; $m = 1.59$ & $b = -0.11$, \; $1/0.63 = 1.59$
+\end{tabular}}\\[0.6em]
+{\large $\displaystyle \min_{\mathbf{w}, b} \tfrac12\lVert\mathbf{w}\rVert^2 \ \text{s.t.}\ y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$}
 \end{column}
 \end{columns}
 \vfill
-\note{같은 문제를 교과서와 라이브러리에서 더 자주 쓰는 꼴로 바꿔 봅시다. 베타와 베타0을 m으로 나눈 것을 w와 b라고 합니다. 그러면 모든 점에서 y 곱하기 값이 m 이상이라는 조건은, 양변을 m으로 나눠 y 곱하기 w x 더하기 b가 1 이상이 됩니다. 가장자리가 값 플러스 마이너스 1인 선이 되는 것이죠. 베타의 길이가 1이었으니 w의 길이는 1 나누기 m, 거꾸로 m은 1 나누기 w의 길이입니다. 왼쪽 그림처럼 w가 크면 길이 좁고, 작으면 넓습니다. 그래서 m을 최대로 하는 것은 w의 길이를 최소로 하는 것과 같고, 계산하기 편하게 w 길이 제곱의 절반을 최소로 하는 문제로 씁니다. 이 데이터에서 w는 마이너스 0.44, 0.44, 길이 0.63, 1 나누기 0.63은 1.59로 앞의 m과 같습니다. 다음 부분의 학습은 이 꼴에서 출발합니다.}
+\note{같은 경계라도 w와 b를 두 배, 세 배 해서 쓸 수 있으니, 크기를 하나로 정하는 약속이 필요합니다. 앞 쪽의 교과서 식은 약속 A, w의 길이를 1로 맞추고 마진 m을 최대로 했습니다. 이 데이터에서 w는 마이너스 0.71, 0.71, b는 마이너스 0.18, m은 1.59입니다. 또 하나의 약속 B는 가장 가까운 점, 서포트 벡터의 값이 딱 1이 되도록 크기를 맞추는 것입니다. 약속 A의 식을 m으로 나누면 이렇게 됩니다. 그러면 모든 점의 값이 1 이상이어야 하고, 앞에서 본 거리 공식에 따라 가장 가까운 점까지 거리, 마진은 1 나누기 w의 길이입니다. 왼쪽 그림처럼 w가 크면 길이 좁고 작으면 넓으니, 마진을 최대로 하는 것은 w의 길이를 최소로 하는 것과 같고, 계산하기 편하게 w 길이 제곱의 절반을 최소로 합니다. 이 데이터에서 w는 마이너스 0.44, 0.44, b는 마이너스 0.11, w의 길이 0.63, 1 나누기 0.63은 1.59로 약속 A의 m과 같습니다. 같은 경계를 크기만 다르게 쓴 것입니다. 다음 부분의 학습은 약속 B의 꼴에서 출발합니다.}
 \end{frame}
 
 \section{학습}
@@ -327,9 +331,9 @@ SVM 답 & $-0.44$ & $0.44$ & $-0.11$ & 3.18 &
 \vfill
 \begin{minipage}{0.62\textwidth}
 {\large\begin{align*}
-\underset{\beta_0, \dots, \beta_p,\ \varepsilon_1, \dots, \varepsilon_n,\ m}{\text{maximize}} \quad & m\\[0.3em]
-\text{subject to} \quad & \sum_{j=1}^{p} \beta_j^2 = 1,\\[0.3em]
-& y_i(\beta_0 + \beta \cdot \mathbf{x}_i) \ge \tikzmarknode{me}{m(1 - \varepsilon_i)},\\[0.3em]
+\underset{w_1, \dots, w_p,\ b,\ \varepsilon_1, \dots, \varepsilon_n,\ m}{\text{maximize}} \quad & m\\[0.3em]
+\text{subject to} \quad & \sum_{j=1}^{p} w_j^2 = 1,\\[0.3em]
+& y_i(\mathbf{w} \cdot \mathbf{x}_i + b) \ge \tikzmarknode{me}{m(1 - \varepsilon_i)},\\[0.3em]
 & \tikzmarknode{ep}{\varepsilon_i \ge 0}, \quad \tikzmarknode{bb}{\sum_{i=1}^{n} \varepsilon_i \le B}
 \end{align*}}
 \end{minipage}
@@ -394,7 +398,7 @@ $B$ & 넘어가도 되는 \kb{총 예산}
 \begin{frame}{분류기를 점곱으로 다시 쓰면: 서포트 벡터만 남는다}
 \vfill
 \centering
-{\Large $\displaystyle f(\mathbf{x}) = \beta_0 + \sum_{i \in S} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle$}\\[0.2em]
+{\Large $\displaystyle f(\mathbf{x}) = b + \sum_{i \in S} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle$}\\[0.2em]
 {\normalsize $\langle \mathbf{x}, \mathbf{x}_i \rangle$ = 점곱 \quad $S$ = 서포트 벡터 모음 \quad 나머지 점은 $\alpha_i = 0$}\\[0.8em]
 \renewcommand{\arraystretch}{1.35}
 {\large\begin{tabular}{l|c|c|c}
@@ -405,7 +409,7 @@ $\alpha_i$ (부호 포함) & $+0.10$ & $+0.10$ & $-0.20$
 {\normalsize 나머지 17개는 $\alpha = 0$ = 학습에서 \kb{한 번도 밀지 않은 점}}\par\vskip0.1em
 {\tiny\color{gray} ISL 9.5절 · Goodfellow, Bengio, Courville, \textit{Deep Learning} (2016) 5.7.2 식 (5.82)}
 \vfill
-\note{선형 분류기는 학습 데이터와의 점곱으로 다시 쓸 수 있다는 게 알려져 있습니다. f는 베타0에 서포트 벡터마다 알파 곱하기 새 점과 그 서포트 벡터의 점곱을 더한 것입니다. 서포트 벡터가 아닌 점은 알파가 0이라 식에서 빠집니다. 이 데이터에서 실제로 계산하면 빨간 서포트 벡터 둘은 알파가 0.10, 파란 하나는 마이너스 0.20입니다. 정확히는 81분의 8과 81분의 16입니다. 이 셋을 알파만큼 더하면 w, 마이너스 0.44, 0.44가 그대로 나옵니다. 나머지 17개는 알파가 0, 학습에서 한 번도 경계를 밀지 않은 점들입니다. 그래서 새 점을 분류할 때 서포트 벡터 3개와의 점곱만 계산하면 됩니다. 이 꼴이 다음 쪽 커널의 출발점입니다.}
+\note{선형 분류기는 학습 데이터와의 점곱으로 다시 쓸 수 있다는 게 알려져 있습니다. f는 b에 서포트 벡터마다 알파 곱하기 새 점과 그 서포트 벡터의 점곱을 더한 것입니다. 서포트 벡터가 아닌 점은 알파가 0이라 식에서 빠집니다. 이 데이터에서 실제로 계산하면 빨간 서포트 벡터 둘은 알파가 0.10, 파란 하나는 마이너스 0.20입니다. 정확히는 81분의 8과 81분의 16입니다. 이 셋을 알파만큼 더하면 w, 마이너스 0.44, 0.44가 그대로 나옵니다. 나머지 17개는 알파가 0, 학습에서 한 번도 경계를 밀지 않은 점들입니다. 그래서 새 점을 분류할 때 서포트 벡터 3개와의 점곱만 계산하면 됩니다. 이 꼴이 다음 쪽 커널의 출발점입니다.}
 \end{frame}
 
 % --- 커널 트릭
@@ -413,7 +417,7 @@ $\alpha_i$ (부호 포함) & $+0.10$ & $+0.10$ & $-0.20$
 \markpage{kernel}
 \vfill
 \centering
-{\Large $\displaystyle f(\mathbf{x}) = \beta_0 + \sum_{i \in S} \alpha_i\, \textcolor{ksablue}{\boldsymbol{K}(\mathbf{x}, \mathbf{x}_i)}$}\\[0.2em]
+{\Large $\displaystyle f(\mathbf{x}) = b + \sum_{i \in S} \alpha_i\, \textcolor{ksablue}{\boldsymbol{K}(\mathbf{x}, \mathbf{x}_i)}$}\\[0.2em]
 {\normalsize 커널 = 높은 차원에서의 점곱을 \textbf{옮기지 않고} 계산 \quad 대칭 $K(\mathbf{x},\mathbf{x}') = K(\mathbf{x}',\mathbf{x})$ \quad 가까우면 크다 (유사도)}\vskip0.2em
 {\Large\[ \phi(\mathbf{x}) = (x_1^2,\ \sqrt2\,x_1x_2,\ x_2^2) \quad\Rightarrow\quad \phi(\mathbf{x})\cdot\phi(\mathbf{x}') = (\mathbf{x}\cdot\mathbf{x}')^2 \]}\vskip0.2em
 {\large $\mathbf{x} = (1, 2)$, $\mathbf{x}' = (3, 1)$: \quad $(1, 2\sqrt2, 4)\cdot(9, 3\sqrt2, 1) = 9 + 12 + 4 = 25 = (3 + 2)^2$}\\[0.6em]
@@ -527,11 +531,11 @@ Banknote Authentication (Lohweg; UCI) \\[0.4em]\href{https://colab.research.goog
 \begin{frame}{정리}
 \vfill
 \centering\normalsize\begin{tabular}{l}
-\textbf{초평면} $\beta_0 + \beta\cdot\mathbf{x} = 0$: 값의 부호로 양쪽을 나눈다\\[0.5em]
+\textbf{초평면} $\mathbf{w}\cdot\mathbf{x} + b = 0$: 값의 부호로 양쪽을 나눈다\\[0.5em]
 \textbf{최대 마진}: 가장 가까운 점까지 거리 $m$ 최대 $\Leftrightarrow$ $\min \frac12\lVert\mathbf{w}\rVert^2$, 경계는 \kb{서포트 벡터}가 정한다\\[0.5em]
 \textbf{학습}: 힌지 손실 경사하강 (여유 $< 1$ 인 점만 민다) 또는 쌍대 문제 (SMO)\\[0.5em]
 \textbf{소프트 마진}: 슬랙 $\varepsilon_i$, 예산 $B$ 크면 넓은 길 (sklearn $C$ 는 반대)\\[0.5em]
-\textbf{커널}: $f(\mathbf{x}) = \beta_0 + \sum_{i\in S}\alpha_i K(\mathbf{x},\mathbf{x}_i)$ $\to$ 휘어진 경계 (다항 · RBF)\\[0.5em]
+\textbf{커널}: $f(\mathbf{x}) = b + \sum_{i\in S}\alpha_i K(\mathbf{x},\mathbf{x}_i)$ $\to$ 휘어진 경계 (다항 · RBF)\\[0.5em]
 \textbf{다중 클래스}: 일대일 $k(k-1)/2$ 개 · 일대다 $k$ 개
 \end{tabular}\par\vskip0.6em
 {\tiny\color{gray} 구성 참고: S. Wang, CME 250 Lecture 5: Support Vector Machines (Stanford, Winter 2019), \href{https://web.stanford.edu/class/cme250/files/cme250_lecture5.pdf}{\textcolor{ksagolddk}{web.stanford.edu/class/cme250/files/cme250\_lecture5.pdf}} · James et al., \textit{An Introduction to Statistical Learning}, 9장}

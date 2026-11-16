@@ -74,7 +74,8 @@ M2 = SVC(kernel="linear", C=1e6).fit(X2, y)
 fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 pts(axs[0]); street(axs[0], M); axs[0].set_title("처음", fontsize=16)
 pts(axs[1], X2); street(axs[1], M2, X2); axs[1].set_title("멀리 있는 빨강 점을 옮겨도", fontsize=16)
-axs[1].annotate("", FAR_MOVE[1], FAR_MOVE[0], arrowprops=dict(arrowstyle="->", lw=2, color=RED))
+axs[1].annotate("", FAR_MOVE[1], FAR_MOVE[0], arrowprops=dict(arrowstyle="->", lw=2, color=RED, shrinkA=9, shrinkB=9))
+axs[1].add_patch(plt.Circle(FAR_MOVE[0], 0.32, fill=False, ls="--", lw=2, ec=RED, zorder=4)); axs[1].text(FAR_MOVE[0][0] + 0.45, FAR_MOVE[0][1] - 0.15, "원래 자리", fontsize=12, color=RED)
 save(fig, "sv_move.png")
 
 # 5. 소프트 마진: C
@@ -431,13 +432,13 @@ def dim(a, b, off, col, lab, lw=2.5):
     mid = (pa + pb) / 2 + 0.22 * nrm
     ax.text(*mid, lab, fontsize=13, color=col, rotation=45, ha="center", va="center", fontweight="bold",
             bbox=dict(fc="white", ec="none", pad=0.5, alpha=0.9))
-dim(0, sh, 0.95, BLUE, f"x 의 β 방향 위치 $\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}")
-dim(0, shb, 0.45, "#555555", f"경계의 위치 {shb:.2f} = $-\\beta_0$")
+dim(0, sh, 0.95, BLUE, f"x 의 w 방향 위치 $\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}")
+dim(0, shb, 0.45, "#555555", f"경계의 위치 {shb:.2f} = $-b$")
 ax.annotate("", F, Fb, arrowprops=dict(arrowstyle="<->", color="#2b8a3e", lw=3, shrinkA=0, shrinkB=0))
 ax.plot(*zip(PX, F), color=GRAY, lw=1.5, ls=":")
 ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black", zorder=4); ax.scatter(0, 0, s=50, color="black", zorder=5); ax.text(-0.35, -0.3, "(0, 0)", fontsize=13)
 ax.text(PX[0] + 0.08, PX[1] + 0.1, "$\\mathbf{x} = (1, 3.6)$", fontsize=15, color=RED)
-ax.text(-0.15, 0.55, "$\\beta$", fontsize=16, color="#7a6a3f", fontweight="bold")
+ax.text(-0.2, 0.55, "$\\mathbf{w}$", fontsize=16, color="#7a6a3f", fontweight="bold")
 ax.text(0.4, 0.6, "θ", fontsize=16)
 ax.text(0.95, 2.3, f"거리 {dist:.2f}", fontsize=15, color="#2b8a3e", fontweight="bold")
 origin_axes(ax); ax.set_xticks([1, 2, 3, 4]); ax.set_yticks([1, 2, 3, 4])
