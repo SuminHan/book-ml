@@ -173,11 +173,11 @@
 \end{align*}}
 \end{minipage}
 \begin{tikzpicture}[remember picture,overlay]
-\node[bub,anchor=west] (b1) at ([xshift=1.6cm,yshift=0.35cm]mm.east) {마진 $m$ 최대};
+\node[bub,anchor=west] (b1) at ([xshift=1.4cm,yshift=0.55cm]mm.east) {마진 $m$ 최대};
 \draw[bubarr] (b1.west) -- (mm.east);
-\node[bub,anchor=west] (b2) at ([xshift=1.2cm,yshift=0.2cm]nb.east) {$\lVert\mathbf{w}\rVert = 1$ $\to$ \textbf{값 = 거리}};
+\node[bub,anchor=west] (b2) at ([xshift=1.4cm,yshift=-0.1cm]nb.east) {$\lVert\mathbf{w}\rVert_2 = \sqrt{w_1^2 + w_2^2}$ \;{\small (L2 노름 = $\mathbf{w}$ 의 길이)}\\ $= 1$ $\to$ \textbf{값 = 거리}};
 \draw[bubarr] (b2.west) -- (nb.east);
-\node[bub,anchor=west] (b3) at ([xshift=0.6cm,yshift=-0.1cm]cc.east) {모든 점이 $m$ 이상};
+\node[bub,anchor=west] (b3) at ([xshift=0.6cm,yshift=-0.4cm]cc.east) {모든 점이 $m$ 이상};
 \draw[bubarr] (b3.west) -- (cc.east);
 \end{tikzpicture}
 \vskip1.2em
@@ -204,27 +204,21 @@
 \end{frame}
 
 % --- 같은 경계, 크기 약속 둘
-\begin{frame}{같은 경계, 크기 약속 두 가지: $\lVert\mathbf{w}\rVert = 1$ 또는 가장 가까운 값 $= 1$}
+\begin{frame}{같은 선을 다르게 쓰기: $\tfrac12\lVert\mathbf{w}\rVert^2$ 최소}
 \markpage{width}
 \vfill
 \begin{columns}[c]
 \begin{column}{0.42\textwidth}\centering\includegraphics[width=\linewidth]{sv_width.png}\end{column}
 \begin{column}{0.56\textwidth}
-{\large 거리 $= |\text{값}| \,/\, \lVert\mathbf{w}\rVert$}\\[0.6em]
-\renewcommand{\arraystretch}{1.35}
-{\small\begin{tabular}{l|l}
-\textbf{약속 A} & \textbf{약속 B}\\ \hline
-$\lVert\mathbf{w}\rVert = 1$ & 가장 가까운 점의 값 $= 1$\\
-값 $\ge m$, \; $m$ 최대 & 값 $\ge 1$, \; $m = 1/\lVert\mathbf{w}\rVert$\\
-& $\to$ \kb{$\lVert\mathbf{w}\rVert$ 최소}\\
-$\mathbf{w} = (-0.71, 0.71)$ & $\mathbf{w} = (-0.44, 0.44)$\\
-$b = -0.18$, \; $m = 1.59$ & $b = -0.11$, \; $1/0.63 = 1.59$
-\end{tabular}}\\[0.6em]
+{\large 앞 식: $\lVert\mathbf{w}\rVert = 1$ \;$\to$\; 가장 가까운 점 값 $= m$}\\[0.8em]
+{\large 식 전체를 $m$ 으로 나누면 \textbf{같은 선}:}\\[0.2em]
+{\large 가장 가까운 점 값 $= 1$, \; $m = 1/\lVert\mathbf{w}\rVert$}\\[0.8em]
+{\large $m$ 최대 $=$ \kb{$\lVert\mathbf{w}\rVert$ 최소}}\\[0.8em]
 {\large $\displaystyle \min_{\mathbf{w}, b} \tfrac12\lVert\mathbf{w}\rVert^2 \ \text{s.t.}\ y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$}
 \end{column}
 \end{columns}
 \vfill
-\note{같은 경계라도 w와 b를 두 배, 세 배 해서 쓸 수 있으니, 크기를 하나로 정하는 약속이 필요합니다. 앞 쪽의 교과서 식은 약속 A, w의 길이를 1로 맞추고 마진 m을 최대로 했습니다. 이 데이터에서 w는 마이너스 0.71, 0.71, b는 마이너스 0.18, m은 1.59입니다. 또 하나의 약속 B는 가장 가까운 점, 서포트 벡터의 값이 딱 1이 되도록 크기를 맞추는 것입니다. 약속 A의 식을 m으로 나누면 이렇게 됩니다. 그러면 모든 점의 값이 1 이상이어야 하고, 앞에서 본 거리 공식에 따라 가장 가까운 점까지 거리, 마진은 1 나누기 w의 길이입니다. 왼쪽 그림처럼 w가 크면 길이 좁고 작으면 넓으니, 마진을 최대로 하는 것은 w의 길이를 최소로 하는 것과 같고, 계산하기 편하게 w 길이 제곱의 절반을 최소로 합니다. 이 데이터에서 w는 마이너스 0.44, 0.44, b는 마이너스 0.11, w의 길이 0.63, 1 나누기 0.63은 1.59로 약속 A의 m과 같습니다. 같은 경계를 크기만 다르게 쓴 것입니다. 다음 부분의 학습은 약속 B의 꼴에서 출발합니다.}
+\note{앞 쪽 식은 w의 길이를 1로 맞추고, 가장 가까운 점의 값 m을 최대로 했습니다. 이 데이터에서 w는 마이너스 0.71, 0.71, b는 마이너스 0.18, 가장 가까운 점의 값 m은 1.59입니다. 그런데 직선 식은 전체를 몇 배 해도 같은 직선입니다. 식 전체를 m, 1.59로 나눠 봅시다. w는 마이너스 0.44, 0.44, b는 마이너스 0.11이 되고, 직선은 그대로인데 가장 가까운 점의 값이 1이 됩니다. 대신 w의 길이가 1이 아니라 1 나누기 1.59, 0.63이 됩니다. 즉 이렇게 쓰면 마진 m은 1 나누기 w의 길이입니다. 그러니 m을 최대로 하는 것은 w의 길이를 최소로 하는 것과 같습니다. 왼쪽 그림처럼 w가 크면 길이 좁고, 작으면 넓습니다. 계산하기 편하게 길이 제곱의 절반을 최소로 하고, 조건은 모든 점의 값이 1 이상입니다. 같은 문제를 다르게 쓴 것뿐이고, 뒤의 학습은 이 꼴에서 출발합니다.}
 \end{frame}
 
 \section{학습}
