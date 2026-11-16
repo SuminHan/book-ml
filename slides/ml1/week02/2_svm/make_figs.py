@@ -404,9 +404,9 @@ sh, shb = Bu @ PX, -B0u                                     # 그림자 3.89, �
 dist = sh - shb; assert abs(dist - (Bu @ PX + B0u)) < 1e-12 and abs(dist - 1.13) < 0.01 and abs(sh - 3.25) < 0.01
 th = np.degrees(np.arccos(sh / np.linalg.norm(PX)))
 fig, ax = plt.subplots(figsize=(6.4, 6.0))
-ax.set_xlim(-0.3, 4.3); ax.set_ylim(-0.3, 4.3); ax.set_aspect("equal"); ax.set_xticks(range(5)); ax.set_yticks(range(5)); ax.grid(alpha=0.25)
+ax.set_xlim(0, 4.3); ax.set_ylim(0, 4.3); ax.set_aspect("equal"); ax.set_xticks(range(5)); ax.set_yticks(range(5)); ax.grid(alpha=0.25)
 ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0)
-t = np.linspace(-0.3, 4.3, 2); ax.plot(t, t, color=GOLD, lw=1.5, ls="--")             # β 방향 축
+t = np.linspace(0, 4.3, 2); ax.plot(t, t, color=GOLD, lw=1.5, ls="--")             # β 방향 축
 ax.plot(t, 3 - t, color="black", lw=2.5)                                               # 경계
 F = sh * Bu; Fb = shb * Bu
 ax.annotate("", PX, (0, 0), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.5, mutation_scale=16))
@@ -418,7 +418,7 @@ ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black",
 ax.text(PX[0] + 0.08, PX[1] + 0.1, "$\\mathbf{x} = (1, 3.6)$", fontsize=15, color=RED)
 ax.text(0.55, 0.12, "$\\beta$ (길이 1)", fontsize=15, color="#7a6a3f", fontweight="bold")
 ax.text(0.33, 0.62, "θ", fontsize=16)
-ax.text(1.95, 0.25, f"x 의 그림자 $\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}", fontsize=14, color=BLUE)
+ax.text(3.08, 0.2, f"x 의 그림자\n$\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}", fontsize=14, color=BLUE)
 ax.annotate(f"경계의 그림자 {shb:.2f}", Fb, (2.45, 1.05), fontsize=14, color="#555555", arrowprops=dict(arrowstyle="->", color="#555555", lw=1.2))
 ax.text(2.45, 1.65, f"거리 {dist:.2f}", fontsize=15, color="#2b8a3e", fontweight="bold")
 save(fig, "sv_cos.png")
