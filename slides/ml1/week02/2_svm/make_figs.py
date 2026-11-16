@@ -495,3 +495,89 @@ def train_anim(X, y, path="figs/sv_train_anim.mp4", fps=20):
 
 if "anim" in sys.argv:
     train_anim(X, y)
+
+
+# 학습 1걸음 따라가기: 평균 두 개 → w 방향 → 원점 지나는 수직선
+def step1_fig(X, y, path="sv_step1.png"):
+    mr, mb = X[y > 0].mean(0), X[y < 0].mean(0); w1 = TRAIN_LR * (y[:, None] * X).sum(0)
+    fig, ax = plt.subplots(figsize=(6.2, 6.2)); pts(ax, X, y)
+    ax.scatter(*mr, s=420, marker="*", color=RED, edgecolors="black", lw=1.2, zorder=5)
+    ax.scatter(*mb, s=420, marker="*", color=BLUE, edgecolors="black", lw=1.2, zorder=5)
+    ax.annotate(f"빨강 평균\n({mr[0]:.2f}, {mr[1]:.2f})", mr, (0.3, 2.6), fontsize=15, color=RED, weight="bold", arrowprops=dict(arrowstyle="-", color=RED, lw=1))
+    ax.annotate(f"파랑 평균\n({mb[0]:.2f}, {mb[1]:.2f})", mb, (7.2, 6.4), fontsize=15, color=BLUE, weight="bold", arrowprops=dict(arrowstyle="-", color=BLUE, lw=1))
+    ax.annotate("", mr, mb, arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3, mutation_scale=22))
+    ax.text(4.9, 5.6, "w 방향", fontsize=16, color="#7a6a3f", weight="bold")
+    yy = -w1[0] * xs / w1[1]; ax.plot(xs, yy, color="black", lw=2.5)
+    ax.text(1.0, 0.25, "← 경계: 원점 지남", fontsize=14)
+    ax.scatter(0, 0, s=60, color="black", zorder=5, clip_on=False)
+    ax.set_title("1걸음 뒤 첫 선", fontsize=16)
+    save(fig, path)
+
+
+step1_fig(X, y)
+
+
+def train_anim_slow(X, y, path="figs/sv_train_slow.mp4", fps=20):
+    """0걸음부터 천천히: 점 20개가 하나씩 더해지는 1걸음 → 길이 넓어짐 → 점이 닿을 때마다 멈춤"""
+    from matplotlib.animation import FuncAnimation, FFMpegWriter
+    order = list(range(len(X)))
+    D = np.unique(np.r_[np.arange(2, 40), np.logspace(np.log10(40), np.log10(TRAIN_T), 200).astype(int), list(TOUCH.values())])
+    _, _, _, sh = train_svm(X, y, snaps=tuple(D))
+    ev = []                                                   # (종류, 값, 프레임 수)
+    ev += [("zero", None, 60)]
+    ev += [("add", k, 9) for k in order] + [("sum", None, 50), ("line", None, 70)]
+    for t in D:
+        ev.append(("step", t, 45 if t in TOUCH.values() else (12 if t <= 3 else 1)))
+    ev.append(("step", TRAIN_T, 60))
+    frames = [(k, v) for k, v, n in ev for _ in range(n)]
+    fig = plt.figure(figsize=(7.2, 9.6)); ax = fig.add_axes([0.1, 0.27, 0.86, 0.6])
+    w1 = TRAIN_LR * (y[:, None] * X).sum(0)
+
+    def head(a, b_, c, col="black"):
+        fig.texts.clear()
+        fig.text(0.5, 0.95, a, ha="center", fontsize=22, weight="bold")
+        fig.text(0.5, 0.905, b_, ha="center", fontsize=15)
+        fig.text(0.5, 0.06, c, ha="center", fontsize=15, color=col, linespacing=1.6)
+
+    def draw(i):
+        kind, v = frames[i]; ax.clear(); pts(ax, X, y); ax.set_xlim(0, 10); ax.set_ylim(0, 10)
+        ring = lambda P, col=GOLD: ax.scatter(P[:, 0], P[:, 1], s=330, facecolors="none", edgecolors=col, lw=2.5, zorder=4)
+        if kind == "zero":
+            ring(X)
+            head("0걸음", "w = (0, 0),  b = 0  →  선이 아직 없다",
+                 "어느 점을 넣어도 값 = 0 × x1 + 0 × x2 + 0 = 0\n여유 = 색 × 0 = 0  <  1   →  20개 모두 민다")
+        elif kind == "add":
+            done = order[: v + 1]; s = (y[done, None] * X[done]).sum(0); p = X[v]
+            ring(X[done], GRAY); ring(p[None], RED if y[v] > 0 else BLUE)
+            op = "+" if y[v] > 0 else "−"
+            head("1걸음 계산 중", f"점 {v + 1} / 20:  {op} ({p[0]:g}, {p[1]:g})",
+                 f"빨강은 좌표를 더하고, 파랑은 뺀다\n합 = ({s[0]:.1f}, {s[1]:.1f})", RED if y[v] > 0 else BLUE)
+        elif kind == "sum":
+            ring(X, GRAY)
+            head("1걸음 계산 끝", "합 = (−44.1, 39.2)  =  10 × (빨강 평균 − 파랑 평균)",
+                 f"w = 0.02 × 합 = ({w1[0]:.2f}, {w1[1]:.2f})\nb = 0.02 × (빨강 10개 − 파랑 10개) = 0")
+        elif kind == "line":
+            ax.plot(xs, -w1[0] * xs / w1[1], color="black", lw=2.5)
+            ax.annotate("", 3 * w1 + np.array([5, 5]), (5, 5), arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3, mutation_scale=20))
+            ax.text(4.2, 6.3, "w 방향\n(빨강 쪽)", fontsize=13, color="#7a6a3f")
+            head("1걸음 결과: 첫 선", f"w = ({w1[0]:.2f}, {w1[1]:.2f}),  b = 0",
+                 "경계 w1 x1 + w2 x2 + b = 0 은 w 에 수직\nb = 0 이라 원점 (0, 0) 을 지난다")
+        else:
+            w_, b_, act = sh[v] if v in sh else train_svm(X, y, snaps=(v,))[3][v]
+            street_wb(ax, w_, b_, X[act]); m = y * (X @ w_ + b_); k = np.argsort(m)[:3]
+            near = "   ".join(f"({X[j][0]:g}, {X[j][1]:g}) {m[j]:.2f}" for j in k)
+            if act.sum():
+                msg = f"여유 < 1 인 점 {act.sum()}개가 민다 (금색)  →  선이 돈다"; col = "#7a6a3f"
+            else:
+                msg = "여유 < 1 인 점 없음  →  w 만 줄인다 (길이 넓어짐)"; col = "black"
+            if v in TOUCH.values():
+                p = [q for q, t in TOUCH.items() if t == v][0]; msg = f"{v:,}걸음: ({p[0]:g}, {p[1]:g}) 이 길에 닿음!"; col = RED if p[1] > p[0] else BLUE
+            head(f"{v:,}걸음", f"w = ({w_[0]:.2f}, {w_[1]:.2f}),  b = {b_:.2f},  폭 {2 / np.linalg.norm(w_):.2f}",
+                 f"가장 가까운 세 점의 여유:  {near}\n{msg}", col)
+    an = FuncAnimation(fig, draw, frames=len(frames))
+    plt.rcParams["animation.ffmpeg_path"] = open(os.path.expanduser("~/Documents/manim_shorts/_env/ffpath")).read().strip()
+    an.save(path, writer=FFMpegWriter(fps=fps, bitrate=2400)); draw(0); fig.savefig("figs/sv_train_slow_thumb.png"); plt.close(fig)
+
+
+if "slow" in sys.argv:
+    train_anim_slow(X, y)
