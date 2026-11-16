@@ -45,6 +45,14 @@ def train_svm(X, y, T=TRAIN_T, lr0=TRAIN_LR, C=1.0, snaps=()):
     return w, b, pushed, shots
 
 
+# CME 250 Lecture 5 (ISL 9장) 표기: ‖β‖ = 1 로 맞춘 경계 β0 + β·x = 0, 마진 M = 경계에서 가장 가까운 점까지 거리 (길 폭 = 2M)
+BETA, BETA0, M_HARD = (-0.71, 0.71), -0.18, 1.59           # β = (−1, 1)/√2, β0 = −1/(4√2), M = 9/(4√2)
+ALPHA = {(5.0, 3.0): 16 / 81, (3.5, 6.0): 8 / 81, (2.0, 4.5): 8 / 81}   # w = Σ α_i y_i x_i (서포트 벡터만, 나머지 α = 0)
+NEWPT, M_NEW = (2.6, 3.8), 0.46                          # 최대 마진의 약점: 파란 점 하나 추가 → M 1.59 → 0.46, 경계가 기운다
+BUDGET = {100: (0.0, 0.11, 3), 1: (1.87, 1.59, 4), 0.05: (2.64, 2.32, 8)}   # sklearn C: (예산 B = Σε, M, 서포트 벡터 수) — 파랑 이상치 포함
+HYPER = (1, 2, 3)                                        # 초평면 예: 1 + 2 x1 + 3 x2 = 0 (ISL 그림 9.1 의 식)
+
+
 KX, KY = (1, 2), (3, 1)                                  # 커널 계산 예: (x·x')² = φ(x)·φ(x') = 25
 
 
@@ -80,4 +88,14 @@ if __name__ == "__main__":
         w_, b_, act = sh[t]; assert (round(w_[0], 2), round(w_[1], 2), round(b_, 2), int(act.sum())) == (a1, a2, bb, k), (t, w_, b_)
     assert tuple(np.round((y[:, None] * X).sum(0), 1)) == SUM_YX
     mg = y * (X @ wt + bt); assert sorted(map(tuple, X[mg < 1.02])) == sorted(SV) and mg[mg >= 1.02].min() > 1.2
+    nw = np.linalg.norm(m.coef_[0])
+    assert tuple(np.round(m.coef_[0] / nw, 2)) == BETA and round(m.intercept_[0] / nw, 2) in (BETA0, -0.17) and round(1 / nw, 2) == M_HARD
+    assert abs(9 / (4 * np.sqrt(2)) - 1.591) < 1e-3 and abs(-1 / (4 * np.sqrt(2)) - BETA0) < 0.01
+    al = {tuple(X[i]): abs(c) for i, c in zip(m.support_, m.dual_coef_[0])}
+    assert all(abs(al[k] - v) < 2e-3 for k, v in ALPHA.items())
+    wa = sum(v * (1 if k[1] > k[0] else -1) * np.array(k) for k, v in ALPHA.items()); assert np.allclose(wa, W)
+    mn = SVC(kernel="linear", C=1e6).fit(np.r_[X, [NEWPT]], np.r_[y, -1]); assert round(1 / np.linalg.norm(mn.coef_[0]), 2) == M_NEW
+    for C, (bud, mg, nsv) in BUDGET.items():
+        mb = SVC(kernel="linear", C=C).fit(Xo, yo); e = np.maximum(0, 1 - yo * mb.decision_function(Xo))
+        assert (round(e.sum(), 2), round(1 / np.linalg.norm(mb.coef_[0]), 2), len(mb.support_)) == (bud, mg, nsv), C
     print("data ok")

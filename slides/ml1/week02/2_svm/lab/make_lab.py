@@ -14,7 +14,7 @@ CELLS = [
 
 가장 넓은 길을 내는 분류기. 마진과 서포트 벡터를 확인하고, 실제 데이터와 휘어진 데이터에서 C · γ 를 고른다.
 
-- **파트 1**: 슬라이드의 점 20개: 마진 3.18, 서포트 벡터 3개
+- **파트 1**: 슬라이드의 점 20개: 마진 M 1.59 (길 폭 3.18), 서포트 벡터 3개
 - **파트 2**: 지폐 1,372장 진위 판별: 선형 vs RBF
 - **파트 3**: 원 · 반달 데이터에서 C 와 γ 를 교차 검증으로
 
@@ -40,11 +40,11 @@ def plot_svm(model, X, y, ax=None, title=""):
     ax.set_aspect("equal"); ax.set_title(title)"""),
 ("md", """## 파트 1. 마진과 서포트 벡터
 
-`C` 를 아주 크게 하면 하드 마진(길 안에 점 없음). 마진 $= 2/\\lVert\\mathbf{w}\\rVert$."""),
+`C` 를 아주 크게 하면 하드 마진(길 안에 점 없음). 마진 $M = 1/\\lVert\\mathbf{w}\\rVert$, 길 폭 $= 2M$."""),
 ("code", """model = SVC(kernel="linear", C=1e6).fit(X, y)
 w, b = model.coef_[0], model.intercept_[0]
-margin = 2 / np.linalg.norm(w)                            #@ANS margin = None  # TODO: width of the street
-print("w =", w.round(3), " b =", round(b, 3), " margin =", round(margin, 2))
+M = 1 / np.linalg.norm(w)                                 #@ANS M = None  # TODO: margin = distance to the nearest point
+print("w =", w.round(3), " b =", round(b, 3), " M =", round(M, 2), " street width =", round(2 * M, 2))
 print("support vectors:", model.support_vectors_.tolist())
 
 X_moved = X.copy()
@@ -59,7 +59,7 @@ fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 for ax, C in zip(axs, [100, 1, 0.05]):
     m = SVC(kernel="linear", C=C).fit(X_out, y_out)
     n_sv = len(m.support_)                                #@ANS n_sv = None  # TODO: number of support vectors
-    plot_svm(m, X_out, y_out, ax, f"C={C}: margin {2 / np.linalg.norm(m.coef_[0]):.2f}, {n_sv} SVs")
+    plot_svm(m, X_out, y_out, ax, f"C={C}: M {1 / np.linalg.norm(m.coef_[0]):.2f}, {n_sv} SVs")
 plt.show()"""),
 ("md", """## 파트 2. 실제 데이터: 지폐 진위 판별
 

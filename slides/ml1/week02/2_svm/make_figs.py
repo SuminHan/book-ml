@@ -54,7 +54,7 @@ fig, ax = plt.subplots(figsize=(5.8, 5.8)); pts(ax); street(ax, M)
 _a = np.array([2.0, 4.5]); _b = _a + (2 / np.linalg.norm(M.coef_[0])) * np.array([1, -1]) / np.sqrt(2)   # 빨강 가장자리 위 서포트 벡터에서 파랑 가장자리까지
 assert abs(M.decision_function([_b])[0] + 1) < 1e-2
 ax.annotate("", _b, _a, arrowprops=dict(arrowstyle="<->", lw=2, shrinkA=0, shrinkB=0))
-ax.text(_b[0] + 0.15, _b[1] - 0.15, f"마진 {MARGIN}", fontsize=15, fontweight="bold", ha="left", va="top")
+ax.text(_b[0] + 0.15, _b[1] - 0.15, f"길 폭 2M = {MARGIN}", fontsize=15, fontweight="bold", ha="left", va="top")
 save(fig, "sv_street.png")
 
 # 4. 멀리 있는 점 옮기기
@@ -68,10 +68,11 @@ save(fig, "sv_move.png")
 
 # 5. 소프트 마진: C
 Xo = np.r_[X, [OUTLIER]]; yo = np.r_[y, [-1]]
-fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-for ax, C in zip(axs, (100, 0.05)):
+fig, axs = plt.subplots(1, 3, figsize=(14, 5.6))
+for ax, C in zip(axs, (100, 1, 0.05)):
     m = SVC(kernel="linear", C=C).fit(Xo, yo); pts(ax, Xo, yo); street(ax, m, Xo)
-    ax.set_title(f"C = {C}: 마진 {2 / np.linalg.norm(m.coef_[0]):.2f}, 서포트 벡터 {len(m.support_)}개", fontsize=14)
+    bud, mg, nsv = BUDGET[C]
+    ax.set_title(f"예산 B = {bud:.2f}  (sklearn C = {C})\nM = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
 save(fig, "sv_soft.png")
 
 # 6. 원 모양 데이터와 들어 올리기
@@ -312,3 +313,66 @@ ax.set_xlim(-1.5, 3); ax.set_ylim(0, 2.7); ax.set_xticks([-1, 0, 1, 2, 3])
 ax.set_xlabel("여유", fontsize=18); ax.set_ylabel("벌점", fontsize=18)
 save(fig, "sv_hinge.png")
 print("ok hinge")
+
+
+# ---- CME 250 Lecture 5 흐름에 맞춘 그림 (초평면 · 약점 · 슬랙 · 커널 비교)
+# 초평면: 2차원 = 직선, 3차원 = 평면
+fig = plt.figure(figsize=(11, 4.6))
+ax = fig.add_subplot(1, 2, 1)
+g2 = np.linspace(-1.5, 1.5, 2); ax.plot(g2, (-1 - 2 * g2) / 3, color="black", lw=3)
+ax.set_xlim(-1.5, 1.5); ax.set_ylim(-1.5, 1.5); ax.set_aspect("equal"); ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0)
+ax.set_title("2차원: 초평면 = 직선 (1차원)", fontsize=16)
+ax3 = fig.add_subplot(1, 2, 2, projection="3d")
+gx, gy = np.meshgrid(np.linspace(-1, 1, 2), np.linspace(-1, 1, 2)); ax3.plot_surface(gx, gy, 0.3 - 0.5 * gx + 0.4 * gy, alpha=0.45, color=GOLD)
+ax3.set_xticks([]); ax3.set_yticks([]); ax3.set_zticks([]); ax3.set_xlabel("$x_1$"); ax3.set_ylabel("$x_2$"); ax3.set_zlabel("$x_3$")
+ax3.set_title("3차원: 초평면 = 평면 (2차원)", fontsize=16)
+save(fig, "sv_hyper.png")
+
+# 반으로 나누기: 1 + 2 x1 + 3 x2
+c0, c1, c2 = HYPER
+fig, ax = plt.subplots(figsize=(5.8, 5.6))
+gg = np.linspace(-1.5, 1.5, 300); G1, G2 = np.meshgrid(gg, gg); F = c0 + c1 * G1 + c2 * G2
+ax.contourf(G1, G2, F > 0, levels=[-0.5, 0.5, 1.5], colors=[BLUE, RED], alpha=0.12)
+ax.plot(gg, (-c0 - c1 * gg) / c2, color="black", lw=3)
+for (px, py) in ((0.8, 0.6), (-0.9, -0.7), (0.5, -0.6)):
+    v = c0 + c1 * px + c2 * py
+    ax.scatter(px, py, s=70, color="black", zorder=3)
+    ax.text(px + 0.07, py + 0.08, f"{v:+.1f}", fontsize=15, fontweight="bold", color=RED if v > 0 else BLUE)
+ax.text(0.05, 1.2, "$1 + 2x_1 + 3x_2 > 0$", fontsize=15, color=RED); ax.text(-1.4, -1.35, "$1 + 2x_1 + 3x_2 < 0$", fontsize=15, color=BLUE)
+ax.set_xlim(-1.5, 1.5); ax.set_ylim(-1.5, 1.5); ax.set_aspect("equal"); ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0)
+save(fig, "sv_half.png")
+
+# 최대 마진의 약점: 겹치면 불가 · 점 하나에 민감
+fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+pts(axs[0], Xo, yo); axs[0].scatter(*OUTLIER, s=380, facecolors="none", edgecolors=RED, lw=2.5, zorder=4)
+axs[0].set_title("겹치면: 가르는 직선이 없다", fontsize=16)
+Xn = np.r_[X, [NEWPT]]; yn = np.r_[y, -1]; Mn = SVC(kernel="linear", C=1e6).fit(Xn, yn)
+pts(axs[1], Xn, yn); street(axs[1], Mn, Xn)
+w0_, b0_ = M.coef_[0], M.intercept_[0]; axs[1].plot(xs, -(b0_ + w0_[0] * xs) / w0_[1], color=GRAY, lw=2, ls=":")
+axs[1].scatter(*NEWPT, s=380, facecolors="none", edgecolors=RED, lw=2.5, zorder=5)
+axs[1].set_title(f"파란 점 하나 추가: M {M_HARD} → {M_NEW}", fontsize=16)
+save(fig, "sv_sensitive.png")
+
+# 슬랙 ε: 예산 안에서 가장자리를 넘는 점
+ms = SVC(kernel="linear", C=0.05).fit(Xo, yo); eps = np.maximum(0, 1 - yo * ms.decision_function(Xo))
+fig, ax = plt.subplots(figsize=(6.0, 6.0)); pts(ax, Xo, yo); street(ax, ms, Xo)
+for i in np.where(eps > 1e-3)[0]:
+    col = RED if eps[i] > 1 else "#e8590c"
+    tx = {(3.5, 6.0): (5.0, 8.9), (2.5, 5.5): (0.3, 9.4), (3.0, 5.2): (4.4, 4.4), (2.0, 4.5): (0.2, 2.6),
+          (6.5, 3.5): (8.0, 6.6), (5.0, 3.0): (2.6, 1.3)}.get(tuple(Xo[i]))
+    ax.annotate(f"ε {eps[i]:.2f}", Xo[i], tx, fontsize=13, fontweight="bold", color=col, zorder=6,
+                bbox=dict(fc="white", ec="none", pad=1, alpha=0.9), arrowprops=dict(arrowstyle="-", color=col, lw=1.5))
+ax.set_title(f"ε > 0: 가장자리를 넘음 · ε > 1: 틀림\nΣε = {eps.sum():.2f} (예산 B)", fontsize=14)
+save(fig, "sv_slack.png")
+
+# 커널 비교: 3차 다항 vs RBF (같은 데이터)
+Xk, yk = make_circles(160, factor=0.45, noise=0.12, random_state=3)
+gx, gy = np.meshgrid(np.linspace(-1.5, 1.5, 300), np.linspace(-1.5, 1.5, 300))
+fig, axs = plt.subplots(1, 3, figsize=(13, 4.4))
+for ax, (ttl, mk) in zip(axs, (("선형 커널", SVC(kernel="linear", C=1)), ("3차 다항 커널", SVC(kernel="poly", degree=3, coef0=1, C=1)), ("RBF 커널", SVC(kernel="rbf", gamma=1, C=1)))):
+    mk.fit(Xk, yk); Z = mk.decision_function(np.c_[gx.ravel(), gy.ravel()]).reshape(gx.shape)
+    ax.contourf(gx, gy, Z > 0, alpha=0.15, colors=[BLUE, RED]); ax.contour(gx, gy, Z, levels=[0], colors="black", linewidths=2.5)
+    ax.scatter(Xk[yk == 1, 0], Xk[yk == 1, 1], color=RED, s=16); ax.scatter(Xk[yk == 0, 0], Xk[yk == 0, 1], color=BLUE, s=16, marker="s")
+    ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal"); ax.set_title(f"{ttl}: 학습 정확도 {mk.score(Xk, yk):.0%}", fontsize=15)
+save(fig, "sv_kernels.png")
+print("ok cme")
