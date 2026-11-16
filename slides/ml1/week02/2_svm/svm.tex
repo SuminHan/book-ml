@@ -142,7 +142,7 @@
 \begin{tikzpicture}[remember picture,overlay]
 \node[bub,anchor=west] (b1) at ([xshift=1.6cm,yshift=0.35cm]mm.east) {마진 $m$ (가장 가까운 점까지 거리) 을 최대로};
 \draw[bubarr] (b1.west) -- (mm.east);
-\node[bub,anchor=west] (b2) at ([xshift=1.2cm,yshift=0.2cm]nb.east) {$= \lVert\beta\rVert_2^2 = 1$, 즉 \textbf{L2 노름} $\lVert\beta\rVert_2 = 1$\\ $\to$ 값 = 경계까지 거리 {\small (다음 쪽)}};
+\node[bub,anchor=west] (b2) at ([xshift=1.2cm,yshift=0.2cm]nb.east) {$= \lVert\beta\rVert_2^2 = 1$, 즉 \textbf{L2 노름} $\lVert\beta\rVert_2 = 1$\\ $\to$ 값 = 경계까지 거리 {\small (다음 쪽: 점과 직선 거리)}};
 \draw[bubarr] (b2.west) -- (nb.east);
 \node[bub,anchor=west] (b3) at ([xshift=0.6cm,yshift=-0.1cm]cc.east) {모든 점이 자기 쪽으로\\ $m$ 이상 떨어져 있어야};
 \draw[bubarr] (b3.west) -- (cc.east);
@@ -155,26 +155,26 @@
 \note{한 줄씩 읽어 봅시다. 첫 줄, 마진 m을 최대로 합니다. 마진은 경계에서 가장 가까운 점까지의 거리입니다. 둘째 줄, 베타1 제곱 더하기 베타2 제곱이 1, 즉 베타의 L2 노름 제곱이 1, 길이 L2 노름을 1로 맞춥니다. 베타0은 들어가지 않습니다. 그래야 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 베타를 두 배, 세 배 키우기만 해도 값이 커지니 m을 끝없이 키울 수 있어서 문제가 성립하지 않습니다. 왜 길이가 1이면 값이 거리인지는 다음 쪽에서 봅니다. 셋째 줄, 모든 점에서 라벨 곱하기 값이 m 이상, 즉 모든 점이 자기 쪽으로 경계에서 m 이상 떨어져 있어야 합니다. 이 데이터의 답은 베타가 마이너스 0.71, 0.71, 베타0이 마이너스 0.18, m이 1.59입니다. 서포트 벡터 2, 4.5를 넣으면 값이 1.59, 딱 m입니다. 이 문제는 볼록 최적화라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
 \end{frame}
 
-% --- 값과 거리: 길이 1 로 맞추면 값 = 거리 (다음 쪽 β1² + β2² = 1 의 이유)
-\begin{frame}{왜 $\lVert\beta\rVert_2 = 1$ 로 맞추나: 그래야 값 = 거리}
+% --- 값과 거리: 점과 직선 사이 거리 공식 (고1) → 분모 = 1 이면 거리 = |값|
+\begin{frame}{왜 $\beta_1^2 + \beta_2^2 = 1$ 인가: 점과 직선 사이 거리 공식}
 \vfill
 \begin{columns}[c]
-\begin{column}{0.44\textwidth}\centering\includegraphics[width=\linewidth]{sv_dist.png}\end{column}
-\begin{column}{0.54\textwidth}
-{\large 경계에서 \kq{거리 1} 떨어진 점을 넣어 보면}\\[0.6em]
-{\large $x_1 + x_2 - 3$ \;$\to$\; 1.41 \quad (거리가 아님)}\\[0.3em]
-{\large 두 숫자를 $\sqrt{1^2 + 1^2} = 1.41$ 로 나누면\\ $0.71x_1 + 0.71x_2 - 2.12$ \;$\to$\; \kb{1.00 = 거리}}\\[0.8em]
-{\large 같은 직선인데 값만 1.41배 차이}\\[0.3em]
-{\large $\Rightarrow$ $\lVert\beta\rVert_2^2 = \beta_1^2 + \beta_2^2 = 1$ 이면 \kb{값 = 거리}}\\[0.2em]{\normalsize ($\beta_0$ 은 빼고, 기울기 숫자들만의 L2 노름)}\\[0.6em]
-{\normalsize 그래서 앞 쪽 셋째 줄: ``모든 점의 값 $\ge m$'' = ``모든 점이 $m$ 이상 떨어져 있다''}
+\begin{column}{0.42\textwidth}\centering\includegraphics[width=\linewidth]{sv_dist.png}\end{column}
+\begin{column}{0.56\textwidth}
+{\large 고1 수학: 점과 직선 $ax_1 + bx_2 + c = 0$ 사이 거리}\\[0.3em]
+{\Large $\displaystyle d = \frac{|a x_1 + b x_2 + c|}{\sqrt{a^2 + b^2}}$}\\[0.6em]
+{\large 초평면 식으로 쓰면}\\[0.2em]
+{\Large $\displaystyle d = \frac{|\beta_0 + \beta_1 x_1 + \beta_2 x_2|}{\textcolor{ksared}{\sqrt{\beta_1^2 + \beta_2^2}}}$}\\[0.6em]
+{\large 분모를 1 로 맞추면 \;$\Rightarrow$\; \kb{$d$ = |식의 값|}}\\[0.3em]
+{\normalsize 그림: 값 1.41 $\div \sqrt2$ = 거리 1 \quad $\sqrt2$ 로 나눈 식은 값 1.00}
 \end{column}
 \end{columns}
 \vfill
-\note{다음 쪽 식을 읽기 전에 하나만 확인합니다. 식에 점을 넣은 값이 곧 경계까지의 거리일까요? 그림의 직선 x1 더하기 x2 빼기 3이 0인 선에서, 수직으로 정확히 1 떨어진 빨간 점을 넣어 보면 값이 1.41이 나옵니다. 거리는 1인데 값은 1.41이니 값이 곧 거리는 아닙니다. 이번엔 숫자 1, 1을 루트 2, 1.41로 나눠서 0.71, 0.71로 만들고, 마이너스 3도 같이 나눠 마이너스 2.12로 씁니다. 같은 직선입니다. 같은 점을 넣으면 이번엔 1.00, 정확히 거리와 같습니다. 일반적으로 값은 거리 곱하기 베타의 길이라서, 베타1 제곱 더하기 베타2 제곱을 1로 맞추면 값이 그대로 거리가 됩니다. 그래서 다음 쪽 식에 이 조건이 들어가고, 모든 점의 값이 m 이상이라는 조건이 모든 점이 경계에서 m 이상 떨어져 있다는 뜻이 됩니다.}
+\note{고등학교 1학년 때 배운 점과 직선 사이의 거리 공식을 떠올려 봅시다. 점과 직선 a x1 더하기 b x2 더하기 c가 0인 직선 사이 거리는, 점을 식에 넣은 값의 절댓값을 루트 a제곱 더하기 b제곱으로 나눈 것입니다. 초평면 식으로 쓰면 분자는 베타0 더하기 베타1 x1 더하기 베타2 x2의 절댓값, 분모는 루트 베타1제곱 더하기 베타2제곱입니다. 그러니 분모가 1이 되도록, 즉 베타1제곱 더하기 베타2제곱을 1로 맞춰 두면, 식에 점을 넣은 값이 그대로 거리가 됩니다. 앞 쪽 식의 둘째 줄 조건이 바로 이것입니다. 그림에서 x1 더하기 x2 빼기 3에 거리 1인 점을 넣으면 값이 1.41인데, 루트 2로 나누면 거리 1입니다. 처음부터 식을 루트 2로 나눠 0.71, 0.71, 마이너스 2.12로 쓰면 값이 바로 1.00, 거리와 같습니다. 이 공식이 왜 성립하는지는 다음 참고 쪽에 있습니다.}
 \end{frame}
 
 % --- 참고: 점곱과 코사인 (값 = 그림자 - 경계의 그림자 = 거리)
-\begin{frame}{참고: 점곱과 코사인, 값이 거리가 되는 이유}
+\begin{frame}{참고: 거리 공식이 성립하는 이유 (점곱과 코사인)}
 \vfill
 \begin{columns}[c]
 \begin{column}{0.44\textwidth}\centering\includegraphics[width=\linewidth]{sv_cos.png}\end{column}
