@@ -581,3 +581,44 @@ def train_anim_slow(X, y, path="figs/sv_train_slow.mp4", fps=20):
 
 if "slow" in sys.argv:
     train_anim_slow(X, y)
+
+
+# 가장 쉬운 방법: 두 평균의 수직이등분선 → SVM 이 가장 가까운 점 기준으로 다듬는다
+def line_dist(ax, w, b, X, y, col="black", ls="-", lw=2.5):
+    """경계 w·x + b = 0 을 그리고, 양쪽에서 가장 가까운 점까지 수선과 거리 글자"""
+    ax.plot(xs, (-b - w[0] * xs) / w[1], color=col, ls=ls, lw=lw)
+    u = w / np.linalg.norm(w); d = y * (X @ w + b) / np.linalg.norm(w); out = {}
+    for s, c in ((1, RED), (-1, BLUE)):
+        i = np.where(y == s)[0][np.argmin(d[y == s])]; p = X[i]; f = p - s * d[i] * u
+        ax.plot([p[0], f[0]], [p[1], f[1]], color=c, lw=2.5)
+        ax.scatter(*p, s=330, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4)
+        out[s] = (p, d[i])
+    return out
+
+
+def centroid_figs(X, y):
+    mr, mb = X[y > 0].mean(0), X[y < 0].mean(0); wc = mr - mb; bc = -wc @ (mr + mb) / 2
+    # ① 평균 선 하나만
+    fig, ax = plt.subplots(figsize=(6.2, 6.2)); pts(ax, X, y)
+    for m_, c in ((mr, RED), (mb, BLUE)):
+        ax.scatter(*m_, s=480, marker="*", color=c, edgecolors="black", lw=1.2, zorder=5)
+    ax.plot(*np.c_[mr, mb], color=GOLD, lw=2.5, ls="--")
+    ax.scatter(*((mr + mb) / 2), s=60, color="black", zorder=5)
+    ax.plot(xs, (-bc - wc[0] * xs) / wc[1], color="black", lw=2.8)
+    ax.annotate("빨강 평균", mr, (0.4, 9.2), fontsize=15, color=RED, weight="bold", arrowprops=dict(arrowstyle="-", color=RED))
+    ax.annotate("파랑 평균", mb, (7.6, 0.4), fontsize=15, color=BLUE, weight="bold", arrowprops=dict(arrowstyle="-", color=BLUE))
+    ax.text(4.8, 4.0, "한가운데", fontsize=14)
+    save(fig, "sv_centroid.png")
+    # ② 평균 선 vs SVM
+    fig, axs = plt.subplots(1, 2, figsize=(12.4, 6.2))
+    for ax, (w_, b_, ttl) in zip(axs, ((wc, bc, "평균의 한가운데"), (np.array(W_B[0]), W_B[1], "SVM"))):
+        pts(ax, X, y); o = line_dist(ax, w_, b_, X, y)
+        for s, (p, dd) in o.items():
+            q = (p + p - s * dd * (np.array(w_) / np.linalg.norm(w_))) / 2; ax.text(q[0] + (0.0 if s < 0 else 0.3), q[1] + (-1.3 if s < 0 else 0.6), f"{dd:.2f}", fontsize=20, weight="bold", color=RED if s > 0 else BLUE)
+        ax.set_title(ttl, fontsize=18)
+    axs[1].plot(xs, (-bc - wc[0] * xs) / wc[1], color=GRAY, ls="--", lw=1.5)
+    save(fig, "sv_centroid_vs.png")
+
+
+W_B = ((-4 / 9, 4 / 9), -1 / 9)                            # SVM 답 (약속 B): w = (−0.44, 0.44), b = −0.11
+centroid_figs(X, y)
