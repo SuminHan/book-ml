@@ -350,7 +350,8 @@ for (px, py) in ((0.8, 0.6), (-0.9, -0.7), (0.5, -0.6)):
     v = c0 + c1 * px + c2 * py
     ax.scatter(px, py, s=70, color="black", zorder=3)
     ax.text(px + 0.07, py + 0.08, f"{v:+.1f}", fontsize=15, fontweight="bold", color=RED if v > 0 else BLUE)
-ax.text(0.05, 1.2, "$1 + 2x_1 + 3x_2 > 0$", fontsize=15, color=RED); ax.text(-1.4, -1.35, "$1 + 2x_1 + 3x_2 < 0$", fontsize=15, color=BLUE)
+ax.text(0.3, 1.2, "$1 + 2x_1 + 3x_2 > 0$", fontsize=15, color=RED); ax.text(-1.4, -1.35, "$1 + 2x_1 + 3x_2 < 0$", fontsize=15, color=BLUE)
+ax.annotate("$1 + 2x_1 + 3x_2 = 0$\n(직선)", (-0.95, 0.3), (-1.45, 0.75), fontsize=14, weight="bold", arrowprops=dict(arrowstyle="-|>", color="black", lw=1.5))
 ax.set_xlim(-1.5, 1.5); ax.set_ylim(-1.5, 1.5); ax.set_aspect("equal"); origin_axes(ax)
 save(fig, "sv_half.png")
 
