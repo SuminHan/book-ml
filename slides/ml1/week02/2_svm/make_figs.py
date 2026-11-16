@@ -395,3 +395,31 @@ ax.text(0.1, 3.1, "같은 직선", fontsize=14, rotation=-45)
 ax.set_xlim(-0.2, 4.6)
 save(fig, "sv_dist.png")
 print("ok dist")
+
+
+# 참고: 점곱 = ‖β‖‖x‖cos θ → ‖β‖ = 1 이면 β 방향 그림자, 경계의 그림자 −β0 를 빼면 거리
+Bu, B0u = WE / NW, BE / NW                                  # (0.71, 0.71), −2.12
+PX = np.array([1.0, 3.6])
+sh, shb = Bu @ PX, -B0u                                     # 그림자 3.89, 경계 2.12
+dist = sh - shb; assert abs(dist - (Bu @ PX + B0u)) < 1e-12 and abs(dist - 1.13) < 0.01 and abs(sh - 3.25) < 0.01
+th = np.degrees(np.arccos(sh / np.linalg.norm(PX)))
+fig, ax = plt.subplots(figsize=(6.4, 6.0))
+ax.set_xlim(-0.3, 4.3); ax.set_ylim(-0.3, 4.3); ax.set_aspect("equal"); ax.set_xticks(range(5)); ax.set_yticks(range(5)); ax.grid(alpha=0.25)
+ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0)
+t = np.linspace(-0.3, 4.3, 2); ax.plot(t, t, color=GOLD, lw=1.5, ls="--")             # β 방향 축
+ax.plot(t, 3 - t, color="black", lw=2.5)                                               # 경계
+F = sh * Bu; Fb = shb * Bu
+ax.annotate("", PX, (0, 0), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.5, mutation_scale=16))
+ax.annotate("", Bu, (0, 0), arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3.5, mutation_scale=18))
+ax.plot(*zip(PX, F), color=GRAY, lw=1.5, ls=":")
+ax.plot([0, F[0]], [0, F[1]], color=BLUE, lw=6, alpha=0.35, solid_capstyle="butt")
+ax.annotate("", F, Fb, arrowprops=dict(arrowstyle="<->", color=RED, lw=2.5, shrinkA=0, shrinkB=0))
+ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black", zorder=4)
+ax.text(PX[0] + 0.08, PX[1] + 0.1, "$\\mathbf{x} = (1, 3.6)$", fontsize=15, color=RED)
+ax.text(0.55, 0.12, "$\\beta$ (길이 1)", fontsize=15, color="#7a6a3f", fontweight="bold")
+ax.text(0.33, 0.62, "θ", fontsize=16)
+ax.text(1.95, 0.25, f"x 의 그림자 $\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}", fontsize=14, color=BLUE)
+ax.annotate(f"경계의 그림자 {shb:.2f}", Fb, (2.45, 1.05), fontsize=14, arrowprops=dict(arrowstyle="->", color="black", lw=1.2))
+ax.text(2.45, 1.65, f"거리 {dist:.2f}", fontsize=15, color=RED, fontweight="bold")
+save(fig, "sv_cos.png")
+print("ok cos", round(th, 1))
