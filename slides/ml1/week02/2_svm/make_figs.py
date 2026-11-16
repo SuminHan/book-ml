@@ -622,3 +622,51 @@ def centroid_figs(X, y):
 
 W_B = ((-4 / 9, 4 / 9), -1 / 9)                            # SVM 답 (약속 B): w = (−0.44, 0.44), b = −0.11
 centroid_figs(X, y)
+
+
+def train_anim_bad(X, y, w0, b0, name, path, T=6000, lr=0.01, fps=20, ylim=10):
+    """엉뚱한 선에서 출발: 틀리거나 가까운 점 (여유 < 1) 이 w, b 를 밀어 선을 옮긴다. 학습률 고정 lr."""
+    from matplotlib.animation import FuncAnimation, FFMpegWriter
+    w, b = np.array(w0, float), float(b0); hist = {}
+    for t in range(1, T + 1):
+        act = y * (X @ w + b) < 1; hist[t] = (w.copy(), b, act)
+        w, b = w - lr * (w - (y[act, None] * X[act]).sum(0)), b + lr * y[act].sum()
+    hist[T + 1] = (w.copy(), b, y * (X @ w + b) < 1)
+    S = list(range(1, 6)) + list(np.unique(np.logspace(np.log10(6), np.log10(T + 1), 150).astype(int)))
+    frames = [(s, 30 if s <= 5 else 1) for s in S] + [(T + 1, 60)]
+    frames = [(s, k) for s, n in frames for k in range(n)]
+    fig = plt.figure(figsize=(7.2, 9.6)); ax = fig.add_axes([0.11, 0.25, 0.85, 0.6])
+    eq = lambda w_, b_: f"x2 = {-w_[0] / w_[1]:.2f}·x1 {-b_ / w_[1]:+.2f}"
+    wsv, bsv = np.array(W_B[0]), W_B[1]
+
+    def draw(i):
+        s, k = frames[i]; w_, b_, act = hist[s]; ax.clear(); pts(ax, X, y); ax.set_ylim(0, ylim); ax.set_yticks(range(0, ylim + 1, 2))
+        if s > 1 and k < 30 and s <= 6:
+            pw, pb, _ = hist[s - 1]; ax.plot(xs, (-pb - pw[0] * xs) / pw[1], color=GRAY, ls="--", lw=1.5)
+        if s == T + 1:
+            ax.plot(xs, (-bsv - wsv[0] * xs) / wsv[1], color=GOLD, ls="--", lw=2)
+        ax.plot(xs, (-b_ - w_[0] * xs) / w_[1], color="black", lw=2.8)
+        R, B = act & (y > 0), act & (y < 0)
+        ax.scatter(X[R, 0], X[R, 1], s=340, facecolors="none", edgecolors=RED, lw=2.5, zorder=4)
+        ax.scatter(X[B, 0], X[B, 1], s=340, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=4)
+        fig.texts.clear()
+        fig.text(0.5, 0.955, f"{name}  ·  {min(s, T):,}걸음", ha="center", fontsize=21, weight="bold")
+        fig.text(0.5, 0.905, f"선: {eq(w_, b_)}", ha="center", fontsize=17)
+        if s == T + 1:
+            msg = "금색 점선 = SVM 답  x2 = 1.00·x1 +0.25\n가까이 도착 (학습률 고정이라 조금 흔들림)"; col = "#7a6a3f"
+        else:
+            parts = []
+            if R.sum(): parts.append(f"빨강 {R.sum()}개: b ↑ , w += 좌표  →  선이 파랑 쪽으로")
+            if B.sum(): parts.append(f"파랑 {B.sum()}개: b ↓ , w −= 좌표  →  선이 빨강 쪽으로")
+            msg = "\n".join(parts) if parts else "미는 점 없음  →  w 만 줄인다 (길이 넓어짐)"
+            col = RED if R.sum() > B.sum() else (BLUE if B.sum() else "black")
+        fig.text(0.5, 0.115, "동그라미 = 틀렸거나 너무 가까운 점 (여유 < 1)", ha="center", fontsize=13, color="#555")
+        fig.text(0.5, 0.035, msg, ha="center", fontsize=15, color=col, linespacing=1.5)
+    an = FuncAnimation(fig, draw, frames=len(frames))
+    plt.rcParams["animation.ffmpeg_path"] = open(os.path.expanduser("~/Documents/manim_shorts/_env/ffpath")).read().strip()
+    an.save(path, writer=FFMpegWriter(fps=fps, bitrate=2400)); draw(0); fig.savefig(path.replace(".mp4", "_thumb.png")); plt.close(fig)
+
+
+if "bad" in sys.argv:
+    train_anim_bad(X, y, (-1, 1), -10, "위로 밀린 선에서 출발", "figs/sv_bad_up.mp4", ylim=12)
+    train_anim_bad(X, y, (-3, 1), 0, "가파른 선에서 출발", "figs/sv_bad_steep.mp4")
