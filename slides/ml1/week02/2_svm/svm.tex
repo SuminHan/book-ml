@@ -4,6 +4,9 @@
 \setbeamerfont{author}{size=\normalsize}
 \setbeamerfont{institute}{size=\small}
 \graphicspath{{figs/}{../../../assets/}}
+\usetikzlibrary{tikzmark,shapes.callouts,positioning}
+\tikzset{bub/.style={draw=ksagolddk,line width=1pt,fill=ksagolddk!10,rounded corners=3pt,inner sep=4pt,font=\normalsize,align=left},
+         bubarr/.style={-latex,ksagolddk,line width=1.2pt}}
 \makeatletter
 \newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
 \newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
@@ -109,42 +112,65 @@
 \note{이 경계는 20개 점 중 단 3개, 서포트 벡터가 정합니다. 빨강 둘, 파랑 하나입니다. 길 가장자리에서 멀리 떨어진 점은 경계에 아무 영향이 없습니다. 오른쪽 그림에서 왼쪽 위의 빨간 점 하나를 더 멀리 옮겼는데, 경계와 길은 그대로입니다. 반대로 서포트 벡터 하나를 옮기면 경계가 바뀝니다. 로지스틱회귀는 모든 점이 조금씩 경계에 영향을 주는 것과 대조적입니다.}
 \end{frame}
 
-% --- 왜 폭이 2/||w|| 인가 (1): 걸어 보기
-\begin{frame}{값과 거리: 경계에 수직으로 걸어 보면}
-\vfill
-\begin{columns}[c]
-\begin{column}{0.40\textwidth}\centering\includegraphics[width=\linewidth]{sv_walk.png}\end{column}
-\begin{column}{0.58\textwidth}
-{\large \textbf{1.} 경계 위 점 $\mathbf{x}_0$ 에서 값 $= 0$}\\[0.6em]
-{\large \textbf{2.} $\mathbf{w}$ 방향 (길이 1: $\mathbf{u} = \mathbf{w}/\lVert\mathbf{w}\rVert$) 으로 $d$ 걸으면}\\[0.3em]
-{\normalsize $\mathbf{w}\cdot(\mathbf{x}_0 + d\,\mathbf{u}) + b \;=\; \underbrace{\mathbf{w}\cdot\mathbf{x}_0 + b}_{0} \;+\; d\,\underbrace{\mathbf{w}\cdot\mathbf{u}}_{\lVert\mathbf{w}\rVert} \;=\;$ \kb{$d\,\lVert\mathbf{w}\rVert$}}\\[0.6em]
-{\large \textbf{3.} 값이 $+1$ 이 되는 곳: \kb{$d = 1/\lVert\mathbf{w}\rVert$}}\\[0.3em]
-{\normalsize $\lVert\mathbf{w}\rVert$ = 화살표 $\mathbf{w}$ 의 길이 $= \sqrt{w_1^2 + w_2^2}$}\\[0.2em]
-{\normalsize 예: $\sqrt{1^2 + 1^2} = 1.41$ $\to$ $d = 0.71$}\\[0.4em]
-{\large $\Rightarrow$ 길이를 \kb{$\lVert\mathbf{w}\rVert = 1$} 로 맞추면 \kq{값 = 경계까지 거리}}
-\end{column}
-\end{columns}
-\vfill
-\note{가장자리 값을 플러스 마이너스 1로 정했는데, 그게 왜 폭 2 나누기 w의 길이가 되는지 걸어 보면서 확인합니다. 앞 쪽의 예, w가 1, 1이고 b가 마이너스 3인 경계입니다. 경계 위 점 1.5, 1.5에서 값은 0입니다. 여기서 w 방향, 즉 경계에 수직인 방향으로 걸어 봅니다. 0.5 걸으면 값이 0.71, 1 걸으면 1.41, 1.5 걸으면 2.12. 1 걸을 때마다 값이 1.41씩, 정확히 w의 길이 루트 2만큼 오릅니다. 식으로 보면, w를 자기 길이로 나눈 길이 1짜리 방향 u를 d배 해서 x0에 더하고 값을 계산하면, 앞부분은 경계 위라서 0이고, 뒷부분 w 점곱 u는 w 길이의 제곱을 w 길이로 나눈 것, 즉 w의 길이입니다. 그래서 d 곱하기 w의 길이가 남습니다. 그러면 값이 1이 되는 곳, 가장자리는 d가 1 나누기 w의 길이인 곳입니다. 이 예에서는 0.71 걸으면 가장자리입니다.}
-\end{frame}
 
-% --- 최대 마진 식 (CME 250 / ISL 표기)
-\begin{frame}{최대 마진 초평면 찾기: 식으로}
+% --- 최대 마진 식 (공식 그대로, ISL 9.9-9.11)
+\begin{frame}{최대 마진 초평면 찾기}
 \markpage{form}
 \vfill
 \centering
-{\Large $\displaystyle \max_{\beta_0, \beta_1, \beta_2,\, m}\ m$ \quad subject to}\\[0.2em]
-{\Large $\beta_1^2 + \beta_2^2 = 1, \quad y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \ge m$ \; (모든 $i$)}\\[0.6em]
-\renewcommand{\arraystretch}{1.35}
-{\large\begin{tabular}{l|l}
-$\max m$ & 마진 (가장 가까운 점까지 거리) 을 최대로\\
-$\beta_1^2 + \beta_2^2 = 1$ & 길이 1 로 맞춤 $\to$ 값 = 경계까지 거리 (없으면 $\beta$ 를 키워 값만 커진다)\\
-$y_i(\cdots) \ge m$ & 모든 점이 자기 쪽으로 $m$ 이상 떨어져 있다\\ \hline
-이 데이터 & $\beta = (-0.71,\ 0.71)$, \; $\beta_0 = -0.18$, \; \kb{$m = 1.59$}
-\end{tabular}}\\[0.6em]
+{\large 학습 데이터 $(\mathbf{x}_1, y_1), \dots, (\mathbf{x}_n, y_n)$, \; $y_i \in \{+1, -1\}$ 에 대해 다음을 푼다}\\[0.6em]
+{\large\begin{align*}
+\underset{\beta_0, \beta_1, \dots, \beta_p,\, m}{\text{maximize}} \quad & m\\
+\text{subject to} \quad & \sum_{j=1}^{p} \beta_j^2 = 1,\\
+& y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_p x_{ip}) \ge m \quad \text{for all } i = 1, \dots, n
+\end{align*}}
+{\small\color{gray} James et al., ISL 식 (9.9)--(9.11) \quad CME 250 Lecture 5}
+\vfill
+\note{최대 마진 초평면을 찾는 문제를 교과서에 나오는 그대로 쓰면 이렇습니다. 학습 데이터가 n개, 특징이 p개이고 라벨은 플러스 1 아니면 마이너스 1입니다. 베타0부터 베타p, 그리고 마진 m을 골라서 m을 최대로 합니다. 조건은 두 가지입니다. 베타1부터 베타p까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 m 이상. 다음 쪽에서 한 줄씩 읽어 보겠습니다.}
+\end{frame}
+
+% --- 최대 마진 식 해설 (말풍선)
+\begin{frame}{최대 마진 초평면 찾기: 한 줄씩 읽기}
+\vfill
+\begin{minipage}{0.62\textwidth}
+{\Large\begin{align*}
+\underset{\beta_0, \beta_1, \beta_2,\, m}{\text{maximize}} \quad & \tikzmarknode{mm}{m}\\[0.4em]
+\text{subject to} \quad & \tikzmarknode{nb}{\beta_1^2 + \beta_2^2 = 1},\\[0.4em]
+& \tikzmarknode{cc}{y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \ge m}
+\end{align*}}
+\end{minipage}
+\begin{tikzpicture}[remember picture,overlay]
+\node[bub,anchor=west] (b1) at ([xshift=1.6cm,yshift=0.35cm]mm.east) {마진 $m$ (가장 가까운 점까지 거리) 을 최대로};
+\draw[bubarr] (b1.west) -- (mm.east);
+\node[bub,anchor=west] (b2) at ([xshift=1.2cm,yshift=0.2cm]nb.east) {$= \lVert\beta\rVert_2^2 = 1$, 즉 \textbf{L2 노름} $\lVert\beta\rVert_2 = 1$\\ $\to$ 값 = 경계까지 거리 {\small (다음 쪽)}};
+\draw[bubarr] (b2.west) -- (nb.east);
+\node[bub,anchor=west] (b3) at ([xshift=0.6cm,yshift=-0.1cm]cc.east) {모든 점이 자기 쪽으로\\ $m$ 이상 떨어져 있어야};
+\draw[bubarr] (b3.west) -- (cc.east);
+\end{tikzpicture}
+\vskip1.2em
+\centering
+{\large 이 데이터 ($p = 2$): \; $\beta = (-0.71,\ 0.71)$, \; $\beta_0 = -0.18$, \; \kb{$m = 1.59$}}\\[0.3em]
 {\normalsize 확인: 서포트 벡터 $(2, 4.5)$ \; $-0.71 \cdot 2 + 0.71 \cdot 4.5 - 0.18 \approx 1.59$ \qquad 볼록 최적화 $\to$ 답은 하나}
 \vfill
-\note{최대 마진 초평면을 식으로 쓰면 이렇습니다. 첫째, 마진 m을 최대로 합니다. 둘째, 베타1 제곱 더하기 베타2 제곱이 1, 즉 앞 쪽에서 본 길이를 1로 맞춥니다. 그러면 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 베타를 두 배, 세 배 키우기만 해도 값이 커져서 m을 끝없이 키울 수 있으니 문제가 성립하지 않습니다. 셋째, 모든 점에서 라벨 곱하기 값이 m 이상, 즉 모든 점이 자기 쪽으로 m 이상 떨어져 있어야 합니다. 이 데이터의 답은 베타가 마이너스 0.71, 0.71, 베타0이 마이너스 0.18, m이 1.59입니다. 서포트 벡터 2, 4.5를 넣으면 값이 1.59, 딱 m입니다. 이 문제는 볼록 최적화 문제라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
+\note{한 줄씩 읽어 봅시다. 첫 줄, 마진 m을 최대로 합니다. 마진은 경계에서 가장 가까운 점까지의 거리입니다. 둘째 줄, 베타1 제곱 더하기 베타2 제곱이 1, 즉 베타의 L2 노름 제곱이 1, 길이 L2 노름을 1로 맞춥니다. 베타0은 들어가지 않습니다. 그래야 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 베타를 두 배, 세 배 키우기만 해도 값이 커지니 m을 끝없이 키울 수 있어서 문제가 성립하지 않습니다. 왜 길이가 1이면 값이 거리인지는 다음 쪽에서 봅니다. 셋째 줄, 모든 점에서 라벨 곱하기 값이 m 이상, 즉 모든 점이 자기 쪽으로 경계에서 m 이상 떨어져 있어야 합니다. 이 데이터의 답은 베타가 마이너스 0.71, 0.71, 베타0이 마이너스 0.18, m이 1.59입니다. 서포트 벡터 2, 4.5를 넣으면 값이 1.59, 딱 m입니다. 이 문제는 볼록 최적화라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
+\end{frame}
+
+% --- 값과 거리: 길이 1 로 맞추면 값 = 거리 (다음 쪽 β1² + β2² = 1 의 이유)
+\begin{frame}{왜 $\lVert\beta\rVert_2 = 1$ 로 맞추나: 그래야 값 = 거리}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.44\textwidth}\centering\includegraphics[width=\linewidth]{sv_dist.png}\end{column}
+\begin{column}{0.54\textwidth}
+{\large 경계에서 \kq{거리 1} 떨어진 점을 넣어 보면}\\[0.6em]
+{\large $x_1 + x_2 - 3$ \;$\to$\; 1.41 \quad (거리가 아님)}\\[0.3em]
+{\large 두 숫자를 $\sqrt{1^2 + 1^2} = 1.41$ 로 나누면\\ $0.71x_1 + 0.71x_2 - 2.12$ \;$\to$\; \kb{1.00 = 거리}}\\[0.8em]
+{\large 같은 직선인데 값만 1.41배 차이}\\[0.3em]
+{\large $\Rightarrow$ $\lVert\beta\rVert_2^2 = \beta_1^2 + \beta_2^2 = 1$ 이면 \kb{값 = 거리}}\\[0.2em]{\normalsize ($\beta_0$ 은 빼고, 기울기 숫자들만의 L2 노름)}\\[0.6em]
+{\normalsize 그래서 앞 쪽 셋째 줄: ``모든 점의 값 $\ge m$'' = ``모든 점이 $m$ 이상 떨어져 있다''}
+\end{column}
+\end{columns}
+\vfill
+\note{다음 쪽 식을 읽기 전에 하나만 확인합니다. 식에 점을 넣은 값이 곧 경계까지의 거리일까요? 그림의 직선 x1 더하기 x2 빼기 3이 0인 선에서, 수직으로 정확히 1 떨어진 빨간 점을 넣어 보면 값이 1.41이 나옵니다. 거리는 1인데 값은 1.41이니 값이 곧 거리는 아닙니다. 이번엔 숫자 1, 1을 루트 2, 1.41로 나눠서 0.71, 0.71로 만들고, 마이너스 3도 같이 나눠 마이너스 2.12로 씁니다. 같은 직선입니다. 같은 점을 넣으면 이번엔 1.00, 정확히 거리와 같습니다. 일반적으로 값은 거리 곱하기 베타의 길이라서, 베타1 제곱 더하기 베타2 제곱을 1로 맞추면 값이 그대로 거리가 됩니다. 그래서 다음 쪽 식에 이 조건이 들어가고, 모든 점의 값이 m 이상이라는 조건이 모든 점이 경계에서 m 이상 떨어져 있다는 뜻이 됩니다.}
 \end{frame}
 
 % --- 같은 문제를 w 로
@@ -275,15 +301,38 @@ SVM 답 & $-0.44$ & $0.44$ & $-0.11$ & 3.18 &
 \note{최대 마진 분류기에는 두 가지 약점이 있습니다. 첫째, 왼쪽처럼 파란 점 하나가 빨강 무리 안에 들어오면 두 무리를 완벽히 가르는 직선이 아예 없습니다. 그러면 문제의 답이 없습니다. 둘째, 가를 수 있더라도 점 하나에 아주 민감합니다. 오른쪽은 파란 점 하나를 2.6, 3.8에 더한 것입니다. 마진이 1.59에서 0.46으로 확 줄고, 경계도 점선이던 원래 경계에서 기울어집니다. 점 하나 때문에 경계가 크게 흔들리면 학습 데이터에 과대적합하기 쉽습니다.}
 \end{frame}
 
-% --- 서포트 벡터 분류기 식
-\begin{frame}{서포트 벡터 분류기 (소프트 마진): 넘어가도 되지만 예산 안에서}
+% --- 서포트 벡터 분류기 식 (공식 그대로 + 말풍선, ISL 9.12-9.15)
+\begin{frame}{서포트 벡터 분류기 (소프트 마진) 찾기}
 \markpage{soft}
+\vfill
+\begin{minipage}{0.62\textwidth}
+{\large\begin{align*}
+\underset{\beta_0, \dots, \beta_p,\ \varepsilon_1, \dots, \varepsilon_n,\ m}{\text{maximize}} \quad & m\\[0.3em]
+\text{subject to} \quad & \sum_{j=1}^{p} \beta_j^2 = 1,\\[0.3em]
+& y_i(\beta_0 + \beta \cdot \mathbf{x}_i) \ge \tikzmarknode{me}{m(1 - \varepsilon_i)},\\[0.3em]
+& \tikzmarknode{ep}{\varepsilon_i \ge 0}, \quad \tikzmarknode{bb}{\sum_{i=1}^{n} \varepsilon_i \le B}
+\end{align*}}
+\end{minipage}
+\begin{tikzpicture}[remember picture,overlay]
+\node[bub,anchor=west] (s1) at ([xshift=0.5cm,yshift=0.9cm]me.east) {$m$ 이상 떨어지거나,\\ 아니면 모자란 비율 $\varepsilon_i$ 만큼 벌점};
+\draw[bubarr] (s1.south west) -- (me.north east);
+\node[bub,anchor=east] (s2) at ([xshift=-0.5cm]ep.west) {\textbf{슬랙 변수} $\varepsilon_i$\\ 점마다 하나};
+\draw[bubarr] (s2.east) -- (ep.west);
+\node[bub,anchor=west] (s3) at ([xshift=0.9cm,yshift=-0.5cm]bb.east) {넘어가도 되는 \textbf{총 예산}\\{\small (ISL · CME 250 은 $C$ 라고 씀)}};
+\draw[bubarr] (s3.west) -- (bb.east);
+\end{tikzpicture}
+\vskip2.2em
+{\small\color{gray} James et al., ISL 식 (9.12)--(9.15) \quad CME 250 Lecture 5}
+\vfill
+\note{깔끔하게 나뉘지 않을 때 쓰는 서포트 벡터 분류기, 소프트 마진의 식입니다. 교과서 그대로입니다. 최대 마진 식과 거의 같은데 두 군데가 다릅니다. 첫째, 조건의 오른쪽이 m이 아니라 m 곱하기 1 빼기 엡실론 i입니다. 점마다 m 이상 떨어지는 게 원칙인데, 못 지키면 모자란 비율만큼 엡실론을 씁니다. 이 엡실론을 슬랙 변수라고 하고 점마다 하나씩 있습니다. 둘째, 엡실론은 0 이상이고, 모두 더한 것이 예산 B를 넘으면 안 됩니다. 교과서와 이 강의 원본은 이 예산을 C라고 부르는데, sklearn의 C와 뜻이 반대라서 여기서는 B라고 쓰겠습니다.}
+\end{frame}
+
+% --- 서포트 벡터 분류기 식
+\begin{frame}{슬랙 $\varepsilon_i$ 읽기: 넘어가도 되지만 예산 안에서}
 \vfill
 \begin{columns}[c]
 \begin{column}{0.40\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_slack.png}\end{column}
 \begin{column}{0.58\textwidth}
-{\large $\max m$ \; s.t. \; $\lVert\beta\rVert = 1$, \; $\varepsilon_i \ge 0$, \; $\sum_i \varepsilon_i \le B$}\\[0.2em]
-{\large \hspace{2.6em} $y_i f(\mathbf{x}_i) \ge m(1 - \varepsilon_i)$}\\[0.6em]
 \renewcommand{\arraystretch}{1.3}
 {\large\begin{tabular}{l|l}
 $\varepsilon_i = 0$ & 가장자리 바깥, 제자리\\
@@ -296,7 +345,7 @@ $B$ & 넘어가도 되는 \kb{총 예산}
 \end{column}
 \end{columns}
 \vfill
-\note{그래서 조금 넘어가는 것을 허락합니다. 이것을 서포트 벡터 분류기, 또는 소프트 마진이라고 합니다. 점마다 엡실론이라는 슬랙 변수를 두고, 조건을 m 대신 m 곱하기 1 빼기 엡실론 이상으로 느슨하게 합니다. 엡실론이 0이면 원래대로 가장자리 바깥, 0과 1 사이면 가장자리를 넘어 길 안에 들어온 것, 1보다 크면 경계까지 넘어 틀리게 분류된 것입니다. 대신 엡실론을 모두 더한 것이 예산 B를 넘으면 안 됩니다. 그림은 예산이 2.64일 때입니다. 빨강 무리 안의 파란 점은 엡실론 1.70으로 틀렸고, 나머지 몇 점은 0.04에서 0.45만큼 길 안에 들어와 있습니다. 서포트 벡터는 가장자리 위의 점과 가장자리를 넘은 점 모두입니다. 참고로 앞의 학습 식에서 본 힌지 손실 값이 바로 이 엡실론입니다.}
+\note{그림으로 엡실론을 읽어 봅시다. 엡실론이 0이면 원래대로 가장자리 바깥, 0과 1 사이면 가장자리를 넘어 길 안에 들어온 것, 1보다 크면 경계까지 넘어 틀리게 분류된 것입니다. 대신 엡실론을 모두 더한 것이 예산 B를 넘으면 안 됩니다. 그림은 예산이 2.64일 때입니다. 빨강 무리 안의 파란 점은 엡실론 1.70으로 틀렸고, 나머지 몇 점은 0.04에서 0.45만큼 길 안에 들어와 있습니다. 서포트 벡터는 가장자리 위의 점과 가장자리를 넘은 점 모두입니다. 참고로 앞의 학습 식에서 본 힌지 손실 값이 바로 이 엡실론입니다.}
 \end{frame}
 
 % --- 예산 B

@@ -376,3 +376,22 @@ for ax, (ttl, mk) in zip(axs, (("선형 커널", SVC(kernel="linear", C=1)), ("3
     ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal"); ax.set_title(f"{ttl}: 학습 정확도 {mk.score(Xk, yk):.0%}", fontsize=15)
 save(fig, "sv_kernels.png")
 print("ok cme")
+
+
+# 값과 거리: 같은 직선을 두 식으로 — 길이 1 로 나누면 값 = 거리
+fig, ax = plt.subplots(figsize=(6.2, 5.8)); frame_ax(ax)
+ax.plot(g, 3 - g, color="black", lw=2.5)
+P1 = X0 + 1.0 * U
+ax.annotate("", P1, X0, arrowprops=dict(arrowstyle="<->", color=RED, lw=2.5, shrinkA=0, shrinkB=0))
+ax.text(*(X0 + 0.5 * U + np.array([-0.62, 0.12])), "거리 1", fontsize=16, color=RED, fontweight="bold")
+ax.scatter(*P1, s=110, color=RED, zorder=4); ax.scatter(*X0, s=70, color="black", zorder=4)
+v1, v2 = val(P1), (WE / NW) @ P1 + BE / NW
+assert abs(v1 - NW) < 1e-9 and abs(v2 - 1) < 1e-9
+ax.text(P1[0] - 0.2, P1[1] + 0.95, f"$x_1 + x_2 - 3$  →  {v1:.2f}", fontsize=15, color="#555555",
+        bbox=dict(fc="white", ec=GRAY, pad=3))
+ax.text(P1[0] - 0.2, P1[1] + 0.45, f"$0.71x_1 + 0.71x_2 - 2.12$  →  {v2:.2f}", fontsize=15, color=RED, fontweight="bold",
+        bbox=dict(fc="white", ec=RED, pad=3))
+ax.text(0.1, 3.1, "같은 직선", fontsize=14, rotation=-45)
+ax.set_xlim(-0.2, 4.6)
+save(fig, "sv_dist.png")
+print("ok dist")
