@@ -125,7 +125,7 @@
 \text{subject to} \quad & \sum_{j=1}^{p} w_j^2 = 1,\\
 & y_i(w_1 x_{i1} + w_2 x_{i2} + \cdots + w_p x_{ip} + b) \ge m \quad \text{for all } i = 1, \dots, n
 \end{align*}}
-{\small\color{gray} James et al., ISL 식 (9.9)--(9.11) \quad CME 250 Lecture 5 \quad (교과서의 $\beta_1, \dots, \beta_p$ 를 $\mathbf{w}$, $\beta_0$ 을 $b$ 로 씀)}
+
 \vfill
 \note{최대 마진 초평면을 찾는 문제를 교과서에 나오는 그대로 쓰면 이렇습니다. 학습 데이터가 n개, 특징이 p개이고 라벨은 플러스 1 아니면 마이너스 1입니다. b부터 wp, 그리고 마진 m을 골라서 m을 최대로 합니다. 조건은 두 가지입니다. w1부터 wp까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 m 이상. 다음 쪽에서 한 줄씩 읽어 보겠습니다.}
 \end{frame}
@@ -386,11 +386,11 @@ SVM 답 & $-0.44$ & $0.44$ & $-0.11$ & 3.18 &
 \draw[bubarr] (s1.south west) -- (me.north east);
 \node[bub,anchor=east] (s2) at ([xshift=-0.5cm]ep.west) {\textbf{슬랙 변수} $\varepsilon_i$\\ 점마다 하나};
 \draw[bubarr] (s2.east) -- (ep.west);
-\node[bub,anchor=west] (s3) at ([xshift=0.9cm,yshift=-0.5cm]bb.east) {넘어가도 되는 \textbf{총 예산}\\{\small (ISL · CME 250 은 $C$ 라고 씀)}};
+\node[bub,anchor=west] (s3) at ([xshift=0.9cm,yshift=-0.5cm]bb.east) {넘어가도 되는 \textbf{총 예산}};
 \draw[bubarr] (s3.west) -- (bb.east);
 \end{tikzpicture}
 \vskip2.2em
-{\small\color{gray} James et al., ISL 식 (9.12)--(9.15) \quad CME 250 Lecture 5}
+
 \vfill
 \note{깔끔하게 나뉘지 않을 때 쓰는 서포트 벡터 분류기, 소프트 마진의 식입니다. 교과서 그대로입니다. 최대 마진 식과 거의 같은데 두 군데가 다릅니다. 첫째, 조건의 오른쪽이 m이 아니라 m 곱하기 1 빼기 엡실론 i입니다. 점마다 m 이상 떨어지는 게 원칙인데, 못 지키면 모자란 비율만큼 엡실론을 씁니다. 이 엡실론을 슬랙 변수라고 하고 점마다 하나씩 있습니다. 둘째, 엡실론은 0 이상이고, 모두 더한 것이 예산 B를 넘으면 안 됩니다. 교과서와 이 강의 원본은 이 예산을 C라고 부르는데, sklearn의 C와 뜻이 반대라서 여기서는 B라고 쓰겠습니다.}
 \end{frame}
@@ -421,7 +421,7 @@ $B$ & 넘어가도 되는 \kb{총 예산}
 \vfill
 \centering\includegraphics[width=0.8\linewidth]{sv_soft.png}\par\vskip0.1em
 {\large $B$ 크면 $m$ 커지고 서포트 벡터 많음 (\kb{편향}$\uparrow$ 분산$\downarrow$) \quad $B = 0$ 이면 최대 마진 \quad $B$ 는 교차 검증으로}\\[0.2em]
-{\small ISL · CME 250 은 이 예산을 $C$ 라고 쓴다. sklearn 과 앞 학습 식의 $C$ 는 \kq{벌점 무게}라 반대 (클수록 좁은 길)}
+{\small sklearn 과 앞 학습 식의 $C$ 는 \kq{벌점 무게}라 $B$ 와 반대 (클수록 좁은 길)}
 \vfill
 \note{예산을 바꿔 봅시다. 예산이 0이면 하나도 넘어가면 안 되니 이상치를 피해 가느라 마진이 0.11로 아주 좁고, 서포트 벡터는 3개입니다. 예산이 1.87이면 이상치 하나만 틀리기로 하고, 원래 데이터와 같은 마진 1.59, 서포트 벡터 4개입니다. 예산이 2.64면 여러 점이 길 안에 들어오는 대신 마진이 2.32로 넓어지고 서포트 벡터가 8개로 늘어납니다. 예산이 크면 경계가 여러 점의 영향을 고루 받아 덜 흔들리니 분산은 작고 편향은 큽니다. 예산이 작으면 반대입니다. 예산 B도 교차 검증으로 고릅니다. 주의할 점이 있습니다. 교과서 ISL과 이 강의 원본은 이 예산을 C라고 부릅니다. 그런데 sklearn과 앞에서 본 학습 식의 C는 넘어간 만큼의 벌점에 곱하는 무게라서 뜻이 반대입니다. sklearn의 C가 크면 벌점이 무거워 좁은 길, 작으면 넓은 길입니다. 그림 제목에 두 숫자를 같이 적어 두었습니다.}
 \end{frame}
@@ -451,7 +451,7 @@ $\alpha_i$ (부호 포함) & $+0.10$ & $+0.10$ & $-0.20$
 \end{tabular}}\\[0.5em]
 {\large $\mathbf{w} = 0.10\,(3.5, 6) + 0.10\,(2, 4.5) - 0.20\,(5, 3) \approx (-0.44,\ 0.44)$}\\[0.5em]
 {\normalsize 나머지 17개는 $\alpha = 0$ = 학습에서 \kb{한 번도 밀지 않은 점}}\par\vskip0.1em
-{\tiny\color{gray} ISL 9.5절 · Goodfellow, Bengio, Courville, \textit{Deep Learning} (2016) 5.7.2 식 (5.82)}
+
 \vfill
 \note{선형 분류기는 학습 데이터와의 점곱으로 다시 쓸 수 있다는 게 알려져 있습니다. f는 b에 서포트 벡터마다 알파 곱하기 새 점과 그 서포트 벡터의 점곱을 더한 것입니다. 서포트 벡터가 아닌 점은 알파가 0이라 식에서 빠집니다. 이 데이터에서 실제로 계산하면 빨간 서포트 벡터 둘은 알파가 0.10, 파란 하나는 마이너스 0.20입니다. 정확히는 81분의 8과 81분의 16입니다. 이 셋을 알파만큼 더하면 w, 마이너스 0.44, 0.44가 그대로 나옵니다. 나머지 17개는 알파가 0, 학습에서 한 번도 경계를 밀지 않은 점들입니다. 그래서 새 점을 분류할 때 서포트 벡터 3개와의 점곱만 계산하면 됩니다. 이 꼴이 다음 쪽 커널의 출발점입니다.}
 \end{frame}
