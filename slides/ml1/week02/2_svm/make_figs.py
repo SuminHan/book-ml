@@ -444,3 +444,54 @@ ax.text(0.95, 2.3, f"거리 {dist:.2f}", fontsize=15, color="#2b8a3e", fontweigh
 origin_axes(ax); ax.set_xticks([1, 2, 3, 4]); ax.set_yticks([1, 2, 3, 4])
 save(fig, "sv_cos.png")
 print("ok cos", round(th, 1))
+
+
+# 학습: 걸음마다 길의 폭이 어떻게 바뀌나 (+ 애니메이션 figs/sv_train_anim.mp4)
+T = np.unique(np.logspace(0, np.log10(TRAIN_T), 300).astype(int)); T = T[T >= 2]
+_, _, _, sha = train_svm(X, y, snaps=tuple(T))
+wid = np.array([2 / np.linalg.norm(sha[t][0]) for t in T])
+fig, ax = plt.subplots(figsize=(11, 4.6))
+ax.axvspan(2, 176, color=GOLD, alpha=0.15); ax.text(4, 2.9, "미는 점 없음\n선은 그대로, 길만 넓어짐", fontsize=13, color="#7a6a3f")
+ax.plot(T, wid, color="black", lw=2.5); ax.set_xscale("log")
+ax.axhline(3.18, color=GRAY, ls="--", lw=1); ax.text(2.2, 3.23, "SVM 답 3.18", fontsize=12, color="#555")
+for (p, t), tp in zip(TOUCH.items(), ((230, 2.4), (360, 2.8), (2600, 2.95))):
+    k = np.searchsorted(T, t); col = RED if p[1] > p[0] else BLUE
+    ax.scatter(T[k], wid[k], s=90, color=col, zorder=4)
+    ax.annotate(f"{t:,}걸음: ({p[0]:g}, {p[1]:g}) 이 밀기 시작", (T[k], wid[k]), tp, fontsize=12, color=col,
+                arrowprops=dict(arrowstyle="-", color=col, lw=1))
+ax.set_xticks([2, 10, 100, 1000, 10000, 20000]); ax.set_xticklabels(["2", "10", "100", "1,000", "10,000", "20,000"])
+ax.set_xlabel("걸음 (로그 눈금)", fontsize=13); ax.set_ylabel("길의 폭", fontsize=13)
+ax.set_ylim(1.6, 3.4); ax.tick_params(labelsize=12)
+save(fig, "sv_trainpath.png")
+
+
+def train_anim(X, y, path="figs/sv_train_anim.mp4", fps=20):
+    """경사하강 2만 걸음을 로그 간격 프레임으로: 길 · 미는 점 · w, b · 폭"""
+    from matplotlib.animation import FuncAnimation, FFMpegWriter
+    F = np.unique(np.r_[np.arange(1, 30), np.logspace(np.log10(30), np.log10(TRAIN_T), 230).astype(int)])
+    F = np.r_[F, [TRAIN_T] * 40]
+    _, _, _, sh = train_svm(X, y, snaps=tuple(F))
+    seen = np.zeros(len(X), bool)
+    fig, ax = plt.subplots(figsize=(7.2, 8)); fig.subplots_adjust(top=0.80, bottom=0.08, left=0.1, right=0.97)
+    def draw(i):
+        t = F[i]; w_, b_, act = sh[t]; ax.clear(); pts(ax, X, y)
+        if t > 1:
+            seen[act] = True
+        if np.linalg.norm(w_) > 0:
+            street_wb(ax, w_, b_, X[act])
+            wtxt = f"폭 {2 / np.linalg.norm(w_):.2f}"
+        else:
+            ax.scatter(X[:, 0], X[:, 1], s=320, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4); wtxt = "선 없음 (w = 0)"
+        ax.set_xlim(0, 10); ax.set_ylim(0, 10)
+        fig.texts.clear()
+        fig.text(0.5, 0.95, f"{t:,}걸음", ha="center", fontsize=24, weight="bold")
+        fig.text(0.5, 0.895, f"w = ({w_[0]:.2f}, {w_[1]:.2f}),  b = {b_:.2f},  {wtxt}", ha="center", fontsize=16)
+        fig.text(0.5, 0.845, f"미는 점 (금색 동그라미) {act.sum()}개", ha="center", fontsize=15, color="#7a6a3f")
+    an = FuncAnimation(fig, draw, frames=len(F))
+    ff = open(os.path.expanduser("~/Documents/manim_shorts/_env/ffpath")).read().strip()
+    plt.rcParams["animation.ffmpeg_path"] = ff
+    an.save(path, writer=FFMpegWriter(fps=fps, bitrate=2400)); draw(len(F) - 60); fig.savefig("figs/sv_train_anim_thumb.png"); plt.close(fig)
+
+
+if "anim" in sys.argv:
+    train_anim(X, y)
