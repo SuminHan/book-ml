@@ -21,7 +21,18 @@ def save(fig, name):
 
 def pts(ax, X=X, y=y):
     ax.scatter(X[y > 0, 0], X[y > 0, 1], s=80, color=RED, zorder=3); ax.scatter(X[y < 0, 0], X[y < 0, 1], s=80, color=BLUE, marker="s", zorder=3)
-    ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.set_aspect("equal"); ax.set_xticks(range(0, 11, 2)); ax.set_yticks(range(0, 11, 2))
+    ax.tick_params(labelsize=11, length=3); ax.set_xlabel("$x_1$", fontsize=13, labelpad=1); ax.set_ylabel("$x_2$", fontsize=13, rotation=0, labelpad=8)
+
+
+def origin_axes(ax):
+    """원점 (0, 0) 을 지나는 x1 · x2 축 (화살표 끝 + 이름)"""
+    ax.spines["left"].set_position("zero"); ax.spines["bottom"].set_position("zero")
+    ax.plot(1, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False, ms=7)
+    ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False, ms=7)
+    ax.set_xticks([-1, 1]); ax.set_yticks([-1, 1]); ax.tick_params(labelsize=12)
+    ax.text(1.0, 0.0, "  $x_1$", transform=ax.get_yaxis_transform(), va="center", fontsize=16)
+    ax.text(0.0, 0.97, "  $x_2$", transform=ax.get_xaxis_transform(), ha="left", va="top", fontsize=16)
 
 
 def street(ax, m, X=X, label=True):
@@ -179,7 +190,7 @@ g = np.linspace(-0.6, 4.6, 2)
 
 
 def frame_ax(ax):
-    ax.set_xlim(-0.2, 4.0); ax.set_ylim(-0.2, 4.0); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlim(0, 4.0); ax.set_ylim(0, 4.0); ax.set_aspect("equal"); ax.set_xticks(range(5)); ax.set_yticks(range(5)); ax.tick_params(labelsize=12)
     ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$")
 
 
@@ -320,7 +331,7 @@ print("ok hinge")
 fig = plt.figure(figsize=(11, 4.6))
 ax = fig.add_subplot(1, 2, 1)
 g2 = np.linspace(-1.5, 1.5, 2); ax.plot(g2, (-1 - 2 * g2) / 3, color="black", lw=3)
-ax.set_xlim(-1.5, 1.5); ax.set_ylim(-1.5, 1.5); ax.set_aspect("equal"); ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0)
+ax.set_xlim(-1.5, 1.5); ax.set_ylim(-1.5, 1.5); ax.set_aspect("equal"); origin_axes(ax)
 ax.set_title("2차원: 초평면 = 직선 (1차원)", fontsize=16)
 ax3 = fig.add_subplot(1, 2, 2, projection="3d")
 gx, gy = np.meshgrid(np.linspace(-1, 1, 2), np.linspace(-1, 1, 2)); ax3.plot_surface(gx, gy, 0.3 - 0.5 * gx + 0.4 * gy, alpha=0.45, color=GOLD)
@@ -339,7 +350,7 @@ for (px, py) in ((0.8, 0.6), (-0.9, -0.7), (0.5, -0.6)):
     ax.scatter(px, py, s=70, color="black", zorder=3)
     ax.text(px + 0.07, py + 0.08, f"{v:+.1f}", fontsize=15, fontweight="bold", color=RED if v > 0 else BLUE)
 ax.text(0.05, 1.2, "$1 + 2x_1 + 3x_2 > 0$", fontsize=15, color=RED); ax.text(-1.4, -1.35, "$1 + 2x_1 + 3x_2 < 0$", fontsize=15, color=BLUE)
-ax.set_xlim(-1.5, 1.5); ax.set_ylim(-1.5, 1.5); ax.set_aspect("equal"); ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0)
+ax.set_xlim(-1.5, 1.5); ax.set_ylim(-1.5, 1.5); ax.set_aspect("equal"); origin_axes(ax)
 save(fig, "sv_half.png")
 
 # 최대 마진의 약점: 겹치면 불가 · 점 하나에 민감
@@ -392,7 +403,7 @@ ax.text(P1[0] - 0.2, P1[1] + 0.95, f"$x_1 + x_2 - 3$  →  {v1:.2f}", fontsize=1
 ax.text(P1[0] - 0.2, P1[1] + 0.45, f"$0.71x_1 + 0.71x_2 - 2.12$  →  {v2:.2f}", fontsize=15, color=RED, fontweight="bold",
         bbox=dict(fc="white", ec=RED, pad=3))
 ax.text(0.1, 3.1, "같은 직선", fontsize=14, rotation=-45)
-ax.set_xlim(-0.2, 4.6)
+ax.set_xlim(0, 4.6)
 save(fig, "sv_dist.png")
 print("ok dist")
 
