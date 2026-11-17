@@ -1,7 +1,7 @@
 """실습 노트북 원본: 이 파일을 고치고 실행하면 <주제>.ipynb(학생용) / <주제>_solution.ipynb(정답) 이 다시 만들어진다.
    ~/Documents/manim_shorts/_env/v/bin/python make_lab.py
 코드 줄 끝의 '#@ANS 빈칸버전' = solution 노트북엔 앞부분, student 노트북엔 빈칸버전이 들어간다.
-데이터: 슬라이드의 점 20개 (data.py 와 같은 배열) · Banknote Authentication (UCI, 처음 실행 때 내려받기) · make_circles / make_moons."""
+데이터: 슬라이드의 점 20개 (원래 값 → z-score, data.py 와 같은 배열) · Banknote Authentication (UCI, 처음 실행 때 내려받기) · make_circles / make_moons."""
 import os, sys
 sys.path.insert(0, os.path.expanduser("~/book-ml/lessons/_tools"))
 import lab
@@ -14,7 +14,7 @@ CELLS = [
 
 가장 넓은 길을 내는 분류기. 마진과 서포트 벡터를 확인하고, 실제 데이터와 휘어진 데이터에서 C · γ 를 고른다.
 
-- **파트 1**: 슬라이드의 점 20개: 마진 m 1.59 (길 폭 3.18), 서포트 벡터 3개
+- **파트 1**: 슬라이드의 점 20개를 z-score 하고: 마진 m 0.67 (길 폭 1.34), 서포트 벡터 3개
 - **파트 2**: 지폐 1,372장 진위 판별: 선형 vs RBF
 - **파트 3**: 원 · 반달 데이터에서 C 와 γ 를 교차 검증으로
 
@@ -23,15 +23,19 @@ CELLS = [
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC"""),
-("md", """## 슬라이드의 예시 데이터"""),
-("code", """# Same example as the slides: 10 red (+1) and 10 blue (-1) points
-X = np.array([[1.5, 6.0], [2.0, 7.5], [2.5, 5.5], [3.0, 7.0], [1.0, 8.0], [3.5, 6.0], [2.0, 4.5], [3.0, 8.5], [1.2, 5.2], [4.0, 7.8],   # red
+("md", """## 슬라이드의 예시 데이터
+
+원래 값에서 축마다 평균을 빼고 표준편차로 나눈다 (z-score). 슬라이드의 점은 이 값을 소수 첫째 자리로 반올림한 것."""),
+("code", """# Same example as the slides: 10 red (+1) and 10 blue (-1) points, raw values
+X_raw = np.array([[1.5, 6.0], [2.0, 7.5], [2.5, 5.5], [3.0, 7.0], [1.0, 8.0], [3.5, 6.0], [2.0, 4.5], [3.0, 8.5], [1.2, 5.2], [4.0, 7.8],   # red
               [6.0, 2.5], [7.0, 4.0], [5.5, 1.5], [8.0, 2.0], [6.5, 3.5], [7.5, 1.0], [5.0, 3.0], [8.5, 3.5], [6.0, 0.8], [7.8, 5.0]])  # blue
 y = np.array([1] * 10 + [-1] * 10)
+X = ((X_raw - X_raw.mean(0)) / X_raw.std(0)).round(1)     #@ANS X = None  # TODO: z-score each column, round to 1 decimal
+print("mean", X.mean(0).round(2), " std", X.std(0).round(2))
 
 def plot_svm(model, X, y, ax=None, title=""):
     ax = ax or plt.gca()
-    gx, gy = np.meshgrid(np.linspace(0, 10, 200), np.linspace(0, 10, 200))
+    gx, gy = np.meshgrid(np.linspace(-2.2, 2.2, 200), np.linspace(-2.2, 2.2, 200))
     Z = model.decision_function(np.c_[gx.ravel(), gy.ravel()]).reshape(gx.shape)
     ax.contour(gx, gy, Z, levels=[-1, 0, 1], linestyles=["--", "-", "--"], colors="k")
     ax.scatter(X[:, 0], X[:, 1], c=y, cmap="coolwarm_r")
@@ -49,15 +53,15 @@ print("w =", w.round(3), " b =", round(b, 3), " m =", round(margin, 2), " street
 print("support vectors:", model.support_vectors_.tolist())
 
 X_moved = X.copy()
-X_moved[4] = [0.3, 9.5]                                   # move a far-away red point
+X_moved[4] = [-1.8, 2.1]                                  # move a far-away red point
 model2 = SVC(kernel="linear", C=1e6).fit(X_moved, y)
 print("w after moving a far point:", model2.coef_[0].round(3))
 fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 plot_svm(model, X, y, axs[0], "original"); plot_svm(model2, X_moved, y, axs[1], "far point moved"); plt.show()"""),
 ("code", """# Soft margin: add one blue outlier inside the red group
-X_out = np.r_[X, [[3.0, 5.2]]]; y_out = np.r_[y, [-1]]
+X_out = np.r_[X, [[-0.6, 0.2]]]; y_out = np.r_[y, [-1]]
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-for ax, C in zip(axs, [100, 1, 0.05]):
+for ax, C in zip(axs, [100, 3, 0.3]):
     m = SVC(kernel="linear", C=C).fit(X_out, y_out)
     n_sv = len(m.support_)                                #@ANS n_sv = None  # TODO: number of support vectors
     plot_svm(m, X_out, y_out, ax, f"C={C}: m {1 / np.linalg.norm(m.coef_[0]):.2f}, {n_sv} SVs")   # street edge: distance 1/||coef|| after scaling w to length 1
