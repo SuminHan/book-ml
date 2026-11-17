@@ -289,10 +289,10 @@ def street_m(ax, w, b, m, ring=(), ring_col=GOLD):
         r = np.array(ring); ax.scatter(r[:, 0], r[:, 1], s=320, facecolors="none", edgecolors=ring_col, lw=2.5, zorder=4)
 
 
-TR4 = {2: "1걸음 뒤: 첫 선", 3: "2걸음 뒤: 너무 돌았다", 141: "140걸음 뒤", 20000: "20,000걸음"}
+TR4 = {2: "1걸음 뒤", 3: "2걸음 뒤", 4: "3걸음 뒤", 5: "4걸음 뒤", 6: "5걸음 뒤", 7: "6걸음 뒤", 141: "140걸음 뒤", 20000: "2만 걸음 뒤"}
 wt, bt, pushed, shots = train_maxmin(X, y, snaps=tuple(TR4))
-fig, axs = plt.subplots(1, 4, figsize=(16, 4.6))
-for ax, (t, ttl) in zip(axs, TR4.items()):
+fig, axs = plt.subplots(2, 4, figsize=(16, 8.6))
+for ax, (t, ttl) in zip(axs.ravel(), TR4.items()):
     w_, b_, act, m_ = shots[t]; pts(ax); street_m(ax, w_, b_, m_, X[act])
     ax.set_title(f"{ttl}  m {m_:.2f}", fontsize=15)
 save(fig, "sv_train4.png")
