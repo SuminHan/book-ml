@@ -652,3 +652,23 @@ def train_anim_bad(X, y, w0, b0, name, path, T=6000, fps=20, ylim=10):
 if "bad" in sys.argv:
     train_anim_bad(X, y, (-1, 1), -10, "위로 밀린 선에서 출발", "figs/sv_bad_up.mp4", ylim=12)
     train_anim_bad(X, y, (-3, 1), 0, "가파른 선에서 출발", "figs/sv_bad_steep.mp4")
+
+
+def b_rate_fig(X, y, path="sv_b_rate.png", T=20000):
+    """b 학습률을 1배 · 5배로 했을 때 걸음마다 b (로그 가로축). 1배는 b 가 거의 안 움직인다."""
+    ts = np.unique(np.logspace(0, np.log10(T), 300).astype(int))
+    fig, ax = plt.subplots(figsize=(7.2, 4.2))
+    for sb, col, lab in ((1, GRAY, "b 학습률 1배"), (MM_SB, BLUE, f"b 학습률 {MM_SB}배")):
+        *_, shots = train_maxmin(X, y, T=T, sb=sb, snaps=set(ts))
+        ax.plot(ts, [shots[t][1] for t in ts], color=col, lw=2.8, label=lab)
+        ax.annotate(f"2만 걸음: {shots[ts[-1]][1]:.2f}", (ts[-1], shots[ts[-1]][1]), xytext=(-4, 12), textcoords="offset points", ha="right", color=col, fontsize=13)
+    ax.axhline(B_ANS, color=RED, ls="--", lw=1.8); ax.text(1.2, B_ANS - 0.012, f"SVM 답 b = {B_ANS:.2f}", color=RED, fontsize=13, va="top")
+    ax.set_xscale("log"); ax.set_xlabel("걸음 (로그 눈금)"); ax.set_ylabel("b", rotation=0, labelpad=10)
+    ax.set_xticks([1, 10, 100, 1000, 10000]); ax.set_xticklabels(["1", "10", "100", "1,000", "10,000"])
+    ax.set_xlim(1, T * 1.3); ax.legend(frameon=False, fontsize=13, loc="upper right")
+    save(fig, path)
+
+
+if "brate" in sys.argv:
+    B_ANS = -0.18
+    b_rate_fig(X, y); sys.exit()
