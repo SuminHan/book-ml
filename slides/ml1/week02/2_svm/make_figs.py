@@ -658,7 +658,7 @@ def b_rate_fig(X, y, path="sv_b_rate.png", T=20000):
     """b 학습률을 1배 · 5배로 했을 때 걸음마다 b (로그 가로축). 1배는 b 가 거의 안 움직인다."""
     ts = np.unique(np.logspace(0, np.log10(T), 300).astype(int))
     fig, ax = plt.subplots(figsize=(7.2, 4.2))
-    for sb, col, lab in ((1, GRAY, "b 학습률 1배"), (MM_SB, BLUE, f"b 학습률 {MM_SB}배")):
+    for sb, col, lab in ((1, GRAY, r"$\eta_b = \eta_w$"), (MM_SB, BLUE, rf"$\eta_b = {MM_SB}\,\eta_w$")):
         *_, shots = train_maxmin(X, y, T=T, sb=sb, snaps=set(ts))
         ax.plot(ts, [shots[t][1] for t in ts], color=col, lw=2.8, label=lab)
         ax.annotate(f"2만 걸음: {shots[ts[-1]][1]:.2f}", (ts[-1], shots[ts[-1]][1]), xytext=(-4, 12), textcoords="offset points", ha="right", color=col, fontsize=13)
