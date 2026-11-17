@@ -672,3 +672,107 @@ def b_rate_fig(X, y, path="sv_b_rate.png", T=20000):
 if "brate" in sys.argv:
     B_ANS = -0.18
     b_rate_fig(X, y); sys.exit()
+
+
+def train_anim_click(X, y, path="figs/sv_train_click.mp4", fps=20, slow=(1, 2, 3, 4, 5, 6)):
+    """한 걸음 = ① 값 재기 → ② 가장 작은 점 클릭 → ③ 민다 (선 이동) → ④ ‖w‖ 로 나눔 (선은 그대로). 앞 몇 걸음은 천천히, 뒤는 빨리."""
+    from matplotlib.animation import FuncAnimation, FFMpegWriter
+    from matplotlib.patches import Polygon
+    fast = np.unique(np.r_[np.arange(slow[-1] + 1, 60), np.logspace(np.log10(60), np.log10(MM_T), 120).astype(int), list(MM_FIRST.values())])
+    _, _, _, sh = train_maxmin(X, y, snaps=tuple(slow) + tuple(fast))
+    P = {"val": 28, "move": 14, "click": 10, "push": 26, "norm": 30}
+    frames = []
+    for t in slow:
+        for ph, n in P.items():
+            frames += [(t, ph, j / max(n - 1, 1)) for j in range(n)]
+    for t in fast:
+        frames += [(t, "fast", 0)] * (30 if t in MM_FIRST.values() and t > slow[-1] else 2)
+    frames += [(MM_T, "fast", 0)] * 70
+    fig = plt.figure(figsize=(7.2, 9.6)); ax = fig.add_axes([0.1, 0.27, 0.86, 0.6])
+
+    def head(a, b_, c, col="black"):
+        fig.texts.clear()
+        fig.text(0.5, 0.95, a, ha="center", fontsize=22, weight="bold")
+        fig.text(0.5, 0.905, b_, ha="center", fontsize=15)
+        fig.text(0.5, 0.05, c, ha="center", fontsize=15, color=col, linespacing=1.6)
+
+    def line(w_, b_, **kw):
+        if np.linalg.norm(w_) > 1e-9:
+            if abs(w_[1]) > 1e-6:
+                ax.plot(xs, -(w_[0] * xs + b_) / w_[1], **kw)
+            else:
+                ax.axvline(-b_ / w_[0], **kw)
+
+    def cursor(p):
+        c = np.array([[0, 0], [0, -0.75], [0.2, -0.57], [0.36, -0.9], [0.48, -0.84], [0.33, -0.52], [0.58, -0.52]])
+        ax.add_patch(Polygon(c + p, closed=True, fc="white", ec="black", lw=1.6, zorder=6))
+
+    def draw(i):
+        t, ph, a = frames[i]; ax.clear(); pts(ax, X, y); ax.set_xlim(0, 10); ax.set_ylim(0, 10)
+        w_, b_, act, m_ = sh[t]; ks = np.where(act)[0]
+        eta = MM_LR / np.sqrt(t); w2 = w_ + eta * (y[ks, None] * X[ks]).sum(0); b2 = b_ + MM_SB * eta * y[ks].sum()
+        n2 = np.linalg.norm(w2); w3, b3 = (w2 / n2, b2 / n2) if n2 > 1 else (w2, b2)
+        v = y * (X @ w_ + b_)
+        ring = lambda Q, col=GOLD, s=330, lw=2.5: ax.scatter(Q[:, 0], Q[:, 1], s=s, facecolors="none", edgecolors=col, lw=lw, zorder=4)
+        nm = "20개 모두" if len(ks) > 1 else f"({X[ks[0], 0]:g}, {X[ks[0], 1]:g})"
+        kcol = GOLD if len(ks) > 1 else (RED if y[ks[0]] > 0 else BLUE)
+        if ph == "fast":
+            street_m(ax, w_, b_, m_, X[act])
+            msg = f"가장 가까운 점 {nm} 이 민다"
+            if t in MM_FIRST.values() and t > slow[-1]:
+                msg = f"({X[ks[0], 0]:g}, {X[ks[0], 1]:g}) 이 처음으로 가장 가까워짐"
+            if t == MM_T:
+                msg = "서포트 벡터 3개가 번갈아 민다\nm = 1.59 (SVM 답)"; kcol = "#7a6a3f"
+            head(f"{t - 1:,}걸음 뒤", f"w = ({w_[0]:.2f}, {w_[1]:.2f}),  b = {b_:.2f},  m = {m_:.2f}", msg, kcol if t != MM_T else kcol)
+            return
+        if ph in ("val", "move", "click"):
+            line(w_, b_, color="black", lw=2.5)
+            for j in range(len(X)):
+                lo = act[j]
+                ax.text(X[j, 0] + 0.22, X[j, 1] + 0.2, f"{v[j]:.2f}", fontsize=12 if lo else 9, weight="bold" if lo else None,
+                        color="#7a6a3f" if lo else GRAY, zorder=5)
+            if ph == "val":
+                head(f"{t}걸음째  ① 값 재기", f"w = ({w_[0]:.2f}, {w_[1]:.2f}),  b = {b_:.2f}",
+                     r"점마다 값 $y_i(\mathbf{w}\cdot\mathbf{x}_i + b)$ = 경계까지 거리" + "\n" + ("선이 없어서 모두 0" if t == 1 else f"가장 작은 값 = m = {m_:.2f}"))
+            else:
+                tgt = X[ks].mean(0) if len(ks) > 1 else X[ks[0]]
+                start = np.array([8.6, 1.0])
+                p = start + (tgt - start) * (min(a, 1) if ph == "move" else 1)
+                if ph == "click":
+                    ring(X[ks], kcol, s=330 + 900 * a, lw=3 * (1 - a) + 0.5)
+                    ring(X[ks], kcol)
+                if len(ks) == 1 or ph == "move":
+                    cursor(p + np.array([0.05, -0.05]))
+                head(f"{t}걸음째  ② 가장 작은 점 클릭", f"k = argmin 값  →  {nm}",
+                     f"값 {m_:.2f}  =  m" if len(ks) == 1 else "값이 모두 0 으로 같다  →  20개 모두", kcol)
+        elif ph == "push":
+            s = a * a * (3 - 2 * a)
+            wi, bi = w_ + s * (w2 - w_), b_ + s * (b2 - b_)
+            line(w_, b_, color=GRAY, lw=1.5, ls=":")
+            line(wi, bi, color="black", lw=2.5)
+            ring(X[ks], kcol)
+            sg = "+" if (len(ks) == 1 and y[ks[0]] > 0) else ("−" if len(ks) == 1 else "")
+            body = (rf"$\mathbf{{w}} \leftarrow \mathbf{{w}} {sg} \eta_w\,({X[ks[0], 0]:g}, {X[ks[0], 1]:g})$,   $b \leftarrow b {sg} \eta_b$" if len(ks) == 1
+                    else r"$\mathbf{w} \leftarrow \mathbf{w} + \eta_w\,$(빨강 합 − 파랑 합)")
+            head(rf"{t}걸음째  ③ 민다  ($\eta_w$ = {eta:.3f}, $\eta_b$ = {MM_SB * eta:.3f})", body,
+                 f"w = ({w2[0]:.2f}, {w2[1]:.2f}),  b = {b2:.2f}\n선이 그 점에서 멀어진다", kcol)
+        else:
+            line(w3, b3, color="black", lw=2.5)
+            v3 = y * (X @ w3 + b3); m3 = v3.min()
+            street_m(ax, w3, b3, m3) if a > 0.5 else None
+            if n2 > 1:
+                head(f"{t}걸음째  ④ 길이 1 로", rf"$\|\mathbf{{w}}\|$ = {n2:.2f}  →  w, b 를 {n2:.2f} 로 나눈다",
+                     f"w = ({w3[0]:.2f}, {w3[1]:.2f}),  b = {b3:.2f}\n선은 그대로, 숫자만 바뀐다  →  새 m = {m3:.2f}")
+            else:
+                head(f"{t}걸음째  ④ 길이 1 로", rf"$\|\mathbf{{w}}\|$ = {n2:.2f} ≤ 1  →  그대로", f"새 m = {m3:.2f}")
+    an = FuncAnimation(fig, draw, frames=len(frames))
+    plt.rcParams["animation.ffmpeg_path"] = open(os.path.expanduser("~/Documents/manim_shorts/_env/ffpath")).read().strip()
+    an.save(path, writer=FFMpegWriter(fps=fps, bitrate=2400))
+    for nm_, k in (("thumb", 28 + 14 + 9), ("p1", 10), ("p2", 28 + 14 + 9), ("p3", 28 + 14 + 10 + 25), ("p4", 28 + 14 + 10 + 26 + 29)):
+        draw(k + 108); fig.savefig(f"figs/sv_train_click_{nm_}.png")
+    plt.close(fig)
+    return len(frames) / fps
+
+
+if "click" in sys.argv:
+    print("click", train_anim_click(X, y)); sys.exit()
