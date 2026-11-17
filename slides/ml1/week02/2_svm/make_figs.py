@@ -864,3 +864,34 @@ def push_dir_fig(X, y, t=2, path="sv_push_dir.png", S=2.2):
 
 if "pushdir" in sys.argv:
     print("pushdir", push_dir_fig(X, y)); sys.exit()
+
+
+def zscore_fig(X, y, shift=100, T=MM_T, path="sv_zscore.png"):
+    """x2 에 +shift 한 데이터: 그대로 학습하면 실패, z-score (x − 평균)/표준편차 후 학습하면 SVM 답. 두 그림 모두 원래 좌표로."""
+    A = X + np.array([0, shift]); mu, sd = A.mean(0), A.std(0); Z = (A - mu) / sd
+    w1, b1, _, _ = train_maxmin(A, y, T=T)
+    wz, bz, _, _ = train_maxmin(Z, y, T=T)
+    w2 = wz / sd; b2 = bz - w2 @ mu; n = np.linalg.norm(w2); w2, b2 = w2 / n, b2 / n
+    fig, axs = plt.subplots(1, 2, figsize=(11.5, 5.6))
+    for ax, (w_, b_), ttl in zip(axs, ((w1, b1), (w2, b2)), ("그대로 학습", "z-score 후 학습")):
+        v = y * (A @ w_ + b_); m_ = v.min(); bad = v < 0
+        ax.scatter(A[y > 0, 0], A[y > 0, 1], s=80, color=RED, zorder=3); ax.scatter(A[y < 0, 0], A[y < 0, 1], s=80, color=BLUE, marker="s", zorder=3)
+        s_ = np.linspace(-400, 400, 2); u = w_ / np.linalg.norm(w_); d = np.array([-u[1], u[0]])
+        seg = lambda c: (c - b_) * u[:, None] + d[:, None] * s_
+        if m_ > 0:
+            a_, c_ = seg(m_), seg(-m_)
+            ax.fill(np.r_[a_[0], c_[0][::-1]], np.r_[a_[1], c_[1][::-1]], color=GOLD, alpha=0.18, lw=0)
+            ax.plot(*a_, "--", color=RED, lw=1.5); ax.plot(*c_, "--", color=BLUE, lw=1.5)
+        else:
+            ax.scatter(A[bad, 0], A[bad, 1], s=330, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4)
+        ax.plot(*seg(0), color="black", lw=2.5)
+        ax.set_xlim(-1, 10); ax.set_ylim(shift, shift + 10); ax.set_aspect("equal")
+        ax.set_xticks(range(0, 11, 2)); ax.set_yticks(range(shift, shift + 11, 2))
+        ax.set_xlabel("$x_1$"); ax.set_ylabel("$x_2$", rotation=0, labelpad=12)
+        ax.set_title(f"{ttl}: 2만 걸음 뒤\n" + (f"m = {m_:.2f}" if m_ > 0 else f"틀린 점 {bad.sum()}개"), fontsize=15)
+    save(fig, path)
+    return (w1, b1), (w2, b2), mu, sd
+
+
+if "zscore" in sys.argv:
+    print("zscore", zscore_fig(X, y)); sys.exit()
