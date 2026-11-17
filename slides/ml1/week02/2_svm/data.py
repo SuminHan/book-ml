@@ -45,6 +45,33 @@ def train_svm(X, y, T=TRAIN_T, lr0=TRAIN_LR, C=1.0, snaps=()):
     return w, b, pushed, shots
 
 
+# 학습 (‖w‖ = 1 기준, 덱 전체가 이 기준): 매 걸음 가장 가까운 점(값 최소)이 민다 → w 길이가 1 넘으면 1 로 나눈다
+MM_T, MM_LR, MM_SB = 20000, 0.05, 5                      # 걸음 수, 학습률 0.05/√t, b 는 5배 (b 가 너무 느려서)
+MM_FIRST = {(3.5, 6.0): 2, (7.8, 5.0): 3, (5.0, 3.0): 5, (2.0, 4.5): 141}   # 1걸음 뒤 처음 민 걸음 (나머지 16개는 한 번도 안 민다)
+MM_STEPS = {1: (0, 0, 0, 0.0, 20), 2: (-0.75, 0.66, 0, 1.37, 1), 3: (-0.58, 0.81, 0.16, 0.28, 1),
+            5: (-0.65, 0.76, 0.14, 0.85, 1), 200: (-0.71, 0.71, -0.19, 1.58, 1), 20000: (-0.71, 0.71, -0.18, 1.58, 1)}   # 걸음: (w1, w2, b, m, 미는 점 수), 그 걸음 직전
+MM_SUM = 0.05 * 44.1                                      # 1걸음: 0.05 × (−44.1, 39.2) 의 길이 2.95 > 1 → 1 로 나눔
+
+
+def train_maxmin(X, y, T=MM_T, lr0=MM_LR, sb=MM_SB, w0=(0, 0), b0=0.0, snaps=()):
+    """‖w‖ = 1 로 맞춘 채 가장 가까운 점까지 거리 m = min y_i (w·x_i + b) 를 키운다.
+    한 걸음: 값이 가장 작은 점(들) k 가 w += η Σ y_k x_k, b += sb·η Σ y_k  → ‖w‖ > 1 이면 w, b 를 ‖w‖ 로 나눈다.
+    반환: 마지막 (w, b), 걸음마다 민 점 (T × n), snaps 걸음 직전의 (w, b, 미는 점, m)."""
+    w, b = np.array(w0, float), float(b0)
+    pushed, shots = np.zeros((T, len(X)), bool), {}
+    for t in range(1, T + 1):
+        v = y * (X @ w + b); m = v.min(); act = v <= m + 1e-9
+        pushed[t - 1] = act
+        if t in snaps:
+            shots[t] = (w.copy(), b, act.copy(), m)
+        eta = lr0 / np.sqrt(t)
+        w, b = w + eta * (y[act, None] * X[act]).sum(0), b + sb * eta * y[act].sum()
+        n = np.linalg.norm(w)
+        if n > 1:
+            w, b = w / n, b / n
+    return w, b, pushed, shots
+
+
 # CME 250 Lecture 5 (ISL 9장) 표기: ‖β‖ = 1 로 맞춘 경계 β0 + β·x = 0, 마진 M = 경계에서 가장 가까운 점까지 거리 (길 폭 = 2M)
 BETA, BETA0, M_HARD = (-0.71, 0.71), -0.18, 1.59           # β = (−1, 1)/√2, β0 = −1/(4√2), M = 9/(4√2)
 ALPHA = {(5.0, 3.0): 16 / 81, (3.5, 6.0): 8 / 81, (2.0, 4.5): 8 / 81}   # w = Σ α_i y_i x_i (서포트 벡터만, 나머지 α = 0)
@@ -98,4 +125,12 @@ if __name__ == "__main__":
     for C, (bud, mg, nsv) in BUDGET.items():
         mb = SVC(kernel="linear", C=C).fit(Xo, yo); e = np.maximum(0, 1 - yo * mb.decision_function(Xo))
         assert (round(e.sum(), 2), round(1 / np.linalg.norm(mb.coef_[0]), 2), len(mb.support_)) == (bud, mg, nsv), C
+    wm, bm, pm, _ = train_maxmin(X, y)
+    assert tuple(np.round(wm, 2)) == BETA and round(bm, 2) == BETA0 and round((y * (X @ wm + bm)).min(), 2) == 1.58
+    firstm = {tuple(X[i]): int(np.argmax(pm[1:, i])) + 2 for i in range(len(X)) if pm[1:, i].any()}
+    assert firstm == MM_FIRST
+    _, _, _, shm = train_maxmin(X, y, snaps=tuple(MM_STEPS))
+    for t, (a1, a2, bb, mm, k) in MM_STEPS.items():
+        w_, b_, act, m_ = shm[t]; assert (round(w_[0], 2), round(w_[1], 2), round(b_, 2), round(m_, 2), int(act.sum())) == (a1, a2, bb, mm, k), (t, w_, b_, m_)
+    vm = y * (X @ wm + bm); assert sorted(map(tuple, X[vm < 1.6])) == sorted(SV) and vm[vm >= 1.6].min() > 1.9
     print("data ok")

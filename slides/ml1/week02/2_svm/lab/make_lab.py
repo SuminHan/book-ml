@@ -40,10 +40,11 @@ def plot_svm(model, X, y, ax=None, title=""):
     ax.set_aspect("equal"); ax.set_title(title)"""),
 ("md", """## 파트 1. 마진과 서포트 벡터
 
-`C` 를 아주 크게 하면 하드 마진(길 안에 점 없음). 마진 $m = 1/\\lVert\\mathbf{w}\\rVert$, 길 폭 $= 2m$."""),
+`C` 를 아주 크게 하면 하드 마진(길 안에 점 없음). sklearn 이 주는 $\\mathbf{w}, b$ 를 $\\lVert\\mathbf{w}\\rVert$ 로 나눠 길이 1 로 맞추면 값 = 거리, 마진 $m$ = 가장 가까운 점의 값, 길 폭 $= 2m$."""),
 ("code", """model = SVC(kernel="linear", C=1e6).fit(X, y)
-w, b = model.coef_[0], model.intercept_[0]
-margin = 1 / np.linalg.norm(w)                            #@ANS margin = None  # TODO: m = distance to the nearest point
+n = np.linalg.norm(model.coef_[0])
+w, b = model.coef_[0] / n, model.intercept_[0] / n          # scale so that ||w|| = 1 (value = distance)
+margin = (y * (X @ w + b)).min()                          #@ANS margin = None  # TODO: m = distance to the nearest point
 print("w =", w.round(3), " b =", round(b, 3), " m =", round(margin, 2), " street width =", round(2 * margin, 2))
 print("support vectors:", model.support_vectors_.tolist())
 
@@ -59,7 +60,7 @@ fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 for ax, C in zip(axs, [100, 1, 0.05]):
     m = SVC(kernel="linear", C=C).fit(X_out, y_out)
     n_sv = len(m.support_)                                #@ANS n_sv = None  # TODO: number of support vectors
-    plot_svm(m, X_out, y_out, ax, f"C={C}: m {1 / np.linalg.norm(m.coef_[0]):.2f}, {n_sv} SVs")
+    plot_svm(m, X_out, y_out, ax, f"C={C}: m {1 / np.linalg.norm(m.coef_[0]):.2f}, {n_sv} SVs")   # street edge: distance 1/||coef|| after scaling w to length 1
 plt.show()"""),
 ("md", """## 파트 2. 실제 데이터: 지폐 진위 판별
 

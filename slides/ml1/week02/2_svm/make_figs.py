@@ -275,40 +275,37 @@ save(fig, "sv_perp.png")
 print("ok read")
 
 
-# 학습: 여유 < 1 인 점만 민다 (경사하강)
-def street_wb(ax, w, b, ring=()):
-    s = np.linspace(-30, 30, 2); nrm = np.linalg.norm(w); u = w / nrm; d = np.array([-u[1], u[0]])
-    seg = lambda c: ((c - b) / nrm) * u[:, None] + d[:, None] * s
-    a, c = seg(1), seg(-1)
-    ax.fill(np.r_[a[0], c[0][::-1]], np.r_[a[1], c[1][::-1]], color=GOLD, alpha=0.18, lw=0)
-    ax.plot(*seg(0), color="black", lw=2.5); ax.plot(*a, "--", color=RED, lw=1.5); ax.plot(*c, "--", color=BLUE, lw=1.5)
+# 학습 (‖w‖ = 1): 가장 가까운 점이 민다 → 길이 1 로
+def street_m(ax, w, b, m, ring=(), ring_col=GOLD):
+    """‖w‖ = 1 인 경계와, 경계에서 거리 m 인 길 가장자리 두 줄"""
+    s = np.linspace(-30, 30, 2); u = w / np.linalg.norm(w); d = np.array([-u[1], u[0]]); b = b / np.linalg.norm(w)
+    seg = lambda c: (c - b) * u[:, None] + d[:, None] * s
+    if m > 0:
+        a, c = seg(m), seg(-m)
+        ax.fill(np.r_[a[0], c[0][::-1]], np.r_[a[1], c[1][::-1]], color=GOLD, alpha=0.18, lw=0)
+        ax.plot(*a, "--", color=RED, lw=1.5); ax.plot(*c, "--", color=BLUE, lw=1.5)
+    ax.plot(*seg(0), color="black", lw=2.5)
     if len(ring):
-        r = np.array(ring); ax.scatter(r[:, 0], r[:, 1], s=320, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4)
+        r = np.array(ring); ax.scatter(r[:, 0], r[:, 1], s=320, facecolors="none", edgecolors=ring_col, lw=2.5, zorder=4)
 
 
-wt, bt, pushed, shots = train_svm(X, y, snaps=SNAPS)
+TR4 = {2: "1걸음 뒤: 첫 선", 3: "2걸음 뒤: 너무 돌았다", 141: "140걸음 뒤", 20000: "20,000걸음"}
+wt, bt, pushed, shots = train_maxmin(X, y, snaps=tuple(TR4))
 fig, axs = plt.subplots(1, 4, figsize=(16, 4.6))
-for ax, t in zip(axs, SNAPS):
-    w_, b_, act = shots[t]; pts(ax)
-    if t == SNAPS[0]:
-        street_wb(ax, w_, b_, X); ttl = "1걸음: 20개 모두 밀어 첫 선"
-    elif t == SNAPS[-1]:
-        street_wb(ax, w_, b_, SV); ttl = f"{t:,}걸음: 폭 {2 / np.linalg.norm(w_):.2f}"
-    else:
-        new = [k for k, v in TOUCH.items() if v <= t]
-        street_wb(ax, w_, b_, new); ttl = f"{t}걸음: 폭 {2 / np.linalg.norm(w_):.2f}, 미는 점 {len(new)}개"
-    ax.set_title(ttl, fontsize=15)
+for ax, (t, ttl) in zip(axs, TR4.items()):
+    w_, b_, act, m_ = shots[t]; pts(ax); street_m(ax, w_, b_, m_, X[act])
+    ax.set_title(f"{ttl}  m {m_:.2f}", fontsize=15)
 save(fig, "sv_train4.png")
 
-mg = y * (X @ wt + bt); o = np.argsort(mg)
+mg = y * (X @ wt + bt); o = np.argsort(mg); Mn = mg.min()
 fig, ax = plt.subplots(figsize=(10, 4.2))
-cols = [GOLD if mg[i] < 1.02 else (RED if y[i] > 0 else BLUE) for i in o]
+cols = [GOLD if mg[i] < Mn + 0.02 else (RED if y[i] > 0 else BLUE) for i in o]
 ax.bar(range(20), mg[o], color=cols, alpha=0.9)
-ax.axhline(1, color="black", ls="--", lw=1.5); ax.text(-0.4, 2.8, "점선: 여유 1 = 길 가장자리", fontsize=14)
-ax.text(1, 1.32, "서포트 벡터", ha="center", fontsize=14, color="#7a6a3f", fontweight="bold")
+ax.axhline(Mn, color="black", ls="--", lw=1.5); ax.text(-0.4, 5.6, f"점선: m = {Mn:.2f} = 길 가장자리", fontsize=14)
+ax.text(1, Mn + 0.45, "서포트 벡터", ha="center", fontsize=14, color="#7a6a3f", fontweight="bold")
 for k, i in enumerate(o[:3]):
-    ax.text(k, mg[i] + 0.08, f"{mg[i]:.2f}", ha="center", fontsize=12, fontweight="bold")
-ax.set_xticks([]); ax.set_ylabel("여유  $y_i(\\mathbf{w}\\cdot\\mathbf{x}_i + b)$"); ax.set_xlabel("점 20개 (여유 작은 순)")
+    ax.text(k, mg[i] + 0.12, f"{mg[i]:.2f}", ha="center", fontsize=12, fontweight="bold")
+ax.set_xticks([]); ax.set_ylabel("경계까지 거리"); ax.set_xlabel("점 20개 (거리 작은 순)")
 save(fig, "sv_slack_bars.png")
 print("ok train")
 
@@ -447,22 +444,19 @@ save(fig, "sv_cos.png")
 print("ok cos", round(th, 1))
 
 
-# 학습: 걸음마다 길의 폭이 어떻게 바뀌나 (+ 애니메이션 figs/sv_train_anim.mp4)
-T = np.unique(np.logspace(0, np.log10(TRAIN_T), 300).astype(int)); T = T[T >= 2]
-_, _, _, sha = train_svm(X, y, snaps=tuple(T))
-wid = np.array([2 / np.linalg.norm(sha[t][0]) for t in T])
+# 학습: 걸음마다 m (가장 가까운 점까지 거리) 이 어떻게 바뀌나
+T = np.unique(np.logspace(0, np.log10(MM_T), 300).astype(int)); T = T[T >= 2]
+_, _, _, sha = train_maxmin(X, y, snaps=tuple(T))
+mm = np.array([sha[t][3] for t in T])
 fig, ax = plt.subplots(figsize=(11, 4.6))
-ax.axvspan(2, 176, color=GOLD, alpha=0.15); ax.text(4, 2.9, "미는 점 없음\n선은 그대로, 길만 넓어짐", fontsize=13, color="#7a6a3f")
-ax.plot(T, wid, color="black", lw=2.5); ax.set_xscale("log")
-ax.axhline(3.18, color=GRAY, ls="--", lw=1); ax.text(2.2, 3.23, "SVM 답 3.18", fontsize=12, color="#555")
-for (p, t), tp in zip(TOUCH.items(), ((230, 2.4), (360, 2.8), (2600, 2.95))):
-    k = np.searchsorted(T, t); col = RED if p[1] > p[0] else BLUE
-    ax.scatter(T[k], wid[k], s=90, color=col, zorder=4)
-    ax.annotate(f"{t:,}걸음: ({p[0]:g}, {p[1]:g}) 이 밀기 시작", (T[k], wid[k]), tp, fontsize=12, color=col,
-                arrowprops=dict(arrowstyle="-", color=col, lw=1))
+ax.plot(T, mm, color="black", lw=2); ax.set_xscale("log")
+ax.axhline(1.59, color=GOLD, ls="--", lw=1.5); ax.text(2.2, 1.66, "SVM 답 1.59", fontsize=12, color="#7a6a3f")
+ax.annotate("2걸음 뒤: 너무 돌아서 (7.8, 5) 가 가장 가까움", (3, sha[3][3]), (6, 0.25), fontsize=12, color=BLUE,
+            arrowprops=dict(arrowstyle="-", color=BLUE, lw=1))
+ax.scatter(3, sha[3][3], s=70, color=BLUE, zorder=4)
 ax.set_xticks([2, 10, 100, 1000, 10000, 20000]); ax.set_xticklabels(["2", "10", "100", "1,000", "10,000", "20,000"])
-ax.set_xlabel("걸음 (로그 눈금)", fontsize=13); ax.set_ylabel("길의 폭", fontsize=13)
-ax.set_ylim(1.6, 3.4); ax.tick_params(labelsize=12)
+ax.set_xlabel("걸음 (로그 눈금)", fontsize=13); ax.set_ylabel("m (가장 가까운 점까지 거리)", fontsize=13)
+ax.set_ylim(0, 1.9); ax.tick_params(labelsize=12)
 save(fig, "sv_trainpath.png")
 
 
@@ -519,20 +513,17 @@ step1_fig(X, y)
 
 
 def train_anim_slow(X, y, path="figs/sv_train_slow.mp4", fps=20):
-    """0걸음부터 천천히: 점 20개가 하나씩 더해지는 1걸음 → 길이 넓어짐 → 점이 닿을 때마다 멈춤"""
+    """0걸음부터 천천히: 점 20개가 하나씩 더해지는 1걸음 → 길이 1 로 → 가장 가까운 점이 민다"""
     from matplotlib.animation import FuncAnimation, FFMpegWriter
-    order = list(range(len(X)))
-    D = np.unique(np.r_[np.arange(2, 40), np.logspace(np.log10(40), np.log10(TRAIN_T), 200).astype(int), list(TOUCH.values())])
-    _, _, _, sh = train_svm(X, y, snaps=tuple(D))
-    ev = []                                                   # (종류, 값, 프레임 수)
-    ev += [("zero", None, 60)]
-    ev += [("add", k, 9) for k in order] + [("sum", None, 50), ("line", None, 70)]
+    D = np.unique(np.r_[np.arange(2, 40), np.logspace(np.log10(40), np.log10(MM_T), 200).astype(int), list(MM_FIRST.values())])
+    _, _, _, sh = train_maxmin(X, y, snaps=tuple(D))
+    ev = [("zero", None, 60)] + [("add", k, 9) for k in range(len(X))] + [("sum", None, 60), ("line", None, 70)]
     for t in D:
-        ev.append(("step", t, 45 if t in TOUCH.values() else (12 if t <= 3 else 1)))
-    ev.append(("step", TRAIN_T, 60))
+        ev.append(("step", t, 45 if t in MM_FIRST.values() else (25 if t <= 6 else 1)))
+    ev.append(("step", MM_T, 60))
     frames = [(k, v) for k, v, n in ev for _ in range(n)]
     fig = plt.figure(figsize=(7.2, 9.6)); ax = fig.add_axes([0.1, 0.27, 0.86, 0.6])
-    w1 = TRAIN_LR * (y[:, None] * X).sum(0)
+    raw = MM_LR * (y[:, None] * X).sum(0); w1 = raw / np.linalg.norm(raw)
 
     def head(a, b_, c, col="black"):
         fig.texts.clear()
@@ -546,35 +537,31 @@ def train_anim_slow(X, y, path="figs/sv_train_slow.mp4", fps=20):
         if kind == "zero":
             ring(X)
             head("0걸음", "w = (0, 0),  b = 0  →  선이 아직 없다",
-                 "어느 점을 넣어도 값 = 0 × x1 + 0 × x2 + 0 = 0\n여유 = 색 × 0 = 0  <  1   →  20개 모두 민다")
+                 "어느 점이든 값 = 0  →  모두 똑같이 가장 가깝다\n→  20개 모두 민다")
         elif kind == "add":
-            done = order[: v + 1]; s = (y[done, None] * X[done]).sum(0); p = X[v]
-            ring(X[done], GRAY); ring(p[None], RED if y[v] > 0 else BLUE)
-            op = "+" if y[v] > 0 else "−"
-            head("1걸음 계산 중", f"점 {v + 1} / 20:  {op} ({p[0]:g}, {p[1]:g})",
+            s = (y[: v + 1, None] * X[: v + 1]).sum(0); p = X[v]
+            ring(X[: v + 1], GRAY); ring(p[None], RED if y[v] > 0 else BLUE)
+            head("1걸음 계산 중", f"점 {v + 1} / 20:  {'+' if y[v] > 0 else '−'} ({p[0]:g}, {p[1]:g})",
                  f"빨강은 좌표를 더하고, 파랑은 뺀다\n합 = ({s[0]:.1f}, {s[1]:.1f})", RED if y[v] > 0 else BLUE)
         elif kind == "sum":
             ring(X, GRAY)
-            head("1걸음 계산 끝", "합 = (−44.1, 39.2)  =  10 × (빨강 평균 − 파랑 평균)",
-                 f"w = 0.02 × 합 = ({w1[0]:.2f}, {w1[1]:.2f})\nb = 0.02 × (빨강 10개 − 파랑 10개) = 0")
+            head("1걸음 계산 끝", "w = 0.05 × (−44.1, 39.2) = (−2.21, 1.96)",
+                 f"길이 2.95 > 1  →  2.95 로 나눠 길이 1 로\nw = ({w1[0]:.2f}, {w1[1]:.2f}),  b = 0")
         elif kind == "line":
             ax.plot(xs, -w1[0] * xs / w1[1], color="black", lw=2.5)
-            ax.annotate("", 3 * w1 + np.array([5, 5]), (5, 5), arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3, mutation_scale=20))
+            ax.annotate("", 2.5 * w1 + np.array([5, 5]), (5, 5), arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3, mutation_scale=20))
             ax.text(4.2, 6.3, "w 방향\n(빨강 쪽)", fontsize=13, color="#7a6a3f")
             head("1걸음 결과: 첫 선", f"w = ({w1[0]:.2f}, {w1[1]:.2f}),  b = 0",
-                 "경계 w1 x1 + w2 x2 + b = 0 은 w 에 수직\nb = 0 이라 원점 (0, 0) 을 지난다")
+                 "경계는 w 에 수직, 원점 (0, 0) 을 지난다")
         else:
-            w_, b_, act = sh[v] if v in sh else train_svm(X, y, snaps=(v,))[3][v]
-            street_wb(ax, w_, b_, X[act]); m = y * (X @ w_ + b_); k = np.argsort(m)[:3]
-            near = "   ".join(f"({X[j][0]:g}, {X[j][1]:g}) {m[j]:.2f}" for j in k)
-            if act.sum():
-                msg = f"여유 < 1 인 점 {act.sum()}개가 민다 (금색)  →  선이 돈다"; col = "#7a6a3f"
-            else:
-                msg = "여유 < 1 인 점 없음  →  w 만 줄인다 (길이 넓어짐)"; col = "black"
-            if v in TOUCH.values():
-                p = [q for q, t in TOUCH.items() if t == v][0]; msg = f"{v:,}걸음: ({p[0]:g}, {p[1]:g}) 이 길에 닿음!"; col = RED if p[1] > p[0] else BLUE
-            head(f"{v:,}걸음", f"w = ({w_[0]:.2f}, {w_[1]:.2f}),  b = {b_:.2f},  폭 {2 / np.linalg.norm(w_):.2f}",
-                 f"가장 가까운 세 점의 여유:  {near}\n{msg}", col)
+            w_, b_, act, m_ = sh[v]; street_m(ax, w_, b_, m_, X[act])
+            k = np.where(act)[0][0]; p = X[k]; col = RED if y[k] > 0 else BLUE
+            msg = f"가장 가까운 점 ({p[0]:g}, {p[1]:g}) 이 민다  →  길이 1 로"
+            if v in MM_FIRST.values():
+                msg = f"{v:,}걸음: ({p[0]:g}, {p[1]:g}) 이 처음으로 가장 가까워짐!"
+            if v == MM_T:
+                msg = "서포트 벡터 3개가 번갈아 민다\nm = 1.59 (SVM 답)"; col = "#7a6a3f"
+            head(f"{min(v, MM_T):,}걸음", f"w = ({w_[0]:.2f}, {w_[1]:.2f}),  b = {b_:.2f},  m = {m_:.2f}", msg, col)
     an = FuncAnimation(fig, draw, frames=len(frames))
     plt.rcParams["animation.ffmpeg_path"] = open(os.path.expanduser("~/Documents/manim_shorts/_env/ffpath")).read().strip()
     an.save(path, writer=FFMpegWriter(fps=fps, bitrate=2400)); draw(0); fig.savefig("figs/sv_train_slow_thumb.png"); plt.close(fig)
@@ -621,47 +608,41 @@ def centroid_figs(X, y):
     save(fig, "sv_centroid_vs.png")
 
 
-W_B = ((-4 / 9, 4 / 9), -1 / 9)                            # SVM 답 (약속 B): w = (−0.44, 0.44), b = −0.11
+W_B = ((-1 / np.sqrt(2), 1 / np.sqrt(2)), -1 / (4 * np.sqrt(2)))   # SVM 답 (‖w‖ = 1): w = (−0.71, 0.71), b = −0.18
 centroid_figs(X, y)
 
 
-def train_anim_bad(X, y, w0, b0, name, path, T=6000, lr=0.01, fps=20, ylim=10):
-    """엉뚱한 선에서 출발: 틀리거나 가까운 점 (여유 < 1) 이 w, b 를 밀어 선을 옮긴다. 학습률 고정 lr."""
+def train_anim_bad(X, y, w0, b0, name, path, T=6000, fps=20, ylim=10):
+    """엉뚱한 선에서 출발 (‖w‖ = 1): 가장 가까운 점 (틀린 점이면 값이 음수) 이 밀어 선을 옮긴다"""
     from matplotlib.animation import FuncAnimation, FFMpegWriter
-    w, b = np.array(w0, float), float(b0); hist = {}
-    for t in range(1, T + 1):
-        act = y * (X @ w + b) < 1; hist[t] = (w.copy(), b, act)
-        w, b = w - lr * (w - (y[act, None] * X[act]).sum(0)), b + lr * y[act].sum()
-    hist[T + 1] = (w.copy(), b, y * (X @ w + b) < 1)
-    S = list(range(1, 6)) + list(np.unique(np.logspace(np.log10(6), np.log10(T + 1), 150).astype(int)))
-    frames = [(s, 30 if s <= 5 else 1) for s in S] + [(T + 1, 60)]
-    frames = [(s, k) for s, n in frames for k in range(n)]
+    n0 = np.linalg.norm(w0); w0, b0 = np.array(w0, float) / n0, b0 / n0
+    S = list(range(1, 6)) + list(np.unique(np.r_[np.logspace(np.log10(6), np.log10(T), 150).astype(int), T]))
+    _, _, _, hist = train_maxmin(X, y, T=T, w0=w0, b0=b0, snaps=tuple(S))
+    frames = [(s, k) for s, n in [(s, 30 if s <= 5 else 1) for s in S] + [(T, 60)] for k in range(n)]
     fig = plt.figure(figsize=(7.2, 9.6)); ax = fig.add_axes([0.11, 0.25, 0.85, 0.6])
     eq = lambda w_, b_: f"x2 = {-w_[0] / w_[1]:.2f}·x1 {-b_ / w_[1]:+.2f}"
-    wsv, bsv = np.array(W_B[0]), W_B[1]
+    bsv = np.array([-1, 1]) / np.sqrt(2), -1 / (4 * np.sqrt(2))
 
     def draw(i):
-        s, k = frames[i]; w_, b_, act = hist[s]; ax.clear(); pts(ax, X, y); ax.set_ylim(0, ylim); ax.set_yticks(range(0, ylim + 1, 2))
-        if s > 1 and k < 30 and s <= 6:
-            pw, pb, _ = hist[s - 1]; ax.plot(xs, (-pb - pw[0] * xs) / pw[1], color=GRAY, ls="--", lw=1.5)
-        if s == T + 1:
-            ax.plot(xs, (-bsv - wsv[0] * xs) / wsv[1], color=GOLD, ls="--", lw=2)
+        s, k = frames[i]; w_, b_, act, m_ = hist[s]; ax.clear(); pts(ax, X, y); ax.set_ylim(0, ylim); ax.set_yticks(range(0, ylim + 1, 2))
+        if 1 < s <= 5 and k < 30:
+            pw, pb, _, _ = hist[s - 1]; ax.plot(xs, (-pb - pw[0] * xs) / pw[1], color=GRAY, ls="--", lw=1.5)
+        last = i >= len(frames) - 60
+        if last:
+            ax.plot(xs, (-bsv[1] - bsv[0][0] * xs) / bsv[0][1], color=GOLD, ls="--", lw=2)
         ax.plot(xs, (-b_ - w_[0] * xs) / w_[1], color="black", lw=2.8)
-        R, B = act & (y > 0), act & (y < 0)
-        ax.scatter(X[R, 0], X[R, 1], s=340, facecolors="none", edgecolors=RED, lw=2.5, zorder=4)
-        ax.scatter(X[B, 0], X[B, 1], s=340, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=4)
+        j = np.where(act)[0][0]; p = X[j]; col = RED if y[j] > 0 else BLUE
+        ax.scatter(*p, s=340, facecolors="none", edgecolors=col, lw=2.5, zorder=4)
         fig.texts.clear()
-        fig.text(0.5, 0.955, f"{name}  ·  {min(s, T):,}걸음", ha="center", fontsize=21, weight="bold")
-        fig.text(0.5, 0.905, f"선: {eq(w_, b_)}", ha="center", fontsize=17)
-        if s == T + 1:
-            msg = "금색 점선 = SVM 답  x2 = 1.00·x1 +0.25\n가까이 도착 (학습률 고정이라 조금 흔들림)"; col = "#7a6a3f"
+        fig.text(0.5, 0.955, f"{name}  ·  {s:,}걸음", ha="center", fontsize=21, weight="bold")
+        fig.text(0.5, 0.905, f"선: {eq(w_, b_)}   m = {m_:.2f}", ha="center", fontsize=17)
+        if last:
+            msg = "금색 점선 = SVM 답  x2 = 1.00·x1 +0.25\n같은 자리에 도착"; col = "#7a6a3f"
         else:
-            parts = []
-            if R.sum(): parts.append(f"빨강 {R.sum()}개: b ↑ , w += 좌표  →  선이 파랑 쪽으로")
-            if B.sum(): parts.append(f"파랑 {B.sum()}개: b ↓ , w −= 좌표  →  선이 빨강 쪽으로")
-            msg = "\n".join(parts) if parts else "미는 점 없음  →  w 만 줄인다 (길이 넓어짐)"
-            col = RED if R.sum() > B.sum() else (BLUE if B.sum() else "black")
-        fig.text(0.5, 0.115, "동그라미 = 틀렸거나 너무 가까운 점 (여유 < 1)", ha="center", fontsize=13, color="#555")
+            side = "파랑" if y[j] > 0 else "빨강"
+            msg = (f"값이 가장 작은 점 ({p[0]:g}, {p[1]:g}){' (틀림, 값 < 0)' if m_ < 0 else ''}\n"
+                   f"→ 선을 {side} 쪽으로 밀어낸다")
+        fig.text(0.5, 0.115, "동그라미 = 이번 걸음에 가장 가까운 점 (값이 가장 작은 점)", ha="center", fontsize=13, color="#555")
         fig.text(0.5, 0.035, msg, ha="center", fontsize=15, color=col, linespacing=1.5)
     an = FuncAnimation(fig, draw, frames=len(frames))
     plt.rcParams["animation.ffmpeg_path"] = open(os.path.expanduser("~/Documents/manim_shorts/_env/ffpath")).read().strip()
