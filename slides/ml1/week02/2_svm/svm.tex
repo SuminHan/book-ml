@@ -321,12 +321,20 @@ SVM 답 & $-0.71$ & $0.71$ & $-0.18$ & 1.59 &
 \note{같은 학습을 걸음마다 m, 가장 가까운 점까지의 거리로 그렸습니다. 가로축은 로그 눈금입니다. 처음엔 가장 가까운 점이 밀 때마다 선이 너무 돌아서 반대편 점이 가까워지니 m이 크게 흔들립니다. 2걸음 뒤에는 0.28까지 떨어집니다. 학습률이 걸음마다 줄면서 흔들림이 작아지고, 수백 걸음이면 SVM 답 1.59 근처에서 거의 멈춥니다.}
 \end{frame}
 
+% --- 한 걸음씩 애니메이션 (영상 쪽: 제목 + 썸네일 + 링크만)
+\begin{frame}{한 걸음씩: 클릭 $\to$ 선 이동}
+\vfill
+\centering
+\href{run:figs/sv_train_click.mp4}{\includegraphics[height=0.72\textheight]{sv_train_click_thumb.png}}
+\vfill
+\note{학습 한 걸음을 네 단계로 나눠 보여 주는 영상입니다. 첫째, 점마다 값을 잽니다. 점 옆 숫자가 경계까지 거리입니다. 둘째, 값이 가장 작은 점을 클릭합니다. 그 값이 지금의 m입니다. 셋째, 그 점이 밉니다. 빨간 점이면 w에 학습률 곱하기 자기 좌표를 더하고 b에 b 학습률을 더해서 선이 그 점에서 멀어집니다. 넷째, w의 길이가 1을 넘으면 w와 b를 길이로 나눕니다. 이때 선은 그대로이고 숫자만 바뀝니다. 1걸음은 20개가 모두 같은 값 0이라 다 같이 밀고, 2걸음에는 빨간 점 3.5, 6이 밀었더니 선이 너무 돌아 m이 0.28로 줄어듭니다. 6걸음까지 이렇게 천천히 보고, 그 뒤는 빠르게 2만 걸음까지 갑니다.}
+\end{frame}
+
 % --- 학습 애니메이션 (영상 쪽: 제목 + 썸네일 + 링크만)
 \begin{frame}{학습 애니메이션}
 \vfill
 \centering
-\href{run:figs/sv_train_slow.mp4}{\includegraphics[height=0.72\textheight]{sv_train_slow_thumb.png}}\\[0.3em]
-\href{run:figs/sv_train_slow.mp4}{\textcolor{ksagolddk}{▶ figs/sv\_train\_slow.mp4}}
+\href{run:figs/sv_train_slow.mp4}{\includegraphics[height=0.72\textheight]{sv_train_slow_thumb.png}}
 \vfill
 \note{0걸음부터 2만 걸음까지 영상입니다. 0걸음에는 w와 b가 0이라 선이 없고 모든 점의 값이 0이라 20개가 모두 밉니다. 1걸음에서는 점 20개가 하나씩, 빨강은 자기 좌표를 더하고 파랑은 빼서 합이 마이너스 44.1, 39.2가 되는 과정을 보여 주고, 0.05를 곱한 뒤 길이 2.95로 나눠 길이를 1로 맞춥니다. 그 뒤로는 걸음마다 w, b, m과 그 걸음에 가장 가까워 미는 점이 동그라미로 나옵니다. 어떤 점이 처음으로 가장 가까워질 때마다 잠깐 멈춥니다.}
 \end{frame}
@@ -335,8 +343,7 @@ SVM 답 & $-0.71$ & $0.71$ & $-0.18$ & 1.59 &
 \begin{frame}{엉뚱한 선에서 출발하면}
 \vfill
 \centering
-\href{run:figs/sv_train_bad.mp4}{\includegraphics[height=0.72\textheight]{sv_bad_up_thumb.png}}\\[0.3em]
-\href{run:figs/sv_train_bad.mp4}{\textcolor{ksagolddk}{▶ figs/sv\_train\_bad.mp4}}
+\href{run:figs/sv_train_bad.mp4}{\includegraphics[height=0.72\textheight]{sv_bad_up_thumb.png}}
 \vfill
 \note{출발점이 엉뚱해도 같은 규칙으로 선이 제자리를 찾아갑니다. 첫 영상은 x2 = x1 + 10, 모든 점보다 위에 있는 선에서 출발합니다. 빨간 점이 모두 파랑 쪽에 있어 값이 음수, 틀렸습니다. 값이 가장 작은 빨간 점이 밉니다. 자기 좌표를 w에 더하고 b를 올리니 그 점의 값이 커지고, 값이 0인 선은 파랑 쪽으로 내려옵니다. 파란 점이 가장 가까우면 반대로 선을 빨강 쪽으로 올립니다. 이렇게 가장 가까운 점이 번갈아 밀다가 금색 점선, SVM 답에 도착합니다. 둘째 영상은 x2 = 3 x1, 가파른 선에서 출발해 같은 방식으로 눕혀집니다.}
 \end{frame}
