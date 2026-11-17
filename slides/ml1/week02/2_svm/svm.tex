@@ -223,16 +223,16 @@
 {\large\begin{tabular}{rl}
 \textbf{1.} & 점마다 값 $y_i(\mathbf{w}\cdot\mathbf{x}_i + b)$ \;= 경계까지 거리 (because $\lVert\mathbf{w}\rVert = 1$)\\
 \textbf{2.} & 값이 \kq{가장 작은 점} $k = \arg\min_i\, y_i(\mathbf{w}\cdot\mathbf{x}_i + b)$ 가 민다:\\
- & $\mathbf{w} \leftarrow \mathbf{w} + \eta_w\, y_k \mathbf{x}_k$, \quad $b \leftarrow b + \eta_b\, y_k$\\
+ & $\mathbf{w} \leftarrow \mathbf{w} + \eta_1\, y_k \mathbf{x}_k$, \quad $b \leftarrow b + \eta_2\, y_k$\\
 \textbf{3.} & $\lVert\mathbf{w}\rVert > 1$ 이면 $\mathbf{w}, b$ 를 $\lVert\mathbf{w}\rVert$ 로 나눈다 \;(길이 1 로)
 \end{tabular}}\\[0.8em]
-{\large 밀고 나면 그 점의 값: \; $y_k(\mathbf{w}\cdot\mathbf{x}_k + b) + \eta_w\lVert\mathbf{x}_k\rVert^2 + \eta_b$ \;\; $\to$ 항상 커진다}\\[0.6em]
-{\normalsize $\eta_w = 0.05/\sqrt{\text{걸음}}$, \quad $\eta_b = 5\,\eta_w$}
+{\large 밀고 나면 그 점의 값: \; $y_k(\mathbf{w}\cdot\mathbf{x}_k + b) + \eta_1\lVert\mathbf{x}_k\rVert^2 + \eta_2$ \;\; $\to$ 항상 커진다}\\[0.6em]
+{\normalsize $\eta_1 = 0.05/\sqrt{\text{걸음}}$, \quad $\eta_2 = 5\,\eta_1$}
 \vfill
 \note{한 걸음은 세 단계입니다. 첫째, 점 20개를 넣어 값, 라벨 곱하기 w x 더하기 b를 계산합니다. w의 길이가 1이니 이 값이 곧 경계까지의 거리이고, 틀린 점은 음수입니다. 둘째, 값이 가장 작은 점 하나가 밉니다. 빨간 점이면 w에 자기 좌표를 학습률만큼 더하고 b를 올리고, 파란 점이면 좌표를 빼고 b를 내립니다. 그러면 그 점의 값이 커집니다. 실제로 바꾼 w, b를 넣어 보면 y k 제곱이 1이라서 값이 w 학습률 곱하기 좌표 길이 제곱, 더하기 b 학습률만큼 늘어납니다. 빨강이든 파랑이든 항상 양수입니다. 즉 가장 가까운 점이 경계를 자기 반대쪽으로 밀어내는 것입니다. 우리가 키우려는 m이 바로 이 가장 작은 값이니, 그 점을 키우는 것이 m을 키우는 방향입니다. 셋째, w의 길이가 1을 넘으면 w와 b를 길이로 나눠 다시 1로 맞춥니다. 직선은 그대로이고 크기만 맞추는 것입니다. w와 b는 학습률을 따로 둡니다. b는 좌표에 비해 너무 느리게 움직여서 b 학습률을 w의 5배로 줬습니다. 학습률은 걸음이 갈수록 줄입니다. 최솟값을 키우는 방향으로 조금씩 가는 것이라 경사하강법의 한 종류, 정확히는 서브그래디언트 방법입니다.}
 \end{frame}
 
-\begin{frame}{왜 $\eta_b = 5\,\eta_w$ 인가: $b$ 는 너무 느리다}
+\begin{frame}{왜 $\eta_2 = 5\,\eta_1$ 인가: $b$ 는 너무 느리다}
 \vfill
 \centering
 {\large 같은 학습률이면 $\mathbf{w}$ 는 $\eta \times$ 좌표 (2$\sim$8) 만큼, \; $b$ 는 $\eta \times 1$ 만큼 움직인다}\\[0.4em]
@@ -535,11 +535,11 @@ RBF & $\exp\!\big(-\gamma \lVert \mathbf{x}-\mathbf{x}' \rVert^2\big)$
 \vfill
 \centering
 {\large 빨강 ($y=+1$): $A(6, 3)$, \; $B(2, 5)$ \qquad 파랑 ($y=-1$): $C(0, 0)$}\\[0.5em]
-{\large 지금 선: $\mathbf{w} = (0, 1)$, \; $b = -2$ \quad ($x_2 = 2$), \quad $\eta_w = 0.2$, \; $\eta_b = 1$}\\[0.9em]
+{\large 지금 선: $\mathbf{w} = (0, 1)$, \; $b = -2$ \quad ($x_2 = 2$), \quad $\eta_1 = 0.2$, \; $\eta_2 = 1$}\\[0.9em]
 \raggedright
 \begin{enumerate}
 \item[(a)] 세 점의 값 $y_i(\mathbf{w}\cdot\mathbf{x}_i + b)$ 와 $m$ 은? 어느 점이 미나?\vskip0.5em
-\item[(b)] $\mathbf{w} \leftarrow \mathbf{w} + \eta_w\, y_k \mathbf{x}_k$, \; $b \leftarrow b + \eta_b\, y_k$ 를 계산하라.\vskip0.5em
+\item[(b)] $\mathbf{w} \leftarrow \mathbf{w} + \eta_1\, y_k \mathbf{x}_k$, \; $b \leftarrow b + \eta_2\, y_k$ 를 계산하라.\vskip0.5em
 \item[(c)] $\lVert\mathbf{w}\rVert$ 는? 길이 1 로 맞추면 $\mathbf{w}, b$ 는?\vskip0.5em
 \item[(d)] 새 선에서 세 점의 값과 $m$ 은? 다음 걸음엔 어느 점이 미나?
 \end{enumerate}
