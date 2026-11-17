@@ -776,3 +776,52 @@ def train_anim_click(X, y, path="figs/sv_train_click.mp4", fps=20, slow=(1, 2, 3
 
 if "click" in sys.argv:
     print("click", train_anim_click(X, y)); sys.exit()
+
+
+def fold_fig(X, y, w, b, path="sv_fold.png"):
+    """거울로 접기: y_i 를 곱하는 것 = 파란 점을 경계(거울)에 비춰 빨강 쪽으로 넘기기. 접은 뒤 가장 가까운 거리 = m"""
+    w = np.asarray(w, float); w, b = w / np.linalg.norm(w), b / np.linalg.norm(w)
+    v = y * (X @ w + b); m = v.min(); sv = v < m + 0.02
+    Xf = X.copy(); bl = y < 0; Xf[bl] = X[bl] - 2 * (X[bl] @ w + b)[:, None] * w
+    fig, axs = plt.subplots(1, 2, figsize=(11.5, 5.4))
+    for ax, ttl in zip(axs, ("접기 전", "접은 뒤: 파랑을 경계(거울)에 비춰 넘김")):
+        ax.set_title(ttl, fontsize=16)
+    pts(axs[0], X, y); street_m(axs[0], w, b, m, X[sv])
+    ax = axs[1]; pts(ax, X[~bl], y[~bl])
+    ax.scatter(Xf[bl, 0], Xf[bl, 1], s=80, facecolors="none", edgecolors=BLUE, marker="s", lw=2, zorder=3)
+    for p, q in zip(X[bl], Xf[bl]):
+        ax.plot([p[0], q[0]], [p[1], q[1]], color=BLUE, alpha=0.15, lw=1)
+    ax.scatter(X[bl, 0], X[bl, 1], s=40, color=BLUE, marker="s", alpha=0.15)
+    s = np.linspace(-30, 30, 2); d = np.array([-w[1], w[0]])
+    seg = lambda c: (c - b) * w[:, None] + d[:, None] * s
+    ax.plot(*seg(0), color="black", lw=2.5); ax.plot(*seg(m), "--", color=GOLD, lw=2)
+    Q = np.where(sv)[0]; ax.scatter(Xf[Q, 0], Xf[Q, 1], s=330, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4)
+    ax.text(9.7, 0.35, f"접은 뒤 가장 가까운 거리\nm = {m:.2f}", fontsize=13, color="#7a6a3f", ha="right", bbox=dict(fc="white", ec="none", alpha=0.9))
+    save(fig, path)
+
+
+def push_fig(X, y, t=2, path="sv_push.png"):
+    """한 번 밀기 = 평행이동 (b) + 회전 (w). 실제 학습 t 걸음째 숫자."""
+    _, _, _, sh = train_maxmin(X, y, snaps=(t,), T=t)
+    w, b, act, m = sh[t]; k = np.where(act)[0][0]; xk, yk = X[k], y[k]
+    e1 = MM_LR / np.sqrt(t); e2 = MM_SB * e1
+    wb, bb = w, b + e2 * yk                       # b 만
+    wf, bf = w + e1 * yk * xk, b + e2 * yk        # w 까지
+    dist = lambda w_, b_: yk * (w_ @ xk + b_) / np.linalg.norm(w_)
+    fig, ax = plt.subplots(figsize=(6.6, 6.0)); pts(ax, X, y)
+    def L(w_, b_, **kw):
+        ax.plot(xs, -(w_[0] * xs + b_) / w_[1], **kw)
+    L(w, b, color=GRAY, lw=2, ls=":", label=f"전: 거리 {dist(w, b):.2f}")
+    L(wb, bb, color=GOLD, lw=2.5, ls="--", label=rf"$b$ 만 ($+\eta_2 y_k$): 평행이동, 거리 {dist(wb, bb):.2f}")
+    L(wf, bf, color="black", lw=2.8, label=rf"$\mathbf{{w}}$ 까지 ($+\eta_1 y_k \mathbf{{x}}_k$): 회전 추가, 거리 {dist(wf, bf):.2f}")
+    ax.scatter(*xk, s=380, facecolors="none", edgecolors=RED if yk > 0 else BLUE, lw=3, zorder=5)
+    ax.text(xk[0] - 0.3, xk[1] + 0.45, f"k = ({xk[0]:g}, {xk[1]:g})", fontsize=13, ha="right", color=RED if yk > 0 else BLUE)
+    ax.set_xlim(0, 10); ax.set_ylim(0, 10)
+    ax.legend(loc="lower left", bbox_to_anchor=(0, 1.0), frameon=False, fontsize=12.5)
+    save(fig, path)
+    return dist(w, b), dist(wb, bb), dist(wf, bf)
+
+
+if "fold" in sys.argv:
+    fold_fig(X, y, *W_B)
+    print(push_fig(X, y)); sys.exit()
