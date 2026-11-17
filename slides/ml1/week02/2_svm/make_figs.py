@@ -838,14 +838,14 @@ def push_dir_fig(X, y, t=2, path="sv_push_dir.png", S=2.2):
     def L(ax, w_, b_, **kw):
         ax.plot(xs, -(w_[0] * xs + b_) / w_[1], **kw)
     fig, axs = plt.subplots(1, 2, figsize=(12.4, 6.0))
-    ax = axs[0]; pts(ax, X, y); ax.set_title(r"① $b \leftarrow b + \eta_2 y_k$ : 선에 수직으로", fontsize=15)
+    ax = axs[0]; pts(ax, X, y); ax.set_title(r"① $b' = b + \eta_2 y_k$ : 선에 수직으로", fontsize=15)
     L(ax, w, b, color=GRAY, lw=2, ls=":"); L(ax, w, bb, color="black", lw=2.6)
     for s_ in (-3, 0, 3):
         p = foot + s_ * np.array([-u[1], u[0]]); q = p - (bb - b) * u / np.linalg.norm(w)
         arw(ax, p, p + (q - p) * 8, GOLD)
     ax.scatter(*xk, s=380, facecolors="none", edgecolors=RED, lw=3, zorder=5)
     ax.text(0.3, 9.4, "점 $k$ 반대쪽으로 평행이동 (화살표 8배)", fontsize=12.5, color="#7a6a3f")
-    ax = axs[1]; pts(ax, X, y); ax.set_title(r"② $\mathbf{w} \leftarrow \mathbf{w} + \eta_1 y_k \mathbf{x}_k$ : 법선이 돈다", fontsize=15)
+    ax = axs[1]; pts(ax, X, y); ax.set_title(r"② $\mathbf{w}' = \mathbf{w} + \eta_1 y_k \mathbf{x}_k$ : 법선이 돈다", fontsize=15)
     L(ax, w, b, color=GRAY, lw=2, ls=":"); L(ax, wf, b, color="black", lw=2.6)
     ax.plot([0, xk[0]], [0, xk[1]], color=RED, ls="--", lw=1.4); ax.text(xk[0] * 0.45 + 0.15, xk[1] * 0.45 - 0.55, r"$\mathbf{x}_k$", color=RED, fontsize=15)
     q0 = np.array([6.6, 7.4]); o = q0 - (w @ q0 + b) * u / np.linalg.norm(w); tip = o + S * u; add = S * e1 * yk * xk * 3; tip2 = tip + add
