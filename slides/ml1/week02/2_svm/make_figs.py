@@ -26,6 +26,7 @@ def pts(ax, X=X, y=y, lim=L):
     ax.scatter(X[y > 0, 0], X[y > 0, 1], s=80, color=RED, zorder=3); ax.scatter(X[y < 0, 0], X[y < 0, 1], s=80, color=BLUE, marker="s", zorder=3)
     ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim); ax.set_aspect("equal"); ax.set_xticks(range(-2, 3)); ax.set_yticks(range(-2, 3))
     ax.tick_params(labelsize=11, length=3); ax.set_xlabel("$x_1$", fontsize=13, labelpad=1); ax.set_ylabel("$x_2$", fontsize=13, rotation=0, labelpad=8)
+    ax.axhline(0, color=GRAY, lw=0.9, zorder=0); ax.axvline(0, color=GRAY, lw=0.9, zorder=0)          # x1 = 0, x2 = 0 축
 
 
 def street_m(ax, w, b, m, ring=(), ring_col=GOLD, s_len=10):
@@ -69,7 +70,7 @@ def fig_raw_z():
     A = np.array(RAW_RED + RAW_BLUE, float)
     fig, axs = plt.subplots(1, 2, figsize=(11.5, 5.4))
     ax = axs[0]; ax.scatter(A[y > 0, 0], A[y > 0, 1], s=80, color=RED, zorder=3); ax.scatter(A[y < 0, 0], A[y < 0, 1], s=80, color=BLUE, marker="s", zorder=3)
-    ax.scatter(*RAW_MU, s=420, marker="+", color="black", lw=3, zorder=5); ax.text(RAW_MU[0] - 0.3, RAW_MU[1] - 1.0, f"평균 ({RAW_MU[0]}, {RAW_MU[1]})", fontsize=13)
+    ax.scatter(*RAW_MU, s=420, marker="+", color="black", lw=3, zorder=5); ax.text(RAW_MU[0] - 2.2, RAW_MU[1] - 1.0, f"평균 ({RAW_MU[0]}, {RAW_MU[1]})", fontsize=13)
     ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.set_aspect("equal"); ax.set_xticks(range(0, 11, 2)); ax.set_yticks(range(0, 11, 2))
     ax.set_xlabel("원래 $x_1$"); ax.set_ylabel("원래 $x_2$"); ax.set_title(f"원래 값 (표준편차 {RAW_SD[0]}, {RAW_SD[1]})", fontsize=15)
     ax = axs[1]; pts(ax); ax.scatter(0, 0, s=420, marker="+", color="black", lw=3, zorder=5); ax.text(0.12, 0.12, "평균 (0, 0)", fontsize=13)
@@ -115,7 +116,7 @@ def fig_centroid():
     for ax, (w_, b_, ttl) in zip(axs, ((wc, bc, "평균의 한가운데"), (WA, BA, "SVM"))):
         pts(ax); o = line_dist(ax, w_, b_, X, y)
         for s, (p, dd) in o.items():
-            ax.text(p[0] + (0.25 if s < 0 else -0.95), p[1] + (-0.45 if s < 0 else 0.25), f"{dd:.2f}", fontsize=20, weight="bold", color=RED if s > 0 else BLUE)
+            ax.text(p[0] + (-0.85 if s < 0 else -0.95), p[1] + (-0.55 if s < 0 else 0.25), f"{dd:.2f}", fontsize=20, weight="bold", color=RED if s > 0 else BLUE)
         ax.set_title(ttl, fontsize=18)
     line(axs[1], wc, bc, color=GRAY, ls="--", lw=1.5)
     save(fig, "sv_centroid_vs.png")
@@ -149,17 +150,17 @@ def fig_hyper():
 
 def fig_street():
     fig, ax = plt.subplots(figsize=(5.8, 5.8)); pts(ax); svm_street(ax, M)
-    a = np.array(SV[1]); b = a - 2 * MA * WA
+    a = np.array(SV[1]); b = a + 2 * MA * WA
     ax.annotate("", b, a, arrowprops=dict(arrowstyle="<->", lw=2, shrinkA=0, shrinkB=0))
-    ax.text(b[0] + 0.1, b[1] - 0.1, f"길 폭 2m = {2 * MA:.2f}", fontsize=15, fontweight="bold", ha="left", va="top")
+    ax.text(-2.05, -0.75, f"길 폭 2m = {2 * MA:.2f}", fontsize=15, fontweight="bold", ha="left", va="top")
     save(fig, "sv_street.png")
-    X2 = X.copy(); X2[RED_PTS.index(FAR_MOVE[0])] = FAR_MOVE[1]
+    X2 = X.copy(); X2[10 + BLUE_PTS.index(FAR_MOVE[0])] = FAR_MOVE[1]
     M2 = SVC(kernel="linear", C=1e6).fit(X2, y)
     fig, axs = plt.subplots(1, 2, figsize=(10, 5))
     pts(axs[0]); svm_street(axs[0], M); axs[0].set_title("처음", fontsize=16)
-    pts(axs[1], X2); svm_street(axs[1], M2, X2); axs[1].set_title("멀리 있는 빨강 점을 옮겨도", fontsize=16)
-    axs[1].annotate("", FAR_MOVE[1], FAR_MOVE[0], arrowprops=dict(arrowstyle="->", lw=2, color=RED, shrinkA=9, shrinkB=9))
-    axs[1].add_patch(plt.Circle(FAR_MOVE[0], 0.13, fill=False, ls="--", lw=2, ec=RED, zorder=4)); axs[1].text(FAR_MOVE[0][0] + 0.2, FAR_MOVE[0][1] - 0.1, "원래 자리", fontsize=12, color=RED)
+    pts(axs[1], X2); svm_street(axs[1], M2, X2); axs[1].set_title("멀리 있는 파랑 점을 옮겨도", fontsize=16)
+    axs[1].annotate("", FAR_MOVE[1], FAR_MOVE[0], arrowprops=dict(arrowstyle="->", lw=2, color=BLUE, shrinkA=9, shrinkB=9))
+    axs[1].add_patch(plt.Circle(FAR_MOVE[0], 0.13, fill=False, ls="--", lw=2, ec=BLUE, zorder=4)); axs[1].text(FAR_MOVE[0][0] - 1.05, FAR_MOVE[0][1] - 0.1, "원래 자리", fontsize=12, color=BLUE)
     save(fig, "sv_move.png")
 
 
@@ -268,17 +269,14 @@ def fig_zscore(T=MM_T):
 
 
 def fig_step1():
-    mr, mb = X[y > 0].mean(0), X[y < 0].mean(0); w1 = np.array(STEP1_W)
+    """1걸음 뒤 첫 선: w = 0.05 × Σ y_i x_i 를 길이 1 로, b = 0 이라 원점을 지난다"""
+    w1 = np.array(STEP1_W)
     fig, ax = plt.subplots(figsize=(6.2, 6.2)); pts(ax)
-    ax.scatter(*mr, s=420, marker="*", color=RED, edgecolors="black", lw=1.2, zorder=5)
-    ax.scatter(*mb, s=420, marker="*", color=BLUE, edgecolors="black", lw=1.2, zorder=5)
-    ax.annotate(f"빨강 평균\n({mr[0]:.2f}, {mr[1]:.2f})", mr, (-2.1, -1.9), fontsize=14, color=RED, weight="bold", arrowprops=dict(arrowstyle="-", color=RED, lw=1))
-    ax.annotate(f"파랑 평균\n({mb[0]:.2f}, {mb[1]:.2f})", mb, (0.9, 1.3), fontsize=14, color=BLUE, weight="bold", arrowprops=dict(arrowstyle="-", color=BLUE, lw=1))
-    ax.annotate("", mr, mb, arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=3, mutation_scale=22))
-    ax.text(0.05, 0.25, "w 방향", fontsize=15, color=GOLDT, weight="bold")
+    arw(ax, (0, 0), 1.3 * w1, GOLD, 3.5)
+    ax.text(*(1.3 * w1 + np.array([-0.35, 0.12])), f"$\\mathbf{{w}}$ = ({w1[0]:.2f}, {w1[1]:.2f})", fontsize=15, color=GOLDT, weight="bold")
     line(ax, w1, 0.0, color="black", lw=2.5)
-    ax.scatter(0, 0, s=60, color="black", zorder=5)
-    ax.set_title("1걸음 뒤 첫 선 (원점 지남)", fontsize=16)
+    ax.scatter(0, 0, s=60, color="black", zorder=5); ax.text(0.1, -0.25, "(0, 0)", fontsize=13)
+    ax.set_title("1걸음 뒤 첫 선 ($b = 0$, 원점 지남)", fontsize=16)
     save(fig, "sv_step1.png")
 
 
@@ -316,14 +314,14 @@ def fig_train():
 
 
 def fig_soft():
-    Xo = np.r_[X, [OUTLIER]]; yo = np.r_[y, [-1]]
+    Xo = np.r_[X, [OUTLIER]]; yo = np.r_[y, [1]]
     fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-    pts(axs[0], Xo, yo); axs[0].scatter(*OUTLIER, s=380, facecolors="none", edgecolors=RED, lw=2.5, zorder=4)
+    pts(axs[0], Xo, yo); axs[0].scatter(*OUTLIER, s=380, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=4)
     axs[0].set_title("겹치면: 가르는 직선이 없다", fontsize=16)
-    Xn = np.r_[X, [NEWPT]]; yn = np.r_[y, -1]; Mn = SVC(kernel="linear", C=1e6).fit(Xn, yn)
+    Xn = np.r_[X, [NEWPT]]; yn = np.r_[y, 1]; Mn = SVC(kernel="linear", C=1e6).fit(Xn, yn)
     pts(axs[1], Xn, yn); svm_street(axs[1], Mn, Xn); line(axs[1], WA, BA, color=GRAY, lw=2, ls=":")
-    axs[1].scatter(*NEWPT, s=380, facecolors="none", edgecolors=RED, lw=2.5, zorder=5)
-    axs[1].set_title(f"파란 점 하나 추가: m {MA:.2f} → {M_NEW}", fontsize=16)
+    axs[1].scatter(*NEWPT, s=380, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=5)
+    axs[1].set_title(f"빨간 점 하나 추가: m {MA:.2f} → {M_NEW}", fontsize=16)
     save(fig, "sv_sensitive.png")
     Cs = sorted(BUDGET, reverse=True)
     ms = SVC(kernel="linear", C=Cs[-1]).fit(Xo, yo); eps = np.maximum(0, 1 - yo * ms.decision_function(Xo))
@@ -331,9 +329,9 @@ def fig_soft():
     lab = []
     for i in np.where(eps > 1e-3)[0]:
         c = RED if eps[i] > 1 else "#e8590c"; p = Xo[i]
-        off = np.array([-0.95, 0.35]) if yo[i] > 0 else np.array([0.25, -0.4])
+        off = np.array([-0.95, 0.35]) if yo[i] > 0 else np.array([0.5, -0.2])
         if eps[i] > 1:
-            off = np.array([-0.3, -0.85])
+            off = np.array([-0.95, -0.55])
         ax.annotate(f"ε {eps[i]:.2f}", p, p + off, fontsize=12, fontweight="bold", color=c, zorder=6,
                     bbox=dict(fc="white", ec="none", pad=1, alpha=0.9), arrowprops=dict(arrowstyle="-", color=c, lw=1.2))
         lab.append((tuple(p), round(eps[i], 2)))
