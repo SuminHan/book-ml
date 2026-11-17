@@ -115,7 +115,7 @@ def fig_centroid():
     ax.text(0.9, -2.05, "□ = 파랑 $\\times (-1)$", fontsize=13, color=BLUE)
     save(fig, "sv_centroid.png")
     fig, axs = plt.subplots(1, 2, figsize=(12.4, 6.2))
-    for ax, (w_, b_, ttl) in zip(axs, ((a, 0.0, "모든 점의 평균"), (WA, BA, "SVM"))):
+    for ax, (w_, b_, ttl) in zip(axs, ((a, 0.0, "모든 벡터의 평균"), (WA, BA, "SVM"))):
         pts(ax); o = line_dist(ax, w_, b_, X, y)
         for s, (p, dd) in o.items():
             ax.text(p[0] + (-0.85 if s < 0 else -0.95), p[1] + (-0.55 if s < 0 else 0.25), f"{dd:.2f}", fontsize=20, weight="bold", color=RED if s > 0 else BLUE)
