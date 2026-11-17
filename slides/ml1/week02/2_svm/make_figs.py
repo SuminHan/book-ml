@@ -825,3 +825,38 @@ def push_fig(X, y, t=2, path="sv_push.png"):
 if "fold" in sys.argv:
     fold_fig(X, y, *W_B)
     print(push_fig(X, y)); sys.exit()
+
+
+def push_dir_fig(X, y, t=2, path="sv_push_dir.png", S=2.2):
+    """미는 방향: 왼쪽 ① b 만 → 선에 수직으로 평행이동, 오른쪽 ② w 에 η1 y_k x_k 를 더함 → 법선 w 가 x_k 쪽으로 돈다 (화살표 길이 S 배)"""
+    _, _, _, sh = train_maxmin(X, y, snaps=(t,), T=t)
+    w, b, act, m = sh[t]; k = np.where(act)[0][0]; xk, yk = X[k], y[k]
+    e1 = MM_LR / np.sqrt(t); e2 = MM_SB * e1
+    wf = w + e1 * yk * xk; bb = b + e2 * yk
+    u = w / np.linalg.norm(w); foot = xk - (w @ xk + b) * u
+    arw = lambda ax, p, q, col, lw=3: ax.annotate("", q, p, arrowprops=dict(arrowstyle="-|>", color=col, lw=lw, mutation_scale=22), zorder=6)
+    def L(ax, w_, b_, **kw):
+        ax.plot(xs, -(w_[0] * xs + b_) / w_[1], **kw)
+    fig, axs = plt.subplots(1, 2, figsize=(12.4, 6.0))
+    ax = axs[0]; pts(ax, X, y); ax.set_title(r"① $b \leftarrow b + \eta_2 y_k$ : 선에 수직으로", fontsize=15)
+    L(ax, w, b, color=GRAY, lw=2, ls=":"); L(ax, w, bb, color="black", lw=2.6)
+    for s_ in (-3, 0, 3):
+        p = foot + s_ * np.array([-u[1], u[0]]); q = p - (bb - b) * u / np.linalg.norm(w)
+        arw(ax, p, p + (q - p) * 8, GOLD)
+    ax.scatter(*xk, s=380, facecolors="none", edgecolors=RED, lw=3, zorder=5)
+    ax.text(0.3, 9.4, "점 $k$ 반대쪽으로 평행이동 (화살표 8배)", fontsize=12.5, color="#7a6a3f")
+    ax = axs[1]; pts(ax, X, y); ax.set_title(r"② $\mathbf{w} \leftarrow \mathbf{w} + \eta_1 y_k \mathbf{x}_k$ : 법선이 돈다", fontsize=15)
+    L(ax, w, b, color=GRAY, lw=2, ls=":"); L(ax, wf, b, color="black", lw=2.6)
+    ax.plot([0, xk[0]], [0, xk[1]], color=RED, ls="--", lw=1.4); ax.text(xk[0] * 0.45 + 0.15, xk[1] * 0.45 - 0.55, r"$\mathbf{x}_k$", color=RED, fontsize=15)
+    q0 = np.array([6.6, 7.4]); o = q0 - (w @ q0 + b) * u / np.linalg.norm(w); tip = o + S * u; add = S * e1 * yk * xk * 3; tip2 = tip + add
+    arw(ax, o, tip, GRAY); ax.text(*(tip + np.array([-0.55, -0.45])), r"$\mathbf{w}$", fontsize=15, color=GRAY)
+    arw(ax, tip, tip2, RED, 2.5); ax.text(*(tip + add / 2 + np.array([-1.55, 0.0])), r"$+\eta_1 \mathbf{x}_k$", fontsize=14, color=RED, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    arw(ax, o, tip2, "black")
+    ax.text(*(tip2 + np.array([0.15, -0.1])), "새 $\\mathbf{w}$", fontsize=14)
+    ax.scatter(*xk, s=380, facecolors="none", edgecolors=RED, lw=3, zorder=5)
+    ax.set_ylim(0, 11); ax.set_yticks(range(0, 11, 2)); ax.text(0.2, 10.8, "법선이 $\\mathbf{x}_k$ 쪽으로 돈다\n→ 선이 회전 (빨간 화살표 3배)", fontsize=12.5, va="top")
+    save(fig, path)
+
+
+if "pushdir" in sys.argv:
+    push_dir_fig(X, y); sys.exit()
