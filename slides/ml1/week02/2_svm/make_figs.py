@@ -101,24 +101,26 @@ def line_dist(ax, w, b, X, y, col="black", ls="-", lw=2.5):
 
 
 def fig_centroid():
-    mr, mb = X[y > 0].mean(0), X[y < 0].mean(0); wc = mr - mb; bc = -wc @ (mr + mb) / 2
+    """가장 쉬운 방법: 빨강은 그대로, 파랑은 부호를 뒤집어 20개 y_i x_i 의 평균 = w, b = 0 → 원점을 지나고 w 에 수직인 선 (= 학습 1걸음 뒤 첫 선)"""
+    a = (y[:, None] * X).mean(0)
     fig, ax = plt.subplots(figsize=(6.2, 6.2)); pts(ax)
-    for m_, c in ((mr, RED), (mb, BLUE)):
-        ax.scatter(*m_, s=480, marker="*", color=c, edgecolors="black", lw=1.2, zorder=5)
-    ax.plot(*np.c_[mr, mb], color=GOLD, lw=2.5, ls="--")
-    ax.scatter(*((mr + mb) / 2), s=60, color="black", zorder=5)
-    line(ax, wc, bc, color="black", lw=2.8)
-    ax.annotate("빨강 평균", mr, (-2.0, 2.0), fontsize=15, color=RED, weight="bold", arrowprops=dict(arrowstyle="-", color=RED))
-    ax.annotate("파랑 평균", mb, (0.9, -2.05), fontsize=15, color=BLUE, weight="bold", arrowprops=dict(arrowstyle="-", color=BLUE))
-    ax.text(0.15, -0.25, "한가운데", fontsize=14)
+    F = -X[y < 0]
+    ax.scatter(F[:, 0], F[:, 1], s=80, facecolors="none", edgecolors=BLUE, marker="s", lw=1.8, zorder=3)
+    for p in X[y < 0]:
+        ax.annotate("", -p, p, arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=0.8, alpha=0.25, shrinkA=6, shrinkB=6))
+    arw(ax, (0, 0), a, GOLD, 4)
+    ax.text(0.15, 1.9, f"평균 $\\mathbf{{w}}$ = ({MEAN_W[0]:.2f}, {MEAN_W[1]:.2f})", fontsize=14, color=GOLDT, weight="bold", ha="left", bbox=dict(fc="white", ec="none", alpha=0.9))
+    ax.annotate("", a + 0.05, (0.6, 1.85), arrowprops=dict(arrowstyle="-", color=GOLDT, lw=1))
+    line(ax, a, 0.0, color="black", lw=2.8)
+    ax.text(0.9, -2.05, "□ = 파랑 $\\times (-1)$", fontsize=13, color=BLUE)
     save(fig, "sv_centroid.png")
     fig, axs = plt.subplots(1, 2, figsize=(12.4, 6.2))
-    for ax, (w_, b_, ttl) in zip(axs, ((wc, bc, "평균의 한가운데"), (WA, BA, "SVM"))):
+    for ax, (w_, b_, ttl) in zip(axs, ((a, 0.0, "모든 점의 평균"), (WA, BA, "SVM"))):
         pts(ax); o = line_dist(ax, w_, b_, X, y)
         for s, (p, dd) in o.items():
             ax.text(p[0] + (-0.85 if s < 0 else -0.95), p[1] + (-0.55 if s < 0 else 0.25), f"{dd:.2f}", fontsize=20, weight="bold", color=RED if s > 0 else BLUE)
         ax.set_title(ttl, fontsize=18)
-    line(axs[1], wc, bc, color=GRAY, ls="--", lw=1.5)
+    line(axs[1], a, 0.0, color=GRAY, ls="--", lw=1.5)
     save(fig, "sv_centroid_vs.png")
 
 

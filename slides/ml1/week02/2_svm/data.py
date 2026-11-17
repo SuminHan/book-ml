@@ -13,7 +13,8 @@ BLUE_PTS = [(1.3, -0.6), (1.1, -1.2), (0.9, -0.4), (0.6, -1.0), (1.5, -1.4), (0.
 W_ANS, B_ANS, M_ANS = (-1 / np.sqrt(2), 1 / np.sqrt(2)), 0.05 / np.sqrt(2), 0.95 / np.sqrt(2)   # (−0.71, 0.71), 0.04, 0.67
 SV = [(-0.2, 0.7), (0.4, -0.6), (1.1, 0.1)]             # 서포트 벡터: 빨강 하나, 파랑 둘
 ALPHA = {(-0.2, 0.7): 0.74, (0.4, -0.6): -0.37, (1.1, 0.1): -0.37}   # ‖w‖ = 1 기준 w = Σ α_i x_i (부호 포함)
-CENTROID_D = (0.61, 0.70)                                 # 평균 한가운데 선에서 가장 가까운 빨강 · 파랑까지 거리
+MEAN_W = (-0.91, 0.83)                                    # 가장 쉬운 방법: w = 20개의 y_i x_i 평균 (빨강은 그대로, 파랑은 부호 뒤집어), b = 0
+MEAN_D = (0.62, 0.70)                                     # 그 선에서 가장 가까운 빨강 · 파랑까지 거리
 FAR_MOVE = ((1.5, -1.4), (1.8, -2.1))                     # 멀리 있는 파랑 점을 옮겨도 경계는 그대로
 OUTLIER = (0.6, -0.2)                                     # 소프트 마진: 파랑 무리 안에 들어간 빨강 점
 NEWPT, M_NEW = (0.8, 0.4), 0.21                           # 최대 마진의 약점: 빨간 점 하나 추가 → m 0.67 → 0.21
@@ -71,8 +72,9 @@ if __name__ == "__main__":
     assert sorted(map(tuple, X[m.support_])) == sorted(SV)
     al = {tuple(X[i]): round(c * mm, 2) for i, c in zip(m.support_, m.dual_coef_[0])}; assert al == ALPHA
     assert np.allclose(sum(v * np.array(k) for k, v in ALPHA.items()), W_ANS, atol=0.02)
-    mr, mb = X[y > 0].mean(0), X[y < 0].mean(0); u = (mr - mb) / np.linalg.norm(mr - mb); bc = -u @ (mr + mb) / 2
-    v = y * (X @ u + bc); assert (round(v[y > 0].min(), 2), round(v[y < 0].min(), 2)) == CENTROID_D
+    a = (y[:, None] * X).mean(0); assert np.allclose(a, MEAN_W, atol=0.006); u = a / np.linalg.norm(a)
+    v = y * (X @ u); assert (round(v[y > 0].min(), 2), round(v[y < 0].min(), 2)) == MEAN_D
+    assert tuple(np.round(u, 2)) == STEP1_W                        # 가장 쉬운 방법의 선 = 학습 1걸음 뒤 첫 선
     X2 = X.copy(); X2[10 + BLUE_PTS.index(FAR_MOVE[0])] = FAR_MOVE[1]
     assert np.allclose(SVC(kernel="linear", C=1e6).fit(X2, y).coef_, m.coef_, atol=1e-3)
     assert round(unit(SVC(kernel="linear", C=1e6).fit(np.r_[X, [NEWPT]], np.r_[y, 1]))[2], 2) == M_NEW
