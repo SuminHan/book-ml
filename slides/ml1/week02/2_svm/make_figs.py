@@ -497,8 +497,25 @@ def fig_rbf():
     save(fig, "sv_rbf.png")
 
 
+def fig_rbf_degree(G=(0.25, 1, 2.5, 5), D=22):
+    """γ 에 따라 RBF 의 무게가 몰리는 차수: (x·x′ = 1 일 때) d 차 항 (2γ)^d / d! 를 합 1 로 나눈 막대. 가장 큰 무게 ≈ 2γ 차 (포아송 분포 모양)"""
+    from math import factorial
+    fig, axs = plt.subplots(1, len(G), figsize=(15, 4.4), sharey=True); out = {}
+    d = np.arange(D)
+    for ax, g in zip(axs, G):
+        wts = np.array([(2 * g) ** k / factorial(k) for k in d]); wts = wts / wts.sum()
+        ax.bar(d, wts, color=GOLD, alpha=0.9); top = int(np.argmax(wts))
+        ax.bar([top], [wts[top]], color=RED)
+        ax.set_title(f"γ = {g}: 무게 중심 ≈ {2 * g:g}차", fontsize=15)
+        ax.set_xlabel("다항 차수 d"); ax.set_xticks(range(0, D, 4))
+        out[g] = (top, round(float((d * wts).sum()), 2))
+    axs[0].set_ylabel("d 차 항의 몫")
+    save(fig, "sv_rbf_degree.png")
+    return out
+
+
 FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
-        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf}
+        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf, "rbfdeg": fig_rbf_degree}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
