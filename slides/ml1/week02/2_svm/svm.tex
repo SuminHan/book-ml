@@ -166,6 +166,33 @@
 \end{frame}
 
 
+\begin{frame}{참고: 거리 공식이 성립하는 이유 (점곱과 코사인 · 정사영)}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.44\textwidth}\centering\includegraphics[width=\linewidth]{sv_cos.png}\end{column}
+\begin{column}{0.54\textwidth}
+{\large $\textcolor{fbeta}{\mathbf{w}}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fbeta}{\mathbf{w}}\rVert\,\lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta = \lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.1em]
+{\normalsize (because $\lVert\textcolor{fbeta}{\mathbf{w}}\rVert = 1$)}\\[0.6em]
+{\large $= \textcolor{fx}{\mathbf{x}}$ 의 \textbf{\textcolor{fsh}{$\mathbf{w}$ 방향 위치}}}\\[0.8em]
+{\large 값 = \textcolor{fsh}{1.41} $-$ \textcolor{fbd}{0.71} $=$ \textbf{\textcolor{fdist}{거리 0.71}}}
+\end{column}
+\end{columns}
+\vfill
+\note{마진 m은 거리입니다. 그런데 학습에서는 거리를 매번 계산하기보다, 식의 값 w x 더하기 b를 그대로 거리로 쓰고 싶습니다. 그러려면 w의 길이를 1로 맞추면 됩니다. 이 덱은 처음부터 끝까지 w의 길이를 1로 둡니다. 왜 그런지 봅시다. 거리 공식, 거리는 값의 절댓값 나누기 w의 길이, 가 왜 성립하는지는 점곱과 코사인의 관계로 볼 수 있습니다. 두 벡터의 점곱은 두 길이를 곱하고 사이각의 코사인을 곱한 것과 같습니다. w의 길이가 1이면 w 점곱 x는 x의 길이 곱하기 코사인 세타, 즉 점 x에서 w 축으로 수직선을 내렸을 때 원점에서 그 발까지의 길이, 정사영 길이입니다. x가 w 방향으로 얼마나 가 있는지, w 방향 위치라고 읽으면 됩니다. 그림에서 파란 치수선이 점 0.4, 1.6의 w 방향 위치 1.41입니다. 경계는 w에 수직인 직선이라, 경계 위의 점은 어디든 w 방향 위치가 똑같고, 그 값이 마이너스 b입니다. 이 예의 경계는 x1 더하기 x2가 1인 직선이고, 길이 1로 맞춘 식은 0.71 x1 더하기 0.71 x2 빼기 0.71이니 b는 마이너스 0.71, 경계의 위치는 0.71입니다. 그러니 값 b 더하기 w 점곱 x는 x의 위치에서 경계의 위치를 뺀 것, 1.41 빼기 0.71, 0.71이고, 이것이 w 방향으로 잰 경계까지의 거리입니다. 길이가 1이 아니면 위치에 w의 길이가 곱해지니, 거리 공식은 값의 절댓값을 w의 길이로 나눈 것이 됩니다.}
+\end{frame}
+
+% --- 참고: 점곱과 코사인 (값 = 그림자 - 경계의 그림자 = 거리)
+\begin{frame}{값에 $y_i$ 를 곱한다: 파랑 $\mathbf{w}\cdot\mathbf{x} + b \to -(\mathbf{w}\cdot\mathbf{x} + b)$}
+\vfill
+\centering
+\includegraphics[width=0.74\textwidth]{sv_fold.png}\\[0.1em]
+{\large 점으로 보면 $\mathbf{x} \to \mathbf{x} - 2(\mathbf{w}\cdot\mathbf{x} + b)\,\mathbf{w}$ \;= 경계를 \kb{거울}로 비춘 자리}\\[0.2em]
+{\normalsize 접으면 모두 한쪽, 값 = 거울까지 거리 $\to$ 가장 가까운 거리 $m$ 을 최대로}
+\vfill
+\note{이번에는 점이 아니라 값, w 점곱 x 더하기 b에 y i를 곱합니다. 앞에서 점에 y i를 곱한 것, 원점 기준 180도 회전과는 다른 그림입니다. 파란 점은 y가 마이너스 1이라 값의 부호가 뒤집힙니다. 값은 경계까지의 거리이니, 부호만 뒤집힌 값을 갖는 자리는 경계 반대편으로 같은 거리, 즉 경계를 거울 삼아 비춘 자리입니다. 그래서 값에 y를 곱하는 것은 파란 점을 경계에 비춰 빨강 쪽으로 넘긴 것과 같습니다. 점으로 쓰면 x에서 2 곱하기 값 곱하기 w를 뺀 자리, x 빼기 2 (w x 더하기 b) w입니다. w의 길이가 1이라 이 자리에 넣으면 값이 정확히 마이너스 (w x 더하기 b)가 됩니다. 원점 기준으로 180도 돌리면 b가 0이 아닐 때 값이 달라집니다. 접고 나면 20개가 모두 한쪽에 있고, 각 점의 값은 거울까지의 거리입니다. 틀린 쪽에 있던 점이 있다면 접어도 거울 반대편에 남아 값이 음수가 됩니다. 최대 마진은 거울을 기울이고 옮겨서 접은 점들 중 가장 가까운 거리를 최대로 만드는 것입니다. 답에서는 빨강 한 점과 비춰 넘긴 파랑 두 점이 똑같이 0.67 거리에 닿습니다. 거울을 움직이면 접힌 모양도 같이 바뀌니, 가장 가까운 점도 계속 바뀝니다.}
+\end{frame}
+
+\section{학습}
 % --- 학습 0: 숫자 3개 찾기
 \begin{frame}{직선 찾기 = 숫자 3개 $(w_1, w_2, b)$ 찾기}
 \vfill
@@ -194,74 +221,6 @@
 \note{한 걸음은 세 단계입니다. 첫째, 점 20개를 넣어 값, 라벨 곱하기 w x 더하기 b를 계산합니다. w의 길이가 1이니 이 값이 곧 경계까지의 거리이고, 틀린 점은 음수입니다. 둘째, 값이 가장 작은 점 하나가 밉니다. 빨간 점이면 w에 자기 좌표를 학습률만큼 더하고 b를 올리고, 파란 점이면 좌표를 빼고 b를 내립니다. 그러면 그 점의 값이 커집니다. 실제로 바꾼 w, b를 넣어 보면 y k 제곱이 1이라서 값이 학습률 곱하기 (좌표 길이 제곱 더하기 1)만큼 늘어납니다. 빨강이든 파랑이든 항상 양수입니다. 즉 가장 가까운 점이 경계를 자기 반대쪽으로 밀어내는 것입니다. 우리가 키우려는 m이 바로 이 가장 작은 값이니, 그 점을 키우는 것이 m을 키우는 방향입니다. 셋째, w의 길이가 1을 넘으면 w와 b를 길이로 나눠 다시 1로 맞춥니다. 직선은 그대로이고 크기만 맞추는 것입니다. 점들을 z-score 해 두었으니 w와 b에 같은 학습률 하나를 씁니다. 학습률은 걸음이 갈수록 줄입니다. 최솟값을 키우는 방향으로 조금씩 가는 것이라 경사하강법의 한 종류, 정확히는 서브그래디언트 방법입니다.}
 \end{frame}
 
-% --- 최대 마진 식 해설 (말풍선)
-\begin{frame}{최대 마진 초평면 찾기: 한 줄씩 읽기}
-\vfill
-\begin{minipage}{0.62\textwidth}
-{\Large\begin{align*}
-\text{find} \quad & w_1, w_2,\, b\\ & \text{that maximize } \tikzmarknode{mm}{m > 0}\\[0.4em]
-\text{subject to} \quad & \tikzmarknode{nb}{w_1^2 + w_2^2 = 1},\\[0.4em]
-& \tikzmarknode{cc}{y_i(w_1 x_{i1} + w_2 x_{i2} + b) \ge m}
-\end{align*}}
-\end{minipage}
-\begin{tikzpicture}[remember picture,overlay]
-\node[bub,anchor=west] (b1) at ([xshift=1.4cm,yshift=0.55cm]mm.east) {마진 $m$ 최대};
-\draw[bubarr] (b1.west) -- (mm.east);
-\node[bub,anchor=west] (b2) at ([xshift=1.4cm,yshift=-0.1cm]nb.east) {$\lVert\mathbf{w}\rVert_2 = \sqrt{w_1^2 + w_2^2}$ \;{\small (L2 노름 = $\mathbf{w}$ 의 길이)}\\ $= 1$ $\to$ \textbf{값 = 거리}};
-\draw[bubarr] (b2.west) -- (nb.east);
-\node[bub,anchor=west] (b3) at ([xshift=0.6cm,yshift=-0.4cm]cc.east) {모든 점이 $m$ 이상};
-\draw[bubarr] (b3.west) -- (cc.east);
-\end{tikzpicture}
-\vskip1.2em
-\centering
-{\large 이 데이터: \; $\mathbf{w} = (0.71,\ 0.71)$, \; $b = 0.04$, \; \kb{$m = 0.67$}}
-\vfill
-\note{한 줄씩 읽어 봅시다. 첫 줄, 마진 m을 최대로 합니다. 마진은 경계에서 가장 가까운 점까지의 거리입니다. 둘째 줄, w1 제곱 더하기 w2 제곱이 1, 즉 w의 L2 노름 제곱이 1, 길이 L2 노름을 1로 맞춥니다. b은 들어가지 않습니다. 그래야 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 w를 두 배, 세 배 키우기만 해도 값이 커지니 m을 끝없이 키울 수 있어서 문제가 성립하지 않습니다. 점과 직선 사이 거리 공식에서 거리는 값의 절댓값을 w의 길이로 나눈 것이라, 길이를 1로 맞추면 값이 그대로 거리입니다. 이 공식이 왜 성립하는지는 뒤의 참고 쪽에 있습니다. 셋째 줄, 모든 점에서 라벨 곱하기 값이 m 이상, 즉 모든 점이 자기 쪽으로 경계에서 m 이상 떨어져 있어야 합니다. 이 데이터의 답은 w가 0.71, 0.71, b가 0.04, m이 0.67입니다. 서포트 벡터 0.7, 0.2을 넣으면 값이 0.67, 딱 m입니다. 이 문제는 볼록 최적화라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
-\end{frame}
-
-% --- 최대 마진 식 (공식 그대로, ISL 9.9-9.11)
-\begin{frame}{최대 마진 초평면 찾기}
-\markpage{form}
-\vfill
-\centering
-{\large\begin{align*}
-\text{find} \quad & w_1, \dots, w_p,\, b\\ & \text{that maximize } m > 0\\
-\text{subject to} \quad & \sum_{j=1}^{p} w_j^2 = 1,\\
-& y_i(w_1 x_{i1} + w_2 x_{i2} + \cdots + w_p x_{ip} + b) \ge m \quad \text{for all } i = 1, \dots, n
-\end{align*}}
-{\large $y_i = +1$ 또는 $-1$}
-
-\vfill
-\note{최대 마진 초평면을 찾는 문제를 교과서에 나오는 그대로 쓰면 이렇습니다. 학습 데이터가 n개, 특징이 p개이고 라벨은 플러스 1 아니면 마이너스 1입니다. b부터 wp, 그리고 마진 m을 골라서 m을 최대로 합니다. 조건은 두 가지입니다. w1부터 wp까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 m 이상. 앞 쪽에서 읽은 2차원 식을 특징이 p개인 경우로 그대로 늘린 것입니다.}
-\end{frame}
-
-% --- 참고: 점곱과 코사인 (값 = 그림자 - 경계의 그림자 = 거리)
-\begin{frame}{값에 $y_i$ 를 곱한다: 파랑 $\mathbf{w}\cdot\mathbf{x} + b \to -(\mathbf{w}\cdot\mathbf{x} + b)$}
-\vfill
-\centering
-\includegraphics[width=0.74\textwidth]{sv_fold.png}\\[0.1em]
-{\large 점으로 보면 $\mathbf{x} \to \mathbf{x} - 2(\mathbf{w}\cdot\mathbf{x} + b)\,\mathbf{w}$ \;= 경계를 \kb{거울}로 비춘 자리}\\[0.2em]
-{\normalsize 접으면 모두 한쪽, 값 = 거울까지 거리 $\to$ 가장 가까운 거리 $m$ 을 최대로}
-\vfill
-\note{이번에는 점이 아니라 값, w 점곱 x 더하기 b에 y i를 곱합니다. 앞에서 점에 y i를 곱한 것, 원점 기준 180도 회전과는 다른 그림입니다. 파란 점은 y가 마이너스 1이라 값의 부호가 뒤집힙니다. 값은 경계까지의 거리이니, 부호만 뒤집힌 값을 갖는 자리는 경계 반대편으로 같은 거리, 즉 경계를 거울 삼아 비춘 자리입니다. 그래서 값에 y를 곱하는 것은 파란 점을 경계에 비춰 빨강 쪽으로 넘긴 것과 같습니다. 점으로 쓰면 x에서 2 곱하기 값 곱하기 w를 뺀 자리, x 빼기 2 (w x 더하기 b) w입니다. w의 길이가 1이라 이 자리에 넣으면 값이 정확히 마이너스 (w x 더하기 b)가 됩니다. 원점 기준으로 180도 돌리면 b가 0이 아닐 때 값이 달라집니다. 접고 나면 20개가 모두 한쪽에 있고, 각 점의 값은 거울까지의 거리입니다. 틀린 쪽에 있던 점이 있다면 접어도 거울 반대편에 남아 값이 음수가 됩니다. 최대 마진은 거울을 기울이고 옮겨서 접은 점들 중 가장 가까운 거리를 최대로 만드는 것입니다. 답에서는 빨강 한 점과 비춰 넘긴 파랑 두 점이 똑같이 0.67 거리에 닿습니다. 거울을 움직이면 접힌 모양도 같이 바뀌니, 가장 가까운 점도 계속 바뀝니다.}
-\end{frame}
-
-\begin{frame}{참고: 거리 공식이 성립하는 이유 (점곱과 코사인 · 정사영)}
-\vfill
-\begin{columns}[c]
-\begin{column}{0.44\textwidth}\centering\includegraphics[width=\linewidth]{sv_cos.png}\end{column}
-\begin{column}{0.54\textwidth}
-{\large $\textcolor{fbeta}{\mathbf{w}}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fbeta}{\mathbf{w}}\rVert\,\lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta = \lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.1em]
-{\normalsize (because $\lVert\textcolor{fbeta}{\mathbf{w}}\rVert = 1$)}\\[0.6em]
-{\large $= \textcolor{fx}{\mathbf{x}}$ 의 \textbf{\textcolor{fsh}{$\mathbf{w}$ 방향 위치}}}\\[0.8em]
-{\large 값 = \textcolor{fsh}{1.41} $-$ \textcolor{fbd}{0.71} $=$ \textbf{\textcolor{fdist}{거리 0.71}}}
-\end{column}
-\end{columns}
-\vfill
-\note{거리 공식, 거리는 값의 절댓값 나누기 w의 길이, 가 왜 성립하는지는 점곱과 코사인의 관계로 볼 수 있습니다. 두 벡터의 점곱은 두 길이를 곱하고 사이각의 코사인을 곱한 것과 같습니다. w의 길이가 1이면 w 점곱 x는 x의 길이 곱하기 코사인 세타, 즉 점 x에서 w 축으로 수직선을 내렸을 때 원점에서 그 발까지의 길이, 정사영 길이입니다. x가 w 방향으로 얼마나 가 있는지, w 방향 위치라고 읽으면 됩니다. 그림에서 파란 치수선이 점 0.4, 1.6의 w 방향 위치 1.41입니다. 경계는 w에 수직인 직선이라, 경계 위의 점은 어디든 w 방향 위치가 똑같고, 그 값이 마이너스 b입니다. 이 예의 경계는 x1 더하기 x2가 1인 직선이고, 길이 1로 맞춘 식은 0.71 x1 더하기 0.71 x2 빼기 0.71이니 b는 마이너스 0.71, 경계의 위치는 0.71입니다. 그러니 값 b 더하기 w 점곱 x는 x의 위치에서 경계의 위치를 뺀 것, 1.41 빼기 0.71, 0.71이고, 이것이 w 방향으로 잰 경계까지의 거리입니다. 길이가 1이 아니면 위치에 w의 길이가 곱해지니, 거리 공식은 값의 절댓값을 w의 길이로 나눈 것이 됩니다.}
-\end{frame}
-
-\section{학습}
 \begin{frame}{한 번 밀면: $\mathbf{w}$ 는 회전, $b$ 는 평행이동}
 \vfill
 \centering
@@ -349,6 +308,48 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 {\large 거리 $= m$ 인 3개 = \kb{서포트 벡터}}
 \vfill
 \note{학습이 끝난 뒤 점 20개의 경계까지 거리를 작은 순서로 막대로 그렸습니다. 세 점이 모두 0.67로 m, 길 가장자리 위에 있습니다. 이 셋이 서포트 벡터입니다. 나머지 17개는 모두 0.81 이상입니다. 서포트 벡터를 미리 고르는 게 아니라, 가장 가까운 점이 미는 학습을 하다 보면 끝까지 가장 가까운 점들이 저절로 서포트 벡터가 됩니다. 실무에서 쓰는 sklearn의 SVC는 이런 방법 대신 SMO라는 다른 풀이법을 쓰지만 같은 답을 내고, support vectors라는 속성에 이 3개를 담아 줍니다.}
+\end{frame}
+
+\section{식}
+% --- 최대 마진 식 해설 (말풍선)
+\begin{frame}{최대 마진 초평면 찾기: 한 줄씩 읽기}
+\vfill
+\begin{minipage}{0.62\textwidth}
+{\Large\begin{align*}
+\text{find} \quad & w_1, w_2,\, b\\ & \text{that maximize } \tikzmarknode{mm}{m > 0}\\[0.4em]
+\text{subject to} \quad & \tikzmarknode{nb}{w_1^2 + w_2^2 = 1},\\[0.4em]
+& \tikzmarknode{cc}{y_i(w_1 x_{i1} + w_2 x_{i2} + b) \ge m}
+\end{align*}}
+\end{minipage}
+\begin{tikzpicture}[remember picture,overlay]
+\node[bub,anchor=west] (b1) at ([xshift=1.4cm,yshift=0.55cm]mm.east) {마진 $m$ 최대};
+\draw[bubarr] (b1.west) -- (mm.east);
+\node[bub,anchor=west] (b2) at ([xshift=1.4cm,yshift=-0.1cm]nb.east) {$\lVert\mathbf{w}\rVert_2 = \sqrt{w_1^2 + w_2^2}$ \;{\small (L2 노름 = $\mathbf{w}$ 의 길이)}\\ $= 1$ $\to$ \textbf{값 = 거리}};
+\draw[bubarr] (b2.west) -- (nb.east);
+\node[bub,anchor=west] (b3) at ([xshift=0.6cm,yshift=-0.4cm]cc.east) {모든 점이 $m$ 이상};
+\draw[bubarr] (b3.west) -- (cc.east);
+\end{tikzpicture}
+\vskip1.2em
+\centering
+{\large 이 데이터: \; $\mathbf{w} = (0.71,\ 0.71)$, \; $b = 0.04$, \; \kb{$m = 0.67$}}
+\vfill
+\note{한 줄씩 읽어 봅시다. 첫 줄, 마진 m을 최대로 합니다. 마진은 경계에서 가장 가까운 점까지의 거리입니다. 둘째 줄, w1 제곱 더하기 w2 제곱이 1, 즉 w의 L2 노름 제곱이 1, 길이 L2 노름을 1로 맞춥니다. b은 들어가지 않습니다. 그래야 식의 값이 곧 경계까지의 거리가 됩니다. 이 조건이 없으면 w를 두 배, 세 배 키우기만 해도 값이 커지니 m을 끝없이 키울 수 있어서 문제가 성립하지 않습니다. 점과 직선 사이 거리 공식에서 거리는 값의 절댓값을 w의 길이로 나눈 것이라, 길이를 1로 맞추면 값이 그대로 거리입니다. 이 공식이 왜 성립하는지는 앞의 참고 쪽에서 봤습니다. 셋째 줄, 모든 점에서 라벨 곱하기 값이 m 이상, 즉 모든 점이 자기 쪽으로 경계에서 m 이상 떨어져 있어야 합니다. 이 데이터의 답은 w가 0.71, 0.71, b가 0.04, m이 0.67입니다. 서포트 벡터 0.7, 0.2을 넣으면 값이 0.67, 딱 m입니다. 이 문제는 볼록 최적화라서 효율적으로 풀 수 있고 답이 하나로 정해집니다.}
+\end{frame}
+
+% --- 최대 마진 식 (공식 그대로, ISL 9.9-9.11)
+\begin{frame}{최대 마진 초평면 찾기}
+\markpage{form}
+\vfill
+\centering
+{\large\begin{align*}
+\text{find} \quad & w_1, \dots, w_p,\, b\\ & \text{that maximize } m > 0\\
+\text{subject to} \quad & \sum_{j=1}^{p} w_j^2 = 1,\\
+& y_i(w_1 x_{i1} + w_2 x_{i2} + \cdots + w_p x_{ip} + b) \ge m \quad \text{for all } i = 1, \dots, n
+\end{align*}}
+{\large $y_i = +1$ 또는 $-1$}
+
+\vfill
+\note{최대 마진 초평면을 찾는 문제를 교과서에 나오는 그대로 쓰면 이렇습니다. 학습 데이터가 n개, 특징이 p개이고 라벨은 플러스 1 아니면 마이너스 1입니다. b부터 wp, 그리고 마진 m을 골라서 m을 최대로 합니다. 조건은 두 가지입니다. w1부터 wp까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 m 이상. 앞 쪽에서 읽은 2차원 식을 특징이 p개인 경우로 그대로 늘린 것입니다.}
 \end{frame}
 
 \section{소프트 마진}
