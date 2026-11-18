@@ -253,7 +253,6 @@ def fig_push(t=2, S=1.1, KW=10, KB=10):
     ax.plot([0, xk[0]], [0, xk[1]], color=col, ls="--", lw=1.4); ax.text(xk[0] / 2 - 0.1, xk[1] / 2 + 0.12, r"$\mathbf{x}_k$", color=col, fontsize=15)
     ft = xk - (w @ xk + b) * u                                            # 점 k 에서 원래 선으로 내린 수선의 발
     ax.plot(*zip(xk, ft), color=col, lw=2, ls=":")
-    ax.text(0.45, -0.1, f"가장 가까운 점 k\n거리 {dist(w, b):.2f}", fontsize=12.5, color=col, weight="bold", va="top", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     o = np.array([1.0, -1.0]); o = o - (w @ o + b) * u
     tip = o + S * u; add = S * KW * eta * yk * xk; tip2 = tip + add; n = np.array([-u[1], u[0]])
     arw(ax, o, tip, GRAY); ax.text(*((o + tip) / 2 + 0.22 * n), r"$\mathbf{w}$", fontsize=16, color=GRAY, ha="center", va="center")
