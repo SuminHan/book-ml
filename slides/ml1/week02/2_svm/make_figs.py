@@ -404,7 +404,28 @@ def fig_kernel():
     save(fig, "sv_kernels.png")
 
 
-FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "fold": fig_fold,
+def fig_lock():
+    """왜 2~3개로 정해지나: ① 한쪽만 닿음 → 평행이동하면 넓어짐 ② 양쪽 1개씩 → 돌리면 넓어짐 ③ 3개 닿음 → 더 못 넓힘"""
+    def best_b(u):
+        r, q = (X[y > 0] @ u).min(), (X[y < 0] @ u).max(); return (r - q) / 2, -(r + q) / 2
+    th0 = np.arctan2(WA[1], WA[0])
+    u2 = np.array([np.cos(th0 - np.radians(14)), np.sin(th0 - np.radians(14))]); m2, b2 = best_b(u2)
+    m1 = MA - 0.15; b1 = BA - 0.15                                    # 최적 방향, 파랑 쪽으로 0.15 치우친 선
+    cases = [(WA, b1, "① 한쪽만 닿음", "평행이동하면 넓어진다"), (u2, b2, "② 양쪽 1개씩 닿음", "돌리면 넓어진다"), (WA, BA, "③ 3개 닿음", "더 못 넓힌다 = 답")]
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5.6)); out = []
+    for ax, (w_, b_, ttl, sub) in zip(axs, cases):
+        v = y * (X @ w_ + b_); m_ = v.min(); touch = v < m_ + 0.005
+        pts(ax); street_m(ax, w_, b_, m_, X[touch])
+        ax.set_title(f"{ttl}: m = {m_:.2f}\n→ {sub}", fontsize=15, color="black" if ttl[0] != "③" else GOLDT)
+        out.append((round(m_, 2), int(touch.sum())))
+    arw(axs[0], np.array([-0.2, -0.6]) + 0.0, np.array([-0.2, -0.6]) - 0.35 * WA, GOLD, 3)
+    from matplotlib.patches import FancyArrowPatch
+    axs[1].add_patch(FancyArrowPatch((1.2, -1.6), (1.75, -0.9), connectionstyle="arc3,rad=0.4", arrowstyle="-|>", mutation_scale=20, color=GOLD, lw=3))
+    save(fig, "sv_lock.png")
+    return out
+
+
+FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "fold": fig_fold,
         "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "soft": fig_soft, "kernel": fig_kernel}
 
 if __name__ == "__main__":
