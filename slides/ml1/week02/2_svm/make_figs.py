@@ -108,6 +108,10 @@ def fig_centroid():
     ax.scatter(F[:, 0], F[:, 1], s=80, facecolors="none", edgecolors=BLUE, marker="s", lw=1.8, zorder=3)
     for p in X[y < 0]:
         ax.annotate("", -p, p, arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=0.8, alpha=0.25, shrinkA=6, shrinkB=6))
+    ex = np.array([-1.0, -0.6])                                            # 예시 하나: 원점 기준 180° 회전 (점대칭)
+    ax.plot([ex[0], -ex[0]], [ex[1], -ex[1]], color=BLUE, lw=1.6, ls="--", zorder=2)
+    ax.annotate("", -ex, ex, arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=2, connectionstyle="arc3,rad=-0.9", shrinkA=8, shrinkB=8), zorder=4)
+    ax.text(-1.55, 0.75, "원점 기준\n180° 회전", fontsize=13, color=BLUE, weight="bold", ha="center")
     arw(ax, (0, 0), a, GOLD, 4)
     ax.text(0.15, -1.55, f"평균 $\\mathbf{{w}}$ = ({MEAN_W[0]:.2f}, {MEAN_W[1]:.2f})", fontsize=14, color=GOLDT, weight="bold", ha="left", bbox=dict(fc="white", ec="none", alpha=0.9))
     ax.annotate("", a * 0.6, (0.9, -1.35), arrowprops=dict(arrowstyle="-", color=GOLDT, lw=1))
