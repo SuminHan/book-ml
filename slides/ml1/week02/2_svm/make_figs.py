@@ -240,7 +240,7 @@ def fig_cos():
     save(fig, "sv_cos.png")
 
 
-def fig_push(t=2, S=1.0, KW=10, KB=10):
+def fig_push(t=2, S=0.8, KW=10, KB=10):
     """한 번 밀기 (식 순서대로): ① w' = w + η y_k x_k → 법선이 돈다, ② b' = b + η y_k → 그 선이 수직으로 평행이동. 화살표는 KW · KB 배"""
     _, _, _, sh = train_maxmin(X, y, snaps=(t,), T=t)
     w, b, act, m = sh[t]; k = np.where(act)[0][0]; xk, yk = X[k], y[k]; col = RED if yk > 0 else BLUE
@@ -250,14 +250,14 @@ def fig_push(t=2, S=1.0, KW=10, KB=10):
     fig, axs = plt.subplots(1, 2, figsize=(12.4, 6.0))
     ax = axs[0]; pts(ax); ax.set_title(r"① $\mathbf{w}' = \mathbf{w} + \eta\, y_k \mathbf{x}_k$ : 법선이 돈다", fontsize=15)
     line(ax, w, b, color=GRAY, lw=2, ls=":"); line(ax, wf, b, color="black", lw=2.6)
-    ax.plot([0, xk[0]], [0, xk[1]], color=col, ls="--", lw=1.4); ax.text(xk[0] / 2 + 0.12, xk[1] / 2 - 0.05, r"$\mathbf{x}_k$", color=col, fontsize=15)
-    o = np.array([1.0, -0.9]); o = o - (w @ o + b) * u
+    ax.plot([0, xk[0]], [0, xk[1]], color=col, ls="--", lw=1.4); ax.text(xk[0] / 2 - 0.1, xk[1] / 2 + 0.12, r"$\mathbf{x}_k$", color=col, fontsize=15)
+    o = np.array([1.2, -1.25]); o = o - (w @ o + b) * u
     tip = o + S * u; add = S * KW * eta * yk * xk; tip2 = tip + add
-    arw(ax, o, tip, GRAY); ax.text(*(tip + np.array([-0.3, -0.05])), r"$\mathbf{w}$", fontsize=15, color=GRAY)
-    arw(ax, tip, tip2, col, 2.5); ax.text(*(tip + add / 2 + np.array([0.06, 0.08])), r"$-\eta\,\mathbf{x}_k$" if yk < 0 else r"$+\eta\,\mathbf{x}_k$", fontsize=14, color=col)
-    arw(ax, o, tip2, "black"); ax.text(*(tip2 + np.array([0.05, 0.08])), r"$\mathbf{w}'$", fontsize=15)
+    arw(ax, o, tip, GRAY); ax.text(*(tip + np.array([-0.32, 0.0])), r"$\mathbf{w}$", fontsize=15, color=GRAY)
+    arw(ax, tip, tip2, col, 2.5); ax.text(*(tip + np.array([-0.35, 0.3])), r"$-\eta\,\mathbf{x}_k$" if yk < 0 else r"$+\eta\,\mathbf{x}_k$", fontsize=14, color=col, bbox=dict(fc="white", ec="none", alpha=0.9, pad=1))
+    arw(ax, o, tip2, "black"); ax.text(*(tip2 + np.array([0.02, -0.3])), r"$\mathbf{w}'$", fontsize=15)
     ax.scatter(*xk, s=380, facecolors="none", edgecolors=col, lw=3, zorder=5)
-    ax.text(2.1, -2.05, f"화살표 {KW}배 · 거리 {dist(w, b):.3f} → {dist(wf, b):.3f}", fontsize=12.5, ha="right")
+    ax.text(2.1, 2.05, f"화살표 {KW}배 · 거리 {dist(w, b):.3f} → {dist(wf, b):.3f}", fontsize=12.5, ha="right")
     ax = axs[1]; pts(ax); ax.set_title(r"② $b' = b + \eta\, y_k$ : 선에 수직으로", fontsize=15)
     uf = wf / np.linalg.norm(wf)
     line(ax, wf, b, color=GRAY, lw=2, ls=":"); line(ax, wf, bb, color="black", lw=2.6)
@@ -265,7 +265,7 @@ def fig_push(t=2, S=1.0, KW=10, KB=10):
     for s_ in (-1.2, 0, 1.2):
         p = foot + s_ * np.array([-uf[1], uf[0]]); arw(ax, p, p - KB * (bb - b) / np.linalg.norm(wf) * uf, GOLD)
     ax.scatter(*xk, s=380, facecolors="none", edgecolors=col, lw=3, zorder=5)
-    ax.text(2.1, -2.05, f"화살표 {KB}배 · 거리 {dist(wf, b):.3f} → {dist(wf, bb):.3f}", fontsize=12.5, color=GOLDT, ha="right")
+    ax.text(2.1, 2.05, f"화살표 {KB}배 · 거리 {dist(wf, b):.3f} → {dist(wf, bb):.3f}", fontsize=12.5, color=GOLDT, ha="right")
     save(fig, "sv_push_dir.png")
     return xk, yk, dist(w, b), dist(wf, b), dist(wf, bb)
 
