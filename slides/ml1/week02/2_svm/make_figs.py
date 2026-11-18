@@ -100,6 +100,25 @@ def line_dist(ax, w, b, X, y, col="black", ls="-", lw=2.5):
     return out
 
 
+def fig_flip():
+    """파랑 부호 뒤집기: −x = 원점 기준 180° 회전 (점대칭). 왼쪽 원래, 오른쪽 뒤집은 뒤"""
+    fig, axs = plt.subplots(1, 2, figsize=(11.5, 5.6))
+    pts(axs[0]); axs[0].set_title("원래", fontsize=16)
+    ax = axs[1]; pts(ax, X[y > 0], y[y > 0]); F = -X[y < 0]
+    ax.scatter(X[y < 0, 0], X[y < 0, 1], s=40, color=BLUE, marker="s", alpha=0.18)
+    ax.scatter(F[:, 0], F[:, 1], s=80, facecolors="none", edgecolors=BLUE, marker="s", lw=2, zorder=3)
+    for p in X[y < 0]:
+        ax.plot([p[0], -p[0]], [p[1], -p[1]], color=BLUE, lw=0.8, alpha=0.2)
+    ex = np.array([-1.0, -0.6])
+    ax.plot([ex[0], -ex[0]], [ex[1], -ex[1]], color=BLUE, lw=1.6, ls="--", zorder=2)
+    ax.annotate("", -ex, ex, arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=2.2, connectionstyle="arc3,rad=-0.9", shrinkA=8, shrinkB=8), zorder=4)
+    ax.text(-1.55, 0.8, "원점 기준\n180° 회전", fontsize=14, color=BLUE, weight="bold", ha="center")
+    ax.text(ex[0] - 0.05, ex[1] - 0.3, "$\\mathbf{x}$", fontsize=15, color=BLUE, ha="center")
+    ax.text(-ex[0] + 0.05, -ex[1] - 0.3, "$-\\mathbf{x}$", fontsize=15, color=BLUE, ha="center")
+    ax.set_title("파랑 $\\times (-1)$: 20개가 모두 한쪽에", fontsize=16)
+    save(fig, "sv_flip.png")
+
+
 def fig_centroid():
     """가장 쉬운 방법: 빨강은 그대로, 파랑은 부호를 뒤집어 20개 y_i x_i 의 평균 = w, b = 0 → 원점을 지나고 w 에 수직인 선 (= 학습 1걸음 뒤 첫 선)"""
     a = (y[:, None] * X).mean(0)
@@ -108,10 +127,6 @@ def fig_centroid():
     ax.scatter(F[:, 0], F[:, 1], s=80, facecolors="none", edgecolors=BLUE, marker="s", lw=1.8, zorder=3)
     for p in X[y < 0]:
         ax.annotate("", -p, p, arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=0.8, alpha=0.25, shrinkA=6, shrinkB=6))
-    ex = np.array([-1.0, -0.6])                                            # 예시 하나: 원점 기준 180° 회전 (점대칭)
-    ax.plot([ex[0], -ex[0]], [ex[1], -ex[1]], color=BLUE, lw=1.6, ls="--", zorder=2)
-    ax.annotate("", -ex, ex, arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=2, connectionstyle="arc3,rad=-0.9", shrinkA=8, shrinkB=8), zorder=4)
-    ax.text(-1.55, 0.75, "원점 기준\n180° 회전", fontsize=13, color=BLUE, weight="bold", ha="center")
     arw(ax, (0, 0), a, GOLD, 4)
     ax.text(0.15, -1.55, f"평균 $\\mathbf{{w}}$ = ({MEAN_W[0]:.2f}, {MEAN_W[1]:.2f})", fontsize=14, color=GOLDT, weight="bold", ha="left", bbox=dict(fc="white", ec="none", alpha=0.9))
     ax.annotate("", a * 0.6, (0.9, -1.35), arrowprops=dict(arrowstyle="-", color=GOLDT, lw=1))
@@ -389,7 +404,7 @@ def fig_kernel():
     save(fig, "sv_kernels.png")
 
 
-FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "fold": fig_fold,
+FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "fold": fig_fold,
         "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "soft": fig_soft, "kernel": fig_kernel}
 
 if __name__ == "__main__":
