@@ -282,7 +282,7 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 % --- 걸음별
 \begin{frame}{반복하면 미는 점이 3개만 남는다 (1/3)}
 \vfill
-\centering\includegraphics[width=\linewidth]{sv_train9_1.png}\par\vskip0.2em
+\centering\includegraphics[width=0.95\linewidth]{sv_train9_1.png}\par\vskip0.2em
 {\large 첫 선 = 평균 방향 $\to$ 가장 가까운 점이 밀 때마다 식이 조금씩 바뀐다}
 \vfill
 \note{1걸음 뒤 첫 선은 0.67 x1 더하기 0.74 x2 = 0, 모든 벡터의 평균 방향이고 원점을 지납니다. m은 0.62이고 빨간 점 0.7, 0.2가 가장 가까워 다음에 밉니다. 빨간 점이 밀면 w에 그 좌표가 더해져 0.68, 0.73으로 조금 돌고 b가 0.03으로 커집니다. 2걸음 뒤 m은 0.66. 같은 점이 한 번 더 밀어 3걸음 뒤에는 b가 0.06이 되는데, 이번에는 너무 밀어서 반대편 파란 점 마이너스 0.6, 마이너스 0.4가 가장 가까워집니다. m은 0.64로 오히려 조금 줄었습니다.}
@@ -290,7 +290,7 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 
 \begin{frame}{반복하면 미는 점이 3개만 남는다 (2/3)}
 \vfill
-\centering\includegraphics[width=\linewidth]{sv_train9_2.png}\par\vskip0.2em
+\centering\includegraphics[width=0.95\linewidth]{sv_train9_2.png}\par\vskip0.2em
 {\large 빨강 · 파랑이 \kq{번갈아} 민다, 9걸음 뒤 세 번째 서포트 벡터}
 \vfill
 \note{4걸음 뒤에는 파란 점이 밀어 b가 0.04로 돌아오고 m이 0.67, 5걸음 뒤에는 다시 b가 0.06으로 갔다가 m 0.65. 이렇게 빨강과 파랑의 가장 가까운 점이 번갈아 밀며 b가 0.04와 0.06 사이를 오갑니다. 9걸음 뒤에는 세 번째 서포트 벡터, 파란 점 0.1, 마이너스 1.1이 처음으로 가장 가까워집니다. w가 0.71, 0.70으로 거의 대각선 방향입니다.}
@@ -298,7 +298,7 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 
 \begin{frame}{반복하면 미는 점이 3개만 남는다 (3/3)}
 \vfill
-\centering\includegraphics[width=\linewidth]{sv_train9_3.png}\par\vskip0.2em
+\centering\includegraphics[width=0.95\linewidth]{sv_train9_3.png}\par\vskip0.2em
 {\large 식이 멈춘다 $\to$ 미는 점은 끝까지 \kb{서포트 벡터 3개}뿐}
 \vfill
 \note{100걸음 뒤에는 식이 0.71 x1 더하기 0.71 x2 더하기 0.04 = 0, 소수 둘째 자리까지는 이미 답과 같고 m도 0.67입니다. 1000걸음, 2만 걸음 뒤에도 식은 그대로이고, 서포트 벡터 3개가 번갈아 아주 조금씩 밀며 길을 붙잡고 있습니다. 1걸음 뒤로 한 번이라도 민 점은 이 3개뿐이고, 나머지 17개는 한 번도 밀지 않았습니다. 학습률이 걸음마다 줄어서 흔들림이 점점 작아집니다.}
@@ -361,6 +361,23 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 
 \vfill
 \note{최대 마진 초평면을 찾는 문제를 교과서에 나오는 그대로 쓰면 이렇습니다. 학습 데이터가 n개, 특징이 p개이고 라벨은 플러스 1 아니면 마이너스 1입니다. b부터 wp, 그리고 마진 m을 골라서 m을 최대로 합니다. 조건은 두 가지입니다. w1부터 wp까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 m 이상. 앞 쪽에서 읽은 2차원 식을 특징이 p개인 경우로 그대로 늘린 것입니다.}
+\end{frame}
+
+% --- 참고: sklearn 의 표기
+\begin{frame}{참고: sklearn 은 $\lVert\mathbf{w}\rVert$ 대신 가장 가까운 값을 1 로 둔다}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.6}
+{\large\begin{tabular}{l|c|c}
+ & 이 덱 (ISL) & sklearn (보통 교과서)\\ \hline
+1 로 고정 & $\lVert\mathbf{w}\rVert = 1$ & 가장 가까운 값 $= 1$\\
+조건 & $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge m$ & $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$\\
+목표 & $m$ 최대 & $\tfrac{1}{2}\lVert\mathbf{w}\rVert^2$ 최소 \;($m = 1/\lVert\mathbf{w}\rVert$)\\ \hline
+이 데이터 & $\mathbf{w} = (0.71, 0.71)$, $m = 0.67$ & \texttt{coef\_} $= (1.05, 1.05)$, $1/1.49 = 0.67$
+\end{tabular}}\\[0.8em]
+{\large 같은 선, 크기 맞추는 기준만 다르다 \quad \texttt{coef\_} $/ \lVert$\texttt{coef\_}$\rVert$ = 이 덱의 $\mathbf{w}$}
+\vfill
+\note{sklearn의 SVC나 대부분의 교과서, 논문은 같은 문제를 다르게 씁니다. 이 덱은 w의 길이를 1로 고정하고 m을 최대로 했습니다. sklearn 쪽은 w의 길이 대신 가장 가까운 점의 값을 1로 고정합니다. 그러면 가장 가까운 점까지의 거리는 1 나누기 w의 길이가 되니, 거리를 키우는 것은 w의 길이를 줄이는 것과 같습니다. 그래서 2분의 1 w 길이 제곱을 최소로 합니다. 2분의 1과 제곱은 미분했을 때 식이 깔끔해지라고 붙인 것입니다. 찾는 선은 똑같고, 숫자의 크기만 다릅니다. 이 데이터에서 sklearn의 coef는 1.05, 1.05이고 길이가 1.49라서, 1 나누기 1.49가 0.67, 이 덱의 m과 같습니다. coef를 길이로 나누면 0.71, 0.71, 이 덱의 w입니다. 실습 노트북에서도 이렇게 나눠서 씁니다. 소프트 마진에서는 이 식에 C 곱하기 넘어간 양의 합을 더해서 최소로 하는데, 이것이 sklearn의 C입니다. 넘어간 만큼의 벌점에 곱하는 무게라서, 이 덱의 예산 B와 뜻이 반대입니다. 덱 안에서는 끝까지 w의 길이 1 기준만 씁니다.}
 \end{frame}
 
 \section{소프트 마진}
