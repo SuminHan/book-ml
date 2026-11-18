@@ -425,7 +425,34 @@ def fig_lock():
     return out
 
 
-FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "fold": fig_fold,
+def fig_two_three():
+    """2개 vs 3개: ① 가장 가까운 쌍의 수직이등분선 길이 깨끗하면 2개 (작은 예) ② 우리 데이터: 그 길에 점이 걸린다 ③ 같은 색 2개가 기울기, 반대 색 1개가 폭"""
+    TR, TB = np.array([(0.5, 0.5), (1.5, 1.5), (0.5, 1.6), (1.6, 0.6)]), np.array([(-0.5, -0.5), (-1.5, -1.2), (-0.8, -1.6), (-1.6, -0.3)])
+    Xt = np.r_[TR, TB]; yt = np.r_[np.ones(4), -np.ones(4)]
+    mt = SVC(kernel="linear", C=1e6).fit(Xt, yt); wt, bt, mmt = unit(mt); assert len(mt.support_) == 2
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5.6)); out = {"toy": (np.round(wt, 2), round(bt, 2), round(mmt, 2))}
+    ax = axs[0]; pts(ax, Xt, yt); street_m(ax, wt, bt, mmt, Xt[mt.support_])
+    p, q = Xt[mt.support_]; ax.plot(*zip(p, q), color=GOLD, lw=2, ls="--")
+    ax.set_title(f"① 2개: 가장 가까운 쌍의 수직이등분선\n길 안이 비었다 → m = {mmt:.2f}", fontsize=14)
+    R, B = X[y > 0], X[y < 0]; D = np.linalg.norm(R[:, None] - B[None], axis=2); i, j = np.unravel_index(D.argmin(), D.shape)
+    r, s = R[i], B[j]; u = (r - s) / np.linalg.norm(r - s); bb = -u @ (r + s) / 2; mh = np.linalg.norm(r - s) / 2
+    ax = axs[1]; pts(ax); street_m(ax, u, bb, mh, np.array([r, s])); ax.plot(*zip(r, s), color=GOLD, lw=2, ls="--")
+    v = y * (X @ u + bb); bad = (v < mh - 1e-6)
+    ax.scatter(X[bad, 0], X[bad, 1], s=420, facecolors="none", edgecolors=RED, lw=3, zorder=6)
+    ax.set_title(f"② 우리 데이터: 같은 방법이면 m = {mh:.2f}\n그런데 길 안에 점이 걸린다", fontsize=14)
+    out["pair"] = (r.tolist(), s.tolist(), round(mh, 2), X[bad].tolist())
+    ax = axs[2]; pts(ax); street_m(ax, WA, BA, MA, np.array(SV))
+    b1, b2 = np.array(SV[1]), np.array(SV[2]); d = (b2 - b1) / np.linalg.norm(b2 - b1)
+    ax.plot(*zip(b1 - 1.2 * d, b2 + 1.2 * d), color=BLUE, lw=3.5, alpha=0.5)
+    rr = np.array(SV[0]); foot = rr - 2 * MA * WA
+    ax.annotate("", foot, rr, arrowprops=dict(arrowstyle="<->", color=RED, lw=2.2, shrinkA=0, shrinkB=0))
+    ax.text(*(rr - MA * WA + np.array([0.25, -0.35])), f"2m = {2 * MA:.2f}", fontsize=13, color=RED, weight="bold", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.set_title("③ 3개: 파랑 2개가 기울기, 빨강 1개가 폭\n" + f"m = {MA:.2f}", fontsize=14, color=GOLDT)
+    save(fig, "sv_two_three.png")
+    return out
+
+
+FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
         "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "soft": fig_soft, "kernel": fig_kernel}
 
 if __name__ == "__main__":
