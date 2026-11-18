@@ -27,8 +27,8 @@ from sklearn.svm import SVC"""),
 
 원래 값에서 축마다 평균을 빼고 표준편차로 나눈다 (z-score). 슬라이드의 점은 이 값을 소수 첫째 자리로 반올림한 것."""),
 ("code", """# Same example as the slides: 10 red (+1) and 10 blue (-1) points, raw values
-X_raw = np.array([[4.0, 7.5], [3.0, 6.0], [4.5, 8.5], [2.0, 8.0], [3.5, 6.5], [2.5, 9.0], [5.0, 7.0], [1.5, 6.5], [4.0, 9.2], [2.2, 5.0],   # red
-              [8.5, 4.0], [8.0, 2.5], [7.5, 4.5], [7.0, 3.0], [9.0, 2.0], [6.5, 4.0], [8.0, 5.5], [7.0, 1.5], [8.8, 4.8], [6.0, 2.2]])  # blue
+X_raw = np.array([[7.5, 6.0], [6.0, 7.0], [8.5, 5.5], [8.0, 8.0], [6.5, 6.5], [9.0, 7.5], [7.0, 5.0], [6.5, 8.5], [9.2, 6.0], [5.0, 7.8],   # red
+              [4.0, 1.5], [2.5, 2.0], [4.5, 2.5], [3.0, 3.0], [2.0, 1.0], [4.0, 3.5], [5.5, 2.0], [1.5, 3.0], [4.8, 1.2], [2.2, 4.0]])  # blue
 y = np.array([1] * 10 + [-1] * 10)
 X = ((X_raw - X_raw.mean(0)) / X_raw.std(0)).round(1)     #@ANS X = None  # TODO: z-score each column, round to 1 decimal
 print("mean", X.mean(0).round(2), " std", X.std(0).round(2))
@@ -53,13 +53,13 @@ print("w =", w.round(3), " b =", round(b, 3), " m =", round(margin, 2), " street
 print("support vectors:", model.support_vectors_.tolist())
 
 X_moved = X.copy()
-X_moved[14] = [1.8, -2.1]                                 # move a far-away blue point
+X_moved[14] = [-2.1, -1.8]                                # move a far-away blue point
 model2 = SVC(kernel="linear", C=1e6).fit(X_moved, y)
 print("w after moving a far point:", model2.coef_[0].round(3))
 fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 plot_svm(model, X, y, axs[0], "original"); plot_svm(model2, X_moved, y, axs[1], "far point moved"); plt.show()"""),
 ("code", """# Soft margin: add one red outlier inside the blue group
-X_out = np.r_[X, [[0.6, -0.2]]]; y_out = np.r_[y, [1]]
+X_out = np.r_[X, [[-0.2, -0.6]]]; y_out = np.r_[y, [1]]
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 for ax, C in zip(axs, [100, 3, 0.3]):
     m = SVC(kernel="linear", C=C).fit(X_out, y_out)
