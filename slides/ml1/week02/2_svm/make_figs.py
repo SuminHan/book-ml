@@ -455,8 +455,26 @@ def fig_two_three():
     return out
 
 
+TR9 = {2: "1걸음 뒤", 3: "2걸음 뒤", 4: "3걸음 뒤", 5: "4걸음 뒤", 6: "5걸음 뒤", 10: "9걸음 뒤", 101: "100걸음 뒤", 1001: "1,000걸음 뒤", 20000: "2만 걸음 뒤"}
+
+
+def fig_train9():
+    """걸음별 9장 (3장씩 3쪽): 길 · 미는 점 · 경계선 식"""
+    _, _, _, sh = train_maxmin(X, y, snaps=tuple(TR9)); out = []
+    items = list(TR9.items())
+    for part in range(3):
+        fig, axs = plt.subplots(1, 3, figsize=(13.5, 5.6))
+        for ax, (t, ttl) in zip(axs, items[3 * part:3 * part + 3]):
+            w_, b_, act, m_ = sh[t]; pts(ax); street_m(ax, w_, b_, m_, X[act])
+            sg = "+" if b_ >= 0 else "−"
+            ax.set_title(f"{ttl}   m = {m_:.2f}\n${w_[0]:.2f}\\,x_1 + {w_[1]:.2f}\\,x_2 {sg} {abs(b_):.2f} = 0$", fontsize=18)
+            out.append((t, round(w_[0], 2), round(w_[1], 2), round(b_, 2), round(m_, 2), X[act].tolist()))
+        save(fig, f"sv_train9_{part + 1}.png")
+    return out
+
+
 FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
-        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "soft": fig_soft, "kernel": fig_kernel}
+        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
