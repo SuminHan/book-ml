@@ -552,22 +552,15 @@ RBF & $\exp\!\big(-\gamma \lVert \mathbf{x}-\mathbf{x}' \rVert^2\big)$
 % --- 장단점
 \begin{frame}{SVM 정리: 장점과 단점}
 \vfill
-\begin{columns}[t]
-\begin{column}{0.48\textwidth}
-{\Large\kb{장점}}\\[0.6em]
-{\large 볼록 최적화 $\to$ 답이 \textbf{하나}}\\[0.5em]
-{\large 예산 ($C$) 으로 과대적합 조절}\\[0.5em]
-{\large 커널로 경계 모양이 자유롭다}\\[0.5em]
-{\large 예측엔 서포트 벡터만 필요}
-\end{column}
-\begin{column}{0.48\textwidth}
-{\Large\kq{단점}}\\[0.6em]
-{\large $C$ · 커널 · $\gamma$ 를 골라야 한다 (교차 검증)}\\[0.5em]
-{\large 기본은 \textbf{두 클래스}용}\\[0.5em]
-{\large 해석이 어렵다, 확률을 주지 않는다}\\[0.5em]
-{\large 데이터가 아주 많으면 학습이 느리다}
-\end{column}
-\end{columns}
+\centering
+\renewcommand{\arraystretch}{1.6}
+{\large\begin{tabular}{c|c}
+{\Large\kb{장점}} & {\Large\kq{단점}}\\ \hline
+볼록 최적화 $\to$ 답이 \textbf{하나} & $C$ · 커널 · $\gamma$ 를 골라야 한다 (교차 검증)\\
+예산 ($C$) 으로 과대적합 조절 & 기본은 \textbf{두 클래스}용\\
+커널로 경계 모양이 자유롭다 & 해석이 어렵다, 확률을 주지 않는다\\
+예측엔 서포트 벡터만 필요 & 데이터가 아주 많으면 학습이 느리다
+\end{tabular}}
 \vfill
 \note{정리하면 SVM의 장점은 첫째, 볼록 최적화 문제라 답이 하나로 정해지고 시작점에 따라 달라지지 않습니다. 둘째, 예산이나 C로 과대적합을 조절할 수 있습니다. 셋째, 커널을 바꿔 경계 모양을 자유롭게 만들 수 있습니다. 넷째, 예측할 때 서포트 벡터만 있으면 됩니다. 단점은 C, 커널, 감마 같은 숫자를 교차 검증으로 골라야 하고, 기본적으로 두 클래스를 가르는 방법이며, 로지스틱회귀처럼 확률을 주지 않고 왜 그렇게 분류했는지 해석하기 어렵다는 점입니다. 데이터가 수십만 개를 넘으면 커널 SVM의 학습이 느려지는 것도 단점입니다.}
 \end{frame}
@@ -575,22 +568,15 @@ RBF & $\exp\!\big(-\gamma \lVert \mathbf{x}-\mathbf{x}' \rVert^2\big)$
 % --- 다중 클래스
 \begin{frame}{클래스가 3개 이상이면}
 \vfill
-\begin{columns}[t]
-\begin{column}{0.48\textwidth}
-{\Large\kb{일대일 (one-vs-one)}}\\[0.6em]
-{\large 클래스 두 개씩 짝마다 SVM}\\[0.4em]
-{\large $k(k-1)/2$ 개}\\[0.4em]
-{\large 예측: \textbf{다수결}}
-\end{column}
-\begin{column}{0.48\textwidth}
-{\Large\kq{일대다 (one-vs-all)}}\\[0.6em]
-{\large 클래스마다 ``나 vs 나머지'' SVM}\\[0.4em]
-{\large $k$ 개}\\[0.4em]
-{\large 예측: $f$ 가 가장 큰 클래스}
-\end{column}
-\end{columns}
-\vskip1em
-\centering{\large 숫자 0~9 ($k = 10$): \quad 일대일 \kb{45개} \quad 일대다 \kq{10개}}
+\centering
+\renewcommand{\arraystretch}{1.6}
+{\large\begin{tabular}{c|c|c}
+ & {\Large\kb{일대일 (one-vs-one)}} & {\Large\kq{일대다 (one-vs-all)}}\\ \hline
+만드는 법 & 클래스 두 개씩 짝마다 SVM & 클래스마다 ``나 vs 나머지'' SVM\\
+개수 & $k(k-1)/2$ 개 & $k$ 개\\
+예측 & \textbf{다수결} & $f$ 가 가장 큰 클래스\\ \hline
+숫자 0$\sim$9 ($k = 10$) & \kb{45개} & \kq{10개}
+\end{tabular}}
 \vfill
 \note{SVM은 초평면 하나로 두 쪽을 가르는 방법이라 기본은 두 클래스용입니다. 클래스가 k개면 두 가지 방법을 씁니다. 일대일은 클래스 두 개씩 짝을 지어 짝마다 SVM을 하나씩 만듭니다. k 곱하기 k 빼기 1 나누기 2개가 필요하고, 새 점은 모든 짝에서 이긴 클래스를 세어 가장 많이 이긴 클래스로 정합니다. sklearn의 SVC가 안에서 이 방식을 씁니다. 일대다는 클래스마다 나 대 나머지 전부로 SVM을 하나씩, 모두 k개 만들고, 새 점에서 f 값이 가장 큰, 즉 경계에서 가장 멀리 확신하는 클래스로 정합니다. 나머지 쪽이 훨씬 많아 불균형이 생길 수 있습니다. 손글씨 숫자 0부터 9까지면 일대일은 45개, 일대다는 10개입니다.}
 \end{frame}
