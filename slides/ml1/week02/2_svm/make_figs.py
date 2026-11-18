@@ -473,8 +473,32 @@ def fig_train9():
     return out
 
 
+def fig_rbf():
+    """RBF: ① K = exp(−γ d²) 가까움 점수 (γ 0.5 · 2 · 10) ② 1차원 예: f(x) = Σ α_i K(x, x_i) = 서포트 벡터마다 언덕을 더한 것 (γ 작음 · 큼)"""
+    fig, axs = plt.subplots(1, 3, figsize=(15, 4.6))
+    d = np.linspace(0, 3, 300); ax = axs[0]
+    for g, c in ((0.5, GOLD), (2, "black"), (10, RED)):
+        ax.plot(d, np.exp(-g * d ** 2), color=c, lw=2.8, label=f"γ = {g}")
+    ax.set_xlabel("두 점 사이 거리 $\\Vert\\mathbf{x} - \\mathbf{x}'\\Vert$"); ax.set_ylabel("K"); ax.legend(frameon=False, fontsize=13)
+    ax.set_title("$K = e^{-\\gamma \\Vert\\mathbf{x} - \\mathbf{x}'\\Vert^2}$: 가까우면 1, 멀면 0", fontsize=14)
+    S1 = np.array([-2.0, -0.8, 0.4, 1.6]); A1 = np.array([-1.0, 1.0, 1.0, -1.0]); xs1 = np.linspace(-3.2, 3.2, 600)
+    for ax, g in zip(axs[1:], (0.5, 10)):
+        bumps = A1[:, None] * np.exp(-g * (xs1[None] - S1[:, None]) ** 2); fx = bumps.sum(0)
+        for bmp, a in zip(bumps, A1):
+            ax.plot(xs1, bmp, color=RED if a > 0 else BLUE, lw=1.2, ls="--", alpha=0.7)
+        ax.plot(xs1, fx, color="black", lw=2.8)
+        ax.fill_between(xs1, -1.3, 1.3, where=fx > 0, color=RED, alpha=0.08); ax.fill_between(xs1, -1.3, 1.3, where=fx <= 0, color=BLUE, alpha=0.08)
+        ax.axhline(0, color=GRAY, lw=0.8)
+        ax.scatter(S1[A1 > 0], np.zeros((A1 > 0).sum()), s=90, color=RED, zorder=4); ax.scatter(S1[A1 < 0], np.zeros((A1 < 0).sum()), s=90, color=BLUE, marker="s", zorder=4)
+        ax.set_ylim(-1.3, 1.3); ax.set_xlim(-3.2, 3.2); ax.set_xlabel("$x$")
+        ax.set_title(f"γ = {g}: " + ("언덕이 넓다 → 매끈한 경계" if g < 1 else "언덕이 좁다 → 점마다 섬"), fontsize=14)
+    axs[1].text(0, -1.22, "점선 = 서포트 벡터 하나의 언덕,  검은 선 = 다 더한 $f(x)$", fontsize=11.5, ha="center", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    axs[2].text(0, -1.22, "점에서 멀면 $f \\approx 0$: 아무 언덕도 안 닿는다", fontsize=11.5, ha="center", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    save(fig, "sv_rbf.png")
+
+
 FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
-        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel}
+        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
