@@ -18,11 +18,11 @@ MEAN_D = (0.62, 0.70)                                     # 그 선에서 가장
 FAR_MOVE = ((-1.4, -1.5), (-2.1, -1.8))                     # 멀리 있는 파랑 점을 옮겨도 경계는 그대로
 OUTLIER = (-0.2, -0.6)                                     # 소프트 마진: 파랑 무리 안에 들어간 빨강 점
 NEWPT, M_NEW = (0.4, -0.8), 0.21                           # 최대 마진의 약점: 빨간 점 하나 추가 → m 0.67 → 0.21
-SOFT_B = {1: 0.0, 1 / 3: 1.79, 1 / 5: 2.41}   # 같은 답을 ISL 예산 꼴로 쓰면 B = Σ max(0, 1 − 값/m) = Σε / m
-SOFT_C_SAME = (1.5, 2, 2.5, 3, 4, 6, 10)       # λ = 1/3 과 같은 선이 나오는 sklearn C (범위로 겹친다)
-SOFT_STEPS = {1: (0, 0, 0, 0, 21), 2: (0.68, 0.73, 0.02, 0, 1), 6: (0.69, 0.73, 0.05, 0.07, 1), 51: (0.72, 0.7, 0.21, 0.39, 1),
-              101: (0.71, 0.71, 0.22, 0.49, 3), 301: (0.71, 0.71, 0.09, 0.61, 3), 501: (0.71, 0.71, 0.04, 0.67, 3), 20000: (0.71, 0.71, 0.04, 0.67, 3)}   # λ = 1/3 걸음 직전: (w1, w2, b, m, 미는 점 수)
-SOFT_LAM = {1: (100, 0.07, 3, 0.0), 1 / 3: (3, 0.67, 4, 1.2), 1 / 5: (0.5, 0.93, 7, 2.24)}   # 소프트 마진 λ: (같은 선이 나오는 sklearn C, m, 서포트 벡터 수, Σε) — 이상치 포함 21개, ε = 모자란 거리
+SOFT_B = {1: 0.0, 3: 1.79, 5: 2.41}   # 같은 답을 ISL 예산 꼴로 쓰면 B = Σ max(0, 1 − 값/m) = Σε / m
+SOFT_C_SAME = (1.5, 2, 2.5, 3, 4, 6, 10)       # λ = 3 과 같은 선이 나오는 sklearn C (범위로 겹친다)
+SOFT_STEPS = {1: (0, 0, 0, 0, 21), 2: (0.68, 0.73, 0.05, 0, 1), 6: (0.7, 0.71, 0.16, 0.22, 1), 11: (0.72, 0.69, 0.25, 0.4, 1), 21: (0.7, 0.71, 0.22, 0.5, 2),
+              31: (0.7, 0.71, 0.17, 0.55, 3), 51: (0.7, 0.71, 0.09, 0.63, 3), 101: (0.71, 0.71, 0.04, 0.68, 4), 20000: (0.71, 0.71, 0.04, 0.67, 4)}   # λ = 3 걸음 직전: (w1, w2, b, m, 미는 점 수)
+SOFT_LAM = {1: (100, 0.07, 3, 0.0), 3: (3, 0.67, 4, 1.2), 5: (0.5, 0.93, 7, 2.24)}   # 소프트 마진 λ: (같은 선이 나오는 sklearn C, m, 서포트 벡터 수, Σε) — 이상치 포함 21개, ε = 모자란 거리
 HYPER = (1, 2, 3)                                         # 초평면 예: 1 + 2 x1 + 3 x2 = 0 (ISL 그림 9.1 의 식)
 KX, KY = (1, 2), (3, 1)                                   # 커널 계산 예: (x·x')² = φ(x)·φ(x') = 25
 
@@ -58,16 +58,16 @@ def train_maxmin(X, y, T=MM_T, lr0=MM_LR, w0=(0, 0), b0=0.0, snaps=()):
 
 
 def train_soft(X, y, lam, T=MM_T, lr0=MM_LR, snaps=()):
-    """소프트 마진 (‖w‖ = 1): m − λ Σ max(0, m − y_i(w·x_i + b)) 를 최대로. 길 안 (값 < m) 점들 V 가 다 같이 민다.
-    w' = w + ηλ Σ_V y_i x_i, b' = b + ηλ Σ_V y_i, m' = max(0, m + η(1 − λ|V|))  → w 만 길이로 나눠 1 로 (w = 0 이면 그대로).
-    (첫 걸음은 하드 마진처럼 값이 가장 작은 점들). λ 마다 같은 선이 나오는 sklearn C 는 SOFT_LAM (아래 assert)"""
+    """소프트 마진 (‖w‖ = 1): λ·m − Σ max(0, m − y_i(w·x_i + b)) 를 최대로 (λ = 길 안에 둬도 되는 점의 수).
+    길 안 (값 < m) 점들 V 가 다 같이 민다: w' = w + η Σ_V y_i x_i, b' = b + η Σ_V y_i, m' = max(0, m + η(λ − |V|))
+    → w 만 길이로 나눠 1 로. (첫 걸음은 하드 마진처럼 값이 가장 작은 점들). λ 마다 같은 선이 나오는 sklearn C 는 SOFT_LAM (아래 assert)"""
     w, b, m = np.zeros(X.shape[1]), 0.0, 0.0; shots = {}
     for t in range(1, T + 1):
         v = y * (X @ w + b); V = v <= v.min() + 1e-9 if t == 1 else v < m
         if t in snaps:
             shots[t] = (w.copy(), b, V.copy(), m)                     # t 걸음 직전 = (t − 1) 걸음 뒤
         eta = lr0 / np.sqrt(t)
-        w = w + eta * lam * (y[V, None] * X[V]).sum(0); b = b + eta * lam * y[V].sum(); m = max(0.0, m + eta * (1 - lam * V.sum()))   # 길 폭은 0 아래로 X
+        w = w + eta * (y[V, None] * X[V]).sum(0); b = b + eta * y[V].sum(); m = max(0.0, m + eta * (lam - V.sum()))   # 길 폭은 0 아래로 X
         n = np.linalg.norm(w)
         if n > 0:
             w = w / n
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         v = yo * (Xo @ wl + bl)
         assert (round(ml, 2), int((v <= ml + 2e-3).sum()), round(np.maximum(0, ml - v).sum(), 2)) == (mg, nsv, es), (lam, ml, v)
         assert round(np.maximum(0, 1 - v / ml).sum(), 2) == SOFT_B[lam]
-    _, _, _, shs = train_soft(Xo, yo, 1 / 3, snaps=tuple(SOFT_STEPS))
+    _, _, _, shs = train_soft(Xo, yo, 3, snaps=tuple(SOFT_STEPS))
     for t, row in SOFT_STEPS.items():
         w_, b_, V_, m_ = shs[t]; assert (round(w_[0], 2), round(w_[1], 2), round(b_, 2) + 0.0, round(m_, 2) + 0.0, int(V_.sum())) == row, (t, w_, b_, m_)
     w3 = unit(SVC(kernel="linear", C=3).fit(Xo, yo))

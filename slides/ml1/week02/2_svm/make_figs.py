@@ -348,7 +348,7 @@ def fig_soft():
     axs[1].set_title(f"빨간 점 하나 추가: m {MA:.2f} → {M_NEW}", fontsize=16)
     save(fig, "sv_sensitive.png")
     sol = {lam: train_soft(Xo, yo, lam)[:3] for lam in SOFT_LAM}                     # 직접 짠 소프트 마진 학습 (data.train_soft)
-    lam = 1 / 5; w, b, m = sol[lam]; v = yo * (Xo @ w + b); eps = np.maximum(0, m - v)   # ε = 모자란 거리
+    lam = 5; w, b, m = sol[lam]; v = yo * (Xo @ w + b); eps = np.maximum(0, m - v)   # ε = 모자란 거리
     fig, ax = plt.subplots(figsize=(6.0, 6.0)); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= m + 2e-3])
     lab = []
     for i in np.where(eps > 1e-3)[0]:
@@ -357,10 +357,10 @@ def fig_soft():
         ax.annotate(f"ε {eps[i]:.2f}", p, POS.get(tuple(np.round(p, 1)), tuple(p + np.array([0.5, 0.4]))), fontsize=12, fontweight="bold", color=c, zorder=6,
                     bbox=dict(fc="white", ec="none", pad=1, alpha=0.9), arrowprops=dict(arrowstyle="-", color=c, lw=1.2))
         lab.append((tuple(p), round(eps[i], 2)))
-    ax.set_title(f"λ = 1/5: m = {m:.2f}\nε > 0: 길 안 · ε > m: 틀림", fontsize=14)
+    ax.set_title(f"λ = 5: m = {m:.2f}\nε > 0: 길 안 · ε > m: 틀림", fontsize=14)
     save(fig, "sv_slack.png")
     fig, axs = plt.subplots(1, 3, figsize=(14, 5.6))
-    for ax, (lam, name) in zip(axs, ((1, "1"), (1 / 3, "1/3"), (1 / 5, "1/5"))):
+    for ax, (lam, name) in zip(axs, ((1, "1"), (3, "3"), (5, "5"))):
         w, b, m = sol[lam]; v = yo * (Xo @ w + b); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= m + 2e-3])
         _, mg, nsv, _ = SOFT_LAM[lam]
         ax.set_title(f"λ = {name}\nm = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
@@ -471,10 +471,10 @@ def fig_train9():
     return out
 
 
-TS9 = {2: "1걸음 뒤", 6: "5걸음 뒤", 21: "20걸음 뒤", 51: "50걸음 뒤", 101: "100걸음 뒤", 301: "300걸음 뒤", 501: "500걸음 뒤", 1001: "1,000걸음 뒤", 20000: "2만 걸음 뒤"}
+TS9 = {2: "1걸음 뒤", 6: "5걸음 뒤", 11: "10걸음 뒤", 21: "20걸음 뒤", 31: "30걸음 뒤", 51: "50걸음 뒤", 101: "100걸음 뒤", 1001: "1,000걸음 뒤", 20000: "2만 걸음 뒤"}
 
 
-def fig_soft9(lam=1 / 3):
+def fig_soft9(lam=3):
     """소프트 마진 걸음별 9장 (3장씩 3쪽): 길 (폭 m, 따로 움직임) · 미는 점 V (m 보다 가까운 점 모두) · 경계선 식. 이상치 포함 21개"""
     Xo = np.r_[X, [OUTLIER]]; yo = np.r_[y, [1]]
     _, _, _, sh = train_soft(Xo, yo, lam, snaps=tuple(TS9)); out = []
