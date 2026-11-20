@@ -18,6 +18,8 @@ MEAN_D = (0.62, 0.70)                                     # 그 선에서 가장
 FAR_MOVE = ((-1.4, -1.5), (-2.1, -1.8))                     # 멀리 있는 파랑 점을 옮겨도 경계는 그대로
 OUTLIER = (-0.2, -0.6)                                     # 소프트 마진: 파랑 무리 안에 들어간 빨강 점
 NEWPT, M_NEW = (0.4, -0.8), 0.21                           # 최대 마진의 약점: 빨간 점 하나 추가 → m 0.67 → 0.21
+SOFT_B = {1: 0.0, 1 / 3: 1.79, 1 / 5: 2.41}   # 같은 답을 ISL 예산 꼴로 쓰면 B = Σ max(0, 1 − 값/m) = Σε / m
+SOFT_C_SAME = (1.5, 2, 2.5, 3, 4, 6, 10)       # λ = 1/3 과 같은 선이 나오는 sklearn C (범위로 겹친다)
 SOFT_LAM = {1: (100, 0.07, 3, 0.0), 1 / 3: (3, 0.67, 4, 1.2), 1 / 5: (0.5, 0.93, 7, 2.24)}   # 소프트 마진 λ: (같은 선이 나오는 sklearn C, m, 서포트 벡터 수, Σε) — 이상치 포함 21개, ε = 모자란 거리
 HYPER = (1, 2, 3)                                         # 초평면 예: 1 + 2 x1 + 3 x2 = 0 (ISL 그림 9.1 의 식)
 KX, KY = (1, 2), (3, 1)                                   # 커널 계산 예: (x·x')² = φ(x)·φ(x') = 25
@@ -113,4 +115,8 @@ if __name__ == "__main__":
         assert np.allclose(wl, ws, atol=3e-3) and abs(bl - bs) < 3e-3 and abs(ml - ms) < 3e-3, (lam, wl, bl, ml, ws, bs, ms)
         v = yo * (Xo @ wl + bl)
         assert (round(ml, 2), int((v <= ml + 2e-3).sum()), round(np.maximum(0, ml - v).sum(), 2)) == (mg, nsv, es), (lam, ml, v)
+        assert round(np.maximum(0, 1 - v / ml).sum(), 2) == SOFT_B[lam]
+    w3 = unit(SVC(kernel="linear", C=3).fit(Xo, yo))
+    for C in SOFT_C_SAME:
+        assert np.allclose(np.r_[unit(SVC(kernel="linear", C=C).fit(Xo, yo))[0], unit(SVC(kernel="linear", C=C).fit(Xo, yo))[1:]], np.r_[w3[0], w3[1:]], atol=1e-3), C
     print("data ok")
