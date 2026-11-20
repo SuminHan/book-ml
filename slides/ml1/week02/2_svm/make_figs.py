@@ -347,25 +347,23 @@ def fig_soft():
     axs[1].scatter(*NEWPT, s=380, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=5)
     axs[1].set_title(f"빨간 점 하나 추가: m {MA:.2f} → {M_NEW}", fontsize=16)
     save(fig, "sv_sensitive.png")
-    Cs = sorted(BUDGET, reverse=True)
-    ms = SVC(kernel="linear", C=Cs[-1]).fit(Xo, yo); eps = np.maximum(0, 1 - yo * ms.decision_function(Xo))
-    fig, ax = plt.subplots(figsize=(6.0, 6.0)); pts(ax, Xo, yo); svm_street(ax, ms, Xo)
+    sol = {lam: train_soft(Xo, yo, lam) for lam in SOFT_LAM}                     # 직접 짠 소프트 마진 학습 (data.train_soft)
+    lam = 1 / 5; w, b, m = sol[lam]; v = yo * (Xo @ w + b); eps = np.maximum(0, m - v)   # ε = 모자란 거리
+    fig, ax = plt.subplots(figsize=(6.0, 6.0)); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= m + 2e-3])
     lab = []
     for i in np.where(eps > 1e-3)[0]:
-        c = RED if eps[i] > 1 else "#e8590c"; p = Xo[i]
-        off = np.array([-0.9, 0.3]) if yo[i] > 0 else np.array([-0.95, 0.35])
-        if eps[i] > 1:
-            off = np.array([0.6, -0.7])
-        ax.annotate(f"ε {eps[i]:.2f}", p, p + off, fontsize=12, fontweight="bold", color=c, zorder=6,
+        c = RED if eps[i] > m else "#e8590c"; p = Xo[i]
+        POS = {(0.7, 0.2): (1.15, -0.2), (-0.6, -0.4): (-0.95, 0.4), (0.1, -1.1): (0.75, -1.55), (-0.2, -0.6): (0.45, -0.5)}   # 글자 자리 (다른 점과 안 겹치게)
+        ax.annotate(f"ε {eps[i]:.2f}", p, POS.get(tuple(np.round(p, 1)), tuple(p + np.array([0.5, 0.4]))), fontsize=12, fontweight="bold", color=c, zorder=6,
                     bbox=dict(fc="white", ec="none", pad=1, alpha=0.9), arrowprops=dict(arrowstyle="-", color=c, lw=1.2))
         lab.append((tuple(p), round(eps[i], 2)))
-    ax.set_title(f"ε > 0: 가장자리를 넘음 · ε > 1: 틀림\nΣε = {eps.sum():.2f} (예산 B)", fontsize=14)
+    ax.set_title(f"λ = 1/5: m = {m:.2f}\nε > 0: 길 안 · ε > m: 틀림", fontsize=14)
     save(fig, "sv_slack.png")
     fig, axs = plt.subplots(1, 3, figsize=(14, 5.6))
-    for ax, C in zip(axs, Cs):
-        m = SVC(kernel="linear", C=C).fit(Xo, yo); pts(ax, Xo, yo); svm_street(ax, m, Xo)
-        bud, mg, nsv = BUDGET[C]
-        ax.set_title(f"예산 B = {bud:.2f}\nm = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
+    for ax, (lam, name) in zip(axs, ((1, "1"), (1 / 3, "1/3"), (1 / 5, "1/5"))):
+        w, b, m = sol[lam]; v = yo * (Xo @ w + b); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= m + 2e-3])
+        _, mg, nsv, _ = SOFT_LAM[lam]
+        ax.set_title(f"λ = {name}\nm = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
     save(fig, "sv_soft.png")
     return lab
 

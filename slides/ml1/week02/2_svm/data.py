@@ -18,7 +18,7 @@ MEAN_D = (0.62, 0.70)                                     # 그 선에서 가장
 FAR_MOVE = ((-1.4, -1.5), (-2.1, -1.8))                     # 멀리 있는 파랑 점을 옮겨도 경계는 그대로
 OUTLIER = (-0.2, -0.6)                                     # 소프트 마진: 파랑 무리 안에 들어간 빨강 점
 NEWPT, M_NEW = (0.4, -0.8), 0.21                           # 최대 마진의 약점: 빨간 점 하나 추가 → m 0.67 → 0.21
-BUDGET = {100: (0.0, 0.07, 3), 3: (1.79, 0.67, 4), 0.3: (2.47, 0.95, 8)}   # sklearn C: (예산 B = Σε, m, 서포트 벡터 수) — 이상치 포함
+SOFT_LAM = {1: (100, 0.07, 3, 0.0), 1 / 3: (3, 0.67, 4, 1.2), 1 / 5: (0.5, 0.93, 7, 2.24)}   # 소프트 마진 λ: (같은 선이 나오는 sklearn C, m, 서포트 벡터 수, Σε) — 이상치 포함 21개, ε = 모자란 거리
 HYPER = (1, 2, 3)                                         # 초평면 예: 1 + 2 x1 + 3 x2 = 0 (ISL 그림 9.1 의 식)
 KX, KY = (1, 2), (3, 1)                                   # 커널 계산 예: (x·x')² = φ(x)·φ(x') = 25
 
@@ -56,7 +56,7 @@ def train_maxmin(X, y, T=MM_T, lr0=MM_LR, w0=(0, 0), b0=0.0, snaps=()):
 def train_soft(X, y, lam, T=MM_T, lr0=MM_LR):
     """소프트 마진 (‖w‖ = 1): m − λ Σ max(0, m − y_i(w·x_i + b)) 를 최대로. 길 안 (값 < m) 점들 V 가 다 같이 민다.
     w' = w + ηλ Σ_V y_i x_i, b' = b + ηλ Σ_V y_i, m' = m + η(1 − λ|V|)  → w 만 길이로 나눠 1 로 (w = 0 이면 그대로).
-    (첫 걸음은 하드 마진처럼 값이 가장 작은 점들 = 20개 모두). λ = 1/3 은 sklearn C = 3 과 같은 답 (아래 assert)"""
+    (첫 걸음은 하드 마진처럼 값이 가장 작은 점들). λ 마다 같은 선이 나오는 sklearn C 는 SOFT_LAM (아래 assert)"""
     w, b, m = np.zeros(X.shape[1]), 0.0, 0.0
     for t in range(1, T + 1):
         v = y * (X @ w + b); V = v <= v.min() + 1e-9 if t == 1 else v < m
@@ -68,7 +68,6 @@ def train_soft(X, y, lam, T=MM_T, lr0=MM_LR):
     return w, b, m
 
 
-SOFT = {3: (1 / 3, 0.672, 1.79), 0.5: (1 / 5, 0.930, 2.41)}   # sklearn C: (λ, m, 예산 B) — 이상치 포함 21개, 직접 짠 소프트 마진 학습과 같은 선
 
 
 def phi(v):
@@ -99,9 +98,6 @@ if __name__ == "__main__":
     assert np.allclose(SVC(kernel="linear", C=1e6).fit(X2, y).coef_, m.coef_, atol=1e-3)
     assert round(unit(SVC(kernel="linear", C=1e6).fit(np.r_[X, [NEWPT]], np.r_[y, 1]))[2], 2) == M_NEW
     Xo = np.r_[X, [OUTLIER]]; yo = np.r_[y, [1]]
-    for C, (bud, mg, nsv) in BUDGET.items():
-        mb_ = SVC(kernel="linear", C=C).fit(Xo, yo); e = np.maximum(0, 1 - yo * mb_.decision_function(Xo))
-        assert (round(e.sum(), 2), round(unit(mb_)[2], 2), len(mb_.support_)) == (bud, mg, nsv), C
     assert np.dot(KX, KY) ** 2 == 25 and round(float(phi(KX) @ phi(KY)), 6) == 25
     assert tuple(np.round((y[:, None] * X).sum(0), 1)) == SUM_YX
     s1 = MM_LR * np.array(SUM_YX); assert tuple(np.round(s1 / np.linalg.norm(s1), 2)) == STEP1_W
@@ -112,8 +108,9 @@ if __name__ == "__main__":
     _, _, _, shm = train_maxmin(X, y, snaps=tuple(MM_STEPS))
     for t, (a1, a2, bb, m_, k) in MM_STEPS.items():
         w_, b_, act, mt = shm[t]; assert (round(w_[0], 2), round(w_[1], 2), round(b_, 2) + 0.0, round(mt, 2), int(act.sum())) == (a1, a2, bb, m_, k), (t, w_, b_, mt)
-    for C, (lam, mg, bud) in SOFT.items():
+    for lam, (C, mg, nsv, es) in SOFT_LAM.items():
         ws, bs, ms = unit(SVC(kernel="linear", C=C).fit(Xo, yo)); wl, bl, ml = train_soft(Xo, yo, lam)
-        assert np.allclose(wl, ws, atol=3e-3) and abs(bl - bs) < 3e-3 and abs(ml - ms) < 3e-3 and round(ms, 3) == mg, (C, wl, bl, ml, ws, bs, ms)
-        assert round(np.maximum(0, 1 - yo * (Xo @ ws + bs) / ms).sum(), 2) == bud
+        assert np.allclose(wl, ws, atol=3e-3) and abs(bl - bs) < 3e-3 and abs(ml - ms) < 3e-3, (lam, wl, bl, ml, ws, bs, ms)
+        v = yo * (Xo @ wl + bl)
+        assert (round(ml, 2), int((v <= ml + 2e-3).sum()), round(np.maximum(0, ml - v).sum(), 2)) == (mg, nsv, es), (lam, ml, v)
     print("data ok")
