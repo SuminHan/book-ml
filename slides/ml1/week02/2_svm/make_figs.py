@@ -365,7 +365,7 @@ def fig_soft():
     for ax, C in zip(axs, Cs):
         m = SVC(kernel="linear", C=C).fit(Xo, yo); pts(ax, Xo, yo); svm_street(ax, m, Xo)
         bud, mg, nsv = BUDGET[C]
-        ax.set_title(f"예산 B = {bud:.2f}  (sklearn C = {C})\nm = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
+        ax.set_title(f"예산 B = {bud:.2f}\nm = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
     save(fig, "sv_soft.png")
     return lab
 
