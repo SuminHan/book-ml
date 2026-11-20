@@ -514,8 +514,40 @@ def fig_rbf_degree(G=(0.25, 1, 2.5, 5), D=22):
     return out
 
 
+def fig_hills(G=1.0):
+    """원점 언덕 1개 (x1, x2, e^{-γ‖x‖²}) 에 선형 SVM  vs  RBF SVM (서포트 벡터마다 언덕). 원 · 반달 데이터 (z-score). 배경 = f(x), 검은 선 = 경계"""
+    sets = [("원", *make_circles(160, factor=0.45, noise=0.12, random_state=3)), ("반달", *make_moons(150, noise=0.15, random_state=0))]
+    sets = [(n, (X_ - X_.mean(0)) / X_.std(0), y_) for n, X_, y_ in sets]
+    hill = lambda A: np.c_[A, np.exp(-G * (A ** 2).sum(1))]                             # 원점 언덕 하나를 셋째 특징으로
+    fig, axs = plt.subplots(1, 4, figsize=(16, 5.0)); out = {}
+    L = 2.9; gx, gy = np.meshgrid(np.linspace(-L, L, 260), np.linspace(-L, L, 260)); P = np.c_[gx.ravel(), gy.ravel()]
+    for j, (r, (name, Xd, yd)) in enumerate([(0, sets[0]), (0, sets[1]), (1, sets[0]), (1, sets[1])]):
+        ax = axs[j]
+        if r == 0:
+            m = SVC(kernel="linear", C=1).fit(hill(Xd), yd); Z = m.decision_function(hill(P)); acc = m.score(hill(Xd), yd)
+            ax.scatter([0], [0], marker="*", s=420, color=GOLD, edgecolor="black", zorder=6); ttl = f"{name} 데이터: 정확도 {acc:.0%}"
+        else:
+            m = SVC(kernel="rbf", gamma=G, C=1).fit(Xd, yd); Z = m.decision_function(P); acc = m.score(Xd, yd)
+            sv = Xd[m.support_]; sg = np.sign(m.dual_coef_[0])
+            ax.scatter(sv[:, 0], sv[:, 1], s=130, facecolors="none", edgecolors=np.where(sg > 0, RED, BLUE), lw=1.6, zorder=5)
+            ttl = f"{name} 데이터: 정확도 {acc:.0%} (언덕 {len(sv)}개)"
+        Z = Z.reshape(gx.shape); lim = np.abs(Z).max()
+        ax.contourf(gx, gy, Z, levels=np.linspace(-lim, lim, 21), cmap="RdBu_r", alpha=0.45)
+        ax.contour(gx, gy, Z, levels=[0], colors="black", linewidths=2.5)
+        ax.scatter(Xd[yd == 1, 0], Xd[yd == 1, 1], color=RED, s=12, zorder=4); ax.scatter(Xd[yd == 0, 0], Xd[yd == 0, 1], color=BLUE, s=12, marker="s", zorder=4)
+        ax.set_xlim(-L, L); ax.set_ylim(-L, L); ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal"); ax.set_title(ttl, fontsize=14)
+        for s_ in ax.spines.values(): s_.set_visible(True)
+        out[(r, name)] = round(acc, 3)
+    fig.tight_layout(rect=(0, 0, 1, 0.86))
+    fig.text(0.26, 0.93, "원점에 언덕 1개 (높이 $x_1^2 + x_2^2$ 와 같은 생각)", ha="center", fontsize=17, color=GOLDT)
+    fig.text(0.76, 0.93, "RBF SVM: 서포트 벡터마다 언덕", ha="center", fontsize=17)
+    fig.add_artist(plt.Line2D([0.5, 0.5], [0.05, 0.95], color=GRAY, lw=1.2, ls="--"))
+    fig.savefig(O + "sv_hills.png"); plt.close(fig)
+    return out
+
+
 FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
-        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf, "rbfdeg": fig_rbf_degree}
+        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf, "rbfdeg": fig_rbf_degree, "hills": fig_hills}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
