@@ -474,26 +474,13 @@ def fig_train9():
 
 
 def fig_rbf():
-    """RBF: ① K = exp(−γ d²) 가까움 점수 (γ 0.5 · 2 · 10) ② 1차원 예: f(x) = Σ α_i K(x, x_i) = 서포트 벡터마다 언덕을 더한 것 (γ 작음 · 큼)"""
-    fig, axs = plt.subplots(1, 3, figsize=(15, 4.6))
-    d = np.linspace(0, 3, 300); ax = axs[0]
+    """RBF 커널 = 두 점의 가까움 점수: K = exp(−γ d²), 같은 점이면 1, 멀면 0. γ 0.5 · 2 · 10"""
+    fig, ax = plt.subplots(figsize=(8, 4.2))
+    d = np.linspace(0, 3, 300)
     for g, c in ((0.5, GOLD), (2, "black"), (10, RED)):
-        ax.plot(d, np.exp(-g * d ** 2), color=c, lw=2.8, label=f"γ = {g}")
-    ax.set_xlabel("두 점 사이 거리 $\\Vert\\mathbf{x} - \\mathbf{x}'\\Vert$"); ax.set_ylabel("K"); ax.legend(frameon=False, fontsize=13)
-    ax.set_title("$K = e^{-\\gamma \\Vert\\mathbf{x} - \\mathbf{x}'\\Vert^2}$: 가까우면 1, 멀면 0", fontsize=14)
-    S1 = np.array([-2.0, -0.8, 0.4, 1.6]); A1 = np.array([-1.0, 1.0, 1.0, -1.0]); xs1 = np.linspace(-3.2, 3.2, 600)
-    for ax, g in zip(axs[1:], (0.5, 10)):
-        bumps = A1[:, None] * np.exp(-g * (xs1[None] - S1[:, None]) ** 2); fx = bumps.sum(0)
-        for bmp, a in zip(bumps, A1):
-            ax.plot(xs1, bmp, color=RED if a > 0 else BLUE, lw=1.2, ls="--", alpha=0.7)
-        ax.plot(xs1, fx, color="black", lw=2.8)
-        ax.fill_between(xs1, -1.3, 1.3, where=fx > 0, color=RED, alpha=0.08); ax.fill_between(xs1, -1.3, 1.3, where=fx <= 0, color=BLUE, alpha=0.08)
-        ax.axhline(0, color=GRAY, lw=0.8)
-        ax.scatter(S1[A1 > 0], np.zeros((A1 > 0).sum()), s=90, color=RED, zorder=4); ax.scatter(S1[A1 < 0], np.zeros((A1 < 0).sum()), s=90, color=BLUE, marker="s", zorder=4)
-        ax.set_ylim(-1.3, 1.3); ax.set_xlim(-3.2, 3.2); ax.set_xlabel("$x$")
-        ax.set_title(f"γ = {g}: " + ("언덕이 넓다 → 매끈한 경계" if g < 1 else "언덕이 좁다 → 점마다 섬"), fontsize=14)
-    axs[1].text(0, -1.22, "점선 = 서포트 벡터 하나의 언덕,  검은 선 = 다 더한 $f(x)$", fontsize=11.5, ha="center", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
-    axs[2].text(0, -1.22, "점에서 멀면 $f \\approx 0$: 아무 언덕도 안 닿는다", fontsize=11.5, ha="center", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+        ax.plot(d, np.exp(-g * d ** 2), color=c, lw=3, label=f"γ = {g}")
+    ax.set_xlabel("두 점 사이 거리 $\\Vert\\mathbf{x} - \\mathbf{x}'\\Vert$"); ax.set_ylabel("$K(\\mathbf{x}, \\mathbf{x}')$"); ax.legend(frameon=False, fontsize=14)
+    ax.set_ylim(0, 1.05); ax.set_xlim(0, 3)
     save(fig, "sv_rbf.png")
 
 
@@ -515,39 +502,56 @@ def fig_rbf_degree(G=(0.25, 1, 2.5, 5), D=22):
 
 
 def fig_hills(G=1.0):
-    """원점 언덕 1개 (x1, x2, e^{-γ‖x‖²}) 에 선형 SVM  vs  RBF SVM (서포트 벡터마다 언덕). 원 · 반달 데이터 (z-score). 배경 = f(x), 검은 선 = 경계"""
-    sets = [("원", *make_circles(160, factor=0.45, noise=0.12, random_state=3)), ("반달", *make_moons(150, noise=0.15, random_state=0))]
-    sets = [(n, (X_ - X_.mean(0)) / X_.std(0), y_) for n, X_, y_ in sets]
-    hill = lambda A: np.c_[A, np.exp(-G * (A ** 2).sum(1))]                             # 원점 언덕 하나를 셋째 특징으로
-    fig, axs = plt.subplots(1, 4, figsize=(16, 5.0)); out = {}
+    """반달 데이터 (z-score): 원점 언덕 1개를 셋째 특징으로 (x1, x2, e^{-γ‖x‖²}) + 선형 SVM  vs  RBF SVM (서포트 벡터마다 언덕). 배경 = f(x), 검은 선 = 경계"""
+    Xd, yd = make_moons(150, noise=0.15, random_state=0); Xd = (Xd - Xd.mean(0)) / Xd.std(0)
+    hill = lambda A: np.c_[A, np.exp(-G * (A ** 2).sum(1))]
+    fig, axs = plt.subplots(1, 2, figsize=(11.5, 5.6)); out = {}
     L = 2.9; gx, gy = np.meshgrid(np.linspace(-L, L, 260), np.linspace(-L, L, 260)); P = np.c_[gx.ravel(), gy.ravel()]
-    for j, (r, (name, Xd, yd)) in enumerate([(0, sets[0]), (0, sets[1]), (1, sets[0]), (1, sets[1])]):
-        ax = axs[j]
+    for r, ax in enumerate(axs):
         if r == 0:
             m = SVC(kernel="linear", C=1).fit(hill(Xd), yd); Z = m.decision_function(hill(P)); acc = m.score(hill(Xd), yd)
-            ax.scatter([0], [0], marker="*", s=420, color=GOLD, edgecolor="black", zorder=6); ttl = f"{name} 데이터: 정확도 {acc:.0%}"
+            ax.scatter([0], [0], marker="*", s=480, color=GOLD, edgecolor="black", zorder=6)
+            ttl = f"특징 3개: $x_1, x_2$, 원점 언덕 높이\n정확도 {acc:.0%}"
         else:
             m = SVC(kernel="rbf", gamma=G, C=1).fit(Xd, yd); Z = m.decision_function(P); acc = m.score(Xd, yd)
             sv = Xd[m.support_]; sg = np.sign(m.dual_coef_[0])
-            ax.scatter(sv[:, 0], sv[:, 1], s=130, facecolors="none", edgecolors=np.where(sg > 0, RED, BLUE), lw=1.6, zorder=5)
-            ttl = f"{name} 데이터: 정확도 {acc:.0%} (언덕 {len(sv)}개)"
+            ax.scatter(sv[:, 0], sv[:, 1], s=130, facecolors="none", edgecolors=np.where(sg > 0, RED, BLUE), lw=1.8, zorder=5)
+            ttl = f"RBF: 서포트 벡터 {len(sv)}개 자리마다 언덕\n정확도 {acc:.0%}"
         Z = Z.reshape(gx.shape); lim = np.abs(Z).max()
         ax.contourf(gx, gy, Z, levels=np.linspace(-lim, lim, 21), cmap="RdBu_r", alpha=0.45)
         ax.contour(gx, gy, Z, levels=[0], colors="black", linewidths=2.5)
-        ax.scatter(Xd[yd == 1, 0], Xd[yd == 1, 1], color=RED, s=12, zorder=4); ax.scatter(Xd[yd == 0, 0], Xd[yd == 0, 1], color=BLUE, s=12, marker="s", zorder=4)
-        ax.set_xlim(-L, L); ax.set_ylim(-L, L); ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal"); ax.set_title(ttl, fontsize=14)
+        ax.scatter(Xd[yd == 1, 0], Xd[yd == 1, 1], color=RED, s=14, zorder=4); ax.scatter(Xd[yd == 0, 0], Xd[yd == 0, 1], color=BLUE, s=14, marker="s", zorder=4)
+        ax.set_xlim(-L, L); ax.set_ylim(-L, L); ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal"); ax.set_title(ttl, fontsize=15)
         for s_ in ax.spines.values(): s_.set_visible(True)
-        out[(r, name)] = round(acc, 3)
-    fig.tight_layout(rect=(0, 0, 1, 0.86))
-    fig.text(0.26, 0.93, "원점에 언덕 1개 (높이 $x_1^2 + x_2^2$ 와 같은 생각)", ha="center", fontsize=17, color=GOLDT)
-    fig.text(0.76, 0.93, "RBF SVM: 서포트 벡터마다 언덕", ha="center", fontsize=17)
-    fig.add_artist(plt.Line2D([0.5, 0.5], [0.05, 0.95], color=GRAY, lw=1.2, ls="--"))
-    fig.savefig(O + "sv_hills.png"); plt.close(fig)
+        out[r] = round(acc, 3)
+    save(fig, "sv_hills.png")
     return out
 
 
+def fig_hill_count(G=1.0):
+    """RBF 피처 수: 반달 150점 → 언덕 후보 150개 (γ 하나, 폭 같음) → 학습 뒤 α ≠ 0 인 서포트 벡터 언덕만 남음"""
+    Xd, yd = make_moons(150, noise=0.15, random_state=0); Xd = (Xd - Xd.mean(0)) / Xd.std(0)
+    m = SVC(kernel="rbf", gamma=G, C=1).fit(Xd, yd); sv = m.support_; al = m.dual_coef_[0]
+    L = 2.9; gx, gy = np.meshgrid(np.linspace(-L, L, 240), np.linspace(-L, L, 240)); P = np.c_[gx.ravel(), gy.ravel()]
+    hills = lambda C_, W: (np.exp(-G * ((P[:, None, :] - C_[None]) ** 2).sum(2)) * W).sum(1).reshape(gx.shape)
+    fig, axs = plt.subplots(1, 2, figsize=(11.5, 5.4))
+    Z0 = hills(Xd, np.where(yd == 1, 1.0, -1.0)) / 8                       # 후보 언덕: 높이를 모두 같게 (부호만)
+    Z1 = m.decision_function(P).reshape(gx.shape)
+    for ax, Z, ttl in ((axs[0], Z0, f"① 언덕 후보 {len(Xd)}개 = 학습 점마다 하나\n(폭은 γ = {G:g} 하나로 모두 같다)"),
+                       (axs[1], Z1, f"③ 학습 뒤: α ≠ 0 인 언덕 {len(sv)}개만 남음\n(나머지 {len(Xd) - len(sv)}개는 α = 0)")):
+        lim = np.abs(Z).max(); ax.contourf(gx, gy, Z, levels=np.linspace(-lim, lim, 21), cmap="RdBu_r", alpha=0.45)
+        ax.scatter(Xd[yd == 1, 0], Xd[yd == 1, 1], color=RED, s=14, zorder=4); ax.scatter(Xd[yd == 0, 0], Xd[yd == 0, 1], color=BLUE, s=14, marker="s", zorder=4)
+        ax.set_xlim(-L, L); ax.set_ylim(-L, L); ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal"); ax.set_title(ttl, fontsize=14)
+        for s_ in ax.spines.values(): s_.set_visible(True)
+    axs[0].scatter(Xd[:, 0], Xd[:, 1], s=110, facecolors="none", edgecolors=np.where(yd == 1, RED, BLUE), lw=1.0, alpha=0.7, zorder=5)
+    axs[1].scatter(Xd[sv, 0], Xd[sv, 1], s=130, facecolors="none", edgecolors=np.where(al > 0, RED, BLUE), lw=1.8, zorder=5)
+    axs[1].contour(gx, gy, Z1, levels=[0], colors="black", linewidths=2.5)
+    save(fig, "sv_hill_count.png")
+    return len(Xd), len(sv)
+
+
 FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
-        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf, "rbfdeg": fig_rbf_degree, "hills": fig_hills}
+        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf, "rbfdeg": fig_rbf_degree, "hills": fig_hills, "hillcount": fig_hill_count}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
