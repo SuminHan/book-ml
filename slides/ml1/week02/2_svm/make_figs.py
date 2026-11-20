@@ -398,11 +398,11 @@ def fig_kernel():
     Xk, yk = make_circles(160, factor=0.45, noise=0.12, random_state=3)
     gx, gy = np.meshgrid(np.linspace(-1.5, 1.5, 300), np.linspace(-1.5, 1.5, 300))
     fig, axs = plt.subplots(1, 3, figsize=(13, 4.4))
-    for ax, (ttl, mk) in zip(axs, (("선형 커널", SVC(kernel="linear", C=1)), ("3차 다항 커널", SVC(kernel="poly", degree=3, coef0=1, C=1)), ("RBF 커널", SVC(kernel="rbf", gamma=1, C=1)))):
+    for ax, (ttl, mk) in zip(axs, (("선형 커널", SVC(kernel="linear", C=1)), ("다항 커널 (d = 3)", SVC(kernel="poly", degree=3, gamma=1, coef0=1, C=1)), ("RBF 커널 (γ = 1)", SVC(kernel="rbf", gamma=1, C=1)))):
         mk.fit(Xk, yk); Zk = mk.decision_function(np.c_[gx.ravel(), gy.ravel()]).reshape(gx.shape)
         ax.contourf(gx, gy, Zk > 0, alpha=0.15, colors=[BLUE, RED]); ax.contour(gx, gy, Zk, levels=[0], colors="black", linewidths=2.5)
         ax.scatter(Xk[yk == 1, 0], Xk[yk == 1, 1], color=RED, s=16); ax.scatter(Xk[yk == 0, 0], Xk[yk == 0, 1], color=BLUE, s=16, marker="s")
-        ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal"); ax.set_title(f"{ttl}: 학습 정확도 {mk.score(Xk, yk):.0%}", fontsize=15)
+        ax.set_xticks([]); ax.set_yticks([]); ax.set_aspect("equal"); ax.set_title(f"{ttl}\n학습 정확도 {mk.score(Xk, yk):.0%}", fontsize=15)
     save(fig, "sv_kernels.png")
 
 
