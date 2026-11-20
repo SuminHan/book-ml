@@ -87,4 +87,19 @@ for r_, x in zip(b, v): ax.text(r_.get_x() + r_.get_width() / 2, x + 1.5, f"{x}%
 ax.axhline(50, ls="--", color=GRAY); ax.text(3.45, 51.5, "찍기 50%", color=GRAY, fontsize=12, ha="right")
 ax.set_xlabel("더한 잡음 특징 수 (원래 특징 2개)"); ax.set_ylabel("kNN 정확도 (%)"); ax.set_ylim(0, 105)
 save(fig, "kn_noise.png")
+# 8. 손글씨 숫자 (MNIST): 질의 3장과 가장 가까운 5장 (exp_mnist.py). 칸 위치를 직접 정한다 (tight_layout 이 글자 때문에 그림을 줄임)
+E = np.load("assets/mnist_examples.npz")
+fig = plt.figure(figsize=(11, 5.6)); S, H = 0.105, 0.205                       # 칸 너비 · 높이 (그림 비율)
+fig.text(0.075, 0.95, "처음 보는 글씨", fontsize=15, ha="center"); fig.text(0.53, 0.95, "가장 가까운 5장 (학습 60,000장 중)", fontsize=15, ha="center")
+def cell(img, x, y0, col, ttl, tcol="black"):
+    a = fig.add_axes([x, y0, S, H]); a.imshow(img, cmap="gray_r"); a.set_xticks([]); a.set_yticks([])
+    for s_ in a.spines.values(): s_.set_visible(True); s_.set_color(col); s_.set_linewidth(3)
+    a.set_title(ttl, fontsize=13, color=tcol, pad=3)
+for r in range(3):
+    y0 = 0.65 - r * 0.31
+    cell(E["q"][r], 0.025, y0, GOLD, f"정답 {E['ql'][r]}")
+    for j in range(5):
+        good = E["nl"][r, j] == E["ql"][r]
+        cell(E["nb"][r, j], 0.2 + j * 0.135, y0, BLUE if good else RED, f"{E['nl'][r, j]} · 거리 {E['nd'][r, j]:.1f}", "black" if good else RED)
+fig.savefig(O + "kn_mnist.png"); plt.close(fig)
 print("ok")
