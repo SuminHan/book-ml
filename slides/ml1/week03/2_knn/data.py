@@ -31,6 +31,8 @@ RATIO = {int(k): v for k, v in _J["ratio"].items()}
 NOISE_ACC = {int(k): round(v * 100) for k, v in _J["acc"].items()}
 _M = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "mnist.json")))   # exp_mnist.py
 MNIST_ACC = {int(k): round(v * 100, 1) for k, v in _M["acc"].items()}      # 손글씨 숫자 시험 정확도 (%), 학습 60,000장
+MNIST_NN = {int(k): round(v["acc"] * 100, 1) for k, v in _M["nn"].items()}  # 비교: 신경망 (은닉층 64) 1에폭 · 10에폭 시험 정확도 (%)
+MNIST_RIGHT1, MNIST_ONE_D = _M["right_k1"], round(_M["one_dist"], 2)        # k=1 맞힌 수 (10,000장 중), 그림 속 7 과 가장 가까운 장까지 거리
 
 if __name__ == "__main__":
     assert len(PTS) == 21 and sum(l == "귤" for _, l in PTS) == 13
@@ -40,4 +42,5 @@ if __name__ == "__main__":
     n, v = knn(PTS, Q, 3, sy=10); assert [l for _, l in n] == SWEET10 and v == "귤"
     assert (round(RATIO[2], 2), round(RATIO[1000], 1)) == (0.01, 0.9) and NOISE_ACC == {0: 90, 10: 80, 100: 66, 1000: 56}
     assert MNIST_ACC == {1: 96.9, 3: 97.2, 5: 96.9, 7: 97.0} and _M["n_train"] == 60000 and _M["n_test"] == 10000
+    assert MNIST_NN == {1: 96.3, 10: 97.7} and MNIST_RIGHT1 == 9691 and MNIST_ONE_D == 2.65
     print("data ok")

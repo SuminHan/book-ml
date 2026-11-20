@@ -27,3 +27,31 @@ np.savez_compressed(f"{HERE}/assets/mnist_examples.npz", q=Xt[Q].reshape(-1, 28,
 json.dump(dict(acc=acc, ms_per_query=sec / len(Xt) * 1000, n_train=len(y), n_test=len(yt), wrong_k3=len(bad), Q=[int(q) for q in Q]),
           open(f"{HERE}/assets/mnist.json", "w"), indent=1)
 print({k: round(v, 4) for k, v in acc.items()}, f"{sec:.1f}s", "틀림", len(bad), "Q", Q, "nl", y[NB[Q, :5]].tolist(), ND[Q, :5].round(2).tolist())
+
+# --- 1-NN 한 장 (릴스형 그림): 시험 0번 글씨, 가장 가까운 학습 그림, 숫자별 학습 그림 40장씩 (가장 가까운 장 포함)
+q0 = 0; n0 = int(NB[q0, 0]); G = 40
+grid = []
+for d in range(10):
+    ids = [i for i in np.where(y == d)[0][:G]]
+    if d == y[n0]: ids = ids[:G // 2] + [n0] + ids[G // 2:G - 1]       # 가장 가까운 장을 줄 가운데에
+    grid.append(ids)
+grid = np.array(grid)
+
+# --- 비교용 신경망: 은닉층 64 (ReLU), 미니배치 32, 학습률 0.3, 시드 0 (week07 SGD 덱과 같은 설정). 1에폭 · 10에폭
+import torch, torch.nn as nn, torch.nn.functional as F
+torch.manual_seed(0); torch.set_num_threads(4)
+Xtr, ytr, Xte = torch.tensor(X), torch.tensor(y), torch.tensor(Xt)
+net = nn.Sequential(nn.Linear(784, 64), nn.ReLU(), nn.Linear(64, 10)); opt = torch.optim.SGD(net.parameters(), lr=0.3)
+nn_acc, nn_steps = {}, 0
+for ep in range(1, 11):
+    perm = torch.randperm(len(ytr), generator=torch.Generator().manual_seed(ep))
+    for i in range(0, len(ytr), 32):
+        b = perm[i:i + 32]; opt.zero_grad(); F.cross_entropy(net(Xtr[b]), ytr[b]).backward(); opt.step(); nn_steps += 1
+    if ep in (1, 10):
+        with torch.no_grad(): nn_acc[ep] = dict(acc=float((net(Xte).argmax(1).numpy() == yt).mean()), steps=nn_steps)
+np.savez_compressed(f"{HERE}/assets/mnist_one.npz", q=Xt[q0].reshape(28, 28), ql=yt[q0], nb=X[n0].reshape(28, 28), nl=y[n0], nd=ND[q0, 0],
+                    grid=X[grid].reshape(10, G, 28, 28), pos=np.array([int(y[n0]), G // 2]))
+J = json.load(open(f"{HERE}/assets/mnist.json")); J.update(nn=nn_acc, one_dist=float(ND[q0, 0]), one_label=int(y[n0]),
+                                                       right_k1=int((vote(1) == yt).sum()), right_k3=int((vote(3) == yt).sum()))
+json.dump(J, open(f"{HERE}/assets/mnist.json", "w"), indent=1)
+print("1-NN", yt[q0], "->", y[n0], round(float(ND[q0, 0]), 2), "NN", nn_acc, "right", J["right_k1"], J["right_k3"])

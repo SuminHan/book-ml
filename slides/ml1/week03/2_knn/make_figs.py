@@ -102,4 +102,45 @@ for r in range(3):
         good = E["nl"][r, j] == E["ql"][r]
         cell(E["nb"][r, j], 0.2 + j * 0.135, y0, BLUE if good else RED, f"{E['nl'][r, j]} · 거리 {E['nd'][r, j]:.1f}", "black" if good else RED)
 fig.savefig(O + "kn_mnist.png"); plt.close(fig)
+# 9. 학습 없이 가장 가까운 한 장 (1-NN): 처음 보는 7 · 6만 장 중 가장 가까운 장 · 숫자별 학습 그림 · 신경망과 비교
+E1 = np.load("assets/mnist_one.npz"); G1 = E1["grid"]
+fig = plt.figure(figsize=(11, 6.6))
+def tile(img, rect, col, ttl):
+    a = fig.add_axes(rect); a.imshow(img, cmap="gray_r"); a.set_xticks([]); a.set_yticks([])
+    for s_ in a.spines.values(): s_.set_visible(True); s_.set_color(col); s_.set_linewidth(3)
+    a.set_title(ttl, fontsize=14, pad=4)
+tile(E1["q"], [0.13, 0.66, 0.15, 0.25], GOLD, "처음 보는 글씨")
+tile(E1["nb"], [0.72, 0.66, 0.15, 0.25], BLUE, "가장 가까운 한 장")
+fig.text(0.205, 0.625, f"정답 {E1['ql']}", ha="center", fontsize=14)
+fig.text(0.795, 0.625, f"{E1['nl']} → 답 {E1['nl']}", ha="center", fontsize=14, color=BLUE, fontweight="bold")
+fig.text(0.5, 0.80, "거리", ha="center", fontsize=14, color=GRAY)
+fig.text(0.5, 0.735, f"{MNIST_ONE_D}", ha="center", fontsize=30, fontweight="bold")
+fig.text(0.5, 0.69, "학습 60,000장 중 가장 작다", ha="center", fontsize=12.5, color=GRAY)
+big = np.ones((10 * 30, G1.shape[1] * 30))
+for d in range(10):
+    for j in range(G1.shape[1]): big[d * 30 + 1:d * 30 + 29, j * 30 + 1:j * 30 + 29] = G1[d, j]
+a = fig.add_axes([0.06, 0.2, 0.9, 0.38]); a.imshow(big, cmap="gray_r", aspect="auto", vmin=0, vmax=1)
+a.set_xticks([]); a.set_yticks(np.arange(10) * 30 + 15); a.set_yticklabels(range(10), fontsize=11)
+for s_ in a.spines.values(): s_.set_visible(False)
+r_, c_ = E1["pos"]; a.add_patch(plt.Rectangle((c_ * 30 - 0.5, r_ * 30 - 0.5), 30, 30, fill=False, ec=BLUE, lw=2.5))
+a.set_title("학습 그림 (숫자마다 40장만 보임, 실제로는 모두 60,000장)", fontsize=12.5, loc="left", color=GRAY)
+fig.text(0.3, 0.085, f"{MNIST_NN[1]}%", ha="center", fontsize=30, fontweight="bold", color=GRAY)
+fig.text(0.3, 0.035, "신경망: 1에폭 (1,875걸음) 학습", ha="center", fontsize=13, color=GRAY)
+fig.text(0.72, 0.085, f"{MNIST_ACC[1]}%", ha="center", fontsize=30, fontweight="bold", color=BLUE)
+fig.text(0.72, 0.035, "가장 가까운 한 장: 학습 없음", ha="center", fontsize=13, color=BLUE)
+fig.savefig(O + "kn_mnist_one.png"); plt.close(fig)
+# 10. MNIST 에서 kNN 하는 법: 그림 → 픽셀 784개 = 점 하나, 두 그림의 거리 = 칸마다 차이를 제곱해 더하고 루트
+fig = plt.figure(figsize=(11, 4.4))
+dif = E1["q"] - E1["nb"]
+for x0, img, cm, ttl, col in ((0.03, E1["q"], "gray_r", "처음 보는 글씨", GOLD), (0.30, E1["nb"], "gray_r", "학습 그림 한 장", BLUE),
+                              (0.62, dif, "bwr", "칸마다 차이", GRAY)):
+    a = fig.add_axes([x0, 0.22, 0.2, 0.6]); a.imshow(img, cmap=cm, vmin=-1 if cm == "bwr" else 0, vmax=1)
+    a.set_xticks([]); a.set_yticks([]); a.set_title(ttl, fontsize=15)
+    for s_ in a.spines.values(): s_.set_visible(True); s_.set_color(col); s_.set_linewidth(2.5)
+fig.text(0.265, 0.5, "vs", ha="center", va="center", fontsize=20); fig.text(0.56, 0.5, "→", ha="center", va="center", fontsize=26)
+fig.text(0.13, 0.1, "28 × 28 = 784칸, 칸마다 진하기 0~1\n→ 그림 한 장 = 특징 784개인 점 하나", ha="center", fontsize=13)
+fig.text(0.72, 0.1, "빨강: 처음 보는 글씨만 진함 · 파랑: 학습 그림만 진함", ha="center", fontsize=12, color=GRAY)
+fig.text(0.92, 0.6, "제곱해서\n784개 더하고\n루트", ha="center", fontsize=14)
+fig.text(0.92, 0.33, f"거리 {MNIST_ONE_D}", ha="center", fontsize=20, fontweight="bold")
+fig.savefig(O + "kn_mnist_how.png"); plt.close(fig)
 print("ok")
