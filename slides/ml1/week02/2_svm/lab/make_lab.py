@@ -14,7 +14,7 @@ CELLS = [
 
 가장 넓은 길을 내는 분류기. 마진과 서포트 벡터를 확인하고, 실제 데이터와 휘어진 데이터에서 C · γ 를 고른다.
 
-- **파트 1**: 슬라이드의 점 20개를 z-score 하고: 마진 m 0.67 (길 폭 1.34), 서포트 벡터 3개
+- **파트 1**: 슬라이드의 점 20개를 z-score 하고: 마진 m 0.67 (길 폭 1.34), 서포트 벡터 3개, 슬라이드의 학습 방법을 직접 짜서 sklearn 과 비교
 - **파트 2**: 지폐 1,372장 진위 판별: 선형 vs RBF
 - **파트 3**: 원 · 반달 데이터에서 C 와 γ 를 교차 검증으로
 
@@ -58,6 +58,27 @@ model2 = SVC(kernel="linear", C=1e6).fit(X_moved, y)
 print("w after moving a far point:", model2.coef_[0].round(3))
 fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 plot_svm(model, X, y, axs[0], "original"); plot_svm(model2, X_moved, y, axs[1], "far point moved"); plt.show()"""),
+("md", """### 슬라이드의 학습 방법을 직접 짜서 sklearn 과 비교
+
+슬라이드 \"학습 한 걸음\": 값이 가장 작은 점이 민다 → $\\mathbf{w}$ 길이가 1 을 넘으면 $\\mathbf{w}$ 만 길이로 나눈다 ($b$ 는 그대로). 2만 걸음 뒤 sklearn 답과 같은지 확인한다."""),
+("code", """def train_maxmin(X, y, steps=20000, lr0=0.05):
+    w, b = np.zeros(X.shape[1]), 0.0
+    for t in range(1, steps + 1):
+        v = y * (X @ w + b)                                # value = distance to the line (||w|| = 1)
+        k = v <= v.min() + 1e-9                            # the closest point(s) push; at the start all 20 tie
+        eta = lr0 / np.sqrt(t)
+        w = w + eta * (y[k, None] * X[k]).sum(0)           #@ANS w = None  # TODO: w' = w + eta * sum(y_k x_k)
+        b = b + eta * y[k].sum()
+        n = np.linalg.norm(w)
+        if n > 1:
+            w = w / n                                      # only w is rescaled to length 1; b stays
+    return w, b
+
+w_mine, b_mine = train_maxmin(X, y)
+m_mine = (y * (X @ w_mine + b_mine)).min()
+print("mine   : w =", w_mine.round(3), " b =", round(b_mine, 3), " m =", round(m_mine, 3))
+print("sklearn: w =", w.round(3), " b =", round(b, 3), " m =", round(margin, 3))
+print("angle between the two w (deg):", round(np.degrees(np.arccos(w_mine @ w / np.linalg.norm(w_mine))), 3))"""),
 ("code", """# Soft margin: add one red outlier inside the blue group
 X_out = np.r_[X, [[-0.2, -0.6]]]; y_out = np.r_[y, [1]]
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))

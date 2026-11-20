@@ -245,6 +245,7 @@ def fig_push(t=2, S=1.1, KW=10, KB=10):
     _, _, _, sh = train_maxmin(X, y, snaps=(t,), T=t)
     w, b, act, m = sh[t]; k = np.where(act)[0][0]; xk, yk = X[k], y[k]; col = RED if yk > 0 else BLUE
     eta = MM_LR / np.sqrt(t); wf = w + eta * yk * xk; bb = b + eta * yk
+    wf = wf / max(1.0, np.linalg.norm(wf))                                # 3단계: w 만 길이 1 로 (b 는 그대로)
     dist = lambda w_, b_: yk * (w_ @ xk + b_) / np.linalg.norm(w_)
     u = w / np.linalg.norm(w)
     fig, axs = plt.subplots(1, 2, figsize=(12.4, 6.0))
@@ -454,7 +455,7 @@ def fig_two_three():
     return out
 
 
-TR9 = {2: "1걸음 뒤", 3: "2걸음 뒤", 4: "3걸음 뒤", 5: "4걸음 뒤", 6: "5걸음 뒤", 10: "9걸음 뒤", 101: "100걸음 뒤", 1001: "1,000걸음 뒤", 20000: "2만 걸음 뒤"}
+TR9 = {2: "1걸음 뒤", 3: "2걸음 뒤", 4: "3걸음 뒤", 5: "4걸음 뒤", 6: "5걸음 뒤", 11: "10걸음 뒤", 101: "100걸음 뒤", 1001: "1,000걸음 뒤", 20000: "2만 걸음 뒤"}
 
 
 def fig_train9():
