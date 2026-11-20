@@ -363,22 +363,6 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 \note{최대 마진 초평면을 찾는 문제를 교과서에 나오는 그대로 쓰면 이렇습니다. 학습 데이터가 n개, 특징이 p개이고 라벨은 플러스 1 아니면 마이너스 1입니다. b부터 wp, 그리고 마진 m을 골라서 m을 최대로 합니다. 조건은 두 가지입니다. w1부터 wp까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 m 이상. 앞 쪽에서 읽은 2차원 식을 특징이 p개인 경우로 그대로 늘린 것입니다.}
 \end{frame}
 
-% --- 참고: sklearn 의 표기
-\begin{frame}{참고: sklearn 은 $\lVert\mathbf{w}\rVert$ 대신 가장 가까운 값을 1 로 둔다}
-\vfill
-\centering
-\renewcommand{\arraystretch}{1.6}
-{\large\begin{tabular}{l|c|c}
- & 이 덱 (ISL) & sklearn (보통 교과서)\\ \hline
-1 로 고정 & $\lVert\mathbf{w}\rVert = 1$ & 가장 가까운 값 $= 1$\\
-조건 & $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge m$ & $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$\\
-목표 & $m$ 최대 & $\tfrac{1}{2}\lVert\mathbf{w}\rVert^2$ 최소 \;($m = 1/\lVert\mathbf{w}\rVert$)\\ \hline
-이 데이터 & $\mathbf{w} = (0.71, 0.71)$, $m = 0.67$ & \texttt{coef\_} $= (1.05, 1.05)$, $1/1.49 = 0.67$
-\end{tabular}}\\[0.8em]
-{\large 같은 선, 크기 맞추는 기준만 다르다 \quad \texttt{coef\_} $/ \lVert$\texttt{coef\_}$\rVert$ = 이 덱의 $\mathbf{w}$}
-\vfill
-\note{sklearn의 SVC나 대부분의 교과서, 논문은 같은 문제를 다르게 씁니다. 이 덱은 w의 길이를 1로 고정하고 m을 최대로 했습니다. sklearn 쪽은 w의 길이 대신 가장 가까운 점의 값을 1로 고정합니다. 그러면 가장 가까운 점까지의 거리는 1 나누기 w의 길이가 되니, 거리를 키우는 것은 w의 길이를 줄이는 것과 같습니다. 그래서 2분의 1 w 길이 제곱을 최소로 합니다. 2분의 1과 제곱은 미분했을 때 식이 깔끔해지라고 붙인 것입니다. 찾는 선은 똑같고, 숫자의 크기만 다릅니다. 이 데이터에서 sklearn의 coef는 1.05, 1.05이고 길이가 1.49라서, 1 나누기 1.49가 0.67, 이 덱의 m과 같습니다. coef를 길이로 나누면 0.71, 0.71, 이 덱의 w입니다. 실습 노트북에서도 이렇게 나눠서 씁니다. 소프트 마진에서는 이 식에 C 곱하기 넘어간 양의 합을 더해서 최소로 하는데, 이것이 sklearn의 C입니다. 넘어간 만큼의 벌점에 곱하는 무게라서, 이 덱의 예산 B와 뜻이 반대입니다. 덱 안에서는 끝까지 w의 길이 1 기준만 씁니다.}
-\end{frame}
 
 \section{소프트 마진}
 % --- 최대 마진의 약점
@@ -439,7 +423,7 @@ $B$ & 넘어가도 되는 \kb{총 예산}
 \begin{frame}{예산 $B$: 크면 넓은 길, 작으면 좁은 길}
 \vfill
 \centering\includegraphics[width=0.8\linewidth]{sv_soft.png}\par\vskip0.1em
-{\large $B$ 크면 넓은 길 \quad sklearn $C$ 는 \kq{반대}}
+{\large $B$ 크면 넓은 길 \quad sklearn $C$ 는 \kq{반대} \pref{sklearnform}}
 \vfill
 \note{예산을 바꿔 봅시다. 예산이 0이면 하나도 넘어가면 안 되니 이상치를 피해 가느라 마진이 0.07로 아주 좁고, 서포트 벡터는 3개입니다. 예산이 1.79면 이상치 하나만 틀리기로 하고, 원래 데이터와 같은 마진 0.67, 서포트 벡터 4개입니다. 예산이 2.47이면 여러 점이 길 안에 들어오는 대신 마진이 0.95로 넓어지고 서포트 벡터가 8개로 늘어납니다. 예산이 크면 경계가 여러 점의 영향을 고루 받아 덜 흔들리니 분산은 작고 편향은 큽니다. 예산이 작으면 반대입니다. 예산 B도 교차 검증으로 고릅니다. 주의할 점이 있습니다. 교과서 ISL과 이 강의 원본은 이 예산을 C라고 부릅니다. 그런데 sklearn의 C는 넘어간 만큼의 벌점에 곱하는 무게라서 뜻이 반대입니다. sklearn의 C가 크면 벌점이 무거워 좁은 길, 작으면 넓은 길입니다. 그림 제목에 두 숫자를 같이 적어 두었습니다.}
 \end{frame}
@@ -655,4 +639,24 @@ Banknote Authentication (Lohweg; UCI) \\[0.4em]\href{https://colab.research.goog
 \vfill
 \note{정리합니다. 초평면은 값의 부호로 공간을 둘로 나눕니다. 최대 마진 분류기는 가장 가까운 점까지의 거리 m을 최대로 하는 초평면이고, w의 길이를 1로 맞추면 값이 곧 거리입니다. 경계는 서포트 벡터 몇 개가 정합니다. 학습은 점들을 z-score 한 뒤 매 걸음 가장 가까운 점이 선을 밀고 w의 길이를 다시 1로 맞추는 것을 반복하고, sklearn은 SMO라는 다른 풀이법으로 같은 답을 냅니다. 깔끔하게 나뉘지 않으면 슬랙 엡실론과 예산 B를 두는 소프트 마진을 쓰고, 예산이 크면 넓은 길입니다. sklearn의 C는 뜻이 반대라는 데 주의합니다. 점곱을 커널로 바꾸면 휘어진 경계를 만들 수 있고, 클래스가 여러 개면 일대일이나 일대다로 SVM을 여러 개 만듭니다.}
 \end{frame}
+\appendix
+\section{Appendix}
+% --- Appendix: sklearn 의 표기
+\begin{frame}{Appendix: sklearn 은 $\lVert\mathbf{w}\rVert$ 대신 가장 가까운 값을 1 로 둔다}
+\markpage{sklearnform}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.6}
+{\large\begin{tabular}{l|c|c}
+ & 이 덱 (ISL) & sklearn (보통 교과서)\\ \hline
+1 로 고정 & $\lVert\mathbf{w}\rVert = 1$ & 가장 가까운 값 $= 1$\\
+조건 & $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge m$ & $y_i(\mathbf{w}\cdot\mathbf{x}_i + b) \ge 1$\\
+목표 & $m$ 최대 & $\tfrac{1}{2}\lVert\mathbf{w}\rVert^2$ 최소 \;($m = 1/\lVert\mathbf{w}\rVert$)\\ \hline
+이 데이터 & $\mathbf{w} = (0.71, 0.71)$, $m = 0.67$ & \texttt{coef\_} $= (1.05, 1.05)$, $1/1.49 = 0.67$
+\end{tabular}}\\[0.8em]
+{\large 같은 선, 크기 맞추는 기준만 다르다 \quad \texttt{coef\_} $/ \lVert$\texttt{coef\_}$\rVert$ = 이 덱의 $\mathbf{w}$}
+\vfill
+\note{sklearn의 SVC나 대부분의 교과서, 논문은 같은 문제를 다르게 씁니다. 이 덱은 w의 길이를 1로 고정하고 m을 최대로 했습니다. sklearn 쪽은 w의 길이 대신 가장 가까운 점의 값을 1로 고정합니다. 그러면 가장 가까운 점까지의 거리는 1 나누기 w의 길이가 되니, 거리를 키우는 것은 w의 길이를 줄이는 것과 같습니다. 그래서 2분의 1 w 길이 제곱을 최소로 합니다. 2분의 1과 제곱은 미분했을 때 식이 깔끔해지라고 붙인 것입니다. 찾는 선은 똑같고, 숫자의 크기만 다릅니다. 이 데이터에서 sklearn의 coef는 1.05, 1.05이고 길이가 1.49라서, 1 나누기 1.49가 0.67, 이 덱의 m과 같습니다. coef를 길이로 나누면 0.71, 0.71, 이 덱의 w입니다. 실습 노트북에서도 이렇게 나눠서 씁니다. 소프트 마진에서는 이 식에 C 곱하기 넘어간 양의 합을 더해서 최소로 하는데, 이것이 sklearn의 C입니다. 넘어간 만큼의 벌점에 곱하는 무게라서, 이 덱의 예산 B와 뜻이 반대입니다. 덱 안에서는 끝까지 w의 길이 1 기준만 씁니다.}
+\end{frame}
+
 \end{document}
