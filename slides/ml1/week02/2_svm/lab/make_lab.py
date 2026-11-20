@@ -60,7 +60,7 @@ fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 plot_svm(model, X, y, axs[0], "original"); plot_svm(model2, X_moved, y, axs[1], "far point moved"); plt.show()"""),
 ("md", """### 슬라이드의 학습 방법을 직접 짜서 sklearn 과 비교
 
-슬라이드 \"학습 한 걸음\": 값이 가장 작은 점이 민다 → $\\mathbf{w}$ 길이가 1 을 넘으면 $\\mathbf{w}$ 만 길이로 나눈다 ($b$ 는 그대로). 2만 걸음 뒤 sklearn 답과 같은지 확인한다."""),
+슬라이드 \"학습 한 걸음\": 값이 가장 작은 점이 민다 → $\\mathbf{w}$ 만 길이로 나눠 1 로 맞춘다 ($b$ 는 그대로). 2만 걸음 뒤 sklearn 답과 같은지 확인한다."""),
 ("code", """def train_maxmin(X, y, steps=20000, lr0=0.05):
     w, b = np.zeros(X.shape[1]), 0.0
     for t in range(1, steps + 1):
@@ -70,7 +70,7 @@ plot_svm(model, X, y, axs[0], "original"); plot_svm(model2, X_moved, y, axs[1], 
         w = w + eta * (y[k, None] * X[k]).sum(0)           #@ANS w = None  # TODO: w' = w + eta * sum(y_k x_k)
         b = b + eta * y[k].sum()
         n = np.linalg.norm(w)
-        if n > 1:
+        if n > 0:
             w = w / n                                      # only w is rescaled to length 1; b stays
     return w, b
 

@@ -15,7 +15,7 @@ def train(X, y, scale_b, T=MM_T, lr0=MM_LR):
         if t > T - 1000: pushed |= act
         eta = lr0 / np.sqrt(t); w = w + eta * (y[act, None] * X[act]).sum(0); b = b + eta * y[act].sum()
         n = np.linalg.norm(w)
-        if n > 1: w, b = w / n, (b / n if scale_b else b)
+        if n > 0: w, b = w / n, (b / n if scale_b else b)
     return w, b, pushed
 
 

@@ -22,7 +22,7 @@ BUDGET = {100: (0.0, 0.07, 3), 3: (1.79, 0.67, 4), 0.3: (2.47, 0.95, 8)}   # skl
 HYPER = (1, 2, 3)                                         # 초평면 예: 1 + 2 x1 + 3 x2 = 0 (ISL 그림 9.1 의 식)
 KX, KY = (1, 2), (3, 1)                                   # 커널 계산 예: (x·x')² = φ(x)·φ(x') = 25
 
-# 학습 (‖w‖ = 1): 매 걸음 값이 가장 작은 점이 민다 → w 길이가 1 넘으면 w 만 길이로 나눈다 (b 는 그대로). 학습률 하나 η = 0.05/√걸음
+# 학습 (‖w‖ = 1): 매 걸음 값이 가장 작은 점이 민다 → w 만 길이로 나눠 1 로 맞춘다 (b 는 그대로). 학습률 하나 η = 0.05/√걸음
 MM_T, MM_LR = 20000, 0.05
 SUM_YX = (16.5, 18.2)                                    # 1걸음: 20개 모두 밀 때 Σ y_i x_i = 빨강 합 − 파랑 합
 STEP1_W = (0.67, 0.74)                                    # 0.05 × (16.5, 18.2) = (0.83, 0.91), 길이 1.23 → 1 로
@@ -34,7 +34,8 @@ SHIFT = 100                                               # z-score 안 하면: 
 
 def train_maxmin(X, y, T=MM_T, lr0=MM_LR, w0=(0, 0), b0=0.0, snaps=()):
     """‖w‖ = 1 로 맞춘 채 가장 가까운 점까지 거리 m = min y_i (w·x_i + b) 를 키운다.
-    한 걸음: 값이 가장 작은 점(들) k 가 w' = w + η Σ y_k x_k, b' = b + η Σ y_k  → ‖w'‖ > 1 이면 w 만 ‖w'‖ 로 나눈다 (b 는 그대로).
+    한 걸음: 값이 가장 작은 점(들) k 가 w' = w + η Σ y_k x_k, b' = b + η Σ y_k  → w 만 ‖w'‖ 로 나눠 길이 1 로 (b 는 그대로). 출발 w = 0 만 나누지 않는다.
+    (교과서는 ‖w'‖ > 1 일 때만 나누지만 (≤ 1 로 사영) 이 데이터에선 답이 같다: _이전/data_v13_1넘을때만.py)
     (w 와 b 를 둘 다 나누면 b 가 매 걸음 0 쪽으로 끌려가 정답 b 가 클 때 답에 못 간다: 무작위 데이터 200개 중 17개 실패, verify_sklearn.py. 옛 판 _이전/data_v11_wb둘다나눔.py)
     반환: 마지막 (w, b), 걸음마다 민 점 (T × n), snaps 걸음 직전의 (w, b, 미는 점, m)."""
     w, b = np.array(w0, float), float(b0)
@@ -47,14 +48,14 @@ def train_maxmin(X, y, T=MM_T, lr0=MM_LR, w0=(0, 0), b0=0.0, snaps=()):
         eta = lr0 / np.sqrt(t)
         w, b = w + eta * (y[act, None] * X[act]).sum(0), b + eta * y[act].sum()
         n = np.linalg.norm(w)
-        if n > 1:
+        if n > 0:
             w = w / n
     return w, b, pushed, shots
 
 
 def train_soft(X, y, lam, T=MM_T, lr0=MM_LR):
     """소프트 마진 (‖w‖ = 1): m − λ Σ max(0, m − y_i(w·x_i + b)) 를 최대로. 길 안 (값 < m) 점들 V 가 다 같이 민다.
-    w' = w + ηλ Σ_V y_i x_i, b' = b + ηλ Σ_V y_i, m' = m + η(1 − λ|V|)  → ‖w'‖ > 1 이면 w 만 길이로 나눈다.
+    w' = w + ηλ Σ_V y_i x_i, b' = b + ηλ Σ_V y_i, m' = m + η(1 − λ|V|)  → w 만 길이로 나눠 1 로 (w = 0 이면 그대로).
     (첫 걸음은 하드 마진처럼 값이 가장 작은 점들 = 20개 모두). λ = 1/3 은 sklearn C = 3 과 같은 답 (아래 assert)"""
     w, b, m = np.zeros(X.shape[1]), 0.0, 0.0
     for t in range(1, T + 1):
@@ -62,7 +63,7 @@ def train_soft(X, y, lam, T=MM_T, lr0=MM_LR):
         eta = lr0 / np.sqrt(t)
         w = w + eta * lam * (y[V, None] * X[V]).sum(0); b = b + eta * lam * y[V].sum(); m = m + eta * (1 - lam * V.sum())
         n = np.linalg.norm(w)
-        if n > 1:
+        if n > 0:
             w = w / n
     return w, b, m
 
