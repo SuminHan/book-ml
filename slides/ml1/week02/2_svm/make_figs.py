@@ -347,7 +347,7 @@ def fig_soft():
     axs[1].scatter(*NEWPT, s=380, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=5)
     axs[1].set_title(f"빨간 점 하나 추가: m {MA:.2f} → {M_NEW}", fontsize=16)
     save(fig, "sv_sensitive.png")
-    sol = {lam: train_soft(Xo, yo, lam) for lam in SOFT_LAM}                     # 직접 짠 소프트 마진 학습 (data.train_soft)
+    sol = {lam: train_soft(Xo, yo, lam)[:3] for lam in SOFT_LAM}                     # 직접 짠 소프트 마진 학습 (data.train_soft)
     lam = 1 / 5; w, b, m = sol[lam]; v = yo * (Xo @ w + b); eps = np.maximum(0, m - v)   # ε = 모자란 거리
     fig, ax = plt.subplots(figsize=(6.0, 6.0)); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= m + 2e-3])
     lab = []
@@ -471,6 +471,29 @@ def fig_train9():
     return out
 
 
+TS9 = {2: "1걸음 뒤", 6: "5걸음 뒤", 21: "20걸음 뒤", 51: "50걸음 뒤", 101: "100걸음 뒤", 301: "300걸음 뒤", 501: "500걸음 뒤", 1001: "1,000걸음 뒤", 20000: "2만 걸음 뒤"}
+
+
+def fig_soft9(lam=1 / 3):
+    """소프트 마진 걸음별 9장 (3장씩 3쪽): 길 (폭 m, 따로 움직임) · 미는 점 V (m 보다 가까운 점 모두) · 경계선 식. 이상치 포함 21개"""
+    Xo = np.r_[X, [OUTLIER]]; yo = np.r_[y, [1]]
+    _, _, _, sh = train_soft(Xo, yo, lam, snaps=tuple(TS9)); out = []
+    items = list(TS9.items())
+    for part in range(3):
+        fig, axs = plt.subplots(1, 3, figsize=(13.5, 5.6))
+        for ax, (t, ttl) in zip(axs, items[3 * part:3 * part + 3]):
+            w_, b_, V, m_ = sh[t]; pts(ax, Xo, yo)
+            if m_ > 1e-6:
+                street_m(ax, w_, b_, m_, Xo[V], ring_col=RED)
+            else:
+                line(ax, w_, b_, color="black", lw=2.6); ax.scatter(*Xo[V].T, s=380, facecolors="none", edgecolors=RED, lw=2.5, zorder=5)
+            sg = "+" if b_ >= 0 else "−"
+            ax.set_title(f"{ttl}   m = {m_:.2f}, 미는 점 {int(V.sum())}개\n${w_[0]:.2f}\\,x_1 + {w_[1]:.2f}\\,x_2 {sg} {abs(b_):.2f} = 0$", fontsize=17)
+            out.append((t, round(w_[0], 2), round(w_[1], 2), round(b_, 2), round(m_, 2), int(V.sum())))
+        save(fig, f"sv_soft9_{part + 1}.png")
+    return out
+
+
 def fig_rbf():
     """RBF 커널 = 두 점의 가까움 점수: K = exp(−γ d²), 같은 점이면 1, 멀면 0. γ 0.5 · 2 · 10"""
     fig, ax = plt.subplots(figsize=(8, 4.2))
@@ -549,7 +572,7 @@ def fig_hill_count(G=1.0):
 
 
 FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
-        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf, "rbfdeg": fig_rbf_degree, "hills": fig_hills, "hillcount": fig_hill_count}
+        "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "kernel": fig_kernel, "rbf": fig_rbf, "rbfdeg": fig_rbf_degree, "soft9": fig_soft9, "hills": fig_hills, "hillcount": fig_hill_count}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
