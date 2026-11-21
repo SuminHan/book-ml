@@ -66,6 +66,10 @@ def fig_dual():
         ax.text(s[0] + dx, s[1] + dy, f"$\\alpha$ = {a:+.2f}".replace("-", "−"), fontsize=14, fontweight="bold", color=RED if a > 0 else BLUE, zorder=6,
                 bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.text(0.25, 2.1, "흐린 점 17개: $\\alpha$ = 0", fontsize=13, color="#555555", va="top", zorder=6, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    nx = np.array(kd.NEW_PT)
+    ax.scatter([nx[0]], [nx[1]], marker="*", s=420, color="#2B8A3E", edgecolor="black", lw=1, zorder=7)
+    ax.text(nx[0] + 0.2, nx[1] - 0.05, f"새 점 ({nx[0]:g}, {nx[1]:g})\nf = {kd.NEW_F:+.2f} → 빨강".replace("-", "−"), fontsize=13, fontweight="bold",
+            color="#2B8A3E", va="top", zorder=7, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.set_title("① 서포트 벡터 3개만 $\\alpha \\neq 0$", fontsize=16)
     ax = axs[1]
     cur = np.zeros(2); cols = [RED if a > 0 else BLUE for a in AL]

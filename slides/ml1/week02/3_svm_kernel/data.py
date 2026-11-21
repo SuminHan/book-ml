@@ -28,6 +28,13 @@ assert _f1(1) == -1.25 == P1_COEF[0] + P1_COEF[1] + P1_COEF[2]
 P1_ROOTS = sorted(np.roots(P1_COEF[::-1]).real.round(6).tolist())
 assert P1_ROOTS == [-1.5, 0.5] and _f1(0) > 0 and _f1(-2) < 0 and _f1(1) < 0
 
+# 점곱 꼴로 새 점 하나 분류 (지난 시간 점 20개, 서포트 벡터 3개)
+import data as _d2                                   # ../2_svm/data.py
+NEW_PT = (0.5, -0.3)
+NEW_TERMS = [round(a * float(np.dot(NEW_PT, s)), 2) for s, a in _d2.ALPHA.items()]      # 0.21, 0.07, −0.14
+NEW_F = _d2.B_ANS + sum(a * float(np.dot(NEW_PT, s)) for s, a in _d2.ALPHA.items())
+assert NEW_TERMS == [0.21, 0.07, -0.14] and round(_d2.B_ANS, 2) == 0.04 and round(NEW_F, 2) == 0.18
+assert abs(NEW_F - (np.dot(_d2.W_ANS, NEW_PT) + _d2.B_ANS)) < 0.01      # w·x + b 와 같다
 # α 3개 → 계수 6개 (α 는 덱 약속대로 부호 포함)
 AL_PTS = np.array([[1, 2], [3, 1], [0, 1]], float)
 AL_A = np.array([0.5, -0.2, 0.3])
