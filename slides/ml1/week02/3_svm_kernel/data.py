@@ -69,7 +69,45 @@ assert (_A.predict(Fc) == _B.predict(Xc)).all()
 AB_ACC = _B.score(Xc, yc)
 QL_ACC = SVC(kernel="linear", C=1).fit(Xc, yc).score(Xc, yc)   # 질문 그림: 직선 SVM 정확도
 
+
+# ---- α 학습: 1차시 학습 한 걸음을 w 대신 α 로 (G = 점끼리 점곱 또는 K 표)
+def train_alpha(G, y, T=20000, lr0=0.05, snaps=()):
+    """매 걸음: 값 = y_i(Σ_j α_j G_ji + b), 가장 작은 점(동점 모두) α_k += η y_k, b += η y_k, α 를 ‖w′‖ = √(αᵀGα) 로 나눈다"""
+    a, b, hist = np.zeros(len(y)), 0.0, {}
+    for t in range(1, T + 1):
+        v = y * (G @ a + b); k = v <= v.min() + 1e-9; eta = lr0 / np.sqrt(t)
+        a = a + eta * k * y; b += eta * y[k].sum()
+        n = np.sqrt(a @ G @ a)
+        if n > 0:
+            a = a / n
+        if t in snaps:
+            hist[t] = a.copy()
+    return a, b, hist
+
+
+AL_STEPS = (1, 2, 3, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000)
+_X20 = np.array(_d2.RED_PTS + _d2.BLUE_PTS, float); _y20 = np.r_[np.ones(10), -np.ones(10)]
+AL20, BL20, AL_HIST = train_alpha(_X20 @ _X20.T, _y20, snaps=AL_STEPS)
+AL_ROWS = {t: [round(float(AL_HIST[t][_X20.tolist().index(list(s))]), 2) for s in _d2.SV] for t in (1, 10, 100, 1000, 20000)}
+AL_OTHER = {t: round(float(np.sort(np.abs(AL_HIST[t]))[-4]), 3) for t in (1, 10, 100, 1000, 20000)}   # 서포트 벡터 3개 빼고 가장 큰 |α|
+assert AL_ROWS[20000] == [0.74, -0.37, -0.37] and AL_OTHER[20000] == 0.0 and AL_ROWS[1] == [0.04, -0.04, -0.04]
+assert np.allclose(AL20 @ _X20, _d2.W_ANS, atol=1e-3) and abs(BL20 - _d2.B_ANS) < 2e-3
+
+# 같은 학습에서 점곱 자리에 다항 커널 (1 + x·x')² → 원 데이터 120개, sklearn (하드 마진) 과 비교
+_G = (1 + Xc @ Xc.T) ** 2
+AK, BK, _ = train_alpha(_G, yc.astype(float))
+AK_M = float((yc * (_G @ AK + BK)).min())
+_sk = SVC(kernel="poly", degree=2, coef0=1, gamma=1, C=1e6).fit(Xc, yc)
+_ds = _sk.dual_coef_[0]; _Gs = (1 + Xc[_sk.support_] @ Xc[_sk.support_].T) ** 2
+AK_M_SK = float(1 / np.sqrt(_ds @ _Gs @ _ds))
+AK_NSV, AK_NSV_SK = int((np.abs(AK) > 0.01).sum()), len(_sk.support_)
+_g = np.random.RandomState(0).uniform(-1.3, 1.3, (5000, 2))
+AK_AGREE = float((np.sign(((1 + _g @ Xc.T) ** 2) @ AK + BK) == np.sign(_sk.decision_function(_g))).mean())
+assert round(AK_M, 2) == round(AK_M_SK, 2) == 0.20 and AK_NSV == AK_NSV_SK == 7 and AK_AGREE > 0.999
+
 if __name__ == "__main__":
     print("cut", round(L1_CUT, 2), "coef", AL_COEF, AL_FK)
     print("A=B w", AB_W, "b", round(_A.intercept_[0], 2), "n", AB_N, "nsv", AB_NSV, "acc", AB_ACC, "linear acc", round(QL_ACC, 2))
+    print("alpha rows", AL_ROWS, AL_OTHER)
+    print("poly", round(AK_M, 4), round(AK_M_SK, 4), AK_NSV, AK_NSV_SK, AK_AGREE)
     print("data ok")
