@@ -132,17 +132,23 @@
 \begin{frame}{커널 SVM 학습: 학습에서도 점곱 자리에 $K$}
 \vfill
 \centering
-\renewcommand{\arraystretch}{1.5}
+\renewcommand{\arraystretch}{1.35}
 {\large\begin{tabular}{rl}
 처음 & $\alpha_i = 0$, \; $b = 0$\\
 1. 값 & $y_i\big(\sum_j \alpha_j\, \textcolor{ksablue}{K(\mathbf{x}_j, \mathbf{x}_i)} + b\big)$\\
 2. 밀기 & 가장 작은 점 $k$: \; $\alpha_k \leftarrow \alpha_k + \eta\, y_k$, \; $b \leftarrow b + \eta\, y_k$\\
 3. 길이 1 로 & 모든 $\alpha$ 를 $\sqrt{\sum_j\sum_l \alpha_j\alpha_l\, \textcolor{ksablue}{K(\mathbf{x}_j, \mathbf{x}_l)}}$ 로 나눈다
-\end{tabular}}\\[0.6em]
-{\large $\varphi$ 도 $\mathbf{w}$ 도 \kq{한 번도 안 만든다} \;$\to$\; RBF ($\varphi$ 가 $\infty$ 개) 도 그대로 된다}\\[0.4em]
-{\normalsize 원 120개 · 다항 $K$: 마진 0.20, 서포트 벡터 7개, 새 점 99.98\% 같은 쪽 = \kb{sklearn}}
+\end{tabular}}\\[0.4em]
+{\large 학습 내내 계산하는 건 \kq{학습 점 두 개를 넣은 $K$ 값}뿐}\\[0.4em]
+{\normalsize 원 데이터 120개 · 다항 $K$ 로 이 학습을 직접 돌려 sklearn 과 비교}\\[0.3em]
+{\normalsize\renewcommand{\arraystretch}{1.25}\begin{tabular}{l|c|c}
+ & 직접 짠 학습 & sklearn\\ \hline
+마진 & 0.20 & 0.20\\
+서포트 벡터 & 7개 & 7개\\
+새 점 5000개 분류 & \multicolumn{2}{c}{99.98\% 같은 답}
+\end{tabular}}
 \vfill
-\note{앞에서 알파 학습은 점끼리의 점곱만 쓴다고 했습니다. 그러면 학습에서도 점곱 자리에 K를 넣으면 됩니다. 처음엔 알파와 b가 모두 0입니다. 첫째, 점마다 값을 잴 때 w 대신 알파 j 곱하기 K x j, x i의 합에 b를 더하고 y i를 곱합니다. 둘째, 값이 가장 작은 점이 밀어서 그 점의 알파와 b에 에타 y k를 더합니다. 셋째, 길이를 1로 맞출 때 w의 길이를 알파끼리와 K로 계산해서 모든 알파를 나눕니다. 이 과정 어디에서도 파이로 옮긴 점이나 w를 만들지 않습니다. 그래서 파이가 무한 개인 RBF도 똑같이 학습할 수 있습니다. 원 데이터 120개에 다항 커널로 2만 걸음 돌려 보면 마진이 0.20으로 sklearn의 하드 마진 답과 같고, 알파가 0이 아닌 서포트 벡터도 7개로 같으며, 무작위 새 점 5천 개를 분류해 보면 99.98퍼센트가 같은 쪽으로 분류됩니다. 소프트 마진도 2번에서 길 안의 점 모두가 미는 것만 바뀝니다. sklearn은 이 문제를 SMO라는 더 빠른 방법으로 풀지만, 하는 일은 같습니다.}
+\note{앞에서 알파 학습은 점끼리의 점곱만 쓴다고 했습니다. 그러면 학습에서도 점곱 자리에 K를 넣으면 됩니다. 처음엔 알파와 b가 모두 0입니다. 첫째, 점마다 값을 잴 때 w 대신 알파 j 곱하기 K x j, x i의 합에 b를 더하고 y i를 곱합니다. 둘째, 값이 가장 작은 점이 밀어서 그 점의 알파와 b에 에타 y k를 더합니다. 셋째, 길이를 1로 맞출 때 w의 길이를 알파끼리와 K로 계산해서 모든 알파를 나눕니다. 이 과정 어디에서도 파이로 옮긴 점이나 w를 만들지 않습니다. 그래서 파이가 무한 개인 RBF도 똑같이 학습할 수 있습니다. 아래 표는 이 학습을 직접 짜서 원 데이터 120개에 다항 커널로 2만 걸음 돌린 결과와 sklearn 결과를 나란히 둔 것입니다. 마진은 둘 다 0.20, 알파가 0이 아닌 서포트 벡터도 둘 다 7개입니다. 무작위 새 점 5천 개를 두 모델로 분류하면 99.98퍼센트가 같은 답을 냅니다. 소프트 마진도 2번에서 길 안의 점 모두가 미는 것만 바뀝니다. sklearn은 이 문제를 SMO라는 더 빠른 방법으로 풀지만, 하는 일은 같습니다.}
 \end{frame}
 
 % --- 자주 쓰는 커널
