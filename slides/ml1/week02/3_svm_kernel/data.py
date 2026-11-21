@@ -19,6 +19,15 @@ def phi6(x):
     return np.array([1, r2 * x[0], r2 * x[1], x[0] ** 2, r2 * x[0] * x[1], x[1] ** 2])
 
 
+# 1차원 커널 식 풀기: 학습 점 0 (빨강, α = +1), 2 (파랑, α = −0.25), b = 0
+P1_X = [0.0, 2.0]; P1_A = [1.0, -0.25]
+P1_COEF = [sum(a * c for a, c in zip(P1_A, [1, 1])), sum(a * 2 * x for a, x in zip(P1_A, P1_X)), sum(a * x * x for a, x in zip(P1_A, P1_X))]   # 1, x, x² 앞의 수
+assert P1_COEF == [0.75, -1.0, -1.0]
+_f1 = lambda x: sum(a * (1 + x * xi) ** 2 for a, xi in zip(P1_A, P1_X))
+assert _f1(1) == -1.25 == P1_COEF[0] + P1_COEF[1] + P1_COEF[2]
+P1_ROOTS = sorted(np.roots(P1_COEF[::-1]).real.round(6).tolist())
+assert P1_ROOTS == [-1.5, 0.5] and _f1(0) > 0 and _f1(-2) < 0 and _f1(1) < 0
+
 # α 3개 → 계수 6개 (α 는 덱 약속대로 부호 포함)
 AL_PTS = np.array([[1, 2], [3, 1], [0, 1]], float)
 AL_A = np.array([0.5, -0.2, 0.3])
