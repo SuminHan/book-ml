@@ -102,16 +102,16 @@ def fig_ktrick():
         ax.text(lp[0], lp[1], lab, ha="center", va="center", fontsize=16, color=ec)
     p, q, pr = kd.K_PX, kd.K_PXP, kd.K_PROD
     f = lambda v: "(" + ", ".join(f"{z:g}" for z in v) + ")"
-    box(1.6, 2.5, 2.8, 1.7, f"2차원 점 두 개\n$\\mathbf{{x}}$ = {f(kd.K_X)}\n$\\mathbf{{x}}'$ = {f(kd.K_XP)}", "black")
-    box(6.5, 4.0, 4.0, 1.6, f"3차원 점 두 개를 만든다\n$\\varphi(\\mathbf{{x}})$ = {f(p)}\n$\\varphi(\\mathbf{{x}}')$ = {f(q)}", BLUE)
-    box(6.5, 1.0, 3.8, 0.9, f"$\\mathbf{{x}}\\cdot\\mathbf{{x}}'$ = 3 + 2 = {kd.K_DOT:g}", RED, fs=18)
+    box(1.6, 2.5, 2.8, 1.7, f"2차원 점 두 개\n$\\mathbf{{x}}$ = {f(kd.K_X)}\n$\\mathbf{{x}}_i$ = {f(kd.K_XP)}", "black")
+    box(6.5, 4.0, 4.0, 1.6, f"3차원 점 두 개를 만든다\n$\\varphi(\\mathbf{{x}})$ = {f(p)}\n$\\varphi(\\mathbf{{x}}_i)$ = {f(q)}", BLUE)
+    box(6.5, 1.0, 3.8, 0.9, f"$\\mathbf{{x}}\\cdot\\mathbf{{x}}_i$ = 3 + 2 = {kd.K_DOT:g}", RED, fs=18)
     box(11.4, 2.5, 1.6, 1.2, f"{kd.K_DOT ** 2:g}", "black", fs=30, bold=True)
     arr((3.0, 3.0), (4.5, 3.8), BLUE, "① $\\varphi$ 로 옮기기", (3.3, 3.85))
     arr((8.5, 3.8), (10.5, 2.95), BLUE, f"② 점곱\n{pr[0]:g} + {pr[1]:g} + {pr[2]:g}", (10.0, 3.95))
     arr((3.0, 2.0), (4.5, 1.2), RED, "① 점곱", (3.35, 1.25))
     arr((8.5, 1.2), (10.5, 2.05), RED, f"② 제곱 {kd.K_DOT:g}²", (10.0, 1.15))
     ax.text(12.95, 4.75, "먼 길: 옮기고 점곱", ha="right", va="top", fontsize=17, color=BLUE, fontweight="bold")
-    ax.text(12.95, 0.15, "지름길 = 커널 $K(\\mathbf{x}, \\mathbf{x}') = (\\mathbf{x}\\cdot\\mathbf{x}')^2$", ha="right", fontsize=17, color=RED, fontweight="bold")
+    ax.text(12.95, 0.15, "지름길 = 커널 $K(\\mathbf{x}, \\mathbf{x}_i) = (\\mathbf{x}\\cdot\\mathbf{x}_i)^2$", ha="right", fontsize=17, color=RED, fontweight="bold")
     mf.save(fig, "kn_ktrick.png")
 
 FIGS = {"ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
