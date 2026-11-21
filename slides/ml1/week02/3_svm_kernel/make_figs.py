@@ -50,7 +50,43 @@ def fig_lift1d():
     mf.save(fig, "kn_lift1d.png")
 
 
-FIGS = {"q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+def fig_dual():
+    """지난 시간 점 20개: 서포트 벡터 3개만 α ≠ 0, w = Σ α_i x_i (꼬리 물기)"""
+    X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
+    SV = [np.array(s) for s in mf.SV]; AL = [mf.ALPHA[tuple(s)] for s in mf.SV]
+    fig, axs = plt.subplots(1, 2, figsize=(12, 5.6))
+    ax = axs[0]; mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(SV))
+    ax.scatter(X[y > 0, 0], X[y > 0, 1], s=80, color=RED, alpha=0.28, zorder=3)          # α = 0 인 점은 흐리게
+    ax.scatter(X[y < 0, 0], X[y < 0, 1], s=80, color=BLUE, alpha=0.28, marker="s", zorder=3)
+    for s, a in zip(SV, AL):
+        ax.scatter([s[0]], [s[1]], s=80, color=RED if a > 0 else BLUE, marker="o" if a > 0 else "s", zorder=5)
+    off = {0: (0.2, -0.35), 1: (0.2, 0.2), 2: (0.2, -0.45)}
+    for k, (s, a) in enumerate(zip(SV, AL)):
+        dx, dy = off[k]
+        ax.text(s[0] + dx, s[1] + dy, f"$\\alpha$ = {a:+.2f}".replace("-", "−"), fontsize=14, fontweight="bold", color=RED if a > 0 else BLUE, zorder=6,
+                bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.text(0.25, 2.1, "흐린 점 17개: $\\alpha$ = 0", fontsize=13, color="#555555", va="top", zorder=6, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.set_title("① 서포트 벡터 3개만 $\\alpha \\neq 0$", fontsize=16)
+    ax = axs[1]
+    cur = np.zeros(2); cols = [RED if a > 0 else BLUE for a in AL]
+    for k, (s, a, c) in enumerate(zip(SV, AL, cols)):
+        v = a * s
+        ax.annotate("", cur + v, cur, arrowprops=dict(arrowstyle="-|>", lw=2.5, color=c, mutation_scale=18))
+        mid = cur + v / 2
+        lab = f"{a:+.2f} · ({s[0]:g}, {s[1]:g})".replace("-", "−")
+        ax.text(mid[0] + (0.06 if k != 1 else 0.06), mid[1] + (-0.1 if k == 0 else 0.0), lab, fontsize=13, color=c, ha="left", va="center")
+        cur = cur + v
+    ax.annotate("", cur, (0, 0), arrowprops=dict(arrowstyle="-|>", lw=3, color="black", mutation_scale=20))
+    ax.text(cur[0] / 2 - 0.08, cur[1] / 2 + 0.08, f"합 = $\\mathbf{{w}}$ = ({cur[0]:.2f}, {cur[1]:.2f})", fontsize=14, fontweight="bold", ha="right", va="bottom", rotation=45, rotation_mode="anchor")
+    ax.scatter([0], [0], color="black", s=20)
+    ax.set_xlim(-0.1, 1.0); ax.set_ylim(-0.1, 1.0); ax.set_aspect("equal"); ax.set_xticks([0, 0.5, 1]); ax.set_yticks([0, 0.5, 1])
+    ax.tick_params(labelsize=11); ax.grid(alpha=0.3)
+    ax.set_title("② $\\alpha_i \\mathbf{x}_i$ 를 이어 더하면 $\\mathbf{w}$", fontsize=16)
+    mf.save(fig, "kn_dual.png")
+    return cur.round(3)
+
+
+FIGS = {"dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
