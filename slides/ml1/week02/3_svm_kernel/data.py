@@ -35,6 +35,15 @@ NEW_TERMS = [round(a * float(np.dot(NEW_PT, s)), 2) for s, a in _d2.ALPHA.items(
 NEW_F = _d2.B_ANS + sum(a * float(np.dot(NEW_PT, s)) for s, a in _d2.ALPHA.items())
 assert NEW_TERMS == [0.21, 0.07, -0.14] and round(_d2.B_ANS, 2) == 0.04 and round(NEW_F, 2) == 0.18
 assert abs(NEW_F - (np.dot(_d2.W_ANS, NEW_PT) + _d2.B_ANS)) < 0.01      # w·x + b 와 같다
+# 커널 쪽 그림: (x·x')² = φ(x)·φ(x'), φ(x) = (x1², √2 x1x2, x2²)
+K_X, K_XP = np.array([1.0, 2.0]), np.array([3.0, 1.0])
+phi3 = lambda v: np.array([v[0] ** 2, np.sqrt(2) * v[0] * v[1], v[1] ** 2])
+K_PX, K_PXP = phi3(K_X).round(2), phi3(K_XP).round(2)            # (1, 2.83, 4), (9, 4.24, 1)
+K_PROD = (phi3(K_X) * phi3(K_XP)).round(6)                       # 9, 12, 4
+K_DOT = float(K_X @ K_XP)                                         # 5
+assert K_PX.tolist() == [1, 2.83, 4] and K_PXP.tolist() == [9, 4.24, 1] and K_PROD.tolist() == [9, 12, 4]
+assert K_DOT == 5 and abs(phi3(K_X) @ phi3(K_XP) - K_DOT ** 2) < 1e-9
+
 # α 3개 → 계수 6개 (α 는 덱 약속대로 부호 포함)
 AL_PTS = np.array([[1, 2], [3, 1], [0, 1]], float)
 AL_A = np.array([0.5, -0.2, 0.3])
