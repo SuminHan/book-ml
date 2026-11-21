@@ -11,12 +11,12 @@
 - 리만 가설: s = a + bi 같은 복소수를 넣는 제타 함수 ζ(s)에서, 값이 0이 되는 (자명하지 않은) 점이 모두 실수부(Real part) 1/2 위에 있다는 1859년의 추측
 - Lean은 수식과 증명을 코드로 옮겨 적는 프로그램이에요 (Mathlib에는 리만 가설이 RiemannHypothesis라는 정의로 들어 있어요). 코드로 쓰면 한 줄 한 줄이 규칙에 맞는지 컴퓨터가 검사하는 프로그램이에요. 한 줄만 틀려도 통과하지 못해요
 - 그래서 수학 AI도 Lean으로 배워요. 구글 딥마인드 AlphaProof는 Lean이 통과시킨 증명만 골라 다시 배워 2024 국제수학올림피아드에서 42점 중 28점(은메달 수준)을 받았어요
-- Lean을 통과해도 확인할 곳 ① 문장: Lean은 적힌 문장을 증명했는지만 봐요. 예를 들어 '모든 영점'을 '처음 영점 10개'로 잘못 옮겨 적으면, 이미 계산으로 확인된 쉬운 문장이라 Lean은 통과시키지만 리만 가설을 증명한 건 아니에요
+- Lean을 통과해도 확인할 곳 ① 문장: Lean은 적힌 문장을 증명했는지만 봐요. 예를 들어 결론 'Real(s) = 1/2'을 '0 < Real(s) < 1'로 잘못 옮겨 적으면, 1896년에 이미 증명된 문장이라 Lean은 통과시켜요. 그래서 원래 정의(Mathlib의 RiemannHypothesis)와 똑같은지 비교하는데, 이번 증명은 이 문장 비교를 통과했어요
 - ② 공리: "이건 참이라고 치자"는 공리를 몰래 넣으면 뭐든 증명돼요. #print axioms로 확인하는데, 이번 증명은 표준 공리 3개(propext, Classical.choice, Quot.sound)만 썼다고 MIT 앤드루 서덜랜드가 밝혔어요
 - ③ Lean 자체 버그: 최근에도 공리 없이 거짓(False)을 증명할 수 있는 커널 버그가 고쳐졌어요(Lean 4.32.2). 그래서 따로 만든 검사기로도 돌려요. 서덜랜드의 검증 페이지 기준 nanoda(27분), lean4lean, con-leche, leanchecker는 이미 통과했고, 문장 · 공리 · 검사기를 한꺼번에 보는 Comparator는 문장 · 공리 확인을 통과한 채 마지막 검사가 진행 중이에요 (2026년 11월 21일 12:55 UTC 기준)
 - 전문가 분위기: 서덜랜드 "뭔가 이상할 가능성은 거의 0", 케빈 버자드 "Comparator 결과를 아직 기다리는 중", 브라이언 콘리 "인류 역사의 기념비적인 순간, 더 쉬운 증명도 나올 것". 아직 공식적으로 풀린 것으로 인정된 상태는 아니에요
 
-**참고**: 출처: AFP (phys.org, 2026.11.20), Scientific American (2026.11.20), Interesting Engineering, Andrew Sutherland 검증 페이지 (math.mit.edu/~drew/grh), Lean Language Reference "Validating a Lean Proof", leanprover-community/riemann-hypothesis (verification/NOTES.md), Google DeepMind 블로그 (2024.7.25), Hubert et al., Nature (2025) AlphaProof. 화면의 Lean 코드 · axiom cheat · '처음 영점 10개만' 문장 · 증명 카드 8장 중 2장 통과는 설명용 예시예요. 이모지: Twemoji (CC BY 4.0) · 음성: Typecast (필재) · 배경음: Suno "Curious Groove" (직접 제작)
+**참고**: 출처: AFP (phys.org, 2026.11.20), Scientific American (2026.11.20), Interesting Engineering, Andrew Sutherland 검증 페이지 (math.mit.edu/~drew/grh), Lean Language Reference "Validating a Lean Proof", leanprover-community/riemann-hypothesis (verification/NOTES.md), Google DeepMind 블로그 (2024.7.25), Hubert et al., Nature (2025) AlphaProof. 화면의 Lean 코드 · axiom cheat · '0 < Real(s) < 1' 문장 · 증명 카드 8장 중 2장 통과는 설명용 예시예요. 이모지: Twemoji (CC BY 4.0) · 음성: Typecast (필재) · 배경음: Suno "Curious Groove" (직접 제작)
 
 ## 장면별 자막과 대사
 
@@ -25,7 +25,7 @@
 | 1 | 알포게: Claude와 함께 리만 가설 증명 / Lean 통과 = 진짜 증명? | 11월 20일, 앤트로픽의 레벤트 알포게가 클로드와 함께 리만 가설을 증명한 것 같다고 발표했어요. 증명은 린이라는 프로그램의 코드로 공개됐죠. 그럼 린을 통과하면, 진짜 맞는 증명일까요? |
 | 2 | Lean: 수식과 증명을 코드로 / 한 줄만 틀려도 통과 X | 린은 수식과 증명을 코드로 옮겨 적는 프로그램이에요. 이렇게 코드로 쓰면, 한 줄 한 줄이 규칙에 맞는지 컴퓨터가 검사해요. 한 줄만 틀려도 통과 못 해요. |
 | 3 | AlphaProof: 통과한 증명만 다시 학습 / IMO 2024 42점 중 28점 | 수학 AI도 린으로 배워요. 딥마인드의 알파프루프는 린이 통과시킨 증명만 골라 다시 배워서, 국제수학올림피아드 은메달 수준까지 갔어요. |
-| 4 | ① 문장을 잘못 옮기면 / 쉬운 문장이 통과 ≠ 리만 가설 증명 | 그런데 린을 통과해도 틀릴 수 있는 곳이 세 군데 있어요. 첫째, 문장. 린은 적힌 문장을 증명했는지만 봐요. 예를 들어 모든 영점을, 처음 영점 열 개로 잘못 옮겨 적으면, 그건 이미 계산된 쉬운 문장이라 통과해요. 하지만 리만 가설을 증명한 건 아니죠. |
+| 4 | ① 문장: 조건 하나만 바뀌어도 통과 / 이번엔 Mathlib 정의와 비교 통과 | 그런데 린을 통과해도 틀릴 수 있는 곳이 세 군데 있어요. 첫째, 문장. 린은 받은 문장을 증명했는지만 봐요. 옮겨 적다가 실수부 이분의 일을 영과 일 사이로 바꾸면, 백 년도 더 전에 증명된 문장이라 그냥 통과해요. 그래서 원래 정의와 똑같은지 비교하는데, 이번 증명은 이걸 통과했어요. |
 | 5 | ② 공리: 참이라고 치면 뭐든 증명 / 이번엔 기본 공리 3개만 | 둘째, 몰래 넣은 가정. 이건 그냥 참이라고 치자는 공리를 넣으면 뭐든 증명돼요. 그래서 쓴 공리를 출력해 보는데, 이번엔 기본 공리 세 개만 나왔대요. |
 | 6 | ③ Lean 버그: 다른 검사기로도 확인 / nanoda 등 통과 · Comparator 진행 중 | 셋째, 린 자체의 버그. 최근에도 공리 없이 거짓을 증명하는 버그가 고쳐졌어요. 그래서 따로 만든 검사기로도 돌려 봐요. 이번 증명은 나노다 같은 다른 검사기들을 이미 통과했고, 전부 한꺼번에 보는 컴패러터 검사는 아직 진행 중이에요. |
 | 7 | 전문가 분위기 / 기대 + 검증 결과 기다리는 중 | 전문가 분위기는 이래요. 엠아이티 서덜랜드는 이상할 가능성이 거의 없다고 했고, 케빈 버자드는 컴패러터 결과를 기다리자고 해요. 리만 가설 전문가 콘리는 기념비적인 순간이라면서도, 더 쉬운 증명이 나올 거라고 했어요. |
@@ -53,6 +53,7 @@
 
 ### v4 (2026-11-21 저녁): Real(s) 표기 · 복소수 s = a + bi · ① 문장 예시 구체화 · nanoda 통과 반영 · 배경음 Curious Groove
 - Sutherland 검증 페이지 math.mit.edu/~drew/grh/ ('Page last updated 2026-11-21 12:55 UTC'): nanoda accepts (27 min 42 s), lean4lean 175,187/175,187 pass, leanchecker pass, con-leche accepts, Lean default · paranoid running, lake comparator running ('statement comparison and axiom check already passed in one run; kernels in progress'). 검사한 GRH 는 Dirichlet L-함수까지만
+- v8 ① 문장 예시: 결론 s.re = 1/2 → 0 < s.re < 1 (예시). 자명하지 않은 영점이 0 < Re(s) < 1 띠 안에 있다는 것은 1896년 아다마르 · 드 라 발레 푸생 (소수 정리 증명과 함께). 이번 증명의 문장 비교 통과: Sutherland 페이지 'statement comparison and axiom check already passed in one run'
 
 ## 파일
 

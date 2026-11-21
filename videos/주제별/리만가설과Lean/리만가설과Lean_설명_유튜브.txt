@@ -4,12 +4,12 @@ AI가 증명했다는 리만 가설, 증명 검사기 Lean을 통과하면 믿�
 · 리만 가설: s = a + bi 같은 복소수를 넣는 제타 함수 ζ(s)에서, 값이 0이 되는 (자명하지 않은) 점이 모두 실수부(Real part) 1/2 위에 있다는 1859년의 추측
 · Lean은 수식과 증명을 코드로 옮겨 적는 프로그램이에요 (Mathlib에는 리만 가설이 RiemannHypothesis라는 정의로 들어 있어요). 코드로 쓰면 한 줄 한 줄이 규칙에 맞는지 컴퓨터가 검사하는 프로그램이에요. 한 줄만 틀려도 통과하지 못해요
 · 그래서 수학 AI도 Lean으로 배워요. 구글 딥마인드 AlphaProof는 Lean이 통과시킨 증명만 골라 다시 배워 2024 국제수학올림피아드에서 42점 중 28점(은메달 수준)을 받았어요
-· Lean을 통과해도 확인할 곳 ① 문장: Lean은 적힌 문장을 증명했는지만 봐요. 예를 들어 '모든 영점'을 '처음 영점 10개'로 잘못 옮겨 적으면, 이미 계산으로 확인된 쉬운 문장이라 Lean은 통과시키지만 리만 가설을 증명한 건 아니에요
+· Lean을 통과해도 확인할 곳 ① 문장: Lean은 적힌 문장을 증명했는지만 봐요. 예를 들어 결론 'Real(s) = 1/2'을 '0 < Real(s) < 1'로 잘못 옮겨 적으면, 1896년에 이미 증명된 문장이라 Lean은 통과시켜요. 그래서 원래 정의(Mathlib의 RiemannHypothesis)와 똑같은지 비교하는데, 이번 증명은 이 문장 비교를 통과했어요
 · ② 공리: "이건 참이라고 치자"는 공리를 몰래 넣으면 뭐든 증명돼요. #print axioms로 확인하는데, 이번 증명은 표준 공리 3개(propext, Classical.choice, Quot.sound)만 썼다고 MIT 앤드루 서덜랜드가 밝혔어요
 · ③ Lean 자체 버그: 최근에도 공리 없이 거짓(False)을 증명할 수 있는 커널 버그가 고쳐졌어요(Lean 4.32.2). 그래서 따로 만든 검사기로도 돌려요. 서덜랜드의 검증 페이지 기준 nanoda(27분), lean4lean, con-leche, leanchecker는 이미 통과했고, 문장 · 공리 · 검사기를 한꺼번에 보는 Comparator는 문장 · 공리 확인을 통과한 채 마지막 검사가 진행 중이에요 (2026년 11월 21일 12:55 UTC 기준)
 · 전문가 분위기: 서덜랜드 "뭔가 이상할 가능성은 거의 0", 케빈 버자드 "Comparator 결과를 아직 기다리는 중", 브라이언 콘리 "인류 역사의 기념비적인 순간, 더 쉬운 증명도 나올 것". 아직 공식적으로 풀린 것으로 인정된 상태는 아니에요
 
-※ 출처: AFP (phys.org, 2026.11.20), Scientific American (2026.11.20), Interesting Engineering, Andrew Sutherland 검증 페이지 (math.mit.edu/~drew/grh), Lean Language Reference "Validating a Lean Proof", leanprover-community/riemann-hypothesis (verification/NOTES.md), Google DeepMind 블로그 (2024.7.25), Hubert et al., Nature (2025) AlphaProof. 화면의 Lean 코드 · axiom cheat · '처음 영점 10개만' 문장 · 증명 카드 8장 중 2장 통과는 설명용 예시예요. 이모지: Twemoji (CC BY 4.0) · 음성: Typecast (필재) · 배경음: Suno "Curious Groove" (직접 제작)
+※ 출처: AFP (phys.org, 2026.11.20), Scientific American (2026.11.20), Interesting Engineering, Andrew Sutherland 검증 페이지 (math.mit.edu/~drew/grh), Lean Language Reference "Validating a Lean Proof", leanprover-community/riemann-hypothesis (verification/NOTES.md), Google DeepMind 블로그 (2024.7.25), Hubert et al., Nature (2025) AlphaProof. 화면의 Lean 코드 · axiom cheat · '0 < Real(s) < 1' 문장 · 증명 카드 8장 중 2장 통과는 설명용 예시예요. 이모지: Twemoji (CC BY 4.0) · 음성: Typecast (필재) · 배경음: Suno "Curious Groove" (직접 제작)
 
 문의: suminhan@ksa.kaist.ac.kr
 
