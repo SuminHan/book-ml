@@ -112,6 +112,33 @@ def fig_quizkid():
     mf.save(fig, "kn_quizkid.png")
 
 
+def fig_force():
+    """역학 비유: 서포트 벡터가 경계(판)를 미는 힘 = α. 힘 합 0 (안 밀려 감), 돌림힘 합 0 (안 돎)"""
+    X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
+    u = WA / np.linalg.norm(WA); dd = np.array([-u[1], u[0]]); bb = BA / np.linalg.norm(WA)
+    SV = [np.array(s) for s in mf.SV]; AL = np.array([mf.ALPHA[tuple(s)] for s in mf.SV])
+    pos = np.array([p @ dd for p in SV]); tq = AL * pos
+    assert abs(AL.sum()) < 1e-9 and abs(tq.sum()) < 1e-3                              # 힘의 평형 · 돌림힘의 평형
+    k = MA / AL.max()                                                                  # 가장 큰 힘 화살표 = 마진 길이
+    fig, ax = plt.subplots(figsize=(6.4, 6.0))
+    mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(SV))
+    ax.scatter(X[y > 0, 0], X[y > 0, 1], s=80, color=RED, alpha=0.22, zorder=3); ax.scatter(X[y < 0, 0], X[y < 0, 1], s=80, color=BLUE, alpha=0.22, marker="s", zorder=3)
+    s = np.linspace(-4, 4, 2); ax.plot(*((-bb) * u[:, None] + dd[:, None] * s), color="#555555", lw=7, alpha=0.55, solid_capstyle="butt", zorder=2)   # 판
+    for p, a in zip(SV, AL):
+        c = RED if a > 0 else BLUE
+        ax.scatter(*p, s=90, color=c, marker="o" if a > 0 else "s", zorder=5)
+        foot = p - (p @ u + bb) * u                                                    # 경계 위 발
+        start = foot + np.sign(a) * abs(a) * k * u
+        ax.plot(*np.c_[p, start], ":", color=c, lw=1.5, zorder=4)
+        ax.annotate("", foot, start, arrowprops=dict(arrowstyle="-|>", color=c, lw=2 + 4 * abs(a), mutation_scale=24, shrinkA=0, shrinkB=0), zorder=6)
+        off = np.array([0.15, 0.12]) if a > 0 else np.array([0.12, -0.32])
+        ax.text(*(start + off), f"힘 {abs(a):.2f}", fontsize=14, fontweight="bold", color=c, zorder=7, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.text(0.85, 2.1, "회색 판 = 경계", fontsize=13, color="#444444", va="top")
+    ax.set_title(f"빨강 {AL[0]:.2f} = 파랑 {-AL[1]:.2f} + {-AL[2]:.2f}", fontsize=15)
+    mf.save(fig, "kn_force.png")
+    return dict(pos=pos.round(2).tolist(), torque=tq.round(2).tolist())
+
+
 def fig_q():
     """오늘의 질문: 원 데이터에 직선 SVM"""
     X, y = kd.Xc, kd.yc
@@ -233,7 +260,7 @@ def fig_alpha():
     mf.save(fig, "kn_alpha.png")
 
 
-FIGS = {"recap": fig_recap, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+FIGS = {"recap": fig_recap, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
