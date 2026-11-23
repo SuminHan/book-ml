@@ -5,3 +5,4 @@
 - 숫자: data.py (assert: 계수 6개 · 4.2 · A 와 B 의 w · b · 예측 같음). 1차시 숫자는 ../2_svm/data.py 를 그대로 쓴다.
 - 그림: make_figs.py — kn_q · kn_lift1d 는 여기서, sv_* 커널 그림은 ../2_svm/make_figs.py 의 함수를 불러 이 폴더 figs/ 에 만든다.
 - 실습: lab/make_lab.py — 원 데이터 A vs B 같은 w · Banknote 선형 98.6% vs RBF 100% · 반달 GridSearchCV (C, γ)
+- 퀴즈: quiz/svm_kernel_quiz.pdf (학생용 빈칸) · quiz/svm_kernel_quiz_solution.pdf (정답). 문제는 svm_kernel_quiz_solution.tex 하나만 고치고 둘 다 tectonic 으로 빌드. Q1 α 로 w 만들기 (0.70, 0.70 · 새 점 0.18) · Q2 w = u + v 로 최적의 w 는 학습 점의 합 · Q3 φ 대신 K, RBF ∞ 여도 α n 개

@@ -1,0 +1,121 @@
+\documentclass[11pt]{article}
+% 커널 SVM 퀴즈: 왜 w = Σ α_i x_i 이고, 왜 α 와 K 만으로 학습되나
+% 빌드 (이 폴더에서):  tectonic svm_kernel_quiz_solution.tex   -> 정답 (빈칸에 파란 답)
+%                      tectonic svm_kernel_quiz.tex            -> 학생용 (빈칸)
+% 숫자는 덱과 같은 점 20개 예 (서포트 벡터 3개, α = 0.74, -0.37, -0.37, b = 0.04)
+
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{kotex}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{comment}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+\ifdefined\STUDENT
+  \excludecomment{answer}
+  \newcommand{\blank}[2]{\underline{\hspace{#1}}}
+  \newcommand{\pick}[2]{\text{(\ #1\ )}}
+  \newcommand{\abox}[1]{\par\noindent\framebox[\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax]{\rule{0pt}{#1}}\par}
+\else
+  \specialcomment{answer}{\begingroup\par\vspace{2pt}\color{blue}\small\setlength{\parskip}{2pt}\setlength{\parindent}{0pt}\noindent\textbf{풀이.}\ }{\par\endgroup}
+  \newcommand{\blank}[2]{\underline{\makebox[#1]{\color{blue}#2}}}
+  \newcommand{\pick}[2]{\text{(\ {\color{blue}\textbf{#2}}\ )}}
+  \newcommand{\abox}[1]{}
+\fi
+
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small ML1 02-3 커널 SVM}
+\fancyhead[R]{\bf 퀴즈: 왜 $\alpha$ 와 $K$ 만으로 되나\ifdefined\STUDENT\else\ \ (정답)\fi}
+\fancyfoot[C]{\thepage}
+\setlength{\parskip}{0.06in}
+\setlength{\parindent}{0pt}
+
+\newcounter{q}
+\newcommand{\q}[1]{\par\vspace{10pt}\refstepcounter{q}{\large\bf Q\theq.}\ {\bf #1}\par\vspace{2pt}}
+\newenvironment{parts}{\begin{enumerate}[label=(\alph*),leftmargin=2.2em,itemsep=6pt,topsep=2pt]}{\end{enumerate}}
+
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bv}{\mathbf{v}}
+
+\begin{document}
+
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{
+{\bf 약속} (덱과 같다): 경계 $\bw\cdot\bx + b = 0$, \ $\lVert\bw\rVert = 1$ 이면 점 $i$ 의 값 $y_i(\bw\cdot\bx_i + b)$ = 경계까지 거리 ($y_i = +1$ 빨강, $-1$ 파랑).\\
+SVM: \ $\lVert\bw\rVert = 1$, 모든 $i$ 에서 $y_i(\bw\cdot\bx_i + b) \ge m$ 일 때 $m$ 을 최대로 하는 $\bw,\ b$.
+}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\q{몸풀기: $\alpha$ 로 $\bw$ 만들기}
+덱의 점 20개로 학습한 SVM. 서포트 벡터 3개 말고는 모두 $\alpha = 0$, \ $b = 0.04$.
+\begin{center}\renewcommand{\arraystretch}{1.2}\begin{tabular}{c|c|c}
+$\bx_i$ & 색 & $\alpha_i$\\\hline
+$(0.7,\ 0.2)$ & 빨강 & $+0.74$\\
+$(-0.6,\ -0.4)$ & 파랑 & $-0.37$\\
+$(0.1,\ -1.1)$ & 파랑 & $-0.37$
+\end{tabular}\end{center}
+\begin{parts}
+\item $\sum_i \alpha_i \bx_i = \big(\,\blank{1.4cm}{0.70},\ \blank{1.4cm}{0.70}\,\big)$ \quad (소수 둘째 자리) \quad $\to$ 이것이 $\bw$ 다.
+\item 새 점 $\bx = (0.5,\ -0.3)$: 서포트 벡터마다 $\alpha_i\, \bx\cdot\bx_i$ 를 구하면
+\[ \blank{1.4cm}{0.21} \ + \ \blank{1.4cm}{0.07} \ + \ \blank{1.4cm}{-0.14}, \qquad f(\bx) = b + \textstyle\sum_i \alpha_i\, \bx\cdot\bx_i = \blank{1.4cm}{0.18} \ \to \ \pick{빨강 / 파랑}{빨강} \]
+\item 한 번에: \ $\bw\cdot\bx + b = 0.70(0.5) + 0.70(-0.3) + 0.04 = \blank{1.4cm}{0.18}$ \quad (b) 와 \pick{같다 / 다르다}{같다}
+\end{parts}
+\begin{answer}
+(a) $0.74(0.7) - 0.37(-0.6) - 0.37(0.1) = 0.518 + 0.222 - 0.037 = 0.70$, \ $0.74(0.2) - 0.37(-0.4) - 0.37(-1.1) = 0.148 + 0.148 + 0.407 = 0.70$.\\
+(b) 점곱 $0.29,\ -0.18,\ 0.38$ 에 $\alpha$ 를 곱한다. $0.04 + 0.21 + 0.07 - 0.14 = 0.18 > 0$.
+\end{answer}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\q{증명: 최적의 $\bw$ 는 항상 학습 점의 합}
+Q1 의 $\bw$ 가 학습 점의 합인 것은 우연이 아니다. $\bw$ 를 두 조각으로 나눈다.
+\[ \bw = \bu + \bv, \qquad \bu = \textstyle\sum_i \alpha_i \bx_i \ \text{(학습 점으로 만든 부분)}, \qquad \bv\cdot\bx_i = 0 \ \text{(모든 학습 점과 수직)} \]
+\begin{center}
+\begin{tikzpicture}[scale=1.0, >={Stealth[length=2.2mm]}]
+  \fill[blue!6] (0,0) -- (4.2,0) -- (5.4,1.4) -- (1.2,1.4) -- cycle;
+  \draw[blue!40] (0,0) -- (4.2,0) -- (5.4,1.4) -- (1.2,1.4) -- cycle;
+  \node[blue!60!black, font=\small] at (2.7,-0.3) {학습 점들이 만드는 평면};
+  \foreach \p in {(0.9,0.4),(1.6,0.9),(2.3,0.3),(3.3,1.0),(3.9,0.5)} \fill[black!55] \p circle (1.6pt);
+  \coordinate (O) at (1.9,0.55); \coordinate (U) at (3.4,0.95); \coordinate (W) at (3.4,2.35);
+  \draw[->, very thick, blue!70!black] (O) -- (U) node[midway, below, font=\small] {$\bu$};
+  \draw[->, very thick, red!70!black] (U) -- (W) node[midway, right, font=\small] {$\bv$};
+  \draw[->, very thick] (O) -- (W) node[midway, left, font=\small] {$\bw$};
+  \draw (3.4,1.15) -- (3.25,1.11) -- (3.25,0.91);
+\end{tikzpicture}
+\end{center}
+\begin{parts}
+\item $\bw\cdot\bx_i = \bu\cdot\bx_i + \bv\cdot\bx_i = \bu\cdot\bx_i + \blank{1.2cm}{0}$ \\
+$\to$ 학습 점의 값 $y_i(\bw\cdot\bx_i + b)$ 는 \blank{1.2cm}{$\bu$} 와 $b$ 만으로 정해진다. $\bv$ 는 값을 \pick{바꾼다 / 못 바꾼다}{못 바꾼다}.
+\item $\bu\cdot\bv = \sum_i \alpha_i\,(\bx_i\cdot\bv) = \blank{1.2cm}{0}$ \quad 이므로 \quad $\lVert\bw\rVert^2 = \lVert\bu\rVert^2 + \blank{1.2cm}{$\lVert\bv\rVert^2$}$ \quad (피타고라스)
+\item $\lVert\bw\rVert = 1$ 인데 $\bv \ne \mathbf{0}$ 이면 \ $\lVert\bu\rVert$ \pick{$<$ / $=$ / $>$}{$<$} $1$.\\
+$\bw,\ b$ 대신 $\bu/\lVert\bu\rVert,\ b/\lVert\bu\rVert$ 를 쓰면 길이는 1 이고, 모든 점의 값이 \blank{1.6cm}{$1/\lVert\bu\rVert$} 배\\ $\to$ 마진이 \pick{커진다 / 작아진다}{커진다}.\\
+그래서 최적의 $\bw$ 에서는 $\bv = \blank{1.2cm}{$\mathbf{0}$}$, \ 즉 \ $\bw = \blank{2.2cm}{$\sum_i \alpha_i \bx_i$}$.
+\item $\bw = \sum_i \alpha_i \bx_i$ 를 넣으면\\[2pt]
+\hspace*{1em} 값 $= y_j\big(\,\blank{3cm}{$\sum_i \alpha_i\, \bx_i\cdot\bx_j$} + b\big)$, \qquad $\lVert\bw\rVert^2 = \blank{3.4cm}{$\sum_i\sum_j \alpha_i\alpha_j\, \bx_i\cdot\bx_j$}$\\[2pt]
+$\to$ 학습에 데이터는 학습 점끼리의 \blank{1.4cm}{점곱} 으로만 들어간다.
+\end{parts}
+\begin{answer}
+$\bv$ 는 어떤 점의 값에도 도움이 안 되면서 길이 1 중 일부를 잡아먹는다. 그러니 최적해에는 $\bv$ 가 없다. 소프트 마진도 길 안 점의 벌점이 $\bw\cdot\bx_i$ 로만 정해지므로 똑같다.
+\end{answer}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\q{커널로: $\varphi$ 를 만들지 않는 이유}
+점 $\bx$ 를 특징 $\varphi(\bx)$ 로 바꾼 뒤 SVM 을 푼다. \ $K(\bx, \bx') = \varphi(\bx)\cdot\varphi(\bx')$.
+\begin{parts}
+\item Q2 를 $\bx_i$ 대신 $\varphi(\bx_i)$ 로 반복하면 \ $\bw = \blank{2.6cm}{$\sum_i \alpha_i\, \varphi(\bx_i)$}$
+\item 새 점 분류: \ $f(\bx) = \bw\cdot\varphi(\bx) + b = b + \sum_i \alpha_i\, \blank{2.2cm}{$K(\bx, \bx_i)$}$
+\item 학습 (Q2 (d)) 과 분류 (b) 에 $\varphi$ 는 늘 \blank{1.4cm}{점곱} 모양으로만 나온다\\ $\to$ $\varphi$ 를 \pick{만들어야 한다 / 안 만들어도 된다}{안 만들어도 된다}.
+\item RBF 는 $\varphi$ 의 특징이 \blank{1.2cm}{$\infty$} 개라 직접 만들 수 없다. 그래도 학습 점이 $n$ 개면 숫자 $n$ 개 ($\alpha$) 로 충분한 이유를 Q2 를 이용해 한 문장으로 써라.
+\abox{1.6cm}
+\end{parts}
+\begin{answer}
+(d) 최적의 $\bw$ 는 학습 점 $\varphi(\bx_1), \dots, \varphi(\bx_n)$ 의 합 밖으로 나가지 않는다 ($\bv = \mathbf{0}$). 특징이 무한 개여도 $\bw$ 는 $n$ 개 점의 합이라 $\alpha_1, \dots, \alpha_n$ 만 알면 된다.
+\end{answer}
+
+\end{document}
