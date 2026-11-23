@@ -33,6 +33,40 @@ def fig_recap():
     return d
 
 
+def fig_svarrow():
+    """w = 파랑 서포트 벡터 → 빨강 서포트 벡터 화살표 두 개의 합 × 0.37"""
+    X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
+    r, b1, b2 = (np.array(s) for s in mf.SV); ar, a1, a2 = (mf.ALPHA[tuple(s)] for s in mf.SV)
+    assert abs(ar + a1 + a2) < 0.01 and abs(a1 - a2) < 0.01           # 빨강 무게 = 파랑 무게, 파랑 둘 같다
+    c = -a1; d1, d2 = r - b1, r - b2; w = c * (d1 + d2)
+    assert np.allclose(w, ar * r + a1 * b1 + a2 * b2) and np.allclose(w, WA, atol=0.02)
+    GREEN = "#2b8a3e"
+    fig, axs = plt.subplots(1, 2, figsize=(12, 5.6))
+    ax = axs[0]; mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(mf.SV))
+    ax.scatter(X[y > 0, 0], X[y > 0, 1], s=80, color=RED, alpha=0.25, zorder=3); ax.scatter(X[y < 0, 0], X[y < 0, 1], s=80, color=BLUE, alpha=0.25, marker="s", zorder=3)
+    ax.scatter(*r, s=90, color=RED, zorder=5); ax.scatter(*np.c_[b1, b2], s=90, color=BLUE, marker="s", zorder=5)
+    mf.arw(ax, b1, r, "#e8590c"); mf.arw(ax, b2, r, GREEN)
+    BB = dict(fc="white", ec="none", pad=2, alpha=0.9)
+    ax.text(0.35, -1.55, f"$r - b_1$ = ({d1[0]:.1f}, {d1[1]:.1f})", color="#e8590c", fontsize=14, fontweight="bold", bbox=BB, zorder=7)
+    ax.text(0.35, -1.95, f"$r - b_2$ = ({d2[0]:.1f}, {d2[1]:.1f})", color=GREEN, fontsize=14, fontweight="bold", bbox=BB, zorder=7)
+    for p, t, o in ((r, "$r$", (0.12, 0.1)), (b1, "$b_1$", (-0.3, 0.12)), (b2, "$b_2$", (-0.32, -0.2))):
+        ax.text(p[0] + o[0], p[1] + o[1], t, fontsize=15, fontweight="bold")
+    ax.set_title("① 파랑 서포트 벡터 → 빨강 서포트 벡터", fontsize=15)
+    ax = axs[1]; O = np.zeros(2)
+    ax.set_xlim(-0.9, 2.2); ax.set_ylim(-0.2, 2.2); ax.set_aspect("equal"); ax.tick_params(labelsize=11)
+    ax.axhline(0, color=GRAY, lw=0.9, zorder=0); ax.axvline(0, color=GRAY, lw=0.9, zorder=0)
+    ax.set_xlabel("$x_1$", fontsize=13); ax.set_ylabel("$x_2$", fontsize=13, rotation=0, labelpad=8)
+    mf.arw(ax, O, d1, "#e8590c"); mf.arw(ax, d1, d1 + d2, GREEN); mf.arw(ax, O, w, "black", lw=4)
+    ax.plot(*np.c_[O, d1 + d2], ":", color=GRAY, lw=1.5, zorder=0)
+    ax.text(*(d1 / 2 + np.array([0.05, -0.22])), "$r - b_1$", color="#e8590c", fontsize=14, fontweight="bold")
+    ax.text(*(d1 + d2 / 2 + np.array([0.08, -0.1])), "$r - b_2$", color=GREEN, fontsize=14, fontweight="bold")
+    ax.text(*(d1 + d2 + np.array([-0.55, 0.08])), f"합 ({(d1 + d2)[0]:.1f}, {(d1 + d2)[1]:.1f})", fontsize=13)
+    ax.text(-0.85, 1.0, f"합 × {c:.2f} = w\n= ({w[0]:.2f}, {w[1]:.2f})", fontsize=14, fontweight="bold")
+    ax.set_title(f"② 두 화살표를 더해 {c:.2f} 배 = w", fontsize=15)
+    mf.save(fig, "kn_svarrow.png")
+    return dict(c=round(c, 2), d1=d1.round(1).tolist(), d2=d2.round(1).tolist(), w=w.round(2).tolist())
+
+
 def fig_q():
     """오늘의 질문: 원 데이터에 직선 SVM"""
     X, y = kd.Xc, kd.yc
@@ -154,7 +188,7 @@ def fig_alpha():
     mf.save(fig, "kn_alpha.png")
 
 
-FIGS = {"recap": fig_recap, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+FIGS = {"recap": fig_recap, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
