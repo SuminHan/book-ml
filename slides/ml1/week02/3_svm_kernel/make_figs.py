@@ -90,23 +90,25 @@ def fig_quiz1():
 
 
 def fig_quizkid():
-    """쉬운 퀴즈: 정수 점 8개, 경계 x1 + x2 = 3, 서포트 벡터 A (2,2) · B (1,1), 새 점 P (4,1) · Q (0,2)"""
-    R = np.array([[2, 2], [3, 2], [2, 3], [3, 3]]); B = np.array([[1, 1], [0, 1], [1, 0], [0, 0]])
+    """쉬운 퀴즈 (덱처럼 ‖w‖ = 1): 정수 점 8개, w = (0.6, 0.8), b = −3.9, 마진 2.5, 서포트 벡터 A (4,5) · B (1,1), 새 점 P (6,2) · Q (0,3)"""
+    R = np.array([[4, 5], [5, 5], [4, 6], [5, 6]]); B = np.array([[1, 1], [0, 1], [1, 0], [0, 0]])
+    w, b, m = np.array([0.6, 0.8]), -3.9, 2.5
+    M = SVC(kernel="linear", C=1e6, tol=1e-10).fit(np.r_[R, B], np.r_[np.ones(4), -np.ones(4)]); n = np.linalg.norm(M.coef_[0])
+    assert np.allclose(M.coef_[0] / n, w) and np.isclose(M.intercept_[0] / n, b) and np.allclose(np.abs(M.dual_coef_[0] / n), 0.2)
     fig, ax = plt.subplots(figsize=(6.0, 6.0))
-    t = np.linspace(-1, 6, 2)
-    ax.fill_between(t, 2 - t, 4 - t, color=GOLD, alpha=0.18, lw=0)
-    ax.plot(t, 3 - t, color="black", lw=2.5); ax.plot(t, 4 - t, "--", color=RED, lw=1.5); ax.plot(t, 2 - t, "--", color=BLUE, lw=1.5)
+    t = np.linspace(-2, 8, 2); ln = lambda c: (c - b - w[0] * t) / w[1]           # w·x + b = c 인 직선의 x2
+    ax.fill_between(t, ln(-m), ln(m), color=GOLD, alpha=0.18, lw=0)
+    ax.plot(t, ln(0), color="black", lw=2.5); ax.plot(t, ln(m), "--", color=RED, lw=1.5); ax.plot(t, ln(-m), "--", color=BLUE, lw=1.5)
     ax.scatter(R[:, 0], R[:, 1], s=110, color=RED, zorder=4); ax.scatter(B[:, 0], B[:, 1], s=110, color=BLUE, marker="s", zorder=4)
-    ax.scatter([2, 1], [2, 1], s=420, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=5)
-    mf.arw(ax, np.array([1, 1]), np.array([2, 2]), "#e8590c", lw=2.5)
-    ax.text(2.12, 1.72, "A (2, 2)", fontsize=14, fontweight="bold", color=RED); ax.text(1.12, 0.72, "B (1, 1)", fontsize=14, fontweight="bold", color=BLUE)
-    for p, n in (((4, 1), "P (4, 1)"), ((0, 2), "Q (0, 2)")):
+    ax.scatter([4, 1], [5, 1], s=420, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=5)
+    mf.arw(ax, np.array([1, 1]), np.array([4, 5]), "#e8590c", lw=2.5)
+    ax.text(2.2, 5.25, "A (4, 5)", fontsize=14, fontweight="bold", color=RED); ax.text(1.25, 0.45, "B (1, 1)", fontsize=14, fontweight="bold", color=BLUE)
+    for p, nm in (((6, 2), "P (6, 2)"), ((0, 3), "Q (0, 3)")):
         ax.scatter(*p, marker="*", s=420, color="#2B8A3E", edgecolor="black", lw=1, zorder=6)
-        ax.text(p[0] - 0.35, p[1] + 0.28, n, fontsize=14, fontweight="bold", color="#2B8A3E")
-    ax.text(2.75, 0.05, "$x_1 + x_2 = 3$", fontsize=14, rotation=-45, ha="center", va="center")
-    ax.set_xlim(-0.6, 4.6); ax.set_ylim(-0.6, 4.6); ax.set_aspect("equal"); ax.set_xticks(range(0, 5)); ax.set_yticks(range(0, 5)); ax.grid(alpha=0.3)
+        ax.text(p[0] - 0.45, p[1] + 0.35, nm, fontsize=14, fontweight="bold", color="#2B8A3E")
+    ax.set_xlim(-0.6, 6.6); ax.set_ylim(-0.6, 6.6); ax.set_aspect("equal"); ax.set_xticks(range(0, 7)); ax.set_yticks(range(0, 7)); ax.grid(alpha=0.3)
     ax.set_xlabel("$x_1$", fontsize=14); ax.set_ylabel("$x_2$", fontsize=14, rotation=0, labelpad=10)
-    ax.set_title("빨강 4개, 파랑 4개", fontsize=15)
+    ax.set_title("빨강 4개, 파랑 4개: 경계 $0.6x_1 + 0.8x_2 - 3.9 = 0$", fontsize=14)
     mf.save(fig, "kn_quizkid.png")
 
 

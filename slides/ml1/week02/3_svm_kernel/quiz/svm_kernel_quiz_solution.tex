@@ -2,7 +2,7 @@
 % 커널 SVM 퀴즈 (쉬운 판: 곱하기 · 더하기만): 왜 서포트 벡터 몇 개 (α) 로 SVM 과 같은 답이 나오나, 커널은 무엇을 바꿔 끼우나
 % 빌드 (이 폴더에서):  tectonic svm_kernel_quiz_solution.tex   -> 정답 (빈칸에 파란 답)
 %                      tectonic svm_kernel_quiz.tex            -> 학생용 (빈칸)
-% 데이터: 정수 점 8개, 경계 x1 + x2 = 3 (sklearn 하드 마진: w = (1, 1), b = -3, 서포트 벡터 (2,2) · (1,1), α = +1 · -1)
+% 데이터: 정수 점 8개, 덱과 같은 ‖w‖ = 1: w = (0.6, 0.8), b = -3.9, 마진 2.5, 서포트 벡터 A (4,5) · B (1,1), α = +0.2 · -0.2 (sklearn 하드 마진을 ‖w‖ 로 나눈 값, make_figs.fig_quizkid 에 assert)
 % 옛 증명판 (w = u + v) 은 _이전/svm_kernel_quiz_solution_v1_증명.tex
 
 \usepackage[a4paper,margin=2.2cm]{geometry}
@@ -49,13 +49,15 @@
 \q{경계선의 화살표 $\mathbf{w}$ 를 점으로 만들기}
 \begin{center}\includegraphics[width=0.5\linewidth]{kn_quizkid.png}\end{center}
 \vspace{-6pt}
-SVM 이 찾은 경계선은 $x_1 + x_2 = 3$ 이다. 식으로 쓰면 \ $\mathbf{w}\cdot\mathbf{x} + b = 0$, \ $\mathbf{w} = (1,\ 1)$, \ $b = -3$.\\
-점선(길의 가장자리) 위에 있는 \textcolor{red}{A $(2, 2)$} 와 \textcolor{blue}{B $(1, 1)$} 이 서포트 벡터다.
+SVM 이 찾은 경계선: \ $\mathbf{w}\cdot\mathbf{x} + b = 0$, \ $\mathbf{w} = (0.6,\ 0.8)$, \ $b = -3.9$. \ (덱과 같은 약속: $\lVert\mathbf{w}\rVert = 1$ 이라 $f = \mathbf{w}\cdot\mathbf{x} + b$ = 경계까지 거리)\\
+점선(길의 가장자리) 위에 있는 \textcolor{red}{A $(4, 5)$} 와 \textcolor{blue}{B $(1, 1)$} 이 서포트 벡터다.
 \begin{parts}
-\item 주황 화살표는 B 에서 A 로 간다. \quad A $-$ B $= (2 - 1,\ 2 - 1) = (\,\blank{0.8cm}{1},\ \blank{0.8cm}{1}\,)$ \quad $\to$ $\mathbf{w}$ 와 \pick{같다 / 다르다}{같다}
-\item 그래서 \quad $\mathbf{w} = (+1)\times\text{A} + (-1)\times\text{B}$.\\
-이 $+1$, $-1$ 이 $\alpha$ (그 점을 몇 번 쓰는지) 다. 나머지 6개 점의 $\alpha$ 는 \blank{0.8cm}{0}.
-\item 멀리 있는 빨강 $(3, 3)$ 을 지우면 경계선은 \pick{바뀐다 / 안 바뀐다}{안 바뀐다} \ $\to$ 그래서 그 점은 안 써도 된다 ($\alpha = 0$).
+\item $\mathbf{w}$ 의 길이가 1 인지 확인: \ $0.6\times0.6 + 0.8\times0.8 = \blank{0.9cm}{0.36} + \blank{0.9cm}{0.64} = \blank{0.9cm}{1}$
+\item 주황 화살표는 B 에서 A 로 간다. \quad A $-$ B $= (4 - 1,\ 5 - 1) = (\,\blank{0.8cm}{3},\ \blank{0.8cm}{4}\,)$\\[2pt]
+$0.2\times(3,\ 4) = (\,\blank{0.8cm}{0.6},\ \blank{0.8cm}{0.8}\,)$ \quad $\to$ $\mathbf{w}$ 와 \pick{같다 / 다르다}{같다}
+\item 그래서 \quad $\mathbf{w} = (+0.2)\times\text{A} + (-0.2)\times\text{B}$.\\
+이 $+0.2$, $-0.2$ 가 $\alpha$ (그 점을 얼마나 쓰는지) 다. 나머지 6개 점의 $\alpha$ 는 \blank{0.8cm}{0}.
+\item 멀리 있는 빨강 $(5, 6)$ 을 지우면 경계선은 \pick{바뀐다 / 안 바뀐다}{안 바뀐다} \ $\to$ 그래서 그 점은 안 써도 된다 ($\alpha = 0$).
 \end{parts}
 \begin{answer}
 경계선은 가장 가까운 점(서포트 벡터)만 보고 정해진다. 그래서 $\mathbf{w}$ 를 만들 때도 서포트 벡터만 쓴다.
@@ -64,27 +66,26 @@ SVM 이 찾은 경계선은 $x_1 + x_2 = 3$ 이다. 식으로 쓰면 \ $\mathbf{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \q{한 번에 계산 vs 서포트 벡터로 나눠 계산}
-새 점이 빨강인지 파랑인지는 $f = \mathbf{w}\cdot\mathbf{x} + b$ 의 부호로 정한다 ($+$ 면 빨강, $-$ 면 파랑).\\
-$\mathbf{w}\cdot\mathbf{x}$ 를 두 가지 방법으로 계산해 보자.
+새 점은 $f = \mathbf{w}\cdot\mathbf{x} + b$ 의 부호로 나눈다 ($+$ 면 빨강, $-$ 면 파랑). $\lVert\mathbf{w}\rVert = 1$ 이라 $f$ 의 크기는 경계까지 거리다.\\
+$\mathbf{w}\cdot\mathbf{x}$ 를 두 가지 방법으로 계산해 보자. \ ($\mathbf{w} = (0.6,\ 0.8)$, \ $b = -3.9$, \ $\alpha_\text{A} = +0.2$, \ $\alpha_\text{B} = -0.2$)
 \begin{parts}
-\item 새 점 \textcolor{green!45!black}{P $(4, 1)$}
+\item 새 점 \textcolor{green!45!black}{P $(6, 2)$}
 \begin{itemize}[leftmargin=1.5em,itemsep=4pt]
-\item 한 번에: \quad $\mathbf{w}\cdot\text{P} = 1\times4 + 1\times1 = \blank{0.9cm}{5}$
-\item 나눠서: \quad $\text{A}\cdot\text{P} = 2\times4 + 2\times1 = \blank{0.9cm}{10}$, \quad $\text{B}\cdot\text{P} = 1\times4 + 1\times1 = \blank{0.9cm}{5}$\\[3pt]
-\hspace*{4.6em}$(+1)\times\text{A}\cdot\text{P} \ + \ (-1)\times\text{B}\cdot\text{P} = \blank{0.9cm}{10} - \blank{0.9cm}{5} = \blank{0.9cm}{5}$
-\item 두 방법은 \pick{같다 / 다르다}{같다}. \quad $f = 5 + (-3) = \blank{0.9cm}{2}$ \ $\to$ \pick{빨강 / 파랑}{빨강}
+\item 한 번에: \quad $\mathbf{w}\cdot\text{P} = 0.6\times6 + 0.8\times2 = \blank{0.9cm}{3.6} + \blank{0.9cm}{1.6} = \blank{0.9cm}{5.2}$
+\item 나눠서: \quad $\text{A}\cdot\text{P} = 4\times6 + 5\times2 = \blank{0.9cm}{34}$, \quad $\text{B}\cdot\text{P} = 1\times6 + 1\times2 = \blank{0.9cm}{8}$\\[3pt]
+\hspace*{4.6em}$0.2\times34 \ - \ 0.2\times8 = \blank{0.9cm}{6.8} - \blank{0.9cm}{1.6} = \blank{0.9cm}{5.2}$
+\item 두 방법은 \pick{같다 / 다르다}{같다}. \quad $f = 5.2 - 3.9 = \blank{0.9cm}{1.3}$ \ $\to$ \pick{빨강 / 파랑}{빨강}, 경계에서 1.3 떨어져 있다.
 \end{itemize}
-\item 새 점 \textcolor{green!45!black}{Q $(0, 2)$}
+\item 새 점 \textcolor{green!45!black}{Q $(0, 3)$}
 \begin{itemize}[leftmargin=1.5em,itemsep=4pt]
-\item 한 번에: \quad $\mathbf{w}\cdot\text{Q} = \blank{0.9cm}{2}$
-\item 나눠서: \quad $\text{A}\cdot\text{Q} = \blank{0.9cm}{4}$, \quad $\text{B}\cdot\text{Q} = \blank{0.9cm}{2}$, \quad $(+1)\times4 + (-1)\times2 = \blank{0.9cm}{2}$
-\item $f = 2 + (-3) = \blank{0.9cm}{$-1$}$ \ $\to$ \pick{빨강 / 파랑}{파랑}
+\item 한 번에: \quad $\mathbf{w}\cdot\text{Q} = 0.6\times0 + 0.8\times3 = \blank{0.9cm}{2.4}$
+\item 나눠서: \quad $\text{A}\cdot\text{Q} = \blank{0.9cm}{15}$, \quad $\text{B}\cdot\text{Q} = \blank{0.9cm}{3}$, \quad $0.2\times15 - 0.2\times3 = \blank{0.9cm}{2.4}$
+\item $f = 2.4 - 3.9 = \blank{0.9cm}{$-1.5$}$ \ $\to$ \pick{빨강 / 파랑}{파랑}
 \end{itemize}
 \item 그러니 $\mathbf{w}$ 를 몰라도, 서포트 벡터 \blank{0.8cm}{2} 개와 새 점의 점곱에 $\alpha$ 를 곱해 더하면 같은 답이 나온다.
 \end{parts}
-\key{{\bf 왜 같을까?} \ $\mathbf{w}$ 가 원래 $\text{A} - \text{B}$ 이니까, $\mathbf{w}\cdot\text{P}$ 는 $(\text{A} - \text{B})\cdot\text{P} = \text{A}\cdot\text{P} - \text{B}\cdot\text{P}$.\\
+\key{{\bf 왜 같을까?} \ $\mathbf{w}$ 가 원래 $0.2\times(\text{A} - \text{B})$ 이니까, $\mathbf{w}\cdot\text{P} = 0.2\times\text{A}\cdot\text{P} - 0.2\times\text{B}\cdot\text{P}$.\\
 1000원을 500원 동전 2개로 세어도 1000원인 것처럼, 같은 화살표를 다르게 적은 것뿐이다.}
-{\small (덱처럼 $\lVert\mathbf{w}\rVert = 1$ 로 맞추려면 $\mathbf{w}$, $b$, $f$, $\alpha$ 를 모두 $1.41$ 로 나눈다. 빨강·파랑은 그대로다.)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage

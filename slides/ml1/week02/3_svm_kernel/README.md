@@ -5,4 +5,4 @@
 - 숫자: data.py (assert: 계수 6개 · 4.2 · A 와 B 의 w · b · 예측 같음). 1차시 숫자는 ../2_svm/data.py 를 그대로 쓴다.
 - 그림: make_figs.py — kn_q · kn_lift1d 는 여기서, sv_* 커널 그림은 ../2_svm/make_figs.py 의 함수를 불러 이 폴더 figs/ 에 만든다.
 - 실습: lab/make_lab.py — 원 데이터 A vs B 같은 w · Banknote 선형 98.6% vs RBF 100% · 반달 GridSearchCV (C, γ)
-- 퀴즈: quiz/svm_kernel_quiz.pdf (학생용 빈칸) · quiz/svm_kernel_quiz_solution.pdf (정답). 문제는 svm_kernel_quiz_solution.tex 하나만 고치고 둘 다 tectonic 으로 빌드. 곱하기 · 더하기만 쓰는 쉬운 판: 정수 점 8개, 경계 x1 + x2 = 3. Q1 w = A − B (서포트 벡터 (2,2) · (1,1), α = +1 · −1) · Q2 한 번에 vs 서포트 벡터로 나눠 (P (4,1): 5 = 10 − 5, Q (0,2): 2 = 4 − 2) · Q3 점곱 제곱 = 숫자 4개로 늘린 점곱 25 → 커널. 옛 증명판 (w = u + v) 은 quiz/_이전/
+- 퀴즈: quiz/svm_kernel_quiz.pdf (학생용 빈칸) · quiz/svm_kernel_quiz_solution.pdf (정답). 문제는 svm_kernel_quiz_solution.tex 하나만 고치고 둘 다 tectonic 으로 빌드. 곱하기 · 더하기만 쓰는 쉬운 판: 정수 점 8개, 덱과 같은 ‖w‖ = 1 (w = (0.6, 0.8), b = −3.9, 마진 2.5). Q1 w = 0.2 × (A − B) (서포트 벡터 A (4,5) · B (1,1), α = ±0.2) · Q2 한 번에 vs 서포트 벡터로 나눠 (P (6,2): 5.2 = 6.8 − 1.6, f = 1.3 빨강 · Q (0,3): 2.4 = 3 − 0.6, f = −1.5 파랑) · Q3 점곱 제곱 = 숫자 4개로 늘린 점곱 25 → 커널. 옛 증명판 (w = u + v) 은 quiz/_이전/
