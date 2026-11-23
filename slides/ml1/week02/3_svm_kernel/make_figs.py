@@ -139,6 +139,29 @@ def fig_force():
     return dict(pos=pos.round(2).tolist(), torque=tq.round(2).tolist())
 
 
+def fig_quizkid3():
+    """쉬운 퀴즈, 서포트 벡터 3개: 같은 경계 w = (0.6, 0.8), b = −3.9, A (4,5) α +0.2, B1 (−3,4) · B2 (5,−2) α −0.1"""
+    R = np.array([[4, 5], [5, 5], [4, 6], [5, 6]]); B = np.array([[-3, 4], [5, -2], [0, 0], [1, -1]])
+    w, b, m = np.array([0.6, 0.8]), -3.9, 2.5
+    M = SVC(kernel="linear", C=1e6, tol=1e-10).fit(np.r_[R, B], np.r_[np.ones(4), -np.ones(4)]); n = np.linalg.norm(M.coef_[0])
+    al = dict(zip(map(tuple, M.support_vectors_.astype(int).tolist()), (M.dual_coef_[0] / n).round(3)))
+    assert np.allclose(M.coef_[0] / n, w) and np.isclose(M.intercept_[0] / n, b) and al == {(-3, 4): -0.1, (5, -2): -0.1, (4, 5): 0.2}
+    fig, ax = plt.subplots(figsize=(6.4, 6.0))
+    t = np.linspace(-6, 9, 2); ln = lambda c: (c - b - w[0] * t) / w[1]
+    ax.fill_between(t, ln(-m), ln(m), color=GOLD, alpha=0.18, lw=0)
+    ax.plot(t, ln(0), color="black", lw=2.5); ax.plot(t, ln(m), "--", color=RED, lw=1.5); ax.plot(t, ln(-m), "--", color=BLUE, lw=1.5)
+    ax.scatter(R[:, 0], R[:, 1], s=100, color=RED, zorder=4); ax.scatter(B[:, 0], B[:, 1], s=100, color=BLUE, marker="s", zorder=4)
+    for (p, a), nm, off in zip(((k, v) for k, v in al.items()), ("B1", "B2", "A"), ((0.3, 0.25), (-4.3, -0.75), (-2.6, 0.35))):
+        ax.scatter(*p, s=420, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=5)
+        ax.text(p[0] + off[0], p[1] + off[1], f"{nm} ({p[0]}, {p[1]})  α = {a:+.1f}".replace("-", "−"), fontsize=13, fontweight="bold", color=RED if a > 0 else BLUE, zorder=7,
+                bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.scatter(6, 2, marker="*", s=420, color="#2B8A3E", edgecolor="black", lw=1, zorder=6); ax.text(5.4, 2.5, "P (6, 2)", fontsize=13, fontweight="bold", color="#2B8A3E")
+    ax.set_xlim(-4.2, 7.2); ax.set_ylim(-3.2, 7.2); ax.set_aspect("equal"); ax.set_xticks(range(-4, 8, 2)); ax.set_yticks(range(-2, 8, 2)); ax.grid(alpha=0.3)
+    ax.set_xlabel("$x_1$", fontsize=14); ax.set_ylabel("$x_2$", fontsize=14, rotation=0, labelpad=10)
+    ax.set_title("같은 경계, 서포트 벡터 3개", fontsize=15)
+    mf.save(fig, "kn_quizkid3.png")
+
+
 def fig_q():
     """오늘의 질문: 원 데이터에 직선 SVM"""
     X, y = kd.Xc, kd.yc
@@ -260,7 +283,7 @@ def fig_alpha():
     mf.save(fig, "kn_alpha.png")
 
 
-FIGS = {"recap": fig_recap, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+FIGS = {"recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
