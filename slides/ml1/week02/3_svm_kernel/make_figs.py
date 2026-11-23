@@ -13,6 +13,26 @@ from sklearn.svm import SVC
 BLUE, RED, GOLD, GRAY = mf.BLUE, mf.RED, mf.GOLD, mf.GRAY
 
 
+def fig_recap():
+    """지난 시간 한 쪽: ① 경계와 값 = 거리 ② 최대 마진 ③ 소프트 마진 (λ = 5)"""
+    X, y, WA, BA = mf.X, mf.y, mf.WA, mf.BA
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5.4))
+    ax = axs[0]; mf.pts(ax); mf.street_m(ax, WA, BA, 0)
+    p = np.array([-0.2, -1.4]); d = -(WA @ p + BA); q = p + d * WA                  # ‖w‖ = 1 이라 값 = 거리, q = 경계 위 발
+    ax.annotate("", q, p, arrowprops=dict(arrowstyle="<->", lw=2, color="black", shrinkA=6, shrinkB=0), zorder=6)
+    ax.text(-0.45, -1.62, f"값 = 거리 = {d:.2f}", fontsize=14, fontweight="bold", va="top")
+    ax.text(-1.05, 2.05, "$\\mathbf{w}\\cdot\\mathbf{x} + b = 0$", fontsize=14, va="top")
+    ax.set_title("① 경계: $\\Vert\\mathbf{w}\\Vert = 1$ 이면 값 = 거리", fontsize=15)
+    ax = axs[1]; mf.pts(ax); mf.svm_street(ax, mf.M)
+    ax.set_title(f"② 최대 마진: m = {mf.MA:.2f}\n경계는 서포트 벡터 3개가 정한다", fontsize=15)
+    Xo = np.r_[X, [mf.OUTLIER]]; yo = np.r_[y, [1]]
+    w, b, m = mf.train_soft(Xo, yo, 5)[:3]; v = yo * (Xo @ w + b)
+    ax = axs[2]; mf.pts(ax, Xo, yo); mf.street_m(ax, w, b, m, Xo[v <= m + 2e-3])
+    ax.set_title(f"③ 소프트 마진 λ = 5: m = {m:.2f}\n길 안에 점을 둬도 된다", fontsize=15)
+    mf.save(fig, "kn_recap.png")
+    return d
+
+
 def fig_q():
     """오늘의 질문: 원 데이터에 직선 SVM"""
     X, y = kd.Xc, kd.yc
@@ -134,7 +154,7 @@ def fig_alpha():
     mf.save(fig, "kn_alpha.png")
 
 
-FIGS = {"alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+FIGS = {"recap": fig_recap, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
