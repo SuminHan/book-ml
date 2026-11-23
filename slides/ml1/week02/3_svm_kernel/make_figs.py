@@ -67,6 +67,28 @@ def fig_svarrow():
     return dict(c=round(c, 2), d1=d1.round(1).tolist(), d2=d2.round(1).tolist(), w=w.round(2).tolist())
 
 
+def fig_quiz1():
+    """퀴즈 Q1: 점 20개, 서포트 벡터 3개 (좌표 · α), 새 점 ★ (답은 안 적는다)"""
+    X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
+    SV = [np.array(s) for s in mf.SV]; AL = [mf.ALPHA[tuple(s)] for s in mf.SV]
+    fig, ax = plt.subplots(figsize=(6.4, 6.0))
+    mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(SV))
+    ax.scatter(X[y > 0, 0], X[y > 0, 1], s=80, color=RED, alpha=0.28, zorder=3); ax.scatter(X[y < 0, 0], X[y < 0, 1], s=80, color=BLUE, alpha=0.28, marker="s", zorder=3)
+    off = {0: (0.22, -0.05), 1: (-1.55, 0.3), 2: (0.22, -0.3)}
+    for k, (p, a) in enumerate(zip(SV, AL)):
+        c = RED if a > 0 else BLUE
+        ax.scatter([p[0]], [p[1]], s=90, color=c, marker="o" if a > 0 else "s", zorder=5)
+        ax.text(p[0] + off[k][0], p[1] + off[k][1], f"({p[0]:g}, {p[1]:g})\nα = {a:+.2f}".replace("-", "−"), fontsize=13, fontweight="bold", color=c, zorder=6,
+                bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.text(0.3, 2.1, "흐린 점 17개: α = 0", fontsize=13, color="#555555", va="top", zorder=6, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    nx = np.array(kd.NEW_PT)
+    ax.scatter([nx[0]], [nx[1]], marker="*", s=420, color="#2B8A3E", edgecolor="black", lw=1, zorder=7)
+    ax.text(nx[0] + 0.22, nx[1] - 0.35, f"새 점 ({nx[0]:g}, {nx[1]:g})".replace("-", "−"), fontsize=13, fontweight="bold", color="#2B8A3E", zorder=7,
+            bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.set_title(f"점 20개: 서포트 벡터 3개, b = {BA:.2f}", fontsize=15)
+    mf.save(fig, "kn_quiz1.png")
+
+
 def fig_q():
     """오늘의 질문: 원 데이터에 직선 SVM"""
     X, y = kd.Xc, kd.yc
@@ -188,7 +210,7 @@ def fig_alpha():
     mf.save(fig, "kn_alpha.png")
 
 
-FIGS = {"recap": fig_recap, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+FIGS = {"recap": fig_recap, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
