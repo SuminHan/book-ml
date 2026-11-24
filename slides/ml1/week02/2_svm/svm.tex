@@ -240,15 +240,19 @@
 \begin{frame}{푸는 식: 가장 가까운 점을 경계에서 가장 멀리}
 \vfill
 \centering
-{\LARGE $\displaystyle \max_{\mathbf{w},\ \lVert\mathbf{w}\rVert = 1}\ \ \min_{k}\ \ y_k D(\mathbf{x}_k)$}\\[1em]
-\renewcommand{\arraystretch}{1.6}
-{\normalsize\begin{tabular}{rl}
-\textbf{①} \;$\dfrac{y_k D(\mathbf{x}_k)}{\lVert\mathbf{w}\rVert} \ge M$ & 모든 점이 경계에서 $M$ 이상 \;($\lVert\mathbf{w}\rVert = 1$ 이면 $y_k D(\mathbf{x}_k) \ge M$)\\
-\textbf{②} \;$\min_k\, y_k D(\mathbf{x}_k) = M^*$ & 가장 가까운 점의 거리 = 마진\\
-\textbf{③} \;$\max_{\mathbf{w},\,\lVert\mathbf{w}\rVert = 1}$ & $\mathbf{w}$ (경계에 수직) 를 돌리고 $b$ 로 옮기며 \kb{가장 크게}\\
- & {\normalsize $\lVert\mathbf{w}\rVert = 1$: 길이 고정 (안 묶으면 값이 끝없이 커진다)}
-\end{tabular}}\\[1em]
-{\normalsize 찾는 숫자: $w_1, w_2, b$ \quad 방법: \kq{가장 가까운 점}이 민다 $\to$ $\mathbf{w}$ 길이 1 로 $\to$ 반복}
+\vspace*{2.1cm}
+{\LARGE $\tikzmarknode{mx}{\displaystyle\max_{\mathbf{w},\ \lVert\mathbf{w}\rVert = 1}}\ \ \ \tikzmarknode{mn}{\displaystyle\min_{k}}\ \ \ \tikzmarknode{yd}{y_k D(\mathbf{x}_k)}$}
+\begin{tikzpicture}[remember picture,overlay]
+\node[bub,anchor=south west] (b1) at ([xshift=0.6cm,yshift=0.6cm]yd.north east) {\textbf{점 $k$ 에서 경계까지 거리}\\ ($\lVert\mathbf{w}\rVert = 1$ 이라 값 = 거리)};
+\draw[bubarr] (b1.west) to[out=180,in=60] (yd.north);
+\node[bub,anchor=south] (b2) at ([xshift=-1.2cm,yshift=0.7cm]mn.north) {\textbf{20개 중 가장 작은 것}\\ = 가장 가까운 점의 거리 = 마진 $M$};
+\draw[bubarr] (b2.south) -- (mn.north);
+\node[bub,anchor=north] (b3) at ([xshift=0.4cm,yshift=-0.6cm]mx.south) {\textbf{선을 돌리고 ($\mathbf{w}$) 옮기며 ($b$) 그 거리를 가장 크게}\\ $\lVert\mathbf{w}\rVert = 1$: $\mathbf{w}$ 길이 고정 (안 묶으면 값이 끝없이 커진다)};
+\draw[bubarr] (b3.north) -- (mx.south);
+\end{tikzpicture}
+\vskip2.3cm
+{\normalsize 예: 평균 선은 가장 가까운 점까지 0.62, \;SVM 선은 \kb{0.67} $\to$ 더 큰 SVM 선이 답}\\[0.3em]
+{\normalsize 방법: \kq{가장 가까운 점}이 민다 (min) $\to$ 그 거리가 커진다 (max) $\to$ $\mathbf{w}$ 길이 1 로 $\to$ 반복}
 \vfill
 \note{이제 이 경계를 어떻게 찾는지 봅시다. 원 논문은 찾는 것을 한 줄로 씁니다. max min y k D x k입니다. 안쪽부터 읽습니다. 첫째, y k D x k는 점 k의 값에 라벨을 곱한 것이고, w의 길이를 1로 묶어 두었으니 점 k에서 경계까지의 거리입니다. 틀린 쪽에 있는 점이면 음수가 됩니다. 둘째, min k는 점 20개의 거리 중 가장 작은 것, 즉 경계에 가장 가까운 점까지의 거리를 고릅니다. 이것이 마진 M입니다. 셋째, 바깥의 max는 w와 b를 바꿔 가며, 즉 경계를 돌리고 옮겨 가며 그 가장 작은 거리를 가장 크게 만듭니다. 그래서 전체는 가장 가까운 점을 경계에서 가장 멀리 두는 선을 찾으라는 뜻이고, 앞에서 본 가장 넓은 길과 같은 말입니다. 아래 첨자에 w의 길이가 1이라고 적은 것은, 이 조건이 없으면 w를 두 배, 세 배 키우기만 해도 값이 커져서 max가 끝없이 커지기 때문입니다. 우리가 정할 숫자는 w1, w2, b 셋이고, 방법은 다음 쪽부터 봅니다. 가장 가까운 점이 선을 밀고, w의 길이를 다시 1로 맞추는 것을 반복합니다. 가장 가까운 점이 미는 것이 min이고, 밀어서 그 거리를 키우는 것이 max입니다.}
 \end{frame}
