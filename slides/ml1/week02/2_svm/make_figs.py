@@ -173,7 +173,7 @@ def fig_street():
     fig, ax = plt.subplots(figsize=(5.8, 5.8)); pts(ax); svm_street(ax, M)
     a = np.array(SV[1]); b = a + 2 * MA * WA
     ax.annotate("", b, a, arrowprops=dict(arrowstyle="<->", lw=2, shrinkA=0, shrinkB=0))
-    ax.text(0.25, -1.75, f"길 폭 2m = {2 * MA:.2f}", fontsize=15, fontweight="bold", ha="left", va="top")
+    ax.text(0.25, -1.75, f"길 폭 2M = {2 * MA:.2f}", fontsize=15, fontweight="bold", ha="left", va="top")
     save(fig, "sv_street.png")
     X2 = X.copy(); X2[10 + BLUE_PTS.index(FAR_MOVE[0])] = FAR_MOVE[1]
     M2 = SVC(kernel="linear", C=1e6).fit(X2, y)
@@ -199,7 +199,7 @@ def fig_fold():
     s = np.linspace(-10, 10, 2); d = np.array([-WA[1], WA[0]]); seg = lambda c: (c - BA) * WA[:, None] + d[:, None] * s
     ax.plot(*seg(0), color="black", lw=2.5); ax.plot(*seg(MA), "--", color=GOLD, lw=2)
     Q = np.where(sv)[0]; ax.scatter(Xf[Q, 0], Xf[Q, 1], s=330, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4)
-    ax.text(2.1, -2.05, f"접은 뒤 가장 가까운 거리\nm = {MA:.2f}", fontsize=13, color=GOLDT, ha="right", bbox=dict(fc="white", ec="none", alpha=0.9))
+    ax.text(2.1, -2.05, f"접은 뒤 가장 가까운 거리\nM = {MA:.2f}", fontsize=13, color=GOLDT, ha="right", bbox=dict(fc="white", ec="none", alpha=0.9))
     save(fig, "sv_fold.png")
 
 
@@ -287,7 +287,7 @@ def fig_zscore(T=MM_T):
     ax.set_xlabel("원래 $x_1$"); ax.set_ylabel("원래 $x_2$ + 100")
     ax.set_title(f"z-score 안 하고 학습: 2만 걸음 뒤\n틀린 점 {bad.sum()}개", fontsize=15)
     ax = axs[1]; pts(ax); street_m(ax, wz, bz, mz)
-    ax.set_title(f"z-score 하고 학습: 2만 걸음 뒤\nm = {mz:.2f} (SVM 답)", fontsize=15)
+    ax.set_title(f"z-score 하고 학습: 2만 걸음 뒤\nM = {mz:.2f} (SVM 답)", fontsize=15)
     save(fig, "sv_zscore.png")
     return int(bad.sum()), round(mz, 2)
 
@@ -312,13 +312,13 @@ def fig_train():
     fig, axs = plt.subplots(2, 4, figsize=(16, 8.6))
     for ax, (t, ttl) in zip(axs.ravel(), TR8.items()):
         w_, b_, act, m_ = shots[t]; pts(ax); street_m(ax, w_, b_, m_, X[act])
-        ax.set_title(f"{ttl}  m {m_:.2f}", fontsize=15)
+        ax.set_title(f"{ttl}  M {m_:.2f}", fontsize=15)
     save(fig, "sv_train4.png")
     mg = y * (X @ wt + bt); o = np.argsort(mg); Mn = mg.min()
     fig, ax = plt.subplots(figsize=(10, 4.2))
     cols = [GOLD if mg[i] < Mn + 0.01 else (RED if y[i] > 0 else BLUE) for i in o]
     ax.bar(range(20), mg[o], color=cols, alpha=0.9)
-    ax.axhline(Mn, color="black", ls="--", lw=1.5); ax.text(-0.4, 2.35, f"점선: m = {Mn:.2f} = 길 가장자리", fontsize=14)
+    ax.axhline(Mn, color="black", ls="--", lw=1.5); ax.text(-0.4, 2.35, f"점선: M = {Mn:.2f} = 길 가장자리", fontsize=14)
     ax.text(1, Mn + 0.2, "서포트 벡터", ha="center", fontsize=14, color=GOLDT, fontweight="bold")
     for k, i in enumerate(o[:3]):
         ax.text(k, mg[i] + 0.05, f"{mg[i]:.2f}", ha="center", fontsize=12, fontweight="bold")
@@ -331,7 +331,7 @@ def fig_train():
     ax.plot(T - 1, mm, color="black", lw=2); ax.set_xscale("log")
     ax.axhline(MA, color=GOLD, ls="--", lw=1.5); ax.text(1.1, MA + 0.006, f"SVM 답 {MA:.2f}", fontsize=12, color=GOLDT)
     ax.set_xticks([1, 10, 100, 1000, 10000]); ax.set_xticklabels(["1", "10", "100", "1,000", "10,000"])
-    ax.set_xlabel("걸음 뒤 (로그 눈금)", fontsize=13); ax.set_ylabel("m (가장 가까운 점까지 거리)", fontsize=13)
+    ax.set_xlabel("걸음 뒤 (로그 눈금)", fontsize=13); ax.set_ylabel("M (가장 가까운 점까지 거리)", fontsize=13)
     ax.set_ylim(0.55, 0.70); ax.tick_params(labelsize=12)
     save(fig, "sv_trainpath.png")
     return {t: (np.round(shots[t][0], 2), round(shots[t][1], 2), round(shots[t][3], 2), X[shots[t][2]].tolist()) for t in TR8}, [round(mg[i], 2) for i in o[:4]]
@@ -345,25 +345,25 @@ def fig_soft():
     Xn = np.r_[X, [NEWPT]]; yn = np.r_[y, 1]; Mn = SVC(kernel="linear", C=1e6).fit(Xn, yn)
     pts(axs[1], Xn, yn); svm_street(axs[1], Mn, Xn); line(axs[1], WA, BA, color=GRAY, lw=2, ls=":")
     axs[1].scatter(*NEWPT, s=380, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=5)
-    axs[1].set_title(f"빨간 점 하나 추가: m {MA:.2f} → {M_NEW}", fontsize=16)
+    axs[1].set_title(f"빨간 점 하나 추가: M {MA:.2f} → {M_NEW}", fontsize=16)
     save(fig, "sv_sensitive.png")
-    sol = {lam: train_soft(Xo, yo, lam)[:3] for lam in SOFT_LAM}                     # 직접 짠 소프트 마진 학습 (data.train_soft)
-    lam = 5; w, b, m = sol[lam]; v = yo * (Xo @ w + b); eps = np.maximum(0, m - v)   # ε = 모자란 거리
-    fig, ax = plt.subplots(figsize=(6.0, 6.0)); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= m + 2e-3])
+    sol = {C: train_soft(Xo, yo, C, T=200000 if C == 100 else MM_T)[:3] for C in SOFT_C}   # 직접 짠 소프트 마진 학습 (data.train_soft, 논문 C 꼴)
+    C = 0.5; w, b, m = sol[C]; v = yo * (Xo @ w + b); xi = np.maximum(0, 1 - v)          # ξ_k = 모자란 값 (가장 가까운 값 = 1 기준)
+    fig, ax = plt.subplots(figsize=(6.0, 6.0)); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= 1 + 2e-3])
     lab = []
-    for i in np.where(eps > 1e-3)[0]:
-        c = RED if eps[i] > m else "#e8590c"; p = Xo[i]
+    for i in np.where(xi > 1e-3)[0]:
+        c = RED if xi[i] > 1 else "#e8590c"; p = Xo[i]
         POS = {(0.7, 0.2): (1.15, -0.2), (-0.6, -0.4): (-0.95, 0.4), (0.1, -1.1): (0.75, -1.55), (-0.2, -0.6): (0.45, -0.5)}   # 글자 자리 (다른 점과 안 겹치게)
-        ax.annotate(f"ε {eps[i]:.2f}", p, POS.get(tuple(np.round(p, 1)), tuple(p + np.array([0.5, 0.4]))), fontsize=12, fontweight="bold", color=c, zorder=6,
+        ax.annotate(f"ξ {xi[i]:.2f}", p, POS.get(tuple(np.round(p, 1)), tuple(p + np.array([0.5, 0.4]))), fontsize=12, fontweight="bold", color=c, zorder=6,
                     bbox=dict(fc="white", ec="none", pad=1, alpha=0.9), arrowprops=dict(arrowstyle="-", color=c, lw=1.2))
-        lab.append((tuple(p), round(eps[i], 2)))
-    ax.set_title(f"λ = 5: m = {m:.2f}\nε > 0: 길 안 · ε > m: 틀림", fontsize=14)
+        lab.append((tuple(p), round(xi[i], 2)))
+    ax.set_title(f"C = 0.5: M = {m:.2f}\nξ > 0: 길 안 · ξ > 1: 틀림", fontsize=14)
     save(fig, "sv_slack.png")
     fig, axs = plt.subplots(1, 3, figsize=(14, 5.6))
-    for ax, (lam, name) in zip(axs, ((1, "1"), (3, "3"), (5, "5"))):
-        w, b, m = sol[lam]; v = yo * (Xo @ w + b); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= m + 2e-3])
-        _, mg, nsv, _ = SOFT_LAM[lam]
-        ax.set_title(f"λ = {name}\nm = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
+    for ax, C in zip(axs, (100, 3, 0.5)):
+        w, b, m = sol[C]; v = yo * (Xo @ w + b); pts(ax, Xo, yo); street_m(ax, w, b, m, Xo[v <= 1 + 2e-3])
+        mg, nsv, _ = SOFT_C[C]
+        ax.set_title(f"C = {C:g}\nM = {mg:.2f}, 서포트 벡터 {nsv}개", fontsize=14)
     save(fig, "sv_soft.png")
     return lab
 
@@ -417,7 +417,7 @@ def fig_lock():
     for ax, (w_, b_, ttl, sub) in zip(axs, cases):
         v = y * (X @ w_ + b_); m_ = v.min(); touch = v < m_ + 0.005
         pts(ax); street_m(ax, w_, b_, m_, X[touch])
-        ax.set_title(f"{ttl}: m = {m_:.2f}\n→ {sub}", fontsize=15, color="black" if ttl[0] != "③" else GOLDT)
+        ax.set_title(f"{ttl}: M = {m_:.2f}\n→ {sub}", fontsize=15, color="black" if ttl[0] != "③" else GOLDT)
         out.append((round(m_, 2), int(touch.sum())))
     arw(axs[0], np.array([-0.2, -0.6]) + 0.0, np.array([-0.2, -0.6]) - 0.35 * WA, GOLD, 3)
     from matplotlib.patches import FancyArrowPatch
@@ -434,21 +434,21 @@ def fig_two_three():
     fig, axs = plt.subplots(1, 3, figsize=(15, 5.6)); out = {"toy": (np.round(wt, 2), round(bt, 2), round(mmt, 2))}
     ax = axs[0]; pts(ax, Xt, yt); street_m(ax, wt, bt, mmt, Xt[mt.support_])
     p, q = Xt[mt.support_]; ax.plot(*zip(p, q), color=GOLD, lw=2, ls="--")
-    ax.set_title(f"① 2개: 가장 가까운 쌍의 수직이등분선\n길 안이 비었다 → m = {mmt:.2f}", fontsize=14)
+    ax.set_title(f"① 2개: 가장 가까운 쌍의 수직이등분선\n길 안이 비었다 → M = {mmt:.2f}", fontsize=14)
     R, B = X[y > 0], X[y < 0]; D = np.linalg.norm(R[:, None] - B[None], axis=2); i, j = np.unravel_index(D.argmin(), D.shape)
     r, s = R[i], B[j]; u = (r - s) / np.linalg.norm(r - s); bb = -u @ (r + s) / 2; mh = np.linalg.norm(r - s) / 2
     ax = axs[1]; pts(ax); street_m(ax, u, bb, mh, np.array([r, s])); ax.plot(*zip(r, s), color=GOLD, lw=2, ls="--")
     v = y * (X @ u + bb); bad = (v < mh - 1e-6)
     ax.scatter(X[bad, 0], X[bad, 1], s=420, facecolors="none", edgecolors=RED, lw=3, zorder=6)
-    ax.set_title(f"② 우리 데이터: 같은 방법이면 m = {mh:.2f}\n그런데 길 안에 점이 걸린다", fontsize=14)
+    ax.set_title(f"② 우리 데이터: 같은 방법이면 M = {mh:.2f}\n그런데 길 안에 점이 걸린다", fontsize=14)
     out["pair"] = (r.tolist(), s.tolist(), round(mh, 2), X[bad].tolist())
     ax = axs[2]; pts(ax); street_m(ax, WA, BA, MA, np.array(SV))
     b1, b2 = np.array(SV[1]), np.array(SV[2]); d = (b2 - b1) / np.linalg.norm(b2 - b1)
     ax.plot(*zip(b1 - 1.2 * d, b2 + 1.2 * d), color=BLUE, lw=3.5, alpha=0.5)
     rr = np.array(SV[0]); foot = rr - 2 * MA * WA
     ax.annotate("", foot, rr, arrowprops=dict(arrowstyle="<->", color=RED, lw=2.2, shrinkA=0, shrinkB=0))
-    ax.text(*(rr - MA * WA + np.array([0.25, -0.35])), f"2m = {2 * MA:.2f}", fontsize=13, color=RED, weight="bold", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
-    ax.set_title("③ 3개: 파랑 2개가 기울기, 빨강 1개가 폭\n" + f"m = {MA:.2f}", fontsize=14, color=GOLDT)
+    ax.text(*(rr - MA * WA + np.array([0.25, -0.35])), f"2M = {2 * MA:.2f}", fontsize=13, color=RED, weight="bold", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.set_title("③ 3개: 파랑 2개가 기울기, 빨강 1개가 폭\n" + f"M = {MA:.2f}", fontsize=14, color=GOLDT)
     save(fig, "sv_two_three.png")
     return out
 
@@ -465,19 +465,19 @@ def fig_train9():
         for ax, (t, ttl) in zip(axs, items[3 * part:3 * part + 3]):
             w_, b_, act, m_ = sh[t]; pts(ax); street_m(ax, w_, b_, m_, X[act])
             sg = "+" if b_ >= 0 else "−"
-            ax.set_title(f"{ttl}   m = {m_:.2f}\n${w_[0]:.2f}\\,x_1 + {w_[1]:.2f}\\,x_2 {sg} {abs(b_):.2f} = 0$", fontsize=18)
+            ax.set_title(f"{ttl}   M = {m_:.2f}\n${w_[0]:.2f}\\,x_1 + {w_[1]:.2f}\\,x_2 {sg} {abs(b_):.2f} = 0$", fontsize=18)
             out.append((t, round(w_[0], 2), round(w_[1], 2), round(b_, 2), round(m_, 2), X[act].tolist()))
         save(fig, f"sv_train9_{part + 1}.png")
     return out
 
 
-TS9 = {2: "1걸음 뒤", 6: "5걸음 뒤", 11: "10걸음 뒤", 21: "20걸음 뒤", 31: "30걸음 뒤", 51: "50걸음 뒤", 101: "100걸음 뒤", 1001: "1,000걸음 뒤", 20000: "2만 걸음 뒤"}
+TS9 = {2: "1걸음 뒤", 6: "5걸음 뒤", 11: "10걸음 뒤", 21: "20걸음 뒤", 51: "50걸음 뒤", 101: "100걸음 뒤", 201: "200걸음 뒤", 1001: "1,000걸음 뒤", 20000: "2만 걸음 뒤"}
 
 
-def fig_soft9(lam=3):
-    """소프트 마진 걸음별 9장 (3장씩 3쪽): 길 (폭 m, 따로 움직임) · 미는 점 V (m 보다 가까운 점 모두) · 경계선 식. 이상치 포함 21개"""
+def fig_soft9(C=3):
+    """소프트 마진 걸음별 9장 (3장씩 3쪽): 길 (M = 1/‖w‖) · 미는 점 V (값 y_k D(x_k) < 1 인 점 모두) · 경계선 식. 이상치 포함 21개, C = 3"""
     Xo = np.r_[X, [OUTLIER]]; yo = np.r_[y, [1]]
-    _, _, _, sh = train_soft(Xo, yo, lam, snaps=tuple(TS9)); out = []
+    _, _, _, sh = train_soft(Xo, yo, C, snaps=tuple(TS9)); out = []
     items = list(TS9.items())
     for part in range(3):
         fig, axs = plt.subplots(1, 3, figsize=(13.5, 5.6))
@@ -488,7 +488,7 @@ def fig_soft9(lam=3):
             else:
                 line(ax, w_, b_, color="black", lw=2.6); ax.scatter(*Xo[V].T, s=380, facecolors="none", edgecolors=RED, lw=2.5, zorder=5)
             sg = "+" if b_ >= 0 else "−"
-            ax.set_title(f"{ttl}   m = {m_:.2f}, 미는 점 {int(V.sum())}개\n${w_[0]:.2f}\\,x_1 + {w_[1]:.2f}\\,x_2 {sg} {abs(b_):.2f} = 0$", fontsize=17)
+            ax.set_title(f"{ttl}   M = {m_:.2f}, 미는 점 {int(V.sum())}개\n${w_[0]:.2f}\\,x_1 + {w_[1]:.2f}\\,x_2 {sg} {abs(b_):.2f} = 0$", fontsize=17)
             out.append((t, round(w_[0], 2), round(w_[1], 2), round(b_, 2), round(m_, 2), int(V.sum())))
         save(fig, f"sv_soft9_{part + 1}.png")
     return out

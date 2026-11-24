@@ -1,6 +1,9 @@
 """슬라이드·그림·실습이 공유하는 숫자. 덱 전체가 z-score 좌표 하나만 쓴다.
 원래 점 (RAW, 예시 값: x1 은 3~7, x2 는 0~10 으로 축마다 퍼진 정도가 다르다) → z = (x − 평균) / 표준편차, 소수 첫째 자리로 반올림한 값이 덱의 점 20개.
-최대 마진 (‖w‖ = 1): w = (1, 1)/√2, b = 0.05/√2 = 0.04, m = 0.95/√2 = 0.67 (경계 x1 + x2 = −0.05, 가장자리 x1 + x2 = 0.9 / −1.0).
+기호는 Boser, Guyon, Vapnik (1992) 그대로: 점 x_k, 라벨 y_k (k = 1..p, 클래스 A = +1 빨강, B = −1 파랑), D(x) = w·x + b, 마진 M.
+식 (9) ‖w‖ = 1 기준 (값 = 거리, 하드 마진 학습): w = (1, 1)/√2, b = 0.05/√2 = 0.04, M = 0.95/√2 = 0.67 (경계 x1 + x2 = −0.05, 가장자리 x1 + x2 = 0.9 / −1.0).
+식 (12)–(13) M‖w‖ = 1 기준 (가장 가까운 값 = 1, 그 뒤 소프트 마진 · α 전부): w* = (1.05, 1.05), b* = 0.05, α* = 1.11 · 0.55 · 0.55.
+소프트 마진은 Cortes, Vapnik (1995): 슬랙 ξ_k, 벌점 C.
 (빨강 = 1사분면, 파랑 = 3사분면. 1걸음 뒤 처음 미는 점은 빨강. 옛 판 _이전/data_v6_빨강왼쪽위.py 를 시계 방향 90° 돌린 것)"""
 import numpy as np
 
@@ -12,17 +15,18 @@ RED_PTS = [(0.9, 0.6), (0.3, 1.0), (1.3, 0.4), (1.1, 1.4), (0.5, 0.8), (1.6, 1.2
 BLUE_PTS = [(-0.6, -1.3), (-1.2, -1.1), (-0.4, -0.9), (-1.0, -0.6), (-1.4, -1.5), (-0.6, -0.4), (0.1, -1.1), (-1.6, -0.6), (-0.2, -1.4), (-1.3, -0.2)]
 W_ANS, B_ANS, M_ANS = (1 / np.sqrt(2), 1 / np.sqrt(2)), 0.05 / np.sqrt(2), 0.95 / np.sqrt(2)   # (0.71, 0.71), 0.04, 0.67
 SV = [(0.7, 0.2), (-0.6, -0.4), (0.1, -1.1)]             # 서포트 벡터: 빨강 하나, 파랑 둘
-ALPHA = {(0.7, 0.2): 0.74, (-0.6, -0.4): -0.37, (0.1, -1.1): -0.37}   # ‖w‖ = 1 기준 w = Σ α_i x_i (부호 포함)
+W_STAR, B_STAR = (1 / 0.95, 1 / 0.95), 0.05 / 0.95                 # 식 (13) 기준: (1.05, 1.05), 0.05 (= ‖w‖ = 1 답 ÷ M)
+ALPHA = {(0.7, 0.2): 1.11, (-0.6, -0.4): 0.55, (0.1, -1.1): 0.55}     # 논문 식 (16): w* = Σ α_k y_k x_k, α_k ≥ 0 (식 (13) 기준, sklearn |dual_coef_|)
+ALPHA_UNIT = {(0.7, 0.2): 0.74, (-0.6, -0.4): 0.37, (0.1, -1.1): 0.37}  # 같은 α 를 식 (9) ‖w‖ = 1 기준으로 (= α* × M), 하드 마진 학습이 쌓는 값
 MEAN_W = (0.83, 0.91)                                    # 가장 쉬운 방법: w = 20개의 y_i x_i 평균 (빨강은 그대로, 파랑은 부호 뒤집어), b = 0
 MEAN_D = (0.62, 0.70)                                     # 그 선에서 가장 가까운 빨강 · 파랑까지 거리
 FAR_MOVE = ((-1.4, -1.5), (-2.1, -1.8))                     # 멀리 있는 파랑 점을 옮겨도 경계는 그대로
 OUTLIER = (-0.2, -0.6)                                     # 소프트 마진: 파랑 무리 안에 들어간 빨강 점
 NEWPT, M_NEW = (0.4, -0.8), 0.21                           # 최대 마진의 약점: 빨간 점 하나 추가 → m 0.67 → 0.21
-SOFT_B = {1: 0.0, 3: 1.79, 5: 2.41}   # 같은 답을 ISL 예산 꼴로 쓰면 B = Σ max(0, 1 − 값/m) = Σε / m
-SOFT_C_SAME = (1.5, 2, 2.5, 3, 4, 6, 10)       # λ = 3 과 같은 선이 나오는 sklearn C (범위로 겹친다)
-SOFT_STEPS = {1: (0, 0, 0, 0, 21), 2: (0.68, 0.73, 0.05, 0, 1), 6: (0.7, 0.71, 0.16, 0.22, 1), 11: (0.72, 0.69, 0.25, 0.4, 1), 21: (0.7, 0.71, 0.22, 0.5, 2),
-              31: (0.7, 0.71, 0.17, 0.55, 3), 51: (0.7, 0.71, 0.09, 0.63, 3), 101: (0.71, 0.71, 0.04, 0.68, 4), 20000: (0.71, 0.71, 0.04, 0.67, 4)}   # λ = 3 걸음 직전: (w1, w2, b, m, 미는 점 수)
-SOFT_LAM = {1: (100, 0.07, 3, 0.0), 3: (3, 0.67, 4, 1.2), 5: (0.5, 0.93, 7, 2.24)}   # 소프트 마진 λ: (같은 선이 나오는 sklearn C, m, 서포트 벡터 수, Σε) — 이상치 포함 21개, ε = 모자란 거리
+SOFT_C = {100: (0.07, 3, 0.0), 3: (0.67, 4, 1.79), 0.5: (0.93, 7, 2.41)}   # 소프트 마진 C: (M, 서포트 벡터 수, Σξ_k) — 이상치 포함 21개, ξ_k = 1 − y_k D(x_k) (모자란 값). Σξ = ISL 의 예산 B
+SOFT_STEPS = {1: (0, 0, 0, 0, 21), 2: (48.9, 52.8, 3.0, 0.01, 1), 6: (9.3, 9.12, 6.85, 0.08, 1), 11: (5.07, 5.82, 5.15, 0.13, 3), 21: (3.0, 4.1, 3.31, 0.2, 3),
+              31: (2.33, 3.3, 2.47, 0.25, 3), 51: (1.81, 2.53, 1.55, 0.32, 2), 101: (1.44, 1.66, 0.68, 0.46, 2), 201: (1.11, 1.13, 0.11, 0.63, 1),
+              1001: (1.05, 1.05, 0.05, 0.67, 3), 20000: (1.05, 1.05, 0.05, 0.67, 3)}   # C = 3 걸음 직전: (w1, w2, b, M = 1/‖w‖, 미는 점 수)
 HYPER = (1, 2, 3)                                         # 초평면 예: 1 + 2 x1 + 3 x2 = 0 (ISL 그림 9.1 의 식)
 KX, KY = (1, 2), (3, 1)                                   # 커널 계산 예: (x·x')² = φ(x)·φ(x') = 25
 
@@ -57,23 +61,18 @@ def train_maxmin(X, y, T=MM_T, lr0=MM_LR, w0=(0, 0), b0=0.0, snaps=()):
     return w, b, pushed, shots
 
 
-def train_soft(X, y, lam, T=MM_T, lr0=MM_LR, snaps=()):
-    """소프트 마진 (‖w‖ = 1): λ·m − Σ max(0, m − y_i(w·x_i + b)) 를 최대로 (λ = 길 안에 둬도 되는 점의 수).
-    길 안 (값 < m) 점들 V 가 다 같이 민다: w' = w + η Σ_V y_i x_i, b' = b + η Σ_V y_i, m' = max(0, m + η(λ − |V|))
-    → w 만 길이로 나눠 1 로. (첫 걸음은 하드 마진처럼 값이 가장 작은 점들). λ 마다 같은 선이 나오는 sklearn C 는 SOFT_LAM (아래 assert)"""
-    w, b, m = np.zeros(X.shape[1]), 0.0, 0.0; shots = {}
+def train_soft(X, y, C, T=MM_T, snaps=()):
+    """소프트 마진 (Cortes · Vapnik 1995): ½‖w‖² + C Σ ξ_k 를 최소로, y_k D(x_k) ≥ 1 − ξ_k. 학습률 η = 1/걸음.
+    값 y_k D(x_k) 가 1 보다 작은 점 (길 안) V 가 다 같이 민다: w' = w − η (w − C Σ_V y_k x_k), b' = b + η C Σ_V y_k.
+    −η w 는 w 를 줄인다 = 길을 넓힌다 (M = 1/‖w‖). 정규화 없음. sklearn SVC(C) 와 같은 답 (아래 assert)"""
+    w, b = np.zeros(X.shape[1]), 0.0; shots = {}
     for t in range(1, T + 1):
-        v = y * (X @ w + b); V = v <= v.min() + 1e-9 if t == 1 else v < m
+        v = y * (X @ w + b); V = v < 1
         if t in snaps:
-            shots[t] = (w.copy(), b, V.copy(), m)                     # t 걸음 직전 = (t − 1) 걸음 뒤
-        eta = lr0 / np.sqrt(t)
-        w = w + eta * (y[V, None] * X[V]).sum(0); b = b + eta * y[V].sum(); m = max(0.0, m + eta * (lam - V.sum()))   # 길 폭은 0 아래로 X
-        n = np.linalg.norm(w)
-        if n > 0:
-            w = w / n
-    return w, b, m, shots
-
-
+            n = np.linalg.norm(w); shots[t] = (w.copy(), b, V.copy(), 1 / n if n > 0 else 0.0)   # t 걸음 직전 = (t − 1) 걸음 뒤
+        eta = 1 / t
+        w = w - eta * (w - C * (y[V, None] * X[V]).sum(0)); b = b + eta * C * y[V].sum()
+    return w, b, 1 / np.linalg.norm(w), shots
 
 
 def phi(v):
@@ -95,8 +94,12 @@ if __name__ == "__main__":
     m = SVC(kernel="linear", C=1e6).fit(X, y); w, b, mm = unit(m)
     assert np.allclose(w, W_ANS, atol=1e-3) and abs(b - B_ANS) < 1e-3 and abs(mm - M_ANS) < 1e-3
     assert sorted(map(tuple, X[m.support_])) == sorted(SV)
-    al = {tuple(X[i]): round(c * mm, 2) for i, c in zip(m.support_, m.dual_coef_[0])}; assert al == ALPHA
-    assert np.allclose(sum(v * np.array(k) for k, v in ALPHA.items()), W_ANS, atol=0.02)
+    assert np.allclose(m.coef_[0], W_STAR, atol=1e-3) and abs(m.intercept_[0] - B_STAR) < 1e-3
+    al = {tuple(X[i]): round(abs(c), 2) for i, c in zip(m.support_, m.dual_coef_[0])}; assert al == ALPHA
+    au = {tuple(X[i]): round(abs(c) * mm, 2) for i, c in zip(m.support_, m.dual_coef_[0])}; assert au == ALPHA_UNIT
+    yk = {s_: (1 if s_ in RED_PTS else -1) for s_ in SV}
+    assert abs(sum(yk[k] * a for k, a in ALPHA.items())) < 0.02                       # Σ α_k y_k = 0
+    assert np.allclose(sum(yk[k] * a * np.array(k) for k, a in ALPHA.items()), W_STAR, atol=0.02)   # 식 (16)
     a = (y[:, None] * X).mean(0); assert np.allclose(a, MEAN_W, atol=0.006); u = a / np.linalg.norm(a)
     v = y * (X @ u); assert (round(v[y > 0].min(), 2), round(v[y < 0].min(), 2)) == MEAN_D
     assert tuple(np.round(u, 2)) == STEP1_W                        # 가장 쉬운 방법의 선 = 학습 1걸음 뒤 첫 선
@@ -114,16 +117,12 @@ if __name__ == "__main__":
     _, _, _, shm = train_maxmin(X, y, snaps=tuple(MM_STEPS))
     for t, (a1, a2, bb, m_, k) in MM_STEPS.items():
         w_, b_, act, mt = shm[t]; assert (round(w_[0], 2), round(w_[1], 2), round(b_, 2) + 0.0, round(mt, 2), int(act.sum())) == (a1, a2, bb, m_, k), (t, w_, b_, mt)
-    for lam, (C, mg, nsv, es) in SOFT_LAM.items():
-        ws, bs, ms = unit(SVC(kernel="linear", C=C).fit(Xo, yo)); wl, bl, ml, _ = train_soft(Xo, yo, lam)
-        assert np.allclose(wl, ws, atol=3e-3) and abs(bl - bs) < 3e-3 and abs(ml - ms) < 3e-3, (lam, wl, bl, ml, ws, bs, ms)
-        v = yo * (Xo @ wl + bl)
-        assert (round(ml, 2), int((v <= ml + 2e-3).sum()), round(np.maximum(0, ml - v).sum(), 2)) == (mg, nsv, es), (lam, ml, v)
-        assert round(np.maximum(0, 1 - v / ml).sum(), 2) == SOFT_B[lam]
+    for C, (mg, nsv, sx) in SOFT_C.items():
+        sk = SVC(kernel="linear", C=C).fit(Xo, yo); wl, bl, ml, _ = train_soft(Xo, yo, C, T=200000 if C == 100 else MM_T)
+        assert np.allclose(wl, sk.coef_[0], rtol=2e-3) and abs(bl - sk.intercept_[0]) < 2e-2 and abs(ml - 1 / np.linalg.norm(sk.coef_)) < 3e-3, (C, wl, bl, sk.coef_)
+        v = yo * (Xo @ sk.coef_[0] + sk.intercept_[0])
+        assert (round(1 / np.linalg.norm(sk.coef_), 2), len(sk.support_), round(np.maximum(0, 1 - v).sum(), 2)) == (mg, nsv, sx), C
     _, _, _, shs = train_soft(Xo, yo, 3, snaps=tuple(SOFT_STEPS))
     for t, row in SOFT_STEPS.items():
-        w_, b_, V_, m_ = shs[t]; assert (round(w_[0], 2), round(w_[1], 2), round(b_, 2) + 0.0, round(m_, 2) + 0.0, int(V_.sum())) == row, (t, w_, b_, m_)
-    w3 = unit(SVC(kernel="linear", C=3).fit(Xo, yo))
-    for C in SOFT_C_SAME:
-        assert np.allclose(np.r_[unit(SVC(kernel="linear", C=C).fit(Xo, yo))[0], unit(SVC(kernel="linear", C=C).fit(Xo, yo))[1:]], np.r_[w3[0], w3[1:]], atol=1e-3), C
+        w_, b_, V_, m_ = shs[t]; assert (round(w_[0], 2), round(w_[1], 2), round(b_, 2) + 0.0, round(m_, 2) + 0.0, int(V_.sum())) == row, (t, w_, b_, m_, V_.sum())
     print("data ok")
