@@ -242,7 +242,7 @@
 \centering
 {\LARGE $\displaystyle \max_{\mathbf{w},\ \lVert\mathbf{w}\rVert = 1}\ \ \min_{k}\ \ y_k D(\mathbf{x}_k)$}\\[1em]
 \renewcommand{\arraystretch}{1.6}
-{\large\begin{tabular}{rl}
+{\normalsize\begin{tabular}{rl}
 \textbf{①} \;$\dfrac{y_k D(\mathbf{x}_k)}{\lVert\mathbf{w}\rVert} \ge M$ & 모든 점이 경계에서 $M$ 이상 \;($\lVert\mathbf{w}\rVert = 1$ 이면 $y_k D(\mathbf{x}_k) \ge M$)\\
 \textbf{②} \;$\min_k\, y_k D(\mathbf{x}_k) = M^*$ & 가장 가까운 점의 거리 = 마진\\
 \textbf{③} \;$\max_{\mathbf{w},\,\lVert\mathbf{w}\rVert = 1}$ & $\mathbf{w}$ (경계에 수직) 를 돌리고 $b$ 로 옮기며 \kb{가장 크게}\\
@@ -260,7 +260,7 @@
 \begin{column}{0.42\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_step1.png}\end{column}
 \begin{column}{0.56\textwidth}
 \renewcommand{\arraystretch}{1.6}
-{\large\begin{tabular}{l}
+{\normalsize\begin{tabular}{l}
 \textbf{0걸음}: $\mathbf{w} = (0, 0)$, $b = 0$\\
 $\to$ 점 20개의 값이 \kq{모두 0} $\to$ 20개가 다 같이 민다\\[0.3em]
 \textbf{1걸음 뒤}: $\mathbf{w} \propto \sum_{k=1}^{p} y_k\mathbf{x}_k = (16.5,\ 18.2)$\\
@@ -416,13 +416,13 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 
 
 % --- 논문 식 (12)-(13): 가장 가까운 값을 1 로
-\begin{frame}{같은 문제를 다르게: 가장 가까운 값을 1 로 둔다}
+\begin{frame}{같은 문제를 다르게: 길 가장자리를 $D(\mathbf{x}) = \pm 1$ 로 둔다}
 \markpage{form13}
 \vfill
 \centering
 \renewcommand{\arraystretch}{1.6}
-{\large\begin{tabular}{l|c|c}
-1 로 묶는 것 & $\lVert\mathbf{w}\rVert = 1$ & $M\lVert\mathbf{w}\rVert = 1$ \;(가장 가까운 값 $= 1$)\\ \hline
+{\normalsize\begin{tabular}{l|c|c}
+1 로 묶는 것 & $\lVert\mathbf{w}\rVert = 1$ & $M\lVert\mathbf{w}\rVert = 1$ \;(가장자리 $D(\mathbf{x}) = \pm 1$)\\ \hline
 조건 & $y_k D(\mathbf{x}_k) \ge M$ & $y_k D(\mathbf{x}_k) \ge 1$\\
 목표 & $M$ 최대 & $\tfrac{1}{2}\lVert\mathbf{w}\rVert^2$ 최소 \;($M = 1/\lVert\mathbf{w}\rVert$)\\ \hline
 점에서 경계까지 거리 & $|D(\mathbf{x})|$ & $|D(\mathbf{x})|\,/\,\lVert\mathbf{w}\rVert$\\ \hline
@@ -504,7 +504,7 @@ $C$ & 넘어간 양에 거는 \kb{벌점}
 \centering
 \renewcommand{\arraystretch}{1.75}
 {\small\begin{tabular}{c|l|l}
- & \textbf{하드 마진} ($\lVert\mathbf{w}\rVert = 1$) & \textbf{소프트 마진} (가장 가까운 값 $= 1$)\\ \hline
+ & \textbf{하드 마진} ($\lVert\mathbf{w}\rVert = 1$) & \textbf{소프트 마진} (가장자리 $D(\mathbf{x}) = \pm 1$)\\ \hline
 \textbf{1.} 값 재기 & \multicolumn{2}{c}{점마다 $y_k D(\mathbf{x}_k)$ \; (같다)}\\ \hline
 \textbf{2.} 미는 점 & 값이 \kq{가장 작은 점 하나} $k$ & 값이 1 보다 작은 점 \kb{모두} $V$\\
  & $\mathbf{w}' = \mathbf{w} + \eta\, y_k \mathbf{x}_k$ & $\mathbf{w}' = \mathbf{w} - \eta\,\big(\mathbf{w} - C \sum_{k\in V} y_k \mathbf{x}_k\big)$\\
