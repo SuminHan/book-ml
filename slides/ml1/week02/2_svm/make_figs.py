@@ -242,18 +242,18 @@ def fig_fold():
     save(fig, "sv_fold.png")
 
 
-COS_W, COS_B, COS_X = np.array([1, 1]) / np.sqrt(2), -0.5 / np.sqrt(2), np.array([0.4, 1.6])   # 경계 x1 + x2 = 0.5, 점 (0.4, 1.6) (w 의 0.71 과 −b 가 겹치지 않게)
+COS_W, COS_B, COS_X = np.array([1, 1]) / np.sqrt(2), 0.5 / np.sqrt(2), np.array([0.4, 1.6])   # 경계 x1 + x2 = −0.5 (b = +0.35, 값 = w·x + b 를 바로 더하기), 점 (0.4, 1.6)
 
 
 def fig_cos():
     """점곱 = ‖w‖‖x‖cos θ → ‖w‖ = 1 이면 w 방향 위치, 경계의 위치 −b 를 빼면 거리"""
     Bu, PX = COS_W, COS_X
     sh, shb = Bu @ PX, -COS_B; dist = sh - shb
-    assert abs(sh - 1.41) < 0.01 and abs(shb - 0.35) < 0.01 and abs(dist - 1.06) < 0.01
+    assert abs(sh - 1.41) < 0.01 and abs(COS_B - 0.35) < 0.01 and abs(dist - 1.77) < 0.01 and abs(sh + COS_B - dist) < 1e-9
     fig, ax = plt.subplots(figsize=(6.4, 6.0))
-    ax.set_xlim(-0.6, 2.2); ax.set_ylim(-0.7, 2.1); ax.set_aspect("equal"); ax.grid(alpha=0.25)
-    t = np.linspace(-0.6, 2.1, 2); ax.plot(t, t, color=GOLD, lw=1.5, ls="--")
-    ax.plot(t, 0.5 - t, color="black", lw=2.5)
+    ax.set_xlim(-1.2, 2.2); ax.set_ylim(-1.0, 2.1); ax.set_aspect("equal"); ax.grid(alpha=0.25)
+    t = np.linspace(-1.2, 2.1, 2); ax.plot(t, t, color=GOLD, lw=1.5, ls="--")
+    ax.plot(t, -0.5 - t, color="black", lw=2.5)
     F = sh * Bu; Fb = shb * Bu
     arw(ax, (0, 0), PX, RED, 2.5); arw(ax, (0, 0), 0.5 * Bu, GOLD, 3.5)
     nrm = np.array([1, -1]) / np.sqrt(2)
@@ -268,20 +268,19 @@ def fig_cos():
     dim(0, sh, 0.5, BLUE, f"x 의 w 방향 위치 $\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}")
     dim(0, shb, 0.24, "#555555", "")
     mid = shb / 2 * Bu + 0.24 * nrm
-    ax.annotate(f"경계의 위치\n$-b$ = {shb:.2f}", mid, (-0.55, -0.55), fontsize=13, color="#555555", fontweight="bold", ha="center",
+    ax.annotate(f"원점에서 경계까지\nb = {COS_B:.2f}", mid, (0.55, -0.75), fontsize=13, color="#555555", fontweight="bold", ha="center",
                 arrowprops=dict(arrowstyle="-", color="#555555", lw=1), bbox=dict(fc="white", ec="none", pad=0.5, alpha=0.9))
     ax.annotate("", F, Fb, arrowprops=dict(arrowstyle="<->", color="#2b8a3e", lw=3, shrinkA=0, shrinkB=0))
     ax.plot(*zip(PX, F), color=GRAY, lw=1.5, ls=":")
-    ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black", zorder=4); ax.scatter(0, 0, s=50, color="black", zorder=5); ax.text(-0.3, -0.18, "(0, 0)", fontsize=13)
+    ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black", zorder=4); ax.scatter(0, 0, s=50, color="black", zorder=5)
     ax.text(PX[0] + 0.05, PX[1] + 0.05, f"$\\mathbf{{x}} = ({PX[0]:g}, {PX[1]:g})$", fontsize=15, color=RED)
     ax.text(-0.12, 0.3, "$\\mathbf{w}$", fontsize=16, color=GOLDT, fontweight="bold")
     ax.text(0.17, 0.33, "θ", fontsize=16)
     foot = PX - dist * Bu                                                          # 점 x 에서 경계선에 내린 수선의 발
-    ax.text(*((sh + shb) / 2 * Bu - 0.13 * nrm), f"{sh:.2f} − {shb:.2f} = {dist:.2f}", fontsize=12, color="#2b8a3e", rotation=45, ha="center", va="center", fontweight="bold")
     ax.annotate("", foot, PX, arrowprops=dict(arrowstyle="<->", color="#2b8a3e", lw=3, shrinkA=4, shrinkB=0), zorder=5)
     ax.scatter(*foot, s=30, color="#2b8a3e", zorder=5)
-    ax.text(-0.55, 1.2, f"점 x 에서 경계선까지\n거리 {dist:.2f}", fontsize=14, color="#2b8a3e", fontweight="bold", ha="center")
-    ax.text(1.0, -0.65, "경계 $x_1 + x_2 = 0.5$", fontsize=13)
+    ax.text(-0.6, 1.75, f"점 x 에서 경계선까지\n거리 {dist:.2f}", fontsize=14, color="#2b8a3e", fontweight="bold", ha="center")
+    ax.text(-1.15, -0.85, "경계 $x_1 + x_2 = -0.5$", fontsize=13)
     origin_axes(ax); ax.set_xticks([1, 2]); ax.set_yticks([1, 2])
     save(fig, "sv_cos.png")
 
