@@ -242,18 +242,18 @@ def fig_fold():
     save(fig, "sv_fold.png")
 
 
-COS_W, COS_B, COS_X = np.array([1, 1]) / np.sqrt(2), -1 / np.sqrt(2), np.array([0.4, 1.6])   # 경계 x1 + x2 = 1, 점 (0.4, 1.6)
+COS_W, COS_B, COS_X = np.array([1, 1]) / np.sqrt(2), -0.5 / np.sqrt(2), np.array([0.4, 1.6])   # 경계 x1 + x2 = 0.5, 점 (0.4, 1.6) (w 의 0.71 과 −b 가 겹치지 않게)
 
 
 def fig_cos():
     """점곱 = ‖w‖‖x‖cos θ → ‖w‖ = 1 이면 w 방향 위치, 경계의 위치 −b 를 빼면 거리"""
     Bu, PX = COS_W, COS_X
     sh, shb = Bu @ PX, -COS_B; dist = sh - shb
-    assert abs(sh - 1.41) < 0.01 and abs(shb - 0.71) < 0.01 and abs(dist - 0.71) < 0.01
+    assert abs(sh - 1.41) < 0.01 and abs(shb - 0.35) < 0.01 and abs(dist - 1.06) < 0.01
     fig, ax = plt.subplots(figsize=(6.4, 6.0))
     ax.set_xlim(-0.6, 2.2); ax.set_ylim(-0.7, 2.1); ax.set_aspect("equal"); ax.grid(alpha=0.25)
     t = np.linspace(-0.6, 2.1, 2); ax.plot(t, t, color=GOLD, lw=1.5, ls="--")
-    ax.plot(t, 1 - t, color="black", lw=2.5)
+    ax.plot(t, 0.5 - t, color="black", lw=2.5)
     F = sh * Bu; Fb = shb * Bu
     arw(ax, (0, 0), PX, RED, 2.5); arw(ax, (0, 0), 0.5 * Bu, GOLD, 3.5)
     nrm = np.array([1, -1]) / np.sqrt(2)
@@ -264,9 +264,12 @@ def fig_cos():
         for q, base in ((pa, a * Bu), (pb, b * Bu)):
             ax.plot(*zip(base, q + 0.04 * nrm), color=col, lw=1, ls=":")
         mid = (pa + pb) / 2 + 0.11 * nrm
-        ax.text(*mid, lab, fontsize=13, color=col, rotation=45, ha="center", va="center", fontweight="bold", bbox=dict(fc="white", ec="none", pad=0.5, alpha=0.9))
+        if lab: ax.text(*mid, lab, fontsize=13, color=col, rotation=45, ha="center", va="center", fontweight="bold", bbox=dict(fc="white", ec="none", pad=0.5, alpha=0.9))
     dim(0, sh, 0.5, BLUE, f"x 의 w 방향 위치 $\\Vert\\mathbf{{x}}\\Vert\\cos\\theta$ = {sh:.2f}")
-    dim(0, shb, 0.24, "#555555", f"경계의 위치 {shb:.2f} = $-b$")
+    dim(0, shb, 0.24, "#555555", "")
+    mid = shb / 2 * Bu + 0.24 * nrm
+    ax.annotate(f"경계의 위치\n$-b$ = {shb:.2f}", mid, (-0.55, -0.55), fontsize=13, color="#555555", fontweight="bold", ha="center",
+                arrowprops=dict(arrowstyle="-", color="#555555", lw=1), bbox=dict(fc="white", ec="none", pad=0.5, alpha=0.9))
     ax.annotate("", F, Fb, arrowprops=dict(arrowstyle="<->", color="#2b8a3e", lw=3, shrinkA=0, shrinkB=0))
     ax.plot(*zip(PX, F), color=GRAY, lw=1.5, ls=":")
     ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black", zorder=4); ax.scatter(0, 0, s=50, color="black", zorder=5); ax.text(-0.3, -0.18, "(0, 0)", fontsize=13)
@@ -274,7 +277,7 @@ def fig_cos():
     ax.text(-0.12, 0.3, "$\\mathbf{w}$", fontsize=16, color=GOLDT, fontweight="bold")
     ax.text(0.17, 0.33, "θ", fontsize=16)
     ax.text(0.15, 1.05, f"거리 {dist:.2f}", fontsize=15, color="#2b8a3e", fontweight="bold")
-    ax.text(1.45, -0.6, "경계 $x_1 + x_2 = 1$", fontsize=13)
+    ax.text(1.0, -0.65, "경계 $x_1 + x_2 = 0.5$", fontsize=13)
     origin_axes(ax); ax.set_xticks([1, 2]); ax.set_yticks([1, 2])
     save(fig, "sv_cos.png")
 
