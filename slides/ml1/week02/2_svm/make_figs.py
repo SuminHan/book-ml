@@ -291,9 +291,11 @@ def fig_cos():
     ax.text(0.17, 0.33, "θ", fontsize=16)
     foot = PX - dist * Bu                                                          # 점 x 에서 경계선에 내린 수선의 발
     ax.annotate("", foot, PX, arrowprops=dict(arrowstyle="<->", color="black", lw=3, shrinkA=4, shrinkB=0), zorder=5)
-    ax.scatter(*foot, s=30, color="black", zorder=5)
+    ax.scatter(*foot, s=90, color="#555555", edgecolor="white", lw=1.5, zorder=6)
+    ax.text(foot[0] - 0.08, foot[1] + 0.12, "$\\mathbf{z}$", fontsize=17, color="#555555", fontweight="bold", ha="right")
+    ax.text(-1.17, 0.0, "경계선 위의 점\n$D(\\mathbf{z}) = 0$", fontsize=11, color="#555555", ha="left", va="top", bbox=dict(fc="white", ec="none", pad=1, alpha=0.9), zorder=7)
     ax.text(-0.6, 1.75, f"점 x 에서 경계선까지\n거리 {dist:.2f}", fontsize=14, color="black", fontweight="bold", ha="center")
-    ax.text(-1.15, -0.85, "경계 $x_1 + x_2 = -0.5$", fontsize=13)
+    ax.text(-1.15, -0.85, "경계 $D(\\mathbf{x}) = x_1 + x_2 + 0.5 = 0$", fontsize=12)
     origin_axes(ax); ax.set_xticks([1, 2]); ax.set_yticks([1, 2])
     save(fig, "sv_cos.png")
 
