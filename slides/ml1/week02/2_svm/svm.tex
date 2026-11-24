@@ -237,13 +237,39 @@
 
 \section{학습}
 % --- 학습 0: 숫자 3개 찾기
-\begin{frame}{직선 찾기 = 숫자 3개 $(w_1, w_2, b)$ 찾기}
+\begin{frame}{푸는 식: 가장 가까운 점을 경계에서 가장 멀리}
 \vfill
 \centering
-{\LARGE 경계 \quad $w_1 x_1 + w_2 x_2 + b = 0$, \quad $\lVert\mathbf{w}\rVert = 1$}\\[1em]
-{\large $(0, 0, 0)$ 에서 출발 $\to$ \kq{가장 가까운 점}이 민다 $\to$ 길이 1 로 $\to$ 반복}
+{\LARGE $\displaystyle \max_{\mathbf{w},\ \lVert\mathbf{w}\rVert = 1}\ \ \min_{k}\ \ y_k D(\mathbf{x}_k)$}\\[1em]
+\renewcommand{\arraystretch}{1.6}
+{\large\begin{tabular}{rl}
+\textcolor{fx}{\textbf{①}} \;$\dfrac{y_k D(\mathbf{x}_k)}{\lVert\mathbf{w}\rVert} \ge M$ & 모든 점이 경계에서 $M$ 이상 \;($\lVert\mathbf{w}\rVert = 1$ 이면 $y_k D(\mathbf{x}_k) \ge M$)\\
+\textcolor{fsh}{\textbf{②}} \;$\min_k\, y_k D(\mathbf{x}_k) = M^*$ & 가장 가까운 점의 거리 = 마진\\
+\textcolor{fbeta}{\textbf{③}} \;$\max_{\mathbf{w},\,\lVert\mathbf{w}\rVert = 1}$ & 경계를 돌리고 옮겨서 그 거리를 \kb{가장 크게}
+\end{tabular}}\\[1em]
+{\normalsize 찾는 숫자: $w_1, w_2, b$ \quad 방법: \kq{가장 가까운 점}이 민다 $\to$ $\mathbf{w}$ 길이 1 로 $\to$ 반복}
 \vfill
-\note{그래서 이 직선을 어떻게 찾을까요. 경계는 w1 x1 더하기 w2 x2 더하기 b가 0인 직선이고, w의 길이는 1로 맞춰 둡니다. 점 20개는 이미 주어져 있으니 우리가 정할 것은 w1, w2, b 세 숫자뿐입니다. 방법은 간단합니다. 0, 0, 0에서 출발해서, 점 20개의 값을 모두 계산하고, 값이 가장 작은 점, 즉 경계에 가장 가까운 점이 선을 자기 반대쪽으로 조금 밉니다. 그러고 나서 w의 길이를 다시 1로 맞춥니다. 이것을 수천 번 반복합니다.}
+\note{이제 이 경계를 어떻게 찾는지 봅시다. 원 논문은 찾는 것을 한 줄로 씁니다. max min y k D x k입니다. 안쪽부터 읽습니다. 첫째, y k D x k는 점 k의 값에 라벨을 곱한 것이고, w의 길이를 1로 묶어 두었으니 점 k에서 경계까지의 거리입니다. 틀린 쪽에 있는 점이면 음수가 됩니다. 둘째, min k는 점 20개의 거리 중 가장 작은 것, 즉 경계에 가장 가까운 점까지의 거리를 고릅니다. 이것이 마진 M입니다. 셋째, 바깥의 max는 w와 b를 바꿔 가며, 즉 경계를 돌리고 옮겨 가며 그 가장 작은 거리를 가장 크게 만듭니다. 그래서 전체는 가장 가까운 점을 경계에서 가장 멀리 두는 선을 찾으라는 뜻이고, 앞에서 본 가장 넓은 길과 같은 말입니다. 아래 첨자에 w의 길이가 1이라고 적은 것은, 이 조건이 없으면 w를 두 배, 세 배 키우기만 해도 값이 커져서 max가 끝없이 커지기 때문입니다. 우리가 정할 숫자는 w1, w2, b 셋이고, 방법은 다음 쪽부터 봅니다. 가장 가까운 점이 선을 밀고, w의 길이를 다시 1로 맞추는 것을 반복합니다. 가장 가까운 점이 미는 것이 min이고, 밀어서 그 거리를 키우는 것이 max입니다.}
+\end{frame}
+
+% --- 출발: 0걸음 → 1걸음
+\begin{frame}{출발: $\mathbf{w} = 0$ 에서 1걸음 뒤 첫 선}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.42\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_step1.png}\end{column}
+\begin{column}{0.56\textwidth}
+\renewcommand{\arraystretch}{1.6}
+{\large\begin{tabular}{l}
+\textbf{0걸음}: $\mathbf{w} = (0, 0)$, $b = 0$\\
+$\to$ 점 20개의 값이 \kq{모두 0} $\to$ 20개가 다 같이 민다\\[0.3em]
+\textbf{1걸음 뒤}: $\mathbf{w} \propto \sum_{k=1}^{p} y_k\mathbf{x}_k = (16.5,\ 18.2)$\\
+$\to$ 길이 1 로: $\mathbf{w} = (0.67,\ 0.74)$, \;$b = 0$\\[0.3em]
+= 앞에서 본 \kb{평균 선}과 같은 선
+\end{tabular}}
+\end{column}
+\end{columns}
+\vfill
+\note{출발점을 따로 봅시다. 처음에는 w가 0, 0이고 b가 0입니다. 이때는 어느 점을 넣어도 값이 0이라, 20개가 모두 똑같이 가장 가까운 점이 되고, 첫 걸음에는 20개가 모두 밉니다. 그래서 w는 학습률 곱하기 y k x k의 합, 빨강 10개 좌표 합 8.3, 9.1에서 파랑 합 마이너스 8.2, 마이너스 9.1을 뺀 16.5, 18.2 방향이 됩니다. b에는 학습률 곱하기 y의 합을 더하는데, 빨강 10개와 파랑 10개라 y의 합이 0이고 b는 0 그대로입니다. 길이를 1로 맞추면 w는 0.67, 0.74입니다. 이 방향은 20개 y k x k의 평균 방향과 같으니, 첫 선은 앞에서 본 가장 쉬운 방법, 평균 선과 똑같습니다. 그림이 그 첫 선이고, b가 0이라 원점을 지납니다. 다음 쪽부터는 이 선에서 가장 가까운 점이 한 걸음씩 밉니다.}
 \end{frame}
 
 % --- 학습 한 걸음
@@ -252,8 +278,6 @@
 \vfill
 \centering
 \renewcommand{\arraystretch}{1.6}
-{\large 푸는 식: \; $\max_{\mathbf{w},\,\lVert\mathbf{w}\rVert = 1}\ \min_k\ y_k D(\mathbf{x}_k)$ \;= 가장 가까운 점의 거리를 \kb{최대로}}\\[0.3em]
-{\small\color{gray} (\textbf{0.} 시작: $\mathbf{w} = (0, 0)$, $b = 0$ $\to$ 1걸음 뒤 $\mathbf{w} = \bar{\mathbf{v}}/\lVert\bar{\mathbf{v}}\rVert$, $b = 0$ \;($\bar{\mathbf{v}} = \tfrac{1}{p}\sum_{k=1}^{p} y_k\mathbf{x}_k$))}\\[0.4em]
 {\large\begin{tabular}{rl}
 \textbf{1.} & 점마다 거리 $y_k D(\mathbf{x}_k)\,/\,\lVert\mathbf{w}\rVert = y_k D(\mathbf{x}_k)$ \;($\lVert\mathbf{w}\rVert = 1$ 이라)\\
 \textbf{2.} & 값이 \kq{가장 작은 점} $k = \arg\min_l\, y_l D(\mathbf{x}_l)$ 가 민다:\\
