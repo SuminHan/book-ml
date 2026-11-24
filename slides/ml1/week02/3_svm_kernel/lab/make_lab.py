@@ -27,10 +27,10 @@ from sklearn.svm import SVC
 from sklearn.datasets import make_circles, make_moons"""),
 ("md", """## 파트 1. 특징 직접 만들기 (A) vs 커널 (B)
 
-다항 2차 커널 $(1 + \\mathbf{x}\\cdot\\mathbf{x}')^2$ 의 특징 6개: $\\varphi(\\mathbf{x}) = (1, \\sqrt2x_1, \\sqrt2x_2, x_1^2, \\sqrt2x_1x_2, x_2^2)$.
+다항 2차 커널 $(\\mathbf{x}\\cdot\\mathbf{x}' + 1)^2$ 의 특징 6개: $\\varphi(\\mathbf{x}) = (1, \\sqrt2x_1, \\sqrt2x_2, x_1^2, \\sqrt2x_1x_2, x_2^2)$.
 
 - A: 점마다 $\\varphi$ 6개를 만들고 선형 SVM 으로 $\\mathbf{w}$ 6개 학습 (K 안 씀)
-- B: 원래 점 그대로 다항 커널 SVM 으로 $\\alpha$ (점마다 하나) 학습 → $\\mathbf{w} = \\sum_i \\alpha_i \\varphi(\\mathbf{x}_i)$ 로 계산"""),
+- B: 원래 점 그대로 다항 커널 SVM 으로 $\\alpha$ (점마다 하나) 학습 → $\\mathbf{w} = \\sum_k \\alpha_k y_k \\varphi(\\mathbf{x}_k)$ 로 계산 (sklearn `dual_coef_` = $\\alpha_k y_k$)"""),
 ("code", """X, y = make_circles(120, factor=0.4, noise=0.06, random_state=1)
 y = 2 * y - 1                                              # labels +1 / -1
 
@@ -40,13 +40,13 @@ def phi6(x):
 
 F = np.array([phi6(x) for x in X])                         # A: 6 features per point
 model_a = SVC(kernel="linear", C=1).fit(F, y)
-model_b = SVC(kernel="poly", degree=2, coef0=1, gamma=1, C=1).fit(X, y)   # B: kernel (1 + x.x')^2
+model_b = SVC(kernel="poly", degree=2, coef0=1, gamma=1, C=1).fit(X, y)   # B: kernel (x.x' + 1)^2
 
-alpha = model_b.dual_coef_[0]                              # signed alpha of the support vectors (the others are 0)
-w_b = alpha @ F[model_b.support_]                          #@ANS w_b = None  # TODO: w = sum_i alpha_i * phi(x_i)
+alpha_y = model_b.dual_coef_[0]                            # alpha_k * y_k of the support vectors (the others are 0)
+w_b = alpha_y @ F[model_b.support_]                        #@ANS w_b = None  # TODO: w = sum_k alpha_k * y_k * phi(x_k)
 print("A  w =", model_a.coef_[0].round(3), " b =", model_a.intercept_.round(3))
 print("B  w =", w_b.round(3), " b =", model_b.intercept_.round(3))
-print("alpha: one per training point =", len(X), ", nonzero =", len(alpha))
+print("alpha: one per training point =", len(X), ", nonzero =", len(alpha_y))
 print("same predictions:", (model_a.predict(F) == model_b.predict(X)).all())"""),
 ("md", """## 파트 2. 실제 데이터: 지폐 진위 판별
 
@@ -68,7 +68,7 @@ for kernel in ["linear", "rbf"]:
     print(f"{kernel:6s}: CV accuracy {acc:.4f}")"""),
 ("md", """## 파트 3. C 와 γ 고르기
 
-반달 데이터. `GridSearchCV` 는 모든 (C, γ) 조합을 교차 검증해서 가장 좋은 것을 고른다. sklearn 의 `C` 는 지난 시간 λ 와 방향이 반대 (C 가 크면 좁은 길)."""),
+반달 데이터. `GridSearchCV` 는 모든 (C, γ) 조합을 교차 검증해서 가장 좋은 것을 고른다. sklearn 의 `C` 는 지난 시간 슬라이드의 $C$ 와 같다 (크면 좁은 길)."""),
 ("code", """Xm, ym = make_moons(300, noise=0.25, random_state=0)
 grid = GridSearchCV(SVC(kernel="rbf"), {"C": [0.1, 1, 10, 100], "gamma": [0.1, 1, 10, 100]}, cv=5)
 grid.fit(Xm, ym)

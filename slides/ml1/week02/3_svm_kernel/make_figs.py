@@ -14,32 +14,33 @@ BLUE, RED, GOLD, GRAY = mf.BLUE, mf.RED, mf.GOLD, mf.GRAY
 
 
 def fig_recap():
-    """지난 시간 한 쪽: ① 경계와 값 = 거리 ② 최대 마진 ③ 소프트 마진 (λ = 5)"""
+    """지난 시간 한 쪽: ① 경계와 값 = 거리 ② 최대 마진 ③ 소프트 마진 (C = 0.5)"""
     X, y, WA, BA = mf.X, mf.y, mf.WA, mf.BA
     fig, axs = plt.subplots(1, 3, figsize=(15, 5.4))
     ax = axs[0]; mf.pts(ax); mf.street_m(ax, WA, BA, 0)
     p = np.array([-0.2, -1.4]); d = -(WA @ p + BA); q = p + d * WA                  # ‖w‖ = 1 이라 값 = 거리, q = 경계 위 발
     ax.annotate("", q, p, arrowprops=dict(arrowstyle="<->", lw=2, color="black", shrinkA=6, shrinkB=0), zorder=6)
     ax.text(-0.45, -1.62, f"값 = 거리 = {d:.2f}", fontsize=14, fontweight="bold", va="top")
-    ax.text(-1.05, 2.05, "$\\mathbf{w}\\cdot\\mathbf{x} + b = 0$", fontsize=14, va="top")
+    ax.text(-1.05, 2.05, "$D(\\mathbf{x}) = \\mathbf{w}\\cdot\\mathbf{x} + b = 0$", fontsize=14, va="top")
     ax.set_title("① 경계: $\\Vert\\mathbf{w}\\Vert = 1$ 이면 값 = 거리", fontsize=15)
     ax = axs[1]; mf.pts(ax); mf.svm_street(ax, mf.M)
-    ax.set_title(f"② 최대 마진: m = {mf.MA:.2f}\n경계는 서포트 벡터 3개가 정한다", fontsize=15)
+    ax.set_title(f"② 최대 마진: M = {mf.MA:.2f}\n경계는 서포트 벡터 3개가 정한다", fontsize=15)
     Xo = np.r_[X, [mf.OUTLIER]]; yo = np.r_[y, [1]]
-    w, b, m = mf.train_soft(Xo, yo, 5)[:3]; v = yo * (Xo @ w + b)
-    ax = axs[2]; mf.pts(ax, Xo, yo); mf.street_m(ax, w, b, m, Xo[v <= m + 2e-3])
-    ax.set_title(f"③ 소프트 마진 λ = 5: m = {m:.2f}\n길 안에 점을 둬도 된다", fontsize=15)
+    w, b, m = mf.train_soft(Xo, yo, 0.5)[:3]; v = yo * (Xo @ w + b)
+    ax = axs[2]; mf.pts(ax, Xo, yo); mf.street_m(ax, w, b, m, Xo[v <= 1 + 2e-3])
+    ax.set_title(f"③ 소프트 마진 C = 0.5: M = {m:.2f}\n길 안에 점을 둬도 된다", fontsize=15)
     mf.save(fig, "kn_recap.png")
     return d
 
 
 def fig_svarrow():
-    """w = 파랑 서포트 벡터 → 빨강 서포트 벡터 화살표 두 개의 합 × 0.37"""
+    """w* = Σ α_k y_k x_k = 파랑 서포트 벡터 → 빨강 서포트 벡터 화살표 두 개의 합 × 0.55 (논문 식 (16), 식 (13) 기준)"""
     X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
-    r, b1, b2 = (np.array(s) for s in mf.SV); ar, a1, a2 = (mf.ALPHA[tuple(s)] for s in mf.SV)
-    assert abs(ar + a1 + a2) < 0.01 and abs(a1 - a2) < 0.01           # 빨강 무게 = 파랑 무게, 파랑 둘 같다
-    c = -a1; d1, d2 = r - b1, r - b2; w = c * (d1 + d2)
-    assert np.allclose(w, ar * r + a1 * b1 + a2 * b2) and np.allclose(w, WA, atol=0.02)
+    r, b1, b2 = (np.array(s) for s in mf.SV); ar, a1, a2 = (mf.ALPHA[tuple(s)] for s in mf.SV)   # α_k ≥ 0, y = +1 · −1 · −1
+    assert abs(ar - a1 - a2) < 0.01 and abs(a1 - a2) < 0.01           # Σ α_k y_k = 0, 파랑 둘 같다
+    c = a1; d1, d2 = r - b1, r - b2; w = c * (d1 + d2)
+    assert np.allclose(w, ar * r - a1 * b1 - a2 * b2) and np.allclose(w, mf.W_STAR, atol=0.02)
+    w = np.array(mf.W_STAR)
     GREEN = "#2b8a3e"
     fig, axs = plt.subplots(1, 2, figsize=(12, 5.6))
     ax = axs[0]; mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(mf.SV))
@@ -61,8 +62,8 @@ def fig_svarrow():
     ax.text(*(d1 / 2 + np.array([0.05, -0.22])), "$r - b_1$", color="#e8590c", fontsize=14, fontweight="bold")
     ax.text(*(d1 + d2 / 2 + np.array([0.08, -0.1])), "$r - b_2$", color=GREEN, fontsize=14, fontweight="bold")
     ax.text(*(d1 + d2 + np.array([-0.55, 0.08])), f"합 ({(d1 + d2)[0]:.1f}, {(d1 + d2)[1]:.1f})", fontsize=13)
-    ax.text(-0.85, 1.0, f"합 × {c:.2f} = w\n= ({w[0]:.2f}, {w[1]:.2f})", fontsize=14, fontweight="bold")
-    ax.set_title(f"② 두 화살표를 더해 {c:.2f} 배 = w", fontsize=15)
+    ax.text(-0.85, 1.0, f"합 × {c:.2f} = $\\mathbf{{w}}^*$\n= ({w[0]:.2f}, {w[1]:.2f})", fontsize=14, fontweight="bold")
+    ax.set_title(f"② 두 화살표를 더해 {c:.2f} 배 = $\\mathbf{{w}}^*$", fontsize=15)
     mf.save(fig, "kn_svarrow.png")
     return dict(c=round(c, 2), d1=d1.round(1).tolist(), d2=d2.round(1).tolist(), w=w.round(2).tolist())
 
@@ -90,25 +91,25 @@ def fig_quiz1():
 
 
 def fig_quizkid():
-    """쉬운 퀴즈 (덱처럼 ‖w‖ = 1): 정수 점 8개, w = (0.6, 0.8), b = −3.9, 마진 2.5, 서포트 벡터 A (4,5) · B (1,1), 새 점 P (6,2) · Q (0,3)"""
-    R = np.array([[4, 5], [5, 5], [4, 6], [5, 6]]); B = np.array([[1, 1], [0, 1], [1, 0], [0, 0]])
-    w, b, m = np.array([0.6, 0.8]), -3.9, 2.5
-    M = SVC(kernel="linear", C=1e6, tol=1e-10).fit(np.r_[R, B], np.r_[np.ones(4), -np.ones(4)]); n = np.linalg.norm(M.coef_[0])
-    assert np.allclose(M.coef_[0] / n, w) and np.isclose(M.intercept_[0] / n, b) and np.allclose(np.abs(M.dual_coef_[0] / n), 0.2)
+    """쉬운 퀴즈 (논문 식 (13) 기준: 가장 가까운 값 = 1): 점 8개, w = (0.6, 0.8), b = −2.4, M = 1/‖w‖ = 1, 서포트 벡터 A (2.2, 2.6) · B (1, 1), α = 0.5 · 0.5, 새 점 P (6, 2) · Q (0, 2)"""
+    R = np.array([[2.2, 2.6], [4, 3], [3, 4], [5, 2]]); B = np.array([[1, 1], [0, 0], [1, 0], [0, 1]])
+    w, b, m = np.array([0.6, 0.8]), -2.4, 1.0
+    M = SVC(kernel="linear", C=1e6, tol=1e-10).fit(np.r_[R, B], np.r_[np.ones(4), -np.ones(4)])
+    assert np.allclose(M.coef_[0], w) and np.isclose(M.intercept_[0], b) and np.allclose(np.abs(M.dual_coef_[0]), 0.5) and len(M.support_) == 2
     fig, ax = plt.subplots(figsize=(6.0, 6.0))
-    t = np.linspace(-2, 8, 2); ln = lambda c: (c - b - w[0] * t) / w[1]           # w·x + b = c 인 직선의 x2
+    t = np.linspace(-2, 8, 2); ln = lambda c: (c - b - w[0] * t) / w[1]           # D(x) = c 인 직선의 x2
     ax.fill_between(t, ln(-m), ln(m), color=GOLD, alpha=0.18, lw=0)
     ax.plot(t, ln(0), color="black", lw=2.5); ax.plot(t, ln(m), "--", color=RED, lw=1.5); ax.plot(t, ln(-m), "--", color=BLUE, lw=1.5)
     ax.scatter(R[:, 0], R[:, 1], s=110, color=RED, zorder=4); ax.scatter(B[:, 0], B[:, 1], s=110, color=BLUE, marker="s", zorder=4)
-    ax.scatter([4, 1], [5, 1], s=420, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=5)
-    mf.arw(ax, np.array([1, 1]), np.array([4, 5]), "#e8590c", lw=2.5)
-    ax.text(2.2, 5.25, "A (4, 5)", fontsize=14, fontweight="bold", color=RED); ax.text(1.25, 0.45, "B (1, 1)", fontsize=14, fontweight="bold", color=BLUE)
-    for p, nm in (((6, 2), "P (6, 2)"), ((0, 3), "Q (0, 3)")):
+    ax.scatter([2.2, 1], [2.6, 1], s=420, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=5)
+    mf.arw(ax, np.array([1, 1]), np.array([2.2, 2.6]), "#e8590c", lw=2.5)
+    ax.text(-0.1, 3.2, "A (2.2, 2.6)", fontsize=14, fontweight="bold", color=RED); ax.text(1.3, 0.5, "B (1, 1)", fontsize=14, fontweight="bold", color=BLUE)
+    for p, nm, o in (((6, 2), "P (6, 2)", (-0.45, 0.35)), ((0, 2), "Q (0, 2)", (-0.4, 0.35))):
         ax.scatter(*p, marker="*", s=420, color="#2B8A3E", edgecolor="black", lw=1, zorder=6)
-        ax.text(p[0] - 0.45, p[1] + 0.35, nm, fontsize=14, fontweight="bold", color="#2B8A3E")
+        ax.text(p[0] + o[0], p[1] + o[1], nm, fontsize=14, fontweight="bold", color="#2B8A3E")
     ax.set_xlim(-0.6, 6.6); ax.set_ylim(-0.6, 6.6); ax.set_aspect("equal"); ax.set_xticks(range(0, 7)); ax.set_yticks(range(0, 7)); ax.grid(alpha=0.3)
     ax.set_xlabel("$x_1$", fontsize=14); ax.set_ylabel("$x_2$", fontsize=14, rotation=0, labelpad=10)
-    ax.set_title("빨강 4개, 파랑 4개: 경계 $0.6x_1 + 0.8x_2 - 3.9 = 0$", fontsize=14)
+    ax.set_title("빨강 4개, 파랑 4개: 경계 $0.6x_1 + 0.8x_2 - 2.4 = 0$", fontsize=14)
     mf.save(fig, "kn_quizkid.png")
 
 
@@ -116,9 +117,9 @@ def fig_force():
     """역학 비유: 서포트 벡터가 경계(판)를 미는 힘 = α. 힘 합 0 (안 밀려 감), 돌림힘 합 0 (안 돎)"""
     X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
     u = WA / np.linalg.norm(WA); dd = np.array([-u[1], u[0]]); bb = BA / np.linalg.norm(WA)
-    SV = [np.array(s) for s in mf.SV]; AL = np.array([mf.ALPHA[tuple(s)] for s in mf.SV])
+    SV = [np.array(s) for s in mf.SV]; AL = np.array([mf.ALPHA[tuple(s)] * (1 if tuple(s) in mf.RED_PTS else -1) for s in mf.SV])   # α_k y_k
     pos = np.array([p @ dd for p in SV]); tq = AL * pos
-    assert abs(AL.sum()) < 1e-9 and abs(tq.sum()) < 1e-3                              # 힘의 평형 · 돌림힘의 평형
+    assert abs(AL.sum()) < 1e-9 and abs(tq.sum()) < 0.01                              # 힘의 평형 · 돌림힘의 평형
     k = MA / AL.max()                                                                  # 가장 큰 힘 화살표 = 마진 길이
     fig, ax = plt.subplots(figsize=(6.4, 6.0))
     mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(SV))
@@ -132,21 +133,21 @@ def fig_force():
         ax.plot(*np.c_[p, start], ":", color=c, lw=1.5, zorder=4)
         ax.annotate("", foot, start, arrowprops=dict(arrowstyle="-|>", color=c, lw=2 + 4 * abs(a), mutation_scale=24, shrinkA=0, shrinkB=0), zorder=6)
         off = np.array([0.15, 0.12]) if a > 0 else np.array([0.12, -0.32])
-        ax.text(*(start + off), f"힘 {abs(a):.2f}", fontsize=14, fontweight="bold", color=c, zorder=7, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+        ax.text(*(start + off), f"힘 {abs(a):g}", fontsize=14, fontweight="bold", color=c, zorder=7, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.text(0.85, 2.1, "회색 판 = 경계", fontsize=13, color="#444444", va="top")
-    ax.set_title(f"빨강 {AL[0]:.2f} = 파랑 {-AL[1]:.2f} + {-AL[2]:.2f}", fontsize=15)
+    ax.set_title(f"빨강 {AL[0]:g} = 파랑 {-AL[1]:g} + {-AL[2]:g}", fontsize=15)
     mf.save(fig, "kn_force.png")
     return dict(pos=pos.round(2).tolist(), torque=tq.round(2).tolist())
 
 
 def fig_quizkid3():
-    """쉬운 퀴즈, 서포트 벡터 3개 (비대칭): w = (0.6, 0.8), b = −2.4, 마진 1, A (3,2) α +0.5, B1 (5,−2) α −0.3, B2 (−3,4) α −0.2.
+    """쉬운 퀴즈, 서포트 벡터 3개 (비대칭): w = (0.6, 0.8), b = −2.4, M = 1, A (3,2) α 0.5 (y +1), B1 (5,−2) α 0.3 (y −1), B2 (−3,4) α 0.2 (y −1). 논문 기준 = ‖w‖ = 1 기준 (M = 1).
     시소: 경계를 따라 A 에서 B1 은 4, B2 는 6 떨어져 0.3 × 4 = 0.2 × 6"""
     R = np.array([[3, 2], [4, 3], [5, 2], [4, 4]]); B = np.array([[5, -2], [-3, 4], [0, 0], [1, -1]])
     w, b, m = np.array([0.6, 0.8]), -2.4, 1.0
-    M = SVC(kernel="linear", C=1e6, tol=1e-10).fit(np.r_[R, B], np.r_[np.ones(4), -np.ones(4)]); n = np.linalg.norm(M.coef_[0])
-    al = dict(zip(map(tuple, M.support_vectors_.astype(int).tolist()), (M.dual_coef_[0] / n).round(3)))
-    assert np.allclose(M.coef_[0] / n, w) and np.isclose(M.intercept_[0] / n, b) and al == {(5, -2): -0.3, (-3, 4): -0.2, (3, 2): 0.5}
+    M = SVC(kernel="linear", C=1e6, tol=1e-10).fit(np.r_[R, B], np.r_[np.ones(4), -np.ones(4)])
+    al = dict(zip(map(tuple, M.support_vectors_.astype(int).tolist()), M.dual_coef_[0].round(3)))   # α_k y_k
+    assert np.allclose(M.coef_[0], w) and np.isclose(M.intercept_[0], b) and al == {(5, -2): -0.3, (-3, 4): -0.2, (3, 2): 0.5}
     d = np.array([-w[1], w[0]]); pa, p1, p2 = np.array([3, 2]) @ d, np.array([5, -2]) @ d, np.array([-3, 4]) @ d
     assert np.isclose(abs(p1 - pa), 4) and np.isclose(abs(p2 - pa), 6)
     fig, ax = plt.subplots(figsize=(6.4, 6.0))
@@ -158,7 +159,7 @@ def fig_quizkid3():
     for p, a in al.items():
         nm, off = lab[p]
         ax.scatter(*p, s=420, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=5)
-        ax.text(p[0] + off[0], p[1] + off[1], f"{nm} ({p[0]}, {p[1]})  α = {a:+.1f}".replace("-", "−"), fontsize=13, fontweight="bold", color=RED if a > 0 else BLUE, zorder=7,
+        ax.text(p[0] + off[0], p[1] + off[1], f"{nm} ({p[0]}, {p[1]})  α = {abs(a):.1f}".replace("-", "−"), fontsize=13, fontweight="bold", color=RED if a > 0 else BLUE, zorder=7,
                 bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.scatter(6, 2, marker="*", s=420, color="#2B8A3E", edgecolor="black", lw=1, zorder=6); ax.text(5.5, 2.5, "P (6, 2)", fontsize=13, fontweight="bold", color="#2B8A3E")
     ax.set_xlim(-4.2, 7.2); ax.set_ylim(-3.2, 5.6); ax.set_aspect("equal"); ax.set_xticks(range(-4, 8, 2)); ax.set_yticks(range(-2, 6, 2)); ax.grid(alpha=0.3)
@@ -205,9 +206,9 @@ def fig_lift1d():
 
 
 def fig_dual():
-    """지난 시간 점 20개: 서포트 벡터 3개만 α ≠ 0, w = Σ α_i x_i (꼬리 물기)"""
+    """지난 시간 점 20개: 서포트 벡터 3개만 α ≠ 0, w* = Σ α_k y_k x_k (꼬리 물기, 논문 식 (16))"""
     X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
-    SV = [np.array(s) for s in mf.SV]; AL = [mf.ALPHA[tuple(s)] for s in mf.SV]
+    SV = [np.array(s) for s in mf.SV]; AL = [mf.ALPHA[tuple(s)] * (1 if tuple(s) in mf.RED_PTS else -1) for s in mf.SV]   # α_k y_k
     fig, axs = plt.subplots(1, 2, figsize=(12, 5.6))
     ax = axs[0]; mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(SV))
     ax.scatter(X[y > 0, 0], X[y > 0, 1], s=80, color=RED, alpha=0.28, zorder=3)          # α = 0 인 점은 흐리게
@@ -217,12 +218,12 @@ def fig_dual():
     off = {0: (0.2, -0.35), 1: (0.2, 0.2), 2: (0.2, -0.45)}
     for k, (s, a) in enumerate(zip(SV, AL)):
         dx, dy = off[k]
-        ax.text(s[0] + dx, s[1] + dy, f"$\\alpha$ = {a:+.2f}".replace("-", "−"), fontsize=14, fontweight="bold", color=RED if a > 0 else BLUE, zorder=6,
+        ax.text(s[0] + dx, s[1] + dy, f"$\\alpha$ = {abs(a):g}", fontsize=14, fontweight="bold", color=RED if a > 0 else BLUE, zorder=6,
                 bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.text(0.25, 2.1, "흐린 점 17개: $\\alpha$ = 0", fontsize=13, color="#555555", va="top", zorder=6, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     nx = np.array(kd.NEW_PT)
     ax.scatter([nx[0]], [nx[1]], marker="*", s=420, color="#2B8A3E", edgecolor="black", lw=1, zorder=7)
-    ax.text(nx[0] + 0.2, nx[1] - 0.05, f"새 점 ({nx[0]:g}, {nx[1]:g})\nf = {kd.NEW_F:+.2f} → 빨강".replace("-", "−"), fontsize=13, fontweight="bold",
+    ax.text(nx[0] + 0.2, nx[1] - 0.05, f"새 점 ({nx[0]:g}, {nx[1]:g})\nD = {kd.NEW_F:+.2f} → 빨강".replace("-", "−"), fontsize=13, fontweight="bold",
             color="#2B8A3E", va="top", zorder=7, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.set_title("① 서포트 벡터 3개만 $\\alpha \\neq 0$", fontsize=16)
     ax = axs[1]
@@ -231,15 +232,15 @@ def fig_dual():
         v = a * s
         ax.annotate("", cur + v, cur, arrowprops=dict(arrowstyle="-|>", lw=2.5, color=c, mutation_scale=18))
         mid = cur + v / 2
-        lab = f"{a:+.2f} · ({s[0]:g}, {s[1]:g})".replace("-", "−")
+        lab = f"{a:+g} · ({s[0]:g}, {s[1]:g})".replace("-", "−")
         ax.text(mid[0] + (0.06 if k != 1 else 0.06), mid[1] + (-0.1 if k == 0 else 0.0), lab, fontsize=13, color=c, ha="left", va="center")
         cur = cur + v
     ax.annotate("", cur, (0, 0), arrowprops=dict(arrowstyle="-|>", lw=3, color="black", mutation_scale=20))
-    ax.text(cur[0] / 2 - 0.08, cur[1] / 2 + 0.08, f"합 = $\\mathbf{{w}}$ = ({cur[0]:.2f}, {cur[1]:.2f})", fontsize=14, fontweight="bold", ha="right", va="bottom", rotation=45, rotation_mode="anchor")
+    ax.text(cur[0] / 2 - 0.08, cur[1] / 2 + 0.08, f"합 = $\\mathbf{{w}}^*$ = ({mf.W_STAR[0]:.2f}, {mf.W_STAR[1]:.2f})", fontsize=14, fontweight="bold", ha="right", va="bottom", rotation=45, rotation_mode="anchor")
     ax.scatter([0], [0], color="black", s=20)
-    ax.set_xlim(-0.1, 1.0); ax.set_ylim(-0.1, 1.0); ax.set_aspect("equal"); ax.set_xticks([0, 0.5, 1]); ax.set_yticks([0, 0.5, 1])
+    ax.set_xlim(-0.1, 1.4); ax.set_ylim(-0.1, 1.4); ax.set_aspect("equal"); ax.set_xticks([0, 0.5, 1]); ax.set_yticks([0, 0.5, 1])
     ax.tick_params(labelsize=11); ax.grid(alpha=0.3)
-    ax.set_title("② $\\alpha_i \\mathbf{x}_i$ 를 이어 더하면 $\\mathbf{w}$", fontsize=16)
+    ax.set_title("② $\\alpha_k y_k \\mathbf{x}_k$ 를 이어 더하면 $\\mathbf{w}^*$", fontsize=16)
     mf.save(fig, "kn_dual.png")
     return cur.round(3)
 
@@ -256,16 +257,16 @@ def fig_ktrick():
         ax.text(lp[0], lp[1], lab, ha="center", va="center", fontsize=16, color=ec)
     p, q, pr = kd.K_PX, kd.K_PXP, kd.K_PROD
     f = lambda v: "(" + ", ".join(f"{z:g}" for z in v) + ")"
-    box(1.6, 2.5, 2.8, 1.7, f"2차원 점 두 개\n$\\mathbf{{x}}$ = {f(kd.K_X)}\n$\\mathbf{{x}}_i$ = {f(kd.K_XP)}", "black")
-    box(6.5, 4.0, 4.0, 1.6, "3차원 점 두 개를 만든다\n$\\varphi(\\mathbf{x})$ = (1, $2\\sqrt{2}$, 4)\n$\\varphi(\\mathbf{x}_i)$ = (9, $3\\sqrt{2}$, 1)", BLUE)
-    box(6.5, 1.0, 3.8, 0.9, f"$\\mathbf{{x}}\\cdot\\mathbf{{x}}_i$ = 3 + 2 = {kd.K_DOT:g}", RED, fs=18)
+    box(1.6, 2.5, 2.8, 1.7, f"2차원 점 두 개\n$\\mathbf{{x}}$ = {f(kd.K_X)}\n$\\mathbf{{x}}_k$ = {f(kd.K_XP)}", "black")
+    box(6.5, 4.0, 4.0, 1.6, "3차원 점 두 개를 만든다\n$\\varphi(\\mathbf{x})$ = (1, $2\\sqrt{2}$, 4)\n$\\varphi(\\mathbf{x}_k)$ = (9, $3\\sqrt{2}$, 1)", BLUE)
+    box(6.5, 1.0, 3.8, 0.9, f"$\\mathbf{{x}}\\cdot\\mathbf{{x}}_k$ = 3 + 2 = {kd.K_DOT:g}", RED, fs=18)
     box(11.4, 2.5, 1.6, 1.2, f"{kd.K_DOT ** 2:g}", "black", fs=30, bold=True)
     arr((3.0, 3.0), (4.5, 3.8), BLUE, "① $\\varphi$ 로 옮기기", (3.3, 3.85))
     arr((8.5, 3.8), (10.5, 2.95), BLUE, "② 점곱  $1{\\cdot}9 + 2\\sqrt{2}{\\cdot}3\\sqrt{2} + 4{\\cdot}1$\n$= 9 + 12 + 4$", (11.0, 4.3))
     arr((3.0, 2.0), (4.5, 1.2), RED, "① 점곱", (3.35, 1.25))
     arr((8.5, 1.2), (10.5, 2.05), RED, f"② 제곱 {kd.K_DOT:g}²", (10.0, 1.15))
     ax.text(0.05, 4.75, "먼 길: 옮기고 점곱", ha="left", va="top", fontsize=17, color=BLUE, fontweight="bold")
-    ax.text(12.95, 0.15, "지름길 = 커널 $K(\\mathbf{x}, \\mathbf{x}_i) = (\\mathbf{x}\\cdot\\mathbf{x}_i)^2$", ha="right", fontsize=17, color=RED, fontweight="bold")
+    ax.text(12.95, 0.15, "지름길 = 커널 $K(\\mathbf{x}, \\mathbf{x}_k) = (\\mathbf{x}\\cdot\\mathbf{x}_k)^2$", ha="right", fontsize=17, color=RED, fontweight="bold")
     mf.save(fig, "kn_ktrick.png")
 
 def fig_alpha():
@@ -279,11 +280,11 @@ def fig_alpha():
     for i, s in zip(sv, mf.SV):
         c = RED if kd._y20[i] > 0 else BLUE
         ax.plot(ts, H[:, i], color=c, lw=3, marker="o" if c == RED else "s", ms=5, zorder=3)
-        ax.text(ts[-1] * 1.25, H[-1, i] + (0.05 if s == mf.SV[2] else -0.05 if s == mf.SV[1] else 0), f"({s[0]:g}, {s[1]:g})  α = {H[-1, i]:+.2f}".replace("-", "−"), color=c, fontsize=14, va="center", fontweight="bold")
+        ax.text(ts[-1] * 1.25, H[-1, i] + (0.05 if s == mf.SV[2] else -0.05 if s == mf.SV[1] else 0), f"({s[0]:g}, {s[1]:g})  α = {H[-1, i]:.2f}", color=c, fontsize=14, va="center", fontweight="bold")
     ax.text(ts[-1] * 1.25, 0.0, "나머지 17개  α = 0", color="#555555", fontsize=14, va="center")
-    ax.plot([0.8, ts[-1]], [0, 0], color="black", lw=0.8); ax.set_ylim(-0.5, 0.85)
+    ax.plot([0.8, ts[-1]], [0, 0], color="black", lw=0.8); ax.set_ylim(-0.05, 0.85)
     ax.set_xscale("log"); ax.set_xlim(0.8, ts[-1] * 9); ax.set_xticks([1, 10, 100, 1000, 10000]); ax.set_xticklabels(["1", "10", "100", "1000", "1만"])
-    ax.set_xlabel("걸음", fontsize=15); ax.set_ylabel("$\\alpha_i$", fontsize=16, rotation=0, labelpad=14); ax.tick_params(labelsize=12)
+    ax.set_xlabel("걸음", fontsize=15); ax.set_ylabel("$\\alpha_k$", fontsize=16, rotation=0, labelpad=14); ax.tick_params(labelsize=12)
     ax.spines["right"].set_visible(False); ax.spines["top"].set_visible(False)
     mf.save(fig, "kn_alpha.png")
 

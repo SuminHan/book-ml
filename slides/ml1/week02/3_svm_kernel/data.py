@@ -14,7 +14,7 @@ assert round(L1_CUT, 2) == 0.71
 
 
 def phi6(x):
-    """다항 2차 커널 (1 + x·x')² 의 특징 6개"""
+    """다항 2차 커널 (x·x' + 1)² 의 특징 6개"""
     r2 = np.sqrt(2)
     return np.array([1, r2 * x[0], r2 * x[1], x[0] ** 2, r2 * x[0] * x[1], x[1] ** 2])
 
@@ -31,10 +31,15 @@ assert P1_ROOTS == [-1.5, 0.5] and _f1(0) > 0 and _f1(-2) < 0 and _f1(1) < 0
 # 점곱 꼴로 새 점 하나 분류 (지난 시간 점 20개, 서포트 벡터 3개)
 import data as _d2                                   # ../2_svm/data.py
 NEW_PT = (0.5, -0.3)
-NEW_TERMS = [round(a * float(np.dot(NEW_PT, s)), 2) for s, a in _d2.ALPHA.items()]      # 0.21, 0.07, −0.14
-NEW_F = _d2.B_ANS + sum(a * float(np.dot(NEW_PT, s)) for s, a in _d2.ALPHA.items())
-assert NEW_TERMS == [0.21, 0.07, -0.14] and round(_d2.B_ANS, 2) == 0.04 and round(NEW_F, 2) == 0.18
-assert abs(NEW_F - (np.dot(_d2.W_ANS, NEW_PT) + _d2.B_ANS)) < 0.01      # w·x + b 와 같다
+_YK = {s: (1 if s in _d2.RED_PTS else -1) for s in _d2.SV}
+_AX = {(0.7, 0.2): 1.1076, (-0.6, -0.4): 0.5538, (0.1, -1.1): 0.5538}                  # sklearn α* (식 (13) 기준, 덱 표시는 1.1 · 0.55)
+assert all(abs(_AX[s] - _d2.ALPHA[s]) < 0.01 for s in _AX)
+NEW_TERMS = [round(_AX[s] * _YK[s] * float(np.dot(NEW_PT, s)), 2) for s in _d2.SV]      # α_k y_k (x·x_k): 0.32, 0.10, −0.21
+NEW_WX = sum(NEW_TERMS)
+NEW_F = _d2.B_STAR + sum(_AX[s] * _YK[s] * float(np.dot(NEW_PT, s)) for s in _d2.SV)    # D(x) = 0.26
+assert NEW_TERMS == [0.32, 0.1, -0.21] and round(_d2.B_STAR, 2) == 0.05 and round(NEW_F, 2) == 0.26
+assert abs(NEW_F - (np.dot(_d2.W_STAR, NEW_PT) + _d2.B_STAR)) < 0.01      # w*·x + b* 와 같다
+assert round(NEW_F * _d2.M_ANS, 2) == 0.18                              # 거리 = D × M
 # 커널 쪽 그림: (x·x')² = φ(x)·φ(x'), φ(x) = (x1², √2 x1x2, x2²)
 K_X, K_XP = np.array([1.0, 2.0]), np.array([3.0, 1.0])
 phi3 = lambda v: np.array([v[0] ** 2, np.sqrt(2) * v[0] * v[1], v[1] ** 2])
@@ -44,7 +49,7 @@ K_DOT = float(K_X @ K_XP)                                         # 5
 assert K_PX.tolist() == [1, 2.83, 4] and K_PXP.tolist() == [9, 4.24, 1] and K_PROD.tolist() == [9, 12, 4]
 assert K_DOT == 5 and abs(phi3(K_X) @ phi3(K_XP) - K_DOT ** 2) < 1e-9
 
-# α 3개 → 계수 6개 (α 는 덱 약속대로 부호 포함)
+# α 3개 → 계수 6개 (AL_A = α_k y_k: α = 0.5 · 0.2 · 0.3, y = +1 · −1 · +1)
 AL_PTS = np.array([[1, 2], [3, 1], [0, 1]], float)
 AL_A = np.array([0.5, -0.2, 0.3])
 _W = sum(a * phi6(p) for a, p in zip(AL_A, AL_PTS))
@@ -72,12 +77,12 @@ QL_ACC = SVC(kernel="linear", C=1).fit(Xc, yc).score(Xc, yc)   # 질문 그림: 
 
 # ---- α 학습: 1차시 학습 한 걸음을 w 대신 α 로 (G = 점끼리 점곱 또는 K 표)
 def train_alpha(G, y, T=20000, lr0=0.05, snaps=()):
-    """매 걸음: 값 = y_i(Σ_j α_j G_ji + b), 가장 작은 점(동점 모두) α_k += η y_k, b += η y_k, α 를 ‖w′‖ = √(αᵀGα) 로 나눈다"""
+    """매 걸음: 값 = y_k(Σ_l α_l y_l G_lk + b), 가장 작은 점(동점 모두) α_k += η (늘 0 이상), b += η y_k, α 를 ‖w′‖ = √(Σ α_k α_l y_k y_l G_kl) 로 나눈다"""
     a, b, hist = np.zeros(len(y)), 0.0, {}
     for t in range(1, T + 1):
-        v = y * (G @ a + b); k = v <= v.min() + 1e-9; eta = lr0 / np.sqrt(t)
-        a = a + eta * k * y; b += eta * y[k].sum()
-        n = np.sqrt(a @ G @ a)
+        v = y * (G @ (a * y) + b); k = v <= v.min() + 1e-9; eta = lr0 / np.sqrt(t)
+        a = a + eta * k; b += eta * y[k].sum()
+        n = np.sqrt((a * y) @ G @ (a * y))
         if n > 0:
             a = a / n
         if t in snaps:
@@ -90,19 +95,20 @@ _X20 = np.array(_d2.RED_PTS + _d2.BLUE_PTS, float); _y20 = np.r_[np.ones(10), -n
 AL20, BL20, AL_HIST = train_alpha(_X20 @ _X20.T, _y20, snaps=AL_STEPS)
 AL_ROWS = {t: [round(float(AL_HIST[t][_X20.tolist().index(list(s))]), 2) for s in _d2.SV] for t in (1, 10, 100, 1000, 20000)}
 AL_OTHER = {t: round(float(np.sort(np.abs(AL_HIST[t]))[-4]), 3) for t in (1, 10, 100, 1000, 20000)}   # 서포트 벡터 3개 빼고 가장 큰 |α|
-assert AL_ROWS[20000] == [0.74, -0.37, -0.37] and AL_OTHER[20000] == 0.0 and AL_ROWS[1] == [0.04, -0.04, -0.04]
-assert np.allclose(AL20 @ _X20, _d2.W_ANS, atol=1e-3) and abs(BL20 - _d2.B_ANS) < 2e-3
+assert AL_ROWS[20000] == [0.74, 0.37, 0.37] and AL_OTHER[20000] == 0.0 and AL_ROWS[1] == [0.04, 0.04, 0.04]
+assert [round(r / _d2.M_ANS, 2) for r in AL_ROWS[20000]] == [1.1, 0.55, 0.55]   # ÷ M (식 (12)) = 논문 α*
+assert np.allclose((AL20 * _y20) @ _X20, _d2.W_ANS, atol=1e-3) and abs(BL20 - _d2.B_ANS) < 2e-3
 
 # 같은 학습에서 점곱 자리에 다항 커널 (1 + x·x')² → 원 데이터 120개, sklearn (하드 마진) 과 비교
 _G = (1 + Xc @ Xc.T) ** 2
 AK, BK, _ = train_alpha(_G, yc.astype(float))
-AK_M = float((yc * (_G @ AK + BK)).min())
+AK_M = float((yc * (_G @ (AK * yc) + BK)).min())
 _sk = SVC(kernel="poly", degree=2, coef0=1, gamma=1, C=1e6).fit(Xc, yc)
 _ds = _sk.dual_coef_[0]; _Gs = (1 + Xc[_sk.support_] @ Xc[_sk.support_].T) ** 2
 AK_M_SK = float(1 / np.sqrt(_ds @ _Gs @ _ds))
 AK_NSV, AK_NSV_SK = int((np.abs(AK) > 0.01).sum()), len(_sk.support_)
 _g = np.random.RandomState(0).uniform(-1.3, 1.3, (5000, 2))
-AK_AGREE = float((np.sign(((1 + _g @ Xc.T) ** 2) @ AK + BK) == np.sign(_sk.decision_function(_g))).mean())
+AK_AGREE = float((np.sign(((1 + _g @ Xc.T) ** 2) @ (AK * yc) + BK) == np.sign(_sk.decision_function(_g))).mean())
 assert round(AK_M, 2) == round(AK_M_SK, 2) == 0.20 and AK_NSV == AK_NSV_SK == 7 and AK_AGREE > 0.999
 
 if __name__ == "__main__":

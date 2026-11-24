@@ -16,7 +16,7 @@ BLUE_PTS = [(-0.6, -1.3), (-1.2, -1.1), (-0.4, -0.9), (-1.0, -0.6), (-1.4, -1.5)
 W_ANS, B_ANS, M_ANS = (1 / np.sqrt(2), 1 / np.sqrt(2)), 0.05 / np.sqrt(2), 0.95 / np.sqrt(2)   # (0.71, 0.71), 0.04, 0.67
 SV = [(0.7, 0.2), (-0.6, -0.4), (0.1, -1.1)]             # 서포트 벡터: 빨강 하나, 파랑 둘
 W_STAR, B_STAR = (1 / 0.95, 1 / 0.95), 0.05 / 0.95                 # 식 (13) 기준: (1.05, 1.05), 0.05 (= ‖w‖ = 1 답 ÷ M)
-ALPHA = {(0.7, 0.2): 1.11, (-0.6, -0.4): 0.55, (0.1, -1.1): 0.55}     # 논문 식 (16): w* = Σ α_k y_k x_k, α_k ≥ 0 (식 (13) 기준, sklearn |dual_coef_|)
+ALPHA = {(0.7, 0.2): 1.1, (-0.6, -0.4): 0.55, (0.1, -1.1): 0.55}      # 논문 식 (16): w* = Σ α_k y_k x_k, α_k ≥ 0 (식 (13) 기준, sklearn |dual_coef_| = 1.108 · 0.554, 덱은 1.1 = 0.55 + 0.55)
 ALPHA_UNIT = {(0.7, 0.2): 0.74, (-0.6, -0.4): 0.37, (0.1, -1.1): 0.37}  # 같은 α 를 식 (9) ‖w‖ = 1 기준으로 (= α* × M), 하드 마진 학습이 쌓는 값
 MEAN_W = (0.83, 0.91)                                    # 가장 쉬운 방법: w = 20개의 y_i x_i 평균 (빨강은 그대로, 파랑은 부호 뒤집어), b = 0
 MEAN_D = (0.62, 0.70)                                     # 그 선에서 가장 가까운 빨강 · 파랑까지 거리
@@ -95,11 +95,12 @@ if __name__ == "__main__":
     assert np.allclose(w, W_ANS, atol=1e-3) and abs(b - B_ANS) < 1e-3 and abs(mm - M_ANS) < 1e-3
     assert sorted(map(tuple, X[m.support_])) == sorted(SV)
     assert np.allclose(m.coef_[0], W_STAR, atol=1e-3) and abs(m.intercept_[0] - B_STAR) < 1e-3
-    al = {tuple(X[i]): round(abs(c), 2) for i, c in zip(m.support_, m.dual_coef_[0])}; assert al == ALPHA
+    al = {tuple(X[i]): abs(c) for i, c in zip(m.support_, m.dual_coef_[0])}; assert al.keys() == ALPHA.keys() and all(abs(al[k] - ALPHA[k]) < 0.01 for k in al)
     au = {tuple(X[i]): round(abs(c) * mm, 2) for i, c in zip(m.support_, m.dual_coef_[0])}; assert au == ALPHA_UNIT
     yk = {s_: (1 if s_ in RED_PTS else -1) for s_ in SV}
     assert abs(sum(yk[k] * a for k, a in ALPHA.items())) < 0.02                       # Σ α_k y_k = 0
     assert np.allclose(sum(yk[k] * a * np.array(k) for k, a in ALPHA.items()), W_STAR, atol=0.02)   # 식 (16)
+    ALPHA_EXACT = al
     a = (y[:, None] * X).mean(0); assert np.allclose(a, MEAN_W, atol=0.006); u = a / np.linalg.norm(a)
     v = y * (X @ u); assert (round(v[y > 0].min(), 2), round(v[y < 0].min(), 2)) == MEAN_D
     assert tuple(np.round(u, 2)) == STEP1_W                        # 가장 쉬운 방법의 선 = 학습 1걸음 뒤 첫 선
