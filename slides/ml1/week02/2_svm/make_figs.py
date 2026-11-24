@@ -283,16 +283,16 @@ def fig_cos():
     mid = shb / 2 * Bu + 0.24 * nrm
     ax.annotate(f"경계의 위치\n$-b/\\Vert\\mathbf{{w}}\\Vert$ = {shb:.2f}", mid, (0.6, -0.72), fontsize=13, color="#555555", fontweight="bold", ha="center",
                 arrowprops=dict(arrowstyle="-", color="#555555", lw=1), bbox=dict(fc="white", ec="none", pad=0.5, alpha=0.9))
-    ax.annotate("", F, Fb, arrowprops=dict(arrowstyle="<->", color="#E8590C", lw=3, shrinkA=0, shrinkB=0))
+    ax.annotate("", F, Fb, arrowprops=dict(arrowstyle="<->", color="black", lw=3, shrinkA=0, shrinkB=0))
     ax.plot(*zip(PX, F), color=GRAY, lw=1.5, ls=":")
     ax.scatter(*PX, s=80, color=RED, zorder=4); ax.scatter(*Fb, s=50, color="black", zorder=4); ax.scatter(0, 0, s=50, color="black", zorder=5)
     ax.text(PX[0] + 0.05, PX[1] + 0.05, f"$\\mathbf{{x}} = ({PX[0]:g}, {PX[1]:g})$", fontsize=15, color=RED)
     ax.text(-0.42, 0.3, "w 방향", fontsize=14, color=GOLDT, fontweight="bold")
     ax.text(0.17, 0.33, "θ", fontsize=16)
     foot = PX - dist * Bu                                                          # 점 x 에서 경계선에 내린 수선의 발
-    ax.annotate("", foot, PX, arrowprops=dict(arrowstyle="<->", color="#E8590C", lw=3, shrinkA=4, shrinkB=0), zorder=5)
-    ax.scatter(*foot, s=30, color="#E8590C", zorder=5)
-    ax.text(-0.6, 1.75, f"점 x 에서 경계선까지\n거리 {dist:.2f}", fontsize=14, color="#E8590C", fontweight="bold", ha="center")
+    ax.annotate("", foot, PX, arrowprops=dict(arrowstyle="<->", color="black", lw=3, shrinkA=4, shrinkB=0), zorder=5)
+    ax.scatter(*foot, s=30, color="black", zorder=5)
+    ax.text(-0.6, 1.75, f"점 x 에서 경계선까지\n거리 {dist:.2f}", fontsize=14, color="black", fontweight="bold", ha="center")
     ax.text(-1.15, -0.85, "경계 $x_1 + x_2 = -0.5$", fontsize=13)
     origin_axes(ax); ax.set_xticks([1, 2]); ax.set_yticks([1, 2])
     save(fig, "sv_cos.png")
