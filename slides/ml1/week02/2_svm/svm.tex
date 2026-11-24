@@ -27,15 +27,14 @@
 \begin{frame}{SVM 의 원 논문}
 \vfill
 \centering
-\includegraphics[width=0.66\linewidth]{sv_people.png}\par\vskip0.3em
-\renewcommand{\arraystretch}{1.3}
+\renewcommand{\arraystretch}{1.9}
 {\large\begin{tabular}{c@{\hspace{1em}}p{5.3cm}l}
 \textbf{1992} & Boser, Guyon, Vapnik & \kb{최대 마진} 학습 + \kb{커널}\\[-0.4em]
  & \multicolumn{2}{l}{\small \textit{A training algorithm for optimal margin classifiers} (COLT '92)}\\[0.6em]
 \textbf{1995} & Cortes, Vapnik & \kb{소프트 마진}, ``Support Vector'' 라는 이름\\[-0.4em]
  & \multicolumn{2}{l}{\small \textit{Support-vector networks} (\textit{Machine Learning} 20(3))}
-\end{tabular}}\\[0.6em]
-{\normalsize 이 덱의 기호 ($D(\mathbf{x})$, $M$, $y_k$, $\alpha_k$, $\xi_k$, $C$) 는 \kb{두 논문 그대로}}
+\end{tabular}}\\[1.2em]
+{\large 이 덱의 기호 ($D(\mathbf{x})$, $M$, $y_k$, $\alpha_k$, $\xi_k$, $C$) 는 \kb{두 논문 그대로}}
 \vfill
 \note{오늘 배울 서포트 벡터 머신이 어디서 왔는지부터 봅시다. 원 논문은 보통 두 편을 같이 꼽습니다. 첫째는 1992년, AT&T 벨 연구소의 Guyon과 Vapnik, 그리고 Boser가 COLT라는 학회에 낸 A training algorithm for optimal margin classifiers입니다. 경계와 가장 가까운 점 사이의 여백, 마진을 가장 크게 하는 학습법을 내고, 커널을 써서 직선이 아닌 휘어진 경계까지 같은 방법으로 학습할 수 있다는 것을 보였습니다. 오늘 배우는 최대 마진과 다음 시간의 커널이 이 논문입니다. 최대 마진으로 직선을 고르는 생각 자체는 1960년대 Vapnik의 generalized portrait 방법까지 거슬러 올라가고, 커널로 점곱을 바꾸는 생각도 1964년 Aizerman 등의 논문에 있었습니다. 이 논문은 둘을 합쳤습니다. 둘째는 1995년 Cortes와 Vapnik이 Machine Learning 저널에 낸 Support-vector networks입니다. 1992년 논문은 두 무리가 직선으로 깔끔하게 갈릴 때만 다뤘는데, 이 논문이 몇 점은 넘어가도 되는 소프트 마진을 더해 실제 데이터에 쓸 수 있게 했고, 서포트 벡터라는 이름도 이 논문 제목에서 나왔습니다. 두 논문 모두 손글씨 숫자 인식으로 실험했습니다. 이 덱의 기호는 두 논문을 그대로 따릅니다. 결정 함수 D, 마진 대문자 M, 점 번호 k와 라벨 y k는 1992년 논문, 슬랙 크사이와 벌점 C는 1995년 논문 기호입니다.}
 \end{frame}
@@ -578,21 +577,6 @@ sklearn 답 & $1.05$ & $1.05$ & $0.05$ & 0.67 &
 \vfill
 \note{정리합니다. 초평면은 값의 부호로 공간을 둘로 나눕니다. 최대 마진 분류기는 가장 가까운 점까지의 거리 M을 최대로 하는 초평면이고, w의 길이를 1로 맞추면 값이 곧 거리입니다. 가장 가까운 값을 1로 두면 2분의 1 w 길이 제곱을 최소로 하는 같은 문제가 됩니다. 경계는 서포트 벡터 몇 개가 정합니다. 학습은 점들을 z-score 한 뒤 매 걸음 가장 가까운 점이 선을 밀고 w의 길이를 다시 1로 맞추는 것을 반복하고, sklearn은 SMO라는 다른 풀이법으로 같은 답을 냅니다. 깔끔하게 나뉘지 않으면 슬랙 크사이와 벌점 C를 두는 소프트 마진을 쓰고, C가 크면 좁은 길입니다. 클래스가 여러 개면 일대일이나 일대다로 SVM을 여러 개 만듭니다. 오늘 경계는 모두 직선이었습니다. 직선으로 못 가르는 데이터는 다음 시간에 특징 늘리기와 커널로 다룹니다.}
 \end{frame}
-% --- 이미지 출처
-\begin{frame}{이미지 출처}
-\vfill
-\footnotesize
-\renewcommand{\arraystretch}{1.5}
-\begin{tabular}{l p{0.72\linewidth}}
-Bernhard Boser & UC Berkeley EECS \;\texttt{eecs.berkeley.edu/Faculty/Homepages/boser.html}\\
-Isabelle Guyon & Xuthoria, Wikimedia Commons, CC BY-SA 4.0 (SD 2025 - Isabelle Guyon 02, cropped)\\
-Vladimir Vapnik & Simons Foundation \;\texttt{simonsfoundation.org/people/vladimir-vapnik}\\
-Corinna Cortes & Google Research \;\texttt{research.google/people/author121}
-\end{tabular}\\[0.8em]
-나머지 그림은 모두 직접 그림 (\texttt{make\_figs.py})
-\vfill
-\end{frame}
-
 \appendix
 \section{Appendix}
 % --- Appendix: ISL 의 꼴
