@@ -213,7 +213,7 @@
 {\large 거리 $= \dfrac{|D(\mathbf{x})|}{\lVert\mathbf{w}\rVert}$}\\[0.6em]
 {\normalsize 왜? \; $\textcolor{fbeta}{\mathbf{w}}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fbeta}{\mathbf{w}}\rVert\,\lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.2em]
 {\normalsize \hspace*{2.2em}$= \lVert\textcolor{fbeta}{\mathbf{w}}\rVert \times$ ($\textcolor{fx}{\mathbf{x}}$ 의 \textbf{\textcolor{fsh}{$\mathbf{w}$ 방향 위치}})}\\[0.6em]
-{\normalsize $\lVert\mathbf{w}\rVert = 1$ 이면}\\[0.2em]
+{\normalsize 예: $\mathbf{w} = (0.71,\ 0.71)$, $\lVert\mathbf{w}\rVert = 1$}\\[0.2em]
 {\large 값 $= \underbrace{\textcolor{fsh}{\mathbf{w}\cdot\mathbf{x}}}_{\textcolor{fsh}{1.41}} - \underbrace{\textcolor{fbd}{(-b)}}_{\textcolor{fbd}{0.71}} =$ \textbf{\textcolor{fdist}{거리 0.71}}}
 \end{column}
 \end{columns}
@@ -248,10 +248,11 @@
 \markpage{train}
 \vfill
 \centering
-\renewcommand{\arraystretch}{1.8}
+\renewcommand{\arraystretch}{1.6}
+{\large 푸는 식: \; $\max_{\mathbf{w},\,\lVert\mathbf{w}\rVert = 1}\ \min_k\ y_k D(\mathbf{x}_k)$ \;= 가장 가까운 점의 거리를 \kb{최대로}}\\[0.3em]
 {\small\color{gray} (\textbf{0.} 시작: $\mathbf{w} = (0, 0)$, $b = 0$ $\to$ 1걸음 뒤 $\mathbf{w} = \bar{\mathbf{v}}/\lVert\bar{\mathbf{v}}\rVert$, $b = 0$ \;($\bar{\mathbf{v}} = \tfrac{1}{p}\sum_{k=1}^{p} y_k\mathbf{x}_k$))}\\[0.4em]
 {\large\begin{tabular}{rl}
-\textbf{1.} & 점마다 값 $y_k D(\mathbf{x}_k)$ \;= 경계까지 거리 (because $\lVert\mathbf{w}\rVert = 1$)\\
+\textbf{1.} & 점마다 거리 $y_k D(\mathbf{x}_k)\,/\,\lVert\mathbf{w}\rVert = y_k D(\mathbf{x}_k)$ \;($\lVert\mathbf{w}\rVert = 1$ 이라)\\
 \textbf{2.} & 값이 \kq{가장 작은 점} $k = \arg\min_l\, y_l D(\mathbf{x}_l)$ 가 민다:\\
  & $\mathbf{w}' = \mathbf{w} + \eta\, y_k \mathbf{x}_k$, \quad $b' = b + \eta\, y_k$\\
 \textbf{3.} & $\mathbf{w} \leftarrow \mathbf{w}'/\lVert\mathbf{w}'\rVert$ \;(길이 1 로), \quad $b \leftarrow b'$ \;(그대로)
