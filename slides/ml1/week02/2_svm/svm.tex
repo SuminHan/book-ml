@@ -204,19 +204,19 @@
 \note{두 점으로 정해질 때와 세 점으로 정해질 때를 비교합니다. 왼쪽은 작은 예입니다. 빨강과 파랑 사이에서 가장 가까운 두 점을 잇고, 그 선분의 수직이등분선을 경계로 하면 M은 선분 길이의 절반, 0.71입니다. 이 길 안에 다른 점이 하나도 없으면 이것이 답이고, 두 점이 정합니다. 선이 두 점을 잇는 선분에 정확히 수직이라 어느 쪽으로 돌려도 한 점이 가까워지기 때문입니다. 가운데는 우리 데이터에 같은 방법을 쓴 것입니다. 가장 가까운 쌍은 빨강 0.7, 0.2와 파랑 마이너스 0.6, 마이너스 0.4이고 거리가 1.43이라 M은 0.72가 될 것 같지만, 그 길 안에 빨간 동그라미 점들이 걸립니다. 그래서 이 선은 쓸 수 없습니다. 오른쪽이 실제 답입니다. 파랑 두 점, 마이너스 0.6, 마이너스 0.4와 0.1, 마이너스 1.1을 이은 직선이 파랑 쪽 가장자리가 되어 기울기를 정합니다. 기울기가 정확히 마이너스 1이라 w가 0.71, 0.71입니다. 빨강 0.7, 0.2에서 그 직선까지의 거리 1.34가 길 폭 2M이 되어 폭을 정합니다. 그래서 M은 0.67로, 두 점으로 정할 때의 0.72보다 작습니다. 점이 많을수록 길 안에 점이 걸리기 쉬워서 세 점, 특징이 n개면 n 더하기 1개인 경우가 훨씬 흔합니다.}
 \end{frame}
 
-\begin{frame}{참고: 거리 공식이 성립하는 이유 (점곱과 코사인 · 정사영)}
+\begin{frame}{참고: 점에서 경계까지 거리 공식이 성립하는 이유}
 \vfill
 \begin{columns}[c]
 \begin{column}{0.44\textwidth}\centering\includegraphics[width=\linewidth]{sv_cos.png}\end{column}
 \begin{column}{0.54\textwidth}
-{\large $\textcolor{fbeta}{\mathbf{w}}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fbeta}{\mathbf{w}}\rVert\,\lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta = \lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.1em]
-{\normalsize (because $\lVert\textcolor{fbeta}{\mathbf{w}}\rVert = 1$)}\\[0.6em]
-{\large $= \textcolor{fx}{\mathbf{x}}$ 의 \textbf{\textcolor{fsh}{$\mathbf{w}$ 방향 위치}}}\\[0.8em]
-{\large 값 = \textcolor{fsh}{1.41} $-$ \textcolor{fbd}{0.71} $=$ \textbf{\textcolor{fdist}{거리 0.71}}}
+{\large 거리 $= \dfrac{|D(\mathbf{x})|}{\lVert\mathbf{w}\rVert}$ \;(논문 식 8)}\\[0.6em]
+{\normalsize 왜? \; $\textcolor{fbeta}{\mathbf{w}}\cdot\textcolor{fx}{\mathbf{x}} = \lVert\textcolor{fbeta}{\mathbf{w}}\rVert\,\lVert\textcolor{fx}{\mathbf{x}}\rVert\cos\theta$}\\[0.2em]
+{\normalsize \hspace*{2.2em}$= \lVert\textcolor{fbeta}{\mathbf{w}}\rVert \times$ ($\textcolor{fx}{\mathbf{x}}$ 의 \textbf{\textcolor{fsh}{$\mathbf{w}$ 방향 위치}})}\\[0.6em]
+{\normalsize $\lVert\mathbf{w}\rVert = 1$ 이면 (식 9): 값 = \textcolor{fsh}{1.41} $-$ \textcolor{fbd}{0.71} $=$ \textbf{\textcolor{fdist}{거리 0.71}}}
 \end{column}
 \end{columns}
 \vfill
-\note{마진 M은 거리입니다. 그런데 학습에서는 거리를 매번 계산하기보다, 식의 값 w x 더하기 b를 그대로 거리로 쓰고 싶습니다. 그러려면 w의 길이를 1로 맞추면 됩니다. 이 덱은 처음부터 끝까지 w의 길이를 1로 둡니다. 왜 그런지 봅시다. 거리 공식, 거리는 값의 절댓값 나누기 w의 길이, 가 왜 성립하는지는 점곱과 코사인의 관계로 볼 수 있습니다. 두 벡터의 점곱은 두 길이를 곱하고 사이각의 코사인을 곱한 것과 같습니다. w의 길이가 1이면 w 점곱 x는 x의 길이 곱하기 코사인 세타, 즉 점 x에서 w 축으로 수직선을 내렸을 때 원점에서 그 발까지의 길이, 정사영 길이입니다. x가 w 방향으로 얼마나 가 있는지, w 방향 위치라고 읽으면 됩니다. 그림에서 파란 치수선이 점 0.4, 1.6의 w 방향 위치 1.41입니다. 경계는 w에 수직인 직선이라, 경계 위의 점은 어디든 w 방향 위치가 똑같고, 그 값이 마이너스 b입니다. 이 예의 경계는 x1 더하기 x2가 1인 직선이고, 길이 1로 맞춘 식은 0.71 x1 더하기 0.71 x2 빼기 0.71이니 b는 마이너스 0.71, 경계의 위치는 0.71입니다. 그러니 값 b 더하기 w 점곱 x는 x의 위치에서 경계의 위치를 뺀 것, 1.41 빼기 0.71, 0.71이고, 이것이 w 방향으로 잰 경계까지의 거리입니다. 길이가 1이 아니면 위치에 w의 길이가 곱해지니, 거리 공식은 값의 절댓값을 w의 길이로 나눈 것이 됩니다.}
+\note{마진 M은 점에서 경계까지의 거리입니다. 점과 점 사이가 아니라, 점에서 경계선에 수선을 내린 길이입니다. 원 논문의 식 8이 이 거리를 쓴 것으로, 거리는 값의 절댓값 D x를 w의 길이로 나눈 것입니다. 이 공식이 왜 성립하는지는 점곱과 코사인의 관계로 볼 수 있습니다. 두 벡터의 점곱은 두 길이를 곱하고 사이각의 코사인을 곱한 것과 같습니다. 그러니 w 점곱 x는 w의 길이 곱하기 x의 길이 곱하기 코사인 세타이고, x의 길이 곱하기 코사인 세타는 점 x에서 w 축으로 수직선을 내렸을 때 원점에서 그 발까지의 길이, 정사영 길이입니다. x가 w 방향으로 얼마나 가 있는지, w 방향 위치라고 읽으면 됩니다. 그림에서 파란 치수선이 점 0.4, 1.6의 w 방향 위치 1.41입니다. 경계는 w에 수직인 직선이라, 경계 위의 점은 어디든 w 방향 위치가 똑같고, 그 값이 마이너스 b를 w의 길이로 나눈 것입니다. 그러니 x의 위치에서 경계의 위치를 뺀 것이 w 방향으로 잰 경계까지의 거리이고, w의 길이가 곱해져 있으니 나눠 주면 거리 공식이 됩니다. 식 9처럼 w의 길이를 1로 묶으면 값이 그대로 거리입니다. 이 예의 경계는 x1 더하기 x2가 1인 직선이고, 길이 1로 맞춘 식은 0.71 x1 더하기 0.71 x2 빼기 0.71이니 b는 마이너스 0.71, 경계의 위치는 0.71입니다. 그러니 값은 1.41 빼기 0.71, 0.71이고, 이것이 경계까지의 거리입니다. 이 덱은 학습할 때 이 기준을 씁니다. 뒤에서 가장 가까운 값을 1로 두는 식 13으로 바꾸면 w의 길이가 1이 아니므로, 그때는 D를 w의 길이로 나눠야 거리가 됩니다.}
 \end{frame}
 
 % --- 참고: 점곱과 코사인 (값 = 그림자 - 경계의 그림자 = 거리)
@@ -393,6 +393,7 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 1 로 묶는 것 & $\lVert\mathbf{w}\rVert = 1$ & $M\lVert\mathbf{w}\rVert = 1$ \;(가장 가까운 값 $= 1$)\\ \hline
 조건 & $y_k D(\mathbf{x}_k) \ge M$ & $y_k D(\mathbf{x}_k) \ge 1$\\
 목표 & $M$ 최대 & $\tfrac{1}{2}\lVert\mathbf{w}\rVert^2$ 최소 \;($M = 1/\lVert\mathbf{w}\rVert$)\\ \hline
+점에서 경계까지 거리 & $|D(\mathbf{x})|$ & $|D(\mathbf{x})|\,/\,\lVert\mathbf{w}\rVert$\\ \hline
 이 데이터 & $\mathbf{w} = (0.71, 0.71)$, $b = 0.04$ & $\mathbf{w}^* = (1.05, 1.05)$, $b^* = 0.05$\\
  & $M = 0.67$ & $M = 1/1.49 = 0.67$
 \end{tabular}}\\[0.8em]
