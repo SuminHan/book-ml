@@ -119,6 +119,32 @@ def fig_flip():
     save(fig, "sv_flip.png")
 
 
+def fig_flip_mean():
+    """한 줄 세 장: ① 원래 ② 파랑 × (−1) = 원점 기준 180° 회전 (20개가 한쪽에) ③ 20개 y_k x_k 의 평균 = w, 그에 수직이고 원점을 지나는 선 (b = 0)"""
+    a = (y[:, None] * X).mean(0); F = -X[y < 0]
+    fig, axs = plt.subplots(1, 3, figsize=(17, 5.9))
+    pts(axs[0]); axs[0].set_title("① 원래 점 20개", fontsize=17)
+    ax = axs[1]; pts(ax, X[y > 0], y[y > 0])
+    ax.scatter(X[y < 0, 0], X[y < 0, 1], s=40, color=BLUE, marker="s", alpha=0.18)
+    ax.scatter(F[:, 0], F[:, 1], s=80, facecolors="none", edgecolors=BLUE, marker="s", lw=2, zorder=3)
+    for p in X[y < 0]:
+        ax.plot([p[0], -p[0]], [p[1], -p[1]], color=BLUE, lw=0.8, alpha=0.2)
+    ex = np.array([-1.0, -0.6])
+    ax.plot([ex[0], -ex[0]], [ex[1], -ex[1]], color=BLUE, lw=1.6, ls="--", zorder=2)
+    ax.annotate("", -ex, ex, arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=2.2, connectionstyle="arc3,rad=-0.9", shrinkA=8, shrinkB=8), zorder=4)
+    ax.text(-1.55, 0.8, "원점 기준\n180° 회전", fontsize=14, color=BLUE, weight="bold", ha="center")
+    ax.text(ex[0] - 0.05, ex[1] - 0.3, "$\\mathbf{x}$", fontsize=15, color=BLUE, ha="center")
+    ax.text(-ex[0] + 0.05, -ex[1] - 0.3, "$-\\mathbf{x}$", fontsize=15, color=BLUE, ha="center")
+    ax.set_title("② 파랑 $\\times (-1)$: 20개가 모두 한쪽에", fontsize=17)
+    ax = axs[2]; pts(ax, X[y > 0], y[y > 0])
+    ax.scatter(F[:, 0], F[:, 1], s=80, facecolors="none", edgecolors=BLUE, marker="s", lw=1.8, zorder=3)
+    arw(ax, (0, 0), a, GOLD, 4); line(ax, a, 0.0, color="black", lw=2.8)
+    ax.text(-2.05, -1.25, f"평균 $\\mathbf{{w}}$ = ({MEAN_W[0]:.2f}, {MEAN_W[1]:.2f})", fontsize=14, color=GOLDT, weight="bold", ha="left", bbox=dict(fc="white", ec="none", alpha=0.9))
+    ax.annotate("", a * 0.45, (-0.9, -1.05), arrowprops=dict(arrowstyle="-", color=GOLDT, lw=1))
+    ax.set_title("③ 20개의 평균 = $\\mathbf{w}$, 수직인 선 ($b = 0$)", fontsize=17)
+    save(fig, "sv_flip_mean.png")
+
+
 def fig_centroid():
     """가장 쉬운 방법: 빨강은 그대로, 파랑은 부호를 뒤집어 20개 y_i x_i 의 평균 = w, b = 0 → 원점을 지나고 w 에 수직인 선 (= 학습 1걸음 뒤 첫 선)"""
     a = (y[:, None] * X).mean(0)
@@ -172,8 +198,8 @@ def fig_hyper():
 def fig_street():
     fig, ax = plt.subplots(figsize=(5.8, 5.8)); pts(ax); svm_street(ax, M)
     a = np.array(SV[1]); b = a + 2 * MA * WA
-    ax.annotate("", b, a, arrowprops=dict(arrowstyle="<->", lw=2, shrinkA=0, shrinkB=0))
-    ax.text(0.25, -1.75, f"길 폭 2M = {2 * MA:.2f}", fontsize=15, fontweight="bold", ha="left", va="top")
+    ax.annotate("", b, a, arrowprops=dict(arrowstyle="<->", lw=2, color="#666666", shrinkA=0, shrinkB=0))
+    ax.text(0.25, -1.75, f"길 폭 2M = {2 * MA:.2f}", fontsize=15, fontweight="bold", color="#666666", ha="left", va="top")
     save(fig, "sv_street.png")
     X2 = X.copy(); X2[10 + BLUE_PTS.index(FAR_MOVE[0])] = FAR_MOVE[1]
     M2 = SVC(kernel="linear", C=1e6).fit(X2, y)
@@ -446,8 +472,8 @@ def fig_two_three():
     b1, b2 = np.array(SV[1]), np.array(SV[2]); d = (b2 - b1) / np.linalg.norm(b2 - b1)
     ax.plot(*zip(b1 - 1.2 * d, b2 + 1.2 * d), color=BLUE, lw=3.5, alpha=0.5)
     rr = np.array(SV[0]); foot = rr - 2 * MA * WA
-    ax.annotate("", foot, rr, arrowprops=dict(arrowstyle="<->", color=RED, lw=2.2, shrinkA=0, shrinkB=0))
-    ax.text(*(rr - MA * WA + np.array([0.25, -0.35])), f"2M = {2 * MA:.2f}", fontsize=13, color=RED, weight="bold", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
+    ax.annotate("", foot, rr, arrowprops=dict(arrowstyle="<->", color="#666666", lw=2.2, shrinkA=0, shrinkB=0))
+    ax.text(*(rr - MA * WA + np.array([0.25, -0.35])), f"2M = {2 * MA:.2f}", fontsize=13, color="#666666", weight="bold", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.set_title("③ 3개: 파랑 2개가 기울기, 빨강 1개가 폭\n" + f"M = {MA:.2f}", fontsize=14, color=GOLDT)
     save(fig, "sv_two_three.png")
     return out
@@ -571,7 +597,7 @@ def fig_hill_count(G=1.0):
     return len(Xd), len(sv)
 
 
-FIGS = {"rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
+FIGS = {"flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
         "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "soft9": fig_soft9}
 # 커널 그림 (fig_kernel · fig_rbf · fig_rbf_degree · fig_hills · fig_hill_count) 은 ../3_svm_kernel/make_figs.py 가 불러서 그 폴더 figs/ 에 만든다
 

@@ -46,29 +46,14 @@
 \note{시작하기 전에 데이터를 한 번 손봅니다. 왼쪽이 원래 값입니다. 각 축에서 평균을 빼고 표준편차로 나누면 오른쪽처럼 점들이 원점 주변에 크기 1 정도로 모입니다. 이것을 z-score라고 합니다. x1은 평균 5, 표준편차 약 1이고, x2는 평균 5, 표준편차 약 3입니다. 세로로 3배 더 퍼져 있던 것이 z-score 후에는 두 축 모두 크기 1로 맞춰집니다. 오늘 덱의 점 20개, 그림, 숫자는 모두 이 z-score 한 값입니다. 소수 첫째 자리로 반올림했습니다. 모양은 그대로이고 눈금만 바뀝니다. 왜 이렇게 하는지는 학습 부분에서 봅니다. 하지 않으면 학습이 아예 실패할 수 있습니다. sklearn으로 SVM을 쓸 때도 StandardScaler로 z-score를 먼저 하는 것이 기본입니다.}
 \end{frame}
 
-% --- 파랑 뒤집기
-\begin{frame}{점에 $y_k$ 를 곱한다: 파랑 $\mathbf{x} \to -\mathbf{x}$}
-\vfill
-\centering\includegraphics[width=0.8\linewidth]{sv_flip.png}\par\vskip0.2em
-{\large $y_k\mathbf{x}_k$: 빨강은 그대로, 파랑은 \kb{원점 기준 180° 회전} (점대칭)}
-\vfill
-\note{가장 쉬운 방법을 보기 전에 준비가 하나 있습니다. 파란 점의 좌표 두 개에 모두 마이너스를 붙입니다. 라벨 y가 파랑은 마이너스 1이니, y k 곱하기 x k입니다. 좌표 두 개의 부호를 모두 바꾸면 원점을 중심으로 180도 돌린 것, 점대칭입니다. 선을 거울로 비추는 대칭이 아닙니다. 예를 들어 파란 점 마이너스 1, 마이너스 0.6은 1, 0.6으로 갑니다. 그러면 오른쪽처럼 20개가 모두 빨강 쪽, 한쪽에 모입니다. 뒤에서 나오는 거울로 접기는 경계를 거울로 삼는 것이라 다른 이야기입니다.}
-\end{frame}
-
-% --- 가장 쉬운 방법: 모든 벡터의 평균
-\begin{frame}{가장 쉬운 방법: 모든 벡터의 평균}
+% --- 파랑 뒤집기 → 평균 (한 쪽에 세 장)
+\begin{frame}{가장 쉬운 방법: 점에 $y_k$ 를 곱해 평균 내기}
 \markpage{meanvec}
 \vfill
-\begin{columns}[c]
-\begin{column}{0.46\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_centroid.png}\end{column}
-\begin{column}{0.50\textwidth}
-{\large $\mathbf{w}$ = 모든 벡터 $y_k\mathbf{x}_k$ 의 평균}\\[0.2em]
-{\large $= \dfrac{1}{p}\sum_{k=1}^{p} y_k\mathbf{x}_k = (0.83,\ 0.91)$ \;($p = 20$)}\\[0.8em]
-{\large $\mathbf{w}$ 에 수직, 원점을 지나는 선 ($b = 0$)}
-\end{column}
-\end{columns}
+\centering\includegraphics[width=\linewidth]{sv_flip_mean.png}\par\vskip0.2em
+{\large 파랑은 \kb{원점 기준 180° 회전} \;$\to$\; $\mathbf{w} = \dfrac{1}{p}\sum_{k=1}^{p} y_k\mathbf{x}_k = (0.83,\ 0.91)$, \;$b = 0$}
 \vfill
-\note{가장 먼저 떠오르는 방법부터 해 봅시다. 앞 쪽처럼 파란 점을 뒤집어 둡니다. 그림의 빈 네모가 뒤집은 파란 점입니다. 라벨 y를 곱한 것, y k 곱하기 x k입니다. 이렇게 하면 20개가 모두 빨강 쪽에 모이고, 원점에서 각 점까지의 화살표, 즉 벡터 20개의 평균을 내면 금색 화살표, 0.83, 0.91입니다. 이 화살표를 w로 쓰고, w에 수직이고 원점을 지나는 선을 긋습니다. 점들을 z-score 해서 가운데가 원점이니 b는 0으로 둡니다. 계산은 평균 한 번이면 끝납니다. 뒤에서 보겠지만 이 선은 SVM 학습의 1걸음 뒤 첫 선과 똑같습니다.}
+\note{가장 먼저 떠오르는 방법부터 해 봅시다. 세 그림을 왼쪽부터 차례로 봅니다. 첫째 그림은 원래 점 20개입니다. 둘째 그림, 파란 점의 좌표 두 개에 모두 마이너스를 붙입니다. 라벨 y가 파랑은 마이너스 1이니, y k 곱하기 x k입니다. 좌표 두 개의 부호를 모두 바꾸면 원점을 중심으로 180도 돌린 것, 점대칭입니다. 선을 거울로 비추는 대칭이 아닙니다. 예를 들어 파란 점 마이너스 1, 마이너스 0.6은 1, 0.6으로 갑니다. 빈 네모가 뒤집은 파란 점이고, 이제 20개가 모두 빨강 쪽, 한쪽에 모입니다. 셋째 그림, 원점에서 각 점까지의 화살표, 즉 벡터 20개의 평균을 내면 금색 화살표, 0.83, 0.91입니다. 이 화살표를 w로 쓰고, w에 수직이고 원점을 지나는 선을 긋습니다. 점들을 z-score 해서 가운데가 원점이니 b는 0으로 둡니다. 계산은 평균 한 번이면 끝납니다. 뒤에서 나오는 거울로 접기는 경계를 거울 삼는 것이라 다른 이야기입니다. 그리고 뒤에서 보겠지만 이 선은 SVM 학습의 1걸음 뒤 첫 선과 똑같습니다.}
 \end{frame}
 
 % --- 다듬기: 평균 선 vs SVM
@@ -132,7 +117,7 @@
 \begin{column}{0.42\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_hook.png}\end{column}
 \begin{column}{0.56\textwidth}
 {\large $y_k = +1$ (클래스 A, 빨강), $-1$ (B, 파랑)}\\[0.4em]
-{\large $D(\mathbf{x}) = \mathbf{w}\cdot\mathbf{x} + b$}\\[0.4em]
+{\large $D(\mathbf{x}) = \mathbf{w}\cdot\mathbf{x} + b = \sum_{i=1}^{n} w_i x_i + b$}\\[0.4em]
 {\large 잘 가른다 $\Leftrightarrow$ \kb{$y_k\, D(\mathbf{x}_k) > 0$}}\\[1em]
 {\large 가르는 선은 \kq{무수히} 많다}
 \end{column}
@@ -149,7 +134,7 @@
 \begin{columns}[c]
 \begin{column}{0.44\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_street.png}\end{column}
 \begin{column}{0.52\textwidth}
-{\large \kb{마진 $M$} = 가장 가까운 점까지 거리}\\[0.8em]
+{\large \kb{마진 $M \in \mathbb{R}$} = 가장 가까운 점까지 거리}\\[0.8em]
 {\large $M$ 이 가장 큰 선 = 길의 가운데}\\[0.8em]
 {\large $M =$ \kb{0.67} \quad 동그라미 = \textbf{서포트 벡터}}
 \end{column}

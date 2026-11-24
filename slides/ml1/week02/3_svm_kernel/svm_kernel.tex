@@ -184,7 +184,7 @@ RBF & $\exp\!\big(-\gamma \lVert \mathbf{x}-\mathbf{x}' \rVert^2\big)$
  & \textbf{선형} & \textbf{다항} ($q = 2$) & \textbf{RBF}\\ \hline
 $K(\mathbf{x}, \mathbf{x}')$ & $\mathbf{x}\cdot\mathbf{x}'$ & $(\mathbf{x}\cdot\mathbf{x}' + 1)^2$ & $e^{-\gamma\lVert\mathbf{x}-\mathbf{x}'\rVert^2}$\\
 특징 $\varphi(\mathbf{x})$ & $x_1,\ x_2$ & $1,\ x_1,\ x_2,\ x_1^2,\ x_1x_2,\ x_2^2$ & 모든 차수 항\\
-특징 수 & 2 & 6 & \kq{$\infty$}\\
+특징 수 $N$ & 2 & 6 & \kq{$\infty$}\\
 특징 직접 만들기 & 된다 & 된다 & \kq{못 한다} $\to$ \kb{커널로만}\\
 경계 & 직선 & 원 · 타원 · 쌍곡선 & 어떤 모양이든\\ \hline
 실제 계산 & \multicolumn{3}{c}{셋 다 $D(\mathbf{x}) = b + \sum_{k} \alpha_k y_k K(\mathbf{x}, \mathbf{x}_k)$ \;(학습 점 $p$ 개 중 서포트 벡터만)}\\ \hline
@@ -263,7 +263,7 @@ $\alpha_k$ & $0.5$ & $0.2$ & $0.3$
 점을 바꾸나 & $\varphi(\mathbf{x})$ 6개를 \kb{만든다} & \kq{안 만든다}\\
 $K$ 를 쓰나 & 안 쓴다 ($\varphi$ 끼리 그냥 점곱) & $K(\mathbf{x}, \mathbf{x}') = (\mathbf{x}\cdot\mathbf{x}' + 1)^2$\\
 학습하는 것 & $\mathbf{w}$ (\kb{특징마다} 하나): 6개 & $\alpha$ (\kq{점마다} 하나): 120개, 0 아닌 것 21개\\
-분류기 & $\mathbf{w}\cdot\varphi(\mathbf{x}) + b$ & $b + \sum_k \alpha_k y_k K(\mathbf{x}, \mathbf{x}_k)$\\ \hline
+분류기 & $\sum_{i=1}^{N} w_i\varphi_i(\mathbf{x}) + b$ & $b + \sum_k \alpha_k y_k K(\mathbf{x}, \mathbf{x}_k)$\\ \hline
 원 120개 & \multicolumn{2}{c}{둘 다 $\mathbf{w} = (0,\ 0.11,\ 0.13,\ -2.81,\ 0.02,\ -3.09)$, $b = 1.64$ \;(예측도 모두 같다)}
 \end{tabular}}\\[0.6em]
 {\large 잇는 식: \; $\mathbf{w} = \sum_k \alpha_k y_k\, \varphi(\mathbf{x}_k)$ \qquad $K(\mathbf{x}, \mathbf{x}') = \varphi(\mathbf{x})\cdot\varphi(\mathbf{x}')$}\\[0.4em]
