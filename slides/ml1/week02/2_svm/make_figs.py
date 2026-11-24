@@ -276,7 +276,11 @@ def fig_cos():
     ax.text(PX[0] + 0.05, PX[1] + 0.05, f"$\\mathbf{{x}} = ({PX[0]:g}, {PX[1]:g})$", fontsize=15, color=RED)
     ax.text(-0.12, 0.3, "$\\mathbf{w}$", fontsize=16, color=GOLDT, fontweight="bold")
     ax.text(0.17, 0.33, "θ", fontsize=16)
-    ax.text(0.15, 1.05, f"거리 {dist:.2f}", fontsize=15, color="#2b8a3e", fontweight="bold")
+    foot = PX - dist * Bu                                                          # 점 x 에서 경계선에 내린 수선의 발
+    ax.text(*((sh + shb) / 2 * Bu - 0.13 * nrm), f"{sh:.2f} − {shb:.2f} = {dist:.2f}", fontsize=12, color="#2b8a3e", rotation=45, ha="center", va="center", fontweight="bold")
+    ax.annotate("", foot, PX, arrowprops=dict(arrowstyle="<->", color="#2b8a3e", lw=3, shrinkA=4, shrinkB=0), zorder=5)
+    ax.scatter(*foot, s=30, color="#2b8a3e", zorder=5)
+    ax.text(-0.55, 1.2, f"점 x 에서 경계선까지\n거리 {dist:.2f}", fontsize=14, color="#2b8a3e", fontweight="bold", ha="center")
     ax.text(1.0, -0.65, "경계 $x_1 + x_2 = 0.5$", fontsize=13)
     origin_axes(ax); ax.set_xticks([1, 2]); ax.set_yticks([1, 2])
     save(fig, "sv_cos.png")
