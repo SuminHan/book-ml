@@ -8,6 +8,7 @@
 \tikzset{bub/.style={draw=ksagolddk,line width=1pt,fill=ksagolddk!10,rounded corners=3pt,inner sep=4pt,font=\normalsize,align=left},
          bubarr/.style={-latex,ksagolddk,line width=1.2pt}}
 \definecolor{fx}{HTML}{D62728}\definecolor{fsh}{HTML}{2E3192}\definecolor{fbeta}{HTML}{7A6A3F}\definecolor{fdist}{HTML}{2B8A3E}\definecolor{fbd}{HTML}{555555}
+\newcommand{\memo}[1]{\fcolorbox{fbeta}{fbeta!8}{\small 메모 \; #1}}
 \makeatletter
 \newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
 \newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
@@ -102,9 +103,10 @@
 % --- 서포트 벡터 화살표
 \begin{frame}{$\mathbf{w}$ = 서포트 벡터끼리의 화살표}
 \vfill
-\centering\includegraphics[width=0.78\linewidth]{kn_svarrow.png}\par\vskip0.1em
+\centering\includegraphics[width=0.68\linewidth]{kn_svarrow.png}\par\vskip0.1em
 {\large $\mathbf{w}^* = \sum_k \alpha_k y_k \mathbf{x}_k = 1.1\, r - 0.55\, b_1 - 0.55\, b_2 = 0.55\,\big[(r - b_1) + (r - b_2)\big] = (1.05,\ 1.05)$}\\[0.2em]
-{\normalsize 빨강 무게 $1.1$ = 파랑 무게 $0.55 + 0.55$ \;$\to$\; \kb{파랑 $\to$ 빨강 화살표}로 묶인다}
+{\normalsize 빨강 무게 $1.1$ = 파랑 무게 $0.55 + 0.55$ \;$\to$\; \kb{파랑 $\to$ 빨강 화살표}로 묶인다}\\[0.3em]
+\memo{$\alpha_k$: 점 $k$ 가 미는 힘 (서포트 벡터만 $> 0$) \;·\; $y_k$: 미는 방향 (빨강 $+$, 파랑 $-$) \;·\; $\mathbf{x}_k$: 점 $k$}
 \vfill
 \note{학습이 끝난 w를 서포트 벡터 세 개로 다시 봅시다. 빨간 서포트 벡터를 r, 파란 두 개를 b1, b2라고 부르겠습니다. w 별은 알파 k 곱하기 y k 곱하기 x k의 합이니, 빨강은 y가 플러스 1, 파랑은 마이너스 1이라 1.1 곱하기 r 빼기 0.55 곱하기 b1 빼기 0.55 곱하기 b2입니다. 빨강 쪽 무게 1.1이 파랑 쪽 무게 0.55 더하기 0.55와 같기 때문에, 이 식은 0.55 곱하기, r 빼기 b1 더하기 r 빼기 b2로 묶을 수 있습니다. r 빼기 b1은 왼쪽 그림의 주황 화살표, 파란 b1에서 빨간 r로 가는 화살표이고 1.3, 0.6입니다. r 빼기 b2는 초록 화살표, b2에서 r로 가는 화살표이고 0.6, 1.3입니다. 오른쪽 그림처럼 두 화살표를 꼬리에 이어 더하면 1.9, 1.9이고, 0.55를 곱하면 1.05, 1.05, 바로 w 별입니다. 즉 w는 파랑 서포트 벡터에서 빨강 서포트 벡터로 가는 화살표를 더한 방향입니다. 파랑에서 빨강 쪽을 가리키니 경계의 방향이 되는 것이 자연스럽습니다. 확인해 보면 파랑 길 가장자리는 b1과 b2를 지나고 방향이 b2 빼기 b1, 0.7, 마이너스 0.7인데, w와 점곱하면 0이라 w는 길 가장자리와 수직입니다. 또 r 빼기 b1을 w 방향으로 재면 1.9 곱하기 0.71, 1.34로 길 폭과 같습니다. 멀리 있는 17개 점은 지우거나 옮겨도 경계가 그대로이니, 답의 식에 들어갈 이유가 없고 알파가 0입니다. 그래서 w는 서포트 벡터끼리의 빼기와 더하기로 써집니다.}
 \end{frame}
@@ -136,9 +138,10 @@
 \markpage{kernel}
 \vfill
 \centering
-\includegraphics[width=0.8\linewidth]{kn_ktrick.png}\par\vskip0.2em
+\includegraphics[width=0.76\linewidth]{kn_ktrick.png}\par\vskip0.2em
 {\large $D(\mathbf{x}) = b + \sum_{k} \alpha_k y_k\, \mathbf{x}\cdot\mathbf{x}_k$ \;$\to$\; $D(\mathbf{x}) = b + \sum_{k} \alpha_k y_k\, \textcolor{ksablue}{\boldsymbol{K}(\mathbf{x}, \mathbf{x}_k)}$}\\[0.2em]
-{\normalsize $\varphi(\mathbf{x}) = (x_1^2,\ \sqrt2\,x_1x_2,\ x_2^2)$ 로 옮긴 뒤의 점곱을, 옮기지 않고 \kb{지름길}로 계산}
+{\normalsize $\varphi(\mathbf{x}) = (x_1^2,\ \sqrt2\,x_1x_2,\ x_2^2)$ 로 옮긴 뒤의 점곱을, 옮기지 않고 \kb{지름길}로 계산}\\[0.3em]
+\memo{$K(\mathbf{x}_k, \mathbf{x})$: 점곱 $\mathbf{x}_k\cdot\mathbf{x}$ 자리에 넣는 \textbf{가까움 점수} \;·\; $\varphi$: 점을 높은 차원으로 옮기는 함수}
 \vfill
 \note{앞 쪽 식에서 점곱 자리에 다른 함수 K를 넣은 것이 커널 SVM입니다. 이 K를 커널이라고 부릅니다. 커널은 점들을 높은 차원으로 옮긴 뒤의 점곱을, 실제로 옮기지 않고 원래 점으로 바로 계산하는 함수입니다. 순서를 바꿔도 값이 같고, 두 점이 가까울수록 큰 값을 내서 유사도처럼 읽을 수 있습니다. 예를 들어 2차원 점을 x1 제곱, 루트2 x1 x2, x2 제곱인 3차원으로 옮기면, 옮긴 뒤의 점곱은 원래 점곱의 제곱과 정확히 같습니다. 이름은 앞 쪽 식에 맞춰 x는 새 점, x k는 서포트 벡터 같은 학습 점입니다. 그림의 위쪽 파란 길은 먼 길입니다. x 1, 2와 x k 3, 1을 각각 3차원 점 1, 2루트2, 4와 9, 3루트2, 1로 실제로 옮긴 뒤 점곱하면 1 곱하기 9, 2루트2 곱하기 3루트2, 4 곱하기 1입니다. 가운데는 2 곱하기 3이 6, 루트2 곱하기 루트2가 2라서 12입니다. 그래서 9 더하기 12 더하기 4, 25입니다. 아래쪽 빨간 길은 지름길입니다. 원래 점끼리 점곱하면 3 더하기 2, 5이고, 이것을 제곱하면 25입니다. 같은 값이 나오는데, 아래 길은 3차원 점을 만들지 않습니다. 이 지름길 함수, 점곱의 제곱이 커널 K입니다. 앞 쪽 식의 x 점곱 x k 자리에 K를 넣으면 커널 SVM입니다. 원 논문 식 4와 18이 바로 이 꼴입니다. 특징이 수천 개로 늘어나도 원래 점곱 하나로 계산하니, 특징을 직접 만드는 것보다 훨씬 가볍습니다. 이것이 커널 트릭입니다.}
 \end{frame}

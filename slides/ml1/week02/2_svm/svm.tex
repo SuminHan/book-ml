@@ -8,6 +8,7 @@
 \tikzset{bub/.style={draw=ksagolddk,line width=1pt,fill=ksagolddk!10,rounded corners=3pt,inner sep=4pt,font=\normalsize,align=left},
          bubarr/.style={-latex,ksagolddk,line width=1.2pt}}
 \definecolor{fx}{HTML}{D62728}\definecolor{fsh}{HTML}{2E3192}\definecolor{fbeta}{HTML}{7A6A3F}\definecolor{fdist}{HTML}{000000}\definecolor{fbd}{HTML}{555555}
+\newcommand{\memo}[1]{\fcolorbox{fbeta}{fbeta!8}{\small 메모 \; #1}}
 \makeatletter
 \newcommand{\markpage}[1]{\protected@write\@auxout{}{\string\newlabel{#1}{{\the\c@framenumber}{}}}\hypertarget{#1}{}}
 \newcommand{\pref}[1]{\hyperlink{#1}{\textcolor{ksagolddk}{(p.\ref{#1})}}}
@@ -158,6 +159,7 @@
 {\normalsize 그런 선은 검은 선 · 회색 선처럼 \kq{무수히} 많다}
 \end{column}
 \end{columns}
+\centering\memo{$\mathbf{w}$: 경계에 수직인 화살표 (선의 기울기) \;·\; $b$: 선을 평행하게 옮기는 숫자 \;·\; $y_k$: 빨강 $+1$, 파랑 $-1$}
 \vfill
 \note{이제 문제를 원 논문처럼 적어 봅시다. 학습 데이터는 점과 라벨의 짝 p개, 여기서는 20개입니다. 점 x k가 클래스 A, 빨강이면 라벨 y k는 플러스 1, 클래스 B, 파랑이면 마이너스 1입니다. 그리고 초평면의 식 w 점곱 x 더하기 b를 D라고 씁니다. SVM 원 논문, Boser, Guyon, Vapnik의 1992년 논문이 쓰는 이름이고, 결정 함수라는 뜻의 decision function에서 왔습니다. 빨간 점에서 D가 양수, 파란 점에서 음수면 잘 가른 것입니다. 두 조건을 한 줄로 쓰면, 라벨 곱하기 D가 모든 점에서 0보다 크다입니다. 라벨이 마이너스 1이면 음수 곱하기 음수라 양수가 되니까요. 새 점이 오면 D가 0보다 크면 A, 아니면 B로 분류하고, D의 절댓값이 클수록, 즉 경계에서 멀수록 더 확신합니다. 로지스틱회귀의 z가 0인 경계도 이런 분리 초평면입니다. 문제는 데이터가 깔끔하게 나뉘면 가르는 선이 그림처럼 무수히 많다는 것입니다. 어느 것을 골라야 할까요.}
 \end{frame}
@@ -213,7 +215,7 @@
 \begin{column}{0.40\textwidth}\centering\includegraphics[width=\linewidth]{sv_cos.png}\end{column}
 \begin{column}{0.59\textwidth}
 {\large \textcolor{fdist}{\textbf{점 $\mathbf{x}$ 에서 경계선까지 거리} $= \dfrac{|D(\mathbf{x})|}{\lVert\mathbf{w}\rVert}$}}\\[0.6em]
-\hspace*{2.5em}\fcolorbox{fbeta}{fbeta!8}{\small 메모 \; 두 벡터 사이 각: $\cos\theta = \dfrac{\mathbf{a}\cdot\mathbf{b}}{\lVert\mathbf{a}\rVert\,\lVert\mathbf{b}\rVert}$}\\[0.5em]
+\hspace*{2.5em}\memo{$\cos\theta = \dfrac{\mathbf{a}\cdot\mathbf{b}}{\lVert\mathbf{a}\rVert\,\lVert\mathbf{b}\rVert}$ \;·\; $\lVert\mathbf{w}\rVert$: 화살표 $\mathbf{w}$ 의 길이}\\[0.5em]
 {\normalsize \color{fsh}\textbf{1.} $\mathbf{x}$ 의 위치 $\lVert\mathbf{x}\rVert\cos\theta = \tfrac{\mathbf{w}\cdot\mathbf{x}}{\lVert\mathbf{w}\rVert}$}\\[0.4em]
 {\normalsize \color{fbd}\textbf{2.} 경계선 위의 점 $\mathbf{z}$ 는 $D(\mathbf{z}) = 0$, 곧 $\mathbf{w}\cdot\mathbf{z} = -b$\\ \hspace*{1.2em}$\to$ 경계의 위치 $= \tfrac{-b}{\lVert\mathbf{w}\rVert}$}\\[0.4em]
 {\normalsize \textbf{3.} \textcolor{fdist}{거리} $= \tfrac{\mathbf{w}\cdot\mathbf{x}}{\lVert\mathbf{w}\rVert} - \tfrac{-b}{\lVert\mathbf{w}\rVert} = \tfrac{\mathbf{w}\cdot\mathbf{x} + b}{\lVert\mathbf{w}\rVert} = \tfrac{D(\mathbf{x})}{\lVert\mathbf{w}\rVert}$}\\[0.5em]
@@ -429,7 +431,8 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 이 데이터 & $\mathbf{w} = (0.71, 0.71)$, $b = 0.04$ & $\mathbf{w}^* = (1.05, 1.05)$, $b^* = 0.05$\\
  & $M = 0.67$ & $M = 1/1.49 = 0.67$
 \end{tabular}}\\[0.8em]
-{\large 같은 선, $\mathbf{w}$ 와 $b$ 를 $M$ 으로 나눈 것뿐 \quad 여기부터는 \kb{오른쪽}으로 쓴다}
+{\large 같은 선, $\mathbf{w}$ 와 $b$ 를 $M$ 으로 나눈 것뿐 \quad 여기부터는 \kb{오른쪽}으로 쓴다}\\[0.4em]
+\memo{$\tfrac12\lVert\mathbf{w}\rVert^2$ 최소: $\lVert\mathbf{w}\rVert$ 가 작을수록 $M = 1/\lVert\mathbf{w}\rVert$ 이 크다 \;($\tfrac12$ 과 제곱은 미분을 쉽게)}
 \vfill
 \note{같은 문제를 다르게 쓸 수 있습니다. 지금까지는 w의 길이를 1로 묶고 마진 M을 최대로 했습니다. 원 논문은 식 12에서 묶는 것을 바꿉니다. w의 길이 대신 M 곱하기 w의 길이를 1로 묶습니다. 그러면 가장 가까운 점의 값이 1이 되고, 조건은 모든 점에서 y k D x k가 1 이상입니다. 가장 가까운 점까지의 거리는 1 나누기 w의 길이라서, 마진을 키우는 것은 w의 길이를 줄이는 것과 같습니다. 그래서 식 13, 2분의 1 w 길이 제곱을 최소로 합니다. 2분의 1과 제곱은 미분했을 때 식이 깔끔해지라고 붙인 것입니다. 찾는 선은 똑같고, 숫자의 크기만 다릅니다. 왼쪽 답 w 0.71, 0.71과 b 0.04를 M 0.67로 나누면 오른쪽 답, w 별 1.05, 1.05와 b 별 0.05입니다. w 별의 길이는 1.49이고, 1 나누기 1.49가 0.67, 마진은 그대로입니다. 별표는 논문이 최적의 답에 붙이는 표시입니다. sklearn의 SVC가 주는 coef와 intercept도 이 오른쪽 숫자입니다. 학습 한 걸음을 이해하기는 왼쪽이 쉬워서 앞에서는 왼쪽으로 학습했고, 논문도 왼쪽 식 9로 시작해서 오른쪽 식 13으로 넘어갑니다. 여기부터 소프트 마진과 다음 시간의 커널은 모두 오른쪽, 가장 가까운 값을 1로 둔 기준으로 씁니다.}
 \end{frame}
