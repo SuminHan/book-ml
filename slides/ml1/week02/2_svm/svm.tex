@@ -148,16 +148,18 @@
 \begin{frame}{분리 초평면으로 분류하기}
 \vfill
 \begin{columns}[c]
-\begin{column}{0.42\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_hook.png}\end{column}
-\begin{column}{0.56\textwidth}
-{\large $y_k = +1$ (클래스 A, 빨강), $-1$ (B, 파랑)}\\[0.4em]
-{\large $D(\mathbf{x}) = \mathbf{w}\cdot\mathbf{x} + b = \sum_{i=1}^{n} w_i x_i + b$}\\[0.4em]
-{\large 잘 가른다 $\Leftrightarrow$ \kb{$y_k\, D(\mathbf{x}_k) > 0$}}\\[1em]
-{\large 가르는 선은 \kq{무수히} 많다}
+\begin{column}{0.36\textwidth}\centering\includegraphics[width=\linewidth]{sv_hook_d.png}\end{column}
+\begin{column}{0.63\textwidth}
+{\normalsize 학습 데이터 \; $(\mathbf{x}_1, y_1),\ \dots,\ (\mathbf{x}_p, y_p)$, \;$p = 20$}\\[0.2em]
+{\normalsize $y_k = \begin{cases} +1 & \mathbf{x}_k \in \text{클래스 A (빨강)}\\ -1 & \mathbf{x}_k \in \text{클래스 B (파랑)} \end{cases}$}\\[0.5em]
+{\large $D(\mathbf{x}) = \mathbf{w}\cdot\mathbf{x} + b = \sum_{i=1}^{n} w_i x_i + b$}\\[0.2em]
+{\normalsize 분류: $D(\mathbf{x}) > 0$ 이면 A, 아니면 B}\\[0.5em]
+{\normalsize 모든 점이 제 색 영역에 \;$\Leftrightarrow$\; \kb{$y_k\, D(\mathbf{x}_k) > 0$}}\\[0.2em]
+{\normalsize 그런 선은 검은 선 · 회색 선처럼 \kq{무수히} 많다}
 \end{column}
 \end{columns}
 \vfill
-\note{이제 초평면으로 분류합니다. 빨강을 클래스 A, 라벨 플러스 1, 파랑을 클래스 B, 라벨 마이너스 1이라고 하고, 초평면의 식 w 점곱 x 더하기 b를 D라고 씁니다. SVM 원 논문, Boser, Guyon, Vapnik의 1992년 논문이 쓰는 이름이고, 결정 함수라는 뜻의 decision function에서 왔습니다. 빨간 점에서 D가 양수, 파란 점에서 음수면 잘 가른 것입니다. 두 조건을 한 줄로 쓰면, 라벨 곱하기 D가 모든 점에서 0보다 크다입니다. 라벨이 마이너스 1이면 음수 곱하기 음수라 양수가 되니까요. 새 점이 오면 D의 부호로 분류하고, D의 절댓값이 클수록, 즉 경계에서 멀수록 더 확신합니다. 로지스틱회귀의 z가 0인 경계도 이런 분리 초평면입니다. 문제는 데이터가 깔끔하게 나뉘면 가르는 선이 그림처럼 무수히 많다는 것입니다. 어느 것을 골라야 할까요.}
+\note{이제 문제를 원 논문처럼 적어 봅시다. 학습 데이터는 점과 라벨의 짝 p개, 여기서는 20개입니다. 점 x k가 클래스 A, 빨강이면 라벨 y k는 플러스 1, 클래스 B, 파랑이면 마이너스 1입니다. 그리고 초평면의 식 w 점곱 x 더하기 b를 D라고 씁니다. SVM 원 논문, Boser, Guyon, Vapnik의 1992년 논문이 쓰는 이름이고, 결정 함수라는 뜻의 decision function에서 왔습니다. 빨간 점에서 D가 양수, 파란 점에서 음수면 잘 가른 것입니다. 두 조건을 한 줄로 쓰면, 라벨 곱하기 D가 모든 점에서 0보다 크다입니다. 라벨이 마이너스 1이면 음수 곱하기 음수라 양수가 되니까요. 새 점이 오면 D가 0보다 크면 A, 아니면 B로 분류하고, D의 절댓값이 클수록, 즉 경계에서 멀수록 더 확신합니다. 로지스틱회귀의 z가 0인 경계도 이런 분리 초평면입니다. 문제는 데이터가 깔끔하게 나뉘면 가르는 선이 그림처럼 무수히 많다는 것입니다. 어느 것을 골라야 할까요.}
 \end{frame}
 
 \section{최대 마진}

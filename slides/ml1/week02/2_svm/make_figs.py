@@ -79,6 +79,19 @@ def fig_raw_z():
     save(fig, "sv_raw_z.png")
 
 
+def fig_hook_d():
+    """분리 초평면 쪽: 세 선 + 검은 선 기준 D(x) > 0 (A, 옅은 빨강) / D(x) < 0 (B, 옅은 파랑) 영역"""
+    fig, ax = plt.subplots(figsize=(5.6, 5.6))
+    g = np.linspace(-L, L, 400); G1, G2 = np.meshgrid(g, g); Dg = G2 - (-1.0 * G1 - 0.05)
+    ax.contourf(G1, G2, Dg > 0, levels=[-0.5, 0.5, 1.5], colors=[BLUE, RED], alpha=0.10, zorder=0)
+    pts(ax)
+    for (a, c), col in (((-0.625, -0.06), GRAY), ((-1.82, 0.55), GRAY), ((-1.0, -0.05), "black")):
+        ax.plot(xs, a * xs + c, color=col, lw=2.2)
+    ax.text(0.15, 1.95, "$D(\\mathbf{x}) > 0$: A", fontsize=16, color=RED, fontweight="bold", va="top")
+    ax.text(-2.1, -1.85, "$D(\\mathbf{x}) < 0$: B", fontsize=16, color=BLUE, fontweight="bold", va="center")
+    save(fig, "sv_hook_d.png")
+
+
 def fig_hook():
     fig, ax = plt.subplots(figsize=(5.6, 5.6)); pts(ax)
     for (a, c), col in (((-0.625, -0.06), GRAY), ((-1.82, 0.55), GRAY), ((-1.0, -0.05), "black")):
@@ -616,7 +629,7 @@ def fig_hill_count(G=1.0):
     return len(Xd), len(sv)
 
 
-FIGS = {"people": fig_people, "flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
+FIGS = {"hookd": fig_hook_d, "people": fig_people, "flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
         "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "soft9": fig_soft9}
 # 커널 그림 (fig_kernel · fig_rbf · fig_rbf_degree · fig_hills · fig_hill_count) 은 ../3_svm_kernel/make_figs.py 가 불러서 그 폴더 figs/ 에 만든다
 
