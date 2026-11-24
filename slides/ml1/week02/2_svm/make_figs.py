@@ -119,6 +119,19 @@ def fig_flip():
     save(fig, "sv_flip.png")
 
 
+def fig_people():
+    """원 논문 저자 네 명 (사진 출처는 덱 끝 '이미지 출처' 쪽): 1992 Boser · Guyon · Vapnik, 1995 Cortes · Vapnik"""
+    import matplotlib.image as mpimg
+    P = [("boser", "Bernhard Boser"), ("guyon", "Isabelle Guyon"), ("vapnik", "Vladimir Vapnik"), ("cortes", "Corinna Cortes")]
+    fig, axs = plt.subplots(1, 4, figsize=(12, 3.6))
+    for ax, (f, nm) in zip(axs, P):
+        ax.imshow(mpimg.imread(f"figs/people/{f}.jpg")); ax.set_xticks([]); ax.set_yticks([])
+        for sp in ax.spines.values():
+            sp.set_visible(True); sp.set_color("#999999")
+        ax.set_xlabel(nm, fontsize=26, labelpad=8)
+    save(fig, "sv_people.png")
+
+
 def fig_flip_mean():
     """한 줄 세 장: ① 원래 ② 파랑 × (−1) = 원점 기준 180° 회전 (20개가 한쪽에) ③ 20개 y_k x_k 의 평균 = w, 그에 수직이고 원점을 지나는 선 (b = 0)"""
     a = (y[:, None] * X).mean(0); F = -X[y < 0]
@@ -597,7 +610,7 @@ def fig_hill_count(G=1.0):
     return len(Xd), len(sv)
 
 
-FIGS = {"flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
+FIGS = {"people": fig_people, "flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
         "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "soft9": fig_soft9}
 # 커널 그림 (fig_kernel · fig_rbf · fig_rbf_degree · fig_hills · fig_hill_count) 은 ../3_svm_kernel/make_figs.py 가 불러서 그 폴더 figs/ 에 만든다
 
