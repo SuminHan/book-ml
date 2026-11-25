@@ -388,12 +388,12 @@ def fig_parab():
     assert abs(g[J(g).argmax()] - 0.5) < 1e-9 and [J(a) for a in (0.25, 0.5, 1)] == [0.375, 0.5, 0]
     BL, RD, GD = "#2E3192", "#d62728", "#f2b705"
     fig, ax = plt.subplots(figsize=(11, 5.0)); ax.plot(g, J(g), color=BL, lw=5)
-    for a, c, txt, xy, ha in ((0.25, "#777777", "α = 0.25 :  w = 0.5\n힘이 약하다: 점이 길 안", (0.02, 0.55), "left"),
+    for a, c, txt, xy, ha in ((0.25, "#777777", "α = 0.25 :  w = 0.5\n힘이 약하다: 점이 길 안", (0.0, 0.46), "left"),
                               (1.0, RD, "α = 1 :  w = 2\n너무 세다: 길이 좁다", (0.98, 0.27), "right")):
         ax.scatter([a], [J(a)], s=150, color=c, zorder=4); ax.annotate(txt, (a, J(a)), xy, fontsize=17, color=c, ha=ha, va="center", linespacing=1.4, arrowprops=dict(arrowstyle="->", color=c, lw=1.6, shrinkB=8))
     ax.scatter([0.5], [0.5], s=700, marker="*", color=GD, edgecolor="black", lw=1.4, zorder=5)
-    ax.text(0.5, 0.585, "꼭대기  α = 0.5 :  w = 1,  점이 가장자리에 딱  =  답", fontsize=18, fontweight="bold", ha="center")
-    ax.set_xlim(-0.03, 1.05); ax.set_ylim(-0.03, 0.66); ax.set_xticks([0, 0.25, 0.5, 0.75, 1]); ax.set_yticks([0, 0.25, 0.5])
+    ax.text(0.5, 0.62, "꼭대기  α = 0.5 :  w = 1,  점이 가장자리에 딱  =  답", fontsize=18, fontweight="bold", ha="center")
+    ax.set_xlim(-0.03, 1.05); ax.set_ylim(-0.03, 0.68); ax.set_xticks([0, 0.25, 0.5, 0.75, 1]); ax.set_yticks([0, 0.25, 0.5])
     ax.set_xlabel("α  (두 점이 당기는 힘)", fontsize=17); ax.set_ylabel("점수 J", fontsize=17); ax.tick_params(labelsize=13)
     ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
     fig.tight_layout(); fig.savefig(mf.O + "kn_parab.png"); plt.close(fig)
