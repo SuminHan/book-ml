@@ -336,7 +336,7 @@ def fig_meet():
     for k in (0, 1):
         ax.annotate("", (k, up[k] - 0.09), (k, lo[k] + 0.09), arrowprops=dict(arrowstyle="<->", color="#555555", lw=2))
         ax.text(k + 0.05, (up[k] + lo[k]) / 2, f"틈 {up[k] - lo[k]:g}", fontsize=19, color="#444444", va="center")
-        ax.text(k, up[k] + 0.2, f"w = {ws[k]:g}  →  {up[k]:g}", color=BL, fontsize=19, fontweight="bold", ha="center")
+        ax.text(k + 0.22 * k, up[k] + 0.2 + 0.08 * k, f"w = {ws[k]:g}  →  {up[k]:g}", color=BL, fontsize=19, fontweight="bold", ha="center")
         ax.text(k, lo[k] - 0.26, f"α = {als[k]:g}  →  {lo[k]:g}", color=RD, fontsize=19, fontweight="bold", ha="center")
     ax.scatter([2], [0.5], s=900, marker="*", color=GD, edgecolor="black", lw=1.5, zorder=6)
     ax.text(2, 1.0, "틈 0 = 답\nw = 1,  α = 1\n값 0.5", fontsize=19, fontweight="bold", ha="center", va="bottom", linespacing=1.4)
