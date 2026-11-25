@@ -481,7 +481,12 @@ def fig_train():
 def fig_soft():
     Xo = np.r_[X, [OUTLIER]]; yo = np.r_[y, [1]]
     fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-    pts(axs[0], Xo, yo); axs[0].scatter(*OUTLIER, s=380, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=4)
+    deep = (-0.9, -0.9)                                                # 약점 쪽 왼쪽 그림만: 파랑 무리 한가운데 (갈라질 것처럼 안 보이게). 소프트 마진 예는 OUTLIER 그대로
+    Xd = np.r_[X, [deep]]; yd = np.r_[y, [1]]
+    from scipy.optimize import linprog                                  # 직선으로 갈 수 있는지: y_k (w·x_k + b) >= 1 을 만족하는 해가 없어야 한다
+    lp = linprog(np.zeros(3), A_ub=-(yd[:, None] * np.c_[Xd, np.ones(len(Xd))]), b_ub=-np.ones(len(Xd)), bounds=[(None, None)] * 3)
+    assert lp.status == 2, lp.message                                   # 2 = 해 없음
+    pts(axs[0], Xd, yd); axs[0].scatter(*deep, s=380, facecolors="none", edgecolors="#E8590C", lw=3, zorder=4)
     axs[0].set_title("겹치면: 가르는 직선이 없다", fontsize=16)
     Xn = np.r_[X, [NEWPT]]; yn = np.r_[y, 1]; Mn = SVC(kernel="linear", C=1e6).fit(Xn, yn)
     pts(axs[1], Xn, yn); svm_street(axs[1], Mn, Xn); line(axs[1], WA, BA, color=GRAY, lw=2, ls=":")
