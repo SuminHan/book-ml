@@ -556,23 +556,38 @@ def fig_learn():
 
 
 def fig_rock():
-    """실제 점 20개를 학습할 때 두 자가 도는 모습 (못과 고무줄), 한 쪽에 세 장면씩 3쪽: kn_rock9_1..3.png.
+    """실제 점 20개를 학습할 때 두 자가 도는 모습 (스프링 · 못 · 고무줄, 파란 칠 = 길 안), 한 쪽에 세 장면씩 3쪽: kn_rock9_1..3.png.
     고무줄 = 길 안의 점에서 자기 쪽 자까지, 굵기 · 금색 원 = α, 회색 점선 = 앞 장면의 경계"""
-    X, y = np.array(mf.X, float), np.array(mf.y, float); STEPS = [1, 2, 3, 5, 13, 25, 50, 98, 500]
-    _, _, H = kd.train_dual(X @ X.T, y, T=500, snaps=tuple(STEPS))
+    X, y = np.array(mf.X, float), np.array(mf.y, float); STEPS = [0, 1, 2, 3, 13, 25, 50, 98, 500]
+    _, _, H = kd.train_dual(X @ X.T, y, T=500, snaps=tuple(STEPS[1:]))
     def info(t):
         a, b = H[t]; w = (a * y) @ X; return a, b, w, float(np.degrees(np.arctan2(w[1], w[0]))), float(1 / np.linalg.norm(w))
-    got = [(t, round(info(t)[3]), round(info(t)[4], 2)) for t in STEPS]
-    assert got == [(1, 48, 0.81), (2, 54, 1.96), (3, 52, 1.12), (5, 53, 1.08), (13, 53, 0.94), (25, 51, 0.88), (50, 46, 0.76), (98, 42, 0.69), (500, 45, 0.67)], got
+    got = [(t, round(info(t)[3]), round(info(t)[4], 2)) for t in STEPS[1:]]
+    assert got == [(1, 48, 0.81), (2, 54, 1.96), (3, 52, 1.12), (13, 53, 0.94), (25, 51, 0.88), (50, 46, 0.76), (98, 42, 0.69), (500, 45, 0.67)], got
     BAND, RULER = "#1B7F3B", "#6b6b6b"; g = np.array([-4.0, 4.0])
     line = lambda c, w_, b_: (c - b_ - w_[0] * g) / w_[1]
     for page in range(3):
         fig, axs = plt.subplots(1, 3, figsize=(15, 5.7))
         for k, ax in zip(range(3 * page, 3 * page + 3), axs):
-            t = STEPS[k]; a, b, w, th, M = info(t); D = X @ w + b; n2 = w @ w
+            t = STEPS[k]
+            if t == 0:                                                      # α 모두 0: w = 0, 길이 끝없이 넓다 (자는 화면 밖)
+                ax.set_facecolor("#dde6f6")
+                zz = np.array([(-2.3, 1.75)] + [(-2.05 + 4.1 * (i + 0.5) / 12, 1.75 + (0.17 if i % 2 == 0 else -0.17)) for i in range(12)] + [(2.3, 1.75)])
+                ax.plot(*zz.T, color="#333333", lw=2.2, zorder=2.5)
+                ax.scatter(X[:, 0], X[:, 1], c=np.where(y > 0, RED, BLUE), s=60, edgecolor="black", lw=0.6, zorder=5)
+                ax.set_xlim(-2.3, 2.3); ax.set_ylim(-2.3, 2.3); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+                ax.set_title("0 걸음 (α 모두 0)\n선 없음,  길 반폭 M = ∞", fontsize=18, fontweight="bold", linespacing=1.4)
+                continue
+            a, b, w, th, M = info(t); D = X @ w + b; n2 = w @ w
+            ax.fill_between(g, line(-1, w, b), line(1, w, b), color="#dde6f6", zorder=0.5)           # 길 안쪽
+            nv = w / np.sqrt(n2); dv = np.array([-nv[1], nv[0]])                                     # 스프링: 두 자 사이, 점이 없는 왼쪽 위
+            end = lambda c: (c - b) / np.sqrt(n2) * nv + 1.75 * dv
+            p0, p1 = end(-1), end(1); nz = 12
+            zz = np.array([p0] + [p0 + (p1 - p0) * (0.08 + 0.84 * (i + 0.5) / nz) + dv * (0.17 if i % 2 == 0 else -0.17) for i in range(nz)] + [p1])
+            ax.plot(*zz.T, color="#333333", lw=2.2, zorder=2.5)
             for c in (1, -1): ax.plot(g, line(c, w, b), color=RULER, lw=5, solid_capstyle="butt", zorder=2)
             ax.plot(g, line(0, w, b), color="black", ls="--", lw=2, zorder=2)
-            if k > 0:
+            if k > 1:
                 _, b0, w0, _, _ = info(STEPS[k - 1]); ax.plot(g, line(0, w0, b0), color="#bbbbbb", ls=":", lw=3, zorder=1.5)
             for pt, yy, d, al in zip(X, y, D, a):
                 if al > 1e-6 and yy * d < 1 - 1e-3:                                  # 고무줄: 점 → 자기 쪽 자 (D = y)
