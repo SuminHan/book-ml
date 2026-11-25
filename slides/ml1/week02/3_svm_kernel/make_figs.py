@@ -19,10 +19,10 @@ def fig_recap():
     fig, axs = plt.subplots(1, 2, figsize=(10.4, 5.4))
     ax = axs[0]; mf.pts(ax); mf.street_m(ax, WA, BA, 0)
     p = np.array([-0.2, -1.4]); d = -(WA @ p + BA); q = p + d * WA                  # ‖w‖ = 1 이라 값 = 거리, q = 경계 위 발
-    ax.annotate("", q, p, arrowprops=dict(arrowstyle="<->", lw=2, color="black", shrinkA=6, shrinkB=0), zorder=6)
-    ax.text(-0.45, -1.62, f"값 = 거리 = {d:.2f}", fontsize=14, fontweight="bold", va="top")
+    ax.annotate("", q, p, arrowprops=dict(arrowstyle="<->", lw=3.2, color=BLUE, shrinkA=6, shrinkB=0), zorder=6)
+    ax.text(-0.45, -1.62, f"$|D(\\mathbf{{x}})|$ = 경계까지 거리 = {d:.2f}", color=BLUE, fontsize=13, fontweight="bold", va="top")
     ax.text(-1.05, 2.05, "$D(\\mathbf{x}) = \\mathbf{w}\\cdot\\mathbf{x} + b = 0$", fontsize=14, va="top")
-    ax.set_title("① 경계: $\\Vert\\mathbf{w}\\Vert = 1$ 이면 값 = 거리", fontsize=15)
+    ax.set_title("① 경계: $\\Vert\\mathbf{w}\\Vert = 1$ 이면 $|D(\\mathbf{x})|$ = 경계까지 거리", fontsize=15)
     ax = axs[1]; mf.pts(ax); mf.svm_street(ax, mf.M)
     ax.set_title(f"② 최대 마진: M = {mf.MA:.2f}\n경계는 서포트 벡터 3개가 정한다", fontsize=15)
     mf.save(fig, "kn_recap.png")
