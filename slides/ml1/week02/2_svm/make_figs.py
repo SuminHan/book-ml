@@ -238,24 +238,35 @@ def fig_street():
 
 
 def fig_b_balance():
-    """w 고정 (평균 선 방향), b 만 바꾼 세 장: 가장 가까운 빨강 거리 + 파랑 거리 = 늘 같다 → 둘이 같을 때 min 이 가장 크다"""
-    a = (y[:, None] * X).mean(0); w = a / np.linalg.norm(a)
-    fig, axs = plt.subplots(1, 3, figsize=(15, 5.9)); out = []
-    for ax, b in zip(axs, (0.0, 0.04, 0.08)):
-        v = y * (X @ w + b); ir = np.where(y > 0)[0][np.argmin(v[y > 0])]; ib = np.where(y < 0)[0][np.argmin(v[y < 0])]
-        r, bl = v[ir], v[ib]; out.append((b, round(r, 2), round(bl, 2), round(r + bl, 2), round(min(r, bl), 2)))
-        pts(ax); line(ax, w, b, color="black", lw=2.8)
-        for i, c in ((ir, RED), (ib, BLUE)):
-            p = X[i]; foot = p - (p @ w + b) * w
-            ax.annotate("", foot, p, arrowprops=dict(arrowstyle="<->", color=c, lw=3, shrinkA=5, shrinkB=0, mutation_scale=16), zorder=7)
-            off = np.array([0.52, -0.3]) if c == RED else np.array([0.5, -0.4])
-            ax.text(*((p + foot) / 2 + off), f"{v[i]:.2f}", fontsize=19, fontweight="bold", color=c, ha="center", va="center", zorder=8,
-                    bbox=dict(fc="white", ec="none", pad=1, alpha=0.9))
-        same = abs(r - bl) < 0.006
-        ax.set_title(f"b = {b:g}:  min = {min(r, bl):.2f}" + ("  (둘이 같다: 가장 크다)" if same else ""), fontsize=16, color=GOLDT if same else "black", fontweight="bold" if same else "normal")
-        ax.set_xlabel(f"{r:.2f} + {bl:.2f} = {r + bl:.2f}", fontsize=18)
-    assert out == [(0.0, 0.62, 0.7, 1.32, 0.62), (0.04, 0.66, 0.66, 1.32, 0.66), (0.08, 0.7, 0.62, 1.32, 0.62)], out
-    save(fig, "sv_b_balance.png")
+    """w 고정 (평균 선 방향), b 만 크게 바꾼 세 장 (가운데를 확대): 경계에서 가장 가까운 빨강까지 = 빨강 띠, 파랑까지 = 파랑 띠.
+    아래 막대: 두 띠의 합은 늘 1.32 → 둘이 같을 때 min 이 가장 크다"""
+    a = (y[:, None] * X).mean(0); w = a / np.linalg.norm(a); d = np.array([-w[1], w[0]])
+    cases = ((-0.36, "선이 빨강 쪽에 붙음"), (0.04, "가운데"), (0.44, "선이 파랑 쪽에 붙음"))
+    fig = plt.figure(figsize=(15, 6.6)); gs = fig.add_gridspec(2, 3, height_ratios=[5.2, 1], hspace=0.08, wspace=0.08); out = []
+    for k, (b, name) in enumerate(cases):
+        ax = fig.add_subplot(gs[0, k]); v = y * (X @ w + b)
+        ir = np.where(y > 0)[0][np.argmin(v[y > 0])]; ib = np.where(y < 0)[0][np.argmin(v[y < 0])]; r, bl = v[ir], v[ib]
+        out.append((b, round(r, 2), round(bl, 2), round(r + bl, 2)))
+        s_ = np.linspace(-5, 5, 2); seg = lambda c: (c - b) * w[:, None] + d[:, None] * s_
+        for lo, hi, col in ((0, r, RED), (-bl, 0, BLUE)):
+            P, Q = seg(lo), seg(hi); ax.fill(np.r_[P[0], Q[0][::-1]], np.r_[P[1], Q[1][::-1]], color=col, alpha=0.24, lw=0, zorder=1)
+        ax.plot(*seg(r), "--", color=RED, lw=2); ax.plot(*seg(-bl), "--", color=BLUE, lw=2); ax.plot(*seg(0), color="black", lw=5, zorder=4)
+        ax.scatter(X[y > 0, 0], X[y > 0, 1], s=150, color=RED, zorder=5); ax.scatter(X[y < 0, 0], X[y < 0, 1], s=150, color=BLUE, marker="s", zorder=5)
+        for i in (ir, ib):
+            ax.scatter(*X[i], s=520, facecolors="none", edgecolors=GOLD, lw=3.5, zorder=6)
+        ax.set_xlim(-1.25, 1.35); ax.set_ylim(-1.25, 1.35); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+        for sp in ax.spines.values():
+            sp.set_visible(True); sp.set_color("#bbbbbb")
+        ax.set_title(f"b = {b:+.2f} : {name}", fontsize=19, fontweight="bold" if k == 1 else "normal", color=GOLDT if k == 1 else "black")
+        bx = fig.add_subplot(gs[1, k]); bx.barh(0, r, color=RED, height=0.8); bx.barh(0, bl, left=r, color=BLUE, height=0.8)
+        bx.text(r / 2, 0, f"{r:.2f}", ha="center", va="center", color="white", fontsize=22, fontweight="bold")
+        bx.text(r + bl / 2, 0, f"{bl:.2f}", ha="center", va="center", color="white", fontsize=22, fontweight="bold")
+        bx.set_xlim(0, 1.32); bx.set_ylim(-0.45, 0.45); bx.axis("off")
+        bx.text(0.66, -0.62, f"min = {min(r, bl):.2f}" + ("  ← 가장 크다" if k == 1 else ""), ha="center", va="top", fontsize=22 if k == 1 else 19,
+                fontweight="bold", color=GOLDT if k == 1 else "black")
+    assert out == [(-0.36, 0.26, 1.06, 1.32), (0.04, 0.66, 0.66, 1.32), (0.44, 1.06, 0.26, 1.32)], out
+    fig.subplots_adjust(left=0.01, right=0.99, top=0.93, bottom=0.1)
+    fig.savefig(O + "sv_b_balance.png"); plt.close(fig)
     return out
 
 

@@ -307,7 +307,54 @@ def fig_nn():
     mf.save(fig, "kn_nn.png")
 
 
-FIGS = {"nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+def fig_nails():
+    """비유: 못 박힌 판 위에서 스프링이 두 자를 벌린다. 못 = 점 (고정), 두 자 사이 = 길 폭 2M, 자가 닿은 못 = 서포트 벡터, 못이 버티는 힘 = α.
+    ① 좁다 (아무 못에도 안 닿음) ② 못에 걸림 (이 각도의 최대, 돌리면 더) ③ SVM: 폭 1.34, 못 3개가 α = 1.1 · 0.55 · 0.55 로 버팀"""
+    X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
+    wa = WA / np.linalg.norm(WA)
+    th = np.radians(68); w2 = np.array([np.cos(th), np.sin(th)])
+    rm = (X[y > 0] @ w2).min(); bm = (X[y < 0] @ w2).max(); M2, b2 = (rm - bm) / 2, -(rm + bm) / 2
+    assert 0 < M2 < MA - 0.05 and int((y * (X @ w2 + b2) < M2 + 1e-6).sum()) == 2, (M2, b2)
+    cases = ((wa, BA / np.linalg.norm(WA), 0.28, "① 스프링이 두 자를 벌린다"), (w2, b2, M2, "② 못에 걸렸다: 돌리면 더 벌어진다"), (wa, BA / np.linalg.norm(WA), MA, "③ 어느 쪽으로도 더는 못 벌어진다"))
+    WOOD, RULER, EDGE = "#f3e6cc", "#d9a441", "#7a5a1e"
+    fig, axs = plt.subplots(1, 3, figsize=(16, 6.2))
+    for k, (ax, (w, b, M, ttl)) in enumerate(zip(axs, cases)):
+        d = np.array([-w[1], w[0]]); P = lambda c, t: (c - b) * w + t * d          # w·x + b = c 위, 선을 따라 t
+        ax.set_facecolor(WOOD); ax.set_xlim(-2.2, 2.2); ax.set_ylim(-2.2, 2.2); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+        for sg in (1, -1):                                                            # 자: 바깥 모서리가 ±M, 두께는 안쪽으로
+            quad = np.array([P(sg * M, -5), P(sg * M, 5), P(sg * (M - 0.13), 5), P(sg * (M - 0.13), -5)])
+            ax.fill(quad[:, 0], quad[:, 1], color=RULER, ec=EDGE, lw=1.2, zorder=2)
+            for t in np.arange(-3.9, 4, 0.2):
+                ax.plot(*np.c_[P(sg * M, t), P(sg * (M - (0.07 if round(t * 5) % 5 == 0 else 0.04)), t)], color=EDGE, lw=0.9, zorder=3)
+        ax.plot(*np.c_[P(0, -5), P(0, 5)], "--", color="black", lw=1.6, zorder=3)
+        t0 = 1.35; inner = M - 0.13; n = 11                                           # 스프링 (두 자 안쪽 사이)
+        zz = [P(-inner, t0)] + [P(-inner + 2 * inner * (i + 0.5) / n, t0 + (0.13 if i % 2 == 0 else -0.13)) for i in range(n)] + [P(inner, t0)]
+        zz = np.array(zz); ax.plot(zz[:, 0], zz[:, 1], color="#444444", lw=2.2, zorder=4)
+        if k < 2:
+            for sg in (1, -1):
+                ax.annotate("", P(sg * (M + 0.36), -1.45), P(sg * (M - 0.05), -1.45), arrowprops=dict(arrowstyle="-|>", color="#2B8A3E", lw=3.5, mutation_scale=22), zorder=7)
+        v = y * (X @ w + b); touch = v < M + 2e-3 if k else np.zeros(len(y), bool)
+        for p, yy, tc in zip(X, y, touch):                                           # 못: 머리 + 가운데 점
+            c = RED if yy > 0 else BLUE
+            ax.scatter(*p, s=170, color=c, marker="o" if yy > 0 else "s", edgecolor="black", lw=0.8, zorder=6, alpha=1.0 if (tc or k < 2) else 0.35)
+            ax.scatter(*p, s=18, color="white", zorder=6.5)
+            if tc:
+                ax.scatter(*p, s=520, facecolors="none", edgecolors="black", lw=2.4, zorder=6)
+        if k == 2:
+            for sv in mf.SV:
+                p = np.array(sv); yy = 1 if tuple(sv) in mf.RED_PTS else -1; al = mf.ALPHA[tuple(sv)]
+                start = p + yy * w * 0.02; end = p - yy * w * (0.30 + 0.42 * al)
+                ax.annotate("", end, start, arrowprops=dict(arrowstyle="-|>", color=RED if yy > 0 else BLUE, lw=2.5 + 3.2 * al, mutation_scale=26, shrinkA=7, shrinkB=0), zorder=8)
+                off = np.array([0.22, 0.28]) if yy > 0 else (np.array([-0.62, 0.1]) if sv[0] < 0 else np.array([0.55, -0.18]))
+                ax.text(*(p + off), f"α {al:g}", fontsize=18, fontweight="bold", color=RED if yy > 0 else BLUE, ha="center", va="center", zorder=9,
+                        bbox=dict(fc="white", ec="none", pad=1.5, alpha=0.9))
+        ax.set_title(ttl, fontsize=17, fontweight="bold" if k == 2 else "normal")
+        ax.set_xlabel(f"두 자 사이 {2 * M:.2f}", fontsize=19, fontweight="bold" if k == 2 else "normal", labelpad=8)
+    mf.save(fig, "kn_nails.png")
+    return dict(M2=round(float(M2), 3))
+
+
+FIGS = {"nails": fig_nails, "nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
