@@ -364,28 +364,95 @@ $K$ 를 쓰나 & 안 쓴다 ($\varphi$ 끼리 그냥 점곱) & $K(\mathbf{x}, \m
 \note{RBF 커널의 감마는 앞 쪽의 언덕 폭, 점 하나의 영향이 얼마나 멀리까지 미치는지를 정합니다. 대략 1 나누기 루트 감마 거리까지입니다. 감마가 0.1로 작으면 영향이 넓게 퍼져서 경계가 거의 직선입니다. 반달 모양을 못 따라가는 과소적합입니다. 감마가 2면 반달을 따라 적당히 휘어집니다. 감마가 100이면 점 하나하나의 영향이 아주 좁아서 점마다 섬이 생깁니다. 학습 데이터를 외운 과대적합입니다. 그래서 SVM을 쓸 때는 C와 감마 두 숫자를 교차 검증으로 함께 고릅니다. 실습에서 직접 해 봅니다.}
 \end{frame}
 
-\section{논문 식}
-% --- 논문 식 읽기 ①
-\begin{frame}{논문 식 읽기 ①: 라그랑주 함수와 닿은 점}
+\section{논문 따라 읽기}
+% --- 논문 따라 읽기 1
+\begin{frame}{논문 따라 읽기 1: 문제 정의}
 \vfill
 \centering
 {\large\begin{gather*}
-L(\mathbf{w}, b, \boldsymbol{\alpha}) = \tfrac{1}{2}\lVert\mathbf{w}\rVert^2 - \sum_{k=1}^{p} \alpha_k\,\big[\,y_k D(\mathbf{x}_k) - 1\,\big], \qquad \alpha_k \ge 0\\[0.3em]
-\alpha_k\,\big(\,y_k D(\mathbf{x}_k) - 1\,\big) = 0
-\end{gather*}}\\[0.3em]
-{\large 곱이 0 $\to$ 가장자리에 \kq{안 닿은} 점 (값 $> 1$) 은 $\alpha_k = 0$}\\[0.5em]
-{\normalsize 이 데이터: 서포트 벡터 3개만 값 $= 1$ $\to$ $\alpha = 1.1$ · $0.55$ · $0.55$, \;나머지 17개는 값 $\ge 1.21$ $\to$ $\alpha = 0$}
+(\mathbf{x}_1, y_1),\ (\mathbf{x}_2, y_2),\ \dots,\ (\mathbf{x}_p, y_p), \qquad y_k = \begin{cases} +1 & \mathbf{x}_k \in \text{클래스 A}\\ -1 & \mathbf{x}_k \in \text{클래스 B} \end{cases}\\[0.6em]
+\mathbf{x} \in \text{A} \ \ \text{if}\ D(\mathbf{x}) > 0, \qquad \mathbf{x} \in \text{B} \ \ \text{otherwise}
+\end{gather*}}\\[0.6em]
+{\large 학습 데이터 $p$ 개 (점과 라벨), \;$D(\mathbf{x})$ 의 부호로 분류}\\[0.3em]
+{\normalsize 지난 시간 예: $p = 20$, 빨강 = A, 파랑 = B}
 \vfill
-\note{지금까지 배운 것을 원 논문의 식으로 한 번씩 읽어 봅시다. 첫 식은 논문 식 14, 라그랑주 함수입니다. 2분의 1 w 길이 제곱을 줄이고 싶은데, 모든 점의 값이 1 이상이어야 한다는 조건이 붙어 있습니다. 라그랑주 방법은 조건마다 숫자 하나, 알파 k를 붙여서 조건을 식 안으로 넣습니다. 대괄호 안, y k D x k 빼기 1은 점 k가 조건을 얼마나 넉넉하게 지키는지입니다. 둘째 식은 논문 식 15입니다. 알파 k와 대괄호 안의 곱이 0입니다. 곱이 0이면 둘 중 하나는 0이어야 합니다. 그래서 가장자리에 닿지 않은 점, 값이 1보다 큰 점은 알파가 0이고, 알파가 0이 아닐 수 있는 점은 값이 딱 1인 점, 가장자리에 닿은 서포트 벡터뿐입니다. 역학 비유에서 닿아 있을 때만 힘이 생긴다고 한 것이 이 식입니다. 이 데이터에서 확인하면, 서포트 벡터 3개는 값이 1이고 알파가 1.1, 0.55, 0.55입니다. 나머지 17개는 값이 1.21 이상이라 알파가 0입니다.}
+\note{이제 원 논문, Boser, Guyon, Vapnik의 1992년 논문을 처음부터 흐름 그대로 따라 읽어 봅시다. 논문 2장은 문제를 이렇게 적습니다. 식 1, 학습 데이터는 점과 라벨의 짝 p개이고, 라벨 y k는 점이 클래스 A면 플러스 1, B면 마이너스 1입니다. 식 2, 학습이 끝나면 결정 함수 D x의 부호로 분류합니다. 0보다 크면 A, 아니면 B입니다. 지난 시간 예로는 점이 20개, 빨강이 A, 파랑이 B였습니다.}
 \end{frame}
 
-% --- 논문 식 읽기 ②
-\begin{frame}{논문 식 읽기 ②: 미분하면 $\mathbf{w}$, $\mathbf{w}$ 를 지우면 $K$ 만}
+% --- 논문 따라 읽기 2
+\begin{frame}{논문 따라 읽기 2: 같은 분류기를 두 가지로}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.9}
+{\large\begin{tabular}{rl}
+직접: & $D(\mathbf{x}) = \sum_{i=1}^{N} w_i\, \varphi_i(\mathbf{x}) + b$ \quad (특징마다 무게, $N$ 개)\\
+쌍대: & $D(\mathbf{x}) = \sum_{k=1}^{p} \alpha_k\, K(\mathbf{x}_k, \mathbf{x}) + b$ \quad (점마다 숫자, $p$ 개)\\
+커널: & $K(\mathbf{x}, \mathbf{x}') = \sum_{i} \varphi_i(\mathbf{x})\, \varphi_i(\mathbf{x}')$ \quad 예: $(\mathbf{x}\cdot\mathbf{x}' + 1)^q$\\
+잇는 식: & $w_i = \sum_{k=1}^{p} \alpha_k\, \varphi_i(\mathbf{x}_k)$
+\end{tabular}}\\[0.6em]
+{\normalsize 여기 $\alpha_k$ 는 부호까지 담은 숫자 (뒤에서 $\alpha_k y_k$ 로 나눠 쓴다) \quad 원 데이터 예: $N = 6$, $p = 120$}
+\vfill
+\note{논문은 같은 분류기를 두 가지로 쓸 수 있다는 것부터 말합니다. 식 3은 직접 표현입니다. 특징 N개, 파이 i를 만들어 두고 특징마다 무게 w i를 곱해 더합니다. 다항식 분류기는 파이 i가 x 성분들의 곱인 경우입니다. 식 4는 쌍대 표현입니다. 학습 점마다 숫자 알파 k를 하나씩 두고, 새 점과 학습 점을 커널 K에 넣어 더합니다. 합이 특징 수 N이 아니라 점 수 p까지입니다. 식 5, 커널은 두 점을 특징으로 옮겨 점곱한 것과 같고, 예를 들어 x 점곱 x 프라임 더하기 1의 q제곱은 q차 다항식 특징의 점곱입니다. 식 6이 두 표현을 잇는 다리입니다. 특징마다의 무게 w i는 점마다의 알파 k에 그 점의 특징을 곱해 더한 것입니다. 이것을 식 3에 넣고 순서를 바꾸면 식 4가 나옵니다. 여기서의 알파는 부호까지 담은 숫자입니다. 뒤에서 논문은 이것을 0 이상인 알파 k와 라벨 y k로 나눠 씁니다. 덱의 원 데이터 예로는 특징 6개, 점 120개였고, 알파가 0이 아닌 점은 21개였습니다.}
+\end{frame}
+
+% --- 논문 따라 읽기 3
+\begin{frame}{논문 따라 읽기 3: 직접 공간에서 마진 최대로}
+\vfill
+\centering
+{\large\begin{gather*}
+D(\mathbf{x}) = \mathbf{w}\cdot\varphi(\mathbf{x}) + b\\[0.3em]
+\frac{y_k D(\mathbf{x}_k)}{\lVert\mathbf{w}\rVert} \ge M\\[0.3em]
+M^* = \max_{\mathbf{w},\ \lVert\mathbf{w}\rVert = 1} M \quad \text{subject to} \quad y_k D(\mathbf{x}_k) \ge M, \quad k = 1, \dots, p\\[0.3em]
+\min_{k}\, y_k D(\mathbf{x}_k) = M^*
+\end{gather*}}\\[0.4em]
+{\normalsize 모든 점이 경계에서 $M$ 이상 $\to$ 그 $M$ 을 최대로 $\to$ 딱 $M^*$ 인 점 = 서포트 벡터}\\[0.2em]
+{\normalsize 지난 시간 예: $M^* = 0.67$}
+\vfill
+\note{2.1절, 직접 공간에서 마진을 최대로 하는 부분입니다. 식 7, 결정 함수는 w 점곱 파이 x 더하기 b입니다. 식 8, 점에서 경계까지의 거리는 y k D x k 나누기 w의 길이이고, 모든 점이 마진 M 이상 떨어져 있어야 합니다. 식 9, w의 길이를 1로 묶고 이 M을 최대로 하는 것이 목표이고, 최대인 마진을 M 별이라고 씁니다. 식 10, 답에서는 가장 작은 y k D x k가 딱 M 별이고, 이 값을 갖는 점들이 서포트 벡터입니다. 지난 시간 예에서는 M 별이 0.67이고, 서포트 벡터 3개가 딱 0.67에 있었습니다.}
+\end{frame}
+
+% --- 논문 따라 읽기 4
+\begin{frame}{논문 따라 읽기 4: max min, 그리고 크기를 바꿔 쓰기}
+\vfill
+\centering
+{\large\begin{gather*}
+\max_{\mathbf{w},\ \lVert\mathbf{w}\rVert = 1}\ \min_{k}\ y_k D(\mathbf{x}_k)\\[0.4em]
+M \lVert\mathbf{w}\rVert = 1\\[0.4em]
+\min_{\mathbf{w}}\ \lVert\mathbf{w}\rVert^2 \quad \text{under} \quad y_k D(\mathbf{x}_k) \ge 1, \quad k = 1, \dots, p
+\end{gather*}}\\[0.4em]
+{\normalsize 가장 가까운 점을 가장 멀리 $\to$ 길 가장자리를 $D(\mathbf{x}) = \pm 1$ 로 $\to$ $M^* = 1/\lVert\mathbf{w}^*\rVert$}\\[0.2em]
+{\normalsize 예: $1/1.49 = 0.67$}
+\vfill
+\note{식 11은 같은 목표를 한 줄로 쓴 것입니다. 가장 작은 y k D x k, 가장 가까운 점의 거리를 w를 바꿔 가며 최대로 합니다. 이런 꼴을 minimax 문제라고 부릅니다. 지난 시간 학습 한 걸음이 이 식을 푸는 방법이었습니다. 논문은 여기서 크기를 맞추는 기준을 바꿉니다. w의 길이를 1로 고정하는 대신, 식 12, M 곱하기 w의 길이를 1로 고정합니다. 그러면 길 가장자리의 점에서 D가 플러스 마이너스 1이 되고, 마진은 1 나누기 w의 길이입니다. 그래서 마진을 최대로 하는 것은 w의 길이를 최소로 하는 것과 같고, 식 13, w 길이 제곱을 최소로 하되 모든 점이 y k D x k가 1 이상이어야 합니다. 최대 마진은 M 별이 1 나누기 w 별의 길이입니다. 예에서 w 별의 길이가 1.49라 마진은 0.67입니다. 논문은 이어서, 이 문제를 직접 풀 수는 있지만 특징 공간이 크거나 무한이면 어렵고 서포트 벡터도 알 수 없다고 하고, 쌍대 공간으로 넘어갑니다.}
+\end{frame}
+
+% --- 논문 따라 읽기 5
+\begin{frame}{논문 따라 읽기 5: 라그랑주 함수와 닿은 점}
+\vfill
+\centering
+{\normalsize \textbf{라그랑주}: 조건 (모든 점 $y_k D(\mathbf{x}_k) \ge 1$) 마다 \kb{무게 $\alpha_k$} 를 붙여 \textbf{식 하나로} 합친다}\par\vspace{1.5cm}
+{\large $L(\mathbf{w}, b, \boldsymbol{\alpha}) = \tikzmarknode{hw}{\tfrac{1}{2}\lVert\mathbf{w}\rVert^2} - \sum_{k=1}^{p} \tikzmarknode{al}{\alpha_k}\,\tikzmarknode{br}{\big[\,y_k D(\mathbf{x}_k) - 1\,\big]}, \qquad \alpha_k \ge 0$}
+\begin{tikzpicture}[remember picture,overlay]
+\node[bub,anchor=south east,font=\small] (c1) at ([xshift=-0.3cm,yshift=0.45cm]hw.north) {줄이고 싶은 것: $\lVert\mathbf{w}\rVert$ 작게 = \textbf{넓은 길}};
+\draw[bubarr] (c1.south east) -- (hw.north);
+\node[bub,anchor=south west,font=\small] (c3) at ([xshift=0.3cm,yshift=0.45cm]br.north) {점 $\mathbf{x}_k$ 의 \textbf{여유}: $0$ = 가장자리, $+$ = 길 밖};
+\draw[bubarr] (c3.south west) -- (br.north);
+\node[bub,anchor=north,font=\small] (c2) at ([yshift=-0.45cm]al.south) {조건마다 붙인 \textbf{무게} = 점 $\mathbf{x}_k$ 가 \textbf{미는 힘}};
+\draw[bubarr] (c2.north) -- (al.south);
+\end{tikzpicture}\par\vspace{1.3cm}
+{\large $\alpha_k\,\big(\,y_k D(\mathbf{x}_k) - 1\,\big) = 0$ \;$\to$\; 곱이 0: 가장자리에 \kq{안 닿은} 점 (여유 $> 0$) 은 $\alpha_k = 0$}\par\vspace{0.4em}
+{\normalsize 이 데이터: 서포트 벡터 3개만 여유 $0$ $\to$ $\alpha = 1.1$ · $0.55$ · $0.55$, \;나머지 17개 $\alpha = 0$}
+\vfill
+\note{지금까지 배운 것을 원 논문의 식으로 한 번씩 읽어 봅시다. 첫 식은 논문 식 14, 라그랑주 함수입니다. 2분의 1 w 길이 제곱을 줄이고 싶은데, 모든 점의 값이 1 이상이어야 한다는 조건이 붙어 있습니다. 라그랑주 방법은 조건이 붙은 문제를 조건 없는 식 하나로 바꾸는 방법입니다. 조건마다 숫자 하나, 알파 k를 붙여서 조건을 식 안으로 넣습니다. 알파는 그 조건에 거는 무게, 벌금이라고 생각하면 되고, 역학 비유로는 점 x k가 경계를 미는 힘입니다. 앞의 2분의 1 w 길이 제곱은 줄이고 싶은 것, 넓은 길입니다. 대괄호 안, y k D x k 빼기 1은 점 k가 조건을 얼마나 넉넉하게 지키는지입니다. 둘째 식은 논문 식 15입니다. 알파 k와 대괄호 안의 곱이 0입니다. 곱이 0이면 둘 중 하나는 0이어야 합니다. 그래서 가장자리에 닿지 않은 점, 값이 1보다 큰 점은 알파가 0이고, 알파가 0이 아닐 수 있는 점은 값이 딱 1인 점, 가장자리에 닿은 서포트 벡터뿐입니다. 역학 비유에서 닿아 있을 때만 힘이 생긴다고 한 것이 이 식입니다. 이 데이터에서 확인하면, 서포트 벡터 3개는 값이 1이고 알파가 1.1, 0.55, 0.55입니다. 나머지 17개는 값이 1.21 이상이라 알파가 0입니다.}
+\end{frame}
+
+% --- 논문 따라 읽기 6
+\begin{frame}{논문 따라 읽기 6: 미분하면 $\mathbf{w}$, $\mathbf{w}$ 를 지우면 $K$ 만}
 \vfill
 \centering
 {\large\begin{gather*}
 \frac{\partial L}{\partial \mathbf{w}} = \mathbf{w} - \sum_{k} \alpha_k y_k \mathbf{x}_k = 0 \quad\to\quad \mathbf{w}^* = \sum_{k} \alpha_k y_k \mathbf{x}_k\\[0.3em]
-J(\boldsymbol{\alpha}, b) = \sum_{k} \alpha_k\,(1 - b\,y_k) - \tfrac{1}{2}\sum_{k}\sum_{l} \alpha_k \alpha_l\, y_k y_l\, K(\mathbf{x}_k, \mathbf{x}_l)
+J(\boldsymbol{\alpha}, b) = \sum_{k} \alpha_k\,(1 - b\,y_k) - \tfrac{1}{2}\,\boldsymbol{\alpha}\cdot\mathbf{H}\cdot\boldsymbol{\alpha}, \qquad H_{kl} = y_k y_l\, K(\mathbf{x}_k, \mathbf{x}_l)
 \end{gather*}}\\[0.3em]
 {\large $\mathbf{w}$ 가 사라지고 점은 \kb{$K$ 안에만} $\to$ 커널로 학습}\\[0.5em]
 {\normalsize 이 데이터: $\mathbf{w}^* = 1.1\,r - 0.55\,b_1 - 0.55\,b_2 = (1.05,\ 1.05)$}
@@ -393,22 +460,36 @@ J(\boldsymbol{\alpha}, b) = \sum_{k} \alpha_k\,(1 - b\,y_k) - \tfrac{1}{2}\sum_{
 \note{다음은 논문 식 16과 17입니다. 라그랑주 함수 L을 w로 미분해서 0으로 두면, w 빼기 알파 k y k x k의 합이 0, 즉 w 별은 알파 k y k x k의 합입니다. 덱에서 학습을 알파로 다시 쓰며 본 바로 그 식이 미분 한 번으로 나옵니다. 커널을 쓰면 x k 자리가 파이 x k입니다. 이 w를 다시 L에 넣으면 w가 사라지고 알파와 b만 남는 J가 됩니다. 앞의 합은 알파 k 곱하기 1 빼기 b y k이고, 뒤는 알파끼리, 라벨끼리 곱하고 두 점의 K를 곱한 것의 합의 절반입니다. 논문은 뒤의 항을 알파 점 H 점 알파로 쓰고, H k l이 y k y l K x k x l인 행렬이라고 적습니다. 중요한 것은 점이 들어가는 곳이 K 하나뿐이라는 것입니다. 그래서 학습에도 파이를 만들 필요가 없고, 커널 SVM 학습에서 학습 점 두 개를 넣은 K 값만 계산한다고 했던 것이 이 식입니다. 이 데이터에서는 w 별이 1.1 r 빼기 0.55 b1 빼기 0.55 b2, 1.05, 1.05입니다.}
 \end{frame}
 
-% --- 논문 식 읽기 ③
-\begin{frame}{논문 식 읽기 ③: 분류기, $b$, 마진}
+% --- 논문 따라 읽기 7
+\begin{frame}{논문 따라 읽기 7: 분류기와 $b$}
 \vfill
 \centering
-{\large\begin{align*}
-D(\mathbf{x}) &= \sum_{k} y_k \alpha_k^*\, K(\mathbf{x}_k, \mathbf{x}) + b\\[0.2em]
-b^* &= -\tfrac{1}{2}\,\big(\mathbf{w}^*\cdot\mathbf{x}_A + \mathbf{w}^*\cdot\mathbf{x}_B\big) \qquad (\mathbf{x}_A, \mathbf{x}_B:\ \text{빨강 · 파랑 서포트 벡터 하나씩})\\[0.2em]
-\tfrac{1}{2}\lVert\mathbf{w}^*\rVert^2 &= \frac{1}{2M^2} = \tfrac{1}{2}\sum_{k} \alpha_k^*
-\end{align*}}\\[0.3em]
-{\normalsize 이 데이터: \; $b^* = -\tfrac12(0.95 - 1.05) = 0.05$, \quad $\lVert\mathbf{w}^*\rVert^2 = 2.2 = 1/0.67^2 = 1.1 + 0.55 + 0.55$}
+{\large\begin{gather*}
+D(\mathbf{x}) = \mathbf{w}^*\cdot\varphi(\mathbf{x}) + b = \sum_{k} y_k \alpha_k^*\, K(\mathbf{x}_k, \mathbf{x}) + b, \qquad \alpha_k^* \ge 0\\[0.5em]
+b^* = -\tfrac{1}{2}\,\big(\mathbf{w}^*\cdot\varphi(\mathbf{x}_A) + \mathbf{w}^*\cdot\varphi(\mathbf{x}_B)\big)
+\end{gather*}}\\[0.4em]
+{\large 합에는 \kb{서포트 벡터만} 남는다 \quad $\mathbf{x}_A$, $\mathbf{x}_B$: 빨강 · 파랑 서포트 벡터 하나씩}\\[0.4em]
+{\normalsize 예: $b^* = -\tfrac12\,(0.95 - 1.05) = 0.05$}
 \vfill
-\note{논문 식 18, 19, 20입니다. 첫 줄은 학습이 끝난 분류기로, 앞에서 쓴 D x와 같습니다. 서포트 벡터마다 y 곱하기 알파 곱하기 K를 더하고 b를 더합니다. 둘째 줄은 b를 정하는 식입니다. 경계는 두 클래스의 한가운데라, 빨강 서포트 벡터 하나는 값이 플러스 1, 파랑 하나는 마이너스 1입니다. 두 값의 평균이 0이 되게 b를 정하면 b 별은 마이너스 2분의 1 곱하기 두 점의 w 점곱의 합입니다. 이 데이터에서 빨강 r은 w 점곱이 0.95, 파랑 b1은 마이너스 1.05이니, 마이너스 2분의 1 곱하기 마이너스 0.1, 0.05입니다. 셋째 줄은 마진과 알파의 관계입니다. 가장 가까운 값을 1로 두었으니 마진은 1 나누기 w의 길이이고, 그래서 w 길이 제곱은 1 나누기 M 제곱입니다. 그리고 그것이 알파를 다 더한 것과 같습니다. 이 데이터에서 w 길이 제곱은 2.2, 1 나누기 0.67의 제곱도 2.2, 알파의 합 1.1 더하기 0.55 더하기 0.55도 2.2입니다. 마진이 좁을수록 알파가 커지니, 길을 좁게 받치는 점일수록 세게 민다는 뜻입니다. 논문은 이 식으로 알파가 가장 큰 점을 빼면 마진이 가장 많이 넓어진다고 하고, 그 점을 이상치로 찾아냅니다.}
+\note{식 18은 학습이 끝난 분류기입니다. w 별 점곱 파이 x 더하기 b이고, w 별을 알파와 y로 쓰면 서포트 벡터마다 y 곱하기 알파 곱하기 K를 더하고 b를 더하는 꼴입니다. 알파가 0이 아닌 서포트 벡터만 합에 남습니다. 논문은 b를 정하는 방법도 두 가지를 말합니다. b를 미리 정해 두는 옛 방법과, w와 함께 학습하는 방법인데, 실험은 모두 함께 학습했습니다. 식 19는 b를 구하는 식입니다. 경계는 두 클래스 한가운데라 빨강 서포트 벡터 하나는 D가 플러스 1, 파랑 하나는 마이너스 1입니다. 둘의 평균이 0이 되게 b를 정하면 b 별은 마이너스 2분의 1 곱하기 두 점의 w 점곱의 합입니다. 예에서는 빨강 r의 w 점곱이 0.95, 파랑 b1은 마이너스 1.05이라 b 별은 0.05입니다. 논문은 이어서, 점이 아주 많으면 조각으로 나눠 학습하는 방법, chunking도 소개합니다.}
 \end{frame}
 
-% --- 논문 식 읽기 ④
-\begin{frame}{논문 식 읽기 ④: 실험, 특징 수가 폭발해도 서포트 벡터는 그대로}
+% --- 논문 따라 읽기 8
+\begin{frame}{논문 따라 읽기 8: 답의 성질, 마진과 $\alpha$}
+\vfill
+\centering
+{\large\begin{gather*}
+J(\boldsymbol{\alpha}^*) = \tfrac{1}{2}\lVert\mathbf{w}^*\rVert^2 = \frac{1}{2\,(M^*)^2} = \tfrac{1}{2}\sum_{k} \alpha_k^*
+\end{gather*}}\\[0.4em]
+{\large 볼록한 문제 $\to$ 가짜 바닥이 없고 답이 \kb{하나}}\\[0.2em]
+{\large $\alpha$ 가 큰 점을 빼면 마진이 가장 많이 넓어진다}\\[0.4em]
+{\normalsize 예: $\lVert\mathbf{w}^*\rVert^2 = 2.2 = 1/0.67^2 = 1.1 + 0.55 + 0.55$}
+\vfill
+\note{3장은 이 방법의 성질입니다. 마진을 최대로 하는 문제는 그릇 모양, 볼록한 문제라서 가짜 바닥이 없고, H가 꽉 찬 행렬이면 답이 하나로 정해집니다. 시작점에 따라 답이 달라지는 신경망과 다른 점입니다. 식 20은 답에서 J 값, 2분의 1 w 별 길이 제곱, 1 나누기 2 M 별 제곱, 2분의 1 알파 합이 모두 같다는 것입니다. 예에서 w 별 길이 제곱은 2.2, 1 나누기 0.67의 제곱도 2.2, 알파의 합 1.1 더하기 0.55 더하기 0.55도 2.2입니다. 마진이 좁을수록 알파가 크니, 길을 좁게 받치는 점일수록 세게 민다는 뜻입니다. 그래서 논문은 알파가 가장 큰 점을 빼면 마진이 가장 많이 넓어진다고 하고, 이것으로 이상한 점, 이상치를 찾아 데이터를 청소합니다. 또 하나 빼고 검증으로 오류율의 상한을 서포트 벡터 수 나누기 점 수로 잡습니다. 예에서는 3 나누기 20, 15퍼센트입니다.}
+\end{frame}
+
+% --- 논문 따라 읽기 9
+\begin{frame}{논문 따라 읽기 9: 실험, 특징 수가 폭발해도 서포트 벡터는 그대로}
 \vfill
 \centering
 {\large 다항 커널 $K(\mathbf{x}, \mathbf{x}') = (\mathbf{x}\cdot\mathbf{x}' + 1)^q$ \;· 손글씨 숫자 16 $\times$ 16 ($n = 256$)}\\[0.6em]
