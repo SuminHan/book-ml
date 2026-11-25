@@ -107,11 +107,12 @@ $(1.05,\ 1.05)$, \; $0.05$ & 1.49 & \kq{1} & \kb{0.67} & $D(\mathbf{x}_r) = 1$ (
 
 \section{$\alpha$ 로 학습}
 % --- 라그랑주 ① (논문 2.2 첫 문단)
-\begin{frame}{쌍대 공간으로: 라그랑주 함수}
+\begin{frame}{쌍대 공간 (dual space) 으로: 라그랑주 함수 (Lagrangian)}
 \vfill
 \centering
-{\normalsize 직접 풀면: 특징이 아주 많거나 $\infty$ 개면 어렵고, \kq{서포트 벡터}도 모른다 $\to$ \kb{쌍대 공간}으로}\\[0.5em]
-{\normalsize \textbf{라그랑주}: 조건 ($y_k D(\mathbf{x}_k) \ge 1$) 마다 \kb{무게 $\alpha_k$} 를 붙여 \textbf{식 하나로} 합친다}\par\vspace{1.35cm}
+{\normalsize 지금까지 (직접, direct): \textbf{특징마다} $\mathbf{w}$ \;$\to$\; 이제 (\kb{쌍대, dual}): \kb{점마다} $\alpha$}\\[0.1em]
+{\normalsize 특징이 아무리 많아도 점 개수만큼, \kq{서포트 벡터} (support vector) 도 보인다}\\[0.35em]
+{\normalsize \textbf{라그랑주} (Lagrange): 조건 ($y_k D(\mathbf{x}_k) \ge 1$) 마다 \kb{무게 $\alpha_k$} 를 붙여 \textbf{식 하나로} 합친다}\par\vspace{1.2cm}
 {\large $L(\mathbf{w}, b, \boldsymbol{\alpha}) = \tikzmarknode{hw}{\tfrac{1}{2}\lVert\mathbf{w}\rVert^2} - \sum_{k=1}^{p} \tikzmarknode{al}{\alpha_k}\,\tikzmarknode{br}{\big[\,y_k D(\mathbf{x}_k) - 1\,\big]}$}\\[0.2em]
 \begin{tikzpicture}[remember picture,overlay]
 \node[bub,anchor=south east,font=\small] (c1) at ([xshift=0.15cm,yshift=0.45cm]hw.north) {줄이고 싶은 것: $\lVert\mathbf{w}\rVert$ 작게 = \textbf{넓은 길}};
@@ -120,11 +121,11 @@ $(1.05,\ 1.05)$, \; $0.05$ & 1.49 & \kq{1} & \kb{0.67} & $D(\mathbf{x}_r) = 1$ (
 \draw[bubarr] ([xshift=1.0cm]c3.south west) -- (br.north);
 \node[bub,anchor=north,font=\small] (c2) at ([yshift=-0.45cm]al.south) {조건마다 붙인 \textbf{무게} = 점 $\mathbf{x}_k$ 가 \textbf{미는 힘}};
 \draw[bubarr] (c2.north) -- (al.south);
-\end{tikzpicture}\par\vspace{1.25cm}
-{\large 조건: $\alpha_k \ge 0$, \; $k = 1, \dots, p$ \qquad $\alpha_k$ = \kb{라그랑주 승수} (Kuhn--Tucker 계수)}\\[0.5em]
-{\normalsize $\mathbf{w}$, $b$ 에는 가장 작게, $\boldsymbol{\alpha}$ 에는 가장 크게 \quad ($\tfrac12$ 은 보기 좋으라고, 답은 같다)}
+\end{tikzpicture}\par\vspace{1.05cm}
+{\large 조건: $\alpha_k \ge 0$, \; $k = 1, \dots, p$ \qquad $\alpha_k$ = \kb{라그랑주 승수} (Lagrange multiplier)}\\[0.5em]
+{\small $\mathbf{w}$, $b$ 에는 가장 작게, $\boldsymbol{\alpha}$ 에는 가장 크게 \quad ($\tfrac12$ 은 보기 좋으라고, 답은 같다)}
 \vfill
-\note{방금 만든 문제, 2분의 1 w 길이 제곱을 최소로 하되 모든 점에서 y k D x k가 1 이상인 문제는 원칙적으로 w를 직접 구해도 됩니다. 그런데 원 논문은 두 가지 이유로 그렇게 하지 않습니다. 특징이 아주 많거나 무한 개면 특징마다 있는 w를 직접 다루기 어렵고, 직접 풀면 누가 서포트 벡터인지도 알 수 없습니다. 그래서 라그랑주 방법으로 이 문제를 쌍대 공간으로 옮깁니다. 라그랑주 방법은 조건이 붙은 문제를 식 하나로 바꾸는 방법입니다. 조건마다 숫자 하나, 알파 k를 붙여서 조건을 식 안으로 넣습니다. 앞의 2분의 1 w 길이 제곱은 줄이고 싶은 것, 넓은 길입니다. 대괄호 안, y k D x k 빼기 1은 점 k의 여유입니다. 0이면 길 가장자리, 플러스면 길 밖에 여유가 있고, 마이너스면 조건을 어긴 것입니다. 알파는 그 조건에 거는 무게이고, 뒤의 역학 비유로는 점 x k가 경계를 미는 힘입니다. 알파는 0 이상이고, 라그랑주 승수, 또는 Kuhn Tucker 계수라고 부릅니다. 원 논문의 식 14입니다. 답은 이 L이 w와 b에 대해서는 가장 작고, 알파에 대해서는 가장 큰 곳, 안장점입니다. 앞의 2분의 1은 미분했을 때 식이 깔끔해지라고 붙인 것이고, 논문도 답은 바뀌지 않는다고 적습니다.}
+\note{방금 만든 문제, 2분의 1 w 길이 제곱을 최소로 하되 모든 점에서 y k D x k가 1 이상인 문제는 원칙적으로 w를 직접 구해도 됩니다. 지금까지처럼 특징마다 w를 직접 구하는 것을 direct, 직접 방식이라고 합니다. 이제부터는 같은 문제를 점마다 숫자 하나, 알파를 구하는 문제로 바꿔 풉니다. 이것을 dual, 쌍대 방식이라고 하고, 논문은 dual space, 쌍대 공간이라고 부릅니다. 새 그림이 있는 공간이 아니라, 구하는 숫자가 바뀐다는 뜻입니다. 답은 똑같은 선입니다. 원 논문이 이렇게 바꾸는 이유는 두 가지입니다. 특징이 아주 많거나 무한 개면 특징마다 있는 w를 직접 다루기 어렵고, 직접 풀면 누가 서포트 벡터인지도 알 수 없습니다. 그래서 라그랑주 방법으로 이 문제를 쌍대 공간으로 옮깁니다. 라그랑주 방법은 조건이 붙은 문제를 식 하나로 바꾸는 방법입니다. 조건마다 숫자 하나, 알파 k를 붙여서 조건을 식 안으로 넣습니다. 앞의 2분의 1 w 길이 제곱은 줄이고 싶은 것, 넓은 길입니다. 대괄호 안, y k D x k 빼기 1은 점 k의 여유입니다. 0이면 길 가장자리, 플러스면 길 밖에 여유가 있고, 마이너스면 조건을 어긴 것입니다. 알파는 그 조건에 거는 무게이고, 뒤의 역학 비유로는 점 x k가 경계를 미는 힘입니다. 알파는 0 이상이고, 라그랑주 승수, 또는 Kuhn Tucker 계수라고 부릅니다. 원 논문의 식 14입니다. 답은 이 L이 w와 b에 대해서는 가장 작고, 알파에 대해서는 가장 큰 곳, 안장점입니다. 앞의 2분의 1은 미분했을 때 식이 깔끔해지라고 붙인 것이고, 논문도 답은 바뀌지 않는다고 적습니다.}
 \end{frame}
 
 % --- 라그랑주 ② (닿은 점만 α > 0)
