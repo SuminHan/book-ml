@@ -555,6 +555,39 @@ def fig_learn():
     return out
 
 
+def fig_rock():
+    """실제 점 20개를 학습할 때 두 자가 도는 모습 (못과 고무줄), 한 쪽에 세 장면씩 3쪽: kn_rock9_1..3.png.
+    고무줄 = 길 안의 점에서 자기 쪽 자까지, 굵기 · 금색 원 = α, 회색 점선 = 앞 장면의 경계"""
+    X, y = np.array(mf.X, float), np.array(mf.y, float); STEPS = [1, 2, 3, 5, 13, 25, 50, 98, 500]
+    _, _, H = kd.train_dual(X @ X.T, y, T=500, snaps=tuple(STEPS))
+    def info(t):
+        a, b = H[t]; w = (a * y) @ X; return a, b, w, float(np.degrees(np.arctan2(w[1], w[0]))), float(1 / np.linalg.norm(w))
+    got = [(t, round(info(t)[3]), round(info(t)[4], 2)) for t in STEPS]
+    assert got == [(1, 48, 0.81), (2, 54, 1.96), (3, 52, 1.12), (5, 53, 1.08), (13, 53, 0.94), (25, 51, 0.88), (50, 46, 0.76), (98, 42, 0.69), (500, 45, 0.67)], got
+    WOOD, RULER = "#f6ead0", "#b98a2e"; g = np.array([-4.0, 4.0])
+    line = lambda c, w_, b_: (c - b_ - w_[0] * g) / w_[1]
+    for page in range(3):
+        fig, axs = plt.subplots(1, 3, figsize=(15, 5.7))
+        for k, ax in zip(range(3 * page, 3 * page + 3), axs):
+            t = STEPS[k]; a, b, w, th, M = info(t); D = X @ w + b; n2 = w @ w
+            ax.set_facecolor(WOOD)
+            for c in (1, -1): ax.plot(g, line(c, w, b), color=RULER, lw=7, solid_capstyle="butt", zorder=2)
+            ax.plot(g, line(0, w, b), color="black", ls="--", lw=2, zorder=2)
+            if k > 0:
+                _, b0, w0, _, _ = info(STEPS[k - 1]); ax.plot(g, line(0, w0, b0), color="#777777", ls=":", lw=3, zorder=1.5)
+            for pt, yy, d, al in zip(X, y, D, a):
+                if al > 1e-6 and yy * d < 1 - 1e-3:                                  # 고무줄: 점 → 자기 쪽 자 (D = y)
+                    foot = pt + (yy - d) / n2 * w
+                    ax.plot(*np.c_[pt, foot], color="#e0662b", lw=1.2 + 6 * al, solid_capstyle="round", zorder=3)
+            on = a > 1e-6
+            ax.scatter(X[on, 0], X[on, 1], s=140 + 800 * a[on], color="#f2b705", alpha=0.4, zorder=3.5)
+            ax.scatter(X[:, 0], X[:, 1], c=np.where(y > 0, RED, BLUE), s=60, edgecolor="black", lw=0.6, zorder=5)
+            ax.set_xlim(-2.3, 2.3); ax.set_ylim(-2.3, 2.3); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+            ax.set_title(f"{t} 걸음\n방향 {th:.0f}°,  길 반폭 M = {M:.2f}", fontsize=18, fontweight="bold", linespacing=1.4)
+        fig.tight_layout(w_pad=1.5); fig.savefig(mf.O + f"kn_rock9_{page + 1}.png", dpi=150); plt.close(fig)
+    return got
+
+
 def fig_pull():
     """왜 서포트 벡터만 남나: 길 안의 점은 고무줄로 가장자리 (자) 를 자기 쪽으로 당긴다 (α ↑), 길 밖이면 α ↓ 0.
     점 6개 (특징 = 높이 하나, 좌우 위치는 그림용) 를 실제로 학습한 α · 길 폭 (η = 0.01, 3 · 40 · 300걸음)."""
@@ -594,7 +627,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
