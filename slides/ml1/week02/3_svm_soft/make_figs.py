@@ -416,7 +416,7 @@ def fig_learn():
     isv = [X.tolist().index(list(p)) for p in kd._d2.SV]
     wf = (H[500][0] * y) @ X
     assert np.allclose(wf, kd._d2.W_STAR, atol=5e-3) and int((H[500][0] > 1e-6).sum()) == 3
-    cur = np.array([[H[t][0][i] for i in isv] for t in ts]); out = {}
+    cur = np.array([[H[t][0][i] for i in isv] for t in ts]); allc = np.array([H[t][0] for t in ts]); rest = [i for i in range(len(y)) if i not in isv]; out = {}
     gx = np.linspace(-2.2, 2.2, 400); GX, GY = np.meshgrid(gx, gx)
     for k, t in enumerate(STEPS, 1):
         a, b = H[t]; w = (a * y) @ X; n = int((a > 1e-6).sum()); M = 1 / np.linalg.norm(w)
@@ -433,11 +433,16 @@ def fig_learn():
         ax.set_xlim(-2.2, 2.2); ax.set_ylim(-2.2, 2.2); ax.set_aspect("equal"); ax.set_xlabel("$x_1$", fontsize=15); ax.set_ylabel("$x_2$", fontsize=15)
         ax.set_title(f"{t} 걸음: α > 0 인 점 {n}개, M = {M:.2f}", fontsize=17, fontweight="bold")
         ax = axs[1]; m = np.array(ts) <= t
+        for k2, i in enumerate(rest):                                # 나머지 17개: 가는 선
+            ax.plot(np.array(ts)[m], allc[m, i], color=RED if y[i] > 0 else BLUE, lw=1.3, alpha=0.4, zorder=2)
+        ax.scatter([t] * len(rest), a[rest], c=np.where(y[rest] > 0, RED, BLUE), s=22, alpha=0.5, zorder=3)
+        nr = int((a[rest] > 1e-6).sum())
+        ax.plot([], [], color="#8a8a8a", lw=1.3, label=f"나머지 17개: α > 0 인 것 {nr}개" + (f" (최대 {a[rest].max():.2f})" if nr else " → 모두 0"))
         for j, (lab, c, ls) in enumerate((("빨강 r", RED, "-"), ("파랑 b1", BLUE, "-"), ("파랑 b2", BLUE, "--"))):
             ax.plot(np.array(ts)[m], cur[m, j], color=c, ls=ls, lw=3, label=f"{lab}: α = {a[isv[j]]:.2f}")
             ax.scatter([t], [a[isv[j]]], color=c, s=70, zorder=5)
         ax.set_xscale("log"); ax.set_xlim(0.9, 620); ax.set_ylim(0, 1.3); ax.set_xticks(STEPS); ax.set_xticklabels([str(v) for v in STEPS]); ax.minorticks_off()
-        ax.set_xlabel("걸음", fontsize=15); ax.set_title("서포트 벡터 3개의 α", fontsize=17, fontweight="bold"); ax.legend(loc="upper left", fontsize=14, frameon=False)
+        ax.set_xlabel("걸음", fontsize=15); ax.set_title("점 20개의 α", fontsize=17, fontweight="bold"); ax.legend(loc="upper left", fontsize=14, frameon=False)
         ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
         fig.tight_layout(w_pad=2.5); fig.savefig(mf.O + f"kn_learn{k}.png", dpi=150); plt.close(fig)
         out[t] = (n, round(float(M), 2), w.round(2).tolist(), round(float(b), 2))
@@ -445,35 +450,42 @@ def fig_learn():
 
 
 def fig_pull():
-    """왜 서포트 벡터만 남나 (만화): 길 안의 점은 고무줄로 가장자리 (자) 를 자기 쪽으로 당긴다 (α ↑). 길 밖의 점은 줄이 없다 (α → 0).
-    길이 좁아지면 당기는 점이 줄고, 닿은 점만 남는다. 학습 순서 (전부 → 일부 → 서포트 벡터) 와 같다."""
+    """왜 서포트 벡터만 남나: 길 안의 점은 고무줄로 가장자리 (자) 를 자기 쪽으로 당긴다 (α ↑), 길 밖이면 α ↓ 0.
+    점 6개 (특징 = 높이 하나, 좌우 위치는 그림용) 를 실제로 학습한 α · 길 폭 (η = 0.01, 3 · 40 · 300걸음)."""
     R = [(1.0, 1.0), (2.3, 1.7), (3.6, 2.4)]; B = [(1.7, -1.0), (3.0, -1.7), (0.5, -2.4)]
-    PAN = [(3.0, "① 처음: 길이 아주 넓다", "6개 모두 당긴다"), (2.0, "② 길이 좁아졌다", "먼 점은 손을 뗀다 (α → 0)"), (1.0, "③ 멈춤", "닿은 점만 버틴다 = 서포트 벡터")]
-    inside = [sum(abs(h) < M for _, h in R + B) for M, _, _ in PAN]
-    assert inside == [6, 4, 0] and sum(abs(h) == 1.0 for _, h in R + B) == 2
-    fig, axs = plt.subplots(1, 3, figsize=(14.4, 6.0))
-    for ax, (M, ttl, sub) in zip(axs, PAN):
-        ax.axhspan(-M, M, color=GOLD, alpha=0.14); ax.axhline(0, color="black", lw=2, ls=(0, (6, 4)))
+    pts = R + B; h = np.array([p[1] for p in pts]); y = np.sign(h)
+    _, _, H = kd.train_dual(np.outer(h, h), y, T=300, eta=0.01, etab=0.01, snaps=(3, 40, 300))
+    STEPS = [(3, "① 3걸음", "6개 모두 당긴다"), (40, "② 40걸음", "길 밖의 점은 α 가 줄어든다"), (300, "③ 300걸음: 멈춤", "닿은 점만 남는다 = 서포트 벡터")]
+    AL = {t: H[t][0] for t, _, _ in STEPS}; M = {t: 1 / float((H[t][0] * y) @ h) for t, _, _ in STEPS}
+    assert all(abs(H[t][1]) < 1e-9 for t in AL)
+    assert (AL[3] > 0).all() and [round(float(v), 2) for v in AL[40][:3]] == [0.21, 0.07, 0.0] and [round(float(v), 2) for v in AL[300]] == [0.5, 0, 0, 0.5, 0, 0]
+    assert [round(M[t], 2) for t, _, _ in STEPS] == [3.99, 1.55, 1.0]
+    fig, axs = plt.subplots(1, 3, figsize=(14.4, 6.6))
+    for ax, (t, ttl, sub) in zip(axs, STEPS):
+        m = M[t]; al = AL[t]
+        ax.axhspan(-m, m, color=GOLD, alpha=0.14); ax.axhline(0, color="black", lw=2, ls=(0, (6, 4)))
         for sgn in (1, -1):
-            ax.plot([-0.15, 4.25], [sgn * M, sgn * M], color="#8a6d2f", lw=9, solid_capstyle="round", zorder=3)
-        for pts, c, sgn in ((R, RED, 1), (B, BLUE, -1)):
-            for x, h in pts:
-                gap = M - abs(h)
-                if gap > 0:                                          # 길 안: 가장자리를 점 쪽으로 당긴다
-                    ax.annotate("", (x, h + sgn * 0.17), (x, sgn * M), arrowprops=dict(arrowstyle="-|>", lw=2 + 2.6 * gap, color=c, mutation_scale=20, shrinkA=0, shrinkB=0), zorder=4)
-                touch = abs(h) == M
-                if touch:
-                    ax.scatter(x, h, s=900, facecolors=GOLD, alpha=0.55, edgecolors="none", zorder=4)
-                    ax.text(x + 0.32, h - sgn * 0.42, "α > 0", color=c, fontsize=17, fontweight="bold", va="center")
-                faded = gap < 0
-                ax.scatter(x, h, s=190, color=c, alpha=0.35 if faded else 1, zorder=5)
-                if faded:
-                    ax.text(x, h + sgn * 0.36, "α = 0", color="#7a7a7a", fontsize=14, ha="center", va="center", zorder=5)
-        ax.set_title(ttl, fontsize=19, fontweight="bold", pad=10)
-        ax.text(2.05, -3.75, sub, fontsize=17, ha="center", fontweight="bold")
-        ax.set_xlim(-0.35, 4.55); ax.set_ylim(-4.05, 3.45); ax.axis("off")
-    fig.tight_layout(w_pad=1.5)
+            ax.plot([-0.15, 4.55], [sgn * m, sgn * m], color="#8a6d2f", lw=8, solid_capstyle="round", zorder=3)
+        for k, (x, hh) in enumerate(pts):
+            c, sgn = (RED, 1) if hh > 0 else (BLUE, -1)
+            gap = m - abs(hh); touch = abs(gap) < 0.02; zero = al[k] < 0.005
+            if gap > 0 and not touch:                              # 길 안: 가장자리를 점 쪽으로 당긴다
+                ax.annotate("", (x, hh + sgn * 0.19), (x, sgn * m), arrowprops=dict(arrowstyle="-|>", lw=1.8 + 1.7 * gap, color=c, mutation_scale=19, shrinkA=0, shrinkB=0), zorder=4)
+            if touch:
+                ax.scatter(x, hh, s=900, facecolors=GOLD, alpha=0.55, edgecolors="none", zorder=4)
+            ax.scatter(x, hh, s=190, color=c, alpha=0.35 if zero else 1, zorder=5)
+            inside = gap > 0.02
+            ty = hh - sgn * 0.12 if inside else hh + sgn * 0.42
+            if touch: ty = hh - sgn * 0.5
+            ax.text(x + (0.17 if inside else 0.08), ty, "α = 0" if zero else f"α = {al[k]:.2f}", color="#7a7a7a" if zero else c, fontsize=15.5 if not zero else 14,
+                    fontweight="normal" if zero else "bold", va="center", ha="left" if inside else "center", zorder=7,
+                    bbox=dict(fc="white", ec="none", alpha=0.85, pad=1.5))
+        ax.set_title(f"{ttl},  길 반폭 M = {m:.1f}", fontsize=18, fontweight="bold", pad=10)
+        ax.text(2.2, -4.75, sub, fontsize=17, ha="center", fontweight="bold")
+        ax.set_xlim(-0.35, 4.85); ax.set_ylim(-5.05, 4.3); ax.axis("off")
+    fig.tight_layout(w_pad=1.2)
     fig.savefig(mf.O + "kn_pull.png", dpi=150); plt.close(fig)
+    return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
 FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
