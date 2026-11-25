@@ -381,6 +381,24 @@ def fig_states():
     fig.savefig(mf.O + "kn_states.png"); plt.close(fig)
 
 
+def fig_parab():
+    """점 두 개 (x = ±1) 의 점수 J(α) = 2α − 2α²: 꼭대기 α = 0.5 → w = 2α = 1, 길 반폭 1"""
+    J = lambda a: 2 * a - 2 * a ** 2
+    g = np.linspace(0, 1, 201)
+    assert abs(g[J(g).argmax()] - 0.5) < 1e-9 and [J(a) for a in (0.25, 0.5, 1)] == [0.375, 0.5, 0]
+    BL, RD, GD = "#2E3192", "#d62728", "#f2b705"
+    fig, ax = plt.subplots(figsize=(11, 5.0)); ax.plot(g, J(g), color=BL, lw=5)
+    for a, c, txt, xy, ha in ((0.25, "#777777", "α = 0.25 :  w = 0.5\n힘이 약하다: 점이 길 안", (0.02, 0.55), "left"),
+                              (1.0, RD, "α = 1 :  w = 2\n너무 세다: 길이 좁다", (0.98, 0.27), "right")):
+        ax.scatter([a], [J(a)], s=150, color=c, zorder=4); ax.annotate(txt, (a, J(a)), xy, fontsize=17, color=c, ha=ha, va="center", linespacing=1.4, arrowprops=dict(arrowstyle="->", color=c, lw=1.6, shrinkB=8))
+    ax.scatter([0.5], [0.5], s=700, marker="*", color=GD, edgecolor="black", lw=1.4, zorder=5)
+    ax.text(0.5, 0.585, "꼭대기  α = 0.5 :  w = 1,  점이 가장자리에 딱  =  답", fontsize=18, fontweight="bold", ha="center")
+    ax.set_xlim(-0.03, 1.05); ax.set_ylim(-0.03, 0.66); ax.set_xticks([0, 0.25, 0.5, 0.75, 1]); ax.set_yticks([0, 0.25, 0.5])
+    ax.set_xlabel("α  (두 점이 당기는 힘)", fontsize=17); ax.set_ylabel("점수 J", fontsize=17); ax.tick_params(labelsize=13)
+    ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+    fig.tight_layout(); fig.savefig(mf.O + "kn_parab.png"); plt.close(fig)
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -550,7 +568,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
