@@ -289,7 +289,25 @@ def fig_alpha():
     mf.save(fig, "kn_alpha.png")
 
 
-FIGS = {"recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+def fig_nn():
+    """원 논문 (Boser 1992) 4장의 시험 오류율 (%): 숫자는 논문 본문 · 표 그대로.
+    DB1: 깨끗한 손글씨 1200장 (절반 학습), 직선 분류기끼리: 최대 마진 3.2 vs 평균제곱오차 (역전파 · 유사역행렬) 12.7.
+    DB2: 우편물 숫자 7300 학습 · 2000 시험: 최대 마진 다항 4차 4.9 vs 5층 신경망 (LeCun 1990, 같은 데이터) 5.1"""
+    cases = [("① 직선끼리 (DB1: 깨끗한 손글씨)", [("평균제곱오차 직선\n(역전파 · 유사역행렬)", 12.7, GRAY), ("최대 마진 직선", 3.2, RED)], 14.5),
+             ("② 우편물 숫자 (DB2)", [("5층 신경망\n(LeCun 1990)", 5.1, GRAY), ("최대 마진 + 다항 4차", 4.9, RED)], 6.2)]
+    fig, axs = plt.subplots(1, 2, figsize=(11.5, 4.6))
+    for ax, (ttl, bars, top) in zip(axs, cases):
+        for i, (name, v, c) in enumerate(bars):
+            ax.bar(i, v, color=c, width=0.6)
+            ax.text(i, v + top * 0.02, f"{v}%", ha="center", va="bottom", fontsize=19, fontweight="bold", color=c if c == RED else "#555555")
+        ax.set_xticks([0, 1]); ax.set_xticklabels([b[0] for b in bars], fontsize=14)
+        ax.set_ylim(0, top); ax.set_yticks([]); ax.set_title(ttl, fontsize=16)
+        for sp in ("left", "right", "top"):
+            ax.spines[sp].set_visible(False)
+    mf.save(fig, "kn_nn.png")
+
+
+FIGS = {"nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
