@@ -372,7 +372,34 @@ def fig_overlap():
     return int(bad.sum())
 
 
-FIGS = {"cos": mf.fig_cos, "overlap": fig_overlap, "soft": mf.fig_soft, "soft9": mf.fig_soft9, "nails": fig_nails, "nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+def fig_saddle():
+    """안장점 예 (w 하나, 조건 하나): ½w² 최소, 조건 w ≥ 1  →  L(w, α) = ½w² − α(w − 1). 답 w = 1, α = 1, L = 0.5.
+    α = 1 에서 w 방향 = 골짜기 (최소). 각 α 에서 w 를 최소로 고른 값 (w = α) = α − ½α² 은 α = 1 에서 봉우리 (최대) = J"""
+    L = lambda w, a: 0.5 * w ** 2 - a * (w - 1)
+    g = np.linspace(-0.2, 2.2, 481)
+    assert abs(g[np.argmin(L(g, 1.0))] - 1) < 1e-9 and abs(g[np.argmax(g - 0.5 * g ** 2)] - 1) < 1e-9 and L(1, 1) == 0.5
+    assert np.allclose(L(g, g), g - 0.5 * g ** 2)
+    BL, RD = "#2E3192", "#d62728"
+    fig = plt.figure(figsize=(15, 5.6)); gs = fig.add_gridspec(1, 3, width_ratios=[1.25, 1, 1], wspace=0.28)
+    ax = fig.add_subplot(gs[0], projection="3d", computed_zorder=False)
+    W, A = np.meshgrid(np.linspace(-0.2, 2.2, 60), np.linspace(-0.2, 2.2, 60))
+    ax.plot_surface(W, A, L(W, A), cmap="YlOrBr", alpha=0.55, linewidth=0, zorder=1)
+    ax.plot(g, np.ones_like(g), L(g, 1.0), color=BL, lw=3.5, zorder=3); ax.plot(g, g, L(g, g), color=RD, lw=3.5, zorder=3)
+    ax.scatter([1], [1], [0.5], s=140, color="black", zorder=5)
+    ax.set_xlabel("w", fontsize=15); ax.set_ylabel("α", fontsize=15); ax.set_zlabel("L", fontsize=15); ax.view_init(elev=24, azim=-58)
+    ax.set_xticks([0, 1, 2]); ax.set_yticks([0, 1, 2]); ax.set_zticks([0, 1, 2]); ax.set_title("말안장 모양, 검은 점 = 안장점", fontsize=16)
+    for k, (col, x, y, xl, ttl, lab) in enumerate((
+            (BL, g, L(g, 1.0), "w", "① α = 1 에서 w 방향: 골짜기 = 최소", "w = 1"),
+            (RD, g, g - 0.5 * g ** 2, "α", "② α 마다 w 를 최소로 → α 방향: 봉우리 = 최대", "α = 1"))):
+        a2 = fig.add_subplot(gs[k + 1]); a2.plot(x, y, color=col, lw=3.5); a2.scatter([1], [0.5], s=140, color="black", zorder=5)
+        a2.annotate(f"{lab}, L = 0.5", (1, 0.5), (1, 1.05 if k == 0 else 0.05), ha="center", fontsize=15, fontweight="bold", arrowprops=dict(arrowstyle="->", lw=1.5))
+        a2.set_xlabel(xl, fontsize=17); a2.set_ylabel("L", fontsize=15, rotation=0, labelpad=10); a2.set_title(ttl, fontsize=15, color=col, fontweight="bold")
+        a2.set_xlim(-0.2, 2.2); a2.set_ylim(-0.3, 1.6); a2.set_xticks([0, 1, 2]); a2.spines["top"].set_visible(False); a2.spines["right"].set_visible(False)
+    fig.subplots_adjust(left=0.01, right=0.99, top=0.9, bottom=0.12)
+    fig.savefig(mf.O + "kn_saddle.png"); plt.close(fig)
+
+
+FIGS = {"saddle": fig_saddle, "cos": mf.fig_cos, "overlap": fig_overlap, "soft": mf.fig_soft, "soft9": mf.fig_soft9, "nails": fig_nails, "nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
