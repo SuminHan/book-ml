@@ -277,33 +277,16 @@
 \note{최대 마진 초평면을 찾는 문제를 원 논문, Boser, Guyon, Vapnik 1992년 논문의 식 9 그대로 쓰면 이렇습니다. 학습 데이터가 p개, 특징이 n개이고 라벨은 클래스 A면 플러스 1, B면 마이너스 1입니다. 점 번호는 k, 특징 번호는 i로 씁니다. w1부터 wn과 b, 그리고 마진 M을 골라서 M을 최대로 합니다. 조건은 두 가지입니다. w1부터 wn까지의 제곱합이 1, 그리고 모든 점에서 라벨 곱하기 초평면 식의 값이 M 이상. 앞 쪽에서 읽은 2차원 식을 특징이 n개인 경우로 그대로 늘린 것입니다.}
 \end{frame}
 
-% --- 두 식 잇기 (논문 식 9 → 10 → 11)
-\begin{frame}{같은 문제, 두 가지 쓰기}
-\vfill
-\centering
-\renewcommand{\arraystretch}{1.4}
-{\large\begin{tabular}{rl}
-$M$ 을 따로 두면 & $\displaystyle M^* = \max_{\mathbf{w},\, b,\ \lVert\mathbf{w}\rVert = 1} M$ \quad 조건: 모든 $k$ 에서 $y_k D(\mathbf{x}_k) \ge M$\\[1.1em]
-\textbf{선 하나}를 정하면 & 모든 거리가 $M$ 이상이어야 하니, $M$ 은 \kq{가장 작은 거리}까지만\\
- & $\to$ 그 선의 $M \;=\; \displaystyle\min_{k}\, y_k D(\mathbf{x}_k)$\\[1.1em]
-$M$ 자리에 넣으면 & $\displaystyle M^* = \max_{\mathbf{w},\, b,\ \lVert\mathbf{w}\rVert = 1}\ \min_{k}\ y_k D(\mathbf{x}_k)$
-\end{tabular}}\\[0.9em]
-{\normalsize 평균 선의 $M$ 은 0.62, \;SVM 선은 \kb{0.67}, 이게 가장 크다 $\to$ $M^* = 0.67$}\\[0.2em]
-{\normalsize 거리가 $M^*$ 인 점 = 서포트 벡터}
-\vfill
-\note{방금 본 식과 앞으로 학습에서 쓸 식이 같은 문제라는 것을 봅시다. 위 식은 원 논문의 식 9입니다. 마진 M이라는 숫자를 따로 두고, 모든 점에서 y k D x k가 M 이상이라는 조건을 지키면서 M을 가장 크게 합니다. 그러면 이 M은 어디까지 키울 수 있을까요. 모든 점이 M 이상이어야 하니, 가장 가까운 점의 거리를 넘는 순간 그 점이 조건을 어깁니다. 그래서 선을 하나 정하면, 그 선의 M은 가장 작은 y k D x k, 가장 가까운 점의 거리입니다. 선마다 이 M이 하나씩 정해지고, 그중 가장 큰 것을 M 별이라고 씁니다. 가장 좋은 선에서 가장 작은 거리가 M 별이라는 것이 논문 식 10입니다. 그러니 M 자리에 min을 바로 써 넣을 수 있고, 그것이 아래 식, 논문 식 11입니다. 두 식은 모양만 다르고 답이 같습니다. 평균 선에서는 M을 0.62까지 키울 수 있고, 0.63이면 가장 가까운 빨간 점이 조건을 어깁니다. SVM 선에서는 0.67까지 키울 수 있고, 어떤 선보다 큽니다. 다음 쪽에서 이 한 줄짜리 식을 조각마다 다시 읽고, 그다음에 이것을 푸는 방법을 봅니다.}
-\end{frame}
-
 \section{학습}
 % --- 학습 0: 숫자 3개 찾기
 \begin{frame}{푸는 식: 가장 가까운 점을 경계에서 가장 멀리}
 \vfill
 \centering
 \vspace*{2.1cm}
-{\LARGE $\tikzmarknode{mx}{\displaystyle\max_{\mathbf{w},\, b,\ \lVert\mathbf{w}\rVert = 1}}\ \ \ \tikzmarknode{mn}{\displaystyle\min_{k}}\ \ \ \tikzmarknode{yd}{y_k D(\mathbf{x}_k)}$}
+{\LARGE $M^* = \ \tikzmarknode{mx}{\displaystyle\max_{\mathbf{w},\, b,\ \lVert\mathbf{w}\rVert = 1}}\ \ \ \tikzmarknode{mn}{\displaystyle\min_{k}}\ \ \ \tikzmarknode{yd}{y_k D(\mathbf{x}_k)}$}
 \begin{tikzpicture}[remember picture,overlay]
-\node[bub,anchor=south west] (b1) at ([xshift=-0.25cm,yshift=0.6cm]yd.north east) {\textbf{점 $\mathbf{x}_k$ 에서 경계까지 거리}\\ ($\lVert\mathbf{w}\rVert = 1$ 이라 값 = 거리)};
-\draw[bubarr] (b1.west) to[out=180,in=60] (yd.north);
+\node[bub,anchor=south west] (b1) at ([xshift=-1.15cm,yshift=0.6cm]yd.north east) {\textbf{점 $\mathbf{x}_k$ 에서 경계까지 거리}\\ ($\lVert\mathbf{w}\rVert = 1$ 이라 값 = 거리)};
+\draw[bubarr] ([xshift=-0.6cm]b1.south) -- (yd.north);
 \node[bub,anchor=south] (b2) at ([xshift=-1.2cm,yshift=0.7cm]mn.north) {\textbf{점 $p$ 개의 거리 중 가장 작은 것}\\ = 가장 가까운 점의 거리 = 마진 $M$};
 \draw[bubarr] (b2.south) -- (mn.north);
 \node[bub,anchor=north] (b3) at ([xshift=0.4cm,yshift=-0.6cm]mx.south) {\textbf{선을 돌리고 ($\mathbf{w}$) 옮기며 ($b$) 그 거리를 가장 크게}\\ $\lVert\mathbf{w}\rVert = 1$: $\mathbf{w}$ 길이 고정 (안 묶으면 값이 끝없이 커진다)};
@@ -313,7 +296,7 @@ $M$ 자리에 넣으면 & $\displaystyle M^* = \max_{\mathbf{w},\, b,\ \lVert\ma
 {\normalsize 예: 평균 선은 가장 가까운 점까지 0.62, \;SVM 선은 \kb{0.67} $\to$ 더 큰 SVM 선이 답}\\[0.3em]
 {\normalsize 방법: \kq{가장 가까운 점}이 민다 (min) $\to$ 그 거리가 커진다 (max) $\to$ $\mathbf{w}$ 길이 1 로 $\to$ 반복}
 \vfill
-\note{이제 이 경계를 어떻게 찾는지 봅시다. 원 논문은 찾는 것을 한 줄로 씁니다. max min y k D x k입니다. 안쪽부터 읽습니다. 첫째, y k D x k는 점 k의 값에 라벨을 곱한 것이고, w의 길이를 1로 묶어 두었으니 점 k에서 경계까지의 거리입니다. 틀린 쪽에 있는 점이면 음수가 됩니다. 둘째, min k는 점 20개의 거리 중 가장 작은 것, 즉 경계에 가장 가까운 점까지의 거리를 고릅니다. 이것이 마진 M입니다. 셋째, 바깥의 max는 w와 b를 바꿔 가며, 즉 경계를 돌리고 옮겨 가며 그 가장 작은 거리를 가장 크게 만듭니다. 그래서 전체는 가장 가까운 점을 경계에서 가장 멀리 두는 선을 찾으라는 뜻이고, 앞에서 본 가장 넓은 길과 같은 말입니다. 원 논문은 max 아래에 w만 적지만, b도 같이 바꿔 가며 고르기 때문에 여기서는 b도 적었습니다. 아래 첨자에 w의 길이가 1이라고 적은 것은, 이 조건이 없으면 w를 두 배, 세 배 키우기만 해도 값이 커져서 max가 끝없이 커지기 때문입니다. 우리가 정할 숫자는 w1, w2, b 셋이고, 방법은 다음 쪽부터 봅니다. 가장 가까운 점이 선을 밀고, w의 길이를 다시 1로 맞추는 것을 반복합니다. 가장 가까운 점이 미는 것이 min이고, 밀어서 그 거리를 키우는 것이 max입니다.}
+\note{방금 본 M 최대, 모든 점이 M 이상이라는 문제를 원 논문은 한 줄로도 씁니다. 선 하나를 정하면 모든 점이 M 이상이어야 하니 M은 가장 가까운 점의 거리까지만 커질 수 있습니다. 그래서 M 자리에 가장 작은 거리, min을 바로 쓸 수 있습니다. M 별은 모든 선 중에서 가장 큰 마진이고, 이 데이터에서는 0.67입니다. 거리가 M 별인 점이 서포트 벡터입니다. max min y k D x k입니다. 안쪽부터 읽습니다. 첫째, y k D x k는 점 k의 값에 라벨을 곱한 것이고, w의 길이를 1로 묶어 두었으니 점 k에서 경계까지의 거리입니다. 틀린 쪽에 있는 점이면 음수가 됩니다. 둘째, min k는 점 20개의 거리 중 가장 작은 것, 즉 경계에 가장 가까운 점까지의 거리를 고릅니다. 이것이 마진 M입니다. 셋째, 바깥의 max는 w와 b를 바꿔 가며, 즉 경계를 돌리고 옮겨 가며 그 가장 작은 거리를 가장 크게 만듭니다. 그래서 전체는 가장 가까운 점을 경계에서 가장 멀리 두는 선을 찾으라는 뜻이고, 앞에서 본 가장 넓은 길과 같은 말입니다. 원 논문은 max 아래에 w만 적지만, b도 같이 바꿔 가며 고르기 때문에 여기서는 b도 적었습니다. 아래 첨자에 w의 길이가 1이라고 적은 것은, 이 조건이 없으면 w를 두 배, 세 배 키우기만 해도 값이 커져서 max가 끝없이 커지기 때문입니다. 우리가 정할 숫자는 w1, w2, b 셋이고, 방법은 다음 쪽부터 봅니다. 가장 가까운 점이 선을 밀고, w의 길이를 다시 1로 맞추는 것을 반복합니다. 가장 가까운 점이 미는 것이 min이고, 밀어서 그 거리를 키우는 것이 max입니다.}
 \end{frame}
 
 % --- 출발: 0걸음 → 1걸음
