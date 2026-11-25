@@ -251,7 +251,19 @@ def fig_fold():
     s = np.linspace(-10, 10, 2); d = np.array([-WA[1], WA[0]]); seg = lambda c: (c - BA) * WA[:, None] + d[:, None] * s
     ax.plot(*seg(0), color="black", lw=2.5); ax.plot(*seg(MA), "--", color=GOLD, lw=2)
     Q = np.where(sv)[0]; ax.scatter(Xf[Q, 0], Xf[Q, 1], s=330, facecolors="none", edgecolors=GOLD, lw=2.5, zorder=4)
-    ax.text(2.1, -2.05, f"접은 뒤 가장 가까운 거리\nM = {MA:.2f}", fontsize=13, color=GOLDT, ha="right", bbox=dict(fc="white", ec="none", alpha=0.9))
+    ax.text(2.1, -2.05, f"접은 뒤 가장 가까운 거리\n$M$ = {MA:.2f}", fontsize=13, color=GOLDT, ha="right", bbox=dict(fc="white", ec="none", alpha=0.9))
+    # 마진 M 표시: 서포트 벡터에서 경계(거울)까지 수선, 글자는 화살표 바로 옆 (경계를 따라 조금 비켜서)
+    side = np.array([1.0, -1.0]) / np.sqrt(2)
+    def mark(ax, p):
+        d = p @ WA + BA; foot = p - d * WA
+        ax.annotate("", foot, p, arrowprops=dict(arrowstyle="<->", color="black", lw=2.4, shrinkA=5, shrinkB=0, mutation_scale=16), zorder=7)
+        ax.text(*((p + foot) / 2 + 0.19 * side), "$M$", fontsize=17, fontweight="bold", ha="center", va="center", zorder=8,
+                bbox=dict(fc="white", ec="none", pad=0.6, alpha=0.9))
+    for p in X[sv]:
+        mark(axs[0], p)
+    for p in Xf[Q]:
+        mark(axs[1], p)
+    axs[0].text(-2.05, -2.05, f"$M$ = {MA:.2f}", fontsize=17, fontweight="bold")
     save(fig, "sv_fold.png")
 
 
