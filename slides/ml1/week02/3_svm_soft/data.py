@@ -16,11 +16,13 @@ assert NEW_TERMS == [0.32, 0.1, -0.21] and round(_d2.B_STAR, 2) == 0.05 and roun
 assert abs(NEW_F - (np.dot(_d2.W_STAR, NEW_PT) + _d2.B_STAR)) < 0.01      # w*·x + b* 와 같다
 assert round(NEW_F * _d2.M_ANS, 2) == 0.18                              # 거리 = D × M
 # ---- α 학습: 논문 식 (17) J(α, b) = Σ α_k(1 − b y_k) − ½ α·H·α 를 조금씩 키운다 (α ≥ 0).
-def train_dual(G, y, T=20000, eta=0.05, etab=0.05, snaps=()):
+def train_dual(G, y, T=20000, eta=0.05, etab=0.05, snaps=(), a0=None):
     """한 걸음: 값 = y_k D(x_k), D(x_k) = Σ_l α_l y_l G_lk + b.  α_k ← max(0, α_k + η(1 − 값))  (∂J/∂α_k = 1 − y_k D(x_k)),
     b ← b + η_b Σ α_k y_k  (J 의 b 방향은 안장점: Σ α y = 0 이 되면 멈춘다). J 는 논문 식, 이렇게 조금씩 올라가는 방법은 수업용 선택 (논문은 Powell, sklearn 은 SMO).
     hist[t] = t 걸음 뒤의 (α, b)"""
-    a, b, hist = np.zeros(len(y)), 0.0, {}
+    a, b, hist = np.zeros(len(y)) if a0 is None else np.array(a0, float), 0.0, {}
+    if 0 in snaps:
+        hist[0] = (a.copy(), b)
     for t in range(1, T + 1):
         v = y * (G @ (a * y) + b)
         a = np.maximum(0.0, a + eta * (1 - v))
@@ -30,17 +32,19 @@ def train_dual(G, y, T=20000, eta=0.05, etab=0.05, snaps=()):
     return a, float(b), hist
 
 
-AL_STEPS = (1, 2, 3, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000)
+AL_STEPS = (0, 1, 2, 3, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000)
 _X20 = np.array(_d2.RED_PTS + _d2.BLUE_PTS, float); _y20 = np.r_[np.ones(10), -np.ones(10)]
-AL20, BL20, AL_HIST = train_dual(_X20 @ _X20.T, _y20, snaps=AL_STEPS)
+A0 = np.where(_y20 > 0, 1 / (_y20 > 0).sum(), 1 / (_y20 < 0).sum())   # 시작: 같은 색 점 수 분의 1 → w = 빨강 평균 − 파랑 평균, Σ α y = 0
+AL20, BL20, AL_HIST = train_dual(_X20 @ _X20.T, _y20, snaps=AL_STEPS, a0=A0)
 _isv = [_X20.tolist().index(list(s)) for s in _d2.SV]
 AL_TABLE = {}                                                    # 걸음: ([α r, b1, b2], α > 0 인 점 수, (w1, w2), b)
-for t in (1, 10, 50, 100, 500, 20000):
+for t in (0, 1, 10, 50, 100, 500, 20000):
     al, bb = AL_HIST[t]; w = (al * _y20) @ _X20
     AL_TABLE[t] = ([round(float(al[i]), 2) for i in _isv], int((al > 1e-6).sum()), (round(float(w[0]), 2), round(float(w[1]), 2)), round(bb, 2) + 0.0)
 assert [round(float(AL20[i]), 3) for i in _isv] == [1.108, 0.554, 0.554] and int((AL20 > 1e-6).sum()) == 3   # 논문 α* 와 sklearn 과 같다
 assert np.allclose((AL20 * _y20) @ _X20, _d2.W_STAR, atol=2e-3) and abs(BL20 - _d2.B_STAR) < 2e-3
-assert AL_TABLE[1][2] == (0.83, 0.91) == _d2.MEAN_W                                        # 1걸음 = 평균 선
+_w0 = (A0 * _y20) @ _X20
+assert np.allclose(_w0, _X20[_y20 > 0].mean(0) - _X20[_y20 < 0].mean(0)) and np.allclose(_w0 / 2, _d2.MEAN_W, atol=0.006) and abs(A0 @ _y20) < 1e-12   # 0걸음 = 평균 선
 
 # 소프트 마진 (Cortes · Vapnik 1995): 같은 학습에서 α 를 C 에서 자른다 → sklearn SVC(C) 와 같은 선
 _Xo = np.r_[_X20, [_d2.OUTLIER]]; _yo = np.r_[_y20, [1]]; _Go = _Xo @ _Xo.T

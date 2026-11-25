@@ -222,8 +222,8 @@ def fig_alpha():
         ax.plot(ts, H[:, i], color=c, lw=3, marker="o" if c == RED else "s", ms=5, zorder=3)
         ax.text(ts[-1] * 1.25, H[-1, i] + (0.06 if s == mf.SV[2] else -0.06 if s == mf.SV[1] else 0), f"({s[0]:g}, {s[1]:g})  α = {H[-1, i]:.2f}".replace("-", "−"), color=c, fontsize=14, va="center", fontweight="bold")
     ax.text(ts[-1] * 1.25, 0.0, "나머지 17개  α = 0", color="#555555", fontsize=14, va="center")
-    ax.plot([0.8, ts[-1]], [0, 0], color="black", lw=0.8); ax.set_ylim(-0.06, 1.28)
-    ax.set_xscale("log"); ax.set_xlim(0.8, ts[-1] * 9); ax.set_xticks([1, 10, 100, 1000, 10000]); ax.set_xticklabels(["1", "10", "100", "1000", "1만"])
+    ax.plot([-0.25, ts[-1]], [0, 0], color="black", lw=0.8); ax.set_ylim(-0.06, 1.28)
+    ax.set_xscale("symlog", linthresh=1); ax.set_xlim(-0.25, ts[-1] * 9); ax.set_xticks([0, 1, 10, 100, 1000, 10000]); ax.set_xticklabels(["0", "1", "10", "100", "1000", "1만"]); ax.minorticks_off()
     ax.set_xlabel("걸음", fontsize=15); ax.set_ylabel("$\\alpha_k$", fontsize=16, rotation=0, labelpad=14); ax.tick_params(labelsize=12)
     ax.spines["right"].set_visible(False); ax.spines["top"].set_visible(False)
     mf.save(fig, "kn_alpha.png")
@@ -516,9 +516,9 @@ def fig_equiv():
 
 def fig_learn():
     """α 학습 (J 를 키우는 두 줄) 이 진행되며 선이 자리를 잡는 모습. 점 둘레 원 크기 = α. kn_learn1..6.png"""
-    X, y = np.array(mf.X, float), np.array(mf.y, float); STEPS = [1, 10, 20, 50, 100, 500]
-    ts = sorted(set(STEPS) | set(int(round(v)) for v in np.logspace(0, np.log10(500), 60)))
-    _, _, H = kd.train_dual(X @ X.T, y, T=500, snaps=tuple(ts))
+    X, y = np.array(mf.X, float), np.array(mf.y, float); STEPS = [0, 1, 10, 50, 100, 500]
+    ts = sorted(set(STEPS) | set(range(21)) | set(int(round(v)) for v in np.logspace(0, np.log10(500), 60)))
+    _, _, H = kd.train_dual(X @ X.T, y, T=500, snaps=tuple(ts), a0=kd.A0)
     isv = [X.tolist().index(list(p)) for p in kd._d2.SV]
     wf = (H[500][0] * y) @ X
     assert np.allclose(wf, kd._d2.W_STAR, atol=5e-3) and int((H[500][0] > 1e-6).sum()) == 3
@@ -530,7 +530,7 @@ def fig_learn():
         ax = axs[0]; Z = w[0] * GX + w[1] * GY + b
         ax.contourf(GX, GY, Z, levels=[-1, 1], colors=[GOLD], alpha=0.13)
         ax.contour(GX, GY, Z, levels=[-1, 0, 1], colors=[BLUE, "black", RED], linestyles=["--", "-", "--"], linewidths=[1.4, 3, 1.4])
-        if t > 1:                                                   # 바로 앞 장면의 선 (옅게)
+        if k > 1:                                                   # 바로 앞 장면의 선 (옅게)
             a0, b0 = H[STEPS[k - 2]]; w0 = (a0 * y) @ X
             ax.contour(GX, GY, w0[0] * GX + w0[1] * GY + b0, levels=[0], colors="#6f6f6f", linestyles=":", linewidths=3.2)
         on = a > 1e-6
@@ -547,7 +547,7 @@ def fig_learn():
         for j, (lab, c, ls) in enumerate((("빨강 r", RED, "-"), ("파랑 b1", BLUE, "-"), ("파랑 b2", BLUE, "--"))):
             ax.plot(np.array(ts)[m], cur[m, j], color=c, ls=ls, lw=3, label=f"{lab}: α = {a[isv[j]]:.2f}")
             ax.scatter([t], [a[isv[j]]], color=c, s=70, zorder=5)
-        ax.set_xscale("log"); ax.set_xlim(0.9, 620); ax.set_ylim(0, 1.3); ax.set_xticks(STEPS); ax.set_xticklabels([str(v) for v in STEPS]); ax.minorticks_off()
+        ax.set_xscale("symlog", linthresh=1); ax.set_xlim(-0.2, 620); ax.set_ylim(0, 1.3); ax.set_xticks(STEPS); ax.set_xticklabels([str(v) for v in STEPS]); ax.minorticks_off()
         ax.set_xlabel("걸음", fontsize=15); ax.set_title("점 20개의 α", fontsize=17, fontweight="bold"); ax.legend(loc="upper left", fontsize=14, frameon=False)
         ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
         fig.tight_layout(w_pad=2.5); fig.savefig(mf.O + f"kn_learn{k}.png", dpi=150); plt.close(fig)
@@ -559,25 +559,18 @@ def fig_rock():
     """실제 점 20개를 학습할 때 두 자가 도는 모습 (스프링 · 못 · 고무줄, 파란 칠 = 길 안), 한 쪽에 세 장면씩 3쪽: kn_rock9_1..3.png.
     고무줄 = 길 안의 점에서 자기 쪽 자까지, 굵기 · 금색 원 = α, 회색 점선 = 앞 장면의 경계"""
     X, y = np.array(mf.X, float), np.array(mf.y, float); STEPS = [0, 1, 2, 3, 13, 25, 50, 98, 500]
-    _, _, H = kd.train_dual(X @ X.T, y, T=500, snaps=tuple(STEPS[1:]))
+    _, _, H = kd.train_dual(X @ X.T, y, T=500, snaps=tuple(STEPS), a0=kd.A0)
     def info(t):
         a, b = H[t]; w = (a * y) @ X; return a, b, w, float(np.degrees(np.arctan2(w[1], w[0]))), float(1 / np.linalg.norm(w))
-    got = [(t, round(info(t)[3]), round(info(t)[4], 2)) for t in STEPS[1:]]
-    assert got == [(1, 48, 0.81), (2, 54, 1.96), (3, 52, 1.12), (13, 53, 0.94), (25, 51, 0.88), (50, 46, 0.76), (98, 42, 0.69), (500, 45, 0.67)], got
+    got = [(t, round(info(t)[3]), round(info(t)[4], 2)) for t in STEPS]
+    assert got == [(0, 48, 0.41), (1, 57, 2.83), (2, 51, 1.0), (3, 54, 1.32), (13, 53, 0.92), (25, 51, 0.87), (50, 46, 0.75), (98, 42, 0.69), (500, 45, 0.67)], got
+    ins = [int((y * (X @ info(t)[2] + H[t][1]) < 1 - 1e-3).sum()) for t in (0, 1)]; assert ins == [0, 20], ins
     BAND, RULER = "#1B7F3B", "#6b6b6b"; g = np.array([-4.0, 4.0])
     line = lambda c, w_, b_: (c - b_ - w_[0] * g) / w_[1]
     for page in range(3):
         fig, axs = plt.subplots(1, 3, figsize=(15, 5.7))
         for k, ax in zip(range(3 * page, 3 * page + 3), axs):
             t = STEPS[k]
-            if t == 0:                                                      # α 모두 0: w = 0, 길이 끝없이 넓다 (자는 화면 밖)
-                ax.set_facecolor("#dde6f6")
-                zz = np.array([(-2.3, 1.75)] + [(-2.05 + 4.1 * (i + 0.5) / 12, 1.75 + (0.17 if i % 2 == 0 else -0.17)) for i in range(12)] + [(2.3, 1.75)])
-                ax.plot(*zz.T, color="#333333", lw=2.2, zorder=2.5)
-                ax.scatter(X[:, 0], X[:, 1], c=np.where(y > 0, RED, BLUE), s=60, edgecolor="black", lw=0.6, zorder=5)
-                ax.set_xlim(-2.3, 2.3); ax.set_ylim(-2.3, 2.3); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
-                ax.set_title("0 걸음 (α 모두 0)\n선 없음,  길 반폭 M = ∞", fontsize=18, fontweight="bold", linespacing=1.4)
-                continue
             a, b, w, th, M = info(t); D = X @ w + b; n2 = w @ w
             ax.fill_between(g, line(-1, w, b), line(1, w, b), color="#dde6f6", zorder=0.5)           # 길 안쪽
             nv = w / np.sqrt(n2); dv = np.array([-nv[1], nv[0]])                                     # 스프링: 두 자 사이, 점이 없는 왼쪽 위
@@ -587,7 +580,7 @@ def fig_rock():
             ax.plot(*zz.T, color="#333333", lw=2.2, zorder=2.5)
             for c in (1, -1): ax.plot(g, line(c, w, b), color=RULER, lw=5, solid_capstyle="butt", zorder=2)
             ax.plot(g, line(0, w, b), color="black", ls="--", lw=2, zorder=2)
-            if k > 1:
+            if k > 0:
                 _, b0, w0, _, _ = info(STEPS[k - 1]); ax.plot(g, line(0, w0, b0), color="#bbbbbb", ls=":", lw=3, zorder=1.5)
             for pt, yy, d, al in zip(X, y, D, a):
                 if al > 1e-6 and yy * d < 1 - 1e-3:                                  # 고무줄: 점 → 자기 쪽 자 (D = y)
@@ -596,7 +589,7 @@ def fig_rock():
             on = a > 1e-6
             ax.scatter(X[on, 0], X[on, 1], s=140 + 800 * a[on], facecolors="none", edgecolors=BAND, linewidths=2, zorder=3.5)
             ax.scatter(X[:, 0], X[:, 1], c=np.where(y > 0, RED, BLUE), s=60, edgecolor="black", lw=0.6, zorder=5)
-            ax.set_xlim(-2.3, 2.3); ax.set_ylim(-2.3, 2.3); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+            ax.set_xlim(-3.1, 3.1); ax.set_ylim(-3.1, 3.1); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
             ax.set_title(f"{t} 걸음\n방향 {th:.0f}°,  길 반폭 M = {M:.2f}", fontsize=18, fontweight="bold", linespacing=1.4)
         fig.tight_layout(w_pad=1.5); fig.savefig(mf.O + f"kn_rock9_{page + 1}.png", dpi=150); plt.close(fig)
     return got

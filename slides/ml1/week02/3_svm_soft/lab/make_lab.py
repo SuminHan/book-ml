@@ -43,11 +43,11 @@ def plot_svm(model, X, y, ax=None, title=""):
     ax.set_aspect("equal"); ax.set_title(title)"""),
 ("md", """## 파트 1. $\\alpha$ 를 $J$ 로 직접 학습
 
-점마다 $\\alpha_k \\ge 0$ 하나. 한 걸음: $\\alpha_k \\leftarrow \\max(0,\\ \\alpha_k + \\eta(1 - y_k D(\\mathbf{x}_k)))$, $b \\leftarrow b + \\eta\\sum_k \\alpha_k y_k$, 여기서 $D(\\mathbf{x}) = \\sum_l \\alpha_l y_l (\\mathbf{x}_l\\cdot\\mathbf{x}) + b$. 끝나면 $\\mathbf{w} = \\sum_k \\alpha_k y_k \\mathbf{x}_k$."""),
+점마다 $\\alpha_k \\ge 0$ 하나. 시작은 $\\alpha_k = 1/$(같은 색 점 수), $b = 0$ ($\\mathbf{w}$ = 빨강 평균 − 파랑 평균). 한 걸음: $\\alpha_k \\leftarrow \\max(0,\\ \\alpha_k + \\eta(1 - y_k D(\\mathbf{x}_k)))$, $b \\leftarrow b + \\eta\\sum_k \\alpha_k y_k$, 여기서 $D(\\mathbf{x}) = \\sum_l \\alpha_l y_l (\\mathbf{x}_l\\cdot\\mathbf{x}) + b$. 끝나면 $\\mathbf{w} = \\sum_k \\alpha_k y_k \\mathbf{x}_k$."""),
 ("code", """# Learn alpha by increasing J (dual problem)
 def train_dual(X, y, steps=20000, eta=0.05):
     G = X @ X.T                                            # dot products x_k . x_l
-    a, b = np.zeros(len(y)), 0.0
+    a, b = np.where(y > 0, 1 / (y > 0).sum(), 1 / (y < 0).sum()), 0.0   # start: w = red mean - blue mean
     for t in range(steps):
         v = y * (G @ (a * y) + b)                          # y_k D(x_k)
         a = np.maximum(0, a + eta * (1 - v))              #@ANS a = None  # TODO: push alpha by (1 - v), keep it >= 0
