@@ -236,6 +236,22 @@ sklearn 답 & 1.11 & 0.55 & 0.55 & 3개 & $(1.05,\ 1.05)$ & 0.05
 \note{지난 시간의 점 20개로 실제로 돌린 숫자입니다. 처음에는 알파와 b가 모두 0이라 모든 점의 값이 0이고, 1에서 1만큼 모자라니 20개 알파가 모두 학습률 0.05가 됩니다. 그러면 w는 0.05 곱하기 y x의 합, 0.83, 0.91입니다. 지난 시간에 가장 쉬운 방법으로 본 평균 선의 w와 숫자까지 같습니다. 20개의 평균은 합을 20으로 나눈 것이고, 0.05는 20분의 1이기 때문입니다. 걸음을 반복하면 여유 있는 점의 알파는 줄어서 0이 됩니다. 알파가 0보다 큰 점이 10걸음에 11개, 50걸음에 4개, 100걸음에 3개입니다. 500걸음이면 알파가 1.11, 0.55, 0.55, w가 1.05, 1.05, b가 0.05로 sklearn의 답과 같습니다. 덱의 다른 쪽에서 빨강 알파를 1.1로 쓰는 것은 파랑 두 개 0.55를 더한 값으로 맞춰 쓴 것이고, 정확한 값은 1.108입니다.}
 \end{frame}
 
+% --- 학습 과정 (클릭해서 넘김)
+\begin{frame}{$\alpha$ 를 학습하면: 선이 자리를 잡는 과정}
+\vfill
+\centering
+\only<1>{\includegraphics[width=0.88\linewidth]{kn_learn1.png}}%
+\only<2>{\includegraphics[width=0.88\linewidth]{kn_learn2.png}}%
+\only<3>{\includegraphics[width=0.88\linewidth]{kn_learn3.png}}%
+\only<4>{\includegraphics[width=0.88\linewidth]{kn_learn4.png}}%
+\only<5>{\includegraphics[width=0.88\linewidth]{kn_learn5.png}}%
+\only<6>{\includegraphics[width=0.88\linewidth]{kn_learn6.png}}%
+\par\vskip0.4em
+{\large \textcolor{ksagolddk}{\textbf{금색 원}} 크기 = $\alpha_k$ \qquad 점선 \textcolor{gray}{회색} = 앞 장면의 선}
+\vfill
+\note{알파를 학습하면서 선이 어떻게 자리를 잡는지 한 장면씩 넘겨 봅시다. 점 둘레의 금색 원이 클수록 그 점의 알파가 큽니다. 처음 한 걸음에는 20개 모두 알파가 생겨서, 선은 두 색의 평균을 가르는 평균 선입니다. 열 걸음이 되면 멀리 있는 점들은 값이 1을 넘어 알파가 줄기 시작해 11개가 남습니다. 20걸음에는 9개, 50걸음에는 4개입니다. 100걸음이면 서포트 벡터 3개만 남고, 이제는 세 점의 알파 사이의 균형만 맞춥니다. 500걸음에 알파가 1.11, 0.55, 0.55가 되고 선은 w 1.05, 1.05, b 0.05, 마진 0.67로 멈춥니다. 회색 점선은 바로 앞 장면의 선이라, 선이 얼마나 움직였는지 볼 수 있습니다.}
+\end{frame}
+
 % --- α 가 쌓이는 모습
 \begin{frame}{$\alpha$ 가 자라는 모습: 서포트 벡터 3개만 남는다}
 \vfill

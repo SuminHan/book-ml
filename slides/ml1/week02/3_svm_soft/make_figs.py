@@ -408,7 +408,43 @@ def fig_equiv():
     fig.savefig(mf.O + "kn_equiv.png", dpi=160); plt.close(fig)
 
 
-FIGS = {"equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+def fig_learn():
+    """α 학습 (J 를 키우는 두 줄) 이 진행되며 선이 자리를 잡는 모습. 점 둘레 원 크기 = α. kn_learn1..6.png"""
+    X, y = np.array(mf.X, float), np.array(mf.y, float); STEPS = [1, 10, 20, 50, 100, 500]
+    ts = sorted(set(STEPS) | set(int(round(v)) for v in np.logspace(0, np.log10(500), 60)))
+    _, _, H = kd.train_dual(X @ X.T, y, T=500, snaps=tuple(ts))
+    isv = [X.tolist().index(list(p)) for p in kd._d2.SV]
+    wf = (H[500][0] * y) @ X
+    assert np.allclose(wf, kd._d2.W_STAR, atol=5e-3) and int((H[500][0] > 1e-6).sum()) == 3
+    cur = np.array([[H[t][0][i] for i in isv] for t in ts]); out = {}
+    gx = np.linspace(-2.2, 2.2, 400); GX, GY = np.meshgrid(gx, gx)
+    for k, t in enumerate(STEPS, 1):
+        a, b = H[t]; w = (a * y) @ X; n = int((a > 1e-6).sum()); M = 1 / np.linalg.norm(w)
+        fig, axs = plt.subplots(1, 2, figsize=(12.6, 5.6), gridspec_kw=dict(width_ratios=[1, 1.05]))
+        ax = axs[0]; Z = w[0] * GX + w[1] * GY + b
+        ax.contourf(GX, GY, Z, levels=[-1, 1], colors=[GOLD], alpha=0.13)
+        ax.contour(GX, GY, Z, levels=[-1, 0, 1], colors=[BLUE, "black", RED], linestyles=["--", "-", "--"], linewidths=[1.4, 3, 1.4])
+        if t > 1:                                                   # 바로 앞 장면의 선 (옅게)
+            a0, b0 = H[STEPS[k - 2]]; w0 = (a0 * y) @ X
+            ax.contour(GX, GY, w0[0] * GX + w0[1] * GY + b0, levels=[0], colors="#6f6f6f", linestyles=":", linewidths=3.2)
+        on = a > 1e-6
+        ax.scatter(X[on, 0], X[on, 1], s=170 + 1100 * a[on], facecolors=GOLD, alpha=0.45, edgecolors="none", zorder=3)
+        ax.scatter(X[:, 0], X[:, 1], c=np.where(y > 0, RED, BLUE), s=45, zorder=4)
+        ax.set_xlim(-2.2, 2.2); ax.set_ylim(-2.2, 2.2); ax.set_aspect("equal"); ax.set_xlabel("$x_1$", fontsize=15); ax.set_ylabel("$x_2$", fontsize=15)
+        ax.set_title(f"{t} 걸음: α > 0 인 점 {n}개, M = {M:.2f}", fontsize=17, fontweight="bold")
+        ax = axs[1]; m = np.array(ts) <= t
+        for j, (lab, c, ls) in enumerate((("빨강 r", RED, "-"), ("파랑 b1", BLUE, "-"), ("파랑 b2", BLUE, "--"))):
+            ax.plot(np.array(ts)[m], cur[m, j], color=c, ls=ls, lw=3, label=f"{lab}: α = {a[isv[j]]:.2f}")
+            ax.scatter([t], [a[isv[j]]], color=c, s=70, zorder=5)
+        ax.set_xscale("log"); ax.set_xlim(0.9, 620); ax.set_ylim(0, 1.3); ax.set_xticks(STEPS); ax.set_xticklabels([str(v) for v in STEPS]); ax.minorticks_off()
+        ax.set_xlabel("걸음", fontsize=15); ax.set_title("서포트 벡터 3개의 α", fontsize=17, fontweight="bold"); ax.legend(loc="upper left", fontsize=14, frameon=False)
+        ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+        fig.tight_layout(w_pad=2.5); fig.savefig(mf.O + f"kn_learn{k}.png", dpi=150); plt.close(fig)
+        out[t] = (n, round(float(M), 2), w.round(2).tolist(), round(float(b), 2))
+    return out
+
+
+FIGS = {"learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
