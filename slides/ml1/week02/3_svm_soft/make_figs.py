@@ -238,11 +238,12 @@ def fig_nails():
     rm = (X[y > 0] @ w2).min(); bm = (X[y < 0] @ w2).max(); M2, b2 = (rm - bm) / 2, -(rm + bm) / 2
     assert 0 < M2 < MA - 0.05 and int((y * (X @ w2 + b2) < M2 + 1e-6).sum()) == 2, (M2, b2)
     cases = ((wa, BA / np.linalg.norm(WA), 0.28, "① 스프링이 두 자를 벌린다"), (w2, b2, M2, "② 못에 걸렸다: 돌리면 더 벌어진다"), (wa, BA / np.linalg.norm(WA), MA, "③ 어느 쪽으로도 더는 못 벌어진다"))
-    WOOD, RULER, EDGE = "#f3e6cc", "#d9a441", "#7a5a1e"
+    RULER, EDGE = "#d9a441", "#7a5a1e"
     fig, axs = plt.subplots(1, 3, figsize=(16, 6.2))
     for k, (ax, (w, b, M, ttl)) in enumerate(zip(axs, cases)):
         d = np.array([-w[1], w[0]]); P = lambda c, t: (c - b) * w + t * d          # w·x + b = c 위, 선을 따라 t
-        ax.set_facecolor(WOOD); ax.set_xlim(-2.2, 2.2); ax.set_ylim(-2.2, 2.2); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+        ax.set_xlim(-2.2, 2.2); ax.set_ylim(-2.2, 2.2); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+        road = np.array([P(M, -5), P(M, 5), P(-M, 5), P(-M, -5)]); ax.fill(road[:, 0], road[:, 1], color="#dde6f6", zorder=1)   # 길 안쪽만 칠, 바깥은 흰색
         for sg in (1, -1):                                                            # 자: 바깥 모서리가 ±M, 두께는 안쪽으로
             quad = np.array([P(sg * M, -5), P(sg * M, 5), P(sg * (M - 0.13), 5), P(sg * (M - 0.13), -5)])
             ax.fill(quad[:, 0], quad[:, 1], color=RULER, ec=EDGE, lw=1.2, zorder=2)
