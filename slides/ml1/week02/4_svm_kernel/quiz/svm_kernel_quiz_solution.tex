@@ -1,0 +1,73 @@
+\documentclass[11pt]{article}
+% 커널 SVM 퀴즈 (쉬운 판: 곱하기 · 더하기만): 커널은 무엇을 바꿔 끼우나
+% 빌드 (이 폴더에서):  tectonic svm_kernel_quiz_solution.tex   -> 정답 (빈칸에 파란 답)
+%                      tectonic svm_kernel_quiz.tex            -> 학생용 (빈칸)
+% 표기: 원 논문 (Boser, Guyon, Vapnik 1992) 그대로. D(x) = w·x + b, 라벨 y_k = ±1, α_k ≥ 0, w = Σ α_k y_k x_k, 가장 가까운 값 = 1 (식 (13)), 마진 M = 1/‖w‖.
+% 데이터: Q1 점 8개 w = (0.6, 0.8), b = -2.4, M = 1, 서포트 벡터 A (2.2, 2.6) · B (1, 1), α = 0.5 · 0.5. Q3 같은 w · b, 서포트 벡터 3개 (make_figs.fig_quizkid · fig_quizkid3 에 sklearn assert). 바꾸기 전 = _이전/svm_kernel_quiz_solution_v2_벡터1기준.tex
+% 옛 증명판 (w = u + v) 은 _이전/svm_kernel_quiz_solution_v1_증명.tex
+
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{kotex}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{comment}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\graphicspath{{../figs/}}
+
+\ifdefined\STUDENT
+  \excludecomment{answer}
+  \newcommand{\blank}[2]{\underline{\hspace{#1}}}
+  \newcommand{\pick}[2]{\text{(\ #1\ )}}
+\else
+  \specialcomment{answer}{\begingroup\par\vspace{2pt}\color{blue}\small\setlength{\parskip}{2pt}\setlength{\parindent}{0pt}\noindent\textbf{풀이.}\ }{\par\endgroup}
+  \newcommand{\blank}[2]{\underline{\makebox[#1]{\color{blue}#2}}}
+  \newcommand{\pick}[2]{\text{(\ {\color{blue}\textbf{#2}}\ )}}
+\fi
+
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small ML1 02-4 SVM 3: 커널}
+\fancyhead[R]{\bf 퀴즈: 점곱 자리에 커널\ifdefined\STUDENT\else\ \ (정답)\fi}
+\fancyfoot[C]{\thepage}
+\setlength{\parskip}{0.06in}
+\setlength{\parindent}{0pt}
+
+\newcounter{q}
+\newcommand{\q}[1]{\par\vspace{10pt}\refstepcounter{q}{\large\bf Q\theq.}\ {\bf #1}\par\vspace{2pt}}
+\newenvironment{parts}{\begin{enumerate}[label=(\alph*),leftmargin=2.2em,itemsep=7pt,topsep=2pt]}{\end{enumerate}}
+\newcommand{\key}[1]{\par\vspace{6pt}\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{#1}}\par}
+
+\begin{document}
+
+\key{{\bf 이 퀴즈는 곱하기와 더하기만 쓴다.}\\[3pt]
+{\bf 점곱}: 두 점의 같은 자리끼리 곱해서 더한다. \quad $(a,\ b)\cdot(c,\ d) = a\times c + b\times d$\\[2pt]
+예: \ $(2,\ 2)\cdot(4,\ 1) = 2\times4 + 2\times1 = 10$}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\q{점곱 자리에 다른 계산을 끼우면: 커널}
+지난 시간에는 분류를 서포트 벡터마다 "나눠서" 계산했다. 그 계산에는 점끼리의 점곱만 나온다. 그 자리를 \textbf{점곱의 제곱}으로 바꿔 보자.\\
+두 점 \ $\mathbf{x} = (1,\ 2)$, \ $\mathbf{x}' = (3,\ 1)$.
+\begin{parts}
+\item 점곱 \ $\mathbf{x}\cdot\mathbf{x}' = 1\times3 + 2\times1 = \blank{0.9cm}{5}$, \qquad 그 값을 제곱하면 \ $\blank{0.9cm}{25}$
+\item 이번엔 점을 숫자 4개로 늘린다: \quad $(x_1,\ x_2) \ \to\ (x_1\times x_1,\ \ x_1\times x_2,\ \ x_2\times x_1,\ \ x_2\times x_2)$
+\begin{itemize}[leftmargin=1.5em,itemsep=4pt]
+\item $(1,\ 2) \ \to\ (1,\ 2,\ 2,\ 4)$
+\item $(3,\ 1) \ \to\ (\,\blank{0.7cm}{9},\ \blank{0.7cm}{3},\ \blank{0.7cm}{3},\ \blank{0.7cm}{1}\,)$
+\item 늘린 4개끼리 점곱: \ $1\times9 + 2\times3 + 2\times3 + 4\times1 = \blank{0.7cm}{9} + \blank{0.7cm}{6} + \blank{0.7cm}{6} + \blank{0.7cm}{4} = \blank{0.9cm}{25}$
+\end{itemize}
+\item (a) 와 (b) 는 \pick{같다 / 다르다}{같다}.\\
+$\to$ 숫자를 4개로 늘려서 점곱한 값을, 늘리지 않고 원래 점곱 하나를 \blank{1.2cm}{제곱} 해서 얻었다.
+\item 그래서 "나눠서" 계산에서 점곱 자리를 \textbf{점곱의 제곱}으로 바꾸면,\\
+점을 숫자 \blank{0.8cm}{4} 개로 늘린 뒤 SVM 을 한 것과 같다. 이때 점을 실제로 \pick{늘린다 / 안 늘린다}{안 늘린다}.\\
+이렇게 끼우는 계산 $K(\mathbf{x}, \mathbf{x}') = (\mathbf{x}\cdot\mathbf{x}')^2$ 을 \textbf{커널}이라고 부른다.
+\end{parts}
+\key{{\bf 한 줄 정리}\\[2pt]
+$\mathbf{w}$ = 서포트 벡터 몇 개를 더하고 뺀 것 \ $\to$ \ 분류 = 서포트 벡터와의 점곱을 더하고 뺀 것 \ $\to$ \ 그 점곱 자리에 $K$ 를 끼우면 커널 SVM}
+\begin{answer}
+(b) $3\times3 = 9$, \ $3\times1 = 3$, \ $1\times3 = 3$, \ $1\times1 = 1$.
+\end{answer}
+
+\end{document}
