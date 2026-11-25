@@ -1,5 +1,7 @@
 \documentclass[aspectratio=169,11pt,t]{beamer}
 \input{../../../theme/ksa-cs-v2.tex}
+\usepackage{fontawesome5}
+\newcommand{\paperlink}[1]{\href{#1}{\textcolor{ksablue}{\faFile*[regular]}}}
 % 원본 덱 (ksa-theme) 의 그림·실습은 이 폴더로 합쳤다 (옛 원본: slides/old/v2/)
 \setbeamerfont{author}{size=\normalsize}
 \setbeamerfont{institute}{size=\small}
@@ -86,9 +88,9 @@
 \renewcommand{\arraystretch}{1.9}
 {\large\begin{tabular}{c@{\hspace{1em}}p{5.3cm}l}
 \textbf{1992} & Boser, Guyon, Vapnik & \kb{최대 마진} 학습 + \kb{커널}\\[-0.4em]
- & \multicolumn{2}{l}{\small \textit{A training algorithm for optimal margin classifiers} (COLT '92)}\\[0.6em]
+ & \multicolumn{2}{l}{\small \textit{A training algorithm for optimal margin classifiers} (COLT '92) \paperlink{https://doi.org/10.1145/130385.130401}}\\[0.6em]
 \textbf{1995} & Cortes, Vapnik & \kb{소프트 마진}, ``Support Vector'' 라는 이름\\[-0.4em]
- & \multicolumn{2}{l}{\small \textit{Support-vector networks} (\textit{Machine Learning} 20(3))}
+ & \multicolumn{2}{l}{\small \textit{Support-vector networks} (\textit{Machine Learning} 20(3)) \paperlink{https://doi.org/10.1007/BF00994018}}
 \end{tabular}}\\[1.2em]
 {\large 덱의 기호 ($D(\mathbf{x})$, $M$, $y_k$ · 다음 시간 $\alpha_k$, $\xi_k$, $C$) 는 \kb{두 논문 그대로}}
 \vfill
@@ -466,9 +468,24 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 \textbf{학습}: z-score 한 뒤, 가장 가까운 점이 밀고 길이 1 로 맞추기를 반복 (sklearn 은 SMO)\\[0.5em]
 \textbf{다중 클래스}: 일대일 $c(c-1)/2$ 개 · 일대다 $c$ 개\\[0.5em]
 \kq{다음 시간}: 점이 겹치면? $\to$ 소프트 마진 \quad 직선으로 못 가르면? $\to$ 커널
-\end{tabular}\par\vskip0.6em
-{\tiny\color{gray} 구성 참고: S. Wang, CME 250 Lecture 5: Support Vector Machines (Stanford, Winter 2019), \href{https://web.stanford.edu/class/cme250/files/cme250_lecture5.pdf}{\textcolor{ksagolddk}{web.stanford.edu/class/cme250/files/cme250\_lecture5.pdf}} · James et al., \textit{An Introduction to Statistical Learning}, 9장\\ 원 논문: Boser, Guyon, Vapnik (1992), A training algorithm for optimal margin classifiers, COLT · Cortes, Vapnik (1995), Support-vector networks, \textit{Machine Learning} 20(3)}
+\end{tabular}
 \vfill
 \note{정리합니다. 초평면은 값의 부호로 공간을 둘로 나눕니다. 최대 마진 분류기는 가장 가까운 점까지의 거리 M을 최대로 하는 초평면이고, w의 길이를 1로 맞추면 값이 곧 거리입니다. 원 논문의 한 줄로는 M 별이 max min y k D x k입니다. 경계는 서포트 벡터 몇 개가 정합니다. 학습은 점들을 z-score 한 뒤 매 걸음 가장 가까운 점이 선을 밀고 w의 길이를 다시 1로 맞추는 것을 반복하고, sklearn은 SMO라는 다른 풀이법으로 같은 답을 냅니다. 클래스가 여러 개면 일대일이나 일대다로 SVM을 여러 개 만듭니다. 오늘 데이터는 직선으로 깔끔하게 갈렸습니다. 다음 시간에는 두 색이 겹치면 어떻게 하는지, 소프트 마진과, 직선으로 못 가르는 데이터를 다루는 커널을 배웁니다.}
 \end{frame}
+% --- 참고 문헌
+\begin{frame}{참고 문헌}
+\vfill
+\small
+\begin{itemize}
+\setlength{\itemsep}{0.7em}
+\item Boser, B. E., Guyon, I. M., \& Vapnik, V. N. (1992). A training algorithm for optimal margin classifiers. \textit{COLT '92}, 144--152. \paperlink{https://doi.org/10.1145/130385.130401}
+\item Cortes, C., \& Vapnik, V. (1995). Support-vector networks. \textit{Machine Learning}, 20(3), 273--297. \paperlink{https://doi.org/10.1007/BF00994018}
+\item James, G., Witten, D., Hastie, T., \& Tibshirani, R. \textit{An Introduction to Statistical Learning}, 9장. \paperlink{https://doi.org/10.1007/978-1-0716-1418-1}
+\item Wang, S. (2019). CME 250 Lecture 5: Support Vector Machines, Stanford. \paperlink{https://web.stanford.edu/class/cme250/files/cme250_lecture5.pdf}
+\end{itemize}
+{\footnotesize\color{gray} \faFile*[regular] 를 누르면 원문으로 간다}
+\vfill
+\note{이 덱의 참고 문헌입니다.}
+\end{frame}
+
 \end{document}

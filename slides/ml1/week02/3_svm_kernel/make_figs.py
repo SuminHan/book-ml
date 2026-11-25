@@ -350,7 +350,16 @@ def fig_nails():
     return dict(M2=round(float(M2), 3))
 
 
-FIGS = {"soft": mf.fig_soft, "soft9": mf.fig_soft9, "nails": fig_nails, "nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+def fig_overlap():
+    """오늘의 첫 질문: 빨간 점 하나가 파랑 무리 안에 → 가르는 직선이 없다"""
+    X, y = mf.X, mf.y; Xo = np.r_[X, [mf.OUTLIER]]; yo = np.r_[y, [1]]
+    fig, ax = plt.subplots(figsize=(5.6, 5.4)); mf.pts(ax, Xo, yo)
+    ax.scatter(*mf.OUTLIER, s=520, facecolors="none", edgecolors="#E8590C", lw=3.5, zorder=5)
+    ax.set_title("가르는 직선이 없다", fontsize=18)
+    mf.save(fig, "kn_overlap.png")
+
+
+FIGS = {"overlap": fig_overlap, "soft": mf.fig_soft, "soft9": mf.fig_soft9, "nails": fig_nails, "nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
