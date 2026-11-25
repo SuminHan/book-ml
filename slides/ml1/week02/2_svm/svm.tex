@@ -230,7 +230,7 @@
 \centering
 \includegraphics[width=0.68\textwidth]{sv_fold.png}\\[0.1em]
 {\large 빨강 $D(\mathbf{x}_k)$, \; 파랑 $-D(\mathbf{x}_k)$ \;$\to$\; 둘 다 $y_k D(\mathbf{x}_k)$ = 거울까지 거리}\\[0.3em]
-{\large $M = \min_k\, y_k D(\mathbf{x}_k)$ \;$\to$\; $M$ 을 \kb{최대로} = SVM}
+{\large 모든 점이 경계에서 $M$ 이상: \;$\dfrac{y_k D(\mathbf{x}_k)}{\lVert\mathbf{w}\rVert} \ge M$}
 \vfill
 \note{이번에는 점이 아니라 값, w 점곱 x 더하기 b에 y k를 곱합니다. 앞에서 점에 y k를 곱한 것, 원점 기준 180도 회전과는 다른 그림입니다. 파란 점은 y가 마이너스 1이라 값의 부호가 뒤집힙니다. 값은 경계까지의 거리이니, 부호만 뒤집힌 값을 갖는 자리는 경계 반대편으로 같은 거리, 즉 경계를 거울 삼아 비춘 자리입니다. 그래서 값에 y를 곱하는 것은 파란 점을 경계에 비춰 빨강 쪽으로 넘긴 것과 같습니다. 원점 기준으로 180도 돌리면 b가 0이 아닐 때 값이 달라집니다. 접고 나면 20개가 모두 한쪽에 있고, 각 점의 값은 거울까지의 거리입니다. 틀린 쪽에 있던 점이 있다면 접어도 거울 반대편에 남아 값이 음수가 됩니다. 빨강은 값 그대로, 파랑은 값에 마이너스를 붙이면 둘 다 거울까지의 거리가 되는데, 이 둘을 한 식으로 쓴 것이 y k 곱하기 D x k입니다. 그중 가장 작은 것이 M이고, 거울을 기울이고 옮겨서 이 M을 최대로 만드는 것이 바로 SVM, 최대 마진입니다. 뒤의 식 쪽에서 이 문장이 그대로 조건 y k D x k ≥ M이 됩니다. 답에서는 빨강 한 점과 비춰 넘긴 파랑 두 점이 똑같이 0.67 거리에 닿습니다. 거울을 움직이면 접힌 모양도 같이 바뀌니, 가장 가까운 점도 계속 바뀝니다.}
 \end{frame}
@@ -271,7 +271,6 @@
 \text{subject to} \quad & \sum_{i=1}^{n} w_i^2 = 1,\\
 & y_k(w_1 x_{k1} + w_2 x_{k2} + \cdots + w_n x_{kn} + b) \ge M \quad \text{for all } k = 1, \dots, p
 \end{align*}}
-{\normalsize $\lVert\mathbf{w}\rVert$ 로 나눈 꼴: \;$\dfrac{y_k D(\mathbf{x}_k)}{\lVert\mathbf{w}\rVert} \ge M$ \;(점에서 경계까지 거리가 $M$ 이상)}\\[0.3em]
 {\large $y_k = +1$ (A) 또는 $-1$ (B)}
 
 \vfill
@@ -285,7 +284,7 @@
 \renewcommand{\arraystretch}{1.4}
 {\large\begin{tabular}{rl}
 $M$ 을 따로 두면 & $\displaystyle\max_{\mathbf{w},\, b,\ \lVert\mathbf{w}\rVert = 1} M$ \quad 조건: 모든 $k$ 에서 $y_k D(\mathbf{x}_k) \ge M$\\[0.9em]
-\multicolumn{2}{c}{$\Downarrow$ \;\; 가장 큰 $M$ $=\ \displaystyle \min_{k}\, y_k D(\mathbf{x}_k)$ \;(\kq{가장 가까운 점}에서 막힌다)}\\[0.9em]
+\multicolumn{2}{c}{$\Downarrow$ \;\; 가장 큰 $M$: \;$\displaystyle \min_{k}\, y_k D(\mathbf{x}_k) = M^*$ \;(이 값인 점 = \kq{서포트 벡터})}\\[0.9em]
 한 줄로 쓰면 & $\displaystyle\max_{\mathbf{w},\, b,\ \lVert\mathbf{w}\rVert = 1}\ \min_{k}\ y_k D(\mathbf{x}_k)$
 \end{tabular}}\\[1em]
 {\normalsize 예: 평균 선은 $M$ 을 0.62 까지 (0.63 이면 가장 가까운 점이 조건을 어긴다), \;SVM 선은 \kb{0.67} 까지}
@@ -316,7 +315,7 @@ $M$ 을 따로 두면 & $\displaystyle\max_{\mathbf{w},\, b,\ \lVert\mathbf{w}\r
 \end{frame}
 
 % --- 출발: 0걸음 → 1걸음
-\begin{frame}{출발: $\mathbf{w} = 0$ 에서 1걸음 뒤 첫 선}
+\begin{frame}{학습 (max min, $\lVert\mathbf{w}\rVert = 1$): $\mathbf{w} = 0$ 에서 첫 선}
 \vfill
 \begin{columns}[c]
 \begin{column}{0.42\textwidth}\centering\includegraphics[width=0.95\linewidth]{sv_step1.png}\end{column}
@@ -332,7 +331,7 @@ $\to$ 길이 1 로: $\mathbf{w} = (0.67,\ 0.74)$, \;$b = 0$\\[0.3em]
 \end{column}
 \end{columns}
 \vfill
-\note{출발점을 따로 봅시다. 처음에는 w가 0, 0이고 b가 0입니다. 이때는 어느 점을 넣어도 값이 0이라, 20개가 모두 똑같이 가장 가까운 점이 되고, 첫 걸음에는 20개가 모두 밉니다. 그래서 w는 학습률 곱하기 y k x k의 합, 빨강 10개 좌표 합 8.3, 9.1에서 파랑 합 마이너스 8.2, 마이너스 9.1을 뺀 16.5, 18.2 방향이 됩니다. b에는 학습률 곱하기 y의 합을 더하는데, 빨강 10개와 파랑 10개라 y의 합이 0이고 b는 0 그대로입니다. 길이를 1로 맞추면 w는 0.67, 0.74입니다. 이 방향은 20개 y k x k의 평균 방향과 같으니, 첫 선은 앞에서 본 가장 쉬운 방법, 평균 선과 똑같습니다. 그림이 그 첫 선이고, b가 0이라 원점을 지납니다. 다음 쪽부터는 이 선에서 가장 가까운 점이 한 걸음씩 밉니다.}
+\note{이제 학습입니다. 방금 본 max min 식, w의 길이가 1인 식을 풉니다. 이 방법은 이해하기 쉽게 고른 수업용 방법이고, 원 논문이 쓴 방법, 알파로 푸는 것은 다음 시간에 봅니다. 가장 가까운 점이 미는 것이 min이고, 밀어서 그 거리를 키우는 것이 max입니다. 출발점을 따로 봅시다. 처음에는 w가 0, 0이고 b가 0입니다. 이때는 어느 점을 넣어도 값이 0이라, 20개가 모두 똑같이 가장 가까운 점이 되고, 첫 걸음에는 20개가 모두 밉니다. 그래서 w는 학습률 곱하기 y k x k의 합, 빨강 10개 좌표 합 8.3, 9.1에서 파랑 합 마이너스 8.2, 마이너스 9.1을 뺀 16.5, 18.2 방향이 됩니다. b에는 학습률 곱하기 y의 합을 더하는데, 빨강 10개와 파랑 10개라 y의 합이 0이고 b는 0 그대로입니다. 길이를 1로 맞추면 w는 0.67, 0.74입니다. 이 방향은 20개 y k x k의 평균 방향과 같으니, 첫 선은 앞에서 본 가장 쉬운 방법, 평균 선과 똑같습니다. 그림이 그 첫 선이고, b가 0이라 원점을 지납니다. 다음 쪽부터는 이 선에서 가장 가까운 점이 한 걸음씩 밉니다.}
 \end{frame}
 
 % --- 학습 한 걸음
