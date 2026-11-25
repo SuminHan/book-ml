@@ -1,7 +1,7 @@
 """실습 노트북 원본: 이 파일을 고치고 실행하면 <주제>.ipynb(학생용) / <주제>_solution.ipynb(정답) 이 다시 만들어진다.
    ~/Documents/manim_shorts/_env/v/bin/python make_lab.py
 코드 줄 끝의 '#@ANS 빈칸버전' = solution 노트북엔 앞부분, student 노트북엔 빈칸버전이 들어간다.
-1주 3차시 = 옛 dirty_data + feature_scaling 실습을 합친 것.
+2주 3차시 = 옛 dirty_data + feature_scaling 실습을 합친 것.
 데이터 (첫 실행 때 data/ 에 내려받음, git 제외): METR-LA 시험 기간 (Hugging Face witgaw/METR-LA) · UCI Wine (scikit-learn 내장) · MNIST (torchvision)
 · CIFAR-10 시험 1만 장 (Hugging Face uoft-cs parquet) · UCI SMS Spam · 항공 승객 (jbrownlee/Datasets) · Free Spoken Digit Dataset 6개 · Muybridge 말 GIF (Wikimedia Commons).
 슬라이드 숫자 (exp_scale.py · exp_modal.py) 와 같은 설정. MNIST 는 시간 때문에 시드 1개 (슬라이드는 3개 평균)."""

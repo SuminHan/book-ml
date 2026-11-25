@@ -1,4 +1,4 @@
-# 데이터 직접 다루기 (1주 3차시)
+# 데이터 직접 다루기 (2주 3차시)
 
 - 원본 쇼츠: [`lessons/ml1/dirty_data/`](../../../../../lessons/ml1/dirty_data/README.md) — 더티 데이터의 세 가지 모양 · [`lessons/ml1/feature_scaling/`](../../../../../lessons/ml1/feature_scaling/README.md) — 와인 그대로 72% vs 정규화 98%
 - 옛 덱 `week01/dirty_data` + `week01/feature_scaling` 을 합친 것 (옛 폴더는 `week01/_이전/`)
