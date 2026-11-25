@@ -372,7 +372,7 @@ def fig_overlap():
     return int(bad.sum())
 
 
-FIGS = {"overlap": fig_overlap, "soft": mf.fig_soft, "soft9": mf.fig_soft9, "nails": fig_nails, "nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
+FIGS = {"cos": mf.fig_cos, "overlap": fig_overlap, "soft": mf.fig_soft, "soft9": mf.fig_soft9, "nails": fig_nails, "nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
         "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
