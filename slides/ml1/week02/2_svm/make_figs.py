@@ -237,6 +237,42 @@ def fig_street():
     save(fig, "sv_move.png")
 
 
+def fig_eta_why():
+    """왜 η: 윗줄 = 가장 가까운 빨강 · 파랑 두 점에 딱 맞는 선으로 바로 점프 (두 점을 잇는 선에 직각, b 는 한가운데) → 두 선을 맴돈다.
+    b = 새 선에서 가장 가까운 두 색의 한가운데. 아랫줄 = 덱의 학습 (η 로 조금씩) → 0.67. 두 줄 모두 같은 첫 선 (평균 방향, b = 0) 에서 시작"""
+    R, Bm = X[y > 0], X[y < 0]
+    w = (y[:, None] * X).mean(0); w /= np.linalg.norm(w); b = 0.0; pair = None
+    jumps = []
+    for _ in range(5):
+        v = y * (X @ w + b); jumps.append((w, b, v.min(), pair))
+        r = R[np.argmin(R @ w)]; bl = Bm[np.argmax(Bm @ w)]; pair = (r, bl)
+        w = (r - bl) / np.linalg.norm(r - bl); b = -((R @ w).min() + (Bm @ w).max()) / 2     # b = 새 선에서 가장 가까운 빨강 · 파랑의 한가운데
+    assert [round(float(j[2]), 2) for j in jumps] == [0.62, 0.37, 0.07, 0.09, 0.07], [j[2] for j in jumps]
+    assert np.allclose(jumps[2][0], jumps[4][0])
+    snaps = {2: "1걸음", 3: "2걸음", 4: "3걸음", 11: "10걸음", 20000: "2만 걸음"}
+    _, _, _, sh = train_maxmin(X, y, snaps=tuple(snaps))
+    fig, axs = plt.subplots(2, 5, figsize=(17, 7.4))
+    names = ["첫 선", "점프 1", "점프 2", "점프 3", "점프 4 (= 점프 2)"]
+    for k, (ax, (w_, b_, m_, pr)) in enumerate(zip(axs[0], jumps)):
+        pts(ax); line(ax, w_, b_, color="black", lw=3)
+        if pr is not None:
+            ax.plot(*np.c_[pr[0], pr[1]], "--", color=GRAY, lw=2, zorder=2)
+            ax.scatter(*np.array(pr).T, s=300, facecolors="none", edgecolors="black", lw=2, zorder=4)
+        v = y * (X @ w_ + b_); i = int(np.argmin(v))
+        ax.scatter(*X[i], s=520, facecolors="none", edgecolors="#E8590C", lw=3.5, zorder=5)
+        ax.set_title(f"{names[k]}: min {m_:.2f}", fontsize=17, color="#c92a2a" if k >= 1 else "black", fontweight="bold" if k >= 2 else "normal")
+    for ax, (t, nm) in zip(axs[1], snaps.items()):
+        w_, b_, act, m_ = sh[t]; pts(ax); line(ax, w_, b_, color="black", lw=3)
+        v = y * (X @ w_ + b_); i = int(np.argmin(v)); ax.scatter(*X[i], s=520, facecolors="none", edgecolors="#E8590C", lw=3.5, zorder=5)
+        ax.set_title(f"{nm}: min {m_:.2f}", fontsize=17, fontweight="bold" if t == 20000 else "normal", color=GOLDT if t == 20000 else "black")
+    for ax in axs.ravel():
+        ax.set_xlabel(""); ax.set_ylabel(""); ax.set_xticks([]); ax.set_yticks([])
+    axs[0, 0].set_ylabel("딱 맞춰\n한 번에 점프", fontsize=18, fontweight="bold", color="#c92a2a", rotation=90, labelpad=10)
+    axs[1, 0].set_ylabel("$\\eta$ 로\n조금씩", fontsize=18, fontweight="bold", color=BLUE, rotation=90, labelpad=10)
+    save(fig, "sv_eta_why.png")
+    return [round(float(j[2]), 2) for j in jumps], [round(float(sh[t][3]), 2) for t in snaps]
+
+
 def fig_b_balance():
     """w 고정 (평균 선 방향), b 만 크게 바꾼 세 장 (가운데를 확대): 경계에서 가장 가까운 빨강까지 = 빨강 띠, 파랑까지 = 파랑 띠.
     아래 막대: 두 띠의 합은 늘 1.32 → 둘이 같을 때 min 이 가장 크다"""
@@ -676,7 +712,7 @@ def fig_hill_count(G=1.0):
     return len(Xd), len(sv)
 
 
-FIGS = {"bbalance": fig_b_balance, "hookd": fig_hook_d, "people": fig_people, "flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
+FIGS = {"etawhy": fig_eta_why, "bbalance": fig_b_balance, "hookd": fig_hook_d, "people": fig_people, "flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
         "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "soft9": fig_soft9}
 # 커널 그림 (fig_kernel · fig_rbf · fig_rbf_degree · fig_hills · fig_hill_count) 은 ../3_svm_kernel/make_figs.py 가 불러서 그 폴더 figs/ 에 만든다
 
