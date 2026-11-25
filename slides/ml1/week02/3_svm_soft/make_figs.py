@@ -319,6 +319,33 @@ def fig_saddle():
     fig.savefig(mf.O + "kn_saddle.png"); plt.close(fig)
 
 
+def fig_meet():
+    """위아래에서 만난다: 예 ½w² 최소, 조건 w ≥ 1. 파랑 = 조건 지키는 w 의 ½w² (2 → 1 로 내려옴), 빨강 = J(α) = α − ½α² (L 에 w = α, 0 → 1 로 올라감).
+    두 곡선은 w = α = 1, 값 0.5 한 점에서 만난다"""
+    J = lambda a: a - 0.5 * a ** 2; P = lambda w: 0.5 * w ** 2
+    ws, als = np.linspace(1, 2, 101), np.linspace(0, 1, 101)
+    assert J(als).max() == J(1) == P(1) == P(ws).min() == 0.5 and J(als).max() <= P(ws).min()
+    assert (P(2), P(1.5), J(0), J(0.5)) == (2.0, 1.125, 0.0, 0.375)
+    X, y = mf.X, mf.y; a = np.array([mf.ALPHA.get(tuple(p), 0.0) for p in X.tolist()]); w = (a * y) @ X
+    assert abs(0.5 * w @ w - 1.11) < 0.02 and abs(a.sum() - 0.5 * w @ w - 1.11) < 0.02          # 점 20개: 최소 = 최대
+    BL, RD = "#2E3192", "#d62728"
+    fig, ax = plt.subplots(figsize=(11, 5.2))
+    ax.plot(ws, P(ws), color=BL, lw=4.5); ax.plot(als, J(als), color=RD, lw=4.5)
+    g = np.linspace(0, 1, 51); ax.plot(g, P(g), color=BL, lw=1.8, ls=":", alpha=0.5); h = np.linspace(1, 2, 51); ax.plot(h, J(h), color=RD, lw=1.8, ls=":", alpha=0.5)
+    for f, c, x0, x1 in ((P, BL, 1.42, 1.28), (J, RD, 0.36, 0.52)):                                # 가는 방향 화살촉
+        ax.annotate("", (x1, f(x1)), (x0, f(x0)), arrowprops=dict(arrowstyle="-|>", color=c, lw=4.5, mutation_scale=34))
+    for x, f, c, t, off, ha in ((2, P, BL, "w = 2 :  2.00", (-0.04, 0.02), "right"), (1.5, P, BL, "w = 1.5 :  1.125", (-0.05, 0.05), "right"),
+                               (0, J, RD, "α = 0 :  0", (0.05, -0.03), "left"), (0.5, J, RD, "α = 0.5 :  0.375", (0.05, -0.1), "left")):
+        ax.scatter([x], [f(x)], s=110, color=c, zorder=4); ax.text(x + off[0], f(x) + off[1], t, color=c, fontsize=16, ha=ha, va="center", fontweight="bold")
+    ax.scatter([1], [0.5], s=620, marker="*", color="#f2b705", edgecolor="black", lw=1.4, zorder=6)
+    ax.annotate("만나는 점 :  w = 1,  α = 1,  값 0.5", (1.02, 0.47), (1.3, 0.12), fontsize=17, fontweight="bold", ha="left", arrowprops=dict(arrowstyle="->", lw=1.6))
+    ax.text(1.62, 1.72, "위에서: ½w² 을 작게", color=BL, fontsize=19, fontweight="bold", ha="center")
+    ax.text(0.45, 0.82, "아래에서: J 를 크게", color=RD, fontsize=19, fontweight="bold", ha="center")
+    ax.set_xlim(-0.08, 2.12); ax.set_ylim(-0.12, 2.12); ax.set_xticks([0, 0.5, 1, 1.5, 2]); ax.set_xlabel("w  (파랑)  ·  α  (빨강)", fontsize=16); ax.set_ylabel("값", fontsize=16, rotation=0, labelpad=14)
+    ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False); ax.tick_params(labelsize=13)
+    fig.tight_layout(); fig.savefig(mf.O + "kn_meet.png"); plt.close(fig)
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -488,7 +515,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
