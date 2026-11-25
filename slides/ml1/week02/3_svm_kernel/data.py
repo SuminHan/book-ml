@@ -75,45 +75,58 @@ AB_ACC = _B.score(Xc, yc)
 QL_ACC = SVC(kernel="linear", C=1).fit(Xc, yc).score(Xc, yc)   # 질문 그림: 직선 SVM 정확도
 
 
-# ---- α 학습: 1차시 학습 한 걸음을 w 대신 α 로 (G = 점끼리 점곱 또는 K 표)
-def train_alpha(G, y, T=20000, lr0=0.05, snaps=()):
-    """매 걸음: 값 = y_k(Σ_l α_l y_l G_lk + b), 가장 작은 점(동점 모두) α_k += η (늘 0 이상), b += η y_k, α 를 ‖w′‖ = √(Σ α_k α_l y_k y_l G_kl) 로 나눈다"""
+# ---- α 학습: 논문 식 (17) J(α, b) = Σ α_k(1 − b y_k) − ½ α·H·α 를 조금씩 키운다 (α ≥ 0).
+def train_dual(G, y, T=20000, eta=0.05, etab=0.05, snaps=()):
+    """한 걸음: 값 = y_k D(x_k), D(x_k) = Σ_l α_l y_l G_lk + b.  α_k ← max(0, α_k + η(1 − 값))  (∂J/∂α_k = 1 − y_k D(x_k)),
+    b ← b + η_b Σ α_k y_k  (J 의 b 방향은 안장점: Σ α y = 0 이 되면 멈춘다). J 는 논문 식, 이렇게 조금씩 올라가는 방법은 수업용 선택 (논문은 Powell, sklearn 은 SMO).
+    hist[t] = t 걸음 뒤의 (α, b)"""
     a, b, hist = np.zeros(len(y)), 0.0, {}
     for t in range(1, T + 1):
-        v = y * (G @ (a * y) + b); k = v <= v.min() + 1e-9; eta = lr0 / np.sqrt(t)
-        a = a + eta * k; b += eta * y[k].sum()
-        n = np.sqrt((a * y) @ G @ (a * y))
-        if n > 0:
-            a = a / n
+        v = y * (G @ (a * y) + b)
+        a = np.maximum(0.0, a + eta * (1 - v))
+        b = b + etab * (a @ y)
         if t in snaps:
-            hist[t] = a.copy()
-    return a, b, hist
+            hist[t] = (a.copy(), float(b))
+    return a, float(b), hist
 
 
 AL_STEPS = (1, 2, 3, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000)
 _X20 = np.array(_d2.RED_PTS + _d2.BLUE_PTS, float); _y20 = np.r_[np.ones(10), -np.ones(10)]
-AL20, BL20, AL_HIST = train_alpha(_X20 @ _X20.T, _y20, snaps=AL_STEPS)
-AL_ROWS = {t: [round(float(AL_HIST[t][_X20.tolist().index(list(s))]), 2) for s in _d2.SV] for t in (1, 10, 100, 1000, 20000)}
-AL_OTHER = {t: round(float(np.sort(np.abs(AL_HIST[t]))[-4]), 3) for t in (1, 10, 100, 1000, 20000)}   # 서포트 벡터 3개 빼고 가장 큰 |α|
-assert AL_ROWS[20000] == [0.74, 0.37, 0.37] and AL_OTHER[20000] == 0.0 and AL_ROWS[1] == [0.04, 0.04, 0.04]
-assert [round(r / _d2.M_ANS, 2) for r in AL_ROWS[20000]] == [1.1, 0.55, 0.55]   # ÷ M (식 (12)) = 논문 α*
-assert np.allclose((AL20 * _y20) @ _X20, _d2.W_ANS, atol=1e-3) and abs(BL20 - _d2.B_ANS) < 2e-3
+AL20, BL20, AL_HIST = train_dual(_X20 @ _X20.T, _y20, snaps=AL_STEPS)
+_isv = [_X20.tolist().index(list(s)) for s in _d2.SV]
+AL_TABLE = {}                                                    # 걸음: ([α r, b1, b2], α > 0 인 점 수, (w1, w2), b)
+for t in (1, 10, 50, 100, 500, 20000):
+    al, bb = AL_HIST[t]; w = (al * _y20) @ _X20
+    AL_TABLE[t] = ([round(float(al[i]), 2) for i in _isv], int((al > 1e-6).sum()), (round(float(w[0]), 2), round(float(w[1]), 2)), round(bb, 2) + 0.0)
+assert [round(float(AL20[i]), 3) for i in _isv] == [1.108, 0.554, 0.554] and int((AL20 > 1e-6).sum()) == 3   # 논문 α* 와 sklearn 과 같다
+assert np.allclose((AL20 * _y20) @ _X20, _d2.W_STAR, atol=2e-3) and abs(BL20 - _d2.B_STAR) < 2e-3
+assert AL_TABLE[1][2] == (0.83, 0.91) == _d2.MEAN_W                                        # 1걸음 = 평균 선
 
-# 같은 학습에서 점곱 자리에 다항 커널 (1 + x·x')² → 원 데이터 120개, sklearn (하드 마진) 과 비교
+# 같은 학습에서 점곱 자리에 다항 커널 (x·x' + 1)² → 원 데이터 120개, sklearn (하드 마진) 과 비교
 _G = (1 + Xc @ Xc.T) ** 2
-AK, BK, _ = train_alpha(_G, yc.astype(float))
-AK_M = float((yc * (_G @ (AK * yc) + BK)).min())
+AK, BK, _ = train_dual(_G, yc.astype(float), T=200000, eta=0.002, etab=0.1)
+_ay = AK * yc
+AK_M = float(1 / np.sqrt(_ay @ _G @ _ay))
 _sk = SVC(kernel="poly", degree=2, coef0=1, gamma=1, C=1e6).fit(Xc, yc)
 _ds = _sk.dual_coef_[0]; _Gs = (1 + Xc[_sk.support_] @ Xc[_sk.support_].T) ** 2
 AK_M_SK = float(1 / np.sqrt(_ds @ _Gs @ _ds))
-AK_NSV, AK_NSV_SK = int((np.abs(AK) > 0.01).sum()), len(_sk.support_)
+AK_NSV, AK_NSV_SK = int((AK > 0.01).sum()), len(_sk.support_)
 _g = np.random.RandomState(0).uniform(-1.3, 1.3, (5000, 2))
-AK_AGREE = float((np.sign(((1 + _g @ Xc.T) ** 2) @ (AK * yc) + BK) == np.sign(_sk.decision_function(_g))).mean())
-assert round(AK_M, 2) == round(AK_M_SK, 2) == 0.20 and AK_NSV == AK_NSV_SK == 7 and AK_AGREE > 0.999
+AK_AGREE = float((np.sign(((1 + _g @ Xc.T) ** 2) @ _ay + BK) == np.sign(_sk.decision_function(_g))).mean())
+assert round(AK_M, 2) == round(AK_M_SK, 2) == 0.20 and AK_AGREE > 0.998
+
+# 소프트 마진 (Cortes · Vapnik 1995): 같은 학습에서 α 를 C 에서 자른다 → sklearn SVC(C) 와 같은 선
+_Xo = np.r_[_X20, [_d2.OUTLIER]]; _yo = np.r_[_y20, [1]]; _Go = _Xo @ _Xo.T
+for _C in (3, 0.5):
+    _a, _b = np.zeros(21), 0.0
+    for _t in range(20000):
+        _a = np.clip(_a + 0.02 * (1 - _yo * (_Go @ (_a * _yo) + _b)), 0, _C); _b += 0.02 * (_a @ _yo)
+    _s = SVC(kernel="linear", C=_C, tol=1e-8).fit(_Xo, _yo)
+    assert np.allclose((_a * _yo) @ _Xo, _s.coef_[0], atol=2e-3) and abs(_b - _s.intercept_[0]) < 2e-3
 
 if __name__ == "__main__":
     print("cut", round(L1_CUT, 2), "coef", AL_COEF, AL_FK)
     print("A=B w", AB_W, "b", round(_A.intercept_[0], 2), "n", AB_N, "nsv", AB_NSV, "acc", AB_ACC, "linear acc", round(QL_ACC, 2))
-    print("alpha rows", AL_ROWS, AL_OTHER)
+    print("alpha table", AL_TABLE, "max alpha", round(max(float(h[0].max()) for h in AL_HIST.values()), 3))
     print("poly", round(AK_M, 4), round(AK_M_SK, 4), AK_NSV, AK_NSV_SK, AK_AGREE)
     print("data ok")

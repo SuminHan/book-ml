@@ -270,8 +270,8 @@ def fig_ktrick():
     mf.save(fig, "kn_ktrick.png")
 
 def fig_alpha():
-    """걸음마다 α: 서포트 벡터 3개는 쌓이고, 나머지 17개는 0 으로"""
-    ts = kd.AL_STEPS; H = np.array([kd.AL_HIST[t] for t in ts]); X20 = kd._X20
+    """J 학습의 걸음마다 α: 서포트 벡터 3개만 남고 나머지 17개는 0 으로 (kd.train_dual)"""
+    ts = kd.AL_STEPS; H = np.array([kd.AL_HIST[t][0] for t in ts]); X20 = kd._X20
     sv = [X20.tolist().index(list(s)) for s in mf.SV]
     fig, ax = plt.subplots(figsize=(10, 4.8))
     for i in range(20):
@@ -280,9 +280,9 @@ def fig_alpha():
     for i, s in zip(sv, mf.SV):
         c = RED if kd._y20[i] > 0 else BLUE
         ax.plot(ts, H[:, i], color=c, lw=3, marker="o" if c == RED else "s", ms=5, zorder=3)
-        ax.text(ts[-1] * 1.25, H[-1, i] + (0.05 if s == mf.SV[2] else -0.05 if s == mf.SV[1] else 0), f"({s[0]:g}, {s[1]:g})  α = {H[-1, i]:.2f}", color=c, fontsize=14, va="center", fontweight="bold")
+        ax.text(ts[-1] * 1.25, H[-1, i] + (0.06 if s == mf.SV[2] else -0.06 if s == mf.SV[1] else 0), f"({s[0]:g}, {s[1]:g})  α = {H[-1, i]:.2f}".replace("-", "−"), color=c, fontsize=14, va="center", fontweight="bold")
     ax.text(ts[-1] * 1.25, 0.0, "나머지 17개  α = 0", color="#555555", fontsize=14, va="center")
-    ax.plot([0.8, ts[-1]], [0, 0], color="black", lw=0.8); ax.set_ylim(-0.05, 0.85)
+    ax.plot([0.8, ts[-1]], [0, 0], color="black", lw=0.8); ax.set_ylim(-0.06, 1.28)
     ax.set_xscale("log"); ax.set_xlim(0.8, ts[-1] * 9); ax.set_xticks([1, 10, 100, 1000, 10000]); ax.set_xticklabels(["1", "10", "100", "1000", "1만"])
     ax.set_xlabel("걸음", fontsize=15); ax.set_ylabel("$\\alpha_k$", fontsize=16, rotation=0, labelpad=14); ax.tick_params(labelsize=12)
     ax.spines["right"].set_visible(False); ax.spines["top"].set_visible(False)
