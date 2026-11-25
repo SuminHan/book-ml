@@ -19,13 +19,13 @@ def fig_recap():
     fig, axs = plt.subplots(1, 2, figsize=(10.4, 5.4))
     ax = axs[0]; mf.pts(ax); mf.street_m(ax, WA, BA, 0)
     p = np.array([-0.2, 1.3]); d = WA @ p + BA; q = p - d * WA                     # ‖w‖ = 1 이라 |D| = 거리, q = 경계 위 발. 수선이 다른 점에서 가장 먼 점
-    ax.scatter(*p, s=340, facecolors="none", edgecolors=BLUE, lw=2.5, zorder=6)
-    ax.annotate("", q, p, arrowprops=dict(arrowstyle="<->", lw=3.2, color=BLUE, shrinkA=6, shrinkB=0), zorder=6)
-    ax.text(-2.12, 0.62, f"$|D(\\mathbf{{x}})|$ = 경계까지\n거리 = {abs(d):.2f}", color=BLUE, fontsize=13.5, fontweight="bold", va="top", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1), zorder=7)
+    ax.scatter(*p, s=340, facecolors="none", edgecolors="#6b6b6b", lw=2.5, zorder=6)
+    ax.annotate("", q, p, arrowprops=dict(arrowstyle="<->", lw=3.2, color="#6b6b6b", shrinkA=6, shrinkB=0), zorder=6)
+    ax.text(-2.12, 0.62, f"$|D(\\mathbf{{x}})|$ = 경계까지\n거리 = {abs(d):.2f}", color="#6b6b6b", fontsize=13.5, fontweight="bold", va="top", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1), zorder=7)
     ax.text(-1.05, 2.05, "$D(\\mathbf{x}) = \\mathbf{w}\\cdot\\mathbf{x} + b = 0$", fontsize=14, va="top")
-    from matplotlib.offsetbox import TextArea, HPacker, AnchoredOffsetbox          # 제목에서 거리 부분만 화살표와 같은 파랑
+    from matplotlib.offsetbox import TextArea, HPacker, AnchoredOffsetbox          # 제목에서 거리 부분은 굵게
     parts = [TextArea("① 경계: $\\Vert\\mathbf{w}\\Vert = 1$ 이면 ", textprops=dict(fontsize=15)),
-             TextArea("$|D(\\mathbf{x})|$ = 경계까지 거리", textprops=dict(fontsize=16, color=BLUE, fontweight="bold"))]
+             TextArea("$|D(\\mathbf{x})|$ = 경계까지 거리", textprops=dict(fontsize=16, color="#6b6b6b", fontweight="bold"))]
     ax.add_artist(AnchoredOffsetbox(loc="lower center", child=HPacker(children=parts, align="baseline", pad=0, sep=2), frameon=False,
                                     bbox_to_anchor=(0.5, 1.005), bbox_transform=ax.transAxes, borderpad=0.1))
     ax.set_title(" ", fontsize=15)
