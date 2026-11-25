@@ -33,6 +33,36 @@ ax.text(Q[0] + 0.25, Q[1] + 0.35, "?", fontsize=30, color=GOLD, fontweight="bold
 ax.set_xlim(1, 9.5); ax.set_ylim(2, 9.5)
 save(fig, "kn_hook.png")
 
+# 1-2. 회귀 (지난 시간 선형회귀 데이터) vs 분류 (오늘 과일)
+import importlib.util
+_s = importlib.util.spec_from_file_location("lrdata", "../2_linear_regression/data.py")
+lr = importlib.util.module_from_spec(_s); _s.loader.exec_module(lr)
+
+
+def fig_cls(hours, score, w0, w1):
+    fig, axs = plt.subplots(1, 2, figsize=(12, 4.5))
+    ax = axs[0]
+    ax.scatter(hours, score, s=60, color=GRAY, zorder=2)
+    xs = np.array([0, 10.5]); ax.plot(xs, w0 + w1 * xs, color=BLUE, lw=2.5)
+    p = w0 + w1 * 7
+    ax.plot([7, 7, 0], [35, p, p], ls="--", color=GOLD, lw=2)
+    ax.scatter([7], [p], s=320, marker="*", color=GOLD, edgecolor="black", zorder=4)
+    ax.text(0.2, p + 2, f"{p:.1f}점", fontsize=16, color=BLUE, fontweight="bold")
+    ax.set_xlim(0, 10.5); ax.set_ylim(35, 105); ax.set_xlabel("공부 시간"); ax.set_ylabel("점수")
+    ax.set_title("지난 시간: 회귀 → 숫자 맞히기", fontsize=18, color=BLUE)
+    ax = axs[1]
+    fruits(ax, qs=300)
+    ax.text(Q[0] + 0.25, Q[1] + 0.35, "?", fontsize=28, color=GOLD, fontweight="bold")
+    ax.set_xlim(1, 9.5); ax.set_ylim(2, 9.5)
+    ax.set_title("오늘: 분류 → 종류 맞히기", fontsize=18, color=RED)
+    save(fig, "kn_cls.png")
+
+
+_h, _sc = lr.study()
+_w1, _w0 = np.polyfit(_h, _sc, 1)
+assert abs(_w0 - lr.W0) < 0.01 and abs(_w1 - lr.W1) < 0.01 and round(_w0 + 7 * _w1, 1) == lr.PRED7
+fig_cls(_h, _sc, _w0, _w1)
+
 # 2. k=3 이웃
 fig, ax = plt.subplots(figsize=(7.5, 5)); fruits(ax)
 r = NEAR3[-1][2]
