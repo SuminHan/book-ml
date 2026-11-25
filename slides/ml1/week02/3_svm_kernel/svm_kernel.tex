@@ -81,6 +81,22 @@
 \note{소프트 마진을 쓰기 전에 크기를 정하는 약속을 바꿉니다. 지난 시간에는 w의 길이를 1로 묶고 마진 M을 최대로 했습니다. 원 논문은 식 12에서 묶는 것을 바꿉니다. w의 길이 대신 M 곱하기 w의 길이를 1로 묶습니다. 그러면 가장 가까운 점의 값이 1이 되고, 조건은 모든 점에서 y k D x k가 1 이상입니다. 가장 가까운 점까지의 거리는 1 나누기 w의 길이라서, 마진을 키우는 것은 w의 길이를 줄이는 것과 같습니다. 그래서 식 13, w 길이 제곱을 최소로 합니다. 앞에 2분의 1을 붙인 것은 미분했을 때 식이 깔끔해지라는 것이고 답은 같습니다. 찾는 선은 똑같고 숫자의 크기만 다릅니다. 지난 시간 답 w 0.71, 0.71과 b 0.04를 M 0.67로 나누면 w 별 1.05, 1.05와 b 별 0.05입니다. w 별의 길이는 1.49이고, 1 나누기 1.49가 0.67, 마진은 그대로입니다. 별표는 논문이 최적의 답에 붙이는 표시입니다. sklearn의 SVC가 주는 coef와 intercept도 이 오른쪽 숫자입니다. 오늘 끝까지, 소프트 마진과 커널 모두 이 오른쪽 기준으로 씁니다.}
 \end{frame}
 
+% --- 정리: 지난 시간 식 → 오늘 식
+\begin{frame}{정리: 지난 시간 식에서 오늘 식으로}
+\vfill
+\centering
+{\large $\displaystyle \max_{\lVert\mathbf{w}\rVert = 1} M
+\;\;\xrightarrow{\;M\lVert\mathbf{w}\rVert = 1\;}\;\; \max \frac{1}{\lVert\mathbf{w}\rVert}
+\;\;\Longleftrightarrow\;\; \min \lVert\mathbf{w}\rVert
+\;\;\Longleftrightarrow\;\; \min \tfrac{1}{2}\lVert\mathbf{w}\rVert^2$}\\[1.6em]
+\fcolorbox{fbeta}{fbeta!8}{\parbox{0.72\linewidth}{\centering\vskip0.3em
+{\LARGE $\displaystyle \min_{\mathbf{w},\,b}\ \ \tfrac{1}{2}\lVert\mathbf{w}\rVert^2$}\\[0.5em]
+{\Large 조건: \; $y_k D(\mathbf{x}_k) \ge 1$, \quad $k = 1, \dots, p$}\vskip0.5em}}\\[1.4em]
+{\large 이 데이터: \; $\mathbf{w}^* = (1.05,\ 1.05)$, \; $b^* = 0.05$, \; $M = \dfrac{1}{\lVert\mathbf{w}^*\rVert} = \kb{0.67}$}
+\vfill
+\note{지금까지의 식을 한 번 정리합니다. 윗줄을 왼쪽부터 읽습니다. 지난 시간에는 w의 길이를 1로 묶고 마진 M을 최대로 했습니다. 약속을 M 곱하기 w의 길이가 1로 바꾸면 M은 1 나누기 w의 길이가 되어, 1 나누기 w의 길이를 최대로 하는 문제가 됩니다. 분수를 크게 하려면 분모를 작게 하면 되니, w의 길이를 최소로 하는 것과 같습니다. 길이가 가장 작은 w는 길이의 제곱도 가장 작으니, 2분의 1 w 길이 제곱을 최소로 해도 답이 같습니다. 제곱과 2분의 1은 미분했을 때 식이 깔끔해지라고 붙인 것입니다. 상자 안이 오늘 계속 쓸 식입니다. 2분의 1 w 길이 제곱을 최소로 하되, 모든 점에서 y k D x k가 1 이상이어야 합니다. 이 데이터의 답은 w 별 1.05, 1.05, b 별 0.05이고, 마진은 1 나누기 w 별의 길이, 지난 시간과 같은 0.67입니다. 다음 쪽의 소프트 마진은 이 식에 벌점 하나를 더한 것입니다.}
+\end{frame}
+
 % --- 서포트 벡터 분류기 식 (Cortes, Vapnik 1995)
 \begin{frame}{서포트 벡터 분류기 (소프트 마진) 찾기}
 \markpage{soft}
