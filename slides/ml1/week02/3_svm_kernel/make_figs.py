@@ -362,7 +362,7 @@ def fig_overlap():
     w, b = m.coef_[0], m.intercept_[0]; g = np.linspace(-2.2, 2.2, 2); ax.plot(g, -(b + w[0] * g) / w[1], color="black", lw=2.5)
     ax.scatter(*A[bad].T, s=330, facecolors="none", edgecolors="#E8590C", lw=3, zorder=5)
     ax.set_xlim(-2.1, 2.1); ax.set_ylim(-2.1, 2.1); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
-    ax.set_title(f"가장 잘 그은 직선도 {int(bad.sum())}개를 틀린다", fontsize=17)
+    ax.set_title(f"어떤 직선도 몇 점은 틀린다 (이 직선은 {int(bad.sum())}개)", fontsize=16)
     mf.save(fig, "kn_overlap.png")
     return int(bad.sum())
 
