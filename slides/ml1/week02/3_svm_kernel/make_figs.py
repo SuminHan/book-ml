@@ -351,12 +351,20 @@ def fig_nails():
 
 
 def fig_overlap():
-    """오늘의 첫 질문: 빨간 점 하나가 파랑 무리 안에 → 가르는 직선이 없다"""
-    X, y = mf.X, mf.y; Xo = np.r_[X, [mf.OUTLIER]]; yo = np.r_[y, [1]]
-    fig, ax = plt.subplots(figsize=(5.6, 5.4)); mf.pts(ax, Xo, yo)
-    ax.scatter(*mf.OUTLIER, s=520, facecolors="none", edgecolors="#E8590C", lw=3.5, zorder=5)
-    ax.set_title("가르는 직선이 없다", fontsize=18)
+    """오늘의 첫 질문: 두 색이 경계 근처에서 뒤섞인 데이터 (예시, 난수) → 어떤 직선을 그어도 몇 점은 틀린다. 동그라미 = 가장 덜 틀리는 직선도 틀리는 점"""
+    rng = np.random.default_rng(3)
+    R = rng.normal((0.5, 0.5), 0.55, (30, 2)); B = rng.normal((-0.5, -0.5), 0.55, (30, 2))
+    A = np.r_[R, B]; t = np.r_[np.ones(30), -np.ones(30)]
+    m = SVC(kernel="linear", C=1).fit(A, t); bad = m.predict(A) != t
+    assert 3 <= bad.sum() <= 10 and SVC(kernel="linear", C=1e4).fit(A, t).score(A, t) < 1
+    fig, ax = plt.subplots(figsize=(5.6, 5.4))
+    ax.scatter(*R.T, s=70, color=RED, zorder=3); ax.scatter(*B.T, s=70, color=BLUE, marker="s", zorder=3)
+    w, b = m.coef_[0], m.intercept_[0]; g = np.linspace(-2.2, 2.2, 2); ax.plot(g, -(b + w[0] * g) / w[1], color="black", lw=2.5)
+    ax.scatter(*A[bad].T, s=330, facecolors="none", edgecolors="#E8590C", lw=3, zorder=5)
+    ax.set_xlim(-2.1, 2.1); ax.set_ylim(-2.1, 2.1); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+    ax.set_title(f"가장 잘 그은 직선도 {int(bad.sum())}개를 틀린다", fontsize=17)
     mf.save(fig, "kn_overlap.png")
+    return int(bad.sum())
 
 
 FIGS = {"overlap": fig_overlap, "soft": mf.fig_soft, "soft9": mf.fig_soft9, "nails": fig_nails, "nn": fig_nn, "recap": fig_recap, "quizkid3": fig_quizkid3, "force": fig_force, "quizkid": fig_quizkid, "quiz1": fig_quiz1, "svarrow": fig_svarrow, "alpha": fig_alpha, "ktrick": fig_ktrick, "dual": fig_dual, "q": fig_q, "lift1d": fig_lift1d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree,
