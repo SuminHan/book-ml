@@ -17,7 +17,7 @@
 
 \renewcommand{\ksacredit}{Machine Learning and Deep Learning \,\textperiodcentered\, SVM 2: 소프트 마진}
 \title{SVM 2: 소프트 마진 (Soft Margin)}
-\subtitle{라그랑주 · $\alpha$ 학습 · 소프트 마진}
+\subtitle{$\alpha$ 학습 · 소프트 마진}
 \author{Machine Learning and Deep Learning}
 \institute{KSA 2027-Spring}
 \date{Sumin Han (suminhan@ksa.hs.kr)}
@@ -39,7 +39,7 @@
 \centering\includegraphics[height=0.7\textheight]{kn_overlap.png}\\[0.4em]
 {\Large 두 색이 \kq{섞여 있으면}?}
 \vfill
-\note{오늘의 질문입니다. 그림처럼 두 색이 경계 근처에서 뒤섞여 있으면 어떻게 할까요. 실제 데이터에는 이런 점이 늘 있습니다. 그러면 어떤 직선을 그어도 몇 점은 반대쪽에 남습니다. 지난 시간의 최대 마진은 모든 점이 제 쪽에 있어야 답이 있었으니, 이런 데이터에서는 답이 없습니다. 먼저 지난 시간 문제를 알파로 푸는 방법을 라그랑주로 배우고, 그다음 몇 점은 넘어가도 되게 하는 소프트 마진으로 이 질문에 답합니다.}
+\note{오늘의 질문입니다. 그림처럼 두 색이 경계 근처에서 뒤섞여 있으면 어떻게 할까요. 실제 데이터에는 이런 점이 늘 있습니다. 그러면 어떤 직선을 그어도 몇 점은 반대쪽에 남습니다. 지난 시간의 최대 마진은 모든 점이 제 쪽에 있어야 답이 있었으니, 이런 데이터에서는 답이 없습니다. 먼저 지난 시간 문제를 점마다 당기는 힘 알파를 붙여 푸는 방법으로 배우고, 그다음 몇 점은 넘어가도 되게 하는 소프트 마진으로 이 질문에 답합니다.}
 \end{frame}
 
 \section{식 다시 쓰기}
@@ -97,74 +97,45 @@ $(1.05,\ 1.05)$, \; $0.05$ & 1.49 & \kq{1} & \kb{0.67} & $D(\mathbf{x}_r) = 1$ (
 \end{frame}
 
 \section{$\alpha$ 로 학습}
-% --- 참고: 라그랑주 함수
-\begin{frame}{참고: 라그랑주 함수 (Lagrangian) 란}
+% --- 비유: 못 박힌 판 위의 두 자
+\begin{frame}{비유: 못 박힌 판 위에서 벌어지는 두 자}
 \vfill
-\centering
-{\large 조건 있는 최소화: \; $\min_{\mathbf{w}} f(\mathbf{w})$, \; 조건 $g_k(\mathbf{w}) \ge 0$}\\[0.9em]
-{\large 조건마다 \kb{벌의 크기 $\alpha_k \ge 0$} 를 붙여 \textbf{식 하나로}}\\[0.3em]
-{\Large $\displaystyle L(\mathbf{w}, \boldsymbol{\alpha}) = f(\mathbf{w}) - \sum_k \alpha_k\, g_k(\mathbf{w})$ \qquad $\displaystyle \min_{\mathbf{w}}\ \max_{\boldsymbol{\alpha} \ge 0}\ L(\mathbf{w}, \boldsymbol{\alpha})$}\\[1em]
-\renewcommand{\arraystretch}{1.35}
-{\normalsize\begin{tabular}{c|c|c}
-\textbf{$\mathbf{w}$ 가 조건을} & \textbf{$L$ 을 가장 크게 하는 $\alpha_k$} & \textbf{$\max_{\boldsymbol{\alpha}} L$}\\ \hline
-\kq{어김} ($g_k < 0$) & 끝없이 크게 & $\infty$\\
-\kb{지킴} ($g_k \ge 0$) & $\alpha_k g_k = 0$ 이 되게 & $f(\mathbf{w})$
-\end{tabular}}\\[0.8em]
-{\large 그래서 바깥의 $\min_{\mathbf{w}}$ 는 \textbf{조건을 지키는 $\mathbf{w}$ 중 $f$ 최소} = 원래 문제}\\[0.4em]
-{\normalsize SVM: \; $f = \tfrac12\lVert\mathbf{w}\rVert^2$, \quad $g_k = y_k D(\mathbf{x}_k) - 1$}
+\centering\includegraphics[width=0.84\linewidth]{kn_nails.png}\par\vskip0.2em
+{\large 못 = 학습 점 \;·\; 두 자 사이 = 길 폭 $2M$}\\[0.15em]
+{\large 자가 닿은 못 = \kb{서포트 벡터}, 못이 당기는 힘 = \kq{$\alpha$} \;·\; 안 닿은 못은 힘 0}
 \vfill
-\note{라그랑주 함수가 무엇인지 먼저 일반적인 모양으로 봅시다. f를 가장 작게 하고 싶은데, 조건 g k가 0 이상이어야 합니다. 조건마다 0 이상인 숫자 알파 k를 붙여, f에서 알파 곱하기 g의 합을 뺀 식 하나를 만듭니다. 이것이 라그랑주 함수이고, 알파가 라그랑주 승수입니다. 그리고 안쪽에서 알파에 대해 가장 크게, 바깥에서 w에 대해 가장 작게 합니다. 표를 보면 왜 같은 문제인지 알 수 있습니다. w가 조건을 하나라도 어기면 g가 마이너스라서, 알파를 키울수록 L이 끝없이 커집니다. 조건을 모두 지키면 알파 곱하기 g를 빼면 L이 작아지기만 하니, 가장 큰 값은 그 곱이 0일 때, 즉 f 그대로입니다. 바깥의 최소화는 무한대인 w를 절대 고르지 않으니, 조건을 지키는 w 중에서 f가 가장 작은 것을 찾습니다. SVM에서는 f가 2분의 1 w 길이 제곱이고, g k는 y k D x k 빼기 1입니다. SVM처럼 볼록한 문제에서는 최소와 최대의 순서를 바꿔도 답이 같아서, 뒤에서는 w를 먼저 최소로 만들고 알파를 최대로 합니다.}
+\note{SVM을 손에 잡히는 장치로 생각해 봅시다. 나무판에 못이 박혀 있습니다. 못 하나가 학습 점 하나이고, 빨간 못과 파란 못이 있습니다. 못은 움직이지 않습니다. 그 사이에 나란한 자 두 개를 놓고, 가운데의 스프링이 두 자를 서로 밀어냅니다. 두 자는 늘 나란하지만, 함께 돌 수도 있고 함께 미끄러질 수도 있습니다. 첫째 그림, 아직 어느 못에도 닿지 않아서 스프링이 자를 계속 벌립니다. 둘째 그림, 이 각도에서 벌리다 보니 빨간 못 하나와 파란 못 하나에 걸렸습니다. 이 각도에서는 폭 1.04가 끝입니다. 그런데 못이 두 개뿐이라 자가 돌 수 있고, 돌리면 더 벌어집니다. 셋째 그림, 돌리고 미끄러지다가 어느 쪽으로도 더 못 벌어지는 자리에서 멈춥니다. 두 자 사이가 1.34, 길의 폭이고, 한가운데 점선이 SVM의 경계입니다. 이때 못 세 개가 자를 버티고 있습니다. 못은 자가 더 벌어지지 못하게 붙잡고 당깁니다. 이 당기는 힘이 알파입니다. 빨간 못 하나가 1.1, 파란 못 둘이 0.55씩입니다. 양쪽 힘의 합이 같아서 자가 한쪽으로 밀려 가지 않고, 돌림힘도 맞아서 돌지도 않습니다. 자에 닿지 않은 나머지 못은 아무 힘도 주지 않아서, 뽑아 버려도 자는 그대로입니다. 이것이 알파가 0이라는 뜻이고, 서포트 벡터만으로 경계가 정해지는 이유입니다. 교실에서는 자 두 개와 압정 몇 개로 직접 보여 줄 수 있습니다.}
 \end{frame}
 
-% --- 라그랑주 함수
-\begin{frame}{라그랑주 함수 (Lagrangian)}
+% --- 점마다 α 만큼 당긴다: 식 하나로
+\begin{frame}{점마다 $\alpha_k$ 만큼 당긴다고 생각하고, 식을 다시 쓰면}
 \vfill
 \centering
-{\large 조건 ($y_k D(\mathbf{x}_k) \ge 1$) 마다 \kb{무게 $\alpha_k$} 를 붙여 \textbf{식 하나로}}\par\vspace{1.15cm}
+\vspace*{1.0cm}
 {\large $L(\mathbf{w}, b, \boldsymbol{\alpha}) = \tikzmarknode{hw}{\tfrac{1}{2}\lVert\mathbf{w}\rVert^2} - \sum_{k=1}^{p} \tikzmarknode{al}{\alpha_k}\,\tikzmarknode{br}{\big[\,y_k D(\mathbf{x}_k) - 1\,\big]}$}\\[0.2em]
 \begin{tikzpicture}[remember picture,overlay]
-\node[bub,anchor=south east,font=\small] (c1) at ([xshift=0.15cm,yshift=0.45cm]hw.north) {줄이고 싶은 것: $\lVert\mathbf{w}\rVert$ 작게 = \textbf{넓은 길}};
+\node[bub,anchor=south east,font=\small] (c1) at ([xshift=0.15cm,yshift=0.45cm]hw.north) {\textbf{스프링}: $\lVert\mathbf{w}\rVert$ 작게 = 길 넓히기};
 \draw[bubarr] (c1.south east) -- (hw.north);
-\node[bub,anchor=south west,font=\small] (c3) at ([xshift=-1.0cm,yshift=0.45cm]br.north) {점 $\mathbf{x}_k$ 의 \textbf{여유}: $0$ = 가장자리, $+$ = 길 밖};
+\node[bub,anchor=south west,font=\small] (c3) at ([xshift=-1.0cm,yshift=0.45cm]br.north) {못의 \textbf{여유}: $0$ 닿음, $+$ 길 밖, $-$ 길 안};
 \draw[bubarr] ([xshift=1.0cm]c3.south west) -- (br.north);
-\node[bub,anchor=north,font=\small] (c2) at ([yshift=-0.45cm]al.south) {조건마다 붙인 \textbf{무게} = 점 $\mathbf{x}_k$ 가 \textbf{미는 힘}};
+\node[bub,anchor=north,font=\small] (c2) at ([yshift=-0.45cm]al.south) {못 $\mathbf{x}_k$ 가 \textbf{당기는 힘} ($\alpha_k \ge 0$)};
 \draw[bubarr] (c2.north) -- (al.south);
-\end{tikzpicture}\par\vspace{0.85cm}
-{\large $\displaystyle\min_{\mathbf{w},\,b}\ \max_{\boldsymbol{\alpha} \ge 0}\ L(\mathbf{w}, b, \boldsymbol{\alpha})$ \;의 답 $=$ $L$ 의 \kb{안장점} (saddle point)}\\[0.5em]
-{\large $L$ 이 $\mathbf{w}$ 에 대해서는 \textbf{최소}, \; $\boldsymbol{\alpha}$ ($\alpha_k \ge 0$) 에 대해서는 \kq{최대} 인 점}\\[0.3em]
-{\large $L(\mathbf{w}^*, b^*, \textcolor{ksared}{\boldsymbol{\alpha}}) \;\le\; L(\mathbf{w}^*, b^*, \boldsymbol{\alpha}^*) \;\le\; L(\textcolor{ksablue}{\mathbf{w}}, b^*, \boldsymbol{\alpha}^*)$}\\[0.4em]
-{\normalsize $\alpha_k$ = \kb{라그랑주 승수} (Lagrange multiplier)}
+\end{tikzpicture}\par\vspace{1.35cm}
+{\large $\displaystyle\min_{\mathbf{w},\,b}\ \max_{\boldsymbol{\alpha} \ge 0}\ L$ : \; $\mathbf{w}, b$ 는 $L$ 을 \kb{작게}, \; $\alpha_k$ 는 \kq{크게}}\\[0.5em]
+{\large 길 안의 못 (여유 $-$): $\alpha_k$ 가 커진다 \quad 길 밖의 못 (여유 $+$): $\alpha_k$ 가 $0$ 으로}\\[0.8em]
+{\small\color{gray} 참고: 이 $L$ = 라그랑주 함수 (Lagrangian), \; $\alpha_k$ = 라그랑주 승수}
 \vfill
-\note{라그랑주 방법은 조건이 붙은 문제를 식 하나로 바꾸는 방법입니다. 조건마다 숫자 하나, 알파 k를 붙여서 조건을 식 안으로 넣습니다. 앞의 2분의 1 w 길이 제곱은 줄이고 싶은 것, 넓은 길입니다. 대괄호 안, y k D x k 빼기 1은 점 k의 여유입니다. 0이면 길 가장자리, 플러스면 길 밖에 여유가 있고, 마이너스면 조건을 어긴 것입니다. 알파는 그 조건에 거는 무게이고, 뒤의 역학 비유로는 점 x k가 경계를 미는 힘입니다. 알파는 0 이상이고, 라그랑주 승수, 또는 Kuhn Tucker 계수라고 부릅니다. 원 논문의 식 14입니다. 답은 이 L이 w와 b에 대해서는 가장 작고, 알파에 대해서는 가장 큰 곳, 안장점입니다. 앞의 2분의 1은 미분했을 때 식이 깔끔해지라고 붙인 것이고, 논문도 답은 바뀌지 않는다고 적습니다. 그래서 앞의 최소화 문제를 푸는 것은 이 L의 안장점을 찾는 것과 같습니다. 원 논문의 문장 그대로, 안장점은 L이 w에 대해서는 가장 작고, 0 이상인 알파에 대해서는 가장 큰 점입니다. 크기를 말하는 것이 아니라 L의 값이 그렇다는 뜻입니다. 왜 알파는 크게 할까요. 어떤 점이 조건을 어기면 여유가 마이너스라서, 알파를 키울수록 L이 끝없이 커집니다. 그러니 w가 L을 작게 하려면 조건을 어길 수 없습니다. 조건을 다 지키면 L의 최댓값은 2분의 1 w 길이 제곱이 됩니다. 한 방향으로는 골짜기, 다른 방향으로는 봉우리라서 말안장 모양, 안장점이라고 부릅니다. b는 논문에서 따로 정하는데, 뒤에서 보겠습니다. 수식으로 쓰면 아래 한 줄입니다. 답 w 별, b 별에서 알파를 아무리 바꿔도 L은 더 커지지 않고, 답 알파 별에서 w를 아무리 바꿔도 L은 더 작아지지 않습니다.}
+\note{못과 자 그림을 식으로 옮겨 봅시다. 모든 못이 자를 알파만큼 당긴다고 생각하면, 하고 싶은 일을 식 하나로 다시 쓸 수 있습니다. 첫 항 2분의 1 w 길이 제곱은 스프링입니다. w를 작게 할수록 길이 넓어집니다. 대괄호 안, y k D x k 빼기 1은 못 하나의 여유입니다. 0이면 자에 닿아 있고, 플러스면 길 밖에 여유가 있고, 마이너스면 길 안에 들어와 있습니다. 알파 k는 그 못이 당기는 힘이고, 0 이상입니다. 못은 자를 당기기만 하고 밀어내지는 않습니다. 이제 w와 b는 L을 작게, 알파는 크게 만듭니다. 왜 그런지 두 경우를 봅시다. 못이 길 안에 있으면 여유가 마이너스라서, 알파를 키울수록 L이 커집니다. 그래서 그 못은 점점 세게 당기고, 자는 그 못을 길 밖으로 내보내는 쪽으로 움직입니다. 못이 길 밖에 있으면 여유가 플러스라서, L을 크게 하려면 알파를 줄여야 하고, 0이 되면 더는 당기지 않습니다. 이렇게 조건마다 숫자를 붙여 식 하나로 만든 것을 수학에서는 라그랑주 함수, 알파를 라그랑주 승수라고 부릅니다. 일반적인 모양과 안장점 그림은 덱 맨 뒤 Appendix에 있습니다. 원 논문의 식 14입니다.}
 \end{frame}
 
-% --- SVM 에서 왜 같은 문제인가
-\begin{frame}{SVM 에서 보면: 왜 같은 문제인가}
-\vfill
-\centering\includegraphics[width=0.78\linewidth]{kn_equiv.png}\par\vskip0.3em
-{\large $\displaystyle \min_{\mathbf{w}} \max_{\boldsymbol{\alpha} \ge 0} L$ \;=\; \kq{빨간 곳은 $\infty$ 라 못 고른다} \;$\to$\; \textbf{지키는 곳에서 $\tfrac12\lVert\mathbf{w}\rVert^2$ 최소}}
-\vfill
-\note{점 20개로 왜 두 문제가 같은지 그려 봅시다. 가로축이 w1, 세로축이 w2이고, b는 답의 값 0.05로 고정합니다. 이 평면의 점 하나가 w 하나, 즉 경계 하나의 방향과 크기입니다. 데이터 점 하나는 y k D x k가 1 이상이라는 규칙 하나이고, 평면에서는 직선 하나입니다. 직선이 20개 있고, 20개를 모두 지키는 곳이 흰 부분입니다. 빨간 곳은 규칙을 하나라도 어긴 w입니다. 거기서는 어긴 점의 알파를 키우면 L이 끝없이 커지니 max L이 무한대입니다. 흰 곳에서는 알파 곱하기 여유를 빼면 작아지기만 하니, 가장 큰 값은 2분의 1 w 길이 제곱입니다. 바깥에서 w를 골라 최소로 하면 무한대인 곳은 절대 안 고르니, 흰 곳에서 원점에 가장 가까운 점, 검은 점이 답입니다. 원래 문제와 똑같습니다. 점선 원은 2분의 1 w 길이 제곱이 같은 곳입니다. 오른쪽 그림에서, 검은 점에 닿아 있는 직선은 3개뿐입니다. 이 3개 점의 알파 곱하기 라벨 곱하기 위치를 화살표로 이으면 정확히 w 별이 됩니다. 나머지 17개는 닿지 않아 알파가 0입니다.}
-\end{frame}
-
-% --- 안장점 그림
-\begin{frame}{안장점 (saddle point): 한 방향은 최소, 다른 방향은 최대}
-\vfill
-\centering\includegraphics[width=0.93\linewidth]{kn_saddle.png}\par\vskip0.5em
-{\large 가장 작은 예: $\tfrac12 w^2$ 최소, 조건 $w \ge 1$ \;$\to$\; $L(w, \alpha) = \tfrac12 w^2 - \alpha\,(w - 1)$}\\[0.3em]
-{\large 답 $w = 1$, $\alpha = 1$: \textcolor{ksablue}{\textbf{$w$ 방향 최소}}, \;\textcolor{ksared}{\textbf{$\alpha$ 방향 최대}}}
-\vfill
-\note{안장점을 그림으로 봅시다. 점 20개의 L은 숫자가 너무 많아 그릴 수 없으니, 가장 작은 예를 씁니다. w 하나이고, 2분의 1 w 제곱을 최소로 하되 w가 1 이상이어야 합니다. 답은 눈으로도 w가 1입니다. 라그랑주 함수는 2분의 1 w 제곱 빼기 알파 곱하기 w 빼기 1입니다. 왼쪽 그림이 이 함수를 w와 알파에 대해 그린 곡면이고, 말안장처럼 한쪽으로는 휘어 올라가고 다른 쪽으로는 휘어 내려갑니다. 가운데 그림은 알파를 1로 두고 w를 움직인 것입니다. w가 1에서 가장 낮은 골짜기, 최소입니다. 오른쪽 그림은 알파를 하나 정할 때마다 w를 L이 가장 작게 되도록 고른 뒤, 그 값을 알파에 대해 그린 것입니다. w가 알파와 같을 때 최소라서 알파 빼기 2분의 1 알파 제곱이 됩니다. 알파가 1에서 가장 높은 봉우리, 최대입니다. 그 값 0.5는 2분의 1 w 제곱, 즉 원래 문제의 답과 같습니다. 오른쪽 곡선이 바로 뒤에서 만들 J입니다. w를 먼저 없애고 알파만 남긴 함수를 최대로 만드는 것입니다.}
-\end{frame}
-
-% --- 라그랑주 ② (닿은 점만 α > 0)
+% --- 닿은 점만 α > 0
 \begin{frame}{답에서는: 가장자리에 닿은 점만 $\alpha_k > 0$}
 \vfill
 \centering
 {\LARGE $\alpha_k\,\big(\,y_k D(\mathbf{x}_k) - 1\,\big) = 0, \qquad k = 1, \dots, p$}\\[1.1em]
 \renewcommand{\arraystretch}{1.5}
 {\large\begin{tabular}{c|c|c}
-점 $\mathbf{x}_k$ & 여유 $y_k D(\mathbf{x}_k) - 1$ & 무게 $\alpha_k$\\ \hline
+점 $\mathbf{x}_k$ & 여유 $y_k D(\mathbf{x}_k) - 1$ & 당기는 힘 $\alpha_k$\\ \hline
 길 밖 (안 닿음) & $> 0$ & 반드시 \kb{0}\\
 가장자리 (닿음) & $= 0$ & $> 0$ 일 수 있다 = \kq{서포트 벡터}
 \end{tabular}}\\[1em]
@@ -186,7 +157,7 @@ J(\boldsymbol{\alpha}, b) = \sum_{k} \alpha_k\,(1 - b\,y_k) - \tfrac{1}{2}\,\bol
 {\large 할 일: $J$ 를 $\alpha_k \ge 0$ 에서 \kb{최대로} \quad 점은 \textbf{점곱} $\mathbf{x}_k\cdot\mathbf{x}_l$ 안에만}\\[0.35em]
 {\normalsize 이 데이터: $\mathbf{w}^* = 1.1\,r - 0.55\,b_1 - 0.55\,b_2 = (1.05,\ 1.05)$}
 \vfill
-\note{라그랑주 함수 L을 w로 미분해서 0으로 두면, w 빼기 알파 k y k x k의 합이 0, 즉 w 별은 알파 k y k x k의 합입니다. 알파는 미는 힘이고 y는 미는 방향이니, w는 점들을 힘만큼 더한 것입니다. 이 w를 다시 L에 넣으면 w가 사라지고 알파와 b만 남는 J가 됩니다. 앞의 합은 알파 k 곱하기 1 빼기 b y k이고, 뒤는 알파 점 H 점 알파의 절반인데, H k l은 y k y l 곱하기 두 점의 점곱입니다. 이제 문제는 이 J를 알파가 0 이상인 범위에서 가장 크게 만드는 것입니다. 점이 들어가는 곳이 점곱 하나뿐이라는 것이 중요합니다.}
+\note{방금 쓴 식 L을 w로 미분해서 0으로 두면, w 빼기 알파 k y k x k의 합이 0, 즉 w 별은 알파 k y k x k의 합입니다. 알파는 미는 힘이고 y는 미는 방향이니, w는 점들을 힘만큼 더한 것입니다. 이 w를 다시 L에 넣으면 w가 사라지고 알파와 b만 남는 J가 됩니다. 앞의 합은 알파 k 곱하기 1 빼기 b y k이고, 뒤는 알파 점 H 점 알파의 절반인데, H k l은 y k y l 곱하기 두 점의 점곱입니다. 이제 문제는 이 J를 알파가 0 이상인 범위에서 가장 크게 만드는 것입니다. 점이 들어가는 곳이 점곱 하나뿐이라는 것이 중요합니다.}
 \end{frame}
 
 % --- J 를 키우는 학습 한 걸음
@@ -358,20 +329,10 @@ $C$ & 넘어간 양에 거는 \kb{벌점}
 {\large 점이 미는 힘 $\alpha_k$ 에 한계 $C$: 더 세게 밀어야 하는 점은 \kq{$\alpha_k = C$} 로 길 안에 들어온다}\\[0.8em]
 {\normalsize 이상치 포함 21개: $C = 100$ · $3$ · $0.5$ $\to$ $M = 0.07$ · $0.67$ · $0.93$ \;= sklearn 과 같은 선}
 \vfill
-\note{그러면 소프트 마진은 어떻게 학습할까요. 놀랍게도 하드 마진 학습에서 한 곳만 바꾸면 됩니다. 알파를 고칠 때 0 아래로 못 가게 막은 것처럼, 위로는 C를 넘지 못하게 자릅니다. b를 고치는 줄은 그대로입니다. 1995년 Cortes와 Vapnik의 논문에서 슬랙을 넣고 라그랑주를 다시 하면, 최대로 만드는 J는 똑같고 알파의 조건만 0 이상에서 0 이상 C 이하로 바뀝니다. 점이 경계를 미는 힘 알파에 한계 C가 있는 것입니다. 그보다 세게 밀려야 하는 점은 힘이 C에 딱 붙은 채로 길 안에 들어옵니다. 이상치가 있는 21개 점으로 이 두 줄을 돌리면 C가 100, 3, 0.5일 때 마진이 0.07, 0.67, 0.93으로, sklearn의 SVC와 같은 선이 나옵니다. C가 크면 한계가 높아서 한 점도 안 넘기려 하고, 작으면 일찍 포기하고 넓은 길을 택합니다. sklearn의 SVC가 푸는 조건이 바로 0 이상 C 이하입니다. w로 직접 학습하는 다른 방법은 덱 맨 뒤 Appendix에 있습니다.}
+\note{그러면 소프트 마진은 어떻게 학습할까요. 놀랍게도 하드 마진 학습에서 한 곳만 바꾸면 됩니다. 알파를 고칠 때 0 아래로 못 가게 막은 것처럼, 위로는 C를 넘지 못하게 자릅니다. b를 고치는 줄은 그대로입니다. 1995년 Cortes와 Vapnik의 논문에서 슬랙을 넣고 라그랑주를 다시 하면, 최대로 만드는 J는 똑같고 알파의 조건만 0 이상에서 0 이상 C 이하로 바뀝니다. 점이 경계를 미는 힘 알파에 한계 C가 있는 것입니다. 그보다 세게 밀려야 하는 점은 힘이 C에 딱 붙은 채로 길 안에 들어옵니다. 이상치가 있는 21개 점으로 이 두 줄을 돌리면 C가 100, 3, 0.5일 때 마진이 0.07, 0.67, 0.93으로, sklearn의 SVC와 같은 선이 나옵니다. C가 크면 한계가 높아서 한 점도 안 넘기려 하고, 작으면 일찍 포기하고 넓은 길을 택합니다. sklearn의 SVC가 푸는 조건이 바로 0 이상 C 이하입니다. w로 직접 학습하는 다른 방법은 덱 맨 뒤 Appendix에 있습니다. 못 비유로 말하면 못이 말랑해서 버틸 수 있는 힘에 한계 C가 있고, 그보다 세게 밀리면 못이 휘어 길 안으로 들어옵니다.}
 \end{frame}
 
 \section{$\alpha$ 의 뜻}
-% --- 비유: 못 박힌 판 위의 두 자
-\begin{frame}{비유: 못 박힌 판 위에서 벌어지는 두 자}
-\vfill
-\centering\includegraphics[width=0.84\linewidth]{kn_nails.png}\par\vskip0.2em
-{\large 못 = 학습 점 \;·\; 두 자 사이 = 길 폭 $2M$}\\[0.15em]
-{\large 자가 닿은 못 = \kb{서포트 벡터}, 못이 버티는 힘 = \kq{$\alpha$} \;·\; 안 닿은 못은 힘 0}
-\vfill
-\note{SVM을 손에 잡히는 장치로 생각해 봅시다. 나무판에 못이 박혀 있습니다. 못 하나가 학습 점 하나이고, 빨간 못과 파란 못이 있습니다. 못은 움직이지 않습니다. 그 사이에 나란한 자 두 개를 놓고, 가운데의 스프링이 두 자를 서로 밀어냅니다. 두 자는 늘 나란하지만, 함께 돌 수도 있고 함께 미끄러질 수도 있습니다. 첫째 그림, 아직 어느 못에도 닿지 않아서 스프링이 자를 계속 벌립니다. 둘째 그림, 이 각도에서 벌리다 보니 빨간 못 하나와 파란 못 하나에 걸렸습니다. 이 각도에서는 폭 1.04가 끝입니다. 그런데 못이 두 개뿐이라 자가 돌 수 있고, 돌리면 더 벌어집니다. 셋째 그림, 돌리고 미끄러지다가 어느 쪽으로도 더 못 벌어지는 자리에서 멈춥니다. 두 자 사이가 1.34, 길의 폭이고, 한가운데 점선이 SVM의 경계입니다. 이때 못 세 개가 자를 버티고 있습니다. 못이 버티는 힘이 알파입니다. 빨간 못 하나가 1.1, 파란 못 둘이 0.55씩입니다. 양쪽 힘의 합이 같아서 자가 한쪽으로 밀려 가지 않고, 돌림힘도 맞아서 돌지도 않습니다. 자에 닿지 않은 나머지 못은 아무 힘도 주지 않아서, 뽑아 버려도 자는 그대로입니다. 이것이 알파가 0이라는 뜻이고, 서포트 벡터만으로 경계가 정해지는 이유입니다. 방금 본 소프트 마진은 못이 말랑해서 버틸 수 있는 힘에 한계 C가 있는 경우입니다. 그보다 세게 밀리면 못이 휘어 자 안쪽, 길 안으로 들어옵니다. 교실에서는 자 두 개와 압정 몇 개로 직접 보여 줄 수 있습니다.}
-\end{frame}
-
 % --- 서포트 벡터 화살표
 \begin{frame}{$\mathbf{w}$ = 서포트 벡터끼리의 화살표}
 \vfill
@@ -410,14 +371,14 @@ $C$ & 넘어간 양에 거는 \kb{벌점}
 \vfill
 \centering\normalsize\begin{tabular}{l}
 \textbf{크기 약속}: $M\lVert\mathbf{w}\rVert = 1$ $\to$ $\min \tfrac12\lVert\mathbf{w}\rVert^2$, 조건 $y_k D(\mathbf{x}_k) \ge 1$\\[0.6em]
-\textbf{라그랑주}: 조건마다 $\alpha_k \ge 0$, 답 = $L$ 의 안장점, 닿은 점만 $\alpha_k > 0$\\[0.6em]
+\textbf{당기는 힘}: 점마다 $\alpha_k \ge 0$ 을 붙인 식 $L$ (라그랑주 함수), 닿은 점만 $\alpha_k > 0$\\[0.6em]
 \textbf{학습}: $\mathbf{w}$ 를 지운 $J(\boldsymbol{\alpha}, b)$ 를 키운다 (sklearn 은 SMO)\\[0.6em]
 \textbf{소프트 마진}: $\min \tfrac12\lVert\mathbf{w}\rVert^2 + C\sum\xi_k$, $C$ 크면 좁은 길, 학습은 $\alpha_k \le C$\\[0.6em]
 \textbf{분류}: $D(\mathbf{x}) = \sum_k \alpha_k y_k (\mathbf{x}_k\cdot\mathbf{x}) + b$, 서포트 벡터와의 \kb{점곱}만
 \end{tabular}\par\vskip1em
 {\large \kq{다음 시간}: 직선으로 못 가르면? $\to$ 커널}
 \vfill
-\note{정리합니다. 길 가장자리의 값을 1로 두는 약속을 하면 마진 최대는 2분의 1 w 길이 제곱 최소가 됩니다. 라그랑주 방법으로 점마다 알파를 붙이면 답은 안장점이고, 가장자리에 닿은 점만 알파가 0보다 큽니다. w를 지우고 남은 J를 키우는 것이 학습입니다. 점이 겹치면 몇 점은 넘어가도 되게 하고 넘어간 양에 C만큼 벌을 주는 소프트 마진을 쓰고, 학습에서는 알파를 C에서 자르면 됩니다. 마지막으로 분류기에는 서포트 벡터와의 점곱만 남습니다. 다음 시간에는 이 점곱 자리를 바꿔서, 직선으로 못 가르는 데이터를 다루는 커널을 배웁니다.}
+\note{정리합니다. 길 가장자리의 값을 1로 두는 약속을 하면 마진 최대는 2분의 1 w 길이 제곱 최소가 됩니다. 점마다 당기는 힘 알파를 붙여 식 하나로 쓰면, 가장자리에 닿은 점만 알파가 0보다 큽니다. w를 지우고 남은 J를 키우는 것이 학습입니다. 점이 겹치면 몇 점은 넘어가도 되게 하고 넘어간 양에 C만큼 벌을 주는 소프트 마진을 쓰고, 학습에서는 알파를 C에서 자르면 됩니다. 마지막으로 분류기에는 서포트 벡터와의 점곱만 남습니다. 다음 시간에는 이 점곱 자리를 바꿔서, 직선으로 못 가르는 데이터를 다루는 커널을 배웁니다.}
 \end{frame}
 
 \section{연습}
@@ -434,6 +395,66 @@ $C$ & 넘어간 양에 거는 \kb{벌점}
 \end{frame}
 \appendix
 \section{Appendix}
+% --- 참고: 라그랑주 함수
+\begin{frame}{참고: 라그랑주 함수 (Lagrangian) 란}
+\vfill
+\centering
+{\large 조건 있는 최소화: \; $\min_{\mathbf{w}} f(\mathbf{w})$, \; 조건 $g_k(\mathbf{w}) \ge 0$}\\[0.9em]
+{\large 조건마다 \kb{벌의 크기 $\alpha_k \ge 0$} 를 붙여 \textbf{식 하나로}}\\[0.3em]
+{\Large $\displaystyle L(\mathbf{w}, \boldsymbol{\alpha}) = f(\mathbf{w}) - \sum_k \alpha_k\, g_k(\mathbf{w})$ \qquad $\displaystyle \min_{\mathbf{w}}\ \max_{\boldsymbol{\alpha} \ge 0}\ L(\mathbf{w}, \boldsymbol{\alpha})$}\\[1em]
+\renewcommand{\arraystretch}{1.35}
+{\normalsize\begin{tabular}{c|c|c}
+\textbf{$\mathbf{w}$ 가 조건을} & \textbf{$L$ 을 가장 크게 하는 $\alpha_k$} & \textbf{$\max_{\boldsymbol{\alpha}} L$}\\ \hline
+\kq{어김} ($g_k < 0$) & 끝없이 크게 & $\infty$\\
+\kb{지킴} ($g_k \ge 0$) & $\alpha_k g_k = 0$ 이 되게 & $f(\mathbf{w})$
+\end{tabular}}\\[0.8em]
+{\large 그래서 바깥의 $\min_{\mathbf{w}}$ 는 \textbf{조건을 지키는 $\mathbf{w}$ 중 $f$ 최소} = 원래 문제}\\[0.4em]
+{\normalsize SVM: \; $f = \tfrac12\lVert\mathbf{w}\rVert^2$, \quad $g_k = y_k D(\mathbf{x}_k) - 1$}
+\vfill
+\note{라그랑주 함수가 무엇인지 먼저 일반적인 모양으로 봅시다. f를 가장 작게 하고 싶은데, 조건 g k가 0 이상이어야 합니다. 조건마다 0 이상인 숫자 알파 k를 붙여, f에서 알파 곱하기 g의 합을 뺀 식 하나를 만듭니다. 이것이 라그랑주 함수이고, 알파가 라그랑주 승수입니다. 그리고 안쪽에서 알파에 대해 가장 크게, 바깥에서 w에 대해 가장 작게 합니다. 표를 보면 왜 같은 문제인지 알 수 있습니다. w가 조건을 하나라도 어기면 g가 마이너스라서, 알파를 키울수록 L이 끝없이 커집니다. 조건을 모두 지키면 알파 곱하기 g를 빼면 L이 작아지기만 하니, 가장 큰 값은 그 곱이 0일 때, 즉 f 그대로입니다. 바깥의 최소화는 무한대인 w를 절대 고르지 않으니, 조건을 지키는 w 중에서 f가 가장 작은 것을 찾습니다. SVM에서는 f가 2분의 1 w 길이 제곱이고, g k는 y k D x k 빼기 1입니다. SVM처럼 볼록한 문제에서는 최소와 최대의 순서를 바꿔도 답이 같아서, 뒤에서는 w를 먼저 최소로 만들고 알파를 최대로 합니다.}
+\end{frame}
+
+% --- 라그랑주 함수
+\begin{frame}{참고: 답은 $L$ 의 안장점}
+\vfill
+\centering
+{\large 조건 ($y_k D(\mathbf{x}_k) \ge 1$) 마다 \kb{무게 $\alpha_k$} 를 붙여 \textbf{식 하나로}}\par\vspace{1.15cm}
+{\large $L(\mathbf{w}, b, \boldsymbol{\alpha}) = \tikzmarknode{hw}{\tfrac{1}{2}\lVert\mathbf{w}\rVert^2} - \sum_{k=1}^{p} \tikzmarknode{al}{\alpha_k}\,\tikzmarknode{br}{\big[\,y_k D(\mathbf{x}_k) - 1\,\big]}$}\\[0.2em]
+\begin{tikzpicture}[remember picture,overlay]
+\node[bub,anchor=south east,font=\small] (c1) at ([xshift=0.15cm,yshift=0.45cm]hw.north) {줄이고 싶은 것: $\lVert\mathbf{w}\rVert$ 작게 = \textbf{넓은 길}};
+\draw[bubarr] (c1.south east) -- (hw.north);
+\node[bub,anchor=south west,font=\small] (c3) at ([xshift=-1.0cm,yshift=0.45cm]br.north) {점 $\mathbf{x}_k$ 의 \textbf{여유}: $0$ = 가장자리, $+$ = 길 밖};
+\draw[bubarr] ([xshift=1.0cm]c3.south west) -- (br.north);
+\node[bub,anchor=north,font=\small] (c2) at ([yshift=-0.45cm]al.south) {조건마다 붙인 \textbf{무게} = 점 $\mathbf{x}_k$ 가 \textbf{미는 힘}};
+\draw[bubarr] (c2.north) -- (al.south);
+\end{tikzpicture}\par\vspace{0.85cm}
+{\large $\displaystyle\min_{\mathbf{w},\,b}\ \max_{\boldsymbol{\alpha} \ge 0}\ L(\mathbf{w}, b, \boldsymbol{\alpha})$ \;의 답 $=$ $L$ 의 \kb{안장점} (saddle point)}\\[0.5em]
+{\large $L$ 이 $\mathbf{w}$ 에 대해서는 \textbf{최소}, \; $\boldsymbol{\alpha}$ ($\alpha_k \ge 0$) 에 대해서는 \kq{최대} 인 점}\\[0.3em]
+{\large $L(\mathbf{w}^*, b^*, \textcolor{ksared}{\boldsymbol{\alpha}}) \;\le\; L(\mathbf{w}^*, b^*, \boldsymbol{\alpha}^*) \;\le\; L(\textcolor{ksablue}{\mathbf{w}}, b^*, \boldsymbol{\alpha}^*)$}\\[0.4em]
+{\normalsize $\alpha_k$ = \kb{라그랑주 승수} (Lagrange multiplier)}
+\vfill
+\note{라그랑주 방법은 조건이 붙은 문제를 식 하나로 바꾸는 방법입니다. 조건마다 숫자 하나, 알파 k를 붙여서 조건을 식 안으로 넣습니다. 앞의 2분의 1 w 길이 제곱은 줄이고 싶은 것, 넓은 길입니다. 대괄호 안, y k D x k 빼기 1은 점 k의 여유입니다. 0이면 길 가장자리, 플러스면 길 밖에 여유가 있고, 마이너스면 조건을 어긴 것입니다. 알파는 그 조건에 거는 무게이고, 뒤의 역학 비유로는 점 x k가 경계를 미는 힘입니다. 알파는 0 이상이고, 라그랑주 승수, 또는 Kuhn Tucker 계수라고 부릅니다. 원 논문의 식 14입니다. 답은 이 L이 w와 b에 대해서는 가장 작고, 알파에 대해서는 가장 큰 곳, 안장점입니다. 앞의 2분의 1은 미분했을 때 식이 깔끔해지라고 붙인 것이고, 논문도 답은 바뀌지 않는다고 적습니다. 그래서 앞의 최소화 문제를 푸는 것은 이 L의 안장점을 찾는 것과 같습니다. 원 논문의 문장 그대로, 안장점은 L이 w에 대해서는 가장 작고, 0 이상인 알파에 대해서는 가장 큰 점입니다. 크기를 말하는 것이 아니라 L의 값이 그렇다는 뜻입니다. 왜 알파는 크게 할까요. 어떤 점이 조건을 어기면 여유가 마이너스라서, 알파를 키울수록 L이 끝없이 커집니다. 그러니 w가 L을 작게 하려면 조건을 어길 수 없습니다. 조건을 다 지키면 L의 최댓값은 2분의 1 w 길이 제곱이 됩니다. 한 방향으로는 골짜기, 다른 방향으로는 봉우리라서 말안장 모양, 안장점이라고 부릅니다. b는 논문에서 따로 정하는데, 뒤에서 보겠습니다. 수식으로 쓰면 아래 한 줄입니다. 답 w 별, b 별에서 알파를 아무리 바꿔도 L은 더 커지지 않고, 답 알파 별에서 w를 아무리 바꿔도 L은 더 작아지지 않습니다.}
+\end{frame}
+
+% --- SVM 에서 왜 같은 문제인가
+\begin{frame}{SVM 에서 보면: 왜 같은 문제인가}
+\vfill
+\centering\includegraphics[width=0.78\linewidth]{kn_equiv.png}\par\vskip0.3em
+{\large $\displaystyle \min_{\mathbf{w}} \max_{\boldsymbol{\alpha} \ge 0} L$ \;=\; \kq{빨간 곳은 $\infty$ 라 못 고른다} \;$\to$\; \textbf{지키는 곳에서 $\tfrac12\lVert\mathbf{w}\rVert^2$ 최소}}
+\vfill
+\note{점 20개로 왜 두 문제가 같은지 그려 봅시다. 가로축이 w1, 세로축이 w2이고, b는 답의 값 0.05로 고정합니다. 이 평면의 점 하나가 w 하나, 즉 경계 하나의 방향과 크기입니다. 데이터 점 하나는 y k D x k가 1 이상이라는 규칙 하나이고, 평면에서는 직선 하나입니다. 직선이 20개 있고, 20개를 모두 지키는 곳이 흰 부분입니다. 빨간 곳은 규칙을 하나라도 어긴 w입니다. 거기서는 어긴 점의 알파를 키우면 L이 끝없이 커지니 max L이 무한대입니다. 흰 곳에서는 알파 곱하기 여유를 빼면 작아지기만 하니, 가장 큰 값은 2분의 1 w 길이 제곱입니다. 바깥에서 w를 골라 최소로 하면 무한대인 곳은 절대 안 고르니, 흰 곳에서 원점에 가장 가까운 점, 검은 점이 답입니다. 원래 문제와 똑같습니다. 점선 원은 2분의 1 w 길이 제곱이 같은 곳입니다. 오른쪽 그림에서, 검은 점에 닿아 있는 직선은 3개뿐입니다. 이 3개 점의 알파 곱하기 라벨 곱하기 위치를 화살표로 이으면 정확히 w 별이 됩니다. 나머지 17개는 닿지 않아 알파가 0입니다.}
+\end{frame}
+
+% --- 안장점 그림
+\begin{frame}{안장점 (saddle point): 한 방향은 최소, 다른 방향은 최대}
+\vfill
+\centering\includegraphics[width=0.93\linewidth]{kn_saddle.png}\par\vskip0.5em
+{\large 가장 작은 예: $\tfrac12 w^2$ 최소, 조건 $w \ge 1$ \;$\to$\; $L(w, \alpha) = \tfrac12 w^2 - \alpha\,(w - 1)$}\\[0.3em]
+{\large 답 $w = 1$, $\alpha = 1$: \textcolor{ksablue}{\textbf{$w$ 방향 최소}}, \;\textcolor{ksared}{\textbf{$\alpha$ 방향 최대}}}
+\vfill
+\note{안장점을 그림으로 봅시다. 점 20개의 L은 숫자가 너무 많아 그릴 수 없으니, 가장 작은 예를 씁니다. w 하나이고, 2분의 1 w 제곱을 최소로 하되 w가 1 이상이어야 합니다. 답은 눈으로도 w가 1입니다. 라그랑주 함수는 2분의 1 w 제곱 빼기 알파 곱하기 w 빼기 1입니다. 왼쪽 그림이 이 함수를 w와 알파에 대해 그린 곡면이고, 말안장처럼 한쪽으로는 휘어 올라가고 다른 쪽으로는 휘어 내려갑니다. 가운데 그림은 알파를 1로 두고 w를 움직인 것입니다. w가 1에서 가장 낮은 골짜기, 최소입니다. 오른쪽 그림은 알파를 하나 정할 때마다 w를 L이 가장 작게 되도록 고른 뒤, 그 값을 알파에 대해 그린 것입니다. w가 알파와 같을 때 최소라서 알파 빼기 2분의 1 알파 제곱이 됩니다. 알파가 1에서 가장 높은 봉우리, 최대입니다. 그 값 0.5는 2분의 1 w 제곱, 즉 원래 문제의 답과 같습니다. 오른쪽 곡선이 바로 뒤에서 만들 J입니다. w를 먼저 없애고 알파만 남긴 함수를 최대로 만드는 것입니다.}
+\end{frame}
+
 % --- 벌금 게임 그림
 \begin{frame}{참고: 벌금 게임 ($\tfrac12 w^2$ 최소, 규칙 $w \ge 1$)}
 \vfill
