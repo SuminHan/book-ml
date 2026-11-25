@@ -312,7 +312,7 @@ def fig_saddle():
     ax.set_xticks([0, 1, 2]); ax.set_yticks([0, 0.5, 1]); ax.set_zticks([0, 1, 2]); ax.set_title("말안장 모양, 검은 점 = 안장점", fontsize=16)
     for k, (col, x, y, xl, ttl, lab) in enumerate((
             (BL, g, L(g, 0.5), "w", "① α = 0.5 에서 w 방향: 골짜기 = 최소", "w = 1"),
-            (RD, h, J, "α", "② α 마다 w 를 최소로 → α 방향: 봉우리 = 최대", "α = 0.5"))):
+            (RD, h, J, "α", "② w 를 늘 바닥에 놓은 L = J(α): 봉우리 = 최대", "α = 0.5"))):
         a2 = fig.add_subplot(gs[k + 1]); a2.plot(x, y, color=col, lw=3.5); px = 1 if k == 0 else 0.5; a2.scatter([px], [0.5], s=140, color="black", zorder=5)
         a2.annotate(f"{lab}, L = 0.5", (px, 0.5), (px, 1.05 if k == 0 else 0.0), ha="center", fontsize=15, fontweight="bold", arrowprops=dict(arrowstyle="->", lw=1.5))
         a2.set_xlabel(xl, fontsize=17); a2.set_ylabel("L", fontsize=15, rotation=0, labelpad=10); a2.set_title(ttl, fontsize=15, color=col, fontweight="bold")
