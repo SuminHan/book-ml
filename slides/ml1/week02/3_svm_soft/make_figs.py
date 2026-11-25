@@ -348,6 +348,39 @@ def fig_meet():
     fig.tight_layout(); fig.savefig(mf.O + "kn_meet.png"); plt.close(fig)
 
 
+def fig_states():
+    """말안장 위의 점마다 어떤 상태인가 (임베딩 지도처럼): w = 0.5 · 1 · 2 (가로), α = 0.25 · 0.5 · 1 (세로) 의 9칸.
+    칸 = 점 두 개 (x = ±1) 와 두 자 (±M = ±1/w), 금색 원 = α, 숫자 = L = ½w² − 2α(w − 1). 파랑 테두리 = α = 0.5 에서 w 방향 골짜기, 빨강 = w = 2α (J)"""
+    L = lambda w, a: 0.5 * w ** 2 - 2 * a * (w - 1)
+    WS, AS = (0.5, 1, 2), (0.25, 0.5, 1)
+    tab = {a: [L(w, a) for w in WS] for a in AS}
+    assert tab == {0.25: [0.375, 0.5, 1.5], 0.5: [0.625, 0.5, 1.0], 1: [1.125, 0.5, 0.0]}
+    assert [L(2 * a, a) for a in AS] == [0.375, 0.5, 0.0] and min(tab[0.5]) == tab[0.5][1]
+    BL, RD, GD, WOOD = "#2E3192", "#d62728", "#f2b705", "#d9a441"
+    fig = plt.figure(figsize=(14, 6.6)); X0, Y0, CW, CH, GX, GY = 0.085, 0.085, 0.285, 0.272, 0.018, 0.022
+    for j, a in enumerate(AS):
+        for i, w in enumerate(WS):
+            ax = fig.add_axes([X0 + i * (CW + GX), Y0 + j * (CH + GY), CW, CH]); M = 1 / w; v = L(w, a)
+            ax.set_xlim(-2.6, 2.6); ax.set_ylim(-1.25, 1.25); ax.set_xticks([]); ax.set_yticks([])
+            ax.axvspan(-M, M, ymin=0.2, ymax=0.68, color="#fdf1cf", zorder=1)
+            for s in (-1, 1): ax.plot([s * M, s * M], [-0.75, 0.45], color=WOOD, lw=7, solid_capstyle="butt", zorder=3)
+            ax.plot([0, 0], [-0.75, 0.45], color="black", ls="--", lw=1.3, zorder=2); ax.plot([-2.45, 2.45], [-0.15, -0.15], color="#999999", lw=1, zorder=1.5)
+            for x, c, mk in ((1, RD, "o"), (-1, BL, "s")):
+                ax.scatter([x], [-0.15], s=150 + 1500 * a, color=GD, alpha=0.4, zorder=3.5)
+                ax.scatter([x], [-0.15], s=120, color=c, marker=mk, edgecolor="black", lw=0.8, zorder=5)
+            state = "점이 길 안 (어김)" if w < 1 else ("딱 닿음" if w == 1 else "점이 길 밖 (여유)")
+            ax.text(0, -1.04, state, ha="center", va="center", fontsize=14, color=RD if w < 1 else "black")
+            ax.text(-2.45, 0.9, f"w = {w:g},  α = {a:g}", ha="left", va="center", fontsize=13.5, color="#444444")
+            ax.text(2.45, 0.9, f"L = {v:g}", ha="right", va="center", fontsize=17, fontweight="bold")
+            ridge, valley = w == 2 * a, a == 0.5
+            col = "black" if ridge and valley else (RD if ridge else (BL if valley else "#cccccc"))
+            for sp in ax.spines.values(): sp.set_color(col); sp.set_linewidth(5 if col != "#cccccc" else 1.2); sp.set_visible(True)
+            if ridge and valley: ax.set_facecolor("#fff8dc")
+    for i, w in enumerate(WS): fig.text(X0 + i * (CW + GX) + CW / 2, 0.035, f"w = {w:g}", ha="center", fontsize=17, fontweight="bold")
+    for j, a in enumerate(AS): fig.text(0.043, Y0 + j * (CH + GY) + CH / 2, f"α = {a:g}", ha="center", va="center", fontsize=17, fontweight="bold")
+    fig.savefig(mf.O + "kn_states.png"); plt.close(fig)
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -517,7 +550,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
