@@ -399,6 +399,32 @@ def fig_parab():
     fig.tight_layout(); fig.savefig(mf.O + "kn_parab.png"); plt.close(fig)
 
 
+def fig_onearrow():
+    """w = S × (빨강 중심 − 파랑 중심): 화살표 하나. 중심 = α 로 무게를 준 서포트 벡터의 평균. 경계는 화살표 한가운데를 수직으로, 화살표 길이 = 길 폭 2M"""
+    X, y = mf.X, mf.y; a = np.array([mf.ALPHA.get(tuple(p), 0.0) for p in X.tolist()]); w = (a * y) @ X
+    S = a[y > 0].sum(); R = a[y > 0] @ X[y > 0] / S; B = a[y < 0] @ X[y < 0] / a[y < 0].sum()
+    assert abs(S - a[y < 0].sum()) < 0.01 and np.allclose(R, (0.7, 0.2)) and np.allclose(B, (-0.25, -0.75), atol=0.01)
+    assert np.allclose(R - B, (0.95, 0.95), atol=0.01) and np.allclose(S * (R - B), mf.WA / mf.MA, atol=0.02)
+    M = mf.MA; wa, ba = mf.WA / M, mf.BA / M                                     # 이 덱 기준: 가장자리 D = ±1
+    assert abs(wa @ ((R + B) / 2) + ba) < 0.01 and abs(np.linalg.norm(R - B) - 2 * M) < 0.01
+    BL, RD, GD = "#2E3192", "#d62728", "#f2b705"
+    fig, ax = plt.subplots(figsize=(10.5, 6.2)); gx = np.linspace(-2.3, 2.3, 2)
+    for c, col, ls in ((0, "black", "--"), (1, RD, ":"), (-1, BL, ":")): ax.plot(gx, (c - ba - wa[0] * gx) / wa[1], color=col, ls=ls, lw=2)
+    ax.fill_between(gx, (-1 - ba - wa[0] * gx) / wa[1], (1 - ba - wa[0] * gx) / wa[1], color="#fdf1cf", zorder=0)
+    for p, yy, al in zip(X, y, a):
+        ax.scatter(*p, s=150, color=RD if yy > 0 else BL, marker="o" if yy > 0 else "s", alpha=1.0 if al > 0 else 0.25, zorder=4)
+    b1, b2 = X[(y < 0) & (a > 0)]; ax.plot(*np.c_[b1, b2], color=BL, lw=1.5, alpha=0.6, zorder=3)
+    ax.scatter(*B, s=230, marker="X", color=BL, edgecolor="white", lw=1.5, zorder=6)
+    ax.scatter(*R, s=420, facecolors="none", edgecolors=RD, lw=3, zorder=5)
+    ax.annotate("", R, B, arrowprops=dict(arrowstyle="-|>", color="black", lw=5, mutation_scale=34, shrinkA=8, shrinkB=10), zorder=7)
+    ax.annotate("빨강 중심\n(0.7, 0.2)", R, (1.75, -0.35), fontsize=17, color=RD, fontweight="bold", ha="center", arrowprops=dict(arrowstyle="->", color=RD, lw=1.4, shrinkB=14))
+    ax.annotate("파랑 중심 (두 점의 가운데)\n(−0.25, −0.75)", B, (0.95, -1.75), fontsize=17, color=BL, fontweight="bold", ha="center", arrowprops=dict(arrowstyle="->", color=BL, lw=1.4, shrinkB=12))
+    ax.text(-0.35, 0.18, "(0.95, 0.95)\n길이 1.34 = 길 폭", fontsize=17, fontweight="bold", ha="right", va="center", bbox=dict(fc="white", ec="none", alpha=0.9))
+    ax.annotate("", (R + B) / 2 + np.array([-0.04, 0.03]), (-0.37, 0.13), arrowprops=dict(arrowstyle="-", color="black", lw=1))
+    ax.set_xlim(-2.4, 2.4); ax.set_ylim(-2.05, 1.75); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+    fig.tight_layout(); mf.save(fig, "kn_onearrow.png")
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -568,7 +594,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
