@@ -12,8 +12,9 @@ TOPIC = __import__("re").sub(r"^\d+_", "", os.path.basename(os.path.dirname(HERE
 CELLS = [
 ("md", """# 커널 SVM 실습
 
-직선으로 못 가르는 데이터를 특징 늘리기와 커널로 가른다.
+겹치는 데이터는 소프트 마진으로, 직선으로 못 가르는 데이터는 특징 늘리기와 커널로 가른다.
 
+- **파트 0**: 슬라이드의 점에 이상치 하나 넣고 소프트 마진
 - **파트 1**: 원 데이터: 특징 6개를 직접 만들기 (A) vs 다항 커널 (B) 가 같은 w 인지 확인
 - **파트 2**: 지폐 1,372장 진위 판별: 선형 vs RBF
 - **파트 3**: 반달 데이터에서 C 와 γ 를 교차 검증으로
@@ -25,6 +26,36 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.datasets import make_circles, make_moons"""),
+("md", """## 슬라이드의 예시 데이터
+
+원래 값에서 축마다 평균을 빼고 표준편차로 나눈다 (z-score). 슬라이드의 점은 이 값을 소수 첫째 자리로 반올림한 것."""),
+("code", """# Same example as the slides: 10 red (+1) and 10 blue (-1) points, raw values
+X_raw = np.array([[5.9, 6.8], [5.3, 8.0], [6.3, 6.2], [6.1, 9.2], [5.5, 7.4], [6.6, 8.6], [5.7, 5.6], [5.5, 9.8], [6.6, 6.8], [4.8, 8.9],   # red
+              [4.4, 1.1], [3.8, 1.7], [4.6, 2.3], [4.0, 3.2], [3.6, 0.5], [4.4, 3.8], [5.1, 1.7], [3.4, 3.2], [4.8, 0.8], [3.7, 4.4]])  # blue
+y = np.array([1] * 10 + [-1] * 10)
+X = ((X_raw - X_raw.mean(0)) / X_raw.std(0)).round(1)     #@ANS X = None  # TODO: z-score each column, round to 1 decimal
+print("mean", X.mean(0).round(2), " std", X.std(0).round(2))
+
+def plot_svm(model, X, y, ax=None, title=""):
+    ax = ax or plt.gca()
+    gx, gy = np.meshgrid(np.linspace(-2.2, 2.2, 200), np.linspace(-2.2, 2.2, 200))
+    Z = model.decision_function(np.c_[gx.ravel(), gy.ravel()]).reshape(gx.shape)
+    ax.contour(gx, gy, Z, levels=[-1, 0, 1], linestyles=["--", "-", "--"], colors="k")
+    ax.scatter(X[:, 0], X[:, 1], c=y, cmap="coolwarm_r")
+    sv = model.support_vectors_
+    ax.scatter(sv[:, 0], sv[:, 1], s=200, facecolors="none", edgecolors="gold", linewidths=2)
+    ax.set_aspect("equal"); ax.set_title(title)"""),
+("md", """## 파트 0. 소프트 마진
+
+빨간 이상치 하나를 파란 쪽에 넣는다. sklearn 의 `C` 는 슬라이드의 $C$ 와 같다: 크면 좁은 길, 작으면 넓은 길. 마진 $M = 1/\\lVert\\mathbf{w}\\rVert$."""),
+("code", """# Soft margin: add one red outlier inside the blue group
+X_out = np.r_[X, [[-0.2, -0.6]]]; y_out = np.r_[y, [1]]
+fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+for ax, C in zip(axs, [100, 3, 0.3]):
+    m = SVC(kernel="linear", C=C).fit(X_out, y_out)
+    n_sv = len(m.support_)                                #@ANS n_sv = None  # TODO: number of support vectors
+    plot_svm(m, X_out, y_out, ax, f"C={C}: M {1 / np.linalg.norm(m.coef_[0]):.2f}, {n_sv} SVs")   # margin M = 1/||w|| (nearest value = 1)
+plt.show()"""),
 ("md", """## 파트 1. 특징 직접 만들기 (A) vs 커널 (B)
 
 다항 2차 커널 $(\\mathbf{x}\\cdot\\mathbf{x}' + 1)^2$ 의 특징 6개: $\\varphi(\\mathbf{x}) = (1, \\sqrt2x_1, \\sqrt2x_2, x_1^2, \\sqrt2x_1x_2, x_2^2)$.
@@ -88,6 +119,7 @@ plt.show()"""),
 2. 파트 1 을 RBF 커널로 바꾸면 A 방법으로 같은 걸 할 수 있나? 왜?
 3. 파트 2 에서 RBF 가 선형보다 조금 높다. 그래도 선형을 고를 이유가 있다면 무엇일까? (서포트 벡터 수, 예측 속도, 설명하기 쉬움)
 4. 파트 3 의 표에서 C 와 γ 가 둘 다 클 때 정확도가 떨어지는 이유는?
+5. 파트 0 에서 C 를 줄일수록 서포트 벡터 수는 어떻게 되나? 왜 그럴까?
 
 데이터 출처: Banknote Authentication, UCI Machine Learning Repository (Volker Lohweg, 2012)."""),
 ]

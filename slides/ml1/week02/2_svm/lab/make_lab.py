@@ -12,11 +12,10 @@ TOPIC = __import__("re").sub(r"^\d+_", "", os.path.basename(os.path.dirname(HERE
 CELLS = [
 ("md", """# 서포트 벡터 머신 실습
 
-가장 넓은 길을 내는 분류기. 마진과 서포트 벡터를 확인하고, 학습 방법을 직접 짜 보고, 소프트 마진을 본다. (커널 · 실제 데이터는 다음 차시 `3_svm_kernel` 실습)
+가장 넓은 길을 내는 분류기. 마진과 서포트 벡터를 확인하고, 학습 방법을 직접 짜 본다. (소프트 마진 · 커널 · 실제 데이터는 다음 차시 `3_svm_kernel` 실습)
 
 - **파트 1**: 슬라이드의 점 20개를 z-score 하고: 마진 M 0.67 (길 폭 1.34), 서포트 벡터 3개
 - **파트 2**: 슬라이드의 학습 방법을 직접 짜서 sklearn 과 비교
-- **파트 3**: 이상치 하나 넣고 소프트 마진
 
 `None` 으로 비워 둔 `TODO` 줄을 채우고 셀을 차례로 실행하세요."""),
 ("code", """import os
@@ -80,21 +79,9 @@ m_mine = (y * (X @ w_mine + b_mine)).min()
 print("mine   : w =", w_mine.round(3), " b =", round(b_mine, 3), " M =", round(m_mine, 3))
 print("sklearn: w =", w.round(3), " b =", round(b, 3), " M =", round(margin, 3))
 print("angle between the two w (deg):", round(np.degrees(np.arccos(w_mine @ w / np.linalg.norm(w_mine))), 3))"""),
-("md", """## 파트 3. 소프트 마진
-
-빨간 이상치 하나를 파란 쪽에 넣는다. sklearn 의 `C` 는 슬라이드의 $C$ 와 같다: 크면 좁은 길, 작으면 넓은 길. 마진 $M = 1/\\lVert\\mathbf{w}\\rVert$."""),
-("code", """# Soft margin: add one red outlier inside the blue group
-X_out = np.r_[X, [[-0.2, -0.6]]]; y_out = np.r_[y, [1]]
-fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-for ax, C in zip(axs, [100, 3, 0.3]):
-    m = SVC(kernel="linear", C=C).fit(X_out, y_out)
-    n_sv = len(m.support_)                                #@ANS n_sv = None  # TODO: number of support vectors
-    plot_svm(m, X_out, y_out, ax, f"C={C}: M {1 / np.linalg.norm(m.coef_[0]):.2f}, {n_sv} SVs")   # margin M = 1/||w|| (nearest value = 1)
-plt.show()"""),
 ("md", """**확인 질문**
 1. 파트 1 에서 서포트 벡터 하나를 옮기면 w 가 바뀌는가? 직접 해 보자.
-2. 파트 2 에서 `w` 만 나누지 않고 `b` 까지 나누면 어떻게 되나? 바꿔서 sklearn 과 비교해 보자.
-3. 파트 3 에서 C 를 줄일수록 서포트 벡터 수는 어떻게 되나? 왜 그럴까?"""),
+2. 파트 2 에서 `w` 만 나누지 않고 `b` 까지 나누면 어떻게 되나? 바꿔서 sklearn 과 비교해 보자."""),
 ]
 
 if __name__ == "__main__":
