@@ -444,7 +444,39 @@ def fig_learn():
     return out
 
 
-FIGS = {"learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+def fig_pull():
+    """왜 서포트 벡터만 남나 (만화): 길 안의 점은 고무줄로 가장자리 (자) 를 자기 쪽으로 당긴다 (α ↑). 길 밖의 점은 줄이 없다 (α → 0).
+    길이 좁아지면 당기는 점이 줄고, 닿은 점만 남는다. 학습 순서 (전부 → 일부 → 서포트 벡터) 와 같다."""
+    R = [(1.0, 1.0), (2.3, 1.7), (3.6, 2.4)]; B = [(1.7, -1.0), (3.0, -1.7), (0.5, -2.4)]
+    PAN = [(3.0, "① 처음: 길이 아주 넓다", "6개 모두 당긴다"), (2.0, "② 길이 좁아졌다", "먼 점은 손을 뗀다 (α → 0)"), (1.0, "③ 멈춤", "닿은 점만 버틴다 = 서포트 벡터")]
+    inside = [sum(abs(h) < M for _, h in R + B) for M, _, _ in PAN]
+    assert inside == [6, 4, 0] and sum(abs(h) == 1.0 for _, h in R + B) == 2
+    fig, axs = plt.subplots(1, 3, figsize=(14.4, 6.0))
+    for ax, (M, ttl, sub) in zip(axs, PAN):
+        ax.axhspan(-M, M, color=GOLD, alpha=0.14); ax.axhline(0, color="black", lw=2, ls=(0, (6, 4)))
+        for sgn in (1, -1):
+            ax.plot([-0.15, 4.25], [sgn * M, sgn * M], color="#8a6d2f", lw=9, solid_capstyle="round", zorder=3)
+        for pts, c, sgn in ((R, RED, 1), (B, BLUE, -1)):
+            for x, h in pts:
+                gap = M - abs(h)
+                if gap > 0:                                          # 길 안: 가장자리를 점 쪽으로 당긴다
+                    ax.annotate("", (x, h + sgn * 0.17), (x, sgn * M), arrowprops=dict(arrowstyle="-|>", lw=2 + 2.6 * gap, color=c, mutation_scale=20, shrinkA=0, shrinkB=0), zorder=4)
+                touch = abs(h) == M
+                if touch:
+                    ax.scatter(x, h, s=900, facecolors=GOLD, alpha=0.55, edgecolors="none", zorder=4)
+                    ax.text(x + 0.32, h - sgn * 0.42, "α > 0", color=c, fontsize=17, fontweight="bold", va="center")
+                faded = gap < 0
+                ax.scatter(x, h, s=190, color=c, alpha=0.35 if faded else 1, zorder=5)
+                if faded:
+                    ax.text(x, h + sgn * 0.36, "α = 0", color="#7a7a7a", fontsize=14, ha="center", va="center", zorder=5)
+        ax.set_title(ttl, fontsize=19, fontweight="bold", pad=10)
+        ax.text(2.05, -3.75, sub, fontsize=17, ha="center", fontweight="bold")
+        ax.set_xlim(-0.35, 4.55); ax.set_ylim(-4.05, 3.45); ax.axis("off")
+    fig.tight_layout(w_pad=1.5)
+    fig.savefig(mf.O + "kn_pull.png", dpi=150); plt.close(fig)
+
+
+FIGS = {"pull": fig_pull, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
