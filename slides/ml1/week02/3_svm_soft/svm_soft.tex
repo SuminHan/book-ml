@@ -176,13 +176,14 @@ $\alpha$ (답의 몇 배) & \textbf{얻는 것} $\sum\alpha_k$ & 마진 $M$ & \t
 \begin{frame}{$J$ 는 새 문제가 아니다: 같은 문제를 네 번 고쳐 쓴 것}
 \vfill
 \centering
-\renewcommand{\arraystretch}{2.3}
+\renewcommand{\arraystretch}{1.95}
 {\normalsize\begin{tabular}{rl}
 \textbf{\textcircled{1} 목표와 조건} & $\displaystyle\min_{\mathbf{w},\,b}\ \tfrac12\lVert\mathbf{w}\rVert^2$ \qquad 조건 $y_k D(\mathbf{x}_k) - 1 \ge 0$\\
-\textbf{\textcircled{2} 식 하나로} & $\displaystyle L = \tfrac12\lVert\mathbf{w}\rVert^2 - \sum_{k=1}^{p} \kq{$\alpha_k$}\,\big[\,y_k D(\mathbf{x}_k) - 1\,\big]$, \qquad \kq{$\alpha_k \ge 0$}\\
+\textbf{\textcircled{2} 식 하나로} & $\displaystyle L = \tfrac12\lVert\mathbf{w}\rVert^2 - \sum_{k=1}^{p} \kq{$\alpha_k$}\,\big[\,y_k D(\mathbf{x}_k) - 1\,\big]$, \qquad \kq{$\alpha_k \ge 0$}\\[-0.6em]
+ & $\displaystyle \min_{\mathbf{w},\,b}\ \max_{\boldsymbol{\alpha} \ge 0}\ L$ \quad {\small ($\mathbf{w}, b$ 는 $L$ 을 \kb{작게}, $\alpha$ 는 \kq{크게})}\\
 \textbf{\textcircled{3} $\mathbf{w}$ 로 미분 $= 0$} & $\displaystyle \mathbf{w}^* = \sum_{k} \alpha_k y_k \mathbf{x}_k$ \qquad \kb{$\leftarrow$ $\mathbf{w}$ 는 작게: 여기서 끝}\\
 \textbf{\textcircled{4} 다시 넣기} & $\displaystyle J = \sum_{k} \alpha_k - \tfrac12\Big\lVert \sum_{k} \alpha_k y_k \mathbf{x}_k \Big\rVert^2$ \qquad \quad \kq{$\leftarrow$ $\alpha$ 는 크게: 학습}
-\end{tabular}}\\[0.8em]
+\end{tabular}}\\[0.4em]
 {\large 컴퓨터가 하는 일은 \kq{$J$ 를 키우는 것} 하나}\\[0.2em]
 {\small 새 생각은 \textcircled{2} 하나: 조건마다 $\alpha_k$ 를 붙여 식 하나로 (라그랑주) \quad \textcircled{4} 는 $\sum_k \alpha_k y_k = 0$ 일 때}
 \vfill
@@ -206,6 +207,24 @@ $2$ & $2$ & 너무 비싸다 $\to$ 너무 일찍
 {\large 알맞은 단가 $\alpha$ 찾기 $=$ \kq{$\alpha$ 학습} \qquad {\normalsize 어차피 일찍 일어나는 규칙엔 단가 $0$}}
 \vfill
 \note{L이 무엇인지 늦잠으로 생각해 봅시다. 수업 w시간 전에 일어난다고 하면, 일찍 일어날수록 괴롭습니다. 괴로움을 2분의 1 w 제곱이라고 합시다. 규칙은 최소 1시간 전에는 일어나야 지각이 아니라는 것입니다. 학교가 모자란 1시간마다 벌점 단가 알파를 매기면, 학생의 총점 L은 괴로움 빼기 알파 곱하기, w 빼기 1입니다. 늦게 일어나 w가 1보다 작으면 괄호가 음수라 빼면 벌점이 더해지고, 일찍 일어나면 오히려 깎입니다. 학생은 규칙은 신경 쓰지 않고 총점이 가장 낮은 시각만 고릅니다. 계산해 보면 학생은 w가 알파인 시각을 고릅니다. 단가가 0이면 벌점이 없으니 수업 직전에 일어나 지각합니다. 0.5면 벌점이 싸서 좀 맞고 말자며 30분 전에 일어나 역시 지각합니다. 1이면 딱 1시간 전에 일어납니다. 2면 너무 비싸서 2시간 전에 일어납니다. 단가가 알맞으면, 학생은 총점만 낮췄는데 규칙을 딱 지킵니다. 이것이 L의 아이디어입니다. 알맞은 단가를 찾는 것이 알파 학습입니다. SVM에서는 괴로움 자리에 2분의 1 w 길이 제곱이고, 규칙이 점마다 하나씩 있어서 단가 알파도 점마다 하나씩입니다. 원래 여유 있는 규칙, 예를 들어 아침형이라 어차피 3시간 전에 일어나는 학생에게는 벌점이 필요 없습니다. 단가 0, 서포트 벡터가 아닌 점입니다. SVM 식의 빼기 알파 곱하기, y D 빼기 1과 같은 꼴입니다.}
+\end{frame}
+
+% --- 평형 = 연립방정식
+\begin{frame}{평형 찾기 = 연립방정식 두 개}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.6}
+{\normalsize\begin{tabular}{r|c|c}
+ & \textbf{늦잠} & \textbf{SVM}\\ \hline
+\textcircled{1} $\mathbf{w}$ 는 $\alpha$ 가 정한다 \; $\mathbf{w} = f(\alpha)$ & $w = \alpha$ & $\mathbf{w} = \sum_k \alpha_k y_k \mathbf{x}_k$\\
+\textcircled{2} 규칙을 딱 지킨다 & $w = 1$ & 모든 점 마진 밖, 닿은 점만 $\alpha_k > 0$\\ \hline
+답 & \kb{$\alpha = 1,\ w = 1$} & $\alpha = 1.11 \cdot 0.55 \cdot 0.55$, \;$\mathbf{w} = (1.05, 1.05)$
+\end{tabular}}\\[0.9em]
+{\large \textcircled{1} 에 \textcircled{2} 를 넣으면 끝 \;$\to$\; 순환이 아니다}\\[0.3em]
+{\normalsize $w = 1,\ \alpha = 0$ 은? \; $f(0) = 0 \ne 1$ \;$\to$\; 벌점이 없으면 학생은 그 자리에 \textbf{머물지 않는다}}\\[0.6em]
+{\large 점이 20개면 손으로 못 푼다 \;$\to$\; $\alpha$ 를 조금씩 고치며 \kq{찾아간다} $=$ 학습}
+\vfill
+\note{w는 알파가 정하고, 알파는 w가 규칙을 지키도록 정한다고 하면 돌고 도는 말처럼 들립니다. 하지만 식이 두 개라서 연립방정식입니다. 첫째 식은 알파가 정해지면 w가 따라온다는 것입니다. 늦잠에서는 학생이 단가 알파를 보고 w가 알파인 시각을 고르고, SVM에서는 w가 알파 y x의 합입니다. 둘째 식은 규칙을 딱 지킨다는 것입니다. 늦잠에서는 w가 1, SVM에서는 모든 점이 마진 밖이고 닿은 점만 알파가 0보다 큽니다. 첫째 식에 둘째 식을 넣으면 1은 알파, 그래서 알파도 1, w도 1로 한 번에 풀립니다. w가 1이면 괄호가 0이라 알파가 0이어도 총점은 0.5로 같지만, 벌점이 0원이면 학생은 1시간 전에 일어날 이유가 없어 수업 직전으로 옮겨 갑니다. 첫째 식을 어기니 평형이 아닙니다. 가격과 수요에 비유하면, 사는 양은 가격이 정하고, 가게는 딱 다 팔리는 가격을 찾습니다. SVM은 점이 20개라 둘째 식을 손으로 풀 수 없어서, 알파를 조금씩 고치며 찾아갑니다. 그것이 학습입니다.}
 \end{frame}
 
 % --- J 를 키우는 학습 한 걸음
