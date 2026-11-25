@@ -23,7 +23,12 @@ def fig_recap():
     ax.annotate("", q, p, arrowprops=dict(arrowstyle="<->", lw=3.2, color=BLUE, shrinkA=6, shrinkB=0), zorder=6)
     ax.text(-2.12, 0.62, f"$|D(\\mathbf{{x}})|$ = 경계까지\n거리 = {abs(d):.2f}", color=BLUE, fontsize=13.5, fontweight="bold", va="top", bbox=dict(fc="white", ec="none", alpha=0.85, pad=1), zorder=7)
     ax.text(-1.05, 2.05, "$D(\\mathbf{x}) = \\mathbf{w}\\cdot\\mathbf{x} + b = 0$", fontsize=14, va="top")
-    ax.set_title("① 경계: $\\Vert\\mathbf{w}\\Vert = 1$ 이면 $|D(\\mathbf{x})|$ = 경계까지 거리", fontsize=15)
+    from matplotlib.offsetbox import TextArea, HPacker, AnchoredOffsetbox          # 제목에서 거리 부분만 화살표와 같은 파랑
+    parts = [TextArea("① 경계: $\\Vert\\mathbf{w}\\Vert = 1$ 이면 ", textprops=dict(fontsize=15)),
+             TextArea("$|D(\\mathbf{x})|$ = 경계까지 거리", textprops=dict(fontsize=16, color=BLUE, fontweight="bold"))]
+    ax.add_artist(AnchoredOffsetbox(loc="lower center", child=HPacker(children=parts, align="baseline", pad=0, sep=2), frameon=False,
+                                    bbox_to_anchor=(0.5, 1.005), bbox_transform=ax.transAxes, borderpad=0.1))
+    ax.set_title(" ", fontsize=15)
     ax = axs[1]; mf.pts(ax); mf.svm_street(ax, mf.M)
     ax.set_title(f"② 최대 마진: M = {mf.MA:.2f}\n경계는 서포트 벡터 3개가 정한다", fontsize=15)
     mf.save(fig, "kn_recap.png")
@@ -361,7 +366,7 @@ def fig_overlap():
     fig, ax = plt.subplots(figsize=(5.6, 5.4))
     ax.scatter(*R.T, s=70, color=RED, zorder=3); ax.scatter(*B.T, s=70, color=BLUE, marker="s", zorder=3)
     w, b = m.coef_[0], m.intercept_[0]; g = np.linspace(-2.2, 2.2, 2); ax.plot(g, -(b + w[0] * g) / w[1], color="black", lw=2.5)
-    ax.scatter(*A[bad].T, s=190, facecolors="none", edgecolors="#8a8a8a", lw=2.2, zorder=5)                 # 반대쪽에 남은 점: 회색 테두리
+    ax.scatter(*A[bad].T, s=360, facecolors="none", edgecolors="#8a8a8a", lw=2.8, zorder=5)                 # 반대쪽에 남은 점: 회색 테두리
     lo, hi = A.min() - 0.15, A.max() + 0.15; ax.set_xlim(lo, hi); ax.set_ylim(lo, hi); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
     mf.save(fig, "kn_overlap.png")
     return int(bad.sum())
