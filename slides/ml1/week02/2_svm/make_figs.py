@@ -237,6 +237,28 @@ def fig_street():
     save(fig, "sv_move.png")
 
 
+def fig_b_balance():
+    """w 고정 (평균 선 방향), b 만 바꾼 세 장: 가장 가까운 빨강 거리 + 파랑 거리 = 늘 같다 → 둘이 같을 때 min 이 가장 크다"""
+    a = (y[:, None] * X).mean(0); w = a / np.linalg.norm(a)
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5.9)); out = []
+    for ax, b in zip(axs, (0.0, 0.04, 0.08)):
+        v = y * (X @ w + b); ir = np.where(y > 0)[0][np.argmin(v[y > 0])]; ib = np.where(y < 0)[0][np.argmin(v[y < 0])]
+        r, bl = v[ir], v[ib]; out.append((b, round(r, 2), round(bl, 2), round(r + bl, 2), round(min(r, bl), 2)))
+        pts(ax); line(ax, w, b, color="black", lw=2.8)
+        for i, c in ((ir, RED), (ib, BLUE)):
+            p = X[i]; foot = p - (p @ w + b) * w
+            ax.annotate("", foot, p, arrowprops=dict(arrowstyle="<->", color=c, lw=3, shrinkA=5, shrinkB=0, mutation_scale=16), zorder=7)
+            off = np.array([0.52, -0.3]) if c == RED else np.array([0.5, -0.4])
+            ax.text(*((p + foot) / 2 + off), f"{v[i]:.2f}", fontsize=19, fontweight="bold", color=c, ha="center", va="center", zorder=8,
+                    bbox=dict(fc="white", ec="none", pad=1, alpha=0.9))
+        same = abs(r - bl) < 0.006
+        ax.set_title(f"b = {b:g}:  min = {min(r, bl):.2f}" + ("  (둘이 같다: 가장 크다)" if same else ""), fontsize=16, color=GOLDT if same else "black", fontweight="bold" if same else "normal")
+        ax.set_xlabel(f"{r:.2f} + {bl:.2f} = {r + bl:.2f}", fontsize=18)
+    assert out == [(0.0, 0.62, 0.7, 1.32, 0.62), (0.04, 0.66, 0.66, 1.32, 0.66), (0.08, 0.7, 0.62, 1.32, 0.62)], out
+    save(fig, "sv_b_balance.png")
+    return out
+
+
 def fig_fold():
     v = y * (X @ WA + BA); sv = v < MA + 0.01
     Xf = X.copy(); bl = y < 0; Xf[bl] = X[bl] - 2 * (X[bl] @ WA + BA)[:, None] * WA
@@ -643,7 +665,7 @@ def fig_hill_count(G=1.0):
     return len(Xd), len(sv)
 
 
-FIGS = {"hookd": fig_hook_d, "people": fig_people, "flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
+FIGS = {"bbalance": fig_b_balance, "hookd": fig_hook_d, "people": fig_people, "flipmean": fig_flip_mean, "rawz": fig_raw_z, "hook": fig_hook, "flip": fig_flip, "centroid": fig_centroid, "hyper": fig_hyper, "street": fig_street, "lock": fig_lock, "twothree": fig_two_three, "fold": fig_fold,
         "cos": fig_cos, "push": fig_push, "zscore": fig_zscore, "step1": fig_step1, "train": fig_train, "train9": fig_train9, "soft": fig_soft, "soft9": fig_soft9}
 # 커널 그림 (fig_kernel · fig_rbf · fig_rbf_degree · fig_hills · fig_hill_count) 은 ../3_svm_kernel/make_figs.py 가 불러서 그 폴더 figs/ 에 만든다
 
