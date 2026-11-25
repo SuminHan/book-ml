@@ -293,37 +293,39 @@ def fig_overlap():
 
 
 def fig_saddle():
-    """안장점 예 (w 하나, 조건 하나): ½w² 최소, 조건 w ≥ 1  →  L(w, α) = ½w² − α(w − 1). 답 w = 1, α = 1, L = 0.5.
-    α = 1 에서 w 방향 = 골짜기 (최소). 각 α 에서 w 를 최소로 고른 값 (w = α) = α − ½α² 은 α = 1 에서 봉우리 (최대) = J"""
-    L = lambda w, a: 0.5 * w ** 2 - a * (w - 1)
+    """안장점 예 (점 두 개 x = ±1, y = ±1, b = 0, 두 점의 α 는 같다): ½w² 최소, 조건 w ≥ 1  →  L(w, α) = ½w² − 2α(w − 1). 답 w = 1, α = 0.5, L = 0.5.
+    α = 0.5 에서 w 방향 = 골짜기 (최소). 각 α 에서 w 를 최소로 고른 값 (w = 2α) = 2α − 2α² 은 α = 0.5 에서 봉우리 (최대) = J"""
+    L = lambda w, a: 0.5 * w ** 2 - 2 * a * (w - 1)
     g = np.linspace(-0.2, 2.2, 481)
-    assert abs(g[np.argmin(L(g, 1.0))] - 1) < 1e-9 and abs(g[np.argmax(g - 0.5 * g ** 2)] - 1) < 1e-9 and L(1, 1) == 0.5
-    assert np.allclose(L(g, g), g - 0.5 * g ** 2)
+    h = np.linspace(-0.1, 1.1, 481); J = 2 * h - 2 * h ** 2
+    assert abs(g[np.argmin(L(g, 0.5))] - 1) < 1e-9 and abs(h[np.argmax(J)] - 0.5) < 1e-9 and L(1, 0.5) == 0.5
+    assert np.allclose(L(2 * h, h), J)
+    X2, Y2 = np.array([1.0, -1.0]), np.array([1.0, -1.0]); assert np.sum(0.5 * Y2 * X2) == 1.0        # w = Σ α y x = 1
     BL, RD = "#2E3192", "#d62728"
     fig = plt.figure(figsize=(15, 5.6)); gs = fig.add_gridspec(1, 3, width_ratios=[1.25, 1, 1], wspace=0.28)
     ax = fig.add_subplot(gs[0], projection="3d", computed_zorder=False)
-    W, A = np.meshgrid(np.linspace(-0.2, 2.2, 60), np.linspace(-0.2, 2.2, 60))
+    W, A = np.meshgrid(np.linspace(-0.2, 2.2, 60), np.linspace(-0.1, 1.1, 60))
     ax.plot_surface(W, A, L(W, A), cmap="YlOrBr", alpha=0.55, linewidth=0, zorder=1)
-    ax.plot(g, np.ones_like(g), L(g, 1.0), color=BL, lw=3.5, zorder=3); ax.plot(g, g, L(g, g), color=RD, lw=3.5, zorder=3)
-    ax.scatter([1], [1], [0.5], s=140, color="black", zorder=5)
+    ax.plot(g, np.full_like(g, 0.5), L(g, 0.5), color=BL, lw=3.5, zorder=3); ax.plot(2 * h, h, J, color=RD, lw=3.5, zorder=3)
+    ax.scatter([1], [0.5], [0.5], s=140, color="black", zorder=5)
     ax.set_xlabel("w", fontsize=15); ax.set_ylabel("α", fontsize=15); ax.set_zlabel("L", fontsize=15); ax.view_init(elev=24, azim=-58)
-    ax.set_xticks([0, 1, 2]); ax.set_yticks([0, 1, 2]); ax.set_zticks([0, 1, 2]); ax.set_title("말안장 모양, 검은 점 = 안장점", fontsize=16)
+    ax.set_xticks([0, 1, 2]); ax.set_yticks([0, 0.5, 1]); ax.set_zticks([0, 1, 2]); ax.set_title("말안장 모양, 검은 점 = 안장점", fontsize=16)
     for k, (col, x, y, xl, ttl, lab) in enumerate((
-            (BL, g, L(g, 1.0), "w", "① α = 1 에서 w 방향: 골짜기 = 최소", "w = 1"),
-            (RD, g, g - 0.5 * g ** 2, "α", "② α 마다 w 를 최소로 → α 방향: 봉우리 = 최대", "α = 1"))):
-        a2 = fig.add_subplot(gs[k + 1]); a2.plot(x, y, color=col, lw=3.5); a2.scatter([1], [0.5], s=140, color="black", zorder=5)
-        a2.annotate(f"{lab}, L = 0.5", (1, 0.5), (1, 1.05 if k == 0 else 0.05), ha="center", fontsize=15, fontweight="bold", arrowprops=dict(arrowstyle="->", lw=1.5))
+            (BL, g, L(g, 0.5), "w", "① α = 0.5 에서 w 방향: 골짜기 = 최소", "w = 1"),
+            (RD, h, J, "α", "② α 마다 w 를 최소로 → α 방향: 봉우리 = 최대", "α = 0.5"))):
+        a2 = fig.add_subplot(gs[k + 1]); a2.plot(x, y, color=col, lw=3.5); px = 1 if k == 0 else 0.5; a2.scatter([px], [0.5], s=140, color="black", zorder=5)
+        a2.annotate(f"{lab}, L = 0.5", (px, 0.5), (px, 1.05 if k == 0 else 0.0), ha="center", fontsize=15, fontweight="bold", arrowprops=dict(arrowstyle="->", lw=1.5))
         a2.set_xlabel(xl, fontsize=17); a2.set_ylabel("L", fontsize=15, rotation=0, labelpad=10); a2.set_title(ttl, fontsize=15, color=col, fontweight="bold")
-        a2.set_xlim(-0.2, 2.2); a2.set_ylim(-0.3, 1.6); a2.set_xticks([0, 1, 2]); a2.spines["top"].set_visible(False); a2.spines["right"].set_visible(False)
+        a2.set_xlim(*((-0.2, 2.2) if k == 0 else (-0.1, 1.1))); a2.set_ylim(-0.3, 1.6); a2.set_xticks([0, 1, 2] if k == 0 else [0, 0.5, 1]); a2.spines["top"].set_visible(False); a2.spines["right"].set_visible(False)
     fig.subplots_adjust(left=0.01, right=0.99, top=0.9, bottom=0.12)
     fig.savefig(mf.O + "kn_saddle.png"); plt.close(fig)
 
 
 def fig_meet():
-    """양쪽에서 좁혀 가기: 예 ½w² 최소, 조건 w ≥ 1. 위 = 조건 지키는 w 의 ½w², 아래 = J(α) = α − ½α².
-    세 번의 시도 (w, α) = (2, 0) → (1.5, 0.5) → (1, 1) 에서 틈 2 → 0.75 → 0"""
-    J = lambda a: a - 0.5 * a ** 2; P = lambda w: 0.5 * w ** 2
-    ws, als = (2, 1.5, 1), (0, 0.5, 1)
+    """양쪽에서 좁혀 가기: 예 ½w² 최소, 조건 w ≥ 1. 위 = 조건 지키는 w 의 ½w², 아래 = J(α) = 2α − 2α² (점 두 개, w = 2α).
+    세 번의 시도 (w, α) = (2, 0) → (1.5, 0.25) → (1, 0.5) 에서 틈 2 → 0.75 → 0"""
+    J = lambda a: 2 * a - 2 * a ** 2; P = lambda w: 0.5 * w ** 2
+    ws, als = (2, 1.5, 1), (0, 0.25, 0.5)
     up, lo = [P(w) for w in ws], [J(a) for a in als]
     assert up == [2.0, 1.125, 0.5] and lo == [0.0, 0.375, 0.5] and [u - l for u, l in zip(up, lo)] == [2.0, 0.75, 0.0]
     assert max(J(np.linspace(0, 3, 301))) <= min(P(np.linspace(1, 3, 201))) == 0.5
@@ -339,7 +341,7 @@ def fig_meet():
         ax.text(k + 0.22 * k, up[k] + 0.2 + 0.08 * k, f"w = {ws[k]:g}  →  {up[k]:g}", color=BL, fontsize=19, fontweight="bold", ha="center")
         ax.text(k, lo[k] - 0.26, f"α = {als[k]:g}  →  {lo[k]:g}", color=RD, fontsize=19, fontweight="bold", ha="center")
     ax.scatter([2], [0.5], s=900, marker="*", color=GD, edgecolor="black", lw=1.5, zorder=6)
-    ax.text(2, 1.0, "틈 0 = 답\nw = 1,  α = 1\n값 0.5", fontsize=19, fontweight="bold", ha="center", va="bottom", linespacing=1.4)
+    ax.text(2, 1.0, "틈 0 = 답\nw = 1,  α = 0.5\n값 0.5", fontsize=19, fontweight="bold", ha="center", va="bottom", linespacing=1.4)
     ax.text(-0.42, 1.2, "위\n½w²\n줄이기", color=BL, fontsize=19, fontweight="bold", ha="center", va="center", linespacing=1.3)
     ax.text(-0.42, -0.02, "아래\nJ\n키우기", color=RD, fontsize=19, fontweight="bold", ha="center", va="center", linespacing=1.3)
     ax.set_xlim(-0.65, 2.4); ax.set_ylim(-0.48, 2.45); ax.axis("off")
