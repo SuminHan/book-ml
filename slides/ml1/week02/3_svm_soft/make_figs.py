@@ -319,7 +319,96 @@ def fig_saddle():
     fig.savefig(mf.O + "kn_saddle.png"); plt.close(fig)
 
 
-FIGS = {"recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+def fig_penalty():
+    """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
+    ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
+    L = lambda w, a: 0.5 * w ** 2 - a * (w - 1)
+    AL = [(0, "#9a9a9a"), (0.5, "#c8a24a"), (1, "#2E3192"), (2, "#d62728")]
+    g = np.linspace(-0.2, 2.4, 521)
+    assert all(abs(L(1, a) - 0.5) < 1e-12 and abs(g[np.argmin(L(g, a))] - a) < 1e-9 for a, _ in AL)
+    assert [L(a, a) for a, _ in AL] == [0, 0.375, 0.5, 0]
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5.4))
+    ax = axs[0]
+    for a, c in AL:
+        ax.plot(g, L(g, a), color=c, lw=3, label=f"α = {a:g}"); ax.scatter([a], [L(a, a)], s=70, color=c, zorder=5)
+    ax.scatter([1], [0.5], s=170, color="black", zorder=6)
+    ax.annotate("w = 1 에서는\nα 가 얼마든 0.5", (1, 0.5), (1.05, 2.05), ha="center", fontsize=14, fontweight="bold", arrowprops=dict(arrowstyle="->", lw=1.5))
+    ax.legend(loc="lower left", fontsize=12.5, frameon=False, ncol=2); ax.set_title("① 감시원이 α 를 바꾸면", fontsize=17, fontweight="bold")
+    ax = axs[1]
+    ax.axvspan(-0.2, 1, color="#d62728", alpha=0.13)
+    ax.text(0.4, 1.55, "규칙 어김\n(w < 1)\nα ↑ → 점수 ∞", ha="center", va="center", fontsize=15, color="#d62728", fontweight="bold")
+    ax.annotate("", (0.4, 2.5), (0.4, 2.05), arrowprops=dict(arrowstyle="-|>", lw=3, color="#d62728"))
+    x = g[g >= 1]; ax.plot(x, 0.5 * x ** 2, color="#2E3192", lw=3.5); ax.text(1.68, 2.05, "½w²", fontsize=16, color="#2E3192", ha="right")
+    ax.scatter([1], [0.5], s=170, color="black", zorder=6)
+    ax.annotate("가장 작은 곳\nw = 1, 0.5", (1, 0.5), (1.65, 0.0), ha="center", fontsize=14, fontweight="bold", arrowprops=dict(arrowstyle="->", lw=1.5))
+    ax.set_title("② α 를 가장 크게 → w 최소", fontsize=17, fontweight="bold")
+    ax = axs[2]
+    ax.plot(g, g - 0.5 * g ** 2, color="black", lw=3)
+    for a, c in AL:
+        ax.scatter([a], [L(a, a)], s=110, color=c, zorder=5)
+    ax.annotate("가장 큰 곳\nα = 1, 0.5", (1, 0.5), (1, 1.45), ha="center", fontsize=14, fontweight="bold", arrowprops=dict(arrowstyle="->", lw=1.5))
+    ax.set_title("③ w 를 가장 작게 → α 최대", fontsize=17, fontweight="bold")
+    for k, ax in enumerate(axs):
+        ax.set_xlim(-0.2, 2.4); ax.set_ylim(-0.75, 2.5); ax.set_xticks([0, 0.5, 1, 1.5, 2]); ax.tick_params(labelsize=12)
+        ax.set_xlabel("α" if k == 2 else "w", fontsize=17); ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+    axs[0].set_ylabel("점수 L", fontsize=15)
+    fig.tight_layout(w_pad=2.2)
+    fig.savefig(mf.O + "kn_penalty.png", dpi=160); plt.close(fig)
+
+
+def fig_equiv():
+    """SVM 에서 min ½‖w‖² (조건 y D ≥ 1) = min max L. b = b* 로 두고 w 평면: 점 하나 = 직선 규칙 하나.
+    ① 규칙을 하나라도 어기면 max_α L = ∞, 모두 지키면 ½‖w‖²  ② 답에서 α y x 화살표 3개의 합 = w*"""
+    X, y = np.array(mf.X, float), np.array(mf.y, float); b = kd._d2.B_STAR; wst = np.array(kd._d2.W_STAR, float)
+    ok = lambda w: bool((y * (X @ w + b)).min() >= 1 - 2e-3)
+    assert ok(wst) and ok(np.array([1.6, 1.6])) and not ok(np.array([0.7, 0.7]))
+    sv = [(s, kd._AX[s], kd._YK[s]) for s in kd._d2.SV]
+    parts = [a * yy * np.array(s) for s, a, yy in sv]
+    assert np.allclose(sum(parts), wst, atol=3e-3) and abs(0.5 * wst @ wst - 1.108) < 3e-3
+    lo, hi = -0.15, 2.35
+    g = np.linspace(lo, hi, 901); W1, W2 = np.meshgrid(g, g)
+    feas = np.ones_like(W1, bool)
+    for p, yy in zip(X, y):
+        feas &= yy * (W1 * p[0] + W2 * p[1] + b) >= 1
+    # 격자에서 지키는 w 중 ½‖w‖² 가 가장 작은 곳 = w*
+    J = np.where(feas, 0.5 * (W1 ** 2 + W2 ** 2), np.inf); i = np.unravel_index(np.argmin(J), J.shape)
+    assert np.hypot(W1[i] - wst[0], W2[i] - wst[1]) < 0.02
+    fig, axs = plt.subplots(1, 2, figsize=(13, 6.2))
+    ax = axs[0]
+    ax.contourf(W1, W2, (~feas).astype(float), levels=[0.5, 1.5], colors=["#d62728"], alpha=0.13)
+    for p, yy in zip(X, y):                                        # 규칙 20개 = 직선 20개
+        on = any(np.allclose(p, s) for s, _, _ in sv)
+        Z = yy * (W1 * p[0] + W2 * p[1] + b) - 1
+        if Z.min() < 0 < Z.max():
+            ax.contour(W1, W2, Z, levels=[0], colors=[RED if yy > 0 else BLUE], linewidths=2.8 if on else 0.8, alpha=1 if on else 0.35)
+    for r in (np.linalg.norm(wst), 1.9, 2.263):
+        ax.add_patch(plt.Circle((0, 0), r, fill=False, color="#555555", lw=1.4, ls="--"))
+    ax.scatter(*wst, s=190, color="black", zorder=6); ax.scatter(1.6, 1.6, s=110, color="#2b8a3e", zorder=6); ax.scatter(0.7, 0.7, s=110, color="#d62728", marker="X", zorder=6)
+    box = dict(fc="white", ec="none", alpha=0.92, pad=3)
+    ax.annotate("어김 → max L = ∞", (0.7, 0.7), (0.42, 0.28), ha="center", fontsize=15, color="#d62728", fontweight="bold", bbox=box, arrowprops=dict(arrowstyle="->", color="#d62728", lw=1.5), zorder=7)
+    ax.annotate("지킴 → max L\n= ½‖w‖² = 2.56", (1.6, 1.6), (1.75, 2.08), ha="center", fontsize=15, color="#2b8a3e", fontweight="bold", bbox=box, arrowprops=dict(arrowstyle="->", color="#2b8a3e", lw=1.5), zorder=7)
+    ax.annotate("w* : ½‖w‖² = 1.11\n(지키는 곳 중 최소)", wst, (1.78, 0.42), ha="center", fontsize=15, fontweight="bold", bbox=box, arrowprops=dict(arrowstyle="->", lw=1.5), zorder=7)
+    ax.set_title("① 점 하나 = 직선 규칙 하나 (b = 0.05)", fontsize=17, fontweight="bold")
+    ax = axs[1]
+    ax.add_patch(plt.Circle((0, 0), np.linalg.norm(wst), fill=False, color="#555555", lw=1.4, ls="--"))
+    at = np.zeros(2); names = ["1.1 r", "−0.55 b1", "−0.55 b2"]; offs = [(0.12, -0.13), (0.22, -0.07), (0.3, 0.0)]
+    for v, (s, a, yy), nm, off in zip(parts, sv, names, offs):
+        c = RED if yy > 0 else BLUE
+        ax.annotate("", at + v, at, arrowprops=dict(arrowstyle="-|>", lw=3.5, color=c, shrinkA=0, shrinkB=0, mutation_scale=22), zorder=5)
+        ax.text(*(at + v / 2 + np.array(off)), nm, color=c, fontsize=16, fontweight="bold", ha="center")
+        at = at + v
+    ax.annotate("", wst, (0, 0), arrowprops=dict(arrowstyle="-|>", lw=3.5, color="black", shrinkA=0, shrinkB=0, mutation_scale=22), zorder=4)
+    ax.text(0.28, 0.62, "w*", fontsize=19, fontweight="bold")
+    ax.scatter(*wst, s=120, color="black", zorder=6)
+    ax.set_title("② 닿은 규칙 3개의 α 화살표 합 = w*", fontsize=17, fontweight="bold")
+    for k, ax in enumerate(axs):
+        ax.set_xlim(*((lo, hi) if k == 0 else (-0.25, 1.65))); ax.set_ylim(*((lo, hi) if k == 0 else (-0.25, 1.65)))
+        ax.set_aspect("equal"); ax.set_xlabel("$w_1$", fontsize=17); ax.set_ylabel("$w_2$", fontsize=17); ax.tick_params(labelsize=12)
+    fig.tight_layout(w_pad=3)
+    fig.savefig(mf.O + "kn_equiv.png", dpi=160); plt.close(fig)
+
+
+FIGS = {"equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
