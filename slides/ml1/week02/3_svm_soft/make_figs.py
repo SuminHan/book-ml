@@ -445,6 +445,34 @@ def fig_tilt():
     fig.tight_layout(); fig.savefig(mf.O + "kn_tilt.png"); plt.close(fig)
 
 
+def fig_rope():
+    """외줄타기 비유: 몸 (= 선의 방향) 이 기울면 균형봉 (= α) 으로 바로잡는다. 각도는 실제 학습의 방향 54° · 42° · 45° (답 45°), 그림은 기울기를 3배로 과장"""
+    from matplotlib.patches import Circle as Cc
+    cases = ((54, "① 한쪽으로 기울었다", "봉을 반대로 → α 를 고친다"), (42, "② 너무 당겨 반대로 지나쳤다", "다시 조금 되돌린다"), (45, "③ 똑바로: 균형", "두 힘이 같다 → 멈춤"))
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5.6))
+    for ax, (deg, ttl, sub) in zip(axs, cases):
+        lean = np.radians(3 * (deg - 45)); up = np.array([np.sin(lean), np.cos(lean)]); side = np.array([np.cos(lean), -np.sin(lean)])
+        ax.plot([-3, 3], [0, 0], color="#8a6a3a", lw=3, zorder=1); ax.plot([-3, -3], [-1.2, 0.2], color="#555555", lw=5); ax.plot([3, 3], [-1.2, 0.2], color="#555555", lw=5)
+        foot = np.array([0.0, 0.0]); hip = foot + 1.1 * up; neck = foot + 2.3 * up; head = foot + 2.75 * up
+        for d in (-0.22, 0.22): ax.plot(*np.c_[foot + d * side * 0.6, hip], color="black", lw=4, solid_capstyle="round")
+        ax.plot(*np.c_[hip, neck], color="black", lw=5, solid_capstyle="round"); ax.add_patch(Cc(head, 0.32, color="black"))
+        hand = neck - 0.45 * up; pole = 2.4
+        ax.plot(*np.c_[neck, hand + 0.35 * side], color="black", lw=3); ax.plot(*np.c_[neck, hand - 0.35 * side], color="black", lw=3)
+        pc = hand + (0.0 if deg == 45 else (-0.7 if deg > 45 else 0.35)) * np.array([1, 0])            # 봉을 반대쪽으로 민다
+        pa, pb = pc - pole * np.array([1, 0.0]), pc + pole * np.array([1, 0.0])
+        ax.plot(*np.c_[pa, pb], color="#d62728", lw=5, solid_capstyle="round", zorder=4)
+        for e in (pa, pb): ax.scatter(*e, s=160, color="#d62728", zorder=5)
+        ax.plot(*np.c_[foot, foot + 3.2 * np.array([0, 1])], color="#999999", ls="--", lw=1.4)
+        if deg != 45:
+            s = 1 if deg > 45 else -1
+            ax.annotate("", head + 0.55 * s * side, head + 0.05 * s * side, arrowprops=dict(arrowstyle="-|>", color="#555555", lw=3, mutation_scale=22))
+            ax.annotate("", pc - 0.9 * s * np.array([1, 0]) + np.array([0, -0.35]), pc + np.array([0, -0.35]), arrowprops=dict(arrowstyle="-|>", color="#d62728", lw=3, mutation_scale=22))
+        ax.set_title(f"{ttl}\n선의 방향 {deg}°", fontsize=17, fontweight="bold", linespacing=1.4)
+        ax.text(0, -0.75, sub, ha="center", fontsize=16, color="#d62728" if deg != 45 else "#2E3192", fontweight="bold")
+        ax.set_xlim(-3.3, 3.3); ax.set_ylim(-1.1, 3.6); ax.set_aspect("equal"); ax.axis("off")
+    fig.tight_layout(w_pad=1.0); fig.savefig(mf.O + "kn_rope.png"); plt.close(fig)
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -654,7 +682,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "rope": fig_rope, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
