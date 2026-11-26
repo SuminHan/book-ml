@@ -137,9 +137,9 @@ def fig_lagrange():
     mf.save(fig, "kn_lagrange.png")
 
 def fig_lagrange3d():
-    """라그랑주 예를 3D 로 (어두운 배경): 곡면 z = f = x² + 2y, 조건 직선 위를 따라가는 곡선 (보라), 그 위 가장 낮은 점 (노랑 빛), 바닥에 등고선 · 조건 직선 (∇ 화살표는 원근 때문에 수직이 안 보여 2D 그림 kn_lagrange 에만)"""
+    """라그랑주 예를 3D 로 (흰 배경): 곡면 z = f = x² + 2y, 조건 직선 위를 따라가는 곡선 (보라), 그 위 가장 낮은 점 (노랑 빛), 바닥에 등고선 · 조건 직선 (∇ 화살표는 원근 때문에 수직이 안 보여 2D 그림 kn_lagrange 에만)"""
     from mpl_toolkits.mplot3d.art3d import Line3DCollection
-    BG, SURF, PUR, YEL, RD, TXT = "#0f1117", "#4fb3e8", "#c58cff", "#ffe66d", "#ff5a4e", "#e8e8e8"
+    BG, SURF, PUR, YEL, RD, TXT = "white", "#2f7fc1", "#7b3fbf", "#e69500", "#d62728", "#222222"   # 흰 배경 (노랑 → 주황, 보라 · 파랑 진하게)
     xs, ys = np.linspace(-1.5, 4.0, 60), np.linspace(-5.5, 1.0, 60); gx, gy = np.meshgrid(xs, ys); F = gx ** 2 + 2 * gy
     z0 = -14.0                                                          # 바닥 높이
     fig = plt.figure(figsize=(7.2, 6.0), facecolor=BG); ax = fig.add_subplot(projection="3d", facecolor=BG)
