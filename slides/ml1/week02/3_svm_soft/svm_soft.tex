@@ -176,19 +176,19 @@ $\alpha$ (답의 몇 배) & \textbf{얻는 것} $\sum\alpha_k$ & 마진 $M$ & \t
 \begin{frame}{$J$ 는 새 문제가 아니다: 같은 문제를 네 번 고쳐 쓴 것}
 \vfill
 \centering
-\renewcommand{\arraystretch}{1.75}
+\renewcommand{\arraystretch}{1.6}
 {\normalsize\begin{tabular}{rl}
-\textbf{\textcircled{1} 목표와 조건} & $\displaystyle\min_{\mathbf{w},\,b}\ \tfrac12\lVert\mathbf{w}\rVert^2$ \qquad 조건 $y_k D(\mathbf{x}_k) - 1 \ge 0$\\
-\textbf{\textcircled{2} 식 하나로} & $L = \tfrac12\lVert\mathbf{w}\rVert^2 - \sum_{k} \kq{$\alpha_k$}\,\big[\,y_k D(\mathbf{x}_k) - 1\,\big]$, \qquad \kq{$\alpha_k \ge 0$}\\[-0.3em]
- & $\phantom{L} = \tfrac12\lVert\mathbf{w}\rVert^2 + \sum_{k} \kq{$\alpha_k$}\,\textcolor{fgap}{(1 - y_k D(\mathbf{x}_k))}$ \quad {\small \kq{단가} $\times$ \textcolor{fgap}{모자란 양} $=$ 벌점}\\[-0.2em]
- & $\displaystyle \min_{\mathbf{w},\,b}\ \max_{\boldsymbol{\alpha} \ge 0}\ L$ \quad {\small ($\mathbf{w}, b$ 는 $L$ 을 \kb{작게}, $\alpha$ 는 \kq{크게})}\\
+\textbf{\textcircled{1} 목표와 조건} & $\displaystyle\min_{\mathbf{w},\,b}\ \tfrac12\lVert\mathbf{w}\rVert^2$ \qquad 조건 $y_k D(\mathbf{x}_k) \ge 1$, \; 곧 \textcolor{fgap}{모자란 양} $\textcolor{fgap}{1 - y_k D(\mathbf{x}_k)} \le 0$\\[-0.35em]
+ & {\small $\downarrow$ \; 조건을 \textbf{강요하는 대신}, 모자란 만큼 \textbf{벌점}을 더한다 (점마다 \kq{단가 $\alpha_k$})}\\[-0.35em]
+\textbf{\textcircled{2} 식 하나로} & $L = \tfrac12\lVert\mathbf{w}\rVert^2 + \sum_{k} \kq{$\alpha_k$}\,\textcolor{fgap}{(1 - y_k D(\mathbf{x}_k))}$, \quad $\alpha_k \ge 0$\\[-0.2em]
+ & 찾는 것: \; $\displaystyle (\mathbf{w}^*, b^*, \boldsymbol{\alpha}^*) = \arg\min_{\mathbf{w},\,b}\ \max_{\boldsymbol{\alpha} \ge 0}\ L$ \quad {\small ($\mathbf{w}, b$ 는 \kb{작게}, $\alpha$ 는 \kq{크게})}\\
 \textbf{\textcircled{3} $\mathbf{w}$ 로 미분 $= 0$} & $\displaystyle \mathbf{w}^* = \sum_{k} \alpha_k y_k \mathbf{x}_k$ \qquad \kb{$\leftarrow$ $\mathbf{w}$ 는 작게: 여기서 끝}\\
 \textbf{\textcircled{4} 다시 넣기} & $\displaystyle J = \sum_{k} \alpha_k - \tfrac12\Big\lVert \sum_{k} \alpha_k y_k \mathbf{x}_k \Big\rVert^2$ \qquad \quad \kq{$\leftarrow$ $\alpha$ 는 크게: 학습}
 \end{tabular}}\\[0.4em]
 {\large 컴퓨터가 하는 일은 \kq{$J$ 를 키우는 것} 하나}\\[0.2em]
-{\small 새 생각은 \textcircled{2} 하나: 조건마다 $\alpha_k$ 를 붙여 식 하나로 (라그랑주) \quad \textcircled{4} 는 $\sum_k \alpha_k y_k = 0$ 일 때}
+{\small 새 생각은 \textcircled{2} 하나 (라그랑주) \quad 논문 표기 $-\sum_k \alpha_k[y_k D(\mathbf{x}_k) - 1]$ (같은 식) \quad \textcircled{4} 는 $\sum_k \alpha_k y_k = 0$ 일 때}
 \vfill
-\note{J가 갑자기 생긴 새 문제처럼 보일 수 있지만, 처음의 넓은 길 문제를 네 번 고쳐 쓴 것입니다. 첫째, 원래 문제입니다. 2분의 1 w 길이 제곱을 가장 작게 하되 모든 점에서 y D 빼기 1이 0 이상이어야 합니다. 원 논문 식 13이고, 2분의 1은 미분하기 편하라고 붙인 것이라 답은 같습니다. 둘째, 목표에서 조건 곱하기 알파를 빼서 식 하나로 만듭니다. 빼기를 안으로 넣으면 알파 곱하기 1 빼기 y D를 더한 것, 즉 단가 곱하기 모자란 양만큼 벌점을 더한 것입니다. 알파는 0 이상입니다. 식 14, 라그랑주 함수입니다. 여기서 새 생각은 이것 하나입니다. 셋째, 이 식을 w로 미분해 0으로 두면 w는 알파 y x의 합입니다. 식 16이고, 앞에서 점을 더해서 w를 만들었던 것과 같은 꼴입니다. 넷째, 그 w를 다시 식에 넣으면 w가 사라지고 알파만 남는 J가 됩니다. 식 17인데, 알파 y의 합이 0이면 b가 든 항이 사라져 이 간단한 꼴이 됩니다. 방향을 정리하면, w와 b는 L을 작게, 알파는 크게 합니다. w를 작게 하는 일은 셋째 줄에서 미분으로 끝났고, 남은 일은 J, 즉 알파 쪽을 키우는 것 하나입니다. 알파를 키우는 이유는 규칙을 어긴 점에 벌을 주기 위해서입니다. 첫째 줄은 w를 찾는 문제이고, 넷째 줄은 알파를 찾는 문제이며, 답은 같습니다.}
+\note{J가 갑자기 생긴 새 문제처럼 보일 수 있지만, 처음의 넓은 길 문제를 네 번 고쳐 쓴 것입니다. 첫째, 원래 문제입니다. 2분의 1 w 길이 제곱을 가장 작게 하되 모든 점에서 y D 빼기 1이 0 이상이어야 합니다. 원 논문 식 13이고, 2분의 1은 미분하기 편하라고 붙인 것이라 답은 같습니다. 둘째, 조건을 반드시 지키라고 강요하는 대신, 모자란 양 1 빼기 y D만큼 벌점을 매깁니다. 점마다 단가 알파를 곱해 목표에 더하면 식 하나 L이 됩니다. 논문은 같은 식을 빼기 알파 곱하기, y D 빼기 1로 씁니다. 그리고 우리가 찾는 것은 L의 값이 아니라 그 점, w 별, b 별, 알파 별입니다. w와 b는 L을 작게, 알파는 크게 하는 자리입니다. 알파는 0 이상입니다. 식 14, 라그랑주 함수입니다. 여기서 새 생각은 이것 하나입니다. 셋째, 이 식을 w로 미분해 0으로 두면 w는 알파 y x의 합입니다. 식 16이고, 앞에서 점을 더해서 w를 만들었던 것과 같은 꼴입니다. 넷째, 그 w를 다시 식에 넣으면 w가 사라지고 알파만 남는 J가 됩니다. 식 17인데, 알파 y의 합이 0이면 b가 든 항이 사라져 이 간단한 꼴이 됩니다. 방향을 정리하면, w와 b는 L을 작게, 알파는 크게 합니다. w를 작게 하는 일은 셋째 줄에서 미분으로 끝났고, 남은 일은 J, 즉 알파 쪽을 키우는 것 하나입니다. 알파를 키우는 이유는 규칙을 어긴 점에 벌을 주기 위해서입니다. 첫째 줄은 w를 찾는 문제이고, 넷째 줄은 알파를 찾는 문제이며, 답은 같습니다.}
 \end{frame}
 
 % --- L 의 비유: 늦잠과 지각 벌점
