@@ -258,14 +258,14 @@ def fig_lagrange_svm3d(azim=-60, elev=22, out="kn_lagrange_svm3d.png"):
     d2 = kd._d2
     b0, wst = d2.B_STAR, np.array(d2.W_STAR, float); rs = np.linalg.norm(wst)
     sv = [(np.array(p_), 1.0 if p_ in d2.RED_PTS else -1.0) for p_ in d2.SV]
-    lo, hi, blo, bhi = 0.45, 1.65, -0.55, 0.65
+    lo, hi, blo, bhi = 0.0, 1.7, -0.55, 0.65
     fig = plt.figure(figsize=(7.6, 6.0)); ax = fig.add_subplot(projection="3d")
     g = np.linspace(lo, hi, 60); W1, W2 = np.meshgrid(g, g)
     for (p_, yy), c in zip(sv, [RED, BLUE, "#5b6bd6"]):
         B = yy - (W1 * p_[0] + W2 * p_[1])                                   # y(w·x + b) = 1  →  b = y − w·x
         B = np.where((B >= blo) & (B <= bhi), B, np.nan)
-        ax.plot_surface(W1, W2, B, color=RED if yy > 0 else BLUE, alpha=0.20, linewidth=0, shade=False)
-        ax.plot_wireframe(W1, W2, B, rstride=20, cstride=20, color=RED if yy > 0 else BLUE, linewidth=0.5, alpha=0.5)
+        ax.plot_surface(W1, W2, B, color=RED if yy > 0 else BLUE, alpha=0.07, linewidth=0, shade=False)
+        ax.plot_wireframe(W1, W2, B, rstride=20, cstride=20, color=RED if yy > 0 else BLUE, linewidth=0.5, alpha=0.18)
         t = np.linspace(lo, hi, 300)                                         # b = b* 에서 자른 선
         if abs(p_[1]) > 1e-9:
             w1 = t; w2 = (yy - b0 - w1 * p_[0]) / p_[1]
@@ -275,7 +275,11 @@ def fig_lagrange_svm3d(azim=-60, elev=22, out="kn_lagrange_svm3d.png"):
         ax.plot(w1[m], w2[m], np.full(m.sum(), b0), color=RED if yy > 0 else BLUE, lw=3.0, zorder=10)
     th = np.linspace(0, np.pi / 2, 120); bz = np.linspace(blo, bhi, 2); TH, BZ = np.meshgrid(th, bz)
     CX, CY = rs * np.cos(TH), rs * np.sin(TH); mk = (CX >= lo) & (CX <= hi) & (CY >= lo) & (CY <= hi)
-    ax.plot_surface(np.where(mk, CX, np.nan), np.where(mk, CY, np.nan), BZ, color=GOLD, alpha=0.18, linewidth=0, shade=False)
+    ax.plot_surface(np.where(mk, CX, np.nan), np.where(mk, CY, np.nan), BZ, color=GOLD, alpha=0.35, linewidth=0, shade=False)
+    for bb in (blo, bhi):                                                    # 원통 위 · 아래 테두리
+        ax.plot(rs * np.cos(th), rs * np.sin(th), np.full_like(th, bb), color=GOLD, lw=2.4)
+    for a_ in np.linspace(0, np.pi / 2, 7):                                  # 세로 줄
+        ax.plot([rs * np.cos(a_)] * 2, [rs * np.sin(a_)] * 2, [blo, bhi], color=GOLD, lw=1.2, alpha=0.8)
     cm = (rs * np.cos(th) >= lo) & (rs * np.sin(th) >= lo) & (rs * np.cos(th) <= hi) & (rs * np.sin(th) <= hi)
     ax.plot(rs * np.cos(th)[cm], rs * np.sin(th)[cm], np.full(cm.sum(), b0), color=GOLD, lw=2.6)
     ax.plot_surface(*np.meshgrid([lo, hi], [lo, hi]), np.full((2, 2), b0), color="#888888", alpha=0.18, linewidth=0, shade=False)
@@ -283,7 +287,7 @@ def fig_lagrange_svm3d(azim=-60, elev=22, out="kn_lagrange_svm3d.png"):
     ax.scatter(*wst, b0, s=90, color="black", depthshade=False, zorder=12)
     ax.set_xlim(lo, hi); ax.set_ylim(lo, hi); ax.set_zlim(blo, bhi)
     ax.set_xlabel("$w_1$", fontsize=16); ax.set_ylabel("$w_2$", fontsize=16); ax.set_zlabel("$b$", fontsize=16)
-    ax.set_xticks([0.5, 1.0, 1.5]); ax.set_yticks([0.5, 1.0, 1.5]); ax.set_zticks([-0.5, 0, 0.5]); ax.tick_params(labelsize=10)
+    ax.set_xticks([0, 0.5, 1.0, 1.5]); ax.set_yticks([0, 0.5, 1.0, 1.5]); ax.set_zticks([-0.5, 0, 0.5]); ax.tick_params(labelsize=10)
     ax.view_init(elev=elev, azim=azim)
     fig.subplots_adjust(0, 0, 1, 1)
     fig.savefig(out if "/" in out else mf.O + out, dpi=200, facecolor="white", bbox_inches=fig.bbox_inches.from_bounds(0.45, 0.15, 6.9, 5.75), pad_inches=0); plt.close(fig)
