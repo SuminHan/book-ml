@@ -29,6 +29,30 @@ P1_ROOTS = sorted(np.roots(P1_COEF[::-1]).real.round(6).tolist())
 assert P1_ROOTS == [-1.5, 0.5] and _f1(0) > 0 and _f1(-2) < 0 and _f1(1) < 0
 
 import data as _d2                                   # ../2_svm/data.py
+
+# 1/19 다음 쪽: 지난 시간 학습 (train_maxmin) 을 그대로 돌리면서, 걸음마다 민 점(argmin)에 η 를 적어 둔다 → w = Σ α_k y_k x_k 가 늘 성립
+def train_maxmin_alpha(X, y, T=_d2.MM_T, lr0=_d2.MM_LR, snaps=()):
+    """train_maxmin 과 같은 걸음. α_k += η (k = 민 점), w 를 ‖w‖ 로 나눌 때 α 도 같이 나눈다. 반환: w, b, α, snaps 걸음 뒤의 α."""
+    a, b, shots = np.zeros(len(X)), 0.0, {}
+    w = np.zeros(X.shape[1])
+    for t in range(1, T + 1):
+        v = y * (X @ w + b); act = v <= v.min() + 1e-9
+        eta = lr0 / np.sqrt(t)
+        a[act] += eta; b += eta * y[act].sum()
+        w = (a * y) @ X; n = np.linalg.norm(w)
+        if n > 0:
+            a, w = a / n, w / n
+        if t in snaps:
+            shots[t] = a.copy()
+    return w, b, a, shots
+
+_XA = np.array(_d2.RED_PTS + _d2.BLUE_PTS, float); _YA = np.r_[np.ones(10), -np.ones(10)]
+_wa, _ba, _aa, _sa = train_maxmin_alpha(_XA, _YA, snaps=(1, 11, 100, 1000, _d2.MM_T))
+_ia = [(_d2.RED_PTS + _d2.BLUE_PTS).index(p) for p in _d2.SV]
+ALPHA_TRACE = {t: tuple(s[_ia].round(2).tolist()) + (round(float(np.delete(s, _ia).sum()), 2),) for t, s in _sa.items()}   # 걸음 뒤: (α_r, α_b1, α_b2, 나머지 17개 합)
+assert ALPHA_TRACE == {1: (0.04, 0.04, 0.04, 0.69), 11: (0.14, 0.11, 0.05, 0.6), 100: (0.36, 0.2, 0.16, 0.39),
+                       1000: (0.66, 0.33, 0.32, 0.09), 20000: (0.74, 0.37, 0.37, 0.0)}, ALPHA_TRACE
+assert np.allclose(_wa, _d2.W_ANS, atol=1e-3) and tuple(_aa[_ia].round(2)) == tuple(_d2.ALPHA_UNIT.values())
 # 커널 쪽 그림: (x·x')² = φ(x)·φ(x'), φ(x) = (x1², √2 x1x2, x2²)
 K_X, K_XP = np.array([1.0, 2.0]), np.array([3.0, 1.0])
 phi3 = lambda v: np.array([v[0] ** 2, np.sqrt(2) * v[0] * v[1], v[1] ** 2])
