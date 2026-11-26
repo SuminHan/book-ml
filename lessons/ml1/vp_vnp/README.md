@@ -14,7 +14,7 @@
 - 사람들은 25년 동안 아주 어려운 수학(기하학적 복잡도 이론)을 팠는데, 이번 증명은 1891년 칸토어의 대각선 논법 같은 옛 기술로 다른 길로 감
 - 컴퓨터 검사기(Lean)는 통과, 사람 수학자 확인은 이제 시작. P vs NP의 사촌 문제이고 P vs NP 자체는 아직
 
-**참고**: 체스 → 스타크래프트는 이해를 돕는 비유예요. 2×2 숫자는 예시, 계산 횟수는 상수를 뺀 대략값이에요. 출처: github.com/anthropics/formal-math (vp-vnp), github.com/openai/math, Scott Aaronson 블로그 Shtetl-Optimized (2026.11.24), Lance Fortnow Computational Complexity 블로그 (2026.11), Valiant (1979), Razborov · Rudich (1994). 이모지: Twemoji (CC BY 4.0) · 음성: Typecast (필재) · 배경음: Suno
+**참고**: 알파고 37수(2016 이세돌 9단과의 2국)는 이해를 돕는 비유이고, 화면의 바둑판 돌 배치는 그림용 예시예요. 2×2 숫자는 예시, 계산 횟수는 상수를 뺀 대략값이에요. 출처: github.com/anthropics/formal-math (vp-vnp), github.com/openai/math, Scott Aaronson 블로그 Shtetl-Optimized (2026.11.24), Lance Fortnow Computational Complexity 블로그 (2026.11), Valiant (1979), Razborov · Rudich (1994). 이모지: Twemoji (CC BY 4.0) · 음성: Typecast (필재) · 배경음: Suno
 
 ## 장면별 자막과 대사
 
@@ -26,7 +26,7 @@
 | 4 | 못 찾음 ≠ 없음 / 없다 = 모든 방법이 느리다 | 더 빠른 방법이 정말 없을까요? 못 찾은 것과 없는 것은 달라요. 없다고 하려면 앞으로 나올 모든 방법까지 이겨야 해요. 1979년부터 아무도 못 했어요. |
 | 5 | 흔한 무기 = 쓰면 암호도 깨짐 / 1994년: 이걸로는 안 된다 | 사람들이 쓰던 흔한 무기는, 쓰면 암호까지 깨져 버리는 무기라서 안 통한다는 게 1994년에 증명됐어요. |
 | 6 | 사람: 25년 어려운 수학 / AI: 백 년 넘은 옛 기술 | 그래서 사람들은 이십오 년 동안 아주 어려운 수학을 팠는데, AI는 백 년도 넘은 옛날 기술을 꺼내 와 다른 길로 갔어요. |
-| 7 | 체스 → 스타크래프트 / 정답 있는 문제 → 길 모르는 문제 | 비유하면, 체스만 두던 AI가 갑자기 스타크래프트를 잘하게 된 느낌이에요. 정답이 있는 문제를 풀던 AI가, 아무도 길을 모르는 문제에서 새 길을 찾은 거예요. |
+| 7 | 2016 알파고 37수 / 실수 같던 수가 이기는 수로 | 비유하면 2016년 알파고의 37수 같아요. 해설진이 처음엔 실수라고 봤던 수가 결국 이기는 수였죠. 이번에도 혼자선 안 통한다며 덜 쓰던 옛 기술로 새 길을 낸 거예요. |
 | 8 | 검사기 통과 · 사람 확인 전 / P vs NP의 사촌 문제 | 컴퓨터 검사기는 통과했지만, 사람 수학자의 확인은 이제 시작이에요. 피 대 엔피도 아직이고요, 이건 그 사촌 문제예요. |
 | 9 | 부호 하나 차이, 47년 난제 / 검증은 이제 시작 | 부호 하나 차이가 계산을 이렇게 바꿔요. 없다는 증명은 어렵고, AI는 옛 기술로 새 길을 냈어요. |
 
@@ -37,7 +37,7 @@
 - 증명 방법: Aaronson, Shtetl-Optimized (scottaaronson.blog/?p=10362, 2026-11-24) "highly nontrivial 'compression' or 'shortening' … diagonalization … should let these arguments evade the natural proofs barrier", "from what little I understand so far" → 영상 '벽을 피한 듯', '(본인도 아직 조금밖에 모름)'. Fortnow, Computational Complexity blog (2026/11/vp-vnp): Strassen asymptotic spectrum 변형으로 두 경우 (rank argument / diagonalization), "uses essentially no algebraic geometry" → 영상 '대수기하 거의 없이'.
 - 배경: Valiant 1979 (STOC) 퍼머넌트 VNP 완전 · 추측. 사람 하한 기록 약 m² log m (Baur–Strassen 1983, MACCUS). 자연스러운 증명 Razborov–Rudich 1994 (불 회로, 의사난수 함수가 있으면 natural proof 불가). 대수 쪽 비슷한 벽 논의 (Forbes–Shpilka–Volk 2017, Grochow–Kumar–Saks–Saraf 2017). 대각선 논법만으로는 P vs NP 불가 (상대화, Baker–Gill–Solovay 1975). GCT (Mulmuley–Sohoni 2001) → '25년'.
 - 비용 숫자 (data.py assert): 50×50 행렬식 약 n³ = 125,000 ('약 12만', 상수 무시), 퍼머넌트 라이저 1963 약 n·2ⁿ = 5.6×10¹⁶ ('약 5.6경'). 2×2 [[1,2],[3,4]], 대각선 표 비트는 예시.
-- 체스 → 스타크래프트: 강의에서 들은 비유 (영상에선 '비유하면' 으로만, 누구 말인지 밝히지 않음). AI 학습 데이터·과정은 공개되지 않아 '학습하지 않은 영역' 같은 말은 쓰지 않음.
+- 비유: v3까지 강의에서 들은 '체스 → 스타크래프트' (다른 게임으로 일반화한 것처럼 들려 과장, 이번 건 같은 수학 · 같은 Lean 도구) → v4 에서 2016 알파고 vs 이세돌 2국 37수 (해설진이 처음엔 실수로 봄 → 승리 수)로 교체: '혼자선 안 통한다'던 옛 기술 (대각선 논법, 상대화 장벽 1975) 로 길을 낸 구조와 맞음. 바둑판 돌 배치는 그림용 예시 (실제 기보 아님). AI 학습 데이터는 비공개라 '학습 안 한 영역' 표현은 쓰지 않음.
 - 상태 (2026-11-26): 두 증명 모두 사람 검증 전.
 - 이모지: Twemoji (CC BY 4.0). 음성: Typecast 필재. 배경음: Suno "Curious Groove".
 
