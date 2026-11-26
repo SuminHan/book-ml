@@ -419,6 +419,24 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 \note{학습이 끝난 뒤 점 20개의 경계까지 거리를 작은 순서로 막대로 그렸습니다. 세 점이 모두 0.67로 M, 길 가장자리 위에 있습니다. 이 셋이 서포트 벡터입니다. 나머지 17개는 모두 0.81 이상입니다. 서포트 벡터를 미리 고르는 게 아니라, 가장 가까운 점이 미는 학습을 하다 보면 끝까지 가장 가까운 점들이 저절로 서포트 벡터가 됩니다. 실무에서 쓰는 sklearn의 SVC는 이런 방법 대신 SMO라는 다른 풀이법을 쓰지만 같은 답을 내고, support vectors라는 속성에 이 3개를 담아 줍니다.}
 \end{frame}
 
+% --- 가장 가까운 점 고르기 = 점마다 무게
+\begin{frame}{``가장 가까운 점 고르기'' $=$ 점마다 \textbf{무게}를 나눠 주기}
+\vfill
+\centering
+{\large 오늘의 식: \quad $\displaystyle \max_{\mathbf{w},\,b,\ \lVert\mathbf{w}\rVert = 1}\ \min_{k}\ y_k D(\mathbf{x}_k)$ \qquad 안쪽 $\min_k$ $=$ 가장 가까운 점 하나 고르기}\\[0.9em]
+{\Large $\displaystyle \min_{k}\ y_k D(\mathbf{x}_k) \;=\; \min_{\lambda}\ \sum_k \lambda_k\, y_k D(\mathbf{x}_k)$ \qquad {\normalsize $\lambda_k \ge 0$, \;$\sum_k \lambda_k = 1$}}\\[0.6em]
+{\normalsize $\mathbf{w}$ 가 정해지면: $\lambda$ 는 \textbf{argmin 점 하나에 $1$}}\\[0.1em]
+{\normalsize 답에서는 \kq{argmin 이 여럿} (서포트 벡터) $\to$ \textbf{나눠 가진다}}\\[0.8em]
+\renewcommand{\arraystretch}{1.35}
+{\large\begin{tabular}{c|ccc|c|c}
+ & \textcolor{ksared}{빨강 $r$} & \textcolor{ksablue}{파랑 $b_1$} & \textcolor{ksablue}{파랑 $b_2$} & 나머지 17개 & 합\\ \hline
+$\lambda$ & \kb{0.5} & \kb{0.25} & \kb{0.25} & 0 & 1
+\end{tabular}}\\[0.8em]
+{\large 이 무게가 학습한 $\mathbf{w}$ 안의 \textbf{몫}과 같다}
+\vfill
+\note{오늘의 식은 w의 길이를 1로 묶은 max min입니다. 안쪽 min은 점들 중 값이 가장 작은 점, 가장 가까운 점 하나를 고르는 것입니다. 이 일은 점마다 무게를 나눠 주고 무게 준 합을 가장 작게 만드는 일과 같습니다. 무게는 0 이상이고 다 더하면 1입니다. 무게 준 합은 값들의 가중 평균이고, 평균은 가장 작은 값보다 작아질 수 없습니다. 값이 0.6, 0.8, 1.0인 세 점이면, 무게를 1, 0, 0으로 주면 0.6, 반반씩이면 0.7, 3분의 1씩이면 0.8입니다. 반 평균이 꼴찌 점수보다 낮을 수 없는 것과 같습니다. 그래서 가장 작게 하려면 가장 가까운 점에 무게를 다 몰아줍니다. w가 정해져 있으면 람다는 argmin 점 하나에 1입니다. 그런데 답에서는 서포트 벡터 세 점이 똑같이 가장 가까워서, 0.67, 0.67, 0.67처럼 동점입니다. 이때는 셋에 어떻게 나눠 줘도 같은 값이라 무게를 나눠 가질 수 있습니다. 나머지 17개는 더 멀어서 무게가 0입니다. 나누는 비율 0.5, 0.25, 0.25는 학습한 w 안의 몫과 같습니다. 이어서 확인합니다.}
+\end{frame}
+
 % --- argmin 이 여럿: 서포트 벡터 몇 개로 쓸 수 있다
 \begin{frame}{가장 가까운 점이 여럿: $\mathbf{w}$ 는 서포트 벡터 몇 개로 쓸 수 있다}
 \vfill
