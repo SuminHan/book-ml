@@ -123,3 +123,46 @@ print("1D w", w1.round(5), "p(0)", round(sig(w1[0]), 3), "50% at", round(-w1[0] 
       "odds/100", round(np.exp(100 * w1[1]), 2), "odds/400", round(np.exp(400 * w1[1]), 2), "Elo slope", round(np.log(10) / 400, 5), "Elo p(+200)", round(1 / (1 + 10 ** -0.5), 3))
 print("2D w", w2.round(5), "boundary white - black =", round(-w2[0] / w2[1], 1), "(w2/w1", round(w2[2] / w2[1], 3), ")")
 print("threshold 0.5: precision", round(pr[0], 3), "recall", round(pr[1], 3))
+
+
+# ---------------------------------------------------------------- kNN 베이스라인 (2026-11-27)
+KNN_K, KNN_X = 500, 200                                   # 새 판 = 백이 200점 높은 판, 가까운 500판
+KNN_KS = [1, 5, 25, 100, 500, 2000]
+
+
+def knn_idea_fig(x, y, k=KNN_K, x0=KNN_X, seed=3):
+    """새 판 (+200) 과 레이팅 차이가 가장 가까운 k판을 세면 → 백 승률."""
+    i = np.argsort(np.abs(x - x0), kind="stable")[:k]; lo, hi, win = x[i].min(), x[i].max(), int(y[i].sum())
+    fig, ax = plt.subplots(figsize=(8.5, 4.4))
+    points(ax, x, y, 400, seed)
+    ax.axvspan(lo - 12, hi + 12, color=GOLD, alpha=0.35)
+    rng = np.random.default_rng(seed); j = rng.choice(i, 60, replace=False)
+    ax.scatter(x[j] + rng.uniform(-8, 8, 60), y[j] + rng.uniform(-0.05, 0.05, 60), s=30, c=np.where(y[j] == 1, BLUE, RED), edgecolors="black", linewidths=0.4)
+    ax.annotate(f"새 판: 백이 {x0}점 높다\n가장 가까운 {k}판 ({lo:.0f}~{hi:.0f}점)\n백 승 {win} / {k} = {win / k:.0%}", (x0 + 15, 0.5), (x0 + 120, 0.32),
+                fontsize=15, color=BLUE, fontweight="bold", arrowprops=dict(arrowstyle="->", color=GOLD, lw=2))
+    yaxis(ax); ax.set_ylim(-0.12, 1.12)
+    fig.tight_layout(); fig.savefig(O + "chess_knn.png"); plt.close(fig)
+    return lo, hi, win
+
+
+def knn_acc_fig(x, y, w_ks=KNN_KS, seed=0):
+    """학습 80% / 시험 20%: kNN (k 바꿔 가며) vs 로지스틱회귀 정확도."""
+    from sklearn.neighbors import KNeighborsClassifier
+    from sklearn.linear_model import LogisticRegression
+    p = np.random.default_rng(seed).permutation(len(x)); n = int(0.8 * len(x)); tr, te = p[:n], p[n:]
+    acc = {k: KNeighborsClassifier(k).fit(x[tr, None], y[tr]).score(x[te, None], y[te]) for k in w_ks}
+    lr = LogisticRegression().fit(x[tr, None] / 100, y[tr]).score(x[te, None] / 100, y[te])
+    fig, ax = plt.subplots(figsize=(8.5, 4.2))
+    ax.plot(list(acc), [100 * a for a in acc.values()], "o-", color=GOLD, lw=3, ms=9, label="kNN")
+    ax.axhline(100 * lr, color=BLUE, lw=3, label=f"로지스틱회귀 (숫자 2개) {lr:.1%}")
+    for k, a in acc.items():
+        ax.annotate(f"{a:.1%}", (k, 100 * a), (0, -22), textcoords="offset points", ha="center", fontsize=13, color="#6b5b2e")
+    ax.set_xscale("log"); ax.set_xticks(list(acc), [str(k) for k in acc]); ax.set_xlabel("k (가까운 판 몇 개를 보나)")
+    ax.set_ylabel("시험 정확도 (%)"); ax.set_ylim(55, 69); ax.legend(frameon=False, loc="lower right", fontsize=13)
+    fig.tight_layout(); fig.savefig(O + "chess_knn_acc.png"); plt.close(fig)
+    return {k: round(a, 4) for k, a in acc.items()}, round(lr, 4), len(tr), len(te)
+
+
+kn = knn_idea_fig(x, y); ka = knn_acc_fig(x, y)
+print("knn +200: range", kn[0], kn[1], "wins", kn[2], "/", KNN_K)
+print("knn acc", ka[0], "logit acc", ka[1], "train/test", ka[2], ka[3])
