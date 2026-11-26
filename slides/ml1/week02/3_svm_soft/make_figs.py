@@ -446,30 +446,35 @@ def fig_tilt():
 
 
 def fig_rope():
-    """외줄타기 비유: 몸 (= 선의 방향) 이 기울면 균형봉 (= α) 으로 바로잡는다. 각도는 실제 학습의 방향 54° · 42° · 45° (답 45°), 그림은 기울기를 3배로 과장"""
-    from matplotlib.patches import Circle as Cc
-    cases = ((54, "① 한쪽으로 기울었다", "봉을 반대로 → α 를 고친다"), (42, "② 너무 당겨 반대로 지나쳤다", "다시 조금 되돌린다"), (45, "③ 똑바로: 균형", "두 힘이 같다 → 멈춤"))
-    fig, axs = plt.subplots(1, 3, figsize=(15, 5.6))
+    """외줄타기 비유: 몸 (= 선의 방향) 이 기울면 균형봉 (= α) 으로 바로잡는다. 각도는 실제 학습의 방향 54° · 42° · 45° (답 45°), 그림은 기울기를 4배로 과장.
+    흐린 회색 = 똑바로 선 자세, 휘어진 화살표 = 휘청이는 방향, 빨간 화살표 = 봉으로 바로잡는 방향"""
+    from matplotlib.patches import Circle as Cc, FancyArrowPatch
+    cases = ((54, "① 오른쪽으로 휘청", "봉을 왼쪽으로 → α 를 고친다"), (42, "② 너무 당겨 왼쪽으로 휘청", "다시 조금 되돌린다"), (45, "③ 똑바로: 균형", "두 힘이 같다 → 멈춤"))
+    def person(ax, lean, col, alpha, lw=1.0):
+        up = np.array([np.sin(lean), np.cos(lean)]); side = np.array([np.cos(lean), -np.sin(lean)])
+        foot = np.array([0.0, 0.0]); hip = foot + 1.1 * up; neck = foot + 2.3 * up; head = foot + 2.75 * up; hand = neck - 0.45 * up
+        for d in (-0.15, 0.15): ax.plot(*np.c_[foot + d * np.array([1, 0]), hip], color=col, lw=4 * lw, alpha=alpha, solid_capstyle="round")
+        ax.plot(*np.c_[hip, neck], color=col, lw=5 * lw, alpha=alpha, solid_capstyle="round"); ax.add_patch(Cc(head, 0.32, color=col, alpha=alpha))
+        for d in (-0.4, 0.4): ax.plot(*np.c_[neck, hand + d * side], color=col, lw=3 * lw, alpha=alpha)
+        return up, side, hand, head
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5.8))
     for ax, (deg, ttl, sub) in zip(axs, cases):
-        lean = np.radians(3 * (deg - 45)); up = np.array([np.sin(lean), np.cos(lean)]); side = np.array([np.cos(lean), -np.sin(lean)])
-        ax.plot([-3, 3], [0, 0], color="#8a6a3a", lw=3, zorder=1); ax.plot([-3, -3], [-1.2, 0.2], color="#555555", lw=5); ax.plot([3, 3], [-1.2, 0.2], color="#555555", lw=5)
-        foot = np.array([0.0, 0.0]); hip = foot + 1.1 * up; neck = foot + 2.3 * up; head = foot + 2.75 * up
-        for d in (-0.22, 0.22): ax.plot(*np.c_[foot + d * side * 0.6, hip], color="black", lw=4, solid_capstyle="round")
-        ax.plot(*np.c_[hip, neck], color="black", lw=5, solid_capstyle="round"); ax.add_patch(Cc(head, 0.32, color="black"))
-        hand = neck - 0.45 * up; pole = 2.4
-        ax.plot(*np.c_[neck, hand + 0.35 * side], color="black", lw=3); ax.plot(*np.c_[neck, hand - 0.35 * side], color="black", lw=3)
-        pc = hand + (0.0 if deg == 45 else (-0.7 if deg > 45 else 0.35)) * np.array([1, 0])            # 봉을 반대쪽으로 민다
-        pa, pb = pc - pole * np.array([1, 0.0]), pc + pole * np.array([1, 0.0])
-        ax.plot(*np.c_[pa, pb], color="#d62728", lw=5, solid_capstyle="round", zorder=4)
-        for e in (pa, pb): ax.scatter(*e, s=160, color="#d62728", zorder=5)
-        ax.plot(*np.c_[foot, foot + 3.2 * np.array([0, 1])], color="#999999", ls="--", lw=1.4)
+        lean = np.radians(4 * (deg - 45))
+        ax.plot([-3.2, 3.2], [0, 0], color="#8a6a3a", lw=3, zorder=1)
+        for x in (-3.2, 3.2): ax.plot([x, x], [-1.3, 0.2], color="#555555", lw=5)
+        if deg != 45: person(ax, 0.0, "#bbbbbb", 0.6)                                                # 똑바로 선 자세 (흐리게)
+        up, side, hand, head = person(ax, lean, "black", 1.0)
+        pc = hand; pa, pb = pc - 1.9 * side, pc + 1.9 * side                                          # 봉은 몸과 같이 기운다
+        ax.plot(*np.c_[pa, pb], color="#d62728", lw=6, solid_capstyle="round", zorder=4)
+        for e in (pa, pb): ax.scatter(*e, s=200, color="#d62728", zorder=5)
+        ax.plot([0, 0], [0, 3.3], color="#999999", ls="--", lw=1.3, zorder=0)
         if deg != 45:
             s = 1 if deg > 45 else -1
-            ax.annotate("", head + 0.55 * s * side, head + 0.05 * s * side, arrowprops=dict(arrowstyle="-|>", color="#555555", lw=3, mutation_scale=22))
-            ax.annotate("", pc - 0.9 * s * np.array([1, 0]) + np.array([0, -0.35]), pc + np.array([0, -0.35]), arrowprops=dict(arrowstyle="-|>", color="#d62728", lw=3, mutation_scale=22))
+            ax.add_patch(FancyArrowPatch((0.15 * s, 3.35), (head[0] + 0.35 * s, head[1] + 0.25), connectionstyle=f"arc3,rad={-0.35 * s}", arrowstyle="-|>", mutation_scale=22, color="#555555", lw=2.5))
+            ax.annotate("", (pc[0] - 1.6 * s, pc[1] - 0.75), (pc[0] - 0.2 * s, pc[1] - 0.75), arrowprops=dict(arrowstyle="-|>", color="#d62728", lw=3.5, mutation_scale=24))
         ax.set_title(f"{ttl}\n선의 방향 {deg}°", fontsize=17, fontweight="bold", linespacing=1.4)
-        ax.text(0, -0.75, sub, ha="center", fontsize=16, color="#d62728" if deg != 45 else "#2E3192", fontweight="bold")
-        ax.set_xlim(-3.3, 3.3); ax.set_ylim(-1.1, 3.6); ax.set_aspect("equal"); ax.axis("off")
+        ax.text(0, -0.8, sub, ha="center", fontsize=16, color="#d62728" if deg != 45 else "#2E3192", fontweight="bold")
+        ax.set_xlim(-3.4, 3.4); ax.set_ylim(-1.15, 3.8); ax.set_aspect("equal"); ax.axis("off")
     fig.tight_layout(w_pad=1.0); fig.savefig(mf.O + "kn_rope.png"); plt.close(fig)
 
 
