@@ -420,7 +420,7 @@ def fig_onearrow():
     ax.annotate("", R, B, arrowprops=dict(arrowstyle="-|>", color="black", lw=5, mutation_scale=34, shrinkA=8, shrinkB=10), zorder=7)
     ax.annotate("빨강 중심\n(0.7, 0.2)", R, (1.75, -0.35), fontsize=17, color=RD, fontweight="bold", ha="center", arrowprops=dict(arrowstyle="->", color=RD, lw=1.4, shrinkB=14))
     ax.annotate("파랑 중심 (두 점의 가운데)\n(−0.25, −0.75)", B, (0.95, -1.75), fontsize=17, color=BL, fontweight="bold", ha="center", arrowprops=dict(arrowstyle="->", color=BL, lw=1.4, shrinkB=12))
-    ax.text(-0.35, 0.18, "(0.95, 0.95)\n길이 1.34 = 길 폭", fontsize=17, fontweight="bold", ha="right", va="center", bbox=dict(fc="white", ec="none", alpha=0.9))
+    ax.text(-0.35, 0.18, "(0.95, 0.95)\n길이 1.34 = 길 폭 2M\nM = 0.67", fontsize=17, fontweight="bold", ha="right", va="center", bbox=dict(fc="white", ec="none", alpha=0.9))
     ax.annotate("", (R + B) / 2 + np.array([-0.04, 0.03]), (-0.37, 0.13), arrowprops=dict(arrowstyle="-", color="black", lw=1))
     ax.set_xlim(-2.4, 2.4); ax.set_ylim(-2.05, 1.75); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
     fig.tight_layout(); mf.save(fig, "kn_onearrow.png")
