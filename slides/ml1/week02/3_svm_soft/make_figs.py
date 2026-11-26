@@ -544,6 +544,37 @@ def fig_wspring():
     fig.tight_layout(); fig.savefig(mf.O + "kn_wspring.png"); plt.close(fig)
 
 
+def fig_block():
+    """완전한 물리 문제: 막대 위 블록, 원점에 매단 용수철 (k = 1) 이 당기고, x = 1 의 멈춤쇠가 막는다. 평형 x = 1, 멈춤쇠의 반력 N = kx = 1 (= α).
+    아래: 마찰이 있을 때 x(t) (감쇠 진동 → 멈춤쇠에 기대어 정지)"""
+    from matplotlib.patches import Rectangle
+    k, m, c, dt = 1.0, 1.0, 0.15, 0.01
+    x, v, xs = 2.6, 0.0, []
+    for _ in range(3000):                                                         # 멈춤쇠: x ≥ 1 (부딪히면 속도를 잃는다)
+        a = (-k * x - c * v) / m; v += a * dt; x += v * dt
+        if x < 1: x, v = 1.0, -0.55 * v                                           # 튕겨 나오며 속도를 일부 잃는다
+        xs.append(x)
+    assert abs(xs[-1] - 1) < 2e-3 and max(xs[:200]) <= 2.6
+    fig = plt.figure(figsize=(13, 4.4)); g = fig.add_gridspec(1, 2, width_ratios=[1.25, 1], wspace=0.15)
+    ax = fig.add_subplot(g[0]); GR = "#444444"
+    ax.plot([-0.2, 3.0], [0, 0], color="#8a8a8a", lw=4)
+    ax.add_patch(Rectangle((-0.32, -0.5), 0.12, 1.0, color=GR)); ax.text(-0.26, -0.68, "x = 0", ha="center", fontsize=14)
+    ax.add_patch(Rectangle((0.95, 0.12), 0.1, 0.5, color="#d62728")); ax.add_patch(Rectangle((0.95, -0.62), 0.1, 0.5, color="#d62728"))
+    ax.text(1.0, -0.82, "멈춤쇠 x = 1", ha="center", fontsize=15, color="#d62728", fontweight="bold")
+    xb = 1.0; nz = 12
+    zz = np.array([(-0.2, 0)] + [(-0.2 + (xb + 0.2) * (i + 0.5) / nz, 0.13 if i % 2 == 0 else -0.13) for i in range(nz)] + [(xb + 0.05, 0)])
+    ax.plot(*zz.T, color=GR, lw=2.2, zorder=3)
+    ax.add_patch(Rectangle((xb + 0.05, -0.3), 0.6, 0.6, color="#2E3192", zorder=4)); ax.text(xb + 0.35, 0, "블록", color="white", ha="center", va="center", fontsize=15, fontweight="bold", zorder=5)
+    ax.annotate("", (0.45, 0.55), (1.0, 0.55), arrowprops=dict(arrowstyle="-|>", color=GR, lw=3.5, mutation_scale=24)); ax.text(0.72, 0.68, "용수철 힘 kx = 1", ha="center", fontsize=15, color=GR, fontweight="bold")
+    ax.annotate("", (1.6, -0.48), (1.05, -0.48), arrowprops=dict(arrowstyle="-|>", color="#d62728", lw=3.5, mutation_scale=24)); ax.text(2.05, -0.5, "반력 N = 1", ha="left", va="center", fontsize=15, color="#d62728", fontweight="bold")
+    ax.set_xlim(-0.45, 3.0); ax.set_ylim(-1.0, 1.0); ax.set_aspect("equal"); ax.axis("off"); ax.set_title("평형: 블록이 멈춤쇠에 기대어 선다", fontsize=17, fontweight="bold")
+    ax = fig.add_subplot(g[1]); tt = np.arange(len(xs)) * dt
+    ax.plot(tt, xs, color="#2E3192", lw=3); ax.axhline(1, color="#d62728", ls="--", lw=2); ax.text(29, 1.08, "멈춤쇠 x = 1", ha="right", color="#d62728", fontsize=14)
+    ax.set_xlabel("시간", fontsize=15); ax.set_ylabel("블록 위치 x", fontsize=15); ax.set_ylim(0.85, 2.75); ax.tick_params(labelsize=12)
+    ax.set_title("x = 2.6 에서 놓으면: 튕기다 멈춘다", fontsize=17, fontweight="bold"); ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+    fig.subplots_adjust(left=0.02, right=0.98, top=0.9, bottom=0.14); fig.savefig(mf.O + "kn_block.png"); plt.close(fig)
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -753,7 +784,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "wspring": fig_wspring, "history": fig_history, "rope": fig_rope, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "block": fig_block, "wspring": fig_wspring, "history": fig_history, "rope": fig_rope, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
