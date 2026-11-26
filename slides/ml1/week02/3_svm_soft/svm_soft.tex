@@ -101,15 +101,16 @@ $(1.05,\ 1.05)$, \; $0.05$ & 1.49 & \kq{1} & \kb{0.67} & $D(\mathbf{x}_r) = 1$ (
 \begin{frame}{``가장 가까운 점 고르기'' $=$ 점마다 \textbf{무게}를 나눠 주기}
 \vfill
 \centering
-{\large 지난 시간: \quad $\displaystyle \max_{\mathbf{w},\,b,\ \lVert\mathbf{w}\rVert = 1}\ \min_{k}\ y_k D(\mathbf{x}_k)$ \qquad 안쪽 $\min_k$ $=$ 가장 가까운 점 하나 고르기}\\[0.9em]
-{\Large $\displaystyle \min_{k}\ y_k D(\mathbf{x}_k) \;=\; \min_{\lambda}\ \sum_k \lambda_k\, y_k D(\mathbf{x}_k)$ \qquad {\normalsize $\lambda_k \ge 0$, \;$\sum_k \lambda_k = 1$}}\\[0.5em]
+{\large 지난 시간: \quad $\displaystyle \max_{\mathbf{w},\,b,\ \lVert\mathbf{w}\rVert = 1}\ \min_{k}\ y_k D(\mathbf{x}_k)$ \qquad 안쪽 $\min_k$ $=$ 가장 가까운 점 하나 고르기}\\[0.5em]
+{\Large $\displaystyle \underbrace{\min_{k}\ y_k D(\mathbf{x}_k)}_{\text{\normalsize 최소값: 한 점}} \;=\; \underbrace{\min_{\lambda}\ \sum_k \lambda_k\, y_k D(\mathbf{x}_k)}_{\text{\normalsize 가중 평균의 최소: 여러 점이 나눠 가질 수 있다}}$}\\[0.1em]
+{\small $\lambda_k \ge 0$, \;$\sum_k \lambda_k = 1$}\\[0.5em]
 {\normalsize $\mathbf{w}$ 가 정해지면: $\lambda$ 는 \textbf{argmin 점 하나에 $1$}}\\[0.1em]
-{\normalsize 답에서는 \kq{argmin 이 여럿} (서포트 벡터) $\to$ \textbf{나눠 가진다}}\\[0.6em]
-\renewcommand{\arraystretch}{1.35}
+{\normalsize 답에서는 \kq{argmin 이 여럿} (서포트 벡터) $\to$ \textbf{나눠 가진다}}\\[0.4em]
+\renewcommand{\arraystretch}{1.15}
 {\large\begin{tabular}{c|ccc|c|c}
  & \textcolor{ksared}{빨강 $r$} & \textcolor{ksablue}{파랑 $b_1$} & \textcolor{ksablue}{파랑 $b_2$} & 나머지 17개 & 합\\ \hline
 $\lambda$ & \kb{0.5} & \kb{0.25} & \kb{0.25} & 0 & 1
-\end{tabular}}\\[0.9em]
+\end{tabular}}\\[0.4em]
 {\large ``가장 가까운 점 고르기'' 를 점마다 \textbf{무게}로 쓴 것 $=$ 학습한 $\mathbf{w}$ 안의 \textbf{몫}}
 \vfill
 \note{지난 시간의 식은 w의 길이를 1로 묶은 max min이었습니다. 안쪽 min은 가장 가까운 점 하나를 고르는 것입니다. 이 일은 점마다 무게를 나눠 주고 무게 준 합을 가장 작게 만드는 일과 같습니다. 무게는 0 이상이고 다 더하면 1입니다. 무게 준 합은 가중 평균이라 가장 작은 값보다 작아질 수 없으니, 가장 가까운 점에 무게를 몰아줍니다. w가 정해지면 람다는 argmin 점 하나에 1입니다. 답에서는 서포트 벡터 세 점이 똑같이 가장 가까워서 무게를 나눠 가지고, 그 비율 0.5, 0.25, 0.25는 지난 시간 학습한 w 안의 몫과 같습니다. 나머지 17개는 무게가 0입니다.}
@@ -137,17 +138,18 @@ $\lambda$ & \kb{0.5} & \kb{0.25} & \kb{0.25} & 0 & 1
 \begin{frame}{무게 $\lambda$ 에서 $\alpha$ 로: 비율은 같고 \textbf{크기만} 바꾼다}
 \vfill
 \centering
-{\large $\sum_k \lambda_k y_k \mathbf{x}_k = 0.5\,r - 0.25\,b_1 - 0.25\,b_2 = (0.475,\ 0.475)$ \qquad 길이 $0.67 = M$}\\[0.4em]
-{\large 오늘 약속 ($M\lVert\mathbf{w}\rVert = 1$) 의 $\mathbf{w}^* = (1.05,\ 1.05)$ \;$\to$\; \textbf{$2.22$ 배} \;($= 1/M^2$)}\\[0.9em]
+{\large $\mathbf{v} = \sum_k \lambda_k y_k \mathbf{x}_k = (0.475,\ 0.475)$, \qquad $\lVert\mathbf{v}\rVert = 0.67 = M$}\\[0.4em]
+{\large $\lVert\mathbf{w}\rVert = 1$ 약속: \; $\alpha = \lambda / \lVert\mathbf{v}\rVert$}\\[0.2em]
+{\large 오늘 약속 (가장자리 값 $1$): 한 번 더 $\div \lVert\mathbf{v}\rVert$ \;$\to$\; \kq{$\alpha = \lambda / \lVert\mathbf{v}\rVert^2$}}\\[0.9em]
 \renewcommand{\arraystretch}{1.4}
 {\large\begin{tabular}{c|ccc|c|c}
  & \textcolor{ksared}{빨강 $r$} & \textcolor{ksablue}{파랑 $b_1$} & \textcolor{ksablue}{파랑 $b_2$} & 나머지 17개 & 합\\ \hline
 $\lambda$ (비율) & 0.5 & 0.25 & 0.25 & 0 & 1\\
-\kq{$\alpha = 2.22\,\lambda$} & \kq{1.11} & \kq{0.55} & \kq{0.55} & 0 & 2.22
+\kq{$\alpha = \lambda / 0.67^2 = 2.22\,\lambda$} & \kq{1.11} & \kq{0.55} & \kq{0.55} & 0 & 2.22
 \end{tabular}}\\[0.9em]
 {\Large $\mathbf{w}^* = \sum_k \kq{$\alpha_k$}\, y_k \mathbf{x}_k$} \qquad {\normalsize $\alpha$ $=$ 오늘 약속에서 점마다의 \textbf{몫}}
 \vfill
-\note{무게 람다를 오늘 쓸 알파로 옮겨 봅시다. 람다로 점들을 더하면 0.5 r 빼기 0.25 b1 빼기 0.25 b2, 0.475, 0.475이고, 그 길이는 0.67, 마진 M과 같습니다. 오늘의 약속은 M 곱하기 w의 길이가 1이라 답 w 별은 1.05, 1.05입니다. 0.475의 2.22배이고, 2.22는 1 나누기 M 제곱입니다. 그래서 람다에 2.22를 곱하면 빨강 1.11, 파랑 0.55, 0.55가 되고 합은 2.22입니다. 이것이 알파입니다. 비율은 람다와 같고 크기만 오늘의 약속에 맞춘 것입니다. 그래서 w 별은 알파 y x의 합이고, 알파는 오늘 약속에서 점마다의 몫입니다. 나머지 17개는 여전히 0입니다.}
+\note{무게 람다를 오늘 쓸 알파로 옮겨 봅시다. 람다로 점들을 더하면 0.5 r 빼기 0.25 b1 빼기 0.25 b2, 0.475, 0.475이고, 그 길이는 0.67, 마진 M과 같습니다. 오늘의 약속은 M 곱하기 w의 길이가 1이라 답 w 별은 1.05, 1.05입니다. v의 길이가 0.67, 마진 M과 같으니, w의 길이를 1로 맞추면 람다 나누기 v의 길이, 가장자리 값을 1로 맞추는 오늘 약속에서는 한 번 더 나눠 람다 나누기 v의 길이 제곱입니다. 0.67 제곱은 0.45라 2.22배입니다. 그래서 람다에 2.22를 곱하면 빨강 1.11, 파랑 0.55, 0.55가 되고 합은 2.22입니다. 이것이 알파입니다. 비율은 람다와 같고 크기만 오늘의 약속에 맞춘 것입니다. 그래서 w 별은 알파 y x의 합이고, 알파는 오늘 약속에서 점마다의 몫입니다. 나머지 17개는 여전히 0입니다.}
 \end{frame}
 
 % --- 비유: 못 박힌 판 위의 두 자
