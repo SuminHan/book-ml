@@ -213,7 +213,7 @@ def fig_lagrange_svm():
     ax.text(0.55, 1.95, "회색 = 조건을 어긴 w", fontsize=15, color="#555555", bbox=box, ha="center")
     ax.text(0.15, 0.62, "½‖w‖² 등고선", fontsize=14, color="#555555", bbox=box)
     ax.add_patch(plt.Rectangle((0.75, 0.75), 0.6, 0.6, fill=False, ls="--", lw=1.2, color="black"))
-    ax.set_title("① 점 하나 = 조건 직선 하나 (b = b* 고정)", fontsize=17, fontweight="bold")
+    ax.set_title("① b = b* 로 자른 단면: 점 하나 = 직선 하나", fontsize=17, fontweight="bold")
     ax = axs[1]                                                       # 확대
     L, e = 0.20, 0.03
     def _rt(n, c):
@@ -252,7 +252,44 @@ def fig_lagrange_svm():
     fig.tight_layout(w_pad=3)
     mf.save(fig, "kn_lagrange_svm.png")
 
-FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "lagrange": fig_lagrange, "lagrange3d": fig_lagrange3d, "lagrange_svm": fig_lagrange_svm, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
+def fig_lagrange_svm3d(azim=-60, elev=22, out="kn_lagrange_svm3d.png"):
+    """SVM 을 (w1, w2, b) 3D 로: 서포트 벡터 3개의 조건 y_k(w·x_k + b) = 1 = 평면 3장, 답 (w*, b*) = 세 평면이 만나는 모서리,
+    ½‖w‖² 등고선 = b 와 무관한 원기둥 (금색), b = b* 수평면으로 자르면 직선 3개 + 원 (= 다음 쪽 w 평면 그림)"""
+    d2 = kd._d2
+    b0, wst = d2.B_STAR, np.array(d2.W_STAR, float); rs = np.linalg.norm(wst)
+    sv = [(np.array(p_), 1.0 if p_ in d2.RED_PTS else -1.0) for p_ in d2.SV]
+    lo, hi, blo, bhi = 0.45, 1.65, -0.55, 0.65
+    fig = plt.figure(figsize=(7.6, 6.0)); ax = fig.add_subplot(projection="3d")
+    g = np.linspace(lo, hi, 60); W1, W2 = np.meshgrid(g, g)
+    for (p_, yy), c in zip(sv, [RED, BLUE, "#5b6bd6"]):
+        B = yy - (W1 * p_[0] + W2 * p_[1])                                   # y(w·x + b) = 1  →  b = y − w·x
+        B = np.where((B >= blo) & (B <= bhi), B, np.nan)
+        ax.plot_surface(W1, W2, B, color=RED if yy > 0 else BLUE, alpha=0.20, linewidth=0, shade=False)
+        ax.plot_wireframe(W1, W2, B, rstride=20, cstride=20, color=RED if yy > 0 else BLUE, linewidth=0.5, alpha=0.5)
+        t = np.linspace(lo, hi, 300)                                         # b = b* 에서 자른 선
+        if abs(p_[1]) > 1e-9:
+            w1 = t; w2 = (yy - b0 - w1 * p_[0]) / p_[1]
+        else:
+            w2 = t; w1 = (yy - b0 - w2 * p_[1]) / p_[0]
+        m = (w1 >= lo) & (w1 <= hi) & (w2 >= lo) & (w2 <= hi)
+        ax.plot(w1[m], w2[m], np.full(m.sum(), b0), color=RED if yy > 0 else BLUE, lw=3.0, zorder=10)
+    th = np.linspace(0, np.pi / 2, 120); bz = np.linspace(blo, bhi, 2); TH, BZ = np.meshgrid(th, bz)
+    CX, CY = rs * np.cos(TH), rs * np.sin(TH); mk = (CX >= lo) & (CX <= hi) & (CY >= lo) & (CY <= hi)
+    ax.plot_surface(np.where(mk, CX, np.nan), np.where(mk, CY, np.nan), BZ, color=GOLD, alpha=0.18, linewidth=0, shade=False)
+    cm = (rs * np.cos(th) >= lo) & (rs * np.sin(th) >= lo) & (rs * np.cos(th) <= hi) & (rs * np.sin(th) <= hi)
+    ax.plot(rs * np.cos(th)[cm], rs * np.sin(th)[cm], np.full(cm.sum(), b0), color=GOLD, lw=2.6)
+    ax.plot_surface(*np.meshgrid([lo, hi], [lo, hi]), np.full((2, 2), b0), color="#888888", alpha=0.18, linewidth=0, shade=False)
+    ax.plot([lo, hi, hi, lo, lo], [lo, lo, hi, hi, lo], [b0] * 5, color="#666666", lw=1.0)
+    ax.scatter(*wst, b0, s=90, color="black", depthshade=False, zorder=12)
+    ax.set_xlim(lo, hi); ax.set_ylim(lo, hi); ax.set_zlim(blo, bhi)
+    ax.set_xlabel("$w_1$", fontsize=16); ax.set_ylabel("$w_2$", fontsize=16); ax.set_zlabel("$b$", fontsize=16)
+    ax.set_xticks([0.5, 1.0, 1.5]); ax.set_yticks([0.5, 1.0, 1.5]); ax.set_zticks([-0.5, 0, 0.5]); ax.tick_params(labelsize=10)
+    ax.view_init(elev=elev, azim=azim)
+    fig.subplots_adjust(0, 0, 1, 1)
+    fig.savefig(out if "/" in out else mf.O + out, dpi=200, facecolor="white", bbox_inches=fig.bbox_inches.from_bounds(0.45, 0.15, 6.9, 5.75), pad_inches=0); plt.close(fig)
+
+
+FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "lagrange": fig_lagrange, "lagrange3d": fig_lagrange3d, "lagrange_svm": fig_lagrange_svm, "lagrange_svm3d": fig_lagrange_svm3d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
