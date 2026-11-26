@@ -308,51 +308,64 @@ def fig_lagrange_svm3d(azim=-60, elev=22, out="kn_lagrange_svm3d.png"):
 
 
 def fig_lagrange_svm_grow():
-    """원통 ½‖w‖² = 반지름 r 을 키우다가, 조건을 다 지키는 영역 (답에서 뾰족한 모서리, 평면 3장으로 깎인 뿔) 에 처음 닿는 곳 = (w*, b*).
-    3칸: r = 0.7 · 1.1 (안 닿음) · ‖w*‖ = 1.49 (처음 닿음). 뿔은 모서리에서 세 평면이 만나는 선 3개 방향으로 그린다"""
+    """원통 ½‖w‖² = 반지름 r 을 키우다가 조건을 다 지키는 영역에 처음 닿는 곳 = (w*, b*). 두 줄로 나란히:
+    위 = 서포트 벡터 3개 (우리 점 20개): 평면 3장이 깎은 뿔, 뿔 끝 (꼭짓점) 에 닿는다. r = 0.7 · 1.1 · 1.49
+    아래 = 서포트 벡터 2개 (지난 시간 작은 예 점 8개): 평면 2장이 만든 지붕, 모서리 선 (b = 0, w1 + w2 = 2) 에 옆으로 닿는다. r = 0.6 · 1.0 · 1.41"""
     from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     d2 = kd._d2
-    b0, wst = d2.B_STAR, np.array(d2.W_STAR, float); rs = np.linalg.norm(wst); V = np.r_[wst, b0]
-    sv = [(np.array(p_), 1.0 if p_ in d2.RED_PTS else -1.0) for p_ in d2.SV]
-    N = [np.r_[yy * p_, yy] for p_, yy in sv]                                 # 조건 N·(w, b) ≥ 1 의 수직 방향
-    assert all(abs(n @ V - 1) < 2e-3 for n in N)
+    # 3개
+    V3 = np.r_[np.array(d2.W_STAR, float), d2.B_STAR]
+    sv3 = [(np.array(p_), 1.0 if p_ in d2.RED_PTS else -1.0) for p_ in d2.SV]
+    N3 = [np.r_[yy * p_, yy] for p_, yy in sv3]
+    assert all(abs(n @ V3 - 1) < 2e-3 for n in N3)
     E = {}
     for i in range(3):
         for j in range(i + 1, 3):
-            k = 3 - i - j; d = np.cross(N[i], N[j]); d = d if N[k] @ d > 0 else -d
+            k = 3 - i - j; d = np.cross(N3[i], N3[j]); d = d if N3[k] @ d > 0 else -d
             E[(i, j)] = d / np.linalg.norm(d)
     L = 1.1
-    faces = []
-    for k in range(3):                                                        # 평면 k 위의 면 = 평면 k 를 지나는 두 모서리 선 사이
-        es = [E[e] for e in E if k in e]
-        faces.append((k, [V, V + L * es[0], V + L * es[1]]))
-    fig = plt.figure(figsize=(18, 6.4))
+    faces3 = [(sv3[k][1], [V3, V3 + L * es[0], V3 + L * es[1]]) for k in range(3) for es in [[E[e] for e in E if k in e]]]
+    edges3 = [(V3, V3 + L * e) for e in E.values()]
+    # 2개
+    V2 = np.r_[np.array(kd.TOY2_W, float), kd.TOY2_B]
+    sv2 = [(np.array(p_), 1.0 if p_ in kd.TOY2_RED else -1.0) for p_ in kd.TOY2_SV]
+    N2 = [np.r_[yy * p_, yy] for p_, yy in sv2]
+    assert all(abs(n @ V2 - 1) < 2e-3 for n in N2)
+    e = np.cross(N2[0], N2[1]); e = e / np.linalg.norm(e); T = 1.3; L2 = 0.9
+    faces2, edges2 = [], [(V2 - T * e, V2 + T * e)]
+    for k in range(2):
+        dk = np.cross(e, N2[k]); dk = dk / np.linalg.norm(dk); dk = dk if N2[1 - k] @ dk > 0 else -dk
+        faces2.append((sv2[k][1], [V2 - T * e, V2 + T * e, V2 + T * e + L2 * dk, V2 - T * e + L2 * dk]))
+    cols = [(faces3, edges3, V3, "서포트 벡터 3개: 뿔 끝 (꼭짓점) 에 닿음"), (faces2, edges2, V2, "서포트 벡터 2개: 지붕 모서리 (선) 에 닿음")]
+    fig = plt.figure(figsize=(16, 7.4))
     th = np.linspace(0, np.pi / 2, 120); lo, hi, blo, bhi = 0.0, 2.0, -0.9, 1.0
-    for c, (r, ttl) in enumerate([(0.7, "① r = 0.7: 안 닿음"), (1.1, "② r = 1.1: 아직 안 닿음"), (rs, "③ r = 1.49: 처음 닿음 = 답")]):
-        ax = fig.add_subplot(1, 3, c + 1, projection="3d")
-        for k, f in faces:
-            col = RED if sv[k][1] > 0 else BLUE
+    for cl, (faces, edges, V, head) in enumerate(cols):
+        ax = fig.add_subplot(1, 2, cl + 1, projection="3d")
+        rstar = np.linalg.norm(V[:2])
+        for yy, f in faces:
+            col = RED if yy > 0 else BLUE
             ax.add_collection3d(Poly3DCollection([f], facecolor=col, alpha=0.18, edgecolor=col, linewidths=0.8))
-        for e in E.values():
-            ax.plot(*np.c_[V, V + L * e], color="#333333", lw=1.6)
+        for a_, b_ in edges:
+            ax.plot(*np.c_[a_, b_], color="#333333", lw=1.8)
+        for r in (0.4, 0.8, 1.2):                                         # 키우는 중의 작은 원통 (점선 테두리)
+            for bb in (blo, bhi):
+                ax.plot(r * np.cos(th), r * np.sin(th), np.full_like(th, bb), color=GOLD, lw=1.3, ls="--", alpha=0.7)
         TH, BZ = np.meshgrid(th, np.linspace(blo, bhi, 2))
-        ax.plot_surface(r * np.cos(TH), r * np.sin(TH), BZ, color=GOLD, alpha=0.30 if c < 2 else 0.40, linewidth=0, shade=False)
+        ax.plot_surface(rstar * np.cos(TH), rstar * np.sin(TH), BZ, color=GOLD, alpha=0.35, linewidth=0, shade=False)
         for bb in (blo, bhi):
-            ax.plot(r * np.cos(th), r * np.sin(th), np.full_like(th, bb), color=GOLD, lw=2.2)
+            ax.plot(rstar * np.cos(th), rstar * np.sin(th), np.full_like(th, bb), color=GOLD, lw=2.6)
         for a_ in np.linspace(0, np.pi / 2, 5):
-            ax.plot([r * np.cos(a_)] * 2, [r * np.sin(a_)] * 2, [blo, bhi], color=GOLD, lw=1.0, alpha=0.8)
-        ax.scatter(*V, s=70 if c == 2 else 35, color="black" if c == 2 else "#555555", depthshade=False)
+            ax.plot([rstar * np.cos(a_)] * 2, [rstar * np.sin(a_)] * 2, [blo, bhi], color=GOLD, lw=1.0, alpha=0.8)
+        a_ = np.pi / 4; ax.quiver(0.3 * np.cos(a_), 0.3 * np.sin(a_), bhi, (rstar - 0.45) * np.cos(a_), (rstar - 0.45) * np.sin(a_), 0, color=GOLD, linewidth=2.6, arrow_length_ratio=0.15)
+        ax.text2D(0.5, 0.86, f"원통을 키운다 (점선): r = 0.4 → 0.8 → 1.2 → {rstar:.2f}", transform=ax.transAxes, color=GOLD, fontsize=15, fontweight="bold", ha="center")
+        ax.scatter(*V, s=90, color="black", depthshade=False)
         ax.set_xlim(lo, hi); ax.set_ylim(lo, hi); ax.set_zlim(blo, bhi)
         ax.set_xlabel("$w_1$", fontsize=15); ax.set_ylabel("$w_2$", fontsize=15); ax.set_zlabel("$b$", fontsize=15)
         ax.set_xticks([0, 1, 2]); ax.set_yticks([0, 1, 2]); ax.set_zticks([-0.5, 0, 0.5]); ax.tick_params(labelsize=10)
         ax.view_init(elev=22, azim=-60)
-        ax.set_title(ttl, fontsize=18, fontweight="bold", y=0.98)
-        if c == 0:
-            ax.text(*(V + L * 0.75 * (E[(0, 1)] + E[(1, 2)]) / 2 + np.array([0.15, 0.0, 0.25])), "조건을 다 지키는 곳", fontsize=15, color="#333333", zorder=20)
-            ax.text(r * 0.2, r * 0.2, bhi + 0.05, "½‖w‖² = r²/2", fontsize=15, color=GOLD, zorder=20)
-    fig.subplots_adjust(left=0, right=1, bottom=0.02, top=0.95, wspace=0.0)
-    fig.savefig(mf.O + "kn_lagrange_svm_grow.png", dpi=170, facecolor="white"); plt.close(fig)
-
+        ax.set_title(head, fontsize=19, fontweight="bold", y=1.02)
+    fig.subplots_adjust(left=0.0, right=0.98, bottom=0.0, top=0.95, wspace=0.0)
+    fig.savefig(mf.O + "kn_lagrange_svm_grow.png", dpi=160, facecolor="white", bbox_inches="tight", pad_inches=0.05); plt.close(fig)
 
 FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "lagrange": fig_lagrange, "lagrange3d": fig_lagrange3d, "lagrange_svm": fig_lagrange_svm, "lagrange_svm3d": fig_lagrange_svm3d, "lagrange_svm_grow": fig_lagrange_svm_grow, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 

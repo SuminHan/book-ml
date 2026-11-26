@@ -30,6 +30,28 @@ assert P1_ROOTS == [-1.5, 0.5] and _f1(0) > 0 and _f1(-2) < 0 and _f1(1) < 0
 
 import data as _d2                                   # ../2_svm/data.py
 
+# 서포트 벡터 2개 예 (../2_svm 'sv_two_three' 의 작은 예, 점 8개, y D = 1 약속): 서포트 벡터 빨강 (0.5, 0.5) · 파랑 (−0.5, −0.5), w* = (1, 1), b* = 0
+TOY2_RED = [(0.5, 0.5), (1.5, 1.5), (0.5, 1.6), (1.6, 0.6)]
+TOY2_BLUE = [(-0.5, -0.5), (-1.5, -1.2), (-0.8, -1.6), (-1.6, -0.3)]
+_Xt = np.array(TOY2_RED + TOY2_BLUE, float); _yt = np.r_[np.ones(4), -np.ones(4)]
+_mt = SVC(kernel="linear", C=1e6).fit(_Xt, _yt)
+TOY2_W, TOY2_B = _mt.coef_[0].round(3), round(float(_mt.intercept_[0]), 3)
+TOY2_SV = [tuple(_Xt[i]) for i in _mt.support_]
+assert len(TOY2_SV) == 2 and np.allclose(TOY2_W, [1, 1], atol=2e-3) and abs(TOY2_B) < 2e-3
+
+# 서포트 벡터 몇 개? 겹치지 않는 2차원 점 20개 (두 무리 N((±1.2, ±1.2), 0.6²)) 를 2,000 번 만들어 하드 마진 SVM: 2개 · 3개 · 4개 횟수
+# (python data.py 로 다시 센다. 2개 = 빨강 1 · 파랑 1, 3개 = 2 + 1 또는 1 + 2, 4개 이상 = 점이 한 직선에 놓인 우연)
+SV_COUNT = {2: 922, 3: 1073, 4: 4}
+def sv_count_sim(n_trial=2000, seed=0):
+    rng = np.random.default_rng(seed); c = {}
+    for _ in range(n_trial):
+        X = np.r_[rng.normal([1.2, 1.2], 0.6, (10, 2)), rng.normal([-1.2, -1.2], 0.6, (10, 2))]; y = np.r_[np.ones(10), -np.ones(10)]
+        m = SVC(kernel="linear", C=1e6).fit(X, y)
+        if (y * m.decision_function(X)).min() < 0.999:
+            continue
+        k = int((np.abs(m.dual_coef_[0]) > 1e-6).sum()); c[k] = c.get(k, 0) + 1
+    return c
+
 # 라그랑주 승수법 예 (등식 조건, 언덕에서 조건 위 가장 높은 점): max f = 4 − ½[(x − 2)² + (y − 2)²]  s.t.  g = x + y − 2 = 0,  L = f − α g
 # ∂L/∂x = −(x − 2) − α = 0, ∂L/∂y = −(y − 2) − α = 0, ∂L/∂α = −g = 0  →  x = y = 2 − α, 4 − 2α = 2  →  α = 1, (x, y) = (1, 1), f = 3 (꼭대기 (2, 2) 는 4)
 LG_A, LG_X, LG_Y, LG_C, LG_TOP = 1.0, 1.0, 1.0, (2.0, 2.0), 4.0
@@ -118,4 +140,5 @@ if __name__ == "__main__":
     print("cut", round(L1_CUT, 2), "coef", AL_COEF, AL_FK)
     print("A=B w", AB_W, "b", round(_A.intercept_[0], 2), "n", AB_N, "nsv", AB_NSV, "acc", AB_ACC, "linear acc", round(QL_ACC, 2))
     print("poly", round(AK_M, 4), round(AK_M_SK, 4), AK_NSV, AK_NSV_SK, AK_AGREE)
+    assert sv_count_sim() == SV_COUNT, sv_count_sim()
     print("data ok")
