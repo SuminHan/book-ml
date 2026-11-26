@@ -1,8 +1,8 @@
-"""SVM 2 (소프트 마진) 덱의 그림 원본. 실행: python make_figs.py [키]. 공용 그림 함수는 ../2_svm/make_figs.py, 숫자는 data.py (이 폴더)."""
+"""SVM 2 (소프트 마진) 덱의 그림 원본. 실행: python make_figs.py [키]. 공용 그림 함수는 ../4_svm/make_figs.py, 숫자는 data.py (이 폴더)."""
 import os, sys, importlib.util
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "2_svm"))
-import make_figs as mf                                     # ../2_svm/make_figs.py (그 폴더 data.py 를 불러온다)
+sys.path.insert(0, os.path.join(HERE, "..", "4_svm"))
+import make_figs as mf                                     # ../4_svm/make_figs.py (그 폴더 data.py 를 불러온다)
 os.chdir(HERE)
 mf.O = os.path.join(HERE, "figs") + "/"
 _s = importlib.util.spec_from_file_location("kdata", os.path.join(HERE, "data.py")); kd = importlib.util.module_from_spec(_s); _s.loader.exec_module(kd)

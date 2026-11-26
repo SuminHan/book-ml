@@ -2,7 +2,7 @@
 \input{../../../theme/ksa-cs-v2.tex}
 \usepackage{fontawesome5}
 \newcommand{\paperlink}[1]{\href{#1}{\textcolor{ksablue}{\faLink}}}
-% SVM 보충 덱 (2026-11-26: 수업 두 덱 ../2_svm · ../3_svm_kernel 에서 뺀 학습 과정·크기 약속·α·J·라그랑주·역학 비유·논문 따라 읽기를 모음)
+% SVM 보충 덱 (2026-11-26: 수업 두 덱 ../4_svm · ../../week03/1_svm_kernel 에서 뺀 학습 과정·크기 약속·α·J·라그랑주·역학 비유·논문 따라 읽기를 모음)
 \setbeamerfont{author}{size=\normalsize}
 \setbeamerfont{institute}{size=\small}
 \graphicspath{{figs/}{../../../assets/}}
@@ -50,7 +50,7 @@
 \begin{frame}{학습 (max min, $\lVert\mathbf{w}\rVert = 1$): $\mathbf{w} = 0$ 에서 첫 선}
 \vfill
 \begin{columns}[c]
-\begin{column}{0.42\textwidth}\centering\includegraphics[width=0.95\linewidth]{../2_svm/figs/sv_step1.png}\end{column}
+\begin{column}{0.42\textwidth}\centering\includegraphics[width=0.95\linewidth]{../4_svm/figs/sv_step1.png}\end{column}
 \begin{column}{0.56\textwidth}
 \renewcommand{\arraystretch}{1.6}
 {\normalsize\begin{tabular}{l}
@@ -87,7 +87,7 @@ $\to$ 길이 1 로: $\mathbf{w} = (0.67,\ 0.74)$, \;$b = 0$\\[0.3em]
 \begin{frame}{한 번 밀면: $\mathbf{w}$ 는 회전, $b$ 는 평행이동}
 \vfill
 \centering
-\includegraphics[width=0.82\textwidth]{../2_svm/figs/sv_push_dir.png}\\[0.2em]
+\includegraphics[width=0.82\textwidth]{../4_svm/figs/sv_push_dir.png}\\[0.2em]
 {\large ①② 는 \kq{동시에} (나눠 그린 것) \quad 점 $\mathbf{x}_k$ 까지 거리: 0.618 $\to$ $\mathbf{w}$ 만 0.623 $\to$ 둘 다 0.659}
 \vfill
 \note{1걸음 뒤, 빨간 점 0.7, 0.2이 가장 가까울 때 한 번 미는 것을 식 순서대로 둘로 나눠 그렸습니다. 실제로는 w와 b를 한 걸음에 동시에 바꿉니다. w 업데이트에는 b가, b 업데이트에는 w가 들어가지 않으니 순서는 상관없고, 이해하기 쉽게 나눠 그린 것입니다. 실제 변화가 작아서 화살표는 10배로 그렸습니다. 왼쪽, w에 학습률 곱하기 y k 곱하기 x k를 더합니다. x k는 원점에서 점까지의 화살표이고, 빨간 점이라 y k가 플러스 1이니 x k를 더합니다. 회색 w는 선에 수직인 법선인데, 빨강 쪽을 가리킵니다. 여기에 x k를 더하면 검은 w 프라임이 x k 쪽으로 돌아가고, 법선이 돌았으니 선도 돕니다. 왜 거리가 늘어날까요. 앞의 참고 쪽에서 w 점곱 x는 x의 길이 곱하기 코사인 세타, 즉 x를 w 방향으로 비춘 길이였습니다. 빨간 점이면 w가 x k 쪽으로 돌아 이 길이가 길어지고, 파란 점이면 w가 x k에서 멀어지며 이 길이가 더 음수가 됩니다. 어느 쪽이든 점 k가 선에서 멀어집니다. 이번에는 거리가 0.618에서 0.623으로 조금 늡니다. 오른쪽, b에 학습률 곱하기 y k를 더하면 기울기는 그대로이고 그 선이 자기에 수직인 방향으로, 점 k 반대쪽으로 평행이동합니다. 거리는 0.659가 됩니다. 이처럼 점에서 직각으로만 미는 것이 아니라, 그 점의 값을 가장 빨리 키우는 방향으로 w와 b를 함께 바꾸는 것입니다.}
@@ -96,7 +96,7 @@ $\to$ 길이 1 로: $\mathbf{w} = (0.67,\ 0.74)$, \;$b = 0$\\[0.3em]
 % --- 걸음별
 \begin{frame}{반복하면 미는 점이 3개만 남는다 (1/3)}
 \vfill
-\centering\includegraphics[width=0.95\linewidth]{../2_svm/figs/sv_train9_1.png}\par\vskip0.2em
+\centering\includegraphics[width=0.95\linewidth]{../4_svm/figs/sv_train9_1.png}\par\vskip0.2em
 {\large 첫 선 = 평균 방향 $\to$ 가장 가까운 점이 밀 때마다 식이 조금씩 바뀐다}
 \vfill
 \note{1걸음 뒤 첫 선은 0.67 x1 더하기 0.74 x2 = 0, 모든 벡터의 평균 방향이고 원점을 지납니다. M은 0.62이고 빨간 점 0.7, 0.2가 가장 가까워 다음에 밉니다. 빨간 점이 밀면 w에 그 좌표가 더해져 0.68, 0.73으로 조금 돌고 b가 0.04로 커집니다. 2걸음 뒤 M은 0.66. 같은 점이 한 번 더 밀어 3걸음 뒤에는 b가 0.06이 되는데, 이번에는 너무 밀어서 반대편 파란 점 마이너스 0.6, 마이너스 0.4가 가장 가까워집니다. M은 0.64로 오히려 조금 줄었습니다.}
@@ -104,7 +104,7 @@ $\to$ 길이 1 로: $\mathbf{w} = (0.67,\ 0.74)$, \;$b = 0$\\[0.3em]
 
 \begin{frame}{반복하면 미는 점이 3개만 남는다 (2/3)}
 \vfill
-\centering\includegraphics[width=0.95\linewidth]{../2_svm/figs/sv_train9_2.png}\par\vskip0.2em
+\centering\includegraphics[width=0.95\linewidth]{../4_svm/figs/sv_train9_2.png}\par\vskip0.2em
 {\large 빨강 · 파랑이 \kq{번갈아} 민다, 10걸음 뒤 세 번째 서포트 벡터}
 \vfill
 \note{4걸음 뒤에는 파란 점이 밀어 b가 0.04로 돌아오고 M이 0.66, 파란 점이 한 번 더 밀어 5걸음 뒤에는 b가 0.02, M 0.65. 이렇게 빨강과 파랑의 가장 가까운 점이 번갈아 밀며 b가 0.02와 0.06 사이를 오갑니다. 10걸음 뒤에는 세 번째 서포트 벡터, 파란 점 0.1, 마이너스 1.1이 처음으로 가장 가까워집니다. w가 0.71, 0.70으로 거의 대각선 방향입니다.}
@@ -112,7 +112,7 @@ $\to$ 길이 1 로: $\mathbf{w} = (0.67,\ 0.74)$, \;$b = 0$\\[0.3em]
 
 \begin{frame}{반복하면 미는 점이 3개만 남는다 (3/3)}
 \vfill
-\centering\includegraphics[width=0.95\linewidth]{../2_svm/figs/sv_train9_3.png}\par\vskip0.2em
+\centering\includegraphics[width=0.95\linewidth]{../4_svm/figs/sv_train9_3.png}\par\vskip0.2em
 {\large 식이 멈춘다 $\to$ 미는 점은 끝까지 \kb{서포트 벡터 3개}뿐}
 \vfill
 \note{100걸음 뒤에는 식이 0.71 x1 더하기 0.71 x2 더하기 0.04 = 0, 소수 둘째 자리까지는 이미 답과 같고 M도 0.67입니다. 1000걸음, 2만 걸음 뒤에도 식은 그대로이고, 서포트 벡터 3개가 번갈아 아주 조금씩 밀며 길을 붙잡고 있습니다. 1걸음 뒤로 한 번이라도 민 점은 이 3개뿐이고, 나머지 17개는 한 번도 밀지 않았습니다. 학습률이 걸음마다 줄어서 흔들림이 점점 작아집니다.}
@@ -121,7 +121,7 @@ $\to$ 길이 1 로: $\mathbf{w} = (0.67,\ 0.74)$, \;$b = 0$\\[0.3em]
 % --- 걸음마다 M
 \begin{frame}{걸음마다 $M$ 이 어떻게 바뀌나}
 \vfill
-\centering\includegraphics[width=\linewidth]{../2_svm/figs/sv_trainpath.png}
+\centering\includegraphics[width=\linewidth]{../4_svm/figs/sv_trainpath.png}
 \vfill
 \note{같은 학습을 걸음마다 M, 가장 가까운 점까지의 거리로 그렸습니다. 가로축은 로그 눈금이고, 세로축은 0.55에서 0.70까지만 크게 키워 그렸습니다. 1걸음 뒤 0.62에서 시작해, 가장 가까운 점이 밀 때마다 반대편 점이 조금 가까워지니 M이 위아래로 흔들립니다. 학습률이 걸음마다 줄면서 흔들림이 작아지고, 수백 걸음이면 SVM 답 0.67에서 거의 멈춥니다.}
 \end{frame}
@@ -149,7 +149,7 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 \vfill
 \centering
 {\large 원래 값에 $x_2 + 100$ 만 했을 때}\\[0.2em]
-\includegraphics[width=0.74\textwidth]{../2_svm/figs/sv_zscore.png}\\[0.1em]
+\includegraphics[width=0.74\textwidth]{../4_svm/figs/sv_zscore.png}\\[0.1em]
 {\large $\mathbf{x}_k$ 가 모두 위쪽 화살표 + $b$ 는 $-82.8$ 까지 가야 함 $\to$ 학습이 제대로 안 된다}
 \vfill
 \note{왜 처음에 z-score를 했는지 봅시다. w에 x k를 더하는 학습이라 데이터가 원점에서 멀면 문제가 생깁니다. z-score 하기 전 원래 값의 x2에 100을 더해 봤습니다. 답은 그대로 100만큼 옮겨진 선이어야 합니다. 그런데 그대로 학습하면 2만 걸음 뒤에도 빨간 점 10개 중 9개가 틀립니다. 이유는 둘입니다. 첫째, 모든 점의 좌표가 (5, 105)처럼 거의 같은 위쪽 화살표라서 w를 어느 쪽으로 돌릴지 점마다 차이가 거의 없고 크게 휘둘립니다. 둘째, 답의 b가 마이너스 82.8인데 b는 한 걸음에 학습률만큼씩만 움직여 거기까지 못 갑니다. 오른쪽은 우리가 쓰는 z-score 한 점으로 같은 학습을 한 것으로, SVM 답 M 0.67에 도착합니다. 원래 값에 100을 더해도 z-score 하면 평균을 빼니 같은 점이 됩니다. 최대 마진 답 자체는 데이터를 옮겨도 같이 옮겨질 뿐인데, 이 학습 방법이 원점 위치와 크기에 민감한 것입니다. 단, 이 데이터처럼 축마다 표준편차가 다르면, 1과 3이면, 나누는 순간 거리 재는 기준이 바뀌어 답의 선도 달라집니다. z-score 해서 구한 답을 원래 값으로 되돌리면, 원래 값에서 바로 구한 최대 마진 선과 같지 않습니다. 어느 축이든 같은 크기로 보겠다는 선택을 한 것입니다.}
@@ -158,7 +158,7 @@ SVM 답 & $0.71$ & $0.71$ & $0.04$ & 0.67 &
 % --- 학습 3: 가려내기
 \begin{frame}{끝나고 거리를 재면 서포트 벡터가 보인다}
 \vfill
-\centering\includegraphics[width=0.78\linewidth]{../2_svm/figs/sv_slack_bars.png}\par\vskip0.2em
+\centering\includegraphics[width=0.78\linewidth]{../4_svm/figs/sv_slack_bars.png}\par\vskip0.2em
 {\large 거리 $= M$ 인 3개 = \kb{서포트 벡터}}
 \vfill
 \note{학습이 끝난 뒤 점 20개의 경계까지 거리를 작은 순서로 막대로 그렸습니다. 세 점이 모두 0.67로 M, 길 가장자리 위에 있습니다. 이 셋이 서포트 벡터입니다. 나머지 17개는 모두 0.81 이상입니다. 서포트 벡터를 미리 고르는 게 아니라, 가장 가까운 점이 미는 학습을 하다 보면 끝까지 가장 가까운 점들이 저절로 서포트 벡터가 됩니다. 실무에서 쓰는 sklearn의 SVC는 이런 방법 대신 SMO라는 다른 풀이법을 쓰지만 같은 답을 내고, support vectors라는 속성에 이 3개를 담아 줍니다.}
@@ -792,7 +792,7 @@ $\alpha_k$ & $0.5$ & $0.2$ & $0.3$
 \large 1 & 최대 마진 학습을 직접 짜서 sklearn 과 같은 선인지 확인 \;(SVM 1 노트북 뒷부분)\\[0.5em]
 \large 2 & $\alpha$ 를 $J$ 로 직접 학습: 서포트 벡터 3개와 $\mathbf{w}^* = (1.05,\ 1.05)$ 확인
 \end{tabular}\vskip1em
-\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week02/2_svm/lab/svm.ipynb}{\textcolor{ksagolddk}{▶ 1: SVM 1 노트북}} \qquad
+\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week02/4_svm/lab/svm.ipynb}{\textcolor{ksagolddk}{▶ 1: SVM 1 노트북}} \qquad
 \href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week02/9_svm_extra/lab/svm_soft.ipynb}{\textcolor{ksagolddk}{▶ 2: 보충 노트북}}
 \vfill
 \note{보충 실습입니다. 첫째, 가장 가까운 점이 밀고 w 길이를 1로 맞추는 최대 마진 학습을 직접 코드로 짜서 sklearn과 같은 선이 나오는지 비교합니다. 둘째, 알파를 J를 키우는 두 줄로 직접 학습해서, 서포트 벡터 3개만 알파가 남고 w가 1.05, 1.05가 되는지 확인합니다.}
@@ -1181,7 +1181,7 @@ J(\boldsymbol{\alpha}^*) = \tfrac{1}{2}\lVert\mathbf{w}^*\rVert^2 = \frac{1}{2\,
 % --- 논문 따라 읽기 10
 \begin{frame}{원 논문의 실험: 신경망과 비교 (시험 오류율, 낮을수록 좋다)}
 \vfill
-\centering\includegraphics[width=0.86\linewidth]{../3_svm_kernel/figs/kn_nn.png}\par\vskip0.4em
+\centering\includegraphics[width=0.86\linewidth]{../../week03/1_svm_kernel/figs/kn_nn.png}\par\vskip0.4em
 {\large 신경망은 숫자 인식에 \kq{맞춰 설계}한 구조, 최대 마진은 \kb{그런 설계 없이} 비슷하거나 조금 낫다}
 \vfill
 \note{논문이 신경망과 비교한 결과입니다. 왼쪽은 깨끗한 손글씨 데이터 DB1에서 직선 분류기끼리 비교한 것입니다. 같은 직선이라도 평균 제곱 오차를 줄이는 방법, 역전파나 유사역행렬로 학습하면 시험 오류가 12.7퍼센트이고, 최대 마진으로 학습하면 3.2퍼센트입니다. 여기서 12.7퍼센트는 여러 층 신경망이 아니라 직선 분류기라는 점에 주의합니다. 논문은 이 두 데이터에서 여러 층 신경망처럼 표현력이 더 큰 방법은 직선보다 나은 성능을 냈다고도 적습니다. 오른쪽은 실제 우편물에서 모은 DB2입니다. 7300장으로 학습하고 2000장으로 시험했습니다. LeCun 등이 1990년에 만든 5층 신경망이 같은 데이터에서 5.1퍼센트였고, 최대 마진에 4차 다항 커널을 쓴 것이 4.9퍼센트입니다. 차이는 0.2퍼센트포인트, 2000장 중 네 장 정도라 크지 않습니다. 중요한 것은 그 신경망은 숫자 인식에 맞게 구조를 정교하게 설계한 것인데, 최대 마진은 이 문제에 특화된 지식을 하나도 넣지 않고 비슷하거나 조금 나은 성능을 냈다는 점입니다. 논문 결론도 특정 문제에 맞춘 지식 없이도 정교한 분류기와 맞먹는다고 씁니다. 앞에서 본 비하인드의 1995년 내기가 이런 경쟁 분위기에서 나왔습니다. 참고로 이 숫자는 1992년 논문 시점의 것이고, 그 뒤 신경망은 훨씬 좋아졌습니다.}
@@ -1210,7 +1210,7 @@ J(\boldsymbol{\alpha}^*) = \tfrac{1}{2}\lVert\mathbf{w}^*\rVert^2 = \frac{1}{2\,
 % --- 참고: γ 에 따라 닮는 차수
 \begin{frame}{참고: $\gamma$ 에 따라 몇 차 다항과 닮나}
 \vfill
-\centering\includegraphics[width=0.96\linewidth]{../3_svm_kernel/figs/sv_rbf_degree.png}\par\vskip0.3em
+\centering\includegraphics[width=0.96\linewidth]{../../week03/1_svm_kernel/figs/sv_rbf_degree.png}\par\vskip0.3em
 {\large $\mathbf{x}\cdot\mathbf{x}' = 1$ 일 때 $q$ 차 항의 몫 $\propto \dfrac{(2\gamma)^q}{q!}$ \;$\to$\; 무게 중심 $= 2\gamma$ 차}\\[0.3em]
 {\normalsize $\gamma$ 를 키우면 무게가 \kq{높은 차수}로 옮겨 간다 $\to$ 구불구불한 경계 }
 \vfill

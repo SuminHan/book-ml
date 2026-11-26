@@ -1,10 +1,10 @@
-"""SVM 2 (소프트 마진) 덱의 숫자. 선형 SVM 덱(../2_svm/data.py)의 숫자는 그대로 불러 쓰고, 이 덱에서 새로 쓰는 숫자만 계산 · assert 한다."""
+"""SVM 2 (소프트 마진) 덱의 숫자. 선형 SVM 덱(../4_svm/data.py)의 숫자는 그대로 불러 쓰고, 이 덱에서 새로 쓰는 숫자만 계산 · assert 한다."""
 import os, sys, numpy as np
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "2_svm"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "4_svm"))
 from sklearn.svm import SVC
 
 # 점곱 꼴로 새 점 하나 분류 (지난 시간 점 20개, 서포트 벡터 3개)
-import data as _d2                                   # ../2_svm/data.py
+import data as _d2                                   # ../4_svm/data.py
 NEW_PT = (0.5, -0.3)
 _YK = {s: (1 if s in _d2.RED_PTS else -1) for s in _d2.SV}
 _AX = {(0.7, 0.2): 1.1076, (-0.6, -0.4): 0.5538, (0.1, -1.1): 0.5538}                  # sklearn α* (식 (13) 기준, 덱 표시는 1.1 · 0.55)
