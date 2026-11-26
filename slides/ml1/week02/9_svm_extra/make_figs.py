@@ -114,13 +114,13 @@ def fig_quizkid():
     mf.save(fig, "kn_quizkid.png")
 
 
-def fig_force():
+def fig_force(unit=False):
     """역학 비유: 서포트 벡터가 경계(판)를 미는 힘 = α. 힘 합 0 (안 밀려 감), 돌림힘 합 0 (안 돎)"""
     X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
     u = WA / np.linalg.norm(WA); dd = np.array([-u[1], u[0]]); bb = BA / np.linalg.norm(WA)
-    SV = [np.array(s) for s in mf.SV]; AL = np.array([mf.ALPHA[tuple(s)] * (1 if tuple(s) in mf.RED_PTS else -1) for s in mf.SV])   # α_k y_k
+    SV = [np.array(s) for s in mf.SV]; AL = np.array([(mf.ALPHA_UNIT if unit else mf.ALPHA)[tuple(s)] * (1 if tuple(s) in mf.RED_PTS else -1) for s in mf.SV])   # α_k y_k (unit: ‖w‖ = 1 기준)
     pos = np.array([p @ dd for p in SV]); tq = AL * pos
-    assert abs(AL.sum()) < 1e-9 and abs(tq.sum()) < 0.01                              # 힘의 평형 · 돌림힘의 평형
+    assert abs(AL.sum()) < 1e-9 and abs(tq.sum()) < 0.01 + 0.01 * unit                              # 힘의 평형 · 돌림힘의 평형
     k = MA / AL.max()                                                                  # 가장 큰 힘 화살표 = 마진 길이
     fig, ax = plt.subplots(figsize=(6.4, 6.0))
     mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(SV))
@@ -136,8 +136,16 @@ def fig_force():
         off = np.array([0.15, 0.12]) if a > 0 else np.array([0.12, -0.32])
         ax.text(*(start + off), f"힘 {abs(a):g}", fontsize=14, fontweight="bold", color=c, zorder=7, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.text(0.85, 2.1, "회색 판 = 경계", fontsize=13, color="#444444", va="top")
+    if unit:                                                                           # 시소: 판을 따라 빨강 발에서 파랑 발까지 거리
+        feet = [p - (p @ u + bb) * u for p in SV]
+        for fb in feet[1:]:
+            ax.plot(*np.c_[feet[0], fb], color="#2B8A3E", lw=4, alpha=0.9, zorder=6.5, solid_capstyle="butt")
+            mid = (feet[0] + fb) / 2 + 0.28 * u + 0.08 * dd * np.sign((fb - feet[0]) @ dd)
+            ax.text(*mid, f"{abs((fb - feet[0]) @ dd):.2f}", fontsize=14, fontweight="bold", color="#2B8A3E", ha="center", va="center", zorder=8,
+                    bbox=dict(fc="white", ec="none", alpha=0.9, pad=1))
+        ax.scatter(*feet[0], marker="^", s=260, color="#2B8A3E", edgecolor="black", zorder=8)
     ax.set_title(f"빨강 {AL[0]:g} = 파랑 {-AL[1]:g} + {-AL[2]:g}", fontsize=15)
-    mf.save(fig, "kn_force.png")
+    mf.save(fig, "kn_force_unit.png" if unit else "kn_force.png")
     return dict(pos=pos.round(2).tolist(), torque=tq.round(2).tolist())
 
 

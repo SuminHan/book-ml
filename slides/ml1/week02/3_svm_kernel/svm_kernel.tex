@@ -35,15 +35,44 @@
 \note{지난 시간의 최대 마진을 그림 하나로 다시 봅시다. 점마다 못이 박혀 있고, 두 자 사이에 스프링이 있어서 길을 계속 넓히려 합니다. 첫째 그림처럼 아무 못에도 안 닿으면 자는 계속 벌어집니다. 둘째 그림처럼 못 두 개에 걸려도, 자를 돌리면 더 벌어질 수 있습니다. 셋째 그림처럼 못 세 개에 걸리면 어느 쪽으로 돌려도 더는 못 벌어지고 멈춥니다. 이것이 최대 마진입니다. 자에 닿은 못이 서포트 벡터이고, 그 못이 자를 버티는 힘의 크기를 알파라고 부릅니다. 빨강 못이 0.74, 파랑 못 둘이 0.37씩 버티고, 자에 안 닿은 못 17개는 아무 힘도 쓰지 않으니 알파가 0입니다.}
 \end{frame}
 
-% --- 직관 2: w = 못 화살표의 합 → 점곱
-\begin{frame}{그래서 $\mathbf{w}$ 는 못이 버틴 힘 화살표의 \textbf{합}, 분류는 \textbf{점곱}만으로}
+% --- 직관 2: 멈춤 = 힘의 평형 → w = Σ α y x
+\begin{frame}{멈췄다 $=$ 경계 판이 \textbf{밀리지도, 돌지도} 않는다}
 \vfill
-\centering\includegraphics[width=0.62\linewidth]{kn_dual_unit.png}\par\vskip0.1em
-{\large 멈췄다 $=$ 힘이 비긴다 \;$\to$\; \fcolorbox{fbeta}{fbeta!10}{$\mathbf{w} = \sum_k \alpha_k y_k \mathbf{x}_k$} \;{\normalsize (꼭 그렇게 되는 이유: 보충 덱)}}\\[0.3em]
-{\large $D(\mathbf{x}) = \mathbf{w}\cdot\mathbf{x} + b = b + \sum_k \alpha_k y_k\,(\textcolor{ksared}{\mathbf{x}_k\cdot\mathbf{x}})$ \quad {\normalsize 합의 점곱 $=$ 점곱의 합}}\\[0.2em]
-{\normalsize 예 $\star$: \; $\mathbf{w}\cdot\mathbf{x} = 0.14$ (한 번에) $= 0.21 + 0.07 - 0.14$ (못마다) $\to$ $D = +0.18$ \kq{빨강}}
+\begin{columns}[c]
+\begin{column}{0.42\textwidth}\centering\includegraphics[width=\linewidth]{kn_force_unit.png}\end{column}
+\begin{column}{0.56\textwidth}
+\renewcommand{\arraystretch}{1.5}
+{\small\begin{tabular}{rl}
+\textbf{\textcircled{1} 안 밀린다} & 빨강 $0.74$ $=$ 파랑 $0.37 + 0.37$\\
+ & $\to$ \kb{$\sum_k \alpha_k y_k = 0$}\\
+\textbf{\textcircled{2} 안 돈다} & \textcolor{fgap}{$\blacktriangle$} 시소: $0.37 \times 0.49 = 0.37 \times 0.49$\\
+ & $\to$ 판 방향 $\mathbf{d}$ 로: \kb{$\sum_k \alpha_k y_k\,(\mathbf{x}_k\cdot\mathbf{d}) = 0$}
+\end{tabular}}\\[0.8em]
+{\normalsize 힘 화살표 $\alpha_k y_k \mathbf{x}_k$ 를 다 더하면 \textbf{판 방향은 $0$}}\\[0.1em]
+{\normalsize $\to$ 판에 \textbf{수직}인 쪽만 남는다 $=$ $\mathbf{w}$ 의 방향}\\[0.6em]
+\fcolorbox{fbeta}{fbeta!10}{\large $\mathbf{w} = \sum_k \alpha_k y_k \mathbf{x}_k = (0.71,\ 0.71)$}
+\end{column}
+\end{columns}
 \vfill
-\note{자가 멈췄다는 것은 스프링이 미는 힘과 못들이 버티는 힘이 비겼다는 뜻입니다. 그래서 선의 방향 w는 못들이 버틴 힘을 화살표로 이어 더한 것과 같습니다. 화살표 하나는 알파 곱하기 y 곱하기 그 못의 위치입니다. 빨강은 y가 플러스 1이라 그대로, 파랑은 마이너스 1이라 반대 방향입니다. 오른쪽 그림처럼 0.74 곱하기 0.7, 0.2에서 시작해 파랑 둘을 이어 붙이면 끝점이 0.71, 0.71, 지난 시간에 학습한 w입니다. 힘의 평형만으로 이 식이 꼭 나온다는 증명은 라그랑주가 필요해서 보충 덱에 두었습니다. 이제 분류기 D x, w 점곱 x 더하기 b에 이 w를 넣습니다. 점곱은 더하기를 나눠서 할 수 있으니, 합 전체와 x의 점곱은 못마다 따로 점곱해서 더한 것과 같습니다. 초록 별 0.5, 마이너스 0.3으로 확인하면, w로 한 번에 계산해도 0.14, 못마다 0.21, 0.07, 마이너스 0.14로 나눠 계산해도 0.14입니다. b 0.04를 더하면 D는 0.18, 빨강입니다. 나눠 쓴 꼴에는 w가 없고 새 점은 서포트 벡터와의 점곱 안에만 나옵니다. 오늘은 이 점곱 자리를 바꾸면 어떤 일이 생기는지 봅니다.}
+\note{자가 멈췄다는 것은 경계 판이 힘을 받고도 움직이지 않는다는 뜻입니다. 움직이지 않으려면 두 가지가 맞아야 합니다. 첫째, 밀려 가지 않아야 합니다. 빨강 못이 0.74로 밀고 파랑 못 둘이 0.37씩 반대로 미니, 0.74와 0.37 더하기 0.37이 같아서 비깁니다. 식으로는 알파 y의 합이 0입니다. 둘째, 돌지 않아야 합니다. 초록 삼각형, 빨강 못이 미는 자리를 받침점으로 보면 파랑 둘이 판을 따라 양쪽으로 0.49씩 떨어져 같은 힘으로 밀고 있습니다. 시소가 수평입니다. 이것을 판 방향 d로 쓰면 알파 y 곱하기 점의 판 방향 위치의 합이 0입니다. 그러면 힘 화살표 알파 y x를 모두 더했을 때 판을 따라가는 방향의 성분은 0이고, 판에 수직인 방향만 남습니다. 판에 수직인 방향이 바로 w의 방향입니다. 실제로 더하면 0.74 곱하기 0.7, 0.2 빼기 0.37 곱하기 마이너스 0.6, 마이너스 0.4 빼기 0.37 곱하기 0.1, 마이너스 1.1이 0.71, 0.71, 지난 시간에 학습한 w입니다.}
+\end{frame}
+
+% --- 직관 3: 합의 점곱 = 점곱의 합
+\begin{frame}{그래서 분류는 서포트 벡터와의 \textbf{점곱}만으로}
+\vfill
+\centering
+{\large $\mathbf{w} = \sum_k \alpha_k y_k \mathbf{x}_k$ 를 분류기에 넣으면}\\[0.6em]
+{\Large $D(\mathbf{x}) = \mathbf{w}\cdot\mathbf{x} + b = b + \sum_k \alpha_k y_k\,(\textcolor{ksared}{\mathbf{x}_k\cdot\mathbf{x}})$}\\[0.3em]
+{\normalsize 합의 점곱 $=$ 점곱의 합}\\[1em]
+\renewcommand{\arraystretch}{1.35}
+{\small\begin{tabular}{l|ccc|c}
+$\mathbf{x} = (0.5, -0.3)$ & \textcolor{ksared}{빨강 $(0.7, 0.2)$} & \textcolor{ksablue}{파랑 $(-0.6, -0.4)$} & \textcolor{ksablue}{파랑 $(0.1, -1.1)$} & 합\\ \hline
+$\alpha_k y_k\,(\mathbf{x}_k\cdot\mathbf{x})$ & $0.74 \times 0.29 = 0.21$ & $-0.37 \times (-0.18) = 0.07$ & $-0.37 \times 0.38 = -0.14$ & $0.14$\\
+$\mathbf{w}\cdot\mathbf{x}$ (한 번에) & \multicolumn{3}{c|}{$0.71 \times 0.5 + 0.71 \times (-0.3)$} & $0.14$
+\end{tabular}}\\[0.8em]
+{\large $D = 0.14 + b\,(0.04) = +0.18$ \;$\to$\; \kq{빨강} \qquad 새 점은 \kq{점곱} 안에만 나온다}
+\vfill
+\note{이제 분류기 D x, w 점곱 x 더하기 b에 이 w를 넣습니다. 점곱은 더하기를 나눠서 할 수 있으니, 합 전체와 x의 점곱은 서포트 벡터마다 따로 점곱해서 더한 것과 같습니다. 새 점 0.5, 마이너스 0.3으로 확인해 봅시다. 빨강과의 점곱은 0.29이고 0.74를 곱하면 0.21, 첫째 파랑과의 점곱은 마이너스 0.18이고 마이너스 0.37을 곱하면 0.07, 둘째 파랑과의 점곱은 0.38이고 마이너스 0.37을 곱하면 마이너스 0.14입니다. 더하면 0.14이고, w로 한 번에 계산해도 0.14입니다. b 0.04를 더하면 D는 0.18, 빨강입니다. 나눠 쓴 꼴에는 w가 없고 새 점은 서포트 벡터와의 점곱 안에만 나옵니다. 오늘은 이 점곱 자리를 바꾸면 어떤 일이 생기는지 봅니다.}
 \end{frame}
 
 % --- 오늘의 질문

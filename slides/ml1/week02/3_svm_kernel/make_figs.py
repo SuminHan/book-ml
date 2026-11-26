@@ -105,12 +105,17 @@ def fig_nails_unit():
     return _extra("fig_nails", unit=True)
 
 
+def fig_force_unit():
+    """힘의 평형: 판이 안 밀리고 (0.74 = 0.37 + 0.37) 안 돈다 (빨강 발 양쪽 0.49 시소)"""
+    return _extra("fig_force", unit=True)
+
+
 def fig_dual_unit():
     """w = 못이 버틴 힘 화살표 α_k y_k x_k 의 합 = (0.71, 0.71), 새 점 D = w·x + b"""
     return _extra("fig_dual", unit=True)
 
 
-FIGS = {"nails_unit": fig_nails_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
+FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
