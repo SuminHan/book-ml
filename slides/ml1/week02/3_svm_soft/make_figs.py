@@ -426,6 +426,25 @@ def fig_onearrow():
     fig.tight_layout(); mf.save(fig, "kn_onearrow.png")
 
 
+def fig_tilt():
+    """벌점이 그릇을 기울여 바닥을 옮긴다: 점 하나 (x = 1, y = +1, b = 0) → D = w, L(w) = ½w² − α(w − 1). 바닥 w = α"""
+    L = lambda w, a: 0.5 * w ** 2 - a * (w - 1)
+    g = np.linspace(-0.4, 2.6, 601); AS = [(0, "#9a9a9a"), (0.5, "#c8a24a"), (1, "#2E3192"), (2, "#d62728")]
+    for a, _ in AS: assert abs(g[L(g, a).argmin()] - a) < 1e-9
+    assert [L(a, a) for a, _ in AS] == [0, 0.375, 0.5, 0] and all(abs(L(1, a) - 0.5) < 1e-12 for a, _ in AS)
+    fig, ax = plt.subplots(figsize=(13, 5.0))
+    ax.axvspan(-0.4, 1, color="#fde2e2", zorder=0); ax.text(0.3, 2.35, "규칙 어김 (w < 1)\n여유 −  →  벌점", ha="center", va="top", fontsize=16, color="#c0392b", fontweight="bold")
+    ax.axvline(1, color="#555555", ls="--", lw=1.5)
+    for a, c in AS:
+        ax.plot(g, L(g, a), color=c, lw=4 if a == 1 else 2.6, label=f"α = {a:g}  →  바닥 w = {a:g}")
+        ax.scatter([a], [L(a, a)], s=260 if a == 1 else 110, color=c, edgecolor="black", lw=1.2, zorder=5, marker="*" if a == 1 else "o")
+    ax.annotate("α = 1: 바닥이 딱 경계에", (1, 0.5), (1.45, -0.35), fontsize=16, fontweight="bold", color="#2E3192", arrowprops=dict(arrowstyle="->", color="#2E3192", lw=1.6))
+    ax.set_xlim(-0.4, 2.6); ax.set_ylim(-0.6, 2.45); ax.set_xlabel("w", fontsize=17); ax.set_ylabel("L", fontsize=17, rotation=0, labelpad=12)
+    ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1.0), fontsize=15, frameon=False); ax.tick_params(labelsize=12)
+    ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False)
+    fig.tight_layout(); fig.savefig(mf.O + "kn_tilt.png"); plt.close(fig)
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -635,7 +654,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
