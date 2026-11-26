@@ -92,7 +92,25 @@ def fig_nn():
     mf.save(fig, "kn_nn.png")
 
 
-FIGS = {"q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
+def _extra(name, **kw):
+    """보충 덱(../9_svm_extra/make_figs.py) 그림 함수를 ‖w‖ = 1 기준으로 불러 이 폴더 figs/ 에 그린다"""
+    sp = importlib.util.spec_from_file_location("xfigs", os.path.join(HERE, "..", "9_svm_extra", "make_figs.py"))
+    xm = importlib.util.module_from_spec(sp); sp.loader.exec_module(xm)
+    os.chdir(HERE); mf.O = os.path.join(HERE, "figs") + "/"
+    return getattr(xm, name)(**kw)
+
+
+def fig_nails_unit():
+    """첫 쪽 직관: 스프링이 벌린 두 자가 못 3개에 걸려 멈춘다 (α = ‖w‖ = 1 기준 0.74 · 0.37 · 0.37)"""
+    return _extra("fig_nails", unit=True)
+
+
+def fig_dual_unit():
+    """w = 못이 버틴 힘 화살표 α_k y_k x_k 의 합 = (0.71, 0.71), 새 점 D = w·x + b"""
+    return _extra("fig_dual", unit=True)
+
+
+FIGS = {"nails_unit": fig_nails_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)

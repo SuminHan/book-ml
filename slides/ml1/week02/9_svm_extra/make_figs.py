@@ -169,10 +169,11 @@ def fig_quizkid3():
     mf.save(fig, "kn_quizkid3.png")
 
 
-def fig_dual():
-    """지난 시간 점 20개: 서포트 벡터 3개만 α ≠ 0, w* = Σ α_k y_k x_k (꼬리 물기, 논문 식 (16))"""
+def fig_dual(unit=False):
+    """지난 시간 점 20개: 서포트 벡터 3개만 α ≠ 0, w* = Σ α_k y_k x_k (꼬리 물기, 논문 식 (16)). unit=True: ‖w‖ = 1 기준 (α = ALPHA_UNIT, w = (0.71, 0.71)) → 커널 덱"""
     X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
-    SV = [np.array(s) for s in mf.SV]; AL = [mf.ALPHA[tuple(s)] * (1 if tuple(s) in mf.RED_PTS else -1) for s in mf.SV]   # α_k y_k
+    A = mf.ALPHA_UNIT if unit else mf.ALPHA; WS = WA if unit else np.array(mf.W_STAR)
+    SV = [np.array(s) for s in mf.SV]; AL = [A[tuple(s)] * (1 if tuple(s) in mf.RED_PTS else -1) for s in mf.SV]   # α_k y_k
     fig, axs = plt.subplots(1, 2, figsize=(12, 5.6))
     ax = axs[0]; mf.pts(ax, np.zeros((0, 2)), np.zeros(0)); mf.street_m(ax, WA, BA, MA, np.array(SV))
     ax.scatter(X[y > 0, 0], X[y > 0, 1], s=80, color=RED, alpha=0.28, zorder=3)          # α = 0 인 점은 흐리게
@@ -187,7 +188,7 @@ def fig_dual():
     ax.text(0.25, 2.1, "흐린 점 17개: $\\alpha$ = 0", fontsize=13, color="#555555", va="top", zorder=6, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     nx = np.array(kd.NEW_PT)
     ax.scatter([nx[0]], [nx[1]], marker="*", s=420, color="#2B8A3E", edgecolor="black", lw=1, zorder=7)
-    ax.text(nx[0] + 0.2, nx[1] - 0.05, f"새 점 ({nx[0]:g}, {nx[1]:g})\nD = {kd.NEW_F:+.2f} → 빨강".replace("-", "−"), fontsize=13, fontweight="bold",
+    ax.text(nx[0] + 0.2, nx[1] - 0.05, f"새 점 ({nx[0]:g}, {nx[1]:g})\nD = {(WA @ nx + BA) if unit else kd.NEW_F:+.2f} → 빨강".replace("-", "−"), fontsize=13, fontweight="bold",
             color="#2B8A3E", va="top", zorder=7, bbox=dict(fc="white", ec="none", alpha=0.85, pad=1))
     ax.set_title("① 서포트 벡터 3개만 $\\alpha \\neq 0$", fontsize=16)
     ax = axs[1]
@@ -200,12 +201,13 @@ def fig_dual():
         ax.text(mid[0] + (0.06 if k != 1 else 0.06), mid[1] + (-0.1 if k == 0 else 0.0), lab, fontsize=13, color=c, ha="left", va="center")
         cur = cur + v
     ax.annotate("", cur, (0, 0), arrowprops=dict(arrowstyle="-|>", lw=3, color="black", mutation_scale=20))
-    ax.text(cur[0] / 2 - 0.08, cur[1] / 2 + 0.08, f"합 = $\\mathbf{{w}}^*$ = ({mf.W_STAR[0]:.2f}, {mf.W_STAR[1]:.2f})", fontsize=14, fontweight="bold", ha="right", va="bottom", rotation=45, rotation_mode="anchor")
+    ax.text(cur[0] / 2 - 0.08, cur[1] / 2 + 0.08, f"합 = $\\mathbf{{w}}^*$ = ({WS[0]:.2f}, {WS[1]:.2f})", fontsize=14, fontweight="bold", ha="right", va="bottom", rotation=45, rotation_mode="anchor")
     ax.scatter([0], [0], color="black", s=20)
-    ax.set_xlim(-0.1, 1.4); ax.set_ylim(-0.1, 1.4); ax.set_aspect("equal"); ax.set_xticks([0, 0.5, 1]); ax.set_yticks([0, 0.5, 1])
+    lim = 1.0 if unit else 1.4
+    ax.set_xlim(-0.1, lim); ax.set_ylim(-0.1, lim); ax.set_aspect("equal"); ax.set_xticks([0, 0.5, 1]); ax.set_yticks([0, 0.5, 1])
     ax.tick_params(labelsize=11); ax.grid(alpha=0.3)
     ax.set_title("② $\\alpha_k y_k \\mathbf{x}_k$ 를 이어 더하면 $\\mathbf{w}^*$", fontsize=16)
-    mf.save(fig, "kn_dual.png")
+    mf.save(fig, "kn_dual_unit.png" if unit else "kn_dual.png")
     return cur.round(3)
 
 
@@ -229,7 +231,7 @@ def fig_alpha():
     mf.save(fig, "kn_alpha.png")
 
 
-def fig_nails():
+def fig_nails(unit=False):
     """비유: 못 박힌 판 위에서 스프링이 두 자를 벌린다. 못 = 점 (고정), 두 자 사이 = 길 폭 2M, 자가 닿은 못 = 서포트 벡터, 못이 버티는 힘 = α.
     ① 좁다 (아무 못에도 안 닿음) ② 못에 걸림 (이 각도의 최대, 돌리면 더) ③ SVM: 폭 1.34, 못 3개가 α = 1.1 · 0.55 · 0.55 로 버팀"""
     X, y, WA, BA, MA = mf.X, mf.y, mf.WA, mf.BA, mf.MA
@@ -265,15 +267,15 @@ def fig_nails():
                 ax.scatter(*p, s=520, facecolors="none", edgecolors="black", lw=2.4, zorder=6)
         if k == 2:
             for sv in mf.SV:
-                p = np.array(sv); yy = 1 if tuple(sv) in mf.RED_PTS else -1; al = mf.ALPHA[tuple(sv)]
-                start = p + yy * w * 0.02; end = p - yy * w * (0.30 + 0.42 * al)
-                ax.annotate("", end, start, arrowprops=dict(arrowstyle="-|>", color=RED if yy > 0 else BLUE, lw=2.5 + 3.2 * al, mutation_scale=26, shrinkA=7, shrinkB=0), zorder=8)
+                p = np.array(sv); yy = 1 if tuple(sv) in mf.RED_PTS else -1; al = (mf.ALPHA_UNIT if unit else mf.ALPHA)[tuple(sv)]; aw = mf.ALPHA[tuple(sv)]   # aw: 화살표 굵기는 비율만
+                start = p + yy * w * 0.02; end = p - yy * w * (0.30 + 0.42 * aw)
+                ax.annotate("", end, start, arrowprops=dict(arrowstyle="-|>", color=RED if yy > 0 else BLUE, lw=2.5 + 3.2 * aw, mutation_scale=26, shrinkA=7, shrinkB=0), zorder=8)
                 off = np.array([0.22, 0.28]) if yy > 0 else (np.array([-0.62, 0.1]) if sv[0] < 0 else np.array([0.55, -0.18]))
                 ax.text(*(p + off), f"α {al:g}", fontsize=18, fontweight="bold", color=RED if yy > 0 else BLUE, ha="center", va="center", zorder=9,
                         bbox=dict(fc="white", ec="none", pad=1.5, alpha=0.9))
         ax.set_title(ttl, fontsize=17, fontweight="bold" if k == 2 else "normal")
         ax.set_xlabel(f"두 자 사이 {2 * M:.2f}", fontsize=19, fontweight="bold" if k == 2 else "normal", labelpad=8)
-    mf.save(fig, "kn_nails.png")
+    mf.save(fig, "kn_nails_unit.png" if unit else "kn_nails.png")
     return dict(M2=round(float(M2), 3))
 
 

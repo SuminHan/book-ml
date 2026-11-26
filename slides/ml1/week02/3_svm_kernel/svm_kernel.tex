@@ -25,18 +25,25 @@
 {\setbeamertemplate{footline}{}\begin{frame}[c,noframenumbering]\titlepage\end{frame}}
 
 \section{질문}
-% --- 지난 시간의 선형 SVM 을 점곱으로 (It can be shown)
-\begin{frame}{선형 SVM 은 서포트 벡터와의 \textbf{점곱}으로 쓸 수 있다}
+% --- 직관 1: 스프링 · 두 자 · 못
+\begin{frame}{지난 시간의 답을 다시 보면: 스프링이 벌린 두 자가 \textbf{못 3개}에 걸려 멈춘다}
 \vfill
-\centering
-{\large 지난 시간: \; $D(\mathbf{x}) = \mathbf{w}\cdot\mathbf{x} + b$}\\[0.8em]
-{\large 답의 $\mathbf{w}$ 는 서포트 벡터를 더한 것 \; {\normalsize (증명은 보충 덱)}}\\[0.3em]
-{\Large $\mathbf{w} = \sum_{k} \alpha_k y_k \mathbf{x}_k$, \quad $\alpha_k \ge 0$, \quad 서포트 벡터만 $\alpha_k \neq 0$}\\[0.9em]
-{\large 넣으면 \quad \fcolorbox{fbeta}{fbeta!10}{$\displaystyle D(\mathbf{x}) = b + \sum_{k \in S} \alpha_k y_k\, (\textcolor{ksared}{\mathbf{x}\cdot\mathbf{x}_k})$} \quad {\normalsize $S$ = 서포트 벡터}}\\[0.6em]
-{\normalsize 지난 시간 점 20개: 서포트 벡터 3개, $\alpha$ 비율 \textcolor{ksared}{빨강} $0.5$ : \textcolor{ksablue}{파랑} $0.25$ : $0.25$, 나머지 17개는 $0$}\\[0.9em]
-{\Large 새 점은 \kq{점곱} 안에만 나온다}
+\centering\includegraphics[width=0.86\linewidth]{kn_nails_unit.png}\par\vskip0.2em
+{\large 못 = 학습 점 \;·\; 두 자 사이 = 길 폭 $2M$ \;·\; 스프링 = 길을 넓히려는 힘}\\[0.15em]
+{\large 자가 닿은 못 = \kb{서포트 벡터}, 못이 버티는 힘 = \kq{$\alpha_k$} \;·\; 안 닿은 못 17개는 힘 \textbf{0}}
 \vfill
-\note{지난 시간의 선형 SVM은 D x, w 점곱 x 더하기 b로 분류했습니다. 그런데 답으로 나온 w는 서포트 벡터에 점마다의 숫자 알파와 라벨 y를 곱해 더한 것으로 쓸 수 있다는 것이 알려져 있습니다. 알파는 0 이상이고, 서포트 벡터가 아닌 점은 알파가 0입니다. 왜 그런지는 라그랑주라는 도구가 필요해서 보충 덱에 따로 두었습니다. 이 w를 D에 넣으면, 점곱은 더하기를 나눠서 할 수 있으니 b 더하기 서포트 벡터마다 알파 곱하기 y 곱하기 새 점 x와 x k의 점곱이 됩니다. 지난 시간 점 20개에서는 서포트 벡터 3개만 알파가 있고 비율이 빨강 0.5, 파랑 0.25, 0.25입니다. 이 꼴에는 w가 없고, 새 점은 서포트 벡터와의 점곱 안에만 나옵니다. 오늘은 이 점곱 자리를 바꾸면 어떤 일이 생기는지 봅니다.}
+\note{지난 시간의 최대 마진을 그림 하나로 다시 봅시다. 점마다 못이 박혀 있고, 두 자 사이에 스프링이 있어서 길을 계속 넓히려 합니다. 첫째 그림처럼 아무 못에도 안 닿으면 자는 계속 벌어집니다. 둘째 그림처럼 못 두 개에 걸려도, 자를 돌리면 더 벌어질 수 있습니다. 셋째 그림처럼 못 세 개에 걸리면 어느 쪽으로 돌려도 더는 못 벌어지고 멈춥니다. 이것이 최대 마진입니다. 자에 닿은 못이 서포트 벡터이고, 그 못이 자를 버티는 힘의 크기를 알파라고 부릅니다. 빨강 못이 0.74, 파랑 못 둘이 0.37씩 버티고, 자에 안 닿은 못 17개는 아무 힘도 쓰지 않으니 알파가 0입니다.}
+\end{frame}
+
+% --- 직관 2: w = 못 화살표의 합 → 점곱
+\begin{frame}{그래서 $\mathbf{w}$ 는 못이 버틴 힘 화살표의 \textbf{합}, 분류는 \textbf{점곱}만으로}
+\vfill
+\centering\includegraphics[width=0.62\linewidth]{kn_dual_unit.png}\par\vskip0.1em
+{\large 멈췄다 $=$ 힘이 비긴다 \;$\to$\; \fcolorbox{fbeta}{fbeta!10}{$\mathbf{w} = \sum_k \alpha_k y_k \mathbf{x}_k$} \;{\normalsize (꼭 그렇게 되는 이유: 보충 덱)}}\\[0.3em]
+{\large $D(\mathbf{x}) = \mathbf{w}\cdot\mathbf{x} + b = b + \sum_k \alpha_k y_k\,(\textcolor{ksared}{\mathbf{x}_k\cdot\mathbf{x}})$ \quad {\normalsize 합의 점곱 $=$ 점곱의 합}}\\[0.2em]
+{\normalsize 예 $\star$: \; $\mathbf{w}\cdot\mathbf{x} = 0.14$ (한 번에) $= 0.21 + 0.07 - 0.14$ (못마다) $\to$ $D = +0.18$ \kq{빨강}}
+\vfill
+\note{자가 멈췄다는 것은 스프링이 미는 힘과 못들이 버티는 힘이 비겼다는 뜻입니다. 그래서 선의 방향 w는 못들이 버틴 힘을 화살표로 이어 더한 것과 같습니다. 화살표 하나는 알파 곱하기 y 곱하기 그 못의 위치입니다. 빨강은 y가 플러스 1이라 그대로, 파랑은 마이너스 1이라 반대 방향입니다. 오른쪽 그림처럼 0.74 곱하기 0.7, 0.2에서 시작해 파랑 둘을 이어 붙이면 끝점이 0.71, 0.71, 지난 시간에 학습한 w입니다. 힘의 평형만으로 이 식이 꼭 나온다는 증명은 라그랑주가 필요해서 보충 덱에 두었습니다. 이제 분류기 D x, w 점곱 x 더하기 b에 이 w를 넣습니다. 점곱은 더하기를 나눠서 할 수 있으니, 합 전체와 x의 점곱은 못마다 따로 점곱해서 더한 것과 같습니다. 초록 별 0.5, 마이너스 0.3으로 확인하면, w로 한 번에 계산해도 0.14, 못마다 0.21, 0.07, 마이너스 0.14로 나눠 계산해도 0.14입니다. b 0.04를 더하면 D는 0.18, 빨강입니다. 나눠 쓴 꼴에는 w가 없고 새 점은 서포트 벡터와의 점곱 안에만 나옵니다. 오늘은 이 점곱 자리를 바꾸면 어떤 일이 생기는지 봅니다.}
 \end{frame}
 
 % --- 오늘의 질문
