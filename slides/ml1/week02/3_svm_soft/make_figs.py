@@ -515,6 +515,35 @@ def fig_history():
     fig.tight_layout(w_pad=1.5); fig.savefig(mf.O + "kn_history.png"); plt.close(fig)
 
 
+def fig_wspring():
+    """w 공간의 용수철: 원점 (w = 0, 끝없이 넓은 길) 과 w* 를 k = 1 용수철로 잇는다. 용수철 힘 −w*, 서포트 벡터의 힘 α y x 셋을 이어 붙이면 +w* → 평형 w* = Σ α y x"""
+    sv = [(np.array(p), 1 if tuple(p) in mf.RED_PTS else -1, mf.ALPHA[tuple(p)]) for p in mf.SV]
+    W = sum(al * yy * p for p, yy, al in sv); assert np.allclose(W, (1.045, 1.045), atol=0.01)
+    RED, BL, GR = "#d62728", "#2E3192", "#444444"
+    fig, ax = plt.subplots(figsize=(8.6, 7.2))
+    ax.axhline(0, color="#dddddd", lw=1); ax.axvline(0, color="#dddddd", lw=1)
+    ax.scatter([0], [0], s=200, marker="s", color=GR, zorder=5); ax.text(0.0, -0.16, "원점 w = 0 = 끝없이 넓은 길", fontsize=16, ha="left", va="top", color=GR)
+    n = 14; d = W / np.linalg.norm(W); perp = np.array([-d[1], d[0]]); L_ = np.linalg.norm(W)
+    zz = np.array([np.zeros(2)] + [d * L_ * (0.08 + 0.84 * (i + 0.5) / n) + perp * (0.06 if i % 2 == 0 else -0.06) for i in range(n)] + [W])
+    ax.plot(*zz.T, color=GR, lw=2.4, zorder=3)
+    ax.scatter(*W, s=260, color="black", zorder=6); ax.text(W[0] + 0.1, W[1] - 0.08, "w*", fontsize=20, fontweight="bold", va="top")
+    o = -perp * 0.28
+    ax.annotate("", W - 0.75 * W + o, W + o, arrowprops=dict(arrowstyle="-|>", color=GR, lw=4.5, mutation_scale=28), zorder=7)
+    ax.text(0.95, 0.12, "용수철 힘 −w\n(원점 쪽으로)", fontsize=17, color=GR, fontweight="bold", ha="left", va="center")
+    cur = W.copy(); labs = []
+    for p, yy, al in sv:
+        f = al * yy * p; c = RED if yy > 0 else BL
+        ax.annotate("", cur + f, cur, arrowprops=dict(arrowstyle="-|>", color=c, lw=4.5, mutation_scale=26), zorder=7)
+        labs.append((cur + f / 2, c, f"{'빨강' if yy > 0 else '파랑'} α = {al:g}")); cur = cur + f
+    for (m, c, txt), off in zip(labs, ((0.05, -0.2), (0.12, -0.12), (0.1, 0.0))):
+        ax.text(m[0] + off[0], m[1] + off[1], txt, fontsize=15, color=c, fontweight="bold")
+    assert np.allclose(cur, 2 * W)
+    ax.text(cur[0] - 0.05, cur[1] + 0.12, "못들의 힘 합 = +w", fontsize=17, fontweight="bold", ha="center")
+    ax.set_xlim(-0.35, 2.6); ax.set_ylim(-0.75, 2.5); ax.set_aspect("equal"); ax.set_xlabel("$w_1$", fontsize=17); ax.set_ylabel("$w_2$", fontsize=17, rotation=0, labelpad=12)
+    ax.spines["top"].set_visible(False); ax.spines["right"].set_visible(False); ax.tick_params(labelsize=12)
+    fig.tight_layout(); fig.savefig(mf.O + "kn_wspring.png"); plt.close(fig)
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -724,7 +753,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "history": fig_history, "rope": fig_rope, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "wspring": fig_wspring, "history": fig_history, "rope": fig_rope, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
