@@ -337,7 +337,7 @@ def fig_lagrange_svm_grow():
         dk = np.cross(e, N2[k]); dk = dk / np.linalg.norm(dk); dk = dk if N2[1 - k] @ dk > 0 else -dk
         faces2.append((sv2[k][1], [V2 - T * e, V2 + T * e, V2 + T * e + L2 * dk, V2 - T * e + L2 * dk]))
     cols = [(faces3, edges3, V3, "서포트 벡터 3개: 뿔 끝 (꼭짓점) 에 닿음"), (faces2, edges2, V2, "서포트 벡터 2개: 지붕 모서리 (선) 에 닿음")]
-    fig = plt.figure(figsize=(16, 7.4))
+    fig = plt.figure(figsize=(16, 8.8))
     th = np.linspace(0, np.pi / 2, 120); lo, hi, blo, bhi = 0.0, 2.0, -0.9, 1.0
     for cl, (faces, edges, V, head) in enumerate(cols):
         ax = fig.add_subplot(1, 2, cl + 1, projection="3d")
@@ -359,12 +359,21 @@ def fig_lagrange_svm_grow():
         a_ = np.pi / 4; ax.quiver(0.3 * np.cos(a_), 0.3 * np.sin(a_), bhi, (rstar - 0.45) * np.cos(a_), (rstar - 0.45) * np.sin(a_), 0, color=GOLD, linewidth=2.6, arrow_length_ratio=0.15)
         ax.text2D(0.5, 0.86, f"원통을 키운다 (점선): r = 0.4 → 0.8 → 1.2 → {rstar:.2f}", transform=ax.transAxes, color=GOLD, fontsize=15, fontweight="bold", ha="center")
         ax.scatter(*V, s=90, color="black", depthshade=False)
+        svs = sorted(sv3 if cl == 0 else sv2, key=lambda t: -t[1])          # 빨강 먼저
+        def _t(v):
+            v = round(float(v), 2); return f"{v:g}".replace("-", "−")
+        for q, (p_, yy) in enumerate(svs):                                  # 평면 식: y x1 w1 + y x2 w2 + y b = 1
+            c1, c2 = yy * p_
+            eq = f"${_t(c1)}\\,w_1 {'+' if c2 >= 0 else '-'} {_t(abs(c2))}\\,w_2 {'+' if yy > 0 else '-'} b = 1$".replace("−", "-")
+            fig.text(0.03 + 0.5 * cl, 0.125 - 0.055 * q, f"{'빨강' if yy > 0 else '파랑'} ({_t(p_[0])}, {_t(p_[1])}):   " + eq,
+                     color=RED if yy > 0 else BLUE, fontsize=23, fontweight="bold", ha="left")
+            assert abs(c1 * V[0] + c2 * V[1] + yy * V[2] - 1) < 2e-3
         ax.set_xlim(lo, hi); ax.set_ylim(lo, hi); ax.set_zlim(blo, bhi)
         ax.set_xlabel("$w_1$", fontsize=15); ax.set_ylabel("$w_2$", fontsize=15); ax.set_zlabel("$b$", fontsize=15)
         ax.set_xticks([0, 1, 2]); ax.set_yticks([0, 1, 2]); ax.set_zticks([-0.5, 0, 0.5]); ax.tick_params(labelsize=10)
         ax.view_init(elev=22, azim=-60)
-        ax.set_title(head, fontsize=19, fontweight="bold", y=1.02)
-    fig.subplots_adjust(left=0.0, right=0.98, bottom=0.0, top=0.95, wspace=0.0)
+        ax.set_title(head, fontsize=23, fontweight="bold", y=1.02)
+    fig.subplots_adjust(left=0.0, right=0.98, bottom=0.17, top=0.95, wspace=0.0)
     fig.savefig(mf.O + "kn_lagrange_svm_grow.png", dpi=160, facecolor="white", bbox_inches="tight", pad_inches=0.05); plt.close(fig)
 
 FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "lagrange": fig_lagrange, "lagrange3d": fig_lagrange3d, "lagrange_svm": fig_lagrange_svm, "lagrange_svm3d": fig_lagrange_svm3d, "lagrange_svm_grow": fig_lagrange_svm_grow, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
