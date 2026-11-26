@@ -116,56 +116,72 @@ def fig_dual_unit():
 
 
 def fig_lagrange():
-    """라그랑주 승수법 예 (축 비율 1:1): f = x² + 2y 등고선 (포물선) + 조건 직선 3x + 2y + 1 = 0, 답에서 두 선이 맞닿고 ∇f = α ∇g (평행)"""
-    xs = np.linspace(-2.5, 5.5, 400); gx, gy = np.meshgrid(xs, np.linspace(-6, 1.5, 400))
-    F = gx ** 2 + 2 * gy
-    fig, ax = plt.subplots(figsize=(6.4, 6.0))
-    ax.contour(gx, gy, F, levels=[-9, -6.5, -1, 1.5, 4], colors=GRAY, linewidths=1.0, linestyles="solid")
-    ax.contour(gx, gy, F, levels=[kd.LG_F], colors=GOLD, linewidths=2.8, linestyles="solid")
-    ax.plot(xs, (-1 - 3 * xs) / 2, color="black", lw=2.6)
+    """라그랑주 승수법 예 (위에서 본 그림, 축 비율 1:1): 언덕 f = 4 − ½[(x−2)² + (y−2)²] 등고선 (꼭대기 (2, 2) 중심 동심원) + 조건 직선 x + y = 2,
+    답 (1, 1) 에서 등고선 f = 3 이 직선에 맞닿고 ∇f = α ∇g (오르막 = 꼭대기 쪽, 직선에 수직)"""
+    t = np.linspace(0, 2 * np.pi, 400); cx, cy = kd.LG_C
+    fig, ax = plt.subplots(figsize=(6.0, 6.0))
+    for r in (0.6, 2.0, 2.6, 3.2):
+        ax.plot(cx + r * np.cos(t), cy + r * np.sin(t), color=GRAY, lw=1.1)
+    rs = np.sqrt(2 * (kd.LG_TOP - kd.LG_F))
+    ax.plot(cx + rs * np.cos(t), cy + rs * np.sin(t), color=GOLD, lw=2.8)
+    xs = np.linspace(-1.0, 3.0, 10); ax.plot(xs, 2 - xs, color="black", lw=2.6)
     box = dict(boxstyle="round,pad=0.25", fc="white", ec="none", alpha=0.9)
-    ax.text(-0.7, 1.0, "g = 3x + 2y + 1 = 0", fontsize=17, ha="left", va="center", bbox=box)
-    ax.text(-2.3, -3.9, f"f = x² + 2y = {kd.LG_F:g}", color=GOLD, fontsize=17, ha="left", bbox=box)
+    ax.text(-0.9, 3.25, "g = x + y − 2 = 0", fontsize=17, ha="left", va="center", bbox=box)
+    ax.text(2.0, 3.6, "f = 3", color=GOLD, fontsize=17, ha="center", bbox=box)
+    ax.scatter([cx], [cy], s=60, color="#666666", zorder=5); ax.text(cx + 0.12, cy + 0.12, "꼭대기 f = 4", fontsize=15, color="#555555", bbox=box)
     x0, y0 = kd.LG_X, kd.LG_Y
-    u = np.array([3, 2]) / np.hypot(3, 2) * 1.1
-    ax.annotate("", xy=(x0 + u[0], y0 + u[1]), xytext=(x0, y0), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.6, mutation_scale=18))
-    ax.text(x0 + u[0] + 0.15, y0 + u[1], "∇f = α ∇g\n(2x, 2) = 1·(3, 2)", color=RED, fontsize=17, va="center", bbox=box)
+    ax.annotate("", xy=(x0 + 0.75, y0 + 0.75), xytext=(x0, y0), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.8, mutation_scale=20))
+    ax.text(x0 + 0.95, y0 + 0.2, "∇f = α ∇g\n(1, 1) = 1·(1, 1)", color=RED, fontsize=17, va="center", bbox=box)
     ax.scatter([x0], [y0], s=110, color=RED, zorder=5)
-    ax.text(x0 - 0.25, y0 - 0.25, "(x, y) = (3/2, −11/4)", fontsize=17, ha="right", va="top", bbox=box)
-    ax.set_xlim(-2.5, 5.5); ax.set_ylim(-6, 1.5); ax.set_aspect("equal")   # 1:1 이어야 ∇g 가 직선에 수직으로 보인다
+    ax.text(x0 - 0.15, y0 - 0.2, "(1, 1)", fontsize=17, ha="right", va="top", bbox=box)
+    ax.set_xlim(-1.2, 5.2); ax.set_ylim(-1.2, 5.2); ax.set_aspect("equal")   # 1:1 이어야 ∇g 가 직선에 수직으로 보인다
     ax.set_xlabel("x", fontsize=17); ax.set_ylabel("y", fontsize=17)
     mf.save(fig, "kn_lagrange.png")
 
+
 def fig_lagrange3d():
-    """라그랑주 예를 3D 로 (흰 배경): 곡면 z = f = x² + 2y, 조건 직선 위를 따라가는 곡선 (보라), 그 위 가장 낮은 점 (노랑 빛), 바닥에 등고선 · 조건 직선 (∇ 화살표는 원근 때문에 수직이 안 보여 2D 그림 kn_lagrange 에만)"""
-    from mpl_toolkits.mplot3d.art3d import Line3DCollection
-    BG, SURF, PUR, YEL, RD, TXT = "white", "#2f7fc1", "#7b3fbf", "#e69500", "#d62728", "#222222"   # 흰 배경 (노랑 → 주황, 보라 · 파랑 진하게)
-    xs, ys = np.linspace(-1.5, 4.0, 60), np.linspace(-5.5, 1.0, 60); gx, gy = np.meshgrid(xs, ys); F = gx ** 2 + 2 * gy
-    z0 = -14.0                                                          # 바닥 높이
-    fig = plt.figure(figsize=(7.2, 6.0), facecolor=BG); ax = fig.add_subplot(projection="3d", facecolor=BG)
-    ax.plot_surface(gx, gy, F, color=SURF, alpha=0.28, linewidth=0, antialiased=True, shade=False)
-    ax.plot_wireframe(gx, gy, F, rstride=4, cstride=4, color=SURF, linewidth=0.5, alpha=0.45)
-    ax.contour(gx, gy, F, levels=[-9, -6.5, kd.LG_F, -1, 1.5, 4, 6.5, 9], zdir="z", offset=z0, colors=SURF, linewidths=0.9, alpha=0.6, linestyles="solid")
-    t = np.linspace(-1.0, 3.3, 200); cy = (-1 - 3 * t) / 2; cz = t ** 2 + 2 * cy   # 곡면 범위 (y ≤ 1, y ≥ −5.5) 안만
-    ax.plot(t, cy, np.full_like(t, z0), color=PUR, lw=2.2, ls="--", alpha=0.9)               # 바닥의 조건 직선
-    ax.plot(t, cy, cz, color=PUR, lw=3.2)                                                   # 곡면 위로 올린 조건 곡선
+    """라그랑주 예를 3D 로 (흰 배경): 언덕 z = f, 바닥에 동심원 등고선 · 조건 직선 x + y = 2,
+    언덕 위 조건 곡선 (보라) 과 그 위 가장 높은 점 (주황), 조건 없을 때의 꼭대기 (회색). ∇ 화살표는 원근 때문에 수직이 안 보여 2D 그림에만"""
+    SURF, PUR, ORG = "#2f7fc1", "#7b3fbf", "#e69500"
+    cx0, cy0 = kd.LG_C; top = kd.LG_TOP
+    R, T = np.meshgrid(np.linspace(0, 2.7, 40), np.linspace(0, 2 * np.pi, 72))
+    gx, gy = cx0 + R * np.cos(T), cy0 + R * np.sin(T); F = top - 0.5 * R ** 2
+    z0 = -0.6
+    fig = plt.figure(figsize=(7.2, 6.4)); ax = fig.add_subplot(projection="3d")
+    ax.plot_surface(gx, gy, F, color=SURF, alpha=0.22, linewidth=0, antialiased=True, shade=False)
+    ax.plot_wireframe(gx, gy, F, rstride=4, cstride=4, color=SURF, linewidth=0.6, alpha=0.5)
+    t = np.linspace(0, 2 * np.pi, 200)
+    for r in (0.6, 1.0, 2.0, 2.6):
+        ax.plot(cx0 + r * np.cos(t), cy0 + r * np.sin(t), np.full_like(t, z0), color=SURF, lw=1.0, alpha=0.7)
+        ax.plot(cx0 + r * np.cos(t), cy0 + r * np.sin(t), np.full_like(t, top - 0.5 * r * r), color=SURF, lw=1.0, alpha=0.5)
+    rs = np.sqrt(2 * (top - kd.LG_F))
+    ax.plot(cx0 + rs * np.cos(t), cy0 + rs * np.sin(t), np.full_like(t, z0), color=ORG, lw=2.2)
+    ax.plot(cx0 + rs * np.cos(t), cy0 + rs * np.sin(t), np.full_like(t, kd.LG_F), color=ORG, lw=2.2)
+    h = np.sqrt(2.7 ** 2 - 2) / np.sqrt(2); u = np.linspace(1 - h, 1 + h, 200); cx, cy = u, 2 - u
+    cz = top - 0.5 * ((cx - cx0) ** 2 + (cy - cy0) ** 2)
+    ax.plot(cx, cy, np.full_like(u, z0), color=PUR, lw=2.2, ls="--")
+    ax.plot(cx, cy, cz, color=PUR, lw=3.4)
     x0, y0, f0 = kd.LG_X, kd.LG_Y, kd.LG_F
-    ax.plot([x0, x0], [y0, y0], [z0, f0], color=YEL, lw=1.2, ls=":", alpha=0.9)
-    for sz, al in ((700, 0.10), (320, 0.22), (120, 0.45), (40, 1.0)):
-        ax.scatter([x0], [y0], [f0], s=sz, color=YEL, alpha=al, depthshade=False, edgecolors="none")
-        ax.scatter([x0], [y0], [z0], s=sz * 0.6, color=YEL, alpha=al, depthshade=False, edgecolors="none")
-    ax.set_xlim(-1.5, 4.0); ax.set_ylim(-5.5, 1.0); ax.set_zlim(z0, 14)
-    ax.view_init(elev=24, azim=-62); ax.set_axis_off()
-    ax.text(x0 + 0.3, y0 - 0.4, f0 + 1.0, "조건 위에서 가장 낮은 점", color=YEL, fontsize=20, zorder=10)
-    ax.text(-1.0, 0.9, z0 + 1.0, "g = 3x + 2y + 1 = 0", color=PUR, fontsize=20, zorder=10, ha="right")
-    ax.text(-1.4, 1.0, 13, "f = x² + 2y", color=SURF, fontsize=20, zorder=10)
+    ax.plot([x0, x0], [y0, y0], [z0, f0], color=ORG, lw=1.4, ls=":")
+    for sz, al in ((650, 0.12), (300, 0.25), (110, 0.5), (40, 1.0)):
+        ax.scatter([x0], [y0], [f0], s=sz, color=ORG, alpha=al, depthshade=False, edgecolors="none")
+        ax.scatter([x0], [y0], [z0], s=sz * 0.6, color=ORG, alpha=al, depthshade=False, edgecolors="none")
+    ax.scatter([cx0], [cy0], [top], s=50, color="#555555", depthshade=False)
+    ax.view_init(elev=26, azim=170); ax.set_axis_off(); ax.set_box_aspect((1, 1, 0.75))
+    ax.set_xlim(cx0 - 2.7, cx0 + 2.7); ax.set_ylim(cy0 - 2.7, cy0 + 2.7); ax.set_zlim(z0, top + 0.3)
+    ax.text2D(0.03, 0.93, "f = 4 − ½[(x−2)² + (y−2)²]", transform=ax.transAxes, color=SURF, fontsize=19, ha="left")
+    ax.text2D(0.56, 0.72, "조건 없으면 꼭대기", transform=ax.transAxes, color="#555555", fontsize=17, ha="left")
+    ax.text2D(0.80, 0.50, "조건 위에서\n가장 높은 점", transform=ax.transAxes, color=ORG, fontsize=19, ha="left")
+    ax.text2D(0.80, 0.20, "x + y = 2", transform=ax.transAxes, color=PUR, fontsize=19, ha="left")
     fig.subplots_adjust(0, 0, 1, 1)
-    fig.savefig(mf.O + "kn_lagrange3d.png", dpi=200, facecolor=BG, bbox_inches="tight", pad_inches=0.1); plt.close(fig)
+    fig.savefig(mf.O + "kn_lagrange3d.png", dpi=200, facecolor="white", bbox_inches="tight", pad_inches=0.1); plt.close(fig)
 
 
 def fig_lagrange_svm():
-    """SVM 의 L 을 w 평면에서 (b = b* 고정, y D = 1 약속): 점 하나 = 조건 직선 하나, ½‖w‖² 원이 지키는 곳에 처음 닿는 점 = w*,
-    거기서 ∇(½‖w‖²) = w* = 닿은 3개의 α_k y_k x_k 합 (= Σ α_k ∇g_k, 앞 예의 ∇f = α∇g 를 조건 여러 개로). 축 비율 1:1"""
+    """SVM 의 L 을 w 평면에서 (b = b* 고정, y D = 1 약속, 축 비율 1:1):
+    ① 점 하나 = 조건 직선 하나, ½‖w‖² 원이 지키는 곳에 처음 닿는 점 = w*
+    ② w* 확대: 닿은 직선 3개 각각에 수직 = ∇g_k = y_k x_k, 원에 수직 = ∇(½‖w‖²) = w* (직각 표시)
+    ③ w* = 닿은 3개의 α_k y_k x_k 합 (= Σ α_k ∇g_k, 앞 예의 ∇f = α∇g 를 조건 여러 개로)"""
     d2 = kd._d2
     X = np.array(d2.RED_PTS + d2.BLUE_PTS, float); y = np.r_[np.ones(len(d2.RED_PTS)), -np.ones(len(d2.BLUE_PTS))]
     b, wst = d2.B_STAR, np.array(d2.W_STAR, float)
@@ -177,24 +193,46 @@ def fig_lagrange_svm():
     feas = np.ones_like(W1, bool)
     for p_, yy in zip(X, y):
         feas &= yy * (W1 * p_[0] + W2 * p_[1] + b) >= 1
-    fig, axs = plt.subplots(1, 2, figsize=(13, 6.2))
+    rs = np.linalg.norm(wst); box = dict(fc="white", ec="none", alpha=0.92, pad=3)
+    fig, axs = plt.subplots(1, 3, figsize=(19, 6.4))
+    for k in (0, 1):
+        ax = axs[k]
+        ax.contourf(W1, W2, (~feas).astype(float), levels=[0.5, 1.5], colors=[GRAY], alpha=0.18)
+        for p_, yy in zip(X, y):
+            on = any(np.allclose(p_, s_) for s_, _, _ in sv)
+            if k == 1 and not on:
+                continue
+            Z = yy * (W1 * p_[0] + W2 * p_[1] + b) - 1
+            if Z.min() < 0 < Z.max():
+                ax.contour(W1, W2, Z, levels=[0], colors=[RED if yy > 0 else BLUE], linewidths=2.8 if on else 0.8, alpha=1 if on else 0.35)
+        for r in ((0.8, rs, 1.9) if k == 0 else (rs,)):
+            ax.add_patch(plt.Circle((0, 0), r, fill=False, color=GOLD if r == rs else "#777777", lw=2.6 if r == rs else 1.2))
+        ax.scatter(*wst, s=150, color="black", zorder=6)
     ax = axs[0]
-    ax.contourf(W1, W2, (~feas).astype(float), levels=[0.5, 1.5], colors=[GRAY], alpha=0.18)
-    for p_, yy in zip(X, y):
-        on = any(np.allclose(p_, s_) for s_, _, _ in sv)
-        Z = yy * (W1 * p_[0] + W2 * p_[1] + b) - 1
-        if Z.min() < 0 < Z.max():
-            ax.contour(W1, W2, Z, levels=[0], colors=[RED if yy > 0 else BLUE], linewidths=2.8 if on else 0.8, alpha=1 if on else 0.35)
-    for r in (0.8, np.linalg.norm(wst), 1.9):
-        ax.add_patch(plt.Circle((0, 0), r, fill=False, color=GOLD if abs(r - np.linalg.norm(wst)) < 1e-9 else "#777777", lw=2.6 if abs(r - np.linalg.norm(wst)) < 1e-9 else 1.2))
-    ax.scatter(*wst, s=190, color="black", zorder=6)
-    box = dict(fc="white", ec="none", alpha=0.92, pad=3)
     ax.annotate("w* : 원이 처음 닿는 곳", wst, (1.75, 0.35), ha="center", fontsize=16, fontweight="bold", bbox=box, arrowprops=dict(arrowstyle="->", lw=1.5), zorder=7)
     ax.text(0.55, 1.95, "회색 = 조건을 어긴 w", fontsize=15, color="#555555", bbox=box, ha="center")
     ax.text(0.15, 0.62, "½‖w‖² 등고선", fontsize=14, color="#555555", bbox=box)
+    ax.add_patch(plt.Rectangle((0.75, 0.75), 0.6, 0.6, fill=False, ls="--", lw=1.2, color="black"))
     ax.set_title("① 점 하나 = 조건 직선 하나 (b = b* 고정)", fontsize=17, fontweight="bold")
-    ax = axs[1]
-    ax.add_patch(plt.Circle((0, 0), np.linalg.norm(wst), fill=False, color=GOLD, lw=2.0))
+    ax = axs[1]                                                       # 확대
+    L, e = 0.20, 0.03
+    def _rt(n, c):
+        n = n / np.linalg.norm(n); d = np.array([-n[1], n[0]])
+        q = np.array([wst + e * d, wst + e * d + e * n, wst + e * n])
+        ax.plot(q[:, 0], q[:, 1], color=c, lw=1.6, zorder=7)
+    lab = {0: ("y x (빨강)", (0.0, -0.03)), 1: ("y x (파랑 1)", (0.0, 0.0)), 2: ("y x (파랑 2)", (0.03, -0.06))}
+    for k, (p_, a, yy) in enumerate(sv):
+        n = yy * p_; c = RED if yy > 0 else BLUE; u = n / np.linalg.norm(n)
+        ax.annotate("", wst + L * u, wst, arrowprops=dict(arrowstyle="-|>", lw=2.8, color=c, shrinkA=0, shrinkB=0, mutation_scale=18), zorder=8)
+        _rt(n, c)
+        ax.text(*(wst + (L + 0.02) * u + np.array(lab[k][1])), lab[k][0], color=c, fontsize=15, fontweight="bold", ha="left", va="center", bbox=box, zorder=9)
+    u = wst / rs
+    ax.annotate("", wst + L * u, wst, arrowprops=dict(arrowstyle="-|>", lw=2.8, color="black", shrinkA=0, shrinkB=0, mutation_scale=18), zorder=8)
+    _rt(wst, GOLD)
+    ax.text(*(wst + (L + 0.02) * u + np.array([-0.06, 0.02])), "w (원에 수직)", fontsize=15, fontweight="bold", ha="right", va="bottom", bbox=box, zorder=9)
+    ax.set_title("② 확대: 직선마다 수직 = y x", fontsize=17, fontweight="bold")
+    ax = axs[2]
+    ax.add_patch(plt.Circle((0, 0), rs, fill=False, color=GOLD, lw=2.0))
     at = np.zeros(2); names = ["α y x (빨강)", "α y x (파랑 1)", "α y x (파랑 2)"]; offs = [(0.12, -0.15), (0.32, -0.07), (0.38, 0.0)]
     for v, (s_, a, yy), nm, off in zip(parts, sv, names, offs):
         c = RED if yy > 0 else BLUE
@@ -204,13 +242,15 @@ def fig_lagrange_svm():
     ax.annotate("", wst, (0, 0), arrowprops=dict(arrowstyle="-|>", lw=3.5, color="black", shrinkA=0, shrinkB=0, mutation_scale=22), zorder=4)
     ax.text(-0.2, 1.3, "∇(½‖w‖²) = w*", fontsize=17, fontweight="bold")
     ax.scatter(*wst, s=120, color="black", zorder=6)
-    ax.set_title("② w* = 닿은 3개의 α y x 합", fontsize=17, fontweight="bold")
+    ax.set_title("③ w* = 닿은 3개의 α y x 합", fontsize=17, fontweight="bold")
+    lims = [(lo, hi), (0.75, 1.35), (-0.25, 1.65)]
+    lims[1] = (0.75, 1.35)
     for k, ax in enumerate(axs):
-        ax.set_xlim(*((lo, hi) if k == 0 else (-0.25, 1.65))); ax.set_ylim(*((lo, hi) if k == 0 else (-0.25, 1.65)))
+        a0, a1 = lims[k]
+        ax.set_xlim(a0, a1); ax.set_ylim(a0, a1)
         ax.set_aspect("equal"); ax.set_xlabel("$w_1$", fontsize=17); ax.set_ylabel("$w_2$", fontsize=17); ax.tick_params(labelsize=12)
     fig.tight_layout(w_pad=3)
     mf.save(fig, "kn_lagrange_svm.png")
-
 
 FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "lagrange": fig_lagrange, "lagrange3d": fig_lagrange3d, "lagrange_svm": fig_lagrange_svm, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 

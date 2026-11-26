@@ -30,12 +30,14 @@ assert P1_ROOTS == [-1.5, 0.5] and _f1(0) > 0 and _f1(-2) < 0 and _f1(1) < 0
 
 import data as _d2                                   # ../2_svm/data.py
 
-# 라그랑주 승수법 예 (등식 조건): min f = x² + 2y  s.t.  g = 3x + 2y + 1 = 0,  L = f − α g
-# ∂L/∂x = 2x − 3α = 0, ∂L/∂y = 2 − 2α = 0, ∂L/∂α = −g = 0  →  α = 1, x = 3/2, y = −11/4, f = −13/4
-LG_A, LG_X, LG_Y = 1.0, 1.5, -2.75
-assert 2 * LG_X - 3 * LG_A == 0 and 2 - 2 * LG_A == 0 and 3 * LG_X + 2 * LG_Y + 1 == 0
-_lgx = np.linspace(-5, 5, 100001); assert abs(_lgx[np.argmin(_lgx ** 2 + 2 * (-1 - 3 * _lgx) / 2)] - LG_X) < 1e-3   # 직선 위에서 f 가 가장 작은 곳
-LG_F = LG_X ** 2 + 2 * LG_Y                                                  # −3.25
+# 라그랑주 승수법 예 (등식 조건, 언덕에서 조건 위 가장 높은 점): max f = 4 − ½[(x − 2)² + (y − 2)²]  s.t.  g = x + y − 2 = 0,  L = f − α g
+# ∂L/∂x = −(x − 2) − α = 0, ∂L/∂y = −(y − 2) − α = 0, ∂L/∂α = −g = 0  →  x = y = 2 − α, 4 − 2α = 2  →  α = 1, (x, y) = (1, 1), f = 3 (꼭대기 (2, 2) 는 4)
+LG_A, LG_X, LG_Y, LG_C, LG_TOP = 1.0, 1.0, 1.0, (2.0, 2.0), 4.0
+_lgf = lambda x, y: LG_TOP - 0.5 * ((x - LG_C[0]) ** 2 + (y - LG_C[1]) ** 2)
+assert -(LG_X - 2) - LG_A == 0 and -(LG_Y - 2) - LG_A == 0 and LG_X + LG_Y - 2 == 0
+_lgx = np.linspace(-5, 5, 100001); assert abs(_lgx[np.argmax(_lgf(_lgx, 2 - _lgx))] - LG_X) < 1e-3   # 직선 위에서 f 가 가장 큰 곳
+LG_F = _lgf(LG_X, LG_Y)                                                       # 3
+assert LG_F == 3
 
 # 1/19 다음 쪽: 지난 시간 학습 (train_maxmin) 을 그대로 돌리면서, 걸음마다 민 점(argmin)에 η 를 적어 둔다 → w = Σ α_k y_k x_k 가 늘 성립
 def train_maxmin_alpha(X, y, T=_d2.MM_T, lr0=_d2.MM_LR, snaps=()):
