@@ -2,7 +2,7 @@
 \input{../../../theme/ksa-cs-v2.tex}
 \usepackage{fontawesome5}
 \newcommand{\paperlink}[1]{\href{#1}{\textcolor{ksablue}{\faLink}}}
-% SVM 수업 두 덱 중 첫째 (2026-11-26 Stanford CME 250 범위로: 학습 과정·크기 약속·라그랑주는 보충 덱 ../3_svm_soft)
+% SVM 수업 두 덱 중 첫째 (2026-11-26 Stanford CME 250 범위로: 학습 과정·크기 약속·라그랑주는 보충 덱 ../9_svm_extra)
 \setbeamerfont{author}{size=\normalsize}
 \setbeamerfont{institute}{size=\small}
 \graphicspath{{figs/}{../../../assets/}}
@@ -265,7 +265,7 @@
 % --- 최대 마진의 약점
 \begin{frame}{최대 마진의 약점: 겹치면 불가능, 점 하나에 민감}
 \vfill
-\centering\includegraphics[width=0.66\linewidth]{../3_svm_soft/figs/sv_sensitive.png}\par\vskip0.2em
+\centering\includegraphics[width=0.66\linewidth]{../9_svm_extra/figs/sv_sensitive.png}\par\vskip0.2em
 {\large 가를 수 \kq{없다} \quad 점 하나에 $M$ $0.67 \to 0.21$}
 \vfill
 \note{최대 마진 분류기에는 두 가지 약점이 있습니다. 첫째, 왼쪽처럼 빨간 점 하나가 파랑 무리 안에 들어오면 두 무리를 완벽히 가르는 직선이 아예 없습니다. 그러면 문제의 답이 없습니다. 둘째, 가를 수 있더라도 점 하나에 아주 민감합니다. 오른쪽은 빨간 점 하나를 0.4, 마이너스 0.8에 더한 것입니다. 마진이 0.67에서 0.21로 확 줄고, 경계도 점선이던 원래 경계에서 기울어집니다. 점 하나 때문에 경계가 크게 흔들리면 학습 데이터에 과대적합하기 쉽습니다.}
@@ -301,7 +301,7 @@
 \begin{frame}{슬랙 $\xi_k$ 읽기: 넘어가도 되지만 예산 안에서}
 \vfill
 \begin{columns}[c]
-\begin{column}{0.40\textwidth}\centering\includegraphics[width=0.95\linewidth]{../3_svm_soft/figs/sv_slack.png}\end{column}
+\begin{column}{0.40\textwidth}\centering\includegraphics[width=0.95\linewidth]{../9_svm_extra/figs/sv_slack.png}\end{column}
 \begin{column}{0.58\textwidth}
 \renewcommand{\arraystretch}{1.3}
 {\large\begin{tabular}{l|l}
@@ -319,7 +319,7 @@ $B$ & $\sum_k \xi_k$ 의 \kb{예산}
 % --- 예산 B 와 sklearn 의 C
 \begin{frame}{예산 $B$: 크면 넓은 길 \quad (sklearn 의 $C$ 는 \kq{반대})}
 \vfill
-\centering\includegraphics[width=0.56\linewidth]{../3_svm_soft/figs/sv_soft.png}\par\vskip0.2em
+\centering\includegraphics[width=0.56\linewidth]{../9_svm_extra/figs/sv_soft.png}\par\vskip0.2em
 \renewcommand{\arraystretch}{1.25}
 {\normalsize\begin{tabular}{r|ccc}
 sklearn $C$ (넘어간 양의 \textbf{벌점}) & $100$ & $3$ & $0.5$\\ \hline
@@ -358,7 +358,7 @@ sklearn $C$ (넘어간 양의 \textbf{벌점}) & $100$ & $3$ & $0.5$\\ \hline
 \large 2 & 이상치 하나 넣고 소프트 마진: sklearn $C$ 에 따른 길 폭과 서포트 벡터 수
 \end{tabular}\vskip1em
 \href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week02/2_svm/lab/svm.ipynb}{\textcolor{ksagolddk}{▶ 1: 최대 마진 노트북}} \qquad
-\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week02/3_svm_soft/lab/svm_soft.ipynb}{\textcolor{ksagolddk}{▶ 2: 소프트 마진 노트북}}
+\href{https://colab.research.google.com/github/SuminHan/book-ml/blob/main/slides/ml1/week02/9_svm_extra/lab/svm_soft.ipynb}{\textcolor{ksagolddk}{▶ 2: 소프트 마진 노트북}}
 \vfill
 \note{실습은 두 부분입니다. 첫째, 슬라이드의 z-score 한 점 20개로 선형 SVM을 학습해서 마진 0.67, 길 폭 1.34와 서포트 벡터 3개를 재현하고, 먼 점을 옮겨도 경계가 그대로인지 확인합니다. 둘째, 빨간 이상치 하나를 파란 쪽에 넣고, sklearn의 C를 바꾸면 길 폭과 서포트 벡터 수가 어떻게 달라지는지 봅니다. C는 벌점이라 크면 좁은 길입니다. 커널과 지폐 데이터는 다음 시간 실습에서 합니다.}
 \end{frame}

@@ -64,8 +64,8 @@ AB_ACC = _B.score(Xc, yc)
 QL_ACC = SVC(kernel="linear", C=1).fit(Xc, yc).score(Xc, yc)   # 질문 그림: 직선 SVM 정확도
 
 
-import importlib.util as _u                            # 알파 학습 (train_dual) 은 ../3_svm_soft/data.py
-_sp = _u.spec_from_file_location("sdata", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "3_svm_soft", "data.py"))
+import importlib.util as _u                            # 알파 학습 (train_dual) 은 ../9_svm_extra/data.py
+_sp = _u.spec_from_file_location("sdata", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "9_svm_extra", "data.py"))
 _sd = _u.module_from_spec(_sp); _sp.loader.exec_module(_sd); train_dual = _sd.train_dual
 
 # 같은 학습에서 점곱 자리에 다항 커널 (x·x' + 1)² → 원 데이터 120개, sklearn (하드 마진) 과 비교
