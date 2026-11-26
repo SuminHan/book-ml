@@ -30,6 +30,13 @@ assert P1_ROOTS == [-1.5, 0.5] and _f1(0) > 0 and _f1(-2) < 0 and _f1(1) < 0
 
 import data as _d2                                   # ../2_svm/data.py
 
+# 라그랑주 승수법 예 (등식 조건): min f = x² + 2y  s.t.  g = 3x + 2y + 1 = 0,  L = f − α g
+# ∂L/∂x = 2x − 3α = 0, ∂L/∂y = 2 − 2α = 0, ∂L/∂α = −g = 0  →  α = 1, x = 3/2, y = −11/4, f = −13/4
+LG_A, LG_X, LG_Y = 1.0, 1.5, -2.75
+assert 2 * LG_X - 3 * LG_A == 0 and 2 - 2 * LG_A == 0 and 3 * LG_X + 2 * LG_Y + 1 == 0
+_lgx = np.linspace(-5, 5, 100001); assert abs(_lgx[np.argmin(_lgx ** 2 + 2 * (-1 - 3 * _lgx) / 2)] - LG_X) < 1e-3   # 직선 위에서 f 가 가장 작은 곳
+LG_F = LG_X ** 2 + 2 * LG_Y                                                  # −3.25
+
 # 1/19 다음 쪽: 지난 시간 학습 (train_maxmin) 을 그대로 돌리면서, 걸음마다 민 점(argmin)에 η 를 적어 둔다 → w = Σ α_k y_k x_k 가 늘 성립
 def train_maxmin_alpha(X, y, T=_d2.MM_T, lr0=_d2.MM_LR, snaps=()):
     """train_maxmin 과 같은 걸음. α_k += η (k = 민 점), w 를 ‖w‖ 로 나눌 때 α 도 같이 나눈다. 반환: w, b, α, snaps 걸음 뒤의 α."""

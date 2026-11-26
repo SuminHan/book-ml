@@ -115,7 +115,28 @@ def fig_dual_unit():
     return _extra("fig_dual", unit=True)
 
 
-FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
+def fig_lagrange():
+    """라그랑주 승수법 예: f = x² + 2y 등고선 (포물선) + 조건 직선 3x + 2y + 1 = 0, 답에서 두 선이 맞닿고 ∇f = α ∇g (평행)"""
+    xs = np.linspace(-2.5, 5.5, 400); gx, gy = np.meshgrid(xs, np.linspace(-6, 1.5, 400))
+    F = gx ** 2 + 2 * gy
+    fig, ax = plt.subplots(figsize=(7.6, 5.6))
+    ax.contour(gx, gy, F, levels=[-9, -6.5, -1, 1.5, 4], colors=GRAY, linewidths=1.0, linestyles="solid")
+    ax.contour(gx, gy, F, levels=[kd.LG_F], colors=GOLD, linewidths=2.8, linestyles="solid")
+    ax.plot(xs, (-1 - 3 * xs) / 2, color="black", lw=2.6)
+    box = dict(boxstyle="round,pad=0.25", fc="white", ec="none", alpha=0.9)
+    ax.text(-0.7, 1.0, "g = 3x + 2y + 1 = 0", fontsize=17, ha="left", va="center", bbox=box)
+    ax.text(-2.3, -3.9, f"f = x² + 2y = {kd.LG_F:g}", color=GOLD, fontsize=17, ha="left", bbox=box)
+    x0, y0 = kd.LG_X, kd.LG_Y
+    u = np.array([3, 2]) / np.hypot(3, 2) * 1.1
+    ax.annotate("", xy=(x0 + u[0], y0 + u[1]), xytext=(x0, y0), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.6, mutation_scale=18))
+    ax.text(x0 + u[0] + 0.15, y0 + u[1], "∇f = α ∇g\n(2x, 2) = 1·(3, 2)", color=RED, fontsize=17, va="center", bbox=box)
+    ax.scatter([x0], [y0], s=110, color=RED, zorder=5)
+    ax.text(x0 - 0.25, y0 - 0.25, "(x, y) = (3/2, −11/4)", fontsize=17, ha="right", va="top", bbox=box)
+    ax.set_xlim(-2.5, 5.5); ax.set_ylim(-6, 1.5)
+    ax.set_xlabel("x", fontsize=17); ax.set_ylabel("y", fontsize=17)
+    mf.save(fig, "kn_lagrange.png")
+
+FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "lagrange": fig_lagrange, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)

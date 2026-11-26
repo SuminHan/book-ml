@@ -132,6 +132,63 @@ RBF & \kq{$\infty$ 개} & 그래도 \kb{점 수}만큼
 \note{앞 쪽처럼 선형 SVM은 점마다 알파로 쓸 수 있습니다. 왜 이렇게 쓰는 게 좋은지 이제 말할 수 있습니다. 특징을 늘려 파이 공간으로 옮기면, 직접 방식은 특징마다 w를 하나씩 구해야 합니다. 파이 공간의 차원 N이 아주 크면 어렵고, RBF처럼 무한 개면 불가능합니다. 쌍대 방식은 점마다 알파 하나라서, 특징이 몇 개든 점 수만큼만 구합니다. 그리고 답에서는 서포트 벡터만 알파가 0이 아니라 누가 서포트 벡터인지도 보입니다. 오늘의 질문에서 본 빨강이 가운데인 데이터, 점 120개에 특징 6개, 1, x1, x2, x1 제곱, x1 x2, x2 제곱을 쓰면 직접은 w 6개, 쌍대는 알파 120개이고 그중 0이 아닌 것, 서포트 벡터가 21개였습니다. 이 데이터처럼 특징이 적으면 직접이 더 간단하지만, 특징이 많아질수록 쌍대가 이깁니다. 원 논문도 파이 공간의 차원이 크거나 무한하면 직접 푸는 것은 비실용적이고 서포트 벡터에 대한 정보도 얻지 못한다고 하며 쌍대 공간으로 넘어갑니다. 게다가 앞 쪽에서 본 것처럼 점은 점곱 안에만 나옵니다. 그 점곱 자리를 다른 함수로 바꾸면 어떻게 될까요. 그것이 다음 쪽의 커널입니다.}
 \end{frame}
 
+% --- 라그랑주 승수법 1: 기본 개념 + 등식 예 (숫자: data.py LG_*)
+\begin{frame}{라그랑주 승수법 (Lagrange multiplier): 조건을 식 \textbf{안으로}}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.52\textwidth}\centering\includegraphics[width=\linewidth]{kn_lagrange.png}\end{column}
+\begin{column}{0.46\textwidth}
+{\large $\min\ f = x^2 + 2y$}\\[0.2em]
+{\large s.t. \; $g = 3x + 2y + 1 = 0$ \quad {\normalsize (등식 조건)}}\\[0.6em]
+{\large $L(x, y, \textcolor{ksared}{\alpha}) = f - \textcolor{ksared}{\alpha}\, g$ \quad {\normalsize (조건 없는 문제로)}}\\[0.6em]
+\renewcommand{\arraystretch}{1.3}
+{\normalsize\begin{tabular}{l@{\;}l}
+$\partial L/\partial x = 2x - 3\alpha = 0$ & \\
+$\partial L/\partial y = 2 - 2\alpha = 0$ & $\to\ \textcolor{ksared}{\alpha = 1}$, \;$x = \tfrac32$\\
+$\partial L/\partial \alpha = -g = 0$ & $\to\ y = -\tfrac{11}{4}$
+\end{tabular}}\\[0.6em]
+{\normalsize 답에서 $f$ 등고선과 조건 직선이 \kb{맞닿는다}: $\nabla f = \alpha \nabla g$}
+\end{column}
+\end{columns}
+\vfill
+\note{SVM은 조건이 붙은 최소화 문제입니다. 이런 문제를 푸는 도구가 라그랑주 승수법입니다. 생각은 하나, 조건을 목적 함수 안으로 옮겨서 조건 없는 문제로 바꾸는 것입니다. 쉬운 예부터 봅시다. x 제곱 더하기 2y를 가장 작게 하되, 3x 더하기 2y 더하기 1이 0이어야 합니다. 조건 g에 숫자 알파를 곱해 f에서 빼면 라그랑주 함수 L입니다. 이 알파가 라그랑주 승수입니다. 이제 조건을 따로 신경 쓰지 않고, x, y, 알파 세 변수로 각각 편미분해서 모두 0이 되는 곳을 찾습니다. x로 미분하면 2x 빼기 3알파, y로 미분하면 2 빼기 2알파, 알파로 미분하면 마이너스 g, 즉 조건 그 자체가 나옵니다. 둘째 식에서 알파가 1, 첫째 식에서 x가 2분의 3, 조건에 넣으면 y가 마이너스 4분의 11입니다. 그림으로 보면, 회색 포물선이 f가 같은 곳, 등고선이고 검은 직선이 조건입니다. 직선 위를 따라가며 f가 가장 작은 곳은 금색 등고선이 직선에 딱 맞닿는 곳입니다. 맞닿는다는 것은 두 선의 수직 방향, 기울기 벡터가 평행하다는 뜻이고, f의 기울기 2x, 2가 g의 기울기 3, 2의 알파배, 1배입니다. 편미분이 0이라는 식이 바로 이 평행 조건입니다.}
+\end{frame}
+
+% --- 라그랑주 승수법 2: SVM 에 적용, 부등식 조건 → KKT
+\begin{frame}{SVM 에 적용: 점마다 승수 $\alpha_k$, 부등식이면 \textbf{KKT 조건}}
+\vfill
+\centering
+{\normalsize 크기 맞추기: 가장 가까운 점에서 $y_k D(\mathbf{x}_k) = 1$ \;$\to$\; 마진 $M = 1/\lVert\mathbf{w}\rVert$ \;$\to$\; 넓은 길 $=$ 작은 $\lVert\mathbf{w}\rVert$}\\[0.4em]
+{\Large $\min\ \tfrac12\lVert\mathbf{w}\rVert^2$ \quad s.t. \quad $y_k(\mathbf{w}\cdot\mathbf{x}_k + b) - 1 \ge 0$, \;$k = 1, \dots, p$}\\[0.6em]
+{\Large $L(\mathbf{w}, b, \textcolor{ksared}{\alpha}) = \tfrac12\lVert\mathbf{w}\rVert^2 - \sum_{k=1}^{p} \textcolor{ksared}{\alpha_k}\,\big[\,y_k(\mathbf{w}\cdot\mathbf{x}_k + b) - 1\,\big]$}\\[0.7em]
+\renewcommand{\arraystretch}{1.4}
+{\large\begin{tabular}{rl}
+\textbf{1.} & $\partial L/\partial\mathbf{w} = 0$, \quad $\partial L/\partial b = 0$\\
+\textbf{2.} & $\alpha_k \ge 0$\\
+\textbf{3.} & $\alpha_k = 0$ \;또는\; $y_k(\mathbf{w}\cdot\mathbf{x}_k + b) = 1$ \quad {\normalsize $\to$ 길 가장자리 점 (\kb{서포트 벡터}) 만 $\alpha_k \neq 0$}
+\end{tabular}}\\[0.3em]
+{\small KKT = Karush (1939) · Kuhn · Tucker (1951): 부등식 조건으로 넓힌 라그랑주}
+\vfill
+\note{이제 SVM에 적용합니다. 먼저 크기를 맞춥니다. 가장 가까운 점에서 y k D x k가 정확히 1이 되도록 w와 b를 함께 늘이거나 줄이면, 마진은 1 나누기 w의 길이가 됩니다. 그래서 길을 가장 넓게 하는 것은 w의 길이를 가장 작게 하는 것이고, 문제는 2분의 1 w 길이 제곱을 최소로 하되 모든 점이 y k 곱하기 w 점곱 x k 더하기 b, 빼기 1이 0 이상이어야 한다가 됩니다. 2분의 1은 미분하면 깔끔해지라고 붙인 것입니다. 조건이 점마다 하나씩, p개이니 승수도 점마다 알파 k 하나씩 붙여 빼면 L입니다. 앞의 예와 다른 점은 조건이 등식이 아니라 부등식이라는 것입니다. 부등식일 때 답이 만족하는 조건을 KKT 조건이라고 부릅니다. 첫째, w와 b로 편미분한 것이 0입니다. 둘째, 알파는 0 이상입니다. 셋째, 점마다 알파가 0이거나, 아니면 조건이 딱 등호로 성립합니다. 등호라는 것은 그 점이 길 가장자리에 있다는 뜻, 서포트 벡터입니다. 그래서 서포트 벡터가 아닌 점은 알파가 0입니다. 1939년 카루시의 석사 논문과 1951년 쿤과 터커의 논문이 라그랑주 방법을 이렇게 부등식으로 넓혔고, 세 사람의 이름을 따서 KKT라고 합니다.}
+\end{frame}
+
+% --- 라그랑주 승수법 3: ∂L/∂w = 0 을 대입 → α 만 남는 dual
+\begin{frame}{$\mathbf{w}$ 를 대입하면 $\alpha$ \textbf{만} 남는다: 쌍대 (dual) 문제}
+\vfill
+\centering
+\renewcommand{\arraystretch}{1.5}
+{\large\begin{tabular}{rl}
+$\partial L/\partial\mathbf{w} = 0$: & $\mathbf{w} - \sum_k \alpha_k y_k \mathbf{x}_k = 0$ \;$\to$\; \fcolorbox{fbeta}{fbeta!10}{$\mathbf{w} = \sum_k \alpha_k y_k \mathbf{x}_k$}\\
+$\partial L/\partial b = 0$: & $\sum_k \alpha_k y_k = 0$ \quad {\normalsize ($b$ 가 든 항이 사라진다)}
+\end{tabular}}\\[0.5em]
+{\normalsize $\textstyle L = \underbrace{\tfrac12 \sum\nolimits_{k}\sum\nolimits_{l} \alpha_k\alpha_l y_k y_l\, \mathbf{x}_k\cdot\mathbf{x}_l}_{\tfrac12\lVert\mathbf{w}\rVert^2} \;-\; \underbrace{\sum\nolimits_{k}\sum\nolimits_{l} \alpha_k\alpha_l y_k y_l\, \mathbf{x}_k\cdot\mathbf{x}_l}_{\sum_k \alpha_k y_k\, \mathbf{w}\cdot\mathbf{x}_k} \;-\; \underbrace{b\sum\nolimits_k \alpha_k y_k}_{0} \;+\; \sum_k \alpha_k$}\\[0.5em]
+{\Large $\displaystyle = \textcolor{ksared}{\sum_{k=1}^{p} \alpha_k - \frac12 \sum_{k=1}^{p}\sum_{l=1}^{p} \alpha_k\alpha_l\, y_k y_l\, (\mathbf{x}_k\cdot\mathbf{x}_l)}$}\\[0.4em]
+{\large $\alpha^2$ 항이 $-$ \;$\to$\; $\mathbf{w}$ 의 \textbf{최소} 문제가 $\alpha$ 의 \kb{최대} 문제로 \quad {\normalsize ($\alpha_k \ge 0$, $\textstyle\sum_k \alpha_k y_k = 0$)}}\\[0.3em]
+{\large 점은 \kq{$\mathbf{x}_k\cdot\mathbf{x}_l$ 점곱} 안에만 나온다}
+\vfill
+\note{KKT 첫째 조건을 실제로 계산해 봅시다. L을 w로 미분하면 w 빼기 알파 y x의 합이고, 0으로 두면 w는 알파 k y k x k의 합입니다. 처음에 못이 버티는 힘으로 본 바로 그 식이 여기서 나옵니다. b로 미분하면 알파 y의 합이 0입니다. 이제 이 w를 L에 다시 넣습니다. 2분의 1 w 길이 제곱은 w 점곱 w라서 이중 합 알파 k 알파 l y k y l x k 점곱 x l의 2분의 1입니다. 둘째 항, 알파 k y k w 점곱 x k의 합에도 w를 넣으면 같은 이중 합이 2분의 1 없이 나옵니다. b가 든 항은 알파 y의 합이 0이라 사라지고, 마지막에 알파의 합이 남습니다. 정리하면 알파의 합 빼기 2분의 1 이중 합입니다. w와 b가 사라지고 알파만 남은 식이 됐습니다. 알파 제곱 항의 부호가 마이너스라 이 식은 위로 볼록한 산 모양이고, 그래서 w의 최소 문제가 알파의 최대 문제로 바뀝니다. 이것을 쌍대 문제, dual이라고 합니다. 조건은 알파가 0 이상이고 알파 y의 합이 0인 것입니다. 그리고 가장 중요한 점, 이 식에서 학습 점은 x k 점곱 x l, 두 점의 점곱 안에만 나옵니다. 분류할 때도 새 점은 점곱 안에만 나왔습니다. 그러니 이 점곱 자리를 바꾸면 어떻게 될까요. 그것이 커널입니다.}
+\end{frame}
+
 % --- 커널 트릭
 \begin{frame}{커널: 점곱 자리에 $K$ 를 넣는다}
 \markpage{kernel}
