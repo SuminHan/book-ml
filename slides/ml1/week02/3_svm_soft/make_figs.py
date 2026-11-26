@@ -478,6 +478,43 @@ def fig_rope():
     fig.tight_layout(w_pad=1.0); fig.savefig(mf.O + "kn_rope.png"); plt.close(fig)
 
 
+def fig_history():
+    """α 의 역사를 그림으로: ① 1788 철사에 꿴 구슬 (철사가 붙잡는 모르는 힘 λ) ② 1951 벽 (밀기만, 안 닿으면 0) ③ 1992 SVM 못과 자 (못이 버티는 힘 α)"""
+    from matplotlib.patches import Circle as Cc, Rectangle
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5.2))
+    RED, BL, GR = "#d62728", "#2E3192", "#555555"
+    def arrow(ax, a, b, c, lw=3.5): ax.annotate("", b, a, arrowprops=dict(arrowstyle="-|>", color=c, lw=lw, mutation_scale=24))
+    # ① 구슬과 철사
+    ax = axs[0]; th = np.linspace(np.pi * 1.1, np.pi * 1.9, 100); cx, cy, r = 0, 2.2, 2.0
+    ax.plot(cx + r * np.cos(th), cy + r * np.sin(th), color="#8a6a3a", lw=4)
+    p = np.array([cx + r * np.cos(np.pi * 1.32), cy + r * np.sin(np.pi * 1.32)]); n = (np.array([cx, cy]) - p) / r
+    ax.add_patch(Cc(p, 0.17, color="black", zorder=5))
+    arrow(ax, p, p + np.array([0, -1.0]), GR); ax.text(p[0] + 0.12, p[1] - 0.95, "무게", fontsize=14, color=GR)
+    arrow(ax, p, p + 0.95 * n, RED); ax.text(-1.45, 1.75, "철사가 붙잡는 힘\n= 모르는 수 λ", fontsize=14, color=RED, fontweight="bold", ha="center")
+    ax.set_title("1788 라그랑주\n철사에 꿴 구슬", fontsize=17, fontweight="bold", linespacing=1.4)
+    # ② 벽
+    ax = axs[1]; ax.add_patch(Rectangle((1.2, -0.6), 0.35, 2.6, color="#8a8a8a"))
+    for y_, x_, lab, touch in ((1.35, 0.97, "닿음: 벽이 민다 (α > 0)", True), (0.1, 0.1, "안 닿음: 힘 0 (α = 0)", False)):
+        ax.add_patch(Cc((x_, y_), 0.22, color="black", zorder=5))
+        arrow(ax, (x_ - 0.95, y_), (x_ - 0.25, y_), GR, 3)
+        if touch: arrow(ax, (1.2, y_), (0.55, y_), RED)
+        ax.text(0.1, y_ - 0.48, lab, fontsize=14, color=RED if touch else GR, fontweight="bold", ha="center")
+    ax.text(-0.95, 1.65, "밀어붙이는 힘", fontsize=13, color=GR)
+    ax.set_title("1939 · 1951 카루시, 쿤 · 터커\n벽은 밀기만 한다", fontsize=17, fontweight="bold", linespacing=1.4)
+    # ③ 못과 자
+    ax = axs[2]; M = 0.75
+    for s in (-1, 1): ax.add_patch(Rectangle((s * M - (0.12 if s > 0 else 0), -0.6), 0.12, 2.6, color="#b98a2e"))
+    zz = np.array([(-M + 0.0, 1.6)] + [(-M + 2 * M * (i + 0.5) / 10, 1.6 + (0.12 if i % 2 == 0 else -0.12)) for i in range(10)] + [(M, 1.6)]); ax.plot(*zz.T, color="#333333", lw=2)
+    arrow(ax, (-0.2, 1.95), (-0.75, 1.95), GR, 2.5); arrow(ax, (0.2, 1.95), (0.75, 1.95), GR, 2.5); ax.text(0, 2.12, "스프링이 벌린다", fontsize=13, color=GR, ha="center")
+    for (x_, y_, c, a_) in ((M + 0.17, 0.6, RED, "α 1.11"), (-M - 0.17, 0.95, BL, "α 0.55"), (-M - 0.17, 0.05, BL, "α 0.55")):
+        ax.add_patch(Cc((x_, y_), 0.14, color=c, zorder=5))
+        s = 1 if x_ > 0 else -1; arrow(ax, (s * M, y_), (s * (M - 0.55), y_), c)
+        ax.text(x_ + s * 0.25, y_, a_, fontsize=14, color=c, fontweight="bold", ha="left" if s > 0 else "right", va="center")
+    ax.set_title("1992 SVM\n못이 자를 버틴다", fontsize=17, fontweight="bold", linespacing=1.4)
+    for ax in axs: ax.set_xlim(-2.2, 2.2); ax.set_ylim(-0.9, 2.5); ax.set_aspect("equal"); ax.axis("off")
+    fig.tight_layout(w_pad=1.5); fig.savefig(mf.O + "kn_history.png"); plt.close(fig)
+
+
 def fig_penalty():
     """벌금 게임: L(w, α) = ½w² − α(w − 1). ① α 마다 곡선 (모두 (1, 0.5) 를 지남) ② α 를 가장 크게 → w < 1 은 ∞, 최소는 w = 1
     ③ w 를 가장 작게 → α − ½α², 최대는 α = 1. ② 의 최소 = ③ 의 최대 = 0.5"""
@@ -687,7 +724,7 @@ def fig_pull():
     return {t: ([round(float(v), 2) for v in AL[t]], round(M[t], 2)) for t in AL}
 
 
-FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "rope": fig_rope, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
+FIGS = {"pull": fig_pull, "rock": fig_rock, "learn": fig_learn, "equiv": fig_equiv, "penalty": fig_penalty, "recap": fig_recap, "svarrow": fig_svarrow, "quiz1": fig_quiz1, "quizkid": fig_quizkid, "force": fig_force, "quizkid3": fig_quizkid3, "alpha": fig_alpha, "nails": fig_nails, "overlap": fig_overlap, "saddle": fig_saddle, "meet": fig_meet, "history": fig_history, "rope": fig_rope, "tilt": fig_tilt, "onearrow": fig_onearrow, "parab": fig_parab, "states": fig_states, "dual": fig_dual, "cos": mf.fig_cos, "soft": mf.fig_soft, "soft9": mf.fig_soft9}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
