@@ -130,8 +130,16 @@ def fig_lagrange():
     ax.text(2.0, 3.6, "f = 3", color=GOLD, fontsize=17, ha="center", bbox=box)
     ax.scatter([cx], [cy], s=60, color="#666666", zorder=5); ax.text(cx + 0.12, cy + 0.12, "꼭대기 f = 4", fontsize=15, color="#555555", bbox=box)
     x0, y0 = kd.LG_X, kd.LG_Y
+    PUR = "#7b3fbf"; dl = np.array([1, -1]) / np.sqrt(2)                       # 직선 방향
+    for (px, py), sgn in (((-0.2, 2.2), 1), ((2.2, -0.2), -1)):                # 답이 아닌 점: ∇f 가 직선에 수직이 아니다 → 직선을 따라 남은 오르막
+        gf = -np.array([px - cx, py - cy]) * 0.35
+        ax.annotate("", xy=(px + gf[0], py + gf[1]), xytext=(px, py), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.0, mutation_scale=16, alpha=0.7))
+        along = (gf @ dl) * dl
+        ax.annotate("", xy=(px + along[0], py + along[1]), xytext=(px, py), arrowprops=dict(arrowstyle="-|>", color=PUR, lw=2.6, mutation_scale=16))
+        ax.scatter([px], [py], s=45, color="black", zorder=5)
+    ax.text(-1.1, 1.35, "남은 오르막\n→ 더 간다", color=PUR, fontsize=15, ha="left", va="center", bbox=box)
     ax.annotate("", xy=(x0 + 0.75, y0 + 0.75), xytext=(x0, y0), arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.8, mutation_scale=20))
-    ax.text(x0 + 0.95, y0 + 0.2, "∇f = α ∇g\n(1, 1) = 1·(1, 1)", color=RED, fontsize=17, va="center", bbox=box)
+    ax.text(x0 + 0.95, y0 + 0.2, "남은 오르막 0\n∇f = α ∇g (수직)", color=RED, fontsize=17, va="center", bbox=box)
     ax.scatter([x0], [y0], s=110, color=RED, zorder=5)
     ax.text(x0 - 0.15, y0 - 0.2, "(1, 1)", fontsize=17, ha="right", va="top", bbox=box)
     ax.set_xlim(-1.2, 5.2); ax.set_ylim(-1.2, 5.2); ax.set_aspect("equal")   # 1:1 이어야 ∇g 가 직선에 수직으로 보인다
@@ -167,11 +175,17 @@ def fig_lagrange3d():
         ax.scatter([x0], [y0], [f0], s=sz, color=ORG, alpha=al, depthshade=False, edgecolors="none")
         ax.scatter([x0], [y0], [z0], s=sz * 0.6, color=ORG, alpha=al, depthshade=False, edgecolors="none")
     ax.scatter([cx0], [cy0], [top], s=50, color="#555555", depthshade=False)
+    for us, sgn in ((-0.1, 1), (2.1, -1)):                                     # 등산로 위 걷는 사람: 오르막 쪽으로 화살표
+        px, py = us, 2 - us; pz = top - 0.5 * ((px - cx0) ** 2 + (py - cy0) ** 2)
+        d = np.array([1.0, -1.0, 0.0]) * sgn; d[2] = -((px - cx0) * d[0] + (py - cy0) * d[1]); d = d / np.linalg.norm(d) * 1.1
+        ax.scatter([px], [py], [pz], s=45, color="black", depthshade=False)
+        ax.quiver(px, py, pz, *d, color=PUR, linewidth=3.6, arrow_length_ratio=0.3)
+    ax.text2D(0.03, 0.40, "오르막이 남아 있다\n→ 더 간다", transform=ax.transAxes, color=PUR, fontsize=17, ha="left")
     ax.view_init(elev=26, azim=170); ax.set_axis_off(); ax.set_box_aspect((1, 1, 0.75))
     ax.set_xlim(cx0 - 2.7, cx0 + 2.7); ax.set_ylim(cy0 - 2.7, cy0 + 2.7); ax.set_zlim(z0, top + 0.3)
     ax.text2D(0.03, 0.93, "f = 4 − ½[(x−2)² + (y−2)²]", transform=ax.transAxes, color=SURF, fontsize=19, ha="left")
     ax.text2D(0.56, 0.72, "조건 없으면 꼭대기", transform=ax.transAxes, color="#555555", fontsize=17, ha="left")
-    ax.text2D(0.80, 0.50, "조건 위에서\n가장 높은 점", transform=ax.transAxes, color=ORG, fontsize=19, ha="left")
+    ax.text2D(0.80, 0.50, "더 오를 곳 없다\n= 가장 높은 점", transform=ax.transAxes, color=ORG, fontsize=19, ha="left")
     ax.text2D(0.80, 0.20, "x + y = 2", transform=ax.transAxes, color=PUR, fontsize=19, ha="left")
     fig.subplots_adjust(0, 0, 1, 1)
     fig.savefig(mf.O + "kn_lagrange3d.png", dpi=200, facecolor="white", bbox_inches="tight", pad_inches=0.1); plt.close(fig)
@@ -293,7 +307,54 @@ def fig_lagrange_svm3d(azim=-60, elev=22, out="kn_lagrange_svm3d.png"):
     fig.savefig(out if "/" in out else mf.O + out, dpi=200, facecolor="white", bbox_inches=fig.bbox_inches.from_bounds(0.45, 0.15, 6.9, 5.75), pad_inches=0); plt.close(fig)
 
 
-FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "lagrange": fig_lagrange, "lagrange3d": fig_lagrange3d, "lagrange_svm": fig_lagrange_svm, "lagrange_svm3d": fig_lagrange_svm3d, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
+def fig_lagrange_svm_grow():
+    """원통 ½‖w‖² = 반지름 r 을 키우다가, 조건을 다 지키는 영역 (답에서 뾰족한 모서리, 평면 3장으로 깎인 뿔) 에 처음 닿는 곳 = (w*, b*).
+    3칸: r = 0.7 · 1.1 (안 닿음) · ‖w*‖ = 1.49 (처음 닿음). 뿔은 모서리에서 세 평면이 만나는 선 3개 방향으로 그린다"""
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    d2 = kd._d2
+    b0, wst = d2.B_STAR, np.array(d2.W_STAR, float); rs = np.linalg.norm(wst); V = np.r_[wst, b0]
+    sv = [(np.array(p_), 1.0 if p_ in d2.RED_PTS else -1.0) for p_ in d2.SV]
+    N = [np.r_[yy * p_, yy] for p_, yy in sv]                                 # 조건 N·(w, b) ≥ 1 의 수직 방향
+    assert all(abs(n @ V - 1) < 2e-3 for n in N)
+    E = {}
+    for i in range(3):
+        for j in range(i + 1, 3):
+            k = 3 - i - j; d = np.cross(N[i], N[j]); d = d if N[k] @ d > 0 else -d
+            E[(i, j)] = d / np.linalg.norm(d)
+    L = 1.1
+    faces = []
+    for k in range(3):                                                        # 평면 k 위의 면 = 평면 k 를 지나는 두 모서리 선 사이
+        es = [E[e] for e in E if k in e]
+        faces.append((k, [V, V + L * es[0], V + L * es[1]]))
+    fig = plt.figure(figsize=(18, 6.4))
+    th = np.linspace(0, np.pi / 2, 120); lo, hi, blo, bhi = 0.0, 2.0, -0.9, 1.0
+    for c, (r, ttl) in enumerate([(0.7, "① r = 0.7: 안 닿음"), (1.1, "② r = 1.1: 아직 안 닿음"), (rs, "③ r = 1.49: 처음 닿음 = 답")]):
+        ax = fig.add_subplot(1, 3, c + 1, projection="3d")
+        for k, f in faces:
+            col = RED if sv[k][1] > 0 else BLUE
+            ax.add_collection3d(Poly3DCollection([f], facecolor=col, alpha=0.18, edgecolor=col, linewidths=0.8))
+        for e in E.values():
+            ax.plot(*np.c_[V, V + L * e], color="#333333", lw=1.6)
+        TH, BZ = np.meshgrid(th, np.linspace(blo, bhi, 2))
+        ax.plot_surface(r * np.cos(TH), r * np.sin(TH), BZ, color=GOLD, alpha=0.30 if c < 2 else 0.40, linewidth=0, shade=False)
+        for bb in (blo, bhi):
+            ax.plot(r * np.cos(th), r * np.sin(th), np.full_like(th, bb), color=GOLD, lw=2.2)
+        for a_ in np.linspace(0, np.pi / 2, 5):
+            ax.plot([r * np.cos(a_)] * 2, [r * np.sin(a_)] * 2, [blo, bhi], color=GOLD, lw=1.0, alpha=0.8)
+        ax.scatter(*V, s=70 if c == 2 else 35, color="black" if c == 2 else "#555555", depthshade=False)
+        ax.set_xlim(lo, hi); ax.set_ylim(lo, hi); ax.set_zlim(blo, bhi)
+        ax.set_xlabel("$w_1$", fontsize=15); ax.set_ylabel("$w_2$", fontsize=15); ax.set_zlabel("$b$", fontsize=15)
+        ax.set_xticks([0, 1, 2]); ax.set_yticks([0, 1, 2]); ax.set_zticks([-0.5, 0, 0.5]); ax.tick_params(labelsize=10)
+        ax.view_init(elev=22, azim=-60)
+        ax.set_title(ttl, fontsize=18, fontweight="bold", y=0.98)
+        if c == 0:
+            ax.text(*(V + L * 0.75 * (E[(0, 1)] + E[(1, 2)]) / 2 + np.array([0.15, 0.0, 0.25])), "조건을 다 지키는 곳", fontsize=15, color="#333333", zorder=20)
+            ax.text(r * 0.2, r * 0.2, bhi + 0.05, "½‖w‖² = r²/2", fontsize=15, color=GOLD, zorder=20)
+    fig.subplots_adjust(left=0, right=1, bottom=0.02, top=0.95, wspace=0.0)
+    fig.savefig(mf.O + "kn_lagrange_svm_grow.png", dpi=170, facecolor="white"); plt.close(fig)
+
+
+FIGS = {"nails_unit": fig_nails_unit, "force_unit": fig_force_unit, "dual_unit": fig_dual_unit, "q": fig_q, "lift1d": fig_lift1d, "ktrick": fig_ktrick, "nn": fig_nn, "lagrange": fig_lagrange, "lagrange3d": fig_lagrange3d, "lagrange_svm": fig_lagrange_svm, "lagrange_svm3d": fig_lagrange_svm3d, "lagrange_svm_grow": fig_lagrange_svm_grow, "kernel": mf.fig_kernel, "rbf": mf.fig_rbf, "rbfdeg": mf.fig_rbf_degree, "hills": mf.fig_hills, "hillcount": mf.fig_hill_count}
 
 if __name__ == "__main__":
     pick = [a for a in sys.argv[1:] if a in FIGS] or list(FIGS)
