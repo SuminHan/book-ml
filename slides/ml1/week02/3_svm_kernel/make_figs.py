@@ -116,10 +116,10 @@ def fig_dual_unit():
 
 
 def fig_lagrange():
-    """라그랑주 승수법 예: f = x² + 2y 등고선 (포물선) + 조건 직선 3x + 2y + 1 = 0, 답에서 두 선이 맞닿고 ∇f = α ∇g (평행)"""
+    """라그랑주 승수법 예 (축 비율 1:1): f = x² + 2y 등고선 (포물선) + 조건 직선 3x + 2y + 1 = 0, 답에서 두 선이 맞닿고 ∇f = α ∇g (평행)"""
     xs = np.linspace(-2.5, 5.5, 400); gx, gy = np.meshgrid(xs, np.linspace(-6, 1.5, 400))
     F = gx ** 2 + 2 * gy
-    fig, ax = plt.subplots(figsize=(7.6, 5.6))
+    fig, ax = plt.subplots(figsize=(6.4, 6.0))
     ax.contour(gx, gy, F, levels=[-9, -6.5, -1, 1.5, 4], colors=GRAY, linewidths=1.0, linestyles="solid")
     ax.contour(gx, gy, F, levels=[kd.LG_F], colors=GOLD, linewidths=2.8, linestyles="solid")
     ax.plot(xs, (-1 - 3 * xs) / 2, color="black", lw=2.6)
@@ -132,7 +132,7 @@ def fig_lagrange():
     ax.text(x0 + u[0] + 0.15, y0 + u[1], "∇f = α ∇g\n(2x, 2) = 1·(3, 2)", color=RED, fontsize=17, va="center", bbox=box)
     ax.scatter([x0], [y0], s=110, color=RED, zorder=5)
     ax.text(x0 - 0.25, y0 - 0.25, "(x, y) = (3/2, −11/4)", fontsize=17, ha="right", va="top", bbox=box)
-    ax.set_xlim(-2.5, 5.5); ax.set_ylim(-6, 1.5)
+    ax.set_xlim(-2.5, 5.5); ax.set_ylim(-6, 1.5); ax.set_aspect("equal")   # 1:1 이어야 ∇g 가 직선에 수직으로 보인다
     ax.set_xlabel("x", fontsize=17); ax.set_ylabel("y", fontsize=17)
     mf.save(fig, "kn_lagrange.png")
 
