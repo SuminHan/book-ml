@@ -24,12 +24,14 @@
 \vfill
 \centering
 \renewcommand{\arraystretch}{1.6}
-{\Large\begin{tabular}{r|c|c}
- & 예측 $\hat y$ & 기울기 $\partial J / \partial w_1$\\ \hline
-선형회귀 & $z$ & $(\hat y - y)\,x$\\
-로지스틱회귀 & $\sigma(z)$ & $(\hat y - y)\,x$
-\end{tabular}}\\[1.0em]
-{\large $z = w_0 + w_1 x$ \quad 손실은 다르다: 오차 제곱 vs 교차 엔트로피}\\[0.4em]
+{\Large\begin{tabular}{r|c|c|c}
+ & 예측 $\hat y$ & 손실 & 기울기 $\partial J / \partial w_1$\\ \hline
+선형회귀 & $z$ & \kq{오차 제곱} & $(\hat y - y)\,x$\\[-0.5em]
+ & & {\small (Squared Error)} & \\
+로지스틱회귀 & $\sigma(z)$ & \kq{교차 엔트로피} & $(\hat y - y)\,x$\\[-0.5em]
+ & & {\small (Cross Entropy)} &
+\end{tabular}}\\[0.8em]
+{\large $z = w_0 + w_1 x$ \quad 손실은 다른데}\\[0.3em]
 {\large 그런데 미분하면 \kb{똑같은 모양} \;$\to$\; 우연일까?}
 \vfill
 \note{선형회귀와 로지스틱회귀를 나란히 놓아 봅시다. 둘 다 직선 z, w0 더하기 w1 x를 계산합니다. 선형회귀는 z를 그대로 예측으로 쓰고, 로지스틱회귀는 시그모이드를 씌웁니다. 손실도 다릅니다. 선형회귀는 오차 제곱, 로지스틱회귀는 교차 엔트로피입니다. 그런데 손실을 w로 미분하면, 둘 다 오차 와이햇 빼기 y에 입력 x를 곱한 똑같은 모양이 나왔습니다. 로지스틱회귀 시간에 계산으로 확인했죠. 이게 우연일까요? 오늘은 이 두 모델이 사실 한 가족이라서 그렇다는 것을 봅니다. 그 가족의 이름이 일반화 선형 모델, GLM입니다.}
@@ -287,7 +289,7 @@ $K$ 개 중 하나 & softmax & 교차 엔트로피 & \texttt{CrossEntropyLoss}\\
 \begin{columns}[T]
 \begin{column}{0.47\textwidth}
 \centering
-{\large\kq{오차 제곱}}\\[0.3em]
+{\large\kq{오차 제곱} (Squared Error)}\\[0.3em]
 $\displaystyle L = \tfrac12(\hat y - y)^2$\\[0.3em]
 $\displaystyle \frac{dL}{d\hat y} = \hat y - y$\\[0.3em]
 $\displaystyle \frac{dL}{dw} = (\hat y - y)\cdot\textcolor{ksared}{\hat y(1-\hat y)}\cdot x$\\[0.3em]
@@ -295,7 +297,7 @@ $\displaystyle \frac{dL}{dw} = (\hat y - y)\cdot\textcolor{ksared}{\hat y(1-\hat
 \end{column}
 \begin{column}{0.47\textwidth}
 \centering
-{\large\kb{교차 엔트로피} ($= -\log p$)}\\[0.3em]
+{\large\kb{교차 엔트로피} (Cross Entropy)}\\[0.3em]
 $\displaystyle L = -\big[\,y\log\hat y + (1-y)\log(1-\hat y)\,\big]$\\[0.3em]
 $\displaystyle \frac{dL}{d\hat y} = \frac{\hat y - y}{\textcolor{ksared}{\hat y(1-\hat y)}}$\\[0.3em]
 $\displaystyle \frac{dL}{dw} = (\hat y - y)\cdot x$\\[0.3em]
