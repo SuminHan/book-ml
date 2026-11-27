@@ -4,6 +4,8 @@
 - 체스: lichess 2013년 1월, 승패가 난 117,003판 (CC0), data/chess_2013_01.csv.gz (로지스틱회귀 덱과 같은 파일)
 - 월드컵: 본선 1930~2026 23개 대회 1068경기의 팀별 골 수 2136줄 (martj42/international_results, CC0),
   x = 경기 전 Elo 차이 (내 팀 − 상대, 홈 +100 포함). data/worldcup_goals.csv 는 prep_worldcup.py 가 만든다
+- 말 발길질: Bortkiewicz (1898) 프로이센 기병 10개 부대 x 20년 = 200 부대-년, 한 해 말에 차여 죽은 병사 수
+- V-1 폭탄: Clarke (1946) 런던 남부 576 구역 (0.25 km²), 구역마다 떨어진 폭탄 수 (537발)
 - 붓꽃: Fisher (1936) iris 150송이 (sklearn.datasets.load_iris), 꽃잎 길이 하나로 세 종
 """
 import os
@@ -81,6 +83,10 @@ GOALS_L = {-400: 0.31, -300: 0.59, 0: 1.42, 300: 2.25}      # 직선 예측
 GOALS_PMIN, GOALS_LMIN = 0.43, -0.17     # 가장 약한 쪽 (Elo -575): 포아송 / 직선
 GOALS_BIN_M450 = (18, 0.83, 0.17)       # Elo 차이 -500 ~ -400: 줄 수, 실제 평균 골, 직선 (가운데 -450)
 GOALS_EVEN = (462, 1.30, 1.68)          # Elo 차이 -50 ~ +50: 줄 수, 평균, 분산 (분포 그림)
+HORSE_KICKS = [109, 65, 22, 3, 1]       # 사망 0,1,2,3,4 명인 부대-년 수 (200)
+HORSE_MEAN = 0.61
+V1_BOMBS = [229, 211, 93, 35, 7, 1]     # 폭탄 0,1,2,3,4,5+ 발인 구역 수 (576), 5+ 구역은 실제 7발
+V1_N, V1_TOTAL, V1_MEAN = 576, 537, 0.93
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
 IRIS_LOSS49 = 0.54                      # 4.9 cm 꽃이 virginica 일 때 교차 엔트로피 -ln 0.58
 IRIS_CROSS = (2.6, 4.9)                 # 확률이 바뀌는 길이 (setosa|versicolor, versicolor|virginica)
@@ -109,6 +115,9 @@ if __name__ == "__main__":
     assert (round(pm(x.min()), 2), round(np.polyval(k, x.min()), 2)) == (GOALS_PMIN, GOALS_LMIN)
     m = (x >= -500) & (x < -400); assert (m.sum(), round(y[m].mean(), 2), round(np.polyval(k, -450), 2)) == GOALS_BIN_M450
     m = np.abs(x) <= 50; assert (m.sum(), round(y[m].mean(), 2), round(y[m].var(), 2)) == GOALS_EVEN
+
+    h = np.array(HORSE_KICKS); assert h.sum() == 200 and round((h * np.arange(5)).sum() / 200, 2) == HORSE_MEAN
+    b = np.array(V1_BOMBS); assert b.sum() == V1_N and (b[:5] * np.arange(5)).sum() + 7 == V1_TOTAL and round(V1_TOTAL / V1_N, 2) == V1_MEAN
 
     x, y = iris(); W = fit_softmax(x, y); p = softmax_p(W, 4.9)
     xs = np.linspace(1, 7, 6001); P = softmax_p(W, xs)

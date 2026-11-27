@@ -137,10 +137,27 @@ def pois_pmf_fig(lams=((-300, 0.74), (0, 1.34), (300, 2.40)), kmax=7):
     ax.set_xticks(ks); ax.set_xlabel("넣은 골 y"); ax.set_ylabel("확률"); ax.legend(frameon=False, fontsize=13)
     fig.tight_layout(); fig.savefig(O + "glm_pois_pmf.png"); plt.close(fig)
 
+def pois_examples_fig(sets, kmax=6):
+    """개수 데이터 여러 개: 막대 = 실제 비율, 검은 점 = 같은 평균의 포아송. sets = [(제목, x 라벨, 개수 배열, 평균, 단위)]."""
+    from math import lgamma, exp, log
+    fig, ax = plt.subplots(1, len(sets), figsize=(13, 3.9))
+    for a, (title, xl, cnt, lam, unit) in zip(ax, sets):
+        cnt = np.asarray(cnt); ks = np.arange(len(cnt)); n = cnt.sum()
+        pm = np.array([exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks])
+        a.bar(ks, cnt / n, color=GREEN, alpha=0.6, width=0.7, label=f"실제 {n}{unit}")
+        a.plot(ks, pm, "o-", color="k", lw=2, ms=6, label=f"포아송 λ = {lam:.2f}")
+        a.set_xticks(ks); a.set_xlabel(xl); a.set_title(title, fontsize=17, fontweight="bold"); a.set_yticks([])
+        a.legend(frameon=False, fontsize=12, loc="upper right")
+    fig.tight_layout(); fig.savefig(O + "glm_pois_examples.png"); plt.close(fig)
+
 if __name__ == "__main__":
     st, ch, (x, y), ir = D.study(), D.chess(), D.goals(), D.iris()
     types_fig(st, ch, (x, y), ir); print("dists", dists_fig(st, ch, (x, y), ir))
     k = np.polyfit(x, y, 1); goals_line_fig(x, y, k)
     wp = D.fit_glm(x, y, np.exp, lr=0.05, steps=20000, scale=100, w0=np.log(y.mean())); goals_pois_fig(x, y, k, wp)
     W = D.fit_softmax(*ir); softmax_fig(*ir, W); pois_pmf_fig()
+    v = y[np.abs(x) <= 50].astype(int); gc = np.bincount(np.minimum(v, 6))
+    pois_examples_fig([("월드컵: 한 팀의 골", "골 수 (Elo 차이 ±50)", gc, v.mean(), "줄"),
+                       ("기병대: 말에 차여 숨진 병사", "한 부대 · 한 해의 사망자", D.HORSE_KICKS, D.HORSE_MEAN, "부대-년"),
+                       ("런던: 구역에 떨어진 폭탄", "0.25 km² 구역의 V-1 수", D.V1_BOMBS, D.V1_MEAN, "구역")])
     print("figs ok", wp.round(5))
