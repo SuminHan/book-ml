@@ -9,6 +9,8 @@
 - 자동차 보험: freMTPL2freq (프랑스 자동차 책임보험, OpenML 41214) 중 1년을 꼬박 채운 169,349 계약.
   y = 1년 사고 청구 횟수, x = 보너스-말러스 등급 (처음 100, 무사고 1년마다 x0.95 · 최저 50, 사고 1번마다 x1.25).
   data/insurance_claims.csv 는 prep_insurance.py 가 만든다
+- V-1 실제 낙하 지점: Shaw, L. (2025) "V1 and V2 impact sites in London" (Zenodo 14883986, CC BY 4.0), 런던 시의회 (LCC) 구역 887발,
+  LCC Bomb Damage Maps 에서 손으로 옮긴 좌표 (영국 격자 easting/northing, m). data/v1_impacts_lcc.csv
 - 붓꽃: Fisher (1936) iris 150송이 (sklearn.datasets.load_iris), 꽃잎 길이 하나로 세 종
 """
 import os
@@ -47,6 +49,32 @@ def claim_means(x, y, lo=50, hi=150, step=10):
         m = (x >= a) & (x < a + step)
         if m.sum(): out.append((a + step / 2 if a > lo else lo, y[m].mean(), m.sum()))
     return np.array(out)
+
+
+def v1():
+    d = pd.read_csv(os.path.join(HERE, "data", "v1_impacts_lcc.csv"))
+    return d.easting.values, d.northing.values
+
+
+def v1_lonlat():
+    d = pd.read_csv(os.path.join(HERE, "data", "v1_impacts_lcc.csv"))
+    return d.lon.values, d.lat.values
+
+
+V1_BOX = (525000, 537000, 170000, 179000)   # 템스강 남쪽 12 km x 9 km
+V1_CELL = 500                               # 0.5 km 칸 (0.25 km², Clarke 와 같은 크기) → 24 x 18 = 432칸
+
+
+def v1_cells(e, n, box=V1_BOX, cell=V1_CELL):
+    x0, x1, y0, y1 = box; m = (e >= x0) & (e < x1) & (n >= y0) & (n < y1)
+    nx, ny = (x1 - x0) // cell, (y1 - y0) // cell
+    return np.histogram2d(e[m], n[m], bins=[nx, ny], range=[[x0, x1], [y0, y1]])[0].astype(int), m.sum()
+
+
+def v1_sim(k, cells, reps=10000, seed=0):
+    """k 발을 cells 칸에 제멋대로 (칸마다 같은 확률) 떨어뜨리기를 reps 번: 칸별 개수 표 (reps x 6, 5+ 합침)."""
+    rng = np.random.default_rng(seed)
+    return np.array([np.bincount(np.minimum(np.bincount(rng.integers(0, cells, k), minlength=cells), 5), minlength=6) for _ in range(reps)])
 
 
 def iris():
@@ -120,6 +148,12 @@ CLAIMS_L = {50: 0.056, 100: 0.209, 150: 0.362}   # 직선 예측
 CLAIMS_BIN140 = (50, 0.72)              # 등급 140~149: 계약 수, 실제 평균 청구
 CLAIMS_BM50 = (123281, 0.056, 0.058)    # 등급 50 (오래 무사고): 계약 수, 평균, 분산 (분포 그림)
 CLAIMS_G1 = -0.035                      # 첫 걸음: 평균((yhat - y) x), x 는 10점 단위
+V1_REAL_N = 887                         # LCC 구역 V-1 낙하 지점
+V1_REAL_K, V1_REAL_CELLS = 379, 432     # 남쪽 12 x 9 km 안의 폭탄 수, 칸 수
+V1_REAL_TAB = (195, 124, 89, 19, 5, 0)  # 0 · 1 · 2 · 3 · 4 · 5+ 발 칸 수
+V1_REAL_MV = (0.88, 0.92)               # 칸당 평균, 분산
+V1_SIM_ZERO = (167, 192)                # 제멋대로 1만 번: 0발 칸 수의 95% 범위
+V1_SIM_ONE, V1_SIM_TWO = (138, 177), (56, 82)   # 1발 · 2발 칸 수의 95% 범위 (실제 124 · 89 는 밖)
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
 IRIS_LOSS49 = 0.54                      # 4.9 cm 꽃이 virginica 일 때 교차 엔트로피 -ln 0.58
 IRIS_CROSS = (2.6, 4.9)                 # 확률이 바뀌는 길이 (setosa|versicolor, versicolor|virginica)
@@ -153,6 +187,13 @@ if __name__ == "__main__":
     x, y = goals(); k = np.polyfit(x, y, 1)
     assert len(x) == GOALS_N
     m = np.abs(x) <= 50; assert (m.sum(), round(y[m].mean(), 2), round(y[m].var(), 2)) == GOALS_EVEN
+
+    e, n = v1(); H, k = v1_cells(e, n); tab = np.bincount(np.minimum(H.ravel(), 5), minlength=6)
+    print("v1 real", len(e), k, H.size, tab, H.mean().round(3), H.var().round(3))
+    assert (len(e), k, H.size, tuple(tab)) == (V1_REAL_N, V1_REAL_K, V1_REAL_CELLS, V1_REAL_TAB)
+    assert (round(H.mean(), 2), round(H.var(), 2)) == V1_REAL_MV
+    S = v1_sim(k, H.size); assert tuple(np.percentile(S[:, 0], [2.5, 97.5]).astype(int)) == V1_SIM_ZERO
+    assert tuple(np.percentile(S[:, 1], [2.5, 97.5]).astype(int)) == V1_SIM_ONE and tuple(np.percentile(S[:, 2], [2.5, 97.5]).astype(int)) == V1_SIM_TWO
 
     x, y = iris(); W = fit_softmax(x, y); p = softmax_p(W, 4.9)
     xs = np.linspace(1, 7, 6001); P = softmax_p(W, xs)
