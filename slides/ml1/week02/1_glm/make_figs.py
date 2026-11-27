@@ -254,37 +254,42 @@ def basemap(ax, lon0, lon1, lat0, lat1, z=13, style="osm"):
                 open(p, "wb").write(urllib.request.urlopen(req, timeout=30).read())
             big.paste(Image.open(p).convert("RGB"), (256 * i, 256 * j))
     from PIL import ImageOps
-    g = ImageOps.grayscale(big); g = ImageOps.invert(g).point(lambda v: int(25 + v * 0.42)); big = g.convert("RGB")
+    from PIL import ImageEnhance; big = ImageEnhance.Color(big).enhance(0.35); big = ImageEnhance.Brightness(big).enhance(1.03)
     ax.imshow(big, extent=(tx[0] * 256, (tx[-1] + 1) * 256, (ty[-1] + 1) * 256, ty[0] * 256), zorder=0)
     ax.set_xlim(x0, x1); ax.set_ylim(y1, y0)
 
 
-def v1_map_fig(e, n, lon, lat, box=D.V1_BOX, cell=D.V1_CELL, z=13):
+def v1_map_fig(e, n, lon, lat, box=D.V1_BOX, cell=D.V1_CELL, z=14):
     """V-1 실제 낙하 지점 (런던 시의회 구역 887발, Shaw 2025) 을 런던 지도 (OpenStreetMap · CARTO) 위에.
     노란 네모 = 남쪽 12 x 9 km, 0.5 km 칸으로 센다. 영국 격자 (m) → 경위도는 887점으로 맞춘 1차식 (이 넓이에서 오차 수 m)."""
     H, k = D.v1_cells(e, n, box, cell); x0, x1, y0, y1 = box
     A = np.c_[e, n, np.ones_like(e)]; cl = np.linalg.lstsq(A, lon, rcond=None)[0]; ca = np.linalg.lstsq(A, lat, rcond=None)[0]
     to_px = lambda E, N: _merc(np.c_[E, N, np.ones_like(E)] @ cl, np.c_[E, N, np.ones_like(E)] @ ca, z)
-    fig, ax = plt.subplots(figsize=(8.6, 6.6)); fig.patch.set_facecolor("#262626")
-    basemap(ax, lon.min() - 0.01, lon.max() + 0.01, lat.min() - 0.006, lat.max() + 0.006, z)
+    fig, ax = plt.subplots(figsize=(8.6, 6.8)); fig.patch.set_facecolor("white")
+    cx_, cy_ = to_px(np.array([x0, x1, x1, x0], float), np.array([y0, y0, y1, y1], float))
+    m_ = 0.06; A_ = np.c_[np.array([x0, x1, x1, x0], float), np.array([y0, y0, y1, y1], float), np.ones(4)]
+    lo_, la_ = A_ @ cl, A_ @ ca; dl, da = (lo_.max() - lo_.min()) * m_, (la_.max() - la_.min()) * m_
+    basemap(ax, lo_.min() - dl, lo_.max() + dl, la_.min() - da, la_.max() + da, z)
     for v in np.arange(x0, x1 + 1, cell):
-        px, py = to_px(np.array([v, v], float), np.array([y0, y1], float)); ax.plot(px, py, color="#f2c94c", lw=0.35, alpha=0.55, zorder=2)
+        px, py = to_px(np.array([v, v], float), np.array([y0, y1], float)); ax.plot(px, py, color="#d97706", lw=0.4, alpha=0.6, zorder=2)
     for v in np.arange(y0, y1 + 1, cell):
-        px, py = to_px(np.array([x0, x1], float), np.array([v, v], float)); ax.plot(px, py, color="#f2c94c", lw=0.35, alpha=0.55, zorder=2)
-    bx, by = to_px(np.array([x0, x1, x1, x0, x0], float), np.array([y0, y0, y1, y1, y0], float)); ax.plot(bx, by, color="#f2c94c", lw=2.5, zorder=5)
+        px, py = to_px(np.array([x0, x1], float), np.array([v, v], float)); ax.plot(px, py, color="#d97706", lw=0.4, alpha=0.6, zorder=2)
+    bx, by = to_px(np.array([x0, x1, x1, x0, x0], float), np.array([y0, y0, y1, y1, y0], float)); ax.plot(bx, by, color="#d97706", lw=2.5, zorder=5)
     px, py = _merc(lon, lat, z)
-    ax.scatter(px, py, s=14, color="#ff3b30", edgecolors="#ffd0cc", linewidths=0.4, zorder=4)
+    inb = (e >= x0) & (e < x1) & (n >= y0) & (n < y1)
+    ax.scatter(px[~inb], py[~inb], s=22, color="#e0211b", alpha=0.3, edgecolors="none", zorder=3)
+    ax.scatter(px[inb], py[inb], s=32, color="#e0211b", edgecolors="white", linewidths=0.6, zorder=4)
     ii = np.argwhere(H == 2); c = ii[np.argmin(((ii - np.array(H.shape) * [0.55, 0.6]) ** 2).sum(1))]
     cx, cy = x0 + c[0] * cell, y0 + c[1] * cell
     qx, qy = to_px(np.array([cx, cx + cell, cx + cell, cx, cx], float), np.array([cy, cy, cy + cell, cy + cell, cy], float))
-    ax.plot(qx, qy, color="#7CFC9A", lw=2.5, zorder=6)
-    ax.annotate("이 칸: 2발", (qx[2], qy[2]), (qx[2] + 120, qy[2] - 160), color="#7CFC9A", fontsize=16, fontweight="bold", zorder=7,
-                arrowprops=dict(arrowstyle="->", color="#7CFC9A", lw=2))
-    ax.text(bx[0] + 8, by[0] - 12, f"0.5 km 칸 {H.size}개 · {k}발", color="#f2c94c", fontsize=14, fontweight="bold", zorder=7)
-    ax.text(0.995, 0.005, "© OpenStreetMap contributors", transform=ax.transAxes, ha="right", va="bottom", fontsize=8, color="#bbbbbb", zorder=8)
+    ax.plot(qx, qy, color="#2E3192", lw=3, zorder=6)
+    ax.annotate("이 칸: 2발", (qx[2], qy[2]), (qx[2] + 220, qy[2] - 300), color="#2E3192", fontsize=16, fontweight="bold", zorder=7,
+                arrowprops=dict(arrowstyle="->", color="#2E3192", lw=2))
+    ax.text(bx[3] + 20, by[3] + 60, f"0.5 km 칸 {H.size}개 · {k}발", color="#b45309", fontsize=14, fontweight="bold", zorder=7)
+    ax.text(0.995, 0.005, "© OpenStreetMap contributors", transform=ax.transAxes, ha="right", va="bottom", fontsize=8, color="#555555", zorder=8)
     ax.set_xticks([]); ax.set_yticks([])
     for s_ in ax.spines.values(): s_.set_visible(False)
-    fig.tight_layout(pad=0.2); fig.savefig(O + "glm_v1_map.png", facecolor=fig.get_facecolor()); plt.close(fig)
+    fig.tight_layout(pad=0.2); fig.savefig(O + "glm_v1_map.png"); plt.close(fig)
     return len(e), k
 
 
