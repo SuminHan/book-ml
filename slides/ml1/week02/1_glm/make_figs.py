@@ -79,6 +79,41 @@ def goals_pois_fig(x, y, k, wp, marks=(-300, 0, 300)):
     ax.set_ylim(-0.6, 4.6); ax.legend(frameon=False, loc="upper left", fontsize=12)
     fig.tight_layout(); fig.savefig(O + "glm_goals_pois.png"); plt.close(fig)
 
+
+def claims_axes(ax, x, y):
+    """검은 점 = 등급 10점 구간마다 실제 평균 청구 (점 크기 = 계약 수, 로그)."""
+    g = D.claim_means(x, y)
+    ax.scatter(g[:, 0], g[:, 1], s=25 * np.log10(g[:, 2]) + 10, color="k", zorder=4, label="실제 평균 청구 (점 크기 = 계약 수)")
+    ax.set_xlabel("보너스-말러스 등급 x   (50 = 오래 무사고 · 100 = 처음 · 높을수록 사고 이력)")
+    ax.set_ylabel("1년 사고 청구 횟수"); ax.set_xlim(45, 155); ax.set_ylim(0, 1.0)
+
+
+def claims_line_fig(x, y, k, at=145):
+    """개수에 직선: 등급이 높은 쪽에서 실제 평균은 위로 휘는데 직선은 못 따라간다."""
+    xs = np.linspace(45, 155, 200)
+    fig, ax = plt.subplots(figsize=(8.5, 4.6))
+    claims_axes(ax, x, y); ax.plot(xs, np.polyval(k, xs), color=GOLD, lw=3, label="직선")
+    m = (x >= at - 5) & (x < at + 5); real, line = y[m].mean(), np.polyval(k, at)
+    ax.annotate("", (at, line), (at, real), arrowprops=dict(arrowstyle="<->", color=RED, lw=2))
+    ax.text(at - 4, real + 0.08, f"등급 {at - 5}~{at + 4}: 실제 {real:.2f}번 · 직선 {line:.2f}번", fontsize=14, color=RED, fontweight="bold", ha="right")
+    ax.legend(frameon=False, loc="upper left", fontsize=12)
+    fig.tight_layout(); fig.savefig(O + "glm_claims_line.png"); plt.close(fig)
+
+
+def claims_pois_fig(x, y, k, wp, marks=(50, 100, 150)):
+    """포아송 회귀 e^z: 언제나 양수, 등급 10점마다 같은 배수."""
+    xs = np.linspace(45, 155, 200); pm = lambda v: np.exp(wp[0] + wp[1] * v)
+    fig, ax = plt.subplots(figsize=(8.5, 4.6))
+    claims_axes(ax, x, y)
+    ax.plot(xs, np.polyval(k, xs), color=GOLD, lw=2, ls="--", label="직선")
+    ax.plot(xs, pm(xs), color=BLUE, lw=3.5, label="포아송 회귀 $e^{z}$")
+    for v in marks:
+        ax.plot(v, pm(v), "o", color=BLUE, ms=10, zorder=5)
+        ax.annotate(f"{v}: {pm(v):.2f}번", (v, pm(v)), (-70, 14) if v == 150 else ((10, -26) if v == 100 else (6, 14)), textcoords="offset points", fontsize=14, color=BLUE, fontweight="bold")
+    ax.text(62, 0.55, f"등급 10점 오를 때마다 ×{np.exp(10 * wp[1]):.2f}", fontsize=14, color=BLUE, fontweight="bold")
+    ax.legend(frameon=False, loc="upper left", fontsize=12)
+    fig.tight_layout(); fig.savefig(O + "glm_claims_pois.png"); plt.close(fig)
+
 def softmax_fig(x, y, W, v=4.9, seed=1):
     """꽃잎 길이 하나로 세 종의 확률 (소프트맥스 회귀)."""
     rng = np.random.default_rng(seed); xs = np.linspace(1, 7, 400); P = D.softmax_p(W, xs); pv = D.softmax_p(W, v)
@@ -109,12 +144,12 @@ def dists_fig(study, chess, goals, iris, line=(38.58, 5.25), chess_at=200, n_nea
     for k, v in enumerate([1 - ph, ph]): a.text(k, v + 0.02, f"{int(round(v * n_near))}판", ha="center", fontsize=13)
     a.set_xticks([0, 1], ["흑 승 0", "백 승 1"]); a.set_ylim(0, 1)
     a.set_xlabel(f"+{chess_at}점 근처 {n_near}판"); a.set_title("체스 → 베르누이", fontsize=17, fontweight="bold")
-    # 월드컵: Elo 차이가 비슷한 경기 (|차이| <= even) 의 골 수 ~ 포아송 (같은 평균)
-    x, y = goals; v = y[np.abs(x) <= even].astype(int); lam = v.mean(); ks = np.arange(0, 8)
+    # 보험: 등급 50 (오래 무사고) 계약의 1년 청구 횟수 ~ 포아송 (같은 평균)
+    x, y = goals; v = y[x == 50].astype(int); lam = v.mean(); ks = np.arange(0, 4)
     cnt = np.bincount(v, minlength=len(ks))[:len(ks)]; pois = np.array([exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks])
-    a = ax[2]; a.bar(ks, cnt / len(v), color=GREEN, alpha=0.6, width=0.7, label=f"{len(v)}줄")
+    a = ax[2]; a.bar(ks, cnt / len(v), color=GREEN, alpha=0.6, width=0.7, label=f"{len(v):,}계약")
     a.plot(ks, pois, "o-", color="k", lw=2, ms=6, label="포아송")
-    a.set_xticks(ks); a.set_xlabel(f"골 수 (Elo 차이 ±{even})"); a.set_title("월드컵 → 포아송", fontsize=17, fontweight="bold")
+    a.set_xticks(ks); a.set_xlabel("1년 청구 횟수 (등급 50)"); a.set_title("보험 → 포아송", fontsize=17, fontweight="bold")
     a.legend(frameon=False, fontsize=11, loc="upper right")
     # 붓꽃: 꽃잎 길이 근처 ~ 범주형
     x, y = iris; m = np.abs(x - iris_at) <= 0.1 + 1e-9; n = np.bincount(y[m], minlength=3)
@@ -126,15 +161,15 @@ def dists_fig(study, chess, goals, iris, line=(38.58, 5.25), chess_at=200, n_nea
     fig.tight_layout(); fig.savefig(O + "glm_dists.png"); plt.close(fig)
     return sd, ph, round(lam, 2), n
 
-def pois_pmf_fig(lams=((-300, 0.74), (0, 1.34), (300, 2.40)), kmax=7):
-    """포아송 분포 모양: 평균 λ 하나로 정해진다 (월드컵 모델의 약팀 · 비슷 · 강팀 평균)."""
+def pois_pmf_fig(lams=((50, 0.059), (100, 0.216), (150, 0.793)), kmax=4):
+    """포아송 분포 모양: 평균 λ 하나로 정해진다 (보험 모델의 등급 50 · 100 · 150 평균)."""
     from math import lgamma, exp, log
-    ks = np.arange(0, kmax + 1); cols = [RED, GRAY, BLUE]; wd = 0.27
+    ks = np.arange(0, kmax + 1); cols = [GREEN, GRAY, RED]; wd = 0.27
     fig, ax = plt.subplots(figsize=(8.5, 4.2))
     for i, ((d, lam), c) in enumerate(zip(lams, cols)):
         pm = [exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks]
-        ax.bar(ks + (i - 1) * wd, pm, width=wd, color=c, alpha=0.85, label=f"Elo {d:+d}: λ = {lam:.2f}골" if d else f"Elo 0: λ = {lam:.2f}골")
-    ax.set_xticks(ks); ax.set_xlabel("넣은 골 y"); ax.set_ylabel("확률"); ax.legend(frameon=False, fontsize=13)
+        ax.bar(ks + (i - 1) * wd, pm, width=wd, color=c, alpha=0.85, label=f"등급 {d}: λ = {lam:.2f}번")
+    ax.set_xticks(ks); ax.set_xlabel("1년 사고 청구 횟수 y"); ax.set_ylabel("확률"); ax.legend(frameon=False, fontsize=13)
     fig.tight_layout(); fig.savefig(O + "glm_pois_pmf.png"); plt.close(fig)
 
 def pois_examples_fig(sets, kmax=6):
@@ -144,7 +179,7 @@ def pois_examples_fig(sets, kmax=6):
     for a, (title, xl, cnt, lam, unit) in zip(ax, sets):
         cnt = np.asarray(cnt); ks = np.arange(len(cnt)); n = cnt.sum()
         pm = np.array([exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks])
-        a.bar(ks, cnt / n, color=GREEN, alpha=0.6, width=0.7, label=f"실제 {n}{unit}")
+        a.bar(ks, cnt / n, color=GREEN, alpha=0.6, width=0.7, label=f"실제 {n:,}{unit}")
         a.plot(ks, pm, "o-", color="k", lw=2, ms=6, label=f"포아송 λ = {lam:.2f}")
         a.set_xticks(ks); a.set_xlabel(xl); a.set_title(title, fontsize=17, fontweight="bold"); a.set_yticks([])
         a.legend(frameon=False, fontsize=12, loc="upper right")
@@ -198,13 +233,12 @@ def scatter_cells_fig(nx=12, ny=8, lam=2, seed=3, kmax=8):
     return out
 
 if __name__ == "__main__":
-    st, ch, (x, y), ir = D.study(), D.chess(), D.goals(), D.iris()
-    types_fig(st, ch, (x, y), ir); print("dists", dists_fig(st, ch, (x, y), ir))
-    k = np.polyfit(x, y, 1); goals_line_fig(x, y, k)
-    wp = D.fit_glm(x, y, np.exp, lr=0.05, steps=20000, scale=100, w0=np.log(y.mean())); goals_pois_fig(x, y, k, wp)
+    st, ch, ir = D.study(), D.chess(), D.iris(); cx, cy = D.claims()
+    print("dists", dists_fig(st, ch, (cx, cy), ir))
+    k = np.polyfit(cx, cy, 1); claims_line_fig(cx, cy, k)
+    wp = D.fit_glm(cx, cy, np.exp, lr=0.5, steps=20000, scale=10, shift=50, w0=np.log(cy.mean())); claims_pois_fig(cx, cy, k, wp)
     W = D.fit_softmax(*ir); softmax_fig(*ir, W); pois_pmf_fig()
-    v = y[np.abs(x) <= 50].astype(int); gc = np.bincount(np.minimum(v, 6))
-    pois_examples_fig([("월드컵: 한 팀의 골", "골 수 (Elo 차이 ±50)", gc, v.mean(), "줄"),
+    pois_examples_fig([("자동차 보험: 1년 사고 청구", "한 계약의 1년 청구 횟수", D.CLAIMS_COUNTS, D.CLAIMS_MEAN, "계약"),
                        ("기병대: 말에 차여 숨진 병사", "한 부대 · 한 해의 사망자", D.HORSE_KICKS, D.HORSE_MEAN, "부대-년"),
                        ("런던: 구역에 떨어진 폭탄", "0.25 km² 구역의 V-1 수", D.V1_BOMBS, D.V1_MEAN, "구역")])
     pois_origin_fig(); print("scatter", scatter_cells_fig())

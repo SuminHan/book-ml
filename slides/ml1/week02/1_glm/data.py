@@ -6,6 +6,9 @@
   x = 경기 전 Elo 차이 (내 팀 − 상대, 홈 +100 포함). data/worldcup_goals.csv 는 prep_worldcup.py 가 만든다
 - 말 발길질: Bortkiewicz (1898) 프로이센 기병 10개 부대 x 20년 = 200 부대-년, 한 해 말에 차여 죽은 병사 수
 - V-1 폭탄: Clarke (1946) 런던 남부 576 구역 (0.25 km²), 구역마다 떨어진 폭탄 수 (537발)
+- 자동차 보험: freMTPL2freq (프랑스 자동차 책임보험, OpenML 41214) 중 1년을 꼬박 채운 169,349 계약.
+  y = 1년 사고 청구 횟수, x = 보너스-말러스 등급 (처음 100, 무사고 1년마다 x0.95 · 최저 50, 사고 1번마다 x1.25).
+  data/insurance_claims.csv 는 prep_insurance.py 가 만든다
 - 붓꽃: Fisher (1936) iris 150송이 (sklearn.datasets.load_iris), 꽃잎 길이 하나로 세 종
 """
 import os
@@ -30,6 +33,20 @@ def chess():
 def goals():
     d = pd.read_csv(os.path.join(HERE, "data", "worldcup_goals.csv"))
     return d.elo_diff.values.astype(float), d.goals.values.astype(float)
+
+
+def claims():
+    d = pd.read_csv(os.path.join(HERE, "data", "insurance_claims.csv"))
+    return d.bonus_malus.values.astype(float), d.claims.values.astype(float)
+
+
+def claim_means(x, y, lo=50, hi=150, step=10):
+    """등급 10점 구간마다 [가운데, 실제 평균 청구, 계약 수]."""
+    out = []
+    for a in range(lo, hi, step):
+        m = (x >= a) & (x < a + step)
+        if m.sum(): out.append((a + step / 2 if a > lo else lo, y[m].mean(), m.sum()))
+    return np.array(out)
 
 
 def iris():
@@ -92,6 +109,17 @@ POKER_LAM = 1.27                        # 세 경우 모두 판 수 x 확률 = 1
 POKER_P = (42.26, 2.11, 0.144)          # 한 판에 나올 확률 (%)
 POKER_GAP = (0.089, 0.004, 0.000)       # 이항 vs 포아송 확률 차이의 최댓값
 V1_BINOM = (227, 212, 99, 31, 7)        # 537발이 각자 1/576 확률로 한 구역에: 이항으로 기대한 구역 수 (0~4발)
+CLAIMS_N = 169349                      # 1년 꼬박 채운 계약
+CLAIMS_MEAN, CLAIMS_VAR = 0.070, 0.072  # 1년 사고 청구: 평균 · 분산 (거의 같다 → 포아송)
+CLAIMS_COUNTS = (158087, 10723, 521, 18)   # 0 · 1 · 2 · 3번 이상
+CLAIMS_LINE = (-0.097, 0.00306)         # 직선: 청구 = -0.097 + 0.00306 x
+CLAIMS_POIS = (-4.137, 0.0260)          # 포아송: 청구 = e^(-4.137 + 0.0260 x)
+CLAIMS_RATIO10 = 1.30                   # 등급 10점 오를 때마다 x1.30
+CLAIMS_P = {50: 0.059, 100: 0.216, 150: 0.793}   # 포아송 예측
+CLAIMS_L = {50: 0.056, 100: 0.209, 150: 0.362}   # 직선 예측
+CLAIMS_BIN140 = (50, 0.72)              # 등급 140~149: 계약 수, 실제 평균 청구
+CLAIMS_BM50 = (123281, 0.056, 0.058)    # 등급 50 (오래 무사고): 계약 수, 평균, 분산 (분포 그림)
+CLAIMS_G1 = -0.035                      # 첫 걸음: 평균((yhat - y) x), x 는 10점 단위
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
 IRIS_LOSS49 = 0.54                      # 4.9 cm 꽃이 virginica 일 때 교차 엔트로피 -ln 0.58
 IRIS_CROSS = (2.6, 4.9)                 # 확률이 바뀌는 길이 (setosa|versicolor, versicolor|virginica)
@@ -105,32 +133,26 @@ if __name__ == "__main__":
     assert np.allclose(w, CHESS_W, atol=5e-3) and abs(w[1] - CHESS_W[1]) < 5e-5
     assert round(w[0] + 200 * w[1], 2) == CHESS_Z200 and round(sig(w[0] + 200 * w[1]), 2) == CHESS_P200
 
-    x, y = goals(); k = np.polyfit(x, y, 1)
-    print("goals n", len(x), "mean", y.mean().round(3), "x", x.min(), x.max(), "line", k[::-1].round(5), "zero", round(-k[1] / k[0]), "neg", int((np.polyval(k, x) < 0).sum()))
-    assert len(x) == GOALS_N and (x.min(), x.max()) == (GOALS_XMIN, GOALS_XMAX) and round(y.mean(), 2) == GOALS_MEAN
-    assert np.allclose(k[::-1], GOALS_LINE, atol=[5e-4, 5e-6]) and round(-k[1] / k[0]) == GOALS_LINE_ZERO and (np.polyval(k, x) < 0).sum() == GOALS_LINE_NEG
-    wp = fit_glm(x, y, np.exp, lr=0.05, steps=20000, scale=100, w0=np.log(y.mean()))
+    x, y = claims(); k = np.polyfit(x, y, 1)
+    c = np.bincount(np.minimum(y.astype(int), 3))
+    print("claims", len(x), y.mean().round(4), y.var().round(4), c, "line", k[::-1].round(5))
+    assert len(x) == CLAIMS_N and (round(y.mean(), 3), round(y.var(), 3)) == (CLAIMS_MEAN, CLAIMS_VAR) and tuple(c) == CLAIMS_COUNTS
+    assert np.allclose(k[::-1], CLAIMS_LINE, atol=[5e-4, 5e-6])
+    wp = fit_glm(x, y, np.exp, lr=0.5, steps=20000, scale=10, shift=50, w0=np.log(y.mean()))
     pm = lambda v: np.exp(wp[0] + wp[1] * v)
-    print("poisson", wp.round(5), "ratio100", round(np.exp(100 * wp[1]), 3), {v: round(pm(v), 2) for v in GOALS_P})
     from sklearn.linear_model import PoissonRegressor
     sk = PoissonRegressor(alpha=0, max_iter=3000).fit(x[:, None], y)
-    assert abs(sk.intercept_ - wp[0]) < 1e-4 and abs(sk.coef_[0] - wp[1]) < 1e-6      # 경사하강법 = sklearn
-    assert np.allclose(wp, GOALS_POIS, atol=[5e-4, 5e-6]) and round(np.exp(100 * wp[1]), 2) == GOALS_RATIO
-    assert all(round(pm(v), 2) == p for v, p in GOALS_P.items()) and all(round(np.polyval(k, v), 2) == p for v, p in GOALS_L.items())
-    assert (round(pm(x.min()), 2), round(np.polyval(k, x.min()), 2)) == (GOALS_PMIN, GOALS_LMIN)
-    m = (x >= -500) & (x < -400); assert (m.sum(), round(y[m].mean(), 2), round(np.polyval(k, -450), 2)) == GOALS_BIN_M450
+    print("poisson", wp.round(5), "sk", round(sk.intercept_, 5), sk.coef_.round(5), {v: round(pm(v), 3) for v in CLAIMS_P})
+    assert abs(sk.intercept_ - wp[0]) < 1e-3 and abs(sk.coef_[0] - wp[1]) < 1e-5
+    assert np.allclose(wp, CLAIMS_POIS, atol=[5e-4, 5e-5]) and round(np.exp(10 * wp[1]), 2) == CLAIMS_RATIO10
+    assert all(round(pm(v), 3) == p for v, p in CLAIMS_P.items()) and all(round(np.polyval(k, v), 3) == p for v, p in CLAIMS_L.items())
+    m = (x >= 140) & (x < 150); assert (m.sum(), round(y[m].mean(), 2)) == CLAIMS_BIN140
+    m = x == 50; assert (m.sum(), round(y[m].mean(), 3), round(y[m].var(), 3)) == CLAIMS_BM50
+    assert round(np.mean((y.mean() - y) * x / 10), 3) == CLAIMS_G1
+
+    x, y = goals(); k = np.polyfit(x, y, 1)
+    assert len(x) == GOALS_N
     m = np.abs(x) <= 50; assert (m.sum(), round(y[m].mean(), 2), round(y[m].var(), 2)) == GOALS_EVEN
-
-    h = np.array(HORSE_KICKS); assert h.sum() == 200 and round((h * np.arange(5)).sum() / 200, 2) == HORSE_MEAN
-    b = np.array(V1_BOMBS); assert b.sum() == V1_N and (b[:5] * np.arange(5)).sum() + 7 == V1_TOTAL and round(V1_TOTAL / V1_N, 2) == V1_MEAN
-
-    from math import comb, exp as _e, factorial
-    T = comb(52, 5); assert T == 2598960
-    for (name, (c, n)), pp, gap in zip(POKER.items(), POKER_P, POKER_GAP):
-        p = c / T; lam = n * p; assert round(100 * p, 3 if pp < 1 else 2) == pp and round(lam, 2) == POKER_LAM
-        bi = [comb(n, k) * p ** k * (1 - p) ** (n - k) if k <= n else 0 for k in range(8)]
-        assert round(max(abs(a - lam ** k * _e(-lam) / factorial(k)) for k, a in enumerate(bi)), 3) == gap
-    assert tuple(round(comb(537, k) * (1 / 576) ** k * (575 / 576) ** (537 - k) * 576) for k in range(5)) == V1_BINOM
 
     x, y = iris(); W = fit_softmax(x, y); p = softmax_p(W, 4.9)
     xs = np.linspace(1, 7, 6001); P = softmax_p(W, xs)
