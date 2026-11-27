@@ -312,6 +312,31 @@ def v1_sim_fig(lon, lat, reps=10000):
     fig.tight_layout(); fig.savefig(O + "glm_v1_sim.png"); plt.close(fig)
     return tab, lo, hi, round(r, 3), np.percentile(R, [2.5, 97.5]).round(3)
 
+def cannon_fig(x, y, w, v_show=29.0, n_arc=200, seed=2, g=9.8, line=100.0, kmax=8):
+    """대포: 왼쪽 = 설정 속도 29 m/s 로 쏜 포탄 몇 발 (100 m 선을 넘은 것 빨강), 가운데 = 200발 중 넘은 개수 1000번 vs 포아송,
+    오른쪽 = 설정 속도 x 마다 평균 개수 + 포아송 회귀 e^(w0 + w1 x)."""
+    from math import exp, factorial
+    fig, ax = plt.subplots(1, 3, figsize=(14, 4.2), gridspec_kw={"width_ratios": [1.3, 1, 1]})
+    a = ax[0]; rng = np.random.default_rng(seed)
+    for v in v_show + rng.normal(0, 1.0, n_arc):
+        R = v * v / g; t = np.linspace(0, R, 80); hgt = t - t * t / R
+        a.plot(t, hgt, color=RED if R > line else BLUE, lw=2.2 if R > line else 0.5, alpha=1 if R > line else 0.18, zorder=3 if R > line else 1)
+    a.axvline(line, color="k", lw=2, ls="--"); a.text(line + 1, 24, "100 m 선", fontsize=13, fontweight="bold")
+    a.text(2, 27, f"45°, 속도 {v_show:.0f} m/s ± 흔들림 · 빨강 = 넘음", fontsize=13, color=BLUE)
+    a.set_xlim(0, 112); a.set_ylim(0, 30); a.set_xlabel("거리 (m)"); a.set_yticks([]); a.set_title("대포 200발: 선을 넘는 건 드물다", fontsize=15, fontweight="bold")
+    b = ax[1]; c = y[x == v_show].astype(int); lam = c.mean(); ks = np.arange(kmax + 1)
+    cnt = np.bincount(np.minimum(c, kmax), minlength=kmax + 1) / len(c)
+    b.bar(ks, cnt, color=RED, alpha=0.55, width=0.7, label="1000번 되풀이")
+    b.plot(ks, [lam ** k * exp(-lam) / factorial(k) for k in ks], "o-", color="k", lw=2, ms=5, label=f"포아송 λ = {lam:.2f}")
+    b.set_xticks(ks); b.set_yticks([]); b.set_xlabel("200발 중 선을 넘은 개수"); b.legend(frameon=False, fontsize=11)
+    b.set_title(f"속도 {v_show:.0f} m/s: 개수는 포아송", fontsize=15, fontweight="bold")
+    d = ax[2]; vs = np.unique(x); mu = [y[x == v].mean() for v in vs]; u = np.linspace(vs[0] - 0.1, vs[-1] + 0.1, 100)
+    d.plot(vs, mu, "o", color="k", ms=8, label="평균 개수 (1000번)")
+    d.plot(u, np.exp(w[0] + w[1] * u), color=BLUE, lw=3, label="포아송 회귀 $e^{w_0 + w_1 x}$")
+    d.set_xlabel("설정 속도 x (m/s)"); d.set_ylabel("선을 넘은 개수"); d.legend(frameon=False, fontsize=11, loc="upper left")
+    d.set_title(f"x 가 0.25 늘면 ×{np.exp(0.25 * w[1]):.2f}", fontsize=15, fontweight="bold")
+    fig.tight_layout(); fig.savefig(O + "glm_cannon.png"); plt.close(fig)
+
 if __name__ == "__main__":
     st, ch, ir = D.study(), D.chess(), D.iris(); cx, cy = D.claims()
     print("dists", dists_fig(st, ch, (cx, cy), ir))
@@ -322,5 +347,7 @@ if __name__ == "__main__":
                        ("기병대: 말에 차여 숨진 병사", "한 부대 · 한 해의 사망자", D.HORSE_KICKS, D.HORSE_MEAN, "부대-년"),
                        ("자동차 보험: 1년 사고 청구", "한 운전자의 1년 청구 횟수", D.CLAIMS_COUNTS, D.CLAIMS_MEAN, "계약")])
     vl, va = D.v1_lonlat(); print("v1 map", v1_map_fig(vl, va)); print("v1 sim", v1_sim_fig(vl, va))
+    from sklearn.linear_model import PoissonRegressor
+    kx, ky = D.cannon(); cw = PoissonRegressor(alpha=0, max_iter=1000).fit(kx[:, None], ky); cannon_fig(kx, ky, (cw.intercept_, cw.coef_[0]))
     pois_origin_fig(); print("scatter", scatter_cells_fig())
     print("figs ok", wp.round(5))

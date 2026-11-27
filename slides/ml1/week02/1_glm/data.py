@@ -82,6 +82,16 @@ def v1_sim(k, cells, reps=10000, seed=0):
     return np.array([np.bincount(np.minimum(np.bincount(rng.integers(0, cells, k), minlength=cells), 5), minlength=6) for _ in range(reps)])
 
 
+def cannon(vs=None, reps=1000, n=200, sd=1.0, line=100.0, seed=0, g=9.8):
+    """대포 시뮬레이션: 45도로 n 발을 쏜다. 속도는 설정값 v + 흔들림 (표준편차 sd m/s), 사거리 = v^2 / g.
+    y = n 발 중 line (m) 선을 넘은 개수. 설정 속도마다 reps 번 되풀이. 돌려주는 것: (x = 설정 속도, y = 개수) 줄들."""
+    vs = np.round(np.arange(28.0, 29.51, 0.25), 2) if vs is None else np.asarray(vs)
+    rng = np.random.default_rng(seed); X, Y = [], []
+    for v in vs:
+        V = v + rng.normal(0, sd, (reps, n)); Y.append(((V ** 2 / g) > line).sum(1)); X.append(np.full(reps, v))
+    return np.concatenate(X), np.concatenate(Y).astype(float)
+
+
 def iris():
     from sklearn.datasets import load_iris
     X, y = load_iris(return_X_y=True)
@@ -159,6 +169,9 @@ V1_REAL_TAB = (190, 141, 68, 26, 7, 0)  # 0 · 1 · 2 · 3 · 4 · 5+ 발 칸 �
 V1_REAL_MV = (0.89, 0.97)               # 칸당 평균, 분산
 V1_SIM_ZERO = (166, 190)                # 제멋대로 1만 번: 0발 칸 수의 95% 범위
 V1_SIM_ONE, V1_SIM_TWO = (139, 177), (57, 83)   # 1발 · 2발 칸 수의 95% 범위 (실제는 모두 안)
+CANNON_MV29 = (2.16, 2.21)              # 설정 속도 29 m/s: 200발 중 100 m 넘은 개수의 평균 · 분산
+CANNON_W = (-74.8, 2.60)                # 포아송 회귀: 개수 = e^(w0 + w1 x), x = 설정 속도 (28 ~ 29.5 m/s)
+CANNON_RATIO = 1.92                     # 속도 0.25 m/s 늘 때마다 개수 x1.92
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
 IRIS_LOSS49 = 0.54                      # 4.9 cm 꽃이 virginica 일 때 교차 엔트로피 -ln 0.58
 IRIS_CROSS = (2.6, 4.9)                 # 확률이 바뀌는 길이 (setosa|versicolor, versicolor|virginica)
@@ -199,6 +212,13 @@ if __name__ == "__main__":
     assert (round(H.mean(), 2), round(H.var(), 2)) == V1_REAL_MV
     S = v1_sim(k, H.size); assert tuple(np.percentile(S[:, 0], [2.5, 97.5]).astype(int)) == V1_SIM_ZERO
     assert tuple(np.percentile(S[:, 1], [2.5, 97.5]).astype(int)) == V1_SIM_ONE and tuple(np.percentile(S[:, 2], [2.5, 97.5]).astype(int)) == V1_SIM_TWO
+
+    x, y = cannon(); m = x == 29.0
+    from sklearn.linear_model import PoissonRegressor
+    cw = PoissonRegressor(alpha=0, max_iter=1000).fit(x[:, None], y)
+    print("cannon", round(y[m].mean(), 2), round(y[m].var(), 2), round(cw.intercept_, 2), cw.coef_.round(3), round(np.exp(0.25 * cw.coef_[0]), 2))
+    assert (round(y[m].mean(), 2), round(y[m].var(), 2)) == CANNON_MV29
+    assert (round(cw.intercept_, 1), round(cw.coef_[0], 2)) == CANNON_W and round(np.exp(0.25 * cw.coef_[0]), 2) == CANNON_RATIO
 
     x, y = iris(); W = fit_softmax(x, y); p = softmax_p(W, 4.9)
     xs = np.linspace(1, 7, 6001); P = softmax_p(W, xs)
