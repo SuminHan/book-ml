@@ -281,6 +281,26 @@ $K$ 개 중 하나 & 범주형 & (벡터) & $\mathrm{softmax}(z)$ & 소프트맥
 \note{GLM은 딥러닝으로 그대로 이어집니다. 신경망은 입력 x를 숨은 층들에 통과시켜 특징 h를 만들고, 마지막 층에서 z 이퀄 w 점곱 h 더하기 b를 계산한 뒤 함수 g를 씌웁니다. 이 마지막 층이 바로 오늘 본 GLM입니다. 분류하는 신경망의 끝은 로지스틱회귀나 소프트맥스 회귀이고, 숫자를 맞히는 신경망의 끝은 선형회귀입니다. 앞의 층들이 하는 일은 x 대신 GLM이 잘 쓸 수 있는 좋은 특징 h를 만드는 것입니다. 그리고 학습할 때 손실을 z로 미분한 값은, 오늘 본 대로 와이햇 빼기 y입니다. 역전파는 바로 이 와이햇 빼기 y에서 시작해서 앞 층으로 전해집니다. 7주차 역전파에서 다시 만납니다.}
 \end{frame}
 
+% --- 분포 하나에서 출력 함수와 손실이 둘 다
+\begin{frame}{분포는 activation 도 loss 도 아니다: 둘 다 분포에서 나온다}
+\vfill
+\centering
+\begin{tikzpicture}[every node/.style={font=\large},
+  box/.style={draw, rounded corners=3pt, thick, minimum height=1.0cm, minimum width=3.4cm, align=center}]
+\node[box, draw=ksablue, fill=ksablue!8, font=\Large\bfseries] (d) {분포 하나 고르기};
+\node[box, below left=1.3cm and 0.6cm of d] (g) {출력 함수 $g(z)$\\{\normalsize 마지막 층의 activation}};
+\node[box, below right=1.3cm and 0.6cm of d] (l) {손실 함수\\{\normalsize loss}};
+\draw[-{Stealth}, thick] (d.south) -- node[left=6pt, font=\normalsize] {평균을 $z$ 로 풀기} (g.north);
+\draw[-{Stealth}, thick] (d.south) -- node[right=6pt, font=\normalsize] {$-\log p$} (l.north);
+\node[below=0.25cm of g, font=\normalsize] {예: 베르누이 $\to$ 시그모이드 $\sigma(z)$};
+\node[below=0.25cm of l, font=\normalsize] {예: 베르누이 $\to$ 이진 교차 엔트로피};
+\end{tikzpicture}\vskip1.2em
+{\large 같은 분포에서 나왔으니 \kb{짝}으로 다닌다 \;$\to$\; 미분하면 $\hat y - y$}\\[0.3em]
+{\small 숨은 층의 activation (ReLU 등) 은 분포와 상관없다}
+\vfill
+\note{자주 헷갈리는 질문이 있습니다. 정규분포, 베르누이 같은 분포는 activation 함수일까요, 손실 함수일까요? 둘 다 아닙니다. 분포는 y가 이렇게 나온다는 가정입니다. 그리고 이 가정 하나에서 둘이 다 나옵니다. 분포의 평균을 z로 풀면 출력 함수 g가 나오고, 이게 신경망 마지막 층의 activation입니다. 분포에 마이너스 log를 씌우면 손실 함수가 나옵니다. 베르누이를 고르면 출력은 시그모이드, 손실은 이진 교차 엔트로피입니다. 같은 분포에서 나왔으니 둘은 짝으로 다니고, 그래서 미분하면 와이햇 빼기 y로 깔끔합니다. 단, 숨은 층의 ReLU 같은 activation은 분포와 상관없습니다. 마지막 층만입니다. 다음 쪽에서 네 분포의 짝을 표로 봅니다.}
+\end{frame}
+
 % --- 짝 맞추기
 \begin{frame}{출력 함수와 손실은 짝으로 쓴다}
 \vfill
