@@ -79,7 +79,7 @@ GOALS_RATIO = 1.22                      # Elo 100 앞설 때마다 x1.22
 GOALS_P = {-400: 0.61, -300: 0.74, 0: 1.34, 300: 2.40}      # 포아송 예측
 GOALS_L = {-400: 0.31, -300: 0.59, 0: 1.42, 300: 2.25}      # 직선 예측
 GOALS_PMIN, GOALS_LMIN = 0.43, -0.17     # 가장 약한 쪽 (Elo -575): 포아송 / 직선
-GOALS_BIN_M400 = (64, 0.66)             # Elo 차이 -400 ~ -300 인 64줄의 실제 평균 골
+GOALS_BIN_M450 = (18, 0.83, 0.17)       # Elo 차이 -500 ~ -400: 줄 수, 실제 평균 골, 직선 (가운데 -450)
 GOALS_EVEN = (462, 1.30, 1.68)          # Elo 차이 -50 ~ +50: 줄 수, 평균, 분산 (분포 그림)
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
 IRIS_CROSS = (2.6, 4.9)                 # 확률이 바뀌는 길이 (setosa|versicolor, versicolor|virginica)
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     assert np.allclose(wp, GOALS_POIS, atol=[5e-4, 5e-6]) and round(np.exp(100 * wp[1]), 2) == GOALS_RATIO
     assert all(round(pm(v), 2) == p for v, p in GOALS_P.items()) and all(round(np.polyval(k, v), 2) == p for v, p in GOALS_L.items())
     assert (round(pm(x.min()), 2), round(np.polyval(k, x.min()), 2)) == (GOALS_PMIN, GOALS_LMIN)
-    m = (x >= -400) & (x < -300); assert (m.sum(), round(y[m].mean(), 2)) == GOALS_BIN_M400
+    m = (x >= -500) & (x < -400); assert (m.sum(), round(y[m].mean(), 2), round(np.polyval(k, -450), 2)) == GOALS_BIN_M450
     m = np.abs(x) <= 50; assert (m.sum(), round(y[m].mean(), 2), round(y[m].var(), 2)) == GOALS_EVEN
 
     x, y = iris(); W = fit_softmax(x, y); p = softmax_p(W, 4.9)

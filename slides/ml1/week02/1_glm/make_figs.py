@@ -33,25 +33,35 @@ def types_fig(study, chess, goals, iris, seed=0):
     fig.tight_layout(); fig.savefig(O + "glm_types.png"); plt.close(fig)
 
 
-def goals_axes(ax, x, y, seed=0, step=100):
-    """흐린 점 = 팀-경기 한 줄 (골은 정수라 위아래로 살짝 흔듦), 검은 점 = Elo 차이 100 구간마다 실제 평균 골."""
-    rng = np.random.default_rng(seed)
-    ax.scatter(x, y + rng.uniform(-0.2, 0.2, len(y)), s=7, color=GREEN, alpha=0.22, edgecolors="none", label=f"팀-경기 {len(y):,}줄")
-    edges = np.arange(-600, 601, step); c = (edges[:-1] + edges[1:]) / 2
-    mu = np.array([y[(x >= lo) & (x < lo + step)].mean() if ((x >= lo) & (x < lo + step)).sum() >= 15 else np.nan for lo in edges[:-1]])
-    ax.plot(c, mu, "o", color="k", ms=7, label="구간 평균 (실제)")
-    ax.set_xlabel("Elo 차이 (내 팀 − 상대)"); ax.set_ylabel("넣은 골"); ax.set_xlim(-600, 600)
+def goal_means(x, y, step=100, min_n=15):
+    """Elo 차이 step 구간마다 실제 평균 골 (줄이 min_n 개 이상인 구간만)."""
+    out = []
+    for lo in np.arange(-600, 600, step):
+        m = (x >= lo) & (x < lo + step)
+        if m.sum() >= min_n: out.append((lo + step / 2, y[m].mean(), m.sum()))
+    return np.array(out)
 
 
-def goals_line_fig(x, y, k, at=-350):
+def goals_axes(ax, x, y):
+    """검은 점 = Elo 차이 100 구간마다 실제 평균 골 (점 크기 = 경기 수)."""
+    g = goal_means(x, y)
+    ax.scatter(g[:, 0], g[:, 1], s=g[:, 2] * 0.5 + 20, color="k", zorder=4, label="실제 평균 골 (점 크기 = 경기 수)")
+    ax.axhline(0, color=GRAY, lw=1)
+    ax.set_xlabel("Elo 차이 (내 팀 − 상대)   ← 약팀  ·  강팀 →"); ax.set_ylabel("한 경기에 넣은 골"); ax.set_xlim(-600, 600)
+
+
+def goals_line_fig(x, y, k, at=-450):
     """개수에 직선: 약팀 골을 너무 낮게, 끝에서는 음수."""
     xs = np.linspace(-600, 600, 200); z0 = -k[1] / k[0]
     fig, ax = plt.subplots(figsize=(8.5, 4.6))
-    ax.axhspan(-1, 0, color=RED, alpha=0.08)
+    ax.axhspan(-0.6, 0, color=RED, alpha=0.08)
     goals_axes(ax, x, y); ax.plot(xs, np.polyval(k, xs), color=GOLD, lw=3, label="직선")
-    ax.annotate(f"Elo {z0:.0f} 아래면\n골 < 0 ?", (-560, np.polyval(k, -560)), (-430, -0.85), fontsize=14, color=RED, fontweight="bold",
+    m = (x >= at - 50) & (x < at + 50); real, line = y[m].mean(), np.polyval(k, at)
+    ax.annotate("", (at, line), (at, real), arrowprops=dict(arrowstyle="<->", color=BLUE, lw=2))
+    ax.text(at - 140, real + 0.45, f"약팀: 실제 {real:.2f}골\n직선은 {line:.2f}골", fontsize=14, color=BLUE, fontweight="bold", va="center")
+    ax.annotate(f"{-z0:.0f}점 넘게 뒤지면\n직선은 골 < 0", (-560, np.polyval(k, -560)), (-420, -0.5), fontsize=14, color=RED, fontweight="bold",
                 arrowprops=dict(arrowstyle="->", color=RED))
-    ax.set_ylim(-1, 6); ax.legend(frameon=False, loc="upper left", fontsize=11)
+    ax.set_ylim(-0.6, 3.4); ax.legend(frameon=False, loc="upper left", fontsize=12)
     fig.tight_layout(); fig.savefig(O + "glm_goals_line.png"); plt.close(fig)
 
 
@@ -65,8 +75,8 @@ def goals_pois_fig(x, y, k, wp, marks=(-300, 0, 300)):
     for v in marks:
         ax.plot(v, pm(v), "o", color=BLUE, ms=10, zorder=5)
         ax.annotate(f"{v:+d}: {pm(v):.2f}골" if v else f"0: {pm(v):.2f}골", (v, pm(v)), (-30, 26), textcoords="offset points", fontsize=14, color=BLUE, fontweight="bold")
-    ax.text(120, -0.6, f"Elo 100 앞설 때마다 ×{np.exp(100 * wp[1]):.2f}", fontsize=14, color=BLUE, fontweight="bold")
-    ax.set_ylim(-1, 6); ax.legend(frameon=False, loc="upper left", fontsize=11)
+    ax.text(80, 0.25, f"Elo 100 앞설 때마다 ×{np.exp(100 * wp[1]):.2f}", fontsize=14, color=BLUE, fontweight="bold")
+    ax.set_ylim(-0.6, 4.6); ax.legend(frameon=False, loc="upper left", fontsize=12)
     fig.tight_layout(); fig.savefig(O + "glm_goals_pois.png"); plt.close(fig)
 
 def softmax_fig(x, y, W, v=4.9, seed=1):
