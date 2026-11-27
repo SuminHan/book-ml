@@ -150,6 +150,20 @@ def pois_examples_fig(sets, kmax=6):
         a.legend(frameon=False, fontsize=12, loc="upper right")
     fig.tight_layout(); fig.savefig(O + "glm_pois_examples.png"); plt.close(fig)
 
+def pois_origin_fig(lam=D.ORIGIN_LAM, ns=(3, 10, 90), kmax=6, minutes=90):
+    """포아송의 발명: 한 경기 90분을 n칸으로 쪼개고 칸마다 골 확률 lam/n 의 동전 → n 이 커지면 포아송."""
+    from math import comb, exp, factorial
+    ks = np.arange(kmax + 1); po = [lam ** k * exp(-lam) / factorial(k) for k in ks]
+    fig, ax = plt.subplots(1, len(ns), figsize=(13, 3.7), sharey=True)
+    for a, n in zip(ax, ns):
+        p = lam / n; bi = [comb(n, k) * p ** k * (1 - p) ** (n - k) if k <= n else 0 for k in ks]
+        a.bar(ks, bi, color=BLUE, alpha=0.55, width=0.7, label=f"동전 {n}번")
+        a.plot(ks, po, "o-", color="k", lw=2, ms=6, label=f"포아송 λ = {lam:.2f}")
+        per = f"{minutes // n}분씩" if minutes % n == 0 else ""
+        a.set_title(f"{n}칸 ({per}) · 칸마다 {100 * p:.1f}%", fontsize=16, fontweight="bold")
+        a.set_xticks(ks); a.set_xlabel("한 경기의 골 수"); a.set_yticks([]); a.legend(frameon=False, fontsize=12)
+    fig.tight_layout(); fig.savefig(O + "glm_pois_origin.png"); plt.close(fig)
+
 if __name__ == "__main__":
     st, ch, (x, y), ir = D.study(), D.chess(), D.goals(), D.iris()
     types_fig(st, ch, (x, y), ir); print("dists", dists_fig(st, ch, (x, y), ir))
@@ -160,4 +174,5 @@ if __name__ == "__main__":
     pois_examples_fig([("월드컵: 한 팀의 골", "골 수 (Elo 차이 ±50)", gc, v.mean(), "줄"),
                        ("기병대: 말에 차여 숨진 병사", "한 부대 · 한 해의 사망자", D.HORSE_KICKS, D.HORSE_MEAN, "부대-년"),
                        ("런던: 구역에 떨어진 폭탄", "0.25 km² 구역의 V-1 수", D.V1_BOMBS, D.V1_MEAN, "구역")])
+    pois_origin_fig()
     print("figs ok", wp.round(5))
