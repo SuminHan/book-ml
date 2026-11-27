@@ -161,15 +161,15 @@ def dists_fig(study, chess, goals, iris, line=(38.58, 5.25), chess_at=200, n_nea
     fig.tight_layout(); fig.savefig(O + "glm_dists.png"); plt.close(fig)
     return sd, ph, round(lam, 2), n
 
-def pois_pmf_fig(lams=((50, 0.059), (100, 0.216), (150, 0.793)), kmax=4):
-    """포아송 분포 모양: 평균 λ 하나로 정해진다 (보험 모델의 등급 50 · 100 · 150 평균)."""
+def pois_pmf_fig(lams=((28.5, 0.54), (29.0, 2.16), (29.5, 7.02)), kmax=14):
+    """포아송 분포 모양: 평균 λ 하나로 정해진다 (대포 설정 속도 28.5 · 29 · 29.5 m/s 의 평균 개수)."""
     from math import lgamma, exp, log
     ks = np.arange(0, kmax + 1); cols = [GREEN, GRAY, RED]; wd = 0.27
     fig, ax = plt.subplots(figsize=(8.5, 4.2))
     for i, ((d, lam), c) in enumerate(zip(lams, cols)):
         pm = [exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks]
-        ax.bar(ks + (i - 1) * wd, pm, width=wd, color=c, alpha=0.85, label=f"등급 {d}: λ = {lam:.2f}번")
-    ax.set_xticks(ks); ax.set_xlabel("1년 사고 청구 횟수 y"); ax.set_ylabel("확률"); ax.legend(frameon=False, fontsize=13)
+        ax.bar(ks + (i - 1) * wd, pm, width=wd, color=c, alpha=0.85, label=f"속도 {d} m/s: λ = {lam:.2f}발")
+    ax.set_xticks(ks); ax.set_xlabel("200발 중 선을 넘은 개수 y"); ax.set_ylabel("확률"); ax.legend(frameon=False, fontsize=13)
     fig.tight_layout(); fig.savefig(O + "glm_pois_pmf.png"); plt.close(fig)
 
 def pois_examples_fig(sets, kmax=6):
@@ -313,29 +313,29 @@ def v1_sim_fig(lon, lat, reps=10000):
     return tab, lo, hi, round(r, 3), np.percentile(R, [2.5, 97.5]).round(3)
 
 def cannon_fig(x, y, w, v_show=29.0, n_arc=200, seed=2, g=9.8, line=100.0, kmax=8):
-    """대포: 왼쪽 = 설정 속도 29 m/s 로 쏜 포탄 몇 발 (100 m 선을 넘은 것 빨강), 가운데 = 200발 중 넘은 개수 1000번 vs 포아송,
-    오른쪽 = 설정 속도 x 마다 평균 개수 + 포아송 회귀 e^(w0 + w1 x)."""
+    """대포 그림 세 장: glm_cannon_arcs (29 m/s 로 쏜 200발, 100 m 선을 넘은 것 빨강), glm_cannon_count (200발 중 넘은 개수 1000번 vs 포아송),
+    glm_cannon_reg (설정 속도 x 마다 평균 개수 + 포아송 회귀 e^(w0 + w1 x))."""
     from math import exp, factorial
-    fig, ax = plt.subplots(1, 3, figsize=(14, 4.2), gridspec_kw={"width_ratios": [1.3, 1, 1]})
-    a = ax[0]; rng = np.random.default_rng(seed)
+    fig, a = plt.subplots(figsize=(7.5, 4.4)); rng = np.random.default_rng(seed)
     for v in v_show + rng.normal(0, 1.0, n_arc):
         R = v * v / g; t = np.linspace(0, R, 80); hgt = t - t * t / R
-        a.plot(t, hgt, color=RED if R > line else BLUE, lw=2.2 if R > line else 0.5, alpha=1 if R > line else 0.18, zorder=3 if R > line else 1)
-    a.axvline(line, color="k", lw=2, ls="--"); a.text(line + 1, 24, "100 m 선", fontsize=13, fontweight="bold")
-    a.text(2, 27, f"45°, 속도 {v_show:.0f} m/s ± 흔들림 · 빨강 = 넘음", fontsize=13, color=BLUE)
-    a.set_xlim(0, 112); a.set_ylim(0, 30); a.set_xlabel("거리 (m)"); a.set_yticks([]); a.set_title("대포 200발: 선을 넘는 건 드물다", fontsize=15, fontweight="bold")
-    b = ax[1]; c = y[x == v_show].astype(int); lam = c.mean(); ks = np.arange(kmax + 1)
+        a.plot(t, hgt, color=RED if R > line else BLUE, lw=2.4 if R > line else 0.5, alpha=1 if R > line else 0.18, zorder=3 if R > line else 1)
+    a.axvline(line, color="k", lw=2, ls="--"); a.text(line + 1, 24, "100 m 선", fontsize=14, fontweight="bold")
+    a.text(2, 27, f"45° · 속도 {v_show:.0f} m/s (쏠 때마다 ±1 흔들림) · 빨강 = 넘음", fontsize=12, color=BLUE)
+    a.set_xlim(0, 114); a.set_ylim(0, 30); a.set_xlabel("거리 (m)"); a.set_yticks([])
+    fig.tight_layout(); fig.savefig(O + "glm_cannon_arcs.png"); plt.close(fig)
+    fig, b = plt.subplots(figsize=(7.5, 4.2)); c = y[x == v_show].astype(int); lam = c.mean(); ks = np.arange(kmax + 1)
     cnt = np.bincount(np.minimum(c, kmax), minlength=kmax + 1) / len(c)
-    b.bar(ks, cnt, color=RED, alpha=0.55, width=0.7, label="1000번 되풀이")
-    b.plot(ks, [lam ** k * exp(-lam) / factorial(k) for k in ks], "o-", color="k", lw=2, ms=5, label=f"포아송 λ = {lam:.2f}")
-    b.set_xticks(ks); b.set_yticks([]); b.set_xlabel("200발 중 선을 넘은 개수"); b.legend(frameon=False, fontsize=11)
-    b.set_title(f"속도 {v_show:.0f} m/s: 개수는 포아송", fontsize=15, fontweight="bold")
-    d = ax[2]; vs = np.unique(x); mu = [y[x == v].mean() for v in vs]; u = np.linspace(vs[0] - 0.1, vs[-1] + 0.1, 100)
-    d.plot(vs, mu, "o", color="k", ms=8, label="평균 개수 (1000번)")
-    d.plot(u, np.exp(w[0] + w[1] * u), color=BLUE, lw=3, label="포아송 회귀 $e^{w_0 + w_1 x}$")
-    d.set_xlabel("설정 속도 x (m/s)"); d.set_ylabel("선을 넘은 개수"); d.legend(frameon=False, fontsize=11, loc="upper left")
-    d.set_title(f"x 가 0.25 늘면 ×{np.exp(0.25 * w[1]):.2f}", fontsize=15, fontweight="bold")
-    fig.tight_layout(); fig.savefig(O + "glm_cannon.png"); plt.close(fig)
+    b.bar(ks, cnt, color=RED, alpha=0.55, width=0.7, label="200발씩 1000번 쏜 결과")
+    b.plot(ks, [lam ** k * exp(-lam) / factorial(k) for k in ks], "o-", color="k", lw=2, ms=6, label=f"포아송 λ = {lam:.2f}")
+    b.set_xticks(ks); b.set_yticks([]); b.set_xlabel("200발 중 100 m 선을 넘은 개수 y"); b.legend(frameon=False, fontsize=13)
+    fig.tight_layout(); fig.savefig(O + "glm_cannon_count.png"); plt.close(fig)
+    fig, d = plt.subplots(figsize=(7.5, 4.3)); vs = np.unique(x); mu = [y[x == v].mean() for v in vs]; u = np.linspace(vs[0] - 0.1, vs[-1] + 0.1, 100)
+    d.plot(vs, mu, "o", color="k", ms=9, label="속도마다 평균 개수 (1000번)")
+    d.plot(u, np.exp(w[0] + w[1] * u), color=BLUE, lw=3, label="포아송 회귀 $\\hat y = e^{w_0 + w_1 x}$")
+    d.text(28.05, 5.2, f"x 가 0.25 늘 때마다 ×{np.exp(0.25 * w[1]):.2f}", fontsize=14, color=BLUE, fontweight="bold")
+    d.set_xlabel("설정 속도 x (m/s)"); d.set_ylabel("100 m 선을 넘은 개수"); d.legend(frameon=False, fontsize=12, loc="upper left")
+    fig.tight_layout(); fig.savefig(O + "glm_cannon_reg.png"); plt.close(fig)
 
 if __name__ == "__main__":
     st, ch, ir = D.study(), D.chess(), D.iris(); cx, cy = D.claims()
