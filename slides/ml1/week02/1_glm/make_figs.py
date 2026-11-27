@@ -150,19 +150,52 @@ def pois_examples_fig(sets, kmax=6):
         a.legend(frameon=False, fontsize=12, loc="upper right")
     fig.tight_layout(); fig.savefig(O + "glm_pois_examples.png"); plt.close(fig)
 
-def pois_origin_fig(lam=D.ORIGIN_LAM, ns=(3, 10, 90), kmax=6, minutes=90):
-    """포아송의 발명: 한 경기 90분을 n칸으로 쪼개고 칸마다 골 확률 lam/n 의 동전 → n 이 커지면 포아송."""
+def pois_origin_fig(poker=D.POKER, kmax=6):
+    """포아송의 발명: 포커에서 드문 패를 많은 판에서 센다. 판 수 x 확률 = 1.27 로 같게 → 판은 많고 패는 드물수록 포아송."""
     from math import comb, exp, factorial
-    ks = np.arange(kmax + 1); po = [lam ** k * exp(-lam) / factorial(k) for k in ks]
-    fig, ax = plt.subplots(1, len(ns), figsize=(13, 3.7), sharey=True)
-    for a, n in zip(ax, ns):
-        p = lam / n; bi = [comb(n, k) * p ** k * (1 - p) ** (n - k) if k <= n else 0 for k in ks]
-        a.bar(ks, bi, color=BLUE, alpha=0.55, width=0.7, label=f"동전 {n}번")
+    T = comb(52, 5); ks = np.arange(kmax + 1)
+    fig, ax = plt.subplots(1, len(poker), figsize=(13, 3.7), sharey=True)
+    for a, (name, (c, n)) in zip(ax, poker.items()):
+        p = c / T; lam = n * p; po = [lam ** k * exp(-lam) / factorial(k) for k in ks]
+        bi = [comb(n, k) * p ** k * (1 - p) ** (n - k) if k <= n else 0 for k in ks]
+        a.bar(ks, bi, color=BLUE, alpha=0.55, width=0.7, label=f"실제 ({n}판, 이항)")
         a.plot(ks, po, "o-", color="k", lw=2, ms=6, label=f"포아송 λ = {lam:.2f}")
-        per = f"{minutes // n}분씩" if minutes % n == 0 else ""
-        a.set_title(f"{n}칸 ({per}) · 칸마다 {100 * p:.1f}%", fontsize=16, fontweight="bold")
-        a.set_xticks(ks); a.set_xlabel("한 경기의 골 수"); a.set_yticks([]); a.legend(frameon=False, fontsize=12)
+        pct = f"{100 * p:.1f}%" if p > 0.01 else f"{100 * p:.3f}%"
+        a.set_title(f"{name} ({pct}) · {n}판", fontsize=16, fontweight="bold")
+        a.set_xticks(ks); a.set_xlabel(f"{n}판 중 {name} 횟수"); a.set_yticks([]); a.legend(frameon=False, fontsize=12)
     fig.tight_layout(); fig.savefig(O + "glm_pois_origin.png"); plt.close(fig)
+
+
+def scatter_cells_fig(nx=12, ny=8, lam=2, seed=3, kmax=8):
+    """점을 흩뿌리고 칸마다 세기: 제멋대로 (포아송) · 고르게 (좁음) · 뭉침 (넓음). 아래 = 칸별 개수 막대 vs 같은 평균의 포아송."""
+    from math import exp, factorial
+    rng = np.random.default_rng(seed); N = nx * ny * lam
+    rand = np.c_[rng.uniform(0, nx, N), rng.uniform(0, ny, N)]
+    gx, gy = np.meshgrid(np.arange(nx * 2) / 2 + 0.25, np.arange(ny) + 0.5)
+    reg = np.c_[gx.ravel(), gy.ravel()] + rng.uniform(-0.12, 0.12, (N, 2))
+    cen = np.c_[rng.uniform(0.8, nx - 0.8, 8), rng.uniform(0.8, ny - 0.8, 8)]
+    clu = np.clip(np.repeat(cen, N // 8, 0) + rng.normal(0, 0.45, (N, 2)), 0.01, [nx - 0.01, ny - 0.01])
+    sets = [("제멋대로 (서로 상관없음)", rand, "포아송", "#2a9d5c"), ("고르게 (서로 밀어냄)", reg, "포아송보다 좁다", RED), ("뭉침 (서로 끌어당김)", clu, "포아송보다 넓다", RED)]
+    ks = np.arange(kmax + 1); po = [lam ** k * exp(-lam) / factorial(k) for k in ks]
+    fig, ax = plt.subplots(2, 3, figsize=(13, 6.6), gridspec_kw={"height_ratios": [1.05, 1]})
+    out = []
+    for j, (title, P, verdict, col) in enumerate(sets):
+        a = ax[0, j]; a.scatter(P[:, 0], P[:, 1], s=7, color="k")
+        for v in range(nx + 1): a.axvline(v, color="#cccccc", lw=0.6)
+        for v in range(ny + 1): a.axhline(v, color="#cccccc", lw=0.6)
+        a.add_patch(plt.Rectangle((2, 5), 1, 1, fill=False, ec="#2a9d5c", lw=2.5))
+        a.set_xlim(0, nx); a.set_ylim(0, ny); a.set_aspect("equal"); a.set_xticks([]); a.set_yticks([])
+        for s_ in a.spines.values(): s_.set_visible(True)
+        a.set_title(title, fontsize=16, fontweight="bold")
+        c = np.histogram2d(P[:, 0], P[:, 1], bins=[nx, ny], range=[[0, nx], [0, ny]])[0].ravel().astype(int)
+        b = ax[1, j]; cnt = np.bincount(np.minimum(c, kmax), minlength=kmax + 1) / len(c)
+        b.bar(ks, cnt, color=GRAY, alpha=0.6, width=0.7, label="칸별 점 개수")
+        b.plot(ks, po, "o-", color="k", lw=2, ms=5, label=f"포아송 λ = {lam}")
+        b.set_xticks(ks, [str(k) for k in ks[:-1]] + [f"{kmax}+"]); b.set_yticks([]); b.set_xlabel(f"한 칸의 점 수 (평균 {c.mean():.0f}, 분산 {c.var():.1f})")
+        b.set_title(f"→ {verdict}", fontsize=16, fontweight="bold", color=col); b.legend(frameon=False, fontsize=11)
+        out.append((round(c.mean(), 2), round(c.var(), 2)))
+    fig.tight_layout(); fig.savefig(O + "glm_pois_scatter.png"); plt.close(fig)
+    return out
 
 if __name__ == "__main__":
     st, ch, (x, y), ir = D.study(), D.chess(), D.goals(), D.iris()
@@ -174,5 +207,5 @@ if __name__ == "__main__":
     pois_examples_fig([("월드컵: 한 팀의 골", "골 수 (Elo 차이 ±50)", gc, v.mean(), "줄"),
                        ("기병대: 말에 차여 숨진 병사", "한 부대 · 한 해의 사망자", D.HORSE_KICKS, D.HORSE_MEAN, "부대-년"),
                        ("런던: 구역에 떨어진 폭탄", "0.25 km² 구역의 V-1 수", D.V1_BOMBS, D.V1_MEAN, "구역")])
-    pois_origin_fig()
+    pois_origin_fig(); print("scatter", scatter_cells_fig())
     print("figs ok", wp.round(5))

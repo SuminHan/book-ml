@@ -87,8 +87,10 @@ HORSE_KICKS = [109, 65, 22, 3, 1]       # 사망 0,1,2,3,4 명인 부대-년 수
 HORSE_MEAN = 0.61
 V1_BOMBS = [229, 211, 93, 35, 7, 1]     # 폭탄 0,1,2,3,4,5+ 발인 구역 수 (576), 5+ 구역은 실제 7발
 V1_N, V1_TOTAL, V1_MEAN = 576, 537, 0.93
-ORIGIN_LAM = 1.30                       # 포아송의 발명 그림: 실력 비슷한 경기 평균 골 (GOALS_EVEN)
-ORIGIN_GAP = {3: 0.091, 10: 0.024, 90: 0.003}   # 90분을 n칸으로 쪼갠 이항 vs 포아송, 확률 차이의 최댓값
+POKER = {"원페어": (1098240, 3), "트리플": (54912, 60), "풀하우스": (3744, 880)}   # 5장 패 2,598,960 가지 중 경우 수, 판 수
+POKER_LAM = 1.27                        # 세 경우 모두 판 수 x 확률 = 1.27
+POKER_P = (42.26, 2.11, 0.144)          # 한 판에 나올 확률 (%)
+POKER_GAP = (0.089, 0.004, 0.000)       # 이항 vs 포아송 확률 차이의 최댓값
 V1_BINOM = (227, 212, 99, 31, 7)        # 537발이 각자 1/576 확률로 한 구역에: 이항으로 기대한 구역 수 (0~4발)
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
 IRIS_LOSS49 = 0.54                      # 4.9 cm 꽃이 virginica 일 때 교차 엔트로피 -ln 0.58
@@ -123,10 +125,11 @@ if __name__ == "__main__":
     b = np.array(V1_BOMBS); assert b.sum() == V1_N and (b[:5] * np.arange(5)).sum() + 7 == V1_TOTAL and round(V1_TOTAL / V1_N, 2) == V1_MEAN
 
     from math import comb, exp as _e, factorial
-    po = [ORIGIN_LAM ** k * _e(-ORIGIN_LAM) / factorial(k) for k in range(8)]
-    for n, gap in ORIGIN_GAP.items():
-        p = ORIGIN_LAM / n; bi = [comb(n, k) * p ** k * (1 - p) ** (n - k) if k <= n else 0 for k in range(8)]
-        assert round(max(abs(a - b) for a, b in zip(bi, po)), 3) == gap
+    T = comb(52, 5); assert T == 2598960
+    for (name, (c, n)), pp, gap in zip(POKER.items(), POKER_P, POKER_GAP):
+        p = c / T; lam = n * p; assert round(100 * p, 3 if pp < 1 else 2) == pp and round(lam, 2) == POKER_LAM
+        bi = [comb(n, k) * p ** k * (1 - p) ** (n - k) if k <= n else 0 for k in range(8)]
+        assert round(max(abs(a - lam ** k * _e(-lam) / factorial(k)) for k, a in enumerate(bi)), 3) == gap
     assert tuple(round(comb(537, k) * (1 / 576) ** k * (575 / 576) ** (537 - k) * 576) for k in range(5)) == V1_BINOM
 
     x, y = iris(); W = fit_softmax(x, y); p = softmax_p(W, 4.9)
