@@ -79,9 +79,32 @@ def softmax_fig(x, y, W, v=4.9, seed=1):
     fig.tight_layout(); fig.savefig(O + "glm_softmax.png"); plt.close(fig)
 
 
+def dists_fig(mu=0.0, phi=0.7, lam=3.0, probs=(0.2, 0.5, 0.3)):
+    """y 종류마다 쓰는 분포 네 개 (glm_types 와 같은 순서): 정규 · 베르누이 · 포아송 · 범주형. 예측 ŷ = 평균."""
+    from math import lgamma, exp, log
+    fig, ax = plt.subplots(1, 4, figsize=(13, 3.9))
+    x = np.linspace(-4, 4, 400); g = np.exp(-(x - mu) ** 2 / 2) / np.sqrt(2 * np.pi)
+    a = ax[0]; a.plot(x, g, color=GRAY, lw=3); a.fill_between(x, g, color=GRAY, alpha=0.15)
+    a.set_ylim(0, 0.5); a.set_xlabel(rf"$y$  ($\hat y = \mu = {mu:g}$)")
+    a.set_title("정규 (실수)", fontsize=17, fontweight="bold")
+    a = ax[1]; a.bar([0, 1], [1 - phi, phi], color=[RED, BLUE], width=0.5)
+    for k, v in enumerate([1 - phi, phi]): a.text(k, v + 0.02, f"{v:.1f}", ha="center", fontsize=15)
+    a.set_xticks([0, 1]); a.set_ylim(0, 1); a.set_xlabel(rf"$y$  ($\hat y = \phi = {phi}$)")
+    a.set_title("베르누이 (0 / 1)", fontsize=17, fontweight="bold")
+    ys = np.arange(0, 11); pois = np.array([exp(k * log(lam) - lam - lgamma(k + 1)) for k in ys])
+    a = ax[2]; a.bar(ys, pois, color=GREEN, width=0.6); a.set_xticks(ys[::2])
+    a.set_xlabel(rf"$y$  ($\hat y = \lambda = {lam:g}$)")
+    a.set_title("포아송 (개수)", fontsize=17, fontweight="bold")
+    K = len(probs); a = ax[3]; a.bar(range(1, K + 1), probs, color=[GOLD, GREEN, BLUE][:K], width=0.5)
+    for k, v in enumerate(probs): a.text(k + 1, v + 0.02, f"{v:.1f}", ha="center", fontsize=15)
+    a.set_xticks(range(1, K + 1), IRIS_NAMES[:K]); a.set_ylim(0, 1); a.set_xlabel(r"$y = k$")
+    a.set_title("범주형 (여러 클래스)", fontsize=17, fontweight="bold")
+    for a in ax: a.set_yticks([])
+    fig.tight_layout(); fig.savefig(O + "glm_dists.png"); plt.close(fig)
+
 if __name__ == "__main__":
     st, ch, (t, c), ir = D.study(), D.chess(), D.bike(), D.iris()
-    types_fig(st, ch, (t, c), ir)
+    types_fig(st, ch, (t, c), ir); dists_fig()
     k = np.polyfit(t, c, 1); bike_line_fig(t, c, k)
     wp = D.fit_glm(t, c, np.exp, lr=0.002, steps=20000, scale=10, shift=10, w0=np.log(c.mean())); bike_pois_fig(t, c, k, wp)
     W = D.fit_softmax(*ir); softmax_fig(*ir, W)
