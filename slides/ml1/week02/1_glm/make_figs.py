@@ -238,8 +238,8 @@ if __name__ == "__main__":
     k = np.polyfit(cx, cy, 1); claims_line_fig(cx, cy, k)
     wp = D.fit_glm(cx, cy, np.exp, lr=0.5, steps=20000, scale=10, shift=50, w0=np.log(cy.mean())); claims_pois_fig(cx, cy, k, wp)
     W = D.fit_softmax(*ir); softmax_fig(*ir, W); pois_pmf_fig()
-    pois_examples_fig([("자동차 보험: 1년 사고 청구", "한 계약의 1년 청구 횟수", D.CLAIMS_COUNTS, D.CLAIMS_MEAN, "계약"),
+    pois_examples_fig([("런던: 구역에 떨어진 폭탄", "0.25 km² 구역의 V-1 수", D.V1_BOMBS, D.V1_MEAN, "구역"),
                        ("기병대: 말에 차여 숨진 병사", "한 부대 · 한 해의 사망자", D.HORSE_KICKS, D.HORSE_MEAN, "부대-년"),
-                       ("런던: 구역에 떨어진 폭탄", "0.25 km² 구역의 V-1 수", D.V1_BOMBS, D.V1_MEAN, "구역")])
+                       ("자동차 보험: 1년 사고 청구", "한 운전자의 1년 청구 횟수", D.CLAIMS_COUNTS, D.CLAIMS_MEAN, "계약")])
     pois_origin_fig(); print("scatter", scatter_cells_fig())
     print("figs ok", wp.round(5))
