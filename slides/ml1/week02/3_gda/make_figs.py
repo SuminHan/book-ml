@@ -133,6 +133,26 @@ def fig_sample(X, y, M, S, seed=7):
     fig.tight_layout(); fig.savefig(O + "gda_sample.png"); plt.close(fig)
 
 
+def fig_pois(x, y, lam, w, kmax=6):
+    """포아송 GDA: 왼쪽 = 강팀 · 약팀 골 분포 (막대) + 포아송 (점), 오른쪽 = 골 수마다 강팀일 확률 (실제 vs 모델)."""
+    from math import lgamma, exp, log
+    ks = np.arange(kmax + 1); cols = (RED, BLUE); names = ("약팀", "강팀")
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4.3))
+    a = ax[0]
+    for k in (0, 1):
+        v = np.minimum(x[y == k], kmax); cnt = np.bincount(v, minlength=kmax + 1) / len(v)
+        a.bar(ks + (k - 0.5) * 0.38, cnt, width=0.38, color=cols[k], alpha=0.55, label=f"{names[k]} {(y == k).sum()}줄")
+        a.plot(ks + (k - 0.5) * 0.38, [exp(j * log(lam[k]) - lam[k] - lgamma(j + 1)) for j in ks], "o", color=cols[k], ms=7, mec="k")
+    a.plot([], [], "o", color="w", mec="k", label="포아송 (같은 평균)")
+    a.set_xticks(ks, [str(j) for j in ks[:-1]] + [f"{kmax}+"]); a.set_xlabel("넣은 골 x"); a.set_yticks([]); a.legend(frameon=False, fontsize=12)
+    a.set_title(f"약팀 λ = {lam[0]:.2f}  ·  강팀 λ = {lam[1]:.2f}", fontsize=15)
+    a = ax[1]; n = np.array([(x == j).sum() for j in ks]); fr = np.array([y[x == j].mean() if n[j] else np.nan for j in ks])
+    u = np.linspace(0, kmax, 200); a.plot(u, 1 / (1 + np.exp(-(w[0] + w[1] * u))), color=GRAY, lw=1.5, ls=":")
+    a.plot(ks, 1 / (1 + np.exp(-(w[0] + w[1] * ks))), "o-", color=BLUE, lw=2, ms=7, label="포아송 GDA")
+    a.scatter(ks, fr, s=n * 0.9, facecolors="none", edgecolors="k", lw=1.5, label="실제 비율 (원 크기 = 줄 수)")
+    a.set_ylim(0, 1); a.set_xticks(ks); a.set_xlabel("넣은 골 x"); a.set_ylabel("강팀일 확률"); a.legend(frameon=False, fontsize=12, loc="lower right")
+    fig.tight_layout(); fig.savefig(O + "gda_pois.png"); plt.close(fig)
+
 if __name__ == "__main__":
     X, y = D.iris2(); x = X[:, 0]
     phi, M1, S1 = D.fit_gda(x, y); s = float(np.sqrt(S1[0, 0]))
@@ -140,4 +160,5 @@ if __name__ == "__main__":
     fig_1d(x, y, M1[:, 0], s); fig_post(x, y, (wg0, wg[0]), (wl0, wl[0]))
     phi2, M2, S2 = D.fit_gda(X, y); w0, w = D.gda_w(phi2, M2, S2)
     fig_sigma(); fig_2d(X, y, M2, S2, w0, w); fig_qda(X, y); fig_small(D.SMALL); fig_sample(X, y, M2, S2)
+    gx, gy = D.goals(); _, lam, pw = D.fit_pois_gda(gx, gy); fig_pois(gx, gy, lam, pw)
     print("figs ok")
