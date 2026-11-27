@@ -79,32 +79,42 @@ def softmax_fig(x, y, W, v=4.9, seed=1):
     fig.tight_layout(); fig.savefig(O + "glm_softmax.png"); plt.close(fig)
 
 
-def dists_fig(mu=0.0, phi=0.7, lam=3.0, probs=(0.2, 0.5, 0.3)):
-    """y 종류마다 쓰는 분포 네 개 (glm_types 와 같은 순서): 정규 · 베르누이 · 포아송 · 범주형. 예측 ŷ = 평균."""
+def dists_fig(study, chess, bike, iris, line=(38.58, 5.25), chess_at=200, n_near=500, bike_rng=(10, 15), iris_at=4.9):
+    """2쪽 데이터 네 개에 분포 맞추기 (glm_types 와 같은 순서). 막대 = 실제 데이터, 검은 선/점 = 같은 평균의 분포."""
     from math import lgamma, exp, log
     fig, ax = plt.subplots(1, 4, figsize=(13, 3.9))
-    x = np.linspace(-4, 4, 400); g = np.exp(-(x - mu) ** 2 / 2) / np.sqrt(2 * np.pi)
-    a = ax[0]; a.plot(x, g, color=GRAY, lw=3); a.fill_between(x, g, color=GRAY, alpha=0.15)
-    a.set_ylim(0, 0.5); a.set_xlabel(rf"$y$  ($\hat y = \mu = {mu:g}$)")
-    a.set_title("정규 (실수)", fontsize=17, fontweight="bold")
-    a = ax[1]; a.bar([0, 1], [1 - phi, phi], color=[RED, BLUE], width=0.5)
-    for k, v in enumerate([1 - phi, phi]): a.text(k, v + 0.02, f"{v:.1f}", ha="center", fontsize=15)
-    a.set_xticks([0, 1]); a.set_ylim(0, 1); a.set_xlabel(rf"$y$  ($\hat y = \phi = {phi}$)")
-    a.set_title("베르누이 (0 / 1)", fontsize=17, fontweight="bold")
-    ys = np.arange(0, 11); pois = np.array([exp(k * log(lam) - lam - lgamma(k + 1)) for k in ys])
-    a = ax[2]; a.bar(ys, pois, color=GREEN, width=0.6); a.set_xticks(ys[::2])
-    a.set_xlabel(rf"$y$  ($\hat y = \lambda = {lam:g}$)")
-    a.set_title("포아송 (개수)", fontsize=17, fontweight="bold")
-    K = len(probs); a = ax[3]; a.bar(range(1, K + 1), probs, color=[GOLD, GREEN, BLUE][:K], width=0.5)
-    for k, v in enumerate(probs): a.text(k + 1, v + 0.02, f"{v:.1f}", ha="center", fontsize=15)
-    a.set_xticks(range(1, K + 1), IRIS_NAMES[:K]); a.set_ylim(0, 1); a.set_xlabel(r"$y = k$")
-    a.set_title("범주형 (여러 클래스)", fontsize=17, fontweight="bold")
+    # 점수: 직선에서 벗어난 정도 ~ 정규
+    x, y = study; r = y - (line[0] + line[1] * x); sd = r.std()
+    a = ax[0]; a.hist(r, bins=np.arange(-12, 13, 3), density=True, color=GRAY, alpha=0.5, label=f"{len(r)}명")
+    u = np.linspace(-13, 13, 300); a.plot(u, np.exp(-u ** 2 / (2 * sd * sd)) / (sd * np.sqrt(2 * np.pi)), color="k", lw=2.5, label="정규")
+    a.set_xlabel("점수 − 직선 예측"); a.set_title("점수 → 정규", fontsize=17, fontweight="bold"); a.legend(frameon=False, fontsize=11)
+    # 체스: +200 점 근처 n_near 판 ~ 베르누이
+    x, y = chess; i = np.argsort(np.abs(x - chess_at), kind="stable")[:n_near]; ph = y[i].mean()
+    a = ax[1]; a.bar([0, 1], [1 - ph, ph], color=[RED, BLUE], width=0.5)
+    for k, v in enumerate([1 - ph, ph]): a.text(k, v + 0.02, f"{int(round(v * n_near))}판", ha="center", fontsize=13)
+    a.set_xticks([0, 1], ["흑 승 0", "백 승 1"]); a.set_ylim(0, 1)
+    a.set_xlabel(f"+{chess_at}점 근처 {n_near}판"); a.set_title("체스 → 베르누이", fontsize=17, fontweight="bold")
+    # 따릉이: 기온 구간의 대여 수 ~ 포아송 (같은 평균)
+    t, c = bike; v = c[(t >= bike_rng[0]) & (t < bike_rng[1])]; lam = v.mean(); edges = np.arange(0, 701, 50)
+    a = ax[2]; a.hist(v, bins=edges, color=GREEN, alpha=0.6, label=f"{len(v)}일")
+    ks = np.arange(0, 701); pm = np.array([exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks])
+    top = np.histogram(v, bins=edges)[0].max() * 1.5
+    a.plot(ks, pm * 50 * len(v), color="k", lw=2.5, label="포아송\n(위로 잘림)"); a.set_ylim(0, top)
+    a.set_xlabel(f"대여 수 ({bike_rng[0]}~{bike_rng[1]}°C)"); a.set_title("따릉이 → 포아송", fontsize=17, fontweight="bold")
+    a.legend(frameon=False, fontsize=11, loc="upper right")
+    # 붓꽃: 꽃잎 길이 근처 ~ 범주형
+    x, y = iris; m = np.abs(x - iris_at) <= 0.1 + 1e-9; n = np.bincount(y[m], minlength=3)
+    a = ax[3]; a.bar(range(3), n / n.sum(), color=IRIS_COL, width=0.5)
+    for k, v in enumerate(n): a.text(k, v / n.sum() + 0.02, f"{v}송이", ha="center", fontsize=13)
+    a.set_xticks(range(3), IRIS_NAMES); a.set_ylim(0, 1)
+    a.set_xlabel(f"꽃잎 {iris_at - 0.1:.1f}~{iris_at + 0.1:.1f} cm ({n.sum()}송이)"); a.set_title("붓꽃 → 범주형", fontsize=17, fontweight="bold")
     for a in ax: a.set_yticks([])
     fig.tight_layout(); fig.savefig(O + "glm_dists.png"); plt.close(fig)
+    return sd, ph, lam, v.var(), n
 
 if __name__ == "__main__":
     st, ch, (t, c), ir = D.study(), D.chess(), D.bike(), D.iris()
-    types_fig(st, ch, (t, c), ir); dists_fig()
+    types_fig(st, ch, (t, c), ir); print("dists", dists_fig(st, ch, (t, c), ir))
     k = np.polyfit(t, c, 1); bike_line_fig(t, c, k)
     wp = D.fit_glm(t, c, np.exp, lr=0.002, steps=20000, scale=10, shift=10, w0=np.log(c.mean())); bike_pois_fig(t, c, k, wp)
     W = D.fit_softmax(*ir); softmax_fig(*ir, W)
