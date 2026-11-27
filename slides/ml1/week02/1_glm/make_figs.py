@@ -15,7 +15,7 @@ IRIS_NAMES = ["setosa", "versicolor", "virginica"]
 IRIS_COL = [GOLD, GREEN, BLUE]
 
 
-def types_fig(study, chess, bike, iris, seed=0):
+def types_fig(study, chess, goals, iris, seed=0):
     """맞힐 값 y 의 종류 네 가지: 실수 · 0/1 · 개수 · 여러 클래스."""
     rng = np.random.default_rng(seed)
     fig, ax = plt.subplots(1, 4, figsize=(17, 4.2))
@@ -24,8 +24,8 @@ def types_fig(study, chess, bike, iris, seed=0):
     x, y = chess; i = rng.choice(len(x), 300, replace=False)
     ax[1].scatter(x[i], y[i] + rng.uniform(-0.06, 0.06, 300), s=18, c=np.where(y[i] == 1, BLUE, RED), alpha=0.35, edgecolors="none")
     ax[1].set_yticks([0, 1], ["흑 승 0", "백 승 1"]); ax[1].set_xlabel("레이팅 차이"); ax[1].set_title("체스 승패: 0 / 1", fontsize=16, fontweight="bold")
-    t, c = bike; ax[2].scatter(t, c, s=16, color=GREEN, alpha=0.5, edgecolors="none")
-    ax[2].set_xlabel("기온 (°C)"); ax[2].set_title("따릉이 대여: 0, 1, 2, …", fontsize=16, fontweight="bold"); ax[2].set_ylim(0, None)
+    x, y = goals; ax[2].scatter(x, y + rng.uniform(-0.25, 0.25, len(y)), s=8, color=GREEN, alpha=0.3, edgecolors="none")
+    ax[2].set_xlabel("Elo 차이 (상대보다)"); ax[2].set_title("월드컵 골 수: 0, 1, 2, …", fontsize=16, fontweight="bold"); ax[2].set_yticks(range(0, 9, 2))
     x, y = iris
     for k in range(3):
         m = y == k; ax[3].scatter(x[m], k + rng.uniform(-0.12, 0.12, m.sum()), s=18, color=IRIS_COL[k], alpha=0.6, edgecolors="none")
@@ -33,36 +33,41 @@ def types_fig(study, chess, bike, iris, seed=0):
     fig.tight_layout(); fig.savefig(O + "glm_types.png"); plt.close(fig)
 
 
-def bike_axes(ax, t, c):
-    ax.scatter(t, c, s=20, color=GREEN, alpha=0.45, edgecolors="none", label=f"아침 6시 대여 수 ({len(t)}일)")
-    ax.set_xlabel("기온 (°C)"); ax.set_ylabel("대여 수"); ax.set_xlim(-20, 33)
+def goals_axes(ax, x, y, seed=0, step=100):
+    """흐린 점 = 팀-경기 한 줄 (골은 정수라 위아래로 살짝 흔듦), 검은 점 = Elo 차이 100 구간마다 실제 평균 골."""
+    rng = np.random.default_rng(seed)
+    ax.scatter(x, y + rng.uniform(-0.2, 0.2, len(y)), s=7, color=GREEN, alpha=0.22, edgecolors="none", label=f"팀-경기 {len(y):,}줄")
+    edges = np.arange(-600, 601, step); c = (edges[:-1] + edges[1:]) / 2
+    mu = np.array([y[(x >= lo) & (x < lo + step)].mean() if ((x >= lo) & (x < lo + step)).sum() >= 15 else np.nan for lo in edges[:-1]])
+    ax.plot(c, mu, "o", color="k", ms=7, label="구간 평균 (실제)")
+    ax.set_xlabel("Elo 차이 (내 팀 − 상대)"); ax.set_ylabel("넣은 골"); ax.set_xlim(-600, 600)
 
 
-def bike_line_fig(t, c, k):
-    """개수에 직선: 추우면 음수."""
-    ts = np.linspace(-20, 33, 200); z0 = -k[1] / k[0]
+def goals_line_fig(x, y, k, at=-350):
+    """개수에 직선: 약팀 골을 너무 낮게, 끝에서는 음수."""
+    xs = np.linspace(-600, 600, 200); z0 = -k[1] / k[0]
     fig, ax = plt.subplots(figsize=(8.5, 4.6))
-    ax.axhspan(-150, 0, color=RED, alpha=0.08)
-    bike_axes(ax, t, c); ax.plot(ts, np.polyval(k, ts), color=GOLD, lw=3, label="직선")
-    ax.annotate(f"{z0:.1f}°C 아래면\n대여 수 < 0 ?", (-17, np.polyval(k, -17)), (-12.5, -120), fontsize=15, color=RED, fontweight="bold",
+    ax.axhspan(-1, 0, color=RED, alpha=0.08)
+    goals_axes(ax, x, y); ax.plot(xs, np.polyval(k, xs), color=GOLD, lw=3, label="직선")
+    ax.annotate(f"Elo {z0:.0f} 아래면\n골 < 0 ?", (-560, np.polyval(k, -560)), (-430, -0.85), fontsize=14, color=RED, fontweight="bold",
                 arrowprops=dict(arrowstyle="->", color=RED))
-    ax.set_ylim(-150, 850); ax.legend(frameon=False, loc="upper left", fontsize=12)
-    fig.tight_layout(); fig.savefig(O + "glm_bike_line.png"); plt.close(fig)
+    ax.set_ylim(-1, 6); ax.legend(frameon=False, loc="upper left", fontsize=11)
+    fig.tight_layout(); fig.savefig(O + "glm_goals_line.png"); plt.close(fig)
 
 
-def bike_pois_fig(t, c, k, wp):
-    """포아송 회귀 e^z: 언제나 양수, 1도마다 같은 배수."""
-    ts = np.linspace(-20, 33, 200); pm = lambda v: np.exp(wp[0] + wp[1] * v)
+def goals_pois_fig(x, y, k, wp, marks=(-300, 0, 300)):
+    """포아송 회귀 e^z: 언제나 양수, Elo 100 마다 같은 배수."""
+    xs = np.linspace(-600, 600, 200); pm = lambda v: np.exp(wp[0] + wp[1] * v)
     fig, ax = plt.subplots(figsize=(8.5, 4.6))
-    bike_axes(ax, t, c)
-    ax.plot(ts, np.polyval(k, ts), color=GOLD, lw=2, ls="--", label="직선")
-    ax.plot(ts, pm(ts), color=BLUE, lw=3.5, label="포아송 회귀 $e^{z}$")
-    for v in (0, 20):
-        ax.plot(v, pm(v), "o", color=BLUE, ms=9); ax.annotate(f"{v}°C: {pm(v):.0f}대", (v, pm(v)), (-75, 22), textcoords="offset points", fontsize=14, color=BLUE, fontweight="bold")
-    ax.text(14, 40, f"1°C 오를 때마다 ×{np.exp(wp[1]):.3f}", fontsize=15, color=BLUE, fontweight="bold")
-    ax.set_ylim(-150, 850); ax.legend(frameon=False, loc="upper left", fontsize=12)
-    fig.tight_layout(); fig.savefig(O + "glm_bike_pois.png"); plt.close(fig)
-
+    goals_axes(ax, x, y)
+    ax.plot(xs, np.polyval(k, xs), color=GOLD, lw=2, ls="--", label="직선")
+    ax.plot(xs, pm(xs), color=BLUE, lw=3.5, label="포아송 회귀 $e^{z}$")
+    for v in marks:
+        ax.plot(v, pm(v), "o", color=BLUE, ms=10, zorder=5)
+        ax.annotate(f"{v:+d}: {pm(v):.2f}골" if v else f"0: {pm(v):.2f}골", (v, pm(v)), (-30, 26), textcoords="offset points", fontsize=14, color=BLUE, fontweight="bold")
+    ax.text(120, -0.6, f"Elo 100 앞설 때마다 ×{np.exp(100 * wp[1]):.2f}", fontsize=14, color=BLUE, fontweight="bold")
+    ax.set_ylim(-1, 6); ax.legend(frameon=False, loc="upper left", fontsize=11)
+    fig.tight_layout(); fig.savefig(O + "glm_goals_pois.png"); plt.close(fig)
 
 def softmax_fig(x, y, W, v=4.9, seed=1):
     """꽃잎 길이 하나로 세 종의 확률 (소프트맥스 회귀)."""
@@ -79,7 +84,7 @@ def softmax_fig(x, y, W, v=4.9, seed=1):
     fig.tight_layout(); fig.savefig(O + "glm_softmax.png"); plt.close(fig)
 
 
-def dists_fig(study, chess, bike, iris, line=(38.58, 5.25), chess_at=200, n_near=500, bike_rng=(10, 15), iris_at=4.9):
+def dists_fig(study, chess, goals, iris, line=(38.58, 5.25), chess_at=200, n_near=500, even=50, iris_at=4.9):
     """2쪽 데이터 네 개에 분포 맞추기 (glm_types 와 같은 순서). 막대 = 실제 데이터, 검은 선/점 = 같은 평균의 분포."""
     from math import lgamma, exp, log
     fig, ax = plt.subplots(1, 4, figsize=(13, 3.9))
@@ -94,13 +99,12 @@ def dists_fig(study, chess, bike, iris, line=(38.58, 5.25), chess_at=200, n_near
     for k, v in enumerate([1 - ph, ph]): a.text(k, v + 0.02, f"{int(round(v * n_near))}판", ha="center", fontsize=13)
     a.set_xticks([0, 1], ["흑 승 0", "백 승 1"]); a.set_ylim(0, 1)
     a.set_xlabel(f"+{chess_at}점 근처 {n_near}판"); a.set_title("체스 → 베르누이", fontsize=17, fontweight="bold")
-    # 따릉이: 기온 구간의 대여 수 ~ 포아송 (같은 평균)
-    t, c = bike; v = c[(t >= bike_rng[0]) & (t < bike_rng[1])]; lam = v.mean(); edges = np.arange(0, 701, 50)
-    a = ax[2]; a.hist(v, bins=edges, color=GREEN, alpha=0.6, label=f"{len(v)}일")
-    ks = np.arange(0, 701); pm = np.array([exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks])
-    top = np.histogram(v, bins=edges)[0].max() * 1.5
-    a.plot(ks, pm * 50 * len(v), color="k", lw=2.5, label="포아송\n(위로 잘림)"); a.set_ylim(0, top)
-    a.set_xlabel(f"대여 수 ({bike_rng[0]}~{bike_rng[1]}°C)"); a.set_title("따릉이 → 포아송", fontsize=17, fontweight="bold")
+    # 월드컵: Elo 차이가 비슷한 경기 (|차이| <= even) 의 골 수 ~ 포아송 (같은 평균)
+    x, y = goals; v = y[np.abs(x) <= even].astype(int); lam = v.mean(); ks = np.arange(0, 8)
+    cnt = np.bincount(v, minlength=len(ks))[:len(ks)]; pois = np.array([exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks])
+    a = ax[2]; a.bar(ks, cnt / len(v), color=GREEN, alpha=0.6, width=0.7, label=f"{len(v)}줄")
+    a.plot(ks, pois, "o-", color="k", lw=2, ms=6, label="포아송")
+    a.set_xticks(ks); a.set_xlabel(f"골 수 (Elo 차이 ±{even})"); a.set_title("월드컵 → 포아송", fontsize=17, fontweight="bold")
     a.legend(frameon=False, fontsize=11, loc="upper right")
     # 붓꽃: 꽃잎 길이 근처 ~ 범주형
     x, y = iris; m = np.abs(x - iris_at) <= 0.1 + 1e-9; n = np.bincount(y[m], minlength=3)
@@ -110,12 +114,12 @@ def dists_fig(study, chess, bike, iris, line=(38.58, 5.25), chess_at=200, n_near
     a.set_xlabel(f"꽃잎 {iris_at - 0.1:.1f}~{iris_at + 0.1:.1f} cm ({n.sum()}송이)"); a.set_title("붓꽃 → 범주형", fontsize=17, fontweight="bold")
     for a in ax: a.set_yticks([])
     fig.tight_layout(); fig.savefig(O + "glm_dists.png"); plt.close(fig)
-    return sd, ph, lam, v.var(), n
+    return sd, ph, round(lam, 2), n
 
 if __name__ == "__main__":
-    st, ch, (t, c), ir = D.study(), D.chess(), D.bike(), D.iris()
-    types_fig(st, ch, (t, c), ir); print("dists", dists_fig(st, ch, (t, c), ir))
-    k = np.polyfit(t, c, 1); bike_line_fig(t, c, k)
-    wp = D.fit_glm(t, c, np.exp, lr=0.002, steps=20000, scale=10, shift=10, w0=np.log(c.mean())); bike_pois_fig(t, c, k, wp)
+    st, ch, (x, y), ir = D.study(), D.chess(), D.goals(), D.iris()
+    types_fig(st, ch, (x, y), ir); print("dists", dists_fig(st, ch, (x, y), ir))
+    k = np.polyfit(x, y, 1); goals_line_fig(x, y, k)
+    wp = D.fit_glm(x, y, np.exp, lr=0.05, steps=20000, scale=100, w0=np.log(y.mean())); goals_pois_fig(x, y, k, wp)
     W = D.fit_softmax(*ir); softmax_fig(*ir, W)
-    print("figs ok", wp.round(4))
+    print("figs ok", wp.round(5))

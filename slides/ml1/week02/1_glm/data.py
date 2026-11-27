@@ -2,8 +2,8 @@
 데이터
 - 점수: 1주차 선형회귀의 학생 30명 (공부 시간 → 점수), ../../week01/2_linear_regression/data.py 와 같은 배열
 - 체스: lichess 2013년 1월, 승패가 난 117,003판 (CC0), data/chess_2013_01.csv.gz (로지스틱회귀 덱과 같은 파일)
-- 따릉이: 서울 공공자전거 시간별 대여 수 (UCI Seoul Bike Sharing Demand, 2017-12 ~ 2018-11, CC BY 4.0) 중
-  운영한 날의 아침 6시 352개, data/seoul_bike_6am.csv (원본 ~/book-ml/notebooks/datashop/data/seoul_bike.zip)
+- 월드컵: 본선 1930~2026 23개 대회 1068경기의 팀별 골 수 2136줄 (martj42/international_results, CC0),
+  x = 경기 전 Elo 차이 (내 팀 − 상대, 홈 +100 포함). data/worldcup_goals.csv 는 prep_worldcup.py 가 만든다
 - 붓꽃: Fisher (1936) iris 150송이 (sklearn.datasets.load_iris), 꽃잎 길이 하나로 세 종
 """
 import os
@@ -25,9 +25,9 @@ def chess():
     return (d.white - d.black).values.astype(float), d.white_win.values.astype(float)
 
 
-def bike():
-    d = pd.read_csv(os.path.join(HERE, "data", "seoul_bike_6am.csv"))
-    return d.temp.values.astype(float), d["count"].values.astype(float)
+def goals():
+    d = pd.read_csv(os.path.join(HERE, "data", "worldcup_goals.csv"))
+    return d.elo_diff.values.astype(float), d.goals.values.astype(float)
 
 
 def iris():
@@ -69,13 +69,18 @@ def softmax_p(W, v):
 STUDY_W = (38.58, 5.25)                 # 선형회귀: 점수 = 38.58 + 5.25 x
 CHESS_W = (0.09, 0.0047)                # 로지스틱: P(백 승) = sigma(0.09 + 0.0047 x)
 CHESS_Z200, CHESS_P200 = 1.03, 0.74     # +200 점: z = 1.03 -> 74 %
-BIKE_N = 352
-BIKE_LINE = (181.9, 12.31)              # 직선: 대여 = 181.9 + 12.31 t
-BIKE_LINE_ZERO, BIKE_LINE_NEG = -14.8, 5   # 직선이 0 이 되는 기온, 음수로 예측한 날 수
-BIKE_TMIN, BIKE_TMAX = -17.4, 30.5
-BIKE_POIS = (5.15, 0.0447)              # 포아송: 대여 = e^(5.15 + 0.0447 t)
-BIKE_RATIO = 1.046                      # 1 도마다 x1.046 (4.6 %)
-BIKE_P0, BIKE_P20, BIKE_PMIN = 173, 422, 79   # 포아송 예측: 0 도, 20 도, 가장 추운 날
+GOALS_N, GOALS_MATCHES, GOALS_CUPS = 2136, 1068, 23
+GOALS_MEAN = 1.42                       # 한 팀이 한 경기에 넣는 골 평균
+GOALS_XMIN, GOALS_XMAX = -575, 575
+GOALS_LINE = (1.418, 0.00276)           # 직선: 골 = 1.418 + 0.00276 x
+GOALS_LINE_ZERO, GOALS_LINE_NEG = -513, 5    # 직선이 0 이 되는 Elo 차이, 음수로 예측한 줄 수
+GOALS_POIS = (0.289, 0.00195)           # 포아송: 골 = e^(0.289 + 0.00195 x)
+GOALS_RATIO = 1.22                      # Elo 100 앞설 때마다 x1.22
+GOALS_P = {-400: 0.61, -300: 0.74, 0: 1.34, 300: 2.40}      # 포아송 예측
+GOALS_L = {-400: 0.31, -300: 0.59, 0: 1.42, 300: 2.25}      # 직선 예측
+GOALS_PMIN, GOALS_LMIN = 0.43, -0.17     # 가장 약한 쪽 (Elo -575): 포아송 / 직선
+GOALS_BIN_M400 = (64, 0.66)             # Elo 차이 -400 ~ -300 인 64줄의 실제 평균 골
+GOALS_EVEN = (462, 1.30, 1.68)          # Elo 차이 -50 ~ +50: 줄 수, 평균, 분산 (분포 그림)
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
 IRIS_CROSS = (2.6, 4.9)                 # 확률이 바뀌는 길이 (setosa|versicolor, versicolor|virginica)
 
@@ -88,18 +93,21 @@ if __name__ == "__main__":
     assert np.allclose(w, CHESS_W, atol=5e-3) and abs(w[1] - CHESS_W[1]) < 5e-5
     assert round(w[0] + 200 * w[1], 2) == CHESS_Z200 and round(sig(w[0] + 200 * w[1]), 2) == CHESS_P200
 
-    t, c = bike(); k = np.polyfit(t, c, 1)
-    print("bike n", len(t), "t", t.min(), t.max(), "line", k.round(2), "zero", round(-k[1] / k[0], 1), "neg", int((np.polyval(k, t) < 0).sum()))
-    assert len(t) == BIKE_N and (t.min(), t.max()) == (BIKE_TMIN, BIKE_TMAX)
-    assert np.allclose(k[::-1], BIKE_LINE, atol=0.05) and round(-k[1] / k[0], 1) == BIKE_LINE_ZERO and (np.polyval(k, t) < 0).sum() == BIKE_LINE_NEG
-    wp = fit_glm(t, c, np.exp, lr=0.002, steps=20000, scale=10, shift=10, w0=np.log(c.mean()))
+    x, y = goals(); k = np.polyfit(x, y, 1)
+    print("goals n", len(x), "mean", y.mean().round(3), "x", x.min(), x.max(), "line", k[::-1].round(5), "zero", round(-k[1] / k[0]), "neg", int((np.polyval(k, x) < 0).sum()))
+    assert len(x) == GOALS_N and (x.min(), x.max()) == (GOALS_XMIN, GOALS_XMAX) and round(y.mean(), 2) == GOALS_MEAN
+    assert np.allclose(k[::-1], GOALS_LINE, atol=[5e-4, 5e-6]) and round(-k[1] / k[0]) == GOALS_LINE_ZERO and (np.polyval(k, x) < 0).sum() == GOALS_LINE_NEG
+    wp = fit_glm(x, y, np.exp, lr=0.05, steps=20000, scale=100, w0=np.log(y.mean()))
     pm = lambda v: np.exp(wp[0] + wp[1] * v)
-    print("poisson", wp.round(4), "ratio", round(np.exp(wp[1]), 3), "p0", round(pm(0)), "p20", round(pm(20)), "pmin", round(pm(t.min())))
+    print("poisson", wp.round(5), "ratio100", round(np.exp(100 * wp[1]), 3), {v: round(pm(v), 2) for v in GOALS_P})
     from sklearn.linear_model import PoissonRegressor
-    sk = PoissonRegressor(alpha=0, max_iter=2000).fit(t[:, None], c)
-    assert abs(sk.intercept_ - wp[0]) < 1e-3 and abs(sk.coef_[0] - wp[1]) < 1e-4      # 경사하강법 = sklearn
-    assert np.allclose(wp, BIKE_POIS, atol=5e-3) and round(np.exp(wp[1]), 3) == BIKE_RATIO
-    assert (round(pm(0)), round(pm(20)), round(pm(t.min()))) == (BIKE_P0, BIKE_P20, BIKE_PMIN)
+    sk = PoissonRegressor(alpha=0, max_iter=3000).fit(x[:, None], y)
+    assert abs(sk.intercept_ - wp[0]) < 1e-4 and abs(sk.coef_[0] - wp[1]) < 1e-6      # 경사하강법 = sklearn
+    assert np.allclose(wp, GOALS_POIS, atol=[5e-4, 5e-6]) and round(np.exp(100 * wp[1]), 2) == GOALS_RATIO
+    assert all(round(pm(v), 2) == p for v, p in GOALS_P.items()) and all(round(np.polyval(k, v), 2) == p for v, p in GOALS_L.items())
+    assert (round(pm(x.min()), 2), round(np.polyval(k, x.min()), 2)) == (GOALS_PMIN, GOALS_LMIN)
+    m = (x >= -400) & (x < -300); assert (m.sum(), round(y[m].mean(), 2)) == GOALS_BIN_M400
+    m = np.abs(x) <= 50; assert (m.sum(), round(y[m].mean(), 2), round(y[m].var(), 2)) == GOALS_EVEN
 
     x, y = iris(); W = fit_softmax(x, y); p = softmax_p(W, 4.9)
     xs = np.linspace(1, 7, 6001); P = softmax_p(W, xs)
