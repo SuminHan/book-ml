@@ -165,93 +165,6 @@ $z = 0$ 이면 정확히 $0.5$
 \end{frame}
 
 \section{학습}
-% --- 엔트로피 (4주차 섀넌 엔트로피 덱에서 옮김)
-\begin{frame}{놀라움 (정보량): 드물수록 크다}
-\markpage{surprise}
-\vfill
-\begin{columns}[c]
-\begin{column}{0.5\textwidth}\centering\includegraphics[width=\linewidth]{en_surprise.png}\end{column}
-\begin{column}{0.46\textwidth}
-{\LARGE\[ I(x) = -\log_2 p(x) \]}
-\renewcommand{\arraystretch}{1.3}
-{\large\begin{tabular}{lr}
-브라질 승 (90\%) & 0.15 비트\\
-반반 (50\%) & 1 비트\\
-한국 승 (10\%) & \kq{3.32 비트}\\
-1\% 사건 & 6.64 비트
-\end{tabular}}
-\end{column}
-\end{columns}
-\vfill
-\note{섀넌은 확률 p인 사건이 일어났을 때의 놀라움을 마이너스 로그 2 p로 정했습니다. 단위는 비트입니다. 90퍼센트 확률인 브라질 승리는 0.15비트, 거의 놀랍지 않습니다. 반반인 사건은 정확히 1비트입니다. 10퍼센트인 한국 승리는 3.32비트, 1퍼센트 사건은 6.64비트입니다. 확률이 작을수록 커지고, 확실한 일, 확률 1은 0비트입니다. 이 값을 정보량이라고도 부릅니다. 드문 결과일수록 우리가 몰랐던 것을 더 많이 알려 주니까요.}
-\end{frame}
-
-\begin{frame}{엔트로피 = 놀라움의 평균}
-\markpage{entropy}
-\vfill
-\centering
-{\LARGE\[ H = \sum_i p_i \cdot \big(-\log_2 p_i\big) = -\sum_i p_i \log_2 p_i \]}\vskip0.4em
-{\large 한국 vs 브라질: \quad $0.9 \times 0.15 + 0.1 \times 3.32 = \kb{0.47}$ 비트}\\[0.8em]
-{\large 경기를 보기 \textbf{전}, 결과가 평균적으로 얼마나 놀라울지 \quad = \quad 불확실함의 크기}
-\vfill
-\note{경기를 하기 전에, 결과가 평균적으로 얼마나 놀라울지 계산할 수 있습니다. 각 결과의 놀라움에 그 확률을 곱해 더하면 됩니다. 이것이 엔트로피입니다. 한국과 브라질 경기는 90퍼센트로 0.15비트, 10퍼센트로 3.32비트이니 평균 0.47비트입니다. 엔트로피는 결과를 보기 전의 불확실함의 크기라고 생각하면 됩니다. 결과가 뻔할수록 작고, 예측하기 어려울수록 큽니다.}
-\end{frame}
-
-\begin{frame}{팽팽할수록 엔트로피가 크다}
-\vfill
-\centering\includegraphics[width=0.6\linewidth]{en_binary.png}\par\vskip0.2em
-{\large 조기축구 vs 브라질 (1\%): \textbf{0.08} \quad 한국 vs 브라질: 0.47 \quad 한일전 (반반): \kb{1.0, 최대}}\\[0.2em]
-{\small 조기축구팀이 이기면 놀라움은 6.64 로 크지만, 1\% 라서 평균에는 거의 기여하지 않는다}
-\vfill
-\note{결과가 두 가지일 때 한쪽이 이길 확률에 따라 엔트로피를 그렸습니다. 조기축구팀과 브라질이면 조기축구팀이 이길 확률 1퍼센트, 엔트로피 0.08입니다. 이기면 놀라움은 6.64로 크지만 그럴 일이 거의 없으니 평균은 작습니다. 한국과 브라질은 0.47, 한일전처럼 반반이면 1로 최대입니다. 결과를 전혀 예측할 수 없을 때 엔트로피가 가장 큽니다. 한일전이 손에 땀을 쥐게 하는 이유입니다.}
-\end{frame}
-
-% --- 교차 엔트로피로 다리 놓기
-\begin{frame}{교차 엔트로피: \textbf{내 예측}으로 잰 놀라움}
-\vfill
-\centering
-{\Large\[ H(p, q) = -\sum_i \underbrace{p_i}_{\text{실제}} \log_2 \underbrace{q_i}_{\text{내 예측}} \]}\vskip0.4em
-{\large 엔트로피는 실제 확률 $p$ 로 놀라움을 쟀다. 교차 엔트로피는 \kb{모델이 말한 확률 $q$} 로 잰다}\\[0.6em]
-{\normalsize 경기가 끝나 정답이 나오면 $p$ = (이긴 쪽 1, 진 쪽 0) $\to$ 합에서 한 항만 남는다: \quad \kq{$-\log_2 q_{\text{정답}}$}}\\[0.4em]
-{\normalsize 정답에 0.9 를 줬으면 0.15 비트, 0.1 을 줬으면 \kq{3.32 비트}: 모델이 \textbf{정답을 얼마나 놀라워했나}}
-\vfill
-\note{엔트로피는 실제 확률로 놀라움의 평균을 쟀습니다. 교차 엔트로피는 놀라움을 모델이 말한 확률 q로 잽니다. 실제 확률 p로 가중 평균을 내되, 로그 안에는 모델의 예측을 넣습니다. 경기가 끝나 정답이 정해지면 p는 이긴 쪽만 1이고 나머지는 0이라서, 합에서 정답 항 하나만 남습니다. 마이너스 로그, 모델이 정답에 준 확률. 정답에 0.9를 줬다면 0.15비트로 별로 놀라지 않았고, 0.1을 줬다면 3.32비트로 크게 놀란 겁니다. 정답을 덜 놀라워하는 모델이 좋은 모델입니다. 이걸 게임으로 바꿔 보면 다음 쪽의 칩 걸기가 됩니다.}
-\end{frame}
-
-% --- 교차 엔트로피 (옛 03-1 교차 엔트로피 덱에서 옮김: 칩 걸기 · 벌점 · MSE 와 비교)
-\begin{frame}{칩 100개를 나눠 걸기}
-\vfill
-\centering\includegraphics[width=0.8\linewidth]{ce_chips.png}\par\vskip0.4em
-{\large AI는 칩 100개를 답마다 나눠 건다. \kq{정답 쪽에 건 칩만 남는다}}
-\vfill
-\note{AI의 예측을 게임으로 바꿔 봅시다. AI는 칩 100개를 고양이와 강아지에 나눠 겁니다. 고양이 90퍼센트라는 예측은 고양이에 90개, 강아지에 10개를 건 것입니다. 정답이 공개되면 정답 쪽에 건 칩만 남습니다. 정답이 고양이니까 A는 90개, 반반 건 B는 50개, 강아지 99퍼센트라고 한 C는 1개만 남습니다. 남은 칩이 적을수록 큰 벌점을 주면 됩니다.}
-\end{frame}
-
-\begin{frame}{남은 칩이 적을수록 큰 벌점}
-\markpage{curve}
-\vfill
-\begin{columns}[c]
-\begin{column}{0.58\textwidth}\centering\includegraphics[width=\linewidth]{ce_curve.png}\end{column}
-\begin{column}{0.38\textwidth}
-{\Large\[ \text{벌점} = -\log_2 \frac{\text{남은 칩}}{100} \]}\vskip0.6em
-100개 $\to$ 0 \quad 50개 $\to$ 1 \quad 25개 $\to$ 2\\[0.3em]
-\kb{칩이 절반이 될 때마다 벌점 +1}\\[0.8em]
-90개 $\to$ \textbf{0.15} \qquad 1개 $\to$ \kq{6.64}\\[0.8em]
-{\small 밑은 아무거나: $\log_2$ $\to$ \textbf{비트}, \; $\ln$ $\to$ \textbf{냇}\\ ML 코드는 보통 $\ln$. 값만 상수배 \pref{celoss}}
-\end{column}
-\end{columns}
-\vfill
-\note{벌점은 남은 칩 비율에 마이너스 로그 2를 씌운 값입니다. 다 남으면 0점, 절반이 남으면 1점, 4분의 1이 남으면 2점입니다. 칩이 절반으로 줄 때마다 벌점이 1씩 오릅니다. 그래서 90개 남은 A는 0.15점, 1개 남은 C는 6.64점입니다. 100개에서 1개가 되려면 절반을 6.6번 해야 하니까요. 처음 질문의 답이 6.64점입니다. 한 가지 짚어 두면, 로그의 밑이 꼭 2일 필요는 없습니다. 밑을 바꾸면 값 전체에 같은 상수가 곱해질 뿐이라 어느 AI가 더 나쁜지 순서도, 학습 결과도 같습니다. 밑이 2이면 단위를 비트라고 부르고, 절반마다 1점이라 직관적이어서 오늘 비유에서는 2를 씁니다. 실제 머신러닝 코드는 보통 자연로그를 쓰고, 단위는 냇이라고 합니다.}
-\end{frame}
-
-\begin{frame}{정답에 0개를 걸었다면}
-\vfill
-\centering\includegraphics[width=0.8\linewidth]{ce_allin.png}\par\vskip0.6em
-{\large 정답에 하나도 안 걸면 \kq{파산: 벌점 $\infty$}. 모를 땐 반반이 낫다 (틀려도 1점)}
-\vfill
-\note{정답인 고양이에 하나도 안 걸고 강아지에 100개를 다 걸었다면 칩이 하나도 안 남습니다. 파산이고, 로그 0은 마이너스 무한대라서 벌점은 무한대입니다. 그래서 교차 엔트로피로 학습한 모델은 모를 때 함부로 확신하지 않습니다. 반반에 걸면 어느 쪽이 정답이든 1점만 잃기 때문입니다. 확신하고 틀리는 것을 아주 크게 벌하는 벌점입니다.}
-\end{frame}
-
 \begin{frame}{로지스틱회귀의 손실: 교차 엔트로피}
 \markpage{celoss}
 \vfill
@@ -259,12 +172,12 @@ $z = 0$ 이면 정확히 $0.5$
 {\Large\[ L = -\big[\, y \ln \hat y + (1-y) \ln (1-\hat y) \,\big] \]}\vskip0.4em
 $y$: 정답 (1 또는 0) \qquad $\hat y = \sigma(z)$: 1일 확률 (시그모이드 출력)\\[0.8em]
 \begin{tabular}{ll}
-$y = 1$ 이면 & $L = -\ln \hat y$ \quad (1에 건 칩)\\[0.3em]
-$y = 0$ 이면 & $L = -\ln (1-\hat y)$ \quad (0에 건 칩)
+$y = 1$ 이면 & $L = -\ln \hat y$ \quad (정답 1 에 준 확률)\\[0.3em]
+$y = 0$ 이면 & $L = -\ln (1-\hat y)$ \quad (정답 0 에 준 확률)
 \end{tabular}\vskip0.8em
-\kb{실제 코드는 $\log_2$ 대신 자연로그 $\ln$} \quad {\small 6.64 비트 $= 6.64 \times \ln 2 \approx 4.60$ (값만 상수배)}
+\kb{정답 쪽에 준 확률이 작을수록 큰 벌점} \quad {\small 왜 $-\ln$ 인가: 정보량 · 칩 걸기 (부록 1$\sim$7)}
 \vfill
-\note{로지스틱회귀에서 쓰는 손실이 바로 이 칩 걸기 벌점, 교차 엔트로피입니다. 답이 두 개뿐이라 y가 1이면 앞 항만, y가 0이면 뒤 항만 남습니다. 결국 정답 쪽에 건 칩에 마이너스 로그를 씌운 것과 같습니다. 한 가지 차이는 로그의 밑입니다. 비유에서는 절반마다 1점이 되도록 로그 2를 썼지만, PyTorch나 scikit-learn은 자연로그를 씁니다. 값이 상수배만 다르고 최솟값의 위치는 같습니다.}
+\note{로지스틱회귀에서 쓰는 손실은 교차 엔트로피입니다. 답이 두 개뿐이라 y가 1이면 앞 항만, y가 0이면 뒤 항만 남습니다. 결국 정답 쪽에 준 확률에 마이너스 ln을 씌운 것입니다. 정답에 0.9를 줬으면 0.11, 0.5면 0.69, 0.01이면 4.60으로, 정답 쪽에 준 확률이 작을수록 벌점이 커집니다. 왜 하필 마이너스 로그인지는 정보량과 칩 걸기 비유로 설명할 수 있는데, 덱 끝 부록 1에서 7에 모아 두었습니다. 실제 코드는 PyTorch나 scikit-learn 모두 자연로그 ln을 씁니다.}
 \end{frame}
 
 % --- 데이터 전체의 손실
@@ -341,6 +254,50 @@ $y = 0$ 이면 & $L = -\ln (1-\hat y)$ \quad (0에 건 칩)
 \note{확률 0.5 이상을 백 승이라고 하는 건 하나의 선택일 뿐입니다. 임계값을 올리면 확실한 판만 백 승이라고 하니까, 백 승이라고 한 것 중 진짜 백 승 비율인 정밀도는 오르고, 진짜 백 승 중 찾아낸 비율인 재현율은 내려갑니다. 0.5에서는 정밀도 67퍼센트, 재현율 71퍼센트입니다. 레이팅 차이 하나만 보니 정확도에 한계가 있죠. 어떤 일에 쓰느냐에 따라, 헛짚는 게 더 곤란하면 임계값을 높이고, 놓치는 게 더 곤란하면 낮춥니다. 임계값을 모두 훑어서 정밀도와 재현율을 그린 것이 다음 주에 배울 PR 곡선입니다.}
 \end{frame}
 
+\section{여러 클래스}
+% --- 소프트맥스 (GLM 덱에서 옮김)
+\begin{frame}{클래스가 셋이면: 소프트맥스}
+\vfill
+\centering
+{\LARGE\[ P(y = k \mid x) = \frac{e^{\,z_k}}{\sum_{j=1}^{K} e^{\,z_j}} \qquad z_k = w_{k0} + w_{k1}\,x \]}\vskip0.5em
+{\large 클래스마다 \kb{직선 하나} (붓꽃: $z_0, z_1, z_2$) \;$\to$\; $e^{z}$ 로 양수 \;$\to$\; 합으로 나눠 \kb{더하면 1}}\\[0.5em]
+{\large 클래스가 2개면: \;$\dfrac{e^{z_1}}{e^{z_1} + e^{z_0}} = \sigma(z_1 - z_0)$ \;=\; \kb{로지스틱회귀}}\\[0.4em]
+{\small 범주형 분포 (categorical): 클래스 $k$ 일 확률 $\phi_k$, 다 더하면 1 \quad 예측 $\hat y_k = P(y = k \mid x)$}
+\vfill
+\note{y가 0과 1 둘이 아니라 셋 이상이면 어떻게 할까요? 붓꽃은 꽃잎 길이로 setosa, versicolor, virginica 세 종 중 하나를 맞힙니다. 클래스마다 확률이 하나씩 필요하고, 조건이 두 가지입니다. 각 확률은 양수, 그리고 합은 1. 방법은 이렇습니다. 클래스마다 직선 z k를 하나씩 둡니다. 붓꽃이면 z0, z1, z2 세 개, w는 6개입니다. 각 z에 e를 씌워 양수로 만들고, 전부 더한 것으로 나눠서 합이 1이 되게 합니다. 이 함수를 소프트맥스라고 부릅니다. 클래스가 두 개일 때 계산해 보면, e의 z1 나누기 e의 z1 더하기 e의 z0은 분자 분모를 e의 z1로 나누면 1 나누기 1 더하기 e의 마이너스 z1 빼기 z0, 시그모이드입니다. 소프트맥스는 오늘 배운 로지스틱회귀를 클래스 여러 개로 넓힌 것입니다.}
+\end{frame}
+
+% --- 소프트맥스 결과
+\begin{frame}{붓꽃 150송이: 꽃잎 길이 하나로 세 종}
+\vfill
+\centering\includegraphics[width=0.5\linewidth]{softmax_iris.png}\par\vskip0.1em
+{\large $z_{\text{setosa}} = 29.4 - 8.8x$ \quad $z_{\text{versicolor}} = 7.2 - 0.1x$ \quad $z_{\text{virginica}} = -36.6 + 8.9x$}\\[0.3em]
+{\large 세 직선을 \kb{같이} 학습 \quad 꽃잎 4.9 cm: versicolor \kb{42\%} · virginica \kb{58\%} \quad 정확도 95\%}
+\vfill
+\note{붓꽃 150송이로 꽃잎 길이 하나만 넣어 소프트맥스 회귀를 학습했습니다. 아래 점들이 실제 꽃이고, 세 곡선이 각 종일 확률입니다. 학습한 직선은 셋입니다. setosa는 29.4 빼기 8.8 x로 꽃잎이 짧을수록 크고, virginica는 마이너스 36.6 더하기 8.9 x로 길수록 크고, versicolor는 거의 평평합니다. 세 직선은 따로따로가 아니라 같이 학습합니다. 소프트맥스가 셋을 서로 나눠 쓰기 때문에, 한 직선이 커지면 나머지 확률이 줄어듭니다. 어느 길이에서든 세 확률을 더하면 1입니다. 4.9센티 꽃은 versicolor 42퍼센트, virginica 58퍼센트로 애매합니다. 실제로 4.5에서 5.1센티 사이는 두 종이 섞여 있습니다. 150송이 중 95퍼센트를 맞힙니다. 이 붓꽃 데이터는 결정 트리에서도 다시 씁니다.}
+\end{frame}
+
+% --- 소프트맥스 손실 · 기울기
+\begin{frame}{소프트맥스 회귀의 손실과 기울기}
+\vfill
+\centering
+{\large\begin{align*}
+\text{loss} &= -\ln \hat y_{\text{정답}} && \text{교차 엔트로피 (정답 칸만 남는다)}\\[0.1em]
+\frac{\partial\,\text{loss}}{\partial z_k} &= \textcolor{ksared}{\hat y_k - y_k} && y = \text{정답 칸만 1 (one-hot)}\\[0.1em]
+\frac{\partial\,\text{loss}}{\partial w_{k1}} &= (\hat y_k - y_k)\,x && z_k = w_{k0} + w_{k1} x
+\end{align*}}\vskip0.1em
+\renewcommand{\arraystretch}{1.12}
+{\large\begin{tabular}{l|ccc}
+꽃잎 4.9 cm, 정답 virginica & setosa & versicolor & virginica\\ \hline
+예측 $\hat y$ & 0 & 0.42 & 0.58\\
+정답 $y$ & 0 & 0 & 1\\
+$\hat y - y$ & 0 & \kq{$+0.42$} ($z$ 내림) & \kb{$-0.42$} ($z$ 올림)
+\end{tabular}}\\[0.2em]
+{\large 손실 $= -\ln 0.58 = 0.54$ \quad 기울기는 로지스틱과 같은 \kq{$(\hat y - y)\,x$}, 직선마다}
+\vfill
+\note{손실은 오늘 배운 교차 엔트로피 그대로입니다. 정답 칸에 준 확률에 마이너스 ln을 씌웁니다. 클래스가 셋이어도 정답 칸 하나만 남습니다. z k로 미분하면 와이햇 k 빼기 y k입니다. 여기서 y는 정답 칸만 1이고 나머지는 0인 벡터, 원핫이라고 부릅니다. 꽃잎이 4.9센티이고 실제로 virginica인 꽃으로 해 봅시다. 예측은 setosa 0, versicolor 0.42, virginica 0.58입니다. 손실은 마이너스 ln 0.58, 0.54입니다. 와이햇 빼기 y는 setosa 0, versicolor 플러스 0.42, virginica 마이너스 0.42입니다. 틀린 versicolor의 직선은 내리고, 정답 virginica의 직선은 올리는 방향입니다. 세 직선 각각의 기울기가 와이햇 k 빼기 y k 곱하기 x, 로지스틱회귀와 같은 모양이라서 세 직선을 한꺼번에 같은 코드로 학습합니다.}
+\end{frame}
+
 \section{연습}
 % --- 문제풀이
 \begin{frame}{문제풀이}
@@ -378,9 +335,98 @@ lichess 체스 117,003판 (2013년 1월, CC0) \\[0.4em]\href{https://colab.resea
 해석 \quad $x$ 가 1 늘면 오즈가 $e^{w_1}$ 배\\[0.5em]
 학습 \quad 교차 엔트로피 + 경사하강법 (기울기는 선형회귀와 같은 모양)\\[0.5em]
 판정 \quad 임계값은 정밀도 · 재현율을 보고 정한다\\[0.5em]
+여러 클래스 \quad 소프트맥스: 클래스마다 직선, $e^{z}$ 를 합으로 나눔 (2개면 시그모이드)\\[0.5em]
 체스 12만 판 \quad 백이 200점 높으면 74\%, 100점마다 오즈 1.6배, Elo 도 로지스틱
 \end{tabular}
 \vfill
-\note{정리합니다. 로지스틱회귀는 직선에 시그모이드를 씌워 1일 확률을 내는 모델입니다. 결정 경계는 z가 0인 곳이고, 특징이 여럿이어도 곧은 경계입니다. w1은 x가 1 늘 때 오즈가 e의 w1제곱 배가 된다고 읽습니다. 학습은 교차 엔트로피와 경사하강법으로 하고, 기울기는 선형회귀와 같은 모양입니다. 마지막으로 0.5라는 임계값은 정밀도와 재현율을 보고 문제에 맞게 정합니다.}
+\note{정리합니다. 로지스틱회귀는 직선에 시그모이드를 씌워 1일 확률을 내는 모델입니다. 결정 경계는 z가 0인 곳이고, 특징이 여럿이어도 곧은 경계입니다. w1은 x가 1 늘 때 오즈가 e의 w1제곱 배가 된다고 읽습니다. 학습은 교차 엔트로피와 경사하강법으로 하고, 기울기는 선형회귀와 같은 모양입니다. 마지막으로 0.5라는 임계값은 정밀도와 재현율을 보고 문제에 맞게 정합니다. 클래스가 셋 이상이면 클래스마다 직선을 하나씩 두고 소프트맥스로 확률을 만들며, 손실과 기울기는 같은 모양입니다.}
 \end{frame}
+\section{부록}
+% --- 엔트로피 (4주차 섀넌 엔트로피 덱에서 옮김)
+\begin{frame}{부록 1. 놀라움 (정보량): 드물수록 크다}
+\markpage{surprise}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}\centering\includegraphics[width=\linewidth]{en_surprise.png}\end{column}
+\begin{column}{0.46\textwidth}
+{\LARGE\[ I(x) = -\log_2 p(x) \]}
+\renewcommand{\arraystretch}{1.3}
+{\large\begin{tabular}{lr}
+브라질 승 (90\%) & 0.15 비트\\
+반반 (50\%) & 1 비트\\
+한국 승 (10\%) & \kq{3.32 비트}\\
+1\% 사건 & 6.64 비트
+\end{tabular}}
+\end{column}
+\end{columns}
+\vfill
+\note{섀넌은 확률 p인 사건이 일어났을 때의 놀라움을 마이너스 로그 2 p로 정했습니다. 단위는 비트입니다. 90퍼센트 확률인 브라질 승리는 0.15비트, 거의 놀랍지 않습니다. 반반인 사건은 정확히 1비트입니다. 10퍼센트인 한국 승리는 3.32비트, 1퍼센트 사건은 6.64비트입니다. 확률이 작을수록 커지고, 확실한 일, 확률 1은 0비트입니다. 이 값을 정보량이라고도 부릅니다. 드문 결과일수록 우리가 몰랐던 것을 더 많이 알려 주니까요.}
+\end{frame}
+
+\begin{frame}{부록 2. 엔트로피 = 놀라움의 평균}
+\markpage{entropy}
+\vfill
+\centering
+{\LARGE\[ H = \sum_i p_i \cdot \big(-\log_2 p_i\big) = -\sum_i p_i \log_2 p_i \]}\vskip0.4em
+{\large 한국 vs 브라질: \quad $0.9 \times 0.15 + 0.1 \times 3.32 = \kb{0.47}$ 비트}\\[0.8em]
+{\large 경기를 보기 \textbf{전}, 결과가 평균적으로 얼마나 놀라울지 \quad = \quad 불확실함의 크기}
+\vfill
+\note{경기를 하기 전에, 결과가 평균적으로 얼마나 놀라울지 계산할 수 있습니다. 각 결과의 놀라움에 그 확률을 곱해 더하면 됩니다. 이것이 엔트로피입니다. 한국과 브라질 경기는 90퍼센트로 0.15비트, 10퍼센트로 3.32비트이니 평균 0.47비트입니다. 엔트로피는 결과를 보기 전의 불확실함의 크기라고 생각하면 됩니다. 결과가 뻔할수록 작고, 예측하기 어려울수록 큽니다.}
+\end{frame}
+
+\begin{frame}{부록 3. 팽팽할수록 엔트로피가 크다}
+\vfill
+\centering\includegraphics[width=0.6\linewidth]{en_binary.png}\par\vskip0.2em
+{\large 조기축구 vs 브라질 (1\%): \textbf{0.08} \quad 한국 vs 브라질: 0.47 \quad 한일전 (반반): \kb{1.0, 최대}}\\[0.2em]
+{\small 조기축구팀이 이기면 놀라움은 6.64 로 크지만, 1\% 라서 평균에는 거의 기여하지 않는다}
+\vfill
+\note{결과가 두 가지일 때 한쪽이 이길 확률에 따라 엔트로피를 그렸습니다. 조기축구팀과 브라질이면 조기축구팀이 이길 확률 1퍼센트, 엔트로피 0.08입니다. 이기면 놀라움은 6.64로 크지만 그럴 일이 거의 없으니 평균은 작습니다. 한국과 브라질은 0.47, 한일전처럼 반반이면 1로 최대입니다. 결과를 전혀 예측할 수 없을 때 엔트로피가 가장 큽니다. 한일전이 손에 땀을 쥐게 하는 이유입니다.}
+\end{frame}
+
+% --- 교차 엔트로피로 다리 놓기
+\begin{frame}{부록 4. 교차 엔트로피: \textbf{내 예측}으로 잰 놀라움}
+\vfill
+\centering
+{\Large\[ H(p, q) = -\sum_i \underbrace{p_i}_{\text{실제}} \log_2 \underbrace{q_i}_{\text{내 예측}} \]}\vskip0.4em
+{\large 엔트로피는 실제 확률 $p$ 로 놀라움을 쟀다. 교차 엔트로피는 \kb{모델이 말한 확률 $q$} 로 잰다}\\[0.6em]
+{\normalsize 경기가 끝나 정답이 나오면 $p$ = (이긴 쪽 1, 진 쪽 0) $\to$ 합에서 한 항만 남는다: \quad \kq{$-\log_2 q_{\text{정답}}$}}\\[0.4em]
+{\normalsize 정답에 0.9 를 줬으면 0.15 비트, 0.1 을 줬으면 \kq{3.32 비트}: 모델이 \textbf{정답을 얼마나 놀라워했나}}
+\vfill
+\note{엔트로피는 실제 확률로 놀라움의 평균을 쟀습니다. 교차 엔트로피는 놀라움을 모델이 말한 확률 q로 잽니다. 실제 확률 p로 가중 평균을 내되, 로그 안에는 모델의 예측을 넣습니다. 경기가 끝나 정답이 정해지면 p는 이긴 쪽만 1이고 나머지는 0이라서, 합에서 정답 항 하나만 남습니다. 마이너스 로그, 모델이 정답에 준 확률. 정답에 0.9를 줬다면 0.15비트로 별로 놀라지 않았고, 0.1을 줬다면 3.32비트로 크게 놀란 겁니다. 정답을 덜 놀라워하는 모델이 좋은 모델입니다. 이걸 게임으로 바꿔 보면 다음 쪽의 칩 걸기가 됩니다.}
+\end{frame}
+
+% --- 교차 엔트로피 (옛 03-1 교차 엔트로피 덱에서 옮김: 칩 걸기 · 벌점 · MSE 와 비교)
+\begin{frame}{부록 5. 칩 100개를 나눠 걸기}
+\vfill
+\centering\includegraphics[width=0.8\linewidth]{ce_chips.png}\par\vskip0.4em
+{\large AI는 칩 100개를 답마다 나눠 건다. \kq{정답 쪽에 건 칩만 남는다}}
+\vfill
+\note{AI의 예측을 게임으로 바꿔 봅시다. AI는 칩 100개를 고양이와 강아지에 나눠 겁니다. 고양이 90퍼센트라는 예측은 고양이에 90개, 강아지에 10개를 건 것입니다. 정답이 공개되면 정답 쪽에 건 칩만 남습니다. 정답이 고양이니까 A는 90개, 반반 건 B는 50개, 강아지 99퍼센트라고 한 C는 1개만 남습니다. 남은 칩이 적을수록 큰 벌점을 주면 됩니다.}
+\end{frame}
+
+\begin{frame}{부록 6. 남은 칩이 적을수록 큰 벌점}
+\markpage{curve}
+\vfill
+\begin{columns}[c]
+\begin{column}{0.58\textwidth}\centering\includegraphics[width=\linewidth]{ce_curve.png}\end{column}
+\begin{column}{0.38\textwidth}
+{\Large\[ \text{벌점} = -\log_2 \frac{\text{남은 칩}}{100} \]}\vskip0.6em
+100개 $\to$ 0 \quad 50개 $\to$ 1 \quad 25개 $\to$ 2\\[0.3em]
+\kb{칩이 절반이 될 때마다 벌점 +1}\\[0.8em]
+90개 $\to$ \textbf{0.15} \qquad 1개 $\to$ \kq{6.64}\\[0.8em]
+{\small 밑은 아무거나: $\log_2$ $\to$ \textbf{비트}, \; $\ln$ $\to$ \textbf{냇}\\ ML 코드는 보통 $\ln$. 값만 상수배 \pref{celoss}}
+\end{column}
+\end{columns}
+\vfill
+\note{벌점은 남은 칩 비율에 마이너스 로그 2를 씌운 값입니다. 다 남으면 0점, 절반이 남으면 1점, 4분의 1이 남으면 2점입니다. 칩이 절반으로 줄 때마다 벌점이 1씩 오릅니다. 그래서 90개 남은 A는 0.15점, 1개 남은 C는 6.64점입니다. 100개에서 1개가 되려면 절반을 6.6번 해야 하니까요. 처음 질문의 답이 6.64점입니다. 한 가지 짚어 두면, 로그의 밑이 꼭 2일 필요는 없습니다. 밑을 바꾸면 값 전체에 같은 상수가 곱해질 뿐이라 어느 AI가 더 나쁜지 순서도, 학습 결과도 같습니다. 밑이 2이면 단위를 비트라고 부르고, 절반마다 1점이라 직관적이어서 오늘 비유에서는 2를 씁니다. 실제 머신러닝 코드는 보통 자연로그를 쓰고, 단위는 냇이라고 합니다.}
+\end{frame}
+
+\begin{frame}{부록 7. 정답에 0개를 걸었다면}
+\vfill
+\centering\includegraphics[width=0.8\linewidth]{ce_allin.png}\par\vskip0.6em
+{\large 정답에 하나도 안 걸면 \kq{파산: 벌점 $\infty$}. 모를 땐 반반이 낫다 (틀려도 1점)}
+\vfill
+\note{정답인 고양이에 하나도 안 걸고 강아지에 100개를 다 걸었다면 칩이 하나도 안 남습니다. 파산이고, 로그 0은 마이너스 무한대라서 벌점은 무한대입니다. 그래서 교차 엔트로피로 학습한 모델은 모를 때 함부로 확신하지 않습니다. 반반에 걸면 어느 쪽이 정답이든 1점만 잃기 때문입니다. 확신하고 틀리는 것을 아주 크게 벌하는 벌점입니다.}
+\end{frame}
+
 \end{document}

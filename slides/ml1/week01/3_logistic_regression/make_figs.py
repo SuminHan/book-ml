@@ -166,3 +166,49 @@ def knn_acc_fig(x, y, w_ks=KNN_KS, seed=0):
 kn = knn_idea_fig(x, y); ka = knn_acc_fig(x, y)
 print("knn +200: range", kn[0], kn[1], "wins", kn[2], "/", KNN_K)
 print("knn acc", ka[0], "logit acc", ka[1], "train/test", ka[2], ka[3])
+
+
+# --- 소프트맥스 (GLM 덱에서 옮김): 붓꽃 세 종
+IRIS_NAMES = ["setosa", "versicolor", "virginica"]
+IRIS_COL = [GOLD, "#2a9d5c", BLUE]
+
+
+def iris():
+    """Fisher (1936) 붓꽃 150송이: 꽃잎 길이 하나, 종 0/1/2."""
+    from sklearn.datasets import load_iris
+    X, yy = load_iris(return_X_y=True)
+    return X[:, 2], yy
+
+
+def fit_softmax(x, y, k=3, lr=0.5, steps=40000, shift=4.0):
+    """소프트맥스 회귀 (클래스 k 개, 특징 하나): 직선 z_k 세 개를 같이 학습, 기울기 (yhat - y) x."""
+    u = x - shift; A = np.c_[np.ones_like(u), u]; Y = np.eye(k)[y]; W = np.zeros((2, k))
+    for _ in range(steps):
+        Z = A @ W; P = np.exp(Z - Z.max(1, keepdims=True)); P /= P.sum(1, keepdims=True)
+        W -= lr * A.T @ (P - Y) / len(y)
+    W[0] -= W[1] * shift
+    return W
+
+
+def softmax_p(W, v):
+    z = W[0] + W[1] * np.asarray(v, float)[..., None]; e = np.exp(z - z.max(-1, keepdims=True))
+    return e / e.sum(-1, keepdims=True)
+
+
+def softmax_fig(x, y, W, v=4.9, seed=1):
+    """꽃잎 길이 하나로 세 종의 확률 (소프트맥스 회귀)."""
+    rng = np.random.default_rng(seed); xs = np.linspace(1, 7, 400); P = softmax_p(W, xs); pv = softmax_p(W, v)
+    fig, ax = plt.subplots(figsize=(8.5, 4.4))
+    for k in range(3):
+        ax.plot(xs, P[:, k], color=IRIS_COL[k], lw=3.5, label=IRIS_NAMES[k])
+        m = y == k; ax.scatter(x[m], -0.07 - 0.04 * k + rng.uniform(-0.012, 0.012, m.sum()), s=14, color=IRIS_COL[k], alpha=0.6, edgecolors="none")
+    ax.axvline(v, color=GRAY, ls=":")
+    ax.annotate(f"{v} cm\nversicolor {pv[1]:.0%}\nvirginica {pv[2]:.0%}", (v, 0.5), (5.25, 0.08), fontsize=14, color=BLUE, fontweight="bold",
+                arrowprops=dict(arrowstyle="->", color=GRAY))
+    ax.set_xlabel("꽃잎 길이 (cm)"); ax.set_ylabel("확률"); ax.set_ylim(-0.17, 1.05); ax.set_yticks([0, 0.5, 1])
+    ax.legend(frameon=False, loc="upper right", bbox_to_anchor=(1.0, 0.92), fontsize=12)
+    fig.tight_layout(); fig.savefig(O + "softmax_iris.png"); plt.close(fig)
+
+
+ix, iy = iris(); W = fit_softmax(ix, iy); softmax_fig(ix, iy, W); p49 = softmax_p(W, 4.9)
+print("softmax W", W.round(2).tolist(), "p4.9", p49.round(2), "loss", round(-np.log(p49[2]), 2), "acc", (softmax_p(W, ix).argmax(1) == iy).mean())
