@@ -82,6 +82,7 @@ GOALS_PMIN, GOALS_LMIN = 0.43, -0.17     # 가장 약한 쪽 (Elo -575): 포아�
 GOALS_BIN_M450 = (18, 0.83, 0.17)       # Elo 차이 -500 ~ -400: 줄 수, 실제 평균 골, 직선 (가운데 -450)
 GOALS_EVEN = (462, 1.30, 1.68)          # Elo 차이 -50 ~ +50: 줄 수, 평균, 분산 (분포 그림)
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
+IRIS_LOSS49 = 0.54                      # 4.9 cm 꽃이 virginica 일 때 교차 엔트로피 -ln 0.58
 IRIS_CROSS = (2.6, 4.9)                 # 확률이 바뀌는 길이 (setosa|versicolor, versicolor|virginica)
 
 if __name__ == "__main__":
@@ -113,5 +114,6 @@ if __name__ == "__main__":
     xs = np.linspace(1, 7, 6001); P = softmax_p(W, xs)
     c01 = xs[np.argmax(P[:, 1] > P[:, 0])]; c12 = xs[np.argmax(P[:, 2] > P[:, 1])]
     print("iris W", W.round(2).tolist(), "p4.9", p.round(3), "cross", round(c01, 2), round(c12, 2), "acc", (softmax_p(W, x).argmax(1) == y).mean())
+    assert round(-np.log(p[2]), 2) == IRIS_LOSS49
     assert np.allclose(p, IRIS_P49, atol=0.005) and (round(c01, 1), round(c12, 1)) == IRIS_CROSS
     print("data ok")

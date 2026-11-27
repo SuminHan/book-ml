@@ -126,10 +126,21 @@ def dists_fig(study, chess, goals, iris, line=(38.58, 5.25), chess_at=200, n_nea
     fig.tight_layout(); fig.savefig(O + "glm_dists.png"); plt.close(fig)
     return sd, ph, round(lam, 2), n
 
+def pois_pmf_fig(lams=((-300, 0.74), (0, 1.34), (300, 2.40)), kmax=7):
+    """포아송 분포 모양: 평균 λ 하나로 정해진다 (월드컵 모델의 약팀 · 비슷 · 강팀 평균)."""
+    from math import lgamma, exp, log
+    ks = np.arange(0, kmax + 1); cols = [RED, GRAY, BLUE]; wd = 0.27
+    fig, ax = plt.subplots(figsize=(8.5, 4.2))
+    for i, ((d, lam), c) in enumerate(zip(lams, cols)):
+        pm = [exp(k * log(lam) - lam - lgamma(k + 1)) for k in ks]
+        ax.bar(ks + (i - 1) * wd, pm, width=wd, color=c, alpha=0.85, label=f"Elo {d:+d}: λ = {lam:.2f}골" if d else f"Elo 0: λ = {lam:.2f}골")
+    ax.set_xticks(ks); ax.set_xlabel("넣은 골 y"); ax.set_ylabel("확률"); ax.legend(frameon=False, fontsize=13)
+    fig.tight_layout(); fig.savefig(O + "glm_pois_pmf.png"); plt.close(fig)
+
 if __name__ == "__main__":
     st, ch, (x, y), ir = D.study(), D.chess(), D.goals(), D.iris()
     types_fig(st, ch, (x, y), ir); print("dists", dists_fig(st, ch, (x, y), ir))
     k = np.polyfit(x, y, 1); goals_line_fig(x, y, k)
     wp = D.fit_glm(x, y, np.exp, lr=0.05, steps=20000, scale=100, w0=np.log(y.mean())); goals_pois_fig(x, y, k, wp)
-    W = D.fit_softmax(*ir); softmax_fig(*ir, W)
+    W = D.fit_softmax(*ir); softmax_fig(*ir, W); pois_pmf_fig()
     print("figs ok", wp.round(5))
