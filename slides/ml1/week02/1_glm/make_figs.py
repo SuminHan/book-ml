@@ -232,6 +232,32 @@ def scatter_cells_fig(nx=12, ny=8, lam=2, seed=3, kmax=8):
     fig.tight_layout(); fig.savefig(O + "glm_pois_scatter.png"); plt.close(fig)
     return out
 
+def v1_map_fig(counts=D.V1_BOMBS, n=24, seed=5, big=7):
+    """런던 남부 576구역 (24 x 24, 0.25 km²) 에 V-1 537발. 구역별 개수는 Clarke (1946) 실제 (229 · 211 · 93 · 35 · 7 · 1 구역),
+    어느 구역이 몇 발인지 (위치) 는 기록이 없어 임의로 배치한다. 강은 분위기용 곡선."""
+    rng = np.random.default_rng(seed)
+    per = np.concatenate([np.full(c, k if k < 5 else big) for k, c in enumerate(counts)]); rng.shuffle(per)
+    fig, ax = plt.subplots(figsize=(7.2, 7.2)); fig.patch.set_facecolor("#20242b"); ax.set_facecolor("#2b3038")
+    t = np.linspace(0, n, 300); river = n * 0.72 + 2.2 * np.sin(t / 3.1) + 1.2 * np.sin(t / 1.3)
+    ax.fill_between(t, river - 0.55, river + 0.55, color="#4a6275", zorder=1)
+    for v in range(n + 1):
+        ax.plot([v, v], [0, n], color="#55606e", lw=0.5, zorder=2); ax.plot([0, n], [v, v], color="#55606e", lw=0.5, zorder=2)
+    pts = []
+    for i, c in enumerate(per):
+        gx, gy = i % n, i // n
+        pts += [(gx + rng.uniform(0.12, 0.88), gy + rng.uniform(0.12, 0.88)) for _ in range(c)]
+    P = np.array(pts)
+    ax.scatter(P[:, 0], P[:, 1], s=34, color="#e8322f", edgecolors="#ffb3b0", linewidths=0.6, zorder=4)
+    two = [i for i, c in enumerate(per) if c == 2]; hi = min(two, key=lambda i: (i % n - n * 0.45) ** 2 + (i // n - n * 0.35) ** 2); gx, gy = hi % n, hi // n
+    ax.add_patch(plt.Rectangle((gx, gy), 1, 1, fill=False, ec="#7CFC9A", lw=3, zorder=5))
+    ax.annotate("이 구역: 2발", (gx + 1, gy + 0.5), (gx + 3.2, gy + 2.2), color="#7CFC9A", fontsize=17, fontweight="bold", zorder=6,
+                arrowprops=dict(arrowstyle="->", color="#7CFC9A", lw=2))
+    ax.text(0.3, n * 0.72 + 1.6, "템스강", color="#cfe3f0", fontsize=14, zorder=6)
+    ax.set_xlim(0, n); ax.set_ylim(0, n); ax.set_aspect("equal"); ax.set_xticks([]); ax.set_yticks([])
+    for s_ in ax.spines.values(): s_.set_visible(False)
+    fig.tight_layout(pad=0.3); fig.savefig(O + "glm_v1_map.png", facecolor=fig.get_facecolor()); plt.close(fig)
+    return len(P), int((per == 0).sum())
+
 if __name__ == "__main__":
     st, ch, ir = D.study(), D.chess(), D.iris(); cx, cy = D.claims()
     print("dists", dists_fig(st, ch, (cx, cy), ir))
@@ -241,5 +267,6 @@ if __name__ == "__main__":
     pois_examples_fig([("런던: 구역에 떨어진 폭탄", "0.25 km² 구역의 V-1 수", D.V1_BOMBS, D.V1_MEAN, "구역"),
                        ("기병대: 말에 차여 숨진 병사", "한 부대 · 한 해의 사망자", D.HORSE_KICKS, D.HORSE_MEAN, "부대-년"),
                        ("자동차 보험: 1년 사고 청구", "한 운전자의 1년 청구 횟수", D.CLAIMS_COUNTS, D.CLAIMS_MEAN, "계약")])
+    print("v1 map", v1_map_fig())
     pois_origin_fig(); print("scatter", scatter_cells_fig())
     print("figs ok", wp.round(5))
