@@ -259,30 +259,26 @@ def basemap(ax, lon0, lon1, lat0, lat1, z=13, style="osm"):
     ax.set_xlim(x0, x1); ax.set_ylim(y1, y0)
 
 
-def v1_map_fig(e, n, lon, lat, box=D.V1_BOX, cell=D.V1_CELL, z=14):
-    """V-1 실제 낙하 지점 (런던 시의회 구역 887발, Shaw 2025) 을 런던 지도 (OpenStreetMap · CARTO) 위에.
-    노란 네모 = 남쪽 12 x 9 km, 0.5 km 칸으로 센다. 영국 격자 (m) → 경위도는 887점으로 맞춘 1차식 (이 넓이에서 오차 수 m)."""
-    H, k = D.v1_cells(e, n, box, cell); x0, x1, y0, y1 = box
-    A = np.c_[e, n, np.ones_like(e)]; cl = np.linalg.lstsq(A, lon, rcond=None)[0]; ca = np.linalg.lstsq(A, lat, rcond=None)[0]
-    to_px = lambda E, N: _merc(np.c_[E, N, np.ones_like(E)] @ cl, np.c_[E, N, np.ones_like(E)] @ ca, z)
+def v1_map_fig(lon, lat, box=D.V1_BOX, cell=D.V1_CELL, z=14):
+    """V-1 실제 낙하 지점 (런던 시의회 구역 887발, Shaw 2025) 을 OpenStreetMap 위에. 주황 네모 = 12 x 9 km, 0.5 km 칸 (지도와 나란히)."""
+    H, k = D.v1_cells(lon, lat, box, cell); w, h = box; c0, c1 = D.V1_CENTER
+    kx, ky = 111320 * np.cos(np.radians(c1)), 110574
+    ll = lambda x, y: (c0 + np.asarray(x, float) / kx, c1 + np.asarray(y, float) / ky)
+    to_px = lambda x, y: _merc(*ll(x, y), z)
     fig, ax = plt.subplots(figsize=(8.6, 6.8)); fig.patch.set_facecolor("white")
-    cx_, cy_ = to_px(np.array([x0, x1, x1, x0], float), np.array([y0, y0, y1, y1], float))
-    m_ = 0.06; A_ = np.c_[np.array([x0, x1, x1, x0], float), np.array([y0, y0, y1, y1], float), np.ones(4)]
-    lo_, la_ = A_ @ cl, A_ @ ca; dl, da = (lo_.max() - lo_.min()) * m_, (la_.max() - la_.min()) * m_
-    basemap(ax, lo_.min() - dl, lo_.max() + dl, la_.min() - da, la_.max() + da, z)
-    for v in np.arange(x0, x1 + 1, cell):
-        px, py = to_px(np.array([v, v], float), np.array([y0, y1], float)); ax.plot(px, py, color="#d97706", lw=0.4, alpha=0.6, zorder=2)
-    for v in np.arange(y0, y1 + 1, cell):
-        px, py = to_px(np.array([x0, x1], float), np.array([v, v], float)); ax.plot(px, py, color="#d97706", lw=0.4, alpha=0.6, zorder=2)
-    bx, by = to_px(np.array([x0, x1, x1, x0, x0], float), np.array([y0, y0, y1, y1, y0], float)); ax.plot(bx, by, color="#d97706", lw=2.5, zorder=5)
-    px, py = _merc(lon, lat, z)
-    inb = (e >= x0) & (e < x1) & (n >= y0) & (n < y1)
+    lo0, la0 = ll(-w / 2 * 1.06, -h / 2 * 1.08); lo1, la1 = ll(w / 2 * 1.06, h / 2 * 1.08)
+    basemap(ax, lo0, lo1, la0, la1, z)
+    for v in np.arange(-w / 2, w / 2 + 1, cell):
+        px, py = to_px([v, v], [-h / 2, h / 2]); ax.plot(px, py, color="#d97706", lw=0.4, alpha=0.6, zorder=2)
+    for v in np.arange(-h / 2, h / 2 + 1, cell):
+        px, py = to_px([-w / 2, w / 2], [v, v]); ax.plot(px, py, color="#d97706", lw=0.4, alpha=0.6, zorder=2)
+    bx, by = to_px([-w / 2, w / 2, w / 2, -w / 2, -w / 2], [-h / 2, -h / 2, h / 2, h / 2, -h / 2]); ax.plot(bx, by, color="#d97706", lw=2.5, zorder=5)
+    x, y = D.v1_xy(lon, lat); px, py = _merc(lon, lat, z); inb = (np.abs(x) < w / 2) & (np.abs(y) < h / 2)
     ax.scatter(px[~inb], py[~inb], s=22, color="#e0211b", alpha=0.3, edgecolors="none", zorder=3)
     ax.scatter(px[inb], py[inb], s=32, color="#e0211b", edgecolors="white", linewidths=0.6, zorder=4)
-    ii = np.argwhere(H == 2); c = ii[np.argmin(((ii - np.array(H.shape) * [0.55, 0.6]) ** 2).sum(1))]
-    cx, cy = x0 + c[0] * cell, y0 + c[1] * cell
-    qx, qy = to_px(np.array([cx, cx + cell, cx + cell, cx, cx], float), np.array([cy, cy, cy + cell, cy + cell, cy], float))
-    ax.plot(qx, qy, color="#2E3192", lw=3, zorder=6)
+    ii = np.argwhere(H == 2); c = ii[np.argmin(((ii - np.array(H.shape) * [0.6, 0.6]) ** 2).sum(1))]
+    cx, cy = -w / 2 + c[0] * cell, -h / 2 + c[1] * cell
+    qx, qy = to_px([cx, cx + cell, cx + cell, cx, cx], [cy, cy, cy + cell, cy + cell, cy]); ax.plot(qx, qy, color="#2E3192", lw=3, zorder=6)
     ax.annotate("이 칸: 2발", (qx[2], qy[2]), (qx[2] + 220, qy[2] - 300), color="#2E3192", fontsize=16, fontweight="bold", zorder=7,
                 arrowprops=dict(arrowstyle="->", color="#2E3192", lw=2))
     ax.text(bx[3] + 20, by[3] + 60, f"0.5 km 칸 {H.size}개 · {k}발", color="#b45309", fontsize=14, fontweight="bold", zorder=7)
@@ -290,13 +286,13 @@ def v1_map_fig(e, n, lon, lat, box=D.V1_BOX, cell=D.V1_CELL, z=14):
     ax.set_xticks([]); ax.set_yticks([])
     for s_ in ax.spines.values(): s_.set_visible(False)
     fig.tight_layout(pad=0.2); fig.savefig(O + "glm_v1_map.png"); plt.close(fig)
-    return len(e), k
+    return len(lon), k
 
 
-def v1_sim_fig(e, n, reps=10000):
+def v1_sim_fig(lon, lat, reps=10000):
     """실제 칸별 개수 vs 포아송 vs 제멋대로 1만 번 (95% 범위). 오른쪽 = 분산/평균 의 시뮬레이션 분포."""
     from math import exp, factorial
-    H, k = D.v1_cells(e, n); cells = H.size; tab = np.bincount(np.minimum(H.ravel(), 5), minlength=6)[:5]
+    H, k = D.v1_cells(lon, lat); cells = H.size; tab = np.bincount(np.minimum(H.ravel(), 5), minlength=6)[:5]
     S = D.v1_sim(k, cells, reps)[:, :5]; lam = k / cells; ks = np.arange(5)
     lo, hi = np.percentile(S, 2.5, 0), np.percentile(S, 97.5, 0)
     fig, ax = plt.subplots(1, 2, figsize=(12.5, 4.3), gridspec_kw={"width_ratios": [1.5, 1]})
@@ -325,6 +321,6 @@ if __name__ == "__main__":
     pois_examples_fig([("런던: 구역에 떨어진 폭탄", "0.25 km² 구역의 V-1 수", D.V1_BOMBS, D.V1_MEAN, "구역"),
                        ("기병대: 말에 차여 숨진 병사", "한 부대 · 한 해의 사망자", D.HORSE_KICKS, D.HORSE_MEAN, "부대-년"),
                        ("자동차 보험: 1년 사고 청구", "한 운전자의 1년 청구 횟수", D.CLAIMS_COUNTS, D.CLAIMS_MEAN, "계약")])
-    ve, vn = D.v1(); vl, va = D.v1_lonlat(); print("v1 map", v1_map_fig(ve, vn, vl, va)); print("v1 sim", v1_sim_fig(ve, vn))
+    vl, va = D.v1_lonlat(); print("v1 map", v1_map_fig(vl, va)); print("v1 sim", v1_sim_fig(vl, va))
     pois_origin_fig(); print("scatter", scatter_cells_fig())
     print("figs ok", wp.round(5))

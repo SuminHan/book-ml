@@ -61,14 +61,19 @@ def v1_lonlat():
     return d.lon.values, d.lat.values
 
 
-V1_BOX = (525000, 537000, 170000, 179000)   # 템스강 남쪽 12 km x 9 km
-V1_CELL = 500                               # 0.5 km 칸 (0.25 km², Clarke 와 같은 크기) → 24 x 18 = 432칸
+V1_CENTER = (-0.114, 51.454)             # 템스강 남쪽 (경도, 위도)
+V1_BOX = (12000, 9000)                  # 가로 12 km x 세로 9 km (지도와 나란한 격자)
+V1_CELL = 500                           # 0.5 km 칸 (0.25 km², Clarke 와 같은 크기) → 24 x 18 = 432칸
 
 
-def v1_cells(e, n, box=V1_BOX, cell=V1_CELL):
-    x0, x1, y0, y1 = box; m = (e >= x0) & (e < x1) & (n >= y0) & (n < y1)
-    nx, ny = (x1 - x0) // cell, (y1 - y0) // cell
-    return np.histogram2d(e[m], n[m], bins=[nx, ny], range=[[x0, x1], [y0, y1]])[0].astype(int), m.sum()
+def v1_xy(lon, lat, center=V1_CENTER):
+    """경위도 → 가운데 기준 m (동쪽 x, 북쪽 y). 이 넓이에서는 평면으로 봐도 된다."""
+    return (lon - center[0]) * 111320 * np.cos(np.radians(center[1])), (lat - center[1]) * 110574
+
+
+def v1_cells(lon, lat, box=V1_BOX, cell=V1_CELL):
+    x, y = v1_xy(lon, lat); w, h = box; m = (np.abs(x) < w / 2) & (np.abs(y) < h / 2)
+    return np.histogram2d(x[m], y[m], bins=[w // cell, h // cell], range=[[-w / 2, w / 2], [-h / 2, h / 2]])[0].astype(int), m.sum()
 
 
 def v1_sim(k, cells, reps=10000, seed=0):
@@ -149,11 +154,11 @@ CLAIMS_BIN140 = (50, 0.72)              # 등급 140~149: 계약 수, 실제 평
 CLAIMS_BM50 = (123281, 0.056, 0.058)    # 등급 50 (오래 무사고): 계약 수, 평균, 분산 (분포 그림)
 CLAIMS_G1 = -0.035                      # 첫 걸음: 평균((yhat - y) x), x 는 10점 단위
 V1_REAL_N = 887                         # LCC 구역 V-1 낙하 지점
-V1_REAL_K, V1_REAL_CELLS = 379, 432     # 남쪽 12 x 9 km 안의 폭탄 수, 칸 수
-V1_REAL_TAB = (195, 124, 89, 19, 5, 0)  # 0 · 1 · 2 · 3 · 4 · 5+ 발 칸 수
-V1_REAL_MV = (0.88, 0.92)               # 칸당 평균, 분산
-V1_SIM_ZERO = (167, 192)                # 제멋대로 1만 번: 0발 칸 수의 95% 범위
-V1_SIM_ONE, V1_SIM_TWO = (138, 177), (56, 82)   # 1발 · 2발 칸 수의 95% 범위 (실제 124 · 89 는 밖)
+V1_REAL_K, V1_REAL_CELLS = 383, 432     # 남쪽 12 x 9 km 안의 폭탄 수, 칸 수
+V1_REAL_TAB = (190, 141, 68, 26, 7, 0)  # 0 · 1 · 2 · 3 · 4 · 5+ 발 칸 수
+V1_REAL_MV = (0.89, 0.97)               # 칸당 평균, 분산
+V1_SIM_ZERO = (166, 190)                # 제멋대로 1만 번: 0발 칸 수의 95% 범위
+V1_SIM_ONE, V1_SIM_TWO = (139, 177), (57, 83)   # 1발 · 2발 칸 수의 95% 범위 (실제는 모두 안)
 IRIS_P49 = (0.0, 0.42, 0.58)            # 꽃잎 4.9 cm: setosa / versicolor / virginica
 IRIS_LOSS49 = 0.54                      # 4.9 cm 꽃이 virginica 일 때 교차 엔트로피 -ln 0.58
 IRIS_CROSS = (2.6, 4.9)                 # 확률이 바뀌는 길이 (setosa|versicolor, versicolor|virginica)
@@ -188,7 +193,7 @@ if __name__ == "__main__":
     assert len(x) == GOALS_N
     m = np.abs(x) <= 50; assert (m.sum(), round(y[m].mean(), 2), round(y[m].var(), 2)) == GOALS_EVEN
 
-    e, n = v1(); H, k = v1_cells(e, n); tab = np.bincount(np.minimum(H.ravel(), 5), minlength=6)
+    e, n = v1(); vl, va = v1_lonlat(); H, k = v1_cells(vl, va); tab = np.bincount(np.minimum(H.ravel(), 5), minlength=6)
     print("v1 real", len(e), k, H.size, tab, H.mean().round(3), H.var().round(3))
     assert (len(e), k, H.size, tuple(tab)) == (V1_REAL_N, V1_REAL_K, V1_REAL_CELLS, V1_REAL_TAB)
     assert (round(H.mean(), 2), round(H.var(), 2)) == V1_REAL_MV
